@@ -1,7 +1,0 @@
-D:\WORK\CS4\UniCS.TM\UniCS.TM\bin\Debug\UniCS.TM.exe
-D:\WORK\CS4\UniCS.TM\UniCS.TM\bin\Debug\UniCS.TM.pdb
-D:\WORK\CS4\UniCS.TM\UniCS.TM\obj\Debug\UniCS.TM.exe
-D:\WORK\CS4\UniCS.TM\UniCS.TM\obj\Debug\UniCS.TM.pdb
-D:\WORK\CS4\UniCS.TM\UniCS.TM\obj\Debug\UniCS.TM.csprojResolveAssemblyReference.cache
-D:\WORK\CS4\UniCS.TM\UniCS.TM\obj\Debug\UniCS.TM.MainForm.resources
-D:\WORK\CS4\UniCS.TM\UniCS.TM\obj\Debug\UniCS.TM.csproj.GenerateResource.Cache
