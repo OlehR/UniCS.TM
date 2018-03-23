@@ -1,0 +1,6 @@
+D:\WORK\CS4\UniCS.TM\MOD\bin\Debug\MOD.exe.config
+D:\WORK\CS4\UniCS.TM\MOD\bin\Debug\MOD.exe
+D:\WORK\CS4\UniCS.TM\MOD\bin\Debug\MOD.pdb
+D:\WORK\CS4\UniCS.TM\MOD\obj\Debug\MOD.csprojResolveAssemblyReference.cache
+D:\WORK\CS4\UniCS.TM\MOD\obj\Debug\MOD.exe
+D:\WORK\CS4\UniCS.TM\MOD\obj\Debug\MOD.pdb

@@ -1,0 +1,5 @@
+D:\WORK\CS4\UniCS.TM\BildSql\bin\Debug\BildSql.exe
+D:\WORK\CS4\UniCS.TM\BildSql\bin\Debug\BildSql.pdb
+D:\WORK\CS4\UniCS.TM\BildSql\obj\Debug\BildSql.exe
+D:\WORK\CS4\UniCS.TM\BildSql\obj\Debug\BildSql.pdb
+D:\WORK\CS4\UniCS.TM\BildSql\obj\Debug\BildSql.csprojResolveAssemblyReference.cache
