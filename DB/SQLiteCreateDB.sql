@@ -71,7 +71,7 @@ CREATE UNIQUE INDEX idx_CONFIG ON CONFIG (
     NAME_VAR
 );
 
---!!! Дисконтрі програми
+--!!! Дисконтрі програми --ИнформационныеКарты
 CREATE TABLE DISCOUNT_CARD (
     CODE_DISCOUNT_CARD           INTEGER NOT NULL,
     CODE_SUBGROUP                INTEGER NOT NULL,
