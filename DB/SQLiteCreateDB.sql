@@ -1,4 +1,5 @@
 -- Одиниці виміру
+-- MSSQL dbo.v_addition_unit
 CREATE TABLE ADDITION_UNIT (
     CODE_WARES                   INTEGER NOT NULL,
     CODE_UNIT                    INTEGER NOT NULL,
@@ -13,6 +14,7 @@ CREATE UNIQUE INDEX id_ADDITION_UNIT ON ADDITION_UNIT (
 
 
 -- Штрихкоди 
+-- dbo.v_BAR_CODE_ADDITIONAL_UNIT
 CREATE TABLE BAR_CODE_ADDITIONAL_UNIT (    
     CODE_WARES                    INTEGER NOT NULL,
     CODE_UNIT                     INTEGER NOT NULL,
@@ -72,6 +74,7 @@ CREATE UNIQUE INDEX idx_CONFIG ON CONFIG (
 );
 
 --!!! Дисконтрі програми --ИнформационныеКарты
+--dbo.V_DISCOUNT_CARD
 CREATE TABLE DISCOUNT_CARD (
     CODE_DISCOUNT_CARD           INTEGER NOT NULL,
     CODE_SUBGROUP                INTEGER NOT NULL,
@@ -124,6 +127,7 @@ CREATE TABLE FIELD_INFO (
     USER_CREATE  INTEGER  NOT NULL
 );
 
+
 -- Фірми
 CREATE TABLE FIRMS (
     CODE_FIRM               INTEGER  NOT NULL,
@@ -135,6 +139,7 @@ CREATE UNIQUE INDEX id_FIRMS ON FIRMS (
     CODE_FIRM
 );
 
+ 
 --- Для генерації номерів докуметів(чеків
 CREATE TABLE GEN_WORKPLACE (
     ID_WORKPLACE INTEGER NOT NULL,
@@ -267,7 +272,7 @@ CREATE UNIQUE INDEX id_translation ON TRANSLATION (NAME, LANGUAGE);
 
 
 -- Довідник Одиниць виміру
-
+-- MSSQL dbo.V_UNIT_DIMENSION 
 CREATE TABLE UNIT_DIMENSION (
     CODE_UNIT                     INTEGER NOT NULL,
     NAME_UNIT                     TEXT    NOT NULL,
