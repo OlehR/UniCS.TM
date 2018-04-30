@@ -1,11 +1,11 @@
--- Одиниці виміру
+﻿-- Одиниці виміру
 CREATE TABLE ADDITION_UNIT (
     CODE_WARES                   INTEGER NOT NULL,
     CODE_UNIT                    INTEGER NOT NULL,
     COEFFICIENT                  NUMBER  NOT NULL,
     DEFAULT_UNIT                 TEXT    NOT NULL
 );
-
+-- Індекс
 CREATE UNIQUE INDEX id_ADDITION_UNIT ON ADDITION_UNIT (
     CODE_WARES,
     CODE_UNIT
