@@ -3,7 +3,7 @@ CREATE TABLE ADDITION_UNIT (
     CODE_WARES                   INTEGER NOT NULL,
     CODE_UNIT                    INTEGER NOT NULL,
     COEFFICIENT                  NUMBER  NOT NULL,
-    DEFAULT_UNIT                 TEXT    NOT NULL
+    DEFAULT_UNIT                 INTEGER    NOT NULL
 );
 -- Індекс
 CREATE UNIQUE INDEX id_ADDITION_UNIT ON ADDITION_UNIT (
@@ -13,19 +13,19 @@ CREATE UNIQUE INDEX id_ADDITION_UNIT ON ADDITION_UNIT (
 
 
 -- Штрихкоди 
-CREATE TABLE BAR_CODE_ADDITIONAL_UNIT (    
+CREATE TABLE BAR_CODE(    
     CODE_WARES                    INTEGER NOT NULL,
     CODE_UNIT                     INTEGER NOT NULL,
     BAR_CODE                      TEXT    NOT NULL    
 );
 
-CREATE UNIQUE INDEX id_BAR_CODE_ADDITIONAL_UNIT ON BAR_CODE_ADDITIONAL_UNIT (
+CREATE UNIQUE INDEX id_BAR_CODE ON BAR_CODE (
     CODE_WARES,
     CODE_UNIT,
     BAR_CODE
 );
 
-CREATE INDEX ind_BAR_CODE_ADDITIONAL_UNIT ON BAR_CODE_ADDITIONAL_UNIT (   
+CREATE UNIQUE INDEX ind_BAR_CODE ON BAR_CODE (   
     BAR_CODE
 );
 
@@ -268,15 +268,12 @@ CREATE UNIQUE INDEX id_translation ON TRANSLATION (NAME, LANGUAGE);
 
 -- Довідник Одиниць виміру
 
+-- Довідник Одиниць виміру
+
 CREATE TABLE UNIT_DIMENSION (
     CODE_UNIT                     INTEGER NOT NULL,
     NAME_UNIT                     TEXT    NOT NULL,
-    ABR_UNIT                      TEXT    NOT NULL,
-    SIGN_ACTIVITY                 TEXT    NOT NULL,
-    SIGN_DIVISIONAL               TEXT    NOT NULL,
-    REUSABLE_CONTAINER            TEXT    NOT NULL,
-    NUMBER_UNIT                   INTEGER NOT NULL,
-    CODE_WARES_REUSABLE_CONTAINER INTEGER,
+    ABR_UNIT                      TEXT    NOT NULL,    
     DESCRIPTION                   TEXT
 );
 
