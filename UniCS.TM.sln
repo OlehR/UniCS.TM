@@ -1,8 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-# SharpDevelop 5.1
-VisualStudioVersion = 12.0.20827.3
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.452
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniCS.TM", "UniCS.TM\UniCS.TM.csproj", "{980BB45D-F2F4-4426-9299-BE27E80AD4A2}"
 EndProject
@@ -11,6 +10,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BildSql", "BildSql\BildSql.csproj", "{A8D75B5D-C320-4654-9315-6863D22D4D93}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MOD", "MOD\MOD.csproj", "{EEC43B58-93D4-42C4-AAF1-F7D9BB96458A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Receipt", "Receipt\Receipt.csproj", "{7EEA740E-552F-41AE-9B45-99FE8A77D58A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedLib", "SharedLib\SharedLib.csproj", "{B30DE63C-CFD2-41A3-91DE-BAFDB614E234}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Model", "Model\Model.csproj", "{990B3417-37A1-4118-BC1E-DFEB7F8373D0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,5 +39,23 @@ Global
 		{EEC43B58-93D4-42C4-AAF1-F7D9BB96458A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EEC43B58-93D4-42C4-AAF1-F7D9BB96458A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EEC43B58-93D4-42C4-AAF1-F7D9BB96458A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7EEA740E-552F-41AE-9B45-99FE8A77D58A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EEA740E-552F-41AE-9B45-99FE8A77D58A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EEA740E-552F-41AE-9B45-99FE8A77D58A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EEA740E-552F-41AE-9B45-99FE8A77D58A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B30DE63C-CFD2-41A3-91DE-BAFDB614E234}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B30DE63C-CFD2-41A3-91DE-BAFDB614E234}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B30DE63C-CFD2-41A3-91DE-BAFDB614E234}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B30DE63C-CFD2-41A3-91DE-BAFDB614E234}.Release|Any CPU.Build.0 = Release|Any CPU
+		{990B3417-37A1-4118-BC1E-DFEB7F8373D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{990B3417-37A1-4118-BC1E-DFEB7F8373D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{990B3417-37A1-4118-BC1E-DFEB7F8373D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{990B3417-37A1-4118-BC1E-DFEB7F8373D0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2E23AA08-5238-40A1-B194-DE5E83EA818D}
 	EndGlobalSection
 EndGlobal
