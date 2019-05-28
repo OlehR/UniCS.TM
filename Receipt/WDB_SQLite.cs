@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Model;
+using SharedLib;
+using System;
 using System.Data;
 //using DB_SQLite;
 using System.IO;
@@ -7,8 +9,8 @@ namespace MID
 {
 	public partial class WDB_SQLite:WDB
 	{
-		public DB_SQLite db;
-		public DB_SQLite db_receipt;
+		public SQLite db;
+		public SQLite db_receipt;
 		public Wares varWares = new Wares();
 		
 		/// <summary>
@@ -26,40 +28,36 @@ namespace MID
 			if(!File.Exists( varReceiptFile))
 			{
 			//Створюємо щоденну табличку з чеками.
-			this.db= new DB_SQLite(varReceiptFile);
-			this.db.Open();
+			this.db= new SQLite(varReceiptFile);
 			this.db.ExecuteNonQuery(varSqlCreateReceiptTable);
 			this.db.Close();
 			}
-		
-			this.db = new DB_SQLite(GlobalVar.varPathDB + @"MID.db","",this.varCallWriteLogSQL);
-			this.db.Open();
+
+            this.db = new SQLite(GlobalVar.varPathDB + @"MID.db");//,"",this.varCallWriteLogSQL);
 			//this.db.ExecuteNonQuery("ATTACH ':memory:' AS m");
 			this.db.ExecuteNonQuery(this.varSqlCreateT);
 			this.db.ExecuteNonQuery("ATTACH '"+varReceiptFile+"' AS rc");
 		}
 		
-		public override DataTable Execute(string parQuery, ParametersCollection parParameters = null)
+		public override DataTable Execute(string parQuery, Parameter[] parParameters = null)
 		{
 			return this.db.Execute(parQuery,parParameters);
 		}
 		
-		public override int ExecuteNonQuery(string parQuery, ParametersCollection parParameters = null)
+		public override int ExecuteNonQuery(string parQuery, Parameter[] parParameters = null)
 		{
 			return this.db.ExecuteNonQuery(parQuery,parParameters);
 		}
 		
 		
-		public override bool InsertT1(ParametersCollection parParameters)
+		public override bool InsertT1(Parameter[] parParameters)
 		{
 			return this.db.ExecuteNonQuery (varSqlInsertT1,parParameters)==0;
 		}
 		
 		public override DataRow Login (string parLogin,string parPassword)
 		{
-			ParametersCollection parColl = new ParametersCollection();
-			parColl.Add("parLogin",parLogin,DbType.String);
-			parColl.Add("parPassWord",parPassword,DbType.String); 
+			var parColl = new Parameter[] { new Parameter {ColumnName= "parLogin",Value= parLogin}, new Parameter { ColumnName = "parPassWord", Value = parPassword } };
 			
 			DataTable dt = db.Execute( varSqlLogin,parColl);
 			if(dt == null || dt.Rows.Count==0)
@@ -83,8 +81,8 @@ namespace MID
 		
 		public override DataRow GetGlobalVar(int parIdWorkPlace)
 		{
-			ParametersCollection varParameters = new ParametersCollection();
-			varParameters.Add("parIdWorkPlace",parIdWorkPlace ,DbType.Int32 );
+            var varParameters = new Parameter[] { new Parameter { ColumnName = "parIdWorkPlace", Value = parIdWorkPlace } };
+            
 			DataTable varDT=this.db.Execute(this.varSqlInitGlobalVar, varParameters);
 			if(varDT!=null&&varDT.Rows.Count>0)
 				return varDT.Rows[0];
@@ -94,8 +92,7 @@ namespace MID
 		
 		public override object GetConfig(string parStr)
 		{
-			ParametersCollection varParameters = new ParametersCollection();
-			varParameters.Add("parNameVar",parStr ,DbType.String);
+            var varParameters = new Parameter[] { new Parameter { ColumnName = "parNameVar", Value = parStr } };
 			DataTable varDT=this.db.Execute(this.varSqlConfig,varParameters);
 			if(varDT!=null&&varDT.Rows.Count>0)
 				return varDT.Rows[0][0];
@@ -111,8 +108,7 @@ namespace MID
 			string varStr =parStr.Trim();
 			Int64 varNumber = 0;
 			Int64.TryParse(varStr, out varNumber);
-			this.db.ExecuteNonQuery("delete from T$1");
-			ParametersCollection parameters = new ParametersCollection();
+			this.db.ExecuteNonQuery("delete from T$1");			
 			// Шукаемо Товар
 			varRezult.TypeFind=TypeFind.Wares;
 			if (varNumber>0)
@@ -138,14 +134,13 @@ namespace MID
 			{
 				if(varStr.Length>= GlobalVar.varMinLenghtBarCodeClient)
 				{//Шукаємо по штрихкоду
-					
-					parameters.Add("parCodeBar",varStr,DbType.String);
-					this.db.ExecuteNonQuery(varSqlFindClientBar,parameters);
+                    var varParameters = new Parameter[] { new Parameter { ColumnName = "parCodeBar", Value = varStr } };
+					this.db.ExecuteNonQuery(varSqlFindClientBar, varParameters);
 					
 				} else
 					if(GlobalVar.varTypeFindClient<2)
 				{
-					parameters.Add("parCodePrivat",varStr,DbType.String);
+                    var varParameters = new Parameter[] { new Parameter { ColumnName = "parCodePrivat", Value = varStr } };                    
 					this.db.ExecuteNonQuery(varSqlFindClientCode);
 				}
 			}
@@ -164,7 +159,7 @@ namespace MID
 			
 		}
 		// Повертає знайдений товар/товари
-		public override System.Data.DataTable FindWares(ParametersCollection parParameters = null)
+		public override System.Data.DataTable FindWares(Parameter[] parParameters = null)
 		{
 			return this.db.Execute(varSqlFoundWares,parParameters);
 		}
@@ -183,17 +178,14 @@ namespace MID
 		{
 			if (parCodePeriod==0)
 				parCodePeriod = Global.GetCodePeriod();
-			ParametersCollection parameters = new ParametersCollection();
-			parameters.Add("parIdWorkplace",GlobalVar.varIdWorkPlace,DbType.Int32);
-			parameters.Add("parCodePeriod",parCodePeriod,DbType.Int32);
+            var varParameters = new Parameter[] { new Parameter { ColumnName = "parIdWorkplace", Value = GlobalVar.varIdWorkPlace }, new Parameter { ColumnName = "parCodePeriod", Value = parCodePeriod } };
+            
 
-
-
-			this.db.ExecuteNonQuery(varSqlUpdateGenWorkPlace,parameters);
-			DataTable varS = this.db.Execute(varSqlSelectGenWorkPlace,parameters);
+			this.db.ExecuteNonQuery(varSqlUpdateGenWorkPlace, varParameters);
+			DataTable varS = this.db.Execute(varSqlSelectGenWorkPlace, varParameters);
 			if(varS==null || varS.Rows.Count==0)
 			{
-				this.db.ExecuteNonQuery( varSqlInsertGenWorkPlace,parameters );
+				this.db.ExecuteNonQuery( varSqlInsertGenWorkPlace, varParameters);
 				
 				return 1;
 			}else
@@ -203,46 +195,46 @@ namespace MID
 			
 		}
 		
-		public override System.Data.DataTable ViewWaresReceipt(ParametersCollection parParameters )
+		public override System.Data.DataTable ViewWaresReceipt(Parameter[] parParameters )
 		{
 			return this.db.Execute(varSqlViewReceipt,parParameters);
 		}
 
-		public override bool  AddReceipt(ParametersCollection parParameters)
+		public override bool  AddReceipt(Parameter[] parParameters)
 		{
 			return this.db.ExecuteNonQuery (varSqlAddReceipt,parParameters)==0;
 		}
 		
-		public override bool  UpdateClient(ParametersCollection parParameters)
+		public override bool  UpdateClient(Parameter[] parParameters)
 		{
 			return this.db.ExecuteNonQuery (varSqlUpdateClient,parParameters)==0;
 		}
 		
-		public override bool  CloseReceipt(ParametersCollection parParameters)
+		public override bool  CloseReceipt(Parameter[] parParameters)
 		{
 			return this.db.ExecuteNonQuery (varSqlCloseReceipt,parParameters)==0 ;
 		}
 
 		
-		public override bool  AddWares(ParametersCollection parParameters )
+		public override bool  AddWares(Parameter[] parParameters )
 		{
 			return this.db.ExecuteNonQuery (varSqlAddWares,parParameters)==0 && RecalcHeadReceipt(parParameters);
 		}
 
-		public override decimal GetCountWares(ParametersCollection parParameters )
+		public override decimal GetCountWares(Parameter[] parParameters )
 		{ 
 			DataTable varDt = db.Execute(varSqlGetCountWares,parParameters); 
 			return (varDt!=null && varDt.Rows.Count>0 && !DBNull.Value.Equals(varDt.Rows[0][0]) ?  Convert.ToDecimal(varDt.Rows[0][0]) :0);
 		}
 		
 		
-		public override bool UpdateQuantityWares(ParametersCollection parParameters )
+		public override bool UpdateQuantityWares(Parameter[] parParameters )
 		{
 			return this.db.ExecuteNonQuery (varSqlUpdateQuantityWares,parParameters)==0 && RecalcHeadReceipt(parParameters);
 		}
 		
 
-		public override bool DeleteWaresReceipt(ParametersCollection parParameters )
+		public override bool DeleteWaresReceipt(Parameter[] parParameters )
 		{
 			return this.db.ExecuteNonQuery (varSqlDeleteWaresReceipt,parParameters)==0 && RecalcHeadReceipt(parParameters);
 		}
@@ -278,18 +270,19 @@ namespace MID
 				return true;
 			}
 		}
-		public override System.Data.DataRow GetPrice(ParametersCollection parParameters)
+		public override System.Data.DataRow GetPrice(Parameter[] parParameters)
 		{
 			return this.db.Execute(varSqlGetPrice,parParameters).Rows[0];
 		}
 		
 		public override bool  RecalcPrice(int parCodeReceipt =0)
 		{
-			ParametersCollection varParameters = new ParametersCollection();;
-			varParameters.Add("parIdWorkplace",GlobalVar.varIdWorkPlace,DbType.Int32);
-			varParameters.Add("parCodePeriod",Global.GetCodePeriod(),DbType.Int32);
-			varParameters.Add("parDefaultCodeDealer",GlobalVar.varDefaultCodeDealer[0],DbType.Int32);
-			varParameters.Add("parCodeReceipt",parCodeReceipt,DbType.Int32);
+			Parameter[] varParameters = new Parameter[] {
+                new Parameter("parIdWorkplace", "parIdWorkplace") ,
+                new Parameter("parCodePeriod", Global.GetCodePeriod()) ,
+                new Parameter("parDefaultCodeDealer", GlobalVar.varDefaultCodeDealer[0]) ,
+                new Parameter("parCodeReceipt", parCodeReceipt) 
+            };
 			
 			DataTable varDT=this.db.Execute(this.varSqlListPS,varParameters);
 			for (int i = 0; i < varDT.Rows.Count; i++)
@@ -298,26 +291,21 @@ namespace MID
 				int varCodeWares=Convert.ToInt32(varDT.Rows[i]["code_wares"] );
 				int varCodeUnit=Convert.ToInt32(varDT.Rows[i]["code_unit"] );
 				int varCodePS=Convert.ToInt32(varDT.Rows[i]["code_ps"] );
-				
-				varParameters.Clear();
-				varParameters.Add("parIdWorkplace",GlobalVar.varIdWorkPlace,DbType.Int32);
-				varParameters.Add("parCodePeriod",Global.GetCodePeriod(),DbType.Int32);
-				varParameters.Add("parCodeReceipt",parCodeReceipt,DbType.Int32);
-				varParameters.Add("parCodeWares", varCodeWares,DbType.Int32);
-				varParameters.Add("parCodeUnit", varCodeUnit,DbType.Int32);
-				varParameters.Add("parCodePS",varCodePS,DbType.Int32);
-				//varParameters.Add("parTypeDiscount",varTypeDiscount,DbType.Int32);
-				
-				varWares.SetWares(varDT.Rows[i]);
-				varParameters.Add("parVatOperation",varWares.varTypeVat,DbType.Int32);
-				varParameters.Add("parSum",(varWares.varPrice*varWares.varQuantity)*(1+varWares.varPercentVat)* varWares.varCoefficient ,DbType.Decimal);
-			    varParameters.Add("parSumVat",varWares.varPrice*varWares.varQuantity*varWares.varPercentVat* varWares.varCoefficient,DbType.Decimal);
 
+                varParameters = new Parameter[] {
+                new Parameter("parIdWorkplace", "parIdWorkplace") ,
+                new Parameter("parCodePeriod", Global.GetCodePeriod()) ,
+                new Parameter("parCodeReceipt", parCodeReceipt),
+                new Parameter("parCodeWares", varCodeWares),
+                new Parameter("parCodeUnit", varCodeUnit),
+                new Parameter("parCodePS", varCodePS),
+                new Parameter("parVatOperation", varWares.varTypeVat),
+                new Parameter("parSum", (varWares.varPrice*varWares.varQuantity)*(1+varWares.varPercentVat)* varWares.varCoefficient),
+                new Parameter("parSumVat", varWares.varPrice*varWares.varQuantity*varWares.varPercentVat* varWares.varCoefficient)
+            };
 				this.db.ExecuteNonQuery(this.varSqlUpdatePrice,varParameters);
 				RecalcHeadReceipt(varParameters);
 			}
-			
-		
 			return true;
 		}
 
@@ -331,7 +319,7 @@ namespace MID
 		
 		}
 		
-		public override bool AddWaresEkka(ParametersCollection parParameters )
+		public override bool AddWaresEkka(Parameter[] parParameters )
 		{
 			return db.ExecuteNonQuery(this.varSqlAddWaresEkka,parParameters)==0;
 		}
@@ -340,7 +328,7 @@ namespace MID
 		{
 			return this.db.ExecuteNonQuery(this.varSqlDeleteWaresEkka)==0;
 		}
-		public override int GetCodeEKKA(ParametersCollection parParameters )
+		public override int GetCodeEKKA(Parameter[] parParameters )
 		{
 			DataTable varDT = this.db.Execute(this.varSqlGetCodeEKKA,parParameters);
             if(varDT.Rows.Count>0)
@@ -349,34 +337,31 @@ namespace MID
                 return 0;
 		}
 		
-		public override DataTable Translation(ParametersCollection parParameters )
+		public override DataTable Translation(Parameter[] parParameters )
 		{
 			return  db.Execute(this.varSqlTranslation,parParameters); 
 		}
-		public override DataTable FieldInfo(ParametersCollection parParameters = null)
+		public override DataTable FieldInfo(Parameter[] parParameters = null)
 		{
 			return  db.Execute(this.varSqlFieldInfo,parParameters);
 		}
 
-		public override bool RecalcHeadReceipt(ParametersCollection parParameters = null)
+		public override bool RecalcHeadReceipt(Parameter[] parParameters = null)
 		{
 			return this.db.ExecuteNonQuery(this.varSqlDeleteWaresEkka)==0;;
 		}
 
 		public override System.Data.DataTable GetAllPermissions(int parCodeUser)
 		{
-			ParametersCollection varParameters = new ParametersCollection();;
-			varParameters.Add("parCodeUser",parCodeUser,DbType.Int32);
+			Parameter[] varParameters = new Parameter[] { new Parameter { ColumnName= "parCodeUser", Value= parCodeUser} };
 			DataTable varDT=this.db.Execute(this.varSqlGetAllPermissions,varParameters);
 			return varDT;
 		}
 		
 		public override TypeAccess GetPermissions(int parCodeUser, CodeEvent parEvent)
 		{
-			ParametersCollection varParameters = new ParametersCollection();;
-			varParameters.Add("parCodeUser",parCodeUser,DbType.Int32);
-			varParameters.Add("parCodeAccess",(int)parEvent,DbType.Int32);
-			
+            Parameter[] varParameters = new Parameter[] { new Parameter { ColumnName = "parCodeUser", Value = parCodeUser }, new Parameter { ColumnName = "parCodeAccess", Value = (int)parEvent }, };
+            
 			DataTable varDT=this.db.Execute(this.varSqlGetAllPermissions,varParameters);
 			if(varDT!=null&&varDT.Rows.Count>0)
 				return (TypeAccess) varDT.Rows[0][0];
@@ -385,7 +370,7 @@ namespace MID
 			
 		}
 		
-		public override bool CopyWaresReturnReceipt(ParametersCollection parParameters = null, bool parIsCurrentDay = true )
+		public override bool CopyWaresReturnReceipt(Parameter[] parParameters = null, bool parIsCurrentDay = true )
 		{
 			string varSqlCopyWaresReturnReceipt=(parIsCurrentDay? this.varSqlCopyWaresReturnReceipt.Replace("RRC.","RC.") : this.varSqlCopyWaresReturnReceipt ) ;
 			return (this.db.ExecuteNonQuery(varSqlCopyWaresReturnReceipt,parParameters)==0);

@@ -11,6 +11,13 @@ namespace SharedLib
         public string ColumnName { get; set; }
         public object Value { get; set; }
         public SqliteType Type { get; set; }
+        public Parameter() { }
+        public Parameter(string parColumnName, object parValue)
+        {
+            ColumnName = parColumnName;
+            Value = parValue;
+        }
+        
     }
 
     public class SQLite
@@ -22,7 +29,7 @@ namespace SharedLib
             connection.Open();
         }
 
-        void Close()
+        public void Close()
         {
 
         }
@@ -46,7 +53,15 @@ namespace SharedLib
                 return dt;
         }
 
-        public void ExecuteNonQuery(string query, Parameter[] parameters = null)
+        public void BeginTransaction()
+        {
+        }
+
+        public void CommitTransaction()
+        {
+        }
+
+        public int ExecuteNonQuery(string query, Parameter[] parameters = null)
         {
             using (var transaction = connection.BeginTransaction())
             {
@@ -61,6 +76,7 @@ namespace SharedLib
                 command.ExecuteNonQuery();
                 transaction.Commit();
             }
+            return 1;
         }
         public object ExecuteScalar(string query, Parameter[] parameters = null)
         {

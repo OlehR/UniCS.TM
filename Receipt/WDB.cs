@@ -8,8 +8,9 @@ using System;
 using System.IO;
 using System.Data;
 using System.Collections;
-
-//using DatabaseLib; // тимчасово для ParametersCollection
+using SharedLib;
+using Model;
+//using DatabaseLib; // тимчасово для Parameter
 namespace MID
 {
 	/// <summary>
@@ -17,7 +18,7 @@ namespace MID
 	/// </summary>
 	public class WDB
 	{
-		public delegate void CallWriteLogSQL(string parQvery, ParametersCollection parParameters = null);
+		public delegate void CallWriteLogSQL(string parQvery, Parameter[] parParameters = null);
         /// <summary>
         /// Функція для запису SQL запитів в локальну LOG базу 
         /// </summary>
@@ -121,12 +122,12 @@ namespace MID
 			this.varCallWriteLogSQL=parCallWriteLogSQL;
 		}
 		
-		public virtual DataTable Execute(string parQuery, ParametersCollection parPrameters = null)
+		public virtual DataTable Execute(string parQuery, Parameter[] parPrameters = null)
 		{
 			return null;
 		}
 		
-		public virtual int ExecuteNonQuery(string parQuery, ParametersCollection parParameters = null)
+		public virtual int ExecuteNonQuery(string parQuery, Parameter[] parParameters = null)
 		{
 			return 0;
 		}
@@ -134,7 +135,7 @@ namespace MID
 		{
 			return null;
 		}
-		public virtual bool InsertT1(ParametersCollection parParameters)
+		public virtual bool InsertT1(Parameter[] parParameters)
 		{
 			return false;
 		}
@@ -188,7 +189,7 @@ namespace MID
 		/// <summary>
 		/// Повертає знайдений товар/товари
 		/// </summary>
-		public virtual System.Data.DataTable FindWares(ParametersCollection parParameters=null)
+		public virtual System.Data.DataTable FindWares(Parameter[] parParameters=null)
 		{
 			return null;
 		}
@@ -232,7 +233,7 @@ namespace MID
 		/// <summary>
 		/// Повертає іформацію про товари в чеку
 		/// </summary>
-		public virtual System.Data.DataTable ViewWarReceipt(ParametersCollection parParameters)
+		public virtual System.Data.DataTable ViewWarReceipt(Parameter[] parParameters)
 		{
 			return null;
 		}
@@ -247,16 +248,16 @@ namespace MID
 		{
 			return false;
 		}
-		public virtual bool  AddReceipt(ParametersCollection parParameters)
+		public virtual bool  AddReceipt(Parameter[] parParameters)
 		{
 			return false;
 		}
-		public virtual bool  UpdateClient(ParametersCollection parParameters)
+		public virtual bool  UpdateClient(Parameter[] parParameters)
 		{
 			return false;
 		}
 		
-		public virtual bool  CloseReceipt(ParametersCollection parParameters)
+		public virtual bool  CloseReceipt(Parameter[] parParameters)
 		{
 			return false;
 		}
@@ -266,23 +267,23 @@ namespace MID
 		/// </summary>
 		/// <param name="parParameters"></param>
 		/// <returns></returns>
-		public virtual bool AddWares(ParametersCollection parParameters )
+		public virtual bool AddWares(Parameter[] parParameters )
 		{
 			return false;
 		}
 		
-		public virtual decimal GetCountWares(ParametersCollection parParameters )
+		public virtual decimal GetCountWares(Parameter[] parParameters )
 		{
 			return 0;
 		}
 		
-		public virtual bool UpdateQuantityWares(ParametersCollection parParameters )
+		public virtual bool UpdateQuantityWares(Parameter[] parParameters )
 		{
 			return false;
 		}
 		
 		
-		public virtual bool DeleteWaresReceipt(ParametersCollection parParameters )
+		public virtual bool DeleteWaresReceipt(Parameter[] parParameters )
 		{
 			return false;
 		}
@@ -291,7 +292,7 @@ namespace MID
 		/// </summary>
 		/// <param name="parParameters"> </param>
 		/// <returns></returns>
-		public virtual System.Data.DataTable ViewWaresReceipt(ParametersCollection parParameters )
+		public virtual System.Data.DataTable ViewWaresReceipt(Parameter[] parParameters )
 		{
 			return null;
 		}
@@ -322,7 +323,7 @@ namespace MID
 			return false;
 		}
 		
-		public virtual System.Data.DataRow GetPrice(ParametersCollection parParameters)
+		public virtual System.Data.DataRow GetPrice(Parameter[] parParameters)
 		{
 			return null;
 		}
@@ -455,7 +456,7 @@ namespace MID
 		{
 			return -1;
 		}
-		public virtual bool AddWaresEkka(ParametersCollection parParameters )
+		public virtual bool AddWaresEkka(Parameter[] parParameters )
 		{
 			return false;
 		}
@@ -464,20 +465,20 @@ namespace MID
 			return false;
 		}
 		
-		public virtual int GetCodeEKKA(ParametersCollection parParameters )
+		public virtual int GetCodeEKKA(Parameter[] parParameters )
 		{
 			return  -1;
 		}
 
-		public virtual DataTable Translation(ParametersCollection parParameters )
+		public virtual DataTable Translation(Parameter[] parParameters )
 		{
 			return  null ;
 		}
-		public virtual DataTable FieldInfo(ParametersCollection parParameters = null)
+		public virtual DataTable FieldInfo(Parameter[] parParameters = null)
 		{
 			return  null;
 		}
-		public virtual bool RecalcHeadReceipt(ParametersCollection parParameters = null)
+		public virtual bool RecalcHeadReceipt(Parameter[] parParameters = null)
 		{
 			return  false;
 		}
@@ -497,7 +498,7 @@ namespace MID
 		/// <param name="parParameters"></param>
 		/// <param name="parIsCurrentDay"> Якщо повернення в день продажу. Важливо тільки для SQLite </param>
 		/// <returns></returns>
-		public virtual bool CopyWaresReturnReceipt(ParametersCollection parParameters = null, bool parIsCurrentDay = true )
+		public virtual bool CopyWaresReturnReceipt(Parameter[] parParameters = null, bool parIsCurrentDay = true )
 		{
 			return false;
 		}
