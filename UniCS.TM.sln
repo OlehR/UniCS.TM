@@ -11,11 +11,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BildSql", "BildSql\BildSql.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MOD", "MOD\MOD.csproj", "{EEC43B58-93D4-42C4-AAF1-F7D9BB96458A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Receipt", "Receipt\Receipt.csproj", "{7EEA740E-552F-41AE-9B45-99FE8A77D58A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Receipt", "Receipt\Receipt.csproj", "{7EEA740E-552F-41AE-9B45-99FE8A77D58A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedLib", "SharedLib\SharedLib.csproj", "{B30DE63C-CFD2-41A3-91DE-BAFDB614E234}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedLib", "SharedLib\SharedLib.csproj", "{B30DE63C-CFD2-41A3-91DE-BAFDB614E234}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Model", "Model\Model.csproj", "{990B3417-37A1-4118-BC1E-DFEB7F8373D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Model", "Model\Model.csproj", "{990B3417-37A1-4118-BC1E-DFEB7F8373D0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModernIntegration", "ModernIntegration\ModernIntegration.csproj", "{DC06DF84-1DC1-4681-8F49-0E11B52875C6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{990B3417-37A1-4118-BC1E-DFEB7F8373D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{990B3417-37A1-4118-BC1E-DFEB7F8373D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{990B3417-37A1-4118-BC1E-DFEB7F8373D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC06DF84-1DC1-4681-8F49-0E11B52875C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC06DF84-1DC1-4681-8F49-0E11B52875C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC06DF84-1DC1-4681-8F49-0E11B52875C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC06DF84-1DC1-4681-8F49-0E11B52875C6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
