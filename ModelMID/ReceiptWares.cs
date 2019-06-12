@@ -4,8 +4,17 @@ using System.Text;
 
 namespace ModelMID
 {
-    public class ReceiptWares:IdReceiptWares
+    public class ReceiptWares : IdReceiptWares
     {
+        public Guid WaresId {
+            get
+            {
+                var strGuid = new String('0', 12) + CodeWares.ToString();
+                strGuid = GlobalVar.WaresGuid + strGuid.Substring(strGuid.Length - 12);
+                return Guid.Parse(strGuid);
+            }
+        }
+       
         /// <summary>
         /// Код товару
         /// </summary>
@@ -13,83 +22,97 @@ namespace ModelMID
         /// <summary>
         /// Назва товару
         /// </summary>
-        public string NameWares;
+        public string NameWares { get; set; }
         /// <summary>
         /// Назва для чека.
         /// </summary>
-        public string NameWaresReceipt;
+        public string NameWaresReceipt { get; set; }
         //public int   TypeVat ;  			// Тип ставка ПДВ  ()
         /// <summary>
         /// % Ставки ПДВ (0 -0 ,20 -20%)
         /// </summary>
-        public int PercentVat;
+        public int PercentVat { get; set; }
         /// <summary>
         /// Код одиниці виміру позамовчуванню
         /// </summary>
         /// 
-        public int TypeVat;
-        public int CodeDefaultUnit;
+        public int TypeVat { get; set; }
+        public int CodeDefaultUnit { get; set; }
         /// <summary>
         /// Коефіцієнт одиниці виіру по замовчуванню
         /// </summary>
-        public int CoefficientDefaultUnit;
+        public int CoefficientDefaultUnit { get; set; }
 
         // Інформація про ціноутворення
         /// <summary>
         /// 
         /// </summary>
-        public decimal Price; // ціна за базову одиницю.
-                                 /// <summary>
-                                 /// 
-                                 /// </summary>
-        public int CodeDealer; // Дилерська категорія.
-                                  /// <summary>
-                                  /// Тип ціноутворення ( 1 - ділерська категорія - 2 ділерська категорія+знижка,3 -фіксація ціни,4-Обмеження по нижньому індикативу, 5-Обмеження по верхньому індикативу, 9 -акція)
-                                  /// </summary>
-        public int TypePrice;
+        public decimal Price { get; set; } // ціна за базову одиницю.
+                                           /// <summary>
+                                           /// 
+                                           /// </summary>
+        public int CodeDealer { get; set; } // Дилерська категорія.
+                                            /// <summary>
+                                            /// Тип ціноутворення ( 1 - ділерська категорія - 2 ділерська категорія+знижка,3 -фіксація ціни,4-Обмеження по нижньому індикативу, 5-Обмеження по верхньому індикативу, 9 -акція)
+                                            /// </summary>
+        public int TypePrice { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public int SumDiscount;
+        public int SumDiscount { get; set; }
         //  Discount = // 
-
+        public decimal Sum { get { return Quantity * Price; } }
+        public decimal SumVat { get; set; }
         // Інформація по знайденому товару
         /// <summary>
         /// Тип знайденої позиції 0-невідомо, 1 - по коду, 2 - По штрихкоду,  3- По штрихкоду - родичі. 4 - По назві
         /// </summary>
-        public int TypeFound;
+        public int TypeFound { get; set; }
         /// <summary>
         /// Текуча одиниця виміру
         /// </summary>
-        public int CodeUnit;
+        //public int CodeUnit { get; set; }
         /// <summary>
         /// Коефіцієнт текучої одиниці виміру
         /// </summary>
-        public decimal Coefficient;
+        public decimal Coefficient { get; set; }
         /// <summary>
         /// Авривіатура текучої одиниці виміру
         /// </summary>
-        public int AbrUnit;
+        public int AbrUnit { get; set; }
         /// <summary>
         /// Кількість товару
         /// </summary>
-        public decimal Quantity;
+        public decimal Quantity { get; set; }
         /// <summary>
         /// код періорду прихідної
         /// </summary>
-        public int CodePeriodIncome;
+        public int CodePeriodIncome { get; set; }
         /// <summary>
         /// Код прихідної
         /// </summary>
-        public int CodeIncome;
+        public int CodeIncome { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        public bool IsSave;
-        public ReceiptWares()
+        public bool IsSave { get; set; }
+
+        public int Sort { get; set; }
+        public int UserCreate { get; set; }
+        public int CodeWarehouse { get; set; }
+        public int @ParPrice1 { get; set; }
+        public int @ParPrice2 { get; set; }
+    public ReceiptWares()
         {
             Clear();
+        }
+
+        public void SetIdReceipt(IdReceipt idReceipt)
+        {
+            IdWorkplace = idReceipt.IdWorkplace;
+            CodePeriod = idReceipt.CodePeriod;
+            CodeReceipt = idReceipt.CodeReceipt;
         }
         public void Clear()
         {

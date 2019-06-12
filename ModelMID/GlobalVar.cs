@@ -43,7 +43,7 @@ namespace ModelMID
                                                    /// <summary>
                                                    /// Тип періоду документів (0 - Глобальний, 1- рік, 2 -місяць, 3 - день.)
                                                    /// </summary>
-        public static int TypePeriod = 3;
+        public static Period TypePeriod = Period.Day;
         /// <summary>
         /// Мінімальна кількість симвлолів в штрихкоді товару
         /// </summary>
@@ -96,7 +96,7 @@ namespace ModelMID
         /// <summary>
         /// Шлях до MID.ini та Key.map
         /// </summary>
-        public static string PathIni = @"";
+        public static string PathIni = @"D:\WORK\CS\UniCS.TM\SharedLib\";
 
         //public static Language Language = Language.uk_UA;
         //public static string 

@@ -7,52 +7,66 @@ namespace ModelMID
     /// <summary>
     /// Зберігає інформацію про чек
     /// </summary>
-    public class Receipt
+    public class Receipt : IdReceipt
     {
         /// <summary>
         /// Код Чека
         /// </summary>
-        public int CodeReceipt;
-        /// <summary>
-        /// Дата Чека
-        /// </summary>
-        public DateTime DateReceipt;
+        //public int CodeReceipt;
+
         /// <summary>
         /// Код періода
         /// </summary>
-        public int CodePeriod;
+        //public int CodePeriod;
+        /// <summary>
+        /// Дата Чека
+        /// </summary>
+        public DateTime DateReceipt { get; set; }
 
+        public int CodeClient { get; set; }
+        public int CodePattern { get; set; }
+        public int NumberCashier { get; set; }
 
-        public decimal SumReceipt;
+        public int CodeWarehouse { get; set; }
+
+        public decimal SumReceipt { get; set; }
         //public string StSumReceipt="0.000"; //TMP test
-        public decimal VatReceipt;
-        public decimal SumRest;
+        public decimal VatReceipt { get; set; }
+        public decimal SumRest { get; set; }
         /// <summary>
         /// Оплачено Готівкою
         /// </summary>
-        public decimal SumCash;
+        public decimal SumCash { get; set; }
         /// <summary>
         /// Сума оплачена Кредиткою
         /// </summary>
-        public decimal SumCreditCard;
+        public decimal SumCreditCard { get; set; }
         /// <summary>
         /// Сума використаних бонусних грн.
         /// </summary>
-        public decimal SumBonus;
-        public Int64 CodeCreditCard;
-        public Int64 NumberSlip;
+        public decimal SumBonus { get; set; }
+        public Int64 CodeCreditCard { get; set; }
+        public Int64 NumberSlip { get; set; }
+
+        public int UserCreate { get; set; }
         /// <summary>
         /// Послідній рядочов в чеку
         /// </summary>
-        public int Sort;
+        public int Sort { get; set; }
         /// <summary>
         /// Шаблони чеків. ????
         /// </summary>
-        public int CodePattern;
         public Receipt()
         {
             Clear();
         }
+        public Receipt(IdReceipt parId)
+        {
+            IdWorkplace = parId.IdWorkplace;
+            CodePeriod  = parId.CodePeriod;
+            CodeReceipt = parId.CodeReceipt;
+        }
+
         public void Clear()
         {
             CodeReceipt = 0;  // Код Чека
@@ -81,6 +95,10 @@ namespace ModelMID
             //CodePeriod = Global.GetCodePeriod(parDateReceipt);
             Sort = 0;
             //CodePattern = Global.DefaultCodePatternReceipt;
+        }
+        public IdReceipt GetIdReceipt()
+        {
+            return (IdReceipt)this; //new IdReceipt() { CodePeriod=this.}
         }
 
 

@@ -27,97 +27,100 @@ namespace SharedLib
 		protected CallWriteLogSQL varCallWriteLogSQL; // это тот самый член-делегат :))
 		*/
         public string varVersion = "0.0.1";
-        protected string varSqlCreateT = @"";
-        protected string varSqlInsertT1 = @"";
-        protected string varSqlCreateReceiptTable = @"";
-        protected string varSqlInitGlobalVar = @"";
-        protected string varSqlConfig = @"";
+        protected string SqlCreateT = @"";
+        protected string SqlInsertT1 = @"";
+        protected string SqlClearT1 = @"";
+        protected string SqlCreateReceiptTable = @"";
+        protected string SqlInitGlobalVar = @"";
+        protected string SqlConfig = @"";
+        
         /// <summary>
         /// Процедура пошуку.(для Баз з можливістю stored procedure) oracle,mssql,...
         /// </summary>
-        protected string varSqlFind = @"";
-        protected string varSqlFindWaresBar = @"";
-        protected string varSqlFindWaresCode = @"";
-        protected string varSqlFindWaresName = @"";
-        protected string varSqlFindClientBar = @"";
-        protected string varSqlFindClientCode = @"";
-        protected string varSqlFindClientName = @"";
+        protected string SqlFind = @"";
+        protected string SqlFindWaresBar = @"";
+        protected string SqlFindWaresCode = @"";
+        protected string SqlFindWaresName = @"";
+        protected string SqlFindClientBar = @"";
+        protected string SqlFindClientCode = @"";
+        protected string SqlFindClientName = @"";
         /// <summary>
         /// Запит, який вертає знайдених клієнтів
         /// </summary>
-        protected string varSqlFoundClient = @"";
+        protected string SqlFoundClient = @"";
         /// <summary>
         /// Запит, який вертає знайдені товари
         /// </summary>
-        protected string varSqlFoundWares = @"";
+        protected string SqlFoundWares = @"";
         /// <summary>
         /// Повертає доступні одиниці виміру по товару
         /// </summary>
-        protected string varSqlAdditionUnit = @"";
+        protected string SqlAdditionUnit = @"";
         /// <summary>
         /// Добавляє чек в базу.
         /// </summary>
-        protected string varSqlAddReceipt = @"";
+        protected string SqlAddReceipt = @"";
         /// <summary>
         /// Запит який вертає інформацію про товари в чеку
         /// </summary>
-        protected string varSqlViewReceipt = @"";
+        protected string SqlViewReceipt = @"";
         // <summary>
         /// Міняє клієнта в чеку
         /// </summary>
-        protected string varSqlUpdateClient = @"";
-        protected string varSqlCloseReceipt = @"";
+        protected string SqlUpdateClient = @"";
+        protected string SqlCloseReceipt = @"";
         /// <summary>
         /// Добавляє товарну позицію в чек
         /// </summary>
-        protected string varSqlAddWares = @"";
-        protected string varSqlGetCountWares = @"";
-        protected string varSqlUpdateQuantityWares = @"";
-        protected string varSqlDeleteReceiptWares = @"";
-        protected string varSqlRecalcHeadReceipt = @"";
+        protected string SqlAddWares = @"";
+        protected string SqlGetCountWares = @"";
+        protected string SqlUpdateQuantityWares = @"";
+        protected string SqlDeleteReceiptWares = @"";
+        protected string SqlRecalcHeadReceipt = @"";
         /// <summary>
         /// Внесення винесення грошей.
         /// </summary>
-        protected string varSqlInputOutputMoney = @"";
+        protected string SqlInputOutputMoney = @"";
         /// <summary>
         /// Добавляє інформацію про Z-звіт
         /// </summary>
-        protected string varSqlAddZ = @"";
+        protected string SqlAddZ = @"";
         /// <summary>
         /// Добавляє інформацію в log файл
         /// </summary>
-        protected string varSqlAddLog = @"";
+        protected string SqlAddLog = @"";
         /// <summary>
         /// Запит для генерації кодів по робочому місці.(наприклад номер чека)
         /// </summary>
-        protected string varSqlGenWorkPlace = @"";
-        protected string varSqlInsertGenWorkPlace = @"";
-        protected string varSqlSelectGenWorkPlace = @"";
-        protected string varSqlUpdateGenWorkPlace = @"";
+        //protected string SqlGenWorkPlace = @"";
+        protected string SqlGetNewCodeReceipt = @"";
+        //protected string SqlInsertGenWorkPlace = @"";
+        //protected string SqlSelectGenWorkPlace = @"";
+        //protected string SqlUpdateGenWorkPlace = @"";
 
-        protected string varSqlLogin = @"";
-        protected string varSqlGetPrice = @"";
+        protected string SqlLogin = @"";
+        protected string SqlGetPrice = @"";
 
-        protected string varSqlPrepareLockFilterT1 = @"";
-        protected string varSqlPrepareLockFilterT2 = @"";
-        protected string varSqlPrepareLockFilterT3 = @"";
-        protected string varSqlPrepareLockFilterT4 = @"";
-        protected string varSqlPrepareLockFilterT5 = @"";
-        protected string varSqlListPS = @"";
-        protected string varSqlUpdatePrice = @"";
+        protected string SqlPrepareLockFilterT1 = @"";
+        protected string SqlPrepareLockFilterT2 = @"";
+        protected string SqlPrepareLockFilterT3 = @"";
+        protected string SqlPrepareLockFilterT4 = @"";
+        protected string SqlPrepareLockFilterT5 = @"";
+        protected string SqlListPS = @"";
+        protected string SqlUpdatePrice = @"";
 
         protected Hashtable keySQL = new Hashtable();
 
-        protected string varSqlGetLastUseCodeEkka = @"";
-        protected string varSqlAddWaresEkka = @"";
-        protected string varSqlDeleteWaresEkka = @"";
-        protected string varSqlGetCodeEKKA = @"";
+        protected string SqlGetLastUseCodeEkka = @"";
+        protected string SqlAddWaresEkka = @"";
+        protected string SqlDeleteWaresEkka = @"";
+        protected string SqlGetCodeEKKA = @"";
 
-        protected string varSqlTranslation = @"";
-        protected string varSqlFieldInfo = @"";
-        protected string varSqlGetPermissions = @"";
-        protected string varSqlGetAllPermissions = @"";
-        protected string varSqlCopyWaresReturnReceipt = @"";
+        protected string SqlTranslation = @"";
+        protected string SqlFieldInfo = @"";
+        protected string SqlGetPermissions = @"";
+        protected string SqlGetAllPermissions = @"";
+        protected string SqlCopyWaresReturnReceipt = @"";
 
         /*		public WDB(CallWriteLogSQL parCallWriteLogSQL=null)
                 {
@@ -192,10 +195,15 @@ namespace SharedLib
 		{
 			return 0;
 		}
-		/// <summary>
-		/// Повертає знайдений товар/товари
-		/// </summary>
-		public virtual IEnumerable<ReceiptWares> FindWares(decimal parDiscount=0)
+
+        public virtual bool ClearT1()
+        {
+            return true;
+        }
+        /// <summary>
+        /// Повертає знайдений товар/товари
+        /// </summary>
+        public virtual IEnumerable<ReceiptWares> FindWares(decimal parDiscount=0)
 		{
             return null;
 		}
@@ -231,9 +239,9 @@ namespace SharedLib
 		/// <returns>
 		///Повертає код чека
 		///</returns>
-		public virtual int GetCodeReceipt(IdReceipt parIdReceipt)
+		public virtual IdReceipt GetNewCodeReceipt(IdReceipt parIdReceipt)
 		{
-			return 0;
+			return null;
 		}
 		
 		
@@ -258,6 +266,7 @@ namespace SharedLib
 		{
 			return false;
 		}
+
 
 		/// <summary>
 		/// Повертає фактичну кількість після вставки(добавляє до текучої кількості - -1 якщо помилка;
@@ -393,55 +402,57 @@ namespace SharedLib
 		}
 		protected bool InitSQL()
 		{
-			varSqlCreateT = GetSQL("varSqlCreateT");
-			varSqlInsertT1 = GetSQL("varSqlInsertT1");
-			varSqlCreateReceiptTable = GetSQL("varSqlCreateReceiptTable");
-			varSqlInitGlobalVar = GetSQL("varSqlInitGlobalVar");
-			varSqlConfig =GetSQL("varSqlConfig");
-			varSqlFind = GetSQL("varSqlFind");
-			varSqlFindWaresBar=GetSQL("varSqlFindWaresBar");
-			varSqlFindWaresCode=GetSQL("varSqlFindWaresCode");
-			varSqlFindWaresName=GetSQL("varSqlFindWaresName");
-			varSqlFindClientBar=GetSQL("varSqlFindClientBar");
-			varSqlFindClientCode=GetSQL("varSqlFindClientCode");
-			varSqlFindClientName=GetSQL("varSqlFindClientName");
-			varSqlFoundClient=GetSQL("varSqlFoundClient");
-			varSqlFoundWares =GetSQL("varSqlFoundWares");
-			varSqlAdditionUnit = GetSQL("varSqlAdditionUnit");
-			varSqlViewReceipt= GetSQL("varSqlViewReceipt");
-			varSqlAddReceipt =GetSQL("varSqlAddReceipt");
-			varSqlUpdateClient =GetSQL("varSqlUpdateClient");
-			varSqlCloseReceipt =GetSQL("varSqlCloseReceipt");
-			varSqlAddWares = GetSQL("varSqlAddWares");
-			varSqlRecalcHeadReceipt = GetSQL("varSqlRecalcHeadReceipt");
-			varSqlGetCountWares= GetSQL("varSqlGetCountWares");
-			varSqlUpdateQuantityWares = GetSQL("varSqlUpdateQuantityWares");
-			varSqlDeleteReceiptWares = GetSQL("varSqlDeleteReceiptWares");
- 			varSqlInputOutputMoney = GetSQL("varSqlInputOutputMoney");
-			varSqlAddZ = GetSQL("varSqlAddZ");
-			varSqlAddLog = GetSQL("varSqlAddLog");
-			varSqlGenWorkPlace=GetSQL("varSqlGenWorkPlace");
-			varSqlInsertGenWorkPlace=GetSQL("varSqlInsertGenWorkPlace");
-			varSqlInsertGenWorkPlace = GetSQL("varSqlInsertGenWorkPlace");
-			varSqlSelectGenWorkPlace = GetSQL("varSqlSelectGenWorkPlace");
-			varSqlUpdateGenWorkPlace = GetSQL("varSqlUpdateGenWorkPlace");
-			varSqlGetPrice = GetSQL("varSqlGetPrice");
-			varSqlLogin = GetSQL("varSqlLogin");
-			varSqlPrepareLockFilterT1=GetSQL("varSqlPrepareLockFilterT1");
-			varSqlPrepareLockFilterT2=GetSQL("varSqlPrepareLockFilterT2");
-			varSqlPrepareLockFilterT3=GetSQL("varSqlPrepareLockFilterT3");
-			varSqlPrepareLockFilterT4=GetSQL("varSqlPrepareLockFilterT4");
-			varSqlPrepareLockFilterT5=GetSQL("varSqlPrepareLockFilterT5");
-			varSqlListPS=GetSQL("varSqlListPS");
-			varSqlGetLastUseCodeEkka = GetSQL("varSqlGetLastUseCodeEkka");
-			varSqlAddWaresEkka= GetSQL("varSqlAddWaresEkka");
-			varSqlDeleteWaresEkka = GetSQL("varSqlDeleteWaresEkka");
-			varSqlGetCodeEKKA = GetSQL("varSqlGetCodeEKKA");
-			varSqlTranslation = GetSQL("varSqlTranslation");
-		    varSqlFieldInfo = GetSQL("varSqlFieldInfo");
-		    varSqlGetAllPermissions = GetSQL("varSqlGetAllPermissions");
-		    varSqlGetPermissions = GetSQL("varSqlGetPermissions");
-		    varSqlCopyWaresReturnReceipt = GetSQL("varSqlCopyWaresReturnReceipt");		    
+			SqlCreateT = GetSQL("SqlCreateT");
+			SqlInsertT1 = GetSQL("SqlInsertT1");
+            SqlClearT1 = GetSQL("SqlClearT1");
+            SqlCreateReceiptTable = GetSQL("SqlCreateReceiptTable");
+			SqlInitGlobalVar = GetSQL("SqlInitGlobalVar");
+			SqlConfig =GetSQL("SqlConfig");
+			SqlFind = GetSQL("SqlFind");
+			SqlFindWaresBar=GetSQL("SqlFindWaresBar");
+			SqlFindWaresCode=GetSQL("SqlFindWaresCode");
+			SqlFindWaresName=GetSQL("SqlFindWaresName");
+			SqlFindClientBar=GetSQL("SqlFindClientBar");
+			SqlFindClientCode=GetSQL("SqlFindClientCode");
+			SqlFindClientName=GetSQL("SqlFindClientName");
+			SqlFoundClient=GetSQL("SqlFoundClient");
+			SqlFoundWares =GetSQL("SqlFoundWares");
+			SqlAdditionUnit = GetSQL("SqlAdditionUnit");
+			SqlViewReceipt= GetSQL("SqlViewReceipt");
+			SqlAddReceipt =GetSQL("SqlAddReceipt");
+			SqlUpdateClient =GetSQL("SqlUpdateClient");
+			SqlCloseReceipt =GetSQL("SqlCloseReceipt");
+			SqlAddWares = GetSQL("SqlAddWares");
+			SqlRecalcHeadReceipt = GetSQL("SqlRecalcHeadReceipt");
+			SqlGetCountWares= GetSQL("SqlGetCountWares");
+			SqlUpdateQuantityWares = GetSQL("SqlUpdateQuantityWares");
+			SqlDeleteReceiptWares = GetSQL("SqlDeleteReceiptWares");
+ 			SqlInputOutputMoney = GetSQL("SqlInputOutputMoney");
+			SqlAddZ = GetSQL("SqlAddZ");
+			SqlAddLog = GetSQL("SqlAddLog");
+			//SqlGenWorkPlace=GetSQL("SqlGenWorkPlace");
+            SqlGetNewCodeReceipt = GetSQL("SqlGetNewCodeReceipt");
+            
+			/*SqlInsertGenWorkPlace = GetSQL("SqlInsertGenWorkPlace");
+			SqlSelectGenWorkPlace = GetSQL("SqlSelectGenWorkPlace");
+			SqlUpdateGenWorkPlace = GetSQL("SqlUpdateGenWorkPlace");*/
+			SqlGetPrice = GetSQL("SqlGetPrice");
+			SqlLogin = GetSQL("SqlLogin");
+			SqlPrepareLockFilterT1=GetSQL("SqlPrepareLockFilterT1");
+			SqlPrepareLockFilterT2=GetSQL("SqlPrepareLockFilterT2");
+			SqlPrepareLockFilterT3=GetSQL("SqlPrepareLockFilterT3");
+			SqlPrepareLockFilterT4=GetSQL("SqlPrepareLockFilterT4");
+			SqlPrepareLockFilterT5=GetSQL("SqlPrepareLockFilterT5");
+			SqlListPS=GetSQL("SqlListPS");
+			SqlGetLastUseCodeEkka = GetSQL("SqlGetLastUseCodeEkka");
+			SqlAddWaresEkka= GetSQL("SqlAddWaresEkka");
+			SqlDeleteWaresEkka = GetSQL("SqlDeleteWaresEkka");
+			SqlGetCodeEKKA = GetSQL("SqlGetCodeEKKA");
+			SqlTranslation = GetSQL("SqlTranslation");
+		    SqlFieldInfo = GetSQL("SqlFieldInfo");
+		    SqlGetAllPermissions = GetSQL("SqlGetAllPermissions");
+		    SqlGetPermissions = GetSQL("SqlGetPermissions");
+		    SqlCopyWaresReturnReceipt = GetSQL("SqlCopyWaresReturnReceipt");		    
 			return true;
 		}
 		

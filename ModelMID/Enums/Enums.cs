@@ -4,6 +4,12 @@ using System.Text;
 
 namespace ModelMID
 {
+    public enum Period
+    {
+        Year,
+        Month,
+        Day
+    }
     public enum TypeAccess
     {
         Question = -3, //Виводити вікно для введення логіна які розширять права на цю операцію. Якщо не введено не дозволяти цю операцію. 

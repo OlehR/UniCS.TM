@@ -12,7 +12,7 @@ namespace SharedLib
         SQLiteConnection connection = null;
         public SQLite(String varConectionString)
         {
-            connection = new SQLiteConnection(varConectionString);
+            connection = new SQLiteConnection("Data Source="+varConectionString+ ";Version=3;");
             connection.Open();
         }
 
