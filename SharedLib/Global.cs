@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ModelMID;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -23,7 +24,7 @@ namespace SharedLib
         {
             if (varD == null)
                 varD = DateTime.Today;
-            switch (3)//GlobalVar.varTypePeriod
+            switch (GlobalVar.TypePeriod)
             {
                 case 0:
                     return 0;

@@ -2,30 +2,17 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
-using Microsoft.Data.Sqlite;
-
+using System.Data.SQLite;
+using Dapper;
 namespace SharedLib
 {
-    public class Parameter
-    {
-        public string ColumnName { get; set; }
-        public object Value { get; set; }
-        public SqliteType Type { get; set; }
-        public Parameter() { }
-        public Parameter(string parColumnName, object parValue)
-        {
-            ColumnName = parColumnName;
-            Value = parValue;
-        }
-        
-    }
-
+    
     public class SQLite
     {
-        SqliteConnection connection = null;
+        SQLiteConnection connection = null;
         public SQLite(String varConectionString)
         {
-            connection = new SqliteConnection(varConectionString);
+            connection = new SQLiteConnection(varConectionString);
             connection.Open();
         }
 
@@ -33,24 +20,15 @@ namespace SharedLib
         {
 
         }
-        /// <summary>
-        /// Выполняет переданный запрос в виде строки.
-        /// </summary>
-        /// <param name="query">Строка запроса</param>
-        /// <param name="parameters">Коллекция параметров</param>
-        /// <returns>Таблица с данными</returns>
-        public DataTable Execute(string query, Parameter[] parameters = null)
+
+        public IEnumerable<T1> Execute<T,T1>(string query, T parameters )
         {
-            DataTable dt = new DataTable();
+            return connection.Query<T1>(query, parameters);
+        }
 
-            var command = connection.CreateCommand();
-            command.CommandText = query;
-            if (parameters != null)
-                foreach (var iparam in parameters)
-                    command.Parameters.AddWithValue(iparam.ColumnName, iparam.Value);
-
-            using (var reader = command.ExecuteReader())
-                return dt;
+        public IEnumerable<T1> Execute<T1>(string query)
+        {
+            return connection.Query<T1>(query);
         }
 
         public void BeginTransaction()
@@ -61,33 +39,23 @@ namespace SharedLib
         {
         }
 
-        public int ExecuteNonQuery(string query, Parameter[] parameters = null)
+        public int ExecuteNonQuery<T>(string parQuery, T Parameters )
         {
-            using (var transaction = connection.BeginTransaction())
-            {
-
-                DataTable dt = new DataTable();
-                var command = connection.CreateCommand();
-                command.CommandText = query;
-                command.Transaction = transaction;
-                if (parameters != null)
-                    foreach (var iparam in parameters)
-                        command.Parameters.AddWithValue(iparam.ColumnName, iparam.Value);
-                command.ExecuteNonQuery();
-                transaction.Commit();
-            }
-            return 1;
+            return connection.Execute(parQuery, Parameters);
         }
-        public object ExecuteScalar(string query, Parameter[] parameters = null)
+        public int ExecuteNonQuery(string parQuery)
         {
-            DataTable dt = new DataTable();
-            var command = connection.CreateCommand();
-            command.CommandText = query;
-            if (parameters != null)
-                foreach (var iparam in parameters)
-                    command.Parameters.AddWithValue(iparam.ColumnName, iparam.Value);
-            return command.ExecuteScalar();
+            return connection.Execute(parQuery);
+        }
 
+        public T1 ExecuteScalar<T1>(string query)
+        {
+            return connection.ExecuteScalar<T1>(query);
+        }
+
+        public T1 ExecuteScalar<T,T1>(string query,T parameters)
+        {
+            return connection.ExecuteScalar<T1>(query, parameters);
         }
 
     }

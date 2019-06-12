@@ -104,7 +104,6 @@ namespace MID
 		
 		public void SetDefaultClient()
 		{
-
 			ParametersCollection varParameters = new ParametersCollection();
 			varParameters.Add("parId",GlobalVar.varDefaultCodeClient, DbType.Int32);
 			varParameters.Add("parData",-1, DbType.Int32);

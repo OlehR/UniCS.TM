@@ -16,26 +16,26 @@ namespace ModernIntegration
     public class Api
     {
         //public bool CreateReceipt(Guid parTerminalId, Guid parReceipt) { return false; }
-        public ProductViewModel AddProductByBarCode(Guid parTerminalId,string parS) { return null; }
-        public ProductViewModel AddProductByProductId(Guid parTerminalId, Guid paparProductId,decimal parQuantity = 0) { return null; }
-        public ReceiptViewModel ChangeQuanity(Guid parTerminalId, Guid parProductId, decimal parQuantity ) { return null; }
-        public ReceiptViewModel GetReciept(Guid parReceipt) { return null; }
-        public bool AddPayment(Guid parTerminalId, Guid parReceiptId, ReceiptPayment[] parPayment) { return false; }
-        public bool AddFiscalNumber(Guid parReceiptId,string parFiscalNumber) { return false; }
-        public bool ClearReceipt(Guid parTerminalId) { return false; }
+        public virtual ProductViewModel AddProductByBarCode(Guid parTerminalId,string parS) { return null; }
+        public virtual ProductViewModel AddProductByProductId(Guid parTerminalId, Guid paparProductId,decimal parQuantity = 0) { return null; }
+        public virtual ReceiptViewModel ChangeQuanity(Guid parTerminalId, Guid parProductId, decimal parQuantity ) { return null; }
+        public virtual ReceiptViewModel GetReciept(Guid parReceipt) { return null; }
+        public virtual bool AddPayment(Guid parTerminalId, Guid parReceiptId, ReceiptPayment[] parPayment) { return false; }
+        public virtual bool AddFiscalNumber(Guid parReceiptId,string parFiscalNumber) { return false; }
+        public virtual bool ClearReceipt(Guid parTerminalId) { return false; }
 
-        public List<ProductViewModel> GetBags() { return null; }
+        public virtual List<ProductViewModel> GetBags() { return null; }
 
-        public List<ProductCategory> GetAllCategories() { return null; }
-        public List<ProductCategory> GetCategoriesByParentId(Guid categoryId) { return null; }
-        public List<ProductViewModel> GetProductsByCategoryId(Guid categoryId) { return null; }
+        public virtual List<ProductCategory> GetAllCategories() { return null; }
+        public virtual List<ProductCategory> GetCategoriesByParentId(Guid categoryId) { return null; }
+        public virtual List<ProductViewModel> GetProductsByCategoryId(Guid categoryId) { return null; }
 
-        public bool UpdateReceipt(ReceiptViewModel parReceipt) { return false; }
-        public TypeSend SendReceipt(Guid parReceipt) { return TypeSend.NotReady; }
-        public TypeSend GetStatusReceipt(Guid parReceipt)  { return TypeSend.NotReady; } 
+        public virtual bool UpdateReceipt(ReceiptViewModel parReceipt) { return false; }
+        public virtual TypeSend SendReceipt(Guid parReceipt) { return TypeSend.NotReady; }
+        public virtual TypeSend GetStatusReceipt(Guid parReceipt)  { return TypeSend.NotReady; } 
 
-        public CustomerViewModel GetCustomerByBarCode(string parS) { return null; }
-        public CustomerViewModel GetCustomerByPhone(string parS) { return null; }
+        public virtual CustomerViewModel GetCustomerByBarCode(string parS) { return null; }
+        public virtual CustomerViewModel GetCustomerByPhone(string parS) { return null; }
 
 
     }
