@@ -9,18 +9,28 @@ namespace ModelMID
     /// </summary>
     public class Client
     {
+        public Guid ClientId
+        {
+            get
+            {
+                var strGuid = new String('0', 12) + CodeClient.ToString();
+                strGuid = GlobalVar.ClientGuid + strGuid.Substring(strGuid.Length - 12);
+                return Guid.Parse(strGuid);
+            }
+        }
+
         /// <summary>
         /// Код клієнта
         /// </summary>
-        public int Code_Client;
+        public int CodeClient;
         /// <summary>
         ///  Назва клієнта
         /// </summary>
-        public string Name_Client;
+        public string NameClient;
         /// <summary>
         /// Тип знижки
         /// </summary>
-        public int Type_Discount;
+        public int TypeDiscount;
         /// <summary>
         /// Відсоток знижки / надбавки
         /// </summary>
@@ -28,7 +38,7 @@ namespace ModelMID
         /// <summary>
         /// Код дилерської категорії
         /// </summary>
-        public int Code_Dealer;
+        public int CodeDealer;
         /// <summary>
         /// Сума накопичених бонусів
         /// </summary>
@@ -46,6 +56,11 @@ namespace ModelMID
         /// </summary>
         public bool IsUseBonusFromRest;
 
+        public Client(int parCodeClient)
+        {
+            CodeClient=parCodeClient;
+            //Clear();
+        }
         /*
         public Client()
         {
@@ -53,11 +68,11 @@ namespace ModelMID
         }
         public void Clear()
         {
-            Code_Client = 0;
-            Name_Client = "";
-            Type_Discount = 0;
+            CodeClient = 0;
+            NameClient = "";
+            TypeDiscount = 0;
             Discount = 0;
-            Code_Dealer = 0;
+            CodeDealer = 0;
             SumBonus = 0;
             SumMoneyBonus = 0;
             IsUseBonusFromRest = false;
@@ -65,22 +80,22 @@ namespace ModelMID
 
         }*/
 
-       /* public virtual void SetClient(DataRow parRw)
-        {
-            Clear();
-            CodeClient = Convert.ToInt32(parRw["Code_Client"]);
-            NameClient = Convert.ToString(parRw["Name_Client"]);
-            TypeDiscount = Convert.ToInt32(parRw["Type_Discount"]);
-            Discount = Convert.ToInt32(parRw["Discount"]);
-            CodeDealer = Convert.ToInt32(parRw["Code_Dealer"]);
-            SumBonus = Convert.ToDecimal(parRw["Sum_Bonus"]);
-            SumMoneyBonus = Convert.ToDecimal(parRw["Sum_Money_Bonus"]);
-            IsUseBonusFromRest = (Convert.ToInt32(parRw["Is_Use_Bonus_From_Rest"]) == 1);
-            IsUseBonusToRest = (Convert.ToInt32(parRw["Is_Use_Bonus_To_Rest"]) == 1);
+        /* public virtual void SetClient(DataRow parRw)
+         {
+             Clear();
+             CodeClient = Convert.ToInt32(parRw["CodeClient"]);
+             NameClient = Convert.ToString(parRw["NameClient"]);
+             TypeDiscount = Convert.ToInt32(parRw["TypeDiscount"]);
+             Discount = Convert.ToInt32(parRw["Discount"]);
+             CodeDealer = Convert.ToInt32(parRw["CodeDealer"]);
+             SumBonus = Convert.ToDecimal(parRw["SumBonus"]);
+             SumMoneyBonus = Convert.ToDecimal(parRw["SumMoneyBonus"]);
+             IsUseBonusFromRest = (Convert.ToInt32(parRw["IsUseBonusFromRest"]) == 1);
+             IsUseBonusToRest = (Convert.ToInt32(parRw["IsUseBonusToRest"]) == 1);
 
-            if (CodeDealer <= 0)
-                CodeDealer = Global.DefaultCodeDealer[-CodeDealer];
-        }*/
+             if (CodeDealer <= 0)
+                 CodeDealer = Global.DefaultCodeDealer[-CodeDealer];
+         }*/
 
 
     }

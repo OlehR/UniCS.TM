@@ -31,6 +31,18 @@ namespace SharedLib
             return parW;
 
         }
+
+        public bool AddReceipt(IdReceipt parReceipt)
+        {
+            var receipt = new Receipt()
+            {
+                IdWorkplace = parReceipt.IdWorkplace,
+                CodePeriod = parReceipt.CodePeriod,
+                CodeReceipt = parReceipt.CodeReceipt
+            };
+
+            return db.AddReceipt(receipt);
+        }
         public bool AddReceipt(Receipt parReceipt)
         {
             return db.AddReceipt(parReceipt);
@@ -90,5 +102,12 @@ namespace SharedLib
             //Res = new ProductViewModel() {Id=w. };         
         }
 
+        public IEnumerable<ReceiptWares>  ViewReceiptWares(IdReceipt parIdReceipt)
+        {
+           var Res= db.ViewReceiptWares(parIdReceipt);
+            //var El = Res.First();
+            return Res;
+
+        }
     }
 }

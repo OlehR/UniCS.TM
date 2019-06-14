@@ -25,6 +25,7 @@ namespace ModelMID
         /// <summary>
         /// Перелік одиниць, по яким необхідно вводити кількість(при пошуку по назві чи коду)
         /// </summary>
+        public static int WeightCodeUnit=5;
         public static int[] UnitMustInputQuantity = { 7 };
         /// <summary>
         /// тип пошуку товара (0 - без обмежень, 1 - штрихкод , код, 2 - штрихкод)
@@ -63,7 +64,7 @@ namespace ModelMID
 
         public static int DefaultCodeClient = 0;
 
-        public static string BillCoins = "грн:1:500,200,100,50,20,10,5,2,1;коп:0.01:50,25,10,5,2,1";
+        public static string BillCoins = "грн:1:500,200,100,50,20,10,5,2,1;коп:0.01:50,10";
 
         /// <summary>
         /// Перераховувати ціни після кожної зміни в чеку
@@ -101,7 +102,7 @@ namespace ModelMID
         //public static Language Language = Language.uk_UA;
         //public static string 
         //public static DateTime ArxDate= new DateTime (1,1,1);\
-        public static string WaresGuid = "1A3B944E-3632-467B-A53A-";
-
+        public static string WaresGuid =  "1A3B944E-3632-467B-A53A-";
+        public static string ClientGuid = "1A3B944E-3632-467B-AFFA-";
     }
 }

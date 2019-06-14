@@ -7,18 +7,19 @@ using ModernExpo.SelfCheckout.Entities.Enums;
 using SharedLib;
 using ModelMID;
 using System.Linq;
+using Receipt = ModernExpo.SelfCheckout.Entities.Models.Receipt;
 
 namespace ModernIntegration
 {
     public class ApiPSU:Api
     {
         BL Bl;
-        Dictionary<Guid, ModelMID.Receipt> Receipts = new Dictionary <Guid,ModelMID.Receipt>();
+        Dictionary<Guid, ModelMID.IdReceipt> Receipts = new Dictionary <Guid,ModelMID.IdReceipt>();
         public ApiPSU()
         {
             Bl = new BL();
         }
-        private ModelMID.Receipt GetCurrentReceiptByTerminalId(Guid parTerminalId)
+        private ModelMID.IdReceipt GetCurrentReceiptByTerminalId(Guid parTerminalId)
         {
             if (!Receipts.ContainsKey(parTerminalId))
             {
@@ -42,7 +43,7 @@ namespace ModernIntegration
                 Price = receiptWares.Price,
                 Weight = 0,//!!!TMP
                 DeltaWeight = 0,//!!!TMP
-                ProductWeightType = ProductWeightType.ByWeight,//!!!TMP
+                ProductWeightType = receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByPiece,//!!!TMP
                 IsAgeRestrictedConfirmed = false,//!!!TMP
                 Quantity = receiptWares.Quantity,
                 DiscountValue = receiptWares.SumDiscount,
@@ -60,6 +61,44 @@ namespace ModernIntegration
             };
             return Res;
         }
+
+        private Receipt GetReceiptViewModel(ModelMID.Receipt parReceipt)
+        {
+
+            return new Receipt()
+            {
+                Id = parReceipt.ReceiptId,
+                FiscalNumber= parReceipt.NumberReceipt,
+                Status = (parReceipt.SumCash>0 || parReceipt.SumCreditCard>0? ReceiptStatusType.Paid:ReceiptStatusType.Created),//!!!TMP Треба врахувати повернення
+                TerminalId= parReceipt.TerminalId,
+                Amount = 0,//!!!TMP
+                Discount = parReceipt.SumDiscount,
+                TotalAmount = 0,//!!!TMP
+                CustomerId = new Client(parReceipt.CodeClient).ClientId,
+                CreatedAt = parReceipt.DateCreate,
+                UpdatedAt = parReceipt.DateCreate//!!!TMP
+
+                //PaymentType= PaymentType.None,//!!!TMP
+                //PaidAmount=0,//
+                //ReceiptItems=
+                //Customer
+                //PaymentInfo
+
+            };
+
+        }
+
+        public List<ReceiptItem> GetReceiptItem(IdReceipt parIdReceipt)
+        {
+            var Res = new List<ReceiptItem>();
+            var res=Bl.ViewReceiptWares(parIdReceipt);//new ModelMID.IdReceipt { CodePeriod = 20190613, CodeReceipt = 1, IdWorkplace = 140701 }
+            foreach(var el in res)
+            {
+                var PVM = this.GetProductViewModel(el);
+                Res.Add(PVM.ToReceiptItem());
+            }
+            return Res;
+        }
         public override ProductViewModel AddProductByBarCode(Guid parTerminalId, string parBarCode)
         {      
             var CurReceipt = GetCurrentReceiptByTerminalId(parTerminalId);            
@@ -74,7 +113,14 @@ namespace ModernIntegration
             return Res;
         }
         public override ReceiptViewModel ChangeQuanity(Guid parTerminalId, Guid parProductId, decimal parQuantity) { return null; }
-        public override ReceiptViewModel GetReciept(Guid parReceipt) { return null; }
+        public override ReceiptViewModel GetReciept(Guid parReceipt)
+        {
+
+            //var Receipt = new GetCurrentReceiptByTerminalId();
+            var Res=new ReceiptViewModel();
+
+            return Res;
+        }
         public override bool AddPayment(Guid parTerminalId, Guid parReceiptId, ReceiptPayment[] parPayment) { return false; }
         public override bool AddFiscalNumber(Guid parReceiptId, string parFiscalNumber)
         {

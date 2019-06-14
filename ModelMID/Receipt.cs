@@ -23,16 +23,22 @@ namespace ModelMID
         /// </summary>
         public DateTime DateReceipt { get; set; }
 
+        public Guid TerminalId { get; set; }
         public int CodeClient { get; set; }
         public int CodePattern { get; set; }
         public int NumberCashier { get; set; }
-
+        /// <summary>
+        /// Номер чека в фіскальному реєстраторі
+        /// </summary>
+        public string NumberReceipt { get; set; }
         public int CodeWarehouse { get; set; }
 
         public decimal SumReceipt { get; set; }
         //public string StSumReceipt="0.000"; //TMP test
         public decimal VatReceipt { get; set; }
+        public decimal SumDiscount { get; set; }
         public decimal SumRest { get; set; }
+        
         /// <summary>
         /// Оплачено Готівкою
         /// </summary>
@@ -48,6 +54,7 @@ namespace ModelMID
         public Int64 CodeCreditCard { get; set; }
         public Int64 NumberSlip { get; set; }
 
+        public DateTime DateCreate { get; set; }
         public int UserCreate { get; set; }
         /// <summary>
         /// Послідній рядочов в чеку

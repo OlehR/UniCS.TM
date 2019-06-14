@@ -41,7 +41,7 @@ namespace ModelMID
         /// <summary>
         /// Коефіцієнт одиниці виіру по замовчуванню
         /// </summary>
-        public int CoefficientDefaultUnit { get; set; }
+        //public int CoefficientDefaultUnit { get; set; }
 
         // Інформація про ціноутворення
         /// <summary>
@@ -62,8 +62,12 @@ namespace ModelMID
         /// </summary>
         public int SumDiscount { get; set; }
         //  Discount = // 
-        public decimal Sum { get { return Quantity * Price; } }
-        public decimal SumVat { get; set; }
+        public decimal Sum
+        {
+            get { return Quantity * Price; }
+            set { Price = (Quantity > 0?value / Quantity:0); }
+        }
+public decimal SumVat { get; set; }
         // Інформація по знайденому товару
         /// <summary>
         /// Тип знайденої позиції 0-невідомо, 1 - по коду, 2 - По штрихкоду,  3- По штрихкоду - родичі. 4 - По назві
@@ -80,7 +84,7 @@ namespace ModelMID
         /// <summary>
         /// Авривіатура текучої одиниці виміру
         /// </summary>
-        public int AbrUnit { get; set; }
+        public string AbrUnit { get; set; }
         /// <summary>
         /// Кількість товару
         /// </summary>
@@ -97,7 +101,8 @@ namespace ModelMID
         /// 
         /// </summary>
         public bool IsSave { get; set; }
-
+        public bool IsWeight
+            { get { return GlobalVar.WeightCodeUnit == CodeDefaultUnit; } }
         public int Sort { get; set; }
         public int UserCreate { get; set; }
         public int CodeWarehouse { get; set; }
@@ -122,7 +127,7 @@ namespace ModelMID
             PercentVat = 0;
             TypeVat = 0;
             CodeDefaultUnit = 0;
-            CoefficientDefaultUnit = 0;
+            //CoefficientDefaultUnit = 0;
             Price = 0;
             CodeDealer = 0;
             TypePrice = 0;

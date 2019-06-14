@@ -108,12 +108,14 @@ select au.code_unit code_unit,ud.abr_unit abr_unit,au.coefficient coefficient, a
        where au.sign_activity='Y' and au.sign_locking='N' and au.code_wares=
 
 [SqlViewReceipt]
-select wr.code_wares code_wares, w.name_wares name_wares ,wr.quantity quantity, ud.abr_unit, wr.sum sum, ' ' type_price,wr.code_unit
+select wr.code_wares as CodeWares, w.Name_Wares NameWares ,wr.quantity Quantity, ud.abr_unit as AbrUnit, wr.sum Sum, Type_Price TypePrice,wr.code_unit as CodeUnit,w.Code_unit as CodeDefaultUnit, PAR_PRICE_1 as CodeDealer,
+                     au.COEFFICIENT as Coefficient,w.NAME_WARES_RECEIPT as  NameWaresReceipt
                      from wares_receipt wr 
                      join wares w on (wr.code_wares =w.code_wares)
+                     join ADDITION_UNIT au on w.code_wares = au.code_wares and wr.code_unit=au.code_unit
                      join unit_dimension ud on (wr.code_unit = ud.code_unit)
                      where wr.id_workplace=@IdWorkplace and  wr.code_period =@CodePeriod and wr.code_receipt=@CodeReceipt
-                     order by sort desc
+                     order by sort
 [SqlAddReceipt]
 insert into receipt (id_workplace, code_period, code_receipt, date_receipt, code_warehouse, 
 sum_receipt, vat_receipt, code_pattern, state_receipt, code_client,
