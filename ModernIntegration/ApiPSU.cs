@@ -71,7 +71,11 @@ namespace ModernIntegration
         public override List<ProductViewModel> GetProductsByName(string parName)
         {
             var Res = new List<ProductViewModel>();
-            return null;
+            var wr=Bl.GetProductsByName(parName);
+            if (wr != null)
+                foreach (var el in wr)
+                    Res.Add(GetProductViewModel(el));
+            return Res;
         }
 
         public override bool UpdateReceipt(ReceiptViewModel parReceipt) { return false; }

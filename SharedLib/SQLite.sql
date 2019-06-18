@@ -33,7 +33,7 @@ insert into t$1 (id_1,data_1) select ifnull(w.code_wares,bc.code_wares),bc.code_
 insert into t$1 (id_1) select w.code_wares from wares w where w.code_wares=@CodeWares
 
 [SqlFindWaresName]
-insert into t$1 (id_1) select w.code_wares from wares w where UPPER(w.name_wares) like @Name
+insert into t$1 (id_1) select w.code_wares from wares w where UPPER(w.name_wares) like UPPER(@Name)
 
 [SqlFindClientBar]
 insert into t$1 (id_1,data_1)
@@ -86,7 +86,7 @@ select t.id_1 as CodeWares,w.name_wares NameWares,w.name_wares_receipt  as NameW
                   else  pd.price_dealer*(1-@Discount) 
                 end   
          else pd.price_dealer*(1-@Discount)
-       end  *(1+w.vat/100 ),0) as Price,
+       end  *(1+w.vat/100.0 ),0.0) as Price,
        case 
          when @Discount=0 then 1
          when pd.fixed_price='1'  and @Discount<>0 and current_date between 
