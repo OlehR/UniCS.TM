@@ -125,5 +125,9 @@ namespace SharedLib
             return true;
             
         }
+        public Receipt GetReceiptHead(IdReceipt idReceipt)
+        {
+            return db.ViewReceipt(idReceipt);
+        }
     }
 }

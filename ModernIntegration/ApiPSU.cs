@@ -19,90 +19,6 @@ namespace ModernIntegration
         {
             Bl = new BL();
         }
-        private ModelMID.IdReceipt GetCurrentReceiptByTerminalId(Guid parTerminalId)
-        {
-            if (!Receipts.ContainsKey(parTerminalId))
-            {
-                var idReceipt = Bl.GetNewIdReceipt(parTerminalId);
-                Receipts[parTerminalId] = new ModelMID.Receipt(idReceipt);
-                Bl.AddReceipt(Receipts[parTerminalId]);
-            }
-            return Receipts[parTerminalId];
-
-        }
-
-        private ProductViewModel GetProductViewModel(ReceiptWares receiptWares)
-        {
-            var Res = new ProductViewModel()
-            {
-                Id = receiptWares.WaresId,
-                Code = receiptWares.CodeWares,
-                Name = receiptWares.NameWares,
-                AdditionalDescription = receiptWares.NameWaresReceipt,//!!!TMP;
-                Image = null,
-                Price = receiptWares.Price,
-                Weight = 0,//!!!TMP
-                DeltaWeight = 0,//!!!TMP
-                ProductWeightType = receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByPiece,//!!!TMP
-                IsAgeRestrictedConfirmed = false,//!!!TMP
-                Quantity = receiptWares.Quantity,
-                DiscountValue = receiptWares.SumDiscount,
-                DiscountName = "",
-                WarningType = null,//!!!TMP
-                CalculatedWeight = 0,
-                Tags=null,//!!!TMP
-                HasSecurityMark=false,//!!!TMP
-                TotalRows= receiptWares.Sort,
-                WeightCategory=0,//!!!TMP
-                IsProductOnProcessing=false//!!!TMP
-                ///CategoryId=   !!!TMP
-
-
-            };
-            return Res;
-        }
-
-        private ReceiptViewModel GetReceiptViewModel(ModelMID.Receipt parReceipt)
-        {
-
-            var receipt = new Receipt()
-            {
-                Id = parReceipt.ReceiptId,
-                FiscalNumber= parReceipt.NumberReceipt,
-                Status = (parReceipt.SumCash>0 || parReceipt.SumCreditCard>0? ReceiptStatusType.Paid:ReceiptStatusType.Created),//!!!TMP Треба врахувати повернення
-                TerminalId= parReceipt.TerminalId,
-                Amount = 0,//!!!TMP
-                Discount = parReceipt.SumDiscount,
-                TotalAmount = 0,//!!!TMP
-                CustomerId = new Client(parReceipt.CodeClient).ClientId,
-                CreatedAt = parReceipt.DateCreate,
-                UpdatedAt = parReceipt.DateCreate//!!!TMP
-
-                //PaymentType= PaymentType.None,//!!!TMP
-                //PaidAmount=0,//
-                //ReceiptItems=
-                //Customer
-                //PaymentInfo
-
-            };
-            var listReceiptItem = GetReceiptItem((IdReceipt)parReceipt);
-            var Res = new ReceiptViewModel(receipt, listReceiptItem,null,null);
-
-            return Res;
-
-        }
-
-        public List<ReceiptItem> GetReceiptItem(IdReceipt parIdReceipt)
-        {
-            var Res = new List<ReceiptItem>();
-            var res=Bl.ViewReceiptWares(parIdReceipt);//new ModelMID.IdReceipt { CodePeriod = 20190613, CodeReceipt = 1, IdWorkplace = 140701 }
-            foreach(var el in res)
-            {
-                var PVM = this.GetProductViewModel(el);
-                Res.Add(PVM.ToReceiptItem());
-            }
-            return Res;
-        }
         public override ProductViewModel AddProductByBarCode(Guid parTerminalId, string parBarCode)
         {      
             var CurReceipt = GetCurrentReceiptByTerminalId(parTerminalId);            
@@ -123,28 +39,24 @@ namespace ModernIntegration
             var CurReceiptWares = new IdReceiptWares(CurReceipt, parProductId);
 
             Bl.ChangeQuantity(CurReceiptWares, parQuantity);
-            ReceiptViewModel Res = null;
+            ReceiptViewModel Res = GetReceiptViewModel(CurReceipt);
             return Res;
         }
         public override ReceiptViewModel GetReciept(Guid parReceipt)
         {
-
             //var Receipt = new GetCurrentReceiptByTerminalId();
-            var Res=new ReceiptViewModel();
-
+            var Res = GetReceiptViewModel(new IdReceipt(parReceipt));
             return Res;
         }
-        public override bool AddPayment(Guid parTerminalId, Guid parReceiptId, ReceiptPayment[] parPayment)
-        {
-            return false;
-        }
+        public override bool AddPayment( Guid parReceiptId,  ReceiptPayment[] parPayment) {  return false; }
         public override bool AddFiscalNumber(Guid parReceiptId, string parFiscalNumber)
         {
             var receiptId = new IdReceipt(parReceiptId);
             Bl.UpdateReceiptFiscalNumber(receiptId, parFiscalNumber);
-            //ClearReceipt(parTerminalId);
+            ClearReceipt(parReceiptId);
             return true;
         }
+
         public override bool ClearReceipt(Guid parTerminalId)
         {
             Receipts[parTerminalId] = null;
@@ -164,5 +76,119 @@ namespace ModernIntegration
         public override CustomerViewModel GetCustomerByBarCode(string parS) { return null; }
         public override CustomerViewModel GetCustomerByPhone(string parS) { return null; }
 
+
+        // Допоміжні методи
+        public bool ClearReceiptByReceiptId(IdReceipt idReceipt)
+        {
+
+            foreach (var el in Receipts)
+            {
+                if (el.Equals(idReceipt))
+                    Receipts[el.Key] = null;
+            }
+            return true;
+        }
+
+        private ModelMID.IdReceipt GetCurrentReceiptByTerminalId(Guid parTerminalId)
+        {
+            if (!Receipts.ContainsKey(parTerminalId))
+            {
+                var idReceipt = Bl.GetNewIdReceipt(parTerminalId);
+                Receipts[parTerminalId] = new ModelMID.Receipt(idReceipt);
+                Bl.AddReceipt(Receipts[parTerminalId]);
+            }
+            return Receipts[parTerminalId];
+
+        }
+        /// <summary>
+        /// Convert MID.ReceiptWares->ProductViewModel
+        /// </summary>
+        /// <param name="receiptWares"></param>
+        /// <returns></returns>
+        private ProductViewModel GetProductViewModel(ReceiptWares receiptWares)
+        {
+            var Res = new ProductViewModel()
+            {
+                Id = receiptWares.WaresId,
+                Code = receiptWares.CodeWares,
+                Name = receiptWares.NameWares,
+                AdditionalDescription = receiptWares.NameWaresReceipt,//!!!TMP;
+                Image = null,
+                Price = receiptWares.Price,
+                Weight = 0,//!!!TMP
+                DeltaWeight = 0,//!!!TMP
+                ProductWeightType = receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByPiece,//!!!TMP
+                IsAgeRestrictedConfirmed = false,//!!!TMP
+                Quantity = receiptWares.Quantity,
+                DiscountValue = receiptWares.SumDiscount,
+                DiscountName = "",
+                WarningType = null,//!!!TMP
+                CalculatedWeight = 0,
+                Tags = null,//!!!TMP
+                HasSecurityMark = false,//!!!TMP
+                TotalRows = receiptWares.Sort,
+                WeightCategory = 0,//!!!TMP
+                IsProductOnProcessing = false//!!!TMP
+                ///CategoryId=   !!!TMP
+
+
+            };
+            return Res;
+        }
+
+        private ReceiptViewModel GetReceiptViewModel(IdReceipt parReceipt)
+        {
+            var receiptMID = Bl.GetReceiptHead(parReceipt);
+
+            var receipt = new Receipt()
+            {
+                Id = receiptMID.ReceiptId,
+                FiscalNumber = receiptMID.NumberReceipt,
+                Status = (receiptMID.SumCash > 0 || receiptMID.SumCreditCard > 0 ? ReceiptStatusType.Paid : ReceiptStatusType.Created),//!!!TMP Треба врахувати повернення
+                TerminalId = receiptMID.TerminalId,
+                Amount = 0,//!!!TMP
+                Discount = receiptMID.SumDiscount,
+                TotalAmount = 0,//!!!TMP
+                CustomerId = new Client(receiptMID.CodeClient).ClientId,
+                CreatedAt = receiptMID.DateCreate,
+                UpdatedAt = receiptMID.DateCreate//!!!TMP
+
+                //PaymentType= PaymentType.None,//!!!TMP
+                //PaidAmount=0,//
+                //ReceiptItems=
+                //Customer
+                //PaymentInfo
+
+            };
+            var listReceiptItem = GetReceiptItem((IdReceipt)parReceipt);
+            var Res = new ReceiptViewModel(receipt, listReceiptItem, null, null);
+
+            return Res;
+
+        }
+
+        private List<ReceiptItem> GetReceiptItem(IdReceipt parIdReceipt)
+        {
+            var Res = new List<ReceiptItem>();
+            var res = Bl.ViewReceiptWares(parIdReceipt);//new ModelMID.IdReceipt { CodePeriod = 20190613, CodeReceipt = 1, IdWorkplace = 140701 }
+            foreach (var el in res)
+            {
+                var PVM = this.GetProductViewModel(el);
+                Res.Add(PVM.ToReceiptItem());
+            }
+            return Res;
+        }
+        private CustomerViewModel GetCustomerViewModelByClient(Client parClient)
+        {
+            return new CustomerViewModel()
+            {
+                Id = parClient.ClientId,
+                CustomerId = parClient.CodeClient.ToString(),
+                Name = parClient.NameClient,
+                DiscountPercent = parClient.Discount
+                //LoyaltyPoints
+                //LoyaltyPointsTotal =
+            };
+        }
     }
 }

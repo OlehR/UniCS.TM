@@ -61,6 +61,10 @@ namespace ModelMID
             CodeClient=parCodeClient;
             //Clear();
         }
+        public int GetClientByClientId(Guid parClientId)
+        {
+            return Convert.ToInt32(parClientId.ToString().Substring(24, 12));
+        }
         /*
         public Client()
         {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 //using DB_SQLite;
 using System.IO;
+using System.Linq;
 using ModelMID;
 
 namespace SharedLib
@@ -176,10 +177,19 @@ namespace SharedLib
 		
 		public override IEnumerable<ReceiptWares> ViewReceiptWares(IdReceipt parIdReceipt)
         {
-			return this.db.Execute<IdReceipt, ReceiptWares>(SqlViewReceipt, parIdReceipt);
+			return this.db.Execute<IdReceipt, ReceiptWares>(SqlViewReceiptWares, parIdReceipt);
 		}
 
-		public override bool  AddReceipt(Receipt parReceipt)
+        public override Receipt ViewReceipt(IdReceipt parIdReceipt)
+        {
+            var res= this.db.Execute<IdReceipt, Receipt>(SqlViewReceipt, parIdReceipt);
+            if (res.Count() == 1)
+                return res.First();
+           
+            return null;
+        }
+
+        public override bool  AddReceipt(Receipt parReceipt)
 		{
             return this.db.ExecuteNonQuery<Receipt> (SqlAddReceipt, parReceipt) ==0;
 		}

@@ -64,6 +64,10 @@ namespace SharedLib
         /// Запит який вертає інформацію про товари в чеку
         /// </summary>
         protected string SqlViewReceipt = @"";
+        /// <summary>
+        /// Запит який вертає інформацію про товари в чеку
+        /// </summary>
+        protected string SqlViewReceiptWares = @"";
         // <summary>
         /// Міняє клієнта в чеку
         /// </summary>
@@ -293,12 +297,17 @@ namespace SharedLib
 		{
 			return false;
 		}
-		/// <summary>
-		/// Показує інформацю про товари в чеку 
-		/// </summary>
-		/// <param name="parParameters"> </param>
-		/// <returns></returns>
-		public virtual IEnumerable<ReceiptWares> ViewReceiptWares(IdReceipt par)
+        public virtual Receipt ViewReceipt(IdReceipt par)
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// Показує інформацю про товари в чеку 
+        /// </summary>
+        /// <param name="parParameters"> </param>
+        /// <returns></returns>
+        public virtual IEnumerable<ReceiptWares> ViewReceiptWares(IdReceipt par)
 		{
 			return null;
 		}
@@ -418,7 +427,8 @@ namespace SharedLib
 			SqlFoundClient=GetSQL("SqlFoundClient");
 			SqlFoundWares =GetSQL("SqlFoundWares");
 			SqlAdditionUnit = GetSQL("SqlAdditionUnit");
-			SqlViewReceipt= GetSQL("SqlViewReceipt");
+            SqlViewReceipt = GetSQL("SqlViewReceipt");
+            SqlViewReceiptWares = GetSQL("SqlViewReceiptWares");
 			SqlAddReceipt =GetSQL("SqlAddReceipt");
 			SqlUpdateClient =GetSQL("SqlUpdateClient");
 			SqlCloseReceipt =GetSQL("SqlCloseReceipt");

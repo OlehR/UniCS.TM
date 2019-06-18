@@ -112,6 +112,18 @@ select au.code_unit code_unit,ud.abr_unit abr_unit,au.coefficient coefficient, a
        where au.sign_activity='Y' and au.sign_locking='N' and au.code_wares=
 
 [SqlViewReceipt]
+select  id_workplace IdWorkplace, code_period CodePeriod, code_receipt CodeReceipt, date_receipt DateReceipt, code_warehouse CodeWarehouse, 
+sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_receipt as StateReceipt, code_client as CodeClient,
+ number_cashier as NumberCashier, number_receipt NumberReceipt, code_discount as CodeDiscount, sum_discount as SumDiscount, percent_discount as PercentDiscount, 
+ code_bonus as CodeBonus, sum_bonus as SumBonus, sum_cash as SumCash, sum_credit_card as SumCreditCard, code_outcome as CodeOutcome, 
+ code_credit_card as CodeCreditCard, number_slip as NumberSlip, number_tax_income as NumberTaxIncome,USER_CREATE as UseCreate
+ from RECEIPT
+ where ID_WORKPLACE = @IdWorkplace
+   and CODE_PERIOD = @CodePeriod
+   and CODE_RECEIPT = @CodeReceipt
+
+
+[SqlViewReceiptWares]
 select wr.code_wares as CodeWares, w.Name_Wares NameWares ,wr.quantity Quantity, ud.abr_unit as AbrUnit, wr.sum Sum, Type_Price TypePrice,wr.code_unit as CodeUnit,w.Code_unit as CodeDefaultUnit, PAR_PRICE_1 as CodeDealer,
                      au.COEFFICIENT as Coefficient,w.NAME_WARES_RECEIPT as  NameWaresReceipt
                      from wares_receipt wr 
@@ -540,5 +552,7 @@ select @IdWorkplaceReturn,@CodePeriodReturn,@CodeReceiptReturn,code_wares,code_u
 0,0,0,type_vat,sort,@IdWorkplace, @CodePeriod, @CodeReceipt, @UserCreate
 from   rrc.wares_receipt wr where wr.id_workplace=@IdWorkplace and wr.code_period=@CodePeriod  and wr.code_receipt=@CodeReceipt;
 update rc.receipt set CODE_PATTERN=2  where id_workplace=@IdWorkplaceReturn and code_period=@CodePeriodReturn  and code_receipt=@CodeReceiptReturn;
+
+
 [SqlEnd]
 */

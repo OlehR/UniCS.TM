@@ -15,7 +15,7 @@ namespace ModelMID
                 var strPeriod = CodePeriod.ToString().Substring(0, 4) + "-" + (CodePeriod.ToString().Substring(4, 4) + new String('0', 4)).Substring(0, 4);
 
                 var strCodeReceipt = new String('0', 12) + CodeReceipt.ToString();
-                var strGuid = strWorkplace + "-FFFF-" + strPeriod  +"-"+ strCodeReceipt.Substring(strCodeReceipt.Length - 12);
+                var strGuid = strWorkplace + "-FFFF-" + strPeriod + "-" + strCodeReceipt.Substring(strCodeReceipt.Length - 12);
 
                 return Guid.Parse(strGuid);
             }
@@ -30,7 +30,6 @@ namespace ModelMID
             IdWorkplace = 0;
             CodePeriod = 0;
             CodeReceipt = 0;
-
         }
 
 
@@ -52,6 +51,15 @@ namespace ModelMID
             IdWorkplace = idReceipt.IdWorkplace;
             CodePeriod = idReceipt.CodePeriod;
             CodeReceipt = idReceipt.CodeReceipt;
+        }
+        public override bool Equals(object obj)
+        {
+            var o = (IdReceipt)obj;
+            return IdWorkplace == o.IdWorkplace && CodePeriod == o.CodePeriod && CodeReceipt == o.CodeReceipt;
+        }
+        public override int GetHashCode()
+        {
+            return IdWorkplace * 100000 + CodePeriod * 1000 + CodeReceipt;
         }
     }
 }
