@@ -2,6 +2,8 @@
 using System.IO;
 using System.Collections;
 
+namespace SharedLib
+{
     class ReadINI2
     {
 
@@ -59,7 +61,7 @@ using System.Collections;
                                 sectionPair.Key = keyPair[0].Trim();
 
                                 if (keyPair.Length > 1)
-                                	value = keyPair[1].Trim();
+                                    value = keyPair[1].Trim();
 
                                 keyPairs.Add(sectionPair, value);
                             }
@@ -91,14 +93,14 @@ using System.Collections;
         /// <param name="settingName">Key name.</param>
         public String GetSetting(String sectionName, String settingName)
         {
-/*        	if (settingName==null || sectionName ==null)
-        		return null;*/
+            /*        	if (settingName==null || sectionName ==null)
+                            return null;*/
             SectionPair sectionPair;
             sectionPair.Section = sectionName.ToUpper().Trim();
             sectionPair.Key = settingName.ToUpper().Trim();
 
             return (String)keyPairs[sectionPair];
-            
+
         }
 
         /// <summary>
@@ -233,3 +235,4 @@ using System.Collections;
         }
     }
 
+}

@@ -118,17 +118,17 @@ namespace ModernIntegration
                 Weight = 0,//!!!TMP
                 DeltaWeight = 0,//!!!TMP
                 ProductWeightType = receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByPiece,//!!!TMP
-                IsAgeRestrictedConfirmed = false,//!!!TMP
+                IsAgeRestrictedConfirmed = false,//!!!TMP //Обмеження по віку алкоголь Підтверджено
                 Quantity = receiptWares.Quantity,
                 DiscountValue = receiptWares.SumDiscount,
                 DiscountName = "",
-                WarningType = null,//!!!TMP
+                WarningType = null,//!!!TMP 
                 CalculatedWeight = 0,
-                Tags = null,//!!!TMP
-                HasSecurityMark = false,//!!!TMP
-                TotalRows = receiptWares.Sort,
+                Tags = null,//!!!TMP // Різні мітки алкоголь, обмеження по часу. 
+                HasSecurityMark = false,//!!!TMP // Магнітна мітка, яку треба знімати.
+                TotalRows = receiptWares.Sort, //Сортування популярного.
                 WeightCategory = 0,//!!!TMP
-                IsProductOnProcessing = false//!!!TMP
+                IsProductOnProcessing = false//!!!TMP  Останній робочий продукт.
                 ///CategoryId=   !!!TMP
 
 
@@ -185,9 +185,9 @@ namespace ModernIntegration
                 Id = parClient.ClientId,
                 CustomerId = parClient.CodeClient.ToString(),
                 Name = parClient.NameClient,
-                DiscountPercent = parClient.Discount
-                //LoyaltyPoints
-                //LoyaltyPointsTotal =
+                DiscountPercent = parClient.Discount,
+                LoyaltyPoints = Convert.ToDouble( parClient.SumBonus),
+                LoyaltyPointsTotal = Convert.ToDouble(parClient.SumMoneyBonus)
             };
         }
     }
