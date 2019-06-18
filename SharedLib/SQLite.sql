@@ -30,10 +30,10 @@ insert into t$1 (id_1,data_1) select ifnull(w.code_wares,bc.code_wares),bc.code_
                  where bc.bar_code=
                  
 [SqlFindWaresCode]
-insert into t$1 (id_1) select w.code_wares from wares w where w.code_wares=
+insert into t$1 (id_1) select w.code_wares from wares w where w.code_wares=@CodeWares
 
 [SqlFindWaresName]
-insert into t$1 (id_1) select w.code_wares from wares w where UPPER(w.name_wares) like 
+insert into t$1 (id_1) select w.code_wares from wares w where UPPER(w.name_wares) like @Name
 
 [SqlFindClientBar]
 insert into t$1 (id_1,data_1)
@@ -42,7 +42,7 @@ insert into t$1 (id_1,data_1)
        select f.code_firm, 2  from firms f where f.bar_code = @CodeBar
 
 [SqlFindClientPhone]
-insert into t$1 (id_1,data_1)
+
 select p.code_privat,0 
 from privat p where p.WORK_PHONE = @Phone or p.HOUSE_PHONE=@Phone
        
@@ -189,7 +189,7 @@ where   id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receip
 select sum(wr.quantity) quantity 
                      from wares_receipt wr 
                      where wr.id_workplace=@IdWorkplace and  wr.code_period =@CodePeriod and  wr.code_receipt=@CodeReceipt 
-                     and wr.code_wares=@CodeWares and wr.code_unit = @CodeUnit and sort <> @Sort
+                     and wr.code_wares=@CodeWares and wr.code_unit = @CodeUnit --and sort <> @Sort
 
 [SqlUpdateQuantityWares]
 update wares_receipt set  quantity= @Quantity, sort=@Sort,

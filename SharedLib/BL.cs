@@ -155,5 +155,20 @@ namespace SharedLib
 
             return null;
         }
+
+
+        public IEnumerable<ReceiptWares> GetProductsByName( string parName)
+        {
+
+            var r = db.FindWaresByName(parName);
+            if (r.Count >0)
+            {                
+                return db.FindWares();                
+            }
+            else
+                return null;
+            //db.AddReceipt
+        }
+
     }
 }

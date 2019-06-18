@@ -29,6 +29,7 @@ namespace ModernIntegration
         public virtual List<ProductCategory> GetAllCategories() { return null; }
         public virtual List<ProductCategory> GetCategoriesByParentId(Guid categoryId) { return null; }
         public virtual List<ProductViewModel> GetProductsByCategoryId(Guid categoryId) { return null; }
+        public virtual List<ProductViewModel> GetProductsByName(string parName) { return null; }
 
         public virtual bool UpdateReceipt(ReceiptViewModel parReceipt) { return false; }
         public virtual TypeSend SendReceipt(Guid parReceipt) { return TypeSend.NotReady; }

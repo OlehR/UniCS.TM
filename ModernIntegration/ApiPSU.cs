@@ -68,6 +68,11 @@ namespace ModernIntegration
         public override List<ProductCategory> GetAllCategories() { return null; }
         public override List<ProductCategory> GetCategoriesByParentId(Guid categoryId) { return null; }
         public override List<ProductViewModel> GetProductsByCategoryId(Guid categoryId) { return null; }
+        public override List<ProductViewModel> GetProductsByName(string parName)
+        {
+            var Res = new List<ProductViewModel>();
+            return null;
+        }
 
         public override bool UpdateReceipt(ReceiptViewModel parReceipt) { return false; }
         public override TypeSend SendReceipt(Guid parReceipt) { return TypeSend.NotReady; }

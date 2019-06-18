@@ -213,14 +213,20 @@ namespace SharedLib
             return null;
 		}
 
-		/// <summary>
-		/// Повертає Одиниці по товару
-		/// </summary>
-		/// <param name="parCodeWares">Код товару</param>
-		/// <returns>
-		///Повертає DataTable з одиницями виміру
-		///</returns>
-		public virtual System.Data.DataTable UnitWares(int parCodeWares)
+        public virtual RezultFind FindWaresByName(string parPhone)
+        {
+            return new RezultFind() { Count = 0, TypeFind = TypeFind.Client };
+        }
+
+
+        /// <summary>
+        /// Повертає Одиниці по товару
+        /// </summary>
+        /// <param name="parCodeWares">Код товару</param>
+        /// <returns>
+        ///Повертає DataTable з одиницями виміру
+        ///</returns>
+        public virtual System.Data.DataTable UnitWares(int parCodeWares)
 		{
 			return null;;
 		}

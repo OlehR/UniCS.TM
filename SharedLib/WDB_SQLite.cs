@@ -156,6 +156,13 @@ namespace SharedLib
             return new RezultFind() { Count = GetCountT1(), TypeFind = TypeFind.Client };
         }
 
+        public override RezultFind FindWaresByName(string parName)
+        {
+            ClearT1();
+            this.db.ExecuteNonQuery<object>(SqlFindWaresName, new { Name = "%"+ parName.Trim().Replace(" ","%") + "%" });
+            return new RezultFind() { Count = GetCountT1(), TypeFind = TypeFind.Wares };
+        }
+
         // Повертає знайдений товар/товари
         public override IEnumerable<ReceiptWares> FindWares(decimal parDiscount=0)
 		{

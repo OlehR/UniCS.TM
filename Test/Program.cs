@@ -16,18 +16,20 @@ namespace Test
 
             var Bl = new BL();
       //      var r=api.GetReceiptItem(new ModelMID.IdReceipt {CodePeriod=20190614,CodeReceipt=1,IdWorkplace= 140701});
-          //  var res = api.AddProductByBarCode(TerminalId, "1376000062218");
-           // res=api.AddProductByProductId (TerminalId, Guid.Parse("1A3B944E-3632-467B-A53A-000000194748"),10);
+            var res = api.AddProductByBarCode(TerminalId, "1376000062218");
+             res = api.AddProductByBarCode(TerminalId, "1376000062218");
 
-           // api.ChangeQuantity(TerminalId, ProductId, 7);
+            // res=api.AddProductByProductId (TerminalId, Guid.Parse("1A3B944E-3632-467B-A53A-000000194748"),10);
+
+            // api.ChangeQuantity(TerminalId, ProductId, 7);
 
 
             //var r=api.AddFiscalNumber(ReceiptId, "TRRF-1234");
 
-           // var rr = api.GetReciept( ReceiptId);
-           // var client = api.GetCustomerByBarCode("5550000923502");
+            // var rr = api.GetReciept( ReceiptId);
+            // var client = api.GetCustomerByBarCode("5550000923502");
             //0959330766
-            var client = api.GetCustomerByPhone("0959330766");
+            //var client = api.GetCustomerByPhone("0959330766");
             Console.WriteLine("Hello World!");
         }
     }
