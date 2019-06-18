@@ -1,4 +1,4 @@
-﻿namespace ModernExpo.SelfCheckout.Entities.Enums
+﻿namespace ModernIntegration.Enums
 {
     /// <summary>
     /// Summary description for ReceiptStatusType

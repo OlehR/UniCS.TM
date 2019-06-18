@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ModernExpo.SelfCheckout.Entities.Enums;
-using ModernExpo.SelfCheckout.Entities.Models;
-using ModernExpo.SelfCheckout.Entities.Session;
+using ModernIntegration.Enums;
+using ModernIntegration.Models;
+using ModernIntegration.Session;
 
-namespace ModernExpo.SelfCheckout.Entities.ViewModels
+namespace ModernIntegration.ViewModels
 {
     public class ReceiptViewModel
     {

@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ModernExpo.SelfCheckout.Entities.Models;
-using ModernExpo.SelfCheckout.Entities.ViewModels;
-using ModernExpo.SelfCheckout.Entities.Enums;
+using ModernIntegration.Models;
+using ModernIntegration.ViewModels;
+using ModernIntegration.Enums;
 using SharedLib;
 using ModelMID;
 using System.Linq;
-using Receipt = ModernExpo.SelfCheckout.Entities.Models.Receipt;
+using Receipt = ModernIntegration.Models.Receipt;
 
 namespace ModernIntegration
 {
@@ -73,7 +73,11 @@ namespace ModernIntegration
         public override TypeSend SendReceipt(Guid parReceipt) { return TypeSend.NotReady; }
         public override TypeSend GetStatusReceipt(Guid parReceipt) { return TypeSend.NotReady; }
 
-        public override CustomerViewModel GetCustomerByBarCode(string parS) { return null; }
+        public override CustomerViewModel GetCustomerByBarCode(string parS)
+        {
+            var CM = Bl.GetCustomerByBarCode(parS);
+            return GetCustomerViewModelByClient(CM);           
+        }
         public override CustomerViewModel GetCustomerByPhone(string parS) { return null; }
 
 

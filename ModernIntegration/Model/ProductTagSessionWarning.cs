@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ModernExpo.SelfCheckout.Entities.ViewModels;
+using ModernIntegration.Session;
+using ModernIntegration.ViewModels;
 
-namespace ModernExpo.SelfCheckout.Entities.Session
+namespace MModernIntegration.Session
 {
     /// <summary>
     /// 

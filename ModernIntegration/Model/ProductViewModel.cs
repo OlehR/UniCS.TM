@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using ModernExpo.SelfCheckout.Entities.Enums;
-using ModernExpo.SelfCheckout.Entities.Models;
+using ModernIntegration.Enums;
+using ModernIntegration.Models;
 
-namespace ModernExpo.SelfCheckout.Entities.ViewModels
+namespace ModernIntegration.ViewModels
 {
     /// <summary>
     /// Summary description for ProductViewModel

@@ -1,5 +1,5 @@
-﻿using ModernExpo.SelfCheckout.Entities.Models;
-using ModernExpo.SelfCheckout.Entities.ViewModels;
+﻿using ModernIntegration.Models;
+using ModernIntegration.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Text;

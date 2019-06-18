@@ -1,7 +1,7 @@
 ﻿using System;
-using ModernExpo.SelfCheckout.Entities.Enums;
+using ModernIntegration.Enums;
 
-namespace ModernExpo.SelfCheckout.Entities.Models
+namespace ModernIntegration.Models
 {
     public class ReceiptPayment
     {

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ModernExpo.SelfCheckout.Entities.Models;
+using ModernIntegration.Models;
 using Newtonsoft.Json;
 
-namespace ModernExpo.SelfCheckout.Entities.ViewModels
+namespace ModernIntegration.ViewModels
 {
     public class ProductCategoryTagsModel
     {

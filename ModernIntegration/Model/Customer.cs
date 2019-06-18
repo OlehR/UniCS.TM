@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices.ComTypes;
 
-namespace ModernExpo.SelfCheckout.Entities.Models
+namespace ModernIntegration.Models
 {
     /// <summary>
     /// Summary description for StoreCustomer

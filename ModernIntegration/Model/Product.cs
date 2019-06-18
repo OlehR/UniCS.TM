@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using ModernExpo.SelfCheckout.Entities.Enums;
+using ModernIntegration.Enums;
 using Newtonsoft.Json;
 
-namespace ModernExpo.SelfCheckout.Entities.Models
+namespace ModernIntegration.Models
 {
     /// <summary>
     /// Summary description for Product

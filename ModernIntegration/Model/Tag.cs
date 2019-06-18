@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModernExpo.SelfCheckout.Entities.Models
+namespace ModernIntegration.Models
 {
     public class Tag
     {

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ModernExpo.SelfCheckout.Entities.ViewModels;
+using ModernIntegration.ViewModels;
 
-namespace ModernExpo.SelfCheckout.Entities.Session
+namespace ModernIntegration.Session
 {
     public class SessionProducts
     {

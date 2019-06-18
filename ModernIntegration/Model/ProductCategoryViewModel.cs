@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
-using ModernExpo.SelfCheckout.Entities.Models;
+using ModernIntegration.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace ModernExpo.SelfCheckout.Entities.ViewModels
+namespace ModernIntegration.ViewModels
 {
     public class ProductCategoryViewModel
     {

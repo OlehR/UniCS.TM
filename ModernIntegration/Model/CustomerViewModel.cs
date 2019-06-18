@@ -1,7 +1,7 @@
-﻿using ModernExpo.SelfCheckout.Entities.Models;
+﻿using ModernIntegration.Models;
 using System;
 
-namespace ModernExpo.SelfCheckout.Entities.ViewModels
+namespace ModernIntegration.ViewModels
 {
     /// <summary>
     /// Summary description for CustomerViewModel

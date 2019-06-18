@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ModernExpo.SelfCheckout.Entities.Enums;
+using ModernIntegration.Enums;
 
-namespace ModernExpo.SelfCheckout.Entities.Session
+namespace ModernIntegration.Session
 {
     /// <summary>
     /// SessionEvents

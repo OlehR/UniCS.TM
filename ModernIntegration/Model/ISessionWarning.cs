@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModernExpo.SelfCheckout.Entities.Session
+namespace ModernIntegration.Session
 {
     public interface ISessionWarning
     {
