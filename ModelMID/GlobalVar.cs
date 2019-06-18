@@ -87,17 +87,17 @@ namespace ModelMID
         /// <summary>
         /// Шлях до SqlLite бази
         /// </summary>
-        public static string PathDB = @"d:\mid\";
+        public static string PathDB = @"c:\mid\";
 
         /// <summary>
         /// Шлях до папки, в яку пиcати LOG
         /// </summary>
-        public static string PathLog = @"d:\temp\";
+        public static string PathLog = @"c:\temp\";
 
         /// <summary>
         /// Шлях до MID.ini та Key.map
         /// </summary>
-        public static string PathIni = @"D:\WORK\CS\UniCS.TM\SharedLib\";
+        public static string PathIni = @"c:\WORK\CS\UniCS.TM\SharedLib\";
 
         //public static Language Language = Language.uk_UA;
         //public static string 

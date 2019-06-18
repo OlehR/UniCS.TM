@@ -59,10 +59,14 @@ select p.code_privat as Code_Client, p.name_for_print as Name_Client, 0 as Type_
 			from t$1 left join privat p on (id_1=p.code_privat) join p_client c on (p.code_privat=c.code_privat)
 			
 [SqlFoundWares]
-select t.id_1 as CodeWares,w.name_wares NameWares,w.name_wares_receipt  as NameWaresReceipt, w.vat/100 Percent_Vat, w.vat_operation TypeVat,
-        ifnull(au.code_unit,0) CodeUnit, ud.abr_unit abr_unit,ifnull(au.coefficient,0) Coefficient,
-        ifnull(aud.code_unit,0) code_unit_default, udd.abr_unit abr_unit_default,ifnull(aud.coefficient,0) coefficient_default,
-        ifnull(
+select t.id_1 as CodeWares,w.name_wares NameWares,w.name_wares_receipt  as NameWaresReceipt, w.vat PercentVat, w.vat_operation TypeVat,
+        COALESCE(au.code_unit,aud.code_unit,0) CodeUnit, 
+        ifnull(ud.abr_unit,udd.abr_unit) abr_unit,
+        COALESCE(au.coefficient,aud.coefficient,0) Coefficient,
+        ifnull(aud.code_unit,0) code_unit_default, 
+        udd.abr_unit abr_unit_default,
+        ifnull(aud.coefficient,0) coefficient_default,
+		ifnull(
         case 
          when @Discount=0 then pd.price_dealer
          when pd.fixed_price='1'  and @Discount<>0 and current_date between 
@@ -134,12 +138,13 @@ update receipt set code_client=@CodeClient
 [SqlCloseReceipt]
 update receipt
    set STATE_RECEIPT    = @StateReceipt,
-       SUM_RECEIPT      = @SumReceipt,
-       VAT_RECEIPT      = @VatReceipt,
-       SUM_CASH         = @SumCash,
-       SUM_CREDIT_CARD  = @SumCreditCard,
-       CODE_CREDIT_CARD = @CodeCreditCard,
-       NUMBER_SLIP		= @NumberSlip
+       NUMBER_RECEIPT=@NumberReceipt
+ --      SUM_RECEIPT      = @SumReceipt,
+ --      VAT_RECEIPT      = @VatReceipt,
+ --      SUM_CASH         = @SumCash,
+ --      SUM_CREDIT_CARD  = @SumCreditCard,
+ --      CODE_CREDIT_CARD = @CodeCreditCard,
+ --      NUMBER_SLIP		= @NumberSlip
  where ID_WORKPLACE = @IdWorkplace
    and CODE_PERIOD = @CodePeriod
    and CODE_RECEIPT = @CodeReceipt

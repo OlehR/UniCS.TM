@@ -27,6 +27,12 @@ namespace ModelMID
         public int CodeClient { get; set; }
         public int CodePattern { get; set; }
         public int NumberCashier { get; set; }
+
+        /// <summary>
+        /// 0- готується,1- оплачено,2- фіскалізовано
+        /// </summary>
+        public int StateReceipt { get; set; }
+
         /// <summary>
         /// Номер чека в фіскальному реєстраторі
         /// </summary>

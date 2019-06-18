@@ -9,7 +9,7 @@ namespace SharedLib
 
     public class BL
     {
-        private WDB db;
+        private WDB_SQLite db;
         public BL()
         {
             db = new WDB_SQLite();
@@ -61,7 +61,12 @@ namespace SharedLib
 
         public bool UpdateReceiptFiscalNumber(IdReceipt receiptId,string parFiscalNumber)
         {
-            return false;
+
+            var receipt = new Receipt(receiptId);
+            receipt.NumberReceipt = parFiscalNumber;
+            receipt.StateReceipt = 2;
+            db.CloseReceipt(receipt);
+            return true;
         }
         public IdReceipt GetIdReceiptByReceiptId(Guid parReceiptId)
         {
@@ -108,6 +113,17 @@ namespace SharedLib
             //var El = Res.First();
             return Res;
 
+        }
+        public bool ChangeQuantity(IdReceiptWares parReceiptWaresId, decimal  parQuantity)
+        {
+            db.ClearT1();
+            db.InsertT1(new T1 { Id = parReceiptWaresId.CodeWares, Data = parReceiptWaresId.CodeUnit });
+            var w = db.FindWares().First();
+            w.SetIdReceiptWares(parReceiptWaresId);
+            w.Quantity = parQuantity;
+            db.UpdateQuantityWares(w);
+            return true;
+            
         }
     }
 }

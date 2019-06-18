@@ -62,10 +62,10 @@ namespace ModernIntegration
             return Res;
         }
 
-        private Receipt GetReceiptViewModel(ModelMID.Receipt parReceipt)
+        private ReceiptViewModel GetReceiptViewModel(ModelMID.Receipt parReceipt)
         {
 
-            return new Receipt()
+            var receipt = new Receipt()
             {
                 Id = parReceipt.ReceiptId,
                 FiscalNumber= parReceipt.NumberReceipt,
@@ -85,6 +85,10 @@ namespace ModernIntegration
                 //PaymentInfo
 
             };
+            var listReceiptItem = GetReceiptItem((IdReceipt)parReceipt);
+            var Res = new ReceiptViewModel(receipt, listReceiptItem,null,null);
+
+            return Res;
 
         }
 
@@ -108,11 +112,20 @@ namespace ModernIntegration
         public override ProductViewModel AddProductByProductId(Guid parTerminalId, Guid parProductId, decimal parQuantity = 0)
         {
             var CurReceipt = GetCurrentReceiptByTerminalId(parTerminalId);
+            var g = CurReceipt.ReceiptId;
             Bl.AddWaresCode(CurReceipt, parProductId, parQuantity);
             ProductViewModel Res = null;
             return Res;
         }
-        public override ReceiptViewModel ChangeQuanity(Guid parTerminalId, Guid parProductId, decimal parQuantity) { return null; }
+        public override ReceiptViewModel ChangeQuantity(Guid parTerminalId, Guid parProductId, decimal parQuantity)
+        {
+            var CurReceipt = GetCurrentReceiptByTerminalId(parTerminalId);
+            var CurReceiptWares = new IdReceiptWares(CurReceipt, parProductId);
+
+            Bl.ChangeQuantity(CurReceiptWares, parQuantity);
+            ReceiptViewModel Res = null;
+            return Res;
+        }
         public override ReceiptViewModel GetReciept(Guid parReceipt)
         {
 
@@ -121,10 +134,13 @@ namespace ModernIntegration
 
             return Res;
         }
-        public override bool AddPayment(Guid parTerminalId, Guid parReceiptId, ReceiptPayment[] parPayment) { return false; }
+        public override bool AddPayment(Guid parTerminalId, Guid parReceiptId, ReceiptPayment[] parPayment)
+        {
+            return false;
+        }
         public override bool AddFiscalNumber(Guid parReceiptId, string parFiscalNumber)
         {
-            var receiptId = Bl.GetIdReceiptByReceiptId(parReceiptId);
+            var receiptId = new IdReceipt(parReceiptId);
             Bl.UpdateReceiptFiscalNumber(receiptId, parFiscalNumber);
             //ClearReceipt(parTerminalId);
             return true;

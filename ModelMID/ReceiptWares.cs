@@ -6,15 +6,7 @@ namespace ModelMID
 {
     public class ReceiptWares : IdReceiptWares
     {
-        public Guid WaresId {
-            get
-            {
-                var strGuid = new String('0', 12) + CodeWares.ToString();
-                strGuid = GlobalVar.WaresGuid + strGuid.Substring(strGuid.Length - 12);
-                return Guid.Parse(strGuid);
-            }
-        }
-       
+               
         /// <summary>
         /// Код товару
         /// </summary>
@@ -31,7 +23,7 @@ namespace ModelMID
         /// <summary>
         /// % Ставки ПДВ (0 -0 ,20 -20%)
         /// </summary>
-        public int PercentVat { get; set; }
+        public decimal PercentVat { get; set; }
         /// <summary>
         /// Код одиниці виміру позамовчуванню
         /// </summary>
@@ -67,10 +59,16 @@ namespace ModelMID
             get { return Quantity * Price; }
             set { Price = (Quantity > 0?value / Quantity:0); }
         }
-public decimal SumVat { get; set; }
+        private decimal? _vat=null;
+        public decimal SumVat
+        {
+            get { return _vat == null ? (Sum * PercentVat) / 100m : (decimal)_vat; }
+            set { _vat = value; }
+        }
         // Інформація по знайденому товару
         /// <summary>
-        /// Тип знайденої позиції 0-невідомо, 1 - по коду, 2 - По штрихкоду,  3- По штрихкоду - родичі. 4 - По назві
+
+            /// Тип знайденої позиції 0-невідомо, 1 - по коду, 2 - По штрихкоду,  3- По штрихкоду - родичі. 4 - По назві
         /// </summary>
         public int TypeFound { get; set; }
         /// <summary>
@@ -108,17 +106,15 @@ public decimal SumVat { get; set; }
         public int CodeWarehouse { get; set; }
         public int @ParPrice1 { get; set; }
         public int @ParPrice2 { get; set; }
-    public ReceiptWares()
+
+        public ReceiptWares()
         {
             Clear();
         }
+        public ReceiptWares(IdReceipt idReceipt, Guid parWaresId) : base(idReceipt, parWaresId)
+        { }
 
-        public void SetIdReceipt(IdReceipt idReceipt)
-        {
-            IdWorkplace = idReceipt.IdWorkplace;
-            CodePeriod = idReceipt.CodePeriod;
-            CodeReceipt = idReceipt.CodeReceipt;
-        }
+        
         public void Clear()
         {
             CodeWares = 0;
