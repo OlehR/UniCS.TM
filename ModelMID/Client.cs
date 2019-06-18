@@ -55,8 +55,10 @@ namespace ModelMID
         /// Чи можна нараховувати бонуси з здачі
         /// </summary>
         public bool IsUseBonusFromRest;
-
-        public Client(int parCodeClient)
+        public Client()
+        {
+        }
+            public Client(int parCodeClient)
         {
             CodeClient=parCodeClient;
             //Clear();

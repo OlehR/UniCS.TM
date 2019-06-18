@@ -130,7 +130,7 @@ namespace SharedLib
             return db.ViewReceipt(idReceipt);
         }
 
-        public Client GetCustomerByBarCode(string parBarCode)
+        public Client GetClientByBarCode(string parBarCode)
         {
             var r = db.FindData(parBarCode, TypeFind.Client);
             if (r.Count == 1)
@@ -140,6 +140,19 @@ namespace SharedLib
                 //Res = new ProductViewModel() {Id=w. };
             }
             
+            return null;
+        }
+
+        public Client GetClientByPhone(string parBarCode)
+        {
+            var r = db.FindClientByPhone(parBarCode);
+            if (r.Count == 1)
+            {
+                var client = db.FindClient().First();
+                return client;
+                //Res = new ProductViewModel() {Id=w. };
+            }
+
             return null;
         }
     }

@@ -148,8 +148,16 @@ namespace SharedLib
 			return varRezult;
 			
 		}
-		// Повертає знайдений товар/товари
-		public override IEnumerable<ReceiptWares> FindWares(decimal parDiscount=0)
+
+        public override RezultFind FindClientByPhone(string parPhone)
+        {
+            ClearT1();
+            this.db.ExecuteNonQuery<object>(SqlFindClientPhone, new { Phone = parPhone });
+            return new RezultFind() { Count = GetCountT1(), TypeFind = TypeFind.Client };
+        }
+
+        // Повертає знайдений товар/товари
+        public override IEnumerable<ReceiptWares> FindWares(decimal parDiscount=0)
 		{
             return this.db.Execute<object, ReceiptWares>(SqlFoundWares,new { Discount= parDiscount });
 		}

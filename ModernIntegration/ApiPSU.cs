@@ -75,10 +75,14 @@ namespace ModernIntegration
 
         public override CustomerViewModel GetCustomerByBarCode(string parS)
         {
-            var CM = Bl.GetCustomerByBarCode(parS);
+            var CM = Bl.GetClientByBarCode(parS);
             return GetCustomerViewModelByClient(CM);           
         }
-        public override CustomerViewModel GetCustomerByPhone(string parS) { return null; }
+        public override CustomerViewModel GetCustomerByPhone(string parPhone)
+        {
+            var CM = Bl.GetClientByPhone(parPhone);
+            return GetCustomerViewModelByClient(CM);
+        }
 
 
         // Допоміжні методи

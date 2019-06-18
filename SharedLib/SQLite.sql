@@ -40,6 +40,11 @@ insert into t$1 (id_1,data_1)
 	   select p.code_privat,1 from privat p where p.bar_code= @CodeBar
        union
        select f.code_firm, 2  from firms f where f.bar_code = @CodeBar
+
+[SqlFindClientPhone]
+insert into t$1 (id_1,data_1)
+select p.code_privat,0 
+from privat p where p.WORK_PHONE = @Phone or p.HOUSE_PHONE=@Phone
        
 [SqlFindClientCode]
 insert into t$1 (id_1,data_1)
@@ -54,8 +59,8 @@ insert into t$1 (id_1,data_1)
        select f.code_firm, 2  from firms f where f.name_for_print like '@Name'
        
 [SqlFoundClient]
-select p.code_privat as Code_Client, p.name_for_print as Name_Client, 0 as Type_Discount, c.discount as Discount, c.code_dealer as code_dealer, 
-	   10.00 as Sum_Money_Bonus, 10.00 as Sum_Bonus,1 Is_Use_Bonus_From_Rest, 1 Is_Use_Bonus_To_Rest
+select p.code_privat as CodeClient, p.name_for_print as NameClient, 0 as TypeDiscount, c.discount as Discount, c.code_dealer as CodeDealer, 
+	   10.00 as SumMoneyBonus, 10.00 as SumBonus,1 IsUseBonusFromRest, 1 IsUseBonusToRest,1 as IsUseBonusFromRest
 			from t$1 left join privat p on (id_1=p.code_privat) join p_client c on (p.code_privat=c.code_privat)
 			
 [SqlFoundWares]

@@ -24,8 +24,10 @@ namespace Test
 
             //var r=api.AddFiscalNumber(ReceiptId, "TRRF-1234");
 
-            var rr = api.GetReciept( ReceiptId);
-
+           // var rr = api.GetReciept( ReceiptId);
+           // var client = api.GetCustomerByBarCode("5550000923502");
+            //0959330766
+            var client = api.GetCustomerByPhone("0959330766");
             Console.WriteLine("Hello World!");
         }
     }

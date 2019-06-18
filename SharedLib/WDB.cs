@@ -44,6 +44,7 @@ namespace SharedLib
         protected string SqlFindClientBar = @"";
         protected string SqlFindClientCode = @"";
         protected string SqlFindClientName = @"";
+        protected string SqlFindClientPhone = @"";
         /// <summary>
         /// Запит, який вертає знайдених клієнтів
         /// </summary>
@@ -235,15 +236,22 @@ namespace SharedLib
 		{
 			return null;
 		}
-		
-		/// <summary>
-		/// Вертає код Чека в зазначеному періоді
-		/// </summary>
-		/// <param name="parCodePeriod">Код періоду (201401 - січень 2014)</param>
-		/// <returns>
-		///Повертає код чека
-		///</returns>
-		public virtual IdReceipt GetNewCodeReceipt(IdReceipt parIdReceipt)
+
+
+        public virtual RezultFind FindClientByPhone(string parPhone)
+        {
+            return new RezultFind() {Count=0,TypeFind= TypeFind.Client };
+        }
+
+
+        /// <summary>
+        /// Вертає код Чека в зазначеному періоді
+        /// </summary>
+        /// <param name="parCodePeriod">Код періоду (201401 - січень 2014)</param>
+        /// <returns>
+        ///Повертає код чека
+        ///</returns>
+        public virtual IdReceipt GetNewCodeReceipt(IdReceipt parIdReceipt)
 		{
 			return null;
 		}
@@ -424,7 +432,8 @@ namespace SharedLib
 			SqlFindClientBar=GetSQL("SqlFindClientBar");
 			SqlFindClientCode=GetSQL("SqlFindClientCode");
 			SqlFindClientName=GetSQL("SqlFindClientName");
-			SqlFoundClient=GetSQL("SqlFoundClient");
+            SqlFindClientPhone = GetSQL("SqlFindClientPhone");
+            SqlFoundClient =GetSQL("SqlFoundClient");
 			SqlFoundWares =GetSQL("SqlFoundWares");
 			SqlAdditionUnit = GetSQL("SqlAdditionUnit");
             SqlViewReceipt = GetSQL("SqlViewReceipt");
