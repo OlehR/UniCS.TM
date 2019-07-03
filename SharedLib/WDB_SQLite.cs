@@ -32,6 +32,7 @@ namespace SharedLib
                 this.db = new SQLite(varReceiptFile);
                 this.db.ExecuteNonQuery(SqlCreateReceiptTable);
                 this.db.Close();
+                
             }
 
             this.db = new SQLite(GlobalVar.PathDB + @"MID.db");//,"",this.varCallWriteLogSQL);

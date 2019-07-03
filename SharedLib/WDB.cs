@@ -127,6 +127,24 @@ namespace SharedLib
         protected string SqlGetAllPermissions = @"";
         protected string SqlCopyWaresReturnReceipt = @"";
 
+        protected string SqlReplaceUnitDimension= @"";
+        protected string SqlReplaceWares= @"";
+        protected string SqlReplaceAdditionUnit= @"";
+        protected string SqlReplaceBarCode= @"";
+        protected string SqlReplacePrice= @"";
+        protected string SqlReplaceTypeDiscount= @"";
+        protected string SqlReplaceClient= @"";
+
+        protected string SqlCreateMIDTable = @"";
+        protected string SqlCreateMIDIndex = @"";
+
+        protected string SqlGetDimUnitDimension = @"";
+        protected string SqlGetDimWares = @"";
+        protected string SqlGetDimAdditionUnit = @"";
+        protected string SqlGetDimBarCode = @"";
+        protected string SqlGetDimPrice = @"";
+        protected string SqlGetDimTypeDiscount = @"";
+        protected string SqlGetDimClient = @"";
         /*		public WDB(CallWriteLogSQL parCallWriteLogSQL=null)
                 {
                     this.varCallWriteLogSQL=parCallWriteLogSQL;
@@ -149,6 +167,7 @@ namespace SharedLib
                 }*/
         public virtual bool InsertT1(T1 parT1)
         {
+            
             return false;
         }
 
@@ -423,63 +442,84 @@ namespace SharedLib
 			}
 			
 		}
-		protected bool InitSQL()
-		{
-			SqlCreateT = GetSQL("SqlCreateT");
-			SqlInsertT1 = GetSQL("SqlInsertT1");
+        protected bool InitSQL()
+        {
+            SqlCreateT = GetSQL("SqlCreateT");
+            SqlInsertT1 = GetSQL("SqlInsertT1");
             SqlClearT1 = GetSQL("SqlClearT1");
             SqlCreateReceiptTable = GetSQL("SqlCreateReceiptTable");
-			SqlInitGlobalVar = GetSQL("SqlInitGlobalVar");
-			SqlConfig =GetSQL("SqlConfig");
-			SqlFind = GetSQL("SqlFind");
-			SqlFindWaresBar=GetSQL("SqlFindWaresBar");
-			SqlFindWaresCode=GetSQL("SqlFindWaresCode");
-			SqlFindWaresName=GetSQL("SqlFindWaresName");
-			SqlFindClientBar=GetSQL("SqlFindClientBar");
-			SqlFindClientCode=GetSQL("SqlFindClientCode");
-			SqlFindClientName=GetSQL("SqlFindClientName");
+            SqlInitGlobalVar = GetSQL("SqlInitGlobalVar");
+            SqlConfig = GetSQL("SqlConfig");
+            SqlFind = GetSQL("SqlFind");
+            SqlFindWaresBar = GetSQL("SqlFindWaresBar");
+            SqlFindWaresCode = GetSQL("SqlFindWaresCode");
+            SqlFindWaresName = GetSQL("SqlFindWaresName");
+            SqlFindClientBar = GetSQL("SqlFindClientBar");
+            SqlFindClientCode = GetSQL("SqlFindClientCode");
+            SqlFindClientName = GetSQL("SqlFindClientName");
             SqlFindClientPhone = GetSQL("SqlFindClientPhone");
-            SqlFoundClient =GetSQL("SqlFoundClient");
-			SqlFoundWares =GetSQL("SqlFoundWares");
-			SqlAdditionUnit = GetSQL("SqlAdditionUnit");
+            SqlFoundClient = GetSQL("SqlFoundClient");
+            SqlFoundWares = GetSQL("SqlFoundWares");
+            SqlAdditionUnit = GetSQL("SqlAdditionUnit");
             SqlViewReceipt = GetSQL("SqlViewReceipt");
             SqlViewReceiptWares = GetSQL("SqlViewReceiptWares");
-			SqlAddReceipt =GetSQL("SqlAddReceipt");
-			SqlUpdateClient =GetSQL("SqlUpdateClient");
-			SqlCloseReceipt =GetSQL("SqlCloseReceipt");
-			SqlAddWares = GetSQL("SqlAddWares");
-			SqlRecalcHeadReceipt = GetSQL("SqlRecalcHeadReceipt");
-			SqlGetCountWares= GetSQL("SqlGetCountWares");
-			SqlUpdateQuantityWares = GetSQL("SqlUpdateQuantityWares");
-			SqlDeleteReceiptWares = GetSQL("SqlDeleteReceiptWares");
- 			SqlInputOutputMoney = GetSQL("SqlInputOutputMoney");
-			SqlAddZ = GetSQL("SqlAddZ");
-			SqlAddLog = GetSQL("SqlAddLog");
-			//SqlGenWorkPlace=GetSQL("SqlGenWorkPlace");
+            SqlAddReceipt = GetSQL("SqlAddReceipt");
+            SqlUpdateClient = GetSQL("SqlUpdateClient");
+            SqlCloseReceipt = GetSQL("SqlCloseReceipt");
+            SqlAddWares = GetSQL("SqlAddWares");
+            SqlRecalcHeadReceipt = GetSQL("SqlRecalcHeadReceipt");
+            SqlGetCountWares = GetSQL("SqlGetCountWares");
+            SqlUpdateQuantityWares = GetSQL("SqlUpdateQuantityWares");
+            SqlDeleteReceiptWares = GetSQL("SqlDeleteReceiptWares");
+            SqlInputOutputMoney = GetSQL("SqlInputOutputMoney");
+            SqlAddZ = GetSQL("SqlAddZ");
+            SqlAddLog = GetSQL("SqlAddLog");
+            //SqlGenWorkPlace=GetSQL("SqlGenWorkPlace");
             SqlGetNewCodeReceipt = GetSQL("SqlGetNewCodeReceipt");
-            
-			/*SqlInsertGenWorkPlace = GetSQL("SqlInsertGenWorkPlace");
+
+            /*SqlInsertGenWorkPlace = GetSQL("SqlInsertGenWorkPlace");
 			SqlSelectGenWorkPlace = GetSQL("SqlSelectGenWorkPlace");
 			SqlUpdateGenWorkPlace = GetSQL("SqlUpdateGenWorkPlace");*/
-			SqlGetPrice = GetSQL("SqlGetPrice");
-			SqlLogin = GetSQL("SqlLogin");
-			SqlPrepareLockFilterT1=GetSQL("SqlPrepareLockFilterT1");
-			SqlPrepareLockFilterT2=GetSQL("SqlPrepareLockFilterT2");
-			SqlPrepareLockFilterT3=GetSQL("SqlPrepareLockFilterT3");
-			SqlPrepareLockFilterT4=GetSQL("SqlPrepareLockFilterT4");
-			SqlPrepareLockFilterT5=GetSQL("SqlPrepareLockFilterT5");
-			SqlListPS=GetSQL("SqlListPS");
-			SqlGetLastUseCodeEkka = GetSQL("SqlGetLastUseCodeEkka");
-			SqlAddWaresEkka= GetSQL("SqlAddWaresEkka");
-			SqlDeleteWaresEkka = GetSQL("SqlDeleteWaresEkka");
-			SqlGetCodeEKKA = GetSQL("SqlGetCodeEKKA");
-			SqlTranslation = GetSQL("SqlTranslation");
-		    SqlFieldInfo = GetSQL("SqlFieldInfo");
-		    SqlGetAllPermissions = GetSQL("SqlGetAllPermissions");
-		    SqlGetPermissions = GetSQL("SqlGetPermissions");
-		    SqlCopyWaresReturnReceipt = GetSQL("SqlCopyWaresReturnReceipt");		    
-			return true;
-		}
+            SqlGetPrice = GetSQL("SqlGetPrice");
+            SqlLogin = GetSQL("SqlLogin");
+            SqlPrepareLockFilterT1 = GetSQL("SqlPrepareLockFilterT1");
+            SqlPrepareLockFilterT2 = GetSQL("SqlPrepareLockFilterT2");
+            SqlPrepareLockFilterT3 = GetSQL("SqlPrepareLockFilterT3");
+            SqlPrepareLockFilterT4 = GetSQL("SqlPrepareLockFilterT4");
+            SqlPrepareLockFilterT5 = GetSQL("SqlPrepareLockFilterT5");
+            SqlListPS = GetSQL("SqlListPS");
+            SqlGetLastUseCodeEkka = GetSQL("SqlGetLastUseCodeEkka");
+            SqlAddWaresEkka = GetSQL("SqlAddWaresEkka");
+            SqlDeleteWaresEkka = GetSQL("SqlDeleteWaresEkka");
+            SqlGetCodeEKKA = GetSQL("SqlGetCodeEKKA");
+            SqlTranslation = GetSQL("SqlTranslation");
+            SqlFieldInfo = GetSQL("SqlFieldInfo");
+            SqlGetAllPermissions = GetSQL("SqlGetAllPermissions");
+            SqlGetPermissions = GetSQL("SqlGetPermissions");
+            SqlCopyWaresReturnReceipt = GetSQL("SqlCopyWaresReturnReceipt");
+
+            SqlReplaceUnitDimension = GetSQL("SqlReplaceUnitDimension");
+            SqlReplaceWares = GetSQL("SqlReplaceWares");
+            SqlReplaceAdditionUnit = GetSQL("SqlReplaceAdditionUnit");
+            SqlReplaceBarCode = GetSQL("SqlReplaceBarCode");
+            SqlReplacePrice = GetSQL("SqlReplacePrice");
+            SqlReplaceTypeDiscount = GetSQL("SqlReplaceTypeDiscount");
+            SqlReplaceClient = GetSQL("SqlReplaceClient");
+
+            SqlCreateMIDTable = GetSQL("SqlCreateMIDTable");
+            SqlCreateMIDIndex = GetSQL("SqlCreateMIDIndex");
+
+
+            SqlGetDimUnitDimension = GetSQL("SqlGetDimUnitDimension");
+            SqlGetDimWares = GetSQL("SqlGetDimWares");
+            SqlGetDimAdditionUnit = GetSQL("SqlGetDimAdditionUnit");
+            SqlGetDimBarCode = GetSQL("SqlGetDimBarCode");
+            SqlGetDimPrice = GetSQL("SqlGetDimPrice");
+            SqlGetDimTypeDiscount = GetSQL("SqlGetDimTypeDiscount");
+            SqlGetDimClient = GetSQL("SqlGetDimClient");
+
+            return true;
+        }
 		
 		public virtual bool LoadDataFromFile(string parFile)
 		{

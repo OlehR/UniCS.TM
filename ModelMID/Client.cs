@@ -22,39 +22,54 @@ namespace ModelMID
         /// <summary>
         /// Код клієнта
         /// </summary>
-        public int CodeClient;
+        public int CodeClient { get; set; }
         /// <summary>
         ///  Назва клієнта
         /// </summary>
-        public string NameClient;
+        public string NameClient { get; set; }
         /// <summary>
         /// Тип знижки
         /// </summary>
-        public int TypeDiscount;
+        public int TypeDiscount { get; set; }
+
+        /// <summary>
+        /// Штрихкод карточки
+        /// </summary>
+        public string BarCode { get; set; }
+        public string  MainPhone { get; set; }
+
         /// <summary>
         /// Відсоток знижки / надбавки
         /// </summary>
-        public double Discount;
+        public decimal PersentDiscount { get; set; }
         /// <summary>
         /// Код дилерської категорії
         /// </summary>
-        public int CodeDealer;
+        public int CodeDealer { get; set; }
         /// <summary>
         /// Сума накопичених бонусів
         /// </summary>
-        public decimal SumBonus;
+        public decimal SumBonus { get; set; }
         /// <summary>
         /// Сума накопичених бонусів в грошовому еквіваленті
         /// </summary>
-        public decimal SumMoneyBonus;
+        public decimal SumMoneyBonus { get; set; }
         /// <summary>
         /// Чи можна списувати бонуси за рахунок здачі
         /// </summary>
-        public bool IsUseBonusToRest;
+        public bool IsUseBonusToRest { get; set; }
         /// <summary>
         /// Чи можна нараховувати бонуси з здачі
         /// </summary>
-        public bool IsUseBonusFromRest;
+        public bool IsUseBonusFromRest { get; set; }
+        /// <summary>
+        /// 0-Активна,1-Заблокована,2 - видалена.
+        /// </summary>
+        public int StatusCard { get; set; }
+        /// <summary>
+        /// Код карточки який видно на дисконтній карточці.
+        /// </summary>
+        public Int64 ViewCode { get; set; }
         public Client()
         {
         }
