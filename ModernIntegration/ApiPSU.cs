@@ -202,7 +202,7 @@ namespace ModernIntegration
                 Id = parClient.ClientId,
                 CustomerId = parClient.CodeClient.ToString(),
                 Name = parClient.NameClient,
-                DiscountPercent = parClient.Discount,
+                DiscountPercent = Convert.ToDouble( parClient.PersentDiscount),
                 LoyaltyPoints = Convert.ToDouble( parClient.SumBonus),
                 LoyaltyPointsTotal = Convert.ToDouble(parClient.SumMoneyBonus)
             };

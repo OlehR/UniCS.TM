@@ -52,5 +52,17 @@ namespace ModelMID
         public int Count;
     }
 
+    public enum TypePayment
+    {
+        Cash,
+        Bonus,
+        CreditCard,
+        MoneyBox
 
+    }
+    public enum TypeCommit
+    {
+        Auto,
+        Manual
+    }
 }

@@ -488,7 +488,7 @@ CREATE TABLE RECEIPT (
                                DEFAULT (CURRENT_TIMESTAMP),
     USER_CREATE       INTEGER  NOT NULL
 );
-
+CREATE UNIQUE INDEX id_RECEIPT ON RECEIPT(CODE_RECEIPT);
 
 CREATE TABLE WARES_RECEIPT (
     ID_WORKPLACE   INTEGER  NOT NULL,
@@ -526,6 +526,21 @@ CREATE TABLE wares_ekka (
 );
 CREATE UNIQUE INDEX id_wares_ekka ON wares_ekka(CODE_WARES,price);
 
+CREATE TABLE payment	
+ (
+    ID_WORKPLACE      INTEGER  NOT NULL,
+    CODE_PERIOD       INTEGER  NOT NULL,
+    CODE_RECEIPT      INTEGER  NOT NULL,
+    TYPE_PAY INTEGER  NOT NULL
+    SUM          NUMBER,
+    SUM_ext      NUMBER,
+    NUMBER_TERMINAL      TEXT,
+    NUMBER_RECEIPT TEXT,
+    CODE_authorization TEXT,
+    NUMBER_SLIP       TEXT
+);
+CREATE INDEX id_payment ON payment(CODE_RECEIPT);
+
 
 [SqlGetAllPermissions]
 select ua.code_access as code_access,ua.type_access as type_access 
@@ -558,6 +573,127 @@ select @IdWorkplaceReturn,@CodePeriodReturn,@CodeReceiptReturn,code_wares,code_u
 from   rrc.wares_receipt wr where wr.id_workplace=@IdWorkplace and wr.code_period=@CodePeriod  and wr.code_receipt=@CodeReceipt;
 update rc.receipt set CODE_PATTERN=2  where id_workplace=@IdWorkplaceReturn and code_period=@CodePeriodReturn  and code_receipt=@CodeReceiptReturn;
 
+[SqlCreateMIDTable]
+
+CREATE TABLE UNIT_DIMENSION (
+    CODE_UNIT                     INTEGER NOT NULL PRIMARY KEY,
+    NAME_UNIT                     TEXT    NOT NULL,
+    ABR_UNIT                      TEXT    NOT NULL,
+    SIGN_ACTIVITY                 INTEGER NOT NULL,
+--    SIGN_DIVISIONAL               TEXT    NOT NULL,
+--    REUSABLE_CONTAINER            TEXT    NOT NULL,
+    --NUMBER_UNIT                   INTEGER NOT NULL,
+--    CODE_WARES_REUSABLE_CONTAINER INTEGER,
+--    DESCRIPTION                   TEXT
+);
+
+CREATE TABLE WARES (
+    CODE_WARES          INTEGER  NOT NULL PRIMARY KEY, 
+    CODE_GROUP          INTEGER  NOT NULL,
+    NAME_WARES          TEXT     NOT NULL,
+    NAME_WARES_RECEIPT  TEXT,
+--    TYPE_POSITION_WARES TEXT     NOT NULL,
+    ARTICL              TEXT     NOT NULL,
+    CODE_BRAND          INTEGER  NOT NULL,
+--    NAME_WARES_BRAND    TEXT,
+--    ARTICL_WARES_BRAND  TEXT,
+    CODE_UNIT           INTEGER  NOT NULL,
+    OLD_WARES           TEXT     NOT NULL,
+    DESCRIPTION         TEXT,
+--    SIGN_1              NUMBER,
+--    SIGN_2              NUMBER,
+--    SIGN_3              NUMBER,
+--    OLD_ARTICL          TEXT,
+    Percent_Vat         NUMBER   NOT NULL,
+    Type_VAT            TEXT     NOT NULL,
+--    OFF_STOCK_METHOD    TEXT     NOT NULL,
+
+--    CODE_WARES_RELATIVE INTEGER,
+--    DATE_INSERT         DATETIME NOT NULL,
+--    USER_INSERT         INTEGER  NOT NULL,
+--    CODE_TRADE_MARK     INTEGER,
+--    KEEPING_TIME        NUMBER
+);
+
+CREATE TABLE ADDITION_UNIT (
+    CODE_WARES    INTEGER NOT NULL PRIMARY KEY,
+    CODE_UNIT     INTEGER NOT NULL PRIMARY KEY,
+    COEFFICIENT   NUMBER  NOT NULL,
+    DEFAULT_UNIT  TEXT    NOT NULL,
+--    SIGN_ACTIVITY TEXT    NOT NULL,
+    WEIGHT        NUMBER,
+    WEIGHT_NET    NUMBER  NOT NULL
+);
+
+CREATE TABLE BAR_CODE (
+    CODE_WARES INTEGER NOT NULL PRIMARY KEY,
+    CODE_UNIT  INTEGER NOT NULL,
+    BAR_CODE   TEXT    NOT NULL
+);
+
+CREATE TABLE PRICE (
+    CODE_DEALER  INTEGER NOT NULL PRIMARY KEY,
+    CODE_WARES   INTEGER NOT NULL PRIMARY KEY,
+    PRICE_DEALER NUMBER  NOT NULL
+);
+
+
+
+CREATE TABLE TYPE_DISCOUNT (
+    TYPE_DISCOUNT    INTEGER NOT NULL PRIMARY KEY,
+    NAME             TEXT    NOT NULL,
+    PERCENT_DISCOUNT NUMBER
+);
+
+
+CREATE TABLE CLIENT (
+    CODE_CLIENT INTEGER NOT NULL PRIMARY KEY,
+    NAME_CLIENT TEXT NOT NULL,
+    TYPE_DISCOUNT INTEGER,
+    PHONE            INTEGER,
+    PERCENT_DISCOUNT NUMBER,
+    BARCODE          TEXT NOT NULL,
+    STATUS_CARD INTEGER DEFAULT(0),
+    view_code INTEGER
+);
+
+
+[SqlCreateMIDIndex]
+
+CREATE UNIQUE INDEX UNIT_DIMENSION_ID ON UNIT_DIMENSION ( CODE_UNIT );
+CREATE UNIQUE INDEX WARES_ID ON WARES ( CODE_WARES,CODE_UNIT );
+CREATE UNIQUE INDEX ADDITION_UNIT_ID ON UNIT_DIMENSION ( CODE_WARES,CODE_UNIT );
+CREATE UNIQUE INDEX BAR_CODE_ID ON BAR_CODE ( BAR_CODE);
+CREATE UNIQUE INDEX BAR_CODE_W_BC ON BAR_CODE ( CODE_WARES,BAR_CODE);
+
+CREATE UNIQUE INDEX TYPE_DISCOUNT_ID ON TYPE_DISCOUNT ( TYPE_DISCOUNT );
+CREATE UNIQUE INDEX CLIENT_ID ON CLIENT ( CODE_CLIENT );
+CREATE UNIQUE INDEX PRICE_ID ON PRICE ( CODE_DEALER, CODE_WARES )
+
+[SqlReplaceUnitDimension]
+replace into UNIT_DIMENSION ( CODE_UNIT, NAME_UNIT, ABR_UNIT) values (@CodeUnit, @NameUnit,@AbrUnit);
+[SqlReplaceWares]
+ replace into  Wares (CODE_WARES,CODE_GROUP,NAME_WARES,NAME_WARES_RECEIPT, ARTICL,CODE_BRAND, CODE_UNIT, DESCRIPTION, Percent_Vat,Type_VAT)
+              values (@CodeWares,@CodeGroup,@NameWares,@NameWaresReceipt, @Articl,@CodeBrand,@CodeUnit, @Description, @PercentVat,@TypeVat)
+[SqlReplaceAdditionUnit]
+replace into  Wares (CODE_WARES, CODE_UNIT, COEFFICIENT, DEFAULT_UNIT, WEIGHT, WEIGHT_NET )
+              Addition_Unit (@CodeWares,@CodeUnit,@Coefficient, @DefaultUnit, @Weight, @WeightNet);
+[SqlReplaceBarCode]
+replace into  Bar_Code (CODE_WARES,CODE_UNIT,BAR_CODE) values (@CodeWares,@CodeUnit,@BarCode);
+[SqlReplacePrice]
+replace into PRICE (CODE_DEALER, CODE_WARES, PRICE_DEALER) values (@CodeDealer,@CodeWares,@PriceDealer);
+[SqlReplaceTypeDiscount]
+replace into TYPE_DISCOUNT (TYPE_DISCOUNT,NAME,PERCENT_DISCOUNT) values (@CodeTypeDiscount,@Name,@PercentDiscount);
+[SqlReplaceClient]
+replace into CLIENT (CODE,NAME,TYPE_DISCOUNT,PHONE, PERCENT_DISCOUNT,BARCODE,STATUS_CARD,view_code) values (@CodeClient ,@NameClient ,@TypeDiscount,@MainPhone,@PersentDiscount,@BarCode,@StatusCard,@ViewCode);
+
+[SqlGetDimUnitDimension]
+[SqlGetDimWares]
+[SqlGetAdditionUnit]
+[SqlGetDimBarCode]
+[SqlGetDimPrice]
+[SqlGetDimTypeDiscount]
+[SqlGetDimClient]
 
 [SqlEnd]
 */
