@@ -30,7 +30,7 @@ namespace Test
             // var client = api.GetCustomerByBarCode("5550000923502");
             //0959330766
             //var client = api.GetCustomerByPhone("0959330766");
-            var f = api.GetProductsByName("апель");
+            //var f = api.GetProductsByName("апель");
             Console.WriteLine("Hello World!");
         }
     }
