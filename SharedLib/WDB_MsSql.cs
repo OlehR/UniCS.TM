@@ -8,37 +8,25 @@ using ModelMID;
 
 namespace SharedLib
 {
-    public partial class WDB_SQLite : WDB
+    public partial class WDB_MsSql : WDB
     {
-        private SQLite db;
-        public SQLite db_receipt;
+        private MSSQL db;
+        //public SQLite db_receipt;
         public ReceiptWares varWares = new ReceiptWares();
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="parCallWriteLogSQL"></param>
-        public WDB_SQLite(string parConnect = "") : base()
+        public WDB_MsSql() : base()
         {
-            this.varVersion = "SQLite.0.0.1";
+            varVersion = "WDB_MsSql.0.0.1";
 
-            this.ReadSQL(GlobalVar.PathIni + @"SQLite.sql");
-            this.InitSQL();
-            DateTime varD = DateTime.Today;
-            string varReceiptFile = GlobalVar.PathDB + varD.ToString("yyyyMM") + @"\Rc_" + GlobalVar.IdWorkPlace.ToString() + "_" + varD.ToString("yyyyMMdd") + ".db";
-            if (!File.Exists(varReceiptFile))
-            {
-                //Створюємо щоденну табличку з чеками.
-                this.db = new SQLite(varReceiptFile);
-                this.db.ExecuteNonQuery(SqlCreateReceiptTable);
-                this.db.Close();
-                
-            }
-
-            this.db = new SQLite(string.IsNullOrEmpty(parConnect) ? GlobalVar.PathDB + @"MID.db" : parConnect);//,"",this.varCallWriteLogSQL);
-                                                                  //this.db.ExecuteNonQuery("ATTACH ':memory:' AS m");
-            this.db.ExecuteNonQuery(this.SqlCreateT);
-            this.db.ExecuteNonQuery("ATTACH '" + varReceiptFile + "' AS rc");
+            ReadSQL(GlobalVar.PathIni + @"MsSql.sql");
+            InitSQL();            
+            
+            db = new MSSQL();//,"",this.varCallWriteLogSQL);                                                                
+          
         }
 
 
@@ -52,24 +40,7 @@ namespace SharedLib
             return this.db.ExecuteNonQuery(SqlClearT1)==0;
         }
 
-        /*		public override DataRow Login (string parLogin,string parPassword)
-                {
-                    var parColl = new Parameter[] { new Parameter {ColumnName= "parLogin",Value= parLogin}, new Parameter { ColumnName = "parPassWord", Value = parPassword } };
-
-                    DataTable dt = db.Execute( SqlLogin,parColl);
-                    if(dt == null || dt.Rows.Count==0)
-                    {
-                        //DataTable dt = new DataTable();
-                        //dt.Columns.Add("code_user", typeof(int));
-                        //dt.Columns.Add("name_user", typeof(string));
-                        //dt.Columns.Add("login", typeof(string));
-                        //dt.Columns.Add("password", typeof(string));
-                        dt.Rows.Add(-2,"Неправильний логін чи пароль",parLogin,parPassword);
-                        return dt.Rows[0];
-                    }
-                    return dt.Rows[0];
-                }*/
-
+        
         public override int GetCountT1()
         {
             return this.db.ExecuteScalar<int>(@"select count(*) cn from T$1");
@@ -283,154 +254,50 @@ namespace SharedLib
 
         public override bool RecalcPrice(IdReceipt parIdReceipt)
         {
-            /*Parameter[] varParameters = new Parameter[] {
-                new Parameter("parIdWorkplace", "parIdWorkplace") ,
-                new Parameter("parCodePeriod", Global.GetCodePeriod()) ,
-                new Parameter("parDefaultCodeDealer", GlobalVar.DefaultCodeDealer[0]) ,
-                new Parameter("parCodeReceipt", parCodeReceipt) 
-            };
-
-            DataTable varDT=this.db.Execute(this.SqlListPS,varParameters);
-            for (int i = 0; i < varDT.Rows.Count; i++)
-            {
-                //wr.code_wares,  wr.code_unit, w.vat, w.vat_operation, ps.code_ps, ps.priority, psd.type_discount, psd.data, pd.price_dealer, pdd.price_dealer default_price_dealer,
-                int varCodeWares=Convert.ToInt32(varDT.Rows[i]["code_wares"] );
-                int varCodeUnit=Convert.ToInt32(varDT.Rows[i]["code_unit"] );
-                int varCodePS=Convert.ToInt32(varDT.Rows[i]["code_ps"] );
-
-                varParameters = new Parameter[] {
-                new Parameter("parIdWorkplace", "parIdWorkplace") ,
-                new Parameter("parCodePeriod", Global.GetCodePeriod()) ,
-                new Parameter("parCodeReceipt", parCodeReceipt),
-                new Parameter("parCodeWares", varCodeWares),
-                new Parameter("parCodeUnit", varCodeUnit),
-                new Parameter("parCodePS", varCodePS),
-                new Parameter("parVatOperation", varWares.varTypeVat),
-                new Parameter("parSum", (varWares.varPrice*varWares.varQuantity)*(1+varWares.varPercentVat)* varWares.varCoefficient),
-                new Parameter("parSumVat", varWares.varPrice*varWares.varQuantity*varWares.varPercentVat* varWares.varCoefficient)
-            };
-                this.db.ExecuteNonQuery(this.SqlUpdatePrice,varParameters);
-
-            }*/
+            
             RecalcHeadReceipt(parIdReceipt);
             return true;
         }
         
-        /*		public override int GetLastUseCodeEkka()
-                {
-                    DataTable varDT=this.db.Execute(this.SqlGetLastUseCodeEkka);
-                    if(varDT.Rows.Count>0 && !DBNull.Value.Equals(varDT.Rows[0][0]))
-                        return ( Convert.ToInt32(varDT.Rows[0][0] ));
-                    else
-                        return 0;
-
-                }
-
-                public override bool AddWaresEkka(Parameter[] parParameters )
-                {
-                    return db.ExecuteNonQuery(this.SqlAddWaresEkka,parParameters)==0;
-                }
-
-                public override bool DeleteWaresEkka()
-                {
-                    return this.db.ExecuteNonQuery(this.SqlDeleteWaresEkka)==0;
-                }
-                public override int GetCodeEKKA(Parameter[] parParameters )
-                {
-                    DataTable varDT = this.db.Execute(this.SqlGetCodeEKKA,parParameters);
-                    if(varDT.Rows.Count>0)
-                        return ( Convert.ToInt32(varDT.Rows[0][0]));
-                    else
-                        return 0;
-                }
-
-                public override DataTable Translation(Parameter[] parParameters )
-                {
-                    return  db.Execute(this.SqlTranslation,parParameters); 
-                }
-                public override DataTable FieldInfo(Parameter[] parParameters = null)
-                {
-                    return  db.Execute(this.SqlFieldInfo,parParameters);
-                }
-                */
-
+        
         public override bool RecalcHeadReceipt(IdReceipt parReceipt)
 		{
 			return this.db.ExecuteNonQuery<IdReceipt>(this.SqlRecalcHeadReceipt, parReceipt) ==0;;
 		}
-        /*
-		public override System.Data.DataTable GetAllPermissions(int parCodeUser)
-		{
-			Parameter[] varParameters = new Parameter[] { new Parameter { ColumnName= "parCodeUser", Value= parCodeUser} };
-			DataTable varDT=this.db.Execute(this.SqlGetAllPermissions,varParameters);
-			return varDT;
-		}
-		
-		public override TypeAccess GetPermissions(int parCodeUser, CodeEvent parEvent)
-		{
-            Parameter[] varParameters = new Parameter[] { new Parameter { ColumnName = "parCodeUser", Value = parCodeUser }, new Parameter { ColumnName = "parCodeAccess", Value = (int)parEvent }, };
-            
-			DataTable varDT=this.db.Execute(this.SqlGetAllPermissions,varParameters);
-			if(varDT!=null&&varDT.Rows.Count>0)
-				return (TypeAccess) varDT.Rows[0][0];
-			else
-				return TypeAccess.No;
-			
-		}
-		*/
+        
         public override bool CopyWaresReturnReceipt(IdReceipt parIdReceipt, bool parIsCurrentDay = true)
 		{
 			string SqlCopyWaresReturnReceipt=(parIsCurrentDay? this.SqlCopyWaresReturnReceipt.Replace("RRC.","RC.") : this.SqlCopyWaresReturnReceipt ) ;
 			return (this.db.ExecuteNonQuery(SqlCopyWaresReturnReceipt, parIdReceipt) ==0);
 		}
 
-        public override bool CreateMIDTable()
+        public bool LoadData(WDB parDB)
         {
-            db.ExecuteNonQuery(SqlCreateMIDTable);
-            return true;
-        }
-        public override bool CreateMIDIndex()
-        {
-            db.ExecuteNonQuery(SqlCreateMIDIndex);
+
+            var UD = db.Execute<UnitDimension>(SqlGetDimUnitDimension);
+            parDB.ReplaceUnitDimension(UD);
+
+            var W = db.Execute<ReceiptWares>(SqlGetDimWares);
+            parDB.ReplaceWares(W);
+
+            var AU = db.Execute<AdditionUnit>(SqlGetDimAdditionUnit);
+            parDB.ReplaceAdditionUnit(AU);
+
+            var BC = db.Execute<Barcode>(SqlGetDimBarCode);
+            parDB.ReplaceBarCode(BC);
+
+            var PD = db.Execute<Price>(SqlGetDimPrice);
+            parDB.ReplacePrice(PD);
+
+            var TD = db.Execute<TypeDiscount>(SqlGetDimTypeDiscount);
+            parDB.ReplaceTypeDiscount(TD);
+
+            var Cl = db.Execute<Client>(SqlGetDimClient);
+            parDB.ReplaceClient(Cl);
+
+
             return true;
         }
 
-
-        public override bool ReplaceUnitDimension(IEnumerable<UnitDimension> parData)
-        {
-            db.BulkExecuteNonQuery<UnitDimension>(SqlReplaceUnitDimension, parData);
-            return true;
-        }
-        public override bool ReplaceWares(IEnumerable<ReceiptWares> parData)
-        {
-            db.BulkExecuteNonQuery<ReceiptWares>(SqlReplaceWares, parData);
-            return true;
-        }
-        public override bool ReplaceAdditionUnit(IEnumerable<AdditionUnit> parData)
-        {
-            db.BulkExecuteNonQuery<AdditionUnit>(SqlReplaceWares, parData);
-            return true;
-        }
-        public override bool ReplaceBarCode(IEnumerable<Barcode> parData)
-        {
-            db.BulkExecuteNonQuery<Barcode>(SqlReplaceBarCode, parData);
-            return true;
-        }
-        public override bool ReplacePrice(IEnumerable<Price> parData)
-        {
-            db.BulkExecuteNonQuery<Price>(SqlReplacePrice, parData);
-            return true;
-        }
-        public override bool ReplaceTypeDiscount(IEnumerable<TypeDiscount> parData)
-        {
-            db.BulkExecuteNonQuery<TypeDiscount>(SqlReplaceTypeDiscount, parData);
-            return true;
-        }
-        public override bool ReplaceClient(IEnumerable<Client> parData)
-        {
-            db.BulkExecuteNonQuery<Client>(SqlReplaceClient, parData);
-            return true;
-        }
-
-    }
+	}
 }

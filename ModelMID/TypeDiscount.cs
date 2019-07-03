@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ModelMID
 {
-    class TypeDiscount
+    public class TypeDiscount
     {
         public int CodeTypeDiscount { get; set; }
         public string Name { get; set; }

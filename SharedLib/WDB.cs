@@ -576,8 +576,18 @@ namespace SharedLib
 		{
 			return false;
 		}
+        public virtual bool CreateMIDTable() { return true; }
+        public virtual bool CreateMIDIndex() { return true; }
 
-		
-	}
+
+        public virtual bool ReplaceUnitDimension(IEnumerable<UnitDimension> parData) { return true; }
+        public virtual bool ReplaceWares(IEnumerable<ReceiptWares> parData) { return true; }
+        public virtual bool ReplaceAdditionUnit(IEnumerable<AdditionUnit> parData) { return true; }
+        public virtual bool ReplaceBarCode(IEnumerable<Barcode> parData) { return true; }
+        public virtual bool ReplacePrice(IEnumerable<Price> parData) { return true; }
+        public virtual bool ReplaceTypeDiscount(IEnumerable<TypeDiscount> parData) { return true; }
+        public virtual bool ReplaceClient(IEnumerable<Client> parData) { return true; }
+
+    }
 
 }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ModelMID
 {
-    class Barcode
+    public class Barcode
     {
         public int CodeWares { get; set; }
         public int CodeUnit { get; set; }

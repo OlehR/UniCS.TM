@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ModelMID
 {
-    class UnitDimension
+    public class UnitDimension
     {
         public int CodeUnit { get; set; }
         public string NameUnit { get; set; }

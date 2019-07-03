@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ModelMID
 {
-    class Price
+    public class Price
     {
         public int CodeDealer { get; set; }
         public int CodeWares { get; set; }
