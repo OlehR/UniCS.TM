@@ -135,7 +135,8 @@ namespace SharedLib
         protected string SqlReplacePrice= @"";
         protected string SqlReplaceTypeDiscount= @"";
         protected string SqlReplaceClient= @"";
-
+        protected string SqlGetFastGroup = @"";
+        protected string SqlGetFastWares = @"";
         protected string SqlCreateMIDTable = @"";
         protected string SqlCreateMIDIndex = @"";
 
@@ -510,6 +511,9 @@ namespace SharedLib
             SqlReplaceTypeDiscount = GetSQL("SqlReplaceTypeDiscount");
             SqlReplaceClient = GetSQL("SqlReplaceClient");
 
+            SqlGetFastGroup = GetSQL("SqlGetFastGroup");
+            SqlGetFastWares = GetSQL("SQlGetFastWares");
+
             SqlCreateMIDTable = GetSQL("SqlCreateMIDTable");
             SqlCreateMIDIndex = GetSQL("SqlCreateMIDIndex");
 
@@ -581,6 +585,11 @@ namespace SharedLib
 		{
 			return false;
 		}
+
+
+        public virtual IEnumerable<FastGroup> GetFastGroup(int parIdWorkplace) { return null; }
+        public virtual IEnumerable<ReceiptWares> GetFastWares(int parCodeFastGroup) { return null; }
+
         public virtual bool CreateMIDTable() { return true; }
         public virtual bool CreateMIDIndex() { return true; }
 
