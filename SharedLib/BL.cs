@@ -96,8 +96,9 @@ namespace SharedLib
             int CodeWares = 0;
             if (int.TryParse(parProductId.ToString().Substring(24), out CodeWares))
             {
+                var W = new IdReceiptWares { WaresId = parProductId };
                 db.ClearT1();
-                db.InsertT1(new T1 { Id = CodeWares, Data = 0 });
+                db.InsertT1(new T1 { Id = W.CodeWares,Data=W.CodeUnit});
                 var w = db.FindWares().First();
                 w.SetIdReceipt(parReceipt);
                 w.Quantity = parQuantity;

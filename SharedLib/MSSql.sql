@@ -120,7 +120,8 @@ SELECT ud.code_unit AS CodeUnit, ud.name_unit AS NameUnit, ud.abr_unit  AbrUnit 
 [SqlGetDimWares]
 SELECT w.code_wares AS CodeWares, w.name_wares AS NameWares, w.code_group AS CodeGroup, w.articl AS Articl, w.code_unit AS CodeUnit, w.VAT AS PercentVat , w.VAT_OPERATION AS TypeVat, w.code_brand AS CodeBrand
   FROM dbo.Wares w
-[SqlGetAdditionUnit]
+  
+[SqlGetDimAdditionUnit]
 SELECT code_wares AS CodeWares,code_unit AS CodeUnit, coef AS Coefficient, weight AS weight, CASE WHEN DEFAULT_UNIT='Y' then 1 ELSE 0 END as DefaultUnit 
   FROM dbo.addition_unit;
 [SqlGetDimBarCode]
@@ -146,6 +147,25 @@ SELECT DC.code_card as CodeClient ,DC.name as NameClient ,TD.TYPE_DISCOUNT  AS T
  LEFT  JOIN dbo.V1C_DIM_CARD_STATUS DCC ON DC.STATUS_CARD_RRef=DCC.STATUS_CARD_RRef
  JOIN DW.dbo.V1C_DIM_TYPE_DISCOUNT TD ON TD.TYPE_DISCOUNT_RRef =DC.TYPE_DISCOUNT_RRef
   WHERE  DCC.CODE_STATUS_CARD=0 AND [bar_code]<>''
+
+[SqlGetDimFastGroup]
+  SELECT CONVERT(INT,wh.Code) AS CodeUp,CONVERT(INT,wh.Code)*1000+g.Order_Button AS CodeFastGroup,g.Name_Button AS NameButton
+  FROM DW.dbo.V1C_DIM_OPTION_WPC O
+  JOIN dw.dbo.WAREHOUSES wh ON o.Warehouse_RRef=wh._IDRRef
+  JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_GROUP G ON o._IDRRef=G._Reference18850_IDRRef
+  --JOIN DW.dbo.V1C_DIM_OPTION_WPC_FACT_WARES W ON G._Reference18850_IDRRef = W._Reference18850_IDRRef AND G. Order_Button = W.Order_Button
+    WHERE wh.Code=9
+
+
+[SqlGetDimFastWares]
+ SELECT CONVERT(INT,wh.Code)*1000+w.Order_Button CodeFastGroup,w1.code_wares AS CodeWares
+  FROM DW.dbo.V1C_DIM_OPTION_WPC O
+  JOIN dw.dbo.WAREHOUSES wh ON o.Warehouse_RRef=wh._IDRRef
+  --JOIN DW.dbo.V1C_DIM_OPTION_WPC_FACT_GROUP G ON o._IDRRef=G._Reference18850_IDRRef
+  JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_WARES W ON o._IDRRef = W._Reference18850_IDRRef --AND G. Order_Button = W.Order_Button
+  JOIN dw.dbo.Wares w1 ON w.Wares_RRef=w1._IDRRef
+    WHERE wh.Code=9;
+
 
 [SqlEnd]
 */

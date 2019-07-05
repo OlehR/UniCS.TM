@@ -23,6 +23,13 @@ namespace ModelMID
                 strWares = strWares.Substring(strWares.Length - 12);
                 return Guid.Parse(strOrder+"-abcd-"+ strUnit.Substring(0,4)+"-"+ strUnit.Substring(4,4)+"-"+ strWares);
             }
+            set
+            {
+                int Code;
+                CodeWares = (int.TryParse(value.ToString().Substring(24), out Code) ? Code : 0);
+                CodeUnit  = (int.TryParse(value.ToString().Substring(19, 4), out Code) ? Code : 0);
+
+            }
         }
         public IdReceiptWares() { }
 

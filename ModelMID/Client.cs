@@ -79,45 +79,9 @@ namespace ModelMID
             //Clear();
         }
         public int GetClientByClientId(Guid parClientId)
-        {
+        {            
             return Convert.ToInt32(parClientId.ToString().Substring(24, 12));
         }
-        /*
-        public Client()
-        {
-            Clear();
-        }
-        public void Clear()
-        {
-            CodeClient = 0;
-            NameClient = "";
-            TypeDiscount = 0;
-            Discount = 0;
-            CodeDealer = 0;
-            SumBonus = 0;
-            SumMoneyBonus = 0;
-            IsUseBonusFromRest = false;
-            IsUseBonusToRest = false;
-
-        }*/
-
-        /* public virtual void SetClient(DataRow parRw)
-         {
-             Clear();
-             CodeClient = Convert.ToInt32(parRw["CodeClient"]);
-             NameClient = Convert.ToString(parRw["NameClient"]);
-             TypeDiscount = Convert.ToInt32(parRw["TypeDiscount"]);
-             Discount = Convert.ToInt32(parRw["Discount"]);
-             CodeDealer = Convert.ToInt32(parRw["CodeDealer"]);
-             SumBonus = Convert.ToDecimal(parRw["SumBonus"]);
-             SumMoneyBonus = Convert.ToDecimal(parRw["SumMoneyBonus"]);
-             IsUseBonusFromRest = (Convert.ToInt32(parRw["IsUseBonusFromRest"]) == 1);
-             IsUseBonusToRest = (Convert.ToInt32(parRw["IsUseBonusToRest"]) == 1);
-
-             if (CodeDealer <= 0)
-                 CodeDealer = Global.DefaultCodeDealer[-CodeDealer];
-         }*/
-
-
+        
     }
 }

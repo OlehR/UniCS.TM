@@ -10,7 +10,8 @@ namespace ModelMID
         /// <summary>
         /// Код товару
         /// </summary>
-        //public int CodeWares;
+        public int CodeGroup;
+
         /// <summary>
         /// Назва товару
         /// </summary>
@@ -19,7 +20,8 @@ namespace ModelMID
         /// Назва для чека.
         /// </summary>
         public string NameWaresReceipt { get; set; }
-        //public int   TypeVat ;  			// Тип ставка ПДВ  ()
+        public int Articl { get; set; }
+        public int CodeBrand { get; set; }
         /// <summary>
         /// % Ставки ПДВ (0 -0 ,20 -20%)
         /// </summary>
@@ -106,7 +108,7 @@ namespace ModelMID
         public int CodeWarehouse { get; set; }
         public int @ParPrice1 { get; set; }
         public int @ParPrice2 { get; set; }
-
+        public string Description { get; set; }
         public ReceiptWares()
         {
             Clear();

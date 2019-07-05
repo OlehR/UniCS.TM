@@ -65,9 +65,15 @@ namespace ModernIntegration
 
         public override List<ProductViewModel> GetBags() { return null; }
 
-        public override List<ProductCategory> GetAllCategories() { return null; }
-        public override List<ProductCategory> GetCategoriesByParentId(Guid categoryId) { return null; }
-        public override List<ProductViewModel> GetProductsByCategoryId(Guid categoryId) { return null; }
+        public override List<ProductCategory> GetAllCategories(Guid parTerminalId)
+        {
+            return null;
+        }
+        public override List<ProductCategory> GetCategoriesByParentId(Guid parTerminalId, Guid categoryId) { return null; }
+        public override List<ProductViewModel> GetProductsByCategoryId(Guid parTerminalId, Guid categoryId)
+        {
+            return null;
+        }
         public override List<ProductViewModel> GetProductsByName(string parName)
         {
             var Res = new List<ProductViewModel>();
@@ -82,12 +88,12 @@ namespace ModernIntegration
         public override TypeSend SendReceipt(Guid parReceipt) { return TypeSend.NotReady; }
         public override TypeSend GetStatusReceipt(Guid parReceipt) { return TypeSend.NotReady; }
 
-        public override CustomerViewModel GetCustomerByBarCode(string parS)
+        public override CustomerViewModel GetCustomerByBarCode(Guid parTerminalId, string parS)
         {
             var CM = Bl.GetClientByBarCode(parS);
             return GetCustomerViewModelByClient(CM);           
         }
-        public override CustomerViewModel GetCustomerByPhone(string parPhone)
+        public override CustomerViewModel GetCustomerByPhone(Guid parTerminalId, string parPhone)
         {
             var CM = Bl.GetClientByPhone(parPhone);
             return GetCustomerViewModelByClient(CM);
@@ -197,6 +203,8 @@ namespace ModernIntegration
         }
         private CustomerViewModel GetCustomerViewModelByClient(Client parClient)
         {
+            if (parClient == null)
+                return null;
             return new CustomerViewModel()
             {
                 Id = parClient.ClientId,
@@ -207,5 +215,6 @@ namespace ModernIntegration
                 LoyaltyPointsTotal = Convert.ToDouble(parClient.SumMoneyBonus)
             };
         }
+
     }
 }

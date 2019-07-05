@@ -26,18 +26,17 @@ namespace ModernIntegration
 
         public virtual List<ProductViewModel> GetBags() { return null; }
 
-        public virtual List<ProductCategory> GetAllCategories() { return null; }
-        public virtual List<ProductCategory> GetCategoriesByParentId(Guid categoryId) { return null; }
-        public virtual List<ProductViewModel> GetProductsByCategoryId(Guid categoryId) { return null; }
+        public virtual List<ProductCategory> GetAllCategories(Guid parTerminalId) { return null; }
+        public virtual List<ProductCategory> GetCategoriesByParentId(Guid parTerminalId, Guid categoryId) { return null; }
+        public virtual List<ProductViewModel> GetProductsByCategoryId(Guid parTerminalId, Guid categoryId) { return null; }
         public virtual List<ProductViewModel> GetProductsByName(string parName) { return null; }
 
         public virtual bool UpdateReceipt(ReceiptViewModel parReceipt) { return false; }
         public virtual TypeSend SendReceipt(Guid parReceipt) { return TypeSend.NotReady; }
         public virtual TypeSend GetStatusReceipt(Guid parReceipt)  { return TypeSend.NotReady; } 
 
-        public virtual CustomerViewModel GetCustomerByBarCode(string parS) { return null; }
-        public virtual CustomerViewModel GetCustomerByPhone(string parS) { return null; }
-
+        public virtual CustomerViewModel GetCustomerByBarCode(Guid parTerminalId, string parS) { return null; }
+        public virtual CustomerViewModel GetCustomerByPhone(Guid parTerminalId,string parS) { return null; }
 
     }
 }

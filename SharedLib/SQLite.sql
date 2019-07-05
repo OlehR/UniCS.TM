@@ -25,9 +25,9 @@ insert into t$1 (id_1,data_1) values (@Id,@Data)
 
 [SqlFindWaresBar]
 insert into t$1 (id_1,data_1) select ifnull(w.code_wares,bc.code_wares),bc.code_unit
-                 from main.bar_code_additional_unit bc left join wares w
-                 on w.CODE_WARES_RELATIVE= bc.code_wares
-                 where bc.bar_code=
+                 from main.bar_code bc left join wares w
+                 on w.CODE_WARES= bc.code_wares
+                 where bc.bar_code=@BarCode;
                  
 [SqlFindWaresCode]
 insert into t$1 (id_1) select w.code_wares from wares w where w.code_wares=@CodeWares
@@ -37,20 +37,15 @@ insert into t$1 (id_1) select w.code_wares from wares w where UPPER(w.name_wares
 
 [SqlFindClientBar]
 insert into t$1 (id_1,data_1)
-	   select p.code_privat,1 from privat p where p.bar_code= @CodeBar
-       union
-       select f.code_firm, 2  from firms f where f.bar_code = @CodeBar
+    select code_client,1 from client c where barcode= @BarCode
 
 [SqlFindClientPhone]
-
-select p.code_privat,0 
-from privat p where p.WORK_PHONE = @Phone or p.HOUSE_PHONE=@Phone
+select p.code_client,0 
+from client p where p.PHONE = @Phone
        
 [SqlFindClientCode]
 insert into t$1 (id_1,data_1)
-	   select p.code_privat,1 from privat p where p.code_privat= @CodePrivat
-       union
-       select f.code_firm, 2  from firms f where f.code_firm = @CodePrivat
+    select code_client,1 from client c where code_client =  @CodePrivat
        
 [SqlFindClientName]
 insert into t$1 (id_1,data_1)
@@ -59,11 +54,29 @@ insert into t$1 (id_1,data_1)
        select f.code_firm, 2  from firms f where f.name_for_print like '@Name'
        
 [SqlFoundClient]
-select p.code_privat as CodeClient, p.name_for_print as NameClient, 0 as TypeDiscount, c.discount as Discount, c.code_dealer as CodeDealer, 
+select p.code_client as CodeClient, p.name_client as NameClient, 0 as TypeDiscount, p.percent_discount as Discount, 0 as CodeDealer, 
 	   10.00 as SumMoneyBonus, 10.00 as SumBonus,1 IsUseBonusFromRest, 1 IsUseBonusToRest,1 as IsUseBonusFromRest
-			from t$1 left join privat p on (id_1=p.code_privat) join p_client c on (p.code_privat=c.code_privat)
+			from t$1 left join client p on (id_1=p.code_client)
 			
 [SqlFoundWares]
+select t.id_1 as CodeWares,w.name_wares NameWares,w.name_wares_receipt  as NameWaresReceipt, w.PERCENT_VAT PercentVat, w.Type_vat TypeVat,
+        COALESCE(au.code_unit,aud.code_unit,0) CodeUnit, 
+        ifnull(ud.abr_unit,udd.abr_unit) abr_unit,
+        COALESCE(au.coefficient,aud.coefficient,0) Coefficient,
+        ifnull(aud.code_unit,0) code_unit_default, 
+        udd.abr_unit abr_unit_default,
+        ifnull(aud.coefficient,0) coefficient_default,
+        ifnull(pd.price_dealer*(1.00-@Discount),0.0) as Price,
+       1   TypePrice
+from t$1 t
+left join wares w on t.id_1=w.code_wares
+left join price pd on ( pd.code_wares=t.id_1 and pd.code_dealer=@CodeDealer)
+left join addition_unit au on (au.code_unit=t.data_1 and t.id_1=au.code_wares)
+left join unit_dimension ud on (t.data_1 =ud.code_unit)
+left join addition_unit aud on (aud.DEFAULT_UNIT='Y' and t.id_1=aud.code_wares)
+left join unit_dimension udd on (aud.code_unit =udd.code_unit)       
+
+[SqlFoundWares_OLD]
 select t.id_1 as CodeWares,w.name_wares NameWares,w.name_wares_receipt  as NameWaresReceipt, w.vat PercentVat, w.vat_operation TypeVat,
         COALESCE(au.code_unit,aud.code_unit,0) CodeUnit, 
         ifnull(ud.abr_unit,udd.abr_unit) abr_unit,
@@ -531,8 +544,8 @@ CREATE TABLE payment
     ID_WORKPLACE      INTEGER  NOT NULL,
     CODE_PERIOD       INTEGER  NOT NULL,
     CODE_RECEIPT      INTEGER  NOT NULL,
-    TYPE_PAY INTEGER  NOT NULL
-    SUM          NUMBER,
+    TYPE_PAY INTEGER  NOT NULL,
+    SUM_PAY          NUMBER,
     SUM_ext      NUMBER,
     NUMBER_TERMINAL      TEXT,
     NUMBER_RECEIPT TEXT,
@@ -541,6 +554,12 @@ CREATE TABLE payment
 );
 CREATE INDEX id_payment ON payment(CODE_RECEIPT);
 
+CREATE TABLE GEN_WORKPLACE (
+    ID_WORKPLACE INTEGER NOT NULL,
+    CODE_PERIOD  INTEGER NOT NULL,
+    CODE_RECEIPT INTEGER NOT NULL
+);
+ CREATE INDEX id_GEN_WORKPLACE ON GEN_WORKPLACE(ID_WORKPLACE,CODE_PERIOD);
 
 [SqlGetAllPermissions]
 select ua.code_access as code_access,ua.type_access as type_access 
@@ -578,8 +597,8 @@ update rc.receipt set CODE_PATTERN=2  where id_workplace=@IdWorkplaceReturn and 
 CREATE TABLE UNIT_DIMENSION (
     CODE_UNIT                     INTEGER NOT NULL PRIMARY KEY,
     NAME_UNIT                     TEXT    NOT NULL,
-    ABR_UNIT                      TEXT    NOT NULL,
-    SIGN_ACTIVITY                 INTEGER NOT NULL,
+    ABR_UNIT                      TEXT    NOT NULL--,
+--    SIGN_ACTIVITY                 INTEGER NOT NULL
 --    SIGN_DIVISIONAL               TEXT    NOT NULL,
 --    REUSABLE_CONTAINER            TEXT    NOT NULL,
     --NUMBER_UNIT                   INTEGER NOT NULL,
@@ -588,7 +607,7 @@ CREATE TABLE UNIT_DIMENSION (
 );
 
 CREATE TABLE WARES (
-    CODE_WARES          INTEGER  NOT NULL PRIMARY KEY, 
+    CODE_WARES          INTEGER  NOT NULL,-- PRIMARY KEY, 
     CODE_GROUP          INTEGER  NOT NULL,
     NAME_WARES          TEXT     NOT NULL,
     NAME_WARES_RECEIPT  TEXT,
@@ -598,14 +617,14 @@ CREATE TABLE WARES (
 --    NAME_WARES_BRAND    TEXT,
 --    ARTICL_WARES_BRAND  TEXT,
     CODE_UNIT           INTEGER  NOT NULL,
-    OLD_WARES           TEXT     NOT NULL,
+--    OLD_WARES           TEXT     NOT NULL,
     DESCRIPTION         TEXT,
 --    SIGN_1              NUMBER,
 --    SIGN_2              NUMBER,
 --    SIGN_3              NUMBER,
 --    OLD_ARTICL          TEXT,
     Percent_Vat         NUMBER   NOT NULL,
-    Type_VAT            TEXT     NOT NULL,
+    Type_VAT            TEXT     NOT NULL
 --    OFF_STOCK_METHOD    TEXT     NOT NULL,
 
 --    CODE_WARES_RELATIVE INTEGER,
@@ -616,13 +635,13 @@ CREATE TABLE WARES (
 );
 
 CREATE TABLE ADDITION_UNIT (
-    CODE_WARES    INTEGER NOT NULL PRIMARY KEY,
-    CODE_UNIT     INTEGER NOT NULL PRIMARY KEY,
+    CODE_WARES    INTEGER NOT NULL ,
+    CODE_UNIT     INTEGER NOT NULL ,
     COEFFICIENT   NUMBER  NOT NULL,
     DEFAULT_UNIT  TEXT    NOT NULL,
 --    SIGN_ACTIVITY TEXT    NOT NULL,
     WEIGHT        NUMBER,
-    WEIGHT_NET    NUMBER  NOT NULL
+    WEIGHT_NET    NUMBER
 );
 
 CREATE TABLE BAR_CODE (
@@ -632,8 +651,8 @@ CREATE TABLE BAR_CODE (
 );
 
 CREATE TABLE PRICE (
-    CODE_DEALER  INTEGER NOT NULL PRIMARY KEY,
-    CODE_WARES   INTEGER NOT NULL PRIMARY KEY,
+    CODE_DEALER  INTEGER NOT NULL ,
+    CODE_WARES   INTEGER NOT NULL ,
     PRICE_DEALER NUMBER  NOT NULL
 );
 
@@ -657,27 +676,42 @@ CREATE TABLE CLIENT (
     view_code INTEGER
 );
 
+CREATE TABLE FAST_GROUP
+(
+ CODE_UP       INTEGER  NOT NULL,
+ Code_Fast_Group INTEGER  NOT NULL,
+ Name TEXT
+);
+
+CREATE TABLE FAST_WARES
+(
+ Code_Fast_Group       INTEGER  NOT NULL,
+ Code_WARES     NOT NULL
+);
 
 [SqlCreateMIDIndex]
 
 CREATE UNIQUE INDEX UNIT_DIMENSION_ID ON UNIT_DIMENSION ( CODE_UNIT );
 CREATE UNIQUE INDEX WARES_ID ON WARES ( CODE_WARES,CODE_UNIT );
-CREATE UNIQUE INDEX ADDITION_UNIT_ID ON UNIT_DIMENSION ( CODE_WARES,CODE_UNIT );
+CREATE UNIQUE INDEX ADDITION_UNIT_ID ON ADDITION_UNIT ( CODE_WARES,CODE_UNIT );
 CREATE UNIQUE INDEX BAR_CODE_ID ON BAR_CODE ( BAR_CODE);
 CREATE UNIQUE INDEX BAR_CODE_W_BC ON BAR_CODE ( CODE_WARES,BAR_CODE);
 
 CREATE UNIQUE INDEX TYPE_DISCOUNT_ID ON TYPE_DISCOUNT ( TYPE_DISCOUNT );
 CREATE UNIQUE INDEX CLIENT_ID ON CLIENT ( CODE_CLIENT );
-CREATE UNIQUE INDEX PRICE_ID ON PRICE ( CODE_DEALER, CODE_WARES )
+CREATE UNIQUE INDEX PRICE_ID ON PRICE ( CODE_DEALER, CODE_WARES );
+
+CREATE INDEX FAST_GROUP_ID ON FAST_GROUP ( CODE_UP,Code_Fast_Group);
+CREATE UNIQUE INDEX FAST_WARES_ID ON FAST_WARES ( Code_Fast_Group,Code_WARES);
 
 [SqlReplaceUnitDimension]
 replace into UNIT_DIMENSION ( CODE_UNIT, NAME_UNIT, ABR_UNIT) values (@CodeUnit, @NameUnit,@AbrUnit);
 [SqlReplaceWares]
- replace into  Wares (CODE_WARES,CODE_GROUP,NAME_WARES,NAME_WARES_RECEIPT, ARTICL,CODE_BRAND, CODE_UNIT, DESCRIPTION, Percent_Vat,Type_VAT)
-              values (@CodeWares,@CodeGroup,@NameWares,@NameWaresReceipt, @Articl,@CodeBrand,@CodeUnit, @Description, @PercentVat,@TypeVat)
+replace into  Wares (CODE_WARES,CODE_GROUP,NAME_WARES, ARTICL,CODE_BRAND, CODE_UNIT, Percent_Vat,Type_VAT,NAME_WARES_RECEIPT, DESCRIPTION)
+             values (@CodeWares,@CodeGroup,@NameWares, @Articl,@CodeBrand,@CodeUnit, @PercentVat, @TypeVat,@NameWaresReceipt, @Description);
 [SqlReplaceAdditionUnit]
-replace into  Wares (CODE_WARES, CODE_UNIT, COEFFICIENT, DEFAULT_UNIT, WEIGHT, WEIGHT_NET )
-              Addition_Unit (@CodeWares,@CodeUnit,@Coefficient, @DefaultUnit, @Weight, @WeightNet);
+replace into  Addition_Unit (CODE_WARES, CODE_UNIT, COEFFICIENT, DEFAULT_UNIT, WEIGHT, WEIGHT_NET )
+              values (@CodeWares,@CodeUnit,@Coefficient, @DefaultUnit, @Weight, @WeightNet);
 [SqlReplaceBarCode]
 replace into  Bar_Code (CODE_WARES,CODE_UNIT,BAR_CODE) values (@CodeWares,@CodeUnit,@BarCode);
 [SqlReplacePrice]
@@ -685,7 +719,14 @@ replace into PRICE (CODE_DEALER, CODE_WARES, PRICE_DEALER) values (@CodeDealer,@
 [SqlReplaceTypeDiscount]
 replace into TYPE_DISCOUNT (TYPE_DISCOUNT,NAME,PERCENT_DISCOUNT) values (@CodeTypeDiscount,@Name,@PercentDiscount);
 [SqlReplaceClient]
-replace into CLIENT (CODE,NAME,TYPE_DISCOUNT,PHONE, PERCENT_DISCOUNT,BARCODE,STATUS_CARD,view_code) values (@CodeClient ,@NameClient ,@TypeDiscount,@MainPhone,@PersentDiscount,@BarCode,@StatusCard,@ViewCode);
+replace into CLIENT (CODE_CLIENT,NAME_CLIENT,TYPE_DISCOUNT,PHONE, PERCENT_DISCOUNT,BARCODE,STATUS_CARD,view_code) values (@CodeClient ,@NameClient ,@TypeDiscount,@MainPhone,@PersentDiscount,@BarCode,@StatusCard,@ViewCode);
+
+[SqlReplaceFastGroup]
+replace into FAST_GROUP ( Code_Fast_Group, CODE_UP, Name) values (@CodeUp,@CodeFastGroup,@Name);
+
+[SqlReplaceFastWares]
+replace into FAST_WARES ( Code_Fast_Group, Code_wares) values (@CodeFastGroup,@CodeWares);
+
 
 [SqlGetDimUnitDimension]
 [SqlGetDimWares]

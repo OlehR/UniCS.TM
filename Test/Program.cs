@@ -3,6 +3,7 @@ using ModernIntegration;
 using SharedLib;
 using System;
 using System.IO;
+using Microsoft.Extensions.Configuration;
 
 namespace Test
 {
@@ -10,12 +11,24 @@ namespace Test
     {
         static void Main(string[] args)
         {
+            var c = new Config();
+            CreateDataBase();
+            //TestReceipt();
+
+        }
+
+        static void CreateDataBase()
+        {
             
 
             var MsSQL = new WDB_MsSql();
-         
+
             DateTime varD = DateTime.Today;
-            string varMidFile = GlobalVar.PathDB + @"MID_" + varD.ToString("yyyyMMdd") + ".db";
+            string varMidFile = GlobalVar.PathDB + @"MID.db"; /*_" + varD.ToString("yyyyMMdd") + "*/
+            if (File.Exists(varMidFile))
+                File.Delete(varMidFile);
+
+
             var SQLite = new WDB_SQLite(varMidFile);
             SQLite.CreateMIDTable();
 
@@ -23,33 +36,32 @@ namespace Test
             SQLite.CreateMIDIndex();
 
             return;
-            
-           
+
         }
-        static void Test()
+        static void TestReceipt()
         {
             var TerminalId = Guid.NewGuid();
-            var ProductId = Guid.Parse("00000010-abcd-0000-0019-000000194748");
-            var ReceiptId = Guid.Parse("00140701-FFFF-2019-0618-000000000008");
+            var ProductId = Guid.Parse("00000010-abcd-0000-0019-000000055004");
+            Guid.Parse("00140701-FFFF-2019-0618-000000000008");
             var api = new ApiPSU();
 
             var Bl = new BL();
             //      var r=api.GetReceiptItem(new ModelMID.IdReceipt {CodePeriod=20190614,CodeReceipt=1,IdWorkplace= 140701});
-            var res = api.AddProductByBarCode(TerminalId, "1376000062218");
-            res = api.AddProductByBarCode(TerminalId, "1376000062218");
+            var res = api.AddProductByBarCode(TerminalId, "4823037501403");
+                res = api.AddProductByBarCode(TerminalId, "9062300108665");
+                res = api.AddProductByProductId(TerminalId, ProductId, 10);
+                var Rec= api.ChangeQuantity(TerminalId, ProductId, 7);
 
-            // res=api.AddProductByProductId (TerminalId, Guid.Parse("1A3B944E-3632-467B-A53A-000000194748"),10);
+            var f = api.GetProductsByName("апель");
+            var ReceiptId = Rec.Id;
+            var r =api.AddFiscalNumber(ReceiptId, "TRRF-1234");
 
-            // api.ChangeQuantity(TerminalId, ProductId, 7);
+            var rr = api.GetReciept(ReceiptId);
 
-
-            //var r=api.AddFiscalNumber(ReceiptId, "TRRF-1234");
-
-            // var rr = api.GetReciept( ReceiptId);
-            // var client = api.GetCustomerByBarCode("5550000923502");
+            var client = api.GetCustomerByBarCode(TerminalId, "8800000499710");
             //0959330766
-            //var client = api.GetCustomerByPhone("0959330766");
-            //var f = api.GetProductsByName("апель");
+             client = api.GetCustomerByPhone(TerminalId,"0959330766");
+            
         }
     }
 }

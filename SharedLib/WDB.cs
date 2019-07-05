@@ -10,6 +10,7 @@ using System.Data;
 using System.Collections;
 using ModelMID;
 using System.Collections.Generic;
+using ModelMID.DB;
 
 //using DatabaseLib; // тимчасово для ParametersCollection
 namespace SharedLib
@@ -145,6 +146,9 @@ namespace SharedLib
         protected string SqlGetDimPrice = @"";
         protected string SqlGetDimTypeDiscount = @"";
         protected string SqlGetDimClient = @"";
+        protected string SqlReplaceFastGroup = @"";
+        protected string SqlReplaceFastWares = @"";
+
         /*		public WDB(CallWriteLogSQL parCallWriteLogSQL=null)
                 {
                     this.varCallWriteLogSQL=parCallWriteLogSQL;
@@ -517,7 +521,8 @@ namespace SharedLib
             SqlGetDimPrice = GetSQL("SqlGetDimPrice");
             SqlGetDimTypeDiscount = GetSQL("SqlGetDimTypeDiscount");
             SqlGetDimClient = GetSQL("SqlGetDimClient");
-
+            SqlReplaceFastGroup = GetSQL("SqlReplaceFastGroup");
+            SqlReplaceFastWares = GetSQL("SqlReplaceFastWares");
             return true;
         }
 		
@@ -581,13 +586,14 @@ namespace SharedLib
 
 
         public virtual bool ReplaceUnitDimension(IEnumerable<UnitDimension> parData) { return true; }
-        public virtual bool ReplaceWares(IEnumerable<ReceiptWares> parData) { return true; }
+        public virtual bool ReplaceWares(IEnumerable<Wares> parData) { return true; }
         public virtual bool ReplaceAdditionUnit(IEnumerable<AdditionUnit> parData) { return true; }
         public virtual bool ReplaceBarCode(IEnumerable<Barcode> parData) { return true; }
         public virtual bool ReplacePrice(IEnumerable<Price> parData) { return true; }
         public virtual bool ReplaceTypeDiscount(IEnumerable<TypeDiscount> parData) { return true; }
         public virtual bool ReplaceClient(IEnumerable<Client> parData) { return true; }
-
+        public virtual bool ReplaceFastGroup(IEnumerable<FastGroup> parData)   { return true; }
+        public virtual bool ReplaceFastWares(IEnumerable<FastWares> parData) { return true; }
     }
 
 }

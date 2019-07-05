@@ -88,7 +88,11 @@ namespace ModelMID
         /// Шлях до SqlLite бази
         /// </summary>
         public static string PathDB = @"c:\mid\";
-
+        
+        /// <summary>
+        /// Текуча директорія
+        /// </summary>
+        public static string PathCur = @"c:\mid\";
         /// <summary>
         /// Шлях до папки, в яку пиcати LOG
         /// </summary>
@@ -97,7 +101,7 @@ namespace ModelMID
         /// <summary>
         /// Шлях до MID.ini та Key.map
         /// </summary>
-        public static string PathIni = @"c:\WORK\CS\UniCS.TM\SharedLib\";
+        public static string PathIni = @"D:\WORK\CS\UniCS.TM\SharedLib\";
 
         //public static Language Language = Language.uk_UA;
         //public static string 

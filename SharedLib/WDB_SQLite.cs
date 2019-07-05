@@ -5,6 +5,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using ModelMID;
+using ModelMID.DB;
 
 namespace SharedLib
 {
@@ -28,6 +29,8 @@ namespace SharedLib
             string varReceiptFile = GlobalVar.PathDB + varD.ToString("yyyyMM") + @"\Rc_" + GlobalVar.IdWorkPlace.ToString() + "_" + varD.ToString("yyyyMMdd") + ".db";
             if (!File.Exists(varReceiptFile))
             {
+                if (!Directory.Exists(GlobalVar.PathDB + varD.ToString("yyyyMM")))
+                    Directory.CreateDirectory(GlobalVar.PathDB + varD.ToString("yyyyMM"));
                 //Створюємо щоденну табличку з чеками.
                 this.db = new SQLite(varReceiptFile);
                 this.db.ExecuteNonQuery(SqlCreateReceiptTable);
@@ -91,56 +94,69 @@ namespace SharedLib
 			return this.db.ExecuteScalar<object,T>(this.SqlConfig,new {NameVar=parStr});
 		
 		}
-		
 
-		public override RezultFind FindData( string parStr,TypeFind parTypeFind = TypeFind.All)			
-		{   
-			RezultFind varRezult;
-			varRezult.Count=0;
-			string varStr =parStr.Trim();
-			Int64 varNumber = 0;
-			Int64.TryParse(varStr, out varNumber);
-			this.db.ExecuteNonQuery("delete from T$1");			
-			// Шукаемо Товар
-			varRezult.TypeFind=TypeFind.Wares;
-			if (varNumber>0)
-			{
-				if(varStr.Length>= GlobalVar.MinLenghtBarCodeWares)
-				{//Шукаємо по штрихкоду
-					this.db.ExecuteNonQuery(this.SqlFindWaresBar+varStr);
-				}else//Шукаемо по коду
-				{ if(GlobalVar.TypeFindWares<2)
-						this.db.ExecuteNonQuery(this.SqlFindWaresCode+varStr);
-				}
-			} else // Шукаємо по назві
-			{
-				if(GlobalVar.TypeFindWares == 0)//Можна шукати по назві
-					this.db.ExecuteNonQuery(SqlFindWaresName+"'%"+varStr.ToUpper().Replace(" ","%")+"%'");
-			}
-			varRezult.Count=this.GetCountT1();
-			
-			if( varRezult.Count>0) return varRezult;//Знайшли товар
-			// ШукаемоКлієнта
-			varRezult.TypeFind=TypeFind.Client;
-			if(varNumber>0)
-			{
-				if(varStr.Length>= GlobalVar.MinLenghtBarCodeClient)
-				{//Шукаємо по штрихкоду
-                    
-					this.db.ExecuteNonQuery(SqlFindClientBar, new { CodeBar = varStr });
-					
-				} else
-					if(GlobalVar.TypeFindClient<2)
-				{                    
-					this.db.ExecuteNonQuery<object>(SqlFindClientCode,new { CodePrivat= varStr });
-				}
-			}
-			else // Пошук по назві
-			{
-				if(GlobalVar.TypeFindClient == 0)//Можна шукати по назві
-					this.db.ExecuteNonQuery(SqlFindClientName+"'%"+varStr.Replace(" ","%")+"%'");
 
-			}
+        public override RezultFind FindData(string parStr, TypeFind parTypeFind = TypeFind.All)
+        {
+            RezultFind varRezult;
+            varRezult.Count = 0;
+            varRezult.TypeFind = TypeFind.All;
+            string varStr = parStr.Trim();
+            Int64 varNumber = 0;
+            Int64.TryParse(varStr, out varNumber);
+            this.db.ExecuteNonQuery("delete from T$1");
+            // Шукаемо Товар
+
+            if (parTypeFind != TypeFind.Client)
+            {
+                varRezult.TypeFind = TypeFind.Wares;
+                if (varNumber > 0)
+                {
+                    if (varStr.Length >= GlobalVar.MinLenghtBarCodeWares)
+                    {//Шукаємо по штрихкоду
+                        this.db.ExecuteNonQuery(this.SqlFindWaresBar, new { BarCode = varStr });
+                    }
+                    else//Шукаемо по коду
+                    {
+                        if (GlobalVar.TypeFindWares < 2)
+                            this.db.ExecuteNonQuery(this.SqlFindWaresCode + varStr);
+                    }
+                }
+                else // Шукаємо по назві
+                {
+                    if (GlobalVar.TypeFindWares == 0)//Можна шукати по назві
+                        this.db.ExecuteNonQuery(SqlFindWaresName + "'%" + varStr.ToUpper().Replace(" ", "%") + "%'");
+                }
+                varRezult.Count = this.GetCountT1();
+
+                if (varRezult.Count > 0) return varRezult;//Знайшли товар
+            }
+            // ШукаемоКлієнта
+
+            if (parTypeFind != TypeFind.Wares)
+            {
+                varRezult.TypeFind = TypeFind.Client;
+                if (varNumber > 0)
+                {
+                    if (varStr.Length >= GlobalVar.MinLenghtBarCodeClient)
+                    {//Шукаємо по штрихкоду
+
+                        this.db.ExecuteNonQuery(SqlFindClientBar, new { BarCode = varStr });
+
+                    }
+                    else
+                        if (GlobalVar.TypeFindClient < 2)
+                    {
+                        this.db.ExecuteNonQuery<object>(SqlFindClientCode, new { CodePrivat = varStr });
+                    }
+                }
+                else // Пошук по назві
+                {
+                    if (GlobalVar.TypeFindClient == 0)//Можна шукати по назві
+                        this.db.ExecuteNonQuery(SqlFindClientName + "'%" + varStr.Replace(" ", "%") + "%'");
+
+                }
+            }
 			varRezult.Count=this.GetCountT1();
 
 			if( varRezult.Count==0) 
@@ -167,7 +183,7 @@ namespace SharedLib
         // Повертає знайдений товар/товари
         public override IEnumerable<ReceiptWares> FindWares(decimal parDiscount=0)
 		{
-            return this.db.Execute<object, ReceiptWares>(SqlFoundWares,new { Discount= parDiscount });
+            return this.db.Execute<object, ReceiptWares>(SqlFoundWares,new { Discount= parDiscount, @CodeDealer =2 });
 		}
 		// Повертає знайдені Одиниці по товару.
 /*		public override System.Data.DataTable UnitWares(int parCodeWares)
@@ -401,14 +417,14 @@ namespace SharedLib
             db.BulkExecuteNonQuery<UnitDimension>(SqlReplaceUnitDimension, parData);
             return true;
         }
-        public override bool ReplaceWares(IEnumerable<ReceiptWares> parData)
+        public override bool ReplaceWares(IEnumerable<Wares> parData)
         {
-            db.BulkExecuteNonQuery<ReceiptWares>(SqlReplaceWares, parData);
+            db.BulkExecuteNonQuery<Wares>(SqlReplaceWares, parData);
             return true;
         }
         public override bool ReplaceAdditionUnit(IEnumerable<AdditionUnit> parData)
         {
-            db.BulkExecuteNonQuery<AdditionUnit>(SqlReplaceWares, parData);
+            db.BulkExecuteNonQuery<AdditionUnit>(SqlReplaceAdditionUnit, parData);
             return true;
         }
         public override bool ReplaceBarCode(IEnumerable<Barcode> parData)
@@ -429,6 +445,17 @@ namespace SharedLib
         public override bool ReplaceClient(IEnumerable<Client> parData)
         {
             db.BulkExecuteNonQuery<Client>(SqlReplaceClient, parData);
+            return true;
+        }
+
+        public override bool ReplaceFastGroup(IEnumerable<FastGroup> parData)
+        {
+            db.BulkExecuteNonQuery<FastGroup>(SqlReplaceFastGroup, parData);
+            return true;
+        }
+        public override bool ReplaceFastWares(IEnumerable<FastWares> parData)
+        {
+            db.BulkExecuteNonQuery<FastWares>(SqlReplaceFastWares, parData);
             return true;
         }
 
