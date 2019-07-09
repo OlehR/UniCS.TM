@@ -10,13 +10,13 @@ namespace SharedLib
 {
 /* */
 
-    public class MSSQL
+    public class MSSQL:SQL
     {
         SqlConnection connection = null;
         IDbTransaction transaction = null;
 
-        public TypeCommit TypeCommit { get; set; }
-        public MSSQL(String varConectionString= "Server=SQLSRV1;Database=DW;Trusted_Connection=True;")
+        //public TypeCommit TypeCommit { get; set; }
+        public MSSQL(String varConectionString= "Server=SQLSRV1;Database=DW;Trusted_Connection=True;"):base(varConectionString)
         {            
             connection = new SqlConnection(varConectionString);
             connection.Open();
@@ -24,39 +24,35 @@ namespace SharedLib
         }
 
 
-        public void Close()
-        {
 
-        }
-
-        public IEnumerable<T1> Execute<T, T1>(string query, T parameters)
+        public override IEnumerable<T1> Execute<T, T1>(string query, T parameters)
         {
             return connection.Query<T1>(query, parameters);
         }
 
-        public IEnumerable<T1> Execute<T1>(string query)
+        public override IEnumerable<T1> Execute<T1>(string query)
         {
             return connection.Query<T1>(query);
         }
 
-        public void BeginTransaction()
+        public override void BeginTransaction()
         {
             //transaction = connection.BeginTransaction();
         }
 
-        public void CommitTransaction()
+        public override void CommitTransaction()
         {
            // transaction.Commit();
         }
 
-        public int ExecuteNonQuery<T>(string parQuery, T Parameters)
+        public override int ExecuteNonQuery<T>(string parQuery, T Parameters)
         {
             if (TypeCommit == TypeCommit.Auto)
                 return connection.Execute(parQuery, Parameters);
             else
                 return connection.Execute(parQuery, Parameters, transaction);
         }
-        public int ExecuteNonQuery(string parQuery)
+        public override int ExecuteNonQuery(string parQuery)
         {
             if (TypeCommit == TypeCommit.Auto)
                 return connection.Execute(parQuery);
@@ -64,17 +60,17 @@ namespace SharedLib
                 return connection.Execute(parQuery, null, transaction);
         }
 
-        public T1 ExecuteScalar<T1>(string query)
+        public override T1 ExecuteScalar<T1>(string query)
         {
             return connection.ExecuteScalar<T1>(query);
         }
 
-        public T1 ExecuteScalar<T, T1>(string query, T parameters)
+        public override T1 ExecuteScalar<T, T1>(string query, T parameters)
         {
             return connection.ExecuteScalar<T1>(query, parameters);
         }
 
-        public int BulkExecuteNonQuery<T>(string parQuery, IEnumerable<T> Parameters)
+        public override int BulkExecuteNonQuery<T>(string parQuery, IEnumerable<T> Parameters)
         {
             BeginTransaction();
             try
