@@ -400,14 +400,6 @@ namespace SharedLib
 			return (this.db.ExecuteNonQuery(SqlCopyWaresReturnReceipt, parIdReceipt) ==0);
 		}
 
-        public override IEnumerable<FastGroup> GetFastGroup(int parIdWorkplace)
-        {
-            return db.Execute<FastGroup>(SqlGetFastGroup);
-        }
-        public override IEnumerable<ReceiptWares> GetFastWares(int parCodeFastGroup)
-        {
-            return db.Execute<ReceiptWares>(SqlGetFastWares);
-        }
 
         public override bool CreateMIDTable()
         {
