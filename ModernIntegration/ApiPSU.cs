@@ -8,21 +8,22 @@ using SharedLib;
 using ModelMID;
 using System.Linq;
 using Receipt = ModernIntegration.Models.Receipt;
+using ModelMID.DB;
 
 namespace ModernIntegration
 {
-    public class ApiPSU:Api
+    public class ApiPSU : Api
     {
         BL Bl;
-        Dictionary<Guid, ModelMID.IdReceipt> Receipts = new Dictionary <Guid,ModelMID.IdReceipt>();
+        Dictionary<Guid, ModelMID.IdReceipt> Receipts = new Dictionary<Guid, ModelMID.IdReceipt>();
         public ApiPSU()
         {
             Bl = new BL();
         }
         public override ProductViewModel AddProductByBarCode(Guid parTerminalId, string parBarCode)
-        {      
-            var CurReceipt = GetCurrentReceiptByTerminalId(parTerminalId);            
-            var RW=Bl.AddWaresBarCode(CurReceipt, parBarCode);
+        {
+            var CurReceipt = GetCurrentReceiptByTerminalId(parTerminalId);
+            var RW = Bl.AddWaresBarCode(CurReceipt, parBarCode);
             return GetProductViewModel(RW);
         }
         public override ProductViewModel AddProductByProductId(Guid parTerminalId, Guid parProductId, decimal parQuantity = 0)
@@ -48,7 +49,7 @@ namespace ModernIntegration
             var Res = GetReceiptViewModel(new IdReceipt(parReceipt));
             return Res;
         }
-        public override bool AddPayment( Guid parReceiptId,  ReceiptPayment[] parPayment) {  return false; }
+        public override bool AddPayment(Guid parReceiptId, ReceiptPayment[] parPayment) { return false; }
         public override bool AddFiscalNumber(Guid parReceiptId, string parFiscalNumber)
         {
             var receiptId = new IdReceipt(parReceiptId);
@@ -67,17 +68,33 @@ namespace ModernIntegration
 
         public override List<ProductCategory> GetAllCategories(Guid parTerminalId)
         {
-            return null;
+            var Res = new List<ProductCategory>();
+            var ct = 9;//TMP!!! Треба брати з налаштувань.
+            var wr = Bl.db.GetFastGroup(ct);
+            if (wr != null)
+                foreach (var el in wr)
+                    Res.Add(GetProductCategory(el));
+            return Res;
         }
-        public override List<ProductCategory> GetCategoriesByParentId(Guid parTerminalId, Guid categoryId) { return null; }
-        public override List<ProductViewModel> GetProductsByCategoryId(Guid parTerminalId, Guid categoryId)
+        public override List<ProductCategory> GetCategoriesByParentId(Guid parTerminalId, Guid categoryId)
         {
             return null;
+
+        }
+        public override List<ProductViewModel> GetProductsByCategoryId(Guid parTerminalId, Guid categoryId)
+        {
+            var Res = new List<ProductViewModel>();
+            var ct = new FastGroup { FastGroupId = categoryId };
+            var wr = Bl.db.GetWaresFromFastGroup(ct.CodeFastGroup);
+            if (wr != null)
+                foreach (var el in wr)
+                    Res.Add(GetProductViewModel(el));
+            return Res;
         }
         public override List<ProductViewModel> GetProductsByName(string parName)
         {
             var Res = new List<ProductViewModel>();
-            var wr=Bl.GetProductsByName(parName);
+            var wr = Bl.GetProductsByName(parName);
             if (wr != null)
                 foreach (var el in wr)
                     Res.Add(GetProductViewModel(el));
@@ -91,7 +108,7 @@ namespace ModernIntegration
         public override CustomerViewModel GetCustomerByBarCode(Guid parTerminalId, string parS)
         {
             var CM = Bl.GetClientByBarCode(parS);
-            return GetCustomerViewModelByClient(CM);           
+            return GetCustomerViewModelByClient(CM);
         }
         public override CustomerViewModel GetCustomerByPhone(Guid parTerminalId, string parPhone)
         {
@@ -210,10 +227,33 @@ namespace ModernIntegration
                 Id = parClient.ClientId,
                 CustomerId = parClient.CodeClient.ToString(),
                 Name = parClient.NameClient,
-                DiscountPercent = Convert.ToDouble( parClient.PersentDiscount),
-                LoyaltyPoints = Convert.ToDouble( parClient.SumBonus),
+                DiscountPercent = Convert.ToDouble(parClient.PersentDiscount),
+                LoyaltyPoints = Convert.ToDouble(parClient.SumBonus),
                 LoyaltyPointsTotal = Convert.ToDouble(parClient.SumMoneyBonus)
             };
+        }
+
+
+        private ProductCategory GetProductCategory(FastGroup parFG)
+        {
+            if (parFG == null)
+                return null;
+            var Parrent = new FastGroup { CodeFastGroup = parFG.CodeUp };
+
+            return new ProductCategory
+            {
+                Id = parFG.FastGroupId,
+                ParentId = Parrent.FastGroupId,
+                Name = parFG.Name,
+                Language = null,
+                CustomId = null,
+                Description = parFG.Name,
+                Image = "",
+                HasChildren = false,
+                HasProducts = true,
+                Tags = null
+            };
+
         }
 
     }

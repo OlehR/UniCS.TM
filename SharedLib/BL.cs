@@ -9,7 +9,7 @@ namespace SharedLib
 
     public class BL
     {
-        private WDB_SQLite db;
+        public WDB_SQLite db;
         public BL()
         {
             db = new WDB_SQLite();
@@ -171,5 +171,7 @@ namespace SharedLib
             //db.AddReceipt
         }
 
-    }
+ 
+
+}
 }

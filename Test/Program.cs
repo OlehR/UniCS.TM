@@ -12,8 +12,8 @@ namespace Test
         static void Main(string[] args)
         {
             var c = new Config();
-            CreateDataBase();
-            //TestReceipt();
+            //CreateDataBase();
+            TestReceipt();
 
         }
 
@@ -42,10 +42,13 @@ namespace Test
         {
             var TerminalId = Guid.NewGuid();
             var ProductId = Guid.Parse("00000010-abcd-0000-0019-000000055004");
-            Guid.Parse("00140701-FFFF-2019-0618-000000000008");
+            var FastGroup =Guid.Parse("12345670-0987-0000-0000-000000009001");
+            //Guid.Parse("00140701-FFFF-2019-0618-000000000008");
             var api = new ApiPSU();
-
             var Bl = new BL();
+
+            var Cat = api.GetAllCategories(TerminalId);
+            var war = api.GetProductsByCategoryId(TerminalId,FastGroup);
             //      var r=api.GetReceiptItem(new ModelMID.IdReceipt {CodePeriod=20190614,CodeReceipt=1,IdWorkplace= 140701});
             var res = api.AddProductByBarCode(TerminalId, "4823037501403");
                 res = api.AddProductByBarCode(TerminalId, "9062300108665");

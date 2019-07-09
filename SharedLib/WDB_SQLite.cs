@@ -459,5 +459,17 @@ namespace SharedLib
             return true;
         }
 
+        public override IEnumerable<ReceiptWares> GetWaresFromFastGroup(int parCodeFastGroup)
+        {
+            db.ExecuteNonQuery(SqlGetWaresFromFastGroup, new { CodeFastGroup= parCodeFastGroup });
+            return FindWares(0);
+        }
+
+        public override IEnumerable<FastGroup> GetFastGroup(int parCodeUpFastGroup)
+        {
+            var FG = new FastGroup { CodeUp = parCodeUpFastGroup };
+            return db.Execute<FastGroup,FastGroup>(SqlGetFastGroup, FG); ;
+        }
+
     }
 }

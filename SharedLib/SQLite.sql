@@ -592,6 +592,13 @@ select @IdWorkplaceReturn,@CodePeriodReturn,@CodeReceiptReturn,code_wares,code_u
 from   rrc.wares_receipt wr where wr.id_workplace=@IdWorkplace and wr.code_period=@CodePeriod  and wr.code_receipt=@CodeReceipt;
 update rc.receipt set CODE_PATTERN=2  where id_workplace=@IdWorkplaceReturn and code_period=@CodePeriodReturn  and code_receipt=@CodeReceiptReturn;
 
+[SqlGetWaresFromFastGroup]
+insert into T$1 (id_1)
+select code_wares from FAST_WARES where code_fast_group=@CodeFastGroup;
+
+[SqlGetFastGroup]
+select code_up as CodeUp,CODE_FAST_GROUP as CodeFastGroup,NAME  from FAST_GROUP where code_up=@CodeUp
+
 [SqlCreateMIDTable]
 
 CREATE TABLE UNIT_DIMENSION (
@@ -722,7 +729,7 @@ replace into TYPE_DISCOUNT (TYPE_DISCOUNT,NAME,PERCENT_DISCOUNT) values (@CodeTy
 replace into CLIENT (CODE_CLIENT,NAME_CLIENT,TYPE_DISCOUNT,PHONE, PERCENT_DISCOUNT,BARCODE,STATUS_CARD,view_code) values (@CodeClient ,@NameClient ,@TypeDiscount,@MainPhone,@PersentDiscount,@BarCode,@StatusCard,@ViewCode);
 
 [SqlReplaceFastGroup]
-replace into FAST_GROUP ( Code_Fast_Group, CODE_UP, Name) values (@CodeUp,@CodeFastGroup,@Name);
+replace into FAST_GROUP ( CODE_UP,Code_Fast_Group, Name) values (@CodeUp,@CodeFastGroup,@Name);
 
 [SqlReplaceFastWares]
 replace into FAST_WARES ( Code_Fast_Group, Code_wares) values (@CodeFastGroup,@CodeWares);
