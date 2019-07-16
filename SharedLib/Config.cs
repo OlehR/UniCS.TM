@@ -20,7 +20,7 @@ namespace SharedLib
             GlobalVar.PathCur = AppConfiguration["MID:PathData"];
             if(string.IsNullOrWhiteSpace(GlobalVar.PathCur) )
                 GlobalVar.PathCur = CurDir;
-            GlobalVar.PathDB = Path.Combine(GlobalVar.PathCur, @"DB");
+            GlobalVar.PathDB = Path.Combine(GlobalVar.PathCur, @"DB\");
 
             GlobalVar.PathIni = AppConfiguration["MID:PathIni"];
             if (string.IsNullOrWhiteSpace(GlobalVar.PathIni))

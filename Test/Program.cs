@@ -24,7 +24,7 @@ namespace Test
             var MsSQL = new WDB_MsSql();
 
             DateTime varD = DateTime.Today;
-            string varMidFile = GlobalVar.PathDB + @"MID.db"; /*_" + varD.ToString("yyyyMMdd") + "*/
+            string varMidFile = Path.Combine( GlobalVar.PathDB , @"MID.db"); /*_" + varD.ToString("yyyyMMdd") + "*/
             if (File.Exists(varMidFile))
                 File.Delete(varMidFile);
 

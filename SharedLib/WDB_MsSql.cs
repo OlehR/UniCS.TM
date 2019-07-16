@@ -32,7 +32,7 @@ namespace SharedLib
             var UD = db.Execute<UnitDimension>(SqlGetDimUnitDimension);
             parDB.ReplaceUnitDimension(UD);
             UD = null;
-
+            
             var GW = db.Execute<GroupWares>(SqlGetDimGroupWares);
             parDB.ReplaceGroupWares(GW);
             GW = null;
