@@ -21,14 +21,14 @@ namespace SharedLib
         /// 
         /// </summary>
         /// <param name="parCallWriteLogSQL"></param>
-        public WDB_SQLite(string parConnect = "") : base(GlobalVar.PathIni + @"SQLite.sql")
+        public WDB_SQLite(string parConnect = "") : base(Path.Combine(GlobalVar.PathIni, "SQLite.sql") )
         {
             varVersion = "SQLite.0.0.1";
             InitSQL();
             DateTime varD = DateTime.Today;
-            string varReceiptFile = GlobalVar.PathDB + varD.ToString("yyyyMM") + @"\Rc_" + GlobalVar.IdWorkPlace.ToString() + "_" + varD.ToString("yyyyMMdd") + ".db";
+            string varReceiptFile = Path.Combine(GlobalVar.PathDB, varD.ToString("yyyyMM") + @"\Rc_" + GlobalVar.IdWorkPlace.ToString() + "_" + varD.ToString("yyyyMMdd") + ".db");
             if (!File.Exists(varReceiptFile))
-            {
+            {                
                 if (!Directory.Exists(GlobalVar.PathDB + varD.ToString("yyyyMM")))
                     Directory.CreateDirectory(GlobalVar.PathDB + varD.ToString("yyyyMM"));
                 //Створюємо щоденну табличку з чеками.
@@ -38,7 +38,7 @@ namespace SharedLib
                 
             }
 
-            db = new SQLite(string.IsNullOrEmpty(parConnect) ? GlobalVar.PathDB + @"MID.db" : parConnect);//,"",this.varCallWriteLogSQL);
+            db = new SQLite(string.IsNullOrEmpty(parConnect) ? Path.Combine(GlobalVar.PathDB,  @"MID.db") : parConnect);//,"",this.varCallWriteLogSQL);
                                                                   //this.db.ExecuteNonQuery("ATTACH ':memory:' AS m");
             db.ExecuteNonQuery(this.SqlCreateT);
             db.ExecuteNonQuery("ATTACH '" + varReceiptFile + "' AS rc");

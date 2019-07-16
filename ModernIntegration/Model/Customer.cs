@@ -37,18 +37,24 @@ namespace ModernIntegration.Models
         /// </value>
         public double DiscountPercent { get; set; }
         /// <summary>
-        /// Gets or sets the loyalty points.
+        /// Gets or sets the bonuses.
         /// </summary>
         /// <value>
-        /// The loyalty points.
+        /// The bonuses.
         /// </value>
-        public double LoyaltyPoints { get; set; }
+        public decimal Bonuses { get; set; }
         /// <summary>
-        /// Gets or sets the loyalty points total.
+        /// Gets or sets the wallet balance.
         /// </summary>
         /// <value>
-        /// The loyalty points total.
+        /// The wallet balance.
         /// </value>
-        public double LoyaltyPointsTotal { get; set; }
+        public decimal Wallet { get; set; }
+
+        /// <summary>
+        /// Gets or sets the phone number.
+        /// </summary>
+        /// <value>The phone number.</value>
+        public string PhoneNumber { get; set; }
     }
 }

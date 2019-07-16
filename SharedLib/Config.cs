@@ -20,7 +20,7 @@ namespace SharedLib
             GlobalVar.PathCur = AppConfiguration["MID:PathData"];
             if(string.IsNullOrEmpty(GlobalVar.PathCur) )
                 GlobalVar.PathCur = CurDir;
-            GlobalVar.PathDB = GlobalVar.PathCur+ @"\DB\";
+            GlobalVar.PathDB = Path.Combine(GlobalVar.PathCur, @"\DB\");
 
             //GlobalVar.DefaultCodeDealer = Convert.ToInt32(AppConfiguration["MID:DefaultCodeDealer"]);
             if(!Directory.Exists(GlobalVar.PathDB))

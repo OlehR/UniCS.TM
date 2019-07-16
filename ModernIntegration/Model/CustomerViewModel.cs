@@ -42,14 +42,19 @@ namespace ModernIntegration.ViewModels
         /// <value>
         /// The loyalty points.
         /// </value>
-        public double LoyaltyPoints { get; set; }
+        public decimal Bonuses { get; set; }
         /// <summary>
         /// Gets or sets the loyalty points total.
         /// </summary>
         /// <value>
         /// The loyalty points total.
         /// </value>
-        public double LoyaltyPointsTotal { get; set; }
+        public decimal Wallet { get; set; }
+        /// <summary>
+        /// Gets or sets the phone number.
+        /// </summary>
+        /// <value>The phone number.</value>
+        public string PhoneNumber { get; set; }
         /// <summary>
         /// Initializes a new instance of the <see cref="CustomerViewModel"/> class.
         /// </summary>
@@ -60,8 +65,9 @@ namespace ModernIntegration.ViewModels
             CustomerId = customer.CardNumber;
             Name = customer.FullName;
             DiscountPercent = customer.DiscountPercent;
-            LoyaltyPoints = customer.LoyaltyPoints;
-            LoyaltyPointsTotal = customer.LoyaltyPointsTotal;
+            Bonuses = customer.Bonuses;
+            Wallet = customer.Wallet;
+            PhoneNumber = customer.PhoneNumber;
         }
 
         public CustomerViewModel()
@@ -74,13 +80,28 @@ namespace ModernIntegration.ViewModels
         /// <returns></returns>
         public Customer ToCustomer()
         {
-            return new Customer()
+            return new Customer
             {
                 CardNumber = CustomerId,
                 FullName = Name,
                 DiscountPercent = DiscountPercent,
-                LoyaltyPoints = LoyaltyPoints,
-                LoyaltyPointsTotal = LoyaltyPointsTotal
+                Bonuses = Bonuses,
+                Wallet = Wallet,
+                PhoneNumber = PhoneNumber
+            };
+        }
+
+        public CustomerViewModel Clone()
+        {
+            return new CustomerViewModel
+            {
+                Id = Id,
+                CustomerId = CustomerId,
+                DiscountPercent = DiscountPercent,
+                Bonuses = Bonuses,
+                Wallet = Wallet,
+                Name = Name,
+                PhoneNumber = PhoneNumber
             };
         }
     }

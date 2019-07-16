@@ -24,6 +24,7 @@ namespace SharedLib
     {
 
         public SQL db;
+        protected Hashtable keySQL = new Hashtable();
 
         /*public delegate void CallWriteLogSQL(string parQvery, ParametersCollection parParameters = null);
         /// <summary>
@@ -119,12 +120,10 @@ namespace SharedLib
         protected string SqlListPS = @"";
         protected string SqlUpdatePrice = @"";
 
-        protected Hashtable keySQL = new Hashtable();
-
-        protected string SqlGetLastUseCodeEkka = @"";
+/*        protected string SqlGetLastUseCodeEkka = @"";
         protected string SqlAddWaresEkka = @"";
         protected string SqlDeleteWaresEkka = @"";
-        protected string SqlGetCodeEKKA = @"";
+        protected string SqlGetCodeEKKA = @"";*/
 
         protected string SqlTranslation = @"";
         protected string SqlFieldInfo = @"";
@@ -200,11 +199,12 @@ namespace SharedLib
 			return null;
 		}*/
 
+/*
 		public virtual DataTable RightOfAccess (int parCodeUser)
 		{
 			return null;
 		}
-		
+*/		
 		/// <summary>
 		/// Шукає дані по строці вводу. Результат в тимчасову табличку.
 		/// </summary>
@@ -249,27 +249,28 @@ namespace SharedLib
             return new RezultFind() { Count = 0, TypeFind = TypeFind.Client };
         }
 
+        /*
+                /// <summary>
+                /// Повертає Одиниці по товару
+                /// </summary>
+                /// <param name="parCodeWares">Код товару</param>
+                /// <returns>
+                ///Повертає DataTable з одиницями виміру
+                ///</returns>
+                public virtual System.Data.DataTable UnitWares(int parCodeWares)
+                {
+                    return null;;
+                }
+                */
 
         /// <summary>
-        /// Повертає Одиниці по товару
+        /// Повертає знайденого клієнта(клієнтів)
         /// </summary>
         /// <param name="parCodeWares">Код товару</param>
         /// <returns>
-        ///Повертає DataTable з одиницями виміру
+        ///Повертає  IEnumerable<Client> з клієнтами
         ///</returns>
-        public virtual System.Data.DataTable UnitWares(int parCodeWares)
-		{
-			return null;;
-		}
-		
-		/// <summary>
-		/// Повертає знайденого клієнта(клієнтів)
-		/// </summary>
-		/// <param name="parCodeWares">Код товару</param>
-		/// <returns>
-		///Повертає DataTable з клієнтами
-		///</returns>
-		public virtual IEnumerable<Client> FindClient()
+        public virtual IEnumerable<Client> FindClient()
 		{
             return this.db.Execute<Client>(SqlFoundClient);
         }
@@ -390,12 +391,13 @@ namespace SharedLib
             return this.db.ExecuteNonQuery(SqlAddLog) == 0;
         }
 */
-		
+
+/*		
 		public virtual System.Data.DataRow GetPrice(int parCodeDealer, int parCodeWares, decimal parDiscount)
 		{
 			return null;
 		}
-		
+		*/
 		protected bool ReadSQL(String iniPath)
 		{
 			TextReader iniFile = null;
@@ -508,10 +510,11 @@ namespace SharedLib
             SqlPrepareLockFilterT4 = GetSQL("SqlPrepareLockFilterT4");
             SqlPrepareLockFilterT5 = GetSQL("SqlPrepareLockFilterT5");
             SqlListPS = GetSQL("SqlListPS");
-            SqlGetLastUseCodeEkka = GetSQL("SqlGetLastUseCodeEkka");
+/*            SqlGetLastUseCodeEkka = GetSQL("SqlGetLastUseCodeEkka");
             SqlAddWaresEkka = GetSQL("SqlAddWaresEkka");
             SqlDeleteWaresEkka = GetSQL("SqlDeleteWaresEkka");
             SqlGetCodeEKKA = GetSQL("SqlGetCodeEKKA");
+*/
             SqlTranslation = GetSQL("SqlTranslation");
             SqlFieldInfo = GetSQL("SqlFieldInfo");
             SqlGetAllPermissions = GetSQL("SqlGetAllPermissions");
