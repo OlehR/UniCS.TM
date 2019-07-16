@@ -132,6 +132,7 @@ namespace SharedLib
         protected string SqlCopyWaresReturnReceipt = @"";
 
         protected string SqlReplaceUnitDimension= @"";
+        protected string SqlReplaceGroupWares = @"";
         protected string SqlReplaceWares= @"";
         protected string SqlReplaceAdditionUnit= @"";
         protected string SqlReplaceBarCode= @"";
@@ -144,6 +145,7 @@ namespace SharedLib
 
 
         protected string SqlGetDimUnitDimension = @"";
+        protected string SqlGetDimGroupWares = @"";
         protected string SqlGetDimWares = @"";
         protected string SqlGetDimAdditionUnit = @"";
         protected string SqlGetDimBarCode = @"";
@@ -522,6 +524,7 @@ namespace SharedLib
             SqlCopyWaresReturnReceipt = GetSQL("SqlCopyWaresReturnReceipt");
 
             SqlReplaceUnitDimension = GetSQL("SqlReplaceUnitDimension");
+            SqlReplaceGroupWares = GetSQL("SqlReplaceGroupWares");
             SqlReplaceWares = GetSQL("SqlReplaceWares");
             SqlReplaceAdditionUnit = GetSQL("SqlReplaceAdditionUnit");
             SqlReplaceBarCode = GetSQL("SqlReplaceBarCode");
@@ -532,6 +535,8 @@ namespace SharedLib
             SqlGetFastGroup = GetSQL("SqlGetFastGroup");
 
             SqlGetDimUnitDimension = GetSQL("SqlGetDimUnitDimension");
+           
+            SqlGetDimGroupWares = GetSQL("SqlGetDimGroupWares");
             SqlGetDimWares = GetSQL("SqlGetDimWares");
             SqlGetDimAdditionUnit = GetSQL("SqlGetDimAdditionUnit");
             SqlGetDimBarCode = GetSQL("SqlGetDimBarCode");
@@ -637,6 +642,13 @@ namespace SharedLib
             db.BulkExecuteNonQuery<UnitDimension>(SqlReplaceUnitDimension, parData);
             return true;
         }
+
+        public virtual bool ReplaceGroupWares(IEnumerable<GroupWares> parData)
+        {
+            db.BulkExecuteNonQuery<GroupWares>(SqlReplaceGroupWares, parData);
+            return true;
+        }
+
         public virtual bool ReplaceWares(IEnumerable<Wares> parData)
         {
             db.BulkExecuteNonQuery<Wares>(SqlReplaceWares, parData);
