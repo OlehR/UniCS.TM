@@ -26,11 +26,12 @@ namespace SharedLib
             varVersion = "SQLite.0.0.1";
             InitSQL();
             DateTime varD = DateTime.Today;
-            string varReceiptFile = Path.Combine(GlobalVar.PathDB, varD.ToString("yyyyMM") + @"\Rc_" + GlobalVar.IdWorkPlace.ToString() + "_" + varD.ToString("yyyyMMdd") + ".db");
+            string varReceiptFile = Path.Combine(GlobalVar.PathDB,$"{varD:yyyyMM}" ,$"Rc_{GlobalVar.IdWorkPlace}_{varD:yyyyMMdd}.db");
             if (!File.Exists(varReceiptFile))
-            {                
-                if (!Directory.Exists(GlobalVar.PathDB + varD.ToString("yyyyMM")))
-                    Directory.CreateDirectory(GlobalVar.PathDB + varD.ToString("yyyyMM"));
+            {
+                var receiptFilePath = Path.GetDirectoryName(varReceiptFile);
+                if (!Directory.Exists(receiptFilePath))
+                    Directory.CreateDirectory(receiptFilePath);
                 //Створюємо щоденну табличку з чеками.
                 db = new SQLite(varReceiptFile);
                 db.ExecuteNonQuery(SqlCreateReceiptTable);

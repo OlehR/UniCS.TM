@@ -17,4 +17,13 @@
     <ProjectReference Include="..\ModelMID\ModelMID.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="MSSql.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SQLite.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

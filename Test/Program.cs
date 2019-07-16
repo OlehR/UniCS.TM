@@ -11,7 +11,7 @@ namespace Test
     {
         static void Main(string[] args)
         {
-            var c = new Config();
+            var c = new Config("appsettings.json");
             CreateDataBase();
             TestReceipt();
 //            var o = new SharedLib.Oracle();

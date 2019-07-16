@@ -19,7 +19,7 @@ namespace SharedLib
         /// 
         /// </summary>
         /// <param name="parCallWriteLogSQL"></param>
-        public WDB_MsSql() : base(GlobalVar.PathIni + @"MsSql.sql")
+        public WDB_MsSql() : base(Path.Combine(GlobalVar.PathIni, @"MsSql.sql"))
         {
             varVersion = "WDB_MsSql.0.0.1";
             db = new MSSQL();//,"",this.varCallWriteLogSQL); 
