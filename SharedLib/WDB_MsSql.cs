@@ -28,6 +28,14 @@ namespace SharedLib
 	
         public bool LoadData(WDB parDB)
         {
+            string SQL;
+
+            SQL = GetSQL("SqlGetPromotionSaleDealer");
+
+            var PSP = db.Execute<PromotionSaleDealer>(SQL);
+            parDB.ReplacePromotionSaleDealer(PSP);
+            PSP = null;
+
 
             var UD = db.Execute<UnitDimension>(SqlGetDimUnitDimension);
             parDB.ReplaceUnitDimension(UD);
@@ -58,7 +66,7 @@ namespace SharedLib
             parDB.ReplaceClient(Cl);
             Cl = null;
 
-            var SQL = GetSQL("SqlGetDimFastGroup");
+            SQL = GetSQL("SqlGetDimFastGroup");
             var FG = db.Execute<FastGroup>(SQL);
             parDB.ReplaceFastGroup(FG);
             FG = null;
@@ -67,6 +75,9 @@ namespace SharedLib
             var FW = db.Execute<FastWares>(SQL);
             parDB.ReplaceFastWares(FW);
             FW = null;
+
+
+            
 
             return true;
         }

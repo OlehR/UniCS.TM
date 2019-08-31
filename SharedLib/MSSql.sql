@@ -1,119 +1,5 @@
 ﻿[SqlBegin]
 /*
-[SqlConfig]
-
-[SqlInitGlobalVar]
-
-[SqlCreateT]
-
-[SqlInsertT1]
-
-[SqlClearT1]
-
-[SqlDelete]
-
-
-[SqlFindWaresBar]
-                 
-[SqlFindWaresCode]
-
-[SqlFindWaresName]
-
-[SqlFindClientBar]
-
-[SqlFindClientPhone]
-       
-[SqlFindClientCode]
-       
-[SqlFindClientName]
-       
-[SqlFoundClient]
-			
-[SqlFoundWares]
-
-[SqlAdditionUnit]
-
-[SqlViewReceipt]
-
-[SqlViewReceiptWares]
-
-[SqlAddReceipt]
- 
-[SqlUpdateClient]
-
-[SqlCloseReceipt]
-
-[SqlAddWares]
-
-[SqlRecalcHeadReceipt]
-
-[SqlGetCountWares]
-
-[SqlUpdateQuantityWares]
-                     
-[SqlDeleteWaresReceipt]
-                     
-[SqlMoveMoney]
-
-[SqlAddZ]
-
-[SqlAddLog]
-
-[SqlGetNewCodeReceipt]
-
-[SqlInsertGenWorkPlace]
-
-[SqlSelectGenWorkPlace]
-
-[SqlUpdateGenWorkPlace]
-
-[SqlLogin]
-
-[SqlGetPrice]
-
-[SqlPrepareLockFilterT1]
-
-[SqlPrepareLockFilterT2]
-
-[SqlPrepareLockFilterT3]
-      
-[SqlPrepareLockFilterT4] 
-
-[SqlPrepareLockFilterT5]
-      
-[SqlListPS]      
-      
-[SqlUpdatePrice]
-
-[SqlGetLastUseCodeEkka]
-
-[SqlAddWaresEkka]
-
-[SqlDeleteWaresEkka]
-
-[SqlGetCodeEKKA]
-
-[SqlTranslation]
-
-[SqlFieldInfo]
-
-[SqlCreateReceiptTable]
-
-[SqlGetPermissions]
-
-[SqlCopyWaresReturnReceipt]
-
-[SqlCreateMIDTable]
-
-[SqlCreateMIDIndex]
-
-[SqlReplaceUnitDimension]
-[SqlReplaceWares]
-[SqlReplaceAdditionUnit]
-[SqlReplaceBarCode]
-[SqlReplacePrice]
-[SqlReplaceTypeDiscount]
-[SqlReplaceClient]
 
 [SqlGetDimUnitDimension]
 SELECT ud.code_unit AS CodeUnit, ud.name_unit AS NameUnit, ud.abr_unit  AbrUnit FROM UNIT_DIMENSION ud 
@@ -171,6 +57,159 @@ SELECT DC.code_card as CodeClient ,DC.name as NameClient ,TD.TYPE_DISCOUNT  AS T
   JOIN dw.dbo.Wares w1 ON w.Wares_RRef=w1._IDRRef
     WHERE wh.Code=9;
 
+[SqlGetPromotionSaleDealer]
+SELECT 9000000000+CONVERT( INT,YEAR(dpg.date_time)*100000+dpg.number) AS CodePS,   CONVERT(INT,dn.code) AS CodeWares, pg.date_beg AS DateBegin,pg.date_end AS DateEnd,CONVERT(INT,tp.code) AS CodeDealer
+  FROM  dbo.V1C_reg_promotion_gal pg
+  JOIN V1C_doc_promotion_gal dpg ON pg.doc_RRef = dpg.doc_RRef
+  JOIN dbo.V1C_dim_nomen dn ON pg.nomen_RRef=dn.IDRRef
+  JOIN dbo.V1C_dim_type_price tp ON pg.price_type_RRef=tp.type_price_RRef
+--  JOIN dw.dbo.WAREHOUSES wh ON pg.Warehouse_RRef=wh._IDRRef
+  where pg.date_end>GETDATE()
+--AND dpg.doc_RRef IS null
+AND pg.subdivision_RRef=0x9078001517DE370411DFFDEC4389A931;
+
+[SqlGetPromotionSale]
+SELECT  
+--dp._IDRRef
+--,dp.version
+--  ,dp.year_doc
+  CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
+  ,dp.comment AS NamePS
+  ,1 AS CodePattern
+  ,9 AS State
+--,dp.user_id 
+  ,dp.d_begin as DateBegin
+  ,dp.d_end  AS DateEnd
+--  ,dp.is_all_nomen 
+--  ,dp.is_all_warehouse
+--  ,dp.type_ex_value
+--  ,dp.number_ex_value
+--  ,dp.type_Reference_ex_value
+--  ,dp.RRef_ex_value
+--  ,dp.time_begin
+--  ,dp.time_end
+  ,1 AS Type
+  ,0 AS TypeData
+  ,1 AS Priority
+  ,dp.mim_money AS SumOrder
+--  ,dp.[percent]
+--  ,dp.kind_promotion
+--  ,dp.is_day_of_week
+--  ,dp.is_operate_in_promotion
+--  ,dp.is_exclusion_nomen
+  ,0 AS TypeWorkCoupon
+  ,NULL AS BarCodeCoupon
+    FROM DW.dbo.V1C_doc_promotion dp 
+  WHERE dp.d_end>getdate()
+UNION ALL 
+SELECT DISTINCT 
+  9000000000+CONVERT( INT,YEAR(dpg.date_time)*100000+dpg.number) AS CodePS
+ ,dpg.comment AS NamePS
+ ,1 AS CodePattern
+ ,9 AS State
+ ,pg.date_beg AS DateBegin
+ ,pg.date_end AS DateEnd
+  ,1 AS Type
+  ,0 AS TypeData
+  ,1 AS Priority
+  , 0.00 AS SumOrder
+  ,0 AS TypeWorkCoupon
+  ,NULL AS BarCodeCoupon
+
+  FROM  dbo.V1C_reg_promotion_gal pg
+  JOIN V1C_doc_promotion_gal dpg ON pg.doc_RRef = dpg.doc_RRef
+  where pg.date_end>GETDATE()
+--AND dpg.doc_RRef IS null
+AND pg.subdivision_RRef=0x9078001517DE370411DFFDEC4389A931;
+
+[SqlGetPromotionSaleFilter]
+SELECT  --Склади дії
+    CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
+    ,1 AS CodeFilter
+    ,50 AS TypeGroupFilter 
+    ,1 AS RuleGroupFilter
+    ,0 AS CodeProporty
+    ,0 AS CodeChoice 
+    ,CONVERT(NUMERIC ,dw.code) as Data --AS CodeWarehouse
+    ,CONVERT(NUMERIC,NULL) AS DataEnd
+    FROM DW.dbo.V1C_doc_promotion_warehouse pw
+    JOIN DW.dbo.V1C_dim_warehouse dw ON dw.warehouse_RRef=pw.warehouse_RRef
+    JOIN DW.dbo.V1C_doc_promotion dp ON dp._IDRRef=pw.doc_promotion_RRef
+  WHERE dp.d_end>getdate()
+  
+UNION all
+SELECT 
+   CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
+    ,1 AS CodeFilter
+    ,CASE WHEN  dn.is_leaf=1 THEN 11 ELSE 15 end  AS TypeGroupFilter
+    ,1 AS RuleGroupFilter
+    ,0 AS CodeProporty
+    ,0 AS CodeChoice 
+    ,CONVERT(INT,dn.code) as Data --AS CodeWarehouse
+  --,dn.[desc]
+  -- pn.doc_promotion_RRef, MIN(pn.[percent]), MAX(pn.[percent])
+    ,CONVERT(NUMERIC,NULL) AS DataEnd
+  FROM DW.dbo.V1C_doc_promotion_nomen pn
+  JOIN dw.dbo.V1C_dim_nomen dn ON pn.nomen_RRef=dn.IDRRef
+  JOIN DW.dbo.V1C_doc_promotion dp ON dp._IDRRef=pn.doc_promotion_RRef
+  WHERE dp.d_end>getdate()
+--AND dn.is_leaf=0
+UNION all
+  SELECT --Заборонені товари
+   CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
+    ,1 AS CodeFilter
+    ,CASE WHEN  dn.is_leaf=1 THEN 11 ELSE 15 end  AS TypeGroupFilter
+    ,-1 AS RuleGroupFilter
+    ,0 AS CodeProporty
+    ,0 AS CodeChoice 
+    ,CONVERT(INT,dn.code) as Data --AS CodeWarehouse
+  --,dn.[desc]
+  -- pn.doc_promotion_RRef, MIN(pn.[percent]), MAX(pn.[percent])
+    ,CONVERT(NUMERIC,NULL) AS DataEnd
+  FROM DW.dbo.V1C_doc_promotion_exclusion_nomen pn
+  JOIN dw.dbo.V1C_dim_nomen dn ON pn.nomen_RRef=dn.IDRRef
+  JOIN DW.dbo.V1C_doc_promotion dp ON dp._IDRRef=pn.doc_promotion_RRef
+  WHERE dp.d_end>getdate()
+--AND dn.is_leaf=0
+
+union all
+
+
+SELECT --День в Тижні
+     CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
+    ,1 AS CodeFilter
+    ,26  AS TypeGroupFilter --День в Тижні
+    ,1 AS RuleGroupFilter
+    ,0 AS CodeProporty
+    ,0 AS CodeChoice 
+ ,CASE 
+  WHEN day_of_week_IDRRef=0x8932ACD3624D708D45AFF1CB425BB270 THEN 1
+  WHEN day_of_week_IDRRef=0xA997253D3C4BF1EE4CAB43089DB28C0D THEN 2
+  WHEN day_of_week_IDRRef=0xA2F169DD99A51F404BCE8A44A004E518 THEN 3
+  WHEN day_of_week_IDRRef=0xBB29773BCFFBD82B44FC0CBC79246930 THEN 4
+  WHEN day_of_week_IDRRef=0x87DAABD485B84805464586F6354539BA THEN 5
+  WHEN day_of_week_IDRRef=0xB60DA28ADEF9AB684615408D548FE772 THEN 6
+  WHEN day_of_week_IDRRef=0xA5F7227211F4F2FD44883340ED1D5F61 THEN 7
+END 
+  ,CONVERT(NUMERIC,NULL) AS DataEnd
+  FROM   DW.dbo.V1C_doc_promotion_day_of_week pw
+  JOIN DW.dbo.V1C_doc_promotion dp ON dp._IDRRef=pw.doc_promotion_RRef
+  --WHERE  doc_promotion_RRef=0x81320050569E814D11E9A86DBEBF29CB --time_end ='01.01.2001 02:00:00.000'
+UNION all
+SELECT --Час
+     CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
+    ,1 AS CodeFilter
+    ,22  AS TypeGroupFilter --Час
+    ,1 AS RuleGroupFilter
+    ,0 AS CodeProporty
+    ,0 AS CodeChoice 
+    ,min(DATEPART(HOUR,pw.time_begin)*100+DATEPART(MINUTE,pw.time_begin)) AS Data
+  ,MAX(DATEPART(HOUR,pw.time_end)*100+DATEPART(MINUTE,pw.time_end)) AS DataEnd
+  FROM   DW.dbo.V1C_doc_promotion_day_of_week pw
+  JOIN DW.dbo.V1C_doc_promotion dp ON dp._IDRRef=pw.doc_promotion_RRef
+  WHERE dp.d_end>getdate()
+  GROUP BY pw.doc_promotion_RRef, SUBSTRING(dp.comment,1,100),dp.number,dp.year_doc
+  --HAVING MAX(pw.time_begin)<>MIN( pw.time_begin)   OR   MAX(pw.time_end)<>MIN( pw.time_end)
 
 [SqlEnd]
 */

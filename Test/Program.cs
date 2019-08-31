@@ -13,7 +13,7 @@ namespace Test
         {
             var c = new Config("appsettings.json");
             CreateDataBase();
-            TestReceipt();
+            //TestReceipt();
 //            var o = new SharedLib.Oracle();
             //var r =  o.Execute<ReceiptWares>("select w.code_wares CodeWares,w.name_wares as NameWares from dw.wares w where w.code_wares in (54882,54883)");
 

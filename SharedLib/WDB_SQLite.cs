@@ -187,6 +187,7 @@ namespace SharedLib
             db.ExecuteNonQuery(SqlCreateMIDIndex);
             return true;
         }
+
         
         public override IEnumerable<ReceiptWares> GetWaresFromFastGroup(int parCodeFastGroup)
         {

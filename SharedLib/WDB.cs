@@ -154,6 +154,14 @@ namespace SharedLib
         protected string SqlGetDimClient = @"";
         protected string SqlReplaceFastGroup = @"";
         protected string SqlReplaceFastWares = @"";
+
+        protected string SqlReplacePromotionSale = @"";
+        protected string SqlReplacePromotionSaleData = @"";
+        protected string SqlReplacePromotionSaleFilter = @"";
+        protected string SqlReplacePromotionSaleGiff = @"";
+        protected string SqlReplacePromotionSaleDealer = @"";
+        
+
         public WDB(string parFileSQL)
         {
             this.ReadSQL(parFileSQL);
@@ -545,6 +553,14 @@ namespace SharedLib
             SqlGetDimClient = GetSQL("SqlGetDimClient");
             SqlReplaceFastGroup = GetSQL("SqlReplaceFastGroup");
             SqlReplaceFastWares = GetSQL("SqlReplaceFastWares");
+            SqlReplacePromotionSale = GetSQL("SqlReplacePromotionSale");
+            SqlReplacePromotionSaleData = GetSQL("SqlReplacePromotionSaleData");
+            SqlReplacePromotionSaleFilter = GetSQL("SqlReplacePromotionSaleFilter");
+            SqlReplacePromotionSaleGiff = GetSQL("SqlReplacePromotionSaleGiff");
+            SqlReplacePromotionSaleDealer = GetSQL("SqlReplacePromotionSaleDealer");
+
+
+
             return true;
         }
 
@@ -690,6 +706,38 @@ namespace SharedLib
             db.BulkExecuteNonQuery<FastWares>(SqlReplaceFastWares, parData);
             return true;
         }
+
+        public virtual bool ReplacePromotionSale(IEnumerable<PromotionSale> parData)
+        {
+            db.BulkExecuteNonQuery<PromotionSale>(SqlReplacePromotionSale, parData);
+            return true;
+        }
+
+        public virtual bool ReplacePromotionSaleData(IEnumerable<PromotionSaleData> parData)
+        {
+            db.BulkExecuteNonQuery<PromotionSaleData>(SqlReplacePromotionSaleData, parData);
+            return true;
+        }
+
+        public virtual bool ReplacePromotionFilter(IEnumerable<PromotionSaleFilter> parData)
+        {
+            db.BulkExecuteNonQuery<PromotionSaleFilter>(SqlReplacePromotionSale, parData);
+            return true;
+        }
+
+/*        public virtual bool ReplacePromotionGiff(IEnumerable<PromotionGiff> parData)
+        {
+            db.BulkExecuteNonQuery<PromotionGiff>(SqlReplacePromotionGiff, parData);
+            return true;
+        }*/
+
+
+        public virtual bool ReplacePromotionSaleDealer(IEnumerable<PromotionSaleDealer> parData)
+        {
+            db.BulkExecuteNonQuery<PromotionSaleDealer>(SqlReplacePromotionSaleDealer, parData);
+            return true;
+        }
+
 
         public virtual IEnumerable<ReceiptWares> GetWaresFromFastGroup(int parCodeFastGroup)   { return null; }
         public virtual IEnumerable<FastGroup> GetFastGroup(int parCodeUpFastGroup)

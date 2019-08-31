@@ -65,4 +65,27 @@ namespace ModelMID
         Auto,
         Manual
     }
+
+    public enum StatePromotionSale
+    {
+        Completed=1,
+        Prepare =0,
+        Prepared=1,
+        Ready=9
+    }
+
+    public enum TypeWorkCoupon
+    {
+        WithOutCoupon=0, // без купона, 
+        All=1,  //на всі товари, 
+        Coupon=2 //тільки на товар зчитаний перед купоном.
+    }
+    public enum RuleGroup
+    {
+        Not=-1,
+        Or=0,
+        And=1
+    }
+        
+
 }

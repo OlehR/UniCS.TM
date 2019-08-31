@@ -462,6 +462,22 @@ select * from TRANSLATION tr where tr.LANGUAGE = @Language
 [SqlFieldInfo]
 select * from FIELD_INFO
 
+[SqlFillQuickGroup]
+WITH RECURSIVE
+	  GW_cte(CODE_GROUP_WARES,CODE_PARENT_GROUP_WARES,NAME) AS (
+
+	    SELECT CODE_GROUP_WARES,CODE_PARENT_GROUP_WARES,NAME
+	        FROM GROUP_WARES
+	        WHERE CODE_PARENT_GROUP_WARES=@CodeGroupWares
+	    UNION ALL
+	        SELECT x.CODE_GROUP_WARES,x.CODE_PARENT_GROUP_WARES,x.NAME
+	            FROM GROUP_WARES AS x
+	            INNER JOIN GW_cte AS y ON (x.CODE_PARENT_GROUP_WARES=y.CODE_GROUP_WARES)
+	  )
+	SELECT CODE_GROUP_WARES,CODE_PARENT_GROUP_WARES,NAME
+	    FROM GW_cte;
+
+
 [SqlCreateReceiptTable]
 CREATE TABLE RECEIPT (
     ID_WORKPLACE      INTEGER  NOT NULL,
@@ -705,7 +721,7 @@ CREATE TABLE FAST_WARES
 CREATE TABLE PROMOTION_SALE (
     CODE_PS          INTEGER  NOT NULL,
     NAME_PS          TEXT     NOT NULL,
-    CODE_PARENT      INTEGER,
+    CODE_PATTERN      INTEGER,
     STATE            INTEGER  NOT NULL,
     DATE_BEGIN       DATETIME,
     DATE_END         DATETIME,
@@ -715,8 +731,8 @@ CREATE TABLE PROMOTION_SALE (
     SUM_ORDER        NUMBER   NOT NULL,
     TYPE_WORK_COUPON INTEGER  NOT NULL,
     BAR_CODE_COUPON  TEXT,
-    DATE_CREATE      DATETIME NOT NULL,
-    USER_CREATE      INTEGER  NOT NULL
+    DATE_CREATE      DATETIME,
+    USER_CREATE      INTEGER
 );
 
 CREATE TABLE PROMOTION_SALE_DATA (
@@ -728,8 +744,8 @@ CREATE TABLE PROMOTION_SALE_DATA (
     ADDITIONAL_CONDITION      INTEGER  NOT NULL,
     DATA                      NUMBER   NOT NULL,
     DATA_ADDITIONAL_CONDITION NUMBER   NOT NULL,
-    DATE_CREATE               DATETIME NOT NULL,
-    USER_CREATE               INTEGER  NOT NULL
+    DATE_CREATE               DATETIME,
+    USER_CREATE               INTEGER
 );
 
 CREATE TABLE PROMOTION_SALE_FILTER (
@@ -738,9 +754,11 @@ CREATE TABLE PROMOTION_SALE_FILTER (
     TYPE_GROUP_FILTER INTEGER  NOT NULL,
     RULE_GROUP_FILTER INTEGER  NOT NULL,
     CODE_PROPERTY     INTEGER  NOT NULL,
-    CODE_CHOICE       INTEGER  NOT NULL,
-    DATE_CREATE       DATETIME NOT NULL,
-    USER_CREATE       INTEGER  NOT NULL
+    CODE_CHOICE       INTEGER  NULL,
+	CODE_DATA		  INTEGER  NULL, 	
+	CODE_DATA_END     INTEGER  NULL, 	
+    DATE_CREATE       DATETIME,
+    USER_CREATE       INTEGER
 );
 
 CREATE TABLE PROMOTION_SALE_GIFT (
@@ -750,10 +768,17 @@ CREATE TABLE PROMOTION_SALE_GIFT (
     TYPE_DISCOUNT INTEGER  NOT NULL,
     DATA          NUMBER   NOT NULL,
     QUANTITY      NUMBER   NOT NULL,
-    DATE_CREATE   DATETIME NOT NULL,
-    USER_CREATE   INTEGER  NOT NULL
+    DATE_CREATE   DATETIME,
+    USER_CREATE   INTEGER
 );
 
+CREATE TABLE PROMOTION_SALE_DEALER (
+    CODE_PS       INTEGER  NOT NULL,
+    Code_Wares  INTEGER  NOT NULL,
+    DATE_BEGIN       DATETIME NOT NULL,
+    DATE_END         DATETIME NOT NULL,
+    Code_Dealer INTEGER NOT NULL    
+);
 
 [SqlCreateMIDIndex]
 
@@ -773,6 +798,8 @@ CREATE INDEX FAST_GROUP_ID ON FAST_GROUP ( CODE_UP,Code_Fast_Group);
 CREATE UNIQUE INDEX FAST_WARES_ID ON FAST_WARES ( Code_Fast_Group,Code_WARES);
 
 CREATE UNIQUE INDEX PROMOTION_SALE_ID ON PROMOTION_SALE ( CODE_PS);
+
+CREATE INDEX PROMOTION_SALE_DEALER_ID ON PROMOTION_SALE_DEALER (Code_Wares,DATE_BEGIN,DATE_END);
 
 [SqlReplaceUnitDimension]
 replace into UNIT_DIMENSION ( CODE_UNIT, NAME_UNIT, ABR_UNIT) values (@CodeUnit, @NameUnit,@AbrUnit);
@@ -800,6 +827,27 @@ replace into FAST_GROUP ( CODE_UP,Code_Fast_Group, Name) values (@CodeUp,@CodeFa
 [SqlReplaceFastWares]
 replace into FAST_WARES ( Code_Fast_Group, Code_wares) values (@CodeFastGroup,@CodeWares);
 
+
+[SqlReplacePromotionSale]
+replace into PROMOTION_SALE (CODE_PS, NAME_PS, CODE_PATTERN, STATE, DATE_BEGIN, DATE_END, TYPE, TYPE_DATA, PRIORITY, SUM_ORDER, TYPE_WORK_COUPON, BAR_CODE_COUPON, DATE_CREATE, USER_CREATE) values 
+							(@CodePS, @NamePs, @CodePattern,@State, @DateBegin, @DateEnd,@Type, @TypeData,@Priority, @SumOrder, @TypeWorkCoupon,  @BarCodeCoupon,  @DateCreate, @UserCreate);
+
+
+
+[SqlReplacePromotionSaleData]
+replace into PROMOTION_SALE_DATA (CODE_PS, NUMBER_GROUP, CODE_WARES, USE_INDICATIVE, TYPE_DISCOUNT,  ADDITIONAL_CONDITION, DATA , DATA_ADDITIONAL_CONDITION) 
+                          values (@CodePS, @NumberGroup, @CodeWares, @UseIndicative, @TypeDiscount,  @AdditionalCondition, @Data ,@DataAdditionalCondition)
+
+[SqlReplacePromotionSaleFilter]
+replace into PROMOTION_SALE_FILTER (CODE_PS, CODE_FILTER, TYPE_GROUP_FILTER, RULE_GROUP_FILTER, CODE_PROPERTY, CODE_CHOICE)
+                          values (@CodePS, CodeGroupFilter, TypeGroupFilter,RuleGroupFilter)
+
+ 
+[SqlReplacePromotionSaleGiff]
+
+
+[SqlReplacePromotionSaleDealer]
+replace into PROMOTION_SALE_DEALER ( CODE_PS,Code_Wares,DATE_BEGIN,DATE_END,Code_Dealer) values (@CodePS,@CodeWares,@DateBegin,@DateEnd,@CodeDealer);--@CodePS,@CodeWares,@DateBegin,@DateEnd,@CodeDealer
 
 [SqlGetDimUnitDimension]
 [SqlGetDimWares]
