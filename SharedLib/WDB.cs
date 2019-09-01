@@ -160,7 +160,8 @@ namespace SharedLib
         protected string SqlReplacePromotionSaleFilter = @"";
         protected string SqlReplacePromotionSaleGiff = @"";
         protected string SqlReplacePromotionSaleDealer = @"";
-        
+        protected string SqlReplacePromotionSaleGroupWares = @"";
+
 
         public WDB(string parFileSQL)
         {
@@ -558,6 +559,7 @@ namespace SharedLib
             SqlReplacePromotionSaleFilter = GetSQL("SqlReplacePromotionSaleFilter");
             SqlReplacePromotionSaleGiff = GetSQL("SqlReplacePromotionSaleGiff");
             SqlReplacePromotionSaleDealer = GetSQL("SqlReplacePromotionSaleDealer");
+            SqlReplacePromotionSaleGroupWares = GetSQL("SqlReplacePromotionSaleGroupWares");
 
 
 
@@ -719,9 +721,9 @@ namespace SharedLib
             return true;
         }
 
-        public virtual bool ReplacePromotionFilter(IEnumerable<PromotionSaleFilter> parData)
+        public virtual bool ReplacePromotionSaleFilter(IEnumerable<PromotionSaleFilter> parData)
         {
-            db.BulkExecuteNonQuery<PromotionSaleFilter>(SqlReplacePromotionSale, parData);
+            db.BulkExecuteNonQuery<PromotionSaleFilter>(SqlReplacePromotionSaleFilter, parData);
             return true;
         }
 
@@ -737,6 +739,13 @@ namespace SharedLib
             db.BulkExecuteNonQuery<PromotionSaleDealer>(SqlReplacePromotionSaleDealer, parData);
             return true;
         }
+
+        public virtual bool ReplacePromotionSaleGroupWares(IEnumerable<PromotionSaleGroupWares> parData)
+        {
+            db.BulkExecuteNonQuery<PromotionSaleGroupWares>(SqlReplacePromotionSaleGroupWares, parData);
+            return true;
+        }
+
 
 
         public virtual IEnumerable<ReceiptWares> GetWaresFromFastGroup(int parCodeFastGroup)   { return null; }

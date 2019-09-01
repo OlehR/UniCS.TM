@@ -16,7 +16,7 @@ namespace SharedLib
         IDbTransaction transaction = null;
 
         //public TypeCommit TypeCommit { get; set; }
-        public MSSQL(String varConectionString= "Server=SQLSRV1;Database=DW;Trusted_Connection=True;"):base(varConectionString)
+        public MSSQL(String varConectionString= @"Server=10.1.0.22;Database=DW;Uid=dwreader;Pwd=DW_Reader;"/* "Server=SQLSRV1;Database=DW;Trusted_Connection=True;"*/) :base(varConectionString)
         {            
             connection = new SqlConnection(varConectionString);
             connection.Open();

@@ -750,10 +750,10 @@ CREATE TABLE PROMOTION_SALE_DATA (
 
 CREATE TABLE PROMOTION_SALE_FILTER (
     CODE_PS           INTEGER  NOT NULL,
-    CODE_FILTER       INTEGER  NOT NULL,
+    CODE_GROUP_FILTER INTEGER  NOT NULL,	
     TYPE_GROUP_FILTER INTEGER  NOT NULL,
     RULE_GROUP_FILTER INTEGER  NOT NULL,
-    CODE_PROPERTY     INTEGER  NOT NULL,
+    CODE_PROPERTY     INTEGER  NULL,
     CODE_CHOICE       INTEGER  NULL,
 	CODE_DATA		  INTEGER  NULL, 	
 	CODE_DATA_END     INTEGER  NULL, 	
@@ -780,6 +780,11 @@ CREATE TABLE PROMOTION_SALE_DEALER (
     Code_Dealer INTEGER NOT NULL    
 );
 
+CREATE TABLE PROMOTION_SALE_GROUP_WARES (
+    CODE_GROUP_WARES_PS INTEGER  NOT NULL,
+    CODE_GROUP_WARES INTEGER  NOT NULL
+);
+
 [SqlCreateMIDIndex]
 
 CREATE UNIQUE INDEX UNIT_DIMENSION_ID ON UNIT_DIMENSION ( CODE_UNIT );
@@ -800,6 +805,8 @@ CREATE UNIQUE INDEX FAST_WARES_ID ON FAST_WARES ( Code_Fast_Group,Code_WARES);
 CREATE UNIQUE INDEX PROMOTION_SALE_ID ON PROMOTION_SALE ( CODE_PS);
 
 CREATE INDEX PROMOTION_SALE_DEALER_ID ON PROMOTION_SALE_DEALER (Code_Wares,DATE_BEGIN,DATE_END);
+
+CREATE UNIQUE INDEX PROMOTION_SALE_GROUP_WARES_ID ON PROMOTION_SALE_GROUP_WARES ( CODE_GROUP_WARES,CODE_GROUP_WARES_PS );
 
 [SqlReplaceUnitDimension]
 replace into UNIT_DIMENSION ( CODE_UNIT, NAME_UNIT, ABR_UNIT) values (@CodeUnit, @NameUnit,@AbrUnit);
@@ -839,8 +846,8 @@ replace into PROMOTION_SALE_DATA (CODE_PS, NUMBER_GROUP, CODE_WARES, USE_INDICAT
                           values (@CodePS, @NumberGroup, @CodeWares, @UseIndicative, @TypeDiscount,  @AdditionalCondition, @Data ,@DataAdditionalCondition)
 
 [SqlReplacePromotionSaleFilter]
-replace into PROMOTION_SALE_FILTER (CODE_PS, CODE_FILTER, TYPE_GROUP_FILTER, RULE_GROUP_FILTER, CODE_PROPERTY, CODE_CHOICE)
-                          values (@CodePS, CodeGroupFilter, TypeGroupFilter,RuleGroupFilter)
+replace into PROMOTION_SALE_FILTER (CODE_PS, CODE_GROUP_FILTER, TYPE_GROUP_FILTER, RULE_GROUP_FILTER, CODE_CHOICE, CODE_DATA, CODE_DATA_END)
+                          values (@CodePS, @CodeGroupFilter, @TypeGroupFilter,@RuleGroupFilter, @CodeChoice, @CodeData, @CodeDataEnd)
 
  
 [SqlReplacePromotionSaleGiff]
@@ -849,13 +856,9 @@ replace into PROMOTION_SALE_FILTER (CODE_PS, CODE_FILTER, TYPE_GROUP_FILTER, RUL
 [SqlReplacePromotionSaleDealer]
 replace into PROMOTION_SALE_DEALER ( CODE_PS,Code_Wares,DATE_BEGIN,DATE_END,Code_Dealer) values (@CodePS,@CodeWares,@DateBegin,@DateEnd,@CodeDealer);--@CodePS,@CodeWares,@DateBegin,@DateEnd,@CodeDealer
 
-[SqlGetDimUnitDimension]
-[SqlGetDimWares]
-[SqlGetAdditionUnit]
-[SqlGetDimBarCode]
-[SqlGetDimPrice]
-[SqlGetDimTypeDiscount]
-[SqlGetDimClient]
+[SqlReplacePromotionSaleGroupWares]
+replace into PROMOTION_SALE_GROUP_WARES (CODE_GROUP_WARES_PS ,CODE_GROUP_WARES) values (@CodeGroupWaresPS, @CodeGroupWares )
+
 
 [SqlEnd]
 */

@@ -24,12 +24,24 @@ SELECT tp.code AS CodeDealer, w.code_wares AS CodeWares, pd.price_dealer AS Pric
 SELECT TypePrice_RRef,nomen_RRef, price_dealer    ,ROW_NUMBER ( )   OVER ( PARTITION BY TypePrice_RRef, nomen_RRef   ORDER BY   _Period DESC) AS nn
   
   FROM dbo.V1C_REG_PRICE_DEALER 
-  WHERE TypePrice_RRef=0xB7A3001517DE370411DF7DD82E29EFF6
+  WHERE TypePrice_RRef in (0xB7A3001517DE370411DF7DD82E29EFF6,0xA481001E67079A7C11E18A1966EECFE6,0xA8D3001E67079A7C11E1907E920EFE12,0x9570001B78074DDF11E0F3315C137FE9)
   --WHERE nomen_characteristic_RRef=0x0
   )pd 
   JOIN dbo.wares w ON pd.nomen_RRef= w._IDRRef
   JOIN DW.dbo.V1C_dim_type_price tp ON  pd.TypePrice_RRef=tp.type_price_RRef
   WHERE nn=1
+   union all --Індикатив(Алкоголь)
+  SELECT -999999 AS CodeDealer, CONVERT(INT,dn.code) AS CodeWares, MAX(ip.min_price) AS PriceDealer
+    FROM dbo.V1C_dim_nomen dn 
+     JOIN dbo.V1C_dim_addition_unit au ON au.nomen_RRef=dn.IDRRef AND  uom_RRef_class_base=au.Unit_dimention_RRef
+     JOIN dbo.V1C_reg_obj_cat oc ON au.nomen_RRef=oc.doc_RRRef
+     JOIN dbo.V1C_reg_indicative_price ip ON ip.cat_RRef=oc.obj_cat_RRef AND au.capacity=ip.capacity
+    --WHERE dn.IDRRef=0x8F91000C29A0FC3111E5D6E02050D8C5 
+    GROUP BY dn.code
+    
+     
+
+
 [SqlGetDimTypeDiscount]
 SELECT  Type_discount AS CodeTypeDiscount,Name AS Name,Percent_discount AS PercentDiscount  FROM DW.dbo.V1C_DIM_TYPE_DISCOUNT
 [SqlGetDimClient]
@@ -130,8 +142,8 @@ SELECT  --Склади дії
     ,1 AS RuleGroupFilter
     ,0 AS CodeProporty
     ,0 AS CodeChoice 
-    ,CONVERT(NUMERIC ,dw.code) as Data --AS CodeWarehouse
-    ,CONVERT(NUMERIC,NULL) AS DataEnd
+    ,CONVERT(NUMERIC ,dw.code) as CodeData --AS CodeWarehouse
+    ,CONVERT(NUMERIC,NULL) AS CodeDataEnd
     FROM DW.dbo.V1C_doc_promotion_warehouse pw
     JOIN DW.dbo.V1C_dim_warehouse dw ON dw.warehouse_RRef=pw.warehouse_RRef
     JOIN DW.dbo.V1C_doc_promotion dp ON dp._IDRRef=pw.doc_promotion_RRef
@@ -210,6 +222,10 @@ SELECT --Час
   WHERE dp.d_end>getdate()
   GROUP BY pw.doc_promotion_RRef, SUBSTRING(dp.comment,1,100),dp.number,dp.year_doc
   --HAVING MAX(pw.time_begin)<>MIN( pw.time_begin)   OR   MAX(pw.time_end)<>MIN( pw.time_end)
+
+[SqlGetPromotionSaleGroupWares]
+
+SELECT CODE_GROUP_WARES_PS as  CodeGroupWaresPS,CODE_GROUP_WARES  as CodeGroupWares FROM dbo.GetPromotionSaleGW ()
 
 [SqlEnd]
 */

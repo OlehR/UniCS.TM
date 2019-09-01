@@ -30,8 +30,26 @@ namespace SharedLib
         {
             string SQL;
 
-            SQL = GetSQL("SqlGetPromotionSaleDealer");
+            SQL = GetSQL("SqlGetPromotionSaleGroupWares");
+            var PSGW = db.Execute<PromotionSaleGroupWares>(SQL);
+            parDB.ReplacePromotionSaleGroupWares(PSGW);
+            PSGW = null;
 
+
+
+            SQL = GetSQL("SqlGetPromotionSale");
+            var PS = db.Execute<PromotionSale>(SQL);
+            parDB.ReplacePromotionSale(PS);
+            PS = null;
+
+
+            SQL = GetSQL("SqlGetPromotionSaleFilter");
+            var PSF = db.Execute<PromotionSaleFilter>(SQL);
+            parDB.ReplacePromotionSaleFilter(PSF);
+            PSF = null;
+
+
+            SQL = GetSQL("SqlGetPromotionSaleDealer");
             var PSP = db.Execute<PromotionSaleDealer>(SQL);
             parDB.ReplacePromotionSaleDealer(PSP);
             PSP = null;
