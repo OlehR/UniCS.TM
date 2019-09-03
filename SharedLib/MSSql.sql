@@ -18,13 +18,13 @@ SELECT code_wares AS CodeWares,code_unit AS CodeUnit, coef AS Coefficient, weigh
 [SqlGetDimBarCode]
 SELECT code_wares CodeWares,code_unit AS CodeUnit,bar_code AS BarCode, coef AS Coefficient 
   FROM dbo.barcode;
+
 [SqlGetDimPrice]
 SELECT tp.code AS CodeDealer, w.code_wares AS CodeWares, pd.price_dealer AS PriceDealer FROM 
   ( 
-SELECT TypePrice_RRef,nomen_RRef, price_dealer    ,ROW_NUMBER ( )   OVER ( PARTITION BY TypePrice_RRef, nomen_RRef   ORDER BY   _Period DESC) AS nn
-  
+SELECT TypePrice_RRef,nomen_RRef, price_dealer    ,ROW_NUMBER ( )   OVER ( PARTITION BY TypePrice_RRef, nomen_RRef   ORDER BY   _Period DESC) AS nn  
   FROM dbo.V1C_REG_PRICE_DEALER 
-  WHERE TypePrice_RRef in (0xB7A3001517DE370411DF7DD82E29EFF6,0xA481001E67079A7C11E18A1966EECFE6,0xA8D3001E67079A7C11E1907E920EFE12,0x9570001B78074DDF11E0F3315C137FE9)
+  WHERE TypePrice_RRef in (0xB7A3001517DE370411DF7DD82E29EFF6,0xA481001E67079A7C11E18A1966EECFE6,0xA8D3001E67079A7C11E1907E920EFE12)
   --WHERE nomen_characteristic_RRef=0x0
   )pd 
   JOIN dbo.wares w ON pd.nomen_RRef= w._IDRRef
@@ -38,6 +38,17 @@ SELECT TypePrice_RRef,nomen_RRef, price_dealer    ,ROW_NUMBER ( )   OVER ( PARTI
      JOIN dbo.V1C_reg_indicative_price ip ON ip.cat_RRef=oc.obj_cat_RRef AND au.capacity=ip.capacity
     --WHERE dn.IDRRef=0x8F91000C29A0FC3111E5D6E02050D8C5 
     GROUP BY dn.code
+
+ union all -- Довго !!! треба оптимізувати
+ SELECT -888888 AS CodeDealer,CONVERT(INT, w.code_wares) AS CodeWares,price_dealer*(1+dbo.GetMinPercent(0xB7A3001517DE370411DF7DD82E29EFF6,nomen_RRef)/100.00) AS PriceDealer 
+  FROM 
+(SELECT TypePrice_RRef,nomen_RRef, price_dealer    ,ROW_NUMBER ( )   OVER ( PARTITION BY TypePrice_RRef, nomen_RRef   ORDER BY   _Period DESC) AS nn
+  FROM dbo.V1C_REG_PRICE_DEALER 
+  WHERE TypePrice_RRef =0x9570001B78074DDF11E0F3315C137FE9
+) pd 
+  JOIN dbo.wares w ON pd.nomen_RRef= w._IDRRef
+  --JOIN DW.dbo.V1C_dim_type_price tp ON  pd.TypePrice_RRef=tp.type_price_RRef
+  WHERE nn=1
     
      
 
@@ -68,6 +79,22 @@ SELECT DC.code_card as CodeClient ,DC.name as NameClient ,TD.TYPE_DISCOUNT  AS T
   JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_WARES W ON o._IDRRef = W._Reference18850_IDRRef --AND G. Order_Button = W.Order_Button
   JOIN dw.dbo.Wares w1 ON w.Wares_RRef=w1._IDRRef
     WHERE wh.Code=9;
+
+[SqlGetPromotionSaleData]
+SELECT
+   CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
+    ,1 AS NumberGroup
+    ,0 AS CodeWares
+    ,1 AS UseIndicative
+    ,3 AS TypeDiscouunt
+    ,0 AS AdditionalCondition
+    ,MAX(pn.[percent]) AS Data
+    ,0 AS DataAdditionalCondition
+  FROM DW.dbo.V1C_doc_promotion_nomen pn
+  --JOIN dw.dbo.V1C_dim_nomen dn ON pn.nomen_RRef=dn.IDRRef
+  JOIN DW.dbo.V1C_doc_promotion dp ON dp._IDRRef=pn.doc_promotion_RRef
+  WHERE dp.d_end>getdate() --AND number=8
+  GROUP BY CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number)
 
 [SqlGetPromotionSaleDealer]
 SELECT 9000000000+CONVERT( INT,YEAR(dpg.date_time)*100000+dpg.number) AS CodePS,   CONVERT(INT,dn.code) AS CodeWares, pg.date_beg AS DateBegin,pg.date_end AS DateEnd,CONVERT(INT,tp.code) AS CodeDealer
@@ -138,7 +165,7 @@ AND pg.subdivision_RRef=0x9078001517DE370411DFFDEC4389A931;
 SELECT  --Склади дії
     CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
     ,1 AS CodeFilter
-    ,50 AS TypeGroupFilter 
+    ,51 AS TypeGroupFilter 
     ,1 AS RuleGroupFilter
     ,0 AS CodeProporty
     ,0 AS CodeChoice 
@@ -148,6 +175,21 @@ SELECT  --Склади дії
     JOIN DW.dbo.V1C_dim_warehouse dw ON dw.warehouse_RRef=pw.warehouse_RRef
     JOIN DW.dbo.V1C_doc_promotion dp ON dp._IDRRef=pw.doc_promotion_RRef
   WHERE dp.d_end>getdate()
+
+UNION all
+SELECT  --Склади дії
+    CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
+    ,1 AS CodeFilter
+    ,32 AS TypeGroupFilter 
+    ,1 AS RuleGroupFilter
+    ,0 AS CodeProporty
+    ,0 AS CodeChoice 
+    ,CONVERT(NUMERIC ,dc.CODE_DISCOUNT_CARD) as CodeData --AS CodeWarehouse
+    ,CONVERT(NUMERIC,NULL) AS CodeDataEnd
+  FROM dbo.V1C_doc_promotion dp
+  JOIN dbo.V_DISCOUNT_CARD dc ON dp.RRef_ex_value=dc._IDRRef
+  WHERE kind_promotion= 0xA6F61431ECE9ED4646ECAA3A735174ED
+    AND  dp.d_end>getdate()
   
 UNION all
 SELECT 
@@ -207,6 +249,7 @@ END
   FROM   DW.dbo.V1C_doc_promotion_day_of_week pw
   JOIN DW.dbo.V1C_doc_promotion dp ON dp._IDRRef=pw.doc_promotion_RRef
   --WHERE  doc_promotion_RRef=0x81320050569E814D11E9A86DBEBF29CB --time_end ='01.01.2001 02:00:00.000'
+
 UNION all
 SELECT --Час
      CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
@@ -222,6 +265,19 @@ SELECT --Час
   WHERE dp.d_end>getdate()
   GROUP BY pw.doc_promotion_RRef, SUBSTRING(dp.comment,1,100),dp.number,dp.year_doc
   --HAVING MAX(pw.time_begin)<>MIN( pw.time_begin)   OR   MAX(pw.time_end)<>MIN( pw.time_end)
+
+UNION all
+  SELECT -- Відносно дня народження.
+     CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
+    ,1 AS CodeFilter
+    ,23  AS TypeGroupFilter --
+    ,1 AS RuleGroupFilter
+    ,0 AS CodeProporty
+    ,0 AS CodeChoice 
+    ,dp.number_ex_value  AS Data
+  ,null AS DataEnd
+  FROM  DW.dbo.V1C_doc_promotion dp 
+  WHERE dp.d_end>getdate() AND kind_promotion= 0x8CA05E08A127F853433EF4373AE9DC39
 
 [SqlGetPromotionSaleGroupWares]
 
