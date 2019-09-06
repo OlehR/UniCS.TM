@@ -84,6 +84,7 @@ namespace SharedLib
         /// Добавляє товарну позицію в чек
         /// </summary>
         protected string SqlAddWares = @"";
+        protected string SqlReplaceWaresReceipt = @"";
         protected string SqlGetCountWares = @"";
         protected string SqlUpdateQuantityWares = @"";
         protected string SqlDeleteReceiptWares = @"";
@@ -342,8 +343,17 @@ namespace SharedLib
 		{
             return this.db.ExecuteNonQuery<ReceiptWares>(SqlAddWares, parReceiptWares) == 0 /*&& RecalcHeadReceipt((IdReceipt)parReceiptWares)*/;
         }
-		
-		public virtual decimal GetCountWares(IdReceiptWares parIdReceiptWares)
+
+
+  
+        public virtual bool ReplaceWaresReceipt(ReceiptWares parReceiptWares)
+        {
+            return this.db.ExecuteNonQuery<ReceiptWares>(SqlReplaceWaresReceipt, parReceiptWares) == 0 /*&& RecalcHeadReceipt((IdReceipt)parReceiptWares)*/;
+        }
+
+        
+
+        public virtual decimal GetCountWares(IdReceiptWares parIdReceiptWares)
 		{
             return db.ExecuteScalar<IdReceiptWares, decimal>(SqlGetCountWares, parIdReceiptWares);
         }
@@ -499,7 +509,10 @@ namespace SharedLib
             SqlAddReceipt = GetSQL("SqlAddReceipt");
             SqlUpdateClient = GetSQL("SqlUpdateClient");
             SqlCloseReceipt = GetSQL("SqlCloseReceipt");
+
             SqlAddWares = GetSQL("SqlAddWares");
+            SqlReplaceWaresReceipt = SqlAddWares.Replace("insert ", "replace ");
+
             SqlRecalcHeadReceipt = GetSQL("SqlRecalcHeadReceipt");
             SqlGetCountWares = GetSQL("SqlGetCountWares");
             SqlUpdateQuantityWares = GetSQL("SqlUpdateQuantityWares");
@@ -560,7 +573,6 @@ namespace SharedLib
             SqlReplacePromotionSaleGiff = GetSQL("SqlReplacePromotionSaleGiff");
             SqlReplacePromotionSaleDealer = GetSQL("SqlReplacePromotionSaleDealer");
             SqlReplacePromotionSaleGroupWares = GetSQL("SqlReplacePromotionSaleGroupWares");
-
 
 
             return true;
@@ -746,13 +758,20 @@ namespace SharedLib
             return true;
         }
 
-
-
         public virtual IEnumerable<ReceiptWares> GetWaresFromFastGroup(int parCodeFastGroup)   { return null; }
         public virtual IEnumerable<FastGroup> GetFastGroup(int parCodeUpFastGroup)
         {
             var FG = new FastGroup { CodeUp = parCodeUpFastGroup };
             return db.Execute<FastGroup, FastGroup>(SqlGetFastGroup, FG);
+        }
+
+        public virtual PricePromotion GetPrice(ParameterPromotion parPromotion)
+        {
+            var  res=db.Execute<ParameterPromotion, PricePromotion>(SqlGetPrice, parPromotion);
+            if (res != null)
+                res.FirstOrDefault();
+            return null;
+
         }
     }
 

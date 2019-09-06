@@ -248,29 +248,46 @@ With ExeptionPS as
     from PROMOTION_SALE_FILTER 
     where TYPE_GROUP_FILTER=51
     group by CODE_PS
-    having sum(case when CODE_DATA=9 then 1 else 0 end)=0
+    having sum(case when CODE_DATA=@CodeWarehouse then 1 else 0 end)=0
 union    
 select CODE_PS--,32--,count(*),sum(case when CODE_DATA=13  then 1 else 0 end) --Карточка
     from PROMOTION_SALE_FILTER 
     where TYPE_GROUP_FILTER=32
     group by CODE_PS
-    having sum(case when CODE_DATA=13  then 1 else 0 end)=0
+    having sum(case when CODE_DATA=@TypeCard  then 1 else 0 end)=0
 union --
 select CODE_PS--,22 --*,strftime('%H%M',datetime('now','localtime')) 
     from PROMOTION_SALE_FILTER PSF where  
-     PSF.TYPE_GROUP_FILTER=22 and PSF.RULE_GROUP_FILTER=1  and ( PSF.CODE_DATA > strftime('%H%M',datetime('now','localtime'))  or  PSF.CODE_DATA_end<strftime('%H%M',datetime('now','localtime') ) )
+     PSF.TYPE_GROUP_FILTER=22 and PSF.RULE_GROUP_FILTER=1  and ( PSF.CODE_DATA > @Time  or  PSF.CODE_DATA_end<@Time )
 union --День народження
 select CODE_PS--,23 --*,strftime('%H%M',datetime('now','localtime')) 
     from PROMOTION_SALE_FILTER PSF where  
-     PSF.TYPE_GROUP_FILTER=23  and date('now','localtime') between date(date('now','localtime'), '-1 day') and date(date('now','localtime'), '+1 day')
-     
+     PSF.TYPE_GROUP_FILTER=23  and @Datе between date(date('now','localtime'), '-1 day') and date(date('now','localtime'), '+1 day')     
+union  --Виключення по товару  
+select PSF.CODE_PS
+from PROMOTION_SALE_FILTER PSF where  PSF.TYPE_GROUP_FILTER=11 and PSF.RULE_GROUP_FILTER=-1 and   PSF.CODE_DATA=57924     
+union --Виключення по Групі товарів
+select PSF.CODE_PS
+  from wares w 
+  join PROMOTION_SALE_GROUP_WARES PSGW on PSGW.CODE_GROUP_WARES=w.CODE_GROUP
+  join PROMOTION_SALE_FILTER PSF on ( PSF.TYPE_GROUP_FILTER=15 and PSF.RULE_GROUP_FILTER=-1 and   PSF.CODE_DATA=PSGW.CODE_GROUP_WARES_PS)
+  where w.CODE_WARES=@CodeWares  
+),
+PSEW as 
+(select psfe.CODE_PS from 
+ (select distinct code_ps from PROMOTION_SALE_FILTER PSF where  PSF.TYPE_GROUP_FILTER in (11,15) and PSF.RULE_GROUP_FILTER=-1) psfe
+ left join 
+  (select distinct  code_ps  from PROMOTION_SALE_FILTER PSF where  PSF.TYPE_GROUP_FILTER in (11,15) and PSF.RULE_GROUP_FILTER=1) psf on psfe.code_ps=psf.code_ps
+ left join  ExeptionPS  EPS on psfe.CODE_PS=EPS.CODE_PS
+where psf.code_ps  is null
+and EPS.code_ps  is null
 )
-
-select psd.CODE_PS,0 as priority ,1 as Type_discont ,p.PRICE_DEALER
+--select * from PSEW
+select psd.CODE_PS as CodePs,0 as Priority ,1 as TypeDiscont  ,p.PRICE_DEALER as PriceDealer
 from  PROMOTION_SALE_DEALER psd
  join PRICE p on psd.CODE_DEALER=p. CODE_DEALER and psd.CODE_WARES=p.CODE_WARES 
 where 
- psd.CODE_WARES = 57924
+ psd.CODE_WARES = @CodeWares
  and datetime('now','localtime') between psd.Date_begin and psd.DATE_END
  and p.PRICE_DEALER>0
 union all
@@ -281,7 +298,18 @@ select PSF.CODE_PS,0 as priority , 3 as Type_discont, PSD.DATA
   join PROMOTION_SALE_DATA PSD on (PSD.CODE_WARES=0 and PSD.CODE_PS=PSF.CODE_PS ) 
   left join ExeptionPS EPS on  (PSF.CODE_PS=EPS.CODE_PS)
   where EPS.CODE_PS is null
-  and w.CODE_WARES=64236
+  and w.CODE_WARES=@CodeWares
+union all
+select PSF.CODE_PS,0 as priority , 3 as Type_discont, PSD.DATA
+  from PROMOTION_SALE_FILTER PSF 
+  join PROMOTION_SALE_DATA PSD on (PSD.CODE_WARES=0 and PSD.CODE_PS=PSF.CODE_PS ) 
+  left join ExeptionPS EPS on  (PSF.CODE_PS=EPS.CODE_PS)
+  where  PSF.TYPE_GROUP_FILTER=15 and PSF.RULE_GROUP_FILTER=1 and   PSF.CODE_DATA=64236 and EPS.CODE_PS is null  
+union all --акції для всіх товарів.
+select PSEW.CODE_PS,0 as priority , 3 as Type_discont, PSD.DATA
+  from PSEW
+  join PROMOTION_SALE_DATA PSD on (PSD.CODE_PS=PSEW.CODE_PS )
+
 
 [SqlGetPriceOld]
 select 

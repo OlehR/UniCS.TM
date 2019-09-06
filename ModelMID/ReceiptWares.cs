@@ -4,6 +4,15 @@ using System.Text;
 
 namespace ModelMID
 {
+    // - ділерська категорія - 2 ділерська категорія+знижка,3 -фіксація ціни,4-Обмеження по нижньому індикативу, 5-Обмеження по верхньому індикативу, 9 -акція
+    public enum TypePrice
+    {
+       NotDefine=0,
+       PriceDealer=1,
+       PD_Discont=2,
+       Indicative=3,
+       Promotion =9
+    }
     public class ReceiptWares : IdReceiptWares
     {
                
@@ -41,16 +50,21 @@ namespace ModelMID
         /// <summary>
         /// 
         /// </summary>
-        public decimal Price { get; set; } // ціна за базову одиницю.
-                                           /// <summary>
-                                           /// 
-                                           /// </summary>
-        public int CodeDealer { get; set; } // Дилерська категорія.
-                                            /// <summary>
-                                            /// Тип ціноутворення ( 1 - ділерська категорія - 2 ділерська категорія+знижка,3 -фіксація ціни,4-Обмеження по нижньому індикативу, 5-Обмеження по верхньому індикативу, 9 -акція)
-                                            /// </summary>
-        public int TypePrice { get; set; }
+        // ціна за базову одиницю.
+        public decimal Price { get; set; } 
+        // Дилерська категорія.                                       
+        public int CodeDealer { get; set; } 
 
+        /// <summary>
+        /// Тип ціноутворення ( 1 - ділерська категорія - 2 ділерська категорія+знижка,3 -фіксація ціни,4-Обмеження по нижньому індикативу, 5-Обмеження по верхньому індикативу, 9 -акція)
+        /// </summary>
+        public TypePrice TypePrice { get; set; }
+        /// <summary>
+        ///  ДК,Код акції
+        /// </summary>
+        public long ParPrice1 { get; set; }
+        //Номер набору, підставлена ДК тощо
+        public long ParPrice2 { get; set; }
         /// <summary>
         /// 
         /// </summary>
@@ -106,8 +120,6 @@ namespace ModelMID
         public int Sort { get; set; }
         public int UserCreate { get; set; }
         public int CodeWarehouse { get; set; }
-        public int @ParPrice1 { get; set; }
-        public int @ParPrice2 { get; set; }
         public string Description { get; set; }
         public ReceiptWares()
         {

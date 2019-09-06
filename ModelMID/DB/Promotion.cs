@@ -118,4 +118,21 @@ namespace ModelMID
         public int CodeGroupWares { get; set; }
     }
 
+    public class ParameterPromotion
+    {
+        public int CodeWarehouse { get; set; }
+        public int TypeCard { get; set; }
+        public string Time { get; set; }
+        public string Date { get; set; }
+        public int CodeWares { get; set; }
+
+    }
+    public class PricePromotion
+    {
+        public Int64 CodePs { get; set; }
+        public int Priority { get; set; }
+        public int TypeDiscont { get; set; }
+        public decimal PriceDealer { get; set; }
+    }
+
 }

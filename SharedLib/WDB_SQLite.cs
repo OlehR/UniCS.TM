@@ -137,35 +137,23 @@ namespace SharedLib
 	
         public override bool RecalcPrice(IdReceipt parIdReceipt)
         {
-            /*Parameter[] varParameters = new Parameter[] {
-                new Parameter("parIdWorkplace", "parIdWorkplace") ,
-                new Parameter("parCodePeriod", Global.GetCodePeriod()) ,
-                new Parameter("parDefaultCodeDealer", GlobalVar.DefaultCodeDealer[0]) ,
-                new Parameter("parCodeReceipt", parCodeReceipt) 
-            };
+            var RH = ViewReceipt(parIdReceipt);
 
-            DataTable varDT=this.db.Execute(this.SqlListPS,varParameters);
-            for (int i = 0; i < varDT.Rows.Count; i++)
+            var par = new ParameterPromotion() { CodeWarehouse = RH.CodeWarehouse, Date= RH.DateReceipt.ToString("yyyy-MM-dd"), Time= RH.DateReceipt.ToString("HH:mm"), TypeCard=-1};
+            var r = ViewReceiptWares(parIdReceipt);
+
+            foreach (var RW in r)
             {
-                //wr.code_wares,  wr.code_unit, w.vat, w.vat_operation, ps.code_ps, ps.priority, psd.type_discount, psd.data, pd.price_dealer, pdd.price_dealer default_price_dealer,
-                int varCodeWares=Convert.ToInt32(varDT.Rows[i]["code_wares"] );
-                int varCodeUnit=Convert.ToInt32(varDT.Rows[i]["code_unit"] );
-                int varCodePS=Convert.ToInt32(varDT.Rows[i]["code_ps"] );
-
-                varParameters = new Parameter[] {
-                new Parameter("parIdWorkplace", "parIdWorkplace") ,
-                new Parameter("parCodePeriod", Global.GetCodePeriod()) ,
-                new Parameter("parCodeReceipt", parCodeReceipt),
-                new Parameter("parCodeWares", varCodeWares),
-                new Parameter("parCodeUnit", varCodeUnit),
-                new Parameter("parCodePS", varCodePS),
-                new Parameter("parVatOperation", varWares.varTypeVat),
-                new Parameter("parSum", (varWares.varPrice*varWares.varQuantity)*(1+varWares.varPercentVat)* varWares.varCoefficient),
-                new Parameter("parSumVat", varWares.varPrice*varWares.varQuantity*varWares.varPercentVat* varWares.varCoefficient)
-            };
-                this.db.ExecuteNonQuery(this.SqlUpdatePrice,varParameters);
-
-            }*/
+                par.CodeWares = RW.CodeWares;
+                var Res = GetPrice(par);
+                if(Res!=null && Res.PriceDealer>0)
+                {
+                    RW.Price = Res.PriceDealer;
+                    RW.TypePrice = TypePrice.Promotion;
+                    RW.ParPrice1 = Res.CodePs;
+                    ReplaceWaresReceipt(RW);
+                }
+            }
             RecalcHeadReceipt(parIdReceipt);
             return true;
         }
