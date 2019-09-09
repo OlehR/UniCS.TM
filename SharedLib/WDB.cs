@@ -67,6 +67,7 @@ namespace SharedLib
         /// Добавляє чек в базу.
         /// </summary>
         protected string SqlAddReceipt = @"";
+        protected string SqlReplaceReceipt = @"";
         /// <summary>
         /// Запит який вертає інформацію про товари в чеку
         /// </summary>
@@ -323,7 +324,12 @@ namespace SharedLib
             return this.db.ExecuteNonQuery<Receipt>(SqlAddReceipt, parReceipt) == 0;
         }
 
-		public virtual bool  UpdateClient(IdReceipt parIdReceipt, int parCodeClient)
+        public virtual bool ReplaceReceipt(Receipt parReceipt)
+        {
+            return this.db.ExecuteNonQuery<Receipt>(SqlReplaceReceipt, parReceipt) == 0;
+        }
+
+        public virtual bool  UpdateClient(IdReceipt parIdReceipt, int parCodeClient)
 		{
             return this.db.ExecuteNonQuery<IdReceipt>(SqlUpdateClient, parIdReceipt) == 0;
         }
@@ -372,8 +378,8 @@ namespace SharedLib
         {
             var res = this.db.Execute<IdReceipt, Receipt>(SqlViewReceipt, parIdReceipt);
             if (res.Count() == 1)
-                return res.First();
-            return null;
+              return res.FirstOrDefault();
+           return null;
         }
 
         /// <summary>
@@ -507,11 +513,14 @@ namespace SharedLib
             SqlViewReceipt = GetSQL("SqlViewReceipt");
             SqlViewReceiptWares = GetSQL("SqlViewReceiptWares");
             SqlAddReceipt = GetSQL("SqlAddReceipt");
+            if(SqlAddReceipt!=null)
+              SqlReplaceReceipt = SqlAddReceipt.Replace("INSERT ", "replace ");
             SqlUpdateClient = GetSQL("SqlUpdateClient");
             SqlCloseReceipt = GetSQL("SqlCloseReceipt");
 
             SqlAddWares = GetSQL("SqlAddWares");
-            SqlReplaceWaresReceipt = SqlAddWares.Replace("insert ", "replace ");
+            if (SqlAddWares != null)
+                SqlReplaceWaresReceipt = SqlAddWares.Replace("INSERT ", "replace ");
 
             SqlRecalcHeadReceipt = GetSQL("SqlRecalcHeadReceipt");
             SqlGetCountWares = GetSQL("SqlGetCountWares");
@@ -767,9 +776,9 @@ namespace SharedLib
 
         public virtual PricePromotion GetPrice(ParameterPromotion parPromotion)
         {
-            var  res=db.Execute<ParameterPromotion, PricePromotion>(SqlGetPrice, parPromotion);
+            /*var  res=db.Execute<ParameterPromotion, PricePromotion>(SqlGetPrice, parPromotion);
             if (res != null)
-                res.FirstOrDefault();
+                res.FirstOrDefault();*/
             return null;
 
         }

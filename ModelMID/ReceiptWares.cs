@@ -9,8 +9,10 @@ namespace ModelMID
     {
        NotDefine=0,
        PriceDealer=1,
-       PD_Discont=2,
-       Indicative=3,
+       PDDiscont=2,
+       PDDiscontMin=3,
+       Indicative =4,
+       PDDiscontIndicative=5,
        Promotion =9
     }
     public class ReceiptWares : IdReceiptWares
@@ -121,6 +123,11 @@ namespace ModelMID
         public int UserCreate { get; set; }
         public int CodeWarehouse { get; set; }
         public string Description { get; set; }
+        public decimal AdditionN1 { get; set; }
+        public decimal AdditionN2 { get; set; }
+        public decimal AdditionN3 { get; set; }
+        public string AdditionC1 { get; set; }
+        public DateTime AdditionD1 { get; set; }
         public ReceiptWares()
         {
             Clear();

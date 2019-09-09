@@ -16,8 +16,8 @@ namespace ModelMID
                 var strOrder = new String('0', 8) + Order.ToString();
                 strOrder =  strOrder.Substring(strOrder.Length - 8);
 
-                var strUnit = new String('0', 8) + Order.ToString();
-                strOrder = strOrder.Substring(strOrder.Length - 8);
+                var strUnit = new String('0', 8) + CodeUnit.ToString();
+                strUnit = strUnit.Substring(strUnit.Length - 8);
 
                 var strWares = new String('0', 12) + CodeWares.ToString();
                 strWares = strWares.Substring(strWares.Length - 12);

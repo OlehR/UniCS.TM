@@ -42,6 +42,7 @@ namespace ModelMID
         public decimal SumReceipt { get; set; }
         //public string StSumReceipt="0.000"; //TMP test
         public decimal VatReceipt { get; set; }
+        public decimal PercentDiscount { get; set; }
         public decimal SumDiscount { get; set; }
         public decimal SumRest { get; set; }
         
@@ -62,13 +63,13 @@ namespace ModelMID
 
         public DateTime DateCreate { get; set; }
         public int UserCreate { get; set; }
-        /// <summary>
-        /// Послідній рядочов в чеку
-        /// </summary>
-        public int Sort { get; set; }
-        /// <summary>
-        /// Шаблони чеків. ????
-        /// </summary>
+
+        public decimal AdditionN1 { get; set; }
+        public decimal AdditionN2 { get; set; }
+        public decimal AdditionN3 { get; set; }
+        public string AdditionC1 { get; set; }
+        public DateTime AdditionD1 { get; set; }
+
         public Receipt()
         {
             Clear();
@@ -85,7 +86,7 @@ namespace ModelMID
             CodeReceipt = 0;  // Код Чека
             DateReceipt = new DateTime(1, 1, 1);  // Дата Чека
             CodePeriod = 0;  // Код періода
-            Sort = 0;            // Послідній рядочов в чеку
+            //Sort = 0;            // Послідній рядочов в чеку
             CodePattern = 0;
             SumReceipt = 0;
             VatReceipt = 0;
@@ -106,7 +107,7 @@ namespace ModelMID
             //Global.Receipts[0] = parCodeReceipt; //tmp щоб зберегти глобально номер чека.???
             DateReceipt = parDateReceipt;
             //CodePeriod = Global.GetCodePeriod(parDateReceipt);
-            Sort = 0;
+            //Sort = 0;
             //CodePattern = Global.DefaultCodePatternReceipt;
         }
         public IdReceipt GetIdReceipt()

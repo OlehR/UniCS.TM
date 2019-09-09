@@ -73,7 +73,7 @@ namespace ModelMID
         public Client()
         {
         }
-            public Client(int parCodeClient)
+        public Client(int parCodeClient)
         {
             CodeClient=parCodeClient;
             //Clear();

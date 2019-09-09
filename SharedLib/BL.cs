@@ -131,14 +131,19 @@ namespace SharedLib
             return db.ViewReceipt(idReceipt);
         }
 
-        public Client GetClientByBarCode(string parBarCode)
+        public Client GetClientByBarCode(IdReceipt idReceipt,string parBarCode)
         {
             var r = db.FindData(parBarCode, TypeFind.Client);
             if (r.Count == 1)
             {
-                var client = db.FindClient().First();                
+                var client = db.FindClient().First();
+                var RH = GetReceiptHead(idReceipt);
+                RH.CodeClient = client.CodeClient;
+                RH.PercentDiscount = client.PersentDiscount;
+                db.ReplaceReceipt(RH);
+
                 return client;
-                //Res = new ProductViewModel() {Id=w. };
+                
             }
             
             return null;

@@ -139,7 +139,7 @@ namespace SharedLib
         {
             var RH = ViewReceipt(parIdReceipt);
 
-            var par = new ParameterPromotion() { CodeWarehouse = RH.CodeWarehouse, Date= RH.DateReceipt.ToString("yyyy-MM-dd"), Time= RH.DateReceipt.ToString("HH:mm"), TypeCard=-1};
+            var par = new ParameterPromotion() { CodeWarehouse = 9/*RH.CodeWarehouse*/, Date= RH.DateReceipt.ToString("yyyy-MM-dd"), Time= RH.DateReceipt.ToString("HHmm"), TypeCard=-1};
             var r = ViewReceiptWares(parIdReceipt);
 
             foreach (var RW in r)

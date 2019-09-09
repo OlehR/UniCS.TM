@@ -14,7 +14,7 @@ namespace ModernIntegration
 {
     public class ApiPSU : Api
     {
-        BL Bl;
+        public BL Bl;
         Dictionary<Guid, ModelMID.IdReceipt> Receipts = new Dictionary<Guid, ModelMID.IdReceipt>();
         public ApiPSU()
         {
@@ -54,7 +54,8 @@ namespace ModernIntegration
         {
             var receiptId = new IdReceipt(parReceiptId);
             Bl.UpdateReceiptFiscalNumber(receiptId, parFiscalNumber);
-            ClearReceipt(parReceiptId);
+            ClearReceiptByReceiptId(receiptId);
+//          ClearReceipt(parReceiptId);
             return true;
         }
 
@@ -107,12 +108,12 @@ namespace ModernIntegration
 
         public override CustomerViewModel GetCustomerByBarCode(Guid parTerminalId, string parS)
         {
-            var CM = Bl.GetClientByBarCode(parS);
+            var CM = Bl.GetClientByBarCode(GetCurrentReceiptByTerminalId(parTerminalId),parS);            
             return GetCustomerViewModelByClient(CM);
         }
         public override CustomerViewModel GetCustomerByPhone(Guid parTerminalId, string parPhone)
         {
-            var CM = Bl.GetClientByPhone(parPhone);
+            var CM = Bl.GetClientByPhone(GetCurrentReceiptByTerminalId(parTerminalId), parPhone);
             return GetCustomerViewModelByClient(CM);
         }
 
@@ -123,23 +124,31 @@ namespace ModernIntegration
 
             foreach (var el in Receipts)
             {
-                if (el.Equals(idReceipt))
+                if (el.Value.Equals(idReceipt))
+                {
                     Receipts[el.Key] = null;
+                    return true;
+                }
             }
-            return true;
+            return false;
         }
 
-        private ModelMID.IdReceipt GetCurrentReceiptByTerminalId(Guid parTerminalId)
+        public ModelMID.IdReceipt GetCurrentReceiptByTerminalId(Guid parTerminalId)
         {
-            if (!Receipts.ContainsKey(parTerminalId))
+
+            if (!Receipts.ContainsKey(parTerminalId)|| Receipts[parTerminalId] == null)
             {
-                var idReceipt = Bl.GetNewIdReceipt(parTerminalId);
+                var idReceipt = Bl.GetNewIdReceipt(parTerminalId);         
+            
                 Receipts[parTerminalId] = new ModelMID.Receipt(idReceipt);
                 Bl.AddReceipt(Receipts[parTerminalId]);
             }
+            
             return Receipts[parTerminalId];
-
         }
+
+
+
         /// <summary>
         /// Convert MID.ReceiptWares->ProductViewModel
         /// </summary>

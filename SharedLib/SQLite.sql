@@ -54,7 +54,7 @@ insert into t$1 (id_1,data_1)
        select f.code_firm, 2  from firms f where f.name_for_print like '@Name'
        
 [SqlFoundClient]
-select p.code_client as CodeClient, p.name_client as NameClient, 0 as TypeDiscount, p.percent_discount as Discount, 0 as CodeDealer, 
+select p.code_client as CodeClient, p.name_client as NameClient, 0 as TypeDiscount, p.percent_discount as PersentDiscount, 0 as CodeDealer, 
 	   10.00 as SumMoneyBonus, 10.00 as SumBonus,1 IsUseBonusFromRest, 1 IsUseBonusToRest,1 as IsUseBonusFromRest
 			from t$1 left join client p on (id_1=p.code_client)
 			
@@ -140,27 +140,34 @@ sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_
    and CODE_PERIOD = @CodePeriod
    and CODE_RECEIPT = @CodeReceipt
 
-
 [SqlViewReceiptWares]
-select wr.code_wares as CodeWares, w.Name_Wares NameWares ,wr.quantity Quantity, ud.abr_unit as AbrUnit, wr.sum Sum, Type_Price TypePrice,wr.code_unit as CodeUnit,w.Code_unit as CodeDefaultUnit, PAR_PRICE_1 as CodeDealer,
-                     au.COEFFICIENT as Coefficient,w.NAME_WARES_RECEIPT as  NameWaresReceipt
+select wr.id_workplace as IdWorkplace, wr.code_period as CodePeriod, wr.code_receipt as CodeReceipt,wr.code_wares as CodeWares, w.Name_Wares NameWares ,wr.quantity Quantity, ud.abr_unit as AbrUnit, wr.sum Sum, Type_Price TypePrice
+				,wr.code_unit as CodeUnit,w.Code_unit as CodeDefaultUnit, PAR_PRICE_1 as CodeDealer,
+                     au.COEFFICIENT as Coefficient,w.NAME_WARES_RECEIPT as  NameWaresReceipt,sort
                      from wares_receipt wr 
                      join wares w on (wr.code_wares =w.code_wares)
                      join ADDITION_UNIT au on w.code_wares = au.code_wares and wr.code_unit=au.code_unit
                      join unit_dimension ud on (wr.code_unit = ud.code_unit)
                      where wr.id_workplace=@IdWorkplace and  wr.code_period =@CodePeriod and wr.code_receipt=@CodeReceipt
                      order by sort
+
 [SqlAddReceipt]
 insert into receipt (id_workplace, code_period, code_receipt, date_receipt, code_warehouse, 
 sum_receipt, vat_receipt, code_pattern, state_receipt, code_client,
  number_cashier, number_receipt, code_discount, sum_discount, percent_discount, 
  code_bonus, sum_bonus, sum_cash, sum_credit_card, code_outcome, 
- code_credit_card, number_slip, number_tax_income,USER_CREATE) values 
+ code_credit_card, number_slip, number_tax_income,USER_CREATE,
+ ADDITION_N1,ADDITION_N2,ADDITION_N3,
+ ADDITION_C1,ADDITION_D1
+ ) values 
  (@IdWorkplace, @CodePeriod, @CodeReceipt, @DateReceipt, @CodeWarehouse,
- 0, 0, @CodePattern, 0, @CodeClient,
- @NumberCashier, 0, 0, 0, 0,
+ @SumReceipt, @VatReceipt, @CodePattern, @StateReceipt, @CodeClient,
+ @NumberCashier, @NumberReceipt, 0, @SumDiscount, @PercentDiscount,
  0, 0, 0, 0, 0,
- 0, 0, 0,@UserCreate)
+ 0, 0, 0,@UserCreate,
+ @AdditionN1,@AdditionN2,@AdditionN3,
+ @AdditionC1,@AdditionD1
+ )
  
 [SqlUpdateClient]
 update receipt set code_client=@CodeClient
@@ -182,11 +189,15 @@ update receipt
 [SqlAddWares]
 insert into wares_receipt (id_workplace, code_period, code_receipt, code_wares, code_unit,
   type_price, code_warehouse,  quantity, price, sum, sum_vat,
-  PAR_PRICE_1,PAR_PRICE_2, sum_discount, type_vat, sort, user_create) 
+  PAR_PRICE_1,PAR_PRICE_2, sum_discount, type_vat, sort, user_create,
+ ADDITION_N1,ADDITION_N2,ADDITION_N3,
+ ADDITION_C1,ADDITION_D1) 
  values (
   @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit,
   @TypePrice, @CodeWarehouse, @Quantity, @Price, @Sum, @SumVat,
-  @ParPrice1,@ParPrice2, @SumDiscount, @TypeVat, @Sort, @UserCreate)
+  @ParPrice1,@ParPrice2, @SumDiscount, @TypeVat, @Sort, @UserCreate,
+ @AdditionN1,@AdditionN2,@AdditionN3,
+ @AdditionC1,@AdditionD1)
 
 [SqlRecalcHeadReceipt]
 update receipt 
@@ -575,7 +586,7 @@ CREATE TABLE RECEIPT (
     ADDITION_N1       NUMBER,
     ADDITION_N2       NUMBER,
     ADDITION_N3       NUMBER,
-    ADDITION_С1       TEXT,
+    ADDITION_C1       TEXT,
     ADDITION_С2       TEXT,
     ADDITION_С3       TEXT,
     ADDITION_D1       TEXT,
@@ -860,11 +871,14 @@ CREATE UNIQUE INDEX GROUP_WARES_ID ON GROUP_WARES ( CODE_GROUP_WARES );
 CREATE INDEX GROUP_WARES_UP ON GROUP_WARES ( CODE_PARENT_GROUP_WARES );
 CREATE UNIQUE INDEX WARES_ID ON WARES ( CODE_WARES,CODE_UNIT );
 CREATE UNIQUE INDEX ADDITION_UNIT_ID ON ADDITION_UNIT ( CODE_WARES,CODE_UNIT );
+
 CREATE UNIQUE INDEX BAR_CODE_ID ON BAR_CODE ( BAR_CODE);
 CREATE UNIQUE INDEX BAR_CODE_W_BC ON BAR_CODE ( CODE_WARES,BAR_CODE);
 
 CREATE UNIQUE INDEX TYPE_DISCOUNT_ID ON TYPE_DISCOUNT ( TYPE_DISCOUNT );
 CREATE UNIQUE INDEX CLIENT_ID ON CLIENT ( CODE_CLIENT );
+CREATE UNIQUE INDEX CLIENT_BC ON CLIENT ( BARCODE );
+
 CREATE UNIQUE INDEX PRICE_ID ON PRICE ( CODE_DEALER, CODE_WARES );
 
 CREATE INDEX FAST_GROUP_ID ON FAST_GROUP ( CODE_UP,Code_Fast_Group);
