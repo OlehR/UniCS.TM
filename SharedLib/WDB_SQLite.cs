@@ -139,20 +139,28 @@ namespace SharedLib
         {
             var RH = ViewReceipt(parIdReceipt);
 
-            var par = new ParameterPromotion() { CodeWarehouse = 9/*RH.CodeWarehouse*/, Date= RH.DateReceipt.ToString("yyyy-MM-dd"), Time= RH.DateReceipt.ToString("HHmm"), TypeCard=-1};
-            var r = ViewReceiptWares(parIdReceipt);
+            var par = new ParameterPromotion() { CodeWarehouse = 9/*RH.CodeWarehouse*/, BirthDay= DateTime.Now.AddDays(-3).Date, Time=Convert.ToInt32( RH.DateReceipt.ToString("HHmm")), TypeCard=-1};
 
+            var PercentDiscount = GetPersentDiscountClientByReceipt(parIdReceipt);
+            var r = ViewReceiptWares(parIdReceipt);
+            
             foreach (var RW in r)
             {
+                var MPI = GetMinPriceIndicative((IdReceiptWares)RW);
                 par.CodeWares = RW.CodeWares;
                 var Res = GetPrice(par);
                 if(Res!=null && Res.PriceDealer>0)
                 {
-                    RW.Price = Res.PriceDealer;
-                    RW.TypePrice = TypePrice.Promotion;
-                    RW.ParPrice1 = Res.CodePs;
-                    ReplaceWaresReceipt(RW);
+                    RW.Price = MPI.GetPricePromotion( Res.PriceDealer);
+                    RW.TypePrice = MPI.typePrice;
+                    RW.ParPrice1 = Res.CodePs;                   
                 }
+                else
+                {
+                    RW.Price = MPI.GetPrice(RW.PriceDealer, PercentDiscount);
+                    RW.TypePrice = MPI.typePrice;
+                }
+                ReplaceWaresReceipt(RW);
             }
             RecalcHeadReceipt(parIdReceipt);
             return true;
@@ -180,7 +188,7 @@ namespace SharedLib
         public override IEnumerable<ReceiptWares> GetWaresFromFastGroup(int parCodeFastGroup)
         {
             db.ExecuteNonQuery(SqlGetWaresFromFastGroup, new { CodeFastGroup= parCodeFastGroup });
-            return FindWares(0);
+            return FindWares();
         }                 
 
     }

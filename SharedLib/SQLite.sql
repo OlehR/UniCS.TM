@@ -65,9 +65,8 @@ select t.id_1 as CodeWares,w.name_wares NameWares,w.name_wares_receipt  as NameW
         COALESCE(au.coefficient,aud.coefficient,0) Coefficient,
         ifnull(aud.code_unit,0) code_unit_default, 
         udd.abr_unit abr_unit_default,
-        ifnull(aud.coefficient,0) coefficient_default,
-        ifnull(pd.price_dealer*(1.00-@Discount),0.0) as Price,
-       1   TypePrice
+      --  ifnull(aud.coefficient,0) as CoefficientDefault,
+        ifnull(pd.price_dealer,0.0) as PriceDealer
 from t$1 t
 left join wares w on t.id_1=w.code_wares
 left join price pd on ( pd.code_wares=t.id_1 and pd.code_dealer=@CodeDealer)
@@ -134,16 +133,26 @@ select  id_workplace IdWorkplace, code_period CodePeriod, code_receipt CodeRecei
 sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_receipt as StateReceipt, code_client as CodeClient,
  number_cashier as NumberCashier, number_receipt NumberReceipt, code_discount as CodeDiscount, sum_discount as SumDiscount, percent_discount as PercentDiscount, 
  code_bonus as CodeBonus, sum_bonus as SumBonus, sum_cash as SumCash, sum_credit_card as SumCreditCard, code_outcome as CodeOutcome, 
- code_credit_card as CodeCreditCard, number_slip as NumberSlip, number_tax_income as NumberTaxIncome,USER_CREATE as UseCreate
+ code_credit_card as CodeCreditCard, number_slip as NumberSlip, number_tax_income as NumberTaxIncome,USER_CREATE as UseCreate,
+ ADDITION_N1 as AdditionN1,ADDITION_N2 as AdditionN2, ADDITION_N3 as AdditionN3,
+ ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1
  from RECEIPT
  where ID_WORKPLACE = @IdWorkplace
    and CODE_PERIOD = @CodePeriod
    and CODE_RECEIPT = @CodeReceipt
 
+[SqlGetPersentDiscountClientByReceipt]
+select c.percent_discount from receipt r
+join client c on r.code_client=c.code_client
+where ID_WORKPLACE = @IdWorkplace
+   and CODE_PERIOD = @CodePeriod
+   and CODE_RECEIPT = @CodeReceipt
 [SqlViewReceiptWares]
 select wr.id_workplace as IdWorkplace, wr.code_period as CodePeriod, wr.code_receipt as CodeReceipt,wr.code_wares as CodeWares, w.Name_Wares NameWares ,wr.quantity Quantity, ud.abr_unit as AbrUnit, wr.sum Sum, Type_Price TypePrice
-				,wr.code_unit as CodeUnit,w.Code_unit as CodeDefaultUnit, PAR_PRICE_1 as CodeDealer,
-                     au.COEFFICIENT as Coefficient,w.NAME_WARES_RECEIPT as  NameWaresReceipt,sort
+				,wr.code_unit as CodeUnit,w.Code_unit as CodeDefaultUnit, PAR_PRICE_1 as ParPrice1, PAR_PRICE_2 as ParPrice2,
+                     au.COEFFICIENT as Coefficient,w.NAME_WARES_RECEIPT as  NameWaresReceipt,sort,
+					 ADDITION_N1 as AdditionN1,ADDITION_N2 as AdditionN2, ADDITION_N3 as AdditionN3,
+ ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1,Price_Dealer as PriceDealer
                      from wares_receipt wr 
                      join wares w on (wr.code_wares =w.code_wares)
                      join ADDITION_UNIT au on w.code_wares = au.code_wares and wr.code_unit=au.code_unit
@@ -188,13 +197,13 @@ update receipt
 
 [SqlAddWares]
 insert into wares_receipt (id_workplace, code_period, code_receipt, code_wares, code_unit,
-  type_price, code_warehouse,  quantity, price, sum, sum_vat,
+  type_price, code_warehouse,  quantity, price, Price_Dealer, sum, sum_vat,
   PAR_PRICE_1,PAR_PRICE_2, sum_discount, type_vat, sort, user_create,
  ADDITION_N1,ADDITION_N2,ADDITION_N3,
  ADDITION_C1,ADDITION_D1) 
  values (
   @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit,
-  @TypePrice, @CodeWarehouse, @Quantity, @Price, @Sum, @SumVat,
+  @TypePrice, @CodeWarehouse, @Quantity, @Price,@PriceDealer, @Sum, @SumVat,
   @ParPrice1,@ParPrice2, @SumDiscount, @TypeVat, @Sort, @UserCreate,
  @AdditionN1,@AdditionN2,@AdditionN3,
  @AdditionC1,@AdditionD1)
@@ -273,7 +282,7 @@ select CODE_PS--,22 --*,strftime('%H%M',datetime('now','localtime'))
 union --День народження
 select CODE_PS--,23 --*,strftime('%H%M',datetime('now','localtime')) 
     from PROMOTION_SALE_FILTER PSF where  
-     PSF.TYPE_GROUP_FILTER=23  and @Datе between date(date('now','localtime'), '-1 day') and date(date('now','localtime'), '+1 day')     
+     PSF.TYPE_GROUP_FILTER=23  and @BirthDay between date(date('now','localtime'), '-1 day') and date(date('now','localtime'), '+1 day')     
 union  --Виключення по товару  
 select PSF.CODE_PS
 from PROMOTION_SALE_FILTER PSF where  PSF.TYPE_GROUP_FILTER=11 and PSF.RULE_GROUP_FILTER=-1 and   PSF.CODE_DATA=57924     
@@ -610,6 +619,7 @@ CREATE TABLE WARES_RECEIPT (
     SUM            NUMBER   NOT NULL,
     SUM_VAT        NUMBER   NOT NULL,
     SUM_DISCOUNT   NUMBER   NOT NULL,
+	PRICE_DEALER   NUMBER   NOT NULL,
     TYPE_PRICE     INTEGER  NOT NULL,
     PAR_PRICE_1    INTEGER  NOT NULL,
     PAR_PRICE_2    INTEGER  NOT NULL,
@@ -941,6 +951,9 @@ replace into PROMOTION_SALE_DEALER ( CODE_PS,Code_Wares,DATE_BEGIN,DATE_END,Code
 [SqlReplacePromotionSaleGroupWares]
 replace into PROMOTION_SALE_GROUP_WARES (CODE_GROUP_WARES_PS ,CODE_GROUP_WARES) values (@CodeGroupWaresPS, @CodeGroupWares )
 
-
+[SqlGetMinPriceIndicative]
+Select min(case when CODE_DEALER=-888888  then PRICE_DEALER else null end) as MinPrice
+,min(case when CODE_DEALER=-999999  then PRICE_DEALER else null end) as Indicative
+ from price where CODE_DEALER in(-999999,-888888) and CODE_WARES=@CodeWares
 [SqlEnd]
 */

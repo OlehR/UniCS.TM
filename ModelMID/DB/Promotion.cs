@@ -122,8 +122,8 @@ namespace ModelMID
     {
         public int CodeWarehouse { get; set; }
         public int TypeCard { get; set; }
-        public string Time { get; set; }
-        public string Date { get; set; }
+        public int Time { get; set; }
+        public DateTime BirthDay { get; set; }
         public int CodeWares { get; set; }
 
     }

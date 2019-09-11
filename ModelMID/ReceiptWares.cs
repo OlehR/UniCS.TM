@@ -5,16 +5,7 @@ using System.Text;
 namespace ModelMID
 {
     // - ділерська категорія - 2 ділерська категорія+знижка,3 -фіксація ціни,4-Обмеження по нижньому індикативу, 5-Обмеження по верхньому індикативу, 9 -акція
-    public enum TypePrice
-    {
-       NotDefine=0,
-       PriceDealer=1,
-       PDDiscont=2,
-       PDDiscontMin=3,
-       Indicative =4,
-       PDDiscontIndicative=5,
-       Promotion =9
-    }
+    
     public class ReceiptWares : IdReceiptWares
     {
                
@@ -40,7 +31,6 @@ namespace ModelMID
         /// <summary>
         /// Код одиниці виміру позамовчуванню
         /// </summary>
-        /// 
         public int TypeVat { get; set; }
         public int CodeDefaultUnit { get; set; }
         /// <summary>
@@ -48,15 +38,17 @@ namespace ModelMID
         /// </summary>
         //public int CoefficientDefaultUnit { get; set; }
 
-        // Інформація про ціноутворення
         /// <summary>
-        /// 
+        /// ціна за базову одиницю.
         /// </summary>
-        // ціна за базову одиницю.
         public decimal Price { get; set; } 
         // Дилерська категорія.                                       
-        public int CodeDealer { get; set; } 
+        //public int CodeDealer { get; set; }
 
+        /// <summary>
+        /// Ціна по ДК
+        /// </summary>
+        public decimal PriceDealer { get; set; }
         /// <summary>
         /// Тип ціноутворення ( 1 - ділерська категорія - 2 ділерська категорія+знижка,3 -фіксація ціни,4-Обмеження по нижньому індикативу, 5-Обмеження по верхньому індикативу, 9 -акція)
         /// </summary>
@@ -146,7 +138,7 @@ namespace ModelMID
             CodeDefaultUnit = 0;
             //CoefficientDefaultUnit = 0;
             Price = 0;
-            CodeDealer = 0;
+            //CodeDealer = 0;
             TypePrice = 0;
             SumDiscount = 0;
             TypeFound = 0;

@@ -86,6 +86,16 @@ namespace ModelMID
         Or=0,
         And=1
     }
-        
 
+    public enum TypePrice
+    {
+        NotDefine = 0,
+        PriceDealer = 1,
+        PDDiscont = 2,
+        PDDiscontMin = 3,
+        Indicative = 4,
+        PDDiscontIndicative = 5,
+        Promotion = 9,
+        PromotionIndicative = 10
+    }
 }

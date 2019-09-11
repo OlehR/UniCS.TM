@@ -65,6 +65,7 @@ namespace SharedLib
             var receipt = new Receipt(receiptId);
             receipt.NumberReceipt = parFiscalNumber;
             receipt.StateReceipt = 2;
+            db.RecalcPrice(receiptId);
             db.CloseReceipt(receipt);
             return true;
         }
@@ -137,10 +138,7 @@ namespace SharedLib
             if (r.Count == 1)
             {
                 var client = db.FindClient().First();
-                var RH = GetReceiptHead(idReceipt);
-                RH.CodeClient = client.CodeClient;
-                RH.PercentDiscount = client.PersentDiscount;
-                db.ReplaceReceipt(RH);
+                UpdateClientInReceipt(idReceipt, client);
 
                 return client;
                 
@@ -149,20 +147,28 @@ namespace SharedLib
             return null;
         }
 
-        public Client GetClientByPhone(string parBarCode)
+        public Client GetClientByPhone(IdReceipt idReceipt, string parBarCode)
         {
             var r = db.FindClientByPhone(parBarCode);
             if (r.Count == 1)
             {
                 var client = db.FindClient().First();
+                UpdateClientInReceipt(idReceipt, client);
                 return client;
-                //Res = new ProductViewModel() {Id=w. };
+                
             }
 
             return null;
         }
+        private void  UpdateClientInReceipt(IdReceipt idReceipt, Client parClient)
+        {
+            var RH = GetReceiptHead(idReceipt);
+            RH.CodeClient = parClient.CodeClient;
+            RH.PercentDiscount = parClient.PersentDiscount;
+            db.ReplaceReceipt(RH);
+        }
 
-
+        
         public IEnumerable<ReceiptWares> GetProductsByName( string parName)
         {
 

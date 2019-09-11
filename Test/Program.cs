@@ -31,11 +31,16 @@ namespace Test
         static void Main(string[] args)
         {
             var c = new Config("appsettings.json");
-            //CreateDataBase();
+            // CreateDataBase();
             //TestReceipt();
             //            var o = new SharedLib.Oracle();
             //var r =  o.Execute<ReceiptWares>("select w.code_wares CodeWares,w.name_wares as NameWares from dw.wares w where w.code_wares in (54882,54883)");
             CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
+            
+          /*  string varMidFile = Path.Combine(GlobalVar.PathDB, @"MID.db");
+            var SQLite = new WDB_SQLite(varMidFile);
+            SQLite.RecalcPrice(new IdReceipt() { IdWorkplace = 140701, CodePeriod = 20190910, CodeReceipt = 12 });
+            */
         }
 
         static void CreateDataBase()
@@ -110,7 +115,8 @@ namespace Test
   JOIN  dbo.V1C_DIM_UNIT_DIMENSION ud ON au.Unit_dimention_RRef=ud.UNIT_DIMENSION_RRef      
 
   WHERE dr._Date_Time BETWEEN CONVERT(DATE,DATEADD(DAY,0,DATEADD(YEAR,2000,GETDATE()))) AND CONVERT(DATE,DATEADD(DAY,1,DATEADD(YEAR,2000,GETDATE())))
---  AND ROUND(drw.amount*drw.price,2)<>drw.sum+drw.sum_bonus
+  --AND ROUND(drw.amount*drw.price,2)<>drw.sum+drw.sum_bonus
+--and is_promotion=1
   AND dr.warehouse_RRef= 0xB7A3001517DE370411DF7DD82E29F000
   --AND td.PERCENT_DISCOUNT<>[disc_perc_auto]
 --  AND dr.number='К0800250773'
@@ -131,7 +137,7 @@ namespace Test
                 {
                     if (LastLine.Number != null)
                     {
-                        Api.AddFiscalNumber(LastReceipt.ReceiptId, L.Number);
+                        Api.AddFiscalNumber(LastReceipt.ReceiptId, LastLine.Number);
                     }
 
                 }
@@ -161,6 +167,10 @@ namespace Test
                 Api.Bl.db.ReplaceWaresReceipt(RWE);
 
                 LastLine = L;
+            }
+            if (LastLine.Number != null)
+            {
+                Api.AddFiscalNumber(LastReceipt.ReceiptId, LastLine.Number);
             }
 
 

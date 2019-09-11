@@ -52,6 +52,10 @@ namespace SharedLib
         protected string SqlFindClientName = @"";
         protected string SqlFindClientPhone = @"";
         /// <summary>
+        /// 
+        /// </summary>
+        protected string SqlGetPersentDiscountClientByReceipt = "";
+        /// <summary>
         /// Запит, який вертає знайдених клієнтів
         /// </summary>
         protected string SqlFoundClient = @"";
@@ -121,11 +125,12 @@ namespace SharedLib
         protected string SqlPrepareLockFilterT5 = @"";
         protected string SqlListPS = @"";
         protected string SqlUpdatePrice = @"";
+        protected string SqlGetMinPriceIndicative = "";
 
-/*        protected string SqlGetLastUseCodeEkka = @"";
-        protected string SqlAddWaresEkka = @"";
-        protected string SqlDeleteWaresEkka = @"";
-        protected string SqlGetCodeEKKA = @"";*/
+        /*        protected string SqlGetLastUseCodeEkka = @"";
+                protected string SqlAddWaresEkka = @"";
+                protected string SqlDeleteWaresEkka = @"";
+                protected string SqlGetCodeEKKA = @"";*/
 
         protected string SqlTranslation = @"";
         protected string SqlFieldInfo = @"";
@@ -254,7 +259,9 @@ namespace SharedLib
         /// </summary>
         public virtual IEnumerable<ReceiptWares> FindWares(decimal parDiscount=0)
 		{
-            return this.db.Execute<object, ReceiptWares>(SqlFoundWares, new { Discount = parDiscount, @CodeDealer = 2 });
+            var Wares= this.db.Execute<object, ReceiptWares>(SqlFoundWares, new { Discount = parDiscount, @CodeDealer = 2 });
+            //var PD=db.GetDi
+            return Wares;
         }
 
         public virtual RezultFind FindWaresByName(string parPhone)
@@ -507,6 +514,9 @@ namespace SharedLib
             SqlFindClientCode = GetSQL("SqlFindClientCode");
             SqlFindClientName = GetSQL("SqlFindClientName");
             SqlFindClientPhone = GetSQL("SqlFindClientPhone");
+
+            SqlGetPersentDiscountClientByReceipt= GetSQL("SqlGetPersentDiscountClientByReceipt");
+
             SqlFoundClient = GetSQL("SqlFoundClient");
             SqlFoundWares = GetSQL("SqlFoundWares");
             SqlAdditionUnit = GetSQL("SqlAdditionUnit");
@@ -543,11 +553,12 @@ namespace SharedLib
             SqlPrepareLockFilterT4 = GetSQL("SqlPrepareLockFilterT4");
             SqlPrepareLockFilterT5 = GetSQL("SqlPrepareLockFilterT5");
             SqlListPS = GetSQL("SqlListPS");
-/*            SqlGetLastUseCodeEkka = GetSQL("SqlGetLastUseCodeEkka");
-            SqlAddWaresEkka = GetSQL("SqlAddWaresEkka");
-            SqlDeleteWaresEkka = GetSQL("SqlDeleteWaresEkka");
-            SqlGetCodeEKKA = GetSQL("SqlGetCodeEKKA");
-*/
+            /*            SqlGetLastUseCodeEkka = GetSQL("SqlGetLastUseCodeEkka");
+                        SqlAddWaresEkka = GetSQL("SqlAddWaresEkka");
+                        SqlDeleteWaresEkka = GetSQL("SqlDeleteWaresEkka");
+                        SqlGetCodeEKKA = GetSQL("SqlGetCodeEKKA");
+            */
+            SqlGetMinPriceIndicative= GetSQL("SqlGetMinPriceIndicative");
             SqlTranslation = GetSQL("SqlTranslation");
             SqlFieldInfo = GetSQL("SqlFieldInfo");
             SqlGetAllPermissions = GetSQL("SqlGetAllPermissions");
@@ -776,9 +787,22 @@ namespace SharedLib
 
         public virtual PricePromotion GetPrice(ParameterPromotion parPromotion)
         {
-            /*var  res=db.Execute<ParameterPromotion, PricePromotion>(SqlGetPrice, parPromotion);
+            var  res=db.Execute<ParameterPromotion, PricePromotion>(SqlGetPrice, parPromotion);
             if (res != null)
-                res.FirstOrDefault();*/
+                return res.FirstOrDefault();
+            return null;
+
+        }
+         public decimal GetPersentDiscountClientByReceipt(IdReceipt parIdReceipt)
+        {
+            return db.ExecuteScalar<IdReceipt, decimal>(SqlGetPersentDiscountClientByReceipt, parIdReceipt);
+        }
+
+        public virtual MinPriceIndicative GetMinPriceIndicative(IdReceiptWares parIdReceiptWares)
+        {
+            var res = db.Execute<IdReceiptWares,MinPriceIndicative>(SqlGetMinPriceIndicative, parIdReceiptWares);
+            if (res != null)
+                return res.FirstOrDefault();
             return null;
 
         }
