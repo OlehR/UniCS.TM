@@ -163,7 +163,7 @@ namespace ModernIntegration
                 Name = receiptWares.NameWares,
                 AdditionalDescription = receiptWares.NameWaresReceipt,//!!!TMP;
                 Image = null,
-                Price = receiptWares.Price,
+                Price = receiptWares.Price>0?receiptWares.Price: receiptWares.PriceDealer,
                 Weight = 0,//!!!TMP
                 DeltaWeight = 0,//!!!TMP
                 ProductWeightType = receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByPiece,//!!!TMP
