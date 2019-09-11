@@ -69,19 +69,18 @@ namespace SharedLib
             db.CloseReceipt(receipt);
             return true;
         }
-        public IdReceipt GetIdReceiptByReceiptId(Guid parReceiptId)
-        {
-            return null;
-        }
-        public ReceiptWares AddWaresBarCode(IdReceipt parReceipt, string parBarCode)
+        
+        public ReceiptWares AddWaresBarCode(IdReceipt parReceipt, string parBarCode, decimal parQuantity = 0)
         {
 
             var r = db.FindData(parBarCode, TypeFind.Wares);
             if (r.Count == 1)
             {
                 var w = db.FindWares().First();
+                if (parQuantity == 0)
+                    return w;
                 w.SetIdReceipt(parReceipt);
-                w.Quantity = 1;
+                w.Quantity = parQuantity;
 
                 //db.
                 return AddReceiptWares(w);
@@ -101,6 +100,8 @@ namespace SharedLib
                 db.ClearT1();
                 db.InsertT1(new T1 { Id = W.CodeWares,Data=W.CodeUnit});
                 var w = db.FindWares().First();
+                if (parQuantity == 0)
+                    return w;
                 w.SetIdReceipt(parReceipt);
                 w.Quantity = parQuantity;
                 return AddReceiptWares(w);

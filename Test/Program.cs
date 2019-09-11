@@ -32,10 +32,10 @@ namespace Test
         {
             var c = new Config("appsettings.json");
             // CreateDataBase();
-            //TestReceipt();
+            TestReceipt();
             //            var o = new SharedLib.Oracle();
             //var r =  o.Execute<ReceiptWares>("select w.code_wares CodeWares,w.name_wares as NameWares from dw.wares w where w.code_wares in (54882,54883)");
-            CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
+            //CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
             
           /*  string varMidFile = Path.Combine(GlobalVar.PathDB, @"MID.db");
             var SQLite = new WDB_SQLite(varMidFile);
@@ -73,8 +73,8 @@ namespace Test
             var Cat = api.GetAllCategories(TerminalId);
             var war = api.GetProductsByCategoryId(TerminalId, FastGroup);
             //      var r=api.GetReceiptItem(new ModelMID.IdReceipt {CodePeriod=20190614,CodeReceipt=1,IdWorkplace= 140701});
-            var res = api.AddProductByBarCode(TerminalId, "4823037501403");
-            res = api.AddProductByBarCode(TerminalId, "9062300108665");
+            var res = api.AddProductByBarCode(TerminalId, "4820016250604");
+            res = api.AddProductByBarCode(TerminalId, "5449000006271");
             res = api.AddProductByProductId(TerminalId, ProductId, 10);
             var Rec = api.ChangeQuantity(TerminalId, ProductId, 7);
 

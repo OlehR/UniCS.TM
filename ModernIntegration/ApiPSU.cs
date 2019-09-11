@@ -20,10 +20,10 @@ namespace ModernIntegration
         {
             Bl = new BL();
         }
-        public override ProductViewModel AddProductByBarCode(Guid parTerminalId, string parBarCode)
+        public override ProductViewModel AddProductByBarCode(Guid parTerminalId, string parBarCode, decimal parQuantity = 0)
         {
             var CurReceipt = GetCurrentReceiptByTerminalId(parTerminalId);
-            var RW = Bl.AddWaresBarCode(CurReceipt, parBarCode);
+            var RW = Bl.AddWaresBarCode(CurReceipt, parBarCode, parQuantity);
             return GetProductViewModel(RW);
         }
         public override ProductViewModel AddProductByProductId(Guid parTerminalId, Guid parProductId, decimal parQuantity = 0)
