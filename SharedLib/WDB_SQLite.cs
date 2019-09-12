@@ -149,6 +149,7 @@ namespace SharedLib
                 var MPI = GetMinPriceIndicative((IdReceiptWares)RW);
                 par.CodeWares = RW.CodeWares;
                 var Res = GetPrice(par);
+                var Price2Cat = GetPricePromotionSale2Category((IdReceiptWares)RW);
                 if(Res!=null && Res.PriceDealer>0)
                 {
                     RW.Price = MPI.GetPricePromotion( Res.PriceDealer);

@@ -9,7 +9,7 @@ SELECT CODE_GROUP_WARES AS CodeGroupWares,CODE_PARENT_GROUP_WARES AS CodeParentG
   FROM dbo.V1C_dim_GROUP_WARES ;
 
 [SqlGetDimWares]
-SELECT w.code_wares AS CodeWares, w.name_wares AS NameWares, w.code_group AS CodeGroup, w.articl AS Articl, w.code_unit AS CodeUnit, w.VAT AS PercentVat , w.VAT_OPERATION AS TypeVat, w.code_brand AS CodeBrand
+SELECT w.code_wares AS CodeWares, w.name_wares AS NameWares, w.code_group AS CodeGroup, w.articl AS Articl, w.code_unit AS CodeUnit, w.VAT AS PercentVat , w.VAT_OPERATION AS TypeVat, w.code_brand AS CodeBrand,Type_wares as TypeWares
   FROM dbo.Wares w
   
 [SqlGetDimAdditionUnit]
@@ -195,7 +195,7 @@ SELECT  --Склади дії
     AND  dp.d_end>getdate()
   
 UNION all
-SELECT 
+SELECT -- Товари чи рупи тварів
    CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
     ,1 AS CodeFilter
     ,CASE WHEN  dn.is_leaf=1 THEN 11 ELSE 15 end  AS TypeGroupFilter
@@ -285,6 +285,14 @@ UNION all
 [SqlGetPromotionSaleGroupWares]
 
 SELECT CODE_GROUP_WARES_PS as  CodeGroupWaresPS,CODE_GROUP_WARES  as CodeGroupWares FROM dbo.GetPromotionSaleGW ()
+
+[SqlGetPromotionSale2Category]
+
+  SELECT distinct CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS, dn.code AS CodeWares
+  FROM DW.dbo.V1C_doc_promotion_2category dp2c
+  JOIN dw.dbo.V1C_dim_nomen dn ON dn.IDRRef=dp2c.nomen_RRef
+  JOIN  DW.dbo.V1C_doc_promotion dp ON dp._IDRRef=dp2c.doc_promotion_RRef
+  WHERE dp.d_end>getdate()
 
 [SqlEnd]
 */

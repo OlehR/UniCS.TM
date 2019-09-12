@@ -156,14 +156,14 @@ namespace ModernIntegration
         /// <returns></returns>
         private ProductViewModel GetProductViewModel(ReceiptWares receiptWares)
         {
-            var Res = new ProductViewModel()
+          var Res = new ProductViewModel()
             {
                 Id = receiptWares.WaresId,
                 Code = receiptWares.CodeWares,
                 Name = receiptWares.NameWares,
                 AdditionalDescription = receiptWares.NameWaresReceipt,//!!!TMP;
                 Image = null,
-                Price = receiptWares.Price>0?receiptWares.Price: receiptWares.PriceDealer,
+                Price = receiptWares.Price > 0 ? receiptWares.Price : receiptWares.PriceDealer,
                 Weight = 0,//!!!TMP
                 DeltaWeight = 0,//!!!TMP
                 ProductWeightType = receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByPiece,//!!!TMP
@@ -173,13 +173,12 @@ namespace ModernIntegration
                 DiscountName = "",
                 WarningType = null,//!!!TMP 
                 CalculatedWeight = 0,
-                Tags = null,//!!!TMP // Різні мітки алкоголь, обмеження по часу. 
+                Tags = (receiptWares.TypeWares > 0 ? new List<Tag>() { new Tag() { Key = "AgeRestricted", Id = 0 }, new Tag() {Key= "TimeRestricted" ,Id=1} } : null),//!!!TMP // Різні мітки алкоголь, обмеження по часу. 
                 HasSecurityMark = false,//!!!TMP // Магнітна мітка, яку треба знімати.
                 TotalRows = receiptWares.Sort, //Сортування популярного.
                 WeightCategory = 0,//!!!TMP
                 IsProductOnProcessing = false//!!!TMP  Останній робочий продукт.
                 ///CategoryId=   !!!TMP
-
 
             };
             return Res;

@@ -67,6 +67,7 @@ select t.id_1 as CodeWares,w.name_wares NameWares,w.name_wares_receipt  as NameW
         udd.abr_unit abr_unit_default,
       --  ifnull(aud.coefficient,0) as CoefficientDefault,
         ifnull(pd.price_dealer,0.0) as PriceDealer
+		,w.Type_Wares as TypeWares
 from t$1 t
 left join wares w on t.id_1=w.code_wares
 left join price pd on ( pd.code_wares=t.id_1 and pd.code_dealer=@CodeDealer)
@@ -310,7 +311,7 @@ where
  psd.CODE_WARES = @CodeWares
  and datetime('now','localtime') between psd.Date_begin and psd.DATE_END
  and p.PRICE_DEALER>0
-union all
+union all -- По групам товарів
 select PSF.CODE_PS,0 as priority , 3 as Type_discont, PSD.DATA
   from wares w 
   join PROMOTION_SALE_GROUP_WARES PSGW on PSGW.CODE_GROUP_WARES=w.CODE_GROUP
@@ -319,17 +320,19 @@ select PSF.CODE_PS,0 as priority , 3 as Type_discont, PSD.DATA
   left join ExeptionPS EPS on  (PSF.CODE_PS=EPS.CODE_PS)
   where EPS.CODE_PS is null
   and w.CODE_WARES=@CodeWares
-union all
+union all --По товарам
 select PSF.CODE_PS,0 as priority , 3 as Type_discont, PSD.DATA
   from PROMOTION_SALE_FILTER PSF 
   join PROMOTION_SALE_DATA PSD on (PSD.CODE_WARES=0 and PSD.CODE_PS=PSF.CODE_PS ) 
   left join ExeptionPS EPS on  (PSF.CODE_PS=EPS.CODE_PS)
-  where  PSF.TYPE_GROUP_FILTER=15 and PSF.RULE_GROUP_FILTER=1 and   PSF.CODE_DATA=64236 and EPS.CODE_PS is null  
+  where  PSF.TYPE_GROUP_FILTER=11 and PSF.RULE_GROUP_FILTER=1 and   PSF.CODE_DATA=@CodeWares and EPS.CODE_PS is null  
 union all --акції для всіх товарів.
 select PSEW.CODE_PS,0 as priority , 3 as Type_discont, PSD.DATA
   from PSEW
   join PROMOTION_SALE_DATA PSD on (PSD.CODE_PS=PSEW.CODE_PS )
 
+[SqlGetPricePromotionSale2Category]
+select CODE_PS from PROMOTION_SALE_2_CATEGORY where CODE_WARES=@CodeWares
 
 [SqlGetPriceOld]
 select 
@@ -742,14 +745,16 @@ CREATE TABLE WARES (
 --    SIGN_3              NUMBER,
 --    OLD_ARTICL          TEXT,
     Percent_Vat         NUMBER   NOT NULL,
-    Type_VAT            TEXT     NOT NULL
+    Type_VAT            TEXT     NOT NULL,
 --    OFF_STOCK_METHOD    TEXT     NOT NULL,
 
 --    CODE_WARES_RELATIVE INTEGER,
 --    DATE_INSERT         DATETIME NOT NULL,
 --    USER_INSERT         INTEGER  NOT NULL,
 --    CODE_TRADE_MARK     INTEGER,
---    KEEPING_TIME        NUMBER
+--    KEEPING_TIME        NUMBER,
+      Type_Wares		 INTEGER   -- 0- Звичайний товар,1 - алкоголь, 2- тютюн.
+
 );
 
 CREATE TABLE ADDITION_UNIT (
@@ -874,6 +879,13 @@ CREATE TABLE PROMOTION_SALE_GROUP_WARES (
     CODE_GROUP_WARES INTEGER  NOT NULL
 );
 
+CREATE TABLE PROMOTION_SALE_2_category (
+    CODE_PS INTEGER  NOT NULL,
+    CODE_WARES INTEGER  NOT NULL
+);
+
+
+
 [SqlCreateMIDIndex]
 
 CREATE UNIQUE INDEX UNIT_DIMENSION_ID ON UNIT_DIMENSION ( CODE_UNIT );
@@ -900,14 +912,17 @@ CREATE INDEX PROMOTION_SALE_DEALER_ID ON PROMOTION_SALE_DEALER (Code_Wares,DATE_
 
 CREATE UNIQUE INDEX PROMOTION_SALE_GROUP_WARES_ID ON PROMOTION_SALE_GROUP_WARES ( CODE_GROUP_WARES,CODE_GROUP_WARES_PS );
 
+CREATE UNIQUE INDEX PROMOTION_SALE_2_category_ID ON PROMOTION_SALE_2_category ( Code_WARES,CODE_PS );
+
+
 [SqlReplaceUnitDimension]
 replace into UNIT_DIMENSION ( CODE_UNIT, NAME_UNIT, ABR_UNIT) values (@CodeUnit, @NameUnit,@AbrUnit);
 [SqlReplaceGroupWares]
 replace into  GROUP_WARES (CODE_GROUP_WARES,CODE_PARENT_GROUP_WARES,NAME)
              values (@CodeGroupWares,@CodeParentGroupWares,@Name);
 [SqlReplaceWares]
-replace into  Wares (CODE_WARES,CODE_GROUP,NAME_WARES, ARTICL,CODE_BRAND, CODE_UNIT, Percent_Vat,Type_VAT,NAME_WARES_RECEIPT, DESCRIPTION)
-             values (@CodeWares,@CodeGroup,@NameWares, @Articl,@CodeBrand,@CodeUnit, @PercentVat, @TypeVat,@NameWaresReceipt, @Description);
+replace into  Wares (CODE_WARES,CODE_GROUP,NAME_WARES, ARTICL,CODE_BRAND, CODE_UNIT, Percent_Vat,Type_VAT,NAME_WARES_RECEIPT, DESCRIPTION,Type_Wares)
+             values (@CodeWares,@CodeGroup,@NameWares, @Articl,@CodeBrand,@CodeUnit, @PercentVat, @TypeVat,@NameWaresReceipt, @Description,@TypeWares);
 [SqlReplaceAdditionUnit]
 replace into  Addition_Unit (CODE_WARES, CODE_UNIT, COEFFICIENT, DEFAULT_UNIT, WEIGHT, WEIGHT_NET )
               values (@CodeWares,@CodeUnit,@Coefficient, @DefaultUnit, @Weight, @WeightNet);
@@ -950,6 +965,9 @@ replace into PROMOTION_SALE_DEALER ( CODE_PS,Code_Wares,DATE_BEGIN,DATE_END,Code
 
 [SqlReplacePromotionSaleGroupWares]
 replace into PROMOTION_SALE_GROUP_WARES (CODE_GROUP_WARES_PS ,CODE_GROUP_WARES) values (@CodeGroupWaresPS, @CodeGroupWares )
+
+[SqlReplacePromotionSale2Category]
+replace into PROMOTION_SALE_2_category (CODE_PS, CODE_WARES) values (@CodePS, @CodeWares)
 
 [SqlGetMinPriceIndicative]
 Select min(case when CODE_DEALER=-888888  then PRICE_DEALER else null end) as MinPrice

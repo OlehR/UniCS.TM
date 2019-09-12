@@ -118,6 +118,12 @@ namespace ModelMID
         public int CodeGroupWares { get; set; }
     }
 
+    public class PromotionSale2Category
+    {
+        public int CodePS { get; set; }
+        public int CodeWares { get; set; }
+    }
+
     public class ParameterPromotion
     {
         public int CodeWarehouse { get; set; }
@@ -134,5 +140,7 @@ namespace ModelMID
         public int TypeDiscont { get; set; }
         public decimal PriceDealer { get; set; }
     }
+    
+
 
 }

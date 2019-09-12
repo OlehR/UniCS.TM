@@ -42,7 +42,12 @@ namespace ModelMID
         public int CodeUnit { get; set; }
         
         public string Description { get; set; }
-        
+        /// <summary>
+        /// 0-звичайний,1-алкоголь,2-тютюн
+        /// </summary>
+        public int TypeWares { get; set; }
+
+
 
     }
 }

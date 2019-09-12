@@ -31,8 +31,8 @@ namespace Test
         static void Main(string[] args)
         {
             var c = new Config("appsettings.json");
-            // CreateDataBase();
-            TestReceipt();
+             CreateDataBase();
+            //TestReceipt();
             //            var o = new SharedLib.Oracle();
             //var r =  o.Execute<ReceiptWares>("select w.code_wares CodeWares,w.name_wares as NameWares from dw.wares w where w.code_wares in (54882,54883)");
             //CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
@@ -103,8 +103,8 @@ namespace Test
   ,[is_promotion]
   ,dr.comment
   --,drw._Fld11310_RRRef
-  ,CONVERT(nchar(32), _Fld17312RRef, 2) AS type_Promotion
-  
+  ,SUBSTRING( sc._Description,4,2) +' '+CONVERT(nchar(32), _Fld17312RRef, 2) AS type_Promotion
+  --,SUBSTRING( sc._Description,4,2)  AS barcode_SC
  -- COUNT(*) 
   FROM dbo.V1C_doc_receipt dr 
   JOIN dbo.V1C_doc_receipt_wares drw ON dr._IDRRef = drw._IDRRef
@@ -112,9 +112,11 @@ namespace Test
   LEFT JOIN dbo.V1C_DIM_CARD dc ON dr.card_RRef = dc.Card_RRef
   LEFT JOIN dbo.V1C_DIM_TYPE_DISCOUNT TD ON TD.TYPE_DISCOUNT_RRef =DC.TYPE_DISCOUNT_RRef
   JOIN dbo.V1C_dim_addition_unit au ON drw.uom_RRef=au._IDRRef
-  JOIN  dbo.V1C_DIM_UNIT_DIMENSION ud ON au.Unit_dimention_RRef=ud.UNIT_DIMENSION_RRef      
+  JOIN  dbo.V1C_DIM_UNIT_DIMENSION ud ON au.Unit_dimention_RRef=ud.UNIT_DIMENSION_RRef 
+  JOIN   UTPPSU.dbo._Reference18060 sc ON drw.barcode_2 = sc._IDRRef
+    
 
-  WHERE dr._Date_Time BETWEEN CONVERT(DATE,DATEADD(DAY,0,DATEADD(YEAR,2000,GETDATE()))) AND CONVERT(DATE,DATEADD(DAY,1,DATEADD(YEAR,2000,GETDATE())))
+  WHERE dr._Date_Time BETWEEN CONVERT(DATE,DATEADD(DAY,-1,DATEADD(YEAR,2000,GETDATE()))) AND CONVERT(DATE,DATEADD(DAY,1,DATEADD(YEAR,2000,GETDATE())))
   --AND ROUND(drw.amount*drw.price,2)<>drw.sum+drw.sum_bonus
 --and is_promotion=1
   AND dr.warehouse_RRef= 0xB7A3001517DE370411DF7DD82E29F000
@@ -142,8 +144,8 @@ namespace Test
 
                 }
 
-                var p = Api.AddProductByProductId(TerminalId, IdWares.WaresId);
-                Api.ChangeQuantity(TerminalId, IdWares.WaresId, L.Amount);
+                var p = Api.AddProductByProductId(TerminalId, IdWares.WaresId,L.Amount);
+                //Api.ChangeQuantity(TerminalId, IdWares.WaresId, L.Amount);
 
                 if (!L.Number.Equals(LastLine.Number))
                 {

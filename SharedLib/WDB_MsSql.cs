@@ -54,6 +54,11 @@ namespace SharedLib
             parDB.ReplacePromotionSaleDealer(PSP);
             PSP = null;
 
+            SQL = GetSQL("SqlGetPromotionSale2Category");
+            var PS2c = db.Execute<PromotionSale2Category>(SQL);
+            parDB.ReplacePromotionSale2Category(PS2c);
+            PS2c = null;
+
 
             var UD = db.Execute<UnitDimension>(SqlGetDimUnitDimension);
             parDB.ReplaceUnitDimension(UD);

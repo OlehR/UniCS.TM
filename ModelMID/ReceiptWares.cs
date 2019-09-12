@@ -120,6 +120,10 @@ namespace ModelMID
         public decimal AdditionN3 { get; set; }
         public string AdditionC1 { get; set; }
         public DateTime AdditionD1 { get; set; }
+        /// <summary>
+        /// 0-звичайний,1-алкоголь,2-тютюн
+        /// </summary>
+        public int TypeWares { get; set; }
         public ReceiptWares()
         {
             Clear();

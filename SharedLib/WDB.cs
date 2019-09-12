@@ -168,6 +168,9 @@ namespace SharedLib
         protected string SqlReplacePromotionSaleGiff = @"";
         protected string SqlReplacePromotionSaleDealer = @"";
         protected string SqlReplacePromotionSaleGroupWares = @"";
+        protected string SqlReplacePromotionSale2Category = "";
+
+        protected string SqlGetPricePromotionSale2Category = "";
 
 
         public WDB(string parFileSQL)
@@ -593,7 +596,8 @@ namespace SharedLib
             SqlReplacePromotionSaleGiff = GetSQL("SqlReplacePromotionSaleGiff");
             SqlReplacePromotionSaleDealer = GetSQL("SqlReplacePromotionSaleDealer");
             SqlReplacePromotionSaleGroupWares = GetSQL("SqlReplacePromotionSaleGroupWares");
-
+            SqlReplacePromotionSale2Category = GetSQL("SqlReplacePromotionSale2Category");
+            SqlGetPricePromotionSale2Category = GetSQL("SqlGetPricePromotionSale2Category");
 
             return true;
         }
@@ -778,12 +782,19 @@ namespace SharedLib
             return true;
         }
 
+        public virtual bool ReplacePromotionSale2Category(IEnumerable<PromotionSale2Category> parData)
+        {
+            db.BulkExecuteNonQuery<PromotionSale2Category>(SqlReplacePromotionSale2Category, parData);
+            return true;
+        }
+
         public virtual IEnumerable<ReceiptWares> GetWaresFromFastGroup(int parCodeFastGroup)   { return null; }
         public virtual IEnumerable<FastGroup> GetFastGroup(int parCodeUpFastGroup)
         {
             var FG = new FastGroup { CodeUp = parCodeUpFastGroup };
             return db.Execute<FastGroup, FastGroup>(SqlGetFastGroup, FG);
         }
+
 
         public virtual PricePromotion GetPrice(ParameterPromotion parPromotion)
         {
@@ -793,6 +804,13 @@ namespace SharedLib
             return null;
 
         }
+
+        public virtual Int64 GetPricePromotionSale2Category(IdReceiptWares parIdReceiptWares)
+        {
+            return db.ExecuteScalar<IdReceiptWares, Int64>(SqlGetPricePromotionSale2Category, parIdReceiptWares);           
+
+        }
+        
          public decimal GetPersentDiscountClientByReceipt(IdReceipt parIdReceipt)
         {
             return db.ExecuteScalar<IdReceipt, decimal>(SqlGetPersentDiscountClientByReceipt, parIdReceipt);
