@@ -5,6 +5,8 @@ using System;
 using System.IO;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Test
 {
@@ -143,7 +145,7 @@ namespace Test
                     }
 
                 }
-
+                
                 var p = Api.AddProductByProductId(TerminalId, IdWares.WaresId,L.Amount);
                 //Api.ChangeQuantity(TerminalId, IdWares.WaresId, L.Amount);
 
@@ -177,5 +179,32 @@ namespace Test
 
 
         }
+
+        //private CancellationTokenSource ts = new CancellationTokenSource();
+
+        //private async Task<int> SomeFunction()
+        //{
+        //    var token = ts.Token;
+        //    ts.Cancel();
+        //    var b = await AAsynFunc(token);
+        //    return b ?? 0;
+        //}
+        //private Task<int?> AAsynFunc(CancellationToken token)
+        //{
+        //    return Task<int?>.Run(() =>
+        //    {
+        //        while (!token.IsCancellationRequested)
+        //        {
+        //            //DO something
+        //        }
+
+        //        return (int?) 10;
+        //    });
+        //}
+
+        //private async Task SomeFunction2()
+        //{
+        //    AAsynFunc().ContinueWith(async r => SomeFunction(await r));
+        //}
     }
 }
