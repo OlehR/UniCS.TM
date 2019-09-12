@@ -32,6 +32,7 @@ namespace ModernIntegration
             var g = CurReceipt.ReceiptId;
             Bl.AddWaresCode(CurReceipt, parProductId, parQuantity);
             ProductViewModel Res = null;
+            //TODO: OnReceiptChanged?.Invoke(receipt,terminalId);
             return Res;
         }
         public override ReceiptViewModel ChangeQuantity(Guid parTerminalId, Guid parProductId, decimal parQuantity)

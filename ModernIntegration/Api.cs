@@ -38,5 +38,7 @@ namespace ModernIntegration
         public virtual CustomerViewModel GetCustomerByBarCode(Guid parTerminalId, string parS) { return null; }
         public virtual CustomerViewModel GetCustomerByPhone(Guid parTerminalId,string parS) { return null; }
 
+        public Action<ReceiptViewModel,Guid> OnReceiptChanged { get; set; }
+
     }
 }
