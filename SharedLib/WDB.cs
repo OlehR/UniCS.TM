@@ -33,13 +33,10 @@ namespace SharedLib
 		protected CallWriteLogSQL varCallWriteLogSQL; // это тот самый член-делегат :))
 		*/
         public string varVersion = "0.0.1";
-        protected string SqlCreateT = @"";
-        protected string SqlInsertT1 = @"";
-        protected string SqlClearT1 = @"";
         protected string SqlCreateReceiptTable = @"";
         protected string SqlInitGlobalVar = @"";
         protected string SqlConfig = @"";
-        
+
         /// <summary>
         /// Процедура пошуку.(для Баз з можливістю stored procedure) oracle,mssql,...
         /// </summary>
@@ -55,6 +52,7 @@ namespace SharedLib
         /// 
         /// </summary>
         protected string SqlGetPersentDiscountClientByReceipt = "";
+        protected string SqlGetTypeDiscountClientByReceipt = "";
         /// <summary>
         /// Запит, який вертає знайдених клієнтів
         /// </summary>
@@ -138,14 +136,14 @@ namespace SharedLib
         protected string SqlGetAllPermissions = @"";
         protected string SqlCopyWaresReturnReceipt = @"";
 
-        protected string SqlReplaceUnitDimension= @"";
+        protected string SqlReplaceUnitDimension = @"";
         protected string SqlReplaceGroupWares = @"";
-        protected string SqlReplaceWares= @"";
-        protected string SqlReplaceAdditionUnit= @"";
-        protected string SqlReplaceBarCode= @"";
-        protected string SqlReplacePrice= @"";
-        protected string SqlReplaceTypeDiscount= @"";
-        protected string SqlReplaceClient= @"";
+        protected string SqlReplaceWares = @"";
+        protected string SqlReplaceAdditionUnit = @"";
+        protected string SqlReplaceBarCode = @"";
+        protected string SqlReplacePrice = @"";
+        protected string SqlReplaceTypeDiscount = @"";
+        protected string SqlReplaceClient = @"";
 
         protected string SqlGetWaresFromFastGroup = "";
         protected string SqlGetFastGroup = "";
@@ -169,9 +167,11 @@ namespace SharedLib
         protected string SqlReplacePromotionSaleDealer = @"";
         protected string SqlReplacePromotionSaleGroupWares = @"";
         protected string SqlReplacePromotionSale2Category = "";
+        protected string SqlReplacePromotionSaleGift = "";
 
         protected string SqlGetPricePromotionSale2Category = "";
 
+        protected string SqlGetPriceDealer = @"";
 
         public WDB(string parFileSQL)
         {
@@ -198,93 +198,40 @@ namespace SharedLib
                 {
                     return null;
                 }*/
-        public virtual bool InsertT1(T1 parT1)
-        {
-            return this.db.ExecuteNonQuery(SqlInsertT1, parT1) == 0;
-        }
 
         public virtual T GetConfig<T>(string parStr)
-		{
+        {
             return this.db.ExecuteScalar<object, T>(this.SqlConfig, new { NameVar = parStr });
             //;
         }
-		/// <summary>
-		/// Конектиться до бази та повертає табличку з правами.
-		/// </summary>
-		/// <param name="parLogin">Логін</param>
-		/// <param name="parPassword">Пароль</param>
-		/// <returns>row(код,назва,логін,пароль) Код користувача, -1 - Відсутній зв'язок з базою, -2  - неправильний логін/пароль</returns>
+        /// <summary>
+        /// Конектиться до бази та повертає табличку з правами.
+        /// </summary>
+        /// <param name="parLogin">Логін</param>
+        /// <param name="parPassword">Пароль</param>
+        /// <returns>row(код,назва,логін,пароль) Код користувача, -1 - Відсутній зв'язок з базою, -2  - неправильний логін/пароль</returns>
 
-/*		public virtual DataRow Login (string parLogin,string parPassword)
-		{
-			return null;
-		}*/
+        /*		public virtual DataRow Login (string parLogin,string parPassword)
+                {
+                    return null;
+                }*/
 
-/*
-		public virtual DataTable RightOfAccess (int parCodeUser)
-		{
-			return null;
-		}
-*/		
-		/// <summary>
-		/// Шукає дані по строці вводу. Результат в тимчасову табличку.
-		/// </summary>
-		/// <param name="parStr">Рядок</param>
-		/// <param name="parTypeFind">Що шукати 0 - все,1 - товари,2-клієнти,3-купони та акціїї </param>
-		/// <returns>
-		///Повертає що знайшли.
-		///0 - нічого не знайшли,1 - товар, 2 - клієнт,3 - Купон.
-		///</returns>
-		public virtual ModelMID.RezultFind FindData( string parStr,TypeFind parTypeFind = TypeFind.All)
-		{
-            
-            RezultFind varRez;
-			varRez.TypeFind = TypeFind.All;
-			varRez.Count=0;
-			return varRez;
-		}
+        /*
+                public virtual DataTable RightOfAccess (int parCodeUser)
+                {
+                    return null;
+                }
+        */
 
-		/// <summary>
-		/// Повертає кількість знайдених елементів.
-		/// </summary>
-		/// <returns></returns>
-		public virtual int GetCountT1()
-		{
-            return this.db.ExecuteScalar<int>(@"select count(*) cn from T$1");
-        }
-
-        public virtual bool ClearT1()
-        {
-            return this.db.ExecuteNonQuery(SqlClearT1) == 0;
-        }
         /// <summary>
         /// Повертає знайдений товар/товари
         /// </summary>
-        public virtual IEnumerable<ReceiptWares> FindWares(decimal parDiscount=0)
-		{
-            var Wares= this.db.Execute<object, ReceiptWares>(SqlFoundWares, new { Discount = parDiscount, @CodeDealer = 2 });
-            //var PD=db.GetDi
+        public virtual IEnumerable<ReceiptWares> FindWares(string parBarCode = null, string parName = null, int parCodeWares = 0, int parCodeUnit = 0)
+        {
+            var Wares = this.db.Execute<object, ReceiptWares>(SqlFoundWares, new { CodeWares = parCodeWares, CodeUnit = parCodeUnit, BarCode = parBarCode, Name = parName == null ? null : "%" + parName + "%", CodeDealer = GlobalVar.DefaultCodeDealer });
             return Wares;
         }
 
-        public virtual RezultFind FindWaresByName(string parPhone)
-        {
-            return new RezultFind() { Count = 0, TypeFind = TypeFind.Client };
-        }
-
-        /*
-                /// <summary>
-                /// Повертає Одиниці по товару
-                /// </summary>
-                /// <param name="parCodeWares">Код товару</param>
-                /// <returns>
-                ///Повертає DataTable з одиницями виміру
-                ///</returns>
-                public virtual System.Data.DataTable UnitWares(int parCodeWares)
-                {
-                    return null;;
-                }
-                */
 
         /// <summary>
         /// Повертає знайденого клієнта(клієнтів)
@@ -293,17 +240,10 @@ namespace SharedLib
         /// <returns>
         ///Повертає  IEnumerable<Client> з клієнтами
         ///</returns>
-        public virtual IEnumerable<Client> FindClient()
-		{
-            return this.db.Execute<Client>(SqlFoundClient);
-        }
-
-
-        public virtual RezultFind FindClientByPhone(string parPhone)
+        public virtual IEnumerable<Client> FindClient(string parBarCode = null,string parPhone=null ,string parName = null, int parCodeClient=0)
         {
-            return new RezultFind() {Count=0,TypeFind= TypeFind.Client };
+            return this.db.Execute<object, Client>(SqlFoundClient, new { CodeClient=parCodeClient, Phone= parPhone, BarCode = parBarCode, Name = (parName == null ? null : "%" + parName + "%")});
         }
-
 
         /// <summary>
         /// Вертає код Чека в зазначеному періоді
@@ -503,13 +443,10 @@ namespace SharedLib
 		}
         protected bool InitSQL()
         {
-            SqlCreateT = GetSQL("SqlCreateT");
-            SqlInsertT1 = GetSQL("SqlInsertT1");
-            SqlClearT1 = GetSQL("SqlClearT1");
             SqlCreateReceiptTable = GetSQL("SqlCreateReceiptTable");
             SqlInitGlobalVar = GetSQL("SqlInitGlobalVar");
             SqlConfig = GetSQL("SqlConfig");
-            SqlFind = GetSQL("SqlFind");
+            
             SqlFindWaresBar = GetSQL("SqlFindWaresBar");
             SqlFindWaresCode = GetSQL("SqlFindWaresCode");
             SqlFindWaresName = GetSQL("SqlFindWaresName");
@@ -519,6 +456,7 @@ namespace SharedLib
             SqlFindClientPhone = GetSQL("SqlFindClientPhone");
 
             SqlGetPersentDiscountClientByReceipt= GetSQL("SqlGetPersentDiscountClientByReceipt");
+            SqlGetTypeDiscountClientByReceipt = GetSQL("SqlGetTypeDiscountClientByReceipt");
 
             SqlFoundClient = GetSQL("SqlFoundClient");
             SqlFoundWares = GetSQL("SqlFoundWares");
@@ -597,8 +535,12 @@ namespace SharedLib
             SqlReplacePromotionSaleDealer = GetSQL("SqlReplacePromotionSaleDealer");
             SqlReplacePromotionSaleGroupWares = GetSQL("SqlReplacePromotionSaleGroupWares");
             SqlReplacePromotionSale2Category = GetSQL("SqlReplacePromotionSale2Category");
-            SqlGetPricePromotionSale2Category = GetSQL("SqlGetPricePromotionSale2Category");
+            SqlReplacePromotionSaleGift = GetSQL("SqlReplacePromotionSaleGift");
 
+            SqlGetPricePromotionSale2Category = GetSQL("SqlGetPricePromotionSale2Category");
+            
+
+            SqlGetPriceDealer = GetSQL("SqlGetPriceDealer");
             return true;
         }
 
@@ -782,6 +724,13 @@ namespace SharedLib
             return true;
         }
 
+        public virtual bool ReplacePromotionSaleGift(IEnumerable<PromotionSaleGift> parData)
+        {
+            db.BulkExecuteNonQuery<PromotionSaleGift>(SqlReplacePromotionSaleGift, parData);
+            return true;
+        }
+
+
         public virtual bool ReplacePromotionSale2Category(IEnumerable<PromotionSale2Category> parData)
         {
             db.BulkExecuteNonQuery<PromotionSale2Category>(SqlReplacePromotionSale2Category, parData);
@@ -797,12 +746,19 @@ namespace SharedLib
 
 
         public virtual PricePromotion GetPrice(ParameterPromotion parPromotion)
-        {
-            var  res=db.Execute<ParameterPromotion, PricePromotion>(SqlGetPrice, parPromotion);
-            if (res != null)
-                return res.FirstOrDefault();
-            return null;
+        {            
+            var PriceDealer = db.ExecuteScalar<ParameterPromotion, decimal>(SqlGetPriceDealer, parPromotion);
+            var Res = new PricePromotion(){ Price = PriceDealer };
+            foreach (var el in db.Execute<ParameterPromotion, PricePromotion>(SqlGetPrice, parPromotion))
+            {
+                if(el.CalcPrice(PriceDealer)< Res.Price)
+                {
+                    Res = el;
+                    Res.Price = el.CalcPrice(PriceDealer);
+                }
 
+            }
+            return Res;
         }
 
         public virtual Int64 GetPricePromotionSale2Category(IdReceiptWares parIdReceiptWares)
@@ -810,11 +766,20 @@ namespace SharedLib
             return db.ExecuteScalar<IdReceiptWares, Int64>(SqlGetPricePromotionSale2Category, parIdReceiptWares);           
 
         }
+
         
-         public decimal GetPersentDiscountClientByReceipt(IdReceipt parIdReceipt)
+        [Obsolete("Устарівша функція використовувувати акційний механізм через GetTypeDiscountClientByReceipt")]
+        public decimal GetPersentDiscountClientByReceipt(IdReceipt parIdReceipt)
         {
             return db.ExecuteScalar<IdReceipt, decimal>(SqlGetPersentDiscountClientByReceipt, parIdReceipt);
         }
+
+        public int GetTypeDiscountClientByReceipt(IdReceipt parIdReceipt)
+        {
+            return db.ExecuteScalar<IdReceipt, int>(SqlGetTypeDiscountClientByReceipt, parIdReceipt);
+        }
+        
+
 
         public virtual MinPriceIndicative GetMinPriceIndicative(IdReceiptWares parIdReceiptWares)
         {

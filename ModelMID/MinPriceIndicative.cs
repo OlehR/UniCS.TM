@@ -6,7 +6,7 @@ namespace ModelMID
 {
     public class MinPriceIndicative
     {
-        public TypePrice typePrice = TypePrice.PriceDealer;
+        public eTypePrice typePrice = eTypePrice.PriceDealer;
         public decimal MinPrice { get; set; }
         public decimal Indicative { get; set; }
         /// <summary>
@@ -15,21 +15,22 @@ namespace ModelMID
         /// <param name="parPriceDialer"></param>
         /// <param name="parPercentDiscount"></param>
         /// <returns></returns>
-        public decimal GetPrice(decimal parPriceDialer,decimal parPercentDiscount=0)
+        public decimal GetPrice(decimal parPrice,bool parIsUseMinPrice)
         {
-            decimal varPrice = parPriceDialer * (100M - parPercentDiscount) / 100M;
+            decimal varPrice = parPrice; /** (100M - parPercentDiscount) / 100M;
             if (parPercentDiscount != 0)
-                typePrice=TypePrice.PDDiscont;
-            if (varPrice< MinPrice)
+                typePrice=eTypePrice.PDDiscont;*/
+
+            if(parIsUseMinPrice && varPrice < MinPrice)
             {
                 varPrice = MinPrice;
-                typePrice = TypePrice.PDDiscontMin;
+                typePrice = eTypePrice.PDDiscontMin;
             }
 
             if (varPrice < Indicative)
             {
                 varPrice = Indicative;
-                typePrice = TypePrice.PDDiscontIndicative;
+                typePrice = eTypePrice.PDDiscontIndicative;
             }
 
             return varPrice;
@@ -39,19 +40,22 @@ namespace ModelMID
         /// </summary>
         /// <param name="parPrice"></param>
         /// <returns></returns>
-        public decimal GetPricePromotion(decimal parPrice)
+    /*    public decimal GetPricePromotion(PricePromotion parPP)
         {
-            typePrice = TypePrice.Promotion;
+            typePrice = eTypePrice.Promotion;
 
-            if (parPrice < Indicative)
+            if (parPP.TypeDiscont == eTypeDiscount.PercentDiscount)
+                GetPrice(parPP.Price);
+
+            if (parPP.Price < Indicative)
             {                
-                typePrice = TypePrice.PromotionIndicative;
+                typePrice = eTypePrice.PromotionIndicative;
                 return Indicative;
             }
 
-            return parPrice;
+            return parPP.Price;
         }
-
+        */
 
     }
 }

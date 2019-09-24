@@ -26,11 +26,11 @@ namespace SharedLib
                 varD = DateTime.Today;
             switch (GlobalVar.TypePeriod)
             {
-                case Period.Year:
+                case ePeriod.Year:
                     return Convert.ToInt32(varD.ToString("yyyy"));
-                case Period.Month:
+                case ePeriod.Month:
                     return Convert.ToInt32(varD.ToString("yyyyMM"));
-                case Period.Day:
+                case ePeriod.Day:
                     return Convert.ToInt32(varD.ToString("yyyyMMdd"));
             }
             return 0;

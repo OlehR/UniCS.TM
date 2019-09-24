@@ -6,7 +6,7 @@ namespace ModelMID
 {
     class Payment:IdReceipt
     {
-        TypePay TypePay { get; set;}
+        eTypePay TypePay { get; set;}
         decimal Sum  { get; set;}
         decimal SumExt { get; set; }
         string NumberTerminal { get; set; }

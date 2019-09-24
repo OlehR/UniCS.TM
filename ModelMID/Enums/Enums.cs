@@ -4,13 +4,13 @@ using System.Text;
 
 namespace ModelMID
 {
-    public enum Period
+    public enum ePeriod
     {
         Year,
         Month,
         Day
     }
-    public enum TypeAccess
+    public enum eTypeAccess
     {
         Question = -3, //Виводити вікно для введення логіна які розширять права на цю операцію. Якщо не введено не дозволяти цю операцію. 
         NoErrorAccess = -2, //не виконувати дію Видавати повідомленя про відсутність прав. Не виводити вікно для введення логіна які розширять права на цю операцію			
@@ -18,7 +18,7 @@ namespace ModelMID
         Yes = 0 // Є права на зазначену операцію.		
     }
 
-    public enum TypePay
+    public enum eTypePay
     {
         Partiall = 0,
         Cash = 1,
@@ -26,7 +26,7 @@ namespace ModelMID
         NonCash = 3
     }
 
-    public enum TypeBonus
+    public enum eTypeBonus
     {
         NonBonus = 0, // 
         Bonus = 1,
@@ -39,20 +39,20 @@ namespace ModelMID
 	/// Інформація про те що знайшли в універсальному вікні пошуку
 	/// 0 - все,1 - товари,2-клієнти,3-купони та акціїї
 	/// </summary>	
-	public enum TypeFind
+	public enum eTypeFind
     {
         All = 0,
         Wares,
         Client,
         Action
     }
-    public struct RezultFind
+    public struct eRezultFind
     {
-        public TypeFind TypeFind;
+        public eTypeFind TypeFind;
         public int Count;
     }
 
-    public enum TypePayment
+    public enum eTypePayment
     {
         Cash,
         Bonus,
@@ -60,13 +60,13 @@ namespace ModelMID
         MoneyBox
 
     }
-    public enum TypeCommit
+    public enum eTypeCommit
     {
         Auto,
         Manual
     }
 
-    public enum StatePromotionSale
+    public enum eStatePromotionSale
     {
         Completed=1,
         Prepare =0,
@@ -74,20 +74,20 @@ namespace ModelMID
         Ready=9
     }
 
-    public enum TypeWorkCoupon
+    public enum eTypeWorkCoupon
     {
         WithOutCoupon=0, // без купона, 
         All=1,  //на всі товари, 
         Coupon=2 //тільки на товар зчитаний перед купоном.
     }
-    public enum RuleGroup
+    public enum eRuleGroup
     {
         Not=-1,
         Or=0,
         And=1
     }
 
-    public enum TypePrice
+    public enum eTypePrice
     {
         NotDefine = 0,
         PriceDealer = 1,
@@ -97,5 +97,35 @@ namespace ModelMID
         PDDiscontIndicative = 5,
         Promotion = 9,
         PromotionIndicative = 10
+    }
+
+
+    public enum eTypeDiscount
+    {
+        NotDefine = 0,
+        /// <summary>
+        /// Фіксована ціна
+        /// </summary>
+        Price = 1,
+        /// <summary>
+        /// Знижка в ГРН
+        /// </summary>
+        PriceDiscount = 2,
+        /// <summary>
+        /// Знижка в відсотках
+        /// </summary>
+        PercentDiscount = 3,
+        /// <summary>
+        /// Заміна ДК (Не використовується)
+        /// </summary>
+        ReplacePriceDealer = 4,
+        /// <summary>
+        /// Набір
+        /// </summary>
+        Set = 21,
+        /// <summary>
+        /// Подарок
+        /// </summary>
+        Gift = 41
     }
 }

@@ -27,20 +27,12 @@ namespace SharedLib
 
             if (GlobalVar.RecalcPriceOnLine)
                 db.RecalcPrice((IdReceipt)parW);
-
             return parW;
-
         }
 
         public bool AddReceipt(IdReceipt parReceipt)
         {
-            var receipt = new Receipt()
-            {
-                IdWorkplace = parReceipt.IdWorkplace,
-                CodePeriod = parReceipt.CodePeriod,
-                CodeReceipt = parReceipt.CodeReceipt
-            };
-
+            var receipt = new Receipt(parReceipt);
             return db.AddReceipt(receipt);
         }
         public bool AddReceipt(Receipt parReceipt)
@@ -72,42 +64,39 @@ namespace SharedLib
         
         public ReceiptWares AddWaresBarCode(IdReceipt parReceipt, string parBarCode, decimal parQuantity = 0)
         {
-
-            var r = db.FindData(parBarCode, TypeFind.Wares);
-            if (r.Count == 1)
+            var w = db.FindWares(parBarCode);
+            if (w.Count() == 1)
             {
-                var w = db.FindWares().First();
+                var W= w.First();
                 if (parQuantity == 0)
-                    return w;
-                w.SetIdReceipt(parReceipt);
-                w.Quantity = parQuantity;
-
-                //db.
-                return AddReceiptWares(w);
-                //Res = new ProductViewModel() {Id=w. };
+                    return W;
+                W.SetIdReceipt(parReceipt);
+                W.Quantity = parQuantity;
+                return AddReceiptWares(W);
             }
             else
                 return null;
-            //db.AddReceipt
+
         }
         public ReceiptWares AddWaresCode(IdReceipt parReceipt, Guid parProductId, decimal parQuantity = 0)
         {
-
             int CodeWares = 0;
             if (int.TryParse(parProductId.ToString().Substring(24), out CodeWares))
             {
-                var W = new IdReceiptWares { WaresId = parProductId };
-                db.ClearT1();
-                db.InsertT1(new T1 { Id = W.CodeWares,Data=W.CodeUnit});
-                var w = db.FindWares().First();
-                if (parQuantity == 0)
-                    return w;
-                w.SetIdReceipt(parReceipt);
-                w.Quantity = parQuantity;
-                return AddReceiptWares(w);
+                var WId = new IdReceiptWares { WaresId = parProductId };
+
+                var w = db.FindWares(null, null, WId.CodeWares, WId.CodeUnit);
+                if (w.Count() == 1)
+                {
+                    var W = w.First();
+                    if (parQuantity == 0)
+                        return W;
+                    W.SetIdReceipt(parReceipt);
+                    W.Quantity = parQuantity;
+                    return AddReceiptWares(W);
+                }
             }
             return null;
-            //Res = new ProductViewModel() {Id=w. };         
         }
 
         public IEnumerable<ReceiptWares>  ViewReceiptWares(IdReceipt parIdReceipt)
@@ -119,13 +108,15 @@ namespace SharedLib
         }
         public bool ChangeQuantity(IdReceiptWares parReceiptWaresId, decimal  parQuantity)
         {
-            db.ClearT1();
-            db.InsertT1(new T1 { Id = parReceiptWaresId.CodeWares, Data = parReceiptWaresId.CodeUnit });
-            var w = db.FindWares().First();
-            w.SetIdReceiptWares(parReceiptWaresId);
-            w.Quantity = parQuantity;
-            db.UpdateQuantityWares(w);
-            return true;
+            var W = db.FindWares(null, null, parReceiptWaresId.CodeWares, parReceiptWaresId.CodeUnit);
+            if (W.Count() == 1)
+            {
+                var w = W.First();
+                w.SetIdReceiptWares(parReceiptWaresId);
+                w.Quantity = parQuantity;
+                return db.UpdateQuantityWares(w);                
+            }
+            return false;
             
         }
         public Receipt GetReceiptHead(IdReceipt idReceipt)
@@ -135,32 +126,30 @@ namespace SharedLib
 
         public Client GetClientByBarCode(IdReceipt idReceipt,string parBarCode)
         {
-            var r = db.FindData(parBarCode, TypeFind.Client);
-            if (r.Count == 1)
+            var r = db.FindClient(parBarCode);
+            if (r.Count() == 1)
             {
-                var client = db.FindClient().First();
+                var client = r.First();
                 UpdateClientInReceipt(idReceipt, client);
-
                 return client;
-                
             }
-            
             return null;
         }
 
-        public Client GetClientByPhone(IdReceipt idReceipt, string parBarCode)
+        public Client GetClientByPhone(IdReceipt idReceipt, string parPhone)
         {
-            var r = db.FindClientByPhone(parBarCode);
-            if (r.Count == 1)
+            var r = db.FindClient(null, parPhone);
+            if (r.Count() == 1)
             {
-                var client = db.FindClient().First();
+                var client = r.First();
                 UpdateClientInReceipt(idReceipt, client);
                 return client;
-                
             }
-
             return null;
+
+
         }
+
         private void  UpdateClientInReceipt(IdReceipt idReceipt, Client parClient)
         {
             var RH = GetReceiptHead(idReceipt);
@@ -172,15 +161,13 @@ namespace SharedLib
         
         public IEnumerable<ReceiptWares> GetProductsByName( string parName)
         {
-
-            var r = db.FindWaresByName(parName);
-            if (r.Count >0)
-            {                
-                return db.FindWares();                
+            var r = db.FindWares(null,parName);
+            if (r.Count() >0)
+            {
+                return r;
             }
             else
                 return null;
-            //db.AddReceipt
         }
 
  

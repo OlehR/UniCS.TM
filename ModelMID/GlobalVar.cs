@@ -40,11 +40,11 @@ namespace ModelMID
         /// </summary>
         public static int IdWorkPlace = 140701;
 
-        public static int CodeWarehouse = 8151; // 1407 Сента;
-                                                   /// <summary>
-                                                   /// Тип періоду документів (0 - Глобальний, 1- рік, 2 -місяць, 3 - день.)
-                                                   /// </summary>
-        public static Period TypePeriod = Period.Day;
+        public static int CodeWarehouse = 9; 
+        /// <summary>
+        /// Тип періоду документів (0 - Глобальний, 1- рік, 2 -місяць, 3 - день.)
+        /// </summary>
+        public static ePeriod TypePeriod = ePeriod.Day;
         /// <summary>
         /// Мінімальна кількість симвлолів в штрихкоді товару
         /// </summary>
@@ -60,7 +60,7 @@ namespace ModelMID
 
         public static int DefaultCodePatternReturnReceipt = -2;
 
-        public static int[] DefaultCodeDealer = { 0, 0, 0, 0, 0 };
+        public static int DefaultCodeDealer = 2;
 
         public static int DefaultCodeClient = 0;
 

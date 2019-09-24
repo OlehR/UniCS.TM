@@ -9,7 +9,7 @@ namespace ModelMID
         public Int64 CodePS { get; set; }
         public string NamePS { get; set; }
         public int CodePattern { get; set; }
-        public StatePromotionSale State { get; set; }
+        public eStatePromotionSale State { get; set; }
         public DateTime DateBegin { get; set; }
         public DateTime DateEnd { get; set; }
         /// <summary>
@@ -22,7 +22,7 @@ namespace ModelMID
         public int TypeData { get; set; }
         public int Priority { get; set; }
         public decimal SumOrder { get; set; }
-        public TypeWorkCoupon TypeWorkCoupon { get; set; }
+        public eTypeWorkCoupon TypeWorkCoupon { get; set; }
         public string BarCodeCoupon { get; set; }
         public DateTime DateCreate { get; set; }
         public int UserCreate { get; set; }
@@ -38,9 +38,9 @@ namespace ModelMID
 
         public bool UseIndicative { get; set; }
         /// <summary>
-        /// Тип знижки (1-ціна,2-знижка,3-%знижки, 4- заміна ДК) і тд (select t.*, t.rowid from C.DATA_NAME t where t.data_level=50)
+        /// Тип знижки (11-ціна,12-знижка,13-%знижки, 14- заміна ДК,41-Подарок) і тд (select t.*, t.rowid from C.DATA_NAME t where t.data_level=50)
         /// </summary>
-        public int TypeDiscount { get; set; }
+        public eTypeDiscount TypeDiscount { get; set; }
         /// <summary>
         /// 0- на кожну позицію, 1-на кожну n- позицію, до n позиції,після n-кількості (n-data_ADDITIONAL_CONDITION )  (select t.*, t.rowid from C.DATA_NAME t where t.data_level=51)
         /// </summary>
@@ -68,7 +68,7 @@ namespace ModelMID
         /// <summary>
         /// Правило групи ( 1- логіче &  , -1 - Заперечення)
         /// </summary>
-        public RuleGroup RuleGroupFilter { get; set; }
+        public eRuleGroup RuleGroupFilter { get; set; }
 
         //int CodeProporty { get; set; }
         public int? CodeChoice { get; set; }
@@ -79,24 +79,26 @@ namespace ModelMID
         public int UserCreate { get; set; }
     }
 
-    /*
-   public class PromotionSaleGiff
+    
+   public class PromotionSaleGift
     {
-        int CodePS { get; set; }
-        int CodeGroup { get; set; }
+        public Int64 CodePS { get; set; }
+        public int NumberGroup { get; set; }
         /// <summary>
-        /// Тип (10- товари 20-Час,30-клієнт,4-Номер чека, 50-склади, 60-Форма оплати, ) ( select t.*, t.rowid from C.DATA_NAME t where t.data_level=53)
+        /// Код товару
         /// </summary>
-        int TypeGroupFilter { get; set; }
+        public int CodeWares { get; set; }
         /// <summary>
-        /// Правило групи ( 1- логіче &  , -1 - Заперечення)
+        /// Тип знижки (11-ціна,12-знижка,13-%знижки, 14- заміна ДК,41-Подарок) і тд (select t.*, t.rowid from C.DATA_NAME t where t.data_level=50)
         /// </summary>
-        RuleGroup RuleGroupFilter { get; set; }
+        public eTypeDiscount TypeDiscount { get; set; }
+        public decimal Data { get; set; }//власне ціна, знижка , ...
+        public decimal Quantity { get; set; }
 
-        DateTime DateCreate { get; set; }
-        int UserCreate { get; set; }
+        public DateTime DateCreate { get; set; }
+        public int UserCreate { get; set; }
     }
-    */
+    
 
 
     public class PromotionSaleDealer
@@ -120,7 +122,7 @@ namespace ModelMID
 
     public class PromotionSale2Category
     {
-        public int CodePS { get; set; }
+        public Int64 CodePS { get; set; }
         public int CodeWares { get; set; }
     }
 
@@ -131,14 +133,35 @@ namespace ModelMID
         public int Time { get; set; }
         public DateTime BirthDay { get; set; }
         public int CodeWares { get; set; }
+        public int CodeDealer { get; set; }
 
     }
     public class PricePromotion
     {
         public Int64 CodePs { get; set; }
         public int Priority { get; set; }
-        public int TypeDiscont { get; set; }
-        public decimal PriceDealer { get; set; }
+        public eTypeDiscount TypeDiscont { get; set; }
+        public decimal Data { get; set; }        
+        public decimal Price { get; set; }
+        public int IsIgnoreMinPrice { get; set; }
+        public decimal CalcPrice(decimal parPrice)
+        {
+
+            //decimal curPrice = 0;
+            switch (TypeDiscont)
+            {
+                case eTypeDiscount.Price:
+                    return (Data > 0 && Data < parPrice ? Data : parPrice);
+                case eTypeDiscount.PriceDiscount:
+                    return parPrice - Data;
+                case eTypeDiscount.PercentDiscount:
+                    return parPrice * (100m - Data) / 100m;
+                default:
+                    return parPrice;
+            }
+        }
+
+            
     }
     
 

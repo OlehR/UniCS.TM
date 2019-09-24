@@ -30,6 +30,12 @@ namespace SharedLib
         {
             string SQL;
 
+            SQL = GetSQL("SqlGetPromotionSaleGift");
+            var PSGf = db.Execute<PromotionSaleGift>(SQL);
+            parDB.ReplacePromotionSaleGift(PSGf);
+            PSGf = null;
+
+
             SQL = GetSQL("SqlGetPromotionSaleGroupWares");
             var PSGW = db.Execute<PromotionSaleGroupWares>(SQL);
             parDB.ReplacePromotionSaleGroupWares(PSGW);
@@ -47,6 +53,12 @@ namespace SharedLib
             var PSF = db.Execute<PromotionSaleFilter>(SQL);
             parDB.ReplacePromotionSaleFilter(PSF);
             PSF = null;
+
+            SQL = GetSQL("SqlGetPromotionSaleData");
+            var PSD = db.Execute<PromotionSaleData>(SQL);
+            parDB.ReplacePromotionSaleData(PSD);
+            PSF = null;
+
 
 
             SQL = GetSQL("SqlGetPromotionSaleDealer");
@@ -98,9 +110,7 @@ namespace SharedLib
             var FW = db.Execute<FastWares>(SQL);
             parDB.ReplaceFastWares(FW);
             FW = null;
-
-
-            
+                                   
 
             return true;
         }

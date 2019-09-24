@@ -52,13 +52,15 @@ namespace ModelMID
         /// <summary>
         /// Тип ціноутворення ( 1 - ділерська категорія - 2 ділерська категорія+знижка,3 -фіксація ціни,4-Обмеження по нижньому індикативу, 5-Обмеження по верхньому індикативу, 9 -акція)
         /// </summary>
-        public TypePrice TypePrice { get; set; }
+        public eTypePrice TypePrice { get; set; }
         /// <summary>
         ///  ДК,Код акції
         /// </summary>
         public long ParPrice1 { get; set; }
         //Номер набору, підставлена ДК тощо
         public long ParPrice2 { get; set; }
+
+        public long ParPrice3 { get; set; }
         /// <summary>
         /// 
         /// </summary>
@@ -124,6 +126,10 @@ namespace ModelMID
         /// 0-звичайний,1-алкоголь,2-тютюн
         /// </summary>
         public int TypeWares { get; set; }
+        /// <summary>
+        /// Штрихкод 2 категорії
+        /// </summary>
+        public string BarCode2Category { get; set; }
         public ReceiptWares()
         {
             Clear();

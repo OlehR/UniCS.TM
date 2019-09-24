@@ -7,7 +7,7 @@ namespace SharedLib
     public class SQL
     {
         private string ConectionString;
-        public TypeCommit TypeCommit { get; set; }
+        public eTypeCommit TypeCommit { get; set; }
         public SQL(String varConectionString)
         {
             ConectionString = varConectionString;            

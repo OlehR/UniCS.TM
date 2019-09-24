@@ -14,12 +14,12 @@ namespace SharedLib
         SQLiteConnection connection = null;
         SQLiteTransaction transaction = null;
 
-        public TypeCommit TypeCommit { get; set; } 
+        public eTypeCommit TypeCommit { get; set; } 
         public SQLite(String varConectionString):base(varConectionString)
         {
             connection = new SQLiteConnection("Data Source="+varConectionString+ ";Version=3;");
             connection.Open();
-            TypeCommit = TypeCommit.Auto;
+            TypeCommit = eTypeCommit.Auto;
         }
 
 
@@ -46,14 +46,14 @@ namespace SharedLib
 
         public override int ExecuteNonQuery<T>(string parQuery, T Parameters )
         {
-            if(TypeCommit==TypeCommit.Auto)
+            if(TypeCommit==eTypeCommit.Auto)
              return connection.Execute(parQuery, Parameters);
             else
              return connection.Execute(parQuery, Parameters,transaction);
         }
         public override int ExecuteNonQuery(string parQuery)
         {
-            if (TypeCommit == TypeCommit.Auto)
+            if (TypeCommit == eTypeCommit.Auto)
                 return connection.Execute(parQuery);
             else
                 return connection.Execute(parQuery,null,transaction);

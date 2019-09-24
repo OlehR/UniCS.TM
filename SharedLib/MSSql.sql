@@ -89,15 +89,29 @@ SELECT
     ,1 AS NumberGroup
     ,0 AS CodeWares
     ,1 AS UseIndicative
-    ,3 AS TypeDiscouunt
+    ,13 AS TypeDiscount--%
     ,0 AS AdditionalCondition
     ,MAX(pn.[percent]) AS Data
-    ,0 AS DataAdditionalCondition
+    ,1 AS DataAdditionalCondition --Ігнорувати мінімальні ціни
   FROM DW.dbo.V1C_doc_promotion_nomen pn
   --JOIN dw.dbo.V1C_dim_nomen dn ON pn.nomen_RRef=dn.IDRRef
   JOIN DW.dbo.V1C_doc_promotion dp ON dp._IDRRef=pn.doc_promotion_RRef
   WHERE dp.d_end>getdate() --AND number=8
   GROUP BY CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number)
+UNION ALL
+SELECT
+   CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
+    ,1 AS NumberGroup
+    ,0 AS CodeWares
+    ,1 AS UseIndicative
+    ,13 AS TypeDiscount--%
+    ,0 AS AdditionalCondition
+    ,dp.[percent] AS Data
+    ,0 AS DataAdditionalCondition
+  --,dp.[comment]
+  FROM DW.dbo.V1C_doc_promotion dp
+  WHERE dp.d_end>getdate() 
+  AND dp.[percent]<>0
 
 [SqlGetPromotionSaleDealer]
 SELECT 9000000000+CONVERT( INT,YEAR(dpg.date_time)*100000+dpg.number) AS CodePS,   CONVERT(INT,dn.code) AS CodeWares, pg.date_beg AS DateBegin,pg.date_end AS DateEnd,CONVERT(INT,tp.code) AS CodeDealer
@@ -180,7 +194,7 @@ SELECT  --Склади дії
   WHERE dp.d_end>getdate()
 
 UNION all
-SELECT  --Склади дії
+SELECT  --Вид дисконтної карти (Тип Клієнта)
     CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
     ,1 AS CodeFilter
     ,32 AS TypeGroupFilter 
@@ -195,7 +209,7 @@ SELECT  --Склади дії
     AND  dp.d_end>getdate()
   
 UNION all
-SELECT -- Товари чи рупи тварів
+SELECT -- Товари чи групи тварів
    CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
     ,1 AS CodeFilter
     ,CASE WHEN  dn.is_leaf=1 THEN 11 ELSE 15 end  AS TypeGroupFilter
@@ -230,7 +244,6 @@ UNION all
 --AND dn.is_leaf=0
 
 union all
-
 
 SELECT --День в Тижні
      CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
@@ -281,6 +294,23 @@ UNION all
   ,null AS DataEnd
   FROM  DW.dbo.V1C_doc_promotion dp 
   WHERE dp.d_end>getdate() AND kind_promotion= 0x8CA05E08A127F853433EF4373AE9DC39
+UNION all
+SELECT -- Товари  набору (Основні)
+   CONVERT(INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
+    ,pk.number_kit AS CodeFilter
+    ,CASE WHEN  dn.is_leaf=1 THEN 11 ELSE 15 end  AS TypeGroupFilter
+    ,1 AS RuleGroupFilter
+    ,0 AS CodeProporty
+    ,0 AS CodeChoice 
+    ,CONVERT(INT,dn.code) as Data 
+  --,dn.[desc]
+  -- pn.doc_promotion_RRef, MIN(pn.[percent]), MAX(pn.[percent])
+    ,CONVERT(NUMERIC,NULL) AS DataEnd
+  FROM DW.dbo.V1C_doc_promotion_kit pk
+  JOIN dw.dbo.V1C_dim_nomen dn ON pk.nomen_RRef=dn.IDRRef
+  JOIN DW.dbo.V1C_doc_promotion dp ON dp._IDRRef=pk.doc_promotion_RRef
+  WHERE dp.d_end>getdate() AND pk.is_main=1
+
 
 [SqlGetPromotionSaleGroupWares]
 
@@ -293,6 +323,21 @@ SELECT CODE_GROUP_WARES_PS as  CodeGroupWaresPS,CODE_GROUP_WARES  as CodeGroupWa
   JOIN dw.dbo.V1C_dim_nomen dn ON dn.IDRRef=dp2c.nomen_RRef
   JOIN  DW.dbo.V1C_doc_promotion dp ON dp._IDRRef=dp2c.doc_promotion_RRef
   WHERE dp.d_end>getdate()
+
+[SqlGetPromotionSaleGift]
+SELECT -- Товари  набору (Основні)
+   CONVERT(INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
+    ,pk.number_kit AS NumberGroup
+    ,CONVERT(INT,dn.code) as CodeWares
+    ,CASE WHEN  pk.[percent] IS NULL OR pk.[percent]=0 THEN 11 ELSE 13 END  AS TypeDiscount
+    ,CASE WHEN  pk.[percent] IS NULL OR pk.[percent]=0 THEN pk.price ELSE pk.[percent] END  AS Data
+    ,1 as  Quantity
+  FROM DW.dbo.V1C_doc_promotion_kit pk
+  JOIN dw.dbo.V1C_dim_nomen dn ON pk.nomen_RRef=dn.IDRRef
+  JOIN DW.dbo.V1C_doc_promotion dp ON dp._IDRRef=pk.doc_promotion_RRef
+  WHERE dp.d_end>getdate() AND
+  pk.is_main=0
+
 
 [SqlEnd]
 */

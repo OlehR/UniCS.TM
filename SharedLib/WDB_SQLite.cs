@@ -17,6 +17,7 @@ namespace SharedLib
         protected string SqlCreateMIDTable = @"";
         protected string SqlCreateMIDIndex = @"";
 
+        
         /// <summary>
         /// 
         /// </summary>
@@ -41,7 +42,7 @@ namespace SharedLib
 
             db = new SQLite(string.IsNullOrEmpty(parConnect) ? Path.Combine(GlobalVar.PathDB,  @"MID.db") : parConnect);//,"",this.varCallWriteLogSQL);
                                                                   //this.db.ExecuteNonQuery("ATTACH ':memory:' AS m");
-            db.ExecuteNonQuery(this.SqlCreateT);
+            
             db.ExecuteNonQuery("ATTACH '" + varReceiptFile + "' AS rc");
         }
 
@@ -49,22 +50,24 @@ namespace SharedLib
         {
             SqlCreateMIDTable = GetSQL("SqlCreateMIDTable");
             SqlCreateMIDIndex = GetSQL("SqlCreateMIDIndex");
+            
             return true;
         }
-        public override RezultFind FindData(string parStr, TypeFind parTypeFind = TypeFind.All)
+/*
+        public override eRezultFind FindData(string parStr, eTypeFind parTypeFind = eTypeFind.All)
         {
-            RezultFind varRezult;
+            eRezultFind varRezult;
             varRezult.Count = 0;
-            varRezult.TypeFind = TypeFind.All;
+            varRezult.TypeFind = eTypeFind.All;
             string varStr = parStr.Trim();
             Int64 varNumber = 0;
             Int64.TryParse(varStr, out varNumber);
             this.db.ExecuteNonQuery("delete from T$1");
             // Шукаемо Товар
 
-            if (parTypeFind != TypeFind.Client)
+            if (parTypeFind != eTypeFind.Client)
             {
-                varRezult.TypeFind = TypeFind.Wares;
+                varRezult.TypeFind = eTypeFind.Wares;
                 if (varNumber > 0)
                 {
                     if (varStr.Length >= GlobalVar.MinLenghtBarCodeWares)
@@ -88,9 +91,9 @@ namespace SharedLib
             }
             // ШукаемоКлієнта
 
-            if (parTypeFind != TypeFind.Wares)
+            if (parTypeFind != eTypeFind.Wares)
             {
-                varRezult.TypeFind = TypeFind.Client;
+                varRezult.TypeFind = eTypeFind.Client;
                 if (varNumber > 0)
                 {
                     if (varStr.Length >= GlobalVar.MinLenghtBarCodeClient)
@@ -115,33 +118,28 @@ namespace SharedLib
 			varRezult.Count=this.GetCountT1();
 
 			if( varRezult.Count==0) 
-				varRezult.TypeFind=TypeFind.All;
+				varRezult.TypeFind=eTypeFind.All;
 				
 			return varRezult;
 			
 		}
+        */
 
-        public override RezultFind FindClientByPhone(string parPhone)
-        {
-            ClearT1();
-            this.db.ExecuteNonQuery<object>(SqlFindClientPhone, new { Phone = parPhone });
-            return new RezultFind() { Count = GetCountT1(), TypeFind = TypeFind.Client };
-        }
 
-        public override RezultFind FindWaresByName(string parName)
-        {
-            ClearT1();
-            this.db.ExecuteNonQuery<object>(SqlFindWaresName, new { Name = "%"+ parName.Trim().Replace(" ","%") + "%" });
-            return new RezultFind() { Count = GetCountT1(), TypeFind = TypeFind.Wares };
-        }              				
-	
         public override bool RecalcPrice(IdReceipt parIdReceipt)
         {
             var RH = ViewReceipt(parIdReceipt);
 
-            var par = new ParameterPromotion() { CodeWarehouse = 9/*RH.CodeWarehouse*/, BirthDay= DateTime.Now.AddDays(-3).Date, Time=Convert.ToInt32( RH.DateReceipt.ToString("HHmm")), TypeCard=-1};
+            var par = new ParameterPromotion() {
+                CodeWarehouse = GlobalVar.CodeWarehouse,
+                BirthDay = DateTime.Now.AddDays(-3).Date,
+                Time =Convert.ToInt32( RH.DateReceipt.ToString("HHmm")),
+                TypeCard =GetTypeDiscountClientByReceipt(parIdReceipt),
+                CodeDealer=GlobalVar.DefaultCodeDealer
+            };
 
-            var PercentDiscount = GetPersentDiscountClientByReceipt(parIdReceipt);
+            //var PercentDiscount = GetPersentDiscountClientByReceipt(parIdReceipt);
+
             var r = ViewReceiptWares(parIdReceipt);
             
             foreach (var RW in r)
@@ -149,18 +147,49 @@ namespace SharedLib
                 var MPI = GetMinPriceIndicative((IdReceiptWares)RW);
                 par.CodeWares = RW.CodeWares;
                 var Res = GetPrice(par);
-                var Price2Cat = GetPricePromotionSale2Category((IdReceiptWares)RW);
-                if(Res!=null && Res.PriceDealer>0)
+
+                Int64 CodePS2Cat = 0;
+                decimal Percent2Cat = 0;
+                if (RW.BarCode2Category != null && RW.BarCode2Category.Length == 13)
                 {
-                    RW.Price = MPI.GetPricePromotion( Res.PriceDealer);
-                    RW.TypePrice = MPI.typePrice;
-                    RW.ParPrice1 = Res.CodePs;                   
+                    Percent2Cat = Convert.ToInt32(RW.BarCode2Category.Substring(3, 2));
+                    CodePS2Cat = GetPricePromotionSale2Category((IdReceiptWares)RW);
                 }
-                else
+
+                if(Res!=null )//&& Res.CodePs>0)
                 {
-                    RW.Price = MPI.GetPrice(RW.PriceDealer, PercentDiscount);
-                    RW.TypePrice = MPI.typePrice;
+                    RW.Price = MPI.GetPrice(Res.Price,Res.IsIgnoreMinPrice==0);
+                    if (CodePS2Cat > 0 && Percent2Cat > 0)
+                    {
+                        RW.TypePrice = eTypePrice.Promotion;
+                        RW.ParPrice1 = CodePS2Cat;
+                    }
+                    else
+                    {
+                        RW.TypePrice = MPI.typePrice;
+                        RW.ParPrice1 = Res.CodePs;
+                        RW.ParPrice2 = (int)Res.TypeDiscont;
+                        RW.ParPrice3 = (int) Res.Data;
+                    }
+                    RW.Price = RW.Price * (100M - Percent2Cat) / 100;
                 }
+/*                else
+                {
+                    
+                    if (CodePS2Cat > 0 && Percent2Cat > 0)
+                    {
+                        RW.Price = RW.PriceDealer * (100M - Percent2Cat) / 100;
+                        RW.TypePrice = eTypePrice.Promotion;
+                        RW.ParPrice1 = CodePS2Cat;
+                    }
+                    else
+                    {
+                        RW.Price = MPI.GetPrice(RW.PriceDealer, );
+                        RW.TypePrice = MPI.typePrice;
+                    }                        
+
+                }*/
+
                 ReplaceWaresReceipt(RW);
             }
             RecalcHeadReceipt(parIdReceipt);
