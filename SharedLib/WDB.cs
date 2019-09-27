@@ -34,20 +34,14 @@ namespace SharedLib
 		*/
         public string varVersion = "0.0.1";
         protected string SqlCreateReceiptTable = @"";
-        protected string SqlInitGlobalVar = @"";
+        
         protected string SqlConfig = @"";
 
         /// <summary>
         /// Процедура пошуку.(для Баз з можливістю stored procedure) oracle,mssql,...
         /// </summary>
         protected string SqlFind = @"";
-        protected string SqlFindWaresBar = @"";
-        protected string SqlFindWaresCode = @"";
-        protected string SqlFindWaresName = @"";
-        protected string SqlFindClientBar = @"";
-        protected string SqlFindClientCode = @"";
-        protected string SqlFindClientName = @"";
-        protected string SqlFindClientPhone = @"";
+       
         /// <summary>
         /// 
         /// </summary>
@@ -444,16 +438,9 @@ namespace SharedLib
         protected bool InitSQL()
         {
             SqlCreateReceiptTable = GetSQL("SqlCreateReceiptTable");
-            SqlInitGlobalVar = GetSQL("SqlInitGlobalVar");
+            
             SqlConfig = GetSQL("SqlConfig");
             
-            SqlFindWaresBar = GetSQL("SqlFindWaresBar");
-            SqlFindWaresCode = GetSQL("SqlFindWaresCode");
-            SqlFindWaresName = GetSQL("SqlFindWaresName");
-            SqlFindClientBar = GetSQL("SqlFindClientBar");
-            SqlFindClientCode = GetSQL("SqlFindClientCode");
-            SqlFindClientName = GetSQL("SqlFindClientName");
-            SqlFindClientPhone = GetSQL("SqlFindClientPhone");
 
             SqlGetPersentDiscountClientByReceipt= GetSQL("SqlGetPersentDiscountClientByReceipt");
             SqlGetTypeDiscountClientByReceipt = GetSQL("SqlGetTypeDiscountClientByReceipt");
@@ -787,8 +774,12 @@ namespace SharedLib
             if (res != null)
                 return res.FirstOrDefault();
             return null;
-
         }
+        public virtual int  GetIdWorkplaceByTerminalId(string parTerminalId)
+        {
+            return 0901;
+        }
+
     }
 
 }

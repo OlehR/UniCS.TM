@@ -10,9 +10,14 @@ namespace SharedLib
     public class BL
     {
         public WDB_SQLite db;
+        /// <summary>
+        /// Для швидкого пошуку 
+        /// </summary>
+        SortedList<Guid, int> WorkId;
         public BL()
         {
             db = new WDB_SQLite();
+            WorkId = new SortedList<Guid, int>();
         }
         public ReceiptWares AddReceiptWares(ReceiptWares parW)
         {
@@ -39,11 +44,22 @@ namespace SharedLib
         {
             return db.AddReceipt(parReceipt);
         }
-
+        
         public int GetIdWorkplaceByTerminalId(Guid parTerminalId)
         {
+            if (WorkId.ContainsKey(parTerminalId))
+                return WorkId[parTerminalId];
+            else
+            {
+                int WI = db.GetIdWorkplaceByTerminalId(parTerminalId.ToString());
+                if(WI>0)
+                {
+                    WorkId.Add(parTerminalId, WI);
+                    return WI;
+                }
+            }
             //!!!TMP Треба доробляти!!!
-            return 140701;
+            return 0901;
         }
         public IdReceipt GetNewIdReceipt(Guid parTerminalId,int parCodePeriod=0)
         {            

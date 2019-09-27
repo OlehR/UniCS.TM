@@ -112,6 +112,22 @@ SELECT
   FROM DW.dbo.V1C_doc_promotion dp
   WHERE dp.d_end>getdate() 
   AND dp.[percent]<>0
+UNION ALL
+SELECT -- Кількість товари  набору (Основні)
+   CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
+    ,pk.number_kit AS NumberGroup
+    ,0 AS CodeWares
+    ,1 AS UseIndicative
+    ,41 AS TypeDiscount--%
+    ,0 AS AdditionalCondition
+    ,MAX(pk.amount) AS Data
+    ,1 AS DataAdditionalCondition --Ігнорувати мінімальні ціни
+  FROM DW.dbo.V1C_doc_promotion_kit pk
+  JOIN dw.dbo.V1C_dim_nomen dn ON pk.nomen_RRef=dn.IDRRef
+  JOIN DW.dbo.V1C_doc_promotion dp ON dp._IDRRef=pk.doc_promotion_RRef
+  WHERE dp.d_end>getdate() AND
+  pk.is_main=0
+  GROUP BY CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number),pk.number_kit
 
 [SqlGetPromotionSaleDealer]
 SELECT 9000000000+CONVERT( INT,YEAR(dpg.date_time)*100000+dpg.number) AS CodePS,   CONVERT(INT,dn.code) AS CodeWares, pg.date_beg AS DateBegin,pg.date_end AS DateEnd,CONVERT(INT,tp.code) AS CodeDealer
@@ -181,7 +197,7 @@ AND pg.subdivision_RRef=0x9078001517DE370411DFFDEC4389A931;
 [SqlGetPromotionSaleFilter]
 SELECT  --Склади дії
     CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
-    ,1 AS CodeFilter
+    ,1 AS CodeGroupFilter
     ,51 AS TypeGroupFilter 
     ,1 AS RuleGroupFilter
     ,0 AS CodeProporty
@@ -196,7 +212,7 @@ SELECT  --Склади дії
 UNION all
 SELECT  --Вид дисконтної карти (Тип Клієнта)
     CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
-    ,1 AS CodeFilter
+    ,1 AS CodeGroupFilter
     ,32 AS TypeGroupFilter 
     ,1 AS RuleGroupFilter
     ,0 AS CodeProporty
@@ -211,7 +227,7 @@ SELECT  --Вид дисконтної карти (Тип Клієнта)
 UNION all
 SELECT -- Товари чи групи тварів
    CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
-    ,1 AS CodeFilter
+    ,1 AS CodeGroupFilter
     ,CASE WHEN  dn.is_leaf=1 THEN 11 ELSE 15 end  AS TypeGroupFilter
     ,1 AS RuleGroupFilter
     ,0 AS CodeProporty
@@ -228,7 +244,7 @@ SELECT -- Товари чи групи тварів
 UNION all
   SELECT --Заборонені товари
    CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
-    ,1 AS CodeFilter
+    ,1 AS CodeGroupFilter
     ,CASE WHEN  dn.is_leaf=1 THEN 11 ELSE 15 end  AS TypeGroupFilter
     ,-1 AS RuleGroupFilter
     ,0 AS CodeProporty
@@ -247,7 +263,7 @@ union all
 
 SELECT --День в Тижні
      CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
-    ,1 AS CodeFilter
+    ,1 AS CodeGroupFilter
     ,26  AS TypeGroupFilter --День в Тижні
     ,1 AS RuleGroupFilter
     ,0 AS CodeProporty
@@ -269,7 +285,7 @@ END
 UNION all
 SELECT --Час
      CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
-    ,1 AS CodeFilter
+    ,1 AS CodeGroupFilter
     ,22  AS TypeGroupFilter --Час
     ,1 AS RuleGroupFilter
     ,0 AS CodeProporty
@@ -285,7 +301,7 @@ SELECT --Час
 UNION all
   SELECT -- Відносно дня народження.
      CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
-    ,1 AS CodeFilter
+    ,1 AS CodeGroupFilter
     ,23  AS TypeGroupFilter --
     ,1 AS RuleGroupFilter
     ,0 AS CodeProporty
@@ -297,7 +313,7 @@ UNION all
 UNION all
 SELECT -- Товари  набору (Основні)
    CONVERT(INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
-    ,pk.number_kit AS CodeFilter
+    ,pk.number_kit AS CodeGroupFilter
     ,CASE WHEN  dn.is_leaf=1 THEN 11 ELSE 15 end  AS TypeGroupFilter
     ,1 AS RuleGroupFilter
     ,0 AS CodeProporty

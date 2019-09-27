@@ -36,9 +36,9 @@ namespace Test
         {
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-            //CreateDataBase(); //Створення бази
+            CreateDataBase(); //Створення бази
             //TestReceipt(); //
-            CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
+            //CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
             //            var o = new SharedLib.Oracle();
             //var r =  o.Execute<ReceiptWares>("select w.code_wares CodeWares,w.name_wares as NameWares from dw.wares w where w.code_wares in (54882,54883)");
 
@@ -100,7 +100,7 @@ namespace Test
 
         static void CreateReceipDay()
         {
-            var SQLGetReceipt = @"SELECT top(200) ISNULL(td.PERCENT_DISCOUNT,0) AS PERCENT_DISCOUNT, dc.bar_code,  dr.number,dr.date_time
+            var SQLGetReceipt = @"SELECT /*top(200)*/ ISNULL(td.PERCENT_DISCOUNT,0) AS PERCENT_DISCOUNT, dc.bar_code,  dr.number,dr.date_time
   ,w.Code_Wares
   ,dbo.GetCodeUnit(ud.code_unit)  AS Code_Unit
   , drw.amount
@@ -126,7 +126,8 @@ namespace Test
   --AND ROUND(drw.amount*drw.price,2)<>drw.sum+drw.sum_bonus
 --and is_promotion=1
   AND dr.warehouse_RRef= 0xB7A3001517DE370411DF7DD82E29F000 --
-  --AND _Fld17312RRef=0xA6F61431ECE9ED4646ECAA3A735174ED --о виду дисконтних карт
+  --AND _Fld17312RRef=0xAF5E2CDABF65241E4EB3EC36EC1F11E2 --Комплект
+  --AND _Fld17312RRef=0xA6F61431ECE9ED4646ECAA3A735174ED --По виду дисконтних карт
 /*0x8CA05E08A127F853433EF4373AE9DC39 --Скидка на день рождения
 0xA19CCECEDC498AF84560C115E6F7418A  --Количество одного товара в документе превысило
 0xA6F61431ECE9ED4646ECAA3A735174ED  --По виду дисконтных карт

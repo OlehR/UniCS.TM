@@ -181,9 +181,7 @@ update wares_receipt set  quantity= @Quantity, sort=@Sort,
     			case when @CodeUnit=0 then code_unit else @CodeUnit end
                      
 [SqlMoveMoney]
-
 [SqlAddZ]
-
 [SqlAddLog]
 
 [SqlGetNewCodeReceipt]
@@ -284,195 +282,28 @@ select PSEW.CODE_PS,0 as priority , 3 as Type_discont, PSD.DATA, PSD.DATA_ADDITI
 [SqlGetPricePromotionSale2Category]
 select CODE_PS from PROMOTION_SALE_2_CATEGORY where CODE_WARES=@CodeWares
 
-[SqlGetPriceOld]
-select 
-       case 
-         when @Discount=0 then pd.price_dealer
-         when pd.fixed_price='1'  and @Discount<>0 and current_date between 
-              ifnull(pd.fixed_begin_date,'1001-01-01') and ifnull(pd.fixed_end_date,'9999-12-31')
-            then pd.price_dealer    
-           
-         when pd.indicative_active=1 and @Discount<>0 and current_date between 
-              ifnull(pd.indicative_begin_date,'1001-01-01') and ifnull(pd.indicative_end_date,'9999-12-31')
-            then 
-               case
-                  when pd.price_dealer*(1-@Discount)< ifnull(pd.indicative_min_price,0) then pd.indicative_min_price
-                  when pd.price_dealer*(1-@Discount)> ifnull(pd.indicative_max_price,9999999999) then   pd.indicative_max_price
-                  else  pd.price_dealer*(1-@Discount) 
-                end   
-         else pd.price_dealer*(1-@Discount)
-       end  price_dealer_calc,
-       case 
-         when @Discount=0 then 1
-         when pd.fixed_price='1'  and @Discount<>0 and current_date between 
-              ifnull(pd.fixed_begin_date,'1001-01-01') and ifnull(pd.fixed_end_date,'9999-12-31')
-            then 3   
-           
-         when pd.indicative_active=1 and @Discount<>0 and current_date between 
-              ifnull(pd.indicative_begin_date,'1001-01-01') and ifnull(pd.indicative_end_date,'9999-12-31')
-            then 
-               case
-                  when pd.price_dealer*(1-@Discount)< ifnull(pd.indicative_min_price,0) then 4
-                  when pd.price_dealer*(1-@Discount)> ifnull(pd.indicative_max_price,9999999999) then   5
-                  else  2
-                end   
-         else 2
-       end  price_dealer_Type
-       from price_dealer pd
-       where pd.code_dealer=@CodeDealer and pd.code_wares=@CodeWares
-[SqlPrepareLockFilterT1]
-delete from c.t$_promotion_sale_wares;
-insert into t$_promotion_sale_wares (code_wares, code_ps, type_group_filter)
-    -- Список Товарів
-    select cd.code_data,ps.code_ps,psf.type_group_filter
-      from promotion_sale ps 
-           join promotion_sale_filter psf on (ps.code_ps=psf.code_ps)
-           join choice_data cd on ( psf.code_choice = cd.code_choice) 
-       where psf.type_group_filter=11
-    union    -- Бренди
-    select w.code_wares,ps.code_ps,psf.type_group_filter
-      from promotion_sale ps 
-           join promotion_sale_filter psf on (ps.code_ps=psf.code_ps)
-           join choice_data cd on ( psf.code_choice = cd.code_choice) 
-           join wares w on ( cd.code_data=w.code_brand )
-       where psf.type_group_filter=14
-    union    -- Групи товарів
-    select w.code_wares,ps.code_ps,psf.type_group_filter
-      from promotion_sale ps 
-           join promotion_sale_filter psf on (ps.code_ps=psf.code_ps)
-           join choice_data cd on ( psf.code_choice = cd.code_choice) 
-           join wares w on ( cd.code_data=w.code_group)
-       where psf.type_group_filter=15;
+[SqlGetPricePromotionKit]
+with wk as 
+(select psd.CODE_PS,psd.DATA,psfw.code_data as Code_wares,psd.Number_group
+from 
+ PROMOTION_SALE_Data psd
+ join  PROMOTION_SALE_FILTER psf on psf.Code_ps=psd.Code_ps and psf.TYPE_GROUP_FILTER=51 and psf.CODE_DATA= 9--@CodeWarehouse
+ join  PROMOTION_SALE_FILTER psfw on psfw.Code_ps=psd.Code_ps and psfw.TYPE_GROUP_FILTER=11  and psfw.Code_Group_Filter=psd.Number_group
+where psd.TYPE_DISCOUNT=41)
+select pr.* from 
+(select wk.CODE_PS,wr.id_workplace, wr.code_period,wr.code_receipt, wr.code_receipt, wk.DATA,wk.Number_group, sum(wr.QUANTITY) as Q
+    from WARES_RECEIPT wr
+    join wk on wr.code_wares=wk.code_wares
+	where wr.ID_WORKPLACE = @IdWorkplace
+   and wr.CODE_PERIOD = @CodePeriod
+   and wr.CODE_RECEIPT = @CodeReceipt
+group by wk.DATA,wk.Number_group
+--having    sum(QUANTITY)> wk.DATA
+) pr
+join PROMOTION_SALE_GIFT psg on (psg.code_ps=pr.code_ps)
+join WARES_RECEIPT wr on (psg.code_wares=wr.code_wares and pr.id_workplace=wr.id_workplace and pr.code_period=wr.code_period and pr.code_receipt=wr.code_receipt)
+order by pr.code_ps, pr.Number_group
 
-[SqlPrepareLockFilterT2]
-delete from t$lock_promotion_sale where  type_group_filter between 20 and 29 and type_group_filter=
-     case when @TypeFilter=22 then 22 else type_group_filter end;
-insert into t$lock_promotion_sale (code_ps,type_group_filter )
-      select code_ps, type_group_filter from (
-      select ps.code_ps, psf.type_group_filter,
-       min(psf.RULE_GROUP_FILTER) * max( case psf.type_group_filter
-        --Період
-        when 21 then case when strftime('%Y%m%d','now') between cd.code_data and cd.code_data_2 then 1 else -1 end 
-        --Час    
-        when 22 then case when strftime('%Y%m','now') between cd.code_data and cd.code_data_2 then 1 else -1 end
-        --Період  відносно Дня народження
-        when 23 then case when date(strftime('%Y', 'now') || strftime( '-%m-%d',p.date_birthday))
-        between date('now', cd.code_data || ' days') and date('now', cd.code_data || ' days') then 1 else -1 end
-        --Період  відносно Активації карточки
-        when 24 then case when date(strftime('%Y', 'now') || strftime( '-%m-%d',p.date_animation_bar_code))
-        between date('now', cd.code_data || ' days') and date('now', cd.code_data || ' days') then 1 else -1 end
-        --День в місяці
-        when 25 then case when strftime('%m','now')between cd.code_data and cd.code_data_2 then 1 else -1 end
-        --День в тижні
-        when 26 then case when case when strftime('%w','now')=0 then 7 else strftime('%w','now') end between cd.code_data and cd.code_data_2 then 1 else -1 end
-       end ) IsFilter 
-      from promotion_sale ps join promotion_sale_filter psf on (ps.code_ps=psf.code_ps)
-       left join choice_data cd on ( psf.code_choice = cd.code_choice) 
-       left join privat p on (p.code_privat=@varCodeClient)
-      where strftime('%Y%m%d','now') between ps.date_begin and ps.date_end and  psf.type_group_filter between 20 and 29 
-          and type_group_filter = case  when @TypeFilter=22 then 22 else type_group_filter end
-      group by  ps.code_ps, psf.type_group_filter     
-      ) where IsFilter = -1;
-
-[SqlPrepareLockFilterT3]
-delete from c.t$lock_promotion_sale where  type_group_filter between 30 and 39; 
-insert into t$lock_promotion_sale (code_ps,type_group_filter )
-      select code_ps, 30 from (
-      select ps.code_ps, 
-        max(case RULE_GROUP_FILTER when 3 then -1 else 1 end * case when cd.code_data=@varCodeClient then 1 else -1 end ) IsFilter 
-      from promotion_sale ps join promotion_sale_filter psf on (ps.code_ps=psf.code_ps)
-       join choice_data cd on ( psf.code_choice = cd.code_choice) 
-      where date('now') between ps.date_begin and ps.date_end and  psf.type_group_filter = 31
-      group by ps.code_ps
-      
-      /*
-      union all
-      select ps.code_ps, 
-        max(case RULE_GROUP_FILTER when 3 then -1 else 1 end * case when cd.code_data=varCodeClient then 1 else -1 end ) IsFilter 
-      from promotion_sale ps join promotion_sale_filter psf on (ps.code_ps=psf.code_ps)
-       left join v_privat_add_property pp on ( pp.code_privat=@varCodeClient and pp.property_id = psf.code_property)
-       left join choice_data cd on ( pp.val = cd.code_choice) 
-      where date('now') between ps.date_begin and ps.date_end and  psf.type_group_filter = 39
-      group by ps.code_ps*/) where IsFilter=-1;
-      
-[SqlPrepareLockFilterT4] 
-delete from t$lock_promotion_sale where  type_group_filter between 40 and 49; 
-      insert into t$lock_promotion_sale (code_ps,type_group_filter )
-      select distinct code_ps, 40 from (
-           select ps.code_ps, (case RULE_GROUP_FILTER when 3 then -1 else 1 end) *
-        case psf.type_group_filter 
-          when 41 then case when psf.code_choice=@CodeReceipt then 1 else -1 end 
-          when 42 then case when psf.code_choice%@CodeReceipt=0 then 1 else -1 end 
-        end    IsFilter
-      from promotion_sale ps join promotion_sale_filter psf on (ps.code_ps=psf.code_ps)) where IsFilter=-1;
-
-[SqlPrepareLockFilterT5]
-delete from t$lock_promotion_sale where  type_group_filter between 50 and 59; 
-insert into t$lock_promotion_sale (code_ps,type_group_filter )
-      select distinct code_ps, 50 from (
-
-      select ps.code_ps, 
-        max(case psf.RULE_GROUP_FILTER when 3 then -1 else 1 end) * max(case when cd.code_data=@varCodeWarehouse then 1 else -1 end ) IsFilter 
-      from promotion_sale ps join promotion_sale_filter psf on (ps.code_ps=psf.code_ps)
-       join choice_data cd on ( psf.code_choice = cd.code_choice) 
-      where date('now') between ps.date_begin and ps.date_end and  psf.type_group_filter = 51
-      group by ps.code_ps
-      union all
-      select ps.code_ps, 
-        max(case psf.RULE_GROUP_FILTER when 3 then -1 else 1 end) * max(case when wh.code_direction = @varCodeDirection then 1 else -1 end ) IsFilter 
-       from promotion_sale ps join promotion_sale_filter psf on (ps.code_ps=psf.code_ps)
-        left join choice_data cd on ( psf.code_choice = cd.code_choice) 
-        left join warehouse wh on ( cd.code_data=wh.code_warehouse ) 
-      where date('now') between ps.date_begin and ps.date_end and  psf.type_group_filter = 52
-      group by ps.code_ps ) where IsFilter=-1;
-      
-[SqlListPS]      
--- Акції зі списком товарів
-select distinct wr.code_wares,  ps.code_ps, ps.priority, psd.type_discount, psd.data, pd.price_dealer, pdd.price_dealer default_price_dealer,
- case psd.type_discount 
-   when 11 then -- Фіксована ціна
-     psd.data
-   when 12 then -- Фіксована сума знижка/надбавки
-     pdd.price_dealer-psd.data
-   when 13 then -- % знижка/надбавки
-     pdd.price_dealer*(1-psd.data)
-   when 14 then   -- Зміна ДК
-     pd.price_dealer
-   else   
-     pdd.price_dealer
- end price 
- from wares_receipt wr
-      join T$_PROMOTION_SALE_WARES tpsw on ( wr.code_wares=TPSW.Code_Wares)
-      join promotion_sale_data psd on (tpsw.code_ps=psd.code_ps  and psd.code_wares =0 )
-      join promotion_sale ps on (ps.code_ps=psd.code_ps)
-      left join t$lock_promotion_sale lps on (lps.code_ps=  psd.code_ps and lps.type_group_filter=-1)
-      left join price_dealer pdd on (pdd.code_dealer = @DefaultCodeDealer and pdd.code_wares= wr.code_wares) 
-      left join price_dealer pd  on  (pdd.code_dealer = psd.data and psd.type_discount=14 and pdd.code_wares= wr.code_wares) 
-  where wr.id_workplace=@IdWorkplace and wr.code_period=@CodePeriod and wr.code_receipt=@CodeReceipt
-       and lps.type_group_filter is null
-union -- Інші акції
-select distinct wr.code_wares,  ps.code_ps, ps.priority, psd.type_discount, psd.data, pd.price_dealer, pdd.price_dealer default_price_dealer,
- case psd.type_discount 
-   when 11 then -- Фіксована ціна
-     psd.data
-   when 12 then -- Фіксована сума знижка/надбавки
-     pdd.price_dealer-psd.data
-   when 13 then -- % знижка/надбавки
-     pdd.price_dealer*(1-psd.data)
-   when 14 then   -- Зміна ДК
-     pd.price_dealer
-   else   
-     pdd.price_dealer
- end price 
- from wares_receipt wr
-      join promotion_sale_data psd on (psd.code_wares=wr.code_wares)
-      join promotion_sale ps on (ps.code_ps=psd.code_ps)
-      left join t$lock_promotion_sale lps on (lps.code_ps=  psd.code_ps and lps.type_group_filter=-1)
-      left join price_dealer pdd on (pdd.code_dealer = @DefaultCodeDealer and pdd.code_wares= wr.code_wares) 
-      left join price_dealer pd on  (pdd.code_dealer = psd.data and psd.type_discount=14 and pdd.code_wares= wr.code_wares)
-  where wr.id_workplace=@IdWorkplace and wr.code_period=@CodePeriod and wr.code_receipt=@CodeReceipt
-       and lps.type_group_filter is null
- order by wr.code_wares,  ps.code_ps
       
 [SqlUpdatePrice]
 update wares_receipt w
@@ -590,6 +421,30 @@ CREATE TABLE WARES_RECEIPT (
     USER_CREATE    INTEGER  NOT NULL
 );
 CREATE UNIQUE INDEX id_WARES_RECEIPT ON WARES_RECEIPT(CODE_RECEIPT,CODE_WARES);
+
+CREATE TABLE WARES_RECEIPT_PROMOTION (
+    ID_WORKPLACE   INTEGER  NOT NULL,
+    CODE_PERIOD    INTEGER  NOT NULL,
+    CODE_RECEIPT   INTEGER  NOT NULL,
+    CODE_WARES     INTEGER  NOT NULL,
+    CODE_UNIT      INTEGER  NOT NULL,
+    CODE_WAREHOUSE INTEGER  NOT NULL,
+    QUANTITY       NUMBER   NOT NULL,    
+    SUM            NUMBER   NOT NULL
+	);
+CREATE UNIQUE INDEX id_WARES_RECEIPT_PROMOTION ON WARES_RECEIPT_PROMOTION(CODE_RECEIPT,CODE_WARES);
+
+CREATE TABLE WARES_RECEIPT_HISTORY (
+    ID_WORKPLACE   INTEGER  NOT NULL,
+    CODE_PERIOD    INTEGER  NOT NULL,
+    CODE_RECEIPT   INTEGER  NOT NULL,
+    CODE_WARES     INTEGER  NOT NULL,
+    CODE_UNIT      INTEGER  NOT NULL,
+    CODE_WAREHOUSE INTEGER  NOT NULL,
+    QUANTITY       NUMBER   NOT NULL,    
+    CODE_OPERATION INTEGER  NOT NULL
+	);
+CREATE UNIQUE INDEX id_WARES_RECEIPT_PROMOTION ON WARES_RECEIPT_PROMOTION(CODE_RECEIPT,CODE_WARES);
 
 CREATE TABLE wares_ekka (
     code_ekka  INTEGER        PRIMARY KEY,
