@@ -163,6 +163,9 @@ namespace SharedLib
         protected string SqlReplacePromotionSale2Category = "";
         protected string SqlReplacePromotionSaleGift = "";
 
+        protected string SqlReplaceWaresReceiptPromotion = "";
+        protected string SqlDeleteWaresReceiptPromotion = "";
+
         protected string SqlGetPricePromotionSale2Category = "";
 
         protected string SqlGetPriceDealer = @"";
@@ -525,8 +528,10 @@ namespace SharedLib
             SqlReplacePromotionSaleGift = GetSQL("SqlReplacePromotionSaleGift");
 
             SqlGetPricePromotionSale2Category = GetSQL("SqlGetPricePromotionSale2Category");
-            
 
+
+            SqlReplaceWaresReceiptPromotion = GetSQL("SqlReplaceWaresReceiptPromotion");
+            SqlDeleteWaresReceiptPromotion = GetSQL("SqlDeleteWaresReceiptPromotion");
             SqlGetPriceDealer = GetSQL("SqlGetPriceDealer");
             return true;
         }
@@ -778,6 +783,19 @@ namespace SharedLib
         public virtual int  GetIdWorkplaceByTerminalId(string parTerminalId)
         {
             return 0901;
+        }
+
+
+        public virtual bool DeleteWaresReceiptPromotion(IdReceipt parIdReceipt)
+        {
+            db.ExecuteNonQuery<IdReceipt>(SqlDeleteWaresReceiptPromotion, parIdReceipt);
+            return true;
+        }
+
+        public virtual bool ReplaceWaresReceiptPromotion(IEnumerable<WaresReceiptPromotion> parData)
+        {
+            db.BulkExecuteNonQuery<WaresReceiptPromotion>(SqlReplaceWaresReceiptPromotion, parData);
+            return true;
         }
 
     }

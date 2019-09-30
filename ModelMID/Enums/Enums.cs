@@ -106,19 +106,19 @@ namespace ModelMID
         /// <summary>
         /// Фіксована ціна
         /// </summary>
-        Price = 1,
+        Price = 11,
         /// <summary>
         /// Знижка в ГРН
         /// </summary>
-        PriceDiscount = 2,
+        PriceDiscount = 12,
         /// <summary>
         /// Знижка в відсотках
         /// </summary>
-        PercentDiscount = 3,
+        PercentDiscount = 13,
         /// <summary>
         /// Заміна ДК (Не використовується)
         /// </summary>
-        ReplacePriceDealer = 4,
+        ReplacePriceDealer = 14,
         /// <summary>
         /// Набір
         /// </summary>

@@ -34,9 +34,9 @@ namespace Test
     {
         static void Main(string[] args)
         {
-
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-            CreateDataBase(); //Створення бази
+            //CreateDataBase(); //Створення бази
+            TestKit();
             //TestReceipt(); //
             //CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
             //            var o = new SharedLib.Oracle();
@@ -68,6 +68,17 @@ namespace Test
             return;
         }
 
+
+
+        static void TestKit()
+        {
+            var a = new string[] //{ "4820083903205", "4820083900990", "4820083900617", "4820083900198", "4820083900037" };
+              { "2509100900008","4779046030109" };
+            var api = new ApiPSU();
+            var TerminalId = Guid.NewGuid();
+            foreach (var el in a)
+              api.AddProductByBarCode(TerminalId, el,2);
+        }
         static void TestReceipt()
         {
             var TerminalId = Guid.NewGuid();

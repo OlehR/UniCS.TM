@@ -160,6 +160,18 @@ update receipt
                   where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt),0) 
 where   id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt
 
+[SqlReplaceWaresReceiptPromotion]
+replace into WARES_RECEIPT_PROMOTION (id_workplace, code_period, code_receipt, code_wares, code_unit,
+  quantity, sum, code_ps,NUMBER_GROUP) 
+ values (
+  @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit,
+  @Quantity, @Sum, @CodePS,@NumberGroup)
+
+
+[SqlDeleteWaresReceiptPromotion]
+ delete from  WARES_RECEIPT_PROMOTION 
+   where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt;
+
 [SqlGetCountWares]
 select sum(wr.quantity) quantity 
                      from wares_receipt wr 
@@ -253,10 +265,8 @@ where
  psd.CODE_WARES = @CodeWares
  and datetime('now','localtime') between psd.Date_begin and psd.DATE_END
  and p.PRICE_DEALER>0
-
 union all -- По групам товарів
-
-select PSF.CODE_PS,0 as priority , 3 as Type_discont, PSD.DATA,PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice
+ select PSF.CODE_PS,0 as priority , 3 as Type_discont, PSD.DATA,PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice
   from wares w 
   join PROMOTION_SALE_GROUP_WARES PSGW on PSGW.CODE_GROUP_WARES=w.CODE_GROUP
   join PROMOTION_SALE_FILTER PSF on ( PSF.TYPE_GROUP_FILTER=15 and PSF.RULE_GROUP_FILTER=1 and   PSF.CODE_DATA=PSGW.CODE_GROUP_WARES_PS)
@@ -264,18 +274,14 @@ select PSF.CODE_PS,0 as priority , 3 as Type_discont, PSD.DATA,PSD.DATA_ADDITION
   left join ExeptionPS EPS on  (PSF.CODE_PS=EPS.CODE_PS)
   where EPS.CODE_PS is null
   and w.CODE_WARES=@CodeWares
-
 union all --По товарам
-
-select PSF.CODE_PS,0 as priority , 3 as Type_discont, PSD.DATA,PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice
+ select PSF.CODE_PS,0 as priority , 3 as Type_discont, PSD.DATA,PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice
   from PROMOTION_SALE_FILTER PSF 
   join PROMOTION_SALE_DATA PSD on (PSD.CODE_WARES=0 and PSD.CODE_PS=PSF.CODE_PS ) 
   left join ExeptionPS EPS on  (PSF.CODE_PS=EPS.CODE_PS)
   where  PSF.TYPE_GROUP_FILTER=11 and PSF.RULE_GROUP_FILTER=1 and   PSF.CODE_DATA=@CodeWares and EPS.CODE_PS is null  
-
 union all --акції для всіх товарів.
-
-select PSEW.CODE_PS,0 as priority , 3 as Type_discont, PSD.DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice
+ select PSEW.CODE_PS,0 as priority , 3 as Type_discont, PSD.DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice
   from PSEW
   join PROMOTION_SALE_DATA PSD on (PSD.CODE_PS=PSEW.CODE_PS )
 
@@ -284,21 +290,21 @@ select CODE_PS from PROMOTION_SALE_2_CATEGORY where CODE_WARES=@CodeWares
 
 [SqlGetPricePromotionKit]
 with wk as 
-(select psd.CODE_PS,psd.DATA,psfw.code_data as Code_wares,psd.Number_group
+(select psd.CODE_PS ,psd.DATA as Quantity_For_Gift ,psfw.code_data as code_wares ,psd.Number_group 
 from 
  PROMOTION_SALE_Data psd
- join  PROMOTION_SALE_FILTER psf on psf.Code_ps=psd.Code_ps and psf.TYPE_GROUP_FILTER=51 and psf.CODE_DATA= 9--@CodeWarehouse
+ join  PROMOTION_SALE_FILTER psf on psf.Code_ps=psd.Code_ps and psf.TYPE_GROUP_FILTER=51 and psf.CODE_DATA= @CodeWarehouse
  join  PROMOTION_SALE_FILTER psfw on psfw.Code_ps=psd.Code_ps and psfw.TYPE_GROUP_FILTER=11  and psfw.Code_Group_Filter=psd.Number_group
 where psd.TYPE_DISCOUNT=41)
-select pr.* from 
-(select wk.CODE_PS,wr.id_workplace, wr.code_period,wr.code_receipt, wr.code_receipt, wk.DATA,wk.Number_group, sum(wr.QUANTITY) as Q
+select pr.Code_PS as CodePS,pr.Number_group as NumberGroup , wr.code_wares as CodeWares,pr.Quantity,psg.TYPE_DISCOUNT as TypeDiscount,psg.Data as DataDiscount from 
+(select wk.CODE_PS,   wk.Number_group, wr.id_workplace, wr.code_period,wr.code_receipt, cast( sum(wr.QUANTITY)/wk.Quantity_For_Gift as int) as Quantity
     from WARES_RECEIPT wr
     join wk on wr.code_wares=wk.code_wares
 	where wr.ID_WORKPLACE = @IdWorkplace
    and wr.CODE_PERIOD = @CodePeriod
    and wr.CODE_RECEIPT = @CodeReceipt
-group by wk.DATA,wk.Number_group
---having    sum(QUANTITY)> wk.DATA
+group by wk.CODE_PS,   wk.Number_group, wr.id_workplace, wr.code_period,wr.code_receipt
+having    sum(wr.QUANTITY)> wk.Quantity_For_Gift
 ) pr
 join PROMOTION_SALE_GIFT psg on (psg.code_ps=pr.code_ps)
 join WARES_RECEIPT wr on (psg.code_wares=wr.code_wares and pr.id_workplace=wr.id_workplace and pr.code_period=wr.code_period and pr.code_receipt=wr.code_receipt)
@@ -351,6 +357,7 @@ WITH RECURSIVE
 
 
 [SqlCreateReceiptTable]
+
 CREATE TABLE RECEIPT (
     ID_WORKPLACE      INTEGER  NOT NULL,
     CODE_PERIOD       INTEGER  NOT NULL,
@@ -389,7 +396,7 @@ CREATE TABLE RECEIPT (
                                DEFAULT (CURRENT_TIMESTAMP),
     USER_CREATE       INTEGER  NOT NULL
 );
-CREATE UNIQUE INDEX id_RECEIPT ON RECEIPT(CODE_RECEIPT);
+CREATE UNIQUE INDEX id_RECEIPT ON RECEIPT(CODE_RECEIPT,ID_WORKPLACE,CODE_PERIOD);
 
 CREATE TABLE WARES_RECEIPT (
     ID_WORKPLACE   INTEGER  NOT NULL,
@@ -420,19 +427,20 @@ CREATE TABLE WARES_RECEIPT (
     DATE_CREATE    DATETIME NOT NULL DEFAULT (CURRENT_TIMESTAMP),
     USER_CREATE    INTEGER  NOT NULL
 );
-CREATE UNIQUE INDEX id_WARES_RECEIPT ON WARES_RECEIPT(CODE_RECEIPT,CODE_WARES);
+CREATE UNIQUE INDEX id_WARES_RECEIPT ON WARES_RECEIPT(CODE_RECEIPT,CODE_WARES,ID_WORKPLACE,CODE_PERIOD);
 
 CREATE TABLE WARES_RECEIPT_PROMOTION (
     ID_WORKPLACE   INTEGER  NOT NULL,
     CODE_PERIOD    INTEGER  NOT NULL,
     CODE_RECEIPT   INTEGER  NOT NULL,
     CODE_WARES     INTEGER  NOT NULL,
-    CODE_UNIT      INTEGER  NOT NULL,
-    CODE_WAREHOUSE INTEGER  NOT NULL,
+    CODE_UNIT      INTEGER  NOT NULL,    
     QUANTITY       NUMBER   NOT NULL,    
-    SUM            NUMBER   NOT NULL
+    SUM            NUMBER   NOT NULL,
+	CODE_PS        INTEGER  NOT NULL,
+    NUMBER_GROUP   INTEGER  NOT NULL
 	);
-CREATE UNIQUE INDEX id_WARES_RECEIPT_PROMOTION ON WARES_RECEIPT_PROMOTION(CODE_RECEIPT,CODE_WARES);
+CREATE UNIQUE INDEX id_WARES_RECEIPT_PROMOTION ON WARES_RECEIPT_PROMOTION(CODE_RECEIPT,CODE_WARES,CODE_PS,NUMBER_GROUP,ID_WORKPLACE,CODE_PERIOD);
 
 CREATE TABLE WARES_RECEIPT_HISTORY (
     ID_WORKPLACE   INTEGER  NOT NULL,
@@ -444,7 +452,7 @@ CREATE TABLE WARES_RECEIPT_HISTORY (
     QUANTITY       NUMBER   NOT NULL,    
     CODE_OPERATION INTEGER  NOT NULL
 	);
-CREATE UNIQUE INDEX id_WARES_RECEIPT_PROMOTION ON WARES_RECEIPT_PROMOTION(CODE_RECEIPT,CODE_WARES);
+CREATE UNIQUE INDEX id_WARES_RECEIPT_HISTORY ON WARES_RECEIPT_HISTORY(CODE_RECEIPT,CODE_WARES,ID_WORKPLACE,CODE_PERIOD);
 
 CREATE TABLE wares_ekka (
     code_ekka  INTEGER        PRIMARY KEY,

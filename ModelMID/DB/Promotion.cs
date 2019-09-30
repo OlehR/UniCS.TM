@@ -163,7 +163,25 @@ namespace ModelMID
 
             
     }
-    
 
+    public class PromotionWaresKit
+    {
+        public Int64 CodePS { get; set; }
+
+        public int NumberGroup { get; set; }
+
+        public int CodeWares { get; set; }
+        public decimal Quantity { get; set; }
+        public decimal Price { get { return (TypeDiscount == eTypeDiscount.Price? DataDiscount:0); }  }
+        
+       
+        public eTypeDiscount TypeDiscount { get; set; }
+
+        /// <summary>
+        /// Власне знижка ціна тощо.
+        /// </summary>
+        public decimal DataDiscount { get; set; }
+    }
+    //psd.CODE_PS,psd.DATA,psfw.code_data as Code_wares,psd.Number_group
 
 }

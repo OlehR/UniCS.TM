@@ -16,8 +16,9 @@ namespace SharedLib
         
         protected string SqlCreateMIDTable = @"";
         protected string SqlCreateMIDIndex = @"";
+        protected string SqlGetPricePromotionKit= @"";
 
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -50,7 +51,8 @@ namespace SharedLib
         {
             SqlCreateMIDTable = GetSQL("SqlCreateMIDTable");
             SqlCreateMIDIndex = GetSQL("SqlCreateMIDIndex");
-            
+            SqlGetPricePromotionKit= GetSQL("SqlGetPricePromotionKit");
+
             return true;
         }
 /*
@@ -192,10 +194,62 @@ namespace SharedLib
 
                 ReplaceWaresReceipt(RW);
             }
+            GetPricePromotionKit(parIdReceipt, r);
             RecalcHeadReceipt(parIdReceipt);
             return true;
         }
-        
+        /// <summary>
+        /// Розраховуємо знижки по наборах
+        /// Можливо зумію це зробити колись на рівні БД
+        /// </summary>
+        /// <param name="parIdReceipt"></param>
+        /// <returns></returns>
+        public bool GetPricePromotionKit(IdReceipt parIdReceipt,IEnumerable<ReceiptWares> parRW)
+        {
+            var varRes = new List<WaresReceiptPromotion>(); 
+            var par = new ParamPricePromotionKit(parIdReceipt, GlobalVar.CodeWarehouse);
+            var r=db.Execute<ParamPricePromotionKit, PromotionWaresKit>(SqlGetPricePromotionKit, par);
+            int NumberGroup = 0;
+            decimal Quantity = 0, AddQuantity=0;
+            Int64 CodePS = 0;
+            foreach (var el in r )//цикл по Можливим позиціям з знижкою.
+            {
+                if(el.CodePS!= CodePS||el.NumberGroup!=NumberGroup)
+                {
+                    Quantity = el.Quantity;
+                    CodePS = el.CodePS;
+                    NumberGroup = el.NumberGroup;
+                }
+                if (Quantity > 0) // Надаєм знижку на інші позиції набору.
+                {
+                    var varQuantityReceipt = parRW.Where(e => e.CodeWares == el.CodeWares).Sum(e => e.Quantity);
+                    var varQuantityUsed = varRes.Where(e => e.CodeWares == el.CodeWares).Sum(e => e.Quantity);
+                    if (varQuantityReceipt - varQuantityUsed > 0) //Якщо ще можемо дати знижку на позицію
+                    {
+                        if (varQuantityReceipt - varQuantityUsed >= Quantity)
+                        {
+                            AddQuantity = Quantity;
+                            Quantity = 0;
+                        }
+                        else
+                        {
+                            AddQuantity = varQuantityReceipt - varQuantityUsed;
+                            Quantity -= varQuantityReceipt - varQuantityUsed;
+                        }
+                        var RWP = new WaresReceiptPromotion(parIdReceipt) { CodeWares = el.CodeWares, Quantity = AddQuantity, Price=el.Price,CodePS=el.CodePS,NumberGroup=el.NumberGroup};
+                        varRes.Add(RWP);
+                    }
+                }
+
+            }
+            DeleteWaresReceiptPromotion(parIdReceipt);
+            ReplaceWaresReceiptPromotion(varRes);
+
+            return true;
+
+        }
+
+
 
         public override bool CopyWaresReturnReceipt(IdReceipt parIdReceipt, bool parIsCurrentDay = true)
 		{

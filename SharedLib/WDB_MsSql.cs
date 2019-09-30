@@ -11,7 +11,7 @@ namespace SharedLib
 {
     public partial class WDB_MsSql : WDB
     {
-        public MSSQL db;
+        //public MSSQL db;
         //public SQLite db_receipt;
         public ReceiptWares varWares = new ReceiptWares();
 
