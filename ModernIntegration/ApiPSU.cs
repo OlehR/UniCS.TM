@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using ModernIntegration.Models;
 using ModernIntegration.ViewModels;
@@ -9,6 +10,7 @@ using ModelMID;
 using System.Linq;
 using Receipt = ModernIntegration.Models.Receipt;
 using ModelMID.DB;
+using ModernIntegration.Model;
 
 namespace ModernIntegration
 {
@@ -19,6 +21,15 @@ namespace ModernIntegration
         public ApiPSU()
         {
             Bl = new BL();
+            Bl.OnReceiptCalculationComplete = (wareses, guid) =>
+            {
+                Debug.WriteLine("=========================================================================");
+                foreach (var receiptWarese in wareses)
+                {
+                    Debug.WriteLine($"{receiptWarese.NameWares} - {receiptWarese.Price}");
+                }
+                OnProductsChanged?.Invoke(wareses.Select(s => GetProductViewModel(s)), guid);
+            };
         }
         public override ProductViewModel AddProductByBarCode(Guid parTerminalId, string parBarCode, decimal parQuantity = 0)
         {
@@ -120,6 +131,11 @@ namespace ModernIntegration
 
 
         // Допоміжні методи
+        /// <summary>
+        /// Clears the receipt by receipt identifier.
+        /// </summary>
+        /// <param name="idReceipt">The identifier receipt.</param>
+        /// <returns></returns>
         public bool ClearReceiptByReceiptId(IdReceipt idReceipt)
         {
 
@@ -134,6 +150,11 @@ namespace ModernIntegration
             return false;
         }
 
+        /// <summary>
+        /// Gets the current receipt by terminal identifier.
+        /// </summary>
+        /// <param name="parTerminalId">The par terminal identifier.</param>
+        /// <returns></returns>
         public ModelMID.IdReceipt GetCurrentReceiptByTerminalId(Guid parTerminalId)
         {
 
@@ -146,6 +167,16 @@ namespace ModernIntegration
             }
             
             return Receipts[parTerminalId];
+        }
+
+        /// <summary>
+        /// Terminalses the specified terminals.
+        /// </summary>
+        /// <param name="terminals">The terminals.</param>
+        /// <returns></returns>
+        public override bool Terminals(List<Terminal> terminals)
+        {
+            return false;
         }
 
 

@@ -10,6 +10,9 @@ namespace SharedLib
     public class BL
     {
         public WDB_SQLite db;
+
+        public Action<IEnumerable<ReceiptWares>,Guid> OnReceiptCalculationComplete { get; set; }
+
         /// <summary>
         /// Для швидкого пошуку 
         /// </summary>
@@ -18,6 +21,7 @@ namespace SharedLib
         {
             db = new WDB_SQLite();
             WorkId = new SortedList<Guid, int>();
+            db.OnReceiptCalculationComplete = (wareses, guid) => OnReceiptCalculationComplete?.Invoke(wareses, guid);
         }
         public ReceiptWares AddReceiptWares(ReceiptWares parW)
         {
@@ -31,7 +35,7 @@ namespace SharedLib
                 db.AddWares(parW);
 
             if (GlobalVar.RecalcPriceOnLine)
-                db.RecalcPrice((IdReceipt)parW);
+               db.RecalcPriceAsync(parW);
             return parW;
         }
 
@@ -73,7 +77,7 @@ namespace SharedLib
             var receipt = new Receipt(receiptId);
             receipt.NumberReceipt = parFiscalNumber;
             receipt.StateReceipt = 2;
-            db.RecalcPrice(receiptId);
+           db.RecalcPriceAsync(receiptId);
             db.CloseReceipt(receipt);
             return true;
         }

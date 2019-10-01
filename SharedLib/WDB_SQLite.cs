@@ -4,6 +4,7 @@ using System.Data;
 //using DB_SQLite;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using ModelMID;
 using ModelMID.DB;
 
@@ -17,7 +18,7 @@ namespace SharedLib
         protected string SqlCreateMIDTable = @"";
         protected string SqlCreateMIDIndex = @"";
         protected string SqlGetPricePromotionKit= @"";
-
+        public Action<IEnumerable<ReceiptWares>, Guid> OnReceiptCalculationComplete { get; set; }
 
         /// <summary>
         /// 
@@ -127,6 +128,17 @@ namespace SharedLib
 		}
         */
 
+        public Task RecalcPriceAsync(IdReceipt parIdReceipt)
+        {
+            return Task.Run(() => RecalcPrice(parIdReceipt)).ContinueWith(res =>
+            {
+                if (res.Result)
+                {
+                    //TODO: Add terminal ID //????
+                    OnReceiptCalculationComplete?.Invoke(ViewReceiptWares(parIdReceipt), Guid.NewGuid());
+                }
+            });
+        }
 
         public override bool RecalcPrice(IdReceipt parIdReceipt)
         {

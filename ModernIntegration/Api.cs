@@ -1,4 +1,5 @@
-﻿using ModernIntegration.Models;
+﻿using ModernIntegration.Model;
+using ModernIntegration.Models;
 using ModernIntegration.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -38,7 +39,19 @@ namespace ModernIntegration
         public virtual CustomerViewModel GetCustomerByBarCode(Guid parTerminalId, string parS) { return null; }
         public virtual CustomerViewModel GetCustomerByPhone(Guid parTerminalId,string parS) { return null; }
 
+        public virtual bool Terminals(List<Terminal> terminals) { return false; }
+
+        public virtual bool MoveSessionToAnotherTerminal(Guid firstTerminalId, Guid secondTerminalId) { return false; }
+
+        public virtual void RequestSyncInfo(){}
+
+        public virtual bool UpdateProductWeight(string parS, int weight) { return false; }
+
+        public Action<SyncInformation> OnSyncInfoCollected { get; set; }
+
         public Action<ReceiptViewModel,Guid> OnReceiptChanged { get; set; }
+
+        public Action<IEnumerable<ProductViewModel>, Guid> OnProductsChanged { get; set; }
 
     }
 }
