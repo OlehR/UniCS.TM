@@ -35,8 +35,8 @@ namespace Test
         static void Main(string[] args)
         {
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-            //CreateDataBase(); //Створення бази
-            TestKit();
+            CreateDataBase(); //Створення бази
+            //TestKit();
             //TestReceipt(); //
             //CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
             //            var o = new SharedLib.Oracle();
