@@ -201,15 +201,6 @@ INSERT OR ignore into GEN_WORKPLACE (ID_WORKPLACE,CODE_PERIOD,CODE_RECEIPT) valu
 update GEN_WORKPLACE set CODE_RECEIPT=CODE_RECEIPT+1 where ID_WORKPLACE=@IdWorkplace and CODE_PERIOD=@CodePeriod;
 select CODE_RECEIPT from GEN_WORKPLACE where ID_WORKPLACE=@IdWorkplace and CODE_PERIOD=@CodePeriod;
 
-[SqlInsertGenWorkPlace]
-insert into Gen_workplace (ID_WORKPLACE,CODE_PERIOD,CODE_RECEIPT) values (@IdWorkplace,@CodePeriod,1)
-
-[SqlSelectGenWorkPlace]
-SELECT CODE_RECEIPT FROM Gen_workplace WHERE ID_WORKPLACE=@IdWorkplace  AND CODE_PERIOD=@CodePeriod
-
-[SqlUpdateGenWorkPlace]
-update Gen_workplace set CODE_RECEIPT=CODE_RECEIPT+1 WHERE ID_WORKPLACE=@IdWorkplace  AND CODE_PERIOD=@CodePeriod
-
 [SqlLogin]
 SELECT u.CODE_USER code_user, p.NAME_FOR_PRINT name_user, u.login login, u.PassWord password
   FROM users u JOIN privat p ON (u.CODE_USER = p.CODE_PRIVAT) and  u.login=@Login and u.PassWord = @PassWord; 
@@ -481,7 +472,7 @@ CREATE TABLE GEN_WORKPLACE (
     CODE_PERIOD  INTEGER NOT NULL,
     CODE_RECEIPT INTEGER NOT NULL
 );
- CREATE INDEX id_GEN_WORKPLACE ON GEN_WORKPLACE(ID_WORKPLACE,CODE_PERIOD);
+ CREATE UNIQUE INDEX id_GEN_WORKPLACE ON GEN_WORKPLACE(ID_WORKPLACE,CODE_PERIOD);
 
 [SqlGetAllPermissions]
 select ua.code_access as code_access,ua.type_access as type_access 

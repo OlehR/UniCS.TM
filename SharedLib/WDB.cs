@@ -103,10 +103,7 @@ namespace SharedLib
         /// </summary>
         //protected string SqlGenWorkPlace = @"";
         protected string SqlGetNewCodeReceipt = @"";
-        //protected string SqlInsertGenWorkPlace = @"";
-        //protected string SqlSelectGenWorkPlace = @"";
-        //protected string SqlUpdateGenWorkPlace = @"";
-
+        
         protected string SqlLogin = @"";
         protected string SqlGetPrice = @"";
 
