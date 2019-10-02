@@ -38,7 +38,7 @@ namespace ModelMID
         /// <summary>
         /// Id робочого місця
         /// </summary>
-        public static int IdWorkPlace = 140701;
+        public static int IdWorkPlace = 62;
 
         public static int CodeWarehouse = 9; 
         /// <summary>

@@ -13,6 +13,16 @@ namespace SharedLib
     {
         //public MSSQL db;
         //public SQLite db_receipt;
+
+        protected string SqlGetDimUnitDimension = @"";
+        protected string SqlGetDimGroupWares = @"";
+        protected string SqlGetDimWares = @"";
+        protected string SqlGetDimAdditionUnit = @"";
+        protected string SqlGetDimBarCode = @"";
+        protected string SqlGetDimPrice = @"";
+        protected string SqlGetDimTypeDiscount = @"";
+        protected string SqlGetDimClient = @"";
+
         public ReceiptWares varWares = new ReceiptWares();
 
         /// <summary>
@@ -22,10 +32,23 @@ namespace SharedLib
         public WDB_MsSql() : base(Path.Combine(GlobalVar.PathIni, @"MsSql.sql"))
         {
             varVersion = "WDB_MsSql.0.0.1";
+            InitSQL();
             db = new MSSQL();//,"",this.varCallWriteLogSQL); 
-          
+
         }
-	
+        private new bool InitSQL()
+        {
+            
+            SqlGetDimUnitDimension = GetSQL("SqlGetDimUnitDimension");
+            SqlGetDimGroupWares = GetSQL("SqlGetDimGroupWares");
+            SqlGetDimWares = GetSQL("SqlGetDimWares");
+            SqlGetDimAdditionUnit = GetSQL("SqlGetDimAdditionUnit");
+            SqlGetDimBarCode = GetSQL("SqlGetDimBarCode");
+            SqlGetDimPrice = GetSQL("SqlGetDimPrice");
+            SqlGetDimTypeDiscount = GetSQL("SqlGetDimTypeDiscount");
+            SqlGetDimClient = GetSQL("SqlGetDimClient");
+            return true;
+        }
         public bool LoadData(WDB parDB)
         {
             string SQL;

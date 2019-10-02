@@ -23,6 +23,10 @@ namespace SharedLib
     public class WDB
     {
 
+        SortedList<Guid, WorkPlace> WorkPlaceByTerminalId;
+        SortedList<int, WorkPlace> WorkPlaceByWorkplaceId;
+       
+
         public SQL db;
         protected Hashtable keySQL = new Hashtable();
 
@@ -106,13 +110,13 @@ namespace SharedLib
         
         protected string SqlLogin = @"";
         protected string SqlGetPrice = @"";
-
+        /*
         protected string SqlPrepareLockFilterT1 = @"";
         protected string SqlPrepareLockFilterT2 = @"";
         protected string SqlPrepareLockFilterT3 = @"";
         protected string SqlPrepareLockFilterT4 = @"";
-        protected string SqlPrepareLockFilterT5 = @"";
-        protected string SqlListPS = @"";
+        protected string SqlPrepareLockFilterT5 = @"";*/
+        //protected string SqlListPS = @"";
         protected string SqlUpdatePrice = @"";
         protected string SqlGetMinPriceIndicative = "";
 
@@ -140,21 +144,12 @@ namespace SharedLib
         protected string SqlGetFastGroup = "";
 
 
-        protected string SqlGetDimUnitDimension = @"";
-        protected string SqlGetDimGroupWares = @"";
-        protected string SqlGetDimWares = @"";
-        protected string SqlGetDimAdditionUnit = @"";
-        protected string SqlGetDimBarCode = @"";
-        protected string SqlGetDimPrice = @"";
-        protected string SqlGetDimTypeDiscount = @"";
-        protected string SqlGetDimClient = @"";
+
         protected string SqlReplaceFastGroup = @"";
         protected string SqlReplaceFastWares = @"";
-
         protected string SqlReplacePromotionSale = @"";
         protected string SqlReplacePromotionSaleData = @"";
-        protected string SqlReplacePromotionSaleFilter = @"";
-        protected string SqlReplacePromotionSaleGiff = @"";
+        protected string SqlReplacePromotionSaleFilter = @"";        
         protected string SqlReplacePromotionSaleDealer = @"";
         protected string SqlReplacePromotionSaleGroupWares = @"";
         protected string SqlReplacePromotionSale2Category = "";
@@ -167,10 +162,29 @@ namespace SharedLib
 
         protected string SqlGetPriceDealer = @"";
 
+        protected string SqlCreateConfigTable = "";
+        protected string SqlReplaceWorkPlace = "";
+        protected string SqlGetWorkplace = "";
+
+        protected string SqlMoveReceipt = "";
+
         public WDB(string parFileSQL)
         {
             this.ReadSQL(parFileSQL);
             InitSQL();
+            BildWorkplace();
+        }
+        protected bool BildWorkplace()
+        {
+            WorkPlaceByTerminalId = new SortedList<Guid, WorkPlace>();
+            WorkPlaceByWorkplaceId = new SortedList<int, WorkPlace>();
+            foreach (var el in GetWorkPlace())
+            {
+                WorkPlaceByTerminalId.Add(el.TerminalGUID, el);
+                WorkPlaceByWorkplaceId.Add(el.IdWorkplace, el);
+            }
+            return true;
+
         }
         /*		public WDB(CallWriteLogSQL parCallWriteLogSQL=null)
                 {
@@ -178,20 +192,6 @@ namespace SharedLib
                 }
                 */
 
-
-        /*		public virtual DataTable Execute(string parQuery, ParametersCollection parPrameters = null)
-                {
-                    return null;
-                }
-
-                public virtual int ExecuteNonQuery(string parQuery, ParametersCollection parParameters = null)
-                {
-                    return 0;
-                }
-                public virtual DataRow GetGlobalVar(int parIdWorkPlace)
-                {
-                    return null;
-                }*/
 
         public virtual T GetConfig<T>(string parStr)
         {
@@ -463,10 +463,10 @@ namespace SharedLib
             SqlRecalcHeadReceipt = GetSQL("SqlRecalcHeadReceipt");
             SqlGetCountWares = GetSQL("SqlGetCountWares");
             SqlUpdateQuantityWares = GetSQL("SqlUpdateQuantityWares");
-            SqlDeleteReceiptWares = GetSQL("SqlDeleteReceiptWares");
-            SqlInputOutputMoney = GetSQL("SqlInputOutputMoney");
-            SqlAddZ = GetSQL("SqlAddZ");
-            SqlAddLog = GetSQL("SqlAddLog");
+            //SqlDeleteReceiptWares = GetSQL("SqlDeleteReceiptWares");
+            //SqlInputOutputMoney = GetSQL("SqlInputOutputMoney");
+            //SqlAddZ = GetSQL("SqlAddZ");
+            //SqlAddLog = GetSQL("SqlAddLog");
             //SqlGenWorkPlace=GetSQL("SqlGenWorkPlace");
             SqlGetNewCodeReceipt = GetSQL("SqlGetNewCodeReceipt");
 
@@ -475,13 +475,13 @@ namespace SharedLib
 			SqlUpdateGenWorkPlace = GetSQL("SqlUpdateGenWorkPlace");*/
             SqlGetPrice = GetSQL("SqlGetPrice");
             SqlLogin = GetSQL("SqlLogin");
-            SqlPrepareLockFilterT1 = GetSQL("SqlPrepareLockFilterT1");
+           /* SqlPrepareLockFilterT1 = GetSQL("SqlPrepareLockFilterT1");
             SqlPrepareLockFilterT2 = GetSQL("SqlPrepareLockFilterT2");
             SqlPrepareLockFilterT3 = GetSQL("SqlPrepareLockFilterT3");
             SqlPrepareLockFilterT4 = GetSQL("SqlPrepareLockFilterT4");
             SqlPrepareLockFilterT5 = GetSQL("SqlPrepareLockFilterT5");
             SqlListPS = GetSQL("SqlListPS");
-            /*            SqlGetLastUseCodeEkka = GetSQL("SqlGetLastUseCodeEkka");
+                        SqlGetLastUseCodeEkka = GetSQL("SqlGetLastUseCodeEkka");
                         SqlAddWaresEkka = GetSQL("SqlAddWaresEkka");
                         SqlDeleteWaresEkka = GetSQL("SqlDeleteWaresEkka");
                         SqlGetCodeEKKA = GetSQL("SqlGetCodeEKKA");
@@ -504,21 +504,11 @@ namespace SharedLib
             SqlGetWaresFromFastGroup = GetSQL("SqlGetWaresFromFastGroup");
             SqlGetFastGroup = GetSQL("SqlGetFastGroup");
 
-            SqlGetDimUnitDimension = GetSQL("SqlGetDimUnitDimension");
-           
-            SqlGetDimGroupWares = GetSQL("SqlGetDimGroupWares");
-            SqlGetDimWares = GetSQL("SqlGetDimWares");
-            SqlGetDimAdditionUnit = GetSQL("SqlGetDimAdditionUnit");
-            SqlGetDimBarCode = GetSQL("SqlGetDimBarCode");
-            SqlGetDimPrice = GetSQL("SqlGetDimPrice");
-            SqlGetDimTypeDiscount = GetSQL("SqlGetDimTypeDiscount");
-            SqlGetDimClient = GetSQL("SqlGetDimClient");
             SqlReplaceFastGroup = GetSQL("SqlReplaceFastGroup");
             SqlReplaceFastWares = GetSQL("SqlReplaceFastWares");
             SqlReplacePromotionSale = GetSQL("SqlReplacePromotionSale");
             SqlReplacePromotionSaleData = GetSQL("SqlReplacePromotionSaleData");
             SqlReplacePromotionSaleFilter = GetSQL("SqlReplacePromotionSaleFilter");
-            SqlReplacePromotionSaleGiff = GetSQL("SqlReplacePromotionSaleGiff");
             SqlReplacePromotionSaleDealer = GetSQL("SqlReplacePromotionSaleDealer");
             SqlReplacePromotionSaleGroupWares = GetSQL("SqlReplacePromotionSaleGroupWares");
             SqlReplacePromotionSale2Category = GetSQL("SqlReplacePromotionSale2Category");
@@ -530,6 +520,10 @@ namespace SharedLib
             SqlReplaceWaresReceiptPromotion = GetSQL("SqlReplaceWaresReceiptPromotion");
             SqlDeleteWaresReceiptPromotion = GetSQL("SqlDeleteWaresReceiptPromotion");
             SqlGetPriceDealer = GetSQL("SqlGetPriceDealer");
+
+            SqlCreateConfigTable = GetSQL("SqlCreateConfigTable");
+            SqlReplaceWorkPlace = GetSQL("SqlReplaceWorkplace");
+            SqlGetWorkplace = GetSQL("SqlGetWorkplace");
             return true;
         }
 
@@ -777,11 +771,21 @@ namespace SharedLib
                 return res.FirstOrDefault();
             return null;
         }
-        public virtual int  GetIdWorkplaceByTerminalId(string parTerminalId)
+        public virtual int  GetIdWorkplaceByTerminalId(Guid parTerminalId)
         {
-            return 0901;
+            if (WorkPlaceByTerminalId.ContainsKey(parTerminalId))
+                return WorkPlaceByTerminalId[parTerminalId].IdWorkplace;
+ 
+                return 0;
         }
 
+        public Guid GetTerminalIdByIdWorkplace(int parIdWorkPlace)
+        {
+            if (WorkPlaceByWorkplaceId.ContainsKey(parIdWorkPlace))
+                return WorkPlaceByWorkplaceId[parIdWorkPlace].TerminalGUID;
+            return Guid.Empty;
+
+        }
 
         public virtual bool DeleteWaresReceiptPromotion(IdReceipt parIdReceipt)
         {
@@ -795,6 +799,21 @@ namespace SharedLib
             return true;
         }
 
+        public virtual bool ReplaceWorkPlace(IEnumerable<WorkPlace> parData)
+        {
+            db.BulkExecuteNonQuery<WorkPlace>(SqlReplaceWorkPlace, parData);
+            return true;
+        }
+
+        public virtual IEnumerable<WorkPlace> GetWorkPlace()
+        {
+            return db.Execute<WorkPlace>(SqlGetWorkplace);             
+        }
+        public virtual bool MoveReceipt(ParamMoveReceipt parMoveReceipt)
+        {
+            db.ExecuteNonQuery<ParamMoveReceipt>(SqlDeleteWaresReceiptPromotion, parMoveReceipt);
+            return true;
+        }
     }
 
 }

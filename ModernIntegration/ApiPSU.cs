@@ -160,7 +160,7 @@ namespace ModernIntegration
 
             if (!Receipts.ContainsKey(parTerminalId)|| Receipts[parTerminalId] == null)
             {
-                var idReceipt = Bl.GetNewIdReceipt(parTerminalId);         
+                var idReceipt = Bl.GetNewIdReceipt(parTerminalId);        
             
                 Receipts[parTerminalId] = new ModelMID.Receipt(idReceipt);
                 Bl.AddReceipt(Receipts[parTerminalId]);
@@ -169,15 +169,6 @@ namespace ModernIntegration
             return Receipts[parTerminalId];
         }
 
-        /// <summary>
-        /// Terminalses the specified terminals.
-        /// </summary>
-        /// <param name="terminals">The terminals.</param>
-        /// <returns></returns>
-        public override bool Terminals(List<Terminal> terminals)
-        {
-            return false;
-        }
 
 
 
@@ -297,6 +288,33 @@ namespace ModernIntegration
             };
 
         }
+
+        /// <summary>
+        /// Terminalses the specified terminals.
+        /// </summary>
+        /// <param name="terminals">The terminals.</param>
+        /// <returns></returns>
+        public override bool Terminals(List<Terminal> terminals)
+        {
+            Bl.UpdateWorkPlace(terminals.Select(r => new WorkPlace() { IdWorkplace = r.CustomerId, Name = r.DisplayName, TerminalGUID = r.Id }));
+            return false;
+        }
+        public override bool MoveSessionToAnotherTerminal(Guid firstTerminalId, Guid secondTerminalId)
+        {
+            //Якщо чек незакрито на терміналі куди переносити тоді помилка.
+            if (Receipts.ContainsKey(secondTerminalId) && Receipts[secondTerminalId] != null)
+                return false;
+            var idReceipt = Bl.GetNewIdReceipt(secondTerminalId);
+
+            if (Bl.MoveReceipt(GetCurrentReceiptByTerminalId(firstTerminalId), idReceipt))
+            {
+                Receipts[secondTerminalId] = new ModelMID.Receipt(idReceipt);
+                return false;
+            }
+            else
+                return false;
+        }
+
 
     }
 }

@@ -1,4 +1,5 @@
 ﻿using ModelMID;
+using ModelMID.DB;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,19 +52,7 @@ namespace SharedLib
         
         public int GetIdWorkplaceByTerminalId(Guid parTerminalId)
         {
-            if (WorkId.ContainsKey(parTerminalId))
-                return WorkId[parTerminalId];
-            else
-            {
-                int WI = db.GetIdWorkplaceByTerminalId(parTerminalId.ToString());
-                if(WI>0)
-                {
-                    WorkId.Add(parTerminalId, WI);
-                    return WI;
-                }
-            }
-            //!!!TMP Треба доробляти!!!
-            return 0901;
+           return  db.GetIdWorkplaceByTerminalId(parTerminalId);
         }
         public IdReceipt GetNewIdReceipt(Guid parTerminalId,int parCodePeriod=0)
         {            
@@ -190,7 +179,17 @@ namespace SharedLib
                 return null;
         }
 
- 
+        public bool UpdateWorkPlace(IEnumerable<WorkPlace> parData)
+        {
+            db.ReplaceWorkPlace(parData);
+            return true;
+        }
 
-}
+        public bool MoveReceipt(IdReceipt parIdReceipt, IdReceipt parIdReceiptTo)
+        {
+            var param = new ParamMoveReceipt(parIdReceipt) {NewCodePeriod= parIdReceiptTo.CodePeriod,NewCodeReceipt= parIdReceiptTo.CodePeriod,NewIdWorkplace= parIdReceiptTo.IdWorkplace };
+            return db.MoveReceipt(param);
+          
+        }
+    }
 }

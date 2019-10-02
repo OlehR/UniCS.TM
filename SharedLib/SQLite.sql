@@ -312,6 +312,15 @@ update wares_receipt w
                  w.type_vat=cur.vat_operation
                      where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt 
                      and code_wares=@CodeWares and code_unit=@CodeUnit
+
+[SqlMoveReceipt]
+update receipt w
+        set id_workplace=@NewIdWorkplace and  code_period =@NewCodePeriod and  code_receipt=@NewCodeReceipt 
+                     where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt;
+update wares_receipt w
+        set id_workplace=@NewIdWorkplace and  code_period =@NewCodePeriod and  code_receipt=@NewCodeReceipt 
+                     where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt;
+                     
                      
 [SqlGetLastUseCodeEkka]
  select max(code_ekka) code_ekka from wares_ekka
@@ -346,7 +355,29 @@ WITH RECURSIVE
 	SELECT CODE_GROUP_WARES,CODE_PARENT_GROUP_WARES,NAME
 	    FROM GW_cte;
 
+[SqlCreateConfigTable]
+CREATE TABLE WORKPLACE (
+    ID_WORKPLACE      INTEGER  NOT NULL,
+	NAME TEXT,
+	Terminal_GUID TEXT
+	);
+	CREATE UNIQUE INDEX id_WORKPLACE ON WORKPLACE(ID_WORKPLACE);
 
+  CREATE TABLE CONFIG (
+    NAME_VAR    TEXT     NOT NULL,
+    DATA_VAR    TEXT     NOT NULL,
+    TYPE_VAR    TEXT     NOT NULL,
+    DESCRIPTION TEXT,
+    USER_CREATE INTEGER  NOT NULL,
+    DATE_CREATE DATETIME NOT NULL
+);
+CREATE UNIQUE INDEX id_CONFIG ON CONFIG(NAME_VAR);
+
+[SqlReplaceWorkplace]
+ replace into WORKPLACE ( ID_WORKPLACE, NAME, Terminal_GUID) values (@IdWorkplace, @Name,@StrTerminalGUID);
+
+[SqlGetWorkplace]
+select ID_WORKPLACE as IdWorkplace, NAME as Name, Terminal_GUID as StrTerminalGUID from WORKPLACE 
 [SqlCreateReceiptTable]
 
 CREATE TABLE RECEIPT (

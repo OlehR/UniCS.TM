@@ -14,7 +14,6 @@ namespace SharedLib
         SQLiteConnection connection = null;
         SQLiteTransaction transaction = null;
 
-        public eTypeCommit TypeCommit { get; set; } 
         public SQLite(String varConectionString):base(varConectionString)
         {
             connection = new SQLiteConnection("Data Source="+varConectionString+ ";Version=3;");

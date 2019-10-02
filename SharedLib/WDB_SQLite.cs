@@ -134,8 +134,9 @@ namespace SharedLib
             {
                 if (res.Result)
                 {
-                    //TODO: Add terminal ID //????
-                    OnReceiptCalculationComplete?.Invoke(ViewReceiptWares(parIdReceipt), Guid.NewGuid());
+                    var r = ViewReceiptWares(parIdReceipt);          
+
+                    OnReceiptCalculationComplete?.Invoke(ViewReceiptWares(parIdReceipt),GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace));
                 }
             });
         }
@@ -286,6 +287,8 @@ namespace SharedLib
             db.ExecuteNonQuery(SqlGetWaresFromFastGroup, new { CodeFastGroup= parCodeFastGroup });
             return FindWares();
         }                 
+
+        
 
     }
 }

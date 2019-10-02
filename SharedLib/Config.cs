@@ -26,6 +26,9 @@ namespace SharedLib
             if (string.IsNullOrWhiteSpace(GlobalVar.PathIni))
                 GlobalVar.PathIni = CurDir;
 
+            var el=AppConfiguration["MID:WorkPlaces"];
+
+
             //GlobalVar.DefaultCodeDealer = Convert.ToInt32(AppConfiguration["MID:DefaultCodeDealer"]);
             if (!Directory.Exists(GlobalVar.PathDB))
                 Directory.CreateDirectory(GlobalVar.PathDB);

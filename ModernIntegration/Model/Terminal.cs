@@ -22,5 +22,7 @@ namespace ModernIntegration.Model
         /// </value>
         public string DisplayName { get; set; }
 
+        public int CustomerId { get; set; }
+
     }
 }
