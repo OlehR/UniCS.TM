@@ -61,7 +61,10 @@ namespace ModernIntegration
             var Res = GetReceiptViewModel(new IdReceipt(parReceipt));
             return Res;
         }
-        public override bool AddPayment(Guid parReceiptId, ReceiptPayment[] parPayment) { return false; }
+        public override bool AddPayment(Guid parReceiptId, ReceiptPayment[] parPayment)
+        {
+            return Bl.db.ReplacePayment(parPayment.Select(r=> ReceiptPaymentToPayment(r)));
+        }
         public override bool AddFiscalNumber(Guid parReceiptId, string parFiscalNumber)
         {
             var receiptId = new IdReceipt(parReceiptId);
@@ -77,7 +80,7 @@ namespace ModernIntegration
             return true;
         }
 
-        public override List<ProductViewModel> GetBags() { return null; }
+        //public override List<ProductViewModel> GetBags() { return null; }
 
         public override List<ProductCategory> GetAllCategories(Guid parTerminalId)
         {
@@ -91,7 +94,8 @@ namespace ModernIntegration
         }
         public override List<ProductCategory> GetCategoriesByParentId(Guid parTerminalId, Guid categoryId)
         {
-            return null;
+            throw new NotImplementedException();
+           // return null;
 
         }
         public override List<ProductViewModel> GetProductsByCategoryId(Guid parTerminalId, Guid categoryId)
@@ -114,9 +118,22 @@ namespace ModernIntegration
             return Res;
         }
 
-        public override bool UpdateReceipt(ReceiptViewModel parReceipt) { return false; }
-        public override TypeSend SendReceipt(Guid parReceipt) { return TypeSend.NotReady; }
-        public override TypeSend GetStatusReceipt(Guid parReceipt) { return TypeSend.NotReady; }
+        public override bool UpdateReceipt(ReceiptViewModel parReceipt)
+        {
+            throw new NotImplementedException();
+            //return false;
+        }
+        public override TypeSend SendReceipt(Guid parReceipt)
+        {
+
+            Bl.SendReceiptTo1C(new IdReceipt(parReceipt));
+            //throw new NotImplementedException();
+            return TypeSend.NotReady;
+        }
+        public override TypeSend GetStatusReceipt(Guid parReceipt) {
+            throw new NotImplementedException();
+            //return TypeSend.NotReady; 
+        }
 
         public override CustomerViewModel GetCustomerByBarCode(Guid parTerminalId, string parS)
         {
@@ -286,6 +303,7 @@ namespace ModernIntegration
                 HasProducts = true,
                 Tags = null
             };
+            
 
         }
 
@@ -305,16 +323,31 @@ namespace ModernIntegration
             if (Receipts.ContainsKey(secondTerminalId) && Receipts[secondTerminalId] != null)
                 return false;
             var idReceipt = Bl.GetNewIdReceipt(secondTerminalId);
-
             if (Bl.MoveReceipt(GetCurrentReceiptByTerminalId(firstTerminalId), idReceipt))
             {
                 Receipts[secondTerminalId] = new ModelMID.Receipt(idReceipt);
-                return false;
+                return true;
             }
             else
                 return false;
         }
 
+        /// <summary>
+        /// Convert ReceiptPayment->Payment
+        /// </summary>
+        /// <param name="parRP"></param>
+        /// <returns></returns>
+        public Payment ReceiptPaymentToPayment(ReceiptPayment parRP)
+        {
+            return new Payment(parRP.ReceiptId)
+            {
+                TypePay = (eTypePay)(int)parRP.PaymentType,
+                Sum = parRP.PayIn,
+                NumberReceipt = parRP.CardPan,
+                CodeAuthorization = parRP.TransactionCode,
+                //NumberTerminal=parRP.,
+            };
+        }
 
     }
 }

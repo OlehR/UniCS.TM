@@ -4,13 +4,16 @@ using System.Text;
 
 namespace ModelMID
 {
-    class Payment:IdReceipt
+    public class Payment:IdReceipt
     {
-        eTypePay TypePay { get; set;}
-        decimal Sum  { get; set;}
-        decimal SumExt { get; set; }
-        string NumberTerminal { get; set; }
-        string NumberReceipt { get; set; }
-        string CodeAuthorization { get; set; }
+        public eTypePay TypePay { get; set;}
+        public decimal Sum  { get; set;}
+        public decimal SumExt { get; set; }
+        public string NumberTerminal { get; set; }
+        public string NumberReceipt { get; set; }
+        public string CodeAuthorization { get; set; }
+        public string NumberSlip { get; set; }
+        public DateTime DateCreate { get; set; }
+        public Payment(Guid parReceipt) : base(parReceipt) { }
     }
 }

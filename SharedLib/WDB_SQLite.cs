@@ -29,6 +29,13 @@ namespace SharedLib
             varVersion = "SQLite.0.0.1";
             InitSQL();
             DateTime varD = DateTime.Today;
+            var ConfigFile = Path.Combine(GlobalVar.PathDB, "config.db");
+            if (!File.Exists(ConfigFile))
+            {
+                db = new SQLite(ConfigFile);
+                db.ExecuteNonQuery(SqlCreateConfigTable);
+                db.Close();
+            }
             string varReceiptFile = Path.Combine(GlobalVar.PathDB,$"{varD:yyyyMM}" ,$"Rc_{GlobalVar.IdWorkPlace}_{varD:yyyyMMdd}.db");
             if (!File.Exists(varReceiptFile))
             {
@@ -43,9 +50,11 @@ namespace SharedLib
             }
 
             db = new SQLite(string.IsNullOrEmpty(parConnect) ? Path.Combine(GlobalVar.PathDB,  @"MID.db") : parConnect);//,"",this.varCallWriteLogSQL);
-                                                                  //this.db.ExecuteNonQuery("ATTACH ':memory:' AS m");
-            
+                                                                                                                        //this.db.ExecuteNonQuery("ATTACH ':memory:' AS m");
+            db.ExecuteNonQuery("ATTACH '" + ConfigFile + "' AS con");
             db.ExecuteNonQuery("ATTACH '" + varReceiptFile + "' AS rc");
+
+            BildWorkplace();
         }
 
         private new bool InitSQL()
@@ -284,8 +293,7 @@ namespace SharedLib
         
         public override IEnumerable<ReceiptWares> GetWaresFromFastGroup(int parCodeFastGroup)
         {
-            db.ExecuteNonQuery(SqlGetWaresFromFastGroup, new { CodeFastGroup= parCodeFastGroup });
-            return FindWares();
+            return FindWares(null, null, 0, 0, parCodeFastGroup);
         }                 
 
         

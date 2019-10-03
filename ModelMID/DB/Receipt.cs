@@ -29,9 +29,9 @@ namespace ModelMID
         public int NumberCashier { get; set; }
 
         /// <summary>
-        /// 0- готується,1- оплачено,2- фіскалізовано
+        /// 0- готується,1- оплачено,2- фіскалізовано,3 - Send
         /// </summary>
-        public int StateReceipt { get; set; }
+        public eStateReceipt StateReceipt { get; set; }
 
         /// <summary>
         /// Номер чека в фіскальному реєстраторі
@@ -69,8 +69,8 @@ namespace ModelMID
         public decimal AdditionN3 { get; set; }
         public string AdditionC1 { get; set; }
         public DateTime AdditionD1 { get; set; }
-        
 
+        public IEnumerable<ReceiptWares> Wares { get; set; }
         public Receipt()
         {
             Clear();

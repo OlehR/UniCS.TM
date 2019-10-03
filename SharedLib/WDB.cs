@@ -37,14 +37,14 @@ namespace SharedLib
 		protected CallWriteLogSQL varCallWriteLogSQL; // это тот самый член-делегат :))
 		*/
         public string varVersion = "0.0.1";
-        protected string SqlCreateReceiptTable = @"";
+        protected string SqlCreateReceiptTable = "";
         
-        protected string SqlConfig = @"";
+        protected string SqlConfig = "";
 
         /// <summary>
         /// Процедура пошуку.(для Баз з можливістю stored procedure) oracle,mssql,...
         /// </summary>
-        protected string SqlFind = @"";
+        protected string SqlFind = "";
        
         /// <summary>
         /// 
@@ -54,104 +54,104 @@ namespace SharedLib
         /// <summary>
         /// Запит, який вертає знайдених клієнтів
         /// </summary>
-        protected string SqlFoundClient = @"";
+        protected string SqlFoundClient = "";
         /// <summary>
         /// Запит, який вертає знайдені товари
         /// </summary>
-        protected string SqlFoundWares = @"";
+        protected string SqlFoundWares = "";
         /// <summary>
         /// Повертає доступні одиниці виміру по товару
         /// </summary>
-        protected string SqlAdditionUnit = @"";
+        protected string SqlAdditionUnit = "";
         /// <summary>
         /// Добавляє чек в базу.
         /// </summary>
-        protected string SqlAddReceipt = @"";
-        protected string SqlReplaceReceipt = @"";
+        protected string SqlAddReceipt = "";
+        protected string SqlReplaceReceipt = "";
         /// <summary>
         /// Запит який вертає інформацію про товари в чеку
         /// </summary>
-        protected string SqlViewReceipt = @"";
+        protected string SqlViewReceipt = "";
         /// <summary>
         /// Запит який вертає інформацію про товари в чеку
         /// </summary>
-        protected string SqlViewReceiptWares = @"";
+        protected string SqlViewReceiptWares = "";
         // <summary>
         /// Міняє клієнта в чеку
         /// </summary>
-        protected string SqlUpdateClient = @"";
-        protected string SqlCloseReceipt = @"";
+        protected string SqlUpdateClient = "";
+        protected string SqlCloseReceipt = "";
         /// <summary>
         /// Добавляє товарну позицію в чек
         /// </summary>
-        protected string SqlAddWares = @"";
-        protected string SqlReplaceWaresReceipt = @"";
-        protected string SqlGetCountWares = @"";
-        protected string SqlUpdateQuantityWares = @"";
-        protected string SqlDeleteReceiptWares = @"";
-        protected string SqlRecalcHeadReceipt = @"";
+        protected string SqlAddWares = "";
+        protected string SqlReplaceWaresReceipt = "";
+        protected string SqlGetCountWares = "";
+        protected string SqlUpdateQuantityWares = "";
+        protected string SqlDeleteReceiptWares = "";
+        protected string SqlRecalcHeadReceipt = "";
         /// <summary>
         /// Внесення винесення грошей.
         /// </summary>
-        protected string SqlInputOutputMoney = @"";
+        protected string SqlInputOutputMoney = "";
         /// <summary>
         /// Добавляє інформацію про Z-звіт
         /// </summary>
-        protected string SqlAddZ = @"";
+        protected string SqlAddZ = "";
         /// <summary>
         /// Добавляє інформацію в log файл
         /// </summary>
-        protected string SqlAddLog = @"";
+        protected string SqlAddLog = "";
         /// <summary>
         /// Запит для генерації кодів по робочому місці.(наприклад номер чека)
         /// </summary>
-        //protected string SqlGenWorkPlace = @"";
-        protected string SqlGetNewCodeReceipt = @"";
+        //protected string SqlGenWorkPlace = "";
+        protected string SqlGetNewCodeReceipt = "";
         
-        protected string SqlLogin = @"";
-        protected string SqlGetPrice = @"";
+        protected string SqlLogin = "";
+        protected string SqlGetPrice = "";
         /*
-        protected string SqlPrepareLockFilterT1 = @"";
-        protected string SqlPrepareLockFilterT2 = @"";
-        protected string SqlPrepareLockFilterT3 = @"";
-        protected string SqlPrepareLockFilterT4 = @"";
-        protected string SqlPrepareLockFilterT5 = @"";*/
-        //protected string SqlListPS = @"";
-        protected string SqlUpdatePrice = @"";
+        protected string SqlPrepareLockFilterT1 = "";
+        protected string SqlPrepareLockFilterT2 = "";
+        protected string SqlPrepareLockFilterT3 = "";
+        protected string SqlPrepareLockFilterT4 = "";
+        protected string SqlPrepareLockFilterT5 = "";*/
+        //protected string SqlListPS = "";
+        protected string SqlUpdatePrice = "";
         protected string SqlGetMinPriceIndicative = "";
 
-        /*        protected string SqlGetLastUseCodeEkka = @"";
-                protected string SqlAddWaresEkka = @"";
-                protected string SqlDeleteWaresEkka = @"";
-                protected string SqlGetCodeEKKA = @"";*/
+        /*        protected string SqlGetLastUseCodeEkka = "";
+                protected string SqlAddWaresEkka = "";
+                protected string SqlDeleteWaresEkka = "";
+                protected string SqlGetCodeEKKA = "";*/
 
-        protected string SqlTranslation = @"";
-        protected string SqlFieldInfo = @"";
-        protected string SqlGetPermissions = @"";
-        protected string SqlGetAllPermissions = @"";
-        protected string SqlCopyWaresReturnReceipt = @"";
+        protected string SqlTranslation = "";
+        protected string SqlFieldInfo = "";
+        protected string SqlGetPermissions = "";
+        protected string SqlGetAllPermissions = "";
+        protected string SqlCopyWaresReturnReceipt = "";
 
-        protected string SqlReplaceUnitDimension = @"";
-        protected string SqlReplaceGroupWares = @"";
-        protected string SqlReplaceWares = @"";
-        protected string SqlReplaceAdditionUnit = @"";
-        protected string SqlReplaceBarCode = @"";
-        protected string SqlReplacePrice = @"";
-        protected string SqlReplaceTypeDiscount = @"";
-        protected string SqlReplaceClient = @"";
+        protected string SqlReplaceUnitDimension = "";
+        protected string SqlReplaceGroupWares = "";
+        protected string SqlReplaceWares = "";
+        protected string SqlReplaceAdditionUnit = "";
+        protected string SqlReplaceBarCode = "";
+        protected string SqlReplacePrice = "";
+        protected string SqlReplaceTypeDiscount = "";
+        protected string SqlReplaceClient = "";
 
-        protected string SqlGetWaresFromFastGroup = "";
+        
         protected string SqlGetFastGroup = "";
 
 
 
-        protected string SqlReplaceFastGroup = @"";
-        protected string SqlReplaceFastWares = @"";
-        protected string SqlReplacePromotionSale = @"";
-        protected string SqlReplacePromotionSaleData = @"";
-        protected string SqlReplacePromotionSaleFilter = @"";        
-        protected string SqlReplacePromotionSaleDealer = @"";
-        protected string SqlReplacePromotionSaleGroupWares = @"";
+        protected string SqlReplaceFastGroup = "";
+        protected string SqlReplaceFastWares = "";
+        protected string SqlReplacePromotionSale = "";
+        protected string SqlReplacePromotionSaleData = "";
+        protected string SqlReplacePromotionSaleFilter = "";        
+        protected string SqlReplacePromotionSaleDealer = "";
+        protected string SqlReplacePromotionSaleGroupWares = "";
         protected string SqlReplacePromotionSale2Category = "";
         protected string SqlReplacePromotionSaleGift = "";
 
@@ -160,19 +160,21 @@ namespace SharedLib
 
         protected string SqlGetPricePromotionSale2Category = "";
 
-        protected string SqlGetPriceDealer = @"";
+        protected string SqlGetPriceDealer = "";
 
         protected string SqlCreateConfigTable = "";
         protected string SqlReplaceWorkPlace = "";
         protected string SqlGetWorkplace = "";
 
         protected string SqlMoveReceipt = "";
+        protected string SqlReplacePayment = "";
+        protected string SqlSetStateReceipt = "";
 
         public WDB(string parFileSQL)
         {
             this.ReadSQL(parFileSQL);
             InitSQL();
-            BildWorkplace();
+   
         }
         protected bool BildWorkplace()
         {
@@ -220,9 +222,9 @@ namespace SharedLib
         /// <summary>
         /// Повертає знайдений товар/товари
         /// </summary>
-        public virtual IEnumerable<ReceiptWares> FindWares(string parBarCode = null, string parName = null, int parCodeWares = 0, int parCodeUnit = 0)
+        public virtual IEnumerable<ReceiptWares> FindWares(string parBarCode = null, string parName = null, int parCodeWares = 0, int parCodeUnit = 0,int parCodeFastGroup=0)
         {
-            var Wares = this.db.Execute<object, ReceiptWares>(SqlFoundWares, new { CodeWares = parCodeWares, CodeUnit = parCodeUnit, BarCode = parBarCode, Name = parName == null ? null : "%" + parName + "%", CodeDealer = GlobalVar.DefaultCodeDealer });
+            var Wares = this.db.Execute<object, ReceiptWares>(SqlFoundWares, new { CodeWares = parCodeWares, CodeUnit = parCodeUnit, BarCode = parBarCode, Name = parName == null ? null : "%" + parName + "%", CodeDealer = GlobalVar.DefaultCodeDealer , CodeFastGroup = parCodeFastGroup });
             return Wares;
         }
 
@@ -318,11 +320,16 @@ namespace SharedLib
 		{
             return this.db.ExecuteNonQuery<IdReceiptWares>(SqlDeleteReceiptWares, parIdReceiptWares) == 0 /*&& RecalcHeadReceipt(parParameters)*/;
         }
-        public virtual Receipt ViewReceipt(IdReceipt parIdReceipt)
+        public virtual Receipt ViewReceipt(IdReceipt parIdReceipt, bool parWithWares=false)
         {
             var res = this.db.Execute<IdReceipt, Receipt>(SqlViewReceipt, parIdReceipt);
             if (res.Count() == 1)
-              return res.FirstOrDefault();
+            {
+                var r= res.FirstOrDefault();
+                if (parWithWares)
+                    r.Wares = ViewReceiptWares(parIdReceipt);
+                return r;
+            }
            return null;
         }
 
@@ -501,7 +508,7 @@ namespace SharedLib
             SqlReplacePrice = GetSQL("SqlReplacePrice");
             SqlReplaceTypeDiscount = GetSQL("SqlReplaceTypeDiscount");
             SqlReplaceClient = GetSQL("SqlReplaceClient");
-            SqlGetWaresFromFastGroup = GetSQL("SqlGetWaresFromFastGroup");
+            
             SqlGetFastGroup = GetSQL("SqlGetFastGroup");
 
             SqlReplaceFastGroup = GetSQL("SqlReplaceFastGroup");
@@ -524,6 +531,8 @@ namespace SharedLib
             SqlCreateConfigTable = GetSQL("SqlCreateConfigTable");
             SqlReplaceWorkPlace = GetSQL("SqlReplaceWorkplace");
             SqlGetWorkplace = GetSQL("SqlGetWorkplace");
+            SqlReplacePayment= GetSQL("SqlReplacePayment");
+            SqlSetStateReceipt = GetSQL("SqlSetStateReceipt");
             return true;
         }
 
@@ -812,6 +821,17 @@ namespace SharedLib
         public virtual bool MoveReceipt(ParamMoveReceipt parMoveReceipt)
         {
             db.ExecuteNonQuery<ParamMoveReceipt>(SqlDeleteWaresReceiptPromotion, parMoveReceipt);
+            return true;
+        }
+        public virtual bool ReplacePayment(IEnumerable<Payment> parData)
+        {
+            db.BulkExecuteNonQuery<Payment>(SqlReplacePayment, parData);
+            return true;
+        }
+
+        public virtual bool SetStateReceipt(Receipt parReceipt)
+        {
+            db.ExecuteNonQuery<Receipt>(SqlSetStateReceipt, parReceipt);
             return true;
         }
     }

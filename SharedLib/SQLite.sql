@@ -23,6 +23,9 @@ union
  from wares w 
  join addition_unit au on (w.CODE_WARES=au.code_wares and au.DEFAULT_UNIT=1)
  where UPPER(w.name_wares) like UPPER(@Name)
+union
+select w.code_wares,au.CODE_UNIT from FAST_WARES w where code_fast_group=@CodeFastGroup
+     join addition_unit au on (w.CODE_WARES=au.code_wares and au.DEFAULT_UNIT=1)
 )
 
 select t.code_wares as CodeWares,w.name_wares NameWares,w.name_wares_receipt  as NameWaresReceipt, w.PERCENT_VAT PercentVat, w.Type_vat TypeVat,
@@ -123,6 +126,7 @@ sum_receipt, vat_receipt, code_pattern, state_receipt, code_client,
 [SqlUpdateClient]
 update receipt set code_client=@CodeClient
         where ID_WORKPLACE = @IdWorkplace and CODE_PERIOD =@CodePeriod and CODE_RECEIPT = @CodeReceipt
+
 [SqlCloseReceipt]
 update receipt
    set STATE_RECEIPT    = @StateReceipt,
@@ -134,6 +138,13 @@ update receipt
  --      CODE_CREDIT_CARD = @CodeCreditCard,
  --      NUMBER_SLIP		= @NumberSlip
  where ID_WORKPLACE = @IdWorkplace
+   and CODE_PERIOD = @CodePeriod
+   and CODE_RECEIPT = @CodeReceipt
+
+[SqlSetStateReceipt]
+update receipt
+   set STATE_RECEIPT    = @StateReceipt,
+  where ID_WORKPLACE = @IdWorkplace
    and CODE_PERIOD = @CodePeriod
    and CODE_RECEIPT = @CodeReceipt
 
@@ -377,7 +388,8 @@ CREATE UNIQUE INDEX id_CONFIG ON CONFIG(NAME_VAR);
  replace into WORKPLACE ( ID_WORKPLACE, NAME, Terminal_GUID) values (@IdWorkplace, @Name,@StrTerminalGUID);
 
 [SqlGetWorkplace]
-select ID_WORKPLACE as IdWorkplace, NAME as Name, Terminal_GUID as StrTerminalGUID from WORKPLACE 
+select ID_WORKPLACE as IdWorkplace, NAME as Name, Terminal_GUID as StrTerminalGUID from WORKPLACE;
+
 [SqlCreateReceiptTable]
 
 CREATE TABLE RECEIPT (
@@ -494,7 +506,9 @@ CREATE TABLE payment
     NUMBER_TERMINAL      TEXT,
     NUMBER_RECEIPT TEXT,
     CODE_authorization TEXT,
-    NUMBER_SLIP       TEXT
+    NUMBER_SLIP       TEXT,
+	DATE_CREATE       DATETIME NOT NULL
+                               DEFAULT (CURRENT_TIMESTAMP)
 );
 CREATE INDEX id_payment ON payment(CODE_RECEIPT);
 
@@ -536,9 +550,6 @@ select @IdWorkplaceReturn,@CodePeriodReturn,@CodeReceiptReturn,code_wares,code_u
 from   rrc.wares_receipt wr where wr.id_workplace=@IdWorkplace and wr.code_period=@CodePeriod  and wr.code_receipt=@CodeReceipt;
 update rc.receipt set CODE_PATTERN=2  where id_workplace=@IdWorkplaceReturn and code_period=@CodePeriodReturn  and code_receipt=@CodeReceiptReturn;
 
-[SqlGetWaresFromFastGroup]
-insert into T$1 (id_1)
-select code_wares from FAST_WARES where code_fast_group=@CodeFastGroup;
 
 [SqlGetFastGroup]
 select code_up as CodeUp,CODE_FAST_GROUP as CodeFastGroup,NAME  from FAST_GROUP where code_up=@CodeUp
@@ -812,5 +823,11 @@ replace into PROMOTION_SALE_GIFT (CODE_PS, NUMBER_GROUP, CODE_WARES, TYPE_DISCOU
 Select min(case when CODE_DEALER=-888888  then PRICE_DEALER else null end) as MinPrice
 ,min(case when CODE_DEALER=-999999  then PRICE_DEALER else null end) as Indicative
  from price where CODE_DEALER in(-999999,-888888) and CODE_WARES=@CodeWares
+ 
+ [SqlReplacePayment]
+ replace into  payment	(ID_WORKPLACE, CODE_PERIOD, CODE_RECEIPT, TYPE_PAY, SUM_PAY, SUM_ext, NUMBER_TERMINAL, NUMBER_RECEIPT, CODE_authorization, NUMBER_SLIP, DATE_CREATE) values
+                        (@IdWorkplace, @CodePeriod, @CodeReceipt, @TypePay, @SumPay, @SumExt, @NumberTerminal, @NumberReceipt, @CodeAuthorization, @NumberSlip, @DateCreate);
+
+
 [SqlEnd]
 */

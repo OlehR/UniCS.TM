@@ -20,10 +20,11 @@ namespace ModelMID
 
     public enum eTypePay
     {
-        Partiall = 0,
-        Cash = 1,
-        Pos = 2,
-        NonCash = 3
+        None = 0,
+        Card = 1,
+        Cash = 2,
+        Both = 3
+              
     }
 
     public enum eTypeBonus
@@ -127,5 +128,25 @@ namespace ModelMID
         /// Подарок
         /// </summary>
         Gift = 41
+    }
+    public enum eStateReceipt
+    {
+        /// <summary>
+        /// Готується
+        /// </summary>
+        Prepare = 0 ,
+        /// <summary>
+        /// Оплачено
+        /// </summary>
+        Pay = 1,
+        /// <summary>
+        /// Надруковано
+        /// </summary>
+        Print= 2,
+        /// <summary>
+        /// Відправлено в 1С
+        /// </summary>
+        Send=3
+
     }
 }

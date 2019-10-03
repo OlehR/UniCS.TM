@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace SharedLib
 {
@@ -12,7 +13,7 @@ namespace SharedLib
     {
         public WDB_SQLite db;
 
-        public Action<IEnumerable<ReceiptWares>,Guid> OnReceiptCalculationComplete { get; set; }
+        public Action<IEnumerable<ReceiptWares>, Guid> OnReceiptCalculationComplete { get; set; }
 
         /// <summary>
         /// Для швидкого пошуку 
@@ -36,7 +37,7 @@ namespace SharedLib
                 db.AddWares(parW);
 
             if (GlobalVar.RecalcPriceOnLine)
-               db.RecalcPriceAsync(parW);
+                db.RecalcPriceAsync(parW);
             return parW;
         }
 
@@ -49,34 +50,33 @@ namespace SharedLib
         {
             return db.AddReceipt(parReceipt);
         }
-        
+
         public int GetIdWorkplaceByTerminalId(Guid parTerminalId)
         {
-           return  db.GetIdWorkplaceByTerminalId(parTerminalId);
+            return db.GetIdWorkplaceByTerminalId(parTerminalId);
         }
-        public IdReceipt GetNewIdReceipt(Guid parTerminalId,int parCodePeriod=0)
-        {            
-            var idReceip = new IdReceipt() { IdWorkplace = GetIdWorkplaceByTerminalId(parTerminalId),CodePeriod= parCodePeriod };
-            return db.GetNewCodeReceipt(idReceip);            
-        }
-
-        public bool UpdateReceiptFiscalNumber(IdReceipt receiptId,string parFiscalNumber)
+        public IdReceipt GetNewIdReceipt(Guid parTerminalId, int parCodePeriod = 0)
         {
+            var idReceip = new IdReceipt() { IdWorkplace = GetIdWorkplaceByTerminalId(parTerminalId), CodePeriod = parCodePeriod };
+            return db.GetNewCodeReceipt(idReceip);
+        }
 
+        public bool UpdateReceiptFiscalNumber(IdReceipt receiptId, string parFiscalNumber)
+        {
             var receipt = new Receipt(receiptId);
             receipt.NumberReceipt = parFiscalNumber;
-            receipt.StateReceipt = 2;
-           db.RecalcPriceAsync(receiptId);
+            receipt.StateReceipt = eStateReceipt.Print;
+            //db.RecalcPrice(receiptId);
             db.CloseReceipt(receipt);
             return true;
         }
-        
+
         public ReceiptWares AddWaresBarCode(IdReceipt parReceipt, string parBarCode, decimal parQuantity = 0)
         {
             var w = db.FindWares(parBarCode);
             if (w.Count() == 1)
             {
-                var W= w.First();
+                var W = w.First();
                 if (parQuantity == 0)
                     return W;
                 W.SetIdReceipt(parReceipt);
@@ -108,14 +108,14 @@ namespace SharedLib
             return null;
         }
 
-        public IEnumerable<ReceiptWares>  ViewReceiptWares(IdReceipt parIdReceipt)
+        public IEnumerable<ReceiptWares> ViewReceiptWares(IdReceipt parIdReceipt)
         {
-           var Res= db.ViewReceiptWares(parIdReceipt);
+            var Res = db.ViewReceiptWares(parIdReceipt);
             //var El = Res.First();
             return Res;
 
         }
-        public bool ChangeQuantity(IdReceiptWares parReceiptWaresId, decimal  parQuantity)
+        public bool ChangeQuantity(IdReceiptWares parReceiptWaresId, decimal parQuantity)
         {
             var W = db.FindWares(null, null, parReceiptWaresId.CodeWares, parReceiptWaresId.CodeUnit);
             if (W.Count() == 1)
@@ -123,17 +123,17 @@ namespace SharedLib
                 var w = W.First();
                 w.SetIdReceiptWares(parReceiptWaresId);
                 w.Quantity = parQuantity;
-                return db.UpdateQuantityWares(w);                
+                return db.UpdateQuantityWares(w);
             }
             return false;
-            
+
         }
         public Receipt GetReceiptHead(IdReceipt idReceipt)
         {
             return db.ViewReceipt(idReceipt);
         }
 
-        public Client GetClientByBarCode(IdReceipt idReceipt,string parBarCode)
+        public Client GetClientByBarCode(IdReceipt idReceipt, string parBarCode)
         {
             var r = db.FindClient(parBarCode);
             if (r.Count() == 1)
@@ -159,7 +159,7 @@ namespace SharedLib
 
         }
 
-        private void  UpdateClientInReceipt(IdReceipt idReceipt, Client parClient)
+        private void UpdateClientInReceipt(IdReceipt idReceipt, Client parClient)
         {
             var RH = GetReceiptHead(idReceipt);
             RH.CodeClient = parClient.CodeClient;
@@ -167,11 +167,11 @@ namespace SharedLib
             db.ReplaceReceipt(RH);
         }
 
-        
-        public IEnumerable<ReceiptWares> GetProductsByName( string parName)
+
+        public IEnumerable<ReceiptWares> GetProductsByName(string parName)
         {
-            var r = db.FindWares(null,parName);
-            if (r.Count() >0)
+            var r = db.FindWares(null, parName);
+            if (r.Count() > 0)
             {
                 return r;
             }
@@ -187,9 +187,40 @@ namespace SharedLib
 
         public bool MoveReceipt(IdReceipt parIdReceipt, IdReceipt parIdReceiptTo)
         {
-            var param = new ParamMoveReceipt(parIdReceipt) {NewCodePeriod= parIdReceiptTo.CodePeriod,NewCodeReceipt= parIdReceiptTo.CodePeriod,NewIdWorkplace= parIdReceiptTo.IdWorkplace };
+            var param = new ParamMoveReceipt(parIdReceipt) { NewCodePeriod = parIdReceiptTo.CodePeriod, NewCodeReceipt = parIdReceiptTo.CodePeriod, NewIdWorkplace = parIdReceiptTo.IdWorkplace };
             return db.MoveReceipt(param);
-          
+        }
+
+        public bool SetStateReceipt(IdReceipt receiptId, eStateReceipt parSrateReceipt)
+        {
+            var receipt = new Receipt(receiptId);
+            receipt.StateReceipt = parSrateReceipt;
+            db.CloseReceipt(receipt);
+            return true;
+        }
+
+        public bool SendReceiptTo1C(IdReceipt parIdReceipt)
+        {
+
+            
+            return SendReceiptTo1C(db.ViewReceipt(parIdReceipt,true));
+
+            
+        }
+            public bool SendReceiptTo1C(Receipt parReceipt)
+        {
+            var Receipt = JsonConvert.SerializeObject(parReceipt);
+            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(Receipt);            
+
+            string SoapText = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +"\n"+
+       "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" + "\n" +
+       "<soap:Body><CreateReceipt xmlns = \"vopak\" >" + "\n" +
+       "< xmlStr >" + System.Convert.ToBase64String(plainTextBytes) +" </ xmlStr >" + "\n" +
+       "</ CreateOrderOfSuplier >" + "\n" +
+       "</ soap:Body>" + "\n" +
+       "</soap:Envelope>";
+
+            return true;
         }
     }
 }
