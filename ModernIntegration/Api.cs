@@ -50,8 +50,6 @@ namespace ModernIntegration
 
         public Action<SyncInformation> OnSyncInfoCollected { get; set; }
 
-        public Action<ReceiptViewModel,Guid> OnReceiptChanged { get; set; }
-
         public Action<IEnumerable<ProductViewModel>, Guid> OnProductsChanged { get; set; }
 
     }
