@@ -169,6 +169,7 @@ namespace SharedLib
         protected string SqlMoveReceipt = "";
         protected string SqlReplacePayment = "";
         protected string SqlSetStateReceipt = "";
+        protected string SqlInsertWeight = "";
 
         public WDB(string parFileSQL)
         {
@@ -533,6 +534,7 @@ namespace SharedLib
             SqlGetWorkplace = GetSQL("SqlGetWorkplace");
             SqlReplacePayment= GetSQL("SqlReplacePayment");
             SqlSetStateReceipt = GetSQL("SqlSetStateReceipt");
+            SqlInsertWeight = GetSQL("SqlInsertWeight");
             return true;
         }
 
@@ -834,6 +836,13 @@ namespace SharedLib
             db.ExecuteNonQuery<Receipt>(SqlSetStateReceipt, parReceipt);
             return true;
         }
+
+        public virtual bool InsertWeight(Object parWeight)
+        {
+            db.ExecuteNonQuery<Object>(SqlInsertWeight, parWeight);
+            return true;
+        }
+        
     }
 
 }

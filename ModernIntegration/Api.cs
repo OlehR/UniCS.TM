@@ -33,6 +33,7 @@ namespace ModernIntegration
         public virtual List<ProductViewModel> GetProductsByName(string parName) { return null; }
 
         public virtual bool UpdateReceipt(ReceiptViewModel parReceipt) { return false; }
+        public virtual bool RefundReceipt(RefundReceiptViewModel parReceipt) { return false; }
         public virtual TypeSend SendReceipt(Guid parReceipt) { return TypeSend.NotReady; }
         public virtual TypeSend GetStatusReceipt(Guid parReceipt)  { return TypeSend.NotReady; } 
 

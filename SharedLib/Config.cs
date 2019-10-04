@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using ModelMID;
+using ModelMID.DB;
 
 namespace SharedLib
 {
@@ -27,7 +28,8 @@ namespace SharedLib
                 GlobalVar.PathIni = CurDir;
 
             //var el=AppConfiguration["MID:WorkPlaces"];
-
+            var Vat = new List<VAT>();
+            AppConfiguration.GetSection("MID:VAT").Bind(Vat);
 
             //GlobalVar.DefaultCodeDealer = Convert.ToInt32(AppConfiguration["MID:DefaultCodeDealer"]);
             if (!Directory.Exists(GlobalVar.PathDB))

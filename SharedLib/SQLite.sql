@@ -384,6 +384,16 @@ CREATE TABLE WORKPLACE (
 );
 CREATE UNIQUE INDEX id_CONFIG ON CONFIG(NAME_VAR);
 
+CREATE TABLE Weight (
+    BarCode TEXT NOT NULL,
+	Weight NUMBER NOT NULL,
+	status integer NOT NULL DEFAULT 0,
+	DATE_CREATE       DATETIME  DEFAULT (CURRENT_TIMESTAMP),
+	);
+
+[SqlInsertWeight] 
+insert into Weight ( BarCode,Weight) values (@BarCode,@Weight);
+
 [SqlReplaceWorkplace]
  replace into WORKPLACE ( ID_WORKPLACE, NAME, Terminal_GUID) values (@IdWorkplace, @Name,@StrTerminalGUID);
 

@@ -222,5 +222,10 @@ namespace SharedLib
 
             return true;
         }
+
+        public bool InsertWeight(string parBarCode,int parWeight)
+        {
+            return db.InsertWeight(new { BarCode = parBarCode, Weigh = (decimal)parWeight / 1000m });
+        }
     }
 }

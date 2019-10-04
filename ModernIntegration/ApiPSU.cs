@@ -348,6 +348,10 @@ namespace ModernIntegration
                 //NumberTerminal=parRP.,
             };
         }
+        public override bool RefundReceipt(RefundReceiptViewModel parReceipt)
+        {
+            return false;
+        }
 
     }
 }
