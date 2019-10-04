@@ -387,5 +387,9 @@ namespace ModernIntegration
             return false;
         }
 
+        public override bool UpdateProductWeight(string parS, int weight)
+        {
+            return Bl.InsertWeight(parS, weight);
+        }
     }
 }
