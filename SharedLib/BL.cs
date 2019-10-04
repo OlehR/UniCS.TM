@@ -207,7 +207,7 @@ namespace SharedLib
 
             
         }
-            public bool SendReceiptTo1C(Receipt parReceipt)
+        public bool SendReceiptTo1C(Receipt parReceipt)
         {
             var Receipt = JsonConvert.SerializeObject(parReceipt);
             var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(Receipt);            

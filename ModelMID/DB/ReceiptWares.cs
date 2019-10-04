@@ -64,7 +64,7 @@ namespace ModelMID
         /// <summary>
         /// 
         /// </summary>
-        public int SumDiscount { get; set; }
+        public decimal SumDiscount { get; set; }
         //  Discount = // 
         public decimal Sum
         {

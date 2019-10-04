@@ -223,6 +223,21 @@ namespace ModernIntegration
             };
             return Res;
         }
+        private ReceiptWares GetReceiptWares(ProductViewModel varPWM)
+        {
+            var Res = new ReceiptWares()
+            {
+                WaresId= varPWM.Id,
+                CodeWares= varPWM.Code,
+                NameWares= varPWM.Name,
+                NameWaresReceipt= varPWM.AdditionalDescription,//!!!TMP;
+                Price = varPWM.Price,
+                Quantity = varPWM.Quantity,
+                SumDiscount= varPWM.DiscountValue ,
+                Sort= varPWM.TotalRows //Сортування популярного.
+            };
+            return Res;
+        }
 
         private ReceiptViewModel GetReceiptViewModel(IdReceipt parReceipt)
         {
@@ -248,11 +263,27 @@ namespace ModernIntegration
                 //PaymentInfo
 
             };
-            var listReceiptItem = GetReceiptItem((IdReceipt)parReceipt);
+            var listReceiptItem = GetReceiptItem(parReceipt);
             var Res = new ReceiptViewModel(receipt, listReceiptItem, null, null);
 
             return Res;
+        }
 
+        private ModelMID.Receipt GetReceipt(ReceiptViewModel parRVM)
+        {
+            var receipt = new ModelMID.Receipt()
+            {
+                ReceiptId= parRVM.Id,
+                NumberReceipt = parRVM.FiscalNumber  ,
+                //Status = (SumCash > 0 || SumCreditCard > 0 ? ReceiptStatusType.Paid : ReceiptStatusType.Created),//!!!TMP Треба врахувати повернення
+                TerminalId = parRVM.TerminalId,
+
+                SumDiscount = parRVM.Discount  ,
+
+                //CustomerId = new Client(CodeClient).ClientId,
+                DateCreate= parRVM.UpdatedAt //!!!TMP              
+            };
+            return receipt;
         }
 
         private List<ReceiptItem> GetReceiptItem(IdReceipt parIdReceipt)
@@ -266,6 +297,9 @@ namespace ModernIntegration
             }
             return Res;
         }
+
+
+
         private CustomerViewModel GetCustomerViewModelByClient(Client parClient)
         {
             if (parClient == null)
