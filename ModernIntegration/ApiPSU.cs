@@ -207,18 +207,18 @@ namespace ModernIntegration
                 Weight = 0,//!!!TMP
                 DeltaWeight = 0,//!!!TMP
                 ProductWeightType = receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByPiece,//!!!TMP
-                IsAgeRestrictedConfirmed = false,//!!!TMP //Обмеження по віку алкоголь Підтверджено
+                IsAgeRestrictedConfirmed = false,//!!!TMP //Обмеження по віку алкоголь Підтверджено не потрібно посилати.
                 Quantity = receiptWares.Quantity,
                 DiscountValue = receiptWares.SumDiscount,
                 DiscountName = "",
-                WarningType = null,//!!!TMP 
+                WarningType = null,//!!! Не посилати 
                 CalculatedWeight = 0,
                 Tags = (receiptWares.TypeWares > 0 ? new List<Tag>() { new Tag() { Key = "AgeRestricted", Id = 0 }, new Tag() {Key= "TimeRestricted" ,Id=1} } : null),//!!!TMP // Різні мітки алкоголь, обмеження по часу. 
                 HasSecurityMark = false,//!!!TMP // Магнітна мітка, яку треба знімати.
                 TotalRows = receiptWares.Sort, //Сортування популярного.
-                WeightCategory = 0,//!!!TMP
-                IsProductOnProcessing = false//!!!TMP  Останній робочий продукт.
-                ///CategoryId=   !!!TMP
+                WeightCategory = 1,//вимірювання Похибки в відсотках,2 в грамах
+                IsProductOnProcessing = false//
+                ///CategoryId=   !!!TMP Групи 1 рівня.
 
             };
             return Res;
@@ -249,17 +249,17 @@ namespace ModernIntegration
                 FiscalNumber = receiptMID.NumberReceipt,
                 Status = (receiptMID.SumCash > 0 || receiptMID.SumCreditCard > 0 ? ReceiptStatusType.Paid : ReceiptStatusType.Created),//!!!TMP Треба врахувати повернення
                 TerminalId = receiptMID.TerminalId,
-                Amount = 0,//!!!TMP
+                Amount = 0,//!!!TMP Сума чека.
                 Discount = receiptMID.SumDiscount,
-                TotalAmount = 0,//!!!TMP
+                TotalAmount = 0,//!!!TMP з врахуванням знижки (знижка на чек.)
                 CustomerId = new Client(receiptMID.CodeClient).ClientId,
                 CreatedAt = receiptMID.DateCreate,
                 UpdatedAt = receiptMID.DateCreate//!!!TMP
 
                 //PaymentType= PaymentType.None,//!!!TMP
-                //PaidAmount=0,//
+                //PaidAmount=0,//Скільки фактично оплатили.
                 //ReceiptItems=
-                //Customer
+                //Customer /// !!!TMP Модель клієнта
                 //PaymentInfo
 
             };
