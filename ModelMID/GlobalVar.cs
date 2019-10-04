@@ -39,6 +39,7 @@ namespace ModelMID
         /// Id робочого місця
         /// </summary>
         public static int IdWorkPlace = 62;
+        public static string PrefixWarehouse = "K";
 
         public static int CodeWarehouse = 9; 
         /// <summary>

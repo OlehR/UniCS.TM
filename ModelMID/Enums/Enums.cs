@@ -147,6 +147,11 @@ namespace ModelMID
         /// Відправлено в 1С
         /// </summary>
         Send=3
+    }
 
+    public enum eTypeReceipt
+    {
+        Refund=-1,
+        Sale=1
     }
 }

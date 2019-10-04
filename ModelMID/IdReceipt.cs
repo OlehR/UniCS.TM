@@ -9,14 +9,9 @@ namespace ModelMID
         public Guid ReceiptId
         {
             get
-            {
-                var strWorkplace = new String('0', 8) + IdWorkplace.ToString();
-                strWorkplace = strWorkplace.Substring(strWorkplace.Length - 8);
-                var strPeriod = CodePeriod.ToString().Substring(0, 4) + "-" + (CodePeriod.ToString().Substring(4, 4) + new String('0', 4)).Substring(0, 4);
-
-                var strCodeReceipt = new String('0', 12) + CodeReceipt.ToString();
-                var strGuid = strWorkplace + "-FFFF-" + strPeriod + "-" + strCodeReceipt.Substring(strCodeReceipt.Length - 12);
-
+            {                             
+                var strPeriod = CodePeriod.ToString("D8").Substring(0, 4) + "-" + CodePeriod.ToString("D8").Substring(4, 4);                              
+                var strGuid = IdWorkplace.ToString("D8") + "-FFFF-" + strPeriod + "-" + CodeReceipt.ToString("D12"); 
                 return Guid.Parse(strGuid);
             }
             set
@@ -31,7 +26,7 @@ namespace ModelMID
 
         public int IdWorkplace { get; set; }
         public int CodePeriod { get; set; }
-        public int CodeReceipt { get; set; }
+        public int CodeReceipt { get; set; }        
 
         public IdReceipt()
         {

@@ -34,6 +34,8 @@ namespace Test
     {
         static void Main(string[] args)
         {
+            
+
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
             //CreateDataBase(); //Створення бази
             TestKit();

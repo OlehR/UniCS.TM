@@ -39,7 +39,7 @@ namespace ModelMID
         //public int CoefficientDefaultUnit { get; set; }
 
         /// <summary>
-        /// ціна за базову одиницю.
+        /// ціна за текучу одиницю.
         /// </summary>
         public decimal Price { get; set; } 
         // Дилерська категорія.                                       
