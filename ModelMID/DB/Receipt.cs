@@ -23,6 +23,7 @@ namespace ModelMID
         /// </summary>
         public DateTime DateReceipt { get; set; }
 
+        public eTypeReceipt TypeReceipt { get; set; }
         public Guid TerminalId { get; set; }
         public int CodeClient { get; set; }
         public int CodePattern { get; set; }
@@ -37,7 +38,7 @@ namespace ModelMID
         /// Номер чека в фіскальному реєстраторі
         /// </summary>
         public string NumberReceipt { get; set; }
-        public int CodeWarehouse { get; set; }
+       // public int CodeWarehouse { get; set; }
 
         public decimal SumReceipt { get; set; }
         //public string StSumReceipt="0.000"; //TMP test

@@ -18,22 +18,22 @@ namespace SharedLib
                    .SetBasePath(CurDir)
                    .AddJsonFile(settingsFilePath).Build();
 
-            GlobalVar.PathCur = AppConfiguration["MID:PathData"];
-            if(string.IsNullOrWhiteSpace(GlobalVar.PathCur) )
-                GlobalVar.PathCur = CurDir;
-            GlobalVar.PathDB = Path.Combine(GlobalVar.PathCur, @"DB\");
+            ModelMID.Global.PathCur = AppConfiguration["MID:PathData"];
+            if(string.IsNullOrWhiteSpace(ModelMID.Global.PathCur) )
+                ModelMID.Global.PathCur = CurDir;
+            ModelMID.Global.PathDB = Path.Combine(ModelMID.Global.PathCur, @"DB\");
 
-            GlobalVar.PathIni = AppConfiguration["MID:PathIni"];
-            if (string.IsNullOrWhiteSpace(GlobalVar.PathIni))
-                GlobalVar.PathIni = CurDir;
+            ModelMID.Global.PathIni = AppConfiguration["MID:PathIni"];
+            if (string.IsNullOrWhiteSpace(ModelMID.Global.PathIni))
+                ModelMID.Global.PathIni = CurDir;
 
             //var el=AppConfiguration["MID:WorkPlaces"];
             var Vat = new List<VAT>();
             AppConfiguration.GetSection("MID:VAT").Bind(Vat);
 
             //GlobalVar.DefaultCodeDealer = Convert.ToInt32(AppConfiguration["MID:DefaultCodeDealer"]);
-            if (!Directory.Exists(GlobalVar.PathDB))
-                Directory.CreateDirectory(GlobalVar.PathDB);
+            if (!Directory.Exists(ModelMID.Global.PathDB))
+                Directory.CreateDirectory(ModelMID.Global.PathDB);
         }
         
 

@@ -66,14 +66,14 @@ select au.code_unit code_unit,ud.abr_unit abr_unit,au.coefficient coefficient, a
        where au.sign_activity='Y' and au.sign_locking='N' and au.code_wares=
 
 [SqlViewReceipt]
-select  id_workplace IdWorkplace, code_period CodePeriod, code_receipt CodeReceipt, date_receipt DateReceipt, code_warehouse CodeWarehouse, 
+select  id_workplace IdWorkplace, code_period CodePeriod, code_receipt CodeReceipt, date_receipt DateReceipt,
 sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_receipt as StateReceipt, code_client as CodeClient,
  number_cashier as NumberCashier, number_receipt NumberReceipt, code_discount as CodeDiscount, sum_discount as SumDiscount, percent_discount as PercentDiscount, 
  code_bonus as CodeBonus, sum_bonus as SumBonus, sum_cash as SumCash, sum_credit_card as SumCreditCard, code_outcome as CodeOutcome, 
  code_credit_card as CodeCreditCard, number_slip as NumberSlip, number_tax_income as NumberTaxIncome,USER_CREATE as UseCreate,
  ADDITION_N1 as AdditionN1,ADDITION_N2 as AdditionN2, ADDITION_N3 as AdditionN3,
  ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1
- from RECEIPT
+ from 
  where ID_WORKPLACE = @IdWorkplace
    and CODE_PERIOD = @CodePeriod
    and CODE_RECEIPT = @CodeReceipt
@@ -106,21 +106,21 @@ select wr.id_workplace as IdWorkplace, wr.code_period as CodePeriod, wr.code_rec
                      order by sort
 
 [SqlAddReceipt]
-insert into receipt (id_workplace, code_period, code_receipt, date_receipt, code_warehouse, 
+insert into receipt (id_workplace, code_period, code_receipt, date_receipt, 
 sum_receipt, vat_receipt, code_pattern, state_receipt, code_client,
  number_cashier, number_receipt, code_discount, sum_discount, percent_discount, 
  code_bonus, sum_bonus, sum_cash, sum_credit_card, code_outcome, 
  code_credit_card, number_slip, number_tax_income,USER_CREATE,
  ADDITION_N1,ADDITION_N2,ADDITION_N3,
- ADDITION_C1,ADDITION_D1
+ ADDITION_C1,ADDITION_D1,Type_Receipt
  ) values 
- (@IdWorkplace, @CodePeriod, @CodeReceipt, @DateReceipt, @CodeWarehouse,
+ (@IdWorkplace, @CodePeriod, @CodeReceipt, @DateReceipt, 
  @SumReceipt, @VatReceipt, @CodePattern, @StateReceipt, @CodeClient,
  @NumberCashier, @NumberReceipt, 0, @SumDiscount, @PercentDiscount,
  0, 0, 0, 0, 0,
  0, 0, 0,@UserCreate,
  @AdditionN1,@AdditionN2,@AdditionN3,
- @AdditionC1,@AdditionD1
+ @AdditionC1,@AdditionD1,@TypeReceipt
  )
  
 [SqlUpdateClient]
@@ -150,13 +150,13 @@ update receipt
 
 [SqlAddWares]
 insert into wares_receipt (id_workplace, code_period, code_receipt, code_wares, code_unit,
-  type_price, code_warehouse,  quantity, price, Price_Dealer, sum, sum_vat,
+  type_price,  quantity, price, Price_Dealer, sum, sum_vat,
   PAR_PRICE_1,PAR_PRICE_2,PAR_PRICE_3, sum_discount, type_vat, sort, user_create,
  ADDITION_N1,ADDITION_N2,ADDITION_N3,
  ADDITION_C1,ADDITION_D1,BARCODE_2Category,DESCRIPTION) 
  values (
   @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit,
-  @TypePrice, @CodeWarehouse, @Quantity, @Price,@PriceDealer, @Sum, @SumVat,
+  @TypePrice, @Quantity, @Price,@PriceDealer, @Sum, @SumVat,
   @ParPrice1,@ParPrice2,@ParPrice3, @SumDiscount, @TypeVat, @Sort, @UserCreate,
  @AdditionN1,@AdditionN2,@AdditionN3,
  @AdditionC1,@AdditionD1,@BARCODE2Category,@DESCRIPTION)
@@ -407,7 +407,8 @@ CREATE TABLE RECEIPT (
     CODE_PERIOD       INTEGER  NOT NULL,
     CODE_RECEIPT      INTEGER  NOT NULL PRIMARY KEY,
     DATE_RECEIPT      DATETIME NOT NULL,
-    CODE_WAREHOUSE    INTEGER  NOT NULL,
+--    CODE_WAREHOUSE    INTEGER  NOT NULL,
+    Type_Receipt INTEGER  NOT NULL DEFAULT 1,
     SUM_RECEIPT       NUMBER   NOT NULL,
     VAT_RECEIPT       NUMBER   NOT NULL,
     CODE_PATTERN      INTEGER  NOT NULL,
@@ -448,7 +449,7 @@ CREATE TABLE WARES_RECEIPT (
     CODE_RECEIPT   INTEGER  NOT NULL,
     CODE_WARES     INTEGER  NOT NULL,
     CODE_UNIT      INTEGER  NOT NULL,
-    CODE_WAREHOUSE INTEGER  NOT NULL,
+--    CODE_WAREHOUSE INTEGER  NOT NULL,
     QUANTITY       NUMBER   NOT NULL,
     PRICE          INTEGER  NOT NULL,
     SUM            NUMBER   NOT NULL,
@@ -492,7 +493,7 @@ CREATE TABLE WARES_RECEIPT_HISTORY (
     CODE_RECEIPT   INTEGER  NOT NULL,
     CODE_WARES     INTEGER  NOT NULL,
     CODE_UNIT      INTEGER  NOT NULL,
-    CODE_WAREHOUSE INTEGER  NOT NULL,
+--    CODE_WAREHOUSE INTEGER  NOT NULL,
     QUANTITY       NUMBER   NOT NULL,    
     CODE_OPERATION INTEGER  NOT NULL
 	);
@@ -553,9 +554,9 @@ order by type_access
 
 [SqlCopyWaresReturnReceipt]
 insert into rc.wares_receipt 
-(id_workplace,code_period,code_receipt,code_wares,code_unit,code_warehouse,quantity,price,sum,sum_vat,sum_discount,
+(id_workplace,code_period,code_receipt,code_wares,code_unit,quantity,price,sum,sum_vat,sum_discount,
 type_price,par_price_1,par_price_2,type_vat,sort, addition_n1, addition_n2,addition_n3, user_create,BARCODE_2Category )
-select @IdWorkplaceReturn,@CodePeriodReturn,@CodeReceiptReturn,code_wares,code_unit,code_warehouse,0,price,0,0,0,
+select @IdWorkplaceReturn,@CodePeriodReturn,@CodeReceiptReturn,code_wares,code_unit,0,price,0,0,0,
 0,0,0,type_vat,sort,@IdWorkplace, @CodePeriod, @CodeReceipt, @UserCreate,@barCode2Category
 from   rrc.wares_receipt wr where wr.id_workplace=@IdWorkplace and wr.code_period=@CodePeriod  and wr.code_receipt=@CodeReceipt;
 update rc.receipt set CODE_PATTERN=2  where id_workplace=@IdWorkplaceReturn and code_period=@CodePeriodReturn  and code_receipt=@CodeReceiptReturn;

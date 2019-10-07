@@ -24,19 +24,19 @@ namespace SharedLib
         /// 
         /// </summary>
         /// <param name="parCallWriteLogSQL"></param>
-        public WDB_SQLite(string parConnect = "") : base(Path.Combine(GlobalVar.PathIni, "SQLite.sql") )
+        public WDB_SQLite(string parConnect = "") : base(Path.Combine(ModelMID.Global.PathIni, "SQLite.sql") )
         {
             varVersion = "SQLite.0.0.1";
             InitSQL();
             DateTime varD = DateTime.Today;
-            var ConfigFile = Path.Combine(GlobalVar.PathDB, "config.db");
+            var ConfigFile = Path.Combine(ModelMID.Global.PathDB, "config.db");
             if (!File.Exists(ConfigFile))
             {
                 db = new SQLite(ConfigFile);
                 db.ExecuteNonQuery(SqlCreateConfigTable);
                 db.Close();
             }
-            string varReceiptFile = Path.Combine(GlobalVar.PathDB,$"{varD:yyyyMM}" ,$"Rc_{GlobalVar.IdWorkPlace}_{varD:yyyyMMdd}.db");
+            string varReceiptFile = Path.Combine(ModelMID.Global.PathDB,$"{varD:yyyyMM}" ,$"Rc_{ModelMID.Global.IdWorkPlace}_{varD:yyyyMMdd}.db");
             if (!File.Exists(varReceiptFile))
             {
                 var receiptFilePath = Path.GetDirectoryName(varReceiptFile);
@@ -49,7 +49,7 @@ namespace SharedLib
                 
             }
 
-            db = new SQLite(string.IsNullOrEmpty(parConnect) ? Path.Combine(GlobalVar.PathDB,  @"MID.db") : parConnect);//,"",this.varCallWriteLogSQL);
+            db = new SQLite(string.IsNullOrEmpty(parConnect) ? Path.Combine(ModelMID.Global.PathDB,  @"MID.db") : parConnect);//,"",this.varCallWriteLogSQL);
                                                                                                                         //this.db.ExecuteNonQuery("ATTACH ':memory:' AS m");
             db.ExecuteNonQuery("ATTACH '" + ConfigFile + "' AS con");
             db.ExecuteNonQuery("ATTACH '" + varReceiptFile + "' AS rc");
@@ -145,7 +145,7 @@ namespace SharedLib
                 {
                     var r = ViewReceiptWares(parIdReceipt);          
 
-                    OnReceiptCalculationComplete?.Invoke(ViewReceiptWares(parIdReceipt),GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace));
+                    OnReceiptCalculationComplete?.Invoke(ViewReceiptWares(parIdReceipt),Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace));
                 }
             });
         }
@@ -155,11 +155,11 @@ namespace SharedLib
             var RH = ViewReceipt(parIdReceipt);
 
             var par = new ParameterPromotion() {
-                CodeWarehouse = GlobalVar.CodeWarehouse,
+                CodeWarehouse = ModelMID.Global.CodeWarehouse,
                 BirthDay = DateTime.Now.AddDays(-3).Date,
-                Time =Convert.ToInt32( RH.DateReceipt.ToString("HHmm")),
-                TypeCard =GetTypeDiscountClientByReceipt(parIdReceipt),
-                CodeDealer=GlobalVar.DefaultCodeDealer
+                Time = Convert.ToInt32( RH.DateReceipt.ToString("HHmm")),
+                TypeCard = GetTypeDiscountClientByReceipt(parIdReceipt),
+                CodeDealer= ModelMID.Global.DefaultCodeDealer
             };
 
             //var PercentDiscount = GetPersentDiscountClientByReceipt(parIdReceipt);
@@ -229,7 +229,7 @@ namespace SharedLib
         public bool GetPricePromotionKit(IdReceipt parIdReceipt,IEnumerable<ReceiptWares> parRW)
         {
             var varRes = new List<WaresReceiptPromotion>(); 
-            var par = new ParamPricePromotionKit(parIdReceipt, GlobalVar.CodeWarehouse);
+            var par = new ParamPricePromotionKit(parIdReceipt, ModelMID.Global.CodeWarehouse);
             var r=db.Execute<ParamPricePromotionKit, PromotionWaresKit>(SqlGetPricePromotionKit, par);
             int NumberGroup = 0;
             decimal Quantity = 0, AddQuantity=0;

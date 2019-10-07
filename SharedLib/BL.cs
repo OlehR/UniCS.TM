@@ -36,7 +36,7 @@ namespace SharedLib
             else
                 db.AddWares(parW);
 
-            if (GlobalVar.RecalcPriceOnLine)
+            if (ModelMID.Global.RecalcPriceOnLine)
                 db.RecalcPriceAsync(parW);
             return parW;
         }
@@ -53,7 +53,7 @@ namespace SharedLib
 
         public int GetIdWorkplaceByTerminalId(Guid parTerminalId)
         {
-            return db.GetIdWorkplaceByTerminalId(parTerminalId);
+            return Global.GetIdWorkplaceByTerminalId(parTerminalId);
         }
         public IdReceipt GetNewIdReceipt(Guid parTerminalId, int parCodePeriod = 0)
         {

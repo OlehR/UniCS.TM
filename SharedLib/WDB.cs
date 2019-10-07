@@ -23,9 +23,7 @@ namespace SharedLib
     public class WDB
     {
 
-        SortedList<Guid, WorkPlace> WorkPlaceByTerminalId;
-        SortedList<int, WorkPlace> WorkPlaceByWorkplaceId;
-       
+      
 
         public SQL db;
         protected Hashtable keySQL = new Hashtable();
@@ -179,12 +177,12 @@ namespace SharedLib
         }
         protected bool BildWorkplace()
         {
-            WorkPlaceByTerminalId = new SortedList<Guid, WorkPlace>();
-            WorkPlaceByWorkplaceId = new SortedList<int, WorkPlace>();
+            Global.WorkPlaceByTerminalId = new SortedList<Guid, WorkPlace>();
+            Global.WorkPlaceByWorkplaceId = new SortedList<int, WorkPlace>();
             foreach (var el in GetWorkPlace())
             {
-                WorkPlaceByTerminalId.Add(el.TerminalGUID, el);
-                WorkPlaceByWorkplaceId.Add(el.IdWorkplace, el);
+                Global.WorkPlaceByTerminalId.Add(el.TerminalGUID, el);
+                Global.WorkPlaceByWorkplaceId.Add(el.IdWorkplace, el);
             }
             return true;
 
@@ -225,7 +223,7 @@ namespace SharedLib
         /// </summary>
         public virtual IEnumerable<ReceiptWares> FindWares(string parBarCode = null, string parName = null, int parCodeWares = 0, int parCodeUnit = 0,int parCodeFastGroup=0)
         {
-            var Wares = this.db.Execute<object, ReceiptWares>(SqlFoundWares, new { CodeWares = parCodeWares, CodeUnit = parCodeUnit, BarCode = parBarCode, Name = parName == null ? null : "%" + parName + "%", CodeDealer = GlobalVar.DefaultCodeDealer , CodeFastGroup = parCodeFastGroup });
+            var Wares = this.db.Execute<object, ReceiptWares>(SqlFoundWares, new { CodeWares = parCodeWares, CodeUnit = parCodeUnit, BarCode = parBarCode, Name = parName == null ? null : "%" + parName + "%", CodeDealer = ModelMID.Global.DefaultCodeDealer , CodeFastGroup = parCodeFastGroup });
             return Wares;
         }
 
@@ -782,21 +780,7 @@ namespace SharedLib
                 return res.FirstOrDefault();
             return null;
         }
-        public virtual int  GetIdWorkplaceByTerminalId(Guid parTerminalId)
-        {
-            if (WorkPlaceByTerminalId.ContainsKey(parTerminalId))
-                return WorkPlaceByTerminalId[parTerminalId].IdWorkplace;
- 
-                return 0;
-        }
-
-        public Guid GetTerminalIdByIdWorkplace(int parIdWorkPlace)
-        {
-            if (WorkPlaceByWorkplaceId.ContainsKey(parIdWorkPlace))
-                return WorkPlaceByWorkplaceId[parIdWorkPlace].TerminalGUID;
-            return Guid.Empty;
-
-        }
+        
 
         public virtual bool DeleteWaresReceiptPromotion(IdReceipt parIdReceipt)
         {

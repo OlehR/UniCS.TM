@@ -112,10 +112,10 @@ namespace ModelMID
         /// </summary>
         public bool IsSave { get; set; }
         public bool IsWeight
-            { get { return GlobalVar.WeightCodeUnit == CodeDefaultUnit; } }
+            { get { return Global.WeightCodeUnit == CodeDefaultUnit; } }
         public int Sort { get; set; }
         public int UserCreate { get; set; }
-        public int CodeWarehouse { get; set; }
+      //  public int CodeWarehouse { get; set; }
         public string Description { get; set; }
         public decimal AdditionN1 { get; set; }
         public decimal AdditionN2 { get; set; }

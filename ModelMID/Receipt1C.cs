@@ -12,7 +12,7 @@ namespace ModelMID
         /// <summary>
         /// 1 - звичайний, -1 - повернення
         /// </summary>
-        public int TypeReceipt { get; set; }
+        public eTypeReceipt TypeReceipt { get; set; }
         public int NumberCashDesk { get; set; }
         public string Description { get; set; }
 
@@ -24,9 +24,9 @@ namespace ModelMID
         public Receipt1C(Receipt parR)
         {
             Date = parR.DateReceipt;
-        
-            Number=GlobalVar.PrefixWarehouse + "14"+ (Date-new DateTime(2019,01,01)).TotalDays.ToString("D4") +parR.CodeReceipt.ToString("D4");///TMP!!! Придуати номер каси.
-            TypeReceipt = 1;///TMP!!!
+            //Фінт з датою заради 4 знаків для дати. Вистачить на років 30.
+            Number=Global.PrefixWarehouse + Global.GetNumberCashDeskByIdWorkplace(parR.IdWorkplace) + (Date-new DateTime(2019,01,01)).TotalDays.ToString("D4") +parR.CodeReceipt.ToString("D4");///TMP!!! Придуати номер каси.
+            TypeReceipt = parR.TypeReceipt;
             NumberCashDesk = parR.IdWorkplace;
             Description = null;///TMP!!! Має бути сліп.
             CodeClientCard = parR.CodeClient;

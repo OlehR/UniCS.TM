@@ -14,7 +14,7 @@ namespace ModelMID
             get
             {
                 var strGuid = new String('0', 12) + CodeClient.ToString();
-                strGuid = GlobalVar.ClientGuid + strGuid.Substring(strGuid.Length - 12);
+                strGuid = Global.ClientGuid + strGuid.Substring(strGuid.Length - 12);
                 return Guid.Parse(strGuid);
             }
         }
