@@ -318,7 +318,6 @@ namespace ModernIntegration
             };
         }
 
-
         private ProductCategory GetProductCategory(FastGroup parFG)
         {
             if (parFG == null)
@@ -391,6 +390,11 @@ namespace ModernIntegration
         public override bool UpdateProductWeight(string parS, int weight)
         {
             return Bl.InsertWeight(parS, weight);
+        }
+
+        public override void RequestSyncInfo()
+        {
+            Bl.SyncData();
         }
     }
 }

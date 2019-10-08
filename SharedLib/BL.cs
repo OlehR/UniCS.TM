@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using System.Net.Http;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace SharedLib
 {
@@ -203,36 +205,56 @@ namespace SharedLib
         public bool SendReceiptTo1C(IdReceipt parIdReceipt)
         {
 
-            
-            return SendReceiptTo1C(db.ViewReceipt(parIdReceipt,true));
+            SendReceiptTo1CAsync(db.ViewReceipt(parIdReceipt, true));
+            return true;
 
             
         }
-        public bool SendReceiptTo1C(Receipt parReceipt)
+        public async Task<bool> SendReceiptTo1CAsync(Receipt parReceipt)
         {
             var r = new Receipt1C(parReceipt);
             HttpClient client = new HttpClient();
 
             // Add a new Request Message
-            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, ToString());
+            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, Global.Server1C);
 
+            //requestMessage.Headers.Add("Accept", "application/vnd.github.v3+json");
             // Add our custom headers
             requestMessage.Content = new StringContent(r.GetSOAP(), Encoding.UTF8, "application/json");
-            //TMP!!!
-            /*
-            // Send the request to the server
-            HttpResponseMessage response = await client.SendAsync(requestMessage);
 
-            // Get the response
-            responseString = await response.Content.ReadAsStringAsync();
+            var response = await client.SendAsync(requestMessage);
 
-            */
-            return true;
+            if (response.IsSuccessStatusCode)
+            {
+                var res = await response.Content.ReadAsStringAsync();
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
+            
+            
 
         public bool InsertWeight(string parBarCode,int parWeight)
         {
             return db.InsertWeight(new { BarCode = parBarCode, Weigh = (decimal)parWeight / 1000m });
         }
+
+        public void SyncData()
+        {
+            var MsSQL = new WDB_MsSql();
+
+           
+            var resS = MsSQL.LoadData(db,false);
+           // SQLite.CreateMIDIndex();
+            return;
+        }
     }
 }
+
+
+
+

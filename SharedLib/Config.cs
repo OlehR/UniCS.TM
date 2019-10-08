@@ -33,6 +33,8 @@ namespace SharedLib
             foreach (var el in Vat)
                 Global.Tax.Add(el.Code, el.CodeEKKA);
 
+            ModelMID.Global.Server1C= AppConfiguration["MID:Server1C"];
+
             //GlobalVar.DefaultCodeDealer = Convert.ToInt32(AppConfiguration["MID:DefaultCodeDealer"]);
             if (!Directory.Exists(ModelMID.Global.PathDB))
                 Directory.CreateDirectory(ModelMID.Global.PathDB);
