@@ -37,9 +37,9 @@ namespace Test
             
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-           // CreateDataBase(); //Створення бази
+            CreateDataBase(); //Створення бази
             //TestKit();
-            TestReceipt(); //
+            //TestReceipt(); //
            // CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
             //            var o = new SharedLib.Oracle();
             //var r =  o.Execute<ReceiptWares>("select w.code_wares CodeWares,w.name_wares as NameWares from dw.wares w where w.code_wares in (54882,54883)");

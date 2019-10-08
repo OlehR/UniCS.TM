@@ -6,5 +6,8 @@ namespace ModernIntegration.Model
 {
     public class SyncInformation
     {
+        public int CodeError { get; set; }
+        //object 
+        public string TextError { get; set; }
     }
 }
