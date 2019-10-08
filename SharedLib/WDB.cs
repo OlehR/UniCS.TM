@@ -168,6 +168,7 @@ namespace SharedLib
         protected string SqlReplacePayment = "";
         protected string SqlSetStateReceipt = "";
         protected string SqlInsertWeight = "";
+        protected string SqlGetPayment = "";
 
         public WDB(string parFileSQL)
         {
@@ -319,14 +320,18 @@ namespace SharedLib
 		{
             return this.db.ExecuteNonQuery<IdReceiptWares>(SqlDeleteReceiptWares, parIdReceiptWares) == 0 /*&& RecalcHeadReceipt(parParameters)*/;
         }
-        public virtual Receipt ViewReceipt(IdReceipt parIdReceipt, bool parWithWares=false)
+        public virtual Receipt ViewReceipt(IdReceipt parIdReceipt, bool parWithDetail=false)
         {
             var res = this.db.Execute<IdReceipt, Receipt>(SqlViewReceipt, parIdReceipt);
             if (res.Count() == 1)
             {
                 var r= res.FirstOrDefault();
-                if (parWithWares)
+                if (parWithDetail)
+                {
                     r.Wares = ViewReceiptWares(parIdReceipt);
+                    //r.Payment = GetPayment(parIdReceipt);
+
+                }
                 return r;
             }
            return null;
@@ -533,6 +538,7 @@ namespace SharedLib
             SqlReplacePayment= GetSQL("SqlReplacePayment");
             SqlSetStateReceipt = GetSQL("SqlSetStateReceipt");
             SqlInsertWeight = GetSQL("SqlInsertWeight");
+            SqlGetPayment = GetSQL("SqlGetPayment");
             return true;
         }
 
@@ -827,6 +833,10 @@ namespace SharedLib
             return true;
         }
         
+        public virtual IEnumerable<Payment> GetPayment(IdReceipt parIdReceipt)
+        {      
+            return db.Execute<IdReceipt, Payment>(SqlGetPayment, parIdReceipt);
+        }
     }
 
 }

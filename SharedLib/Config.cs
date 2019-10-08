@@ -30,6 +30,8 @@ namespace SharedLib
             //var el=AppConfiguration["MID:WorkPlaces"];
             var Vat = new List<VAT>();
             AppConfiguration.GetSection("MID:VAT").Bind(Vat);
+            foreach (var el in Vat)
+                Global.Tax.Add(el.Code, el.CodeEKKA);
 
             //GlobalVar.DefaultCodeDealer = Convert.ToInt32(AppConfiguration["MID:DefaultCodeDealer"]);
             if (!Directory.Exists(ModelMID.Global.PathDB))

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace ModelMID
 {
@@ -25,17 +26,29 @@ namespace ModelMID
         {
             Date = parR.DateReceipt;
             //Фінт з датою заради 4 знаків для дати. Вистачить на років 30.
-            Number=Global.PrefixWarehouse + Global.GetNumberCashDeskByIdWorkplace(parR.IdWorkplace) + (Date-new DateTime(2019,01,01)).TotalDays.ToString("D4") +parR.CodeReceipt.ToString("D4");///TMP!!! Придуати номер каси.
+            Number = parR.NumberReceipt1C;
             TypeReceipt = parR.TypeReceipt;
-            NumberCashDesk = parR.IdWorkplace;
-            Description = null;///TMP!!! Має бути сліп.
+            NumberCashDesk = parR.IdWorkplace;            
             CodeClientCard = parR.CodeClient;
             if(parR.Wares!=null) 
               Wares = parR.Wares.Select(r => new ReceiptWares1C(r));
-
+            if (parR.Payment != null)
+                Description = parR.Payment.Where(r => !string.IsNullOrEmpty(r.NumberSlip)).FirstOrDefault().NumberSlip;
         }
-        
-                
+
+        public string GetSOAP()
+        {
+            var Receipt = JsonConvert.SerializeObject(this);
+            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(Receipt);
+            string SoapText = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + "\n" +
+       "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" + "\n" +
+       "<soap:Body><CreateReceipt xmlns = \"vopak\" >" + "\n" +
+       "< xmlStr >" + System.Convert.ToBase64String(plainTextBytes) + " </ xmlStr >" + "\n" +
+       "</ CreateOrderOfSuplier >" + "\n" +
+       "</ soap:Body>" + "\n" +
+       "</soap:Envelope>";
+            return SoapText;
+        }
     }
     
     public class ReceiptWares1C

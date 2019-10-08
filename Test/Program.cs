@@ -37,10 +37,10 @@ namespace Test
             
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-            //CreateDataBase(); //Створення бази
-            TestKit();
-            //TestReceipt(); //
-            //CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
+           // CreateDataBase(); //Створення бази
+            //TestKit();
+            TestReceipt(); //
+           // CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
             //            var o = new SharedLib.Oracle();
             //var r =  o.Execute<ReceiptWares>("select w.code_wares CodeWares,w.name_wares as NameWares from dw.wares w where w.code_wares in (54882,54883)");
 
@@ -83,13 +83,15 @@ namespace Test
         }
         static void TestReceipt()
         {
+
+      
             var TerminalId = Guid.NewGuid();
             var ProductId = Guid.Parse("00000010-abcd-0000-0019-000000055004");
             var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009001");
             //Guid.Parse("00140701-FFFF-2019-0618-000000000008");
             var api = new ApiPSU();
             var Bl = new BL();
-
+            Bl.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20191007, CodeReceipt = 282, IdWorkplace = 62 });
             var Cat = api.GetAllCategories(TerminalId);
             var war = api.GetProductsByCategoryId(TerminalId, FastGroup);
             //      var r=api.GetReceiptItem(new ModelMID.IdReceipt {CodePeriod=20190614,CodeReceipt=1,IdWorkplace= 140701});

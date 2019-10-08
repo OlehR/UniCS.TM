@@ -265,7 +265,8 @@ namespace SharedLib
 
             }
             DeleteWaresReceiptPromotion(parIdReceipt);
-            ReplaceWaresReceiptPromotion(varRes);
+            if(varRes.Count>0)
+              ReplaceWaresReceiptPromotion(varRes);
 
             return true;
 

@@ -196,7 +196,7 @@ namespace ModernIntegration
         /// <returns></returns>
         private ProductViewModel GetProductViewModel(ReceiptWares receiptWares)
         {
-          var Res = new ProductViewModel()
+            var Res = new ProductViewModel()
             {
                 Id = receiptWares.WaresId,
                 Code = receiptWares.CodeWares,
@@ -213,14 +213,14 @@ namespace ModernIntegration
                 DiscountName = "",
                 WarningType = null,//!!! Не посилати 
                 CalculatedWeight = 0,
-                Tags = (receiptWares.TypeWares > 0 ? new List<Tag>() { new Tag() { Key = "AgeRestricted", Id = 0 }, new Tag() {Key= "TimeRestricted" ,Id=1} } : null),//!!!TMP // Різні мітки алкоголь, обмеження по часу. 
+                Tags = (receiptWares.TypeWares > 0 ? new List<Tag>() { new Tag() { Key = "AgeRestricted", Id = 0 }, new Tag() { Key = "TimeRestricted", Id = 1 } } : null),//!!!TMP // Різні мітки алкоголь, обмеження по часу. 
                 HasSecurityMark = false,//!!!TMP // Магнітна мітка, яку треба знімати.
                 TotalRows = receiptWares.Sort, //Сортування популярного.
                 WeightCategory = 1,//вимірювання Похибки в відсотках,2 в грамах
-                IsProductOnProcessing = false//
+                IsProductOnProcessing = false,//
                 ///CategoryId=   !!!TMP Групи 1 рівня.
-
-            };
+                TaxGroup = Global.GetTaxGroup(receiptWares.TypeVat)
+          };
             return Res;
         }
         private ReceiptWares GetReceiptWares(ProductViewModel varPWM)
@@ -261,10 +261,11 @@ namespace ModernIntegration
                 //ReceiptItems=
                 //Customer /// !!!TMP Модель клієнта
                 //PaymentInfo
+                
 
             };
             var listReceiptItem = GetReceiptItem(parReceipt);
-            var Res = new ReceiptViewModel(receipt, listReceiptItem, null, null);
+            var Res = new ReceiptViewModel(receipt, listReceiptItem, null, null) { CustomId = receiptMID.NumberReceipt1C };
 
             return Res;
         }
@@ -376,7 +377,7 @@ namespace ModernIntegration
             return new Payment(parRP.ReceiptId)
             {
                 TypePay = (eTypePay)(int)parRP.PaymentType,
-                Sum = parRP.PayIn,
+                SumPay = parRP.PayIn,
                 NumberReceipt = parRP.CardPan,
                 CodeAuthorization = parRP.TransactionCode,
                 //NumberTerminal=parRP.,

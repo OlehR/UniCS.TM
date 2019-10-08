@@ -10,15 +10,6 @@ namespace ModelMID
     public class Receipt : IdReceipt
     {
         /// <summary>
-        /// Код Чека
-        /// </summary>
-        //public int CodeReceipt;
-
-        /// <summary>
-        /// Код періода
-        /// </summary>
-        //public int CodePeriod;
-        /// <summary>
         /// Дата Чека
         /// </summary>
         public DateTime DateReceipt { get; set; }
@@ -28,6 +19,12 @@ namespace ModelMID
         public int CodeClient { get; set; }
         public int CodePattern { get; set; }
         public int NumberCashier { get; set; }
+        public string NumberReceipt1C { get {
+              
+                var d = Convert.ToInt32(Math.Floor((DateReceipt - new DateTime(2019, 01, 01)).TotalDays)).ToString("D4");
+                return Global.PrefixWarehouse + Global.GetNumberCashDeskByIdWorkplace(IdWorkplace) + d + CodeReceipt.ToString("D4"); 
+            } }///Придуати номер каси.
+
 
         /// <summary>
         /// 0- готується,1- оплачено,2- фіскалізовано,3 - Send
@@ -72,6 +69,7 @@ namespace ModelMID
         public DateTime AdditionD1 { get; set; }
 
         public IEnumerable<ReceiptWares> Wares { get; set; }
+        public IEnumerable<Payment> Payment { get; set; }
         public Receipt()
         {
             Clear();

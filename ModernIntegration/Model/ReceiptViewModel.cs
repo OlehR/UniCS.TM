@@ -259,6 +259,8 @@ namespace ModernIntegration.ViewModels
                 UpdatedAt = UpdatedAt
             };
         }
+        public string CustomId { get; set; }
+
     }
 
     public class UpdateReceiptViewModel
@@ -267,4 +269,5 @@ namespace ModernIntegration.ViewModels
         public ReceiptViewModel Receipt { get; set; }
         public ReceiptPayment PaymentInfo { get; set; }
     }
+
 }

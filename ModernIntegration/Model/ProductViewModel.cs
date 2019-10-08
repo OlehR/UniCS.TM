@@ -315,5 +315,6 @@ namespace ModernIntegration.ViewModels
 
             return item;
         }
+        public string TaxGroup { get; set; }
     }
 }

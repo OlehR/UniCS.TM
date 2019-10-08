@@ -24,8 +24,9 @@ union
  join addition_unit au on (w.CODE_WARES=au.code_wares and au.DEFAULT_UNIT=1)
  where UPPER(w.name_wares) like UPPER(@Name)
 union
-select w.code_wares,au.CODE_UNIT from FAST_WARES w where code_fast_group=@CodeFastGroup
+select w.code_wares,au.CODE_UNIT from FAST_WARES w 
      join addition_unit au on (w.CODE_WARES=au.code_wares and au.DEFAULT_UNIT=1)
+	 where code_fast_group=@CodeFastGroup
 )
 
 select t.code_wares as CodeWares,w.name_wares NameWares,w.name_wares_receipt  as NameWaresReceipt, w.PERCENT_VAT PercentVat, w.Type_vat TypeVat,
@@ -73,7 +74,7 @@ sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_
  code_credit_card as CodeCreditCard, number_slip as NumberSlip, number_tax_income as NumberTaxIncome,USER_CREATE as UseCreate,
  ADDITION_N1 as AdditionN1,ADDITION_N2 as AdditionN2, ADDITION_N3 as AdditionN3,
  ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1
- from 
+ from receipt
  where ID_WORKPLACE = @IdWorkplace
    and CODE_PERIOD = @CodePeriod
    and CODE_RECEIPT = @CodeReceipt
@@ -839,6 +840,12 @@ Select min(case when CODE_DEALER=-888888  then PRICE_DEALER else null end) as Mi
  replace into  payment	(ID_WORKPLACE, CODE_PERIOD, CODE_RECEIPT, TYPE_PAY, SUM_PAY, SUM_ext, NUMBER_TERMINAL, NUMBER_RECEIPT, CODE_authorization, NUMBER_SLIP, DATE_CREATE) values
                         (@IdWorkplace, @CodePeriod, @CodeReceipt, @TypePay, @SumPay, @SumExt, @NumberTerminal, @NumberReceipt, @CodeAuthorization, @NumberSlip, @DateCreate);
 
-
+[SqlGetPayment]
+select id_workplace as IdWorkplace, code_period as CodePeriod, code_receipt as CodeReceipt, 
+ TYPE_PAY as TypePay, SUM_PAY as SumPay, SUM_EXT as SumExt,
+    NUMBER_TERMINAL as NumberTerminal,   NUMBER_RECEIPT as NumberReceipt, CODE_AUTHORIZATION as CodeAuthorization, NUMBER_SLIP as NumberSlip,
+    DATE_CREATE as DateCreate
+   from payment
+  where   id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt
 [SqlEnd]
 */

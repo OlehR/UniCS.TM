@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
+using System.Net.Http;
 
 namespace SharedLib
 {
@@ -209,17 +210,23 @@ namespace SharedLib
         }
         public bool SendReceiptTo1C(Receipt parReceipt)
         {
-            var Receipt = JsonConvert.SerializeObject(parReceipt);
-            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(Receipt);            
+            var r = new Receipt1C(parReceipt);
+            HttpClient client = new HttpClient();
 
-            string SoapText = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +"\n"+
-       "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" + "\n" +
-       "<soap:Body><CreateReceipt xmlns = \"vopak\" >" + "\n" +
-       "< xmlStr >" + System.Convert.ToBase64String(plainTextBytes) +" </ xmlStr >" + "\n" +
-       "</ CreateOrderOfSuplier >" + "\n" +
-       "</ soap:Body>" + "\n" +
-       "</soap:Envelope>";
+            // Add a new Request Message
+            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, ToString());
 
+            // Add our custom headers
+            requestMessage.Content = new StringContent(r.GetSOAP(), Encoding.UTF8, "application/json");
+            //TMP!!!
+            /*
+            // Send the request to the server
+            HttpResponseMessage response = await client.SendAsync(requestMessage);
+
+            // Get the response
+            responseString = await response.Content.ReadAsStringAsync();
+
+            */
             return true;
         }
 
