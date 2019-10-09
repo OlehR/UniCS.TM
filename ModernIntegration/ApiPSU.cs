@@ -61,9 +61,16 @@ namespace ModernIntegration
             var Res = GetReceiptViewModel(new IdReceipt(parReceipt));
             return Res;
         }
+
+        public override ReceiptViewModel GetRecieptByTerminalId(Guid parTerminalId)
+        {
+            var receiptId = GetCurrentReceiptByTerminalId(parTerminalId);
+            return GetReceiptViewModel(receiptId);
+
+        }
         public override bool AddPayment(Guid parTerminalId, ReceiptPayment[] parPayment)
         {
-            var receiptId = new IdReceipt(GetCurrentReceiptByTerminalId(parTerminalId));
+            var receiptId = GetCurrentReceiptByTerminalId(parTerminalId);
             return Bl.db.ReplacePayment(parPayment.Select(r=> ReceiptPaymentToPayment(receiptId, r)));
         }
         public override bool AddFiscalNumber(Guid parTerminalId, string parFiscalNumber)

@@ -18,6 +18,7 @@ namespace ModelMID
         public string Description { get; set; }
 
         public int CodeClientCard { get; set; }
+        public int CodeWarehouse { get { return 9; } set { } } 
 
         public IEnumerable<ReceiptWares1C> Wares;
 
