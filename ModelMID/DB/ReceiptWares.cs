@@ -130,6 +130,11 @@ namespace ModelMID
         /// Штрихкод 2 категорії
         /// </summary>
         public string BarCode2Category { get; set; }
+
+        /// <summary>
+        /// Штрихкод 2 категорії
+        /// </summary>
+        public string BarCode { get; set; }
         public ReceiptWares()
         {
             Clear();
