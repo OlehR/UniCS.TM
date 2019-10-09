@@ -61,13 +61,14 @@ namespace ModernIntegration
             var Res = GetReceiptViewModel(new IdReceipt(parReceipt));
             return Res;
         }
-        public override bool AddPayment(Guid parReceiptId, ReceiptPayment[] parPayment)
+        public override bool AddPayment(Guid parTerminalId, ReceiptPayment[] parPayment)
         {
-            return Bl.db.ReplacePayment(parPayment.Select(r=> ReceiptPaymentToPayment(r)));
+            var receiptId = new IdReceipt(GetCurrentReceiptByTerminalId(parTerminalId));
+            return Bl.db.ReplacePayment(parPayment.Select(r=> ReceiptPaymentToPayment(receiptId, r)));
         }
-        public override bool AddFiscalNumber(Guid parReceiptId, string parFiscalNumber)
+        public override bool AddFiscalNumber(Guid parTerminalId, string parFiscalNumber)
         {
-            var receiptId = new IdReceipt(parReceiptId);
+            var receiptId = new IdReceipt(GetCurrentReceiptByTerminalId(parTerminalId));
             Bl.UpdateReceiptFiscalNumber(receiptId, parFiscalNumber);
             ClearReceiptByReceiptId(receiptId);
 //          ClearReceipt(parReceiptId);
@@ -378,9 +379,9 @@ namespace ModernIntegration
         /// </summary>
         /// <param name="parRP"></param>
         /// <returns></returns>
-        public Payment ReceiptPaymentToPayment(ReceiptPayment parRP)
+        public Payment ReceiptPaymentToPayment(IdReceipt parIdReceipt, ReceiptPayment parRP)
         {
-            return new Payment(parRP.ReceiptId)
+            return new Payment(parIdReceipt)
             {
                 TypePay = (eTypePay)(int)parRP.PaymentType,
                 SumPay = parRP.PayIn,
