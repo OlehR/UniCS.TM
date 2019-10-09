@@ -41,10 +41,9 @@ namespace ModernIntegration
         {
             var CurReceipt = GetCurrentReceiptByTerminalId(parTerminalId);
             var g = CurReceipt.ReceiptId;
-            Bl.AddWaresCode(CurReceipt, parProductId, parQuantity);
-            ProductViewModel Res = null;
+            var RW = Bl.AddWaresCode(CurReceipt, parProductId, parQuantity);
             //TODO: OnReceiptChanged?.Invoke(receipt,terminalId);
-            return Res;
+            return GetProductViewModel(RW);
         }
         public override ReceiptViewModel ChangeQuantity(Guid parTerminalId, Guid parProductId, decimal parQuantity)
         {
@@ -342,7 +341,7 @@ namespace ModernIntegration
             return new ProductCategory
             {
                 Id = parFG.FastGroupId,
-                ParentId = Parrent.FastGroupId,
+                ParentId = null,
                 Name = parFG.Name,
                 Language = null,
                 CustomId = null,
