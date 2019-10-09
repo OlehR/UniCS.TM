@@ -37,10 +37,10 @@ namespace Test
             
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-            CreateDataBase(); //Створення бази
+            //CreateDataBase(); //Створення бази
             //TestKit();
-            //TestReceipt(); //
-           // CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
+           // TestReceipt(); //
+            CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
             //            var o = new SharedLib.Oracle();
             //var r =  o.Execute<ReceiptWares>("select w.code_wares CodeWares,w.name_wares as NameWares from dw.wares w where w.code_wares in (54882,54883)");
 
@@ -83,15 +83,14 @@ namespace Test
         }
         static void TestReceipt()
         {
-
-      
-            var TerminalId = Guid.NewGuid();
+            var TerminalId = Guid.Parse("abb75469-0f34-4124-8c53-c5392115269d");
             var ProductId = Guid.Parse("00000010-abcd-0000-0019-000000055004");
             var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009001");
             //Guid.Parse("00140701-FFFF-2019-0618-000000000008");
             var api = new ApiPSU();
             var Bl = new BL();
-            Bl.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20191007, CodeReceipt = 282, IdWorkplace = 62 });
+           // Bl.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20191009, CodeReceipt = 10, IdWorkplace = 62 });
+            //return;
             var Cat = api.GetAllCategories(TerminalId);
             var war = api.GetProductsByCategoryId(TerminalId, FastGroup);
             //      var r=api.GetReceiptItem(new ModelMID.IdReceipt {CodePeriod=20190614,CodeReceipt=1,IdWorkplace= 140701});
@@ -115,7 +114,7 @@ namespace Test
 
         static void CreateReceipDay()
         {
-            var SQLGetReceipt = @"SELECT /*top(200)*/ ISNULL(td.PERCENT_DISCOUNT,0) AS PERCENT_DISCOUNT, dc.bar_code,  dr.number,dr.date_time
+            var SQLGetReceipt = @"SELECT top(200) ISNULL(td.PERCENT_DISCOUNT,0) AS PERCENT_DISCOUNT, dc.bar_code,  dr.number,dr.date_time
   ,w.Code_Wares
   ,dbo.GetCodeUnit(ud.code_unit)  AS Code_Unit
   , drw.amount
@@ -153,7 +152,7 @@ namespace Test
   --AND dr.number='К1300008702'
 --  AND drw.sum_bonus>0
   ORDER BY dr._IDRRef";
-            var TerminalId = Guid.NewGuid();
+            var TerminalId = Guid.Parse("abb75469-0f34-4124-8c53-c5392115269d");
             var Api = new ApiPSU();
             var LastLine = new TestReceipt();
             var MsSQL = new WDB_MsSql();
@@ -188,7 +187,6 @@ namespace Test
                     RH.DateReceipt = L.Date_Time;
                     
                     Api.Bl.db.ReplaceReceipt(RH);
-
                 }
                 var RW = Api.Bl.db.ViewReceiptWares(LastReceipt);
                 var RWE = RW.FirstOrDefault(d => d.CodeWares == L.Code_Wares);

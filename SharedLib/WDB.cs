@@ -329,7 +329,7 @@ namespace SharedLib
                 if (parWithDetail)
                 {
                     r.Wares = ViewReceiptWares(parIdReceipt);
-                    //r.Payment = GetPayment(parIdReceipt);
+                    r.Payment = GetPayment(parIdReceipt);
 
                 }
                 return r;
