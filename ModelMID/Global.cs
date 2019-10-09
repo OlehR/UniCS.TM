@@ -115,6 +115,8 @@ namespace ModelMID
 
 
         public static SortedList<int,string>  Tax = new SortedList<int, string>();
+
+        public static string Server1C = "";
         public static int GetCodePeriod()
         {
             return GetCodePeriod(DateTime.Today);

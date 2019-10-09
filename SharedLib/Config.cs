@@ -38,6 +38,8 @@ namespace SharedLib
                 if(!Global.Tax.ContainsKey(el.Code))
                     Global.Tax.TryAdd(el.Code, el.CodeEKKA);
 
+            ModelMID.Global.Server1C= AppConfiguration["MID:Server1C"];
+
             //GlobalVar.DefaultCodeDealer = Convert.ToInt32(AppConfiguration["MID:DefaultCodeDealer"]);
             if (!Directory.Exists(Global.PathDB))
                 Directory.CreateDirectory(Global.PathDB);
