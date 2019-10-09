@@ -114,7 +114,7 @@ namespace Test
 
         static void CreateReceipDay()
         {
-            var SQLGetReceipt = @"SELECT top(200) ISNULL(td.PERCENT_DISCOUNT,0) AS PERCENT_DISCOUNT, dc.bar_code,  dr.number,dr.date_time
+            var SQLGetReceipt = @"SELECT top(500) ISNULL(td.PERCENT_DISCOUNT,0) AS PERCENT_DISCOUNT, dc.bar_code,  dr.number,dr.date_time
   ,w.Code_Wares
   ,dbo.GetCodeUnit(ud.code_unit)  AS Code_Unit
   , drw.amount

@@ -392,7 +392,8 @@ namespace ModernIntegration
             {
                 TypePay = (eTypePay)(int)parRP.PaymentType,
                 SumPay = parRP.PayIn,
-                NumberReceipt = parRP.CardPan,
+                NumberReceipt = parRP.TransactionId ,
+                NumberCard= parRP.CardPan,
                 CodeAuthorization = parRP.TransactionCode,
                 //NumberTerminal=parRP.,
             };

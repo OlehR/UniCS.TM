@@ -98,11 +98,11 @@ select wr.id_workplace as IdWorkplace, wr.code_period as CodePeriod, wr.code_rec
 				,wr.code_unit as CodeUnit,w.Code_unit as CodeDefaultUnit, PAR_PRICE_1 as ParPrice1, PAR_PRICE_2 as ParPrice2,par_price_3 as ParPrice3,
                      au.COEFFICIENT as Coefficient,w.NAME_WARES_RECEIPT as  NameWaresReceipt,sort,
 					 ADDITION_N1 as AdditionN1,ADDITION_N2 as AdditionN2, ADDITION_N3 as AdditionN3,
- ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1,Price_Dealer as PriceDealer,BARCODE_2Category as BARCODE2Category,wr.DESCRIPTION as DESCRIPTION
-                     from wares_receipt wr
-                     join wares w on (wr.code_wares =w.code_wares)
-                     join ADDITION_UNIT au on w.code_wares = au.code_wares and wr.code_unit=au.code_unit
-                     join unit_dimension ud on (wr.code_unit = ud.code_unit)
+ ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1,Price_Dealer as PriceDealer,BARCODE_2Category as BARCODE2Category,wr.DESCRIPTION as DESCRIPTION,w.TYPE_VAT as TypeVat
+                     from rc.wares_receipt wr
+                     join main.wares w on (wr.code_wares =w.code_wares)
+                     join main.ADDITION_UNIT au on w.code_wares = au.code_wares and wr.code_unit=au.code_unit
+                     join main.unit_dimension ud on (wr.code_unit = ud.code_unit)
                      where wr.id_workplace=@IdWorkplace and  wr.code_period =@CodePeriod and wr.code_receipt=@CodeReceipt
                      order by sort
 
