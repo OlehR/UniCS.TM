@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
@@ -201,40 +201,46 @@ namespace ModernIntegration
                 Id = receiptWares.WaresId,
                 Code = receiptWares.CodeWares,
                 Name = receiptWares.NameWares,
-                AdditionalDescription = receiptWares.NameWaresReceipt,//!!!TMP;
+                AdditionalDescription = receiptWares.NameWaresReceipt, //!!!TMP;
                 Image = null,
                 Price = receiptWares.Price > 0 ? receiptWares.Price : receiptWares.PriceDealer,
-                Weight = 0,//!!!TMP
-                DeltaWeight = 0,//!!!TMP
-                ProductWeightType = receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByPiece,//!!!TMP
-                IsAgeRestrictedConfirmed = false,//!!!TMP //Обмеження по віку алкоголь Підтверджено не потрібно посилати.
+                Weight = 0, //!!!TMP
+                DeltaWeight = 0, //!!!TMP
+                ProductWeightType =
+                    receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByPiece, //!!!TMP
+                IsAgeRestrictedConfirmed =
+                    false, //!!!TMP //Обмеження по віку алкоголь Підтверджено не потрібно посилати.
                 Quantity = receiptWares.Quantity,
                 DiscountValue = receiptWares.SumDiscount,
                 DiscountName = "",
-                WarningType = null,//!!! Не посилати 
+                WarningType = null, //!!! Не посилати 
                 CalculatedWeight = 0,
-                Tags = (receiptWares.TypeWares > 0 ? new List<Tag>() { new Tag() { Key = "AgeRestricted", Id = 0 }, new Tag() { Key = "TimeRestricted", Id = 1 } } : null),//!!!TMP // Різні мітки алкоголь, обмеження по часу. 
-                HasSecurityMark = false,//!!!TMP // Магнітна мітка, яку треба знімати.
+                Tags = (receiptWares.TypeWares > 0
+                    ? new List<Tag>()
+                        {new Tag() {Key = "AgeRestricted", Id = 0}, new Tag() {Key = "TimeRestricted", Id = 1}}
+                    : null), //!!!TMP // Різні мітки алкоголь, обмеження по часу. 
+                HasSecurityMark = false, //!!!TMP // Магнітна мітка, яку треба знімати.
                 TotalRows = receiptWares.Sort, //Сортування популярного.
-                WeightCategory = 1,//вимірювання Похибки в відсотках,2 в грамах
-                IsProductOnProcessing = false,//
+                WeightCategory = 1, //вимірювання Похибки в відсотках,2 в грамах
+                IsProductOnProcessing = false, //
                 ///CategoryId=   !!!TMP Групи 1 рівня.
-                TaxGroup = Global.GetTaxGroup(receiptWares.TypeVat)
-          };
+                TaxGroup = Global.GetTaxGroup(receiptWares.TypeVat),
+            };
             return Res;
         }
+
         private ReceiptWares GetReceiptWares(ProductViewModel varPWM)
         {
             var Res = new ReceiptWares()
             {
-                WaresId= varPWM.Id,
-                CodeWares= varPWM.Code,
-                NameWares= varPWM.Name,
-                NameWaresReceipt= varPWM.AdditionalDescription,//!!!TMP;
+                WaresId = varPWM.Id,
+                CodeWares = varPWM.Code,
+                NameWares = varPWM.Name,
+                NameWaresReceipt = varPWM.AdditionalDescription, //!!!TMP;
                 Price = varPWM.Price,
                 Quantity = varPWM.Quantity,
-                SumDiscount= varPWM.DiscountValue ,
-                Sort= varPWM.TotalRows //Сортування популярного.
+                SumDiscount = varPWM.DiscountValue,
+                Sort = varPWM.TotalRows //Сортування популярного.
             };
             return Res;
         }
@@ -247,25 +253,26 @@ namespace ModernIntegration
             {
                 Id = receiptMID.ReceiptId,
                 FiscalNumber = receiptMID.NumberReceipt,
-                Status = (receiptMID.SumCash > 0 || receiptMID.SumCreditCard > 0 ? ReceiptStatusType.Paid : ReceiptStatusType.Created),//!!!TMP Треба врахувати повернення
+                Status = (receiptMID.SumCash > 0 || receiptMID.SumCreditCard > 0
+                    ? ReceiptStatusType.Paid
+                    : ReceiptStatusType.Created), //!!!TMP Треба врахувати повернення
                 TerminalId = receiptMID.TerminalId,
-                Amount = 0,//!!!TMP Сума чека.
+                Amount = 0, //!!!TMP Сума чека.
                 Discount = receiptMID.SumDiscount,
-                TotalAmount = 0,//!!!TMP з врахуванням знижки (знижка на чек.)
+                TotalAmount = 0, //!!!TMP з врахуванням знижки (знижка на чек.)
                 CustomerId = new Client(receiptMID.CodeClient).ClientId,
                 CreatedAt = receiptMID.DateCreate,
-                UpdatedAt = receiptMID.DateCreate//!!!TMP
+                UpdatedAt = receiptMID.DateCreate, //!!!TMP
 
                 //PaymentType= PaymentType.None,//!!!TMP
                 //PaidAmount=0,//Скільки фактично оплатили.
                 //ReceiptItems=
                 //Customer /// !!!TMP Модель клієнта
                 //PaymentInfo
-                
-
             };
             var listReceiptItem = GetReceiptItem(parReceipt);
-            var Res = new ReceiptViewModel(receipt, listReceiptItem, null, null) { CustomId = receiptMID.NumberReceipt1C };
+            var Res = new ReceiptViewModel(receipt, listReceiptItem, null, null)
+                {CustomId = receiptMID.NumberReceipt1C};
 
             return Res;
         }
@@ -392,5 +399,8 @@ namespace ModernIntegration
         {
             return Bl.InsertWeight(parS, weight);
         }
+
+        private static Api _instance;
+        public static Api Instance = _instance ?? (_instance = new ApiPSU());
     }
 }
