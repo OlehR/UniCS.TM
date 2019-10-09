@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using ModelMID.DB;
@@ -154,15 +154,28 @@ namespace ModelMID
                 return WorkPlaceByWorkplaceId[parIdWorkPlace].TerminalGUID;
             return Guid.Empty;
         }
+
         public static string GetNumberCashDeskByIdWorkplace(int parIdWorkPlace)
         {
             if (WorkPlaceByWorkplaceId.ContainsKey(parIdWorkPlace))
-                return WorkPlaceByWorkplaceId[parIdWorkPlace].Name.Right(2).Replace(' ','0').Replace('№', '0'); ;
+                return WorkPlaceByWorkplaceId[parIdWorkPlace].Name.Right(2).Replace(' ', '0').Replace('№', '0');
+            ;
             return "00";
         }
 
         public static string GetTaxGroup(int parTypeVat)
-        { return Tax[parTypeVat]; }
+        {
+            return Tax[parTypeVat];
+        }
 
+        public static MethodExecutionLoggingType MethodExecutionLogging = MethodExecutionLoggingType.Always;
+        public static long LimitMethodExecutionTimeInMillis = 200;
+        
+        public enum MethodExecutionLoggingType
+        {
+            MoreThenMillis = 0,
+            Always,
+            WhenErrored,
+        }
     }
 }
