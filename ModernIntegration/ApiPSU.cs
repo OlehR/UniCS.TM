@@ -103,7 +103,6 @@ namespace ModernIntegration
         {
             throw new NotImplementedException();
            // return null;
-
         }
         public override List<ProductViewModel> GetProductsByCategoryId(Guid parTerminalId, Guid categoryId)
         {
@@ -232,6 +231,7 @@ namespace ModernIntegration
                 IsProductOnProcessing = false, //
                 ///CategoryId=   !!!TMP Групи 1 рівня.
                 TaxGroup = Global.GetTaxGroup(receiptWares.TypeVat),
+                Barcode = receiptWares.BarCode,
             };
             return Res;
         }
@@ -264,9 +264,9 @@ namespace ModernIntegration
                     ? ReceiptStatusType.Paid
                     : ReceiptStatusType.Created), //!!!TMP Треба врахувати повернення
                 TerminalId = receiptMID.TerminalId,
-                Amount = 0, //!!!TMP Сума чека.
+                Amount = receiptMID.SumReceipt, //!!!TMP Сума чека.
                 Discount = receiptMID.SumDiscount,
-                TotalAmount = 0, //!!!TMP з врахуванням знижки (знижка на чек.)
+                TotalAmount = receiptMID.SumReceipt- receiptMID.SumBonus,
                 CustomerId = new Client(receiptMID.CodeClient).ClientId,
                 CreatedAt = receiptMID.DateCreate,
                 UpdatedAt = receiptMID.DateCreate, //!!!TMP
