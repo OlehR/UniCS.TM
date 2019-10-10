@@ -38,6 +38,7 @@ select t.code_wares as CodeWares,w.name_wares NameWares,w.name_wares_receipt  as
       --  ifnull(aud.coefficient,0) as CoefficientDefault,
         CAST(ifnull(pd.price_dealer,0.0)  as decimal) as PriceDealer
 		,w.Type_Wares as TypeWares
+		,(select max(bc.BAR_CODE) from BAR_CODE bc where bc.code_wares=wr.code_wares) as BarCode 
 from t$1 t
 left join wares w on t.code_wares=w.code_wares
 left join price pd on ( pd.code_wares=t.code_wares and pd.code_dealer= @CodeDealer)
@@ -98,8 +99,8 @@ select wr.id_workplace as IdWorkplace, wr.code_period as CodePeriod, wr.code_rec
 				,wr.code_unit as CodeUnit,w.Code_unit as CodeDefaultUnit, PAR_PRICE_1 as ParPrice1, PAR_PRICE_2 as ParPrice2,par_price_3 as ParPrice3,
                      au.COEFFICIENT as Coefficient,w.NAME_WARES_RECEIPT as  NameWaresReceipt,sort,
 					 ADDITION_N1 as AdditionN1,ADDITION_N2 as AdditionN2, ADDITION_N3 as AdditionN3,
-                   ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1,Price_Dealer as PriceDealer,BARCODE_2Category as BARCODE2Category,wr.DESCRIPTION as DESCRIPTION,w.TYPE_VAT as TypeVat
-                   ,(select max(bc.BAR_CODE) from BAR_CODE bc where bc.code_wares=wr.code_wares) as BarCode                     
+ ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1,Price_Dealer as PriceDealer,BARCODE_2Category as BARCODE2Category,wr.DESCRIPTION as DESCRIPTION,w.TYPE_VAT as TypeVat
+ ,(select max(bc.BAR_CODE) from BAR_CODE bc where bc.code_wares=wr.code_wares) as BarCode                     
                      from rc.wares_receipt wr
                      join main.wares w on (wr.code_wares =w.code_wares)
                      join main.ADDITION_UNIT au on w.code_wares = au.code_wares and wr.code_unit=au.code_unit

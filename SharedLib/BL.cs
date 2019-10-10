@@ -252,6 +252,34 @@ namespace SharedLib
            // SQLite.CreateMIDIndex();
             return;
         }
+        public class TableStruc
+        {
+           public int Cid { get; set; }
+            public string Name { get; set; }
+            public string Type { get; set; }
+            public string Dflt_value { get; set; }
+            public int PK { get; set; }
+
+        }
+        public string BildSqlUpdate(string parTableName)
+        {
+           var r= db.db.Execute<TableStruc>($"PRAGMA table_info('{parTableName}');");
+            var ListField="";
+            var Where = "";
+            var On = "";
+
+            foreach(var el in r)
+            {
+                ListField+= (ListField.Length > 0 ? ", " : "") +el.Name ;
+                if (el.PK==1)
+                    On += (On.Length>0? " and ":"")+  $"main.{el.Name}=upd.{el.Name}";
+                else
+                    Where += (Where.Length > 0 ? " or " : "")+ $"main.{el.Name}!=upd.{el.Name}";
+            }
+ 
+            var Res= $"replace parTableName ({ListField}) \n select {ListField} from main.{parTableName}\n join upd.{parTableName} on ( {On})\n where {Where}";
+            return Res;
+        }
     }
 }
 
