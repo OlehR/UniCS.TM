@@ -54,7 +54,7 @@ namespace SharedLib
             string SQL;
 
             SQL = GetSQL("SqlGetDimPrice");
-            var PD = db.Execute<Price>(SQL);
+            var PD = db.Execute<object,Price>(SQL, new { IsFull= parIsFull?1:0});
             parDB.ReplacePrice(PD);
             PD = null;
 

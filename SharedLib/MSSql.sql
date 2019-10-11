@@ -49,7 +49,7 @@ SELECT TypePrice_RRef,nomen_RRef, price_dealer    ,ROW_NUMBER ( )   OVER ( PARTI
 ) pd 
   JOIN dbo.wares w ON pd.nomen_RRef= w._IDRRef
   --JOIN DW.dbo.V1C_dim_type_price tp ON  pd.TypePrice_RRef=tp.type_price_RRef
-  WHERE nn=1   
+  WHERE @IsFull=1 and nn=1   
      
 
 
