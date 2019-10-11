@@ -233,7 +233,6 @@ namespace SharedLib
         }
         public bool SendAllReceipt() 
         {
-
             var varReceipts=db.GetIdReceiptbyState( eStateReceipt.Print);
             foreach (var el in varReceipts)
                 SendReceiptTo1CAsync(db.ViewReceipt(el, true));
@@ -272,7 +271,7 @@ namespace SharedLib
                 SQLite.CreateMIDIndex();
                 db=SQLite;                
             }
-            return ;            
+            return true;            
         }
         public class TableStruc
         {
