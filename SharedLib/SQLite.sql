@@ -168,14 +168,28 @@ insert into wares_receipt (id_workplace, code_period, code_receipt, code_wares, 
  @AdditionC1,@AdditionD1,@BARCODE2Category,@DESCRIPTION)
 
 [SqlRecalcHeadReceipt]
+update WARES_RECEIPT 
+set SUM_DISCOUNT = ifnull( ( select (wr.QUANTITY-wrp.QUANTITY)*wr.price+wrp.sum 
+from 
+(select sum( QUANTITY) as QUANTITY, sum(sum) as sum from WARES_RECEIPT_PROMOTION wrp
+where wrp.id_workplace=@IdWorkplace and  wrp.code_period =@CodePeriod and  wrp.code_receipt=@CodeReceipt and  wrp.code_wares=WARES_RECEIPT.code_wares) as wrp
+join 
+ WARES_RECEIPT wr
+    on  ( wr.id_workplace=@IdWorkplace and  wr.code_period =@CodePeriod and  wr.code_receipt=@CodeReceipt and wr.code_wares=WARES_RECEIPT.code_wares )
+),0)
+where WARES_RECEIPT.id_workplace=@IdWorkplace and  WARES_RECEIPT.code_period =@CodePeriod and  WARES_RECEIPT.code_receipt=@CodeReceipt; 
 update receipt 
        set sum_receipt =ifnull(
            (select sum(wr.sum) from wares_receipt wr 
                   where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt),0),
             VAT_RECEIPT =ifnull(
            (select sum(wr.sum_vat) from wares_receipt wr 
+                  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt),0) ,
+          SUM_DISCOUNT =ifnull(
+           (select sum(wr.SUM_DISCOUNT) from wares_receipt wr 
                   where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt),0) 
-where   id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt
+where   id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt;
+
 
 [SqlReplaceWaresReceiptPromotion]
 replace into WARES_RECEIPT_PROMOTION (id_workplace, code_period, code_receipt, code_wares, code_unit,

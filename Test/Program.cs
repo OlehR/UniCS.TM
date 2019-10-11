@@ -56,8 +56,8 @@ namespace Test
         {
             var bl = new BL();
             bl.SyncData(true);
-            bl.SyncData(false);
-            bl.SyncData(true);
+          //  bl.SyncData(false);
+         //   bl.SyncData(true);
 
         }
 
