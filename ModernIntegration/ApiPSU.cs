@@ -131,9 +131,7 @@ namespace ModernIntegration
         }
         public override TypeSend SendReceipt(Guid parReceipt)
         {
-
-            Bl.SendReceiptTo1C(new IdReceipt(parReceipt));
-            //throw new NotImplementedException();
+            Bl.SendReceiptTo1C(new IdReceipt(parReceipt));            
             return TypeSend.NotReady;
         }
         public override TypeSend GetStatusReceipt(Guid parReceipt) {

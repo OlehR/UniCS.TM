@@ -169,6 +169,7 @@ namespace SharedLib
         protected string SqlSetStateReceipt = "";
         protected string SqlInsertWeight = "";
         protected string SqlGetPayment = "";
+        protected string SqlGetIdReceiptbyState = "";
 
         public WDB(string parFileSQL)
         {
@@ -539,6 +540,8 @@ namespace SharedLib
             SqlSetStateReceipt = GetSQL("SqlSetStateReceipt");
             SqlInsertWeight = GetSQL("SqlInsertWeight");
             SqlGetPayment = GetSQL("SqlGetPayment");
+            SqlGetIdReceiptbyState = GetSQL("SqlGetIdReceiptbyState");
+
             return true;
         }
 
@@ -837,6 +840,11 @@ namespace SharedLib
         {      
             return db.Execute<IdReceipt, Payment>(SqlGetPayment, parIdReceipt);
         }
+        public virtual IEnumerable<IdReceipt> GetIdReceiptbyState(eStateReceipt parState = eStateReceipt.Print) 
+        { 
+            return db.Execute<object, IdReceipt>(SqlGetIdReceiptbyState, new { StateReceipt= parState });
+        }
+
     }
 
 }

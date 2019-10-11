@@ -204,11 +204,8 @@ namespace SharedLib
 
         public bool SendReceiptTo1C(IdReceipt parIdReceipt)
         {
-
             SendReceiptTo1CAsync(db.ViewReceipt(parIdReceipt, true));
-            return true;
-
-            
+            return true;            
         }
         public async Task<bool> SendReceiptTo1CAsync(Receipt parReceipt)
         {
@@ -217,23 +214,31 @@ namespace SharedLib
 
             // Add a new Request Message
             HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, Global.Server1C);
-
             //requestMessage.Headers.Add("Accept", "application/vnd.github.v3+json");
             // Add our custom headers
             requestMessage.Content = new StringContent(r.GetSOAP(), Encoding.UTF8, "application/json");
-
             var response = await client.SendAsync(requestMessage);
 
             if (response.IsSuccessStatusCode)
             {
                 var res = await response.Content.ReadAsStringAsync();
-
+                parReceipt.StateReceipt = eStateReceipt.Send;
+                db.SetStateReceipt(parReceipt);//Змінюєм стан чека на відправлено.
                 return true;
             }
             else
             {
                 return false;
             }
+        }
+        public bool SendAllReceipt() 
+        {
+
+            var varReceipts=db.GetIdReceiptbyState( eStateReceipt.Print);
+            foreach (var el in varReceipts)
+                SendReceiptTo1CAsync(db.ViewReceipt(el, true));
+
+            return true;
         }
             
             
@@ -276,7 +281,6 @@ namespace SharedLib
             public string Type { get; set; }
             public string Dflt_value { get; set; }
             public int PK { get; set; }
-
         }
         public string BildSqlUpdate(string parTableName)
         {

@@ -45,15 +45,13 @@ namespace SharedLib
                 //Створюємо щоденну табличку з чеками.
                 db = new SQLite(varReceiptFile);
                 db.ExecuteNonQuery(SqlCreateReceiptTable);
-                db.Close();
-                
+                db.Close();                
             }
 
             db = new SQLite(string.IsNullOrEmpty(parConnect) ? Path.Combine(ModelMID.Global.PathDB,  @"MID.db") : parConnect);//,"",this.varCallWriteLogSQL);
                                                                                                                         //this.db.ExecuteNonQuery("ATTACH ':memory:' AS m");
             db.ExecuteNonQuery("ATTACH '" + ConfigFile + "' AS con");
             db.ExecuteNonQuery("ATTACH '" + varReceiptFile + "' AS rc");
-
             BildWorkplace();
         }
         
