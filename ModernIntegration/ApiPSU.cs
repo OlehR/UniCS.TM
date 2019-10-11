@@ -419,6 +419,8 @@ namespace ModernIntegration
                     Status = (await res) ? SyncStatus.SyncFinishedSuccess : SyncStatus.SyncFinishedError
                 });
             });
+
+            Bl.SendAllReceipt();
         }
 
         private static Api _instance;
