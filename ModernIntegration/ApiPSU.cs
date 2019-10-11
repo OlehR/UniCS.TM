@@ -407,7 +407,18 @@ namespace ModernIntegration
 
         public override void RequestSyncInfo(bool parIsFull = false)
         {
-            Bl.SyncData( parIsFull);
+            // TODO: check status
+            OnSyncInfoCollected?.Invoke(new SyncInformation()
+            {
+                Status = parIsFull ? SyncStatus.StartedFullSync : SyncStatus.StartedPartialSync
+            });
+            Bl.SyncData( parIsFull).ContinueWith(async res =>
+            {
+                OnSyncInfoCollected?.Invoke(new SyncInformation()
+                {
+                    Status = (await res) ? SyncStatus.SyncFinishedSuccess : SyncStatus.SyncFinishedError
+                });
+            });
         }
 
         private static Api _instance;

@@ -4,10 +4,18 @@ using System.Text;
 
 namespace ModernIntegration.Model
 {
+    public enum SyncStatus
+    {
+        StartedPartialSync = 1,
+        StartedFullSync = 2,
+        SyncFinishedSuccess = 3,
+        SyncFinishedError = 4
+    }
+
     public class SyncInformation
     {
-        public int CodeError { get; set; }
-        //object 
-        public string TextError { get; set; }
+        public SyncStatus Status { get; set; }
+
+        public string StatusDescription { get; set; }
     }
 }

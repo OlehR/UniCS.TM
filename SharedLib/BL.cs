@@ -248,7 +248,7 @@ namespace SharedLib
             return db.InsertWeight(new { BarCode = parBarCode, Weigh = (decimal)parWeight / 1000m });
         }
 
-        public void SyncData(bool parIsFull)
+        public async Task<bool> SyncData(bool parIsFull)
         {
             WDB_SQLite SQLite;
             if (parIsFull)
@@ -272,7 +272,7 @@ namespace SharedLib
                 SQLite.CreateMIDIndex();
                 db=SQLite;                
             }
-            return;            
+            return ;            
         }
         public class TableStruc
         {
