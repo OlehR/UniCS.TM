@@ -407,9 +407,9 @@ namespace ModernIntegration
             return Bl.InsertWeight(parS, weight);
         }
 
-        public override void RequestSyncInfo()
+        public override void RequestSyncInfo(bool parIsFull = false)
         {
-            Bl.SyncData();
+            Bl.SyncData( parIsFull);
         }
 
         private static Api _instance;

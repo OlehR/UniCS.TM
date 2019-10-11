@@ -13,7 +13,7 @@ namespace ModernIntegration
         NotReady,
         WaitSend,
         Send
-    }
+        }
     public class Api
     {
         //public bool CreateReceipt(Guid parTerminalId, Guid parReceipt) { return false; }
@@ -45,7 +45,7 @@ namespace ModernIntegration
 
         public virtual bool MoveSessionToAnotherTerminal(Guid firstTerminalId, Guid secondTerminalId) { return false; }
 
-        public virtual void RequestSyncInfo(){}
+        public virtual void RequestSyncInfo(bool parIsFull=false){}
 
         public virtual bool UpdateProductWeight(string parS, int weight) { return false; }
 

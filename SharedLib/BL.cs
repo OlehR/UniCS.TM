@@ -243,14 +243,31 @@ namespace SharedLib
             return db.InsertWeight(new { BarCode = parBarCode, Weigh = (decimal)parWeight / 1000m });
         }
 
-        public void SyncData()
+        public void SyncData(bool parIsFull)
         {
-            var MsSQL = new WDB_MsSql();
+            WDB_SQLite SQLite;
+            if (parIsFull)
+            {
+                db.db.Close();
+               // DateTime varD = DateTime.Today;
+                string varMidFile = Path.Combine(ModelMID.Global.PathDB, @"MID.db"); /*_" + varD.ToString("yyyyMMdd") + "*/
+                if (File.Exists(varMidFile))
+                    File.Delete(varMidFile);
+                SQLite = new WDB_SQLite(varMidFile);
+                SQLite.CreateMIDTable();
+            }
+            else
+                SQLite = db;
 
-           
-            var resS = MsSQL.LoadData(db,false);
-           // SQLite.CreateMIDIndex();
-            return;
+            var MsSQL = new WDB_MsSql();
+            var resS = MsSQL.LoadData(SQLite, parIsFull);
+
+            if (parIsFull)
+            {
+                SQLite.CreateMIDIndex();
+                db=SQLite;                
+            }
+            return;            
         }
         public class TableStruc
         {

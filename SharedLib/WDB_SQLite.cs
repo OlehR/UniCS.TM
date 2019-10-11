@@ -56,7 +56,7 @@ namespace SharedLib
 
             BildWorkplace();
         }
-
+        
         private new bool InitSQL()
         {
             SqlCreateMIDTable = GetSQL("SqlCreateMIDTable");

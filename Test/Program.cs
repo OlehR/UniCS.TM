@@ -40,7 +40,7 @@ namespace Test
             CreateDataBase(); //Створення бази
             //TestKit();
             //TestReceipt(); //
-           // CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
+            //CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
             //            var o = new SharedLib.Oracle();
             //var r =  o.Execute<ReceiptWares>("select w.code_wares CodeWares,w.name_wares as NameWares from dw.wares w where w.code_wares in (54882,54883)");
 
@@ -54,20 +54,11 @@ namespace Test
 
         static void CreateDataBase()
         {
-            var MsSQL = new WDB_MsSql();
+            var bl = new BL();
+            bl.SyncData(true);
+            bl.SyncData(false);
+            bl.SyncData(true);
 
-            DateTime varD = DateTime.Today;
-            string varMidFile = Path.Combine(ModelMID.Global.PathDB, @"MID.db"); /*_" + varD.ToString("yyyyMMdd") + "*/
-            if (File.Exists(varMidFile))
-                File.Delete(varMidFile);
-
-
-            var SQLite = new WDB_SQLite(varMidFile);
-            SQLite.CreateMIDTable();
-
-            var resS = MsSQL.LoadData(SQLite);
-            SQLite.CreateMIDIndex();
-            return;
         }
 
 
@@ -89,7 +80,9 @@ namespace Test
             //Guid.Parse("00140701-FFFF-2019-0618-000000000008");
             var api = new ApiPSU();
             var Bl = new BL();
-            var repl = Bl.BildSqlUpdate("price");
+            var rrrr=Bl.GetReceiptHead(new IdReceipt() { CodePeriod = 20191010, CodeReceipt = 2, IdWorkplace = 62 });
+
+            //var repl = Bl.BildSqlUpdate("price");
             // Bl.SendReceiptTo1C;(new IdReceipt() { CodePeriod = 20191009, CodeReceipt = 10, IdWorkplace = 62 });
             return;
             var Cat = api.GetAllCategories(TerminalId);

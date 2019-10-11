@@ -5,6 +5,7 @@ using System.Text;
 using System.Data.SQLite;
 using Dapper;
 using ModelMID;
+using System.Threading;
 
 namespace SharedLib
 {
@@ -20,9 +21,15 @@ namespace SharedLib
             connection.Open();
             TypeCommit = eTypeCommit.Auto;
         }
+        public override void Close()
+        {
+            connection.Close();
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            Thread.Sleep(150); 
+        }
 
 
-      
         public override IEnumerable<T1> Execute<T,T1>(string query, T parameters )
         {
             return connection.Query<T1>(query, parameters);
