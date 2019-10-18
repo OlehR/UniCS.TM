@@ -10,6 +10,7 @@ SELECT CODE_GROUP_WARES AS CodeGroupWares,CODE_PARENT_GROUP_WARES AS CodeParentG
 
 [SqlGetDimWares]
 SELECT w.code_wares AS CodeWares, w.name_wares AS NameWares, w.code_group AS CodeGroup, w.articl AS Articl, w.code_unit AS CodeUnit, w.VAT AS PercentVat , w.VAT_OPERATION AS TypeVat, w.code_brand AS CodeBrand,Type_wares as TypeWares
+,Weight_Brutto as WeightBrutto
   FROM dbo.Wares w
   
 [SqlGetDimAdditionUnit]

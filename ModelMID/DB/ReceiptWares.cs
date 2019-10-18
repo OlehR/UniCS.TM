@@ -135,7 +135,9 @@ namespace ModelMID
         /// Штрихкод 2 категорії
         /// </summary>
         public string BarCode { get; set; }
-        public ReceiptWares()
+
+        public decimal WeightBrutto { get; set; }
+    public ReceiptWares()
         {
             Clear();
         }

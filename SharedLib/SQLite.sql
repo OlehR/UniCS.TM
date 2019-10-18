@@ -39,6 +39,7 @@ select t.code_wares as CodeWares,w.name_wares NameWares,w.name_wares_receipt  as
         CAST(ifnull(pd.price_dealer,0.0)  as decimal) as PriceDealer
 		,w.Type_Wares as TypeWares
 		,(select max(bc.BAR_CODE) from BAR_CODE bc where bc.code_wares=w.code_wares) as BarCode 
+		,w.Weight_Brutto as WeightBrutto
 from t$1 t
 left join wares w on t.code_wares=w.code_wares
 left join price pd on ( pd.code_wares=t.code_wares and pd.code_dealer= @CodeDealer)
@@ -100,7 +101,8 @@ select wr.id_workplace as IdWorkplace, wr.code_period as CodePeriod, wr.code_rec
                      au.COEFFICIENT as Coefficient,w.NAME_WARES_RECEIPT as  NameWaresReceipt,sort,
 					 ADDITION_N1 as AdditionN1,ADDITION_N2 as AdditionN2, ADDITION_N3 as AdditionN3,
  ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1,Price_Dealer as PriceDealer,BARCODE_2Category as BARCODE2Category,wr.DESCRIPTION as DESCRIPTION,w.TYPE_VAT as TypeVat
- ,(select max(bc.BAR_CODE) from BAR_CODE bc where bc.code_wares=wr.code_wares) as BarCode                     
+ ,(select max(bc.BAR_CODE) from BAR_CODE bc where bc.code_wares=wr.code_wares) as BarCode 
+ ,w.Weight_Brutto as WeightBrutto
                      from rc.wares_receipt wr
                      join main.wares w on (wr.code_wares =w.code_wares)
                      join main.ADDITION_UNIT au on w.code_wares = au.code_wares and wr.code_unit=au.code_unit
@@ -631,7 +633,8 @@ CREATE TABLE WARES (
 --    USER_INSERT         INTEGER  NOT NULL,
 --    CODE_TRADE_MARK     INTEGER,
 --    KEEPING_TIME        NUMBER,
-      Type_Wares		 INTEGER   -- 0- Звичайний товар,1 - алкоголь, 2- тютюн.
+      Type_Wares		 INTEGER,   -- 0- Звичайний товар,1 - алкоголь, 2- тютюн.
+	  Weight_brutto    NUMBER
 
 );
 
