@@ -208,8 +208,8 @@ namespace ModernIntegration
                 AdditionalDescription = receiptWares.NameWaresReceipt, //!!!TMP;
                 Image = null,
                 Price = receiptWares.Price > 0 ? receiptWares.Price : receiptWares.PriceDealer,
-                Weight = 0, //!!!TMP
-                DeltaWeight = 0, //!!!TMP
+                Weight = Convert.ToDouble( receiptWares.WeightBrutto), 
+                DeltaWeight = 3, //!!!TMP
                 ProductWeightType =
                     receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByPiece, //!!!TMP
                 IsAgeRestrictedConfirmed =
