@@ -38,6 +38,7 @@ namespace SharedLib
         protected string SqlCreateReceiptTable = "";
         
         protected string SqlConfig = "";
+        protected string SqlReplaceConfig = "";
 
         /// <summary>
         /// Процедура пошуку.(для Баз з можливістю stored procedure) oracle,mssql,...
@@ -195,6 +196,13 @@ namespace SharedLib
                 }
                 */
 
+        public virtual bool SetConfig<T>(string parName,T parValue)
+        {
+            int i;
+            parValue.GetType().ToString();
+            this.db.ExecuteNonQuery<object>(this.SqlReplaceConfig, new { NameVar = parName, DataVar= parValue,@TypeVar= parValue.GetType().ToString() });
+            return true;
+        }
 
         public virtual T GetConfig<T>(string parStr)
         {
@@ -452,9 +460,10 @@ namespace SharedLib
             SqlCreateReceiptTable = GetSQL("SqlCreateReceiptTable");
             
             SqlConfig = GetSQL("SqlConfig");
-            
+            SqlReplaceConfig= GetSQL("SqlReplaceConfig");
 
-            SqlGetPersentDiscountClientByReceipt= GetSQL("SqlGetPersentDiscountClientByReceipt");
+
+            SqlGetPersentDiscountClientByReceipt = GetSQL("SqlGetPersentDiscountClientByReceipt");
             SqlGetTypeDiscountClientByReceipt = GetSQL("SqlGetTypeDiscountClientByReceipt");
 
             SqlFoundClient = GetSQL("SqlFoundClient");

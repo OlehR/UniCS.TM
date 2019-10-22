@@ -55,7 +55,7 @@ namespace Test
         static void CreateDataBase()
         {
             var bl = new BL();
-            bl.SyncData(true);
+            bl.SyncData(false);
             //bl.SyncData(false);
          //   bl.SyncData(true);
 

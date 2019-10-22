@@ -271,6 +271,8 @@ namespace SharedLib
                 SQLite.CreateMIDIndex();
                 db=SQLite;                
             }
+            db.SetConfig<string>("Load_" + (parIsFull ? "Full" : "Update"), String.Format("{0:u}", DateTime.Now));
+
             return true;            
         }
         public class TableStruc
