@@ -244,7 +244,7 @@ namespace SharedLib
 
         public bool InsertWeight(string parBarCode,int parWeight)
         {
-            return db.InsertWeight(new { BarCode = parBarCode, Weigh = (decimal)parWeight / 1000m });
+            return db.InsertWeight(new { BarCode = parBarCode, Weight = (decimal)parWeight / 1000m });
         }
 
         public async Task<bool> SyncData(bool parIsFull)
