@@ -6,10 +6,6 @@ SELECT Data_Var  FROM CONFIG  WHERE Name_Var = UPPER(trim(@NameVar));
 [SqlReplaceConfig]
 replace into CONFIG  (Name_Var,Data_Var,Type_Var) values (@NameVar,@DataVar,@TypeVar);
 
-
-[SqlInitGlobalVar]
-SELECT  wp.CODE_WAREHOUSE CODE_WAREHOUSE FROM workplace wp  WHERE wp.ID_WORKPLACE=@IdWorkPlace
-
 [SqlFoundWares]
 with t$1 as 
 (
@@ -399,6 +395,7 @@ CREATE TABLE WORKPLACE (
 	Terminal_GUID TEXT
 	);
 	CREATE UNIQUE INDEX id_WORKPLACE ON WORKPLACE(ID_WORKPLACE);
+	CREATE UNIQUE INDEX WORKPLACE_TG ON WORKPLACE(Terminal_GUID);
 
   CREATE TABLE CONFIG (
     NAME_VAR    TEXT     NOT NULL,
