@@ -414,10 +414,17 @@ namespace ModernIntegration
             });
             Bl.SyncData( parIsFull).ContinueWith(async res =>
             {
-                OnSyncInfoCollected?.Invoke(new SyncInformation()
+                var info = new SyncInformation();
+                try
                 {
-                    Status = (await res) ? SyncStatus.SyncFinishedSuccess : SyncStatus.SyncFinishedError
-                });
+                    info.Status = (await res) ? SyncStatus.SyncFinishedSuccess : SyncStatus.SyncFinishedError;
+                }
+                catch(Exception ex)
+                {
+                    info.Status = SyncStatus.SyncFinishedError;
+                    info.StatusDescription = ex.Message;
+                }
+                OnSyncInfoCollected?.Invoke(info);
             });
 
             Bl.SendAllReceipt();
