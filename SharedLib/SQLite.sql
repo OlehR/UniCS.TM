@@ -154,7 +154,7 @@ update receipt
    and CODE_RECEIPT = @CodeReceipt
 
 [SqlGetIdReceiptbyState]
-select ID_WORKPLACE,CODE_PERIOD,CODE_RECEIPT from receipt where STATE_RECEIPT= @StateReceipt,
+select ID_WORKPLACE,CODE_PERIOD,CODE_RECEIPT from receipt where STATE_RECEIPT= @StateReceipt;
 
 [SqlAddWares]
 insert into wares_receipt (id_workplace, code_period, code_receipt, code_wares, code_unit,
