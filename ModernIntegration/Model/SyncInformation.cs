@@ -9,7 +9,8 @@ namespace ModernIntegration.Model
         StartedPartialSync = 1,
         StartedFullSync = 2,
         SyncFinishedSuccess = 3,
-        SyncFinishedError = 4
+        SyncFinishedError = 4,
+        SyncReceiptSaved =5
     }
 
     public class SyncInformation
@@ -17,5 +18,6 @@ namespace ModernIntegration.Model
         public SyncStatus Status { get; set; }
 
         public string StatusDescription { get; set; }
+        public object SyncData { get; set; }
     }
 }
