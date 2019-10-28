@@ -141,8 +141,7 @@ namespace SharedLib
             {
                 if (res.Result)
                 {
-                    var r = ViewReceiptWares(parIdReceipt);          
-
+                    var r = ViewReceiptWares(parIdReceipt);
                     OnReceiptCalculationComplete?.Invoke(ViewReceiptWares(parIdReceipt),Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace));
                 }
             });

@@ -198,7 +198,6 @@ namespace SharedLib
 
         public virtual bool SetConfig<T>(string parName,T parValue)
         {
-            int i;
             parValue.GetType().ToString();
             this.db.ExecuteNonQuery<object>(this.SqlReplaceConfig, new { NameVar = parName, DataVar= parValue,@TypeVar= parValue.GetType().ToString() });
             return true;

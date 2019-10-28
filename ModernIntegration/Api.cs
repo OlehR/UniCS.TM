@@ -17,6 +17,7 @@ namespace ModernIntegration
     public class Api
     {
         //public bool CreateReceipt(Guid parTerminalId, Guid parReceipt) { return false; }
+     
         public virtual ProductViewModel AddProductByBarCode(Guid parTerminalId,string parS, decimal parQuantity = 0) { return null; }
         public virtual ProductViewModel AddProductByProductId(Guid parTerminalId, Guid paparProductId,decimal parQuantity = 0) { return null; }
         public virtual ReceiptViewModel ChangeQuantity(Guid parTerminalId, Guid parProductId, decimal parQuantity ) { return null; }

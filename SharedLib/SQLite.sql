@@ -217,7 +217,7 @@ update wares_receipt set  quantity= @Quantity, sort=@Sort,
                      where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt 
                      and code_wares=@CodeWares and code_unit=@CodeUnit
                      
-[SqlDeleteWaresReceipt]
+[SqlDeleteReceiptWares]
  delete from  wares_receipt 
    where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt 
                and code_wares= 

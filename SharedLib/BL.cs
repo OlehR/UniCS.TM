@@ -123,10 +123,15 @@ namespace SharedLib
             var W = db.FindWares(null, null, parReceiptWaresId.CodeWares, parReceiptWaresId.CodeUnit);
             if (W.Count() == 1)
             {
-                var w = W.First();
-                w.SetIdReceiptWares(parReceiptWaresId);
-                w.Quantity = parQuantity;
-                return db.UpdateQuantityWares(w);
+                if (parQuantity == 0)
+                    db.DeleteReceiptWares(parReceiptWaresId);
+                else
+                {
+                    var w = W.First();
+                    w.SetIdReceiptWares(parReceiptWaresId);
+                    w.Quantity = parQuantity;
+                    return db.UpdateQuantityWares(w);
+                }
             }
             return false;
 
