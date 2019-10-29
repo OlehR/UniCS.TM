@@ -240,8 +240,7 @@ namespace SharedLib
         {
             var varReceipts=db.GetIdReceiptbyState( eStateReceipt.Print);
             foreach (var el in varReceipts)
-                SendReceiptTo1CAsync(db.ViewReceipt(el, true));
-
+                 SendReceiptTo1CAsync(db.ViewReceipt(el, true));
             return true;
         }
             

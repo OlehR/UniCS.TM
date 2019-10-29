@@ -1,6 +1,9 @@
 ﻿[SqlBegin]
 /*
 
+[SqlGetMessageNo]
+SELECT MAX(MessageNo) as MessageNo FROM DW.dbo.config 
+
 [SqlGetDimUnitDimension]
 SELECT ud.code_unit AS CodeUnit, ud.name_unit AS NameUnit, ud.abr_unit  AbrUnit FROM UNIT_DIMENSION ud 
 
@@ -21,7 +24,11 @@ SELECT code_wares AS CodeWares,code_unit AS CodeUnit, coef AS Coefficient, weigh
 SELECT code_wares CodeWares,code_unit AS CodeUnit,bar_code AS BarCode, coef AS Coefficient 
   FROM dbo.barcode where LEN(bar_code)>6;
 
-[SqlGetDimPrice]
+[SqlGetDimPriceOld]
+  SELECT p.CODE_DEALER AS CodeDealer, p.code_wares AS CodeWares, p.price AS PriceDealer 
+    FROM dbo.price p
+    WHERE p.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull=1
+[SqlGetDimPriceOld]
 SELECT tp.code AS CodeDealer, w.code_wares AS CodeWares, pd.price_dealer AS PriceDealer FROM 
   ( 
 SELECT TypePrice_RRef,nomen_RRef, price_dealer    ,ROW_NUMBER ( )   OVER ( PARTITION BY TypePrice_RRef, nomen_RRef   ORDER BY   _Period DESC) AS nn  
