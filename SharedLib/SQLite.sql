@@ -282,7 +282,7 @@ where psf.code_ps  is null
 and EPS.code_ps  is null
 )
 --select * from PSEW
-select psd.CODE_PS as CodePs,0 as Priority ,1 as TypeDiscont  ,p.PRICE_DEALER as Data,1 as IsIgnoreMinPrice
+select psd.CODE_PS as CodePs,0 as Priority ,11 as TypeDiscont  ,p.PRICE_DEALER as Data,1 as IsIgnoreMinPrice
 from  PROMOTION_SALE_DEALER psd
  join PRICE p on psd.CODE_DEALER=p. CODE_DEALER and psd.CODE_WARES=p.CODE_WARES 
 where 
@@ -290,7 +290,7 @@ where
  and datetime('now','localtime') between psd.Date_begin and psd.DATE_END
  and p.PRICE_DEALER>0
 union all -- По групам товарів
- select PSF.CODE_PS,0 as priority , 3 as Type_discont, PSD.DATA,PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice
+ select PSF.CODE_PS,0 as priority , 13 as Type_discont, PSD.DATA,PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice
   from wares w 
   join PROMOTION_SALE_GROUP_WARES PSGW on PSGW.CODE_GROUP_WARES=w.CODE_GROUP
   join PROMOTION_SALE_FILTER PSF on ( PSF.TYPE_GROUP_FILTER=15 and PSF.RULE_GROUP_FILTER=1 and   PSF.CODE_DATA=PSGW.CODE_GROUP_WARES_PS)
@@ -299,13 +299,13 @@ union all -- По групам товарів
   where EPS.CODE_PS is null
   and w.CODE_WARES=@CodeWares
 union all --По товарам
- select PSF.CODE_PS,0 as priority , 3 as Type_discont, PSD.DATA,PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice
+ select PSF.CODE_PS,0 as priority , 13 as Type_discont, PSD.DATA,PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice
   from PROMOTION_SALE_FILTER PSF 
   join PROMOTION_SALE_DATA PSD on (PSD.CODE_WARES=0 and PSD.CODE_PS=PSF.CODE_PS ) 
   left join ExeptionPS EPS on  (PSF.CODE_PS=EPS.CODE_PS)
   where  PSF.TYPE_GROUP_FILTER=11 and PSF.RULE_GROUP_FILTER=1 and   PSF.CODE_DATA=@CodeWares and EPS.CODE_PS is null  
 union all --акції для всіх товарів.
- select PSEW.CODE_PS,0 as priority , 3 as Type_discont, PSD.DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice
+ select PSEW.CODE_PS,0 as priority , 13 as Type_discont, PSD.DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice
   from PSEW
   join PROMOTION_SALE_DATA PSD on (PSD.CODE_PS=PSEW.CODE_PS )
 
