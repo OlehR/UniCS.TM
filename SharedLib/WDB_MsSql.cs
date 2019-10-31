@@ -53,8 +53,14 @@ namespace SharedLib
         {
             string SQL;
 
+            SQL = GetSQL("SqlGetMessageNo");
+            int varMessageNoMax = db.ExecuteScalar<int>(SQL);
+            int varMessageNoMin = parDB.GetConfig<int>("MessageNo");
+
+            var oMessage = new { IsFull = parIsFull ? 1 : 0, MessageNoMim = varMessageNoMin, MessageNoMax = varMessageNoMax };
+
             SQL = GetSQL("SqlGetDimPrice");
-            var PD = db.Execute<object,Price>(SQL, new { IsFull= parIsFull?1:0});
+            var PD = db.Execute<object,Price>(SQL, oMessage/* new { IsFull= parIsFull?1:0}*/);
             parDB.ReplacePrice(PD);
             PD = null;
 
@@ -147,8 +153,9 @@ namespace SharedLib
                 var FW = db.Execute<FastWares>(SQL);
                 parDB.ReplaceFastWares(FW);
                 FW = null;
-            }             
+            }
 
+            parDB.SetConfig<int>("MessageNo", varMessageNoMax);
             return true;
         }
 

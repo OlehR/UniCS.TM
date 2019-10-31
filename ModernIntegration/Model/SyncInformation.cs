@@ -16,7 +16,6 @@ namespace ModernIntegration.Model
     public class SyncInformation
     {
         public SyncStatus Status { get; set; }
-
         public string StatusDescription { get; set; }
         public object SyncData { get; set; }
     }
