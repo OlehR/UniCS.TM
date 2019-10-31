@@ -57,7 +57,7 @@ namespace SharedLib
             int varMessageNoMax = db.ExecuteScalar<int>(SQL);
             int varMessageNoMin = parDB.GetConfig<int>("MessageNo");
 
-            var oMessage = new { IsFull = parIsFull ? 1 : 0, MessageNoMim = varMessageNoMin, MessageNoMax = varMessageNoMax };
+            var oMessage = new { IsFull = parIsFull ? 1 : 0, MessageNoMin = varMessageNoMin, MessageNoMax = varMessageNoMax };
 
             SQL = GetSQL("SqlGetDimPrice");
             var PD = db.Execute<object,Price>(SQL, oMessage/* new { IsFull= parIsFull?1:0}*/);
