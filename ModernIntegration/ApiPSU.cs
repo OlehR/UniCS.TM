@@ -405,7 +405,7 @@ namespace ModernIntegration
             return Bl.InsertWeight(parS, weight);
         }
 
-/*        public override void RequestSyncInfo(bool parIsFull = false)
+        public override void RequestSyncInfo(bool parIsFull = false)
         {
             // TODO: check status
             OnSyncInfoCollected?.Invoke(new SyncInformation()
@@ -428,7 +428,7 @@ namespace ModernIntegration
             });
 
             Bl.SendAllReceipt();
-        }*/
+        }
 
         private static Api _instance;
         public static Api Instance = _instance ?? (_instance = new ApiPSU());
