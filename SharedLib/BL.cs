@@ -253,7 +253,7 @@ namespace SharedLib
 
 
         //async Task<bool>
-        public bool SyncData(bool parIsFull)
+        public async Task<bool> SyncData(bool parIsFull)
         {
             WDB_SQLite SQLite;
             if (parIsFull)
