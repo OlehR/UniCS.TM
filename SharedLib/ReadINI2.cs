@@ -6,7 +6,7 @@ namespace SharedLib
 {
     class ReadINI2
     {
-
+        Global.
         private Hashtable keyPairs = new Hashtable();
         private String iniFilePath;
 
