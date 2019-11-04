@@ -239,7 +239,9 @@ namespace SharedLib
 
         public bool SendReceiptTo1C(IdReceipt parIdReceipt)
         {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             SendReceiptTo1CAsync(db.ViewReceipt(parIdReceipt, true));
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             return true;            
         }
         public async Task<bool> SendReceiptTo1CAsync(Receipt parReceipt)
@@ -266,11 +268,11 @@ namespace SharedLib
                 return false;
             }
         }
-        public bool SendAllReceipt() 
+        public async Task<bool> SendAllReceipt() 
         {
             var varReceipts=db.GetIdReceiptbyState( eStateReceipt.Print);
             foreach (var el in varReceipts)
-                 SendReceiptTo1CAsync(db.ViewReceipt(el, true));
+                  await SendReceiptTo1CAsync(db.ViewReceipt(el, true));
             return true;
         }
             
@@ -283,7 +285,7 @@ namespace SharedLib
 
 
         //async Task<bool>
-        public async Task<bool> SyncData(bool parIsFull)
+        public bool SyncData(bool parIsFull)
         {
             WDB_SQLite SQLite;
             
@@ -293,21 +295,23 @@ namespace SharedLib
                 if (strTD == null || strTD.Length < 10)
                     parIsFull = true;
                 else
-                 {
+                {
                     var dt = DateTime.Parse(strTD.Substring(0, 10));
                     if (DateTime.Now.Date != dt.Date)
                         parIsFull = true;
-                 }
+                }
             }
+            string varMidFile = db.GetCurrentMIDFile;
+         
             if (parIsFull)
             {
                 db.db.Close();
-               // DateTime varD = DateTime.Today;
-                string varMidFile = Path.Combine(ModelMID.Global.PathDB, @"MID.db"); /*_" + varD.ToString("yyyyMMdd") + "*/
+                DateTime varD = DateTime.Today;
+                
                 if (File.Exists(varMidFile))
                     File.Delete(varMidFile);
-                SQLite = new WDB_SQLite(varMidFile);
-                SQLite.CreateMIDTable();
+                SQLite = new WDB_SQLite(varMidFile,true);
+                //SQLite.CreateMIDTable();
             }
             else
                 SQLite = db;
@@ -317,8 +321,16 @@ namespace SharedLib
 
             if (parIsFull)
             {
-                SQLite.CreateMIDIndex();
-                db=SQLite;                
+                try
+                {
+                    SQLite.CreateMIDIndex();
+                    db = SQLite;
+                    db.SetConfig<string>("Last_MID", varMidFile);
+                }
+                catch (Exception ex)
+                {
+                    var er=ex.Message;
+                }
             }
             db.SetConfig<string>("Load_" + (parIsFull ? "Full" : "Update"), String.Format("{0:u}", DateTime.Now));
 

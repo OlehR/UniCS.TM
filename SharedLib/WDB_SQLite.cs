@@ -17,18 +17,21 @@ namespace SharedLib
         
         protected string SqlCreateMIDTable = @"";
         protected string SqlCreateMIDIndex = @"";
-        protected string SqlGetPricePromotionKit= @"";
+        protected string SqlGetPricePromotionKit = @"";
+        public string GetCurrentMIDFile 
+                {get { DateTime varD = DateTime.Today;
+                       return Path.Combine(Global.PathDB, $"{varD:yyyyMM}", $"MID_{varD:yyyyMMdd}.db"); } }
+
+
         public Action<IEnumerable<ReceiptWares>, Guid> OnReceiptCalculationComplete { get; set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="parCallWriteLogSQL"></param>
-        public WDB_SQLite(string parConnect = "") : base(Path.Combine(ModelMID.Global.PathIni, "SQLite.sql") )
+        
+        public WDB_SQLite(string parConnect = "",bool IsMidMain=false,DateTime parD = default(DateTime))  : base(Path.Combine(Global.PathIni, "SQLite.sql") )
         {
             varVersion = "SQLite.0.0.1";
             InitSQL();
-            DateTime varD = DateTime.Today;
+
+            DateTime varD = ( parD == default(DateTime)? DateTime.Today: parD);
             var ConfigFile = Path.Combine(ModelMID.Global.PathDB, "config.db");
             if (!File.Exists(ConfigFile))
             {
@@ -36,21 +39,51 @@ namespace SharedLib
                 db.ExecuteNonQuery(SqlCreateConfigTable);
                 db.Close();
             }
-            string varReceiptFile = Path.Combine(ModelMID.Global.PathDB,$"{varD:yyyyMM}" ,$"Rc_{ModelMID.Global.IdWorkPlace}_{varD:yyyyMMdd}.db");
+            db = new SQLite(ConfigFile);//,"",this.varCallWriteLogSQL);
+
+            string varReceiptFile = Path.Combine(ModelMID.Global.PathDB, $"{varD:yyyyMM}", $"Rc_{ModelMID.Global.IdWorkPlace}_{varD:yyyyMMdd}.db");
             if (!File.Exists(varReceiptFile))
             {
                 var receiptFilePath = Path.GetDirectoryName(varReceiptFile);
                 if (!Directory.Exists(receiptFilePath))
                     Directory.CreateDirectory(receiptFilePath);
                 //Створюємо щоденну табличку з чеками.
-                db = new SQLite(varReceiptFile);
+                var db = new SQLite(varReceiptFile);
                 db.ExecuteNonQuery(SqlCreateReceiptTable);
                 db.Close();                
             }
+            
+            var MidFile = string.IsNullOrEmpty(parConnect) ? Path.Combine(GetCurrentMIDFile) : parConnect;
+            if (!File.Exists(MidFile) && string.IsNullOrEmpty(parConnect))
+            {
+                var varLastMidFile = GetConfig<string>("Last_MID");
+                if (!string.IsNullOrEmpty(varLastMidFile))                
+                    MidFile = varLastMidFile;
+            }
 
-            db = new SQLite(string.IsNullOrEmpty(parConnect) ? Path.Combine(ModelMID.Global.PathDB,  @"MID.db") : parConnect);//,"",this.varCallWriteLogSQL);
-                                                                                                                        //this.db.ExecuteNonQuery("ATTACH ':memory:' AS m");
-            db.ExecuteNonQuery("ATTACH '" + ConfigFile + "' AS con");
+            if (!File.Exists(MidFile))
+            {
+                var db = new SQLite(MidFile);
+                db.ExecuteNonQuery(SqlCreateMIDTable);
+                db.Close();
+                
+            }
+
+            //   db = new SQLite(string.IsNullOrEmpty(parConnect) ? Path.Combine(ModelMID.Global.PathDB,  @"MID.db") : parConnect);//,"",this.varCallWriteLogSQL);
+            //this.db.ExecuteNonQuery("ATTACH ':memory:' AS m");
+            
+            if(IsMidMain)
+            {
+                db = new SQLite(MidFile);
+                db.ExecuteNonQuery("ATTACH '" + ConfigFile + "' AS con");
+            }
+            else
+            {
+                db = new SQLite(ConfigFile);
+                db.ExecuteNonQuery("ATTACH '" + MidFile + "' AS mid");
+            }
+
+            //db.ExecuteNonQuery("ATTACH '" + MidFile + "' AS mid");
             db.ExecuteNonQuery("ATTACH '" + varReceiptFile + "' AS rc");
             BildWorkplace();
         }
@@ -60,7 +93,6 @@ namespace SharedLib
             SqlCreateMIDTable = GetSQL("SqlCreateMIDTable");
             SqlCreateMIDIndex = GetSQL("SqlCreateMIDIndex");
             SqlGetPricePromotionKit= GetSQL("SqlGetPricePromotionKit");
-
             return true;
         }
 /*

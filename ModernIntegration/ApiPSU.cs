@@ -11,6 +11,7 @@ using System.Linq;
 using Receipt = ModernIntegration.Models.Receipt;
 using ModelMID.DB;
 using ModernIntegration.Model;
+using System.Threading.Tasks;
 
 namespace ModernIntegration
 {
@@ -405,29 +406,26 @@ namespace ModernIntegration
             return Bl.InsertWeight(parS, weight);
         }
 
-        public override void RequestSyncInfo(bool parIsFull = false)
+        public override async Task RequestSyncInfo(bool parIsFull = false)
         {
             // TODO: check status
-            OnSyncInfoCollected?.Invoke(new SyncInformation()
+            OnSyncInfoCollected?.Invoke(new SyncInformation() { Status = parIsFull ? SyncStatus.StartedFullSync : SyncStatus.StartedPartialSync });
+         
+            var info = new SyncInformation();
+            try
             {
-                Status = parIsFull ? SyncStatus.StartedFullSync : SyncStatus.StartedPartialSync
-            });
-            Bl.SyncData( parIsFull).ContinueWith(async res =>
+                var res = await Task.Factory.StartNew(() => Bl.SyncData(parIsFull));
+                info.Status = ( res) ? SyncStatus.SyncFinishedSuccess : SyncStatus.SyncFinishedError;
+            }
+            catch (Exception ex)
             {
-                var info = new SyncInformation();
-                try
-                {
-                    info.Status = (await res) ? SyncStatus.SyncFinishedSuccess : SyncStatus.SyncFinishedError;
-                }
-                catch(Exception ex)
-                {
-                    info.Status = SyncStatus.SyncFinishedError;
-                    info.StatusDescription = ex.Message;
-                }
-                OnSyncInfoCollected?.Invoke(info);
-            });
-
+                info.Status = SyncStatus.SyncFinishedError;
+                info.StatusDescription = ex.Message;
+            }
+            OnSyncInfoCollected?.Invoke(info);
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             Bl.SendAllReceipt();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
         private static Api _instance;

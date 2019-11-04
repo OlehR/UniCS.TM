@@ -4,6 +4,7 @@ using ModernIntegration.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ModernIntegration
 {
@@ -46,7 +47,7 @@ namespace ModernIntegration
 
         public virtual bool MoveSessionToAnotherTerminal(Guid firstTerminalId, Guid secondTerminalId) { return false; }
 
-        public virtual void RequestSyncInfo(bool parIsFull=false){}
+        public virtual Task RequestSyncInfo(bool parIsFull=false){ return null; }
 
         public virtual bool UpdateProductWeight(string parS, int weight) { return false; }
 
