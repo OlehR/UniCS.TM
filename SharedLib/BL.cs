@@ -286,6 +286,19 @@ namespace SharedLib
         public async Task<bool> SyncData(bool parIsFull)
         {
             WDB_SQLite SQLite;
+            
+            if (!parIsFull)
+            {
+                var strTD = db.GetConfig<string>("Load_Full");
+                if (strTD == null || strTD.Length < 10)
+                    parIsFull = true;
+                else
+                 {
+                    var dt = DateTime.Parse(strTD.Substring(0, 10));
+                    if (DateTime.Now.Date != dt.Date)
+                        parIsFull = true;
+                 }
+            }
             if (parIsFull)
             {
                 db.db.Close();
