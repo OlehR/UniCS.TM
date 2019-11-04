@@ -24,7 +24,7 @@ SELECT code_wares AS CodeWares,code_unit AS CodeUnit, coef AS Coefficient, weigh
 SELECT code_wares CodeWares,code_unit AS CodeUnit,bar_code AS BarCode, coef AS Coefficient 
   FROM dbo.barcode where LEN(bar_code)>6;
 
-[SqlGetDimPriceOld]
+[SqlGetDimPrice]
   SELECT p.CODE_DEALER AS CodeDealer, p.code_wares AS CodeWares, p.price AS PriceDealer 
     FROM dbo.price p
     WHERE p.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull=1
