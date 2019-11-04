@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using ModelMID;
 
 namespace SharedLib
@@ -25,6 +26,15 @@ namespace SharedLib
         {
             return null;
         }
+        public virtual Task<IEnumerable<T1>> ExecuteAsync<T, T1>(string query, T parameters)
+        {
+            return null;
+        }
+
+        public virtual Task<IEnumerable<T1>> ExecuteAsync<T1>(string query)
+        {
+            return null;
+        }
 
         public virtual void BeginTransaction()
         {            
@@ -41,6 +51,15 @@ namespace SharedLib
             return 0;
         }
 
+        public virtual Task<int> ExecuteNonQueryAsync<T>(string parQuery, T Parameters)
+        {
+            return null;
+        }
+        public virtual Task<int> ExecuteNonQueryAsync(string parQuery)
+        {
+            return null;
+        }
+
         public virtual T1 ExecuteScalar<T1>(string query)
         {
             return default(T1);
@@ -51,10 +70,23 @@ namespace SharedLib
             return default(T1);
         }
 
+        public virtual Task<T1> ExecuteScalarAsync<T1>(string query)
+        {
+            return null;
+           // default(T1);
+        }
+
+        public virtual Task<T1> ExecuteScalarAsync<T, T1>(string query, T parameters)
+        {
+            return null;
+            //default(T1);
+        }
         public virtual int BulkExecuteNonQuery<T>(string parQuery, IEnumerable<T> Parameters)
         {
             return 0;
         }
+
+        //Async
 
 
 
