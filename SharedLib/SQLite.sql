@@ -14,6 +14,11 @@ select w.code_wares ,case when @CodeUnit=0 then au.CODE_UNIT else @CodeUnit end 
     join addition_unit au on (w.CODE_WARES=au.code_wares and au.DEFAULT_UNIT=1)
     where w.code_wares=@CodeWares 
 union 
+select w.code_wares ,case when @CodeUnit=0 then au.CODE_UNIT else @CodeUnit end as code_unit
+    from wares w 
+    join addition_unit au on (w.CODE_WARES=au.code_wares and au.DEFAULT_UNIT=1)
+    where w.articl=@Articl 
+union
 select ifnull(w.code_wares,bc.code_wares),bc.code_unit
                  from main.bar_code bc left join wares w
                  on w.CODE_WARES= bc.code_wares
@@ -773,7 +778,8 @@ CREATE TABLE PROMOTION_SALE_2_category (
 CREATE UNIQUE INDEX UNIT_DIMENSION_ID ON UNIT_DIMENSION ( CODE_UNIT );
 CREATE UNIQUE INDEX GROUP_WARES_ID ON GROUP_WARES ( CODE_GROUP_WARES );
 CREATE INDEX GROUP_WARES_UP ON GROUP_WARES ( CODE_PARENT_GROUP_WARES );
-CREATE UNIQUE INDEX WARES_ID ON WARES ( CODE_WARES,CODE_UNIT );
+CREATE UNIQUE INDEX WARES_ID ON WARES ( CODE_WARES);
+CREATE UNIQUE INDEX WARES_A ON WARES (ARTICL );
 CREATE UNIQUE INDEX ADDITION_UNIT_ID ON ADDITION_UNIT ( CODE_WARES,CODE_UNIT );
 
 CREATE UNIQUE INDEX BAR_CODE_ID ON BAR_CODE ( BAR_CODE);
