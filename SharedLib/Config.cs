@@ -28,6 +28,7 @@ namespace SharedLib
             if (string.IsNullOrWhiteSpace(Global.PathIni))
                 Global.PathIni = CurDir;
 
+          
             Global.MethodExecutionLogging = AppConfiguration.GetValue<Global.MethodExecutionLoggingType>("MethodExecutionLogging:Type");
             Global.LimitMethodExecutionTimeInMillis = AppConfiguration.GetValue<long>("MethodExecutionLogging:LimitMethodExecutionTimeInMillis");
 
@@ -37,6 +38,10 @@ namespace SharedLib
             foreach (var el in Vat)
                 if(!Global.Tax.ContainsKey(el.Code))
                     Global.Tax.TryAdd(el.Code, el.CodeEKKA);
+
+            Global.CustomerBarCode = new List<CustomerBarCode>();
+            AppConfiguration.GetSection("MID:CustomerBarCode").Bind(Global.CustomerBarCode);
+
 
             ModelMID.Global.Server1C= AppConfiguration["MID:Server1C"];
 

@@ -77,17 +77,47 @@ namespace SharedLib
         public ReceiptWares AddWaresBarCode(IdReceipt parReceipt, string parBarCode, decimal parQuantity = 0)
         {
             var w = db.FindWares(parBarCode);
-            if (w.Count() == 1)
+            //ReceiptWares W = null;
+            if (w == null || w.Count() == 0) // Якщо не знайшли спробуем по ваговим і штучним штрихкодам.          
             {
-                var W = w.First();
-                if (parQuantity == 0)
-                    return W;
-                W.SetIdReceipt(parReceipt);
-                W.Quantity = parQuantity;
-                return AddReceiptWares(W);
+                foreach (var el in Global.CustomerBarCode.Where(el => el.KindBarCode == eKindBarCode.EAN13 && el.TypeBarCode == eTypeBarCode.WaresWeight))
+                {
+                    w = null;
+                    if (el.Prefix.Equals(parBarCode.Substring(0, el.Prefix.Length)))
+                    {
+                        int varCode = Convert.ToInt32(parBarCode.Substring(el.Prefix.Length, el.LenghtCode));
+                        int varValue= Convert.ToInt32(parBarCode.Substring(el.Prefix.Length+el.LenghtCode,el.LenghtQuantity));
+                        switch(el.TypeCode)
+                        {
+                            case eTypeCode.Article:
+                                w= db.FindWares(null, null, 0, 0, 0, varCode);
+                                break;
+                            case eTypeCode.Code:
+                                w = db.FindWares(null, null, varCode);
+                                break;
+                            default:
+                                break;
+                        }
+                        if (parQuantity>0 && w != null && w.Count() == 1) //Знайшли що треба
+                        {
+                            parQuantity = (w.First().CodeUnit == Global.WeightCodeUnit ? varValue / 1000m : varValue);
+                            break;
+                        }
+                    }
+                }
+               
             }
-            else
+
+            if(w == null || w.Count() != 1)
                 return null;
+            var W = w.First();
+            if (parQuantity == 0)
+                return W;
+            W.SetIdReceipt(parReceipt);
+            W.Quantity = parQuantity;
+            return AddReceiptWares(W);
+
+            
 
         }
         public ReceiptWares AddWaresCode(IdReceipt parReceipt, Guid parProductId, decimal parQuantity = 0)

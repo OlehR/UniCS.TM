@@ -230,9 +230,9 @@ namespace SharedLib
         /// <summary>
         /// Повертає знайдений товар/товари
         /// </summary>
-        public virtual IEnumerable<ReceiptWares> FindWares(string parBarCode = null, string parName = null, int parCodeWares = 0, int parCodeUnit = 0,int parCodeFastGroup=0)
+        public virtual IEnumerable<ReceiptWares> FindWares(string parBarCode = null, string parName = null, int parCodeWares = 0, int parCodeUnit = 0,int parCodeFastGroup=0,int parArticl=-1)
         {
-            var Wares = this.db.Execute<object, ReceiptWares>(SqlFoundWares, new { CodeWares = parCodeWares, CodeUnit = parCodeUnit, BarCode = parBarCode, Name = parName == null ? null : "%" + parName + "%", CodeDealer = ModelMID.Global.DefaultCodeDealer , CodeFastGroup = parCodeFastGroup });
+            var Wares = this.db.Execute<object, ReceiptWares>(SqlFoundWares, new { CodeWares = parCodeWares, CodeUnit = parCodeUnit, BarCode = parBarCode, Name = parName == null ? null : "%" + parName + "%", CodeDealer = ModelMID.Global.DefaultCodeDealer , CodeFastGroup = parCodeFastGroup, Articl= parArticl });
             return Wares;
         }
 

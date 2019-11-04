@@ -28,7 +28,7 @@ namespace ModelMID
         /// <summary>
         /// Перелік одиниць, по яким необхідно вводити кількість(при пошуку по назві чи коду)
         /// </summary>
-        public static int WeightCodeUnit=5;
+        public static int WeightCodeUnit = 7;//кг
         public static int[] UnitMustInputQuantity = { 7 };
         /// <summary>
         /// тип пошуку товара (0 - без обмежень, 1 - штрихкод , код, 2 - штрихкод)
@@ -44,7 +44,7 @@ namespace ModelMID
         public static int IdWorkPlace = 62;
         public static string PrefixWarehouse = "K";
 
-        public static int CodeWarehouse = 9; 
+        public static int CodeWarehouse = 9;
         /// <summary>
         /// Тип періоду документів (0 - Глобальний, 1- рік, 2 -місяць, 3 - день.)
         /// </summary>
@@ -92,7 +92,7 @@ namespace ModelMID
         /// Шлях до SqlLite бази
         /// </summary>
         public static string PathDB = @"c:\mid\";
-        
+
         /// <summary>
         /// Текуча директорія
         /// </summary>
@@ -110,13 +110,15 @@ namespace ModelMID
         //public static Language Language = Language.uk_UA;
         //public static string 
         //public static DateTime ArxDate= new DateTime (1,1,1);\
-        public static string WaresGuid =  "1A3B944E-3632-467B-A53A-";
+        public static string WaresGuid = "1A3B944E-3632-467B-A53A-";
         public static string ClientGuid = "1A3B944E-3632-467B-AFFA-";
 
 
-        public static SortedList<int,string>  Tax = new SortedList<int, string>();
+        public static SortedList<int, string> Tax = new SortedList<int, string>();
 
         public static string Server1C = "";
+
+        public static List<CustomerBarCode> CustomerBarCode  { get;set;}
         public static int GetCodePeriod()
         {
             return GetCodePeriod(DateTime.Today);
