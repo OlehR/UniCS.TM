@@ -7,6 +7,8 @@ using Microsoft.Extensions.Configuration;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using ModernIntegration.Model;
 
 namespace Test
 {
@@ -34,10 +36,12 @@ namespace Test
     {
         static void Main(string[] args)
         {
+
             
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
             CreateDataBase(); //Створення бази
+            //Thread.Sleep(1000000);
             //TestKit();
             //TestReceipt(); //
             //CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
@@ -55,9 +59,9 @@ namespace Test
         static void CreateDataBase()
         {
             var bl = new BL();
+             //bl.SyncData(true);
             bl.SyncData(false);
-            //bl.SyncData(false);
-         //   bl.SyncData(true);
+         
 
         }
 
@@ -79,6 +83,12 @@ namespace Test
             var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009001");
             //Guid.Parse("00140701-FFFF-2019-0618-000000000008");
             var api = new ApiPSU();
+            var sd=api.AddProductByBarCode( TerminalId, "7622300813437",1);
+            Thread.Sleep(100000);
+            //api.AddProductByBarCode(Guid.Parse(""),)
+            //api.UpdateProductWeight("1234567890123", 23);
+            //api.Terminals(new List<Terminal>() { new Terminal() {CustomerId=62,DisplayName= "Каса 1",Id= Guid.Parse("1BB89AA9-DBDF-4EB0-B7A2-094665C3FDD0") } });
+            return;
             var Bl = new BL();
             var rrrr=Bl.GetReceiptHead(new IdReceipt() { CodePeriod = 20191010, CodeReceipt = 2, IdWorkplace = 62 });
 

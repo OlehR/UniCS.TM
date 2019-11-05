@@ -20,7 +20,7 @@ select w.code_wares ,case when @CodeUnit=0 then au.CODE_UNIT else @CodeUnit end 
     where w.articl=@Articl 
 union
 select ifnull(w.code_wares,bc.code_wares),bc.code_unit
-                 from mid.bar_code bc left join wares w
+                 from bar_code bc left join wares w
                  on w.CODE_WARES= bc.code_wares
                  where bc.bar_code=@BarCode
 union
@@ -109,9 +109,9 @@ select wr.id_workplace as IdWorkplace, wr.code_period as CodePeriod, wr.code_rec
  ,(select max(bc.BAR_CODE) from BAR_CODE bc where bc.code_wares=wr.code_wares) as BarCode 
  ,w.Weight_Brutto as WeightBrutto
                      from rc.wares_receipt wr
-                     join mid.wares w on (wr.code_wares =w.code_wares)
-                     join mid.ADDITION_UNIT au on w.code_wares = au.code_wares and wr.code_unit=au.code_unit
-                     join mid.unit_dimension ud on (wr.code_unit = ud.code_unit)
+                     join wares w on (wr.code_wares =w.code_wares)
+                     join ADDITION_UNIT au on w.code_wares = au.code_wares and wr.code_unit=au.code_unit
+                     join unit_dimension ud on (wr.code_unit = ud.code_unit)
                      where wr.id_workplace=@IdWorkplace and  wr.code_period =@CodePeriod and wr.code_receipt=@CodeReceipt
                      order by sort
 
