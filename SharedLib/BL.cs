@@ -26,7 +26,7 @@ namespace SharedLib
         {
             db = new WDB_SQLite();
             WorkId = new SortedList<Guid, int>();
-            db.OnReceiptCalculationComplete = (wareses, guid) => OnReceiptCalculationComplete?.Invoke(wareses, guid);
+            WDB_SQLite.OnReceiptCalculationComplete = (wareses, guid) => OnReceiptCalculationComplete?.Invoke(wareses, guid);
         }
         public ReceiptWares AddReceiptWares(ReceiptWares parW)
         {
