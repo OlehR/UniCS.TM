@@ -23,7 +23,7 @@ namespace SharedLib
                        return Path.Combine(Global.PathDB, $"{varD:yyyyMM}", $"MID_{varD:yyyyMMdd}.db"); } }
 
 
-        public Action<IEnumerable<ReceiptWares>, Guid> OnReceiptCalculationComplete { get; set; }
+        public static Action<IEnumerable<ReceiptWares>, Guid> OnReceiptCalculationComplete { get; set; }
 
         
         public WDB_SQLite(string parConnect = "",bool IsMidMain=false,DateTime parD = default(DateTime))  : base(Path.Combine(Global.PathIni, "SQLite.sql") )
@@ -169,10 +169,11 @@ namespace SharedLib
 
         public Task RecalcPriceAsync(IdReceipt parIdReceipt)
         {
-            return Task.Run(() => RecalcPrice(parIdReceipt)).ContinueWith(res =>
+            return Task.Run(() => RecalcPrice(parIdReceipt)).ContinueWith(async res =>
             {
-                if (res.Result)
+                if (await res)
                 {
+                    Console.WriteLine(OnReceiptCalculationComplete != null);
                     var r = ViewReceiptWares(parIdReceipt);
                     OnReceiptCalculationComplete?.Invoke(ViewReceiptWares(parIdReceipt),Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace));
                 }
@@ -181,73 +182,79 @@ namespace SharedLib
 
         public override bool RecalcPrice(IdReceipt parIdReceipt)
         {
-            var RH = ViewReceipt(parIdReceipt);
-
-            var par = new ParameterPromotion() {
-                CodeWarehouse = ModelMID.Global.CodeWarehouse,
-                BirthDay = DateTime.Now.AddDays(-3).Date,
-                Time = Convert.ToInt32( RH.DateReceipt.ToString("HHmm")),
-                TypeCard = GetTypeDiscountClientByReceipt(parIdReceipt),
-                CodeDealer= ModelMID.Global.DefaultCodeDealer
-            };
-
-            //var PercentDiscount = GetPersentDiscountClientByReceipt(parIdReceipt);
-
-            var r = ViewReceiptWares(parIdReceipt);
-            
-            foreach (var RW in r)
+            try
             {
-                var MPI = GetMinPriceIndicative((IdReceiptWares)RW);
-                par.CodeWares = RW.CodeWares;
-                var Res = GetPrice(par);
+                var RH = ViewReceipt(parIdReceipt);
 
-                Int64 CodePS2Cat = 0;
-                decimal Percent2Cat = 0;
-                if (RW.BarCode2Category != null && RW.BarCode2Category.Length == 13)
+                var par = new ParameterPromotion()
                 {
-                    Percent2Cat = Convert.ToInt32(RW.BarCode2Category.Substring(3, 2));
-                    CodePS2Cat = GetPricePromotionSale2Category((IdReceiptWares)RW);
+                    CodeWarehouse = ModelMID.Global.CodeWarehouse,
+                    BirthDay = DateTime.Now.AddDays(-3).Date,
+                    Time = Convert.ToInt32(RH.DateReceipt.ToString("HHmm")),
+                    TypeCard = GetTypeDiscountClientByReceipt(parIdReceipt),
+                    CodeDealer = ModelMID.Global.DefaultCodeDealer
+                };
+                //var PercentDiscount = GetPersentDiscountClientByReceipt(parIdReceipt);
+
+                var r = ViewReceiptWares(parIdReceipt);
+                foreach (var RW in r)
+                {
+                    var MPI = GetMinPriceIndicative((IdReceiptWares)RW);
+                    par.CodeWares = RW.CodeWares;
+                    var Res = GetPrice(par);
+
+                    Int64 CodePS2Cat = 0;
+                    decimal Percent2Cat = 0;
+                    if (RW.BarCode2Category != null && RW.BarCode2Category.Length == 13)
+                    {
+                        Percent2Cat = Convert.ToInt32(RW.BarCode2Category.Substring(3, 2));
+                        CodePS2Cat = GetPricePromotionSale2Category((IdReceiptWares)RW);
+                    }
+
+                    if (Res != null)//&& Res.CodePs>0)
+                    {
+                        RW.Price = MPI.GetPrice(Res.Price, Res.IsIgnoreMinPrice == 0);
+                        if (CodePS2Cat > 0 && Percent2Cat > 0)
+                        {
+                            RW.TypePrice = eTypePrice.Promotion;
+                            RW.ParPrice1 = CodePS2Cat;
+                        }
+                        else
+                        {
+                            RW.TypePrice = MPI.typePrice;
+                            RW.ParPrice1 = Res.CodePs;
+                            RW.ParPrice2 = (int)Res.TypeDiscont;
+                            RW.ParPrice3 = (int)Res.Data;
+                        }
+                        RW.Price = RW.Price * (100M - Percent2Cat) / 100;
+                    }
+                    /*                else
+                                    {
+
+                                        if (CodePS2Cat > 0 && Percent2Cat > 0)
+                                        {
+                                            RW.Price = RW.PriceDealer * (100M - Percent2Cat) / 100;
+                                            RW.TypePrice = eTypePrice.Promotion;
+                                            RW.ParPrice1 = CodePS2Cat;
+                                        }
+                                        else
+                                        {
+                                            RW.Price = MPI.GetPrice(RW.PriceDealer, );
+                                            RW.TypePrice = MPI.typePrice;
+                                        }                        
+
+                                    }*/
+                    ReplaceWaresReceipt(RW);
                 }
-
-                if(Res!=null )//&& Res.CodePs>0)
-                {
-                    RW.Price = MPI.GetPrice(Res.Price,Res.IsIgnoreMinPrice==0);
-                    if (CodePS2Cat > 0 && Percent2Cat > 0)
-                    {
-                        RW.TypePrice = eTypePrice.Promotion;
-                        RW.ParPrice1 = CodePS2Cat;
-                    }
-                    else
-                    {
-                        RW.TypePrice = MPI.typePrice;
-                        RW.ParPrice1 = Res.CodePs;
-                        RW.ParPrice2 = (int)Res.TypeDiscont;
-                        RW.ParPrice3 = (int) Res.Data;
-                    }
-                    RW.Price = RW.Price * (100M - Percent2Cat) / 100;
-                }
-/*                else
-                {
-                    
-                    if (CodePS2Cat > 0 && Percent2Cat > 0)
-                    {
-                        RW.Price = RW.PriceDealer * (100M - Percent2Cat) / 100;
-                        RW.TypePrice = eTypePrice.Promotion;
-                        RW.ParPrice1 = CodePS2Cat;
-                    }
-                    else
-                    {
-                        RW.Price = MPI.GetPrice(RW.PriceDealer, );
-                        RW.TypePrice = MPI.typePrice;
-                    }                        
-
-                }*/
-
-                ReplaceWaresReceipt(RW);
+                GetPricePromotionKit(parIdReceipt, r);
+                RecalcHeadReceipt(parIdReceipt);
+                return true;
             }
-            GetPricePromotionKit(parIdReceipt, r);
-            RecalcHeadReceipt(parIdReceipt);
-            return true;
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
         }
         /// <summary>
         /// Розраховуємо знижки по наборах
