@@ -71,7 +71,9 @@ namespace ModernIntegration
         public override bool AddPayment(Guid parTerminalId, ReceiptPayment[] parPayment)
         {
             var receiptId = GetCurrentReceiptByTerminalId(parTerminalId);
-            return Bl.db.ReplacePayment(parPayment.Select(r=> ReceiptPaymentToPayment(receiptId, r)));
+            Bl.db.ReplacePayment(parPayment.Select(r=> ReceiptPaymentToPayment(receiptId, r)));
+            return Bl.SetStateReceipt(receiptId, eStateReceipt.Pay);
+
         }
         public override bool AddFiscalNumber(Guid parTerminalId, string parFiscalNumber)
         {
