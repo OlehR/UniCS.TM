@@ -231,7 +231,7 @@ namespace ModernIntegration
                 WeightCategory = 1, //вимірювання Похибки в відсотках,2 в грамах
                 IsProductOnProcessing = false, //
                 ///CategoryId=   !!!TMP Групи 1 рівня.
-                TaxGroup = Global.GetTaxGroup(receiptWares.TypeVat),
+                TaxGroup = Global.GetTaxGroup(receiptWares.TypeVat, receiptWares.TypeWares),
                 Barcode = receiptWares.BarCode,
             };
             return Res;
