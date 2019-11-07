@@ -211,13 +211,13 @@ namespace ModernIntegration
                 AdditionalDescription = receiptWares.NameWaresReceipt, //!!!TMP;
                 Image = null,
                 Price = receiptWares.Price > 0 ? receiptWares.Price : receiptWares.PriceDealer,
-                Weight = Convert.ToDouble( receiptWares.WeightBrutto), 
+                Weight = (receiptWares.IsWeight  ? Convert.ToDouble( receiptWares.Quantity): Convert.ToDouble( receiptWares.WeightBrutto)), 
                 DeltaWeight = 3, //!!!TMP
                 ProductWeightType =
                     receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByPiece, //!!!TMP
                 IsAgeRestrictedConfirmed =
                     false, //!!!TMP //Обмеження по віку алкоголь Підтверджено не потрібно посилати.
-                Quantity = receiptWares.Quantity,
+                Quantity = (receiptWares.IsWeight ? 1:receiptWares.Quantity),
                 DiscountValue = receiptWares.SumDiscount,
                 DiscountName = "",
                 WarningType = null, //!!! Не посилати 
