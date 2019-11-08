@@ -72,9 +72,11 @@ namespace SharedLib
 
             SQL = GetSQL("SqlGetPromotionSaleGroupWares");
             var PSGW = db.Execute<PromotionSaleGroupWares>(SQL);
-            parDB.ReplacePromotionSaleGroupWares(PSGW);
-            PSGW = null;
-
+            if (PSGW != null)
+            {
+                parDB.ReplacePromotionSaleGroupWares(PSGW);
+                PSGW = null;
+            }
 
 
             SQL = GetSQL("SqlGetPromotionSale");

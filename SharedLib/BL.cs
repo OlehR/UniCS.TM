@@ -80,7 +80,7 @@ namespace SharedLib
             //ReceiptWares W = null;
             if (w == null || w.Count() == 0) // Якщо не знайшли спробуем по ваговим і штучним штрихкодам.          
             {
-                foreach (var el in Global.CustomerBarCode.Where(el => el.KindBarCode == eKindBarCode.EAN13 && el.TypeBarCode == eTypeBarCode.WaresWeight))
+                foreach (var el in Global.CustomerBarCode.Where(el => el.KindBarCode == eKindBarCode.EAN13 && (el.TypeBarCode == eTypeBarCode.WaresWeight || el.TypeBarCode == eTypeBarCode.WaresUnit )))
                 {
                     w = null;
                     if (el.Prefix.Equals(parBarCode.Substring(0, el.Prefix.Length)))

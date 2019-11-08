@@ -13,8 +13,8 @@ namespace ModelMID
     public enum eTypeBarCode
     {
         NotDefine = 0,
-        WaresWeight =1,
-        WaresUnit=2
+        WaresWeight =1, //Ваговий
+        WaresUnit=2 //Штучний
     }
 
     public enum eKindBarCode
