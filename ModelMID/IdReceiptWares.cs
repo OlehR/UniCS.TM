@@ -13,7 +13,7 @@ namespace ModelMID
         {
             get
             {
-                return Guid.Parse(Order.ToString("D8") + "-abcd-"+ Order.ToString("D8").Substring(0,4)+"-"+ Order.ToString("D8").Substring(4,4)+"-"+ CodeWares.ToString("D12"));
+                return Guid.Parse(Order.ToString("D8") + "-abcd-"+ CodeUnit.ToString("D8").Substring(0,4)+"-"+ CodeUnit.ToString("D8").Substring(4,4)+"-"+ CodeWares.ToString("D12"));
             }
             set
             {
