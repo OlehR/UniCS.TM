@@ -162,6 +162,9 @@ namespace SharedLib
                     w.Quantity = parQuantity;
                     return db.UpdateQuantityWares(w);
                 }
+                if (ModelMID.Global.RecalcPriceOnLine)
+                    db.RecalcPriceAsync(parReceiptWaresId);
+
             }
             return false;
 
@@ -178,6 +181,9 @@ namespace SharedLib
             {
                 var client = r.First();
                 UpdateClientInReceipt(idReceipt, client);
+                if (ModelMID.Global.RecalcPriceOnLine)
+                    db.RecalcPriceAsync(idReceipt);
+
                 return client;
             }
             return null;
