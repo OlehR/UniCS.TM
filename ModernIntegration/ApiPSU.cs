@@ -117,7 +117,8 @@ namespace ModernIntegration
                     Res.Add(GetProductViewModel(el));
             return Res;
         }
-        public override List<ProductViewModel> GetProductsByName(string parName)
+        public override List<ProductViewModel> GetProductsByName(string parName, int pageNumber = 0,
+            bool excludeWeightProduct = false, Guid? categoryId = null)
         {
             var Res = new List<ProductViewModel>();
             var wr = Bl.GetProductsByName(parName);
