@@ -71,7 +71,9 @@ namespace ModernIntegration
         public override bool AddPayment(Guid parTerminalId, ReceiptPayment[] parPayment)
         {
             var receiptId = GetCurrentReceiptByTerminalId(parTerminalId);
-            return Bl.db.ReplacePayment(parPayment.Select(r=> ReceiptPaymentToPayment(receiptId, r)));
+            Bl.db.ReplacePayment(parPayment.Select(r=> ReceiptPaymentToPayment(receiptId, r)));
+            return Bl.SetStateReceipt(receiptId, eStateReceipt.Pay);
+
         }
         public override bool AddFiscalNumber(Guid parTerminalId, string parFiscalNumber)
         {
@@ -209,13 +211,13 @@ namespace ModernIntegration
                 AdditionalDescription = receiptWares.NameWaresReceipt, //!!!TMP;
                 Image = null,
                 Price = receiptWares.Price > 0 ? receiptWares.Price : receiptWares.PriceDealer,
-                Weight = Convert.ToDouble( receiptWares.WeightBrutto), 
+                Weight = (receiptWares.IsWeight  ? Convert.ToDouble( receiptWares.Quantity): Convert.ToDouble( receiptWares.WeightBrutto)), 
                 DeltaWeight = 3, //!!!TMP
                 ProductWeightType =
                     receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByPiece, //!!!TMP
                 IsAgeRestrictedConfirmed =
                     false, //!!!TMP //Обмеження по віку алкоголь Підтверджено не потрібно посилати.
-                Quantity = receiptWares.Quantity,
+                Quantity = (receiptWares.IsWeight ? 1:receiptWares.Quantity),
                 DiscountValue = receiptWares.SumDiscount,
                 DiscountName = "",
                 WarningType = null, //!!! Не посилати 
@@ -229,7 +231,7 @@ namespace ModernIntegration
                 WeightCategory = 1, //вимірювання Похибки в відсотках,2 в грамах
                 IsProductOnProcessing = false, //
                 ///CategoryId=   !!!TMP Групи 1 рівня.
-                TaxGroup = Global.GetTaxGroup(receiptWares.TypeVat),
+                TaxGroup = Global.GetTaxGroup(receiptWares.TypeVat, receiptWares.TypeWares),
                 Barcode = receiptWares.BarCode,
             };
             return Res;

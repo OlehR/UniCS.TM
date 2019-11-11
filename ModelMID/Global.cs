@@ -165,9 +165,9 @@ namespace ModelMID
             return "00";
         }
 
-        public static string GetTaxGroup(int parTypeVat)
+        public static string GetTaxGroup(int parTypeVat,int parTypeWares=0)
         {
-            return Tax[parTypeVat];
+            return Tax[parTypeWares*10+parTypeVat];
         }
 
         public static MethodExecutionLoggingType MethodExecutionLogging = MethodExecutionLoggingType.Always;

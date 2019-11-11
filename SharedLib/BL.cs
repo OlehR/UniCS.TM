@@ -26,7 +26,7 @@ namespace SharedLib
         {
             db = new WDB_SQLite();
             WorkId = new SortedList<Guid, int>();
-            db.OnReceiptCalculationComplete = (wareses, guid) => OnReceiptCalculationComplete?.Invoke(wareses, guid);
+            WDB_SQLite.OnReceiptCalculationComplete = (wareses, guid) => OnReceiptCalculationComplete?.Invoke(wareses, guid);
         }
         public ReceiptWares AddReceiptWares(ReceiptWares parW)
         {
@@ -80,7 +80,7 @@ namespace SharedLib
             //ReceiptWares W = null;
             if (w == null || w.Count() == 0) // Якщо не знайшли спробуем по ваговим і штучним штрихкодам.          
             {
-                foreach (var el in Global.CustomerBarCode.Where(el => el.KindBarCode == eKindBarCode.EAN13 && el.TypeBarCode == eTypeBarCode.WaresWeight))
+                foreach (var el in Global.CustomerBarCode.Where(el => el.KindBarCode == eKindBarCode.EAN13 && (el.TypeBarCode == eTypeBarCode.WaresWeight || el.TypeBarCode == eTypeBarCode.WaresUnit )))
                 {
                     w = null;
                     if (el.Prefix.Equals(parBarCode.Substring(0, el.Prefix.Length)))
@@ -162,6 +162,9 @@ namespace SharedLib
                     w.Quantity = parQuantity;
                     return db.UpdateQuantityWares(w);
                 }
+                if (ModelMID.Global.RecalcPriceOnLine)
+                    db.RecalcPriceAsync(parReceiptWaresId);
+
             }
             return false;
 
@@ -178,6 +181,9 @@ namespace SharedLib
             {
                 var client = r.First();
                 UpdateClientInReceipt(idReceipt, client);
+                if (ModelMID.Global.RecalcPriceOnLine)
+                    db.RecalcPriceAsync(idReceipt);
+
                 return client;
             }
             return null;

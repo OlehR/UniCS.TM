@@ -112,7 +112,7 @@ namespace ModelMID
         /// </summary>
         public bool IsSave { get; set; }
         public bool IsWeight
-            { get { return Global.WeightCodeUnit == CodeDefaultUnit; } }
+            { get { return Global.WeightCodeUnit == CodeUnit; } }
         public int Sort { get; set; }
         public int UserCreate { get; set; }
       //  public int CodeWarehouse { get; set; }
