@@ -483,7 +483,7 @@ namespace SharedLib
             SqlRecalcHeadReceipt = GetSQL("SqlRecalcHeadReceipt");
             SqlGetCountWares = GetSQL("SqlGetCountWares");
             SqlUpdateQuantityWares = GetSQL("SqlUpdateQuantityWares");
-            //SqlDeleteReceiptWares = GetSQL("SqlDeleteReceiptWares");
+            SqlDeleteReceiptWares = GetSQL("SqlDeleteReceiptWares");
             //SqlInputOutputMoney = GetSQL("SqlInputOutputMoney");
             //SqlAddZ = GetSQL("SqlAddZ");
             //SqlAddLog = GetSQL("SqlAddLog");
