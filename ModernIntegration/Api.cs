@@ -28,7 +28,7 @@ namespace ModernIntegration
         public virtual bool AddFiscalNumber(Guid parTerminalId, string parFiscalNumber) { return false; }
         public virtual bool ClearReceipt(Guid parTerminalId) { return false; }
 
-        public virtual List<ProductViewModel> GetBags() { return null; }
+        public virtual IEnumerable<ProductViewModel> GetBags() { return null; }
 
         public virtual List<ProductCategory> GetAllCategories(Guid parTerminalId) { return null; }
         public virtual List<ProductCategory> GetCategoriesByParentId(Guid parTerminalId, Guid categoryId) { return null; }
