@@ -90,7 +90,10 @@ namespace ModernIntegration
             return true;
         }
 
-        //public override List<ProductViewModel> GetBags() { return null; }
+        public override IEnumerable<ProductViewModel> GetBags() 
+        {
+            return Bl.db.GetBags().Select(r => GetProductViewModel(r));
+        }
 
         public override List<ProductCategory> GetAllCategories(Guid parTerminalId)
         {

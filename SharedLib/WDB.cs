@@ -852,6 +852,10 @@ namespace SharedLib
         { 
             return db.Execute<object, IdReceipt>(SqlGetIdReceiptbyState, new { StateReceipt= parState });
         }
+        public virtual IEnumerable<ReceiptWares> GetBags()
+        {
+            throw new NotImplementedException();
+        }
 
     }
 
