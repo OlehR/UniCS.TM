@@ -41,7 +41,7 @@ namespace Test
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-            CreateDataBase(); //Створення бази
+            //CreateDataBase(); //Створення бази
             //Thread.Sleep(1000000);
             //TestKit();
             TestReceipt(); //
@@ -84,6 +84,7 @@ namespace Test
             var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009001");
             //Guid.Parse("00140701-FFFF-2019-0618-000000000008");
             var api = new ApiPSU();
+            var ff = api.GetProductsByName("берез", 1);
             var sd = api.AddProductByBarCode(TerminalId, "7622300813437", 1);//Барні
             sd = api.AddProductByBarCode(TerminalId, "2201652300489", 1); //Морква
             var sс = api.AddProductByBarCode(TerminalId, "1110867180018", 1); //Хліб

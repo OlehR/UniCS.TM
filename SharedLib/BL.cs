@@ -212,9 +212,9 @@ namespace SharedLib
         }
 
 
-        public IEnumerable<ReceiptWares> GetProductsByName(string parName)
+        public IEnumerable<ReceiptWares> GetProductsByName(string parName, int parOffSet = -1, int parLimit = 10)
         {
-            var r = db.FindWares(null, parName);
+            var r = db.FindWares(null, parName,0,0,0,-1, parOffSet, parLimit);
             if (r.Count() > 0)
             {
                 return r;
