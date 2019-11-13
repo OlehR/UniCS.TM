@@ -27,7 +27,7 @@ union
  select w.code_wares, au.CODE_UNIT
  from wares w 
  join addition_unit au on (w.CODE_WARES=au.code_wares and au.DEFAULT_UNIT=1)
- where UPPER(w.name_wares) like UPPER(@Name)
+ where w.name_wares_upper like @NameUpper
 union
 select w.code_wares,au.CODE_UNIT from FAST_WARES w 
      join addition_unit au on (w.CODE_WARES=au.code_wares and au.DEFAULT_UNIT=1)
@@ -617,6 +617,7 @@ CREATE TABLE WARES (
     CODE_WARES          INTEGER  NOT NULL,-- PRIMARY KEY, 
     CODE_GROUP          INTEGER  NOT NULL,
     NAME_WARES          TEXT     NOT NULL,
+	NAME_WARES_UPPER    TEXT     NOT NULL,
     NAME_WARES_RECEIPT  TEXT,
 --    TYPE_POSITION_WARES TEXT     NOT NULL,
     ARTICL              TEXT     NOT NULL,
@@ -809,8 +810,8 @@ replace into UNIT_DIMENSION ( CODE_UNIT, NAME_UNIT, ABR_UNIT) values (@CodeUnit,
 replace into  GROUP_WARES (CODE_GROUP_WARES,CODE_PARENT_GROUP_WARES,NAME)
              values (@CodeGroupWares,@CodeParentGroupWares,@Name);
 [SqlReplaceWares]
-replace into  Wares (CODE_WARES,CODE_GROUP,NAME_WARES, ARTICL,CODE_BRAND, CODE_UNIT, Percent_Vat,Type_VAT,NAME_WARES_RECEIPT, DESCRIPTION,Type_Wares,Weight_brutto)
-             values (@CodeWares,@CodeGroup,@NameWares, @Articl,@CodeBrand,@CodeUnit, @PercentVat, @TypeVat,@NameWaresReceipt, @Description,@TypeWares,@WeightBrutto);
+replace into  Wares (CODE_WARES,CODE_GROUP,NAME_WARES,Name_Wares_Upper, ARTICL,CODE_BRAND, CODE_UNIT, Percent_Vat,Type_VAT,NAME_WARES_RECEIPT, DESCRIPTION,Type_Wares,Weight_brutto)
+             values (@CodeWares,@CodeGroup,@NameWares,@NameWaresUpper, @Articl,@CodeBrand,@CodeUnit, @PercentVat, @TypeVat,@NameWaresReceipt, @Description,@TypeWares,@WeightBrutto);
 [SqlReplaceAdditionUnit]
 replace into  Addition_Unit (CODE_WARES, CODE_UNIT, COEFFICIENT, DEFAULT_UNIT, WEIGHT, WEIGHT_NET )
               values (@CodeWares,@CodeUnit,@Coefficient, @DefaultUnit, @Weight, @WeightNet);

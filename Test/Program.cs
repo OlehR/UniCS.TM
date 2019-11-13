@@ -60,8 +60,8 @@ namespace Test
         static void CreateDataBase()
         {
             var bl = new BL();
-             //bl.SyncData(true);
-            bl.SyncData(false);
+             bl.SyncData(true);
+            //bl.SyncData(false);
          
 
         }
@@ -84,10 +84,12 @@ namespace Test
             var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009001");
             //Guid.Parse("00140701-FFFF-2019-0618-000000000008");
             var api = new ApiPSU();
-            var sd=api.AddProductByBarCode( TerminalId, "7622300813437",1);//Барні
-             sd=api.AddProductByBarCode( TerminalId, "2201652300489",1); //Морква
-            var sс = api.AddProductByBarCode(TerminalId, "1110867180018", 1); //Хліб
-            
+            //var sd=api.AddProductByBarCode( TerminalId, "7622300813437",1);//Барні
+             //sd=api.AddProductByBarCode( TerminalId, "2201652300489",1); //Морква
+            //var sс = api.AddProductByBarCode(TerminalId, "1110867180018", 1); //Хліб
+            var sс = api.AddProductByBarCode(TerminalId, "40804927", 1);
+            var wwwwsс = api.GetProductsByName("БЕРЕ");  // AddProductByBarCode(TerminalId, "743639000026", 1); 
+
             var r1 = api.Bl.ViewReceiptWares(api.GetCurrentReceiptByTerminalId(TerminalId) );
 
             api.ChangeQuantity(TerminalId, r1.First().WaresId, 0);

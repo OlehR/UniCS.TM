@@ -22,6 +22,7 @@ namespace ModelMID
         /// <summary>
         /// Назва для чека.
         /// </summary>
+        public string NameWaresUpper { get { return NameWares.ToUpper(); } }
         public string NameWaresReceipt { get; set; }
         public int Articl { get; set; }
         public int CodeBrand { get; set; }

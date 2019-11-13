@@ -21,7 +21,7 @@ SELECT code_wares AS CodeWares,code_unit AS CodeUnit, coef AS Coefficient, weigh
   FROM dbo.addition_unit;
 
 [SqlGetDimBarCode]
-SELECT code_wares CodeWares,code_unit AS CodeUnit,bar_code AS BarCode, coef AS Coefficient 
+    SELECT code_wares CodeWares,code_unit AS CodeUnit,RTRIM(LTRIM(bar_code)) AS BarCode, coef AS Coefficient 
   FROM dbo.barcode where LEN(bar_code)>6;
 
 [SqlGetDimPrice]
