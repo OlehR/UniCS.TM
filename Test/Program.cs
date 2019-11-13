@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using ModernIntegration.Model;
+using ModernIntegration.Models;
 
 namespace Test
 {
@@ -43,7 +44,7 @@ namespace Test
             CreateDataBase(); //Створення бази
             //Thread.Sleep(1000000);
             //TestKit();
-            //TestReceipt(); //
+            TestReceipt(); //
             //CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
             //            var o = new SharedLib.Oracle();
             //var r =  o.Execute<ReceiptWares>("select w.code_wares CodeWares,w.name_wares as NameWares from dw.wares w where w.code_wares in (54882,54883)");
@@ -78,12 +79,27 @@ namespace Test
         }
         static void TestReceipt()
         {
-            var TerminalId = Guid.Parse("abb75469-0f34-4124-8c53-c5392115269d");
+            var TerminalId = Guid.Parse("1bb89aa9-dbdf-4eb0-b7a2-094665c3fdd0");
             var ProductId = Guid.Parse("00000010-abcd-0000-0019-000000055004");
             var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009001");
             //Guid.Parse("00140701-FFFF-2019-0618-000000000008");
             var api = new ApiPSU();
-            var sd=api.AddProductByBarCode( TerminalId, "7622300813437",1);
+            var sd=api.AddProductByBarCode( TerminalId, "7622300813437",1);//Барні
+             sd=api.AddProductByBarCode( TerminalId, "2201652300489",1); //Морква
+            var sс = api.AddProductByBarCode(TerminalId, "1110867180018", 1); //Хліб
+            
+            var r1 = api.Bl.ViewReceiptWares(api.GetCurrentReceiptByTerminalId(TerminalId) );
+
+            api.ChangeQuantity(TerminalId, r1.First().WaresId, 0);
+            //var cl = api.GetCustomerByBarCode(TerminalId, "8810005077387");
+            Thread.Sleep(100000);
+            return;
+            var RId = api.GetCurrentReceiptByTerminalId(TerminalId).ReceiptId;
+            ReceiptPayment[] pay = new ReceiptPayment[]
+                {new ReceiptPayment {ReceiptId= RId ,
+                                    PaymentType=ModernIntegration.Enums.PaymentType.Card ,PayIn=39.9m,PayOut=0.0m,
+                    CardPan ="7548********8954",TransactionId="37108628262516415955665803737316905361" } } ;
+            api.AddPayment(TerminalId, pay);
             Thread.Sleep(100000);
             //api.AddProductByBarCode(Guid.Parse(""),)
             //api.UpdateProductWeight("1234567890123", 23);
