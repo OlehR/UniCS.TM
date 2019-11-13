@@ -331,9 +331,14 @@ namespace SharedLib
         public override IEnumerable<ReceiptWares> GetWaresFromFastGroup(int parCodeFastGroup)
         {
             return FindWares(null, null, 0, 0, parCodeFastGroup);
-        }                 
+        }
 
-        
+        public override IEnumerable<ReceiptWares> GetBags()
+        {
+            return FindWares(null, null, 0, 0, Global.CodeFastGroupBag);
+        }
+
+
 
     }
 }

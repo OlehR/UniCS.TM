@@ -90,7 +90,10 @@ namespace ModernIntegration
             return true;
         }
 
-        //public override List<ProductViewModel> GetBags() { return null; }
+        public override IEnumerable<ProductViewModel> GetBags() 
+        {
+            return Bl.db.GetBags().Select(r => GetProductViewModel(r));
+        }
 
         public override List<ProductCategory> GetAllCategories(Guid parTerminalId)
         {
@@ -117,14 +120,10 @@ namespace ModernIntegration
                     Res.Add(GetProductViewModel(el));
             return Res;
         }
-        public override List<ProductViewModel> GetProductsByName(string parName)
+        public override IEnumerable<ProductViewModel> GetProductsByName(string parName, int pageNumber = 0, bool excludeWeightProduct = false, Guid? categoryId = null)
         {
-            var Res = new List<ProductViewModel>();
-            var wr = Bl.GetProductsByName(parName);
-            if (wr != null)
-                foreach (var el in wr)
-                    Res.Add(GetProductViewModel(el));
-            return Res;
+            int Limit = 10;            
+            return  Bl.GetProductsByName(parName, pageNumber * Limit, Limit).Select(r => (GetProductViewModel(r)));    
         }
 
         public override bool UpdateReceipt(ReceiptViewModel parReceipt)

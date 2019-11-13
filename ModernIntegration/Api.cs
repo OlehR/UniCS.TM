@@ -28,12 +28,13 @@ namespace ModernIntegration
         public virtual bool AddFiscalNumber(Guid parTerminalId, string parFiscalNumber) { return false; }
         public virtual bool ClearReceipt(Guid parTerminalId) { return false; }
 
-        public virtual List<ProductViewModel> GetBags() { return null; }
+        public virtual IEnumerable<ProductViewModel> GetBags() { return null; }
 
         public virtual List<ProductCategory> GetAllCategories(Guid parTerminalId) { return null; }
         public virtual List<ProductCategory> GetCategoriesByParentId(Guid parTerminalId, Guid categoryId) { return null; }
         public virtual List<ProductViewModel> GetProductsByCategoryId(Guid parTerminalId, Guid categoryId) { return null; }
-        public virtual List<ProductViewModel> GetProductsByName(string parName) { return null; }
+        public virtual IEnumerable<ProductViewModel> GetProductsByName(string parName, int pageNumber = 0,
+            bool excludeWeightProduct = false, Guid? categoryId = null) { return null; }
 
         public virtual bool UpdateReceipt(ReceiptViewModel parReceipt) { return false; }
         public virtual bool RefundReceipt(RefundReceiptViewModel parReceipt) { return false; }

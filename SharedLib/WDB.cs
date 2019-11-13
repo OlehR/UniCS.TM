@@ -230,9 +230,10 @@ namespace SharedLib
         /// <summary>
         /// Повертає знайдений товар/товари
         /// </summary>
-        public virtual IEnumerable<ReceiptWares> FindWares(string parBarCode = null, string parName = null, int parCodeWares = 0, int parCodeUnit = 0,int parCodeFastGroup=0,int parArticl=-1)
+        public virtual IEnumerable<ReceiptWares> FindWares(string parBarCode = null, string parName = null, int parCodeWares = 0, int parCodeUnit = 0,int parCodeFastGroup=0,int parArticl=-1,int parOffSet=-1 ,int parLimit=10)
         {
-            var Wares = this.db.Execute<object, ReceiptWares>(SqlFoundWares, new { CodeWares = parCodeWares, CodeUnit = parCodeUnit, BarCode = parBarCode, Name = parName == null ? null : "%" + parName + "%", CodeDealer = ModelMID.Global.DefaultCodeDealer , CodeFastGroup = parCodeFastGroup, Articl= parArticl });
+            var Lim =  parOffSet>=0 ? $" limit {parLimit} offset {parOffSet}": "";
+            var Wares = this.db.Execute<object, ReceiptWares>(SqlFoundWares + Lim, new { CodeWares = parCodeWares, CodeUnit = parCodeUnit, BarCode = parBarCode, Name = parName == null ? null : "%" + parName + "%", CodeDealer = ModelMID.Global.DefaultCodeDealer , CodeFastGroup = parCodeFastGroup, Articl= parArticl });
             return Wares;
         }
 
@@ -483,7 +484,7 @@ namespace SharedLib
             SqlRecalcHeadReceipt = GetSQL("SqlRecalcHeadReceipt");
             SqlGetCountWares = GetSQL("SqlGetCountWares");
             SqlUpdateQuantityWares = GetSQL("SqlUpdateQuantityWares");
-            //SqlDeleteReceiptWares = GetSQL("SqlDeleteReceiptWares");
+            SqlDeleteReceiptWares = GetSQL("SqlDeleteReceiptWares");
             //SqlInputOutputMoney = GetSQL("SqlInputOutputMoney");
             //SqlAddZ = GetSQL("SqlAddZ");
             //SqlAddLog = GetSQL("SqlAddLog");
@@ -851,6 +852,10 @@ namespace SharedLib
         public virtual IEnumerable<IdReceipt> GetIdReceiptbyState(eStateReceipt parState = eStateReceipt.Print) 
         { 
             return db.Execute<object, IdReceipt>(SqlGetIdReceiptbyState, new { StateReceipt= parState });
+        }
+        public virtual IEnumerable<ReceiptWares> GetBags()
+        {
+            throw new NotImplementedException();
         }
 
     }

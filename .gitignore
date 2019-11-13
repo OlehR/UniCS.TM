@@ -7,3 +7,4 @@ obj
 /UniCS.TM/bin
 /UniCS.TM/obj
 /.vs
+/Test/Program.cs
