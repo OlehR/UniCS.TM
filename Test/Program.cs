@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using ModernIntegration.Model;
 using ModernIntegration.Models;
+using System.Text.RegularExpressions;
 
 namespace Test
 {
@@ -38,7 +39,6 @@ namespace Test
         static void Main(string[] args)
         {
 
-            
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
             CreateDataBase(); //Створення бази
@@ -88,7 +88,8 @@ namespace Test
              //sd=api.AddProductByBarCode( TerminalId, "2201652300489",1); //Морква
             //var sс = api.AddProductByBarCode(TerminalId, "1110867180018", 1); //Хліб
             var sс = api.AddProductByBarCode(TerminalId, "40804927", 1);
-            var wwwwsс = api.GetProductsByName("БЕРЕ");  // AddProductByBarCode(TerminalId, "743639000026", 1); 
+            var ddd=api.GetProductsByName(TerminalId, "40804927");
+            var wwwwsс = api.GetProductsByName(TerminalId,"БЕРЕ");  // AddProductByBarCode(TerminalId, "743639000026", 1); 
 
             var r1 = api.Bl.ViewReceiptWares(api.GetCurrentReceiptByTerminalId(TerminalId) );
 
@@ -121,7 +122,7 @@ namespace Test
             res = api.AddProductByProductId(TerminalId, ProductId, 10);
             var Rec = api.ChangeQuantity(TerminalId, ProductId, 7);
 
-            var f = api.GetProductsByName("апель");
+            var f = api.GetProductsByName(TerminalId,"апель");
             var ReceiptId = Rec.Id;
             var r = api.AddFiscalNumber(ReceiptId, "TRRF-1234");
 

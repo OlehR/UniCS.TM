@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using System.Net.Http;
 using System.IO;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace SharedLib
 {
@@ -212,8 +213,21 @@ namespace SharedLib
         }
 
 
-        public IEnumerable<ReceiptWares> GetProductsByName(string parName, int parOffSet = -1, int parLimit = 10)
+        public IEnumerable<ReceiptWares> GetProductsByName(IdReceipt parReceipt, string parName, int parOffSet = -1, int parLimit = 10)
         {
+            // Якщо пошук по штрихкоду і назва похожа на штрихкод.
+            if (!string.IsNullOrEmpty(parName) )
+            {
+                var Reg = new Regex(@"^[0-9]{8,13}$");
+                if (Reg.IsMatch(parName))
+                {
+                    var w = AddWaresBarCode(parReceipt, parName);
+                    if (w != null)
+                        return new List<ReceiptWares> { w };
+                }
+            }
+
+
             var r = db.FindWares(null, parName,0,0,0,-1, parOffSet, parLimit);
             if (r.Count() > 0)
             {

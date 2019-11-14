@@ -12,6 +12,7 @@ using ModelMID;
 using System.Collections.Generic;
 using ModelMID.DB;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 //using DatabaseLib; // тимчасово для ParametersCollection
 namespace SharedLib
@@ -232,6 +233,7 @@ namespace SharedLib
         /// </summary>
         public virtual IEnumerable<ReceiptWares> FindWares(string parBarCode = null, string parName = null, int parCodeWares = 0, int parCodeUnit = 0,int parCodeFastGroup=0,int parArticl=-1,int parOffSet=-1 ,int parLimit=10)
         {
+
             var Lim =  parOffSet>=0 ? $" limit {parLimit} offset {parOffSet}": "";
             var Wares = this.db.Execute<object, ReceiptWares>(SqlFoundWares + Lim, new { CodeWares = parCodeWares, CodeUnit = parCodeUnit, BarCode = parBarCode, NameUpper = (parName == null ? null : "%" + parName.ToUpper() + "%"), CodeDealer = ModelMID.Global.DefaultCodeDealer , CodeFastGroup = parCodeFastGroup, Articl= parArticl });
             return Wares;
