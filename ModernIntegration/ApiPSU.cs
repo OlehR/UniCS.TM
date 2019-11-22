@@ -36,6 +36,8 @@ namespace ModernIntegration
         {
             var CurReceipt = GetCurrentReceiptByTerminalId(parTerminalId);
             var RW = Bl.AddWaresBarCode(CurReceipt, parBarCode, parQuantity);
+            if (RW == null)
+                return null;
             return GetProductViewModel(RW);
         }
         public override ProductViewModel AddProductByProductId(Guid parTerminalId, Guid parProductId, decimal parQuantity = 0)
@@ -44,6 +46,8 @@ namespace ModernIntegration
             var g = CurReceipt.ReceiptId;
             var RW = Bl.AddWaresCode(CurReceipt, parProductId, parQuantity);
             //TODO: OnReceiptChanged?.Invoke(receipt,terminalId);
+            if (RW == null)
+                return null;
             return GetProductViewModel(RW);
         }
         public override ReceiptViewModel ChangeQuantity(Guid parTerminalId, Guid parProductId, decimal parQuantity)
@@ -52,7 +56,7 @@ namespace ModernIntegration
             var CurReceiptWares = new IdReceiptWares(CurReceipt, parProductId);
 
             Bl.ChangeQuantity(CurReceiptWares, parQuantity);
-            ReceiptViewModel Res = GetReceiptViewModel(CurReceipt);
+            var Res = GetReceiptViewModel(CurReceipt);
             return Res;
         }
         public override ReceiptViewModel GetReciept(Guid parReceipt)
@@ -122,9 +126,13 @@ namespace ModernIntegration
         }
         public override IEnumerable<ProductViewModel> GetProductsByName(Guid parTerminalId, string parName, int pageNumber = 0, bool excludeWeightProduct = false, Guid? categoryId = null)
         {
+
             var receiptId = GetCurrentReceiptByTerminalId(parTerminalId);
-            int Limit = 10;            
-            return  Bl.GetProductsByName(receiptId,parName, pageNumber * Limit, Limit).Select(r => (GetProductViewModel(r)));    
+            int Limit = 10;
+            var res = Bl.GetProductsByName(receiptId, parName.Replace(' ', '%').Trim(), pageNumber * Limit, Limit);
+            if (res == null)
+                return null;
+            return res.Select(r => (GetProductViewModel(r)));    
         }
 
         public override bool UpdateReceipt(ReceiptViewModel parReceipt)
@@ -144,12 +152,16 @@ namespace ModernIntegration
 
         public override CustomerViewModel GetCustomerByBarCode(Guid parTerminalId, string parS)
         {
-            var CM = Bl.GetClientByBarCode(GetCurrentReceiptByTerminalId(parTerminalId),parS);            
+            var CM = Bl.GetClientByBarCode(GetCurrentReceiptByTerminalId(parTerminalId),parS);
+            if (CM == null)
+                return null;
             return GetCustomerViewModelByClient(CM);
         }
         public override CustomerViewModel GetCustomerByPhone(Guid parTerminalId, string parPhone)
         {
             var CM = Bl.GetClientByPhone(GetCurrentReceiptByTerminalId(parTerminalId), parPhone);
+            if (CM == null)
+                return null;
             return GetCustomerViewModelByClient(CM);
         }
 
@@ -239,6 +251,8 @@ namespace ModernIntegration
 
         private ReceiptWares GetReceiptWares(ProductViewModel varPWM)
         {
+            if (varPWM == null)
+                return null;
             var Res = new ReceiptWares()
             {
                 WaresId = varPWM.Id,

@@ -185,17 +185,17 @@ namespace SharedLib
             try
             {
                 var RH = ViewReceipt(parIdReceipt);
+                ParameterPromotion par;
+                var InfoClient = GetInfoClientByReceipt(parIdReceipt);
+                if (InfoClient.Count() == 1)
+                    par = InfoClient.First();
+                else
+                    par = new ParameterPromotion();
 
-                var par = new ParameterPromotion()
-                {
-                    CodeWarehouse = ModelMID.Global.CodeWarehouse,
-                    BirthDay = DateTime.Now.AddDays(-3).Date,
-                    Time = Convert.ToInt32(RH.DateReceipt.ToString("HHmm")),
-                    TypeCard = GetTypeDiscountClientByReceipt(parIdReceipt),
-                    CodeDealer = ModelMID.Global.DefaultCodeDealer
-                };
-                //var PercentDiscount = GetPersentDiscountClientByReceipt(parIdReceipt);
-
+                par.CodeWarehouse = Global.CodeWarehouse;
+                par.Time = Convert.ToInt32(RH.DateReceipt.ToString("HHmm"));
+                par.CodeDealer = Global.DefaultCodeDealer;
+                                
                 var r = ViewReceiptWares(parIdReceipt);
                 foreach (var RW in r)
                 {

@@ -8,13 +8,15 @@ namespace ModelMID
     {
         NotDefine=0,
         Article=1,
-        Code=2
+        Code=2,
+        PercentDiscount=3
     }
     public enum eTypeBarCode
     {
         NotDefine = 0,
         WaresWeight =1, //Ваговий
-        WaresUnit=2 //Штучний
+        WaresUnit=2, //Штучний
+        DiscountAfterWares = 3 //Знижка , яка надається після сканування товару.
     }
 
     public enum eKindBarCode

@@ -50,7 +50,7 @@ namespace SharedLib
         /// 
         /// </summary>
         protected string SqlGetPersentDiscountClientByReceipt = "";
-        protected string SqlGetTypeDiscountClientByReceipt = "";
+        protected string SqlGetInfoClientByReceipt = "";
         /// <summary>
         /// Запит, який вертає знайдених клієнтів
         /// </summary>
@@ -84,7 +84,7 @@ namespace SharedLib
         /// <summary>
         /// Добавляє товарну позицію в чек
         /// </summary>
-        protected string SqlAddWares = "";
+        protected string SqlInsertWaresReceipt = "";
         protected string SqlReplaceWaresReceipt = "";
         protected string SqlGetCountWares = "";
         protected string SqlUpdateQuantityWares = "";
@@ -172,6 +172,7 @@ namespace SharedLib
         protected string SqlInsertWeight = "";
         protected string SqlGetPayment = "";
         protected string SqlGetIdReceiptbyState = "";
+        protected string SqlCheckLastWares2Cat = "";
 
         public WDB(string parFileSQL)
         {
@@ -304,7 +305,7 @@ namespace SharedLib
 		/// <returns></returns>
 		public virtual bool AddWares(ReceiptWares parReceiptWares)
 		{
-            return this.db.ExecuteNonQuery<ReceiptWares>(SqlAddWares, parReceiptWares) == 0 /*&& RecalcHeadReceipt((IdReceipt)parReceiptWares)*/;
+            return this.db.ExecuteNonQuery<ReceiptWares>(SqlInsertWaresReceipt, parReceiptWares) == 0 /*&& RecalcHeadReceipt((IdReceipt)parReceiptWares)*/;
         }
 
 
@@ -466,7 +467,7 @@ namespace SharedLib
 
 
             SqlGetPersentDiscountClientByReceipt = GetSQL("SqlGetPersentDiscountClientByReceipt");
-            SqlGetTypeDiscountClientByReceipt = GetSQL("SqlGetTypeDiscountClientByReceipt");
+            SqlGetInfoClientByReceipt = GetSQL("SqlGetInfoClientByReceipt");
 
             SqlFoundClient = GetSQL("SqlFoundClient");
             SqlFoundWares = GetSQL("SqlFoundWares");
@@ -479,9 +480,8 @@ namespace SharedLib
             SqlUpdateClient = GetSQL("SqlUpdateClient");
             SqlCloseReceipt = GetSQL("SqlCloseReceipt");
 
-            SqlAddWares = GetSQL("SqlAddWares");
-            if (SqlAddWares != null)
-                SqlReplaceWaresReceipt = SqlAddWares.Replace("INSERT ", "replace ");
+            SqlInsertWaresReceipt = GetSQL("SqlInsertWaresReceipt");
+            SqlReplaceWaresReceipt = GetSQL("SqlReplaceWaresReceipt"); 
 
             SqlRecalcHeadReceipt = GetSQL("SqlRecalcHeadReceipt");
             SqlGetCountWares = GetSQL("SqlGetCountWares");
@@ -552,6 +552,8 @@ namespace SharedLib
             SqlInsertWeight = GetSQL("SqlInsertWeight");
             SqlGetPayment = GetSQL("SqlGetPayment");
             SqlGetIdReceiptbyState = GetSQL("SqlGetIdReceiptbyState");
+
+            SqlCheckLastWares2Cat = GetSQL("SqlCheckLastWares2Cat");
 
             return true;
         }
@@ -786,9 +788,9 @@ namespace SharedLib
             return db.ExecuteScalar<IdReceipt, decimal>(SqlGetPersentDiscountClientByReceipt, parIdReceipt);
         }
 
-        public int GetTypeDiscountClientByReceipt(IdReceipt parIdReceipt)
+        public IEnumerable<ParameterPromotion> GetInfoClientByReceipt(IdReceipt parIdReceipt)
         {
-            return db.ExecuteScalar<IdReceipt, int>(SqlGetTypeDiscountClientByReceipt, parIdReceipt);
+            return db.Execute<IdReceipt, ParameterPromotion>(SqlGetInfoClientByReceipt, parIdReceipt);
         }
         
 
@@ -859,6 +861,20 @@ namespace SharedLib
         {
             throw new NotImplementedException();
         }
+
+        public virtual bool InsertBarCode2Cat(IdReceipt parIdReceipt,string parBarCode)
+        {
+            var o = new { CodePeriod = parIdReceipt.CodePeriod, CodeReceipt = parIdReceipt.CodeReceipt, IdWorkplace = parIdReceipt.IdWorkplace, BarCode = parBarCode };
+            db.ExecuteNonQuery<Object>(SqlInsertWeight, o);
+            return true;
+        }
+
+
+        public virtual IEnumerable<WaresReceiptPromotion> CheckLastWares2Cat(IdReceipt parIdReceipt)
+        {
+            return db.Execute<IdReceipt, WaresReceiptPromotion>(SqlCheckLastWares2Cat, parIdReceipt);
+        }
+        
 
     }
 

@@ -41,7 +41,7 @@ namespace Test
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-            CreateDataBase(); //Створення бази
+            //CreateDataBase(); //Створення бази
             //Thread.Sleep(1000000);
             //TestKit();
             TestReceipt(); //
@@ -57,13 +57,10 @@ namespace Test
               */
         }
 
-        static void CreateDataBase()
+        static void CreateDataBase(bool isFull=true)
         {
             var bl = new BL();
-             bl.SyncData(true);
-            //bl.SyncData(false);
-         
-
+             bl.SyncData(isFull);
         }
 
 
@@ -84,17 +81,31 @@ namespace Test
             var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009001");
             //Guid.Parse("00140701-FFFF-2019-0618-000000000008");
             var api = new ApiPSU();
-            //var sd=api.AddProductByBarCode( TerminalId, "7622300813437",1);//Барні
-             //sd=api.AddProductByBarCode( TerminalId, "2201652300489",1); //Морква
-            //var sс = api.AddProductByBarCode(TerminalId, "1110867180018", 1); //Хліб
-            var sс = api.AddProductByBarCode(TerminalId, "40804927", 1);
-            var ddd=api.GetProductsByName(TerminalId, "40804927");
-            var wwwwsс = api.GetProductsByName(TerminalId,"БЕРЕ");  // AddProductByBarCode(TerminalId, "743639000026", 1); 
 
-            var r1 = api.Bl.ViewReceiptWares(api.GetCurrentReceiptByTerminalId(TerminalId) );
 
-            api.ChangeQuantity(TerminalId, r1.First().WaresId, 0);
-            //var cl = api.GetCustomerByBarCode(TerminalId, "8810005077387");
+            //var cl = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
+
+            var sd = api.AddProductByBarCode(TerminalId, "4823000916524", 1); //АРТЕК 
+
+//             sd =api.AddProductByBarCode( TerminalId, "7622300813437",1);//Барн
+//            sd = api.AddProductByBarCode( TerminalId, "2201652300489",1); //Морква
+            //sd = api.AddProductByBarCode(TerminalId, "1110867180018", 1); //Хліб
+//            sd = api.AddProductByBarCode(TerminalId, "40804927", 1);
+            sd = api.AddProductByBarCode(TerminalId, "1110011760018", 1); //КІВІ ВАГОВІ 2 кат
+            sd = api.AddProductByBarCode(TerminalId, "7775006620509", 1); //товар 2 кат
+
+//sd =api.AddProductByBarCode( TerminalId, "5903154545623", 1); //Суміш овочева "Семикомпонентна" 400г /Рудь/ акція 1+1
+                                                                          
+
+
+
+            //var ddd =api.AddProductByBarCode(TerminalId, "40122311");
+            //var wwwwsс = api.GetProductsByName(TerminalId,"БЕРЕ");  
+            // AddProductByBarCode(TerminalId, "743639000026", 1); 
+
+            //var r1 = api.Bl.ViewReceiptWares(api.GetCurrentReceiptByTerminalId(TerminalId) );
+            //api.ChangeQuantity(TerminalId, r1.First().WaresId, 0);
+
             Thread.Sleep(100000);
             return;
             var RId = api.GetCurrentReceiptByTerminalId(TerminalId).ReceiptId;

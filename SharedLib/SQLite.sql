@@ -93,9 +93,10 @@ where ID_WORKPLACE = @IdWorkplace
    and CODE_PERIOD = @CodePeriod
    and CODE_RECEIPT = @CodeReceipt
 
-[SqlGetTypeDiscountClientByReceipt]
-select c.TYPE_DISCOUNT from receipt r
-join client c on r.code_client=c.code_client
+[SqlGetInfoClientByReceipt]
+select COALESCE(c.TYPE_DISCOUNT,0) as TypeCard,c.BirthDay 
+	from receipt r
+	join client c on r.code_client=c.code_client
 where ID_WORKPLACE = @IdWorkplace
    and CODE_PERIOD = @CodePeriod
    and CODE_RECEIPT = @CodeReceipt
@@ -161,8 +162,21 @@ update receipt
 [SqlGetIdReceiptbyState]
 select ID_WORKPLACE,CODE_PERIOD,CODE_RECEIPT from receipt where STATE_RECEIPT= @StateReceipt;
 
-[SqlAddWares]
+[SqlInsertWaresReceipt]
 insert into wares_receipt (id_workplace, code_period, code_receipt, code_wares, code_unit,
+  type_price,  quantity, price, Price_Dealer, sum, sum_vat,
+  PAR_PRICE_1,PAR_PRICE_2,PAR_PRICE_3, sum_discount, type_vat, sort, user_create,
+ ADDITION_N1,ADDITION_N2,ADDITION_N3,
+ ADDITION_C1,ADDITION_D1,BARCODE_2Category,DESCRIPTION) 
+ values (
+  @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit,
+  @TypePrice, @Quantity, @Price,@PriceDealer, @Sum, @SumVat,
+  @ParPrice1,@ParPrice2,@ParPrice3, @SumDiscount, @TypeVat, (select COALESCE(max(sort),0)+1 from wares_receipt  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt), @UserCreate,
+ @AdditionN1,@AdditionN2,@AdditionN3,
+ @AdditionC1,@AdditionD1,@BARCODE2Category,@DESCRIPTION)
+
+ [SqlReplaceWaresReceipt]
+replace into wares_receipt (id_workplace, code_period, code_receipt, code_wares, code_unit,
   type_price,  quantity, price, Price_Dealer, sum, sum_vat,
   PAR_PRICE_1,PAR_PRICE_2,PAR_PRICE_3, sum_discount, type_vat, sort, user_create,
  ADDITION_N1,ADDITION_N2,ADDITION_N3,
@@ -173,6 +187,8 @@ insert into wares_receipt (id_workplace, code_period, code_receipt, code_wares, 
   @ParPrice1,@ParPrice2,@ParPrice3, @SumDiscount, @TypeVat, @Sort, @UserCreate,
  @AdditionN1,@AdditionN2,@AdditionN3,
  @AdditionC1,@AdditionD1,@BARCODE2Category,@DESCRIPTION)
+
+
 
 [SqlRecalcHeadReceipt]
 update WARES_RECEIPT 
@@ -200,10 +216,11 @@ where   id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receip
 
 [SqlReplaceWaresReceiptPromotion]
 replace into WARES_RECEIPT_PROMOTION (id_workplace, code_period, code_receipt, code_wares, code_unit,
-  quantity, sum, code_ps,NUMBER_GROUP) 
+  quantity, sum, code_ps,NUMBER_GROUP,BARCODE_2CATEGORY) 
  values (
   @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit,
-  @Quantity, @Sum, @CodePS,@NumberGroup)
+  @Quantity, @Sum, @CodePS,@NumberGroup, @BarCode2Category --,(select COALESCE(max(sort),0)+1 from wares_receipt  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt)
+  )
 
 
 [SqlDeleteWaresReceiptPromotion]
@@ -217,10 +234,10 @@ select sum(wr.quantity) quantity
                      and wr.code_wares=@CodeWares and wr.code_unit = @CodeUnit --and sort <> @Sort
 
 [SqlUpdateQuantityWares]
-update wares_receipt set  quantity= @Quantity, sort=@Sort,
-						   sum=@Sum, Sum_Vat=@SumVat
+update wares_receipt set  quantity= @Quantity, sum=@Sum, Sum_Vat=@SumVat
+						sort = (select COALESCE(max(sort),0)+1 from wares_receipt  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt)
                      where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt 
-                     and code_wares=@CodeWares and code_unit=@CodeUnit
+                     and code_wares=@CodeWares -- and code_unit=@CodeUnit
                      
 [SqlDeleteReceiptWares]
  delete from  wares_receipt 
@@ -289,7 +306,7 @@ and EPS.code_ps  is null
 --select * from PSEW
 select psd.CODE_PS as CodePs,0 as Priority ,11 as TypeDiscont  ,p.PRICE_DEALER as Data,1 as IsIgnoreMinPrice
 from  PROMOTION_SALE_DEALER psd
- join PRICE p on psd.CODE_DEALER=p. CODE_DEALER and psd.CODE_WARES=p.CODE_WARES 
+ join PRICE p on psd.CODE_DEALER=p.CODE_DEALER and psd.CODE_WARES=p.CODE_WARES 
 where 
  psd.CODE_WARES = @CodeWares
  and datetime('now','localtime') between psd.Date_begin and psd.DATE_END
@@ -511,7 +528,8 @@ CREATE TABLE WARES_RECEIPT_PROMOTION (
     QUANTITY       NUMBER   NOT NULL,    
     SUM            NUMBER   NOT NULL,
 	CODE_PS        INTEGER  NOT NULL,
-    NUMBER_GROUP   INTEGER  NOT NULL
+    NUMBER_GROUP   INTEGER  NOT NULL,
+	BARCODE_2Category        TEXT NULL
 	);
 CREATE UNIQUE INDEX id_WARES_RECEIPT_PROMOTION ON WARES_RECEIPT_PROMOTION(CODE_RECEIPT,CODE_WARES,CODE_PS,NUMBER_GROUP,ID_WORKPLACE,CODE_PERIOD);
 
@@ -684,7 +702,8 @@ CREATE TABLE CLIENT (
     PERCENT_DISCOUNT NUMBER,
     BARCODE          TEXT NOT NULL,
     STATUS_CARD INTEGER DEFAULT(0),
-    view_code INTEGER
+    view_code INTEGER NULL,
+	BirthDay DATETIME NULL
 );
 
 CREATE TABLE FAST_GROUP
@@ -822,7 +841,8 @@ replace into PRICE (CODE_DEALER, CODE_WARES, PRICE_DEALER) values (@CodeDealer,@
 [SqlReplaceTypeDiscount]
 replace into TYPE_DISCOUNT (TYPE_DISCOUNT,NAME,PERCENT_DISCOUNT) values (@CodeTypeDiscount,@Name,@PercentDiscount);
 [SqlReplaceClient]
-replace into CLIENT (CODE_CLIENT,NAME_CLIENT,TYPE_DISCOUNT,PHONE, PERCENT_DISCOUNT,BARCODE,STATUS_CARD,view_code) values (@CodeClient ,@NameClient ,@TypeDiscount,@MainPhone,@PersentDiscount,@BarCode,@StatusCard,@ViewCode);
+replace into CLIENT (CODE_CLIENT, NAME_CLIENT, TYPE_DISCOUNT,PHONE,      PERCENT_DISCOUNT,BARCODE,STATUS_CARD,view_code,BirthDay) 
+		     values (@CodeClient ,@NameClient ,@TypeDiscount,@MainPhone,@PersentDiscount,@BarCode,@StatusCard,@ViewCode,@BirthDay);
 
 [SqlReplaceFastGroup]
 replace into FAST_GROUP ( CODE_UP,Code_Fast_Group, Name) values (@CodeUp,@CodeFastGroup,@Name);
@@ -877,5 +897,17 @@ select id_workplace as IdWorkplace, code_period as CodePeriod, code_receipt as C
     DATE_CREATE as DateCreate
    from payment
   where   id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt
+
+[SqlCheckLastWares2Cat]
+select  wr.id_workplace as IdWorkplace, wr.code_period as CodePeriod, wr.code_receipt as CodeReceipt, wr.code_wares as Codewares,
+ 1 as Quantity, case when wr.price>0 then wr.price else wr.price_dealer end/2 AS Price,  ps.code_ps as CodePS, 0 as NumberGroup, '' as BarCode2Category
+from wares_receipt wr
+join PROMOTION_SALE_2_CATEGORY ps2c on ps2c.code_wares=wr.code_wares
+join PROMOTION_SALE ps on (ps.code_ps=ps2c.code_ps)
+where 
+    sort= (select COALESCE(max(sort),0) from wares_receipt  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt )
+    and id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt
+	 limit 1
+
 [SqlEnd]
 */

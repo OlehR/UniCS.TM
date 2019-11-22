@@ -70,6 +70,8 @@ namespace ModelMID
         /// Код карточки який видно на дисконтній карточці.
         /// </summary>
         public Int64 ViewCode { get; set; }
+
+        public DateTime BirthDay { get; set; }
         public Client()
         {
         }

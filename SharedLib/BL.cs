@@ -81,7 +81,7 @@ namespace SharedLib
             //ReceiptWares W = null;
             if (w == null || w.Count() == 0) // Якщо не знайшли спробуем по ваговим і штучним штрихкодам.          
             {
-                foreach (var el in Global.CustomerBarCode.Where(el => el.KindBarCode == eKindBarCode.EAN13 && (el.TypeBarCode == eTypeBarCode.WaresWeight || el.TypeBarCode == eTypeBarCode.WaresUnit )))
+                foreach (var el in Global.CustomerBarCode.Where(el => el.KindBarCode == eKindBarCode.EAN13 /*&& (el.TypeBarCode == eTypeBarCode.WaresWeight || el.TypeBarCode == eTypeBarCode.WaresUnit )*/))
                 {
                     w = null;
                     if (el.Prefix.Equals(parBarCode.Substring(0, el.Prefix.Length)))
@@ -96,6 +96,9 @@ namespace SharedLib
                             case eTypeCode.Code:
                                 w = db.FindWares(null, null, varCode);
                                 break;
+                            case eTypeCode.PercentDiscount:
+                                CheckDiscountBarCodeAsync(parReceipt,parBarCode);
+                                return null;
                             default:
                                 break;
                         }
@@ -121,6 +124,56 @@ namespace SharedLib
             
 
         }
+
+        public async Task<bool> CheckDiscountBarCodeAsync(IdReceipt parIdReceipt, string parBarCode)
+        {
+            try
+            {
+
+
+                var Cat2 = db.CheckLastWares2Cat(parIdReceipt);
+
+                if (Cat2 == null && Cat2.Count() != 0)
+                    return false;
+                Cat2.First().BarCode2Category = parBarCode;
+                /*
+                if (!CheckLastWares2Cat(parIdReceipt))
+                    return false;
+                */
+                bool isGood = true;
+                string body = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                             "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd = \"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n" +
+                $"<soap:Body>\n<GetRestOfLabel xmlns=\"vopak\">\n<CodeOfLabel>{parBarCode}</CodeOfLabel> \n </GetRestOfLabel> \n </soap:Body>\n </soap:Envelope>";
+
+                HttpClient client = new HttpClient();
+                client.Timeout = TimeSpan.FromMilliseconds(500);
+                // Add a new Request Message
+                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, "http://1CSRV/utppsu/ws/ws1.1cws");
+                //requestMessage.Headers.Add("Accept", "application/vnd.github.v3+json");
+                // Add our custom headers
+                requestMessage.Content = new StringContent(body, Encoding.UTF8, "text/xml");
+                var response = await client.SendAsync(requestMessage);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var res = await response.Content.ReadAsStringAsync();
+                    res = res.Substring(res.IndexOf(@"-instance"">") + 11);
+                    res = res.Substring(0, res.IndexOf("</m:return>")).Trim();
+                    isGood = res.Equals("1");
+                }
+
+                if (isGood)
+                    db.ReplaceWaresReceiptPromotion(Cat2); // InsertBarCode2Cat(parIdReceipt, parBarCode);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                var t = ex.Message;
+                return false;
+            }
+        }
+
         public ReceiptWares AddWaresCode(IdReceipt parReceipt, Guid parProductId, decimal parQuantity = 0)
         {
             int CodeWares = 0;
@@ -277,7 +330,7 @@ namespace SharedLib
             var response = await client.SendAsync(requestMessage);
 
             if (response.IsSuccessStatusCode)
-            {
+            {                
                 var res = await response.Content.ReadAsStringAsync();
                 parReceipt.StateReceipt = eStateReceipt.Send;
                 db.SetStateReceipt(parReceipt);//Змінюєм стан чека на відправлено.

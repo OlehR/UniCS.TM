@@ -26,6 +26,11 @@ namespace ModelMID
 
         public Int64 CodePS { get; set; }
         public int NumberGroup { get; set; }
+        
+        public string BarCode2Category { get; set; }
+        public WaresReceiptPromotion() : base()
+        {
+        }
         public WaresReceiptPromotion(IdReceiptWares parIdReceiptWares) :base(parIdReceiptWares)
             {
             }
