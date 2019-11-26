@@ -193,7 +193,7 @@ namespace SharedLib
                     par = new ParameterPromotion();
 
                 par.CodeWarehouse = Global.CodeWarehouse;
-                par.Time = Convert.ToInt32(RH.DateReceipt.ToString("HHmm"));
+                par.Time = 2145;//TMP Convert.ToInt32(RH.DateReceipt.ToString("HHmm"));
                 par.CodeDealer = Global.DefaultCodeDealer;
                                 
                 var r = ViewReceiptWares(parIdReceipt);

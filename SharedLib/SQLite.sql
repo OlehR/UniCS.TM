@@ -41,10 +41,11 @@ select t.code_wares as CodeWares,w.name_wares NameWares,w.name_wares_receipt  as
         ifnull(aud.code_unit,0) code_unit_default, 
         udd.abr_unit abr_unit_default,
       --  ifnull(aud.coefficient,0) as CoefficientDefault,
-        CAST(ifnull(pd.price_dealer,0.0)  as decimal) as PriceDealer
-		,w.Type_Wares as TypeWares
-		,(select max(bc.BAR_CODE) from BAR_CODE bc where bc.code_wares=w.code_wares) as BarCode 
-		,w.Weight_Brutto as WeightBrutto
+        CAST(ifnull(pd.price_dealer,0.0)  as decimal) as PriceDealer,
+		CAST(ifnull(pd.price_dealer,0.0)  as decimal) as Price,
+		w.Type_Wares as TypeWares,
+		(select max(bc.BAR_CODE) from BAR_CODE bc where bc.code_wares=w.code_wares) as BarCode,
+		w.Weight_Brutto as WeightBrutto
 from t$1 t
 left join wares w on t.code_wares=w.code_wares
 left join price pd on ( pd.code_wares=t.code_wares and pd.code_dealer= @CodeDealer)
@@ -106,7 +107,7 @@ select wr.id_workplace as IdWorkplace, wr.code_period as CodePeriod, wr.code_rec
 				,wr.code_unit as CodeUnit,w.Code_unit as CodeDefaultUnit, PAR_PRICE_1 as ParPrice1, PAR_PRICE_2 as ParPrice2,par_price_3 as ParPrice3,
                      au.COEFFICIENT as Coefficient,w.NAME_WARES_RECEIPT as  NameWaresReceipt,sort,
 					 ADDITION_N1 as AdditionN1,ADDITION_N2 as AdditionN2, ADDITION_N3 as AdditionN3,
- ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1,Price_Dealer as PriceDealer,BARCODE_2Category as BARCODE2Category,wr.DESCRIPTION as DESCRIPTION,w.TYPE_VAT as TypeVat
+ ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1,Price_Dealer as PriceDealer,BARCODE_2_CATEGORY as BARCODE2Category,wr.DESCRIPTION as DESCRIPTION,w.TYPE_VAT as TypeVat
  ,(select max(bc.BAR_CODE) from BAR_CODE bc where bc.code_wares=wr.code_wares) as BarCode 
  ,w.Weight_Brutto as WeightBrutto
                      from rc.wares_receipt wr
@@ -167,7 +168,7 @@ insert into wares_receipt (id_workplace, code_period, code_receipt, code_wares, 
   type_price,  quantity, price, Price_Dealer, sum, sum_vat,
   PAR_PRICE_1,PAR_PRICE_2,PAR_PRICE_3, sum_discount, type_vat, sort, user_create,
  ADDITION_N1,ADDITION_N2,ADDITION_N3,
- ADDITION_C1,ADDITION_D1,BARCODE_2Category,DESCRIPTION) 
+ ADDITION_C1,ADDITION_D1,BARCODE_2_CATEGORY,DESCRIPTION) 
  values (
   @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit,
   @TypePrice, @Quantity, @Price,@PriceDealer, @Sum, @SumVat,
@@ -180,7 +181,7 @@ replace into wares_receipt (id_workplace, code_period, code_receipt, code_wares,
   type_price,  quantity, price, Price_Dealer, sum, sum_vat,
   PAR_PRICE_1,PAR_PRICE_2,PAR_PRICE_3, sum_discount, type_vat, sort, user_create,
  ADDITION_N1,ADDITION_N2,ADDITION_N3,
- ADDITION_C1,ADDITION_D1,BARCODE_2Category,DESCRIPTION) 
+ ADDITION_C1,ADDITION_D1,BARCODE_2_CATEGORY,DESCRIPTION) 
  values (
   @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit,
   @TypePrice, @Quantity, @Price,@PriceDealer, @Sum, @SumVat,
@@ -216,7 +217,7 @@ where   id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receip
 
 [SqlReplaceWaresReceiptPromotion]
 replace into WARES_RECEIPT_PROMOTION (id_workplace, code_period, code_receipt, code_wares, code_unit,
-  quantity, sum, code_ps,NUMBER_GROUP,BARCODE_2CATEGORY) 
+  quantity, sum, code_ps,NUMBER_GROUP,BARCODE_2_CATEGORY) 
  values (
   @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit,
   @Quantity, @Sum, @CodePS,@NumberGroup, @BarCode2Category --,(select COALESCE(max(sort),0)+1 from wares_receipt  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt)
@@ -225,7 +226,7 @@ replace into WARES_RECEIPT_PROMOTION (id_workplace, code_period, code_receipt, c
 
 [SqlDeleteWaresReceiptPromotion]
  delete from  WARES_RECEIPT_PROMOTION 
-   where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt;
+   where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt and BARCODE_2_CATEGORY is null;
 
 [SqlGetCountWares]
 select sum(wr.quantity) quantity 
@@ -283,7 +284,8 @@ select CODE_PS --,22 --*,strftime('%H%M',datetime('now','localtime'))
 union --День народження
 select CODE_PS --,23 --*,strftime('%H%M',datetime('now','localtime')) 
     from PROMOTION_SALE_FILTER PSF where  
-     PSF.TYPE_GROUP_FILTER=23  and NOT date(@BirthDay) between date(date('now','localtime'), '-1 day') and date(date('now','localtime'), '+1 day')     
+     PSF.TYPE_GROUP_FILTER=23  and 
+	 strftime('%m%d',date(@BirthDay)) between strftime('%m%d',date(date('now','localtime'), '-1 day')) and strftime('%m%d',date(date('now','localtime'), '+1 day'))     
 union  --Виключення по товару  
 select PSF.CODE_PS
 from PROMOTION_SALE_FILTER PSF where  PSF.TYPE_GROUP_FILTER=11 and PSF.RULE_GROUP_FILTER=-1 and   PSF.CODE_DATA=@CodeWares     
@@ -513,7 +515,7 @@ CREATE TABLE WARES_RECEIPT (
     ADDITION_N3    NUMBER,
     ADDITION_C1    TEXT,
     ADDITION_D1    DATETIME,
-	BARCODE_2Category TEXT,
+	BARCODE_2_CATEGORY TEXT,
     DATE_CREATE    DATETIME NOT NULL DEFAULT (CURRENT_TIMESTAMP),
     USER_CREATE    INTEGER  NOT NULL
 );
@@ -529,7 +531,7 @@ CREATE TABLE WARES_RECEIPT_PROMOTION (
     SUM            NUMBER   NOT NULL,
 	CODE_PS        INTEGER  NOT NULL,
     NUMBER_GROUP   INTEGER  NOT NULL,
-	BARCODE_2Category        TEXT NULL
+	BARCODE_2_CATEGORY        TEXT NULL
 	);
 CREATE UNIQUE INDEX id_WARES_RECEIPT_PROMOTION ON WARES_RECEIPT_PROMOTION(CODE_RECEIPT,CODE_WARES,CODE_PS,NUMBER_GROUP,ID_WORKPLACE,CODE_PERIOD);
 
@@ -601,7 +603,7 @@ order by type_access
 [SqlCopyWaresReturnReceipt]
 insert into rc.wares_receipt 
 (id_workplace,code_period,code_receipt,code_wares,code_unit,quantity,price,sum,sum_vat,sum_discount,
-type_price,par_price_1,par_price_2,type_vat,sort, addition_n1, addition_n2,addition_n3, user_create,BARCODE_2Category )
+type_price,par_price_1,par_price_2,type_vat,sort, addition_n1, addition_n2,addition_n3, user_create,BARCODE_2_CATEGORY )
 select @IdWorkplaceReturn,@CodePeriodReturn,@CodeReceiptReturn,code_wares,code_unit,0,price,0,0,0,
 0,0,0,type_vat,sort,@IdWorkplace, @CodePeriod, @CodeReceipt, @UserCreate,@barCode2Category
 from   rrc.wares_receipt wr where wr.id_workplace=@IdWorkplace and wr.code_period=@CodePeriod  and wr.code_receipt=@CodeReceipt;
@@ -900,7 +902,7 @@ select id_workplace as IdWorkplace, code_period as CodePeriod, code_receipt as C
 
 [SqlCheckLastWares2Cat]
 select  wr.id_workplace as IdWorkplace, wr.code_period as CodePeriod, wr.code_receipt as CodeReceipt, wr.code_wares as Codewares,
- 1 as Quantity, case when wr.price>0 then wr.price else wr.price_dealer end/2 AS Price,  ps.code_ps as CodePS, 0 as NumberGroup, '' as BarCode2Category
+ 1 as Quantity, case when wr.price>0 then wr.price else wr.price_dealer end AS Price,  ps.code_ps as CodePS, 0 as NumberGroup, '' as BarCode2Category
 from wares_receipt wr
 join PROMOTION_SALE_2_CATEGORY ps2c on ps2c.code_wares=wr.code_wares
 join PROMOTION_SALE ps on (ps.code_ps=ps2c.code_ps)

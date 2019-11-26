@@ -11,37 +11,18 @@ using System.Collections.Generic;
 using ModernIntegration.Model;
 using ModernIntegration.Models;
 using System.Text.RegularExpressions;
+using ModernIntegration.ViewModels;
 
 namespace Test
 {
-
-    public class TestReceipt
-    {
-        public decimal Percent_Discount { get; set; }
-        public string Bar_Code { get; set; }
-        public string Number { get; set; }
-        public DateTime Date_Time { get; set; }
-        public int Code_Wares { get; set; }
-        public int Code_Unit { get; set; }
-        public decimal Amount { get; set; }
-        public decimal Price { get; set; }
-        public decimal Sum { get; set; }
-        public decimal Disc_perc_manual { get; set; }
-        public decimal Disc_Perc_Auto { get; set; }
-        public int Is_Promotion { get; set; }
-        public string Comment { get; set; }
-        public string Type_Promotion { get; set; }
-        public string BarCode2Category { get; set; }
-
-    }
-    class Program
+     class Program
     {
         static void Main(string[] args)
         {
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-            //CreateDataBase(); //Створення бази
+            CreateDataBase(true); //Створення бази
             //Thread.Sleep(1000000);
             //TestKit();
             TestReceipt(); //
@@ -79,22 +60,26 @@ namespace Test
             var TerminalId = Guid.Parse("1bb89aa9-dbdf-4eb0-b7a2-094665c3fdd0");
             var ProductId = Guid.Parse("00000010-abcd-0000-0019-000000055004");
             var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009001");
+            ProductViewModel p;
             //Guid.Parse("00140701-FFFF-2019-0618-000000000008");
             var api = new ApiPSU();
 
 
-            //var cl = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
+           // var cl = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
 
-            var sd = api.AddProductByBarCode(TerminalId, "4823000916524", 1); //АРТЕК 
+            //p = api.AddProductByBarCode(TerminalId, "4823000916524", 1); //АРТЕК 
 
-//             sd =api.AddProductByBarCode( TerminalId, "7622300813437",1);//Барн
-//            sd = api.AddProductByBarCode( TerminalId, "2201652300489",1); //Морква
-            //sd = api.AddProductByBarCode(TerminalId, "1110867180018", 1); //Хліб
-//            sd = api.AddProductByBarCode(TerminalId, "40804927", 1);
-            sd = api.AddProductByBarCode(TerminalId, "1110011760018", 1); //КІВІ ВАГОВІ 2 кат
-            sd = api.AddProductByBarCode(TerminalId, "7775006620509", 1); //товар 2 кат
+            // p=api.AddProductByBarCode( TerminalId, "7622300813437",1);//Барн
+            // p= api.AddProductByBarCode( TerminalId, "2201652300489",1); //Морква
+            //p = api.AddProductByBarCode(TerminalId, "1110867180018", 1); //Хліб
+            //p = api.AddProductByBarCode(TerminalId, "40804927", 1);
+            //p = api.AddProductByBarCode(TerminalId, "2201652300489", 1); //Морква
+            p = api.AddProductByBarCode(TerminalId, "2205726505550", 1);//ТОРТ "ГРИЛЬЯЖНИЙ" ВАГ День народження
+            //p = api.AddProductByBarCode(TerminalId, "1110011760018", 1); //КІВІ ВАГОВІ 2 кат
+            //sp = api.AddProductByBarCode(TerminalId, "7775006620509", 1); //товар 2 кат
+            p = api.AddProductByBarCode(TerminalId, "1110702880010", 1); //
 
-//sd =api.AddProductByBarCode( TerminalId, "5903154545623", 1); //Суміш овочева "Семикомпонентна" 400г /Рудь/ акція 1+1
+//p =api.AddProductByBarCode( TerminalId, "5903154545623", 1); //Суміш овочева "Семикомпонентна" 400г /Рудь/ акція 1+1
                                                                           
 
 
@@ -269,4 +254,25 @@ namespace Test
         //    AAsynFunc().ContinueWith(async r => SomeFunction(await r));
         //}
     }
+
+    public class TestReceipt
+    {
+        public decimal Percent_Discount { get; set; }
+        public string Bar_Code { get; set; }
+        public string Number { get; set; }
+        public DateTime Date_Time { get; set; }
+        public int Code_Wares { get; set; }
+        public int Code_Unit { get; set; }
+        public decimal Amount { get; set; }
+        public decimal Price { get; set; }
+        public decimal Sum { get; set; }
+        public decimal Disc_perc_manual { get; set; }
+        public decimal Disc_Perc_Auto { get; set; }
+        public int Is_Promotion { get; set; }
+        public string Comment { get; set; }
+        public string Type_Promotion { get; set; }
+        public string BarCode2Category { get; set; }
+
+    }
+
 }

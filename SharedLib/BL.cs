@@ -97,7 +97,7 @@ namespace SharedLib
                                 w = db.FindWares(null, null, varCode);
                                 break;
                             case eTypeCode.PercentDiscount:
-                                CheckDiscountBarCodeAsync(parReceipt,parBarCode);
+                                CheckDiscountBarCodeAsync(parReceipt,parBarCode, varCode);
                                 return null;
                             default:
                                 break;
@@ -120,35 +120,27 @@ namespace SharedLib
             W.SetIdReceipt(parReceipt);
             W.Quantity = parQuantity;
             return AddReceiptWares(W);
-
-            
-
         }
 
-        public async Task<bool> CheckDiscountBarCodeAsync(IdReceipt parIdReceipt, string parBarCode)
+        public async Task<bool> CheckDiscountBarCodeAsync(IdReceipt parIdReceipt, string parBarCode, int parPercent)
         {
+            var Cat2 = db.CheckLastWares2Cat(parIdReceipt);
+            if (Cat2 == null && Cat2.Count() != 0)
+                return false;
+            Cat2.First().BarCode2Category = parBarCode;
+            Cat2.First().Price = Cat2.First().Price * (decimal)parPercent / 100m;
+
+            bool isGood = true;
             try
             {
-
-
-                var Cat2 = db.CheckLastWares2Cat(parIdReceipt);
-
-                if (Cat2 == null && Cat2.Count() != 0)
-                    return false;
-                Cat2.First().BarCode2Category = parBarCode;
-                /*
-                if (!CheckLastWares2Cat(parIdReceipt))
-                    return false;
-                */
-                bool isGood = true;
                 string body = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
                              "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd = \"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n" +
                 $"<soap:Body>\n<GetRestOfLabel xmlns=\"vopak\">\n<CodeOfLabel>{parBarCode}</CodeOfLabel> \n </GetRestOfLabel> \n </soap:Body>\n </soap:Envelope>";
 
                 HttpClient client = new HttpClient();
-                client.Timeout = TimeSpan.FromMilliseconds(500);
+                client.Timeout = TimeSpan.FromMilliseconds(5000);
                 // Add a new Request Message
-                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, "http://1CSRV/utppsu/ws/ws1.1cws");
+                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, "http://10.1.0.23/utppsu/ws/ws1.1cws");
                 //requestMessage.Headers.Add("Accept", "application/vnd.github.v3+json");
                 // Add our custom headers
                 requestMessage.Content = new StringContent(body, Encoding.UTF8, "text/xml");
@@ -161,17 +153,16 @@ namespace SharedLib
                     res = res.Substring(0, res.IndexOf("</m:return>")).Trim();
                     isGood = res.Equals("1");
                 }
-
-                if (isGood)
-                    db.ReplaceWaresReceiptPromotion(Cat2); // InsertBarCode2Cat(parIdReceipt, parBarCode);
-
-                return true;
             }
             catch (Exception ex)
             {
                 var t = ex.Message;
-                return false;
             }
+
+            if (isGood)
+                db.ReplaceWaresReceiptPromotion(Cat2); // InsertBarCode2Cat(parIdReceipt, parBarCode);
+
+            return true;
         }
 
         public ReceiptWares AddWaresCode(IdReceipt parReceipt, Guid parProductId, decimal parQuantity = 0)
