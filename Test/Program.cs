@@ -41,7 +41,7 @@ namespace Test
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-            //CreateDataBase(); //Створення бази
+            CreateDataBase(); //Створення бази
             //Thread.Sleep(1000000);
             //TestKit();
             TestReceipt(); //
@@ -87,14 +87,14 @@ namespace Test
 
             var sd = api.AddProductByBarCode(TerminalId, "4823000916524", 1); //АРТЕК 
 
-//             sd =api.AddProductByBarCode( TerminalId, "7622300813437",1);//Барн
+             sd =api.AddProductByBarCode( TerminalId, "7622300813437",1);//Барн
 //            sd = api.AddProductByBarCode( TerminalId, "2201652300489",1); //Морква
             //sd = api.AddProductByBarCode(TerminalId, "1110867180018", 1); //Хліб
-//            sd = api.AddProductByBarCode(TerminalId, "40804927", 1);
+            sd = api.AddProductByBarCode(TerminalId, "40804927", 1);
             sd = api.AddProductByBarCode(TerminalId, "1110011760018", 1); //КІВІ ВАГОВІ 2 кат
             sd = api.AddProductByBarCode(TerminalId, "7775006620509", 1); //товар 2 кат
 
-//sd =api.AddProductByBarCode( TerminalId, "5903154545623", 1); //Суміш овочева "Семикомпонентна" 400г /Рудь/ акція 1+1
+sd =api.AddProductByBarCode( TerminalId, "5903154545623", 1); //Суміш овочева "Семикомпонентна" 400г /Рудь/ акція 1+1
                                                                           
 
 
