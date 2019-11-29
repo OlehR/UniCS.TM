@@ -356,8 +356,15 @@ namespace SharedLib
         /// <returns></returns>
      	public virtual IEnumerable<ReceiptWares> ViewReceiptWares(IdReceipt parIdReceipt)
         {
-            return this.db.Execute<IdReceipt, ReceiptWares>(SqlViewReceiptWares, parIdReceipt);
+            return ViewReceiptWares(new IdReceiptWares(parIdReceipt)); //this.db.Execute<IdReceipt, ReceiptWares>(SqlViewReceiptWares, parIdReceipt);
         }
+        public virtual IEnumerable<ReceiptWares> ViewReceiptWares(IdReceiptWares parIdReceiptWares)
+        {
+
+            return this.db.Execute<IdReceiptWares, ReceiptWares>(SqlViewReceiptWares, parIdReceiptWares);
+        }
+
+
         /// <summary>
         /// Перераховує ціни з врахуванням акцій, кількостей і ТД
         /// </summary>
@@ -365,7 +372,7 @@ namespace SharedLib
         /// <returns>
         ///Успішно чи ні виконана операція
         ///</returns>
-        public virtual bool  RecalcPrice(IdReceipt parIdReceipt)
+        public virtual bool  RecalcPrice(IdReceiptWares parIdReceipt)
 		{
 			return false;
 		}

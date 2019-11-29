@@ -41,7 +41,7 @@ namespace Test
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-            CreateDataBase(); //Створення бази
+            //CreateDataBase(); //Створення бази
             //Thread.Sleep(1000000);
             //TestKit();
             TestReceipt(); //
@@ -82,7 +82,6 @@ namespace Test
             //Guid.Parse("00140701-FFFF-2019-0618-000000000008");
             var api = new ApiPSU();
 
-
             //var cl = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
 
             var sd = api.AddProductByBarCode(TerminalId, "4823000916524", 1); //АРТЕК 
@@ -91,57 +90,21 @@ namespace Test
 //            sd = api.AddProductByBarCode( TerminalId, "2201652300489",1); //Морква
             //sd = api.AddProductByBarCode(TerminalId, "1110867180018", 1); //Хліб
             sd = api.AddProductByBarCode(TerminalId, "40804927", 1);
-            sd = api.AddProductByBarCode(TerminalId, "1110011760018", 1); //КІВІ ВАГОВІ 2 кат
+            //sd = api.AddProductByBarCode(TerminalId, "1110011760018", 1); //КІВІ ВАГОВІ 2 кат
+            sd = api.AddProductByBarCode( TerminalId, "2201652300489",1); //Морква
             sd = api.AddProductByBarCode(TerminalId, "7775006620509", 1); //товар 2 кат
-
-sd =api.AddProductByBarCode( TerminalId, "5903154545623", 1); //Суміш овочева "Семикомпонентна" 400г /Рудь/ акція 1+1
-                                                                          
-
-
-
-            //var ddd =api.AddProductByBarCode(TerminalId, "40122311");
-            //var wwwwsс = api.GetProductsByName(TerminalId,"БЕРЕ");  
-            // AddProductByBarCode(TerminalId, "743639000026", 1); 
-
-            //var r1 = api.Bl.ViewReceiptWares(api.GetCurrentReceiptByTerminalId(TerminalId) );
-            //api.ChangeQuantity(TerminalId, r1.First().WaresId, 0);
-
-            Thread.Sleep(100000);
-            return;
+            Thread.Sleep(1000);
+            sd =api.AddProductByBarCode( TerminalId, "5903154545623", 1); //Суміш овочева "Семикомпонентна" 400г /Рудь/ акція 1+1
+            
             var RId = api.GetCurrentReceiptByTerminalId(TerminalId).ReceiptId;
             ReceiptPayment[] pay = new ReceiptPayment[]
                 {new ReceiptPayment {ReceiptId= RId ,
                                     PaymentType=ModernIntegration.Enums.PaymentType.Card ,PayIn=39.9m,PayOut=0.0m,
-                    CardPan ="7548********8954",TransactionId="37108628262516415955665803737316905361" } } ;
+                    CardPan ="7548********8954",TransactionId="37108628262516415955665803737316905361" } };
             api.AddPayment(TerminalId, pay);
-            Thread.Sleep(100000);
-            //api.AddProductByBarCode(Guid.Parse(""),)
-            //api.UpdateProductWeight("1234567890123", 23);
-            //api.Terminals(new List<Terminal>() { new Terminal() {CustomerId=62,DisplayName= "Каса 1",Id= Guid.Parse("1BB89AA9-DBDF-4EB0-B7A2-094665C3FDD0") } });
-            return;
-            var Bl = new BL();
-            var rrrr=Bl.GetReceiptHead(new IdReceipt() { CodePeriod = 20191010, CodeReceipt = 2, IdWorkplace = 62 });
+            var r = api.AddFiscalNumber(TerminalId, "TRRF-1234");
 
-            //var repl = Bl.BildSqlUpdate("price");
-            // Bl.SendReceiptTo1C;(new IdReceipt() { CodePeriod = 20191009, CodeReceipt = 10, IdWorkplace = 62 });
-            return;
-            var Cat = api.GetAllCategories(TerminalId);
-            var war = api.GetProductsByCategoryId(TerminalId, FastGroup);
-            //      var r=api.GetReceiptItem(new ModelMID.IdReceipt {CodePeriod=20190614,CodeReceipt=1,IdWorkplace= 140701});
-            var res = api.AddProductByBarCode(TerminalId, "4820016250604");
-            res = api.AddProductByBarCode(TerminalId, "5449000006271");
-            res = api.AddProductByProductId(TerminalId, ProductId, 10);
-            var Rec = api.ChangeQuantity(TerminalId, ProductId, 7);
-
-            var f = api.GetProductsByName(TerminalId,"апель");
-            var ReceiptId = Rec.Id;
-            var r = api.AddFiscalNumber(ReceiptId, "TRRF-1234");
-
-            var rr = api.GetReciept(ReceiptId);
-
-            var client = api.GetCustomerByBarCode(TerminalId, "8800000499710");
-            //0959330766
-            client = api.GetCustomerByPhone(TerminalId, "0959330766");
+            Thread.Sleep(100000);           
 
         }
 

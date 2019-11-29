@@ -115,6 +115,7 @@ select wr.id_workplace as IdWorkplace, wr.code_period as CodePeriod, wr.code_rec
                      join ADDITION_UNIT au on w.code_wares = au.code_wares and wr.code_unit=au.code_unit
                      join unit_dimension ud on (wr.code_unit = ud.code_unit)
                      where wr.id_workplace=@IdWorkplace and  wr.code_period =@CodePeriod and wr.code_receipt=@CodeReceipt
+					 and wr.code_wares = case when @CodeWares=0 then wr.code_wares else @CodeWares end
                      order by sort
 
 [SqlAddReceipt]

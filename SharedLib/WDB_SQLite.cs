@@ -180,7 +180,7 @@ namespace SharedLib
             });
         }
 
-        public override bool RecalcPrice(IdReceipt parIdReceipt)
+        public override bool RecalcPrice(IdReceiptWares parIdReceipt)
         {
             try
             {
@@ -193,7 +193,7 @@ namespace SharedLib
                     par = new ParameterPromotion();
 
                 par.CodeWarehouse = Global.CodeWarehouse;
-                par.Time = 2145;//TMP Convert.ToInt32(RH.DateReceipt.ToString("HHmm"));
+                par.Time = Convert.ToInt32(RH.DateReceipt.ToString("HHmm"));
                 par.CodeDealer = Global.DefaultCodeDealer;
                                 
                 var r = ViewReceiptWares(parIdReceipt);
