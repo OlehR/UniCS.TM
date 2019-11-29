@@ -410,6 +410,7 @@ namespace ModernIntegration
                 NumberCard= parRP.CardPan,
                 CodeAuthorization = parRP.TransactionCode,
                 //NumberTerminal=parRP.,
+                NumberSlip= parRP.TransactionId//TMP.!!!!
             };
         }
         public override bool RefundReceipt(RefundReceiptViewModel parReceipt)

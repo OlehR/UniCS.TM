@@ -33,8 +33,8 @@ namespace ModelMID
             CodeClientCard = parR.CodeClient;
             if(parR.Wares!=null) 
               Wares = parR.Wares.Select(r => new ReceiptWares1C(r));
-            if (parR.Payment != null)
-                Description = parR.Payment.Where(r => !string.IsNullOrEmpty(r.NumberSlip)).FirstOrDefault().NumberSlip;
+//            if (parR.Payment != null)
+                //Description = parR.Payment.Where(r => !string.IsNullOrEmpty(r.NumberSlip)).FirstOrDefault().NumberSlip;
         }
 
         public string GetSOAP()
@@ -43,10 +43,10 @@ namespace ModelMID
             var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(Receipt);
             string SoapText = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + "\n" +
        "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" + "\n" +
-       "<soap:Body><CreateReceipt xmlns = \"vopak\" >" + "\n" +
-       "< xmlStr >" + System.Convert.ToBase64String(plainTextBytes) + " </ xmlStr >" + "\n" +
-       "</ CreateOrderOfSuplier >" + "\n" +
-       "</ soap:Body>" + "\n" +
+       "<soap:Body><JSONCheck xmlns = \"vopak\" >" + "\n" +
+       "<JSONSting>" + System.Convert.ToBase64String(plainTextBytes) + " </JSONSting>" + "\n" +
+       "</JSONCheck>" + "\n" +
+       "</soap:Body>" + "\n" +
        "</soap:Envelope>";
             return SoapText;
         }
@@ -62,9 +62,12 @@ namespace ModelMID
         public decimal SumDiscount { get; set; }
         public decimal Sum { get; set; }
         public bool IsPromotion { get; set; }
-        public Int64 CodePS { get; set; }
+        private Int64 CodePS { get; set; }
+            
         public decimal SumBonus { get; set; }
         public string BarCode2Category { get; set; }
+        public int YearPS { get { return CodePS>20000000 ? Convert.ToInt32(CodePS.ToString().Substring((CodePS > 100000000 ? 1 : 0), 4)):0; } }
+        public int NumberPS { get { return CodePS > 20000000 ? Convert.ToInt32(CodePS.ToString().Substring((CodePS > 100000000 ? 1 : 0)+4)):0; } }
         public ReceiptWares1C() { }
         public ReceiptWares1C(ReceiptWares parRW)
         {
@@ -75,11 +78,10 @@ namespace ModelMID
             Price = parRW.Price;
             SumDiscount = parRW.SumDiscount;
             Sum = parRW.Sum;
-            IsPromotion = (CodePS >0);
-            CodePS = ( parRW.TypePrice==eTypePrice.Promotion? parRW.ParPrice1:0);
+            IsPromotion = (CodePS > 100000000);
+            CodePS = ( parRW.TypePrice==eTypePrice.Promotion || parRW.TypePrice == eTypePrice.PromotionIndicative ? parRW.ParPrice1:0);
             SumBonus = 0;//TMP!!! ще не реалізовано.
             BarCode2Category = parRW.BarCode2Category;
-
         }
 
     }

@@ -193,57 +193,26 @@ namespace SharedLib
                     par = new ParameterPromotion();
 
                 par.CodeWarehouse = Global.CodeWarehouse;
-                par.Time = Convert.ToInt32(RH.DateReceipt.ToString("HHmm"));
+                par.Time = 2145;//TMP Convert.ToInt32(RH.DateReceipt.ToString("HHmm"));
                 par.CodeDealer = Global.DefaultCodeDealer;
                                 
                 var r = ViewReceiptWares(parIdReceipt);
+
                 foreach (var RW in r)
                 {
                     var MPI = GetMinPriceIndicative((IdReceiptWares)RW);
                     par.CodeWares = RW.CodeWares;
                     var Res = GetPrice(par);
 
-                    Int64 CodePS2Cat = 0;
-                    decimal Percent2Cat = 0;
-                    if (RW.BarCode2Category != null && RW.BarCode2Category.Length == 13)
+                    if (Res != null)
                     {
-                        Percent2Cat = Convert.ToInt32(RW.BarCode2Category.Substring(3, 2));
-                        CodePS2Cat = GetPricePromotionSale2Category((IdReceiptWares)RW);
+                        RW.Price = MPI.GetPrice(Res.Price, Res.IsIgnoreMinPrice == 0, Res.CodePs > 0);
+                        RW.TypePrice = MPI.typePrice;
+                        RW.ParPrice1 = Res.CodePs;
+                        RW.ParPrice2 = (int)Res.TypeDiscont;
+                        RW.ParPrice3 = (int)Res.Data;
                     }
-
-                    if (Res != null)//&& Res.CodePs>0)
-                    {
-                        RW.Price = MPI.GetPrice(Res.Price, Res.IsIgnoreMinPrice == 0);
-                        if (CodePS2Cat > 0 && Percent2Cat > 0)
-                        {
-                            RW.TypePrice = eTypePrice.Promotion;
-                            RW.ParPrice1 = CodePS2Cat;
-                        }
-                        else
-                        {
-                            RW.TypePrice = MPI.typePrice;
-                            RW.ParPrice1 = Res.CodePs;
-                            RW.ParPrice2 = (int)Res.TypeDiscont;
-                            RW.ParPrice3 = (int)Res.Data;
-                        }
-                        RW.Price = RW.Price * (100M - Percent2Cat) / 100;
-                    }
-                    /*                else
-                                    {
-
-                                        if (CodePS2Cat > 0 && Percent2Cat > 0)
-                                        {
-                                            RW.Price = RW.PriceDealer * (100M - Percent2Cat) / 100;
-                                            RW.TypePrice = eTypePrice.Promotion;
-                                            RW.ParPrice1 = CodePS2Cat;
-                                        }
-                                        else
-                                        {
-                                            RW.Price = MPI.GetPrice(RW.PriceDealer, );
-                                            RW.TypePrice = MPI.typePrice;
-                                        }                        
-
-                                    }*/
+                    
                     ReplaceWaresReceipt(RW);
                 }
                 GetPricePromotionKit(parIdReceipt, r);

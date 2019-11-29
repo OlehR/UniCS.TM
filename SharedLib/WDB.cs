@@ -173,7 +173,7 @@ namespace SharedLib
         protected string SqlGetPayment = "";
         protected string SqlGetIdReceiptbyState = "";
         protected string SqlCheckLastWares2Cat = "";
-
+        protected string SqlInsertBarCode2Cat = "";
         public WDB(string parFileSQL)
         {
             this.ReadSQL(parFileSQL);
@@ -555,6 +555,7 @@ namespace SharedLib
 
             SqlCheckLastWares2Cat = GetSQL("SqlCheckLastWares2Cat");
 
+            SqlInsertBarCode2Cat = GetSQL("SqlInsertBarCode2Cat");
             return true;
         }
 
@@ -862,10 +863,10 @@ namespace SharedLib
             throw new NotImplementedException();
         }
 
-        public virtual bool InsertBarCode2Cat(IdReceipt parIdReceipt,string parBarCode)
+        public virtual bool InsertBarCode2Cat(WaresReceiptPromotion parWRP)
         {
-            var o = new { CodePeriod = parIdReceipt.CodePeriod, CodeReceipt = parIdReceipt.CodeReceipt, IdWorkplace = parIdReceipt.IdWorkplace, BarCode = parBarCode };
-            db.ExecuteNonQuery<Object>(SqlInsertWeight, o);
+            //var o = new { CodePeriod = parIdReceipt.CodePeriod, CodeReceipt = parIdReceipt.CodeReceipt, IdWorkplace = parIdReceipt.IdWorkplace, CodeWares= parIdReceipt.CodeWares, BarCode = parBarCode };
+            db.ExecuteNonQuery<WaresReceiptPromotion>(SqlInsertBarCode2Cat, parWRP);
             return true;
         }
 

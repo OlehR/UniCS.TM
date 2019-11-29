@@ -156,7 +156,7 @@ namespace ModelMID
             //CoefficientDefaultUnit = 0;
             Price = 0;
             //CodeDealer = 0;
-            TypePrice = 0;
+            TypePrice = eTypePrice.NotDefine;
             SumDiscount = 0;
             TypeFound = 0;
             CodeUnit = 0;

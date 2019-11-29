@@ -15,13 +15,13 @@ namespace ModelMID
         /// <param name="parPriceDialer"></param>
         /// <param name="parPercentDiscount"></param>
         /// <returns></returns>
-        public decimal GetPrice(decimal parPrice,bool parIsUseMinPrice)
+        public decimal GetPrice(decimal parPrice,bool parIsUseMinPrice,bool isPromotion=false)
         {
             decimal varPrice = parPrice; /** (100M - parPercentDiscount) / 100M;
             if (parPercentDiscount != 0)
                 typePrice=eTypePrice.PDDiscont;*/
-
-            if(parIsUseMinPrice && varPrice < MinPrice)
+            typePrice = isPromotion ? eTypePrice.Promotion : eTypePrice.PriceDealer;
+            if (!isPromotion && parIsUseMinPrice && varPrice < MinPrice)
             {
                 varPrice = MinPrice;
                 typePrice = eTypePrice.PDDiscontMin;
@@ -30,7 +30,7 @@ namespace ModelMID
             if (varPrice < Indicative)
             {
                 varPrice = Indicative;
-                typePrice = eTypePrice.PDDiscontIndicative;
+                typePrice = isPromotion ? eTypePrice.PromotionIndicative : eTypePrice.PDDiscontIndicative;
             }
 
             return varPrice;
