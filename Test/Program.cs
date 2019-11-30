@@ -11,33 +11,15 @@ using System.Collections.Generic;
 using ModernIntegration.Model;
 using ModernIntegration.Models;
 using System.Text.RegularExpressions;
+using ModernIntegration.ViewModels;
 
 namespace Test
 {
 
-    public class TestReceipt
-    {
-        public decimal Percent_Discount { get; set; }
-        public string Bar_Code { get; set; }
-        public string Number { get; set; }
-        public DateTime Date_Time { get; set; }
-        public int Code_Wares { get; set; }
-        public int Code_Unit { get; set; }
-        public decimal Amount { get; set; }
-        public decimal Price { get; set; }
-        public decimal Sum { get; set; }
-        public decimal Disc_perc_manual { get; set; }
-        public decimal Disc_Perc_Auto { get; set; }
-        public int Is_Promotion { get; set; }
-        public string Comment { get; set; }
-        public string Type_Promotion { get; set; }
-        public string BarCode2Category { get; set; }
-
-    }
     class Program
     {
         static void Main(string[] args)
-        {
+         {
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
@@ -81,21 +63,26 @@ namespace Test
             var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009001");
             //Guid.Parse("00140701-FFFF-2019-0618-000000000008");
             var api = new ApiPSU();
-
+            ProductViewModel sd;
             //var cl = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
 
-            var sd = api.AddProductByBarCode(TerminalId, "4823000916524", 1); //АРТЕК 
+            sd = api.AddProductByBarCode(TerminalId, "4823086109988", 2); // 1+1 Пельмені "Мішутка" Філейні 600г /Три ведмеді/
+
+            /*sd = api.AddProductByBarCode(TerminalId, "4823000916524", 1); //АРТЕК 
 
              sd =api.AddProductByBarCode( TerminalId, "7622300813437",1);//Барн
-//            sd = api.AddProductByBarCode( TerminalId, "2201652300489",1); //Морква
-            //sd = api.AddProductByBarCode(TerminalId, "1110867180018", 1); //Хліб
+            sd = api.AddProductByBarCode(TerminalId, "7622300813437", 2);//Барн
+            //            sd = api.AddProductByBarCode( TerminalId, "2201652300489",1); //Морква
+            sd = api.AddProductByBarCode(TerminalId, "1110867180018", 1); //Хліб
             sd = api.AddProductByBarCode(TerminalId, "40804927", 1);
-            //sd = api.AddProductByBarCode(TerminalId, "1110011760018", 1); //КІВІ ВАГОВІ 2 кат
+            sd = api.AddProductByBarCode(TerminalId, "1110011760018", 1); //КІВІ ВАГОВІ 2 кат
             sd = api.AddProductByBarCode( TerminalId, "2201652300489",1); //Морква
             sd = api.AddProductByBarCode(TerminalId, "7775006620509", 1); //товар 2 кат
-            Thread.Sleep(1000);
+            //Thread.Sleep(1000);
             sd =api.AddProductByBarCode( TerminalId, "5903154545623", 1); //Суміш овочева "Семикомпонентна" 400г /Рудь/ акція 1+1
-            
+            sd = api.AddProductByBarCode(TerminalId, "7622300813437", 5);//Барн*/
+            sd = api.AddProductByBarCode(TerminalId, "4823097403457", 5);//Майонез "Провансаль" 67% д/п 350г /Щедро/
+            sd = api.AddProductByBarCode(TerminalId, "4823097405932", 7);//Кетчуп "Лагідний" д/п 250г /Щедро/
             var RId = api.GetCurrentReceiptByTerminalId(TerminalId).ReceiptId;
             ReceiptPayment[] pay = new ReceiptPayment[]
                 {new ReceiptPayment {ReceiptId= RId ,
@@ -104,7 +91,12 @@ namespace Test
             api.AddPayment(TerminalId, pay);
             var r = api.AddFiscalNumber(TerminalId, "TRRF-1234");
 
-            Thread.Sleep(100000);           
+            Thread.Sleep(100000);
+
+            //169316+169316 4823086109988 Пельмені "Мішутка" Філейні 600г /Три ведмеді/
+            //156727+169583 4823097403457+4823097405932 Майонез "Провансаль" 67% д/п 350г /Щедро/  Кетчуп "Лагідний" д/п 250г /Щедро/
+
+
 
         }
 
@@ -232,4 +224,24 @@ namespace Test
         //    AAsynFunc().ContinueWith(async r => SomeFunction(await r));
         //}
     }
+    public class TestReceipt
+    {
+        public decimal Percent_Discount { get; set; }
+        public string Bar_Code { get; set; }
+        public string Number { get; set; }
+        public DateTime Date_Time { get; set; }
+        public int Code_Wares { get; set; }
+        public int Code_Unit { get; set; }
+        public decimal Amount { get; set; }
+        public decimal Price { get; set; }
+        public decimal Sum { get; set; }
+        public decimal Disc_perc_manual { get; set; }
+        public decimal Disc_Perc_Auto { get; set; }
+        public int Is_Promotion { get; set; }
+        public string Comment { get; set; }
+        public string Type_Promotion { get; set; }
+        public string BarCode2Category { get; set; }
+
+    }
+
 }

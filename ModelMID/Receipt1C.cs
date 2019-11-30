@@ -77,7 +77,7 @@ namespace ModelMID
             AbrUnit = parRW.AbrUnit;
             Price = parRW.Price;
             SumDiscount = parRW.SumDiscount;
-            Sum = parRW.Sum;
+            Sum = parRW.Sum- parRW.SumDiscount;
             IsPromotion = (CodePS > 100000000);
             CodePS = ( parRW.TypePrice==eTypePrice.Promotion || parRW.TypePrice == eTypePrice.PromotionIndicative ? parRW.ParPrice1:0);
             SumBonus = 0;//TMP!!! ще не реалізовано.

@@ -167,62 +167,65 @@ namespace SharedLib
 		}
         */
 
-        public Task RecalcPriceAsync(IdReceipt parIdReceipt)
+        public Task RecalcPriceAsync(IdReceiptWares parIdReceiptWares)
         {
-            return Task.Run(() => RecalcPrice(parIdReceipt)).ContinueWith(async res =>
+            return Task.Run(() => RecalcPrice(parIdReceiptWares)).ContinueWith(async res =>
             {
                 if (await res)
                 {
                     Console.WriteLine(OnReceiptCalculationComplete != null);
-                    var r = ViewReceiptWares(parIdReceipt);
-                    OnReceiptCalculationComplete?.Invoke(r, Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace));
+                    var r = ViewReceiptWares(parIdReceiptWares);
+                    OnReceiptCalculationComplete?.Invoke(r, Global.GetTerminalIdByIdWorkplace(parIdReceiptWares.IdWorkplace));
                 }
             });
         }
 
         public override bool RecalcPrice(IdReceiptWares parIdReceipt)
         {
-            try
+            lock (GetObjectForLockByIdWorkplace(parIdReceipt.IdWorkplace))
             {
-                var RH = ViewReceipt(parIdReceipt);
-                ParameterPromotion par;
-                var InfoClient = GetInfoClientByReceipt(parIdReceipt);
-                if (InfoClient.Count() == 1)
-                    par = InfoClient.First();
-                else
-                    par = new ParameterPromotion();
-
-                par.CodeWarehouse = Global.CodeWarehouse;
-                par.Time = Convert.ToInt32(RH.DateReceipt.ToString("HHmm"));
-                par.CodeDealer = Global.DefaultCodeDealer;
-                                
-                var r = ViewReceiptWares(parIdReceipt);
-
-                foreach (var RW in r)
+                try
                 {
-                    var MPI = GetMinPriceIndicative((IdReceiptWares)RW);
-                    par.CodeWares = RW.CodeWares;
-                    var Res = GetPrice(par);
+                    var RH = ViewReceipt(parIdReceipt);
+                    ParameterPromotion par;
+                    var InfoClient = GetInfoClientByReceipt(parIdReceipt);
+                    if (InfoClient.Count() == 1)
+                        par = InfoClient.First();
+                    else
+                        par = new ParameterPromotion();
 
-                    if (Res != null)
+                    par.CodeWarehouse = Global.CodeWarehouse;
+                    par.Time = Convert.ToInt32(RH.DateReceipt.ToString("HHmm"));
+                    par.CodeDealer = Global.DefaultCodeDealer;
+
+                    var r = ViewReceiptWares(parIdReceipt);
+
+                    foreach (var RW in r)
                     {
-                        RW.Price = MPI.GetPrice(Res.Price, Res.IsIgnoreMinPrice == 0, Res.CodePs > 0);
-                        RW.TypePrice = MPI.typePrice;
-                        RW.ParPrice1 = Res.CodePs;
-                        RW.ParPrice2 = (int)Res.TypeDiscont;
-                        RW.ParPrice3 = (int)Res.Data;
+                        var MPI = GetMinPriceIndicative((IdReceiptWares)RW);
+                        par.CodeWares = RW.CodeWares;
+                        var Res = GetPrice(par);
+
+                        if (Res != null)
+                        {
+                            RW.Price = MPI.GetPrice(Res.Price, Res.IsIgnoreMinPrice == 0, Res.CodePs > 0);
+                            RW.TypePrice = MPI.typePrice;
+                            RW.ParPrice1 = Res.CodePs;
+                            RW.ParPrice2 = (int)Res.TypeDiscont;
+                            RW.ParPrice3 = (int)Res.Data;
+                        }
+
+                        ReplaceWaresReceipt(RW);
                     }
-                    
-                    ReplaceWaresReceipt(RW);
+                    GetPricePromotionKit(parIdReceipt, parIdReceipt.CodeWares);
+                    RecalcHeadReceipt(parIdReceipt);
+                    return true;
                 }
-                GetPricePromotionKit(parIdReceipt, r);
-                RecalcHeadReceipt(parIdReceipt);
-                return true;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return false;
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return false;
+                }
             }
         }
         /// <summary>
@@ -231,14 +234,18 @@ namespace SharedLib
         /// </summary>
         /// <param name="parIdReceipt"></param>
         /// <returns></returns>
-        public bool GetPricePromotionKit(IdReceipt parIdReceipt,IEnumerable<ReceiptWares> parRW)
+        public bool GetPricePromotionKit(IdReceipt parIdReceipt,int parCodeWares)
         {
+            if (parCodeWares > 0 && !IsWaresInPromotionKit(parCodeWares)) 
+                return true;
+
             var varRes = new List<WaresReceiptPromotion>(); 
             var par = new ParamPricePromotionKit(parIdReceipt, ModelMID.Global.CodeWarehouse);
             var r=db.Execute<ParamPricePromotionKit, PromotionWaresKit>(SqlGetPricePromotionKit, par);
             int NumberGroup = 0;
             decimal Quantity = 0, AddQuantity=0;
             Int64 CodePS = 0;
+            var RW = ViewReceiptWares(parIdReceipt);
             foreach (var el in r )//цикл по Можливим позиціям з знижкою.
             {
                 if(el.CodePS!= CodePS||el.NumberGroup!=NumberGroup)
@@ -249,8 +256,8 @@ namespace SharedLib
                 }
                 if (Quantity > 0) // Надаєм знижку на інші позиції набору.
                 {
-                    var varQuantityReceipt = parRW.Where(e => e.CodeWares == el.CodeWares).Sum(e => e.Quantity);
-                    var varQuantityUsed = varRes.Where(e => e.CodeWares == el.CodeWares).Sum(e => e.Quantity);
+                    var varQuantityReceipt = RW.Where(e => e.CodeWares == el.CodeWares).Sum(e => e.Quantity);
+                    var varQuantityUsed = varRes.Where(e => e.CodeWares == el.CodeWares && e.NumberGroup==el.NumberGroup).Sum(e => e.Quantity);
                     if (varQuantityReceipt - varQuantityUsed > 0) //Якщо ще можемо дати знижку на позицію
                     {
                         if (varQuantityReceipt - varQuantityUsed >= Quantity)

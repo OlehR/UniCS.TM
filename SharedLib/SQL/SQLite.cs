@@ -18,7 +18,7 @@ namespace SharedLib
 
         public SQLite(String varConectionString):base(varConectionString)
         {
-            connection = new SQLiteConnection("Data Source="+varConectionString+ ";Version=3;");
+            connection = new SQLiteConnection( "Data Source="+varConectionString+ ";Version=3;");
             connection.Open();
             TypeCommit = eTypeCommit.Auto;
         }

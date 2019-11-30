@@ -28,6 +28,10 @@ namespace SharedLib
 
         public SQL db;
         protected Hashtable keySQL = new Hashtable();
+        /// <summary>
+        /// Для блокування деяких асинхронних операцій по касі.
+        /// </summary>
+        private Dictionary<int, object> WorkplaceIdLockers = new Dictionary<int, object>();
 
         /*public delegate void CallWriteLogSQL(string parQvery, ParametersCollection parParameters = null);
         /// <summary>
@@ -174,11 +178,18 @@ namespace SharedLib
         protected string SqlGetIdReceiptbyState = "";
         protected string SqlCheckLastWares2Cat = "";
         protected string SqlInsertBarCode2Cat = "";
+        protected string SqlIsWaresInPromotionKit = "";
         public WDB(string parFileSQL)
         {
             this.ReadSQL(parFileSQL);
             InitSQL();
    
+        }
+        public object GetObjectForLockByIdWorkplace(int parIdWorkplace)
+        {
+            if (!WorkplaceIdLockers.ContainsKey(parIdWorkplace) || WorkplaceIdLockers[parIdWorkplace] == null)
+                WorkplaceIdLockers[parIdWorkplace] = new object();
+            return WorkplaceIdLockers[parIdWorkplace];
         }
         protected bool BildWorkplace()
         {
@@ -289,7 +300,10 @@ namespace SharedLib
 
         public virtual bool  UpdateClient(IdReceipt parIdReceipt, int parCodeClient)
 		{
-            return this.db.ExecuteNonQuery<IdReceipt>(SqlUpdateClient, parIdReceipt) == 0;
+            lock (GetObjectForLockByIdWorkplace(parIdReceipt.IdWorkplace))
+            {
+                return this.db.ExecuteNonQuery<IdReceipt>(SqlUpdateClient, parIdReceipt) == 0;
+            }
         }
 		
 		public virtual bool  CloseReceipt(Receipt parReceipt)
@@ -324,7 +338,10 @@ namespace SharedLib
 		
 		public virtual bool UpdateQuantityWares(ReceiptWares parIdReceiptWares)
 		{
-            return this.db.ExecuteNonQuery(SqlUpdateQuantityWares, parIdReceiptWares) == 0 /*&& RecalcHeadReceipt(parParameters)*/;
+            lock (GetObjectForLockByIdWorkplace(parIdReceiptWares.IdWorkplace))
+            {
+                return this.db.ExecuteNonQuery(SqlUpdateQuantityWares, parIdReceiptWares) == 0 /*&& RecalcHeadReceipt(parParameters)*/;
+            }
         }
 		
 		
@@ -563,6 +580,8 @@ namespace SharedLib
             SqlCheckLastWares2Cat = GetSQL("SqlCheckLastWares2Cat");
 
             SqlInsertBarCode2Cat = GetSQL("SqlInsertBarCode2Cat");
+
+            SqlIsWaresInPromotionKit = GetSQL("SqlIsWaresInPromotionKit");
             return true;
         }
 
@@ -841,7 +860,13 @@ namespace SharedLib
         }
         public virtual bool ReplacePayment(IEnumerable<Payment> parData)
         {
-            db.BulkExecuteNonQuery<Payment>(SqlReplacePayment, parData);
+            if (parData != null && parData.Count()>0)
+            {
+                if(parData.Count()==1)//Костиль через проблеми з мультипоточністю BD
+                    db.ExecuteNonQuery<Payment>(SqlReplacePayment, parData.First());
+                else
+                    db.BulkExecuteNonQuery<Payment>(SqlReplacePayment, parData);
+            }
             return true;
         }
 
@@ -882,8 +907,13 @@ namespace SharedLib
         {
             return db.Execute<IdReceipt, WaresReceiptPromotion>(SqlCheckLastWares2Cat, parIdReceipt);
         }
+
         
 
+        public virtual bool IsWaresInPromotionKit(int parCodeWares)
+        {
+            return this.db.ExecuteScalar<object, int>(SqlIsWaresInPromotionKit, new { CodeWares = parCodeWares })>0;
+        }
     }
 
 }

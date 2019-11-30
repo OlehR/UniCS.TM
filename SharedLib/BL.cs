@@ -230,8 +230,7 @@ namespace SharedLib
                 var client = r.First();
                 UpdateClientInReceipt(idReceipt, client);
                 if (ModelMID.Global.RecalcPriceOnLine)
-                    db.RecalcPriceAsync(idReceipt);
-
+                    db.RecalcPriceAsync(new IdReceiptWares(idReceipt));
                 return client;
             }
             return null;

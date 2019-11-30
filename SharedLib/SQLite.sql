@@ -66,7 +66,7 @@ union
 )
 select p.code_client as CodeClient, p.name_client as NameClient, 0 as TypeDiscount, p.percent_discount as PersentDiscount, 0 as CodeDealer, 
 	   10.00 as SumMoneyBonus, 10.00 as SumBonus,1 IsUseBonusFromRest, 1 IsUseBonusToRest,1 as IsUseBonusFromRest
-			from t$1 left join client p on (t$1.code_client=p.code_client)
+			from t$1 left join client p on (t$1.code_client=p.code_client)QuantityWares
 			
 [SqlAdditionUnit]
 --Не робочий
@@ -241,10 +241,11 @@ select sum(wr.quantity) quantity
 update wares_receipt set  BARCODE_2_CATEGORY=@BarCode2Category
                      where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt 
                      and code_wares=@CodeWares; -- and code_unit=@CodeUnit
-[SqlUpdate2]
-update wares_receipt set  
+[SqlUpdateQuantityWares]
+update wares_receipt set  quantity= @Quantity, sort=@Sort,
+						   sum=@Sum, Sum_Vat=@SumVat
                      where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt 
-                     and code_wares=@CodeWares -- and code_unit=@CodeUnit
+                     and code_wares=@CodeWares;-- and code_unit=@CodeUnit
                      
 [SqlDeleteReceiptWares]
  delete from  wares_receipt 
@@ -342,6 +343,16 @@ union all --акції для всіх товарів.
 [SqlGetPricePromotionSale2Category]
 select CODE_PS from PROMOTION_SALE_2_CATEGORY where CODE_WARES=@CodeWares
 
+[SqlIsWaresInPromotionKit]
+select sum(n) from 
+( select count(*) as n from  PROMOTION_SALE_FILTER psfw 
+     where  psfw.TYPE_GROUP_FILTER=11  and psfw.Code_data=@CodeWares
+ union all
+ select count(*) from  PROMOTION_SALE_GIFT psg
+     where psg.Code_wares=@CodeWares
+ )
+;
+
 [SqlGetPricePromotionKit]
 with wk as 
 (select psd.CODE_PS ,psd.DATA as Quantity_For_Gift ,psfw.code_data as code_wares ,psd.Number_group 
@@ -358,9 +369,9 @@ select pr.Code_PS as CodePS,pr.Number_group as NumberGroup , wr.code_wares as Co
    and wr.CODE_PERIOD = @CodePeriod
    and wr.CODE_RECEIPT = @CodeReceipt
 group by wk.CODE_PS,   wk.Number_group, wr.id_workplace, wr.code_period,wr.code_receipt
-having    sum(wr.QUANTITY)> wk.Quantity_For_Gift
+having    sum(wr.QUANTITY)>= wk.Quantity_For_Gift
 ) pr
-join PROMOTION_SALE_GIFT psg on (psg.code_ps=pr.code_ps)
+join PROMOTION_SALE_GIFT psg on (psg.code_ps=pr.code_ps and PSG.NUMBER_GROUP =PR.NUMBER_GROUP)
 join WARES_RECEIPT wr on (psg.code_wares=wr.code_wares and pr.id_workplace=wr.id_workplace and pr.code_period=wr.code_period and pr.code_receipt=wr.code_receipt)
 order by pr.code_ps, pr.Number_group
 
@@ -908,7 +919,7 @@ select id_workplace as IdWorkplace, code_period as CodePeriod, code_receipt as C
 
 [SqlCheckLastWares2Cat]
 select  wr.id_workplace as IdWorkplace, wr.code_period as CodePeriod, wr.code_receipt as CodeReceipt, wr.code_wares as Codewares,
- 1 as Quantity, case when wr.price>0 then wr.price else wr.price_dealer end AS Price,  ps.code_ps as CodePS, 0 as NumberGroup, '' as BarCode2Category
+ wr.Quantity as Quantity, case when wr.price>0 then wr.price else wr.price_dealer end AS Price,  ps.code_ps as CodePS, 0 as NumberGroup, '' as BarCode2Category
 from wares_receipt wr
 join PROMOTION_SALE_2_CATEGORY ps2c on ps2c.code_wares=wr.code_wares
 join PROMOTION_SALE ps on (ps.code_ps=ps2c.code_ps)
