@@ -228,6 +228,14 @@ AND wh.code=9;
 
 
 [SqlGetPromotionSaleFilter]
+WITH wh_ex AS 
+  (SELECT pw.doc_promotion_RRef,
+    SUM(CASE WHEN CONVERT(INT,dw.code)= 9 THEN 1 ELSE 0 END) AS Wh,COUNT(*) AS all_wh
+    FROM DW.dbo.V1C_doc_promotion_warehouse pw
+    JOIN DW.dbo.V1C_dim_warehouse dw ON dw.warehouse_RRef=pw.warehouse_RRef
+GROUP BY pw.doc_promotion_RRef
+  HAVING SUM(CASE WHEN dw.code=9 THEN 1 ELSE 0 END) = 0)  
+/*
 SELECT  --Склади дії
     CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
     ,1 AS CodeGroupFilter
@@ -240,9 +248,10 @@ SELECT  --Склади дії
     FROM DW.dbo.V1C_doc_promotion_warehouse pw
     JOIN DW.dbo.V1C_dim_warehouse dw ON dw.warehouse_RRef=pw.warehouse_RRef
     JOIN DW.dbo.V1C_doc_promotion dp ON dp._IDRRef=pw.doc_promotion_RRef
+    LEFT JOIN wh_ex ON (wh_ex.doc_promotion_RRef=dp._IDRRef) 
   WHERE dp.d_end>getdate()
-
-UNION all
+  AND wh_ex.doc_promotion_RRef IS null
+UNION ALL*/
 SELECT  --Вид дисконтної карти (Тип Клієнта)
     CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
     ,1 AS CodeGroupFilter
@@ -254,8 +263,10 @@ SELECT  --Вид дисконтної карти (Тип Клієнта)
     ,CONVERT(NUMERIC,NULL) AS CodeDataEnd
   FROM dbo.V1C_doc_promotion dp
   JOIN dbo.V_DISCOUNT_CARD dc ON dp.RRef_ex_value=dc._IDRRef
+  LEFT JOIN wh_ex ON (wh_ex.doc_promotion_RRef=dp._IDRRef) 
   WHERE kind_promotion= 0xA6F61431ECE9ED4646ECAA3A735174ED
     AND  dp.d_end>getdate()
+    AND wh_ex.doc_promotion_RRef IS null
   
 UNION all
 SELECT -- Товари чи групи тварів
@@ -272,7 +283,9 @@ SELECT -- Товари чи групи тварів
   FROM DW.dbo.V1C_doc_promotion_nomen pn
   JOIN dw.dbo.V1C_dim_nomen dn ON pn.nomen_RRef=dn.IDRRef
   JOIN DW.dbo.V1C_doc_promotion dp ON dp._IDRRef=pn.doc_promotion_RRef
+  LEFT JOIN wh_ex ON (wh_ex.doc_promotion_RRef=dp._IDRRef) 
   WHERE dp.d_end>getdate()
+  AND wh_ex.doc_promotion_RRef IS null
 --AND dn.is_leaf=0
 UNION all
   SELECT --Заборонені товари
@@ -289,7 +302,9 @@ UNION all
   FROM DW.dbo.V1C_doc_promotion_exclusion_nomen pn
   JOIN dw.dbo.V1C_dim_nomen dn ON pn.nomen_RRef=dn.IDRRef
   JOIN DW.dbo.V1C_doc_promotion dp ON dp._IDRRef=pn.doc_promotion_RRef
+  LEFT JOIN wh_ex ON (wh_ex.doc_promotion_RRef=dp._IDRRef) 
   WHERE dp.d_end>getdate()
+  AND wh_ex.doc_promotion_RRef IS null
 --AND dn.is_leaf=0
 
 union all
@@ -313,8 +328,10 @@ END
   ,CONVERT(NUMERIC,NULL) AS DataEnd
   FROM   DW.dbo.V1C_doc_promotion_day_of_week pw
   JOIN DW.dbo.V1C_doc_promotion dp ON dp._IDRRef=pw.doc_promotion_RRef
+  LEFT JOIN wh_ex ON (wh_ex.doc_promotion_RRef=dp._IDRRef) 
   --WHERE  doc_promotion_RRef=0x81320050569E814D11E9A86DBEBF29CB --time_end ='01.01.2001 02:00:00.000'
-
+  WHERE 
+  wh_ex.doc_promotion_RRef IS null
 UNION all
 SELECT --Час
      CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
@@ -327,7 +344,9 @@ SELECT --Час
   ,MAX(DATEPART(HOUR,pw.time_end)*100+DATEPART(MINUTE,pw.time_end)) AS DataEnd
   FROM   DW.dbo.V1C_doc_promotion_day_of_week pw
   JOIN DW.dbo.V1C_doc_promotion dp ON dp._IDRRef=pw.doc_promotion_RRef
+  LEFT JOIN wh_ex ON (wh_ex.doc_promotion_RRef=dp._IDRRef) 
   WHERE dp.d_end>getdate()
+  AND wh_ex.doc_promotion_RRef IS null
   GROUP BY pw.doc_promotion_RRef, SUBSTRING(dp.comment,1,100),dp.number,dp.year_doc
   --HAVING MAX(pw.time_begin)<>MIN( pw.time_begin)   OR   MAX(pw.time_end)<>MIN( pw.time_end)
 
@@ -342,7 +361,9 @@ UNION all
     ,dp.number_ex_value  AS Data
   ,null AS DataEnd
   FROM  DW.dbo.V1C_doc_promotion dp 
+  LEFT JOIN wh_ex ON (wh_ex.doc_promotion_RRef=dp._IDRRef) 
   WHERE dp.d_end>getdate() AND kind_promotion= 0x8CA05E08A127F853433EF4373AE9DC39
+  AND wh_ex.doc_promotion_RRef IS null
 UNION all
 SELECT -- Товари  набору (Основні)
    CONVERT(INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
@@ -358,7 +379,10 @@ SELECT -- Товари  набору (Основні)
   FROM DW.dbo.V1C_doc_promotion_kit pk
   JOIN dw.dbo.V1C_dim_nomen dn ON pk.nomen_RRef=dn.IDRRef
   JOIN DW.dbo.V1C_doc_promotion dp ON dp._IDRRef=pk.doc_promotion_RRef
+  LEFT JOIN wh_ex ON (wh_ex.doc_promotion_RRef=dp._IDRRef) 
   WHERE dp.d_end>getdate() AND pk.is_main=1
+  AND wh_ex.doc_promotion_RRef IS null
+
 
 
 [SqlGetPromotionSaleGroupWares]
