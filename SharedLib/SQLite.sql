@@ -373,6 +373,7 @@ having    sum(wr.QUANTITY)>= wk.Quantity_For_Gift
 ) pr
 join PROMOTION_SALE_GIFT psg on (psg.code_ps=pr.code_ps and PSG.NUMBER_GROUP =PR.NUMBER_GROUP)
 join WARES_RECEIPT wr on (psg.code_wares=wr.code_wares and pr.id_workplace=wr.id_workplace and pr.code_period=wr.code_period and pr.code_receipt=wr.code_receipt)
+join PROMOTION_SALE ps on (ps.code_ps=pr.code_ps and datetime('now','localtime') between  ps.date_begin and ps.DATE_END )
 order by pr.code_ps, pr.Number_group
 
       

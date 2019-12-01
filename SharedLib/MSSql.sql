@@ -85,7 +85,6 @@ SELECT DC.code_card as CodeClient ,DC.name as NameClient ,TD.TYPE_DISCOUNT  AS T
   --JOIN DW.dbo.V1C_DIM_OPTION_WPC_FACT_WARES W ON G._Reference18850_IDRRef = W._Reference18850_IDRRef AND G. Order_Button = W.Order_Button
     WHERE wh.Code=9
 
-
 [SqlGetDimFastWares]
  SELECT CONVERT(INT,wh.Code)*1000+w.Order_Button CodeFastGroup,w1.code_wares AS CodeWares
   FROM DW.dbo.V1C_DIM_OPTION_WPC O
@@ -96,6 +95,14 @@ SELECT DC.code_card as CodeClient ,DC.name as NameClient ,TD.TYPE_DISCOUNT  AS T
     WHERE wh.Code=9;
 
 [SqlGetPromotionSaleData]
+WITH wh_ex AS 
+  (SELECT pw.doc_promotion_RRef,
+    SUM(CASE WHEN CONVERT(INT,dw.code)= 9 THEN 1 ELSE 0 END) AS Wh,COUNT(*) AS all_wh
+    FROM DW.dbo.V1C_doc_promotion_warehouse pw
+    JOIN DW.dbo.V1C_dim_warehouse dw ON dw.warehouse_RRef=pw.warehouse_RRef
+GROUP BY pw.doc_promotion_RRef
+  HAVING SUM(CASE WHEN dw.code=9 THEN 1 ELSE 0 END) = 0)  
+
 SELECT
    CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
     ,1 AS NumberGroup
@@ -108,8 +115,11 @@ SELECT
   FROM DW.dbo.V1C_doc_promotion_nomen pn
   --JOIN dw.dbo.V1C_dim_nomen dn ON pn.nomen_RRef=dn.IDRRef
   JOIN DW.dbo.V1C_doc_promotion dp ON dp._IDRRef=pn.doc_promotion_RRef
+  LEFT JOIN wh_ex ON (wh_ex.doc_promotion_RRef=pn.doc_promotion_RRef)
   WHERE dp.d_end>getdate() --AND number=8
+  AND wh_ex.doc_promotion_RRef IS null
   GROUP BY CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number)
+
 UNION ALL
 SELECT
    CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
@@ -122,9 +132,12 @@ SELECT
     ,0 AS DataAdditionalCondition
   --,dp.[comment]
   FROM DW.dbo.V1C_doc_promotion dp
+  LEFT JOIN wh_ex ON (wh_ex.doc_promotion_RRef=dp._IDRRef)
   WHERE dp.d_end>getdate() 
+  AND wh_ex.doc_promotion_RRef IS null
   AND dp.[percent]<>0
 UNION ALL
+  
 SELECT -- Кількість товари  набору (Основні)
    CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
     ,pk.number_kit AS NumberGroup
@@ -132,25 +145,27 @@ SELECT -- Кількість товари  набору (Основні)
     ,1 AS UseIndicative
     ,41 AS TypeDiscount--%
     ,0 AS AdditionalCondition
-    ,MAX(pk.amount) AS Data
+    ,MAX(pk.amount) + CASE WHEN MAX(pk.amount)=1 AND MAX(pk_k.nomen_RRef) IS NOT NULL THEN 1 ELSE 0 end AS Data
     ,1 AS DataAdditionalCondition --Ігнорувати мінімальні ціни
   FROM DW.dbo.V1C_doc_promotion_kit pk
   JOIN dw.dbo.V1C_dim_nomen dn ON pk.nomen_RRef=dn.IDRRef
-  JOIN DW.dbo.V1C_doc_promotion dp ON dp._IDRRef=pk.doc_promotion_RRef
-  WHERE dp.d_end>getdate() AND
-  pk.is_main=0
+  JOIN DW.dbo.V1C_doc_promotion dp ON dp._IDRRef=pk.doc_promotion_RRef AND dp.d_end>GETDATE()
+  LEFT JOIN DW.dbo.V1C_doc_promotion_kit pk_k ON (pk_k.doc_promotion_RRef=pk.doc_promotion_RRef AND pk.nomen_RRef = pk_k.nomen_RRef AND pk.number_kit = pk_k.number_kit AND pk_k.is_main=0x00)
+  LEFT JOIN wh_ex ON (wh_ex.doc_promotion_RRef=pk.doc_promotion_RRef)
+  WHERE dp.d_end>getdate() 
+  AND pk.is_main=0x01
+  AND wh_ex.doc_promotion_RRef IS null
   GROUP BY CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number),pk.number_kit
 
 [SqlGetPromotionSaleDealer]
 SELECT 9000000000+CONVERT( INT,YEAR(dpg.date_time)*100000+dpg.number) AS CodePS,   CONVERT(INT,dn.code) AS CodeWares, pg.date_beg AS DateBegin,pg.date_end AS DateEnd,CONVERT(INT,tp.code) AS CodeDealer
-  FROM  dbo.V1C_reg_promotion_gal pg
-  JOIN V1C_doc_promotion_gal dpg ON pg.doc_RRef = dpg.doc_RRef
+  FROM dbo.V1C_reg_promotion_gal pg
+  JOIN dbo.V1C_doc_promotion_gal dpg ON pg.doc_RRef = dpg.doc_RRef
   JOIN dbo.V1C_dim_nomen dn ON pg.nomen_RRef=dn.IDRRef
   JOIN dbo.V1C_dim_type_price tp ON pg.price_type_RRef=tp.type_price_RRef
---  JOIN dw.dbo.WAREHOUSES wh ON pg.Warehouse_RRef=wh._IDRRef
+  JOIN dbo.V1C_dim_warehouse wh ON wh.subdivision_RRef=pg.subdivision_RRef
   where pg.date_end>GETDATE()
---AND dpg.doc_RRef IS null
-AND pg.subdivision_RRef=0x9078001517DE370411DFFDEC4389A931;
+  AND wh.code =9
 
 [SqlGetPromotionSale]
 SELECT  
@@ -183,8 +198,14 @@ SELECT
 --  ,dp.is_exclusion_nomen
   ,0 AS TypeWorkCoupon
   ,NULL AS BarCodeCoupon
-    FROM DW.dbo.V1C_doc_promotion dp 
-  WHERE dp.d_end>getdate()
+    FROM DW.dbo.V1C_doc_promotion dp
+  LEFT JOIN (SELECT pw.doc_promotion_RRef,
+    SUM(CASE WHEN CONVERT(INT,dw.code)= 9 THEN 1 ELSE 0 END) AS Wh,COUNT(*) AS all_wh
+    FROM DW.dbo.V1C_doc_promotion_warehouse pw
+    JOIN DW.dbo.V1C_dim_warehouse dw ON dw.warehouse_RRef=pw.warehouse_RRef
+GROUP BY pw.doc_promotion_RRef
+  HAVING SUM(CASE WHEN dw.code=9 THEN 1 ELSE 0 END) = 0) wh_ex ON wh_ex.doc_promotion_RRef=dp._IDRRef
+  WHERE dp.d_end>getdate() AND wh_ex.doc_promotion_RRef IS null
 UNION ALL 
 SELECT DISTINCT 
   9000000000+CONVERT( INT,YEAR(dpg.date_time)*100000+dpg.number) AS CodePS
@@ -199,12 +220,12 @@ SELECT DISTINCT
   , 0.00 AS SumOrder
   ,0 AS TypeWorkCoupon
   ,NULL AS BarCodeCoupon
-
   FROM  dbo.V1C_reg_promotion_gal pg
-  JOIN V1C_doc_promotion_gal dpg ON pg.doc_RRef = dpg.doc_RRef
-  where pg.date_end>GETDATE()
---AND dpg.doc_RRef IS null
-AND pg.subdivision_RRef=0x9078001517DE370411DFFDEC4389A931;
+  JOIN  dbo.V1C_doc_promotion_gal dpg ON pg.doc_RRef = dpg.doc_RRef
+  JOIN  dbo.V1C_dim_warehouse wh ON wh.subdivision_RRef=pg.subdivision_RRef
+  where pg.date_end>GETDATE()  
+AND wh.code=9;
+
 
 [SqlGetPromotionSaleFilter]
 SELECT  --Склади дії
@@ -359,13 +380,20 @@ SELECT -- Товари  набору (Основні)
     ,CONVERT(INT,dn.code) as CodeWares
     ,CASE WHEN  pk.[percent] IS NULL OR pk.[percent]=0 THEN 11 ELSE 13 END  AS TypeDiscount
     ,CASE WHEN  pk.[percent] IS NULL OR pk.[percent]=0 THEN pk.price ELSE pk.[percent] END  AS Data
-    ,1 as  Quantity
-  FROM DW.dbo.V1C_doc_promotion_kit pk
+    ,pk.amount + CASE WHEN pk.amount=1 AND pk_k.nomen_RRef IS NOT NULL THEN 1 ELSE 0 end as  Quantity
+   FROM DW.dbo.V1C_doc_promotion_kit pk
   JOIN dw.dbo.V1C_dim_nomen dn ON pk.nomen_RRef=dn.IDRRef
   JOIN DW.dbo.V1C_doc_promotion dp ON dp._IDRRef=pk.doc_promotion_RRef
-  WHERE dp.d_end>getdate() AND
-  pk.is_main=0
-
+  LEFT JOIN DW.dbo.V1C_doc_promotion_kit pk_k ON (pk_k.doc_promotion_RRef=pk.doc_promotion_RRef AND pk.nomen_RRef = pk_k.nomen_RRef AND pk.number_kit = pk_k.number_kit AND pk_k.is_main=0x01)
+  LEFT JOIN (SELECT pw.doc_promotion_RRef,
+    SUM(CASE WHEN CONVERT(INT,dw.code)= 9 THEN 1 ELSE 0 END) AS Wh,COUNT(*) AS all_wh
+    FROM DW.dbo.V1C_doc_promotion_warehouse pw
+    JOIN DW.dbo.V1C_dim_warehouse dw ON dw.warehouse_RRef=pw.warehouse_RRef
+GROUP BY pw.doc_promotion_RRef
+  HAVING SUM(CASE WHEN dw.code=9 THEN 1 ELSE 0 END) = 0) wh_ex ON wh_ex.doc_promotion_RRef=dp._IDRRef
+  WHERE dp.d_end>getdate() 
+  AND pk.is_main=0
+  AND wh_ex.doc_promotion_RRef IS null
 
 [SqlEnd]
 */
