@@ -261,15 +261,25 @@ namespace SharedLib
 
         public IEnumerable<ReceiptWares> GetProductsByName(IdReceipt parReceipt, string parName, int parOffSet = -1, int parLimit = 10)
         {
-            // Якщо пошук по штрихкоду і назва похожа на штрихкод.
+            parName = parName.Trim();
+            // Якщо пошук по штрихкоду і назва похожа на штрихкод або артикул
             if (!string.IsNullOrEmpty(parName) )
             {
-                var Reg = new Regex(@"^[0-9]{8,13}$");
+                var Reg = new Regex(@"^[0-9]{5,13}$");
                 if (Reg.IsMatch(parName))
                 {
-                    var w = AddWaresBarCode(parReceipt, parName);
-                    if (w != null)
-                        return new List<ReceiptWares> { w };
+                    if (parName.Length >= 8)
+                    {
+                        var w = AddWaresBarCode(parReceipt, parName);
+                        if (w != null)
+                            return new List<ReceiptWares> { w };
+                    }
+                    else
+                    {
+                        var ww = db.FindWares(null, null, 0, 0, 0, Convert.ToInt32(parName));
+                        if (ww.Count() > 0)
+                            return ww;
+                    }
                 }
             }
 

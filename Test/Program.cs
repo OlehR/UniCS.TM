@@ -60,8 +60,7 @@ namespace Test
         {
             var TerminalId = Guid.Parse("1bb89aa9-dbdf-4eb0-b7a2-094665c3fdd0");
             var ProductId = Guid.Parse("00000010-abcd-0000-0019-000000055004");
-            var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009001");
-            //Guid.Parse("00140701-FFFF-2019-0618-000000000008");
+            var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009001");            
             var api = new ApiPSU();
             ProductViewModel sd;
             //var cl = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
@@ -95,9 +94,7 @@ namespace Test
 
             //169316+169316 4823086109988 Пельмені "Мішутка" Філейні 600г /Три ведмеді/
             //156727+169583 4823097403457+4823097405932 Майонез "Провансаль" 67% д/п 350г /Щедро/  Кетчуп "Лагідний" д/п 250г /Щедро/
-
-
-
+                       
         }
 
 
