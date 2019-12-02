@@ -23,7 +23,7 @@ namespace Test
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-            CreateDataBase(); //Створення бази
+            //CreateDataBase(); //Створення бази
             //Thread.Sleep(1000000);
             //TestKit();
             TestReceipt(); //
@@ -65,6 +65,7 @@ namespace Test
             ProductViewModel sd;
             //var cl = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
 
+            var cl = api.GetCustomerByBarCode(TerminalId, "4820220980229");
             sd = api.AddProductByBarCode(TerminalId, "4823086109988", 2); // 1+1 Пельмені "Мішутка" Філейні 600г /Три ведмеді/
 
             /*sd = api.AddProductByBarCode(TerminalId, "4823000916524", 1); //АРТЕК 
