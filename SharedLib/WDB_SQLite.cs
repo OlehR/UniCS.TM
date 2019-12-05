@@ -65,8 +65,7 @@ namespace SharedLib
             {
                 var db = new SQLite(MidFile);
                 db.ExecuteNonQuery(SqlCreateMIDTable);
-                db.Close();
-                
+                db.Close();                
             }
 
             //   db = new SQLite(string.IsNullOrEmpty(parConnect) ? Path.Combine(ModelMID.Global.PathDB,  @"MID.db") : parConnect);//,"",this.varCallWriteLogSQL);

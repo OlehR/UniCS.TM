@@ -64,25 +64,32 @@ namespace Test
             var api = new ApiPSU();
             ProductViewModel sd;
             //var cl = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
-
+            
+            
+            sd=api.AddProductByBarCode(TerminalId, "4820048481960", 0);
+            //Console.WriteLine("var cl = api.AddProductByBarCode(TerminalId, \"4820048481960\");");
+            //Console.WriteLine(sd.Name);
             var cl = api.GetCustomerByBarCode(TerminalId, "4820220980229");
+
             sd = api.AddProductByBarCode(TerminalId, "4823086109988", 2); // 1+1 Пельмені "Мішутка" Філейні 600г /Три ведмеді/
 
-            /*sd = api.AddProductByBarCode(TerminalId, "4823000916524", 1); //АРТЕК 
+            sd = api.AddProductByBarCode(TerminalId, "1111622770010", 1);
+
+            sd = api.AddProductByBarCode(TerminalId, "4823000916524", 1); //АРТЕК 
 
              sd =api.AddProductByBarCode( TerminalId, "7622300813437",1);//Барн
             sd = api.AddProductByBarCode(TerminalId, "7622300813437", 2);//Барн
             //            sd = api.AddProductByBarCode( TerminalId, "2201652300489",1); //Морква
-            sd = api.AddProductByBarCode(TerminalId, "1110867180018", 1); //Хліб
+            /*sd = api.AddProductByBarCode(TerminalId, "1110867180018", 1); //Хліб
             sd = api.AddProductByBarCode(TerminalId, "40804927", 1);
-            sd = api.AddProductByBarCode(TerminalId, "1110011760018", 1); //КІВІ ВАГОВІ 2 кат
+            sd = api.AddProductByBarCode(TerminalId, "1110011760018", 1); //КІВІ ВАГОВІ 2 кат*/
             sd = api.AddProductByBarCode( TerminalId, "2201652300489",1); //Морква
             sd = api.AddProductByBarCode(TerminalId, "7775006620509", 1); //товар 2 кат
             //Thread.Sleep(1000);
-            sd =api.AddProductByBarCode( TerminalId, "5903154545623", 1); //Суміш овочева "Семикомпонентна" 400г /Рудь/ акція 1+1
+            /*sd =api.AddProductByBarCode( TerminalId, "5903154545623", 1); //Суміш овочева "Семикомпонентна" 400г /Рудь/ акція 1+1
             sd = api.AddProductByBarCode(TerminalId, "7622300813437", 5);//Барн*/
             sd = api.AddProductByBarCode(TerminalId, "4823097403457", 5);//Майонез "Провансаль" 67% д/п 350г /Щедро/
-            sd = api.AddProductByBarCode(TerminalId, "4823097405932", 7);//Кетчуп "Лагідний" д/п 250г /Щедро/
+            sd = api.AddProductByBarCode(TerminalId, "4823097405932", 7);//Кетчуп "Лагідний" д/п 250г /Щедро/*/
             var RId = api.GetCurrentReceiptByTerminalId(TerminalId).ReceiptId;
             ReceiptPayment[] pay = new ReceiptPayment[]
                 {new ReceiptPayment {ReceiptId= RId ,
@@ -90,6 +97,8 @@ namespace Test
                     CardPan ="7548********8954",TransactionId="37108628262516415955665803737316905361" } };
             api.AddPayment(TerminalId, pay);
             var r = api.AddFiscalNumber(TerminalId, "TRRF-1234");
+
+            api.SendReceipt(RId);
 
             Thread.Sleep(100000);
 

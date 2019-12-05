@@ -382,11 +382,14 @@ namespace SharedLib
          
             if (parIsFull)
             {
-                db.db.Close();
-                DateTime varD = DateTime.Today;
                 
+                DateTime varD = DateTime.Today;
+
                 if (File.Exists(varMidFile))
-                    File.Delete(varMidFile);
+                {
+                    db.db.Close();
+                    File.Delete(varMidFile);                    
+                }
                 SQLite = new WDB_SQLite(varMidFile,true);
                 //SQLite.CreateMIDTable();
             }
