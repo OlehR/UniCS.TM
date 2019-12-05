@@ -66,6 +66,7 @@ namespace ModelMID
         /// </summary>
         public decimal SumDiscount { get; set; }
         //  Discount = // 
+        public string NameDiscount { get; set; }
         public decimal Sum
         {
             get { return Quantity * Price; }

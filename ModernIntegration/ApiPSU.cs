@@ -231,7 +231,7 @@ namespace ModernIntegration
                     false, //!!!TMP //Обмеження по віку алкоголь Підтверджено не потрібно посилати.
                 Quantity = (receiptWares.IsWeight ? 1:receiptWares.Quantity),
                 DiscountValue = receiptWares.SumDiscount,
-                DiscountName = "",
+                DiscountName = receiptWares.NameDiscount,
                 WarningType = null, //!!! Не посилати 
                 CalculatedWeight = 0,
                 Tags = (receiptWares.TypeWares > 0
@@ -262,6 +262,7 @@ namespace ModernIntegration
                 Price = varPWM.Price,
                 Quantity = varPWM.Quantity,
                 SumDiscount = varPWM.DiscountValue,
+                NameDiscount = varPWM.DiscountName,
                 Sort = varPWM.TotalRows //Сортування популярного.
             };
             return Res;

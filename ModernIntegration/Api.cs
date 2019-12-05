@@ -3,6 +3,7 @@ using ModernIntegration.Models;
 using ModernIntegration.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -51,9 +52,18 @@ namespace ModernIntegration
 
         public virtual bool UpdateProductWeight(string parS, int weight) { return false; }
 
+        public virtual Status GetCurentStatus() { throw new NotImplementedException(); }
+
         public Action<SyncInformation> OnSyncInfoCollected { get; set; }
 
         public Action<IEnumerable<ProductViewModel>, Guid> OnProductsChanged { get; set; }
 
+        public Action<Status> OnStatusChanged { get; set; }
+    }
+    public class Status 
+    {
+        public Color color;
+        public string HexColor => $"{color.R:X2}{color.G:X2}{color.B:X2}";
+        public string Descriprion;
     }
 }

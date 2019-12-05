@@ -87,32 +87,32 @@ namespace SharedLib
                     if (el.Prefix.Equals(parBarCode.Substring(0, el.Prefix.Length)))
                     {
                         int varCode = Convert.ToInt32(parBarCode.Substring(el.Prefix.Length, el.LenghtCode));
-                        int varValue= Convert.ToInt32(parBarCode.Substring(el.Prefix.Length+el.LenghtCode,el.LenghtQuantity));
-                        switch(el.TypeCode)
+                        int varValue = Convert.ToInt32(parBarCode.Substring(el.Prefix.Length + el.LenghtCode, el.LenghtQuantity));
+                        switch (el.TypeCode)
                         {
                             case eTypeCode.Article:
-                                w= db.FindWares(null, null, 0, 0, 0, varCode);
+                                w = db.FindWares(null, null, 0, 0, 0, varCode);
                                 break;
                             case eTypeCode.Code:
                                 w = db.FindWares(null, null, varCode);
                                 break;
                             case eTypeCode.PercentDiscount:
-                                CheckDiscountBarCodeAsync(parReceipt,parBarCode, varCode);
+                                CheckDiscountBarCodeAsync(parReceipt, parBarCode, varCode);
                                 return null;
                             default:
                                 break;
                         }
-                        if (parQuantity>0 && w != null && w.Count() == 1) //Знайшли що треба
+                        if (parQuantity > 0 && w != null && w.Count() == 1) //Знайшли що треба
                         {
                             parQuantity = (w.First().CodeUnit == Global.WeightCodeUnit ? varValue / 1000m : varValue);
                             break;
                         }
                     }
                 }
-               
+
             }
 
-            if(w == null || w.Count() != 1)
+            if (w == null || w.Count() != 1)
                 return null;
             var W = w.First();
             if (parQuantity == 0)
@@ -161,7 +161,7 @@ namespace SharedLib
 
             if (isGood)
             {
-                db.ReplaceWaresReceiptPromotion(Cat2); 
+                db.ReplaceWaresReceiptPromotion(Cat2);
                 db.InsertBarCode2Cat(Cat2.First());
             }
 
@@ -263,7 +263,7 @@ namespace SharedLib
         {
             parName = parName.Trim();
             // Якщо пошук по штрихкоду і назва похожа на штрихкод або артикул
-            if (!string.IsNullOrEmpty(parName) )
+            if (!string.IsNullOrEmpty(parName))
             {
                 var Reg = new Regex(@"^[0-9]{5,13}$");
                 if (Reg.IsMatch(parName))
@@ -284,7 +284,7 @@ namespace SharedLib
             }
 
 
-            var r = db.FindWares(null, parName,0,0,0,-1, parOffSet, parLimit);
+            var r = db.FindWares(null, parName, 0, 0, 0, -1, parOffSet, parLimit);
             if (r.Count() > 0)
             {
                 return r;
@@ -319,7 +319,7 @@ namespace SharedLib
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             SendReceiptTo1CAsync(r);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            return true;            
+            return true;
         }
         public async Task<bool> SendReceiptTo1CAsync(Receipt parReceipt)
         {
@@ -334,7 +334,7 @@ namespace SharedLib
             var response = await client.SendAsync(requestMessage);
 
             if (response.IsSuccessStatusCode)
-            {                
+            {
                 var res = await response.Content.ReadAsStringAsync();
                 parReceipt.StateReceipt = eStateReceipt.Send;
                 db.SetStateReceipt(parReceipt);//Змінюєм стан чека на відправлено.
@@ -345,17 +345,19 @@ namespace SharedLib
                 return false;
             }
         }
-        public async Task<bool> SendAllReceipt() 
+        public async Task<bool> SendAllReceipt(WDB_SQLite parDB = null)
         {
-            var varReceipts=db.GetIdReceiptbyState( eStateReceipt.Print);
+            if (parDB == null)
+                parDB = db;
+            var varReceipts = parDB.GetIdReceiptbyState(eStateReceipt.Print);
             foreach (var el in varReceipts)
-                  await SendReceiptTo1CAsync(db.ViewReceipt(el, true));
+                await SendReceiptTo1CAsync(parDB.ViewReceipt(el, true));
             return true;
         }
-            
-            
 
-        public bool InsertWeight(string parBarCode,int parWeight)
+
+
+        public bool InsertWeight(string parBarCode, int parWeight)
         {
             return db.InsertWeight(new { BarCode = parBarCode, Weight = (decimal)parWeight / 1000m });
         }
@@ -365,7 +367,7 @@ namespace SharedLib
         public bool SyncData(bool parIsFull)
         {
             WDB_SQLite SQLite;
-            
+
             if (!parIsFull)
             {
                 var strTD = db.GetConfig<string>("Load_Full");
@@ -379,18 +381,18 @@ namespace SharedLib
                 }
             }
             string varMidFile = db.GetCurrentMIDFile;
-         
+
             if (parIsFull)
             {
-                
+
                 DateTime varD = DateTime.Today;
 
                 if (File.Exists(varMidFile))
                 {
                     db.db.Close();
-                    File.Delete(varMidFile);                    
+                    File.Delete(varMidFile);
                 }
-                SQLite = new WDB_SQLite(varMidFile,true);
+                SQLite = new WDB_SQLite(varMidFile, true);
                 //SQLite.CreateMIDTable();
             }
             else
@@ -409,16 +411,16 @@ namespace SharedLib
                 }
                 catch (Exception ex)
                 {
-                    var er=ex.Message;
+                    var er = ex.Message;
                 }
             }
             db.SetConfig<string>("Load_" + (parIsFull ? "Full" : "Update"), String.Format("{0:u}", DateTime.Now));
 
-            return true;            
+            return true;
         }
         public class TableStruc
         {
-           public int Cid { get; set; }
+            public int Cid { get; set; }
             public string Name { get; set; }
             public string Type { get; set; }
             public string Dflt_value { get; set; }
@@ -426,22 +428,43 @@ namespace SharedLib
         }
         public string BildSqlUpdate(string parTableName)
         {
-           var r= db.db.Execute<TableStruc>($"PRAGMA table_info('{parTableName}');");
-            var ListField="";
+            var r = db.db.Execute<TableStruc>($"PRAGMA table_info('{parTableName}');");
+            var ListField = "";
             var Where = "";
             var On = "";
 
-            foreach(var el in r)
+            foreach (var el in r)
             {
-                ListField+= (ListField.Length > 0 ? ", " : "") +el.Name ;
-                if (el.PK==1)
-                    On += (On.Length>0? " and ":"")+  $"main.{el.Name}=upd.{el.Name}";
+                ListField += (ListField.Length > 0 ? ", " : "") + el.Name;
+                if (el.PK == 1)
+                    On += (On.Length > 0 ? " and " : "") + $"main.{el.Name}=upd.{el.Name}";
                 else
-                    Where += (Where.Length > 0 ? " or " : "")+ $"main.{el.Name}!=upd.{el.Name}";
+                    Where += (Where.Length > 0 ? " or " : "") + $"main.{el.Name}!=upd.{el.Name}";
             }
- 
-            var Res= $"replace parTableName ({ListField}) \n select {ListField} from main.{parTableName}\n join upd.{parTableName} on ( {On})\n where {Where}";
+
+            var Res = $"replace parTableName ({ListField}) \n select {ListField} from main.{parTableName}\n join upd.{parTableName} on ( {On})\n where {Where}";
             return Res;
+        }
+
+        public void SendOldReceipt()
+        {
+            var Ldc = db.GetConfig<DateTime>("LastDaySend");
+            var today = DateTime.Now.Date;
+
+            if (Ldc == default(DateTime))
+                Ldc = today.AddDays(-20);
+
+            while (Ldc < today)
+            {
+                var ldb = new WDB_SQLite(null, false, Ldc);
+                var t = SendAllReceipt(ldb);
+                t.Wait();
+                var res = t.Result;
+                db.SetConfig<DateTime>("LastDaySend", Ldc);
+                Ldc.AddDays(1);                
+            }
+
+
         }
     }
 }
