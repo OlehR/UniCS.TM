@@ -124,12 +124,12 @@ namespace ModernIntegration
                     Res.Add(GetProductViewModel(el));
             return Res;
         }
-        public override IEnumerable<ProductViewModel> GetProductsByName(Guid parTerminalId, string parName, int pageNumber = 0, bool excludeWeightProduct = false, Guid? categoryId = null)
+        public override IEnumerable<ProductViewModel> GetProductsByName(Guid parTerminalId, string parName, int pageNumber = 0, bool excludeWeightProduct = false, Guid? categoryId = null,int parLimit=10)
         {
 
             var receiptId = GetCurrentReceiptByTerminalId(parTerminalId);
-            int Limit = 10;
-            var res = Bl.GetProductsByName(receiptId, parName.Replace(' ', '%').Trim(), pageNumber * Limit, Limit);
+            //int Limit = 10;
+            var res = Bl.GetProductsByName(receiptId, parName.Replace(' ', '%').Trim(), pageNumber * parLimit, parLimit);
             if (res == null)
                 return null;
             return res.Select(r => (GetProductViewModel(r)));    
