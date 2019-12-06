@@ -23,9 +23,7 @@ namespace SharedLib
                        return Path.Combine(Global.PathDB, $"{varD:yyyyMM}", $"MID_{varD:yyyyMMdd}.db"); } }
 
 
-        public static Action<IEnumerable<ReceiptWares>, Guid> OnReceiptCalculationComplete { get; set; }
-
-        
+  
         public WDB_SQLite(string parConnect = "",bool IsMidMain=false,DateTime parD = default(DateTime))  : base(Path.Combine(Global.PathIni, "SQLite.sql") )
         {
             varVersion = "SQLite.0.0.1";
@@ -222,7 +220,7 @@ namespace SharedLib
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    OnSyncInfoCollected?.Invoke(new SyncInformation { SyncData=e,Status=SyncStatus.Error,StatusDescription=e.Message });
                     return false;
                 }
             }

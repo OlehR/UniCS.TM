@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModernIntegration.Model
+namespace ModelMID
 {
     public enum SyncStatus
     {
@@ -10,7 +10,8 @@ namespace ModernIntegration.Model
         StartedFullSync = 2,
         SyncFinishedSuccess = 3,
         SyncFinishedError = 4,
-        SyncReceiptSaved =5
+        SyncReceiptSaved =5,
+        Error = -1
     }
 
     public class SyncInformation
