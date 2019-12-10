@@ -220,7 +220,7 @@ namespace SharedLib
                 }
                 catch (Exception ex)
                 {
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { SyncData=ex,Status=eSyncStatus.Error,StatusDescription=ex.Message });
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace), Exception = ex, Status =eSyncStatus.Error,StatusDescription=ex.Message });
                     return false;
                 }
             }

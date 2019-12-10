@@ -161,7 +161,7 @@ namespace SharedLib
                 catch (Exception ex)
                 {
                     Global.ErrorDiscountOnLine++;
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { SyncData = ex, Status = eSyncStatus.NoFatalError, StatusDescription = ex.Message });
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId=Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = ex.Message });
                     Global.OnStatusChanged?.Invoke(db.GetStatus());
 
                 }
@@ -175,7 +175,7 @@ namespace SharedLib
 
             catch (Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { SyncData = ex, Status = eSyncStatus.Error, StatusDescription = ex.Message });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.Error, StatusDescription = ex.Message });
             }
             return true;
         }
@@ -361,7 +361,7 @@ namespace SharedLib
             }
             catch(Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { SyncData = ex, Status = eSyncStatus.NoFatalError, StatusDescription = ex.Message });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = ex.Message });
                 return false;
             }
         }
@@ -429,7 +429,7 @@ namespace SharedLib
             }
             catch (Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { SyncData = ex, Status = eSyncStatus.Error, StatusDescription = ex.Message });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation {  Exception = ex, Status = eSyncStatus.Error, StatusDescription = ex.Message });
                 Global.OnStatusChanged?.Invoke(db.GetStatus());
 
                 return false;
