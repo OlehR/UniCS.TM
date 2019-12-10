@@ -372,6 +372,7 @@ namespace SharedLib
             var varReceipts = parDB.GetIdReceiptbyState(eStateReceipt.Print);
             foreach (var el in varReceipts)
                 await SendReceiptTo1CAsync(parDB.ViewReceipt(el, true));
+            SendOldReceipt();
             Global.OnStatusChanged?.Invoke(db.GetStatus());
             return true;
         }
@@ -480,7 +481,10 @@ namespace SharedLib
                 if (res.Count() == 0)
                     db.SetConfig<DateTime>("LastDaySend", Ldc);
                 else
+                {
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation {  Status = eSyncStatus.NoFatalError, StatusDescription = $"SendOldReceipt => ErrorSend data {Ldc} Not Send => {res.Count()}" });
                     return;
+                }
 
                 Ldc.AddDays(1);                
             }
