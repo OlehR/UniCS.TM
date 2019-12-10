@@ -13,6 +13,7 @@ namespace ModelMID
 
         public static Action<IEnumerable<ReceiptWares>, Guid> OnReceiptCalculationComplete { get; set; }
         public static Action<SyncInformation> OnSyncInfoCollected { get; set; }
+        public static Action<Status> OnStatusChanged { get; set; }
 
         public static SortedList<Guid, WorkPlace> WorkPlaceByTerminalId;
         public static SortedList<int, WorkPlace> WorkPlaceByWorkplaceId;
@@ -69,9 +70,9 @@ namespace ModelMID
 
         public static int DefaultCodeDealer = 2;
 
-        public static int DefaultCodeClient = 0;
+        //public static int DefaultCodeClient = 0;
 
-        public static string BillCoins = "грн:1:500,200,100,50,20,10,5,2,1;коп:0.01:50,10";
+        //public static string BillCoins = "грн:1:500,200,100,50,20,10,5,2,1;коп:0.01:50,10";
 
         /// <summary>
         /// Перераховувати ціни після кожної зміни в чеку
@@ -111,17 +112,32 @@ namespace ModelMID
         public static string PathIni = @"D:\WORK\CS\UniCS.TM\SharedLib\";
 
         //public static Language Language = Language.uk_UA;
-        //public static string 
-        //public static DateTime ArxDate= new DateTime (1,1,1);\
-        public static string WaresGuid = "1A3B944E-3632-467B-A53A-";
+        
         public static string ClientGuid = "1A3B944E-3632-467B-AFFA-";
 
-        public static int CodeFastGroupBag=0;
+        public static int CodeFastGroupBag = 0;
         public static SortedList<int, string> Tax = new SortedList<int, string>();
 
         public static string Server1C = "";
 
-        public static List<CustomerBarCode> CustomerBarCode  { get;set;}
+        public static List<CustomerBarCode> CustomerBarCode { get; set; }
+
+        public static eMethodExecutionLoggingType MethodExecutionLogging = eMethodExecutionLoggingType.Always;
+        public static long LimitMethodExecutionTimeInMillis = 200;
+
+        /// <summary>
+        /// Кількість помилкових запитів до сервера
+        /// </summary>
+        public static int ErrorDiscountOnLine { 
+            get { return ErrorDiscountOnLine; } 
+            set { 
+                if (value == 0) FirstErrorDiscountOnLine= default(DateTime); 
+                ErrorDiscountOnLine = value; } 
+        }
+        /// <summary>
+        ///  час Першого помилкового запита до сервера 
+        /// </summary>
+        public static DateTime FirstErrorDiscountOnLine = default(DateTime);
         public static int GetCodePeriod()
         {
             return GetCodePeriod(DateTime.Today);
@@ -168,19 +184,29 @@ namespace ModelMID
             return "00";
         }
 
-        public static string GetTaxGroup(int parTypeVat,int parTypeWares=0)
+        public static string GetTaxGroup(int parTypeVat, int parTypeWares = 0)
         {
-            return Tax[parTypeWares*10+parTypeVat];
+            return Tax[parTypeWares * 10 + parTypeVat];
         }
 
-        public static MethodExecutionLoggingType MethodExecutionLogging = MethodExecutionLoggingType.Always;
-        public static long LimitMethodExecutionTimeInMillis = 200;
-        
-        public enum MethodExecutionLoggingType
+        public static eExchangeStatus GetExchangeStatus(DateTime parDT)
         {
-            MoreThenMillis = 0,
-            Always,
-            WhenErrored,
+            var Diff = DateTime.Now - parDT;
+            if (parDT == default(DateTime) || Diff.Minutes<15)
+                return eExchangeStatus.Green;
+            
+            if(Diff.Minutes<30)
+                return eExchangeStatus.LightGreen;
+            
+            if (Diff.Hours < 1)
+                return eExchangeStatus.Yellow;
+ 
+            if (Diff.Hours < 3)
+                return eExchangeStatus.Orange;
+
+            return eExchangeStatus.Red;
         }
+
+
     }
 }

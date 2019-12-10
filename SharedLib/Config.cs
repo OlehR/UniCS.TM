@@ -29,7 +29,7 @@ namespace SharedLib
                 Global.PathIni = CurDir;
 
           
-            Global.MethodExecutionLogging = AppConfiguration.GetValue<Global.MethodExecutionLoggingType>("MethodExecutionLogging:Type");
+            Global.MethodExecutionLogging = AppConfiguration.GetValue<Global.eMethodExecutionLoggingType>("MethodExecutionLogging:Type");
             Global.LimitMethodExecutionTimeInMillis = AppConfiguration.GetValue<long>("MethodExecutionLogging:LimitMethodExecutionTimeInMillis");
 
             //var el=AppConfiguration["MID:WorkPlaces"];

@@ -111,7 +111,7 @@ select wr.id_workplace as IdWorkplace, wr.code_period as CodePeriod, wr.code_rec
  ,(select max(bc.BAR_CODE) from BAR_CODE bc where bc.code_wares=wr.code_wares) as BarCode 
  ,w.Weight_Brutto as WeightBrutto
  ,ps.NAME_PS as NameDiscount,Sum_Discount as SumDiscount
-                     from rc.wares_receipt wr
+                     from wares_receipt wr
                      join wares w on (wr.code_wares =w.code_wares)
                      join ADDITION_UNIT au on w.code_wares = au.code_wares and wr.code_unit=au.code_unit
                      join unit_dimension ud on (wr.code_unit = ud.code_unit)
@@ -930,6 +930,7 @@ where
     sort= (select COALESCE(max(sort),0) from wares_receipt  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt )
     and id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt
 	 limit 1
-
+[SqlGetDateFirstNotSendReceipt]
+select ifnull(min(date_receipt),datetime('now','localtime'))   from receipt wr where state_receipt =2
 [SqlEnd]
 */

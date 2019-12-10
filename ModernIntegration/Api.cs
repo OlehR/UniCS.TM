@@ -61,10 +61,5 @@ namespace ModernIntegration
 
         public Action<Status> OnStatusChanged { get; set; }
     }
-    public class Status 
-    {
-        public Color color;
-        public string HexColor => $"{color.R:X2}{color.G:X2}{color.B:X2}";
-        public string Descriprion;
-    }
+    
 }

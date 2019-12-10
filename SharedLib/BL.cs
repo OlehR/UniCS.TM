@@ -156,10 +156,14 @@ namespace SharedLib
                         res = res.Substring(0, res.IndexOf("</m:return>")).Trim();
                         isGood = res.Equals("1");
                     }
+                    Global.ErrorDiscountOnLine=0;
                 }
                 catch (Exception ex)
                 {
+                    Global.ErrorDiscountOnLine++;
                     Global.OnSyncInfoCollected?.Invoke(new SyncInformation { SyncData = ex, Status = eSyncStatus.NoFatalError, StatusDescription = ex.Message });
+                    Global.OnStatusChanged?.Invoke(db.GetStatus());
+
                 }
 
                 if (isGood)
@@ -357,7 +361,7 @@ namespace SharedLib
             }
             catch(Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { SyncData = ex, Status = eSyncStatus.Error, StatusDescription = ex.Message });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { SyncData = ex, Status = eSyncStatus.NoFatalError, StatusDescription = ex.Message });
                 return false;
             }
         }
@@ -368,6 +372,7 @@ namespace SharedLib
             var varReceipts = parDB.GetIdReceiptbyState(eStateReceipt.Print);
             foreach (var el in varReceipts)
                 await SendReceiptTo1CAsync(parDB.ViewReceipt(el, true));
+            Global.OnStatusChanged?.Invoke(db.GetStatus());
             return true;
         }
 
@@ -387,16 +392,10 @@ namespace SharedLib
                 WDB_SQLite SQLite;
 
                 if (!parIsFull)
-                {
-                    var strTD = db.GetConfig<string>("Load_Full");
-                    if (strTD == null || strTD.Length < 10)
-                        parIsFull = true;
-                    else
-                    {
-                        var dt = DateTime.Parse(strTD.Substring(0, 10));
-                        if (DateTime.Now.Date != dt.Date)
-                            parIsFull = true;
-                    }
+                {                    
+                    var TD = db.GetConfig<DateTime>("Load_Full");
+                    if (TD == default(DateTime) || DateTime.Now.Date != TD.Date)
+                        parIsFull = true;                    
                 }
                 string varMidFile = db.GetCurrentMIDFile;
 
@@ -430,6 +429,8 @@ namespace SharedLib
             catch (Exception ex)
             {
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { SyncData = ex, Status = eSyncStatus.Error, StatusDescription = ex.Message });
+                Global.OnStatusChanged?.Invoke(db.GetStatus());
+
                 return false;
             }
             return true;
@@ -468,18 +469,23 @@ namespace SharedLib
             var today = DateTime.Now.Date;
 
             if (Ldc == default(DateTime))
-                Ldc = today.AddDays(-20);
+                Ldc = today.AddDays(-10);
 
             while (Ldc < today)
             {
                 var ldb = new WDB_SQLite(null, false, Ldc);
                 var t = SendAllReceipt(ldb);
                 t.Wait();
-                var res = t.Result;
-                db.SetConfig<DateTime>("LastDaySend", Ldc);
+                var  res = ldb.GetIdReceiptbyState(eStateReceipt.Print);
+                if (res.Count() == 0)
+                    db.SetConfig<DateTime>("LastDaySend", Ldc);
+                else
+                    return;
+
                 Ldc.AddDays(1);                
             }
-
+            //Перекидаємо лічильник на сьогодня.
+            db.SetConfig<DateTime>("LastDaySend", Ldc);
 
         }
     }
