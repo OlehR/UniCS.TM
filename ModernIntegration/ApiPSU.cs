@@ -221,9 +221,14 @@ namespace ModernIntegration
                     { new WeightInfo() { Weight = (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : Convert.ToDouble(receiptWares.WeightBrutto)), DeltaWeight = 3 }
                     };
             foreach (var el in receiptWares.AdditionalWeights)
-                LWI.Add(new WeightInfo { DeltaWeight = 3, Weight = Convert.ToDouble(el) });
-
-            var Res = new ProductViewModel()
+                LWI.Add(new WeightInfo { DeltaWeight = 0.07 * Convert.ToDouble(el), Weight = Convert.ToDouble(el) });
+            var varTags = (receiptWares.TypeWares > 0
+                    ? new List<Tag>()
+                        {new Tag() {Key = "AgeRestricted", Id = 0}, new Tag() {Key = "TimeRestricted", Id = 1}}
+                    : null); //!!!TMP // Різні мітки алкоголь, обмеження по часу.
+            if (!receiptWares.IsWeight && receiptWares.WeightBrutto == 0)
+                varTags.Add(new Tag { Id = 3, Key = "NoWeightedProduct" });
+                            var Res = new ProductViewModel()
             {
                 Id = receiptWares.WaresId,
                 Code = receiptWares.CodeWares,
@@ -231,10 +236,10 @@ namespace ModernIntegration
                 AdditionalDescription = receiptWares.NameWaresReceipt, //!!!TMP;
                 Image = null,
                 Price = receiptWares.Price > 0 ? receiptWares.Price : receiptWares.PriceDealer,
-                WeightCategory = 1, //вимірювання Похибки в відсотках,2 в грамах
+                WeightCategory = 2, //вимірювання Похибки в відсотках,2 в грамах
                 Weight = (receiptWares.IsWeight  ? Convert.ToDouble( receiptWares.Quantity): Convert.ToDouble( receiptWares.WeightBrutto)),
-                AdditionalWeights= LWI,
-                DeltaWeight = 3, //!!!TMP
+                DeltaWeight = 0.07* (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : Convert.ToDouble(receiptWares.WeightBrutto)), 
+                AdditionalWeights = LWI,                
                 ProductWeightType =
                     receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByPiece, //!!!TMP
                 IsAgeRestrictedConfirmed =
@@ -244,10 +249,7 @@ namespace ModernIntegration
                 DiscountName = receiptWares.NameDiscount,
                 WarningType = null, //!!! Не посилати 
                 CalculatedWeight = 0,
-                Tags = (receiptWares.TypeWares > 0
-                    ? new List<Tag>()
-                        {new Tag() {Key = "AgeRestricted", Id = 0}, new Tag() {Key = "TimeRestricted", Id = 1}}
-                    : null), //!!!TMP // Різні мітки алкоголь, обмеження по часу. 
+                Tags = varTags, 
                 HasSecurityMark = false, //!!!TMP // Магнітна мітка, яку треба знімати.
                 TotalRows = receiptWares.Sort, //Сортування популярного.
                
