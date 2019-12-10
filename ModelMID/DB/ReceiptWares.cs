@@ -138,6 +138,10 @@ namespace ModelMID
         public string BarCode { get; set; }
 
         public decimal WeightBrutto { get; set; }
+        /// <summary>
+        /// Додаткові ваги
+        /// </summary>
+        public List<decimal> AdditionalWeights;
     public ReceiptWares()
         {
             Clear();

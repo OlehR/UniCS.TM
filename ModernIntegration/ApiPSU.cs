@@ -217,6 +217,12 @@ namespace ModernIntegration
         /// <returns></returns>
         private ProductViewModel GetProductViewModel(ReceiptWares receiptWares)
         {
+            var LWI = new List<WeightInfo>()
+                    { new WeightInfo() { Weight = (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : Convert.ToDouble(receiptWares.WeightBrutto)), DeltaWeight = 3 }
+                    };
+            foreach (var el in receiptWares.AdditionalWeights)
+                LWI.Add(new WeightInfo { DeltaWeight = 3, Weight = Convert.ToDouble(el) });
+
             var Res = new ProductViewModel()
             {
                 Id = receiptWares.WaresId,
@@ -225,7 +231,9 @@ namespace ModernIntegration
                 AdditionalDescription = receiptWares.NameWaresReceipt, //!!!TMP;
                 Image = null,
                 Price = receiptWares.Price > 0 ? receiptWares.Price : receiptWares.PriceDealer,
-                Weight = (receiptWares.IsWeight  ? Convert.ToDouble( receiptWares.Quantity): Convert.ToDouble( receiptWares.WeightBrutto)), 
+                WeightCategory = 1, //вимірювання Похибки в відсотках,2 в грамах
+                Weight = (receiptWares.IsWeight  ? Convert.ToDouble( receiptWares.Quantity): Convert.ToDouble( receiptWares.WeightBrutto)),
+                AdditionalWeights= LWI,
                 DeltaWeight = 3, //!!!TMP
                 ProductWeightType =
                     receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByPiece, //!!!TMP
@@ -242,7 +250,7 @@ namespace ModernIntegration
                     : null), //!!!TMP // Різні мітки алкоголь, обмеження по часу. 
                 HasSecurityMark = false, //!!!TMP // Магнітна мітка, яку треба знімати.
                 TotalRows = receiptWares.Sort, //Сортування популярного.
-                WeightCategory = 1, //вимірювання Похибки в відсотках,2 в грамах
+               
                 IsProductOnProcessing = false, //
                 ///CategoryId=   !!!TMP Групи 1 рівня.
                 TaxGroup = Global.GetTaxGroup(receiptWares.TypeVat, receiptWares.TypeWares),
