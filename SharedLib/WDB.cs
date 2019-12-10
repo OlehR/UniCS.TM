@@ -33,10 +33,6 @@ namespace SharedLib
         /// </summary>
         private Dictionary<int, object> WorkplaceIdLockers = new Dictionary<int, object>();
 
-        public static Action<IEnumerable<ReceiptWares>, Guid> OnReceiptCalculationComplete { get; set; }
-        public static Action<SyncInformation> OnSyncInfoCollected { get; set; }
-
-
 
         /*public delegate void CallWriteLogSQL(string parQvery, ParametersCollection parParameters = null);
         /// <summary>

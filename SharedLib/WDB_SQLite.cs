@@ -172,7 +172,7 @@ namespace SharedLib
                 {
                     //Console.WriteLine(OnReceiptCalculationComplete != null);
                     var r = ViewReceiptWares(parIdReceiptWares);
-                    OnReceiptCalculationComplete?.Invoke(r, Global.GetTerminalIdByIdWorkplace(parIdReceiptWares.IdWorkplace));
+                    Global.OnReceiptCalculationComplete?.Invoke(r, Global.GetTerminalIdByIdWorkplace(parIdReceiptWares.IdWorkplace));
                 }
             });
         }
@@ -220,7 +220,7 @@ namespace SharedLib
                 }
                 catch (Exception ex)
                 {
-                    OnSyncInfoCollected?.Invoke(new SyncInformation { SyncData=ex,Status=eSyncStatus.Error,StatusDescription=ex.Message });
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { SyncData=ex,Status=eSyncStatus.Error,StatusDescription=ex.Message });
                     return false;
                 }
             }

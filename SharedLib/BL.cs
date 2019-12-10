@@ -27,7 +27,7 @@ namespace SharedLib
         {
             db = new WDB_SQLite();
             WorkId = new SortedList<Guid, int>();
-            WDB.OnReceiptCalculationComplete = (wareses, guid) => OnReceiptCalculationComplete?.Invoke(wareses, guid);
+            Global.OnReceiptCalculationComplete = (wareses, guid) => OnReceiptCalculationComplete?.Invoke(wareses, guid);
            
         }
         public ReceiptWares AddReceiptWares(ReceiptWares parW)
@@ -159,7 +159,7 @@ namespace SharedLib
                 }
                 catch (Exception ex)
                 {
-                    WDB.OnSyncInfoCollected?.Invoke(new SyncInformation { SyncData = ex, Status = eSyncStatus.NoFatalError, StatusDescription = ex.Message });
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { SyncData = ex, Status = eSyncStatus.NoFatalError, StatusDescription = ex.Message });
                 }
 
                 if (isGood)
@@ -171,7 +171,7 @@ namespace SharedLib
 
             catch (Exception ex)
             {
-                WDB.OnSyncInfoCollected?.Invoke(new SyncInformation { SyncData = ex, Status = eSyncStatus.Error, StatusDescription = ex.Message });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { SyncData = ex, Status = eSyncStatus.Error, StatusDescription = ex.Message });
             }
             return true;
         }
@@ -357,7 +357,7 @@ namespace SharedLib
             }
             catch(Exception ex)
             {
-                WDB.OnSyncInfoCollected?.Invoke(new SyncInformation { SyncData = ex, Status = eSyncStatus.Error, StatusDescription = ex.Message });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { SyncData = ex, Status = eSyncStatus.Error, StatusDescription = ex.Message });
                 return false;
             }
         }
@@ -429,7 +429,7 @@ namespace SharedLib
             }
             catch (Exception ex)
             {
-                WDB.OnSyncInfoCollected?.Invoke(new SyncInformation { SyncData = ex, Status = eSyncStatus.Error, StatusDescription = ex.Message });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { SyncData = ex, Status = eSyncStatus.Error, StatusDescription = ex.Message });
                 return false;
             }
             return true;

@@ -31,7 +31,7 @@ namespace ModernIntegration
                 }
                 OnProductsChanged?.Invoke(wareses.Select(s => GetProductViewModel(s)), guid);
             };
-            WDB.OnSyncInfoCollected = (SyncInfo) => OnSyncInfoCollected?.Invoke(SyncInfo);
+            Global.OnSyncInfoCollected = (SyncInfo) => OnSyncInfoCollected?.Invoke(SyncInfo);
         }
         public override ProductViewModel AddProductByBarCode(Guid parTerminalId, string parBarCode, decimal parQuantity = 0)
         {
