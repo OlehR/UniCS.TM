@@ -125,47 +125,54 @@ namespace SharedLib
 
         public async Task<bool> CheckDiscountBarCodeAsync(IdReceipt parIdReceipt, string parBarCode, int parPercent)
         {
-            var Cat2 = db.CheckLastWares2Cat(parIdReceipt);
-            if (Cat2 == null && Cat2.Count() != 0)
-                return false;
-            Cat2.First().BarCode2Category = parBarCode;
-            Cat2.First().Price = Cat2.First().Price * (decimal)parPercent / 100m;
-
-            bool isGood = true;
             try
             {
-                string body = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
-                             "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd = \"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n" +
-                $"<soap:Body>\n<GetRestOfLabel xmlns=\"vopak\">\n<CodeOfLabel>{parBarCode}</CodeOfLabel> \n </GetRestOfLabel> \n </soap:Body>\n </soap:Envelope>";
+                var Cat2 = db.CheckLastWares2Cat(parIdReceipt);
+                if (Cat2 == null && Cat2.Count() != 0)
+                    return false;
+                Cat2.First().BarCode2Category = parBarCode;
+                Cat2.First().Price = Cat2.First().Price * (decimal)parPercent / 100m;
 
-                HttpClient client = new HttpClient();
-                client.Timeout = TimeSpan.FromMilliseconds(5000);
-                // Add a new Request Message
-                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, "http://1CSRV/utppsu/ws/ws1.1cws");
-                //requestMessage.Headers.Add("Accept", "application/vnd.github.v3+json");
-                // Add our custom headers
-                requestMessage.Content = new StringContent(body, Encoding.UTF8, "text/xml");
-                var response = await client.SendAsync(requestMessage);
-
-                if (response.IsSuccessStatusCode)
+                bool isGood = true;
+                try
                 {
-                    var res = await response.Content.ReadAsStringAsync();
-                    res = res.Substring(res.IndexOf(@"-instance"">") + 11);
-                    res = res.Substring(0, res.IndexOf("</m:return>")).Trim();
-                    isGood = res.Equals("1");
+                    string body = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                                 "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd = \"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n" +
+                    $"<soap:Body>\n<GetRestOfLabel xmlns=\"vopak\">\n<CodeOfLabel>{parBarCode}</CodeOfLabel> \n </GetRestOfLabel> \n </soap:Body>\n </soap:Envelope>";
+
+                    HttpClient client = new HttpClient();
+                    client.Timeout = TimeSpan.FromMilliseconds(5000);
+                    // Add a new Request Message
+                    HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, "http://1CSRV/utppsu/ws/ws1.1cws");
+                    //requestMessage.Headers.Add("Accept", "application/vnd.github.v3+json");
+                    // Add our custom headers
+                    requestMessage.Content = new StringContent(body, Encoding.UTF8, "text/xml");
+                    var response = await client.SendAsync(requestMessage);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var res = await response.Content.ReadAsStringAsync();
+                        res = res.Substring(res.IndexOf(@"-instance"">") + 11);
+                        res = res.Substring(0, res.IndexOf("</m:return>")).Trim();
+                        isGood = res.Equals("1");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    WDB.OnSyncInfoCollected?.Invoke(new SyncInformation { SyncData = ex, Status = eSyncStatus.NoFatalError, StatusDescription = ex.Message });
+                }
+
+                if (isGood)
+                {
+                    db.ReplaceWaresReceiptPromotion(Cat2);
+                    db.InsertBarCode2Cat(Cat2.First());
                 }
             }
+
             catch (Exception ex)
             {
-                var t = ex.Message;
+                WDB.OnSyncInfoCollected?.Invoke(new SyncInformation { SyncData = ex, Status = eSyncStatus.Error, StatusDescription = ex.Message });
             }
-
-            if (isGood)
-            {
-                db.ReplaceWaresReceiptPromotion(Cat2);
-                db.InsertBarCode2Cat(Cat2.First());
-            }
-
             return true;
         }
 
@@ -324,25 +331,33 @@ namespace SharedLib
         }
         public async Task<bool> SendReceiptTo1CAsync(Receipt parReceipt)
         {
-            var r = new Receipt1C(parReceipt);
-            HttpClient client = new HttpClient();
-
-            // Add a new Request Message
-            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, Global.Server1C);
-            //requestMessage.Headers.Add("Accept", "application/vnd.github.v3+json");
-            // Add our custom headers
-            requestMessage.Content = new StringContent(r.GetSOAP(), Encoding.UTF8, "application/json");
-            var response = await client.SendAsync(requestMessage);
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var res = await response.Content.ReadAsStringAsync();
-                parReceipt.StateReceipt = eStateReceipt.Send;
-                db.SetStateReceipt(parReceipt);//Змінюєм стан чека на відправлено.
-                return true;
+                var r = new Receipt1C(parReceipt);
+                HttpClient client = new HttpClient();
+
+                // Add a new Request Message
+                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, Global.Server1C);
+                //requestMessage.Headers.Add("Accept", "application/vnd.github.v3+json");
+                // Add our custom headers
+                requestMessage.Content = new StringContent(r.GetSOAP(), Encoding.UTF8, "application/json");
+                var response = await client.SendAsync(requestMessage);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var res = await response.Content.ReadAsStringAsync();
+                    parReceipt.StateReceipt = eStateReceipt.Send;
+                    db.SetStateReceipt(parReceipt);//Змінюєм стан чека на відправлено.
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
-            else
+            catch(Exception ex)
             {
+                WDB.OnSyncInfoCollected?.Invoke(new SyncInformation { SyncData = ex, Status = eSyncStatus.Error, StatusDescription = ex.Message });
                 return false;
             }
         }
@@ -367,56 +382,56 @@ namespace SharedLib
         //async Task<bool>
         public bool SyncData(bool parIsFull)
         {
-            WDB_SQLite SQLite;
-
-            if (!parIsFull)
+            try
             {
-                var strTD = db.GetConfig<string>("Load_Full");
-                if (strTD == null || strTD.Length < 10)
-                    parIsFull = true;
-                else
+                WDB_SQLite SQLite;
+
+                if (!parIsFull)
                 {
-                    var dt = DateTime.Parse(strTD.Substring(0, 10));
-                    if (DateTime.Now.Date != dt.Date)
+                    var strTD = db.GetConfig<string>("Load_Full");
+                    if (strTD == null || strTD.Length < 10)
                         parIsFull = true;
+                    else
+                    {
+                        var dt = DateTime.Parse(strTD.Substring(0, 10));
+                        if (DateTime.Now.Date != dt.Date)
+                            parIsFull = true;
+                    }
                 }
-            }
-            string varMidFile = db.GetCurrentMIDFile;
+                string varMidFile = db.GetCurrentMIDFile;
 
-            if (parIsFull)
-            {
-
-                DateTime varD = DateTime.Today;
-
-                if (File.Exists(varMidFile))
+                if (parIsFull)
                 {
-                    db.db.Close();
-                    File.Delete(varMidFile);
+
+                    DateTime varD = DateTime.Today;
+
+                    if (File.Exists(varMidFile))
+                    {
+                        db.db.Close();
+                        File.Delete(varMidFile);
+                    }
+                    SQLite = new WDB_SQLite(varMidFile, true);
+                    //SQLite.CreateMIDTable();
                 }
-                SQLite = new WDB_SQLite(varMidFile, true);
-                //SQLite.CreateMIDTable();
-            }
-            else
-                SQLite = db;
+                else
+                    SQLite = db;
 
-            var MsSQL = new WDB_MsSql();
-            var resS = MsSQL.LoadData(SQLite, parIsFull);
+                var MsSQL = new WDB_MsSql();
+                var resS = MsSQL.LoadData(SQLite, parIsFull);
 
-            if (parIsFull)
-            {
-                try
+                if (parIsFull)
                 {
                     SQLite.CreateMIDIndex();
                     db = SQLite;
                     db.SetConfig<string>("Last_MID", varMidFile);
                 }
-                catch (Exception ex)
-                {
-                    var er = ex.Message;
-                }
+                db.SetConfig<string>("Load_" + (parIsFull ? "Full" : "Update"), String.Format("{0:u}", DateTime.Now));
             }
-            db.SetConfig<string>("Load_" + (parIsFull ? "Full" : "Update"), String.Format("{0:u}", DateTime.Now));
-
+            catch (Exception ex)
+            {
+                WDB.OnSyncInfoCollected?.Invoke(new SyncInformation { SyncData = ex, Status = eSyncStatus.Error, StatusDescription = ex.Message });
+                return false;
+            }
             return true;
         }
         public class TableStruc

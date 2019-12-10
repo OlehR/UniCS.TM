@@ -170,7 +170,7 @@ namespace SharedLib
             {
                 if (await res)
                 {
-                    Console.WriteLine(OnReceiptCalculationComplete != null);
+                    //Console.WriteLine(OnReceiptCalculationComplete != null);
                     var r = ViewReceiptWares(parIdReceiptWares);
                     OnReceiptCalculationComplete?.Invoke(r, Global.GetTerminalIdByIdWorkplace(parIdReceiptWares.IdWorkplace));
                 }
@@ -218,9 +218,9 @@ namespace SharedLib
                     RecalcHeadReceipt(parIdReceipt);
                     return true;
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    OnSyncInfoCollected?.Invoke(new SyncInformation { SyncData=e,Status=SyncStatus.Error,StatusDescription=e.Message });
+                    OnSyncInfoCollected?.Invoke(new SyncInformation { SyncData=ex,Status=eSyncStatus.Error,StatusDescription=ex.Message });
                     return false;
                 }
             }
