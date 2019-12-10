@@ -428,17 +428,17 @@ namespace ModernIntegration
         public override async Task RequestSyncInfo(bool parIsFull = false)
         {
             // TODO: check status
-            OnSyncInfoCollected?.Invoke(new SyncInformation() { Status = parIsFull ? SyncStatus.StartedFullSync : SyncStatus.StartedPartialSync });
+            OnSyncInfoCollected?.Invoke(new SyncInformation() { Status = parIsFull ? eSyncStatus.StartedFullSync : eSyncStatus.StartedPartialSync });
          
             var info = new SyncInformation();
             try
             {
                 var res = await Task.Factory.StartNew(() => Bl.SyncData(parIsFull));
-                info.Status = ( res) ? SyncStatus.SyncFinishedSuccess : SyncStatus.SyncFinishedError;
+                info.Status = ( res) ? eSyncStatus.SyncFinishedSuccess : eSyncStatus.SyncFinishedError;
             }
             catch (Exception ex)
             {
-                info.Status = SyncStatus.SyncFinishedError;
+                info.Status = eSyncStatus.SyncFinishedError;
                 info.StatusDescription = ex.Message;
                 info.SyncData = ex;
             }
