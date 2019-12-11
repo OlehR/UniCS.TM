@@ -53,6 +53,7 @@ left join addition_unit au on (au.code_unit=t.code_unit and t.code_wares=au.code
 left join unit_dimension ud on (t.code_unit =ud.code_unit)
 left join addition_unit aud on (aud.DEFAULT_UNIT=1 and t.code_wares=aud.code_wares)
 left join unit_dimension udd on (aud.code_unit =udd.code_unit)
+where @NameUpper is null or pd.price_dealer>0
 
 [SqlFoundClient]
 with 
