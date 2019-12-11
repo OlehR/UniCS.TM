@@ -27,7 +27,7 @@ union
  select w.code_wares, au.CODE_UNIT
  from wares w 
  join addition_unit au on (w.CODE_WARES=au.code_wares and au.DEFAULT_UNIT=1)
- where w.name_wares_upper like @NameUpper
+ where @NameUpper is not null and w.name_wares_upper like @NameUpper
 union
 select w.code_wares,au.CODE_UNIT from FAST_WARES w 
      join addition_unit au on (w.CODE_WARES=au.code_wares and au.DEFAULT_UNIT=1)

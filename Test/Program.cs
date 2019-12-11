@@ -70,15 +70,36 @@ namespace Test
             //Console.WriteLine("var cl = api.AddProductByBarCode(TerminalId, \"4820048481960\");");
             //Console.WriteLine(sd.Name);
             var cl = api.GetCustomerByBarCode(TerminalId, "4820220980229");
+            var startTime = System.Diagnostics.Stopwatch.StartNew();
 
             sd = api.AddProductByBarCode(TerminalId, "4823086109988", 2); // 1+1 Пельмені "Мішутка" Філейні 600г /Три ведмеді/
 
+            startTime.Stop();
+            Console.WriteLine( startTime.Elapsed);
+            startTime.Restart();
+
             sd = api.AddProductByBarCode(TerminalId, "1111622770010", 1);
+            startTime.Stop();
+            Console.WriteLine(startTime.Elapsed);
+            startTime.Restart();
 
             sd = api.AddProductByBarCode(TerminalId, "4823000916524", 1); //АРТЕК 
 
-             sd =api.AddProductByBarCode( TerminalId, "7622300813437",1);//Барн
+            startTime.Stop();
+            Console.WriteLine(startTime.Elapsed);
+            startTime.Restart();
+
+            sd =api.AddProductByBarCode( TerminalId, "7622300813437",1);//Барн
+            startTime.Stop();
+            Console.WriteLine(startTime.Elapsed);
+            startTime.Restart();
+
             sd = api.AddProductByBarCode(TerminalId, "7622300813437", 2);//Барн
+
+            startTime.Stop();
+            Console.WriteLine(startTime.Elapsed);
+            startTime.Restart();
+
             //            sd = api.AddProductByBarCode( TerminalId, "2201652300489",1); //Морква
             /*sd = api.AddProductByBarCode(TerminalId, "1110867180018", 1); //Хліб
             sd = api.AddProductByBarCode(TerminalId, "40804927", 1);
@@ -102,7 +123,7 @@ namespace Test
             var r = api.AddFiscalNumber(TerminalId, "TRRF-1234");
 
             api.SendReceipt(RId);
-
+            Console.WriteLine("End");
             Thread.Sleep(100000);
 
             //169316+169316 4823086109988 Пельмені "Мішутка" Філейні 600г /Три ведмеді/

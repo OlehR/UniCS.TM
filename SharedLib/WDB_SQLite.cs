@@ -179,6 +179,8 @@ namespace SharedLib
 
         public override bool RecalcPrice(IdReceiptWares parIdReceipt)
         {
+            var startTime = System.Diagnostics.Stopwatch.StartNew();
+
             lock (GetObjectForLockByIdWorkplace(parIdReceipt.IdWorkplace))
             {
                 try
@@ -216,6 +218,9 @@ namespace SharedLib
                     }
                     GetPricePromotionKit(parIdReceipt, parIdReceipt.CodeWares);
                     RecalcHeadReceipt(parIdReceipt);
+                    startTime.Stop();
+                    Console.WriteLine("RecalcPrice=>" + startTime.Elapsed);
+
                     return true;
                 }
                 catch (Exception ex)
