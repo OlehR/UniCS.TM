@@ -23,8 +23,8 @@ namespace Test
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-            CreateDataBase(false); //Створення бази
-            //Thread.Sleep(1000000);
+            //CreateDataBase(false); //Створення бази
+            
             //TestKit();
             TestReceipt(); //
             //CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
@@ -84,12 +84,15 @@ namespace Test
             sd = api.AddProductByBarCode(TerminalId, "40804927", 1);
             sd = api.AddProductByBarCode(TerminalId, "1110011760018", 1); //КІВІ ВАГОВІ 2 кат*/
             sd = api.AddProductByBarCode( TerminalId, "2201652300489",1); //Морква
+
             sd = api.AddProductByBarCode(TerminalId, "7775006620509", 1); //товар 2 кат
             //Thread.Sleep(1000);
             /*sd =api.AddProductByBarCode( TerminalId, "5903154545623", 1); //Суміш овочева "Семикомпонентна" 400г /Рудь/ акція 1+1
             sd = api.AddProductByBarCode(TerminalId, "7622300813437", 5);//Барн*/
             sd = api.AddProductByBarCode(TerminalId, "4823097403457", 5);//Майонез "Провансаль" 67% д/п 350г /Щедро/
             sd = api.AddProductByBarCode(TerminalId, "4823097405932", 7);//Кетчуп "Лагідний" д/п 250г /Щедро/*/
+            api.ChangeQuantity(TerminalId, sd.Id, 0);
+
             var RId = api.GetCurrentReceiptByTerminalId(TerminalId).ReceiptId;
             ReceiptPayment[] pay = new ReceiptPayment[]
                 {new ReceiptPayment {ReceiptId= RId ,

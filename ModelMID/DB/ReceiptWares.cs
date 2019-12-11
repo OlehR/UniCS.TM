@@ -142,14 +142,16 @@ namespace ModelMID
         /// Додаткові ваги
         /// </summary>
         public List<decimal> AdditionalWeights;
-    public ReceiptWares()
+        public decimal QuantityOld { get; set; }
+        public ReceiptWares()
         {
             Clear();
         }
         public ReceiptWares(IdReceipt idReceipt, Guid parWaresId) : base(idReceipt, parWaresId)
         { }
+        public ReceiptWares(IdReceipt idReceipt) : base(idReceipt)
+        { }
 
-        
         public void Clear()
         {
             CodeWares = 0;

@@ -220,15 +220,21 @@ namespace ModernIntegration
             var LWI = new List<WeightInfo>()
                     { new WeightInfo() { Weight = (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : Convert.ToDouble(receiptWares.WeightBrutto)), DeltaWeight = 3 }
                     };
-            foreach (var el in receiptWares.AdditionalWeights)
-                LWI.Add(new WeightInfo { DeltaWeight = 0.07 * Convert.ToDouble(el), Weight = Convert.ToDouble(el) });
+            if (receiptWares.AdditionalWeights != null)
+                foreach (var el in receiptWares.AdditionalWeights)
+                    LWI.Add(new WeightInfo { DeltaWeight = 0.07 * Convert.ToDouble(el), Weight = Convert.ToDouble(el) });
             var varTags = (receiptWares.TypeWares > 0
                     ? new List<Tag>()
                         {new Tag() {Key = "AgeRestricted", Id = 0}, new Tag() {Key = "TimeRestricted", Id = 1}}
                     : null); //!!!TMP // Різні мітки алкоголь, обмеження по часу.
+
             if (!receiptWares.IsWeight && receiptWares.WeightBrutto == 0)
-                varTags.Add(new Tag { Id = 3, Key = "NoWeightedProduct" });
-                            var Res = new ProductViewModel()
+            {
+                if (varTags == null)
+                    varTags = new List<Tag>();
+                    varTags.Add(new Tag { Id = 3, Key = "NoWeightedProduct" });
+            }
+            var Res = new ProductViewModel()
             {
                 Id = receiptWares.WaresId,
                 Code = receiptWares.CodeWares,

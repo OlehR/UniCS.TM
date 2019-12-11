@@ -179,7 +179,11 @@ insert into wares_receipt (id_workplace, code_period, code_receipt, code_wares, 
   @TypePrice, @Quantity, @Price,@PriceDealer, @Sum, @SumVat,
   @ParPrice1,@ParPrice2,@ParPrice3, @SumDiscount, @TypeVat, (select COALESCE(max(sort),0)+1 from wares_receipt  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt), @UserCreate,
  @AdditionN1,@AdditionN2,@AdditionN3,
- @AdditionC1,@AdditionD1,@BARCODE2Category,@DESCRIPTION)
+ @AdditionC1,@AdditionD1,@BARCODE2Category,@DESCRIPTION);
+ ;
+insert into  WARES_RECEIPT_HISTORY ( ID_WORKPLACE,  CODE_PERIOD, CODE_RECEIPT, CODE_WARES, CODE_UNIT, QUANTITY, QUANTITY_OLD, CODE_OPERATION)     
+values ( @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit, @Quantity,@QuantityOld, 0);
+
 
  [SqlReplaceWaresReceipt]
 replace into wares_receipt (id_workplace, code_period, code_receipt, code_wares, code_unit,
@@ -247,7 +251,9 @@ update wares_receipt set  BARCODE_2_CATEGORY=@BarCode2Category
 update wares_receipt set  quantity= @Quantity, sort=@Sort,
 						   sum=@Sum, Sum_Vat=@SumVat
                      where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt 
-                     and code_wares=@CodeWares;-- and code_unit=@CodeUnit
+                     and code_wares=@CodeWares;-- and code_unit=@CodeUnit;
+insert into  WARES_RECEIPT_HISTORY ( ID_WORKPLACE,  CODE_PERIOD, CODE_RECEIPT, CODE_WARES, CODE_UNIT, QUANTITY, QUANTITY_OLD, CODE_OPERATION)     
+values ( @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit, @Quantity, @QuantityOld,case when @QuantityOld=0 then 0 else 1 end);
                      
 [SqlDeleteReceiptWares]
  delete from  wares_receipt 
@@ -255,7 +261,9 @@ update wares_receipt set  quantity= @Quantity, sort=@Sort,
                and code_wares= 
                 case when @CodeWares=0 then code_wares else @CodeWares end  
     		   and code_unit=
-    			case when @CodeUnit=0 then code_unit else @CodeUnit end
+    			case when @CodeUnit=0 then code_unit else @CodeUnit end;
+                insert into  WARES_RECEIPT_HISTORY ( ID_WORKPLACE,  CODE_PERIOD, CODE_RECEIPT, CODE_WARES, CODE_UNIT, QUANTITY, QUANTITY_OLD, CODE_OPERATION)     
+values ( @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit, 0, 0,-1);
                      
 [SqlMoveMoney]
 [SqlAddZ]
@@ -447,7 +455,7 @@ CREATE TABLE WORKPLACE (
     TYPE_VAR    TEXT     NOT NULL,
     DESCRIPTION TEXT,
     USER_CREATE INTEGER,
-    DATE_CREATE DATETIME NOT NULL DEFAULT (CURRENT_TIMESTAMP)
+    DATE_CREATE DATETIME NOT NULL DEFAULT (datetime('now','localtime'))
 );
 CREATE UNIQUE INDEX id_CONFIG ON CONFIG(NAME_VAR);
 
@@ -455,7 +463,7 @@ CREATE TABLE Weight (
     BarCode TEXT NOT NULL,
 	Weight NUMBER NOT NULL,
 	status integer NOT NULL DEFAULT 0,
-	DATE_CREATE       DATETIME  DEFAULT (CURRENT_TIMESTAMP)
+	DATE_CREATE       DATETIME  DEFAULT (datetime('now','localtime'))
 	);
 
 [SqlInsertWeight] 
@@ -505,7 +513,7 @@ CREATE TABLE RECEIPT (
     ADDITION_D2       TEXT,
     ADDITION_D3       TEXT,
     DATE_CREATE       DATETIME NOT NULL
-                               DEFAULT (CURRENT_TIMESTAMP),
+                               DEFAULT (datetime('now','localtime')),
     USER_CREATE       INTEGER  NOT NULL
 );
 CREATE UNIQUE INDEX id_RECEIPT ON RECEIPT(CODE_RECEIPT,ID_WORKPLACE,CODE_PERIOD);
@@ -536,7 +544,7 @@ CREATE TABLE WARES_RECEIPT (
     ADDITION_C1    TEXT,
     ADDITION_D1    DATETIME,
 	BARCODE_2_CATEGORY TEXT,
-    DATE_CREATE    DATETIME NOT NULL DEFAULT (CURRENT_TIMESTAMP),
+    DATE_CREATE    DATETIME NOT NULL DEFAULT (datetime('now','localtime')),
     USER_CREATE    INTEGER  NOT NULL
 );
 CREATE UNIQUE INDEX id_WARES_RECEIPT ON WARES_RECEIPT(CODE_RECEIPT,CODE_WARES,ID_WORKPLACE,CODE_PERIOD);
@@ -562,10 +570,12 @@ CREATE TABLE WARES_RECEIPT_HISTORY (
     CODE_WARES     INTEGER  NOT NULL,
     CODE_UNIT      INTEGER  NOT NULL,
 --    CODE_WAREHOUSE INTEGER  NOT NULL,
-    QUANTITY       NUMBER   NOT NULL,    
-    CODE_OPERATION INTEGER  NOT NULL
+    QUANTITY       NUMBER   NOT NULL, 
+    QUANTITY_OLD       NUMBER   NOT NULL default 0,  
+    CODE_OPERATION INTEGER  NOT NULL,
+     DATE_CREATE    DATETIME NOT NULL default (datetime('now','localtime'))
 	);
-CREATE UNIQUE INDEX id_WARES_RECEIPT_HISTORY ON WARES_RECEIPT_HISTORY(CODE_RECEIPT,CODE_WARES,ID_WORKPLACE,CODE_PERIOD);
+CREATE INDEX id_WARES_RECEIPT_HISTORY ON WARES_RECEIPT_HISTORY(CODE_RECEIPT,CODE_WARES,ID_WORKPLACE,CODE_PERIOD);
 
 CREATE TABLE wares_ekka (
     code_ekka  INTEGER        PRIMARY KEY,
@@ -587,7 +597,7 @@ CREATE TABLE payment
     CODE_authorization TEXT,
     NUMBER_SLIP       TEXT,
 	DATE_CREATE       DATETIME NOT NULL
-                               DEFAULT (CURRENT_TIMESTAMP)
+                               DEFAULT (datetime('now','localtime'))
 );
 CREATE INDEX id_payment ON payment(CODE_RECEIPT);
 

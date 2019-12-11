@@ -33,7 +33,7 @@ namespace SharedLib
         public ReceiptWares AddReceiptWares(ReceiptWares parW)
         {
             var Quantity = db.GetCountWares(parW);
-
+            parW.QuantityOld = Quantity;
             parW.Quantity += Quantity;
 
             if (Quantity > 0)
@@ -210,22 +210,22 @@ namespace SharedLib
         }
         public bool ChangeQuantity(IdReceiptWares parReceiptWaresId, decimal parQuantity)
         {
-            var W = db.FindWares(null, null, parReceiptWaresId.CodeWares, parReceiptWaresId.CodeUnit);
-            if (W.Count() == 1)
-            {
+            //var W = db.FindWares(null, null, parReceiptWaresId.CodeWares, parReceiptWaresId.CodeUnit);
+           // if (W.Count() == 1)
+            //{
                 if (parQuantity == 0)
                     db.DeleteReceiptWares(parReceiptWaresId);
                 else
                 {
-                    var w = W.First();
-                    w.SetIdReceiptWares(parReceiptWaresId);
+                var w = new ReceiptWares(parReceiptWaresId);
+                    //w.SetIdReceiptWares();
                     w.Quantity = parQuantity;
                     return db.UpdateQuantityWares(w);
                 }
                 if (ModelMID.Global.RecalcPriceOnLine)
                     db.RecalcPriceAsync(parReceiptWaresId);
 
-            }
+           // }
             return false;
 
         }
