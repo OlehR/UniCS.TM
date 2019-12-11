@@ -128,11 +128,12 @@ namespace ModelMID
         /// <summary>
         /// Кількість помилкових запитів до сервера
         /// </summary>
+        private static int _ErrorDiscountOnLine;
         public static int ErrorDiscountOnLine { 
-            get { return ErrorDiscountOnLine; } 
+            get { return _ErrorDiscountOnLine; } 
             set { 
                 if (value == 0) FirstErrorDiscountOnLine= default(DateTime); 
-                ErrorDiscountOnLine = value; } 
+                _ErrorDiscountOnLine = value; } 
         }
         /// <summary>
         ///  час Першого помилкового запита до сервера 

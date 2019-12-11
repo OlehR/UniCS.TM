@@ -256,13 +256,12 @@ insert into  WARES_RECEIPT_HISTORY ( ID_WORKPLACE,  CODE_PERIOD, CODE_RECEIPT, C
 values ( @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit, @Quantity, @QuantityOld,case when @QuantityOld=0 then 0 else 1 end);
                      
 [SqlDeleteReceiptWares]
- delete from  wares_receipt 
+delete from  wares_receipt 
    where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt 
-               and code_wares= 
-                case when @CodeWares=0 then code_wares else @CodeWares end  
-    		   and code_unit=
-    			case when @CodeUnit=0 then code_unit else @CodeUnit end;
-                insert into  WARES_RECEIPT_HISTORY ( ID_WORKPLACE,  CODE_PERIOD, CODE_RECEIPT, CODE_WARES, CODE_UNIT, QUANTITY, QUANTITY_OLD, CODE_OPERATION)     
+               and code_wares =  case when @CodeWares=0 then code_wares else @CodeWares end  
+    		   and code_unit = case when @CodeUnit=0 then code_unit else @CodeUnit end
+  ;
+ insert into  WARES_RECEIPT_HISTORY ( ID_WORKPLACE,  CODE_PERIOD, CODE_RECEIPT, CODE_WARES, CODE_UNIT, QUANTITY, QUANTITY_OLD, CODE_OPERATION)     
 values ( @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit, 0, 0,-1);
                      
 [SqlMoveMoney]
