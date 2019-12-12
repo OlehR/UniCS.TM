@@ -134,7 +134,7 @@ namespace SharedLib
                     return false;
                 }
                 Cat2.First().BarCode2Category = parBarCode;
-                Cat2.First().Price = Cat2.First().Price * (decimal)parPercent / 100m;
+                Cat2.First().Price = Cat2.First().Price * (100m-(decimal)parPercent) / 100m;
 
                 bool isGood = true;
                 try
