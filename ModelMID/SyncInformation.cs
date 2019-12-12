@@ -12,8 +12,9 @@ namespace ModelMID
         StartedFullSync = 2,
         SyncFinishedSuccess = 3,
         SyncFinishedError = 4,
-        SyncReceiptSaved =5      
-       
+        SyncReceiptSaved =5 ,
+        IncorectDiscountBarcode,
+        IncorectProductForDiscount       
     }
 
     public class SyncInformation

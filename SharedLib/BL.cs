@@ -129,7 +129,10 @@ namespace SharedLib
             {
                 var Cat2 = db.CheckLastWares2Cat(parIdReceipt);
                 if (Cat2 == null && Cat2.Count() != 0)
+                {
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace),  Status = eSyncStatus.IncorectProductForDiscount });
                     return false;
+                }
                 Cat2.First().BarCode2Category = parBarCode;
                 Cat2.First().Price = Cat2.First().Price * (decimal)parPercent / 100m;
 
@@ -168,7 +171,7 @@ namespace SharedLib
 
                 if (isGood)
                 {
-                    
+
                     Cat2.First()._Sum = Cat2.First().Sum; //Трохи костиль !!!!
                     Cat2.First().Quantity = 0;
                     db.ReplaceWaresReceiptPromotion(Cat2);
@@ -176,6 +179,11 @@ namespace SharedLib
                     db.RecalcHeadReceipt(parIdReceipt);
                     var r = ViewReceiptWares(new IdReceiptWares(parIdReceipt, 0));//вертаємо весь чек.
                     Global.OnReceiptCalculationComplete?.Invoke(r, Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace));
+                }
+                else 
+                {
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace), Status = eSyncStatus.IncorectDiscountBarcode });
+                    return false;
                 }
             }
 
