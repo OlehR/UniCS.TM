@@ -99,7 +99,7 @@ namespace SharedLib
                                 break;
                             case eTypeCode.PercentDiscount:
                                 CheckDiscountBarCodeAsync(parReceipt, parBarCode, varCode);
-                                return null;
+                                return new ReceiptWares(parReceipt);                                
                             default:
                                 break;
                         }
@@ -168,8 +168,14 @@ namespace SharedLib
 
                 if (isGood)
                 {
+                    
+                    Cat2.First()._Sum = Cat2.First().Sum; //Трохи костиль !!!!
+                    Cat2.First().Quantity = 0;
                     db.ReplaceWaresReceiptPromotion(Cat2);
                     db.InsertBarCode2Cat(Cat2.First());
+                    db.RecalcHeadReceipt(parIdReceipt);
+                    var r = ViewReceiptWares(new IdReceiptWares(parIdReceipt, 0));//вертаємо весь чек.
+                    Global.OnReceiptCalculationComplete?.Invoke(r, Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace));
                 }
             }
 

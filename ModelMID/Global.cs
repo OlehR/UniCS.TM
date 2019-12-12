@@ -187,6 +187,8 @@ namespace ModelMID
 
         public static string GetTaxGroup(int parTypeVat, int parTypeWares = 0)
         {
+            if (parTypeVat == 0 && parTypeWares == 0)
+                return Tax[1];
             return Tax[parTypeWares * 10 + parTypeVat];
         }
 
