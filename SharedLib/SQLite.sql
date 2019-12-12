@@ -203,7 +203,7 @@ replace into wares_receipt (id_workplace, code_period, code_receipt, code_wares,
 
 [SqlRecalcHeadReceipt]
 update WARES_RECEIPT 
-set SUM_DISCOUNT = ifnull( ( select (wr.QUANTITY-wrp.QUANTITY)*wr.price-wrp.sum 
+set SUM_DISCOUNT = ifnull( ( select wrp.QUANTITY*wr.price-wrp.sum 
 from 
 (select sum( QUANTITY) as QUANTITY, sum(sum) as sum from WARES_RECEIPT_PROMOTION wrp
 where wrp.id_workplace=@IdWorkplace and  wrp.code_period =@CodePeriod and  wrp.code_receipt=@CodeReceipt and  wrp.code_wares=WARES_RECEIPT.code_wares) as wrp

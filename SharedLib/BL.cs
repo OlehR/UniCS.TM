@@ -172,8 +172,8 @@ namespace SharedLib
                 if (isGood)
                 {
 
-                    Cat2.First()._Sum = Cat2.First().Sum; //Трохи костиль !!!!
-                    Cat2.First().Quantity = 0;
+                    //Cat2.First()._Sum = Cat2.First().Sum; //Трохи костиль !!!!
+                    //Cat2.First().Quantity = 0;
                     db.ReplaceWaresReceiptPromotion(Cat2);
                     db.InsertBarCode2Cat(Cat2.First());
                     db.RecalcHeadReceipt(parIdReceipt);
