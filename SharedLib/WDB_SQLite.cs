@@ -171,7 +171,7 @@ namespace SharedLib
                 if (await res)
                 {
                     //Console.WriteLine(OnReceiptCalculationComplete != null);
-                    var r = ViewReceiptWares(parIdReceiptWares);
+                    var r = ViewReceiptWares(new IdReceiptWares(parIdReceiptWares,0));//вертаємо весь чек.
                     Global.OnReceiptCalculationComplete?.Invoke(r, Global.GetTerminalIdByIdWorkplace(parIdReceiptWares.IdWorkplace));
                 }
             });
