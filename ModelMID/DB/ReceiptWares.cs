@@ -151,7 +151,8 @@ namespace ModelMID
         { }
         public ReceiptWares(IdReceipt idReceipt) : base(idReceipt)
         { }
-
+        public ReceiptWares(IdReceiptWares idReceiptWares) : base(idReceiptWares, idReceiptWares.CodeWares,idReceiptWares.CodeUnit)
+        { }
         public void Clear()
         {
             CodeWares = 0;
