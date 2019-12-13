@@ -64,10 +64,10 @@ namespace Test
             var api = new ApiPSU();
             ProductViewModel sd;
             //var cl = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
-
+            var rrrr = api.GetNoFinishReceipt(TerminalId);
             //var aa=api.Bl.db.GetConfig<DateTime>("Load_Full__");
             //sd =api.AddProductByBarCode(TerminalId, "4820197006205", 1);
-            sd= api.AddProductByBarCode(TerminalId, "4820198091002", 1);
+            sd = api.AddProductByBarCode(TerminalId, "4820198091002", 1);
 
             //Console.WriteLine("var cl = api.AddProductByBarCode(TerminalId, \"4820048481960\");");
             //Console.WriteLine(sd.Name);

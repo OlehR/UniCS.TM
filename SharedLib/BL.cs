@@ -68,7 +68,7 @@ namespace SharedLib
 
         public Receipt GetLastReceipt(Guid parTerminalId, int parCodePeriod = 0)
         {
-            var idReceip = new IdReceipt() { IdWorkplace = GetIdWorkplaceByTerminalId(parTerminalId), CodePeriod = parCodePeriod };
+            var idReceip = new IdReceipt() { IdWorkplace = GetIdWorkplaceByTerminalId(parTerminalId), CodePeriod = (parCodePeriod == 0? Global.GetCodePeriod():parCodePeriod) };
             return db.GetLastReceipt(idReceip);
         }
 
@@ -126,6 +126,8 @@ namespace SharedLib
             var W = w.First();
             if (parQuantity == 0)
                 return W;
+            if (W.Price == 0)//Якщо немає ціни на товар !!!!TMP Краще обробляти на GUI буде пізніше
+                return null;
             W.SetIdReceipt(parReceipt);
             W.Quantity = parQuantity;
             return AddReceiptWares(W);
