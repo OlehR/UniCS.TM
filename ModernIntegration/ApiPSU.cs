@@ -223,17 +223,20 @@ namespace ModernIntegration
             if (receiptWares.AdditionalWeights != null)
                 foreach (var el in receiptWares.AdditionalWeights)
                     LWI.Add(new WeightInfo { DeltaWeight = 0.07 * Convert.ToDouble(el), Weight = Convert.ToDouble(el) });
-            var varTags = (receiptWares.TypeWares > 0
-                    ? new List<Tag>()
-                        {new Tag() {Key = "AgeRestricted", Id = 0}, new Tag() {Key = "TimeRestricted", Id = 1}}
-                    : null); //!!!TMP // Різні мітки алкоголь, обмеження по часу.
+            var varTags = (receiptWares.TypeWares > 0 || (!receiptWares.IsWeight && receiptWares.WeightBrutto == 0))
+                    ? new List<Tag>() : null; //!!!TMP // Різні мітки алкоголь, обмеження по часу.
+            
+            //Якщо алкоголь чи тютюн
+            if (receiptWares.TypeWares > 0)
+                varTags.Add(new Tag() { Key = "AgeRestricted", Id = 0 });
+            //Якщо алкоголь обмеження по часу
+            if (receiptWares.TypeWares == 1)
+                varTags.Add(new Tag() { Key = "TimeRestricted", Id = 1, RuleValue = "{\"Start\":\""+ Global.AlcoholTimeStart + "\",\"Stop\":\""+ Global.AlcoholTimeStop+"\"}" });
 
+            // Якщо немає ваги відключаємо її контроль 
             if (!receiptWares.IsWeight && receiptWares.WeightBrutto == 0)
-            {
-                if (varTags == null)
-                    varTags = new List<Tag>();
                     varTags.Add(new Tag { Id = 3, Key = "NoWeightedProduct" });
-            }
+            
             var Res = new ProductViewModel()
             {
                 Id = receiptWares.WaresId,
