@@ -181,6 +181,7 @@ namespace SharedLib
         protected string SqlInsertBarCode2Cat = "";
         protected string SqlIsWaresInPromotionKit = "";
         protected string SqlGetDateFirstNotSendReceipt = "";
+        protected string SqlGetLastReceipt = "";
         public WDB(string parFileSQL)
         {
             this.ReadSQL(parFileSQL);
@@ -585,6 +586,7 @@ namespace SharedLib
 
             SqlIsWaresInPromotionKit = GetSQL("SqlIsWaresInPromotionKit");
             SqlGetDateFirstNotSendReceipt = GetSQL("SqlGetDateFirstNotSendReceipt");
+            SqlGetLastReceipt = GetSQL("SqlGetLastReceipt");
             return true;
         }
 
@@ -954,5 +956,12 @@ namespace SharedLib
             return res;
         }
 
+        public virtual Receipt GetLastReceipt(IdReceipt parIdReceipt)
+        {
+            var r = this.db.Execute<IdReceipt, Receipt>(SqlGetLastReceipt, parIdReceipt);
+            if (r != null && r.Count() == 1)
+                return r.First();
+            return null;
+        }
     }
 }

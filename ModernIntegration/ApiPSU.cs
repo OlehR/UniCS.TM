@@ -254,7 +254,7 @@ namespace ModernIntegration
                 IsAgeRestrictedConfirmed =
                     false, //!!!TMP //Обмеження по віку алкоголь Підтверджено не потрібно посилати.
                 Quantity = (receiptWares.IsWeight ? 1:receiptWares.Quantity),
-                DiscountValue = receiptWares.SumDiscount,
+                DiscountValue = receiptWares.SumDiscount+(receiptWares.PriceDealer- receiptWares.Price)* receiptWares.Quantity,
                 DiscountName = receiptWares.NameDiscount,
                 WarningType = null, //!!! Не посилати 
                 CalculatedWeight = 0,
@@ -469,5 +469,29 @@ namespace ModernIntegration
 
         private static Api _instance;
         public static Api Instance = _instance ?? (_instance = new ApiPSU());
+
+        public virtual IEnumerable<ProductViewModel> GetNoFinishReceipt(Guid parTerminalId)
+        {
+
+            /*     Bl.GetLastReceipt();
+
+                 public ModelMID.IdReceipt GetCurrentReceiptByTerminalId(Guid parTerminalId)
+                 {
+
+                     if (!Receipts.ContainsKey(parTerminalId) || Receipts[parTerminalId] == null)
+                     {
+                         var idReceipt = Bl.GetNewIdReceipt(parTerminalId);
+
+                         Receipts[parTerminalId] = new ModelMID.Receipt(idReceipt);
+                         Bl.AddReceipt(Receipts[parTerminalId]);
+                     }
+
+                     return Receipts[parTerminalId];
+                     */
+            return null;
+        }
+
+    
+
     }
 }

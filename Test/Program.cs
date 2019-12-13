@@ -23,7 +23,7 @@ namespace Test
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-           //CreateDataBase(true); //Створення бази
+          // CreateDataBase(true); //Створення бази
             
             //TestKit();
             TestReceipt(); //
@@ -65,14 +65,16 @@ namespace Test
             ProductViewModel sd;
             //var cl = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
 
-            var aa=api.Bl.db.GetConfig<DateTime>("Load_Full__");
-            sd =api.AddProductByBarCode(TerminalId, "4820197006205", 1);
+            //var aa=api.Bl.db.GetConfig<DateTime>("Load_Full__");
+            //sd =api.AddProductByBarCode(TerminalId, "4820197006205", 1);
+            sd= api.AddProductByBarCode(TerminalId, "4820198091002", 1);
+
             //Console.WriteLine("var cl = api.AddProductByBarCode(TerminalId, \"4820048481960\");");
             //Console.WriteLine(sd.Name);
-            var cl = api.GetCustomerByBarCode(TerminalId, "4820220980229");
+  //          var cl = api.GetCustomerByBarCode(TerminalId, "4820220980229");
             var startTime = System.Diagnostics.Stopwatch.StartNew();
 
-            sd = api.AddProductByBarCode(TerminalId, "4823086109988", 2); // 1+1 Пельмені "Мішутка" Філейні 600г /Три ведмеді/
+            sd = api.AddProductByBarCode(TerminalId, "4823086109988", 3); // 1+1 Пельмені "Мішутка" Філейні 600г /Три ведмеді/
 
             startTime.Stop();
             Console.WriteLine( startTime.Elapsed);
