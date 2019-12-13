@@ -245,7 +245,7 @@ namespace ModernIntegration
                 Name = receiptWares.NameWares,
                 AdditionalDescription = receiptWares.NameWaresReceipt, //!!!TMP;
                 Image = null,
-                Price = receiptWares.Price > 0 ? receiptWares.Price : receiptWares.PriceDealer,
+                Price = receiptWares.SumDiscount > 0 ? ( receiptWares.Price > 0 ? receiptWares.Price : receiptWares.PriceDealer): receiptWares.PriceDealer,
                 WeightCategory = 2, //вимірювання Похибки в відсотках,2 в грамах
                 Weight = (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : Convert.ToDouble(receiptWares.WeightBrutto)),
                 DeltaWeight = 0.07 * (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : Convert.ToDouble(receiptWares.WeightBrutto)),
