@@ -250,7 +250,7 @@ update wares_receipt set  BARCODE_2_CATEGORY=@BarCode2Category
                      and code_wares=@CodeWares; -- and code_unit=@CodeUnit
 [SqlUpdateQuantityWares]
 update wares_receipt set  quantity= @Quantity, sort=@Sort,
-						   sum=@Sum, Sum_Vat=@SumVat
+						   sum=@Quantity*price ---, Sum_Vat=@SumVat
                      where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt 
                      and code_wares=@CodeWares;-- and code_unit=@CodeUnit;
 insert into  WARES_RECEIPT_HISTORY ( ID_WORKPLACE,  CODE_PERIOD, CODE_RECEIPT, CODE_WARES, CODE_UNIT, QUANTITY, QUANTITY_OLD, CODE_OPERATION)     

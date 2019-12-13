@@ -234,6 +234,7 @@ namespace SharedLib
         }
         public bool ChangeQuantity(IdReceiptWares parReceiptWaresId, decimal parQuantity)
         {
+            var res = false;
             //var W = db.FindWares(null, null, parReceiptWaresId.CodeWares, parReceiptWaresId.CodeUnit);
            // if (W.Count() == 1)
             //{
@@ -244,13 +245,13 @@ namespace SharedLib
                 var w = new ReceiptWares(parReceiptWaresId);
                     //w.SetIdReceiptWares();
                     w.Quantity = parQuantity;
-                    return db.UpdateQuantityWares(w);
+                res=db.UpdateQuantityWares(w);
                 }
                 if (ModelMID.Global.RecalcPriceOnLine)
                     db.RecalcPriceAsync(parReceiptWaresId);
 
            // }
-            return false;
+            return res;
 
         }
         public Receipt GetReceiptHead(IdReceipt idReceipt)
