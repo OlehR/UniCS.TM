@@ -91,6 +91,8 @@ namespace Test
             sd = api.AddProductByBarCode(TerminalId, "4823097403457", 5);//Майонез "Провансаль" 67% д/п 350г /Щедро/
             sd = api.AddProductByBarCode(TerminalId, "4823097405932", 7);//Кетчуп "Лагідний" д/п 250г /Щедро/*/
             var RId = api.GetCurrentReceiptByTerminalId(TerminalId).ReceiptId;
+
+            var rr = api.GetProduct(TerminalId);
             ReceiptPayment[] pay = new ReceiptPayment[]
                 {new ReceiptPayment {ReceiptId= RId ,
                                     PaymentType=ModernIntegration.Enums.PaymentType.Card ,PayIn=39.9m,PayOut=0.0m,

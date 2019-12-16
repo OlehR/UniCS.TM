@@ -23,6 +23,7 @@ namespace ModernIntegration
         public virtual ProductViewModel AddProductByProductId(Guid parTerminalId, Guid paparProductId,decimal parQuantity = 0) { return null; }
         public virtual ReceiptViewModel ChangeQuantity(Guid parTerminalId, Guid parProductId, decimal parQuantity ) { return null; }
         public virtual ReceiptViewModel GetReciept(Guid parReceipt) { return null; }
+        public virtual IEnumerable<ProductViewModel> GetProduct(Guid parTerminalId) { return null; }
         public virtual ReceiptViewModel GetRecieptByTerminalId(Guid parTerminalId) { return null; }
         public virtual bool AddPayment( Guid parTerminalId, ReceiptPayment[] parPayment) { return false; }
         public virtual bool AddFiscalNumber(Guid parTerminalId, string parFiscalNumber) { return false; }

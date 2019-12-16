@@ -444,6 +444,17 @@ namespace ModernIntegration
             await Bl.SendAllReceipt().ConfigureAwait(false);
         }
 
+        public virtual IEnumerable<ProductViewModel> GetProduct(Guid parTerminalId)
+        {
+
+            var receiptId = GetCurrentReceiptByTerminalId(parTerminalId);
+
+            var res = Bl.GetWaresReceipt(new IdReceipt(receiptId));
+            if (res == null)
+                return null;
+            return res.Select(r => (GetProductViewModel(r)));
+        }
+
         private static Api _instance;
         public static Api Instance = _instance ?? (_instance = new ApiPSU());
     }

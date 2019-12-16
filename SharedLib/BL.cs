@@ -443,6 +443,11 @@ namespace SharedLib
             var Res= $"replace parTableName ({ListField}) \n select {ListField} from main.{parTableName}\n join upd.{parTableName} on ( {On})\n where {Where}";
             return Res;
         }
+
+        public IEnumerable<ReceiptWares> GetWaresReceipt(IdReceipt parIdReceipt)
+        {
+            return db.ViewReceiptWares(parIdReceipt);
+        }
     }
 }
 
