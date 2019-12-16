@@ -24,7 +24,7 @@ namespace ModelMID
         Card = 1,
         Cash = 2,
         Both = 3
-              
+
     }
 
     public enum eTypeBonus
@@ -35,12 +35,12 @@ namespace ModelMID
         BonusToRest = 3,
         BonusFromRest = 4
     }
-    
+
     /// <summary>
-	/// Інформація про те що знайшли в універсальному вікні пошуку
-	/// 0 - все,1 - товари,2-клієнти,3-купони та акціїї
-	/// </summary>	
-	public enum eTypeFind
+    /// Інформація про те що знайшли в універсальному вікні пошуку
+    /// 0 - все,1 - товари,2-клієнти,3-купони та акціїї
+    /// </summary>	
+    public enum eTypeFind
     {
         All = 0,
         Wares,
@@ -69,23 +69,23 @@ namespace ModelMID
 
     public enum eStatePromotionSale
     {
-        Completed=1,
-        Prepare =0,
-        Prepared=1,
-        Ready=9
+        Completed = 1,
+        Prepare = 0,
+        Prepared = 1,
+        Ready = 9
     }
 
     public enum eTypeWorkCoupon
     {
-        WithOutCoupon=0, // без купона, 
-        All=1,  //на всі товари, 
-        Coupon=2 //тільки на товар зчитаний перед купоном.
+        WithOutCoupon = 0, // без купона, 
+        All = 1,  //на всі товари, 
+        Coupon = 2 //тільки на товар зчитаний перед купоном.
     }
     public enum eRuleGroup
     {
-        Not=-1,
-        Or=0,
-        And=1
+        Not = -1,
+        Or = 0,
+        And = 1
     }
 
     public enum eTypePrice
@@ -134,7 +134,7 @@ namespace ModelMID
         /// <summary>
         /// Готується
         /// </summary>
-        Prepare = 0 ,
+        Prepare = 0,
         /// <summary>
         /// Оплачено
         /// </summary>
@@ -142,16 +142,31 @@ namespace ModelMID
         /// <summary>
         /// Надруковано
         /// </summary>
-        Print= 2,
+        Print = 2,
         /// <summary>
         /// Відправлено в 1С
         /// </summary>
-        Send=3
+        Send = 3
     }
 
     public enum eTypeReceipt
     {
-        Refund=-1,
-        Sale=1
+        Refund = -1,
+        Sale = 1
+    }
+    public enum eMethodExecutionLoggingType
+    {
+        MoreThenMillis = 0,
+        Always,
+        WhenErrored,
+    }
+
+    public enum eExchangeStatus
+    {
+        Green = 0,
+        LightGreen = 1,
+        Yellow = 2,
+        Orange = 3,
+        Red = 4
     }
 }

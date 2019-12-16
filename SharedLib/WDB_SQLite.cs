@@ -23,9 +23,7 @@ namespace SharedLib
                        return Path.Combine(Global.PathDB, $"{varD:yyyyMM}", $"MID_{varD:yyyyMMdd}.db"); } }
 
 
-        public static Action<IEnumerable<ReceiptWares>, Guid> OnReceiptCalculationComplete { get; set; }
-
-        
+  
         public WDB_SQLite(string parConnect = "",bool IsMidMain=false,DateTime parD = default(DateTime))  : base(Path.Combine(Global.PathIni, "SQLite.sql") )
         {
             varVersion = "SQLite.0.0.1";
@@ -172,15 +170,17 @@ namespace SharedLib
             {
                 if (await res)
                 {
-                    Console.WriteLine(OnReceiptCalculationComplete != null);
-                    var r = ViewReceiptWares(parIdReceiptWares);
-                    OnReceiptCalculationComplete?.Invoke(r, Global.GetTerminalIdByIdWorkplace(parIdReceiptWares.IdWorkplace));
+                    //Console.WriteLine(OnReceiptCalculationComplete != null);
+                    var r = ViewReceiptWares(new IdReceiptWares(parIdReceiptWares,0));//вертаємо весь чек.
+                    Global.OnReceiptCalculationComplete?.Invoke(r, Global.GetTerminalIdByIdWorkplace(parIdReceiptWares.IdWorkplace));
                 }
             });
         }
 
         public override bool RecalcPrice(IdReceiptWares parIdReceipt)
         {
+            var startTime = System.Diagnostics.Stopwatch.StartNew();
+
             lock (GetObjectForLockByIdWorkplace(parIdReceipt.IdWorkplace))
             {
                 try
@@ -218,11 +218,14 @@ namespace SharedLib
                     }
                     GetPricePromotionKit(parIdReceipt, parIdReceipt.CodeWares);
                     RecalcHeadReceipt(parIdReceipt);
+                    startTime.Stop();
+                    Console.WriteLine("RecalcPrice=>" + startTime.Elapsed);
+
                     return true;
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    Console.WriteLine(e);
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace), Exception = ex, Status =eSyncStatus.Error,StatusDescription=ex.Message });
                     return false;
                 }
             }

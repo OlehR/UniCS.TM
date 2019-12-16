@@ -235,7 +235,7 @@ WITH wh_ex AS
     JOIN DW.dbo.V1C_dim_warehouse dw ON dw.warehouse_RRef=pw.warehouse_RRef
 GROUP BY pw.doc_promotion_RRef
   HAVING SUM(CASE WHEN dw.code=9 THEN 1 ELSE 0 END) = 0)  
-/*
+
 SELECT  --Склади дії
     CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
     ,1 AS CodeGroupFilter
@@ -251,7 +251,7 @@ SELECT  --Склади дії
     LEFT JOIN wh_ex ON (wh_ex.doc_promotion_RRef=dp._IDRRef) 
   WHERE dp.d_end>getdate()
   AND wh_ex.doc_promotion_RRef IS null
-UNION ALL*/
+UNION ALL
 SELECT  --Вид дисконтної карти (Тип Клієнта)
     CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
     ,1 AS CodeGroupFilter

@@ -27,7 +27,7 @@ union
  select w.code_wares, au.CODE_UNIT
  from wares w 
  join addition_unit au on (w.CODE_WARES=au.code_wares and au.DEFAULT_UNIT=1)
- where w.name_wares_upper like @NameUpper
+ where @NameUpper is not null and w.name_wares_upper like @NameUpper
 union
 select w.code_wares,au.CODE_UNIT from FAST_WARES w 
      join addition_unit au on (w.CODE_WARES=au.code_wares and au.DEFAULT_UNIT=1)
@@ -53,6 +53,7 @@ left join addition_unit au on (au.code_unit=t.code_unit and t.code_wares=au.code
 left join unit_dimension ud on (t.code_unit =ud.code_unit)
 left join addition_unit aud on (aud.DEFAULT_UNIT=1 and t.code_wares=aud.code_wares)
 left join unit_dimension udd on (aud.code_unit =udd.code_unit)
+where @NameUpper is null or pd.price_dealer>0
 
 [SqlFoundClient]
 with 
@@ -110,10 +111,12 @@ select wr.id_workplace as IdWorkplace, wr.code_period as CodePeriod, wr.code_rec
  ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1,Price_Dealer as PriceDealer,BARCODE_2_CATEGORY as BarCode2Category,wr.DESCRIPTION as DESCRIPTION,w.TYPE_VAT as TypeVat
  ,(select max(bc.BAR_CODE) from BAR_CODE bc where bc.code_wares=wr.code_wares) as BarCode 
  ,w.Weight_Brutto as WeightBrutto
-                     from rc.wares_receipt wr
+ ,ps.NAME_PS as NameDiscount,Sum_Discount as SumDiscount
+                     from wares_receipt wr
                      join wares w on (wr.code_wares =w.code_wares)
                      join ADDITION_UNIT au on w.code_wares = au.code_wares and wr.code_unit=au.code_unit
                      join unit_dimension ud on (wr.code_unit = ud.code_unit)
+                     left join PROMOTION_SALE ps  on PAR_PRICE_1=ps.CODE_PS and type_price=9 
                      where wr.id_workplace=@IdWorkplace and  wr.code_period =@CodePeriod and wr.code_receipt=@CodeReceipt
 					 and wr.code_wares = case when @CodeWares=0 then wr.code_wares else @CodeWares end
                      order by sort
@@ -177,7 +180,11 @@ insert into wares_receipt (id_workplace, code_period, code_receipt, code_wares, 
   @TypePrice, @Quantity, @Price,@PriceDealer, @Sum, @SumVat,
   @ParPrice1,@ParPrice2,@ParPrice3, @SumDiscount, @TypeVat, (select COALESCE(max(sort),0)+1 from wares_receipt  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt), @UserCreate,
  @AdditionN1,@AdditionN2,@AdditionN3,
- @AdditionC1,@AdditionD1,@BARCODE2Category,@DESCRIPTION)
+ @AdditionC1,@AdditionD1,@BARCODE2Category,@DESCRIPTION);
+ ;
+insert into  WARES_RECEIPT_HISTORY ( ID_WORKPLACE,  CODE_PERIOD, CODE_RECEIPT, CODE_WARES, CODE_UNIT, QUANTITY, QUANTITY_OLD, CODE_OPERATION)     
+values ( @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit, @Quantity,@QuantityOld, 0);
+
 
  [SqlReplaceWaresReceipt]
 replace into wares_receipt (id_workplace, code_period, code_receipt, code_wares, code_unit,
@@ -196,7 +203,7 @@ replace into wares_receipt (id_workplace, code_period, code_receipt, code_wares,
 
 [SqlRecalcHeadReceipt]
 update WARES_RECEIPT 
-set SUM_DISCOUNT = ifnull( ( select (wr.QUANTITY-wrp.QUANTITY)*wr.price+wrp.sum 
+set SUM_DISCOUNT = ifnull( ( select wrp.QUANTITY*wr.price-wrp.sum 
 from 
 (select sum( QUANTITY) as QUANTITY, sum(sum) as sum from WARES_RECEIPT_PROMOTION wrp
 where wrp.id_workplace=@IdWorkplace and  wrp.code_period =@CodePeriod and  wrp.code_receipt=@CodeReceipt and  wrp.code_wares=WARES_RECEIPT.code_wares) as wrp
@@ -243,17 +250,20 @@ update wares_receipt set  BARCODE_2_CATEGORY=@BarCode2Category
                      and code_wares=@CodeWares; -- and code_unit=@CodeUnit
 [SqlUpdateQuantityWares]
 update wares_receipt set  quantity= @Quantity, sort=@Sort,
-						   sum=@Sum, Sum_Vat=@SumVat
+						   sum=@Quantity*price ---, Sum_Vat=@SumVat
                      where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt 
-                     and code_wares=@CodeWares;-- and code_unit=@CodeUnit
+                     and code_wares=@CodeWares;-- and code_unit=@CodeUnit;
+insert into  WARES_RECEIPT_HISTORY ( ID_WORKPLACE,  CODE_PERIOD, CODE_RECEIPT, CODE_WARES, CODE_UNIT, QUANTITY, QUANTITY_OLD, CODE_OPERATION)     
+values ( @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit, @Quantity, @QuantityOld,case when @QuantityOld=0 then 0 else 1 end);
                      
 [SqlDeleteReceiptWares]
- delete from  wares_receipt 
+delete from  wares_receipt 
    where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt 
-               and code_wares= 
-                case when @CodeWares=0 then code_wares else @CodeWares end  
-    		   and code_unit=
-    			case when @CodeUnit=0 then code_unit else @CodeUnit end
+               and code_wares =  case when @CodeWares=0 then code_wares else @CodeWares end  
+    		   and code_unit = case when @CodeUnit=0 then code_unit else @CodeUnit end
+  ;
+ insert into  WARES_RECEIPT_HISTORY ( ID_WORKPLACE,  CODE_PERIOD, CODE_RECEIPT, CODE_WARES, CODE_UNIT, QUANTITY, QUANTITY_OLD, CODE_OPERATION)     
+values ( @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit, 0, 0,-1);
                      
 [SqlMoveMoney]
 [SqlAddZ]
@@ -445,7 +455,7 @@ CREATE TABLE WORKPLACE (
     TYPE_VAR    TEXT     NOT NULL,
     DESCRIPTION TEXT,
     USER_CREATE INTEGER,
-    DATE_CREATE DATETIME NOT NULL DEFAULT (CURRENT_TIMESTAMP)
+    DATE_CREATE DATETIME NOT NULL DEFAULT (datetime('now','localtime'))
 );
 CREATE UNIQUE INDEX id_CONFIG ON CONFIG(NAME_VAR);
 
@@ -453,7 +463,7 @@ CREATE TABLE Weight (
     BarCode TEXT NOT NULL,
 	Weight NUMBER NOT NULL,
 	status integer NOT NULL DEFAULT 0,
-	DATE_CREATE       DATETIME  DEFAULT (CURRENT_TIMESTAMP)
+	DATE_CREATE       DATETIME  DEFAULT (datetime('now','localtime'))
 	);
 
 [SqlInsertWeight] 
@@ -503,7 +513,7 @@ CREATE TABLE RECEIPT (
     ADDITION_D2       TEXT,
     ADDITION_D3       TEXT,
     DATE_CREATE       DATETIME NOT NULL
-                               DEFAULT (CURRENT_TIMESTAMP),
+                               DEFAULT (datetime('now','localtime')),
     USER_CREATE       INTEGER  NOT NULL
 );
 CREATE UNIQUE INDEX id_RECEIPT ON RECEIPT(CODE_RECEIPT,ID_WORKPLACE,CODE_PERIOD);
@@ -534,7 +544,7 @@ CREATE TABLE WARES_RECEIPT (
     ADDITION_C1    TEXT,
     ADDITION_D1    DATETIME,
 	BARCODE_2_CATEGORY TEXT,
-    DATE_CREATE    DATETIME NOT NULL DEFAULT (CURRENT_TIMESTAMP),
+    DATE_CREATE    DATETIME NOT NULL DEFAULT (datetime('now','localtime')),
     USER_CREATE    INTEGER  NOT NULL
 );
 CREATE UNIQUE INDEX id_WARES_RECEIPT ON WARES_RECEIPT(CODE_RECEIPT,CODE_WARES,ID_WORKPLACE,CODE_PERIOD);
@@ -560,10 +570,12 @@ CREATE TABLE WARES_RECEIPT_HISTORY (
     CODE_WARES     INTEGER  NOT NULL,
     CODE_UNIT      INTEGER  NOT NULL,
 --    CODE_WAREHOUSE INTEGER  NOT NULL,
-    QUANTITY       NUMBER   NOT NULL,    
-    CODE_OPERATION INTEGER  NOT NULL
+    QUANTITY       NUMBER   NOT NULL, 
+    QUANTITY_OLD       NUMBER   NOT NULL default 0,  
+    CODE_OPERATION INTEGER  NOT NULL,
+     DATE_CREATE    DATETIME NOT NULL default (datetime('now','localtime'))
 	);
-CREATE UNIQUE INDEX id_WARES_RECEIPT_HISTORY ON WARES_RECEIPT_HISTORY(CODE_RECEIPT,CODE_WARES,ID_WORKPLACE,CODE_PERIOD);
+CREATE INDEX id_WARES_RECEIPT_HISTORY ON WARES_RECEIPT_HISTORY(CODE_RECEIPT,CODE_WARES,ID_WORKPLACE,CODE_PERIOD);
 
 CREATE TABLE wares_ekka (
     code_ekka  INTEGER        PRIMARY KEY,
@@ -585,7 +597,7 @@ CREATE TABLE payment
     CODE_authorization TEXT,
     NUMBER_SLIP       TEXT,
 	DATE_CREATE       DATETIME NOT NULL
-                               DEFAULT (CURRENT_TIMESTAMP)
+                               DEFAULT (datetime('now','localtime'))
 );
 CREATE INDEX id_payment ON payment(CODE_RECEIPT);
 
@@ -928,6 +940,18 @@ where
     sort= (select COALESCE(max(sort),0) from wares_receipt  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt )
     and id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt
 	 limit 1
-
+[SqlGetDateFirstNotSendReceipt]
+select ifnull(min(date_receipt),datetime('now','localtime'))   from receipt wr where state_receipt =2
+[SqlGetLastReceipt]
+select  id_workplace IdWorkplace, code_period CodePeriod, code_receipt CodeReceipt, date_receipt DateReceipt,
+sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_receipt as StateReceipt, code_client as CodeClient,
+ number_cashier as NumberCashier, number_receipt NumberReceipt, code_discount as CodeDiscount, sum_discount as SumDiscount, percent_discount as PercentDiscount, 
+ code_bonus as CodeBonus, sum_bonus as SumBonus, sum_cash as SumCash, sum_credit_card as SumCreditCard, code_outcome as CodeOutcome, 
+ code_credit_card as CodeCreditCard, number_slip as NumberSlip, number_tax_income as NumberTaxIncome,USER_CREATE as UseCreate,
+ ADDITION_N1 as AdditionN1,ADDITION_N2 as AdditionN2, ADDITION_N3 as AdditionN3,
+ ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1
+  from RECEIPT r where 
+    r.CODE_RECEIPT=(select CODE_RECEIPT from GEN_WORKPLACE where ID_WORKPLACE=@IdWorkplace and CODE_PERIOD=@CodePeriod)
+    and r.ID_WORKPLACE=@IdWorkplace and r.CODE_PERIOD=@CodePeriod
 [SqlEnd]
 */

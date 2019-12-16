@@ -1,8 +1,10 @@
-﻿using ModernIntegration.Model;
+﻿using ModelMID;
+using ModernIntegration.Model;
 using ModernIntegration.Models;
 using ModernIntegration.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -34,7 +36,7 @@ namespace ModernIntegration
         public virtual List<ProductCategory> GetAllCategories(Guid parTerminalId) { return null; }
         public virtual List<ProductCategory> GetCategoriesByParentId(Guid parTerminalId, Guid categoryId) { return null; }
         public virtual List<ProductViewModel> GetProductsByCategoryId(Guid parTerminalId, Guid categoryId) { return null; }
-        public virtual IEnumerable<ProductViewModel> GetProductsByName(Guid parTerminalId, string parName, int pageNumber = 0, bool excludeWeightProduct = false, Guid? categoryId = null) { return null; }
+        public virtual IEnumerable<ProductViewModel> GetProductsByName(Guid parTerminalId, string parName, int pageNumber = 0, bool excludeWeightProduct = false, Guid? categoryId = null, int parLimit = 10) { return null; }
 
         public virtual bool UpdateReceipt(ReceiptViewModel parReceipt) { return false; }
         public virtual bool RefundReceipt(RefundReceiptViewModel parReceipt) { return false; }
@@ -52,9 +54,15 @@ namespace ModernIntegration
 
         public virtual bool UpdateProductWeight(string parS, int weight) { return false; }
 
+        public virtual Status GetCurentStatus() { throw new NotImplementedException(); }
+
+        public virtual ReceiptViewModel GetNoFinishReceipt(Guid parTerminalId) { throw new NotImplementedException(); }
+
         public Action<SyncInformation> OnSyncInfoCollected { get; set; }
 
         public Action<IEnumerable<ProductViewModel>, Guid> OnProductsChanged { get; set; }
 
+        public Action<Status> OnStatusChanged { get; set; }
     }
+    
 }

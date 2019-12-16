@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using ModernIntegration.Enums;
+using ModernIntegration.Model;
 using ModernIntegration.Models;
 
 namespace ModernIntegration.ViewModels
@@ -75,6 +76,14 @@ namespace ModernIntegration.ViewModels
         public double Weight { get; set; }
 
         /// <summary>
+        /// Gets or sets the additional weights.
+        /// </summary>
+        /// <value>
+        /// The additional weights.
+        /// </value>
+        public List<WeightInfo> AdditionalWeights { get; set; }
+
+        /// <summary>
         /// Gets or sets the delta weight.
         /// </summary>
         /// <value>
@@ -82,6 +91,7 @@ namespace ModernIntegration.ViewModels
         /// </value>
         [Required(ErrorMessage = "Delta weight is required")]
         public double DeltaWeight { get; set; }
+
 
         /// <summary>
         /// Gets the total delta.

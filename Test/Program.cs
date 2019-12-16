@@ -23,8 +23,8 @@ namespace Test
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-            //CreateDataBase(); //Створення бази
-            //Thread.Sleep(1000000);
+           //CreateDataBase(true); //Створення бази
+            
             //TestKit();
             TestReceipt(); //
             //CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
@@ -64,32 +64,76 @@ namespace Test
             var api = new ApiPSU();
             ProductViewModel sd;
             //var cl = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
-            
-            
-            sd=api.AddProductByBarCode(TerminalId, "4820048481960", 0);
+           // var rrrr = api.GetNoFinishReceipt(TerminalId);
+            //var aa=api.Bl.db.GetConfig<DateTime>("Load_Full__");
+            //sd =api.AddProductByBarCode(TerminalId, "4820197006205", 1);
+           // sd = api.AddProductByBarCode(TerminalId, "4820198091002", 1);
+
             //Console.WriteLine("var cl = api.AddProductByBarCode(TerminalId, \"4820048481960\");");
             //Console.WriteLine(sd.Name);
-            var cl = api.GetCustomerByBarCode(TerminalId, "4820220980229");
+  //          var cl = api.GetCustomerByBarCode(TerminalId, "4820220980229");
+            var startTime = System.Diagnostics.Stopwatch.StartNew();
 
-            sd = api.AddProductByBarCode(TerminalId, "4823086109988", 2); // 1+1 Пельмені "Мішутка" Філейні 600г /Три ведмеді/
+            //sd = api.AddProductByBarCode(TerminalId, "4823086109988", 1); // 1+1 Пельмені "Мішутка" Філейні 600г /Три ведмеді/
+            sd = api.AddProductByBarCode(TerminalId, "2201652300489", 1); //Морква
+            Thread.Sleep(1000);
+            sd = api.AddProductByBarCode(TerminalId, "2201652300489", 1); //Морква
+            Thread.Sleep(1000);
+            sd = api.AddProductByBarCode(TerminalId, "2201652300229", 1); //Морква
+            Thread.Sleep(1000);
+            
+            api.ChangeQuantity(TerminalId, sd.Id, 2);
+            Thread.Sleep(1000);
+            api.ChangeQuantity(TerminalId, sd.Id, 3);
+            Thread.Sleep(1000);
+            api.ChangeQuantity(TerminalId, sd.Id, 4);
+            Thread.Sleep(1000);
+            api.ChangeQuantity(TerminalId, sd.Id, 3);
+            Thread.Sleep(1000);
+            api.ChangeQuantity(TerminalId, sd.Id, 2);
+            //Thread.Sleep(100000);
+
+
+            startTime.Stop();
+            Console.WriteLine( startTime.Elapsed);
+            startTime.Restart();
 
             sd = api.AddProductByBarCode(TerminalId, "1111622770010", 1);
+            startTime.Stop();
+            Console.WriteLine(startTime.Elapsed);
+            startTime.Restart();
 
             sd = api.AddProductByBarCode(TerminalId, "4823000916524", 1); //АРТЕК 
 
-             sd =api.AddProductByBarCode( TerminalId, "7622300813437",1);//Барн
+            startTime.Stop();
+            Console.WriteLine(startTime.Elapsed);
+            startTime.Restart();
+
+            sd =api.AddProductByBarCode( TerminalId, "7622300813437",1);//Барн
+            startTime.Stop();
+            Console.WriteLine(startTime.Elapsed);
+            startTime.Restart();
+
             sd = api.AddProductByBarCode(TerminalId, "7622300813437", 2);//Барн
+
+            startTime.Stop();
+            Console.WriteLine(startTime.Elapsed);
+            startTime.Restart();
+
             //            sd = api.AddProductByBarCode( TerminalId, "2201652300489",1); //Морква
             /*sd = api.AddProductByBarCode(TerminalId, "1110867180018", 1); //Хліб
             sd = api.AddProductByBarCode(TerminalId, "40804927", 1);
             sd = api.AddProductByBarCode(TerminalId, "1110011760018", 1); //КІВІ ВАГОВІ 2 кат*/
             sd = api.AddProductByBarCode( TerminalId, "2201652300489",1); //Морква
+
             sd = api.AddProductByBarCode(TerminalId, "7775006620509", 1); //товар 2 кат
             //Thread.Sleep(1000);
             /*sd =api.AddProductByBarCode( TerminalId, "5903154545623", 1); //Суміш овочева "Семикомпонентна" 400г /Рудь/ акція 1+1
             sd = api.AddProductByBarCode(TerminalId, "7622300813437", 5);//Барн*/
             sd = api.AddProductByBarCode(TerminalId, "4823097403457", 5);//Майонез "Провансаль" 67% д/п 350г /Щедро/
             sd = api.AddProductByBarCode(TerminalId, "4823097405932", 7);//Кетчуп "Лагідний" д/п 250г /Щедро/*/
+            api.ChangeQuantity(TerminalId, sd.Id, 0);
+
             var RId = api.GetCurrentReceiptByTerminalId(TerminalId).ReceiptId;
 
             var rr = api.GetProduct(TerminalId);
@@ -101,7 +145,7 @@ namespace Test
             var r = api.AddFiscalNumber(TerminalId, "TRRF-1234");
 
             api.SendReceipt(RId);
-
+            Console.WriteLine("End");
             Thread.Sleep(100000);
 
             //169316+169316 4823086109988 Пельмені "Мішутка" Філейні 600г /Три ведмеді/

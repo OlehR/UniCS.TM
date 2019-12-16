@@ -66,6 +66,7 @@ namespace ModelMID
         /// </summary>
         public decimal SumDiscount { get; set; }
         //  Discount = // 
+        public string NameDiscount { get; set; }
         public decimal Sum
         {
             get { return Quantity * Price; }
@@ -137,14 +138,21 @@ namespace ModelMID
         public string BarCode { get; set; }
 
         public decimal WeightBrutto { get; set; }
-    public ReceiptWares()
+        /// <summary>
+        /// Додаткові ваги
+        /// </summary>
+        public List<decimal> AdditionalWeights;
+        public decimal QuantityOld { get; set; }
+        public ReceiptWares()
         {
             Clear();
         }
         public ReceiptWares(IdReceipt idReceipt, Guid parWaresId) : base(idReceipt, parWaresId)
         { }
-
-        
+        public ReceiptWares(IdReceipt idReceipt) : base(idReceipt)
+        { }
+        public ReceiptWares(IdReceiptWares idReceiptWares) : base(idReceiptWares, idReceiptWares.CodeWares,idReceiptWares.CodeUnit)
+        { }
         public void Clear()
         {
             CodeWares = 0;

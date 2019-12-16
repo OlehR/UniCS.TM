@@ -18,9 +18,10 @@ namespace ModelMID
         /// </summary>
         public decimal Quantity { get; set; }
 
+        public decimal _Sum = 0;
         public decimal Sum
         {
-            get { return Quantity * Price; }
+            get { return (_Sum>0?_Sum:Quantity * Price); }
             set { Price = (Quantity > 0 ? value / Quantity : 0); }
         }
 
