@@ -64,17 +64,35 @@ namespace Test
             var api = new ApiPSU();
             ProductViewModel sd;
             //var cl = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
-            var rrrr = api.GetNoFinishReceipt(TerminalId);
+           // var rrrr = api.GetNoFinishReceipt(TerminalId);
             //var aa=api.Bl.db.GetConfig<DateTime>("Load_Full__");
             //sd =api.AddProductByBarCode(TerminalId, "4820197006205", 1);
-            sd = api.AddProductByBarCode(TerminalId, "4820198091002", 1);
+           // sd = api.AddProductByBarCode(TerminalId, "4820198091002", 1);
 
             //Console.WriteLine("var cl = api.AddProductByBarCode(TerminalId, \"4820048481960\");");
             //Console.WriteLine(sd.Name);
   //          var cl = api.GetCustomerByBarCode(TerminalId, "4820220980229");
             var startTime = System.Diagnostics.Stopwatch.StartNew();
 
-            sd = api.AddProductByBarCode(TerminalId, "4823086109988", 3); // 1+1 Пельмені "Мішутка" Філейні 600г /Три ведмеді/
+            //sd = api.AddProductByBarCode(TerminalId, "4823086109988", 1); // 1+1 Пельмені "Мішутка" Філейні 600г /Три ведмеді/
+            sd = api.AddProductByBarCode(TerminalId, "2201652300489", 1); //Морква
+            Thread.Sleep(1000);
+            sd = api.AddProductByBarCode(TerminalId, "2201652300489", 1); //Морква
+            Thread.Sleep(1000);
+            sd = api.AddProductByBarCode(TerminalId, "2201652300229", 1); //Морква
+            Thread.Sleep(1000);
+            Thread.Sleep(100000);
+            api.ChangeQuantity(TerminalId, sd.Id, 2);
+            Thread.Sleep(1000);
+            api.ChangeQuantity(TerminalId, sd.Id, 3);
+            Thread.Sleep(1000);
+            api.ChangeQuantity(TerminalId, sd.Id, 4);
+            Thread.Sleep(1000);
+            api.ChangeQuantity(TerminalId, sd.Id, 3);
+            Thread.Sleep(1000);
+            api.ChangeQuantity(TerminalId, sd.Id, 2);
+            Thread.Sleep(100000);
+
 
             startTime.Stop();
             Console.WriteLine( startTime.Elapsed);
