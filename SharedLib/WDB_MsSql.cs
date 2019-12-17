@@ -52,24 +52,27 @@ namespace SharedLib
         public bool LoadData(WDB parDB,bool parIsFull=true)
         {
             string SQL;
-
+            Console.WriteLine("Start LoadData "+ parIsFull.ToString());
             SQL = GetSQL("SqlGetMessageNo");
             int varMessageNoMax = db.ExecuteScalar<int>(SQL);
             int varMessageNoMin = parDB.GetConfig<int>("MessageNo");
 
             var oMessage = new { IsFull = parIsFull ? 1 : 0, MessageNoMin = varMessageNoMin, MessageNoMax = varMessageNoMax };
 
+            Console.WriteLine("SqlGetDimPrice");
             SQL = GetSQL("SqlGetDimPrice");
             var PD = db.Execute<object,Price>(SQL, oMessage/* new { IsFull= parIsFull?1:0}*/);
             parDB.ReplacePrice(PD);
             PD = null;
 
+            Console.WriteLine("SqlGetPromotionSaleGift");
             SQL = GetSQL("SqlGetPromotionSaleGift");
             var PSGf = db.Execute<PromotionSaleGift>(SQL);
             parDB.ReplacePromotionSaleGift(PSGf);
             PSGf = null;
 
 
+            Console.WriteLine("SqlGetPromotionSaleGroupWares");
             SQL = GetSQL("SqlGetPromotionSaleGroupWares");
             var PSGW = db.Execute<PromotionSaleGroupWares>(SQL);
             if (PSGW != null)
@@ -78,30 +81,32 @@ namespace SharedLib
                 PSGW = null;
             }
 
-
+            Console.WriteLine("SqlGetPromotionSale");
             SQL = GetSQL("SqlGetPromotionSale");
             var PS = db.Execute<PromotionSale>(SQL);
             parDB.ReplacePromotionSale(PS);
             PS = null;
 
-
+            Console.WriteLine("SqlGetPromotionSaleFilter");
             SQL = GetSQL("SqlGetPromotionSaleFilter");
             var PSF = db.Execute<PromotionSaleFilter>(SQL);
             parDB.ReplacePromotionSaleFilter(PSF);
             PSF = null;
 
+            Console.WriteLine("SqlGetPromotionSaleData");
             SQL = GetSQL("SqlGetPromotionSaleData");
             var PSD = db.Execute<PromotionSaleData>(SQL);
             parDB.ReplacePromotionSaleData(PSD);
             PSF = null;
 
 
-
+            Console.WriteLine("SqlGetPromotionSaleDealer");
             SQL = GetSQL("SqlGetPromotionSaleDealer");
             var PSP = db.Execute<PromotionSaleDealer>(SQL);
             parDB.ReplacePromotionSaleDealer(PSP);
             PSP = null;
 
+            Console.WriteLine("SqlGetPromotionSale2Category");
             SQL = GetSQL("SqlGetPromotionSale2Category");
             var PS2c = db.Execute<PromotionSale2Category>(SQL);
             parDB.ReplacePromotionSale2Category(PS2c);
@@ -109,48 +114,55 @@ namespace SharedLib
 
             if (parIsFull)
             {
+                Console.WriteLine("SqlGetDimUnitDimension");
                 SQL = GetSQL("SqlGetDimUnitDimension");
                 var UD = db.Execute<UnitDimension>(SQL);
                 parDB.ReplaceUnitDimension(UD);
                 UD = null;
 
+                Console.WriteLine("SqlGetDimGroupWares");
                 SQL = GetSQL("SqlGetDimGroupWares");
                 var GW = db.Execute<GroupWares>(SQL);
                 parDB.ReplaceGroupWares(GW);
                 GW = null;
 
+                Console.WriteLine("SqlGetDimWares");
                 SQL = GetSQL("SqlGetDimWares");
                 var W = db.Execute<Wares>(SQL);
                 parDB.ReplaceWares(W);
                 W = null;
 
+                Console.WriteLine("SqlGetDimAdditionUnit");
                 SQL = GetSQL("SqlGetDimAdditionUnit");
                 var AU = db.Execute<AdditionUnit>(SQL);
                 parDB.ReplaceAdditionUnit(AU);
                 AU = null;
 
-
+                Console.WriteLine("SqlGetDimBarCode");
                 SQL = GetSQL("SqlGetDimBarCode");
                 var BC = db.Execute<Barcode>(SQL);
                 parDB.ReplaceBarCode(BC);
                 BC = null;
 
-
+                Console.WriteLine("SqlGetDimTypeDiscount");
                 SQL = GetSQL("SqlGetDimTypeDiscount");
                 var TD = db.Execute<TypeDiscount>(SQL);
                 parDB.ReplaceTypeDiscount(TD);
                 TD = null;
 
+                Console.WriteLine("SqlGetDimClient");
                 SQL = GetSQL("SqlGetDimClient");
                 var Cl = db.Execute<Client>(SQL);
                 parDB.ReplaceClient(Cl);
                 Cl = null;
 
+                Console.WriteLine("SqlGetDimFastGroup");
                 SQL = GetSQL("SqlGetDimFastGroup");
                 var FG = db.Execute<FastGroup>(SQL);
                 parDB.ReplaceFastGroup(FG);
                 FG = null;
 
+                Console.WriteLine("SqlGetDimFastWares");
                 SQL = GetSQL("SqlGetDimFastWares");
                 var FW = db.Execute<FastWares>(SQL);
                 parDB.ReplaceFastWares(FW);

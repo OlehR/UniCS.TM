@@ -446,9 +446,12 @@ namespace SharedLib
 
                 if (parIsFull)
                 {
+                    Console.WriteLine("CreateMIDIndex Start");
                     SQLite.CreateMIDIndex();
+                    Console.WriteLine("CreateMIDIndex Finish");
                     db = SQLite;
                     db.SetConfig<string>("Last_MID", varMidFile);
+                    Console.WriteLine("CreateMIDIndex Finish");
                 }
                 db.SetConfig<string>("Load_" + (parIsFull ? "Full" : "Update"), String.Format("{0:u}", DateTime.Now));
             }
