@@ -161,13 +161,13 @@ update receipt
 
 [SqlSetStateReceipt]
 update receipt
-   set STATE_RECEIPT    = @StateReceipt,
+   set STATE_RECEIPT    = @StateReceipt
   where ID_WORKPLACE = @IdWorkplace
    and CODE_PERIOD = @CodePeriod
    and CODE_RECEIPT = @CodeReceipt
 
 [SqlGetIdReceiptbyState]
-select ID_WORKPLACE,CODE_PERIOD,CODE_RECEIPT from receipt where STATE_RECEIPT= @StateReceipt;
+select ID_WORKPLACE as IdWorkplace,CODE_PERIOD as CodePeriod, CODE_RECEIPT as CodeReceipt from receipt where STATE_RECEIPT= @StateReceipt;
 
 [SqlInsertWaresReceipt]
 insert into wares_receipt (id_workplace, code_period, code_receipt, code_wares, code_unit,
@@ -249,7 +249,7 @@ update wares_receipt set  BARCODE_2_CATEGORY=@BarCode2Category
                      where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt 
                      and code_wares=@CodeWares; -- and code_unit=@CodeUnit
 [SqlUpdateQuantityWares]
-update wares_receipt set  quantity= @Quantity, sort=@Sort,
+update wares_receipt set  quantity= @Quantity, sort= (select COALESCE(max(sort),0)+1 from wares_receipt  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt and code_wares<>@CodeWares) ,
 						   sum=@Quantity*price ---, Sum_Vat=@SumVat
                      where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt 
                      and code_wares=@CodeWares;-- and code_unit=@CodeUnit;

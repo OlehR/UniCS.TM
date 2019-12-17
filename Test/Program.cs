@@ -23,10 +23,10 @@ namespace Test
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-           CreateDataBase(false); //Створення бази
+           //CreateDataBase(false); //Створення бази
             Thread.Sleep(10000);
             //TestKit();
-            //TestReceipt(); //
+            TestReceipt(); //
             //CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
             //            var o = new SharedLib.Oracle();
             //var r =  o.Execute<ReceiptWares>("select w.code_wares CodeWares,w.name_wares as NameWares from dw.wares w where w.code_wares in (54882,54883)");
@@ -64,23 +64,30 @@ namespace Test
             var api = new ApiPSU();
             ProductViewModel sd;
             //var cl = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
-           // var rrrr = api.GetNoFinishReceipt(TerminalId);
+            // var rrrr = api.GetNoFinishReceipt(TerminalId);
             //var aa=api.Bl.db.GetConfig<DateTime>("Load_Full__");
             //sd =api.AddProductByBarCode(TerminalId, "4820197006205", 1);
-           // sd = api.AddProductByBarCode(TerminalId, "4820198091002", 1);
+            // sd = api.AddProductByBarCode(TerminalId, "4820198091002", 1);
 
             //Console.WriteLine("var cl = api.AddProductByBarCode(TerminalId, \"4820048481960\");");
             //Console.WriteLine(sd.Name);
-  //          var cl = api.GetCustomerByBarCode(TerminalId, "4820220980229");
+            //          var cl = api.GetCustomerByBarCode(TerminalId, "4820220980229");
+
+            api.RequestSyncInfo(false);
+            Thread.Sleep(100000);
+
             var startTime = System.Diagnostics.Stopwatch.StartNew();
 
             //sd = api.AddProductByBarCode(TerminalId, "4823086109988", 1); // 1+1 Пельмені "Мішутка" Філейні 600г /Три ведмеді/
+            //sd = api.AddProductByBarCode(TerminalId, "2201652300489", 1); //Морква
+            //Thread.Sleep(1000);
+            sd = api.AddProductByBarCode(TerminalId, "4823000916524", 1); //АРТЕК 
+            sd = api.AddProductByBarCode(TerminalId, "7622300813437", 1);//Барн
+
             sd = api.AddProductByBarCode(TerminalId, "2201652300489", 1); //Морква
-            Thread.Sleep(1000);
-            sd = api.AddProductByBarCode(TerminalId, "2201652300489", 1); //Морква
-            Thread.Sleep(1000);
+            //Thread.Sleep(1000);
             sd = api.AddProductByBarCode(TerminalId, "2201652300229", 1); //Морква
-            Thread.Sleep(1000);
+            //Thread.Sleep(1000);
             
             api.ChangeQuantity(TerminalId, sd.Id, 2);
             Thread.Sleep(1000);
@@ -94,22 +101,12 @@ namespace Test
             //Thread.Sleep(100000);
 
 
-            startTime.Stop();
-            Console.WriteLine( startTime.Elapsed);
-            startTime.Restart();
+//            startTime.Stop();
+//            Console.WriteLine( startTime.Elapsed);
+//            startTime.Restart();
 
             sd = api.AddProductByBarCode(TerminalId, "1111622770010", 1);
-            startTime.Stop();
-            Console.WriteLine(startTime.Elapsed);
-            startTime.Restart();
 
-            sd = api.AddProductByBarCode(TerminalId, "4823000916524", 1); //АРТЕК 
-
-            startTime.Stop();
-            Console.WriteLine(startTime.Elapsed);
-            startTime.Restart();
-
-            sd =api.AddProductByBarCode( TerminalId, "7622300813437",1);//Барн
             startTime.Stop();
             Console.WriteLine(startTime.Elapsed);
             startTime.Restart();

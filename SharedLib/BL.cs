@@ -138,7 +138,7 @@ namespace SharedLib
             try
             {
                 var Cat2 = db.CheckLastWares2Cat(parIdReceipt);
-                if (Cat2 == null && Cat2.Count() != 0)
+                if (Cat2 == null || Cat2.Count() == 0)
                 {
                     Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace),  Status = eSyncStatus.IncorectProductForDiscount });
                     return false;
@@ -397,7 +397,8 @@ namespace SharedLib
             var varReceipts = parDB.GetIdReceiptbyState(eStateReceipt.Print);
             foreach (var el in varReceipts)
                 await SendReceiptTo1CAsync(parDB.ViewReceipt(el, true));
-            SendOldReceipt();
+            if(parDB == null)
+                SendOldReceipt();
             Global.OnStatusChanged?.Invoke(db.GetStatus());
             return true;
         }
