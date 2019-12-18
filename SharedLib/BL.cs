@@ -453,7 +453,7 @@ namespace SharedLib
                     db.SetConfig<string>("Last_MID", varMidFile);
                     Console.WriteLine("CreateMIDIndex Finish");
                 }
-                db.SetConfig<string>("Load_" + (parIsFull ? "Full" : "Update"), String.Format("{0:u}", DateTime.Now));
+                db.SetConfig<DateTime>("Load_" + (parIsFull ? "Full" : "Update"), DateTime.Now /*String.Format("{0:u}", DateTime.Now)*/);
             }
             catch (Exception ex)
             {
