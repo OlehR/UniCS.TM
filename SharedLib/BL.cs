@@ -86,7 +86,9 @@ namespace SharedLib
 
         public ReceiptWares AddWaresBarCode(IdReceipt parReceipt, string parBarCode, decimal parQuantity = 0)
         {
-            var w = db.FindWares(parBarCode);
+
+            var w = parBarCode.Trim().Length >= 8 ? db.FindWares(parBarCode) : db.FindWares(null, null, 0, 0, 0, Convert.ToInt32(parBarCode));
+
             //ReceiptWares W = null;
             if (w == null || w.Count() == 0) // Якщо не знайшли спробуем по ваговим і штучним штрихкодам.          
             {
