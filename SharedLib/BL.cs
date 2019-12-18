@@ -392,11 +392,10 @@ namespace SharedLib
         }
         public async Task<bool> SendAllReceipt(WDB_SQLite parDB = null)
         {
-            if (parDB == null)
-                parDB = db;
-            var varReceipts = parDB.GetIdReceiptbyState(eStateReceipt.Print);
+            var varDB = (parDB == null? db : parDB);
+            var varReceipts = varDB.GetIdReceiptbyState(eStateReceipt.Print);
             foreach (var el in varReceipts)
-                await SendReceiptTo1CAsync(parDB.ViewReceipt(el, true));
+                await SendReceiptTo1CAsync(varDB.ViewReceipt(el, true));
             if(parDB == null)
                 SendOldReceipt();
             Global.OnStatusChanged?.Invoke(db.GetStatus());
@@ -515,7 +514,7 @@ namespace SharedLib
                     return;
                 }
 
-                Ldc.AddDays(1);                
+                Ldc = Ldc.AddDays(1);                
             }
             //Перекидаємо лічильник на сьогодня.
             db.SetConfig<DateTime>("LastDaySend", Ldc);
