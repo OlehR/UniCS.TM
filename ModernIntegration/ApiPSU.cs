@@ -468,7 +468,7 @@ namespace ModernIntegration
             await Bl.SendAllReceipt().ConfigureAwait(false);
         }
 
-        public virtual IEnumerable<ProductViewModel> GetProduct(Guid parTerminalId)
+        public override IEnumerable<ProductViewModel> GetProduct(Guid parTerminalId)
         {
 
             var receiptId = GetCurrentReceiptByTerminalId(parTerminalId);
