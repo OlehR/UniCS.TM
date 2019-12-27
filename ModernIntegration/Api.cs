@@ -57,12 +57,18 @@ namespace ModernIntegration
         public virtual Status GetCurentStatus() { throw new NotImplementedException(); }
 
         public virtual ReceiptViewModel GetNoFinishReceipt(Guid parTerminalId) { throw new NotImplementedException(); }
+        public virtual IEnumerable<ReceiptViewModel> GetReceipts(DateTime parStartDate, DateTime parFinishDate, Guid? parTerminalId = null) 
+            { throw new NotImplementedException(); }
 
         public Action<SyncInformation> OnSyncInfoCollected { get; set; }
+
+
 
         public Action<IEnumerable<ProductViewModel>, Guid> OnProductsChanged { get; set; }
 
         public Action<Status> OnStatusChanged { get; set; }
+
+       
     }
     
 }

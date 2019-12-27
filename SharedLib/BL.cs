@@ -528,6 +528,13 @@ namespace SharedLib
         }
 
 
+        public IEnumerable<Receipt> GetReceipts(DateTime parStartDate, DateTime parFinishDate,int IdWorkPlace)
+        {
+            if(parStartDate.Date!=DateTime.Now.Date|| parFinishDate.Date != DateTime.Now.Date)
+                throw new NotImplementedException();
+            return db.GetReceipts(parStartDate.Date,  parFinishDate.Date.AddDays(1), IdWorkPlace);
+        }
+
 
 
     }

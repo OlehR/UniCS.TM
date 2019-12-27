@@ -182,6 +182,7 @@ namespace SharedLib
         protected string SqlIsWaresInPromotionKit = "";
         protected string SqlGetDateFirstNotSendReceipt = "";
         protected string SqlGetLastReceipt = "";
+        protected string SqlGetReceipts="";
         public WDB(string parFileSQL)
         {
             this.ReadSQL(parFileSQL);
@@ -587,6 +588,7 @@ namespace SharedLib
             SqlIsWaresInPromotionKit = GetSQL("SqlIsWaresInPromotionKit");
             SqlGetDateFirstNotSendReceipt = GetSQL("SqlGetDateFirstNotSendReceipt");
             SqlGetLastReceipt = GetSQL("SqlGetLastReceipt");
+            SqlGetReceipts = GetSQL("SqlGetReceipts");
             return true;
         }
 
@@ -963,5 +965,10 @@ namespace SharedLib
                 return r.First();
             return null;
         }
+        public virtual IEnumerable<Receipt> GetReceipts(DateTime parStartDate, DateTime parFinishDate,int parIdWorkPlace)
+        {
+            return db.Execute< object, Receipt>(SqlGetReceipts, new { StartDate = parStartDate, FinishDate = parFinishDate, IdWorkPlace = parIdWorkPlace });
+        }
+
     }
 }
