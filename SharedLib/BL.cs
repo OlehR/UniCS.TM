@@ -410,9 +410,9 @@ namespace SharedLib
         {
             if (string.IsNullOrEmpty(parBarCode))
                 return false;
-            if (parBarCode.Substring(0, 4).Equals("CODE:"))
+            if (parBarCode.Substring(0, 5).Equals("CODE:"))
             {
-                var GuideWares = Guid.Parse(parBarCode.Substring(4));
+                var GuideWares = Guid.Parse(parBarCode.Substring(5));
                 var Wares= new IdReceiptWares(new IdReceipt(),GuideWares);
                 return db.InsertWeight(new { BarCode = Wares.CodeWares.ToString(), Weight = (decimal)parWeight / 1000m, Status = -1 });
             }
