@@ -281,7 +281,6 @@ namespace Test
      
   
 
-
     }
     public class TestReceipt
     {
@@ -302,6 +301,7 @@ namespace Test
         public string BarCode2Category { get; set; }
 
     }
+
 
    
 }
