@@ -467,7 +467,7 @@ CREATE TABLE Weight (
 	);
 
 [SqlInsertWeight] 
-insert into Weight ( BarCode,Weight) values (@BarCode,@Weight);
+insert into Weight ( BarCode,Weight,STATUS) values (@BarCode,@Weight,@Status);
 
 [SqlReplaceWorkplace]
  replace into WORKPLACE ( ID_WORKPLACE, NAME, Terminal_GUID) values (@IdWorkplace, @Name,@StrTerminalGUID);
@@ -965,6 +965,7 @@ sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_
  from receipt
  where ID_WORKPLACE = case when @IdWorkplace =0 then ID_WORKPLACE else @IdWorkplace end
  and DateReceipt between @StartDate and @FinishDate;   
-
+[SqlAdditionalWeightsWares]
+select WEIGHT from WEIGHT where BARCODE=@CodeWares and  STATUS=-1
 [SqlEnd]
 */

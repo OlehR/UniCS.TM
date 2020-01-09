@@ -141,7 +141,7 @@ namespace ModelMID
         /// <summary>
         /// Додаткові ваги
         /// </summary>
-        public List<decimal> AdditionalWeights;
+        public IEnumerable<decimal> AdditionalWeights;
         public decimal QuantityOld { get; set; }
         public ReceiptWares()
         {
