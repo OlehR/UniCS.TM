@@ -528,6 +528,23 @@ namespace SharedLib
         }
 
 
+        public IEnumerable<Receipt> GetReceipts(DateTime parStartDate, DateTime parFinishDate,int IdWorkPlace)
+        {
+            var res = db.GetReceipts(parStartDate.Date, parFinishDate.Date.AddDays(1), IdWorkPlace).ToList(); ;
+            if (parStartDate.Date != DateTime.Now.Date || parFinishDate.Date != DateTime.Now.Date)
+            {
+                var Ldc = parFinishDate.Date.AddDays(1);
+                while (Ldc <= parFinishDate.Date)
+                {
+                    var ldb = new WDB_SQLite(null, false, Ldc);
+                    var l= ldb.GetReceipts(Ldc.Date, Ldc.Date.AddDays(1), IdWorkPlace);
+                    res.AddRange(l);                    
+                }
+            }
+                //throw new NotImplementedException();
+                return res;
+        }
+
 
 
     }

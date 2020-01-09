@@ -494,6 +494,19 @@ namespace ModernIntegration
             return GetReceiptViewModel(receipt);
         }
 
+        public override IEnumerable<ReceiptViewModel> GetReceipts(DateTime parStartDate, DateTime parFinishDate, Guid? parTerminalId = null)
+        {
+
+            int IdWorkplace = 0;
+                if (parTerminalId != null)
+                IdWorkplace=Global.GetIdWorkplaceByTerminalId(parTerminalId.Value);
+
+            var res=Bl.GetReceipts(parStartDate, parFinishDate, IdWorkplace);
+
+            return res.Select(r=>GetReceiptViewModel(r));
+            
+        }
+
 
     }
 }
