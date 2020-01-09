@@ -278,8 +278,14 @@ namespace Test
 
         }
 
+<<<<<<< HEAD
+
+
+=======
      
   
+>>>>>>> ba4eb216becc17a76c3ea5f21bf1346766e27818
+
 
     }
     public class TestReceipt
@@ -302,6 +308,9 @@ namespace Test
 
     }
 
+<<<<<<< HEAD
 
+=======
    
+>>>>>>> ba4eb216becc17a76c3ea5f21bf1346766e27818
 }

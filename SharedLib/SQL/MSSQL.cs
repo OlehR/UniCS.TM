@@ -78,7 +78,7 @@ namespace SharedLib
                 foreach (var el in Parameters)
                     ExecuteNonQuery(parQuery, el);
             }
-            catch
+            catch(Exception Ex)
             {
                 transaction.Rollback();
                 throw;
