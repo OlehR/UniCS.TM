@@ -12,24 +12,32 @@ using ModernIntegration.Model;
 using ModernIntegration.Models;
 using System.Text.RegularExpressions;
 using ModernIntegration.ViewModels;
+using System.Net.Http;
+using System.Text;
 
 namespace Test
 {
 
     class Program
     {
-        static void Main(string[] args)
-         {
+        static async Task Main(string[] args)
+        {
 
+            //LoadWeightKasa();
+            // var R = await GetInfoBarcode("4823000920439");
+            //var l = new GetGoodUrl();
+            //l.LoadWeightURLAsync();
+            Thread.Sleep(1000000000);
 
+            return;
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-           //CreateDataBase(false); //Створення бази
-            Thread.Sleep(10000);
+            //CreateDataBase(false); //Створення бази
+            //Thread.Sleep(10000);
             //TestKit();
             TestReceipt(); //
-            //CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
-            //            var o = new SharedLib.Oracle();
-            //var r =  o.Execute<ReceiptWares>("select w.code_wares CodeWares,w.name_wares as NameWares from dw.wares w where w.code_wares in (54882,54883)");
+                           //CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
+                           //            var o = new SharedLib.Oracle();
+                           //var r =  o.Execute<ReceiptWares>("select w.code_wares CodeWares,w.name_wares as NameWares from dw.wares w where w.code_wares in (54882,54883)");
 
 
 
@@ -37,12 +45,14 @@ namespace Test
               var SQLite = new WDB_SQLite(varMidFile);
               SQLite.RecalcPrice(new IdReceipt() { IdWorkplace = 140701, CodePeriod = 20190910, CodeReceipt = 12 });
               */
+            Thread.Sleep(100000);
+
         }
 
-        static void CreateDataBase(bool isFull=true)
+        static void CreateDataBase(bool isFull = true)
         {
             var bl = new BL();
-             bl.SyncData(isFull);
+            bl.SyncData(isFull);
         }
 
 
@@ -54,15 +64,17 @@ namespace Test
             var api = new ApiPSU();
             var TerminalId = Guid.NewGuid();
             foreach (var el in a)
-              api.AddProductByBarCode(TerminalId, el,2);
+                api.AddProductByBarCode(TerminalId, el, 2);
         }
         static void TestReceipt()
         {
             var TerminalId = Guid.Parse("1bb89aa9-dbdf-4eb0-b7a2-094665c3fdd0");
             var ProductId = Guid.Parse("00000010-abcd-0000-0019-000000055004");
-            var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009001");            
+            var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009001");
             var api = new ApiPSU();
             ProductViewModel sd;
+            //var reseipt = api.GetReceipts(DateTime.Now.Date, DateTime.Now.Date);
+
             //var cl = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
             // var rrrr = api.GetNoFinishReceipt(TerminalId);
             //var aa=api.Bl.db.GetConfig<DateTime>("Load_Full__");
@@ -73,8 +85,8 @@ namespace Test
             //Console.WriteLine(sd.Name);
             //          var cl = api.GetCustomerByBarCode(TerminalId, "4820220980229");
 
-            api.RequestSyncInfo(false);
-            Thread.Sleep(100000);
+            //api.RequestSyncInfo(false);
+            //Thread.Sleep(100000);
 
             var startTime = System.Diagnostics.Stopwatch.StartNew();
 
@@ -87,23 +99,23 @@ namespace Test
             sd = api.AddProductByBarCode(TerminalId, "2201652300489", 1); //Морква
             //Thread.Sleep(1000);
             sd = api.AddProductByBarCode(TerminalId, "2201652300229", 1); //Морква
-            //Thread.Sleep(1000);
-            
+                                                                          //Thread.Sleep(1000);
+
             api.ChangeQuantity(TerminalId, sd.Id, 2);
-            Thread.Sleep(1000);
+            //Thread.Sleep(1000);
             api.ChangeQuantity(TerminalId, sd.Id, 3);
-            Thread.Sleep(1000);
+            //Thread.Sleep(1000);
             api.ChangeQuantity(TerminalId, sd.Id, 4);
-            Thread.Sleep(1000);
+            //Thread.Sleep(1000);
             api.ChangeQuantity(TerminalId, sd.Id, 3);
-            Thread.Sleep(1000);
+            // Thread.Sleep(1000);
             api.ChangeQuantity(TerminalId, sd.Id, 2);
             //Thread.Sleep(100000);
 
 
-//            startTime.Stop();
-//            Console.WriteLine( startTime.Elapsed);
-//            startTime.Restart();
+            //            startTime.Stop();
+            //            Console.WriteLine( startTime.Elapsed);
+            //            startTime.Restart();
 
             sd = api.AddProductByBarCode(TerminalId, "1111622770010", 1);
 
@@ -121,7 +133,7 @@ namespace Test
             /*sd = api.AddProductByBarCode(TerminalId, "1110867180018", 1); //Хліб
             sd = api.AddProductByBarCode(TerminalId, "40804927", 1);
             sd = api.AddProductByBarCode(TerminalId, "1110011760018", 1); //КІВІ ВАГОВІ 2 кат*/
-            sd = api.AddProductByBarCode( TerminalId, "2201652300489",1); //Морква
+            sd = api.AddProductByBarCode(TerminalId, "2201652300489", 1); //Морква
 
             sd = api.AddProductByBarCode(TerminalId, "7775006620509", 1); //товар 2 кат
             //Thread.Sleep(1000);
@@ -143,11 +155,10 @@ namespace Test
 
             api.SendReceipt(RId);
             Console.WriteLine("End");
-            Thread.Sleep(100000);
 
             //169316+169316 4823086109988 Пельмені "Мішутка" Філейні 600г /Три ведмеді/
             //156727+169583 4823097403457+4823097405932 Майонез "Провансаль" 67% д/п 350г /Щедро/  Кетчуп "Лагідний" д/п 250г /Щедро/
-                       
+
         }
 
 
@@ -210,29 +221,29 @@ namespace Test
                     }
 
                 }
-                
-                var p = Api.AddProductByProductId(TerminalId, IdWares.WaresId,L.Amount);
+
+                var p = Api.AddProductByProductId(TerminalId, IdWares.WaresId, L.Amount);
                 //Api.ChangeQuantity(TerminalId, IdWares.WaresId, L.Amount);
 
                 if (!L.Number.Equals(LastLine.Number))
                 {
                     LastReceipt = Api.GetCurrentReceiptByTerminalId(TerminalId);
-                    if(L.Bar_Code!=null)
-                      Api.GetCustomerByBarCode(TerminalId, L.Bar_Code);
+                    if (L.Bar_Code != null)
+                        Api.GetCustomerByBarCode(TerminalId, L.Bar_Code);
                     var RH = Api.Bl.GetReceiptHead(LastReceipt);
                     RH.AdditionN1 = L.Percent_Discount;
                     RH.AdditionC1 = L.Number;
                     RH.AdditionD1 = L.Date_Time;
                     RH.DateReceipt = L.Date_Time;
-                    
+
                     Api.Bl.db.ReplaceReceipt(RH);
                 }
                 var RW = Api.Bl.db.ViewReceiptWares(LastReceipt);
                 var RWE = RW.FirstOrDefault(d => d.CodeWares == L.Code_Wares);
                 RWE.AdditionN1 = L.Disc_Perc_Auto;
-                RWE.AdditionN2 = L.Sum*(100m-L.Disc_perc_manual)/100;
+                RWE.AdditionN2 = L.Sum * (100m - L.Disc_perc_manual) / 100;
                 RWE.AdditionN3 = L.Is_Promotion;
-                RWE.AdditionC1 = L.Price.ToString()+" "+  L.Type_Promotion;
+                RWE.AdditionC1 = L.Price.ToString() + " " + L.Type_Promotion;
                 RWE.BarCode2Category = L.BarCode2Category;
                 RWE.Description = L.Disc_perc_manual.ToString();
                 Api.Bl.db.ReplaceWaresReceipt(RWE);
@@ -247,32 +258,30 @@ namespace Test
 
         }
 
-        //private CancellationTokenSource ts = new CancellationTokenSource();
+        public static void LoadWeightKasa()
+        {
+            string varSQLUpdate = @"
+-- begin tran
+   update barcode_out with (serializable) set weight=@Weight,Date=@Date
+   where bar_code = @BarCode
 
-        //private async Task<int> SomeFunction()
-        //{
-        //    var token = ts.Token;
-        //    ts.Cancel();
-        //    var b = await AAsynFunc(token);
-        //    return b ?? 0;
-        //}
-        //private Task<int?> AAsynFunc(CancellationToken token)
-        //{
-        //    return Task<int?>.Run(() =>
-        //    {
-        //        while (!token.IsCancellationRequested)
-        //        {
-        //            //DO something
-        //        }
+   if @@rowcount = 0
+   begin
+      insert into barcode_out (bar_code, weight,Date) values ( @BarCode,@Weight,@Date)
+   end
+-- commit tran";
 
-        //        return (int?) 10;
-        //    });
-        //}
+            var dbMs = new MSSQL();
+            var dbSqlite = new SQLite(@"C:\DB\config.db");
+            var r = dbSqlite.Execute<BarCodeOut>(@"select BARCODE as BarCode, avg(WEIGHT) as Weight,max(DATE_CREATE) as Date from WEIGHT where Weight>0 group by BARCODE");
+            dbMs.BulkExecuteNonQuery<BarCodeOut>(varSQLUpdate, r);
 
-        //private async Task SomeFunction2()
-        //{
-        //    AAsynFunc().ContinueWith(async r => SomeFunction(await r));
-        //}
+        }
+
+
+
+
+
     }
     public class TestReceipt
     {
@@ -293,5 +302,6 @@ namespace Test
         public string BarCode2Category { get; set; }
 
     }
+
 
 }
