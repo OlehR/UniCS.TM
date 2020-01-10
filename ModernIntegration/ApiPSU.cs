@@ -443,9 +443,9 @@ namespace ModernIntegration
             return false;
         }
 
-        public override bool UpdateProductWeight(string parS, int weight)
+        public override bool UpdateProductWeight(string parData, int parWeight, Guid? parWares = null)
         {
-            return Bl.InsertWeight(parS, weight);
+            return Bl.InsertWeight(parData, parWeight, parWares);
         }
 
         public override async Task RequestSyncInfo(bool parIsFull = false)

@@ -406,14 +406,14 @@ namespace SharedLib
 
 
 
-        public bool InsertWeight(string parBarCode, int parWeight)
+        public bool InsertWeight(string parBarCode, int parWeight, Guid? parWares = null)
         {
-            if (string.IsNullOrEmpty(parBarCode))
+            if (string.IsNullOrEmpty(parBarCode)&& parWares==null)
                 return false;
-            if (parBarCode.Substring(0, 5).Equals("CODE:"))
+
+            if (parWares !=null)
             {
-                var GuideWares = Guid.Parse(parBarCode.Substring(5));
-                var Wares= new IdReceiptWares(new IdReceipt(),GuideWares);
+                var Wares= new IdReceiptWares(new IdReceipt(), parWares.Value);
                 return db.InsertWeight(new { BarCode = Wares.CodeWares.ToString(), Weight = (decimal)parWeight / 1000m, Status = -1 });
             }
             return db.InsertWeight(new { BarCode = parBarCode, Weight = (decimal)parWeight / 1000m, Status=0 });

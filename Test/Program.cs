@@ -74,7 +74,7 @@ namespace Test
             var api = new ApiPSU();
             ProductViewModel sd;
 
-            var a = api.UpdateProductWeight("CODE:" + ProductId.ToString(),0);
+            //var a = api.UpdateProductWeight("CODE:" + ProductId.ToString(),0);
 
            //var rrr= api.GetReceipts(DateTime.Parse("2020-01-09T00:00:00"), DateTime.Parse("2020-01-09T23:59:59.999"), TerminalId);
             //var reseipt = api.GetReceipts(DateTime.Now.Date, DateTime.Now.Date);
@@ -147,7 +147,12 @@ namespace Test
             sd = api.AddProductByBarCode(TerminalId, "4823097405932", 7);//Кетчуп "Лагідний" д/п 250г /Щедро/*/
             api.ChangeQuantity(TerminalId, sd.Id, 0);
 
+            //api.ClearReceipt(TerminalId);
+            var rrrr = api.GetNoFinishReceipt(TerminalId);
+            return;
             var RId = api.GetCurrentReceiptByTerminalId(TerminalId).ReceiptId;
+
+            
 
             var rr = api.GetProduct(TerminalId);
             ReceiptPayment[] pay = new ReceiptPayment[]
