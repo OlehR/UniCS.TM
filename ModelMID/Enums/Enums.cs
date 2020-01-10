@@ -132,6 +132,11 @@ namespace ModelMID
     public enum eStateReceipt
     {
         /// <summary>
+        /// Скасовано
+        /// </summary>
+        Canceled = -1,
+
+        /// <summary>
         /// Готується
         /// </summary>
         Prepare = 0,

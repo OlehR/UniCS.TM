@@ -93,6 +93,8 @@ namespace ModernIntegration
         public override bool ClearReceipt(Guid parTerminalId)
         {
             Receipts[parTerminalId] = null;
+            var receiptId = new IdReceipt(GetCurrentReceiptByTerminalId(parTerminalId));
+            Bl.SetStateReceipt(receiptId, eStateReceipt.Canceled);
             return true;
         }
 
@@ -487,7 +489,7 @@ namespace ModernIntegration
             var receipt = Bl.GetLastReceipt(parTerminalId);
             if (receipt == null)
                 return null;
-            if (receipt.StateReceipt == eStateReceipt.Print || receipt.StateReceipt == eStateReceipt.Send)
+            if (receipt.StateReceipt != eStateReceipt.Prepare)
                 return null;
             Receipts[parTerminalId] = new ModelMID.Receipt(receipt);
 
