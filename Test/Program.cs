@@ -29,7 +29,7 @@ namespace Test
             //l.LoadWeightURLAsync();
             //Thread.Sleep(1000000000);
 
-            //return;
+
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
             CreateDataBase(false); //Створення бази
             //Thread.Sleep(10000);
@@ -73,6 +73,10 @@ namespace Test
             var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009001");
             var api = new ApiPSU();
             ProductViewModel sd;
+
+            //var a = api.UpdateProductWeight("CODE:" + ProductId.ToString(),0);
+
+           //var rrr= api.GetReceipts(DateTime.Parse("2020-01-09T00:00:00"), DateTime.Parse("2020-01-09T23:59:59.999"), TerminalId);
             //var reseipt = api.GetReceipts(DateTime.Now.Date, DateTime.Now.Date);
 
             //var cl = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
@@ -143,7 +147,12 @@ namespace Test
             sd = api.AddProductByBarCode(TerminalId, "4823097405932", 7);//Кетчуп "Лагідний" д/п 250г /Щедро/*/
             api.ChangeQuantity(TerminalId, sd.Id, 0);
 
+            //api.ClearReceipt(TerminalId);
+            var rrrr = api.GetNoFinishReceipt(TerminalId);
+            return;
             var RId = api.GetCurrentReceiptByTerminalId(TerminalId).ReceiptId;
+
+            
 
             var rr = api.GetProduct(TerminalId);
             ReceiptPayment[] pay = new ReceiptPayment[]
@@ -278,13 +287,8 @@ namespace Test
 
         }
 
-<<<<<<< HEAD
 
 
-=======
-     
-  
->>>>>>> ba4eb216becc17a76c3ea5f21bf1346766e27818
 
 
     }
@@ -308,9 +312,5 @@ namespace Test
 
     }
 
-<<<<<<< HEAD
 
-=======
-   
->>>>>>> ba4eb216becc17a76c3ea5f21bf1346766e27818
 }

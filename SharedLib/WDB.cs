@@ -183,6 +183,7 @@ namespace SharedLib
         protected string SqlGetDateFirstNotSendReceipt = "";
         protected string SqlGetLastReceipt = "";
         protected string SqlGetReceipts="";
+        protected string SqlAdditionalWeightsWares="";
         public WDB(string parFileSQL)
         {
             this.ReadSQL(parFileSQL);
@@ -252,6 +253,10 @@ namespace SharedLib
 
             var Lim = parOffSet >= 0 ? $" limit {parLimit} offset {parOffSet}" : "";
             var Wares = this.db.Execute<object, ReceiptWares>(SqlFoundWares + Lim, new { CodeWares = parCodeWares, CodeUnit = parCodeUnit, BarCode = parBarCode, NameUpper = (parName == null ? null : "%" + parName.ToUpper() + "%"), CodeDealer = ModelMID.Global.DefaultCodeDealer, CodeFastGroup = parCodeFastGroup, Articl = parArticl });
+            foreach (var el in Wares)
+            {
+                el.AdditionalWeights = db.Execute <object ,decimal> (SqlAdditionalWeightsWares,new { CodeWares=el.CodeWares});
+            }
             return Wares;
         }
 
@@ -589,6 +594,7 @@ namespace SharedLib
             SqlGetDateFirstNotSendReceipt = GetSQL("SqlGetDateFirstNotSendReceipt");
             SqlGetLastReceipt = GetSQL("SqlGetLastReceipt");
             SqlGetReceipts = GetSQL("SqlGetReceipts");
+            SqlAdditionalWeightsWares = GetSQL("SqlAdditionalWeightsWares");
             return true;
         }
 

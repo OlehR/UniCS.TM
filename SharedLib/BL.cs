@@ -256,9 +256,9 @@ namespace SharedLib
             return res;
 
         }
-        public Receipt GetReceiptHead(IdReceipt idReceipt)
+        public Receipt GetReceiptHead(IdReceipt idReceipt, bool parWithDetail = false)
         {
-            return db.ViewReceipt(idReceipt);
+            return db.ViewReceipt(idReceipt, parWithDetail);
         }
 
         public Client GetClientByBarCode(IdReceipt idReceipt, string parBarCode)
@@ -406,9 +406,17 @@ namespace SharedLib
 
 
 
-        public bool InsertWeight(string parBarCode, int parWeight)
+        public bool InsertWeight(string parBarCode, int parWeight, Guid? parWares = null)
         {
-            return db.InsertWeight(new { BarCode = parBarCode, Weight = (decimal)parWeight / 1000m });
+            if (string.IsNullOrEmpty(parBarCode)&& parWares==null)
+                return false;
+
+            if (parWares !=null)
+            {
+                var Wares= new IdReceiptWares(new IdReceipt(), parWares.Value);
+                return db.InsertWeight(new { BarCode = Wares.CodeWares.ToString(), Weight = (decimal)parWeight / 1000m, Status = -1 });
+            }
+            return db.InsertWeight(new { BarCode = parBarCode, Weight = (decimal)parWeight / 1000m, Status=0 });
         }
 
 
