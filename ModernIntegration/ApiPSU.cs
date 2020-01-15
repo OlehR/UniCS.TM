@@ -452,9 +452,9 @@ namespace ModernIntegration
                 SumPay = parRP.PayIn,
                 NumberReceipt = parRP.TransactionId,
                 NumberCard = parRP.CardPan,
-                CodeAuthorization = parRP.TransactionCode,
-                //NumberTerminal=parRP.,
-                NumberSlip = parRP.TransactionId//TMP.!!!!
+                CodeAuthorization = parRP.TransactionCode, //RRN
+                NumberTerminal=parRP.PosTerminalId,
+                NumberSlip = parRP.PosAuthCode //код авторизації
             };
         }
         public override bool RefundReceipt(RefundReceiptViewModel parReceipt)
