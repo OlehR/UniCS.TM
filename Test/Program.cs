@@ -29,12 +29,12 @@ namespace Test
             //l.LoadWeightURLAsync();
             //Thread.Sleep(1000000000);
 
-           // return;
+
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-            //CreateDataBase(false); //Створення бази
+            CreateDataBase(false); //Створення бази
             //Thread.Sleep(10000);
             //TestKit();
-            TestReceipt(); //
+            //TestReceipt(); //
                            //CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
                            //            var o = new SharedLib.Oracle();
                            //var r =  o.Execute<ReceiptWares>("select w.code_wares CodeWares,w.name_wares as NameWares from dw.wares w where w.code_wares in (54882,54883)");

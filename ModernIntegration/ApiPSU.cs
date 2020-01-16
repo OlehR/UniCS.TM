@@ -294,8 +294,9 @@ namespace ModernIntegration
 
         private ReceiptViewModel GetReceiptViewModel(IdReceipt parReceipt)
         {
-            var receiptMID = Bl.GetReceiptHead(parReceipt);
-
+            var receiptMID = Bl.GetReceiptHead(parReceipt,true);
+            if (receiptMID == null)
+                return null;
             var receipt = new Receipt()
             {
                 Id = receiptMID.ReceiptId,
@@ -311,16 +312,22 @@ namespace ModernIntegration
                 CreatedAt = receiptMID.DateCreate,
                 UpdatedAt = receiptMID.DateCreate, //!!!TMP
 
-                //PaymentType= PaymentType.None,//!!!TMP
-                //PaidAmount=0,//Скільки фактично оплатили.
                 //ReceiptItems=
                 //Customer /// !!!TMP Модель клієнта
                 //PaymentInfo
             };
-            var listReceiptItem = GetReceiptItem(parReceipt);
+            var listReceiptItem = GetReceiptItem(receiptMID.Wares); //GetReceiptItem(parReceipt);
             var Res = new ReceiptViewModel(receipt, listReceiptItem, null, null)
             { CustomId = receiptMID.NumberReceipt1C };
-
+            
+            if (receiptMID.Payment != null)
+            {
+                Res.PaidAmount = receiptMID.Payment.Sum(r => receipt.Amount);
+                var SumCash = receiptMID.Payment.Where(r=> r.TypePay== eTypePay.Cash).Sum(r => receipt.Amount);
+                var SumCard = receiptMID.Payment.Where(r => r.TypePay == eTypePay.Card).Sum(r => receipt.Amount);
+                Res.PaymentType = (SumCash > 0 && SumCard > 0 ? PaymentType.Both : (SumCash == 0 && SumCard == 0 ? PaymentType.None : (SumCash > 0?PaymentType.Cash: PaymentType.Card)));
+            }
+            
             return Res;
         }
 
@@ -343,8 +350,22 @@ namespace ModernIntegration
 
         private List<ReceiptItem> GetReceiptItem(IdReceipt parIdReceipt)
         {
-            var Res = new List<ReceiptItem>();
             var res = Bl.ViewReceiptWares(parIdReceipt);//new ModelMID.IdReceipt { CodePeriod = 20190613, CodeReceipt = 1, IdWorkplace = 140701 }
+
+            return GetReceiptItem(res);
+            /*var Res = new List<ReceiptItem>();
+            var res = Bl.ViewReceiptWares(parIdReceipt);//new ModelMID.IdReceipt { CodePeriod = 20190613, CodeReceipt = 1, IdWorkplace = 140701 }
+            foreach (var el in res)
+            {
+                var PVM = this.GetProductViewModel(el);
+                Res.Add(PVM.ToReceiptItem());
+            }
+            return Res;*/
+        }
+
+        private List<ReceiptItem> GetReceiptItem(IEnumerable<ReceiptWares> res)
+        {
+            var Res = new List<ReceiptItem>();
             foreach (var el in res)
             {
                 var PVM = this.GetProductViewModel(el);
@@ -352,7 +373,6 @@ namespace ModernIntegration
             }
             return Res;
         }
-
 
 
         private CustomerViewModel GetCustomerViewModelByClient(Client parClient)
@@ -433,9 +453,10 @@ namespace ModernIntegration
                 SumPay = parRP.PayIn,
                 NumberReceipt = parRP.TransactionId,
                 NumberCard = parRP.CardPan,
-                CodeAuthorization = parRP.TransactionCode,
-                //NumberTerminal=parRP.,
-                NumberSlip = parRP.TransactionId//TMP.!!!!
+                CodeAuthorization = parRP.TransactionCode, //RRN
+                NumberTerminal=parRP.PosTerminalId,
+                NumberSlip = parRP.PosAuthCode, //код авторизації
+                DateCreate=parRP.CreatedAt
             };
         }
         public override bool RefundReceipt(RefundReceiptViewModel parReceipt)

@@ -85,6 +85,17 @@ namespace ModernIntegration.Models
         /// </value>
         public string TransactionStatus { get; set; }
 
+
+        /// <summary>
+        /// код авторизації
+        /// </summary>
+        public string PosAuthCode  { get; set; }
+
+        /// <summary>
+        /// термінал
+        /// </summary>
+        public string PosTerminalId { get; set; }
+
         /// <summary>
         /// Gets or sets the created at.
         /// </summary>

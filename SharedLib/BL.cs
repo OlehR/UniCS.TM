@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.IO;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace SharedLib
 {
@@ -229,6 +230,7 @@ namespace SharedLib
 
         public IEnumerable<ReceiptWares> ViewReceiptWares(IdReceipt parIdReceipt)
         {
+
             var Res = db.ViewReceiptWares(parIdReceipt);
             //var El = Res.First();
             return Res;
@@ -256,9 +258,17 @@ namespace SharedLib
             return res;
 
         }
-        public Receipt GetReceiptHead(IdReceipt idReceipt)
+        public Receipt GetReceiptHead(IdReceipt idReceipt, bool parWithDetail = false)
         {
-            return db.ViewReceipt(idReceipt);
+            DateTime Ldc = DateTime.ParseExact(idReceipt.CodePeriod.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture);
+            if (Ldc == DateTime.Now.Date)
+             return db.ViewReceipt(idReceipt, parWithDetail);
+
+            var ldb = new WDB_SQLite(null, false, Ldc);
+            return ldb.ViewReceipt(idReceipt, parWithDetail);
+
+
+
         }
 
         public Client GetClientByBarCode(IdReceipt idReceipt, string parBarCode)
@@ -411,12 +421,14 @@ namespace SharedLib
             if (string.IsNullOrEmpty(parBarCode)&& parWares==null)
                 return false;
 
-            if (parWares !=null)
+            if (parBarCode != null)
+                return db.InsertWeight(new { BarCode = parBarCode, Weight = (decimal)parWeight / 1000m, Status = 0 });
+            else
             {
                 var Wares= new IdReceiptWares(new IdReceipt(), parWares.Value);
                 return db.InsertWeight(new { BarCode = Wares.CodeWares.ToString(), Weight = (decimal)parWeight / 1000m, Status = -1 });
             }
-            return db.InsertWeight(new { BarCode = parBarCode, Weight = (decimal)parWeight / 1000m, Status=0 });
+            
         }
 
 
@@ -427,7 +439,7 @@ namespace SharedLib
             {
                 WDB_SQLite SQLite;
 
-                if (!parIsFull)
+                if (!parIsFull)                    
                 {                    
                     var TD = db.GetConfig<DateTime>("Load_Full");
                     if (TD == default(DateTime) || DateTime.Now.Date != TD.Date)
@@ -538,15 +550,16 @@ namespace SharedLib
 
         public IEnumerable<Receipt> GetReceipts(DateTime parStartDate, DateTime parFinishDate,int IdWorkPlace)
         {
-            var res = db.GetReceipts(parStartDate.Date, parFinishDate.Date.AddDays(1), IdWorkPlace).ToList(); ;
+            var res = db.GetReceipts(parStartDate.Date, parFinishDate.Date.AddDays(1), IdWorkPlace).ToList();
             if (parStartDate.Date != DateTime.Now.Date || parFinishDate.Date != DateTime.Now.Date)
             {
-                var Ldc = parFinishDate.Date.AddDays(1);
+                var Ldc = parStartDate.Date;
                 while (Ldc <= parFinishDate.Date)
                 {
                     var ldb = new WDB_SQLite(null, false, Ldc);
                     var l= ldb.GetReceipts(Ldc.Date, Ldc.Date.AddDays(1), IdWorkPlace);
-                    res.AddRange(l);                    
+                    res.AddRange(l);
+                    Ldc = Ldc.AddDays(1);
                 }
             }
                 //throw new NotImplementedException();
