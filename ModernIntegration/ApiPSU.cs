@@ -455,7 +455,8 @@ namespace ModernIntegration
                 NumberCard = parRP.CardPan,
                 CodeAuthorization = parRP.TransactionCode, //RRN
                 NumberTerminal=parRP.PosTerminalId,
-                NumberSlip = parRP.PosAuthCode //код авторизації
+                NumberSlip = parRP.PosAuthCode, //код авторизації
+                DateCreate=parRP.CreatedAt
             };
         }
         public override bool RefundReceipt(RefundReceiptViewModel parReceipt)
