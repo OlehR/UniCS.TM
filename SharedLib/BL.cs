@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.IO;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace SharedLib
 {
@@ -229,6 +230,7 @@ namespace SharedLib
 
         public IEnumerable<ReceiptWares> ViewReceiptWares(IdReceipt parIdReceipt)
         {
+
             var Res = db.ViewReceiptWares(parIdReceipt);
             //var El = Res.First();
             return Res;
@@ -258,7 +260,15 @@ namespace SharedLib
         }
         public Receipt GetReceiptHead(IdReceipt idReceipt, bool parWithDetail = false)
         {
-            return db.ViewReceipt(idReceipt, parWithDetail);
+            DateTime Ldc = DateTime.ParseExact(idReceipt.CodePeriod.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture);
+            if (Ldc == DateTime.Now.Date)
+             return db.ViewReceipt(idReceipt, parWithDetail);
+
+            var ldb = new WDB_SQLite(null, false, Ldc);
+            return ldb.ViewReceipt(idReceipt, parWithDetail);
+
+
+
         }
 
         public Client GetClientByBarCode(IdReceipt idReceipt, string parBarCode)
@@ -429,7 +439,7 @@ namespace SharedLib
             {
                 WDB_SQLite SQLite;
 
-                if (!parIsFull)
+                if (!parIsFull)                    
                 {                    
                     var TD = db.GetConfig<DateTime>("Load_Full");
                     if (TD == default(DateTime) || DateTime.Now.Date != TD.Date)

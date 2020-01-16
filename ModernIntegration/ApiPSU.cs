@@ -295,7 +295,8 @@ namespace ModernIntegration
         private ReceiptViewModel GetReceiptViewModel(IdReceipt parReceipt)
         {
             var receiptMID = Bl.GetReceiptHead(parReceipt,true);
-
+            if (receiptMID == null)
+                return null;
             var receipt = new Receipt()
             {
                 Id = receiptMID.ReceiptId,
