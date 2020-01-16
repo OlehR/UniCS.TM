@@ -74,7 +74,7 @@ namespace Test
             var api = new ApiPSU();
             ProductViewModel sd;
 
-            //var a = api.UpdateProductWeight("CODE:" + ProductId.ToString(),0);
+            var a = api.UpdateProductWeight("CODE:" + ProductId.ToString(),0);
 
            //var rrr= api.GetReceipts(DateTime.Parse("2020-01-09T00:00:00"), DateTime.Parse("2020-01-09T23:59:59.999"), TerminalId);
             //var reseipt = api.GetReceipts(DateTime.Now.Date, DateTime.Now.Date);
