@@ -31,10 +31,10 @@ namespace Test
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-            CreateDataBase(false); //Створення бази
+            //CreateDataBase(false); //Створення бази
             //Thread.Sleep(10000);
             //TestKit();
-            //TestReceipt(); //
+            TestReceipt(); //
                            //CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
                            //            var o = new SharedLib.Oracle();
                            //var r =  o.Execute<ReceiptWares>("select w.code_wares CodeWares,w.name_wares as NameWares from dw.wares w where w.code_wares in (54882,54883)");
@@ -76,7 +76,29 @@ namespace Test
 
             var a = api.UpdateProductWeight("CODE:" + ProductId.ToString(),0);
 
-           //var rrr= api.GetReceipts(DateTime.Parse("2020-01-09T00:00:00"), DateTime.Parse("2020-01-09T23:59:59.999"), TerminalId);
+            var Pay = new ReceiptPayment[] {
+                new ReceiptPayment
+            {
+                Id = Guid.Parse("9e960928-1070-457d-aec3-14672adf3e9b"),
+                ReceiptId = Guid.Parse("00000062-ffff-2020-0116-000000000007"),
+                PaymentType = ModernIntegration.Enums.PaymentType.Card,
+                PayIn = 25.9M,
+                PayOut = 0.0M,
+                CardPan = "XXXXXXXXXXXX2520",
+                IsPayOutSuccess = null,
+                TransactionId = "2",
+                TransactionCode = "039177601652",
+                TransactionStatus = "Àâòîðèçàö³ÿ ç áàíêîì",
+                PosAuthCode = null,
+                PosTerminalId = null,
+                CreatedAt = DateTime.Parse("2020-01-16T17:28:15.7516934+02:00")
+            } };
+
+            api.AddPayment(TerminalId, Pay);
+
+           var rrr= api.GetReceipts(DateTime.Parse("2020-01-15T00:00:00"), DateTime.Parse("2020-01-15T23:59:59.999"), TerminalId);
+
+            Thread.Sleep(1000000);
             //var reseipt = api.GetReceipts(DateTime.Now.Date, DateTime.Now.Date);
 
             //var cl = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
