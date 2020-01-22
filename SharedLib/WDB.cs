@@ -335,6 +335,7 @@ namespace SharedLib
 
         public virtual bool ReplaceWaresReceipt(ReceiptWares parReceiptWares)
         {
+
             return this.db.ExecuteNonQuery<ReceiptWares>(SqlReplaceWaresReceipt, parReceiptWares) == 0 /*&& RecalcHeadReceipt((IdReceipt)parReceiptWares)*/;
         }
 

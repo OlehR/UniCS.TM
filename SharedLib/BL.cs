@@ -98,6 +98,9 @@ namespace SharedLib
                     w = null;
                     if (el.Prefix.Equals(parBarCode.Substring(0, el.Prefix.Length)))
                     {
+                        if(el.KindBarCode==eKindBarCode.EAN13 && parBarCode.Length!=13)
+                            break;
+
                         int varCode = Convert.ToInt32(parBarCode.Substring(el.Prefix.Length, el.LenghtCode));
                         int varValue = Convert.ToInt32(parBarCode.Substring(el.Prefix.Length + el.LenghtCode, el.LenghtQuantity));
                         switch (el.TypeCode)

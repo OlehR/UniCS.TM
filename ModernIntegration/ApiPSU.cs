@@ -252,10 +252,8 @@ namespace ModernIntegration
                 Weight = (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : Convert.ToDouble(receiptWares.WeightBrutto)),
                 DeltaWeight = 0.07 * (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : Convert.ToDouble(receiptWares.WeightBrutto)),
                 AdditionalWeights = LWI,
-                ProductWeightType =
-                    receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByPiece, //!!!TMP
-                IsAgeRestrictedConfirmed =
-                    false, //!!!TMP //Обмеження по віку алкоголь Підтверджено не потрібно посилати.
+                ProductWeightType =  receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByPiece, 
+                IsAgeRestrictedConfirmed = false, //Обмеження по віку алкоголь Підтверджено не потрібно посилати.
                 Quantity = (receiptWares.IsWeight ? 1 : receiptWares.Quantity),
                 DiscountValue = receiptWares.SumDiscount>0 ? receiptWares.SumDiscount : (receiptWares.PriceDealer - receiptWares.Price) * receiptWares.Quantity,
                 DiscountName = receiptWares.NameDiscount,
@@ -264,7 +262,6 @@ namespace ModernIntegration
                 Tags = varTags,
                 HasSecurityMark = false, //!!!TMP // Магнітна мітка, яку треба знімати.
                 TotalRows = receiptWares.Sort, //Сортування популярного.
-
                 IsProductOnProcessing = false, //
                 ///CategoryId=   !!!TMP Групи 1 рівня.
                 TaxGroup = Global.GetTaxGroup(receiptWares.TypeVat, receiptWares.TypeWares),

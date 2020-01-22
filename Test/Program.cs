@@ -23,7 +23,7 @@ namespace Test
         static async Task Main(string[] args)
         {
 
-            //LoadWeightKasa();
+            //LoadWeightKasa();            return;
             // var R = await GetInfoBarcode("4823000920439");
             //var l = new GetGoodUrl();
             //l.LoadWeightURLAsync();
@@ -75,30 +75,11 @@ namespace Test
             ProductViewModel sd;
 
             var a = api.UpdateProductWeight("CODE:" + ProductId.ToString(),0);
-
-            var Pay = new ReceiptPayment[] {
-                new ReceiptPayment
-            {
-                Id = Guid.Parse("9e960928-1070-457d-aec3-14672adf3e9b"),
-                ReceiptId = Guid.Parse("00000062-ffff-2020-0116-000000000007"),
-                PaymentType = ModernIntegration.Enums.PaymentType.Card,
-                PayIn = 25.9M,
-                PayOut = 0.0M,
-                CardPan = "XXXXXXXXXXXX2520",
-                IsPayOutSuccess = null,
-                TransactionId = "2",
-                TransactionCode = "039177601652",
-                TransactionStatus = "Àâòîðèçàö³ÿ ç áàíêîì",
-                PosAuthCode = null,
-                PosTerminalId = null,
-                CreatedAt = DateTime.Parse("2020-01-16T17:28:15.7516934+02:00")
-            } };
-
-            api.AddPayment(TerminalId, Pay);
+            
 
            var rrr= api.GetReceipts(DateTime.Parse("2020-01-15T00:00:00"), DateTime.Parse("2020-01-15T23:59:59.999"), TerminalId);
 
-            Thread.Sleep(1000000);
+            //Thread.Sleep(1000000);
             //var reseipt = api.GetReceipts(DateTime.Now.Date, DateTime.Now.Date);
 
             //var cl = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
@@ -119,7 +100,8 @@ namespace Test
             //sd = api.AddProductByBarCode(TerminalId, "4823086109988", 1); // 1+1 Пельмені "Мішутка" Філейні 600г /Три ведмеді/
             //sd = api.AddProductByBarCode(TerminalId, "2201652300489", 1); //Морква
             //Thread.Sleep(1000);
-            sd = api.AddProductByBarCode(TerminalId, "4823000916524", 1); //АРТЕК 
+           // sd = api.AddProductByBarCode(TerminalId, "4823000916524", 1); //АРТЕК 
+            sd = api.AddProductByBarCode(TerminalId, "22970558", 0);
             sd = api.AddProductByBarCode(TerminalId, "7622300813437", 1);//Барн
 
             sd = api.AddProductByBarCode(TerminalId, "2201652300489", 1); //Морква
@@ -151,16 +133,15 @@ namespace Test
 
             sd = api.AddProductByBarCode(TerminalId, "7622300813437", 2);//Барн
 
-            startTime.Stop();
+            //startTime.Stop();
             Console.WriteLine(startTime.Elapsed);
-            startTime.Restart();
+            //startTime.Restart();
 
             //            sd = api.AddProductByBarCode( TerminalId, "2201652300489",1); //Морква
             /*sd = api.AddProductByBarCode(TerminalId, "1110867180018", 1); //Хліб
             sd = api.AddProductByBarCode(TerminalId, "40804927", 1);
             sd = api.AddProductByBarCode(TerminalId, "1110011760018", 1); //КІВІ ВАГОВІ 2 кат*/
             sd = api.AddProductByBarCode(TerminalId, "2201652300489", 1); //Морква
-
             sd = api.AddProductByBarCode(TerminalId, "7775006620509", 1); //товар 2 кат
             //Thread.Sleep(1000);
             /*sd =api.AddProductByBarCode( TerminalId, "5903154545623", 1); //Суміш овочева "Семикомпонентна" 400г /Рудь/ акція 1+1
@@ -169,6 +150,8 @@ namespace Test
             sd = api.AddProductByBarCode(TerminalId, "4823097405932", 7);//Кетчуп "Лагідний" д/п 250г /Щедро/*/
             api.ChangeQuantity(TerminalId, sd.Id, 0);
 
+
+            //api.AddPayment(TerminalId, Pay);
             //api.ClearReceipt(TerminalId);
             var rrrr = api.GetNoFinishReceipt(TerminalId);
             return;
@@ -177,6 +160,25 @@ namespace Test
             
 
             var rr = api.GetProduct(TerminalId);
+            var Pay = new ReceiptPayment[] {
+                new ReceiptPayment
+            {
+                Id = Guid.Parse("9e960928-1070-457d-aec3-14672adf3e9b"),
+                ReceiptId = Guid.Parse("00000062-ffff-2020-0116-000000000007"),
+                PaymentType = ModernIntegration.Enums.PaymentType.Card,
+                PayIn = 25.9M,
+                PayOut = 0.0M,
+                CardPan = "XXXXXXXXXXXX2520",
+                IsPayOutSuccess = null,
+                TransactionId = "2",
+                TransactionCode = "039177601652",
+                TransactionStatus = "Àâòîðèçàö³ÿ ç áàíêîì",
+                PosAuthCode = null,
+                PosTerminalId = null,
+                CreatedAt = DateTime.Parse("2020-01-16T17:28:15.7516934+02:00")
+            } };
+
+
             ReceiptPayment[] pay = new ReceiptPayment[]
                 {new ReceiptPayment {ReceiptId= RId ,
                                     PaymentType=ModernIntegration.Enums.PaymentType.Card ,PayIn=39.9m,PayOut=0.0m,
@@ -291,7 +293,7 @@ namespace Test
 
         public static void LoadWeightKasa()
         {
-            string varSQLUpdate = @"
+            string SQLUpdate = @"
 -- begin tran
    update barcode_out with (serializable) set weight=@Weight,Date=@Date
    where bar_code = @BarCode
@@ -304,9 +306,11 @@ namespace Test
 
             var dbMs = new MSSQL();
             var dbSqlite = new SQLite(@"C:\DB\config.db");
-            var r = dbSqlite.Execute<BarCodeOut>(@"select BARCODE as BarCode, avg(WEIGHT) as Weight,max(DATE_CREATE) as Date from WEIGHT where Weight>0 group by BARCODE");
-            dbMs.BulkExecuteNonQuery<BarCodeOut>(varSQLUpdate, r);
-
+            var SqlSelect = @"select [barcode] as BarCode, weight as Weight, DATE_CREATE as Date,STATUS
+from ( SELECT [barcode],DATE_CREATE,STATUS,weight,ROW_NUMBER() OVER (PARTITION BY barcode ORDER BY DATE_CREATE DESC) as [nn]  FROM WEIGHT) dd
+where nn=1 ";
+            var r = dbSqlite.Execute<BarCodeOut>(SqlSelect) ;
+            dbMs.BulkExecuteNonQuery<BarCodeOut>(SQLUpdate, r);
         }
 
 

@@ -19,7 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModelMID", "ModelMID\ModelM
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", "{1DA58E99-4E25-4890-947E-92754131602C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Front", "Front\Front.csproj", "{0F73D6D3-3A09-4C6C-834D-8E3EC2156F32}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Front", "Front\Front.csproj", "{0F73D6D3-3A09-4C6C-834D-8E3EC2156F32}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrintServer", "PrintServer\PrintServer.csproj", "{5073BEB9-305B-40EB-B6AA-68083D92BD56}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +65,10 @@ Global
 		{0F73D6D3-3A09-4C6C-834D-8E3EC2156F32}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F73D6D3-3A09-4C6C-834D-8E3EC2156F32}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F73D6D3-3A09-4C6C-834D-8E3EC2156F32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5073BEB9-305B-40EB-B6AA-68083D92BD56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5073BEB9-305B-40EB-B6AA-68083D92BD56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5073BEB9-305B-40EB-B6AA-68083D92BD56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5073BEB9-305B-40EB-B6AA-68083D92BD56}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
