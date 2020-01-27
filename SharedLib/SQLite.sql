@@ -178,7 +178,7 @@ insert into wares_receipt (id_workplace, code_period, code_receipt, code_wares, 
  values (
   @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit,
   @TypePrice, @Quantity, @Price,@PriceDealer, @Sum, @SumVat,
-  @ParPrice1,@ParPrice2,@ParPrice3, @SumDiscount, @TypeVat, (select COALESCE(max(sort),0)+1 from wares_receipt  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt), @UserCreate,
+  @ParPrice1,@ParPrice2,@ParPrice3, round(@SumDiscount,2), @TypeVat, (select COALESCE(max(sort),0)+1 from wares_receipt  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt), @UserCreate,
  @AdditionN1,@AdditionN2,@AdditionN3,
  @AdditionC1,@AdditionD1,@BARCODE2Category,@DESCRIPTION);
  ;
