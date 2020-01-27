@@ -255,7 +255,7 @@ namespace ModernIntegration
                 ProductWeightType =  receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByPiece, 
                 IsAgeRestrictedConfirmed = false, //Обмеження по віку алкоголь Підтверджено не потрібно посилати.
                 Quantity = (receiptWares.IsWeight ? 1 : receiptWares.Quantity),
-                DiscountValue = receiptWares.SumDiscount>0 ? receiptWares.SumDiscount : (receiptWares.PriceDealer - receiptWares.Price) * receiptWares.Quantity,
+                DiscountValue =Math.Round(receiptWares.SumDiscount>0 ? receiptWares.SumDiscount : (receiptWares.PriceDealer * receiptWares.Quantity - receiptWares.Sum),2),
                 DiscountName = receiptWares.NameDiscount,
                 WarningType = null, //!!! Не посилати 
                 CalculatedWeight = 0,
@@ -265,7 +265,10 @@ namespace ModernIntegration
                 IsProductOnProcessing = false, //
                 ///CategoryId=   !!!TMP Групи 1 рівня.
                 TaxGroup = Global.GetTaxGroup(receiptWares.TypeVat, receiptWares.TypeWares),
-                Barcode = receiptWares.BarCode,
+                Barcode = receiptWares.BarCode
+                //FullPrice = receiptWares.Sum
+
+
             };
             return Res;
         }
