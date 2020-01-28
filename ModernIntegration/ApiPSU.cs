@@ -204,7 +204,7 @@ namespace ModernIntegration
                 var idReceipt = Bl.GetNewIdReceipt(parTerminalId);
 
                 Receipts[parTerminalId] = new ModelMID.Receipt(idReceipt);
-                Bl.AddReceipt(Receipts[parTerminalId]);
+                //Bl.AddReceipt(Receipts[parTerminalId]);
             }
 
             return Receipts[parTerminalId];

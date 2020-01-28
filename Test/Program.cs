@@ -74,7 +74,7 @@ namespace Test
             var api = new ApiPSU();
             ProductViewModel sd;
 
-            var a = api.UpdateProductWeight("CODE:" + ProductId.ToString(),0);
+            
             
 
            var rrr= api.GetReceipts(DateTime.Parse("2020-01-15T00:00:00"), DateTime.Parse("2020-01-15T23:59:59.999"), TerminalId);
@@ -97,10 +97,10 @@ namespace Test
 
             var startTime = System.Diagnostics.Stopwatch.StartNew();
 
-            //sd = api.AddProductByBarCode(TerminalId, "4823086109988", 1); // 1+1 Пельмені "Мішутка" Філейні 600г /Три ведмеді/
+            sd = api.AddProductByBarCode(TerminalId, "4823086109988", 1); // 1+1 Пельмені "Мішутка" Філейні 600г /Три ведмеді/
             //sd = api.AddProductByBarCode(TerminalId, "2201652300489", 1); //Морква
             //Thread.Sleep(1000);
-           // sd = api.AddProductByBarCode(TerminalId, "4823000916524", 1); //АРТЕК 
+            sd = api.AddProductByBarCode(TerminalId, "4823000916524", 1); //АРТЕК 
             sd = api.AddProductByBarCode(TerminalId, "22970558", 0);
             sd = api.AddProductByBarCode(TerminalId, "7622300813437", 1);//Барн
 
@@ -109,7 +109,8 @@ namespace Test
             sd = api.AddProductByBarCode(TerminalId, "2201652300229", 1); //Морква
                                                                           //Thread.Sleep(1000);
 
-            api.ChangeQuantity(TerminalId, sd.Id, 2);
+            var rssss=api.GetRecieptByTerminalId(TerminalId);
+            
             //Thread.Sleep(1000);
             api.ChangeQuantity(TerminalId, sd.Id, 3);
             //Thread.Sleep(1000);
