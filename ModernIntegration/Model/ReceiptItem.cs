@@ -111,5 +111,6 @@ namespace ModernIntegration.Models
         /// The total price.
         /// </value>
         public decimal TotalPrice { get; set; }
+        public string TaxGroup { get; set; }
     }
 }
