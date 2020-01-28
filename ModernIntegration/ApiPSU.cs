@@ -237,8 +237,8 @@ namespace ModernIntegration
                 varTags.Add(new Tag() { Key = "TimeRestricted", Id = 1, RuleValue = "{\"Start\":\"" + Global.AlcoholTimeStart + "\",\"Stop\":\"" + Global.AlcoholTimeStop + "\"}" });
 
             // Якщо немає ваги відключаємо її контроль 
-            if (!receiptWares.IsWeight && receiptWares.WeightBrutto == 0)
-                varTags.Add(new Tag { Id = 3, Key = "NoWeightedProduct" });
+            //if (!receiptWares.IsWeight && receiptWares.WeightBrutto == 0)
+                //varTags.Add(new Tag { Id = 3, Key = "NoWeightedProduct" }); 
 
             var Res = new ProductViewModel()
             {
@@ -249,7 +249,7 @@ namespace ModernIntegration
                 Image = null,
                 Price = receiptWares.SumDiscount > 0 ? ( receiptWares.Price > 0 ? receiptWares.Price : receiptWares.PriceDealer): receiptWares.PriceDealer,
                 WeightCategory = 2, //вимірювання Похибки в відсотках,2 в грамах
-                Weight = (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : Convert.ToDouble(receiptWares.WeightBrutto)),
+                Weight = (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : (receiptWares.WeightBrutto==0m? 100000 : Convert.ToDouble(receiptWares.WeightBrutto))),
                 DeltaWeight = 0.07 * (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : Convert.ToDouble(receiptWares.WeightBrutto)),
                 AdditionalWeights = LWI,
                 ProductWeightType =  receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByPiece, 
