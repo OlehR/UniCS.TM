@@ -64,7 +64,7 @@ namespace SharedLib
         public IdReceipt GetNewIdReceipt(Guid parTerminalId, int parCodePeriod = 0)
         {
             var idReceip = new IdReceipt() { IdWorkplace = GetIdWorkplaceByTerminalId(parTerminalId), CodePeriod = parCodePeriod };
-            return db.GetNewCodeReceipt(idReceip);
+            return db.GetNewReceipt(idReceip);
         }
 
         public Receipt GetLastReceipt(Guid parTerminalId, int parCodePeriod = 0)

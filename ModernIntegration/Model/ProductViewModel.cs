@@ -318,7 +318,8 @@ namespace ModernIntegration.ViewModels
                 ProductWeight = (int) Math.Round(Weight, MidpointRounding.AwayFromZero),
                 ProductCalculatedWeight = (int) Math.Round(CalculatedWeight, MidpointRounding.AwayFromZero),
                 ProductQuantity = ProductWeightType == ProductWeightType.ByWeight ? (decimal)Weight/1000M : Quantity,
-                ProductWeightType = ProductWeightType
+                ProductWeightType = ProductWeightType,
+                TaxGroup = TaxGroup
             };
 
             item.TotalPrice = item.FullPrice - item.Discount;

@@ -111,7 +111,7 @@ namespace SharedLib
         /// Запит для генерації кодів по робочому місці.(наприклад номер чека)
         /// </summary>
         //protected string SqlGenWorkPlace = "";
-        protected string SqlGetNewCodeReceipt = "";
+        protected string SqlGetNewReceipt = "";
 
         protected string SqlLogin = "";
         protected string SqlGetPrice = "";
@@ -280,11 +280,11 @@ namespace SharedLib
         /// <returns>
         ///Повертає код чека
         ///</returns>
-        public virtual IdReceipt GetNewCodeReceipt(IdReceipt parIdReceipt)
+        public virtual IdReceipt GetNewReceipt(IdReceipt parIdReceipt)
         {
             if (parIdReceipt.CodePeriod == 0)
                 parIdReceipt.CodePeriod = Global.GetCodePeriod();
-            parIdReceipt.CodeReceipt = this.db.ExecuteScalar<IdReceipt, int>(SqlGetNewCodeReceipt, parIdReceipt);
+            parIdReceipt.CodeReceipt = this.db.ExecuteScalar<IdReceipt, int>(SqlGetNewReceipt, parIdReceipt);
             return parIdReceipt;
         }
 
@@ -525,7 +525,7 @@ namespace SharedLib
             //SqlAddZ = GetSQL("SqlAddZ");
             //SqlAddLog = GetSQL("SqlAddLog");
             //SqlGenWorkPlace=GetSQL("SqlGenWorkPlace");
-            SqlGetNewCodeReceipt = GetSQL("SqlGetNewCodeReceipt");
+            SqlGetNewReceipt = GetSQL("SqlGetNewReceipt");
 
             /*SqlInsertGenWorkPlace = GetSQL("SqlInsertGenWorkPlace");
 			SqlSelectGenWorkPlace = GetSQL("SqlSelectGenWorkPlace");
@@ -869,7 +869,7 @@ namespace SharedLib
         }
         public virtual bool MoveReceipt(ParamMoveReceipt parMoveReceipt)
         {
-            db.ExecuteNonQuery<ParamMoveReceipt>(SqlDeleteWaresReceiptPromotion, parMoveReceipt);
+            db.ExecuteNonQuery<ParamMoveReceipt>(SqlMoveReceipt, parMoveReceipt);
             return true;
         }
         public virtual bool ReplacePayment(IEnumerable<Payment> parData)

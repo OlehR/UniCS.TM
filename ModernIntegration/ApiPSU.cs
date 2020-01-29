@@ -74,25 +74,25 @@ namespace ModernIntegration
             return GetReceiptViewModel(receiptId);
 
         }
-        public override bool AddPayment(Guid parTerminalId, ReceiptPayment[] parPayment)
+        public override bool AddPayment(Guid parTerminalId, ReceiptPayment[] parPayment, Guid? parReceiptId = null)
         {
-            var receiptId = GetCurrentReceiptByTerminalId(parTerminalId);
+            IdReceipt receiptId = (parReceiptId != null && parReceiptId != Guid.Empty)?  new IdReceipt(parReceiptId.Value): GetCurrentReceiptByTerminalId(parTerminalId);
             Bl.db.ReplacePayment(parPayment.Select(r => ReceiptPaymentToPayment(receiptId, r)));
             return Bl.SetStateReceipt(receiptId, eStateReceipt.Pay);
 
         }
-        public override bool AddFiscalNumber(Guid parTerminalId, string parFiscalNumber)
+        public override bool AddFiscalNumber(Guid parTerminalId, string parFiscalNumber, Guid? parReceiptId = null)
         {
-            var receiptId = new IdReceipt(GetCurrentReceiptByTerminalId(parTerminalId));
+            IdReceipt receiptId = (parReceiptId != null && parReceiptId != Guid.Empty) ? new IdReceipt(parReceiptId.Value) : GetCurrentReceiptByTerminalId(parTerminalId);
             Bl.UpdateReceiptFiscalNumber(receiptId, parFiscalNumber);
             ClearReceiptByReceiptId(receiptId);
             //          ClearReceipt(parReceiptId);
             return true;
         }
 
-        public override bool ClearReceipt(Guid parTerminalId)
+        public override bool ClearReceipt(Guid parTerminalId, Guid? parReceiptId = null)
         {
-            var receiptId = new IdReceipt(GetCurrentReceiptByTerminalId(parTerminalId));
+            IdReceipt receiptId = (parReceiptId != null && parReceiptId != Guid.Empty) ? new IdReceipt(parReceiptId.Value) : GetCurrentReceiptByTerminalId(parTerminalId);
             Bl.SetStateReceipt(receiptId, eStateReceipt.Canceled);
             Receipts[parTerminalId] = null;
             return true;
@@ -204,7 +204,7 @@ namespace ModernIntegration
                 var idReceipt = Bl.GetNewIdReceipt(parTerminalId);
 
                 Receipts[parTerminalId] = new ModelMID.Receipt(idReceipt);
-                Bl.AddReceipt(Receipts[parTerminalId]);
+                //Bl.AddReceipt(Receipts[parTerminalId]);
             }
 
             return Receipts[parTerminalId];
@@ -237,8 +237,8 @@ namespace ModernIntegration
                 varTags.Add(new Tag() { Key = "TimeRestricted", Id = 1, RuleValue = "{\"Start\":\"" + Global.AlcoholTimeStart + "\",\"Stop\":\"" + Global.AlcoholTimeStop + "\"}" });
 
             // Якщо немає ваги відключаємо її контроль 
-            if (!receiptWares.IsWeight && receiptWares.WeightBrutto == 0)
-                varTags.Add(new Tag { Id = 3, Key = "NoWeightedProduct" });
+            //if (!receiptWares.IsWeight && receiptWares.WeightBrutto == 0)
+                //varTags.Add(new Tag { Id = 3, Key = "NoWeightedProduct" }); 
 
             var Res = new ProductViewModel()
             {
@@ -249,13 +249,13 @@ namespace ModernIntegration
                 Image = null,
                 Price = receiptWares.SumDiscount > 0 ? ( receiptWares.Price > 0 ? receiptWares.Price : receiptWares.PriceDealer): receiptWares.PriceDealer,
                 WeightCategory = 2, //вимірювання Похибки в відсотках,2 в грамах
-                Weight = (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : Convert.ToDouble(receiptWares.WeightBrutto)),
+                Weight = (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : (receiptWares.WeightBrutto==0m? 100000 : Convert.ToDouble(receiptWares.WeightBrutto))),
                 DeltaWeight = 0.07 * (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : Convert.ToDouble(receiptWares.WeightBrutto)),
                 AdditionalWeights = LWI,
                 ProductWeightType =  receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByPiece, 
                 IsAgeRestrictedConfirmed = false, //Обмеження по віку алкоголь Підтверджено не потрібно посилати.
                 Quantity = (receiptWares.IsWeight ? 1 : receiptWares.Quantity),
-                DiscountValue = receiptWares.SumDiscount>0 ? receiptWares.SumDiscount : (receiptWares.PriceDealer - receiptWares.Price) * receiptWares.Quantity,
+                DiscountValue =Math.Round(receiptWares.SumDiscount>0 ? receiptWares.SumDiscount : (receiptWares.PriceDealer * receiptWares.Quantity - receiptWares.Sum),2),
                 DiscountName = receiptWares.NameDiscount,
                 WarningType = null, //!!! Не посилати 
                 CalculatedWeight = 0,
@@ -265,7 +265,10 @@ namespace ModernIntegration
                 IsProductOnProcessing = false, //
                 ///CategoryId=   !!!TMP Групи 1 рівня.
                 TaxGroup = Global.GetTaxGroup(receiptWares.TypeVat, receiptWares.TypeWares),
-                Barcode = receiptWares.BarCode,
+                Barcode = receiptWares.BarCode
+                //FullPrice = receiptWares.Sum
+
+
             };
             return Res;
         }

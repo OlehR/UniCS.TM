@@ -27,9 +27,9 @@ namespace ModernIntegration
         public virtual ReceiptViewModel GetReciept(Guid parReceipt) { throw new NotImplementedException(); }
         public virtual IEnumerable<ProductViewModel> GetProduct(Guid parTerminalId) { throw new NotImplementedException(); }
         public virtual ReceiptViewModel GetRecieptByTerminalId(Guid parTerminalId) { throw new NotImplementedException(); }
-        public virtual bool AddPayment( Guid parTerminalId, ReceiptPayment[] parPayment) { throw new NotImplementedException(); }
-        public virtual bool AddFiscalNumber(Guid parTerminalId, string parFiscalNumber) { throw new NotImplementedException(); }
-        public virtual bool ClearReceipt(Guid parTerminalId) { throw new NotImplementedException(); }
+        public virtual bool AddPayment( Guid parTerminalId, ReceiptPayment[] parPayment,Guid? parReceiptId= null) { throw new NotImplementedException(); }
+        public virtual bool AddFiscalNumber(Guid parTerminalId, string parFiscalNumber, Guid? parReceiptId = null) { throw new NotImplementedException(); }
+        public virtual bool ClearReceipt(Guid parTerminalId, Guid? parReceiptId = null) { throw new NotImplementedException(); }
         public virtual IEnumerable<ProductViewModel> GetBags() { throw new NotImplementedException(); }
         public virtual List<ProductCategory> GetAllCategories(Guid parTerminalId) { throw new NotImplementedException(); }
         public virtual List<ProductCategory> GetCategoriesByParentId(Guid parTerminalId, Guid categoryId) { throw new NotImplementedException(); }

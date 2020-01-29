@@ -178,7 +178,7 @@ insert into wares_receipt (id_workplace, code_period, code_receipt, code_wares, 
  values (
   @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit,
   @TypePrice, @Quantity, @Price,@PriceDealer, @Sum, @SumVat,
-  @ParPrice1,@ParPrice2,@ParPrice3, @SumDiscount, @TypeVat, (select COALESCE(max(sort),0)+1 from wares_receipt  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt), @UserCreate,
+  @ParPrice1,@ParPrice2,@ParPrice3, round(@SumDiscount,2), @TypeVat, (select COALESCE(max(sort),0)+1 from wares_receipt  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt), @UserCreate,
  @AdditionN1,@AdditionN2,@AdditionN3,
  @AdditionC1,@AdditionD1,@BARCODE2Category,@DESCRIPTION);
  ;
@@ -269,9 +269,10 @@ values ( @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit, 0, 0,-1
 [SqlAddZ]
 [SqlAddLog]
 
-[SqlGetNewCodeReceipt]
+[SqlGetNewReceipt]
 INSERT OR ignore into GEN_WORKPLACE (ID_WORKPLACE,CODE_PERIOD,CODE_RECEIPT) values (@IdWorkplace,@CodePeriod,0);
 update GEN_WORKPLACE set CODE_RECEIPT=CODE_RECEIPT+1 where ID_WORKPLACE=@IdWorkplace and CODE_PERIOD=@CodePeriod;
+insert into receipt (id_workplace, code_period, code_receipt) values (@IdWorkplace,@CodePeriod,(select CODE_RECEIPT from GEN_WORKPLACE where ID_WORKPLACE=@IdWorkplace and CODE_PERIOD=@CodePeriod));
 select CODE_RECEIPT from GEN_WORKPLACE where ID_WORKPLACE=@IdWorkplace and CODE_PERIOD=@CodePeriod;
 
 [SqlLogin]
@@ -399,6 +400,8 @@ update wares_receipt w
                      and code_wares=@CodeWares and code_unit=@CodeUnit
 
 [SqlMoveReceipt]
+delete from receipt w
+                     where id_workplace=@NewIdWorkplace and  code_period =@NewCodePeriod and  code_receipt=@NewCodeReceipt;
 update receipt w
         set id_workplace=@NewIdWorkplace and  code_period =@NewCodePeriod and  code_receipt=@NewCodeReceipt 
                      where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt;
@@ -481,24 +484,24 @@ CREATE TABLE RECEIPT (
     ID_WORKPLACE      INTEGER  NOT NULL,
     CODE_PERIOD       INTEGER  NOT NULL,
     CODE_RECEIPT      INTEGER  NOT NULL PRIMARY KEY,
-    DATE_RECEIPT      DATETIME NOT NULL,
+    DATE_RECEIPT      DATETIME NOT NULL DEFAULT (datetime('now','localtime')),
 --    CODE_WAREHOUSE    INTEGER  NOT NULL,
     Type_Receipt INTEGER  NOT NULL DEFAULT 1,
-    SUM_RECEIPT       NUMBER   NOT NULL,
-    VAT_RECEIPT       NUMBER   NOT NULL,
-    CODE_PATTERN      INTEGER  NOT NULL,
-    STATE_RECEIPT     INTEGER  NOT NULL,
-    CODE_CLIENT       INTEGER  NOT NULL,
-    NUMBER_CASHIER    INTEGER  NOT NULL,
+    SUM_RECEIPT       NUMBER   NOT NULL DEFAULT 0, 
+    VAT_RECEIPT       NUMBER   NOT NULL DEFAULT 0,
+    CODE_PATTERN      INTEGER  NOT NULL DEFAULT 0,
+    STATE_RECEIPT     INTEGER  NOT NULL DEFAULT 0,
+    CODE_CLIENT       INTEGER  NOT NULL DEFAULT 0,
+    NUMBER_CASHIER    INTEGER  NOT NULL DEFAULT 0,
     NUMBER_RECEIPT    TEXT,
     CODE_DISCOUNT     INTEGER,
-    SUM_DISCOUNT      NUMBER   NOT NULL,
+    SUM_DISCOUNT      NUMBER   NOT NULL DEFAULT 0,
     PERCENT_DISCOUNT  INTEGER,
     CODE_BONUS        INTEGER,
-    SUM_BONUS         NUMBER   NOT NULL,
+    SUM_BONUS         NUMBER   NOT NULL DEFAULT 0,
     SUM_CASH          NUMBER,
     SUM_CREDIT_CARD   NUMBER,
-    CODE_OUTCOME      INTEGER  NOT NULL,
+    CODE_OUTCOME      INTEGER  NOT NULL DEFAULT 0,
     CODE_CREDIT_CARD  INTEGER,
     NUMBER_SLIP       TEXT,
     NUMBER_TAX_INCOME INTEGER,
@@ -512,9 +515,8 @@ CREATE TABLE RECEIPT (
     ADDITION_D1       TEXT,
     ADDITION_D2       TEXT,
     ADDITION_D3       TEXT,
-    DATE_CREATE       DATETIME NOT NULL
-                               DEFAULT (datetime('now','localtime')),
-    USER_CREATE       INTEGER  NOT NULL
+    DATE_CREATE       DATETIME NOT NULL DEFAULT (datetime('now','localtime')),
+    USER_CREATE       INTEGER  NOT NULL DEFAULT 0
 );
 CREATE UNIQUE INDEX id_RECEIPT ON RECEIPT(CODE_RECEIPT,ID_WORKPLACE,CODE_PERIOD);
 

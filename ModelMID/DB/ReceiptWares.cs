@@ -69,7 +69,7 @@ namespace ModelMID
         public string NameDiscount { get; set; }
         public decimal Sum
         {
-            get { return Quantity * Price; }
+            get { return Math.Round(Quantity * Price,2); }
             set { Price = (Quantity > 0?value / Quantity:0); }
         }
         private decimal? _vat=null;
