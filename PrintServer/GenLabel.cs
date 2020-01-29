@@ -19,14 +19,29 @@ namespace PrintServer
         MSSQL db = new MSSQL();//("Server = SQLSRV2; Database=DW;Trusted_Connection=True;"
         QRCodeGenerator qrGenerator = new QRCodeGenerator();
         Image logo = Image.FromFile("C:\\Spar.bmp");
+        int CodeWarehouse = 1;
+        string NamePrinter = "";
+        string NamePrinterYelow;
+        string NameDocument;
+
         public GenLabel()
         {
+            string Warehouse = System.Configuration.ConfigurationManager.AppSettings["CodeWarehouse"];
+            if (!string.IsNullOrEmpty(Warehouse))
+                CodeWarehouse = Convert.ToInt32(Warehouse);
+
+            string PathLogo = System.Configuration.ConfigurationManager.AppSettings["PathLogo"];
+            if (!string.IsNullOrEmpty(PathLogo))
+                logo = Image.FromFile(PathLogo);
+
+            NamePrinterYelow = System.Configuration.ConfigurationManager.AppSettings["NamePrinterYelow"];
+            NamePrinter = System.Configuration.ConfigurationManager.AppSettings["NamePrinter"];
         }
 
-        public void GetCode(string parCodeWares)
+        public List<cPrice> GetCode(string parCodeWares)
         {
             if (string.IsNullOrEmpty(parCodeWares))
-                return;
+                return null;
             var L = new List<cPrice>();
             foreach (var el in parCodeWares.Split(','))
             {
@@ -37,20 +52,45 @@ namespace PrintServer
                     L.Add(pr);
                 }
             }
-            price = L.ToArray();
-            current = 0;
+            return L;           
         }
         public cPrice GetPrice(int? parCodeWares, int? parArticle = null)
         {
             var Sql = "select dbo.GetPrice(@CodeWarehouse ,@CodeWares,null,@Article,1)";
 
-            var param = new { CodeWarehouse = 9, CodeWares = parCodeWares, Article = parArticle };
+            var param = new { CodeWarehouse = this.CodeWarehouse, CodeWares = parCodeWares, Article = parArticle };
             var json = db.ExecuteScalar<object, string>(Sql, param);
             var price = JsonConvert.DeserializeObject<cPrice>(json);
             return price;
         }
+        public void Print(IEnumerable<cPrice> parPrice, string parNameDocument = null)
+        {
+            current = 0;
+            if (string.IsNullOrEmpty(NamePrinterYelow))
+            {
+                price = parPrice.ToArray();
+                if (price.Count() > 0)
+                    PrintServer(NamePrinter);
+            }
+            else
+            {
+                price = parPrice.Where(el => el.ActionType == 0).ToArray();
+                if (price.Count() > 0)
+                    PrintServer(NamePrinter);
+                current = 0;
+                price = parPrice.Where(el => el.ActionType != 0).ToArray();
+                if(price.Count()>0)
+                    PrintServer(NamePrinterYelow);
+            }
+            NameDocument = parNameDocument;
+            if(string.IsNullOrEmpty(NameDocument))
+            {
 
-        public void PrintServer()
+            }
+
+
+        }
+        public void PrintServer(string varNamePrinter)
         {
             // объект для печати
             PrintDocument printDocument = new PrintDocument();
@@ -66,8 +106,15 @@ namespace PrintServer
             printDialog.Document = printDocument;
 
             //System.Drawing.Printing.PrinterSettings newSettings = new System.Drawing.Printing.PrinterSettings();
-            printDialog.PrinterSettings.PrinterName = "BTP-R580II(U) 1";//newSettings.PrinterName;
+            printDialog.PrinterSettings.PrinterName = varNamePrinter;//newSettings.PrinterName;
             printDialog.Document.Print(); // печатаем
+            if(!string.IsNullOrEmpty(NameDocument))//Друкуємо підсумок по документу.
+            {
+                printDocument.PrintPage -= PrintPageHandler;
+                printDocument.PrintPage += PrintTotal;
+                printDialog.Document.Print();
+            }
+
         }
 
 
@@ -108,8 +155,12 @@ namespace PrintServer
                     return;
             }
 
+        }
 
-
+        void PrintTotal(object sender, PrintPageEventArgs e)
+        {
+            e.Graphics.DrawString(NameDocument, new Font("Arial", 22), Brushes.Black, 0,20);
+            e.Graphics.DrawString($"Вcього:{price.Count()}", new Font("Arial", 22), Brushes.Black, 0, 20);
         }
         public void PrintLabel(cPrice parPrice, PrintPageEventArgs e)
         {

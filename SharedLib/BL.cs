@@ -476,7 +476,7 @@ namespace SharedLib
                     Console.WriteLine("CreateMIDIndex Finish");
                     db = SQLite;
                     db.SetConfig<string>("Last_MID", varMidFile);
-                    Console.WriteLine("CreateMIDIndex Finish");
+                    Console.WriteLine("Set config");
                 }
                 db.SetConfig<DateTime>("Load_" + (parIsFull ? "Full" : "Update"), DateTime.Now /*String.Format("{0:u}", DateTime.Now)*/);
             }

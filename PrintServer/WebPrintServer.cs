@@ -8,14 +8,19 @@ namespace PrintServer
 {
     class WebPrintServer: IWebPrintServer
     {
-        public string Print(string Wares) 
+        GenLabel GL = new GenLabel();
+        public string Print(Wares parWares) 
         {
-            Console.WriteLine(Wares);
-            GenLabel GL = new GenLabel();
-            GL.GetCode(Wares);//"000140296,000055083,000055053"
-            GL.PrintPreview();
+            if (parWares == null)
+                return "Bad input Data";
+            Console.WriteLine(parWares.CodeWares);
+            
+            var ListWares=GL.GetCode(parWares.CodeWares);//"000140296,000055083,000055053"
+            
 
-            return Wares;
-        }
+            GL.PrintPreview();
+            return "Print";
+        }        
+
     }
 }
