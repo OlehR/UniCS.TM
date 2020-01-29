@@ -31,7 +31,7 @@ namespace Test
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-            //CreateDataBase(false); //Створення бази
+            CreateDataBase(true); //Створення бази
             //Thread.Sleep(10000);
             //TestKit();
             TestReceipt(); //
@@ -309,8 +309,11 @@ namespace Test
             var SqlSelect = @"select [barcode] as BarCode, weight as Weight, DATE_CREATE as Date,STATUS
 from ( SELECT [barcode],DATE_CREATE,STATUS,weight,ROW_NUMBER() OVER (PARTITION BY barcode ORDER BY DATE_CREATE DESC) as [nn]  FROM WEIGHT) dd
 where nn=1 ";
+            Console.WriteLine("Start");
             var r = dbSqlite.Execute<BarCodeOut>(SqlSelect) ;
+            Console.WriteLine(r.Count().ToString());
             dbMs.BulkExecuteNonQuery<BarCodeOut>(SQLUpdate, r);
+            Console.WriteLine("Finish");
         }
 
 
