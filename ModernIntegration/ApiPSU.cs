@@ -74,25 +74,25 @@ namespace ModernIntegration
             return GetReceiptViewModel(receiptId);
 
         }
-        public override bool AddPayment(Guid parTerminalId, ReceiptPayment[] parPayment)
+        public override bool AddPayment(Guid parTerminalId, ReceiptPayment[] parPayment, Guid? parReceiptId = null)
         {
-            var receiptId = GetCurrentReceiptByTerminalId(parTerminalId);
+            IdReceipt receiptId = (parReceiptId != null && parReceiptId != Guid.Empty)?  new IdReceipt(parReceiptId.Value): GetCurrentReceiptByTerminalId(parTerminalId);
             Bl.db.ReplacePayment(parPayment.Select(r => ReceiptPaymentToPayment(receiptId, r)));
             return Bl.SetStateReceipt(receiptId, eStateReceipt.Pay);
 
         }
-        public override bool AddFiscalNumber(Guid parTerminalId, string parFiscalNumber)
+        public override bool AddFiscalNumber(Guid parTerminalId, string parFiscalNumber, Guid? parReceiptId = null)
         {
-            var receiptId = new IdReceipt(GetCurrentReceiptByTerminalId(parTerminalId));
+            IdReceipt receiptId = (parReceiptId != null && parReceiptId != Guid.Empty) ? new IdReceipt(parReceiptId.Value) : GetCurrentReceiptByTerminalId(parTerminalId);
             Bl.UpdateReceiptFiscalNumber(receiptId, parFiscalNumber);
             ClearReceiptByReceiptId(receiptId);
             //          ClearReceipt(parReceiptId);
             return true;
         }
 
-        public override bool ClearReceipt(Guid parTerminalId)
+        public override bool ClearReceipt(Guid parTerminalId, Guid? parReceiptId = null)
         {
-            var receiptId = new IdReceipt(GetCurrentReceiptByTerminalId(parTerminalId));
+            IdReceipt receiptId = (parReceiptId != null && parReceiptId != Guid.Empty) ? new IdReceipt(parReceiptId.Value) : GetCurrentReceiptByTerminalId(parTerminalId);
             Bl.SetStateReceipt(receiptId, eStateReceipt.Canceled);
             Receipts[parTerminalId] = null;
             return true;
