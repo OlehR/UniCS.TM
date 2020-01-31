@@ -184,6 +184,7 @@ namespace SharedLib
         protected string SqlGetLastReceipt = "";
         protected string SqlGetReceipts="";
         protected string SqlAdditionalWeightsWares="";
+        protected string SqlInsertAddWeight = "";
         public WDB(string parFileSQL)
         {
             this.ReadSQL(parFileSQL);
@@ -596,6 +597,7 @@ namespace SharedLib
             SqlGetLastReceipt = GetSQL("SqlGetLastReceipt");
             SqlGetReceipts = GetSQL("SqlGetReceipts");
             SqlAdditionalWeightsWares = GetSQL("SqlAdditionalWeightsWares");
+            SqlInsertAddWeight = GetSQL("SqlInsertAddWeight");
             return true;
         }
 
@@ -976,6 +978,12 @@ namespace SharedLib
         {
             return db.Execute< object, Receipt>(SqlGetReceipts, new { StartDate = parStartDate, FinishDate = parFinishDate, IdWorkPlace = parIdWorkPlace });
         }
+
+        public virtual bool InsertAddWeight (AddWeight parAddWeight)
+        {
+            return db.ExecuteNonQuery<AddWeight>(SqlInsertAddWeight, parAddWeight)>0;
+        }
+
 
     }
 }

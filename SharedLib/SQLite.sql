@@ -825,6 +825,13 @@ CREATE TABLE PROMOTION_SALE_2_category (
     CODE_WARES INTEGER  NOT NULL
 );
 
+CREATE TABLE ADD_WEIGHT (
+    CODE_WARES   INTEGER NOT NULL,
+    CODE_UNIT    INTEGER NOT NULL default 0,
+    WEIGHT      NUMBER   NOT NULL
+);
+
+
 
 
 [SqlCreateMIDIndex]
@@ -856,6 +863,7 @@ CREATE UNIQUE INDEX PROMOTION_SALE_GROUP_WARES_ID ON PROMOTION_SALE_GROUP_WARES 
 
 CREATE UNIQUE INDEX PROMOTION_SALE_2_category_ID ON PROMOTION_SALE_2_category ( Code_WARES,CODE_PS );
 
+CREATE INDEX ADD_WEIGHT_W ON ADD_WEIGHT ( CODE_WARES );
 
 [SqlReplaceUnitDimension]
 replace into UNIT_DIMENSION ( CODE_UNIT, NAME_UNIT, ABR_UNIT) values (@CodeUnit, @NameUnit,@AbrUnit);
@@ -969,5 +977,9 @@ sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_
  and DateReceipt between @StartDate and @FinishDate;   
 [SqlAdditionalWeightsWares]
 select WEIGHT from WEIGHT where BARCODE=@CodeWares and  STATUS=-1
+
+[SqlInsertAddWeight]
+insert into ADD_WEIGHT ( CODE_WARES, CODE_UNIT, WEIGHT) values (@CodeWares, @CodeUnit,@Weight);
+
 [SqlEnd]
 */

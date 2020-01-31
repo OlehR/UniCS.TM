@@ -11,6 +11,7 @@ namespace PrintServer
     class Program
     {
         private static ServiceHost _serviceHost;
+        static string Url;
         #region Nested classes to support running as service
         public const string ServiceName = "WebPrintServer";
 
@@ -32,8 +33,14 @@ namespace PrintServer
             }
         }
         #endregion
+        /// <summary>
+        /// Реєстраія служби
+        /// sc.exe create PrintServer binPath= "D:\PrintServer\PrintServer.exe" start =auto
+        /// </summary>
+        /// <param name="args"></param>
         static void Main(string[] args)
         {
+            Url= System.Configuration.ConfigurationManager.AppSettings["Url"];
             if (!Environment.UserInteractive)
                 // running as service
                 using (var service = new Service())
@@ -56,7 +63,7 @@ namespace PrintServer
             };
 
             _serviceHost =
-                new ServiceHost(typeof(WebPrintServer), new Uri("http://localhost:8081/WebPrintServer"))
+                new ServiceHost(typeof(WebPrintServer), new Uri(Url)) //"http://localhost:8080/WebPrintServer"
                 {
                     OpenTimeout = TimeSpan.FromMinutes(4),
                     CloseTimeout = TimeSpan.FromMinutes(4)

@@ -9,6 +9,7 @@ using QRCoder;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Windows.Forms;
+using System.Drawing.Drawing2D;
 
 namespace PrintServer
 {
@@ -18,7 +19,7 @@ namespace PrintServer
         cPrice[] price;
         MSSQL db = new MSSQL();//("Server = SQLSRV2; Database=DW;Trusted_Connection=True;"
         QRCodeGenerator qrGenerator = new QRCodeGenerator();
-        Image logo = Image.FromFile("C:\\Spar.bmp");
+        Image logo;// = Image.FromFile("D:\\Vopak.bmp");
         int CodeWarehouse = 1;
         string NamePrinter = "";
         string NamePrinterYelow;
@@ -97,7 +98,7 @@ namespace PrintServer
 
             // обработчик события печати
             printDocument.PrintPage += PrintPageHandler;
-            printDocument.DefaultPageSettings.PaperSize = new PaperSize("54 x 60 mm", 230, 120);
+            printDocument.DefaultPageSettings.PaperSize = new PaperSize("54 x 60 mm", 230, 130);
 
             // диалог настройки печати
             PrintDialog printDialog = new PrintDialog();
@@ -127,7 +128,7 @@ namespace PrintServer
             pd.Document = printDocument;
             // обработчик события печати
             printDocument.PrintPage += PrintPageHandler;
-            printDocument.DefaultPageSettings.PaperSize = new PaperSize("54 x 60 mm", 230, 120);
+            printDocument.DefaultPageSettings.PaperSize = new PaperSize("54 x 60 mm", 230, 122);
 
             // диалог настройки печати
             PrintDialog printDialog = new PrintDialog();
@@ -164,7 +165,8 @@ namespace PrintServer
         }
         public void PrintLabel(cPrice parPrice, PrintPageEventArgs e)
         {
-            int LengthName = 40;
+
+            int LengthName = 28;
             string Name1, Name2 = "";
             if (parPrice.Name.Length < LengthName)
                 Name1 = parPrice.Name;
@@ -183,23 +185,68 @@ namespace PrintServer
             string BarCodePrice = parPrice.Code.ToString() + "-" + parPrice.Price.ToString() + (parPrice.PriceOpt == 0 ? "" : "-" + parPrice.PriceOpt.ToString());
 
 
-            e.Graphics.DrawImage(logo, 0, 0);
-            e.Graphics.DrawString(DateTime.Now.ToString("dd/MM/yyyy H:mm"), new Font("Arial", 9), Brushes.Black, 200, 0); //Час
-            e.Graphics.DrawString(Name1, new Font("Arial", 22), Brushes.Black, 0, 20);
-            e.Graphics.DrawString(Name2, new Font("Arial", 22), Brushes.Black, 0, 40);
-            var price = parPrice.Price.ToString().Split(',');
+            e.Graphics.DrawImage(logo, 10, 0);
+            e.Graphics.DrawString(DateTime.Now.ToString("dd/MM/yyyy H:mm"), new Font("Arial", 8), Brushes.Black, 120, 0); //Час
 
-            e.Graphics.DrawString(price[0], new Font("Arial Black", 40), Brushes.Black, 0, 80);
-            e.Graphics.DrawString(price[1], new Font("Arial", 22), Brushes.Black, 150, 80);
-            e.Graphics.DrawString(parPrice.Unit, new Font("Arial", 22), Brushes.Black, 150, 100);
-
-            var qrCodeData = qrGenerator.CreateQrCode("122222-3511", QRCodeGenerator.ECCLevel.Q);
+            var strPrice = parPrice.Price.ToString().Replace(",","");
+            var qrCodeData = qrGenerator.CreateQrCode($"{parPrice.Code}-{strPrice}" , QRCodeGenerator.ECCLevel.Q);
             var qrCode = new QRCode(qrCodeData);
-            e.Graphics.DrawImage(qrCode.GetGraphic(2), 200, 80);
+            e.Graphics.DrawImage(qrCode.GetGraphic(2), 165, 50);
+            
 
-            e.Graphics.DrawString(parPrice.BarCodes, new Font("Arial", 9), Brushes.Black, 0, 250);
-            e.Graphics.DrawString(parPrice.Article.ToString(), new Font("Arial", 9), Brushes.Black, 200, 250);
+            e.Graphics.DrawString(Name1, new Font("Arial", 11, FontStyle.Bold), Brushes.Black, 0, 16);
+            e.Graphics.DrawString(Name2, new Font("Arial", 11, FontStyle.Bold), Brushes.Black, 0, 33);
 
+            int LeftBill = 0, LeftCoin = 135;
+            float coef=1;
+            var price = parPrice.Price.ToString().Split(',');
+            //price[0] = "4293";
+            switch (price[0].Count())
+            {
+                case 1:
+                    LeftBill = 40;
+                    LeftCoin = 100;                    
+                    break;
+                case 2:                    
+                    LeftBill = 20;
+                    LeftCoin = 120;
+                    break;
+                case 3:
+                    LeftBill = 5;
+                    LeftCoin = 135;
+                    coef = 0.9f;
+                    break;
+                default:
+                    LeftBill = 0;
+                    LeftCoin = 135;
+                    coef = 0.70f;
+                    break;                    
+            }
+
+
+            Graphics gr = e.Graphics;
+            GraphicsState state = gr.Save();
+            gr.ResetTransform();
+            gr.ScaleTransform(coef, 1.0f);
+            e.Graphics.DrawString(price[0], new Font("Arial Black", 50), Brushes.Black, LeftBill, 35);
+            gr.Restore(state);
+            
+            //e.Graphics.DrawString(price[0], new Font("Arial Black", 35), Brushes.Black, LeftBill, 35);
+            e.Graphics.DrawString(price[1], new Font("Arial Black", 18), Brushes.Black, LeftCoin, 50);
+            e.Graphics.DrawString("грн", new Font("Arial", 13,FontStyle.Bold), Brushes.Black, LeftCoin+3, 75);
+            if (parPrice.Unit.Count() > 2)
+                parPrice.Unit = parPrice.Unit.ToLower().Substring(0, 2);
+            
+            e.Graphics.DrawString(parPrice.Unit.ToLower().Substring(0,2), new Font("Arial", 14), Brushes.Black, LeftCoin + 3, 90);
+            if (parPrice.BarCodes != null)
+            {
+                if (parPrice.BarCodes.Length > 27)
+                    parPrice.BarCodes = parPrice.BarCodes.Substring(0, 27);
+                e.Graphics.DrawString(parPrice.BarCodes, new Font("Arial", 7), Brushes.Black, 10, 120);
+            }
+            e.Graphics.DrawString(parPrice.Article.ToString(), new Font("Arial", 8,FontStyle.Bold), Brushes.Black, 170, 110);
+            e.Graphics.DrawLine(new Pen(Color.Black, 1), 0, 133, 150, 133);
+            //e.Graphics.DrawString(parPrice.Article.ToString(), new Font("Arial", 8), Brushes.Black, 170, 120);
         }
 
     }
