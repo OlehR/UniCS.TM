@@ -313,7 +313,7 @@ namespace ModernIntegration
                 TotalAmount = receiptMID.SumReceipt - receiptMID.SumBonus,
                 CustomerId = new Client(receiptMID.CodeClient).ClientId,
                 CreatedAt = receiptMID.DateCreate,
-                UpdatedAt = receiptMID.DateCreate, //!!!TMP
+                UpdatedAt = receiptMID.DateReceipt, 
 
                 //ReceiptItems=
                 //Customer /// !!!TMP Модель клієнта
