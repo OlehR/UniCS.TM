@@ -119,7 +119,8 @@ namespace SharedLib
                         }
                         if (parQuantity > 0 && w != null && w.Count() == 1) //Знайшли що треба
                         {
-                            parQuantity = (w.First().CodeUnit == Global.WeightCodeUnit ? varValue / 1000m : varValue);
+                            //parQuantity = (w.First().CodeUnit == Global.WeightCodeUnit ? varValue / 1000m : varValue);
+                            parQuantity = varValue;
                             break;
                         }
                     }
@@ -135,7 +136,7 @@ namespace SharedLib
             if (W.Price == 0)//Якщо немає ціни на товар !!!!TMP Краще обробляти на GUI буде пізніше
                 return null;
             W.SetIdReceipt(parReceipt);
-            W.Quantity = parQuantity;
+            W.Quantity = (W.CodeUnit == Global.WeightCodeUnit ? parQuantity/1000m : parQuantity);// Вага приходить в грамах
             return AddReceiptWares(W);
         }
 
@@ -224,7 +225,7 @@ namespace SharedLib
                     if (parQuantity == 0)
                         return W;
                     W.SetIdReceipt(parReceipt);
-                    W.Quantity = parQuantity;
+                    W.Quantity = (W.CodeUnit==Global.WeightCodeUnit? parQuantity/1000m : parQuantity);//Хак для вагового товару Який приходить в грамах.
                     return AddReceiptWares(W);
                 }
             }
