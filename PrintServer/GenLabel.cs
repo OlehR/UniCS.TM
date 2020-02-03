@@ -20,26 +20,26 @@ namespace PrintServer
         MSSQL db = new MSSQL();//("Server = SQLSRV2; Database=DW;Trusted_Connection=True;"
         QRCodeGenerator qrGenerator = new QRCodeGenerator();
         Image logo;// = Image.FromFile("D:\\Vopak.bmp");
-        int CodeWarehouse = 1;
-        string NamePrinter = "";
-        string NamePrinterYelow;
+        //int CodeWarehouse = 1;
+        //string NamePrinter = "";
+        //string NamePrinterYelow;
         string NameDocument;
 
         public GenLabel()
         {
-            string Warehouse = System.Configuration.ConfigurationManager.AppSettings["CodeWarehouse"];
-            if (!string.IsNullOrEmpty(Warehouse))
-                CodeWarehouse = Convert.ToInt32(Warehouse);
+            //string Warehouse = System.Configuration.ConfigurationManager.AppSettings["CodeWarehouse"];
+            //if (!string.IsNullOrEmpty(Warehouse))
+                //CodeWarehouse = Convert.ToInt32(Warehouse);
 
             string PathLogo = System.Configuration.ConfigurationManager.AppSettings["PathLogo"];
             if (!string.IsNullOrEmpty(PathLogo))
                 logo = Image.FromFile(PathLogo);
 
-            NamePrinterYelow = System.Configuration.ConfigurationManager.AppSettings["NamePrinterYelow"];
-            NamePrinter = System.Configuration.ConfigurationManager.AppSettings["NamePrinter"];
+            //NamePrinterYelow = System.Configuration.ConfigurationManager.AppSettings["NamePrinterYelow"];
+            //NamePrinter = System.Configuration.ConfigurationManager.AppSettings["NamePrinter"];
         }
 
-        public List<cPrice> GetCode(string parCodeWares)
+        public List<cPrice> GetCode(int parCodeWarehouse,string parCodeWares )
         {
             if (string.IsNullOrEmpty(parCodeWares))
                 return null;
@@ -49,39 +49,39 @@ namespace PrintServer
                 int CodeWares;
                 if (int.TryParse(el, out CodeWares))
                 {
-                    var pr = GetPrice(CodeWares);
+                    var pr = GetPrice(parCodeWarehouse, CodeWares);
                     L.Add(pr);
                 }
             }
             return L;           
         }
-        public cPrice GetPrice(int? parCodeWares, int? parArticle = null)
+        public cPrice GetPrice(int parCodeWarehouse,int? parCodeWares, int? parArticle = null)
         {
             var Sql = "select dbo.GetPrice(@CodeWarehouse ,@CodeWares,null,@Article,1)";
 
-            var param = new { CodeWarehouse = this.CodeWarehouse, CodeWares = parCodeWares, Article = parArticle };
+            var param = new { CodeWarehouse = parCodeWarehouse, CodeWares = parCodeWares, Article = parArticle };
             var json = db.ExecuteScalar<object, string>(Sql, param);
             var price = JsonConvert.DeserializeObject<cPrice>(json);
             return price;
         }
-        public void Print(IEnumerable<cPrice> parPrice, string parNameDocument = null)
+        public void Print(IEnumerable<cPrice> parPrice,string parNamePrinter, string parNamePrinterYelow, string parNameDocument = null)
         {
             current = 0;
-            if (string.IsNullOrEmpty(NamePrinterYelow))
+            if (string.IsNullOrEmpty(parNamePrinterYelow))
             {
                 price = parPrice.ToArray();
                 if (price.Count() > 0)
-                    PrintServer(NamePrinter);
+                    PrintServer(parNamePrinter);
             }
             else
             {
                 price = parPrice.Where(el => el.ActionType == 0).ToArray();
                 if (price.Count() > 0)
-                    PrintServer(NamePrinter);
+                    PrintServer(parNamePrinter);
                 current = 0;
                 price = parPrice.Where(el => el.ActionType != 0).ToArray();
                 if(price.Count()>0)
-                    PrintServer(NamePrinterYelow);
+                    PrintServer(parNamePrinterYelow);
             }
             NameDocument = parNameDocument;
             if(string.IsNullOrEmpty(NameDocument))

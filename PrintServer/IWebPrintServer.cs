@@ -36,8 +36,8 @@ namespace PrintServer
         public string CodeWares { get; set; }
         public string Article { get; set; }
         public string NameDocument { get; set; }
-        //[DataMember]
-        //public string Password { get; set; }
+        public int CodeWarehouse { get; set; }
+        
     }
 }
 

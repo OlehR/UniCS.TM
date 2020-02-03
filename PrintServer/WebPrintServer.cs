@@ -16,7 +16,7 @@ namespace PrintServer
         //int y = 1;
         public WebPrintServer()
         {
-            var PathLog = System.Configuration.ConfigurationManager.AppSettings["CodeWarehouse"];
+            var PathLog = System.Configuration.ConfigurationManager.AppSettings["PathLog"];
             string now = DateTime.Now.ToString("yyyyMMdd");
             fileName = Path.Combine(PathLog, $"\\PrintServer_{now}.log");
             //y = 0;
@@ -26,12 +26,20 @@ namespace PrintServer
             try
             {
                 if (parWares == null)
-                    return "Bad input Data";
+                    return "Bad input Data: Wares";
                 Console.WriteLine(parWares.CodeWares);
 
+                if (parWares.CodeWarehouse == 0)
+                    return "Bad input Data:CodeWarehouse";
+                
+                var NamePrinterYelow = System.Configuration.ConfigurationManager.AppSettings[$"NamePrinterYelow_{parWares.CodeWarehouse}"];
+                var NamePrinter = System.Configuration.ConfigurationManager.AppSettings[$"NamePrinter_{parWares.CodeWarehouse}"];
+                if(string.IsNullOrEmpty( NamePrinter))
+                    return $"Відсутній принтер: NamePrinter_{parWares.CodeWarehouse}";
+
                 //int  x = 343 / y;
-                var ListWares = GL.GetCode(parWares.CodeWares);//"000140296,000055083,000055053"
-                GL.Print(ListWares, "Супер тест");  //PrintPreview();
+                var ListWares = GL.GetCode(parWares.CodeWarehouse,parWares.CodeWares);//"000140296,000055083,000055053"
+                GL.Print(ListWares, NamePrinter, NamePrinterYelow, "Супер тест");  //PrintPreview();
                 return $"Print=>{ListWares.Count()}"; 
 
             }
