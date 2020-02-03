@@ -143,6 +143,8 @@ namespace ModelMID
         /// </summary>
         public IEnumerable<decimal> AdditionalWeights;
         public decimal QuantityOld { get; set; }
+
+        public int TotalRows { get; set; }
         public ReceiptWares()
         {
             Clear();

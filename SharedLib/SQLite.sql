@@ -46,6 +46,7 @@ select t.code_wares as CodeWares,w.name_wares NameWares,w.name_wares_receipt  as
 		w.Type_Wares as TypeWares,
 		(select max(bc.BAR_CODE) from BAR_CODE bc where bc.code_wares=w.code_wares) as BarCode,
 		w.Weight_Brutto as WeightBrutto
+        ,count(*) over() as TotalRows
 from t$1 t
 left join wares w on t.code_wares=w.code_wares
 left join price pd on ( pd.code_wares=t.code_wares and pd.code_dealer= @CodeDealer)

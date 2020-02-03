@@ -264,7 +264,7 @@ namespace ModernIntegration
                 CalculatedWeight = 0,
                 Tags = varTags,
                 HasSecurityMark = false, //!!!TMP // Магнітна мітка, яку треба знімати.
-                TotalRows = receiptWares.Sort, //Сортування популярного.
+                TotalRows = receiptWares.TotalRows, //Сортування популярного.
                 IsProductOnProcessing = false, //
                 ///CategoryId=   !!!TMP Групи 1 рівня.
                 TaxGroup = Global.GetTaxGroup(receiptWares.TypeVat, receiptWares.TypeWares),
