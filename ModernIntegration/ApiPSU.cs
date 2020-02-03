@@ -17,6 +17,7 @@ namespace ModernIntegration
 {
     public class ApiPSU : Api
     {
+        private double Delta = 0.07;
         public BL Bl;
         Dictionary<Guid, ModelMID.IdReceipt> Receipts = new Dictionary<Guid, ModelMID.IdReceipt>();
         public ApiPSU()
@@ -220,12 +221,14 @@ namespace ModernIntegration
         /// <returns></returns>
         private ProductViewModel GetProductViewModel(ReceiptWares receiptWares)
         {
-            var LWI = new List<WeightInfo>()
-                    { new WeightInfo() { Weight = (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : Convert.ToDouble(receiptWares.WeightBrutto)), DeltaWeight = 3 }
-                    };
+            var LWI = new List<WeightInfo>();
+            if(receiptWares.IsWeight || receiptWares.WeightBrutto>0)
+              LWI.Add(      
+                    new WeightInfo() { Weight = (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : Convert.ToDouble(receiptWares.WeightBrutto)), DeltaWeight = Delta * (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : Convert.ToDouble(receiptWares.WeightBrutto))  }                    
+            );
             if (receiptWares.AdditionalWeights != null)
                 foreach (var el in receiptWares.AdditionalWeights)
-                    LWI.Add(new WeightInfo { DeltaWeight = 0.07 * Convert.ToDouble(el), Weight = Convert.ToDouble(el) });
+                    LWI.Add(new WeightInfo { DeltaWeight = Delta * Convert.ToDouble(el), Weight = Convert.ToDouble(el) });
             var varTags = (receiptWares.TypeWares > 0 || (!receiptWares.IsWeight && receiptWares.WeightBrutto == 0))
                     ? new List<Tag>() : null; //!!!TMP // Різні мітки алкоголь, обмеження по часу.
 
@@ -250,7 +253,7 @@ namespace ModernIntegration
                 Price = receiptWares.SumDiscount > 0 ? ( receiptWares.Price > 0 ? receiptWares.Price : receiptWares.PriceDealer): receiptWares.PriceDealer,
                 WeightCategory = 2, //вимірювання Похибки в відсотках,2 в грамах
                 Weight = (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : (receiptWares.WeightBrutto==0m? 100000 : Convert.ToDouble(receiptWares.WeightBrutto))),
-                DeltaWeight = 0.07 * (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : Convert.ToDouble(receiptWares.WeightBrutto)),
+                DeltaWeight = Delta * (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : Convert.ToDouble(receiptWares.WeightBrutto)),
                 AdditionalWeights = LWI,
                 ProductWeightType =  receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByPiece, 
                 IsAgeRestrictedConfirmed = false, //Обмеження по віку алкоголь Підтверджено не потрібно посилати.
