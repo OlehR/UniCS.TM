@@ -104,7 +104,7 @@ namespace ModernIntegration.Models
         /// </value>
         public decimal Discount { get; set; }
 
-        public decimal RefaundedQuantity { get; set; }
+        public decimal RefundedQuantity { get; set; }
 
         /// <summary>
         /// Gets or sets the total price.

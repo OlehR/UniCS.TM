@@ -268,8 +268,9 @@ namespace ModernIntegration
                 IsProductOnProcessing = false, //
                 ///CategoryId=   !!!TMP Групи 1 рівня.
                 TaxGroup = Global.GetTaxGroup(receiptWares.TypeVat, receiptWares.TypeWares),
-                Barcode = receiptWares.BarCode
+                Barcode = receiptWares.BarCode,
                 //FullPrice = receiptWares.Sum
+                RefundedQuantity= receiptWares.RefundedQuantity
 
 
             };
@@ -548,6 +549,13 @@ namespace ModernIntegration
 
             return res.Select(r=>GetReceiptViewModel(r));
             
+        }
+
+        public override bool CreateRefundReceipt(Guid parReceiptFrom, ReceiptViewModel parReceipt) 
+        {
+
+
+            return false;
         }
 
 

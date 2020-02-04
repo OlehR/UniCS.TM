@@ -68,6 +68,11 @@ namespace ModelMID
         public string AdditionC1 { get; set; }
         public DateTime AdditionD1 { get; set; }
 
+        public IdReceipt RefundId { get; set; }
+
+        public int IdWorkplaceRefund { get { return RefundId == null ? 0 : RefundId.IdWorkplace; } set { if (RefundId == null) RefundId = new IdReceipt(); RefundId.IdWorkplace = value;  } }
+        public int CodePeriodRefund { get { return RefundId == null ? 0 : RefundId.CodePeriod; } set { if (RefundId == null) RefundId = new IdReceipt(); RefundId.CodePeriod = value; } }
+        public int CodeReceiptRefund { get { return RefundId == null ? 0 : RefundId.CodeReceipt; } set { if (RefundId == null) RefundId = new IdReceipt(); RefundId.CodeReceipt = value; } }
         public IEnumerable<ReceiptWares> Wares { get; set; }
         public IEnumerable<Payment> Payment { get; set; }
         public Receipt()

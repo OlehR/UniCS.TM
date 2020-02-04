@@ -247,6 +247,8 @@ namespace ModernIntegration.ViewModels
 
         public Guid CategoryId { get; set; }
 
+        public decimal RefundedQuantity { get; set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ProductViewModel"/> class.
         /// </summary>
@@ -319,7 +321,8 @@ namespace ModernIntegration.ViewModels
                 ProductCalculatedWeight = (int) Math.Round(CalculatedWeight, MidpointRounding.AwayFromZero),
                 ProductQuantity = ProductWeightType == ProductWeightType.ByWeight ? (decimal)Weight/1000M : Quantity,
                 ProductWeightType = ProductWeightType,
-                TaxGroup = TaxGroup
+                TaxGroup = TaxGroup,
+                RefundedQuantity= RefundedQuantity
             };
 
             item.TotalPrice = item.FullPrice - item.Discount;

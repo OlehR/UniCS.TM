@@ -42,6 +42,8 @@ namespace ModernIntegration
         public virtual TypeSend GetStatusReceipt(Guid parReceipt)  { throw new NotImplementedException(); } 
         public virtual CustomerViewModel GetCustomerByBarCode(Guid parTerminalId, string parS) { throw new NotImplementedException(); }
         public virtual CustomerViewModel GetCustomerByPhone(Guid parTerminalId,string parS) { throw new NotImplementedException(); }
+
+        public virtual bool CreateRefundReceipt(Guid parReceiptFrom, ReceiptViewModel parReceipt ) { throw new NotImplementedException(); }
         public virtual bool Terminals(List<Terminal> terminals) { throw new NotImplementedException(); }
 
         public virtual bool MoveSessionToAnotherTerminal(Guid firstTerminalId, Guid secondTerminalId) { throw new NotImplementedException(); }

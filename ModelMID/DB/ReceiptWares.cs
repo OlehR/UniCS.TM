@@ -145,6 +145,8 @@ namespace ModelMID
         public decimal QuantityOld { get; set; }
 
         public int TotalRows { get; set; }
+
+        public decimal RefundedQuantity { get; set; }
         public ReceiptWares()
         {
             Clear();
