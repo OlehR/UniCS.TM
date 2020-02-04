@@ -159,7 +159,7 @@ namespace SharedLib
                 try
                 {
                     var body=soapTo1C.GenBody("GetRestOfLabel", new Parameters[] { new Parameters("CodeOfLabel", parBarCode)  });
-                    var  res = await soapTo1C.RequestAsync(body, Global.Server1C);
+                    var  res = await soapTo1C.RequestAsync( Global.Server1C, body);
                     isGood = res.Equals("1");
 
                     /*     string body = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
@@ -386,8 +386,8 @@ namespace SharedLib
             {
                 var r = new Receipt1C(parReceipt);
 
-                var body = soapTo1C.GenBody("JSONCheck", new Parameters[] { new Parameters("JSONSting", r.GetBase64) });
-                var res = await soapTo1C.RequestAsync(body, Global.Server1C);
+                var body = soapTo1C.GenBody("JSONCheck", new Parameters[] { new Parameters("JSONSting", r.GetBase64()) });
+                var res = await soapTo1C.RequestAsync(Global.Server1C, body);
                 
 
                 /* HttpClient client = new HttpClient();

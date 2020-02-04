@@ -37,12 +37,12 @@ namespace ModelMID
                 //Description = parR.Payment.Where(r => !string.IsNullOrEmpty(r.NumberSlip)).FirstOrDefault().NumberSlip;
         }
 
-        public string GetBase64 {
-            get {
-                var Receipt = JsonConvert.SerializeObject(this);
-                var plainTextBytes = Encoding.UTF8.GetBytes(Receipt);
-                return Convert.ToBase64String(plainTextBytes);
-            } }
+        public string GetBase64()
+        {
+            var Receipt = JsonConvert.SerializeObject(this);
+            var plainTextBytes = Encoding.UTF8.GetBytes(Receipt);
+            return Convert.ToBase64String(plainTextBytes);
+        }
        /* public string GetSOAP()
         {
            
