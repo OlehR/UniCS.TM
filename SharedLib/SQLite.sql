@@ -83,7 +83,12 @@ sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_
  code_bonus as CodeBonus, sum_bonus as SumBonus, sum_cash as SumCash, sum_credit_card as SumCreditCard, code_outcome as CodeOutcome, 
  code_credit_card as CodeCreditCard, number_slip as NumberSlip, number_tax_income as NumberTaxIncome,USER_CREATE as UseCreate, Date_Create as DateCreate,
  ADDITION_N1 as AdditionN1,ADDITION_N2 as AdditionN2, ADDITION_N3 as AdditionN3,
- ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1
+ ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1 
+ Id_Workplace_Refund as IdWorkplaceRefund,
+Code_Period_Refund as CodePeriodRefund,
+Code_Receipt_Refund as CodeReceiptRefund
+
+
  from receipt
  where ID_WORKPLACE = @IdWorkplace
    and CODE_PERIOD = @CodePeriod
@@ -111,8 +116,9 @@ select wr.id_workplace as IdWorkplace, wr.code_period as CodePeriod, wr.code_rec
 					 ADDITION_N1 as AdditionN1,ADDITION_N2 as AdditionN2, ADDITION_N3 as AdditionN3,
  ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1,Price_Dealer as PriceDealer,BARCODE_2_CATEGORY as BarCode2Category,wr.DESCRIPTION as DESCRIPTION,w.TYPE_VAT as TypeVat
  ,(select max(bc.BAR_CODE) from BAR_CODE bc where bc.code_wares=wr.code_wares) as BarCode 
- ,w.Weight_Brutto as WeightBrutto
+ ,w.Weight_Brutto as WeightBrutto,Refunded_Quantity as RefundedQuantity
  ,ps.NAME_PS as NameDiscount,Sum_Discount as SumDiscount
+ , wr.Refunded_Quantity  as RefundedQuantity
                      from wares_receipt wr
                      join wares w on (wr.code_wares =w.code_wares)
                      join ADDITION_UNIT au on w.code_wares = au.code_wares and wr.code_unit=au.code_unit
@@ -129,7 +135,8 @@ sum_receipt, vat_receipt, code_pattern, state_receipt, code_client,
  code_bonus, sum_bonus, sum_cash, sum_credit_card, code_outcome, 
  code_credit_card, number_slip, number_tax_income,USER_CREATE,
  ADDITION_N1,ADDITION_N2,ADDITION_N3,
- ADDITION_C1,ADDITION_D1,Type_Receipt
+ ADDITION_C1,ADDITION_D1,Type_Receipt, 
+ Id_Workplace_Refund,Code_Period_Refund,Code_Receipt_Refund
  ) values 
  (@IdWorkplace, @CodePeriod, @CodeReceipt, @DateReceipt, 
  @SumReceipt, @VatReceipt, @CodePattern, @StateReceipt, @CodeClient,
@@ -137,7 +144,8 @@ sum_receipt, vat_receipt, code_pattern, state_receipt, code_client,
  0, 0, 0, 0, 0,
  0, 0, 0,@UserCreate,
  @AdditionN1,@AdditionN2,@AdditionN3,
- @AdditionC1,@AdditionD1,@TypeReceipt
+ @AdditionC1,@AdditionD1,@TypeReceipt,
+ IdWorkplaceRefund,CodePeriodRefund, CodeReceiptRefund
  )
  
 [SqlUpdateClient]
@@ -192,13 +200,13 @@ replace into wares_receipt (id_workplace, code_period, code_receipt, code_wares,
   type_price,  quantity, price, Price_Dealer, sum, sum_vat,
   PAR_PRICE_1,PAR_PRICE_2,PAR_PRICE_3, sum_discount, type_vat, sort, user_create,
  ADDITION_N1,ADDITION_N2,ADDITION_N3,
- ADDITION_C1,ADDITION_D1,BARCODE_2_CATEGORY,DESCRIPTION) 
+ ADDITION_C1,ADDITION_D1,BARCODE_2_CATEGORY,DESCRIPTION,RefundedQuantity) 
  values (
   @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit,
   @TypePrice, @Quantity, @Price,@PriceDealer, @Sum, @SumVat,
   @ParPrice1,@ParPrice2,@ParPrice3, @SumDiscount, @TypeVat, @Sort, @UserCreate,
  @AdditionN1,@AdditionN2,@AdditionN3,
- @AdditionC1,@AdditionD1,@BARCODE2Category,@DESCRIPTION)
+ @AdditionC1,@AdditionD1,@BARCODE2Category,@DESCRIPTION,@RefundedQuantity)
 
 
 
