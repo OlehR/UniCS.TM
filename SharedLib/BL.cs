@@ -17,7 +17,7 @@ namespace SharedLib
     public class BL
     {
         public WDB_SQLite db;
-
+        public SoapTo1C soapTo1C;
         public Action<IEnumerable<ReceiptWares>, Guid> OnReceiptCalculationComplete { get; set; }
 
         /// <summary>
@@ -29,7 +29,9 @@ namespace SharedLib
             db = new WDB_SQLite();
             WorkId = new SortedList<Guid, int>();
             Global.OnReceiptCalculationComplete = (wareses, guid) => OnReceiptCalculationComplete?.Invoke(wareses, guid);
-           
+            soapTo1C = new SoapTo1C();
+
+
         }
         public ReceiptWares AddReceiptWares(ReceiptWares parW)
         {
@@ -156,26 +158,30 @@ namespace SharedLib
                 bool isGood = true;
                 try
                 {
-                    string body = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
-                                 "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd = \"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n" +
-                    $"<soap:Body>\n<GetRestOfLabel xmlns=\"vopak\">\n<CodeOfLabel>{parBarCode}</CodeOfLabel> \n </GetRestOfLabel> \n </soap:Body>\n </soap:Envelope>";
+                    var body=soapTo1C.GenBody("GetRestOfLabel", new Parameters[] { new Parameters("CodeOfLabel", parBarCode)  });
+                    var  res = await soapTo1C.RequestAsync(body, Global.Server1C);
+                    isGood = res.Equals("1");
 
-                    HttpClient client = new HttpClient();
-                    client.Timeout = TimeSpan.FromMilliseconds(5000);
-                    // Add a new Request Message
-                    HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, "http://1CSRV/utppsu/ws/ws1.1cws");
-                    //requestMessage.Headers.Add("Accept", "application/vnd.github.v3+json");
-                    // Add our custom headers
-                    requestMessage.Content = new StringContent(body, Encoding.UTF8, "text/xml");
-                    var response = await client.SendAsync(requestMessage);
+                    /*     string body = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                                      "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd = \"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n" +
+                         $"<soap:Body>\n<GetRestOfLabel xmlns=\"vopak\">\n<CodeOfLabel>{parBarCode}</CodeOfLabel> \n </GetRestOfLabel> \n </soap:Body>\n </soap:Envelope>";
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var res = await response.Content.ReadAsStringAsync();
-                        res = res.Substring(res.IndexOf(@"-instance"">") + 11);
-                        res = res.Substring(0, res.IndexOf("</m:return>")).Trim();
-                        isGood = res.Equals("1");
-                    }
+                         HttpClient client = new HttpClient();
+                         client.Timeout = TimeSpan.FromMilliseconds(5000);
+                         // Add a new Request Message
+                         HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, Global.Server1C);
+                         //requestMessage.Headers.Add("Accept", "application/vnd.github.v3+json");
+                         // Add our custom headers
+                         requestMessage.Content = new StringContent(body, Encoding.UTF8, "text/xml");
+                         var response = await client.SendAsync(requestMessage);
+
+                         if (response.IsSuccessStatusCode)
+                         {
+                             var res = await response.Content.ReadAsStringAsync();
+                             res = res.Substring(res.IndexOf(@"-instance"">") + 11);
+                             res = res.Substring(0, res.IndexOf("</m:return>")).Trim();
+                             isGood = res.Equals("1");
+                         }*/
                     Global.ErrorDiscountOnLine=0;
                 }
                 catch (Exception ex)
@@ -379,26 +385,38 @@ namespace SharedLib
             try
             {
                 var r = new Receipt1C(parReceipt);
-                HttpClient client = new HttpClient();
 
-                // Add a new Request Message
-                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, Global.Server1C);
-                //requestMessage.Headers.Add("Accept", "application/vnd.github.v3+json");
-                // Add our custom headers
-                requestMessage.Content = new StringContent(r.GetSOAP(), Encoding.UTF8, "application/json");
-                var response = await client.SendAsync(requestMessage);
+                var body = soapTo1C.GenBody("JSONCheck", new Parameters[] { new Parameters("JSONSting", r.GetBase64) });
+                var res = await soapTo1C.RequestAsync(body, Global.Server1C);
+                
 
-                if (response.IsSuccessStatusCode)
+                /* HttpClient client = new HttpClient();
+
+                 // Add a new Request Message
+                 HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, Global.Server1C);
+                 //requestMessage.Headers.Add("Accept", "application/vnd.github.v3+json");
+                 // Add our custom headers
+                 requestMessage.Content = new StringContent(r.GetSOAP(), Encoding.UTF8, "application/json");
+                 var response = await client.SendAsync(requestMessage);
+
+                 if (response.IsSuccessStatusCode)
+                 {
+                     var res = await response.Content.ReadAsStringAsync();
+                     parReceipt.StateReceipt = eStateReceipt.Send;
+                     db.SetStateReceipt(parReceipt);//Змінюєм стан чека на відправлено.
+                     return true;
+                 }
+                 else
+                 {
+                     return false;
+                 }*/
+                if (!string.IsNullOrEmpty(res))
                 {
-                    var res = await response.Content.ReadAsStringAsync();
                     parReceipt.StateReceipt = eStateReceipt.Send;
                     db.SetStateReceipt(parReceipt);//Змінюєм стан чека на відправлено.
-                    return true;
                 }
-                else
-                {
-                    return false;
-                }
+
+                return res.Equals("1");
             }
             catch(Exception ex)
             {

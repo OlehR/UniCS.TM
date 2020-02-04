@@ -127,6 +127,7 @@ namespace ModelMID
 
         public static string AlcoholTimeStart = "07:00:00.0000";
         public static string AlcoholTimeStop = "23:00:00.0000";
+        
         /// <summary>
         /// Кількість помилкових запитів до сервера
         /// </summary>

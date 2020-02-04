@@ -59,6 +59,10 @@ namespace ModelMID
         /// </summary>
         public bool IsUseBonusToRest { get; set; }
         /// <summary>
+        /// Здача Кошильок
+        /// </summary>
+        public decimal Wallet { get; set; }
+        /// <summary>
         /// Чи можна нараховувати бонуси з здачі
         /// </summary>
         public bool IsUseBonusFromRest { get; set; }

@@ -323,12 +323,13 @@ namespace ModernIntegration
             var Res = new ReceiptViewModel(receipt, listReceiptItem, null, null)
             { CustomId = receiptMID.NumberReceipt1C };
             
-            if (receiptMID.Payment != null)
+            if (receiptMID.Payment != null && receiptMID.Payment.Count()>0)
             {
                 Res.PaidAmount = receiptMID.Payment.Sum(r => receipt.Amount);
                 var SumCash = receiptMID.Payment.Where(r=> r.TypePay== eTypePay.Cash).Sum(r => receipt.Amount);
                 var SumCard = receiptMID.Payment.Where(r => r.TypePay == eTypePay.Card).Sum(r => receipt.Amount);
                 Res.PaymentType = (SumCash > 0 && SumCard > 0 ? PaymentType.Both : (SumCash == 0 && SumCard == 0 ? PaymentType.None : (SumCash > 0?PaymentType.Cash: PaymentType.Card)));
+                Res.PaymentInfo = PaymentToReceiptPayment(receiptMID.Payment.First());
             }
             
             return Res;
@@ -389,9 +390,9 @@ namespace ModernIntegration
                 Name = parClient.NameClient,
                 DiscountPercent = Convert.ToDouble(parClient.PersentDiscount),
                 //LoyaltyPoints 
-                Bonuses = Convert.ToDecimal(parClient.SumBonus),
+                Bonuses = Convert.ToDecimal(parClient.SumMoneyBonus),
                 //LoyaltyPointsTotal 
-                Wallet = Convert.ToDecimal(parClient.SumMoneyBonus)
+                Wallet = Convert.ToDecimal(parClient.Wallet)
             };
         }
 
@@ -462,6 +463,22 @@ namespace ModernIntegration
                 DateCreate=parRP.CreatedAt
             };
         }
+
+        public ReceiptPayment PaymentToReceiptPayment( Payment parRP)
+        {
+            return new ReceiptPayment()
+            {
+                PaymentType = (PaymentType)(int)parRP.TypePay,
+                PayIn = parRP.SumPay,
+                TransactionId = parRP.NumberReceipt,
+                CardPan = parRP.NumberCard,
+                TransactionCode = parRP.CodeAuthorization, //RRN
+                PosTerminalId = parRP.NumberTerminal,
+                PosAuthCode = parRP.NumberSlip, //код авторизації
+                CreatedAt = parRP.DateCreate
+            };
+        }
+
         public override bool RefundReceipt(RefundReceiptViewModel parReceipt)
         {
             return false;

@@ -58,13 +58,12 @@ namespace ModernIntegration
 
         public Action<SyncInformation> OnSyncInfoCollected { get; set; }
 
-
-
         public Action<IEnumerable<ProductViewModel>, Guid> OnProductsChanged { get; set; }
 
         public Action<Status> OnStatusChanged { get; set; }
+        public Action<CustomerViewModel> OnCustomerChanged { get; set; }
 
-       
+
     }
     
 }

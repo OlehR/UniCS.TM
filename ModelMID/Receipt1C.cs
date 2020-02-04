@@ -37,19 +37,24 @@ namespace ModelMID
                 //Description = parR.Payment.Where(r => !string.IsNullOrEmpty(r.NumberSlip)).FirstOrDefault().NumberSlip;
         }
 
-        public string GetSOAP()
+        public string GetBase64 {
+            get {
+                var Receipt = JsonConvert.SerializeObject(this);
+                var plainTextBytes = Encoding.UTF8.GetBytes(Receipt);
+                return Convert.ToBase64String(plainTextBytes);
+            } }
+       /* public string GetSOAP()
         {
-            var Receipt = JsonConvert.SerializeObject(this);
-            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(Receipt);
+           
             string SoapText = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + "\n" +
        "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" + "\n" +
        "<soap:Body><JSONCheck xmlns = \"vopak\" >" + "\n" +
-       "<JSONSting>" + System.Convert.ToBase64String(plainTextBytes) + " </JSONSting>" + "\n" +
+       "<JSONSting>" + GetBase64 + " </JSONSting>" + "\n" +
        "</JSONCheck>" + "\n" +
        "</soap:Body>" + "\n" +
        "</soap:Envelope>";
             return SoapText;
-        }
+        } */
     }
     
     public class ReceiptWares1C
