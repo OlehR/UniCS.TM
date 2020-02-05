@@ -116,7 +116,6 @@ select wr.id_workplace as IdWorkplace, wr.code_period as CodePeriod, wr.code_rec
  ,(select max(bc.BAR_CODE) from BAR_CODE bc where bc.code_wares=wr.code_wares) as BarCode 
  ,w.Weight_Brutto as WeightBrutto,Refunded_Quantity as RefundedQuantity
  ,ps.NAME_PS as NameDiscount,Sum_Discount as SumDiscount
- , wr.Refunded_Quantity  as RefundedQuantity
                      from wares_receipt wr
                      join wares w on (wr.code_wares =w.code_wares)
                      join ADDITION_UNIT au on w.code_wares = au.code_wares and wr.code_unit=au.code_unit
@@ -198,7 +197,7 @@ replace into wares_receipt (id_workplace, code_period, code_receipt, code_wares,
   type_price,  quantity, price, Price_Dealer, sum, sum_vat,
   PAR_PRICE_1,PAR_PRICE_2,PAR_PRICE_3, sum_discount, type_vat, sort, user_create,
  ADDITION_N1,ADDITION_N2,ADDITION_N3,
- ADDITION_C1,ADDITION_D1,BARCODE_2_CATEGORY,DESCRIPTION,RefundedQuantity) 
+ ADDITION_C1,ADDITION_D1,BARCODE_2_CATEGORY,DESCRIPTION,Refunded_Quantity) 
  values (
   @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit,
   @TypePrice, @Quantity, @Price,@PriceDealer, @Sum, @SumVat,
