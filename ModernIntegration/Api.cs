@@ -37,13 +37,11 @@ namespace ModernIntegration
         public virtual IEnumerable<ProductViewModel> GetProductsByName(Guid parTerminalId, string parName, int pageNumber = 0, bool excludeWeightProduct = false, Guid? categoryId = null, int parLimit = 10) { throw new NotImplementedException(); }
 
         public virtual bool UpdateReceipt(ReceiptViewModel parReceipt) { throw new NotImplementedException(); }
-        public virtual bool RefundReceipt(RefundReceiptViewModel parReceipt) { throw new NotImplementedException(); }
+        public virtual bool RefundReceipt(Guid parTerminalId,RefundReceiptViewModel parReceipt) { throw new NotImplementedException(); }
         public virtual TypeSend SendReceipt(Guid parReceipt) { throw new NotImplementedException(); }
         public virtual TypeSend GetStatusReceipt(Guid parReceipt)  { throw new NotImplementedException(); } 
         public virtual CustomerViewModel GetCustomerByBarCode(Guid parTerminalId, string parS) { throw new NotImplementedException(); }
         public virtual CustomerViewModel GetCustomerByPhone(Guid parTerminalId,string parS) { throw new NotImplementedException(); }
-
-        public virtual bool CreateRefundReceipt(Guid parReceiptFrom, ReceiptViewModel parReceipt ) { throw new NotImplementedException(); }
         public virtual bool Terminals(List<Terminal> terminals) { throw new NotImplementedException(); }
 
         public virtual bool MoveSessionToAnotherTerminal(Guid firstTerminalId, Guid secondTerminalId) { throw new NotImplementedException(); }

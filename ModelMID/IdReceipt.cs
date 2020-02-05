@@ -19,7 +19,7 @@ namespace ModelMID
                 var IdStr = value.ToString();
                 IdWorkplace = Convert.ToInt32(IdStr.Substring(0, 8));
                 CodePeriod = Convert.ToInt32(IdStr.Substring(14, 9).Replace("-",""));
-                CodeReceipt = Convert.ToInt32(IdStr.Substring(14, 12));
+                CodeReceipt = Convert.ToInt32(IdStr.Substring(24, 12));
             }
 
         }

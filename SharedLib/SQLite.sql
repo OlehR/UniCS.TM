@@ -143,7 +143,7 @@ sum_receipt, vat_receipt, code_pattern, state_receipt, code_client,
  0, 0, 0,@UserCreate,
  @AdditionN1,@AdditionN2,@AdditionN3,
  @AdditionC1,@AdditionD1,@TypeReceipt,
- IdWorkplaceRefund,CodePeriodRefund, CodeReceiptRefund
+ @IdWorkplaceRefund,@CodePeriodRefund, @CodeReceiptRefund
  )
  
 [SqlUpdateClient]

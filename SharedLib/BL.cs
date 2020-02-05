@@ -588,6 +588,15 @@ namespace SharedLib
                 return res;
         }
 
+        public bool SaveRefundReceipt(Receipt parReceipt)       
+        {
+            db.ReplaceReceipt(parReceipt);
+            db.ReplacePayment(parReceipt.Payment);
+            foreach (var el in parReceipt.Wares)
+                db.AddWares(el);
+            return true;
+        }
+
 
 
     }
