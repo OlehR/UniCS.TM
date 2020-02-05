@@ -83,12 +83,10 @@ sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_
  code_bonus as CodeBonus, sum_bonus as SumBonus, sum_cash as SumCash, sum_credit_card as SumCreditCard, code_outcome as CodeOutcome, 
  code_credit_card as CodeCreditCard, number_slip as NumberSlip, number_tax_income as NumberTaxIncome,USER_CREATE as UseCreate, Date_Create as DateCreate,
  ADDITION_N1 as AdditionN1,ADDITION_N2 as AdditionN2, ADDITION_N3 as AdditionN3,
- ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1 
+ ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1, 
  Id_Workplace_Refund as IdWorkplaceRefund,
 Code_Period_Refund as CodePeriodRefund,
 Code_Receipt_Refund as CodeReceiptRefund
-
-
  from receipt
  where ID_WORKPLACE = @IdWorkplace
    and CODE_PERIOD = @CodePeriod
