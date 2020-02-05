@@ -23,7 +23,7 @@ namespace ModernIntegration
         public ApiPSU()
         {
             Bl = new BL();
-            Bl.OnReceiptCalculationComplete = (wareses, guid) =>
+            Global.OnReceiptCalculationComplete = (wareses, guid) =>
             {
                 Debug.WriteLine("=========================================================================");
                 foreach (var receiptWarese in wareses)
@@ -34,7 +34,13 @@ namespace ModernIntegration
             };
             Global.OnSyncInfoCollected = (SyncInfo) => OnSyncInfoCollected?.Invoke(SyncInfo);
             Global.OnStatusChanged = (Status) => OnStatusChanged?.Invoke(Status);
+
+            Global.OnClientChanged = (client, guid) =>
+            {               
+                OnCustomerChanged?.Invoke(GetCustomerViewModelByClient(client), guid);
+            };
         }
+
         public override ProductViewModel AddProductByBarCode(Guid parTerminalId, string parBarCode, decimal parQuantity = 0)
         {
             var CurReceipt = GetCurrentReceiptByTerminalId(parTerminalId);
@@ -376,9 +382,9 @@ namespace ModernIntegration
                 Name = parClient.NameClient,
                 DiscountPercent = Convert.ToDouble(parClient.PersentDiscount),
                 //LoyaltyPoints 
-                Bonuses = Convert.ToDecimal(parClient.SumMoneyBonus),
+                Bonuses = parClient.SumMoneyBonus,
                 //LoyaltyPointsTotal 
-                Wallet = Convert.ToDecimal(parClient.Wallet)
+                Wallet = parClient.Wallet
             };
         }
 

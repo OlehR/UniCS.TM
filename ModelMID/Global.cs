@@ -14,6 +14,7 @@ namespace ModelMID
         public static Action<IEnumerable<ReceiptWares>, Guid> OnReceiptCalculationComplete { get; set; }
         public static Action<SyncInformation> OnSyncInfoCollected { get; set; }
         public static Action<Status> OnStatusChanged { get; set; }
+        public static Action<Client, Guid> OnClientChanged { get; set; }
 
         public static SortedList<Guid, WorkPlace> WorkPlaceByTerminalId;
         public static SortedList<int, WorkPlace> WorkPlaceByWorkplaceId;

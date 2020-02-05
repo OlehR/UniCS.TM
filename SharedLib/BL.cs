@@ -18,7 +18,7 @@ namespace SharedLib
     {
         public WDB_SQLite db;
         public SoapTo1C soapTo1C;
-        public Action<IEnumerable<ReceiptWares>, Guid> OnReceiptCalculationComplete { get; set; }
+        //public Action<IEnumerable<ReceiptWares>, Guid> OnReceiptCalculationComplete { get; set; }
 
         /// <summary>
         /// Для швидкого пошуку 
@@ -28,7 +28,7 @@ namespace SharedLib
         {
             db = new WDB_SQLite();
             WorkId = new SortedList<Guid, int>();
-            Global.OnReceiptCalculationComplete = (wareses, guid) => OnReceiptCalculationComplete?.Invoke(wareses, guid);
+         //   Global.OnReceiptCalculationComplete = (wareses, guid) => OnReceiptCalculationComplete?.Invoke(wareses, guid);
             soapTo1C = new SoapTo1C();
 
 
@@ -288,8 +288,7 @@ namespace SharedLib
             {
                 var client = r.First();
                 UpdateClientInReceipt(idReceipt, client);
-                if (ModelMID.Global.RecalcPriceOnLine)
-                    db.RecalcPriceAsync(new IdReceiptWares(idReceipt));
+               
                 return client;
             }
             return null;
@@ -315,6 +314,9 @@ namespace SharedLib
             RH.CodeClient = parClient.CodeClient;
             RH.PercentDiscount = parClient.PersentDiscount;
             db.ReplaceReceipt(RH);
+            if (Global.RecalcPriceOnLine)
+                db.RecalcPriceAsync(new IdReceiptWares(idReceipt));
+            _ = GetBonusAsync(parClient, Global.GetTerminalIdByIdWorkplace(idReceipt.IdWorkplace));
         }
 
 
@@ -597,9 +599,31 @@ namespace SharedLib
             return true;
         }
 
+         public async Task GetBonusAsync(Client parClient,Guid parTerminalId)
+        {
+            try
+            {
+                decimal Sum;
+                var body = soapTo1C.GenBody("GetBonusSum", new Parameters[] { new Parameters("CodeOfCard", parClient.BarCode) });
+                var res = await soapTo1C.RequestAsync(Global.Server1C, body);
+                if (!string.IsNullOrEmpty(res) && decimal.TryParse(res, out Sum))
+                    parClient.SumBonus = Sum;
+                body = soapTo1C.GenBody("GetMoneySum", new Parameters[] { new Parameters("CodeOfCard", parClient.BarCode) });
+                res = await soapTo1C.RequestAsync(Global.Server1C, body);
+                if (!string.IsNullOrEmpty(res) && decimal.TryParse(res, out Sum))
+                    parClient.Wallet = Sum;
+                Global.OnClientChanged?.Invoke(parClient, parTerminalId);
+            }
+            catch (Exception ex)
+            {
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = parTerminalId, Exception = ex, Status = eSyncStatus.NoFatalError , StatusDescription = ex.Message });
+            }
 
+            //return parClient;
+        }
 
     }
+
 
 }
 

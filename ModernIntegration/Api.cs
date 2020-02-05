@@ -61,7 +61,7 @@ namespace ModernIntegration
         public Action<IEnumerable<ProductViewModel>, Guid> OnProductsChanged { get; set; }
 
         public Action<Status> OnStatusChanged { get; set; }
-        public Action<CustomerViewModel> OnCustomerChanged { get; set; }
+        public Action<CustomerViewModel, Guid> OnCustomerChanged { get; set; }
 
 
     }
