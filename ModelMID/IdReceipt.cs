@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace ModelMID
@@ -27,7 +28,8 @@ namespace ModelMID
         public int IdWorkplace { get; set; }
         public int CodePeriod { get; set; }
         public int CodeReceipt { get; set; }
-       
+
+        public DateTime DTPeriod { get { return DateTime.ParseExact(CodePeriod.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture); } }
         public IdReceipt()
         {
             IdWorkplace = 0;

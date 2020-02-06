@@ -594,12 +594,14 @@ namespace SharedLib
         {
             db.ReplaceReceipt(parReceipt);
             db.ReplacePayment(parReceipt.Payment);
+            var dbr = parReceipt.CodePeriod == parReceipt.CodePeriodRefund ? db : new WDB_SQLite("", true, parReceipt.RefundId.DTPeriod);
+
             foreach (var el in parReceipt.Wares)
             {
                 db.AddWares(el);
                 var w = new ReceiptWares(parReceipt.RefundId, el.WaresId);
                 w.Quantity = el.Quantity;
-                db.SetRefundedQuantity(w);
+                dbr.SetRefundedQuantity(w);
             }
             return true;
         }
