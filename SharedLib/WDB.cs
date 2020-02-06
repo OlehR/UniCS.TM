@@ -185,6 +185,7 @@ namespace SharedLib
         protected string SqlGetReceipts="";
         protected string SqlAdditionalWeightsWares="";
         protected string SqlInsertAddWeight = "";
+        protected string SqlSetRefundedQuantity = "";
         public WDB(string parFileSQL)
         {
             this.ReadSQL(parFileSQL);
@@ -598,6 +599,7 @@ namespace SharedLib
             SqlGetReceipts = GetSQL("SqlGetReceipts");
             SqlAdditionalWeightsWares = GetSQL("SqlAdditionalWeightsWares");
             SqlInsertAddWeight = GetSQL("SqlInsertAddWeight");
+            SqlSetRefundedQuantity = GetSQL("SqlSetRefundedQuantity");
             return true;
         }
 
@@ -983,7 +985,10 @@ namespace SharedLib
         {
             return db.ExecuteNonQuery<AddWeight>(SqlInsertAddWeight, parAddWeight)>0;
         }
-
-
+        public virtual bool SetRefundedQuantity(ReceiptWares parReceiptWares)
+        {
+            return db.ExecuteNonQuery<ReceiptWares>(SqlSetRefundedQuantity, parReceiptWares) > 0;
+        }
+       
     }
 }

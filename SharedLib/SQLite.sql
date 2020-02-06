@@ -991,5 +991,13 @@ select WEIGHT from WEIGHT where BARCODE=@CodeWares and  STATUS=-1
 [SqlInsertAddWeight]
 insert into ADD_WEIGHT ( CODE_WARES, CODE_UNIT, WEIGHT) values (@CodeWares, @CodeUnit,@Weight);
 
+
+[SqlSetRefundedQuantity]
+update wares_receipt
+   set Refunded_Quantity = Refunded_Quantity+ @Quantity
+  where ID_WORKPLACE = @IdWorkplace
+   and CODE_PERIOD = @CodePeriod
+   and CODE_RECEIPT = @CodeReceipt
+   and Code_wares=@CodeWares;
 [SqlEnd]
 */

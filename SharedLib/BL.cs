@@ -595,7 +595,12 @@ namespace SharedLib
             db.ReplaceReceipt(parReceipt);
             db.ReplacePayment(parReceipt.Payment);
             foreach (var el in parReceipt.Wares)
+            {
                 db.AddWares(el);
+                var w = new ReceiptWares(parReceipt.RefundId, el.WaresId);
+                w.Quantity = el.Quantity;
+                db.SetRefundedQuantity(w);
+            }
             return true;
         }
 
