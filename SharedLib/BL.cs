@@ -629,6 +629,39 @@ namespace SharedLib
             //return parClient;
         }
 
+        public void LoadWeightKasa(DateTime parDT = default(DateTime))
+        {
+            if (parDT == default(DateTime))
+            {
+                parDT =  db.GetConfig<DateTime>("Load_Full");
+                var parDTU = db.GetConfig<DateTime>("Load_Update");
+                if (parDTU > parDT)
+                    parDT = parDTU;
+            }
+
+            string SQLUpdate = @"
+-- begin tran
+   update barcode_out with (serializable) set weight=@Weight,Date=@Date
+   where bar_code = @BarCode
+
+   if @@rowcount = 0
+   begin
+      insert into barcode_out (bar_code, weight,Date) values ( @BarCode,@Weight,@Date)
+   end
+-- commit tran";
+
+            var dbMs = new MSSQL();
+            var dbSqlite = new SQLite(@"C:\DB\config.db");
+            var SqlSelect = @"select [barcode] as BarCode, weight as Weight, DATE_CREATE as Date,STATUS
+from ( SELECT [barcode],DATE_CREATE,STATUS,weight,ROW_NUMBER() OVER (PARTITION BY barcode ORDER BY DATE_CREATE DESC) as [nn]  FROM WEIGHT where  DATE_CREATE>=:parDT ) dd
+where nn=1 ";
+            Console.WriteLine("Start LoadWeightKasa");
+            var r = dbSqlite.Execute<object,BarCodeOut>(SqlSelect,new { parDT = parDT });
+            Console.WriteLine(r.Count().ToString());
+            dbMs.BulkExecuteNonQuery<BarCodeOut>(SQLUpdate, r);
+            Console.WriteLine("Finish LoadWeightKasa");
+        }
+
     }
 
 

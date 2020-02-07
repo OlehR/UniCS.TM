@@ -497,6 +497,9 @@ namespace ModernIntegration
             OnSyncInfoCollected?.Invoke(info);
 
             await Bl.SendAllReceipt().ConfigureAwait(false);
+            Bl.LoadWeightKasa();
+
+
         }
 
         public override IEnumerable<ProductViewModel> GetProduct(Guid parTerminalId)

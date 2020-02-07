@@ -6,22 +6,11 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using ModelMID.DB;
 
 namespace Test
 {
-    public class BarCodeOut
-    {
-        public string BarCode { get; set; }
-        public decimal Weight { get; set; }
-        public DateTime Date { get; set; }
-        public string Url { get; set; }
-        public string Data { get; set; }
-        public decimal WeightUrl { get; set; }
-        public DateTime DateUrl { get; set; }
-        public string Error { get; set; }
-    }
-
-    
+      
 
     public class GetGoodUrl
     {
