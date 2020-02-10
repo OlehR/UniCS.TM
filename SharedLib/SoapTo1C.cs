@@ -23,11 +23,11 @@ namespace SharedLib
             string parameters = "";
             if (parPar != null)
                 foreach (var el in parPar)
-                    parameters += $"\n<{el.Name}> {el.Value}</{el.Name}>";
+                    parameters += $"\n<{el.Name}>{el.Value}</{el.Name}>";
 
             return "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
                                  "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd = \"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n" +
-                    $"<soap:Body>\n<{parFunction} xmlns=\"vopak\">{parameters} </{parFunction}> \n </soap:Body>\n </soap:Envelope>";
+                    $"<soap:Body>\n<{parFunction} xmlns=\"vopak\">{parameters}</{parFunction}>\n</soap:Body>\n</soap:Envelope>";
         }
 
         public async System.Threading.Tasks.Task<string> RequestAsync(string parUrl,string parBody,int parWait=1000)

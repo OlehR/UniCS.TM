@@ -412,13 +412,13 @@ namespace SharedLib
                  {
                      return false;
                  }*/
-                if (!string.IsNullOrEmpty(res))
+                if (!string.IsNullOrEmpty(res)&& res.Equals("0"))
                 {
                     parReceipt.StateReceipt = eStateReceipt.Send;
                     db.SetStateReceipt(parReceipt);//Змінюєм стан чека на відправлено.
                 }
 
-                return res.Equals("1");
+                return res.Equals("0");
             }
             catch(Exception ex)
             {

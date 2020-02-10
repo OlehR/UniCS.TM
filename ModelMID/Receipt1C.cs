@@ -41,7 +41,8 @@ namespace ModelMID
         {
             var Receipt = JsonConvert.SerializeObject(this);
             var plainTextBytes = Encoding.UTF8.GetBytes(Receipt);
-            return Convert.ToBase64String(plainTextBytes);
+            var res= Convert.ToBase64String(plainTextBytes);
+            return res; /// Convert.ToBase64String(plainTextBytes);
         }
        /* public string GetSOAP()
         {
