@@ -412,7 +412,7 @@ namespace SharedLib
                  {
                      return false;
                  }*/
-                if (!string.IsNullOrEmpty(res)&& res.Equals("0"))
+                if (!string.IsNullOrEmpty(res) && res.Equals("0"))
                 {
                     parReceipt.StateReceipt = eStateReceipt.Send;
                     db.SetStateReceipt(parReceipt);//Змінюєм стан чека на відправлено.
