@@ -27,6 +27,13 @@ namespace PrintServer
         ResponseFormat = WebMessageFormat.Json,
          BodyStyle = WebMessageBodyStyle.Bare)]
         string Print(Wares parWares);
+
+        [WebGet]
+        [WebMethod]
+        string GetQueue();
+        [WebGet]
+        [WebMethod]
+        string ClearQueue();
     }
 
     //[DataContract]
@@ -37,7 +44,8 @@ namespace PrintServer
         public string Article { get; set; }
         public string NameDocument { get; set; }
         public int CodeWarehouse { get; set; }
-        
+        public DateTime Date { get; set; }
+
     }
 }
 
