@@ -14,6 +14,7 @@ using System.Text.RegularExpressions;
 using ModernIntegration.ViewModels;
 using System.Net.Http;
 using System.Text;
+using ModelMID.DB;
 
 namespace Test
 {
@@ -31,7 +32,7 @@ namespace Test
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-            CreateDataBase(true); //Створення бази
+            //CreateDataBase(true); //Створення бази
             //Thread.Sleep(10000);
             //TestKit();
             TestReceipt(); //
@@ -74,10 +75,10 @@ namespace Test
             var api = new ApiPSU();
             ProductViewModel sd;
 
-            
-            
+            _ = api.Bl.SendAllReceipt(); //
 
-           var rrr= api.GetReceipts(DateTime.Parse("2020-01-15T00:00:00"), DateTime.Parse("2020-01-15T23:59:59.999"), TerminalId);
+            return;
+            var rrr= api.GetReceipts(DateTime.Parse("2020-01-15T00:00:00"), DateTime.Parse("2020-01-15T23:59:59.999"), TerminalId);
 
             //Thread.Sleep(1000000);
             //var reseipt = api.GetReceipts(DateTime.Now.Date, DateTime.Now.Date);
