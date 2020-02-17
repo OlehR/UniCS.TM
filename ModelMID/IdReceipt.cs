@@ -29,7 +29,14 @@ namespace ModelMID
         public int CodePeriod { get; set; }
         public int CodeReceipt { get; set; }
 
-        public DateTime DTPeriod { get { return DateTime.ParseExact(CodePeriod.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture); } }
+        public DateTime DTPeriod { get 
+            {
+                DateTime res;
+                if (DateTime.TryParseExact(CodePeriod.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out res))
+                    return res;
+                return DateTime.Now.Date;            
+            } 
+        }
         public IdReceipt()
         {
             IdWorkplace = 0;
