@@ -14,7 +14,8 @@ using System.Text.RegularExpressions;
 using ModernIntegration.ViewModels;
 using System.Net.Http;
 using System.Text;
-using ModelMID.DB;
+using Newtonsoft.Json;
+//using System.Printing;
 
 namespace Test
 {
@@ -24,15 +25,17 @@ namespace Test
         static async Task Main(string[] args)
         {
 
+            //LocalPrintServer ps = new LocalPrintServer();
+          //  var pq = ps.GetPrintQueues(); 
             //LoadWeightKasa();            return;
             // var R = await GetInfoBarcode("4823000920439");
-            //var l = new GetGoodUrl();
+            var l = new GetGoodUrl();
             //l.LoadWeightURLAsync();
             //Thread.Sleep(1000000000);
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-            //CreateDataBase(true); //Створення бази
+           CreateDataBase(false); //Створення бази
             //Thread.Sleep(10000);
             //TestKit();
             TestReceipt(); //
@@ -70,20 +73,21 @@ namespace Test
         static void TestReceipt()
         {
             var TerminalId = Guid.Parse("1bb89aa9-dbdf-4eb0-b7a2-094665c3fdd0");
-            var ProductId = Guid.Parse("00000010-abcd-0000-0019-000000055004");
+            var ProductId = Guid.Parse("00000000-abcd-0000-0019-000000166767");
             var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009001");
             var api = new ApiPSU();
             ProductViewModel sd;
+            api.Bl.LoadWeightKasa();
 
-            _ = api.Bl.SendAllReceipt(); //
+            var ddd = api.GetProductsByName(TerminalId,"Бер");
+            
 
-            return;
-            var rrr= api.GetReceipts(DateTime.Parse("2020-01-15T00:00:00"), DateTime.Parse("2020-01-15T23:59:59.999"), TerminalId);
+           var rrr= api.GetReceipts(DateTime.Parse("2020-02-03T00:00:00"), DateTime.Parse("2020-02-03T23:59:59.999"), TerminalId);
 
             //Thread.Sleep(1000000);
             //var reseipt = api.GetReceipts(DateTime.Now.Date, DateTime.Now.Date);
 
-            //var cl = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
+            var cl = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
             // var rrrr = api.GetNoFinishReceipt(TerminalId);
             //var aa=api.Bl.db.GetConfig<DateTime>("Load_Full__");
             //sd =api.AddProductByBarCode(TerminalId, "4820197006205", 1);
@@ -96,16 +100,20 @@ namespace Test
             //api.RequestSyncInfo(false);
             //Thread.Sleep(100000);
 
+          
+
             var startTime = System.Diagnostics.Stopwatch.StartNew();
 
-            sd = api.AddProductByBarCode(TerminalId, "4823086109988", 1); // 1+1 Пельмені "Мішутка" Філейні 600г /Три ведмеді/
+            //sd = api.AddProductByBarCode(TerminalId, "4823086109988", 1); // 1+1 Пельмені "Мішутка" Філейні 600г /Три ведмеді/
             //sd = api.AddProductByBarCode(TerminalId, "2201652300489", 1); //Морква
             //Thread.Sleep(1000);
-            sd = api.AddProductByBarCode(TerminalId, "4823000916524", 1); //АРТЕК 
+            sd = api.AddProductByBarCode(TerminalId, "4823000916524", 2); //АРТЕК 
             sd = api.AddProductByBarCode(TerminalId, "22970558", 0);
             sd = api.AddProductByBarCode(TerminalId, "7622300813437", 1);//Барн
+            sd = api.AddProductByProductId(TerminalId, ProductId, 1);
 
-            sd = api.AddProductByBarCode(TerminalId, "2201652300489", 1); //Морква
+
+          sd = api.AddProductByBarCode(TerminalId, "2201652300489", 1); //Морква
             //Thread.Sleep(1000);
             sd = api.AddProductByBarCode(TerminalId, "2201652300229", 1); //Морква
                                                                           //Thread.Sleep(1000);
@@ -155,8 +163,8 @@ namespace Test
 
             //api.AddPayment(TerminalId, Pay);
             //api.ClearReceipt(TerminalId);
-            var rrrr = api.GetNoFinishReceipt(TerminalId);
-            return;
+            //var rrrr = api.GetNoFinishReceipt(TerminalId);
+        
             var RId = api.GetCurrentReceiptByTerminalId(TerminalId).ReceiptId;
 
             
@@ -177,19 +185,29 @@ namespace Test
                 TransactionStatus = "Àâòîðèçàö³ÿ ç áàíêîì",
                 PosAuthCode = null,
                 PosTerminalId = null,
-                CreatedAt = DateTime.Parse("2020-01-16T17:28:15.7516934+02:00")
+                CreatedAt = DateTime.Now
             } };
 
 
-            ReceiptPayment[] pay = new ReceiptPayment[]
-                {new ReceiptPayment {ReceiptId= RId ,
-                                    PaymentType=ModernIntegration.Enums.PaymentType.Card ,PayIn=39.9m,PayOut=0.0m,
-                    CardPan ="7548********8954",TransactionId="37108628262516415955665803737316905361" } };
-            api.AddPayment(TerminalId, pay);
+           
+            api.AddPayment(TerminalId, Pay);
             var r = api.AddFiscalNumber(TerminalId, "TRRF-1234");
 
-            api.SendReceipt(RId);
+            var receipt = api.GetReciept(RId);
+
+            var sz = JsonConvert.SerializeObject(receipt);
+            var RefoundReceipt = JsonConvert.DeserializeObject<RefundReceiptViewModel>(sz);
+            RefoundReceipt.IdPrimary = RefoundReceipt.Id;
+      
+            var resRef=api.RefundReceipt(TerminalId, RefoundReceipt);
+
+
+            //           api.SendReceipt(RId);
+            var Rec=api.GetReciept(RId);
+            
+            
             Console.WriteLine("End");
+
 
             //169316+169316 4823086109988 Пельмені "Мішутка" Філейні 600г /Три ведмеді/
             //156727+169583 4823097403457+4823097405932 Майонез "Провансаль" 67% д/п 350г /Щедро/  Кетчуп "Лагідний" д/п 250г /Щедро/
@@ -292,34 +310,6 @@ namespace Test
 
 
         }
-
-        public static void LoadWeightKasa()
-        {
-            string SQLUpdate = @"
--- begin tran
-   update barcode_out with (serializable) set weight=@Weight,Date=@Date
-   where bar_code = @BarCode
-
-   if @@rowcount = 0
-   begin
-      insert into barcode_out (bar_code, weight,Date) values ( @BarCode,@Weight,@Date)
-   end
--- commit tran";
-
-            var dbMs = new MSSQL();
-            var dbSqlite = new SQLite(@"C:\DB\config.db");
-            var SqlSelect = @"select [barcode] as BarCode, weight as Weight, DATE_CREATE as Date,STATUS
-from ( SELECT [barcode],DATE_CREATE,STATUS,weight,ROW_NUMBER() OVER (PARTITION BY barcode ORDER BY DATE_CREATE DESC) as [nn]  FROM WEIGHT) dd
-where nn=1 ";
-            Console.WriteLine("Start");
-            var r = dbSqlite.Execute<BarCodeOut>(SqlSelect) ;
-            Console.WriteLine(r.Count().ToString());
-            dbMs.BulkExecuteNonQuery<BarCodeOut>(SQLUpdate, r);
-            Console.WriteLine("Finish");
-        }
-
-
-
 
 
     }

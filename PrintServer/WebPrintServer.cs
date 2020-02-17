@@ -48,7 +48,19 @@ namespace PrintServer
                 File.AppendAllText(fileName, $"\n{DateTime.Now.ToString()}\nInputData=>{parWares.CodeWares}\n{ex.Message } \n{ex.StackTrace}");
                 return "Error=>"+ex.Message;
             }
-        }        
+        }
+
+        public string GetQueue()
+        {
+            var q = new MyQueue();
+            return q.GetQueue();
+        }
+        
+        public string ClearQueue()
+        {
+            var q = new MyQueue();
+            return q.GetQueue();
+        }
 
     }
 }
