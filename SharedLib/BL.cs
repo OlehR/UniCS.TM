@@ -422,7 +422,7 @@ namespace SharedLib
             }
             catch(Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = ex.Message });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parReceipt.IdWorkplace), Exception =  ex, Status = eSyncStatus.NoFatalError, StatusDescription = parReceipt.ReceiptId.ToString() + " " + ex.Message });
                 return false;
             }
         }
