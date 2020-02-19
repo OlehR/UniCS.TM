@@ -654,7 +654,8 @@ namespace SharedLib
 -- commit tran";
 
             var dbMs = new MSSQL();
-            var dbSqlite = new SQLite(@"C:\DB\config.db");
+            var path = Path.Combine(ModelMID.Global.PathDB, "config.db");
+            var dbSqlite = new SQLite(path);
             var SqlSelect = @"select [barcode] as BarCode, weight as Weight, DATE_CREATE as Date,STATUS
 from ( SELECT [barcode],DATE_CREATE,STATUS,weight,ROW_NUMBER() OVER (PARTITION BY barcode ORDER BY DATE_CREATE DESC) as [nn]  FROM WEIGHT where  DATE_CREATE>=:parDT ) dd
 where nn=1 ";

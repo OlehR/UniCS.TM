@@ -77,9 +77,9 @@ namespace Test
             var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009001");
             var api = new ApiPSU();
             ProductViewModel sd;
-            //api.Bl.LoadWeightKasa();
+            api.Bl.LoadWeightKasa(new DateTime(2020,01,01));return;
 
-            api.Bl.SendAllReceipt();return;
+            //api.Bl.SendAllReceipt();return;
 
             var ddd = api.GetProductsByName(TerminalId,"Бер");
             
