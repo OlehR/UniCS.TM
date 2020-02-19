@@ -389,16 +389,17 @@ namespace SharedLib
                 var r = new Receipt1C(parReceipt);
 
                 var body = soapTo1C.GenBody("JSONCheck", new Parameters[] { new Parameters("JSONSting", r.GetBase64()) });
-                var res = await soapTo1C.RequestAsync(Global.Server1C, body);
+                var res = await soapTo1C.RequestAsync(Global.Server1C, body,10000, "application/json");
                 
-
-                /* HttpClient client = new HttpClient();
+/*
+                 HttpClient client = new HttpClient();
 
                  // Add a new Request Message
                  HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, Global.Server1C);
                  //requestMessage.Headers.Add("Accept", "application/vnd.github.v3+json");
                  // Add our custom headers
-                 requestMessage.Content = new StringContent(r.GetSOAP(), Encoding.UTF8, "application/json");
+                 requestMessage.Content = new StringContent(//r.GetSOAP() 
+                     body, Encoding.UTF8, "application/json");
                  var response = await client.SendAsync(requestMessage);
 
                  if (response.IsSuccessStatusCode)
@@ -411,7 +412,9 @@ namespace SharedLib
                  else
                  {
                      return false;
-                 }*/
+                 }
+                
+                */
                 if (!string.IsNullOrEmpty(res) && res.Equals("0"))
                 {
                     parReceipt.StateReceipt = eStateReceipt.Send;
@@ -420,7 +423,7 @@ namespace SharedLib
 
                 return res.Equals("0");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parReceipt.IdWorkplace), Exception =  ex, Status = eSyncStatus.NoFatalError, StatusDescription = parReceipt.ReceiptId.ToString() + " " + ex.Message });
                 return false;

@@ -30,7 +30,7 @@ namespace SharedLib
                     $"<soap:Body>\n<{parFunction} xmlns=\"vopak\">{parameters}</{parFunction}>\n</soap:Body>\n</soap:Envelope>";
         }
 
-        public async System.Threading.Tasks.Task<string> RequestAsync(string parUrl,string parBody,int parWait=1000)
+        public async System.Threading.Tasks.Task<string> RequestAsync(string parUrl,string parBody,int parWait=1000,string parContex= "text/xml")
         {
             string res = null;
             HttpClient client = new HttpClient();
@@ -38,7 +38,7 @@ namespace SharedLib
 
             HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, parUrl);
 
-            requestMessage.Content = new StringContent(parBody, Encoding.UTF8, "text/xml");
+            requestMessage.Content = new StringContent(parBody, Encoding.UTF8, parContex);
             var response = await client.SendAsync(requestMessage);
 
             if (response.IsSuccessStatusCode)

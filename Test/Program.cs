@@ -35,7 +35,7 @@ namespace Test
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-           CreateDataBase(false); //Створення бази
+           //CreateDataBase(false); //Створення бази
             //Thread.Sleep(10000);
             //TestKit();
             TestReceipt(); //
@@ -77,7 +77,9 @@ namespace Test
             var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009001");
             var api = new ApiPSU();
             ProductViewModel sd;
-            api.Bl.LoadWeightKasa();
+            //api.Bl.LoadWeightKasa();
+
+            api.Bl.SendAllReceipt();return;
 
             var ddd = api.GetProductsByName(TerminalId,"Бер");
             

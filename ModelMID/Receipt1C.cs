@@ -18,8 +18,9 @@ namespace ModelMID
         public string Description { get; set; }
 
         public int CodeClientCard { get; set; }
-        public int CodeWarehouse { get { return 9; } set { } } 
+        public int CodeWarehouse { get { return 9; } set { } }
 
+        public string RefundNumber { get; set; }
         public IEnumerable<ReceiptWares1C> Wares;
 
         public Receipt1C() { }
@@ -28,7 +29,8 @@ namespace ModelMID
             Date = parR.DateReceipt;
             //Фінт з датою заради 4 знаків для дати. Вистачить на років 30.
             Number = parR.NumberReceipt1C;
-            TypeReceipt = parR.TypeReceipt;
+            RefundNumber = parR.RefundNumberReceipt1C;
+            TypeReceipt =  (parR.TypeReceipt== eTypeReceipt.Refund? eTypeReceipt.Refund:eTypeReceipt.Sale);
             NumberCashDesk = parR.IdWorkplace;            
             CodeClientCard = parR.CodeClient;
             if(parR.Wares!=null) 
@@ -44,13 +46,13 @@ namespace ModelMID
             var res= Convert.ToBase64String(plainTextBytes);
             return res; /// Convert.ToBase64String(plainTextBytes);
         }
-       /* public string GetSOAP()
+        /*public string GetSOAP()
         {
-           
+
             string SoapText = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + "\n" +
        "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" + "\n" +
        "<soap:Body><JSONCheck xmlns = \"vopak\" >" + "\n" +
-       "<JSONSting>" + GetBase64 + " </JSONSting>" + "\n" +
+       "<JSONSting>" + GetBase64() + " </JSONSting>" + "\n" +
        "</JSONCheck>" + "\n" +
        "</soap:Body>" + "\n" +
        "</soap:Envelope>";

@@ -70,6 +70,16 @@ namespace ModelMID
 
         public IdReceipt RefundId { get; set; }
 
+        public string RefundNumberReceipt1C
+        {
+            get
+            {
+                if (RefundId == null)
+                    return null;
+                var d = Convert.ToInt32(Math.Floor((RefundId.DTPeriod  - new DateTime(2019, 01, 01)).TotalDays)).ToString("D4");
+                return Global.PrefixWarehouse + Global.GetNumberCashDeskByIdWorkplace(IdWorkplaceRefund) + d + CodeReceiptRefund.ToString("D4");
+            }
+        }
         public int IdWorkplaceRefund { get { return RefundId == null ? 0 : RefundId.IdWorkplace; } set { if (RefundId == null) RefundId = new IdReceipt(); RefundId.IdWorkplace = value;  } }
         public int CodePeriodRefund { get { return RefundId == null ? 0 : RefundId.CodePeriod; } set { if (RefundId == null) RefundId = new IdReceipt(); RefundId.CodePeriod = value; } }
         public int CodeReceiptRefund { get { return RefundId == null ? 0 : RefundId.CodeReceipt; } set { if (RefundId == null) RefundId = new IdReceipt(); RefundId.CodeReceipt = value; } }

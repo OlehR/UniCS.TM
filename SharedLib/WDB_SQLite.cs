@@ -50,14 +50,15 @@ namespace SharedLib
                 db.ExecuteNonQuery(SqlCreateReceiptTable);
                 db.Close();                
             }
+
             
             var MidFile = string.IsNullOrEmpty(parConnect) ? Path.Combine(GetCurrentMIDFile) : parConnect;
-            if (!File.Exists(MidFile) && string.IsNullOrEmpty(parConnect))
-            {
-                var varLastMidFile = GetConfig<string>("Last_MID");
-                if (!string.IsNullOrEmpty(varLastMidFile))                
-                    MidFile = varLastMidFile;
-            }
+            /*            if (!File.Exists(MidFile) && string.IsNullOrEmpty(parConnect))
+                        {
+                            var varLastMidFile = GetConfig<string>("Last_MID");
+                            if (!string.IsNullOrEmpty(varLastMidFile))                
+                                MidFile = varLastMidFile;
+                        }*/
 
             if (!File.Exists(MidFile))
             {
