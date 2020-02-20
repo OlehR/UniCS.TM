@@ -126,6 +126,8 @@ namespace SharedLib
                 parDB.ReplaceGroupWares(GW);
                 GW = null;
 
+
+
                 Console.WriteLine("SqlGetDimWares");
                 SQL = GetSQL("SqlGetDimWares");
                 var W = db.Execute<Wares>(SQL);
@@ -162,11 +164,21 @@ namespace SharedLib
                 parDB.ReplaceFastGroup(FG);
                 FG = null;
 
+                
                 Console.WriteLine("SqlGetDimFastWares");
                 SQL = GetSQL("SqlGetDimFastWares");
                 var FW = db.Execute<FastWares>(SQL);
                 parDB.ReplaceFastWares(FW);
                 FW = null;
+
+                //Пакети
+                var GWL = new List<FastWares>();
+                foreach (var el in Global.Bags)
+                    GWL.Add(new FastWares { CodeFastGroup = Global.CodeFastGroupBag, CodeWares = el });
+
+                parDB.ReplaceFastWares(GWL);
+                GWL = null;
+
             }
 
             parDB.SetConfig<int>("MessageNo", varMessageNoMax);

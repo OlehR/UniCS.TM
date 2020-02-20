@@ -117,6 +117,7 @@ namespace ModelMID
         public static string ClientGuid = "1A3B944E-3632-467B-AFFA-";
 
         public static int CodeFastGroupBag = 0;
+        public static List<int> Bags ;
         public static SortedList<int, string> Tax = new SortedList<int, string>();
 
         public static string Server1C = "";

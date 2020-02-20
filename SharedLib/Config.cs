@@ -41,11 +41,14 @@ namespace SharedLib
 
             Global.CustomerBarCode = new List<CustomerBarCode>();
             AppConfiguration.GetSection("MID:CustomerBarCode").Bind(Global.CustomerBarCode);
-
+            
+            Global.Bags = new List<int>();
+            AppConfiguration.GetSection("MID:Bags").Bind(Global.Bags);
 
             Global.Server1C= AppConfiguration["MID:Server1C"];
             if (!string.IsNullOrWhiteSpace(AppConfiguration["MID:CodeFastGroupBag"]))
                 Global.CodeFastGroupBag = Convert.ToInt32( AppConfiguration["MID:CodeFastGroupBag"]);
+
 
             //GlobalVar.DefaultCodeDealer = Convert.ToInt32(AppConfiguration["MID:DefaultCodeDealer"]);
             if (!Directory.Exists(Global.PathDB))
