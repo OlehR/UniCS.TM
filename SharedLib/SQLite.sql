@@ -609,6 +609,8 @@ CREATE TABLE payment
     CODE_authorization TEXT,
     NUMBER_SLIP       TEXT,
 	Number_Card		  TEXT,
+    Pos_Paid  NUMBER,
+    Pos_Add_Amount NUMBER,
 	DATE_CREATE       DATETIME NOT NULL   DEFAULT (datetime('now','localtime'))
 );
 CREATE INDEX id_payment ON payment(CODE_RECEIPT);
@@ -939,14 +941,14 @@ Select min(case when CODE_DEALER=-888888  then PRICE_DEALER else null end) as Mi
  from price where CODE_DEALER in(-999999,-888888) and CODE_WARES=@CodeWares
  
  [SqlReplacePayment]
- replace into  payment	(ID_WORKPLACE, CODE_PERIOD, CODE_RECEIPT, TYPE_PAY, SUM_PAY, SUM_ext, NUMBER_TERMINAL, NUMBER_RECEIPT, CODE_authorization, NUMBER_SLIP, Number_Card, DATE_CREATE) values
-                        (@IdWorkplace, @CodePeriod, @CodeReceipt, @TypePay, @SumPay, @SumExt, @NumberTerminal, @NumberReceipt, @CodeAuthorization, @NumberSlip, @NumberCard, @DateCreate);
+ replace into  payment	(ID_WORKPLACE, CODE_PERIOD, CODE_RECEIPT, TYPE_PAY, SUM_PAY, SUM_ext, NUMBER_TERMINAL, NUMBER_RECEIPT, CODE_authorization, NUMBER_SLIP, Number_Card,Pos_Paid , Pos_Add_Amount , DATE_CREATE) values
+                        (@IdWorkplace, @CodePeriod, @CodeReceipt, @TypePay, @SumPay, @SumExt, @NumberTerminal, @NumberReceipt, @CodeAuthorization, @NumberSlip, @NumberCard, @PosPaid, @PosAddAmount , @DateCreate);
 
 [SqlGetPayment]
 select id_workplace as IdWorkplace, code_period as CodePeriod, code_receipt as CodeReceipt, 
  TYPE_PAY as TypePay, SUM_PAY as SumPay, SUM_EXT as SumExt,
     NUMBER_TERMINAL as NumberTerminal,   NUMBER_RECEIPT as NumberReceipt, CODE_AUTHORIZATION as CodeAuthorization, NUMBER_SLIP as NumberSlip,
-    DATE_CREATE as DateCreate
+    Pos_Paid as PosPaid, Pos_Add_Amount as PosAddAmount, DATE_CREATE as DateCreate
    from payment
   where   id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt
 

@@ -452,6 +452,8 @@ namespace ModernIntegration
                 CodeAuthorization = parRP.TransactionCode, //RRN
                 NumberTerminal=parRP.PosTerminalId,
                 NumberSlip = parRP.PosAuthCode, //код авторизації
+                PosPaid =parRP.PosPaid,
+                PosAddAmount=parRP.PosAddAmount,
                 DateCreate=parRP.CreatedAt
             };
         }
@@ -467,6 +469,8 @@ namespace ModernIntegration
                 TransactionCode = parRP.CodeAuthorization, //RRN
                 PosTerminalId = parRP.NumberTerminal,
                 PosAuthCode = parRP.NumberSlip, //код авторизації
+                PosPaid = parRP.PosPaid,
+                PosAddAmount = parRP.PosAddAmount,
                 CreatedAt = parRP.DateCreate
             };
         }
