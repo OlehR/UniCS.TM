@@ -7,5 +7,8 @@
         ManualChangeGiving = 3,
         CustomerCardAccepted = 4,
         ProductWithSecurityMark = 5,
+        ReceiptWithRefund = 6,
+        Paid = 7,
+        GarbageOnWeight = 8
     }
 }
