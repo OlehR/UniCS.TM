@@ -631,7 +631,7 @@ CREATE TABLE RECEIPT_Event (
     ID_GUID TEXT,
     Mobile_Device_Id_GUID TEXT,
     Product_Name TEXT,
-    Receipt_Event_Type INTEGER NOT NULL,
+    Event_Type INTEGER NOT NULL,
     Event_Name TEXT,
     Product_Weight INTEGER,
     Product_Confirmed_Weight INTEGER,
@@ -1032,7 +1032,7 @@ insert into RECEIPT_Event
     ID_GUID,
     Mobile_Device_Id_GUID,
     Product_Name,
-    Receipt_Event_Type,
+    Event_Type,
     Event_Name,
     Product_Weight,
     Product_Confirmed_Weight,
@@ -1049,7 +1049,7 @@ insert into RECEIPT_Event
 	@IDGUID,
     @MobileDeviceIdGUID,
     @ProductName,
-    @ReceiptEventType,
+    @EventType,
     @EventName,
     @ProductWeight,
     @ProductConfirmedWeight,
@@ -1060,14 +1060,14 @@ insert into RECEIPT_Event
     @RefundAmount,
     @FiscalNumber,
     @PaymentType,
-    @TotalAmount	
+    @TotalAmount
 	);
 [SqlGetReceiptEvent]
 select     ID_WORKPLACE as IdWorkplace,    CODE_PERIOD as CodePeriod,    CODE_RECEIPT as CodeReceipt,    CODE_WARES as CodeWares,    CODE_UNIT as CodeUnit,
     ID_GUID as IDGUID,
     Mobile_Device_Id_GUID as MobileDeviceIdGUID,
     Product_Name as ProductName,
-    Receipt_Event_Type as ReceiptEventType,
+    Event_Type as EventType,
     Event_Name as EventName,
     Product_Weight as ProductWeight,
     Product_Confirmed_Weight as ProductConfirmedWeight,
