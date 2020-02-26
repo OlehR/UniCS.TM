@@ -638,8 +638,8 @@ CREATE TABLE RECEIPT_Event (
     UserId_GUID TEXT,
     User_Name TEXT,
     Created_At DATETIME,
-    Resolved_At DATETIME
-    Refund_Amount NUMBER
+    Resolved_At DATETIME,
+    Refund_Amount NUMBER,
     Fiscal_Number TEXT,
     Payment_Type INTEGER,
     Total_Amount NUMBER
@@ -1063,7 +1063,7 @@ insert into RECEIPT_Event
     @TotalAmount	
 	);
 [SqlGetReceiptEvent]
-select     ID_WORKPLACE as IdWorkplace,    CODE_PERIODa as CodePeriod,    CODE_RECEIPT as CodeReceipt,    CODE_WARES as CodeWares,    CODE_UNIT as CodeUnit,
+select     ID_WORKPLACE as IdWorkplace,    CODE_PERIOD as CodePeriod,    CODE_RECEIPT as CodeReceipt,    CODE_WARES as CodeWares,    CODE_UNIT as CodeUnit,
     ID_GUID as IDGUID,
     Mobile_Device_Id_GUID as MobileDeviceIdGUID,
     Product_Name as ProductName,
@@ -1074,8 +1074,8 @@ select     ID_WORKPLACE as IdWorkplace,    CODE_PERIODa as CodePeriod,    CODE_R
     UserId_GUID as UserIdGUID,
     User_Name as UserName,
     Created_At as CreatedAt,
-    Resolved_At as ResolvedAt
-    Refund_Amount as RefundAmount
+    Resolved_At as ResolvedAt,
+    Refund_Amount as RefundAmount,
     Fiscal_Number as FiscalNumber,
     Payment_Type as PaymentType,
     Total_Amount  as TotalAmount
