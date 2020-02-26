@@ -346,9 +346,12 @@ namespace ModernIntegration
                 var SumCash = receiptMID.Payment.Where(r=> r.TypePay== eTypePay.Cash).Sum(r => receipt.Amount);
                 var SumCard = receiptMID.Payment.Where(r => r.TypePay == eTypePay.Card).Sum(r => receipt.Amount);
                 Res.PaymentType = (SumCash > 0 && SumCard > 0 ? PaymentType.Both : (SumCash == 0 && SumCard == 0 ? PaymentType.None : (SumCash > 0?PaymentType.Cash: PaymentType.Card)));
-                Res.PaymentInfo = PaymentToReceiptPayment(receiptMID.Payment.First());
+                Res.PaymentInfo = PaymentToReceiptPayment(receiptMID.Payment.First());                
             }
             
+            if (receiptMID.ReceiptEvent != null && receiptMID.ReceiptEvent.Count() > 0)
+                Res.ReceiptEvents = receiptMID.ReceiptEvent.Select(r => GetReceiptEvent(r)).ToList();
+
             return Res;
         }
 
@@ -593,7 +596,11 @@ namespace ModernIntegration
 
             if(parReceiptRVM.ReceiptItems!=null)
             receipt.Wares = parReceiptRVM.ReceiptItems.Select(r=>GetReceiptWaresFromReceiptItem(receipt, r));
-                       
+
+            //if(parReceiptRVM.ReceiptEvents!=null)
+            //    receipt.ReceiptEvent= parReceiptRVM.ReceiptEvent
+
+
             return receipt;
         }
 

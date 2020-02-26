@@ -375,6 +375,7 @@ namespace SharedLib
                 {
                     r.Wares = ViewReceiptWares(parIdReceipt);
                     r.Payment = GetPayment(parIdReceipt);
+                    r.ReceiptEvent = GetReceiptEvent(parIdReceipt);
 
                 }
                 return r;
