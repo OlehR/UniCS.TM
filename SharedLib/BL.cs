@@ -419,9 +419,10 @@ namespace SharedLib
                 {
                     parReceipt.StateReceipt = eStateReceipt.Send;
                     parDB.SetStateReceipt(parReceipt);//Змінюєм стан чека на відправлено.
+                    return true;
                 }
 
-                return res.Equals("0");
+                return false;
             }
             catch (Exception ex)
             {

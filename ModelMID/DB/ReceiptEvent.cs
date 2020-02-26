@@ -12,7 +12,7 @@ namespace ModelMID.DB
         /// <value>The identifier.</value>
         public Guid Id { get; set; }
 
-        public string Id_GUID { get { return Id.ToString(); }set { Id = Guid.Parse(value); } }
+        public string IdGUID { get { return Id.ToString(); }set { Id = Guid.Parse(value); } }
         /// <summary>
         /// Gets or sets the mobile device identifier.
         /// </summary>
@@ -69,6 +69,8 @@ namespace ModelMID.DB
         /// </summary>
         /// <value>The user identifier.</value>
         public Guid? UserId { get; set; }
+
+        public string UserIdGUID { get { return UserId?.ToString(); } set { UserId = Guid.Parse(value); } }
 
         /// <summary>
         /// Gets or sets the user name.
