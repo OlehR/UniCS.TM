@@ -32,7 +32,11 @@ namespace ModernIntegration
                 }
                 OnProductsChanged?.Invoke(wareses.Select(s => GetProductViewModel(s)), guid);
             };
-            Global.OnSyncInfoCollected = (SyncInfo) => OnSyncInfoCollected?.Invoke(SyncInfo);
+            Global.OnSyncInfoCollected = (SyncInfo) =>
+            {
+                Console.WriteLine($"OnSyncInfoCollected Status=>{SyncInfo.Status} StatusDescription=>{SyncInfo.StatusDescription}");
+                OnSyncInfoCollected?.Invoke(SyncInfo);
+            };
             Global.OnStatusChanged = (Status) => OnStatusChanged?.Invoke(Status);
 
             Global.OnClientChanged = (client, guid) =>
@@ -578,7 +582,7 @@ namespace ModernIntegration
                 //!!TMP TotalAmount = parReceiptRVM.SumReceipt - parReceiptRVM.SumBonus,
                 ///CustomerId = new Client(parReceiptRVM.CodeClient).ClientId,
                 DateCreate = parReceiptRVM.CreatedAt,
-                DateReceipt = parReceiptRVM.UpdatedAt,
+                DateReceipt = (parReceiptRVM.UpdatedAt==default(DateTime)?DateTime.Now: parReceiptRVM.UpdatedAt),
                 //ReceiptItems=
                 //Customer /// !!!TMP Модель клієнта
                 //PaymentInfo
@@ -601,7 +605,8 @@ namespace ModernIntegration
                 //CodeWares = receiptItem.Code,
                 NameWares = receiptItem.ProductName,
                 BarCode = receiptItem.ProductBarcode,
-                Price = receiptItem.ProductPrice,
+                PriceDealer = receiptItem.ProductPrice,
+                Price = receiptItem.FullPrice,
                 WeightBrutto = receiptItem.ProductWeight / 1000m,
                 Quantity= receiptItem.ProductQuantity,
 //                TaxGroup = Global.GetTaxGroup(receiptItem.TypeVat, receiptItem.TypeWares),               
