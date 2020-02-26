@@ -174,4 +174,15 @@ namespace ModelMID
         Orange = 3,
         Red = 4
     }
+    public enum ReceiptEventType
+    {
+        IncorrectWeight = 1,
+        AgeRestrictedProduct = 2,
+        ManualChangeGiving = 3,
+        CustomerCardAccepted = 4,
+        ProductWithSecurityMark = 5,
+        ReceiptWithRefund = 6,
+        Paid = 7,
+        GarbageOnWeight = 8
+    }
 }

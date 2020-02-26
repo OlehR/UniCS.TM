@@ -36,7 +36,9 @@ namespace ModernIntegration
             Global.OnStatusChanged = (Status) => OnStatusChanged?.Invoke(Status);
 
             Global.OnClientChanged = (client, guid) =>
-            {               
+            {
+                Console.WriteLine($"Client.Wallet=> {client.Wallet} SumBonus=>{client.SumBonus} ");
+                
                 OnCustomerChanged?.Invoke(GetCustomerViewModelByClient(client), guid);
             };
         }
@@ -145,11 +147,13 @@ namespace ModernIntegration
                 return null;
             return res.Select(r => (GetProductViewModel(r)));
         }
-
+        //Зберігає
         public override bool UpdateReceipt(ReceiptViewModel parReceipt)
         {
-            throw new NotImplementedException();
-            //return false;
+            // throw new NotImplementedException();
+            var RE = parReceipt.ReceiptEvents.Select(r => GetReceiptEvent(r));
+            return Bl.SaveReceiptEvents(RE);        
+           
         }
         public override TypeSend SendReceipt(Guid parReceipt)
         {
@@ -167,6 +171,7 @@ namespace ModernIntegration
             var CM = Bl.GetClientByBarCode(GetCurrentReceiptByTerminalId(parTerminalId), parS);
             if (CM == null)
                 return null;
+            _ = Bl.GetBonusAsync(CM, parTerminalId);
             return GetCustomerViewModelByClient(CM);
         }
         public override CustomerViewModel GetCustomerByPhone(Guid parTerminalId, string parPhone)
@@ -174,6 +179,7 @@ namespace ModernIntegration
             var CM = Bl.GetClientByPhone(GetCurrentReceiptByTerminalId(parTerminalId), parPhone);
             if (CM == null)
                 return null;
+            _ = Bl.GetBonusAsync(CM, parTerminalId);
             return GetCustomerViewModelByClient(CM);
         }
 
@@ -604,7 +610,58 @@ namespace ModernIntegration
             };
             return Res;
         }
+
+        private ModernIntegration.Models.ReceiptEvent GetReceiptEvent(ModelMID.DB.ReceiptEvent RE)
+        {
+            return new ModernIntegration.Models.ReceiptEvent()
+            {
+                Id = RE.Id,
+                MobileDeviceId = RE.MobileDeviceId,
+                ReceiptId = RE.ReceiptId,
+                ReceiptItemId = RE.ReceiptItemId,
+                ProductName = RE.ProductName,
+                EventType = (Enums.ReceiptEventType)(int)RE.EventType,
+                EventName = RE.EventName,
+                ProductWeight = RE.ProductWeight,
+                ProductConfirmedWeight = RE.ProductConfirmedWeight,
+                UserId = RE.UserId,
+                UserName = RE.UserName,
+                CreatedAt = RE.CreatedAt,
+                ResolvedAt = RE.ResolvedAt,
+                RefundAmount = RE.RefundAmount,
+                FiscalNumber = RE.FiscalNumber,
+                PaymentType = (Enums.PaymentType)(int)RE.PaymentType,
+                TotalAmount = RE.TotalAmount
+            };
         
+        }
+
+        private ModelMID.DB.ReceiptEvent GetReceiptEvent(ModernIntegration.Models.ReceiptEvent RE)
+        {
+            return new ModelMID.DB.ReceiptEvent()
+            {
+                Id = RE.Id,
+                MobileDeviceId = RE.MobileDeviceId,
+                ReceiptId = RE.ReceiptId,
+                ReceiptItemId = RE.ReceiptItemId,
+                ProductName = RE.ProductName,
+                EventType = (ModelMID.ReceiptEventType)(int)RE.EventType,
+                EventName = RE.EventName,
+                ProductWeight = RE.ProductWeight,
+                ProductConfirmedWeight = RE.ProductConfirmedWeight,
+                UserId = RE.UserId,
+                UserName = RE.UserName,
+                CreatedAt = RE.CreatedAt,
+                ResolvedAt = RE.ResolvedAt,
+                RefundAmount = RE.RefundAmount,
+                FiscalNumber = RE.FiscalNumber,
+                PaymentType =(ModelMID.eTypePayment)(int) RE.PaymentType,
+                TotalAmount = RE.TotalAmount
+            };
+
+        }
+
+
 
     }
 }

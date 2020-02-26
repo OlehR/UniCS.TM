@@ -620,6 +620,7 @@ namespace SharedLib
                     parClient.SumBonus = Sum;
                 body = soapTo1C.GenBody("GetMoneySum", new Parameters[] { new Parameters("CodeOfCard", parClient.BarCode) });
                 res = await soapTo1C.RequestAsync(Global.Server1C, body);
+                res = res.Replace('.', ',');
                 if (!string.IsNullOrEmpty(res) && decimal.TryParse(res, out Sum))
                     parClient.Wallet = Sum;
                 Global.OnClientChanged?.Invoke(parClient, parTerminalId);
@@ -666,7 +667,18 @@ where nn=1 ";
             Console.WriteLine("Finish LoadWeightKasa");
         }
 
+        public bool SaveReceiptEvents(IEnumerable<ReceiptEvent> parRE)
+        {
+            if (parRE != null && parRE.Count() > 0)
+            {
+                db.DeleteReceiptEvent(parRE.First());
+                db.InsertReceiptEvent(parRE);
+            }
+            return true;
+        }
+
     }
+    
 
 
 }
