@@ -16,7 +16,7 @@ namespace ModelMID
         /// </summary>
         public DateTime DateReceipt { 
              get { return (_DateReceipt != default(DateTime) ? _DateReceipt : (_DateReceipt.Date == DTPeriod ? _DateReceipt : DTPeriod)); }
-             set { _DateReceipt = value; } }
+             set { _DateReceipt =  value.AddTicks(-(value.Ticks % TimeSpan.TicksPerSecond)); ; } }
 
         public eTypeReceipt TypeReceipt { get; set; }
         public Guid TerminalId { get; set; }
