@@ -119,6 +119,7 @@ namespace ModelMID
         public static int CodeFastGroupBag = 0;
         public static List<int> Bags ;
         public static SortedList<int, string> Tax = new SortedList<int, string>();
+        public static DeltaWeight[] DeltaWeight;
 
         public static string Server1C = "";
 
@@ -215,6 +216,18 @@ namespace ModelMID
             return eExchangeStatus.Red;
         }
 
+        public static decimal GetCoefDeltaWeight(decimal parWeight)
+        { 
+           var res=0.5m;
+           for(int i =0;i<DeltaWeight.Length;i++)
+            {
+                if (DeltaWeight[i].Weight > parWeight)
+                    break;
+                res = DeltaWeight[i].Coef;
+            }
+
+             return res;
+        }
 
     }
 }

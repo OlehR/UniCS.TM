@@ -39,6 +39,11 @@ namespace SharedLib
                 if(!Global.Tax.ContainsKey(el.Code))
                     Global.Tax.TryAdd(el.Code, el.CodeEKKA);
 
+            var DeltaWeight = new List<DeltaWeight>();
+            AppConfiguration.GetSection("MID:DeltaWeight").Bind(DeltaWeight);
+            DeltaWeight.Sort((x,y) => decimal.Compare(x.Weight,y.Weight));
+            Global.DeltaWeight = DeltaWeight.ToArray();
+
             Global.CustomerBarCode = new List<CustomerBarCode>();
             AppConfiguration.GetSection("MID:CustomerBarCode").Bind(Global.CustomerBarCode);
             
