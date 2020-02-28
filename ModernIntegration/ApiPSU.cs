@@ -239,7 +239,10 @@ namespace ModernIntegration
             var LWI = new List<WeightInfo>();
             if(receiptWares.IsWeight || receiptWares.WeightBrutto>0)
               LWI.Add(      
-                    new WeightInfo() { Weight = (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : Convert.ToDouble(receiptWares.WeightBrutto)), DeltaWeight = Convert.ToDouble(Global.GetCoefDeltaWeight((receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto))) * (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : Convert.ToDouble(receiptWares.WeightBrutto))  }                    
+                    new WeightInfo() {
+                        Weight = (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : Convert.ToDouble(receiptWares.WeightBrutto)),
+                        DeltaWeight = Convert.ToDouble(Global.GetCoefDeltaWeight(
+                            (receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto))* (receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto))  }                    
             );
             if (receiptWares.AdditionalWeights != null)
                 foreach (var el in receiptWares.AdditionalWeights)
@@ -268,7 +271,7 @@ namespace ModernIntegration
                 Price = receiptWares.SumDiscount > 0 ? ( receiptWares.Price > 0 ? receiptWares.Price : receiptWares.PriceDealer): receiptWares.PriceDealer,
                 WeightCategory = 2, //вимірювання Похибки в відсотках,2 в грамах
                 Weight = (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : (receiptWares.WeightBrutto==0m? 100000 : Convert.ToDouble(receiptWares.WeightBrutto))),
-                DeltaWeight = Convert.ToDouble(Global.GetCoefDeltaWeight((receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto))) * (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : Convert.ToDouble(receiptWares.WeightBrutto)),
+                DeltaWeight = Convert.ToDouble(Global.GetCoefDeltaWeight((receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto)) * (receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto)),
                 AdditionalWeights = LWI,
                 ProductWeightType =  receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByPiece, 
                 IsAgeRestrictedConfirmed = false, //Обмеження по віку алкоголь Підтверджено не потрібно посилати.
