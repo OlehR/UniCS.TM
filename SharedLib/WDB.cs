@@ -186,6 +186,10 @@ namespace SharedLib
         protected string SqlAdditionalWeightsWares="";
         protected string SqlInsertAddWeight = "";
         protected string SqlSetRefundedQuantity = "";
+        
+        protected string SqlInsertReceiptEvent = "";
+        protected string SqlGetReceiptEvent = "";
+        protected string SqlDeleteReceiptEvent = "";
         public WDB(string parFileSQL)
         {
             this.ReadSQL(parFileSQL);
@@ -371,6 +375,7 @@ namespace SharedLib
                 {
                     r.Wares = ViewReceiptWares(parIdReceipt);
                     r.Payment = GetPayment(parIdReceipt);
+                    r.ReceiptEvent = GetReceiptEvent(parIdReceipt);
 
                 }
                 return r;
@@ -600,6 +605,10 @@ namespace SharedLib
             SqlAdditionalWeightsWares = GetSQL("SqlAdditionalWeightsWares");
             SqlInsertAddWeight = GetSQL("SqlInsertAddWeight");
             SqlSetRefundedQuantity = GetSQL("SqlSetRefundedQuantity");
+
+            SqlInsertReceiptEvent = GetSQL("SqlInsertReceiptEvent");
+            SqlGetReceiptEvent = GetSQL("SqlGetReceiptEvent");
+            SqlDeleteReceiptEvent = GetSQL("SqlDeleteReceiptEvent");
             return true;
         }
 
@@ -989,6 +998,22 @@ namespace SharedLib
         {
             return db.ExecuteNonQuery<ReceiptWares>(SqlSetRefundedQuantity, parReceiptWares) > 0;
         }
-       
+
+        public virtual bool  InsertReceiptEvent(IEnumerable<ReceiptEvent> parRE)
+        {
+            return db.BulkExecuteNonQuery<ReceiptEvent>(SqlInsertReceiptEvent, parRE) > 0;
+        }
+            
+        public virtual IEnumerable<ReceiptEvent> GetReceiptEvent(IdReceipt parIdReceipt)
+        {
+            return db.Execute<IdReceipt, ReceiptEvent>(SqlGetReceiptEvent, parIdReceipt);
+        }
+
+        public virtual bool DeleteReceiptEvent(IdReceipt parIdReceipt)
+        {
+            return db.ExecuteNonQuery<IdReceipt>(SqlDeleteReceiptEvent, parIdReceipt) > 0;
+        }
+   
+
     }
 }

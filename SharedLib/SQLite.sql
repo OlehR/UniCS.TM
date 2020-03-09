@@ -67,7 +67,7 @@ union
  select code_client,1 from client p where barcode= @BarCode
 )
 select p.code_client as CodeClient, p.name_client as NameClient, 0 as TypeDiscount, p.percent_discount as PersentDiscount, 0 as CodeDealer, 
-	   10.00 as SumMoneyBonus, 10.00 as SumBonus,1 IsUseBonusFromRest, 1 IsUseBonusToRest,1 as IsUseBonusFromRest,barcode  as BarCode
+	   0.00 as SumMoneyBonus, 0.00 as SumBonus,1 IsUseBonusFromRest, 1 IsUseBonusToRest,1 as IsUseBonusFromRest,barcode  as BarCode
 			from t$1 left join client p on (t$1.code_client=p.code_client)
 			
 [SqlAdditionUnit]
@@ -609,6 +609,8 @@ CREATE TABLE payment
     CODE_authorization TEXT,
     NUMBER_SLIP       TEXT,
 	Number_Card		  TEXT,
+    Pos_Paid  NUMBER,
+    Pos_Add_Amount NUMBER,
 	DATE_CREATE       DATETIME NOT NULL   DEFAULT (datetime('now','localtime'))
 );
 CREATE INDEX id_payment ON payment(CODE_RECEIPT);
@@ -619,6 +621,30 @@ CREATE TABLE GEN_WORKPLACE (
     CODE_RECEIPT INTEGER NOT NULL
 );
  CREATE UNIQUE INDEX id_GEN_WORKPLACE ON GEN_WORKPLACE(ID_WORKPLACE,CODE_PERIOD);
+ 
+CREATE TABLE RECEIPT_Event (
+    ID_WORKPLACE   INTEGER  NOT NULL,
+    CODE_PERIOD    INTEGER  NOT NULL,
+    CODE_RECEIPT   INTEGER  NOT NULL,
+    CODE_WARES     INTEGER  NOT NULL,
+    CODE_UNIT      INTEGER  NOT NULL,
+    ID_GUID TEXT,
+    Mobile_Device_Id_GUID TEXT,
+    Product_Name TEXT,
+    Event_Type INTEGER NOT NULL,
+    Event_Name TEXT,
+    Product_Weight INTEGER,
+    Product_Confirmed_Weight INTEGER,
+    UserId_GUID TEXT,
+    User_Name TEXT,
+    Created_At DATETIME,
+    Resolved_At DATETIME,
+    Refund_Amount NUMBER,
+    Fiscal_Number TEXT,
+    Payment_Type INTEGER,
+    Total_Amount NUMBER
+    );
+CREATE INDEX id_RECEIPT_Event ON RECEIPT_Event (CODE_RECEIPT,CODE_WARES,ID_WORKPLACE,CODE_PERIOD);
 
 [SqlGetAllPermissions]
 select ua.code_access as code_access,ua.type_access as type_access 
@@ -939,14 +965,14 @@ Select min(case when CODE_DEALER=-888888  then PRICE_DEALER else null end) as Mi
  from price where CODE_DEALER in(-999999,-888888) and CODE_WARES=@CodeWares
  
  [SqlReplacePayment]
- replace into  payment	(ID_WORKPLACE, CODE_PERIOD, CODE_RECEIPT, TYPE_PAY, SUM_PAY, SUM_ext, NUMBER_TERMINAL, NUMBER_RECEIPT, CODE_authorization, NUMBER_SLIP, Number_Card, DATE_CREATE) values
-                        (@IdWorkplace, @CodePeriod, @CodeReceipt, @TypePay, @SumPay, @SumExt, @NumberTerminal, @NumberReceipt, @CodeAuthorization, @NumberSlip, @NumberCard, @DateCreate);
+ replace into  payment	(ID_WORKPLACE, CODE_PERIOD, CODE_RECEIPT, TYPE_PAY, SUM_PAY, SUM_ext, NUMBER_TERMINAL, NUMBER_RECEIPT, CODE_authorization, NUMBER_SLIP, Number_Card,Pos_Paid , Pos_Add_Amount , DATE_CREATE) values
+                        (@IdWorkplace, @CodePeriod, @CodeReceipt, @TypePay, @SumPay, @SumExt, @NumberTerminal, @NumberReceipt, @CodeAuthorization, @NumberSlip, @NumberCard, @PosPaid, @PosAddAmount , @DateCreate);
 
 [SqlGetPayment]
 select id_workplace as IdWorkplace, code_period as CodePeriod, code_receipt as CodeReceipt, 
  TYPE_PAY as TypePay, SUM_PAY as SumPay, SUM_EXT as SumExt,
     NUMBER_TERMINAL as NumberTerminal,   NUMBER_RECEIPT as NumberReceipt, CODE_AUTHORIZATION as CodeAuthorization, NUMBER_SLIP as NumberSlip,
-    DATE_CREATE as DateCreate
+    Pos_Paid as PosPaid, Pos_Add_Amount as PosAddAmount, DATE_CREATE as DateCreate
    from payment
   where   id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt
 
@@ -999,5 +1025,63 @@ update wares_receipt
    and CODE_PERIOD = @CodePeriod
    and CODE_RECEIPT = @CodeReceipt
    and Code_wares=@CodeWares;
+[SqlInsertReceiptEvent]
+insert into RECEIPT_Event 
+(
+    ID_WORKPLACE,    CODE_PERIOD,    CODE_RECEIPT,    CODE_WARES,    CODE_UNIT,
+    ID_GUID,
+    Mobile_Device_Id_GUID,
+    Product_Name,
+    Event_Type,
+    Event_Name,
+    Product_Weight,
+    Product_Confirmed_Weight,
+    UserId_GUID,
+    User_Name,
+    Created_At,
+    Resolved_At,
+    Refund_Amount,
+    Fiscal_Number,
+    Payment_Type,
+    Total_Amount
+    ) VALUES
+	( @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit,
+	@IDGUID,
+    @MobileDeviceIdGUID,
+    @ProductName,
+    @EventType,
+    @EventName,
+    @ProductWeight,
+    @ProductConfirmedWeight,
+    @UserIdGUID,
+    @UserName,
+    @CreatedAt,
+    @ResolvedAt,
+    @RefundAmount,
+    @FiscalNumber,
+    @PaymentType,
+    @TotalAmount
+	);
+[SqlGetReceiptEvent]
+select     ID_WORKPLACE as IdWorkplace,    CODE_PERIOD as CodePeriod,    CODE_RECEIPT as CodeReceipt,    CODE_WARES as CodeWares,    CODE_UNIT as CodeUnit,
+    ID_GUID as IDGUID,
+    Mobile_Device_Id_GUID as MobileDeviceIdGUID,
+    Product_Name as ProductName,
+    Event_Type as EventType,
+    Event_Name as EventName,
+    Product_Weight as ProductWeight,
+    Product_Confirmed_Weight as ProductConfirmedWeight,
+    UserId_GUID as UserIdGUID,
+    User_Name as UserName,
+    Created_At as CreatedAt,
+    Resolved_At as ResolvedAt,
+    Refund_Amount as RefundAmount,
+    Fiscal_Number as FiscalNumber,
+    Payment_Type as PaymentType,
+    Total_Amount  as TotalAmount
+  from RECEIPT_Event  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt ;
+[SqlDeleteReceiptEvent]
+delete from RECEIPT_Event where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt;
+
 [SqlEnd]
 */

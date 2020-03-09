@@ -1,39 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ModernIntegration.Enums;
-using ModernIntegration.Session;
-using ModernIntegration.ViewModels;
 
-namespace ModernIntegration.Models
+namespace ModelMID.DB
 {
-    /// <summary>
-    /// ReceiptEvent
-    /// </summary>
-    public class ReceiptEvent
+    public class ReceiptEvent:IdReceiptWares
     {
-        
         /// <summary>
         /// Gets or sets the identifier.
         /// </summary>
         /// <value>The identifier.</value>
         public Guid Id { get; set; }
+
+        public string IdGUID { get { return Id.ToString(); }set { Id = Guid.Parse(value); } }
         /// <summary>
         /// Gets or sets the mobile device identifier.
         /// </summary>
         /// <value>The mobile device identifier.</value>
         public Guid? MobileDeviceId { get; set; }
+        
+        public string MobileDeviceIdGUID { get { return MobileDeviceId?.ToString(); } set { MobileDeviceId = Guid.Parse(value); } }
+
+        
         /// <summary>
         /// Gets or sets the receipt identifier.
         /// </summary>
         /// <value>The receipt identifier.</value>
-        public Guid ReceiptId { get; set; }
+        //public Guid ReceiptId { get; set; }
 
         /// <summary>
         /// Gets or sets the receipt item identifier.
         /// </summary>
         /// <value>The receipt item identifier.</value>
-        public Guid? ReceiptItemId { get; set; }
+        public Guid? ReceiptItemId { get { return WaresId; } set { if(value!=null) WaresId = value.Value; } }
 
         /// <summary>
         /// Gets or sets the receipt product name.
@@ -71,6 +70,8 @@ namespace ModernIntegration.Models
         /// <value>The user identifier.</value>
         public Guid? UserId { get; set; }
 
+        public string UserIdGUID { get { return UserId?.ToString(); } set { UserId = Guid.Parse(value); } }
+
         /// <summary>
         /// Gets or sets the user name.
         /// </summary>
@@ -101,37 +102,8 @@ namespace ModernIntegration.Models
         /// <value>The fiscal number.</value>
         public string FiscalNumber { get; set; }
 
-        public PaymentType PaymentType { get; set; }
+        public eTypePayment PaymentType { get; set; }
 
         public decimal TotalAmount { get; set; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ReceiptEvent" /> class.
-        /// </summary>
-        public ReceiptEvent()
-        {
-            EventName = EventType.ToString();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ReceiptEvent" /> class.
-        /// </summary>
-        /// <param name="eventElement">The event element.</param>
-        /// <param name="receiptId">The receipt identifier.</param>
-        /// <param name="receiptItemId">The receipt item identifier.</param>
-        public ReceiptEvent(SessionProductEvent eventElement, Guid receiptId, Guid? receiptItemId)
-        {
-            Id = Guid.NewGuid();
-            ReceiptId = receiptId;
-            MobileDeviceId = eventElement.MobileDeviceId;
-            ReceiptItemId = receiptItemId;
-            EventType = eventElement.EventType;
-            EventName = eventElement.EventType.ToString();
-            UserId = eventElement.UserId;
-            CreatedAt = eventElement.CreatedAt;
-
-            if (eventElement.ResolvedAt != null)
-                ResolvedAt = eventElement.ResolvedAt.Value;
-        }
     }
 }

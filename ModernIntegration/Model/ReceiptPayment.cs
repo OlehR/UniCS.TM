@@ -95,6 +95,10 @@ namespace ModernIntegration.Models
         /// термінал
         /// </summary>
         public string PosTerminalId { get; set; }
+		
+		public decimal PosPaid { get; set; }
+
+        public decimal PosAddAmount { get; set; }
 
         /// <summary>
         /// Gets or sets the created at.

@@ -17,7 +17,6 @@ namespace ModernIntegration
 {
     public class ApiPSU : Api
     {
-        private double Delta = 0.07;
         public BL Bl;
         Dictionary<Guid, ModelMID.IdReceipt> Receipts = new Dictionary<Guid, ModelMID.IdReceipt>();
         public ApiPSU()
@@ -32,11 +31,17 @@ namespace ModernIntegration
                 }
                 OnProductsChanged?.Invoke(wareses.Select(s => GetProductViewModel(s)), guid);
             };
-            Global.OnSyncInfoCollected = (SyncInfo) => OnSyncInfoCollected?.Invoke(SyncInfo);
+            Global.OnSyncInfoCollected = (SyncInfo) =>
+            {
+                Console.WriteLine($"OnSyncInfoCollected Status=>{SyncInfo.Status} StatusDescription=>{SyncInfo.StatusDescription}");
+                OnSyncInfoCollected?.Invoke(SyncInfo);
+            };
             Global.OnStatusChanged = (Status) => OnStatusChanged?.Invoke(Status);
 
             Global.OnClientChanged = (client, guid) =>
-            {               
+            {
+                Console.WriteLine($"Client.Wallet=> {client.Wallet} SumBonus=>{client.SumBonus} ");
+                
                 OnCustomerChanged?.Invoke(GetCustomerViewModelByClient(client), guid);
             };
         }
@@ -145,11 +150,13 @@ namespace ModernIntegration
                 return null;
             return res.Select(r => (GetProductViewModel(r)));
         }
-
+        //Зберігає
         public override bool UpdateReceipt(ReceiptViewModel parReceipt)
         {
-            throw new NotImplementedException();
-            //return false;
+            // throw new NotImplementedException();
+            var RE = parReceipt.ReceiptEvents.Select(r => GetReceiptEvent(r));
+            return Bl.SaveReceiptEvents(RE);        
+           
         }
         public override TypeSend SendReceipt(Guid parReceipt)
         {
@@ -167,6 +174,7 @@ namespace ModernIntegration
             var CM = Bl.GetClientByBarCode(GetCurrentReceiptByTerminalId(parTerminalId), parS);
             if (CM == null)
                 return null;
+            _ = Bl.GetBonusAsync(CM, parTerminalId);
             return GetCustomerViewModelByClient(CM);
         }
         public override CustomerViewModel GetCustomerByPhone(Guid parTerminalId, string parPhone)
@@ -174,6 +182,7 @@ namespace ModernIntegration
             var CM = Bl.GetClientByPhone(GetCurrentReceiptByTerminalId(parTerminalId), parPhone);
             if (CM == null)
                 return null;
+            _ = Bl.GetBonusAsync(CM, parTerminalId);
             return GetCustomerViewModelByClient(CM);
         }
 
@@ -230,11 +239,14 @@ namespace ModernIntegration
             var LWI = new List<WeightInfo>();
             if(receiptWares.IsWeight || receiptWares.WeightBrutto>0)
               LWI.Add(      
-                    new WeightInfo() { Weight = (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : Convert.ToDouble(receiptWares.WeightBrutto)), DeltaWeight = Delta * (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : Convert.ToDouble(receiptWares.WeightBrutto))  }                    
+                    new WeightInfo() {
+                        Weight = (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : Convert.ToDouble(receiptWares.WeightBrutto)),
+                        DeltaWeight = Convert.ToDouble(Global.GetCoefDeltaWeight(
+                            (receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto))* (receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto))  }                    
             );
             if (receiptWares.AdditionalWeights != null)
                 foreach (var el in receiptWares.AdditionalWeights)
-                    LWI.Add(new WeightInfo { DeltaWeight = Delta * Convert.ToDouble(el), Weight = Convert.ToDouble(el) });
+                    LWI.Add(new WeightInfo { DeltaWeight = Convert.ToDouble(Global.GetCoefDeltaWeight(el))*Convert.ToDouble(el), Weight = Convert.ToDouble(el) });
             var varTags = (receiptWares.TypeWares > 0 || (!receiptWares.IsWeight && receiptWares.WeightBrutto == 0))
                     ? new List<Tag>() : null; //!!!TMP // Різні мітки алкоголь, обмеження по часу.
 
@@ -259,7 +271,7 @@ namespace ModernIntegration
                 Price = receiptWares.SumDiscount > 0 ? ( receiptWares.Price > 0 ? receiptWares.Price : receiptWares.PriceDealer): receiptWares.PriceDealer,
                 WeightCategory = 2, //вимірювання Похибки в відсотках,2 в грамах
                 Weight = (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : (receiptWares.WeightBrutto==0m? 100000 : Convert.ToDouble(receiptWares.WeightBrutto))),
-                DeltaWeight = Delta * (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : Convert.ToDouble(receiptWares.WeightBrutto)),
+                DeltaWeight = Convert.ToDouble(Global.GetCoefDeltaWeight((receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto)) * (receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto)),
                 AdditionalWeights = LWI,
                 ProductWeightType =  receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByPiece, 
                 IsAgeRestrictedConfirmed = false, //Обмеження по віку алкоголь Підтверджено не потрібно посилати.
@@ -336,9 +348,12 @@ namespace ModernIntegration
                 var SumCash = receiptMID.Payment.Where(r=> r.TypePay== eTypePay.Cash).Sum(r => receipt.Amount);
                 var SumCard = receiptMID.Payment.Where(r => r.TypePay == eTypePay.Card).Sum(r => receipt.Amount);
                 Res.PaymentType = (SumCash > 0 && SumCard > 0 ? PaymentType.Both : (SumCash == 0 && SumCard == 0 ? PaymentType.None : (SumCash > 0?PaymentType.Cash: PaymentType.Card)));
-                Res.PaymentInfo = PaymentToReceiptPayment(receiptMID.Payment.First());
+                Res.PaymentInfo = PaymentToReceiptPayment(receiptMID.Payment.First());                
             }
             
+            if (receiptMID.ReceiptEvent != null && receiptMID.ReceiptEvent.Count() > 0)
+                Res.ReceiptEvents = receiptMID.ReceiptEvent.Select(r => GetReceiptEvent(r)).ToList();
+
             return Res;
         }
 
@@ -452,6 +467,8 @@ namespace ModernIntegration
                 CodeAuthorization = parRP.TransactionCode, //RRN
                 NumberTerminal=parRP.PosTerminalId,
                 NumberSlip = parRP.PosAuthCode, //код авторизації
+                PosPaid =parRP.PosPaid,
+                PosAddAmount=parRP.PosAddAmount,
                 DateCreate=parRP.CreatedAt
             };
         }
@@ -467,6 +484,8 @@ namespace ModernIntegration
                 TransactionCode = parRP.CodeAuthorization, //RRN
                 PosTerminalId = parRP.NumberTerminal,
                 PosAuthCode = parRP.NumberSlip, //код авторизації
+                PosPaid = parRP.PosPaid,
+                PosAddAmount = parRP.PosAddAmount,
                 CreatedAt = parRP.DateCreate
             };
         }
@@ -568,7 +587,7 @@ namespace ModernIntegration
                 //!!TMP TotalAmount = parReceiptRVM.SumReceipt - parReceiptRVM.SumBonus,
                 ///CustomerId = new Client(parReceiptRVM.CodeClient).ClientId,
                 DateCreate = parReceiptRVM.CreatedAt,
-                DateReceipt = parReceiptRVM.UpdatedAt,
+                DateReceipt = (parReceiptRVM.UpdatedAt==default(DateTime)?DateTime.Now: parReceiptRVM.UpdatedAt),
                 //ReceiptItems=
                 //Customer /// !!!TMP Модель клієнта
                 //PaymentInfo
@@ -579,7 +598,11 @@ namespace ModernIntegration
 
             if(parReceiptRVM.ReceiptItems!=null)
             receipt.Wares = parReceiptRVM.ReceiptItems.Select(r=>GetReceiptWaresFromReceiptItem(receipt, r));
-                       
+
+            //if(parReceiptRVM.ReceiptEvents!=null)
+            //    receipt.ReceiptEvent= parReceiptRVM.ReceiptEvent
+
+
             return receipt;
         }
 
@@ -591,7 +614,8 @@ namespace ModernIntegration
                 //CodeWares = receiptItem.Code,
                 NameWares = receiptItem.ProductName,
                 BarCode = receiptItem.ProductBarcode,
-                Price = receiptItem.ProductPrice,
+                PriceDealer = receiptItem.ProductPrice,
+                Price = receiptItem.FullPrice!=0 ? receiptItem.FullPrice: receiptItem.ProductPrice,
                 WeightBrutto = receiptItem.ProductWeight / 1000m,
                 Quantity= receiptItem.ProductQuantity,
 //                TaxGroup = Global.GetTaxGroup(receiptItem.TypeVat, receiptItem.TypeWares),               
@@ -600,7 +624,58 @@ namespace ModernIntegration
             };
             return Res;
         }
+
+        private ModernIntegration.Models.ReceiptEvent GetReceiptEvent(ModelMID.DB.ReceiptEvent RE)
+        {
+            return new ModernIntegration.Models.ReceiptEvent()
+            {
+                Id = RE.Id,
+                MobileDeviceId = RE.MobileDeviceId,
+                ReceiptId = RE.ReceiptId,
+                ReceiptItemId = RE.ReceiptItemId,
+                ProductName = RE.ProductName,
+                EventType = (Enums.ReceiptEventType)(int)RE.EventType,
+                EventName = RE.EventName,
+                ProductWeight = RE.ProductWeight,
+                ProductConfirmedWeight = RE.ProductConfirmedWeight,
+                UserId = RE.UserId,
+                UserName = RE.UserName,
+                CreatedAt = RE.CreatedAt,
+                ResolvedAt = RE.ResolvedAt,
+                RefundAmount = RE.RefundAmount,
+                FiscalNumber = RE.FiscalNumber,
+                PaymentType = (Enums.PaymentType)(int)RE.PaymentType,
+                TotalAmount = RE.TotalAmount
+            };
         
+        }
+
+        private ModelMID.DB.ReceiptEvent GetReceiptEvent(ModernIntegration.Models.ReceiptEvent RE)
+        {
+            return new ModelMID.DB.ReceiptEvent()
+            {
+                Id = RE.Id,
+                MobileDeviceId = RE.MobileDeviceId,
+                ReceiptId = RE.ReceiptId,
+                ReceiptItemId = RE.ReceiptItemId,
+                ProductName = RE.ProductName,
+                EventType = (ModelMID.ReceiptEventType)(int)RE.EventType,
+                EventName = RE.EventName,
+                ProductWeight = RE.ProductWeight,
+                ProductConfirmedWeight = RE.ProductConfirmedWeight,
+                UserId = RE.UserId,
+                UserName = RE.UserName,
+                CreatedAt = RE.CreatedAt,
+                ResolvedAt = RE.ResolvedAt,
+                RefundAmount = RE.RefundAmount,
+                FiscalNumber = RE.FiscalNumber,
+                PaymentType =(ModelMID.eTypePayment)(int) RE.PaymentType,
+                TotalAmount = RE.TotalAmount
+            };
+
+        }
+
+
 
     }
 }

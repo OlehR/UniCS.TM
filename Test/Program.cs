@@ -29,13 +29,13 @@ namespace Test
           //  var pq = ps.GetPrintQueues(); 
             //LoadWeightKasa();            return;
             // var R = await GetInfoBarcode("4823000920439");
-            var l = new GetGoodUrl();
+            //var l = new GetGoodUrl();
             //l.LoadWeightURLAsync();
             //Thread.Sleep(1000000000);
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-           CreateDataBase(true); //Створення бази
+           //CreateDataBase(true); //Створення бази
             //Thread.Sleep(10000);
             //TestKit();
             TestReceipt(); //
@@ -49,6 +49,8 @@ namespace Test
               var SQLite = new WDB_SQLite(varMidFile);
               SQLite.RecalcPrice(new IdReceipt() { IdWorkplace = 140701, CodePeriod = 20190910, CodeReceipt = 12 });
               */
+            Console.WriteLine("Sleep");
+
             Thread.Sleep(100000);
 
         }
@@ -78,7 +80,7 @@ namespace Test
             var api = new ApiPSU();
             ProductViewModel sd;
             //api.Bl.LoadWeightKasa(new DateTime(2020,01,01));return;
-
+            api.Bl.SendOldReceipt(); return;
             var r2rr=api.GetBags();
             //api.Bl.SendAllReceipt();return;
 
@@ -91,6 +93,8 @@ namespace Test
             //var reseipt = api.GetReceipts(DateTime.Now.Date, DateTime.Now.Date);
 
             var cl = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
+           
+
             // var rrrr = api.GetNoFinishReceipt(TerminalId);
             //var aa=api.Bl.db.GetConfig<DateTime>("Load_Full__");
             //sd =api.AddProductByBarCode(TerminalId, "4820197006205", 1);

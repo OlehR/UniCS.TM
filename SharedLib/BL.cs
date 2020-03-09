@@ -378,11 +378,11 @@ namespace SharedLib
         {
             var r = db.ViewReceipt(parIdReceipt, true);
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            SendReceiptTo1CAsync(r);
+            SendReceiptTo1CAsync(r,db);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             return true;
         }
-        public async Task<bool> SendReceiptTo1CAsync(Receipt parReceipt)
+        public async Task<bool> SendReceiptTo1CAsync(Receipt parReceipt, WDB_SQLite parDB )
         {
             try
             {
@@ -418,10 +418,11 @@ namespace SharedLib
                 if (!string.IsNullOrEmpty(res) && res.Equals("0"))
                 {
                     parReceipt.StateReceipt = eStateReceipt.Send;
-                    db.SetStateReceipt(parReceipt);//Змінюєм стан чека на відправлено.
+                    parDB.SetStateReceipt(parReceipt);//Змінюєм стан чека на відправлено.
+                    return true;
                 }
 
-                return res.Equals("0");
+                return false;
             }
             catch (Exception ex)
             {
@@ -434,7 +435,7 @@ namespace SharedLib
             var varDB = (parDB == null? db : parDB);
             var varReceipts = varDB.GetIdReceiptbyState(eStateReceipt.Print);
             foreach (var el in varReceipts)
-                await SendReceiptTo1CAsync(varDB.ViewReceipt(el, true));
+                await SendReceiptTo1CAsync(varDB.ViewReceipt(el, true), varDB);
             if(parDB == null)
                 SendOldReceipt();
             Global.OnStatusChanged?.Invoke(db.GetStatus());
@@ -616,10 +617,12 @@ namespace SharedLib
                 decimal Sum;
                 var body = soapTo1C.GenBody("GetBonusSum", new Parameters[] { new Parameters("CodeOfCard", parClient.BarCode) });
                 var res = await soapTo1C.RequestAsync(Global.Server1C, body);
+                res = res.Replace('.', ',');
                 if (!string.IsNullOrEmpty(res) && decimal.TryParse(res, out Sum))
                     parClient.SumBonus = Sum;
                 body = soapTo1C.GenBody("GetMoneySum", new Parameters[] { new Parameters("CodeOfCard", parClient.BarCode) });
                 res = await soapTo1C.RequestAsync(Global.Server1C, body);
+                res = res.Replace('.', ',');
                 if (!string.IsNullOrEmpty(res) && decimal.TryParse(res, out Sum))
                     parClient.Wallet = Sum;
                 Global.OnClientChanged?.Invoke(parClient, parTerminalId);
@@ -666,7 +669,18 @@ where nn=1 ";
             Console.WriteLine("Finish LoadWeightKasa");
         }
 
+        public bool SaveReceiptEvents(IEnumerable<ReceiptEvent> parRE)
+        {
+            if (parRE != null && parRE.Count() > 0)
+            {
+                db.DeleteReceiptEvent(parRE.First());
+                db.InsertReceiptEvent(parRE);
+            }
+            return true;
+        }
+
     }
+    
 
 
 }

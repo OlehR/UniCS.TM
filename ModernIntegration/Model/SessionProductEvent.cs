@@ -11,6 +11,13 @@ namespace ModernIntegration.Session
     public class SessionProductEvent
     {
         /// <summary>
+        /// Gets or sets the mobile device identifier.
+        /// </summary>
+        /// <value>
+        /// The mobile device identifier.
+        /// </value>
+        public Guid? MobileDeviceId { get; set; }
+        /// <summary>
         /// Gets or sets the product identifier.
         /// </summary>
         /// <value>
