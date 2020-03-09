@@ -24,6 +24,10 @@ namespace SharedLib
                 Global.PathCur = CurDir;
             Global.PathDB = Path.Combine(Global.PathCur, @"DB\");
 
+            Global.PathLog = AppConfiguration["MID:PathLog"];
+            if (string.IsNullOrWhiteSpace(Global.PathLog))
+                Global.PathLog = Path.GetTempPath(); 
+
             Global.PathIni = AppConfiguration["MID:PathIni"];
             if (string.IsNullOrWhiteSpace(Global.PathIni))
                 Global.PathIni = CurDir;

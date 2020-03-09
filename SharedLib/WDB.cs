@@ -190,6 +190,7 @@ namespace SharedLib
         protected string SqlInsertReceiptEvent = "";
         protected string SqlGetReceiptEvent = "";
         protected string SqlDeleteReceiptEvent = "";
+        protected string SqlSetFixWeight = "";
         public WDB(string parFileSQL)
         {
             this.ReadSQL(parFileSQL);
@@ -609,6 +610,8 @@ namespace SharedLib
             SqlInsertReceiptEvent = GetSQL("SqlInsertReceiptEvent");
             SqlGetReceiptEvent = GetSQL("SqlGetReceiptEvent");
             SqlDeleteReceiptEvent = GetSQL("SqlDeleteReceiptEvent");
+
+            SqlSetFixWeight = GetSQL("SqlSetFixWeight");
             return true;
         }
 
@@ -1013,7 +1016,13 @@ namespace SharedLib
         {
             return db.ExecuteNonQuery<IdReceipt>(SqlDeleteReceiptEvent, parIdReceipt) > 0;
         }
-   
+
+        public virtual bool FixWeight(ReceiptWares parIdReceipt)
+        {
+            return db.ExecuteNonQuery<ReceiptWares>(SqlSetFixWeight, parIdReceipt) > 0;
+        }
+
+
 
     }
 }

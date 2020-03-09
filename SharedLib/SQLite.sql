@@ -114,7 +114,7 @@ select wr.id_workplace as IdWorkplace, wr.code_period as CodePeriod, wr.code_rec
 					 ADDITION_N1 as AdditionN1,ADDITION_N2 as AdditionN2, ADDITION_N3 as AdditionN3,
  ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1,Price_Dealer as PriceDealer,BARCODE_2_CATEGORY as BarCode2Category,wr.DESCRIPTION as DESCRIPTION,w.TYPE_VAT as TypeVat
  ,(select max(bc.BAR_CODE) from BAR_CODE bc where bc.code_wares=wr.code_wares) as BarCode 
- ,w.Weight_Brutto as WeightBrutto,Refunded_Quantity as RefundedQuantity
+ ,w.Weight_Brutto as WeightBrutto,Refunded_Quantity as RefundedQuantity,Fix_Weight as FixWeight
  ,ps.NAME_PS as NameDiscount,Sum_Discount as SumDiscount
                      from wares_receipt wr
                      join wares w on (wr.code_wares =w.code_wares)
@@ -197,13 +197,13 @@ replace into wares_receipt (id_workplace, code_period, code_receipt, code_wares,
   type_price,  quantity, price, Price_Dealer, sum, sum_vat,
   PAR_PRICE_1,PAR_PRICE_2,PAR_PRICE_3, sum_discount, type_vat, sort, user_create,
  ADDITION_N1,ADDITION_N2,ADDITION_N3,
- ADDITION_C1,ADDITION_D1,BARCODE_2_CATEGORY,DESCRIPTION,Refunded_Quantity) 
+ ADDITION_C1,ADDITION_D1,BARCODE_2_CATEGORY,DESCRIPTION,Refunded_Quantity,Fix_Weight) 
  values (
   @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit,
   @TypePrice, @Quantity, @Price,@PriceDealer, @Sum, @SumVat,
   @ParPrice1,@ParPrice2,@ParPrice3, @SumDiscount, @TypeVat, @Sort, @UserCreate,
  @AdditionN1,@AdditionN2,@AdditionN3,
- @AdditionC1,@AdditionD1,@BARCODE2Category,@DESCRIPTION,@RefundedQuantity)
+ @AdditionC1,@AdditionD1,@BARCODE2Category,@DESCRIPTION,@RefundedQuantity,@FixWeight)
 
 
 
@@ -556,6 +556,7 @@ CREATE TABLE WARES_RECEIPT (
     ADDITION_D1    DATETIME,
 	BARCODE_2_CATEGORY TEXT,
     Refunded_Quantity NUMBER   NOT NULL DEFAULT 0,
+    Fix_Weight NUMBER NOT NULL DEFAULT 0,
     DATE_CREATE    DATETIME NOT NULL DEFAULT (datetime('now','localtime')),
     USER_CREATE    INTEGER  NOT NULL
 );
@@ -1025,6 +1026,15 @@ update wares_receipt
    and CODE_PERIOD = @CodePeriod
    and CODE_RECEIPT = @CodeReceipt
    and Code_wares=@CodeWares;
+
+[SqlSetFixWeight]
+update wares_receipt
+   set Fix_Weight=@FixWeight
+  where ID_WORKPLACE = @IdWorkplace
+   and CODE_PERIOD = @CodePeriod
+   and CODE_RECEIPT = @CodeReceipt
+   and Code_wares=@CodeWares;
+
 [SqlInsertReceiptEvent]
 insert into RECEIPT_Event 
 (

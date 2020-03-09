@@ -147,6 +147,10 @@ namespace ModelMID
         public int TotalRows { get; set; }
 
         public decimal RefundedQuantity { get; set; }
+        /// <summary>
+        /// Зафіксована похибка ваги відносно базової.
+        /// </summary>
+        public decimal FixWeight { get; set; }
         public ReceiptWares()
         {
             Clear();

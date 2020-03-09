@@ -58,7 +58,7 @@ namespace Test
         static void CreateDataBase(bool isFull = true)
         {
             var bl = new BL();
-            bl.SyncData(isFull);
+            bl.SyncDataAsync(isFull);
         }
 
 
@@ -80,7 +80,7 @@ namespace Test
             var api = new ApiPSU();
             ProductViewModel sd;
             //api.Bl.LoadWeightKasa(new DateTime(2020,01,01));return;
-            api.Bl.SendOldReceipt(); return;
+            //api.Bl.SendOldReceipt(); return;
             var r2rr=api.GetBags();
             //api.Bl.SendAllReceipt();return;
 

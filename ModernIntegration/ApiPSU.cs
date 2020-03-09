@@ -504,8 +504,8 @@ namespace ModernIntegration
             var info = new SyncInformation();
             try
             {
-                var res = await Task.Factory.StartNew(() => Bl.SyncData(parIsFull));
-                info.Status = (res) ? eSyncStatus.SyncFinishedSuccess : eSyncStatus.SyncFinishedError;
+                var res = await Task.Factory.StartNew(() => Bl.SyncDataAsync(parIsFull));
+                info.Status = await (res) ? eSyncStatus.SyncFinishedSuccess : eSyncStatus.SyncFinishedError;
             }
             catch (Exception ex)
             {
@@ -515,8 +515,7 @@ namespace ModernIntegration
             }
             OnSyncInfoCollected?.Invoke(info);
 
-            await Bl.SendAllReceipt().ConfigureAwait(false);
-            Bl.LoadWeightKasa();
+            
 
 
         }
