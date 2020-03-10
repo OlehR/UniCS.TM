@@ -22,7 +22,7 @@ namespace ModernIntegration
         public ApiPSU()
         {
             Bl = new BL();
-            Global.OnReceiptCalculationComplete = (wareses, guid) =>
+            Global.OnReceiptCalculationComplete += (wareses, guid) =>
             {
                 Debug.WriteLine("=========================================================================");
                 foreach (var receiptWarese in wareses)
@@ -31,17 +31,18 @@ namespace ModernIntegration
                 }
                 OnProductsChanged?.Invoke(wareses.Select(s => GetProductViewModel(s)), guid);
             };
-            Global.OnSyncInfoCollected = (SyncInfo) =>
+            
+            Global.OnSyncInfoCollected += (SyncInfo) =>
             {
                 Console.WriteLine($"OnSyncInfoCollected Status=>{SyncInfo.Status} StatusDescription=>{SyncInfo.StatusDescription}");
                 OnSyncInfoCollected?.Invoke(SyncInfo);
             };
-            Global.OnStatusChanged = (Status) => OnStatusChanged?.Invoke(Status);
+            
+            Global.OnStatusChanged += (Status) => OnStatusChanged?.Invoke(Status);
 
-            Global.OnClientChanged = (client, guid) =>
+            Global.OnClientChanged += (client, guid) =>
             {
-                Console.WriteLine($"Client.Wallet=> {client.Wallet} SumBonus=>{client.SumBonus} ");
-                
+                Console.WriteLine($"Client.Wallet=> {client.Wallet} SumBonus=>{client.SumBonus} ");                
                 OnCustomerChanged?.Invoke(GetCustomerViewModelByClient(client), guid);
             };
         }
@@ -499,25 +500,18 @@ namespace ModernIntegration
         public override async Task RequestSyncInfo(bool parIsFull = false)
         {
             // TODO: check status
-            OnSyncInfoCollected?.Invoke(new SyncInformation() { Status = parIsFull ? eSyncStatus.StartedFullSync : eSyncStatus.StartedPartialSync });
-
-            var info = new SyncInformation();
             try
             {
-                var res = await Task.Factory.StartNew(() => Bl.SyncDataAsync(parIsFull));
-                info.Status = await (res) ? eSyncStatus.SyncFinishedSuccess : eSyncStatus.SyncFinishedError;
+                var res = await Bl.SyncDataAsync(parIsFull);                
             }
             catch (Exception ex)
             {
+                var info = new SyncInformation();
                 info.Status = eSyncStatus.SyncFinishedError;
                 info.StatusDescription = ex.Message;
                 info.SyncData = ex;
+                OnSyncInfoCollected?.Invoke(info);
             }
-            OnSyncInfoCollected?.Invoke(info);
-
-            
-
-
         }
 
         public override IEnumerable<ProductViewModel> GetProduct(Guid parTerminalId)

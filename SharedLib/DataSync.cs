@@ -62,8 +62,8 @@ namespace SharedLib
                                  {
                                      return false;
                                  }
-
                                 */
+                
                 if (!string.IsNullOrEmpty(res) && res.Equals("0"))
                 {
                     parReceipt.StateReceipt = eStateReceipt.Send;
@@ -104,6 +104,9 @@ namespace SharedLib
                     if (TD == default(DateTime) || DateTime.Now.Date != TD.Date)
                         parIsFull = true;
                 }
+                 
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = parIsFull ? eSyncStatus.StartedFullSync : eSyncStatus.StartedPartialSync });
+
                 string varMidFile = db.GetCurrentMIDFile;
 
                 if (parIsFull)
@@ -135,7 +138,8 @@ namespace SharedLib
                     Console.WriteLine("Set config");
                 }
                 db.SetConfig<DateTime>("Load_" + (parIsFull ? "Full" : "Update"), DateTime.Now /*String.Format("{0:u}", DateTime.Now)*/);
-            }
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.SyncFinishedSuccess });
+                }
             catch (Exception ex)
             {
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.Error, StatusDescription = ex.Message });
@@ -143,6 +147,7 @@ namespace SharedLib
 
                 return false;
             }
+
             return true;
         }
         public class TableStruc
@@ -302,15 +307,17 @@ namespace SharedLib
         }
         public void LoadWeightKasa(DateTime parDT = default(DateTime))
         {
-            if (parDT == default(DateTime))
+            try
             {
-                parDT = db.GetConfig<DateTime>("Load_Full");
-                var parDTU = db.GetConfig<DateTime>("Load_Update");
-                if (parDTU > parDT)
-                    parDT = parDTU;
-            }
+                if (parDT == default(DateTime))
+                {
+                    parDT = db.GetConfig<DateTime>("Load_Full");
+                    var parDTU = db.GetConfig<DateTime>("Load_Update");
+                    if (parDTU > parDT)
+                        parDT = parDTU;
+                }
 
-            string SQLUpdate = @"
+                string SQLUpdate = @"
 -- begin tran
    update barcode_out with (serializable) set weight=@Weight,Date=@Date
    where bar_code = @BarCode
@@ -321,17 +328,22 @@ namespace SharedLib
    end
 -- commit tran";
 
-            var dbMs = new MSSQL();
-            var path = Path.Combine(ModelMID.Global.PathDB, "config.db");
-            var dbSqlite = new SQLite(path);
-            var SqlSelect = @"select [barcode] as BarCode, weight as Weight, DATE_CREATE as Date,STATUS
+                var dbMs = new MSSQL();
+                var path = Path.Combine(ModelMID.Global.PathDB, "config.db");
+                var dbSqlite = new SQLite(path);
+                var SqlSelect = @"select [barcode] as BarCode, weight as Weight, DATE_CREATE as Date,STATUS
 from ( SELECT [barcode],DATE_CREATE,STATUS,weight,ROW_NUMBER() OVER (PARTITION BY barcode ORDER BY DATE_CREATE DESC) as [nn]  FROM WEIGHT where  DATE_CREATE>=:parDT ) dd
 where nn=1 ";
-            Console.WriteLine("Start LoadWeightKasa");
-            var r = dbSqlite.Execute<object, BarCodeOut>(SqlSelect, new { parDT = parDT });
-            Console.WriteLine(r.Count().ToString());
-            dbMs.BulkExecuteNonQuery<BarCodeOut>(SQLUpdate, r);
-            Console.WriteLine("Finish LoadWeightKasa");
+                Console.WriteLine("Start LoadWeightKasa");
+                var r = dbSqlite.Execute<object, BarCodeOut>(SqlSelect, new { parDT = parDT });
+                Console.WriteLine(r.Count().ToString());
+                dbMs.BulkExecuteNonQuery<BarCodeOut>(SQLUpdate, r);
+                Console.WriteLine("Finish LoadWeightKasa");
+            }
+             catch (Exception ex)
+            {
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "LoadWeightKasa=> "+ ex.Message });                
+            }
         }
 
 
