@@ -29,7 +29,7 @@ namespace SharedLib
         public BL()
         {
             db = new WDB_SQLite();
-            ds = new DataSync(db,this);
+            ds = new DataSync(this);
             WorkId = new SortedList<Guid, int>();
          //   Global.OnReceiptCalculationComplete = (wareses, guid) => OnReceiptCalculationComplete?.Invoke(wareses, guid);
             
@@ -316,7 +316,6 @@ namespace SharedLib
             }
             
         }
-
 
        
 		public IEnumerable<ReceiptWares> GetWaresReceipt(IdReceipt parIdReceipt)

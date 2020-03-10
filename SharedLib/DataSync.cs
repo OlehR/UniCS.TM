@@ -15,11 +15,12 @@ namespace SharedLib
         public BL bl;
         
         public SoapTo1C soapTo1C;
-        public DataSync(WDB_SQLite parDb,BL parBL)
+        public DataSync(BL parBL)
         {
-            db = parDb;
+            
             soapTo1C = new SoapTo1C();
             bl = parBL; ///!!!TMP Трохи костиль 
+            db = parBL.db;
         }
 
 
@@ -116,7 +117,9 @@ namespace SharedLib
 
                     if (File.Exists(varMidFile))
                     {
-                        db.db.Close();
+
+                        bl.db.db.Close();
+                        bl.db = null;
                         File.Delete(varMidFile);
                     }
                     SQLite = new WDB_SQLite(varMidFile, true);
@@ -133,8 +136,10 @@ namespace SharedLib
                     Console.WriteLine("CreateMIDIndex Start");
                     SQLite.CreateMIDIndex();
                     Console.WriteLine("CreateMIDIndex Finish");
-                    db = SQLite;
-                    db.SetConfig<string>("Last_MID", varMidFile);
+                    SQLite.db.Close();
+                    bl.db = new WDB_SQLite();
+                    db = bl.db;
+                    bl.db.SetConfig<string>("Last_MID", varMidFile);
                     Console.WriteLine("Set config");
                 }
                 db.SetConfig<DateTime>("Load_" + (parIsFull ? "Full" : "Update"), DateTime.Now /*String.Format("{0:u}", DateTime.Now)*/);

@@ -9,11 +9,19 @@ namespace SharedLib
     {
         private string ConectionString;
         public eTypeCommit TypeCommit { get; set; }
+        /// <summary>
+        /// Чи можна користуватись базою
+        /// </summary>
+        protected bool IsLock = false;
         public SQL(String varConectionString)
         {
             ConectionString = varConectionString;            
         }
 
+        public void SetLock(bool parIsLock)
+        {
+            IsLock = parIsLock;
+        }
 
         public virtual void Close() {}
 

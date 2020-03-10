@@ -25,7 +25,7 @@ namespace SharedLib
     {
 
 
-
+        
         public SQL db;
         protected Hashtable keySQL = new Hashtable();
         /// <summary>
@@ -196,6 +196,10 @@ namespace SharedLib
             this.ReadSQL(parFileSQL);
             InitSQL();
 
+        }
+        public void SetLock(bool parIsLock)
+        {
+            db.SetLock(parIsLock);
         }
         public object GetObjectForLockByIdWorkplace(int parIdWorkplace)
         {

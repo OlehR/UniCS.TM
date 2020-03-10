@@ -35,10 +35,10 @@ namespace Test
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-           //CreateDataBase(true); //Створення бази
+            await CreateDataBaseAsync(true); //Створення бази
             //Thread.Sleep(10000);
             //TestKit();
-            TestReceipt(); //
+            //TestReceipt(); //
                            //CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
                            //            var o = new SharedLib.Oracle();
                            //var r =  o.Execute<ReceiptWares>("select w.code_wares CodeWares,w.name_wares as NameWares from dw.wares w where w.code_wares in (54882,54883)");
@@ -55,10 +55,11 @@ namespace Test
 
         }
 
-        static void CreateDataBase(bool isFull = true)
+        static async Task CreateDataBaseAsync(bool isFull = true)
         {
-            var bl = new BL();
-            bl.SyncDataAsync(isFull);
+            //var bl = new BL();            bl.SyncDataAsync(isFull);
+            var api = new ApiPSU();
+            await api.RequestSyncInfo(false);
         }
 
 
@@ -78,6 +79,7 @@ namespace Test
             var ProductId = Guid.Parse("00000000-abcd-0000-0019-000000166767");
             var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009001");
             var api = new ApiPSU();
+            
             ProductViewModel sd;
             //api.Bl.LoadWeightKasa(new DateTime(2020,01,01));return;
             //api.Bl.SendOldReceipt(); return;
