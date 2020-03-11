@@ -212,7 +212,7 @@ namespace ModernIntegration
         /// <returns></returns>
         public bool ClearReceiptByReceiptId(IdReceipt idReceipt)
         {
-
+            if(Receipts!=null)
             foreach (var el in Receipts)
             {
                 if (el.Value.Equals(idReceipt))
