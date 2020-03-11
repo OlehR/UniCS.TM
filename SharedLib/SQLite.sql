@@ -1,5 +1,9 @@
 ﻿[SqlBegin]
 /*
+[SqlUpdateRC_V1]
+[SqlUpdateConfig_V1]
+[SqlUpdateMID_V1]
+
 [SqlConfig]
 SELECT Data_Var  FROM CONFIG  WHERE UPPER(Name_Var) = UPPER(trim(@NameVar));
 
@@ -434,6 +438,15 @@ select * from TRANSLATION tr where tr.LANGUAGE = @Language
 [SqlFieldInfo]
 select * from FIELD_INFO
 
+[SqlInsertWeight] 
+insert into Weight ( BarCode,Weight,STATUS) values (@BarCode,@Weight,@Status);
+
+[SqlReplaceWorkplace]
+ replace into WORKPLACE ( ID_WORKPLACE, NAME, Terminal_GUID) values (@IdWorkplace, @Name,@StrTerminalGUID);
+
+[SqlGetWorkplace]
+select ID_WORKPLACE as IdWorkplace, NAME as Name, Terminal_GUID as StrTerminalGUID from WORKPLACE;
+
 [SqlFillQuickGroup]
 WITH RECURSIVE
 	  GW_cte(CODE_GROUP_WARES,CODE_PARENT_GROUP_WARES,NAME) AS (
@@ -474,16 +487,8 @@ CREATE TABLE Weight (
 	status integer NOT NULL DEFAULT 0,
 	DATE_CREATE       DATETIME  DEFAULT (datetime('now','localtime'))
 	);
-
-[SqlInsertWeight] 
-insert into Weight ( BarCode,Weight,STATUS) values (@BarCode,@Weight,@Status);
-
-[SqlReplaceWorkplace]
- replace into WORKPLACE ( ID_WORKPLACE, NAME, Terminal_GUID) values (@IdWorkplace, @Name,@StrTerminalGUID);
-
-[SqlGetWorkplace]
-select ID_WORKPLACE as IdWorkplace, NAME as Name, Terminal_GUID as StrTerminalGUID from WORKPLACE;
-
+CREATE TABLE VER_CONFIG ( ver INTEGER  NOT NULL);
+insert into VER_CONFIG(ver) values (0);
 [SqlCreateReceiptTable]
 
 CREATE TABLE RECEIPT (
@@ -646,6 +651,9 @@ CREATE TABLE RECEIPT_Event (
     Total_Amount NUMBER
     );
 CREATE INDEX id_RECEIPT_Event ON RECEIPT_Event (CODE_RECEIPT,CODE_WARES,ID_WORKPLACE,CODE_PERIOD);
+
+CREATE TABLE VER_RC ( ver INTEGER  NOT NULL);
+insert into VER_RC(ver) values (0);
 
 [SqlGetAllPermissions]
 select ua.code_access as code_access,ua.type_access as type_access 
@@ -901,6 +909,10 @@ CREATE UNIQUE INDEX PROMOTION_SALE_GROUP_WARES_ID ON PROMOTION_SALE_GROUP_WARES 
 CREATE UNIQUE INDEX PROMOTION_SALE_2_category_ID ON PROMOTION_SALE_2_category ( Code_WARES,CODE_PS );
 
 CREATE INDEX ADD_WEIGHT_W ON ADD_WEIGHT ( CODE_WARES );
+
+CREATE TABLE VER_MID ( ver INTEGER  NOT NULL);
+insert into VER_MID(ver) values (0);
+
 
 [SqlReplaceUnitDimension]
 replace into UNIT_DIMENSION ( CODE_UNIT, NAME_UNIT, ABR_UNIT) values (@CodeUnit, @NameUnit,@AbrUnit);

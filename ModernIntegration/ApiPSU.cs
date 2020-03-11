@@ -168,9 +168,12 @@ namespace ModernIntegration
         public override bool UpdateReceipt(ReceiptViewModel parReceipt)
         {
             // throw new NotImplementedException();
-            var RE = parReceipt.ReceiptEvents.Select(r => GetReceiptEvent(r));
-            return Bl.SaveReceiptEvents(RE);        
-           
+            if (parReceipt!=null && parReceipt.ReceiptEvents!=null)
+            {
+                var RE = parReceipt.ReceiptEvents.Select(r => GetReceiptEvent(r));
+                return Bl.SaveReceiptEvents(RE);
+            }
+            return false;
         }
         public override TypeSend SendReceipt(Guid parReceipt)
         {
