@@ -97,7 +97,7 @@ namespace ModernIntegration
 
         public override ReceiptViewModel GetRecieptByTerminalId(Guid parTerminalId)
         {
-            var receiptId = GetCurrentReceiptByTerminalId(parTerminalId);
+            var receiptId = GetCurrentReceiptByTerminalId(parTerminalId); 
             return GetReceiptViewModel(receiptId);
 
         }
@@ -213,15 +213,15 @@ namespace ModernIntegration
         /// <returns></returns>
         public bool ClearReceiptByReceiptId(IdReceipt idReceipt)
         {
-            if(Receipts!=null)
-            foreach (var el in Receipts)
-            {
-                if (el.Value.Equals(idReceipt))
+            if (Receipts != null)
+                foreach (var el in Receipts)
                 {
-                    Receipts[el.Key] = null;
-                    return true;
+                    if (el.Value != null && el.Value.Equals(idReceipt))
+                    {
+                        Receipts[el.Key] = null;
+                        return true;
+                    }
                 }
-            }
             return false;
         }
 
