@@ -35,6 +35,7 @@ namespace ModernIntegration
             Global.OnSyncInfoCollected += (SyncInfo) =>
             {
                 Console.WriteLine($"OnSyncInfoCollected Status=>{SyncInfo.Status} StatusDescription=>{SyncInfo.StatusDescription}");
+                /*
                 if (SyncInfo.Status== eSyncStatus.SyncFinishedSuccess)
                 {
                     try
@@ -46,7 +47,7 @@ namespace ModernIntegration
                         var e = ex.Message;
                     }
 
-                }
+                }*/
                                 
                 OnSyncInfoCollected?.Invoke(SyncInfo);
             };

@@ -1,8 +1,18 @@
 ﻿[SqlBegin]
 /*
+[VerRC]
+1
+[VerMID]
+0
+[VerConfig]
+0
+
 [SqlUpdateRC_V1]
+alter TABLE WARES_RECEIPT 
+    add Fix_Weight NUMBER NOT NULL DEFAULT 0;
 [SqlUpdateConfig_V1]
 [SqlUpdateMID_V1]
+
 
 [SqlConfig]
 SELECT Data_Var  FROM CONFIG  WHERE UPPER(Name_Var) = UPPER(trim(@NameVar));

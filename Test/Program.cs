@@ -38,7 +38,7 @@ namespace Test
             await CreateDataBaseAsync(true); //Створення бази
             //Thread.Sleep(10000);
             //TestKit();
-            //TestReceipt(); //
+            TestReceipt(); //
                            //CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
                            //            var o = new SharedLib.Oracle();
                            //var r =  o.Execute<ReceiptWares>("select w.code_wares CodeWares,w.name_wares as NameWares from dw.wares w where w.code_wares in (54882,54883)");
@@ -79,7 +79,9 @@ namespace Test
             var ProductId = Guid.Parse("00000000-abcd-0000-0019-000000166767");
             var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009001");
             var api = new ApiPSU();
+
             
+            //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200212, IdWorkplace = 62, CodeReceipt = 10 });  return;
             ProductViewModel sd;
             //api.Bl.LoadWeightKasa(new DateTime(2020,01,01));return;
             //api.Bl.SendOldReceipt(); return;
@@ -87,9 +89,10 @@ namespace Test
             //api.Bl.SendAllReceipt();return;
 
             var ddd = api.GetProductsByName(TerminalId,"Бер");
-            
+            var ddd1 = api.GetProductsByName(TerminalId, "Бер",3);
 
-           var rrr= api.GetReceipts(DateTime.Parse("2020-02-03T00:00:00"), DateTime.Parse("2020-02-03T23:59:59.999"), TerminalId);
+
+            var rrr= api.GetReceipts(DateTime.Parse("2020-02-03T00:00:00"), DateTime.Parse("2020-02-03T23:59:59.999"), TerminalId);
 
             //Thread.Sleep(1000000);
             //var reseipt = api.GetReceipts(DateTime.Now.Date, DateTime.Now.Date);

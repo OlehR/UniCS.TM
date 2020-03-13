@@ -26,9 +26,12 @@ namespace SharedLib
 
         public bool SendReceiptTo1C(IdReceipt parIdReceipt)
         {
-            var r = db.ViewReceipt(parIdReceipt, true);
+            var ldb = new WDB_SQLite(null, false, parIdReceipt.DTPeriod);
+            var r = ldb.ViewReceipt(parIdReceipt, true);
+
+            
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            SendReceiptTo1CAsync(r, db);
+            SendReceiptTo1CAsync(r, ldb);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             return true;
         }
