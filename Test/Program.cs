@@ -35,7 +35,9 @@ namespace Test
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-           //CreateDataBase(true); //Створення бази
+
+            
+            CreateDataBase(true); //Створення бази
             //Thread.Sleep(10000);
             //TestKit();
             TestReceipt(); //
@@ -74,13 +76,18 @@ namespace Test
         }
         static void TestReceipt()
         {
+
+            string JsonReceipt = "{\"Id\":\"00111111-ffff-2020-0226-000000000001\",\"CustomId\":\"K0104210001\",\"TerminalId\":\"1bb89aa9-dbdf-4eb0-b7a2-094665c3fdd0\",\"Status\":0,\"PaymentType\":1,\"FiscalNumber\":null,\"Amount\":0.0,\"PaidAmount\":0.0,\"Discount\":0.0,\"TotalAmount\":128.32,\"MaxBonusesToUse\":0.0,\"BonusesApplied\":0.0,\"ReceiptItems\":[{\"Id\":\"140e8db3-2abe-44d0-ac84-9041218d00d3\",\"ReceiptId\":\"00111111-ffff-2020-0226-000000000001\",\"ProductId\":\"00000000-abcd-0000-0019-000000055386\",\"ProductName\":\"Oj yt,enm pf ghj\",\"ProductWeight\":100000,\"ProductCalculatedWeight\":0,\"ProductWeightType\":0,\"ProductBarcode\":\"4820073560043\",\"ProductQuantity\":1.0,\"ProductPrice\":46.94,\"FullPrice\":46.94,\"Discount\":-81.38,\"DiscountDescription\":null,\"TotalPrice\":128.32,\"TaxGroup\":\"?\",\"RefundsCount\":0.0,\"Quantities\":\"1\"}],\"Customer\":null,\"Cashier\":\"Cashier Cashier\",\"PaymentInfo\":{\"Id\":\"67ed65dd-352d-4d89-8231-58fea97affcc\",\"ReceiptId\":\"00111111-ffff-2020-0226-000000000001\",\"PaymentType\":1,\"CashPayIn\":0.0,\"CashPayOut\":0.0,\"PosPayIn\":128.32,\"PosPaid\":128.22,\"PosAddAmount\":0.1,\"BonusPlusPercent\":0.08,\"DepositPayIn\":0.0,\"TotalPayIn\":128.32,\"CardPan\":\"4634********9091\",\"IsPayOutSuccess\":null,\"TransactionId\":\"-9189351039341351863079918464355968227\",\"TransactionCode\":\"Code\",\"TransactionStatus\":\"Status\",\"PosTerminalId\":\"TranId\",\"PosAuthCode\":\"Aut\",\"CreatedAt\":\"2020-02-26T15:03:01.2192965+02:00\"},\"ReceiptEvents\":[{\"Id\":\"f595af44-3d36-4df4-aa65-21cbee754809\",\"MobileDeviceId\":\"00000000-0000-0000-0000-000000000000\",\"ReceiptId\":\"00111111-ffff-2020-0226-000000000001\",\"ReceiptItemId\":\"5856c320-42db-4ffa-af5b-1b4552d5cf72\",\"ProductName\":null,\"EventType\":2,\"EventName\":\"AgeRestrictedProduct\",\"ProductWeight\":0,\"ProductConfirmedWeight\":0,\"UserId\":\"35a18683-131d-413e-abb7-552e3f799d64\",\"UserName\":null,\"CreatedAt\":\"2020-02-26T15:02:38.7239783+02:00\",\"ResolvedAt\":\"2020-02-26T15:02:51.0710115+02:00\",\"RefundAmount\":0.0,\"FiscalNumber\":null,\"PaymentType\":0,\"TotalAmount\":0.0}],\"CreatedAt\":\"2020-02-26T15:02:17\",\"UpdatedAt\":\"2020-02-26T15:03:01.286638+02:00\",\"DisplayName\":null,\"IsTransferred\":false,\"TransferredAt\":null}";
+            // ReceiptViewModel 
+            var receiptViewModel = JsonConvert.DeserializeObject<ReceiptViewModel>(JsonReceipt);
             var TerminalId = Guid.Parse("1bb89aa9-dbdf-4eb0-b7a2-094665c3fdd0");
             var ProductId = Guid.Parse("00000000-abcd-0000-0019-000000166767");
             var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009001");
             var api = new ApiPSU();
             ProductViewModel sd;
             //api.Bl.LoadWeightKasa(new DateTime(2020,01,01));return;
-            api.Bl.SendOldReceipt(); return;
+            //api.UpdateReceipt(receiptViewModel); return;
+            //api.Bl.SendOldReceipt(); return;
             var r2rr=api.GetBags();
             //api.Bl.SendAllReceipt();return;
 
@@ -98,7 +105,7 @@ namespace Test
             // var rrrr = api.GetNoFinishReceipt(TerminalId);
             //var aa=api.Bl.db.GetConfig<DateTime>("Load_Full__");
             //sd =api.AddProductByBarCode(TerminalId, "4820197006205", 1);
-            // sd = api.AddProductByBarCode(TerminalId, "4820198091002", 1);
+             sd = api.AddProductByBarCode(TerminalId, "2203388707846", 1);
 
             //Console.WriteLine("var cl = api.AddProductByBarCode(TerminalId, \"4820048481960\");");
             //Console.WriteLine(sd.Name);
