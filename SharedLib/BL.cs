@@ -247,7 +247,7 @@ namespace SharedLib
         }
 
 
-        public IEnumerable<ReceiptWares> GetProductsByName(IdReceipt parReceipt, string parName, int parOffSet = -1, int parLimit = 10)
+        public IEnumerable<ReceiptWares> GetProductsByName(IdReceipt parReceipt, string parName, int parOffSet = -1, int parLimit = 10, int parCodeFastGroup = 0)
         {
             parName = parName.Trim();
             // Якщо пошук по штрихкоду і назва похожа на штрихкод або артикул
@@ -272,7 +272,7 @@ namespace SharedLib
             }
 
 
-            var r = db.FindWares(null, parName, 0, 0, 0, -1, parOffSet, parLimit);
+            var r = db.FindWares(null, parName, 0, 0, parCodeFastGroup, -1, parOffSet, parLimit);
             if (r.Count() > 0)
             {
                 return r;

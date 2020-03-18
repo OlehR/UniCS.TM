@@ -35,7 +35,7 @@ namespace Test
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-            await CreateDataBaseAsync(true); //Створення бази
+           // await CreateDataBaseAsync(true); //Створення бази
             //Thread.Sleep(10000);
             //TestKit();
             TestReceipt(); //
@@ -59,7 +59,7 @@ namespace Test
         {
             //var bl = new BL();            bl.SyncDataAsync(isFull);
             var api = new ApiPSU();
-            await api.RequestSyncInfo(false);
+            await api.RequestSyncInfo(isFull);
         }
 
 
@@ -77,19 +77,20 @@ namespace Test
         {
             var TerminalId = Guid.Parse("1bb89aa9-dbdf-4eb0-b7a2-094665c3fdd0");
             var ProductId = Guid.Parse("00000000-abcd-0000-0019-000000166767");
-            var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009001");
+            var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009000");
             var api = new ApiPSU();
 
             
             //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200212, IdWorkplace = 62, CodeReceipt = 10 });  return;
             ProductViewModel sd;
-            //api.Bl.LoadWeightKasa(new DateTime(2020,01,01));return;
+            //api.Bl.ds.LoadWeightKasa(new DateTime(2020,02,17));return;
             //api.Bl.SendOldReceipt(); return;
             var r2rr=api.GetBags();
             //api.Bl.SendAllReceipt();return;
 
-            var ddd = api.GetProductsByName(TerminalId,"Бер");
-            var ddd1 = api.GetProductsByName(TerminalId, "Бер",3);
+            var ddd = api.GetProductsByName(TerminalId,"",0,false, FastGroup);
+            var ddd1  = api.GetProductsByName(TerminalId, "", 1, false, FastGroup);
+            var ddd2 = api.GetProductsByName(TerminalId, "пом", 0, false, FastGroup);
 
 
             var rrr= api.GetReceipts(DateTime.Parse("2020-02-03T00:00:00"), DateTime.Parse("2020-02-03T23:59:59.999"), TerminalId);

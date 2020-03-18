@@ -158,9 +158,11 @@ namespace ModernIntegration
         public override IEnumerable<ProductViewModel> GetProductsByName(Guid parTerminalId, string parName, int pageNumber = 0, bool excludeWeightProduct = false, Guid? categoryId = null, int parLimit = 10)
         {
 
+            FastGroup fastGroup =( categoryId == null ? new FastGroup() : new FastGroup(categoryId.Value));
+
             var receiptId = GetCurrentReceiptByTerminalId(parTerminalId);
             //int Limit = 10;
-            var res = Bl.GetProductsByName(receiptId, parName.Replace(' ', '%').Trim(), pageNumber * parLimit, parLimit);
+            var res = Bl.GetProductsByName(receiptId, parName.Replace(' ', '%').Trim(), pageNumber * parLimit, parLimit, fastGroup.CodeFastGroup);
             if (res == null)
                 return null;
             return res.Select(r => (GetProductViewModel(r)));
