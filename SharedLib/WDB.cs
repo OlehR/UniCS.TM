@@ -25,7 +25,7 @@ namespace SharedLib
     {
 
 
-
+        
         public SQL db;
         protected Hashtable keySQL = new Hashtable();
         /// <summary>
@@ -190,11 +190,16 @@ namespace SharedLib
         protected string SqlInsertReceiptEvent = "";
         protected string SqlGetReceiptEvent = "";
         protected string SqlDeleteReceiptEvent = "";
+        protected string SqlSetFixWeight = "";
         public WDB(string parFileSQL)
         {
             this.ReadSQL(parFileSQL);
             InitSQL();
 
+        }
+        public void SetLock(bool parIsLock)
+        {
+            db.SetLock(parIsLock);
         }
         public object GetObjectForLockByIdWorkplace(int parIdWorkplace)
         {
@@ -609,6 +614,8 @@ namespace SharedLib
             SqlInsertReceiptEvent = GetSQL("SqlInsertReceiptEvent");
             SqlGetReceiptEvent = GetSQL("SqlGetReceiptEvent");
             SqlDeleteReceiptEvent = GetSQL("SqlDeleteReceiptEvent");
+
+            SqlSetFixWeight = GetSQL("SqlSetFixWeight");
             return true;
         }
 
@@ -1013,7 +1020,34 @@ namespace SharedLib
         {
             return db.ExecuteNonQuery<IdReceipt>(SqlDeleteReceiptEvent, parIdReceipt) > 0;
         }
-   
+
+        public virtual bool FixWeight(ReceiptWares parIdReceipt)
+        {
+            return db.ExecuteNonQuery<ReceiptWares>(SqlSetFixWeight, parIdReceipt) > 0;
+        }
+
+        public virtual int GetVersion(string varDB)
+        {
+            try
+            {
+                return db.ExecuteScalar<int>($"Select max(ver) from VER_{varDB}");
+            }
+            catch 
+            {
+                return 0;
+            }
+        }
+        public virtual bool SetVersion(string varDB,int parVer)
+        {
+            try
+            {
+                return db.ExecuteNonQuery($"update VER_{varDB} set ver={parVer} ") > 0;
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
     }
 }

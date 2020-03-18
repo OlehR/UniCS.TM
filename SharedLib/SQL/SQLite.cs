@@ -30,24 +30,32 @@ namespace SharedLib
             Thread.Sleep(150); 
         }
 
+        public void ExceptionIsLock() 
+        {
+            throw new Exception("SqlLite is Lock for FullUpdate");
+        }
 
         public override IEnumerable<T1> Execute<T,T1>(string query, T parameters )
         {
+            if (IsLock) ExceptionIsLock();
             return connection.Query<T1>(query, parameters);
         }
 
         public override IEnumerable<T1> Execute<T1>(string query)
         {
+            if (IsLock) ExceptionIsLock();
             return connection.Query<T1>(query);
         }
 
         public override  Task<IEnumerable<T1>> ExecuteAsync<T, T1>(string query, T parameters)
         {
+            if (IsLock) ExceptionIsLock();
             return  connection.QueryAsync<T1>(query, parameters);
         }
 
         public override Task<IEnumerable<T1>> ExecuteAsync<T1>(string query)
         {
+            if (IsLock) ExceptionIsLock();
             return connection.QueryAsync<T1>(query);
         }
         public override void BeginTransaction()
@@ -62,13 +70,15 @@ namespace SharedLib
 
         public override int ExecuteNonQuery<T>(string parQuery, T Parameters )
         {
-            if(TypeCommit==eTypeCommit.Auto)
+            if (IsLock) ExceptionIsLock();
+            if (TypeCommit==eTypeCommit.Auto)
              return connection.Execute(parQuery, Parameters);
             else
              return connection.Execute(parQuery, Parameters,transaction);
         }
         public override int ExecuteNonQuery(string parQuery)
         {
+            if (IsLock) ExceptionIsLock();
             if (TypeCommit == eTypeCommit.Auto)
                 return connection.Execute(parQuery);
             else
@@ -77,6 +87,7 @@ namespace SharedLib
 
         public override Task<int> ExecuteNonQueryAsync<T>(string parQuery, T Parameters)
         {
+            if (IsLock) ExceptionIsLock();
             if (TypeCommit == eTypeCommit.Auto)
                 return connection.ExecuteAsync(parQuery, Parameters);
             else
@@ -84,6 +95,7 @@ namespace SharedLib
         }
         public override Task<int> ExecuteNonQueryAsync(string parQuery)
         {
+            if (IsLock) ExceptionIsLock();
             if (TypeCommit == eTypeCommit.Auto)
                 return connection.ExecuteAsync(parQuery);
             else
@@ -92,21 +104,25 @@ namespace SharedLib
 
         public override T1 ExecuteScalar<T1>(string query)
         {
+            if (IsLock) ExceptionIsLock();
             return connection.ExecuteScalar<T1>(query);
         }
 
         public override T1 ExecuteScalar<T,T1>(string query,T parameters)
         {
+            if (IsLock) ExceptionIsLock();
             return connection.ExecuteScalar<T1>(query, parameters);
         }
 
         public override Task<T1> ExecuteScalarAsync<T1>(string query)
         {
+            if (IsLock) ExceptionIsLock();
             return connection.ExecuteScalarAsync<T1>(query);
         }
 
         public override Task<T1> ExecuteScalarAsync<T, T1>(string query, T parameters)
         {
+            if (IsLock) ExceptionIsLock();
             return connection.ExecuteScalarAsync<T1>(query, parameters);
         }
 

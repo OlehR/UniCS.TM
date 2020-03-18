@@ -22,7 +22,7 @@ namespace ModernIntegration
         public ApiPSU()
         {
             Bl = new BL();
-            Global.OnReceiptCalculationComplete = (wareses, guid) =>
+            Global.OnReceiptCalculationComplete += (wareses, guid) =>
             {
                 Debug.WriteLine("=========================================================================");
                 foreach (var receiptWarese in wareses)
@@ -31,17 +31,32 @@ namespace ModernIntegration
                 }
                 OnProductsChanged?.Invoke(wareses.Select(s => GetProductViewModel(s)), guid);
             };
-            Global.OnSyncInfoCollected = (SyncInfo) =>
+            
+            Global.OnSyncInfoCollected += (SyncInfo) =>
             {
                 Console.WriteLine($"OnSyncInfoCollected Status=>{SyncInfo.Status} StatusDescription=>{SyncInfo.StatusDescription}");
+                /*
+                if (SyncInfo.Status== eSyncStatus.SyncFinishedSuccess)
+                {
+                    try
+                    {
+                        var r= GetBags();
+                    }
+                    catch (Exception ex)
+                    {
+                        var e = ex.Message;
+                    }
+
+                }*/
+                                
                 OnSyncInfoCollected?.Invoke(SyncInfo);
             };
-            Global.OnStatusChanged = (Status) => OnStatusChanged?.Invoke(Status);
+            
+            Global.OnStatusChanged += (Status) => OnStatusChanged?.Invoke(Status);
 
-            Global.OnClientChanged = (client, guid) =>
+            Global.OnClientChanged += (client, guid) =>
             {
-                Console.WriteLine($"Client.Wallet=> {client.Wallet} SumBonus=>{client.SumBonus} ");
-                
+                Console.WriteLine($"Client.Wallet=> {client.Wallet} SumBonus=>{client.SumBonus} ");                
                 OnCustomerChanged?.Invoke(GetCustomerViewModelByClient(client), guid);
             };
         }
@@ -82,7 +97,7 @@ namespace ModernIntegration
 
         public override ReceiptViewModel GetRecieptByTerminalId(Guid parTerminalId)
         {
-            var receiptId = GetCurrentReceiptByTerminalId(parTerminalId);
+            var receiptId = GetCurrentReceiptByTerminalId(parTerminalId); 
             return GetReceiptViewModel(receiptId);
 
         }
@@ -154,9 +169,12 @@ namespace ModernIntegration
         public override bool UpdateReceipt(ReceiptViewModel parReceipt)
         {
             // throw new NotImplementedException();
-            var RE = parReceipt.ReceiptEvents.Select(r => GetReceiptEvent(r));
-            return Bl.SaveReceiptEvents(RE);        
-           
+            if (parReceipt!=null && parReceipt.ReceiptEvents!=null)
+            {
+                var RE = parReceipt.ReceiptEvents.Select(r => GetReceiptEvent(r));
+                return Bl.SaveReceiptEvents(RE);
+            }
+            return false;
         }
         public override TypeSend SendReceipt(Guid parReceipt)
         {
@@ -195,15 +213,15 @@ namespace ModernIntegration
         /// <returns></returns>
         public bool ClearReceiptByReceiptId(IdReceipt idReceipt)
         {
-
-            foreach (var el in Receipts)
-            {
-                if (el.Value.Equals(idReceipt))
+            if (Receipts != null)
+                foreach (var el in Receipts)
                 {
-                    Receipts[el.Key] = null;
-                    return true;
+                    if (el.Value != null && el.Value.Equals(idReceipt))
+                    {
+                        Receipts[el.Key] = null;
+                        return true;
+                    }
                 }
-            }
             return false;
         }
 
@@ -499,26 +517,18 @@ namespace ModernIntegration
         public override async Task RequestSyncInfo(bool parIsFull = false)
         {
             // TODO: check status
-            OnSyncInfoCollected?.Invoke(new SyncInformation() { Status = parIsFull ? eSyncStatus.StartedFullSync : eSyncStatus.StartedPartialSync });
-
-            var info = new SyncInformation();
             try
             {
-                var res = await Task.Factory.StartNew(() => Bl.SyncData(parIsFull));
-                info.Status = (res) ? eSyncStatus.SyncFinishedSuccess : eSyncStatus.SyncFinishedError;
+                var res = await Bl.SyncDataAsync(parIsFull);                
             }
             catch (Exception ex)
             {
+                var info = new SyncInformation();
                 info.Status = eSyncStatus.SyncFinishedError;
                 info.StatusDescription = ex.Message;
                 info.SyncData = ex;
+                OnSyncInfoCollected?.Invoke(info);
             }
-            OnSyncInfoCollected?.Invoke(info);
-
-            await Bl.SendAllReceipt().ConfigureAwait(false);
-            Bl.LoadWeightKasa();
-
-
         }
 
         public override IEnumerable<ProductViewModel> GetProduct(Guid parTerminalId)
