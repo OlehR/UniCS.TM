@@ -47,11 +47,11 @@ union
  from wares w 
  join FAST_WARES fw on (fw.code_fast_group=@CodeFastGroup and fw.CODE_WARES=w.code_wares)
  join addition_unit au on (w.CODE_WARES=au.code_wares and au.DEFAULT_UNIT=1)
- where @NameUpper is not null and  @CodeFastGroup>0 and w.name_wares_upper like @NameUpper
+ where @NameUpper is not null and  @CodeFastGroup<>0 and w.name_wares_upper like @NameUpper
 union
 select w.code_wares,au.CODE_UNIT from FAST_WARES w 
      join addition_unit au on (w.CODE_WARES=au.code_wares and au.DEFAULT_UNIT=1)
-	 where @CodeFastGroup>0 and @NameUpper is null and code_fast_group=@CodeFastGroup
+	 where @CodeFastGroup<>0 and @NameUpper is null and code_fast_group=@CodeFastGroup
 )
 
 select t.code_wares as CodeWares,w.name_wares NameWares,w.name_wares_receipt  as NameWaresReceipt, w.PERCENT_VAT PercentVat, w.Type_vat TypeVat,

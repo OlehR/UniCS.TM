@@ -234,15 +234,12 @@ namespace ModernIntegration
         /// <returns></returns>
         public ModelMID.IdReceipt GetCurrentReceiptByTerminalId(Guid parTerminalId)
         {
-
             if (!Receipts.ContainsKey(parTerminalId) || Receipts[parTerminalId] == null)
             {
                 var idReceipt = Bl.GetNewIdReceipt(parTerminalId);
-
                 Receipts[parTerminalId] = new ModelMID.Receipt(idReceipt);
                 //Bl.AddReceipt(Receipts[parTerminalId]);
             }
-
             return Receipts[parTerminalId];
         }
 
@@ -309,8 +306,6 @@ namespace ModernIntegration
                 Barcode = receiptWares.BarCode,
                 //FullPrice = receiptWares.Sum
                 RefundedQuantity= receiptWares.RefundedQuantity
-
-
             };
             return Res;
         }
