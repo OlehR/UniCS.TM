@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SharedLib
@@ -110,12 +111,12 @@ namespace SharedLib
                 }
                  
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = parIsFull ? eSyncStatus.StartedFullSync : eSyncStatus.StartedPartialSync });
-
+                
                 string varMidFile = db.GetCurrentMIDFile;
 
                 if (parIsFull)
                 {
-
+                    Thread.Sleep(200);
                     DateTime varD = DateTime.Today;
 
                     if (File.Exists(varMidFile))
@@ -150,7 +151,7 @@ namespace SharedLib
                 }
             catch (Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.Error, StatusDescription = ex.Message });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = (parIsFull ? eSyncStatus.Error: eSyncStatus.NoFatalError), StatusDescription = ex.Message });
                 Global.OnStatusChanged?.Invoke(db.GetStatus());
 
                 return false;

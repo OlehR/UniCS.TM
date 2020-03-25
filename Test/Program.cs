@@ -35,7 +35,7 @@ namespace Test
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-           // await CreateDataBaseAsync(true); //Створення бази
+            //await CreateDataBaseAsync(true); //Створення бази
             //Thread.Sleep(10000);
             //TestKit();
             TestReceipt(); //
@@ -98,8 +98,8 @@ namespace Test
             //Thread.Sleep(1000000);
             //var reseipt = api.GetReceipts(DateTime.Now.Date, DateTime.Now.Date);
 
-            var cl = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
-           
+            //var cl = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
+
 
             // var rrrr = api.GetNoFinishReceipt(TerminalId);
             //var aa=api.Bl.db.GetConfig<DateTime>("Load_Full__");
@@ -113,18 +113,21 @@ namespace Test
             //api.RequestSyncInfo(false);
             //Thread.Sleep(100000);
 
-          
+
+            sd = api.AddProductByBarCode(TerminalId, "30886", 1);
 
             var startTime = System.Diagnostics.Stopwatch.StartNew();
 
             //sd = api.AddProductByBarCode(TerminalId, "4823086109988", 1); // 1+1 Пельмені "Мішутка" Філейні 600г /Три ведмеді/
             //sd = api.AddProductByBarCode(TerminalId, "2201652300489", 1); //Морква
             //Thread.Sleep(1000);
+
+            return;
+
             sd = api.AddProductByBarCode(TerminalId, "4823000916524", 2); //АРТЕК 
             sd = api.AddProductByBarCode(TerminalId, "22970558", 0);
             sd = api.AddProductByBarCode(TerminalId, "7622300813437", 1);//Барн
             sd = api.AddProductByProductId(TerminalId, ProductId, 1);
-
 
           sd = api.AddProductByBarCode(TerminalId, "2201652300489", 1); //Морква
             //Thread.Sleep(1000);
