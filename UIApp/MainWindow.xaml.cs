@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using UIApp.Models;
 
+
 namespace UIApp
 {
     /// <summary>
@@ -63,6 +64,11 @@ namespace UIApp
             InitializeComponent();
             
             WaresList.ItemsSource = Wares;
+        }
+
+        private void BildData()
+        {
+            //var bl = new Bl();
         }
     }
 }
