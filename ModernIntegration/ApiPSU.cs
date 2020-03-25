@@ -158,9 +158,11 @@ namespace ModernIntegration
         public override IEnumerable<ProductViewModel> GetProductsByName(Guid parTerminalId, string parName, int pageNumber = 0, bool excludeWeightProduct = false, Guid? categoryId = null, int parLimit = 10)
         {
 
+            FastGroup fastGroup =( categoryId == null ? new FastGroup() : new FastGroup(categoryId.Value));
+
             var receiptId = GetCurrentReceiptByTerminalId(parTerminalId);
             //int Limit = 10;
-            var res = Bl.GetProductsByName(receiptId, parName.Replace(' ', '%').Trim(), pageNumber * parLimit, parLimit);
+            var res = Bl.GetProductsByName(receiptId, parName.Replace(' ', '%').Trim(), pageNumber * parLimit, parLimit, fastGroup.CodeFastGroup);
             if (res == null)
                 return null;
             return res.Select(r => (GetProductViewModel(r)));
@@ -232,15 +234,12 @@ namespace ModernIntegration
         /// <returns></returns>
         public ModelMID.IdReceipt GetCurrentReceiptByTerminalId(Guid parTerminalId)
         {
-
             if (!Receipts.ContainsKey(parTerminalId) || Receipts[parTerminalId] == null)
             {
                 var idReceipt = Bl.GetNewIdReceipt(parTerminalId);
-
                 Receipts[parTerminalId] = new ModelMID.Receipt(idReceipt);
                 //Bl.AddReceipt(Receipts[parTerminalId]);
             }
-
             return Receipts[parTerminalId];
         }
 
@@ -294,7 +293,7 @@ namespace ModernIntegration
                 ProductWeightType =  receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByPiece, 
                 IsAgeRestrictedConfirmed = false, //Обмеження по віку алкоголь Підтверджено не потрібно посилати.
                 Quantity = (receiptWares.IsWeight ? 1 : receiptWares.Quantity),
-                DiscountValue =Math.Round(receiptWares.SumDiscount>0 ? receiptWares.SumDiscount : (receiptWares.PriceDealer * receiptWares.Quantity - receiptWares.Sum),2),
+                DiscountValue =Math.Round(receiptWares.SumDiscount>0 ? receiptWares.SumDiscount : (receiptWares.PriceDealer > receiptWares.Price ? (receiptWares.PriceDealer * receiptWares.Quantity - receiptWares.Sum):0),2),
                 DiscountName = receiptWares.NameDiscount,
                 WarningType = null, //!!! Не посилати 
                 CalculatedWeight = 0,
@@ -307,8 +306,6 @@ namespace ModernIntegration
                 Barcode = receiptWares.BarCode,
                 //FullPrice = receiptWares.Sum
                 RefundedQuantity= receiptWares.RefundedQuantity
-
-
             };
             return Res;
         }
