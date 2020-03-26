@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 //using DB_SQLite;
 using System.IO;
 using System.Linq;
+using System.Text;
 using ModelMID;
 using ModelMID.DB;
 
@@ -49,30 +51,34 @@ namespace SharedLib
             SqlGetDimClient = GetSQL("SqlGetDimClient");*/
             return true;
         }
-        public bool LoadData(WDB parDB,bool parIsFull=true)
+        public bool LoadData(WDB parDB,bool parIsFull, StringBuilder Log)
         {
             string SQL;
-            Console.WriteLine("Start LoadData "+ parIsFull.ToString());
+            Log.Append($"{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} Start LoadData {parIsFull}");
+            Debug.WriteLine("Start LoadData "+ parIsFull.ToString());
             SQL = GetSQL("SqlGetMessageNo");
             int varMessageNoMax = db.ExecuteScalar<int>(SQL);
             int varMessageNoMin = parDB.GetConfig<int>("MessageNo");
 
             var oMessage = new { IsFull = parIsFull ? 1 : 0, MessageNoMin = varMessageNoMin, MessageNoMax = varMessageNoMax };
 
-            Console.WriteLine("SqlGetDimPrice");
+            Log.Append($"{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetDimPrice");
+            Debug.WriteLine("SqlGetDimPrice");
             SQL = GetSQL("SqlGetDimPrice");
             var PD = db.Execute<object,Price>(SQL, oMessage/* new { IsFull= parIsFull?1:0}*/);
             parDB.ReplacePrice(PD);
             PD = null;
 
-            Console.WriteLine("SqlGetPromotionSaleGift");
+            Log.Append($"{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetPromotionSaleGift");
+            Debug.WriteLine("SqlGetPromotionSaleGift");
             SQL = GetSQL("SqlGetPromotionSaleGift");
             var PSGf = db.Execute<PromotionSaleGift>(SQL);
             parDB.ReplacePromotionSaleGift(PSGf);
             PSGf = null;
 
 
-            Console.WriteLine("SqlGetPromotionSaleGroupWares");
+            Log.Append($"{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetPromotionSaleGroupWares");
+            Debug.WriteLine("SqlGetPromotionSaleGroupWares");
             SQL = GetSQL("SqlGetPromotionSaleGroupWares");
             var PSGW = db.Execute<PromotionSaleGroupWares>(SQL);
             if (PSGW != null)
@@ -81,32 +87,37 @@ namespace SharedLib
                 PSGW = null;
             }
 
-            Console.WriteLine("SqlGetPromotionSale");
+            Log.Append($"{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetPromotionSale");
+            Debug.WriteLine("SqlGetPromotionSale");
             SQL = GetSQL("SqlGetPromotionSale");
             var PS = db.Execute<PromotionSale>(SQL);
             parDB.ReplacePromotionSale(PS);
             PS = null;
 
-            Console.WriteLine("SqlGetPromotionSaleFilter");
+            Log.Append($"{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetPromotionSaleFilter");
+            Debug.WriteLine("SqlGetPromotionSaleFilter");
             SQL = GetSQL("SqlGetPromotionSaleFilter");
             var PSF = db.Execute<PromotionSaleFilter>(SQL);
             parDB.ReplacePromotionSaleFilter(PSF);
             PSF = null;
 
-            Console.WriteLine("SqlGetPromotionSaleData");
+            Log.Append($"{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetPromotionSaleData");
+            Debug.WriteLine("SqlGetPromotionSaleData");
             SQL = GetSQL("SqlGetPromotionSaleData");
             var PSD = db.Execute<PromotionSaleData>(SQL);
             parDB.ReplacePromotionSaleData(PSD);
             PSF = null;
 
 
-            Console.WriteLine("SqlGetPromotionSaleDealer");
+            Log.Append($"{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetPromotionSaleDealer");
+            Debug.WriteLine("SqlGetPromotionSaleDealer");
             SQL = GetSQL("SqlGetPromotionSaleDealer");
             var PSP = db.Execute<PromotionSaleDealer>(SQL);
             parDB.ReplacePromotionSaleDealer(PSP);
             PSP = null;
 
-            Console.WriteLine("SqlGetPromotionSale2Category");
+            Log.Append($"{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetPromotionSale2Category");
+            Debug.WriteLine("SqlGetPromotionSale2Category");
             SQL = GetSQL("SqlGetPromotionSale2Category");
             var PS2c = db.Execute<PromotionSale2Category>(SQL);
             parDB.ReplacePromotionSale2Category(PS2c);
@@ -114,58 +125,65 @@ namespace SharedLib
 
             if (parIsFull)
             {
-                Console.WriteLine("SqlGetDimUnitDimension");
+                Log.Append($"{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetDimUnitDimension");
+                Debug.WriteLine("SqlGetDimUnitDimension");
                 SQL = GetSQL("SqlGetDimUnitDimension");
                 var UD = db.Execute<UnitDimension>(SQL);
                 parDB.ReplaceUnitDimension(UD);
                 UD = null;
 
-                Console.WriteLine("SqlGetDimGroupWares");
+                Log.Append($"{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetDimGroupWares");
+                Debug.WriteLine("SqlGetDimGroupWares");
                 SQL = GetSQL("SqlGetDimGroupWares");
                 var GW = db.Execute<GroupWares>(SQL);
                 parDB.ReplaceGroupWares(GW);
                 GW = null;
 
 
-
-                Console.WriteLine("SqlGetDimWares");
+                Log.Append($"{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetDimWares");
+                Debug.WriteLine("SqlGetDimWares");
                 SQL = GetSQL("SqlGetDimWares");
                 var W = db.Execute<Wares>(SQL);
                 parDB.ReplaceWares(W);
                 W = null;
 
-                Console.WriteLine("SqlGetDimAdditionUnit");
+                Log.Append($"{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetDimPrice");
+                Debug.WriteLine("SqlGetDimAdditionUnit");
                 SQL = GetSQL("SqlGetDimAdditionUnit");
                 var AU = db.Execute<AdditionUnit>(SQL);
                 parDB.ReplaceAdditionUnit(AU);
                 AU = null;
 
-                Console.WriteLine("SqlGetDimBarCode");
+                Log.Append($"{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetDimAdditionUnit");
+                Debug.WriteLine("SqlGetDimBarCode");
                 SQL = GetSQL("SqlGetDimBarCode");
                 var BC = db.Execute<Barcode>(SQL);
                 parDB.ReplaceBarCode(BC);
                 BC = null;
 
-                Console.WriteLine("SqlGetDimTypeDiscount");
+                Log.Append($"{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetDimTypeDiscount");
+                Debug.WriteLine("SqlGetDimTypeDiscount");
                 SQL = GetSQL("SqlGetDimTypeDiscount");
                 var TD = db.Execute<TypeDiscount>(SQL);
                 parDB.ReplaceTypeDiscount(TD);
                 TD = null;
 
-                Console.WriteLine("SqlGetDimClient");
+                Log.Append($"{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetDimClient");
+                Debug.WriteLine("SqlGetDimClient");
                 SQL = GetSQL("SqlGetDimClient");
                 var Cl = db.Execute<Client>(SQL);
                 parDB.ReplaceClient(Cl);
                 Cl = null;
 
-                Console.WriteLine("SqlGetDimFastGroup");
+                Log.Append($"{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetDimFastGroup");
+                Debug.WriteLine("SqlGetDimFastGroup");
                 SQL = GetSQL("SqlGetDimFastGroup");
                 var FG = db.Execute<FastGroup>(SQL);
                 parDB.ReplaceFastGroup(FG);
                 FG = null;
 
-                
-                Console.WriteLine("SqlGetDimFastWares");
+                Log.Append($"{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetDimFastWares");
+                Debug.WriteLine("SqlGetDimFastWares");
                 SQL = GetSQL("SqlGetDimFastWares");
                 var FW = db.Execute<FastWares>(SQL);
                 parDB.ReplaceFastWares(FW);
@@ -182,6 +200,7 @@ namespace SharedLib
             }
 
             parDB.SetConfig<int>("MessageNo", varMessageNoMax);
+            Log.Append($"{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} MessageNo {varMessageNoMax}");
             return true;
         }
 

@@ -2,6 +2,7 @@
 using ModelMID.DB;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -43,7 +44,7 @@ namespace SharedLib
                 var r = new Receipt1C(parReceipt);
 
                 var body = soapTo1C.GenBody("JSONCheck", new Parameters[] { new Parameters("JSONSting", r.GetBase64()) });
-                var res = await soapTo1C.RequestAsync(Global.Server1C, body, 10000, "application/json");
+                var res = await soapTo1C.RequestAsync(Global.Server1C, body, 45000, "application/json");
 
                 /*
                                  HttpClient client = new HttpClient();
@@ -80,7 +81,7 @@ namespace SharedLib
             }
             catch (Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = parReceipt.ReceiptId.ToString() + " " + ex.Message });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "SendReceiptTo1CAsync=>" + parReceipt.ReceiptId.ToString() + " " + ex.Message });
                 return false;
             }
         }
@@ -99,6 +100,7 @@ namespace SharedLib
         //async Task<bool>
         public bool SyncData(bool parIsFull)
         {
+            StringBuilder Log = new StringBuilder();
             try
             {
                 WDB_SQLite SQLite;
@@ -121,11 +123,12 @@ namespace SharedLib
 
                     if (File.Exists(varMidFile))
                     {
-
+                        Log.Append($"{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} Try Delete file{varMidFile}");
                         bl.db.db.Close();
                         bl.db = null;
                         File.Delete(varMidFile);
                     }
+                    Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} Create New DB");
                     SQLite = new WDB_SQLite(varMidFile, true);
                     //SQLite.CreateMIDTable();
                 }
@@ -133,25 +136,27 @@ namespace SharedLib
                     SQLite = db;
 
                 var MsSQL = new WDB_MsSql();
-                var resS = MsSQL.LoadData(SQLite, parIsFull);
+                var resS = MsSQL.LoadData(SQLite, parIsFull,Log);
 
                 if (parIsFull)
                 {
-                    Console.WriteLine("CreateMIDIndex Start");
-                    SQLite.CreateMIDIndex();
-                    Console.WriteLine("CreateMIDIndex Finish");
+                    Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} Create New DB");
+                    Debug.WriteLine("CreateMIDIndex Start");
+                    SQLite.CreateMIDIndex();                   
                     SQLite.db.Close();
                     bl.db = new WDB_SQLite();
                     db = bl.db;
                     bl.db.SetConfig<string>("Last_MID", varMidFile);
-                    Console.WriteLine("Set config");
+                    Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} Set config");
+                    Debug.WriteLine("Set config");
                 }
                 db.SetConfig<DateTime>("Load_" + (parIsFull ? "Full" : "Update"), DateTime.Now /*String.Format("{0:u}", DateTime.Now)*/);
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.SyncFinishedSuccess });
+                Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} End");
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.SyncFinishedSuccess, StatusDescription = Log.ToString() });
                 }
             catch (Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = (parIsFull ? eSyncStatus.Error: eSyncStatus.NoFatalError), StatusDescription = ex.Message });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = (parIsFull ? eSyncStatus.Error: eSyncStatus.NoFatalError), StatusDescription = Log.ToString() });
                 Global.OnStatusChanged?.Invoke(db.GetStatus());
 
                 return false;
@@ -205,7 +210,7 @@ namespace SharedLib
                     db.SetConfig<DateTime>("LastDaySend", Ldc);
                 else
                 {
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.NoFatalError, StatusDescription = $"SendOldReceipt => ErrorSend data {Ldc} Not Send => {res.Count()}" });
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.NoFatalError, StatusDescription = $"SendOldReceipt => ErrorSend Date:{Ldc} Not Send => {res.Count()}" });
                     return;
                 }
 

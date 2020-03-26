@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Net.Http;
+using ModelMID;
 
 namespace SharedLib
 {
@@ -45,7 +46,11 @@ namespace SharedLib
             {
                 res = await response.Content.ReadAsStringAsync();
                 res = res.Substring(res.IndexOf(@"-instance"">") + 11);
-                res = res.Substring(0, res.IndexOf("</m:return>")).Trim();               
+                res = res.Substring(0, res.IndexOf("</m:return>")).Trim();
+            }
+            else
+            {  
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation {  Exception = null, Status = eSyncStatus.NoFatalError, StatusDescription = "RequestAsync=>" + response.RequestMessage });
             }
             return res;
         }

@@ -21,7 +21,7 @@ namespace SharedLib
             var varD = DateTime.Now;
             var filePath = Path.Combine(Global.PathLog, $"Log_{varD:yyyyMMdd}.log");
 
-            text=$"Log_{varD:yyyyMMdd h:mm:ss.fffffff} /n {text} /n";
+            text=$"/n{varD:yyyy-MM-dd h:mm:ss.fffffff} /n /t {text} /n";
             
             byte[] encodedText = Encoding.Unicode.GetBytes(text);
 

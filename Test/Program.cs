@@ -35,10 +35,10 @@ namespace Test
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-            //await CreateDataBaseAsync(true); //Створення бази
+            await CreateDataBaseAsync(false); //Створення бази
             //Thread.Sleep(10000);
             //TestKit();
-            TestReceipt(); //
+            //TestReceipt(); //
                            //CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
                            //            var o = new SharedLib.Oracle();
                            //var r =  o.Execute<ReceiptWares>("select w.code_wares CodeWares,w.name_wares as NameWares from dw.wares w where w.code_wares in (54882,54883)");
@@ -59,6 +59,7 @@ namespace Test
         {
             //var bl = new BL();            bl.SyncDataAsync(isFull);
             var api = new ApiPSU();
+           
             await api.RequestSyncInfo(isFull);
         }
 
