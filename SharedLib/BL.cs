@@ -26,9 +26,11 @@ namespace SharedLib
         /// Для швидкого пошуку 
         /// </summary>
         SortedList<Guid, int> WorkId;
-        public BL()
+
+
+        public BL(bool  pIsUseOldDB=false)
         {
-            db = new WDB_SQLite();
+            db = new WDB_SQLite("",false,default(DateTime), pIsUseOldDB);
             ds = new DataSync(this);
             WorkId = new SortedList<Guid, int>();
          //   Global.OnReceiptCalculationComplete = (wareses, guid) => OnReceiptCalculationComplete?.Invoke(wareses, guid);

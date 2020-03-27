@@ -24,7 +24,7 @@ namespace SharedLib
 
 
   
-        public WDB_SQLite(string parConnect = "",bool IsMidMain=false,DateTime parD = default(DateTime))  : base(Path.Combine(Global.PathIni, "SQLite.sql") )
+        public WDB_SQLite(string parConnect = "",bool IsMidMain=false,DateTime parD = default(DateTime), bool pIsUseOldDB = false)  : base(Path.Combine(Global.PathIni, "SQLite.sql") )
         {
             varVersion = "SQLite.0.0.1";
             InitSQL();
@@ -53,12 +53,13 @@ namespace SharedLib
 
             
             var MidFile = string.IsNullOrEmpty(parConnect) ? Path.Combine(GetCurrentMIDFile) : parConnect;
-            /*            if (!File.Exists(MidFile) && string.IsNullOrEmpty(parConnect))
+            
+            if (pIsUseOldDB &&!File.Exists(MidFile) && string.IsNullOrEmpty(parConnect))
                         {
                             var varLastMidFile = GetConfig<string>("Last_MID");
                             if (!string.IsNullOrEmpty(varLastMidFile))                
                                 MidFile = varLastMidFile;
-                        }*/
+                        }
 
             if (!File.Exists(MidFile))
             {
