@@ -48,7 +48,7 @@ namespace ModernIntegration
 
         public virtual Task RequestSyncInfo(bool parIsFull=false){ throw new NotImplementedException(); }
 
-        public virtual bool UpdateProductWeight(string parData, int parWeight, Guid? parWares = null) { throw new NotImplementedException(); }
+        public virtual bool UpdateProductWeight(string parData, int parWeight, Guid parWares, TypeSaveWeight parTypeSaveWeight) { throw new NotImplementedException(); }
 
         public virtual Status GetCurentStatus() { throw new NotImplementedException(); }
 

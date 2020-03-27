@@ -304,19 +304,25 @@ namespace SharedLib
         }
 
       
-        public bool InsertWeight(string parBarCode, int parWeight, Guid? parWares = null)
+        public bool InsertWeight(string parBarCode, int parWeight, Guid parWares, TypeSaveWeight parTypeSaveWeight)
         {
-            if (string.IsNullOrEmpty(parBarCode)&& parWares==null)
-                return false;
+            var CodeWares = 0;
 
-            if (parBarCode != null)
+            if (string.IsNullOrEmpty(parBarCode)&& parWares==Guid.Empty )
+                return false;
+            if ( parWares != Guid.Empty)
+                CodeWares= new IdReceiptWares(new IdReceipt(), parWares).CodeWares;
+
+            return db.InsertWeight(new { BarCode = (parTypeSaveWeight == TypeSaveWeight.Add ? CodeWares.ToString() : parBarCode), Weight = (decimal)parWeight / 1000m, Status = parTypeSaveWeight });
+
+            /*if (parBarCode != null)
                 return db.InsertWeight(new { BarCode = parBarCode, Weight = (decimal)parWeight / 1000m, Status = 0 });
             else
             {
-                var Wares= new IdReceiptWares(new IdReceipt(), parWares.Value);
+                
                 return db.InsertWeight(new { BarCode = Wares.CodeWares.ToString(), Weight = (decimal)parWeight / 1000m, Status = -1 });
             }
-            
+            */
         }
 
        

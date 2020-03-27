@@ -185,4 +185,9 @@ namespace ModelMID
         Paid = 7,
         GarbageOnWeight = 8
     }
+    public enum TypeSaveWeight
+    {
+        Add = -1,
+        Main = 0
+    }
 }
