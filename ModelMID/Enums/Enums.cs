@@ -188,6 +188,7 @@ namespace ModelMID
     public enum TypeSaveWeight
     {
         Add = -1,
-        Main = 0
+        Main = 0,
+        Client=1
     }
 }
