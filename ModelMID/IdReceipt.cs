@@ -66,8 +66,12 @@ namespace ModelMID
         }
         public override bool Equals(object obj)
         {
-            var o = (IdReceipt)obj;
-            return IdWorkplace == o.IdWorkplace && CodePeriod == o.CodePeriod && CodeReceipt == o.CodeReceipt;
+            if (obj is IdReceipt)
+            {
+                var o = (IdReceipt)obj;
+                return IdWorkplace == o.IdWorkplace && CodePeriod == o.CodePeriod && CodeReceipt == o.CodeReceipt;
+            }
+            return false;
         }
         public override int GetHashCode()
         {
