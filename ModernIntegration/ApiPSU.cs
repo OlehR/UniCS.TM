@@ -329,7 +329,7 @@ namespace ModernIntegration
             return Res;
         }
 
-        private ReceiptViewModel GetReceiptViewModel(IdReceipt parReceipt)
+        public ReceiptViewModel GetReceiptViewModel(IdReceipt parReceipt)
         {
             var receiptMID = Bl.GetReceiptHead(parReceipt,true);
             if (receiptMID == null)
@@ -344,7 +344,7 @@ namespace ModernIntegration
                 TerminalId = receiptMID.TerminalId,
                 Amount = receiptMID.SumReceipt, //!!!TMP Сума чека.
                 Discount = receiptMID.SumDiscount,
-                TotalAmount = receiptMID.SumReceipt - receiptMID.SumBonus,
+                TotalAmount = receiptMID.SumReceipt - receiptMID.SumBonus- receiptMID.SumDiscount,
                 CustomerId = new Client(receiptMID.CodeClient).ClientId,
                 CreatedAt = receiptMID.DateCreate,
                 UpdatedAt = receiptMID.DateReceipt, 
