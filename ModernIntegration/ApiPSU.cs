@@ -261,7 +261,7 @@ namespace ModernIntegration
                         DeltaWeight = Convert.ToDouble(Global.GetCoefDeltaWeight(
                             (receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto))* (receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto))  }                    
             );
-            if (receiptWares.AdditionalWeights != null)
+            if (!receiptWares.IsWeight && receiptWares.AdditionalWeights != null)
                 foreach (var el in receiptWares.AdditionalWeights)
                     LWI.Add(new WeightInfo { DeltaWeight = Convert.ToDouble(Global.GetCoefDeltaWeight(el))*Convert.ToDouble(el), Weight = Convert.ToDouble(el) });
             var varTags = (receiptWares.TypeWares > 0 || (!receiptWares.IsWeight && receiptWares.WeightBrutto == 0))
