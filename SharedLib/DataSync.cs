@@ -229,7 +229,7 @@ namespace SharedLib
                 var res = await soapTo1C.RequestAsync(Global.Server1C, body);
                 res = res.Replace('.', ',');
                 if (!string.IsNullOrEmpty(res) && decimal.TryParse(res, out Sum))
-                    parClient.SumBonus = Sum;
+                    parClient.SumMoneyBonus = Sum; //!!!TMP
                 body = soapTo1C.GenBody("GetMoneySum", new Parameters[] { new Parameters("CodeOfCard", parClient.BarCode) });
                 res = await soapTo1C.RequestAsync(Global.Server1C, body);
                 res = res.Replace('.', ',');

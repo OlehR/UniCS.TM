@@ -276,7 +276,10 @@ namespace ModernIntegration
 
             // Якщо немає ваги відключаємо її контроль 
             if (!receiptWares.IsWeight && LWI.Count() == 0)
-                varTags.Add(new Tag { Id = 3, Key = "AutoAcceptRule" }); 
+                varTags.Add(new Tag { Id = 3, Key = "AutoAcceptRule" });
+
+            //if()
+//                new Tag { Id = 4, Key = "NoWeightedProduct" });
 
             var Res = new ProductViewModel()
             {
