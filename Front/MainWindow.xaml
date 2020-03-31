@@ -14,65 +14,46 @@
             <RowDefinition Height="100"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*"></ColumnDefinition>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
-                <ColumnDefinition Width="3*"></ColumnDefinition>
-                <ColumnDefinition Width="2*"></ColumnDefinition>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Margin="10" FontSize="24" FontWeight="Bold">? Допомога</Button>
-            <Label Grid.Column="3" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center">Кількість товарів :</Label>
-            <TextBlock Grid.Column="4" 
-                       TextAlignment="Center" 
+        <Border Grid.Row="0" BorderBrush="Gray" BorderThickness="1"  CornerRadius="10">
+            
+            <Border.Effect>
+                <DropShadowEffect ShadowDepth="0" BlurRadius="10"/>
+            </Border.Effect>
+            <Grid  Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                    <ColumnDefinition Width="3*"></ColumnDefinition>
+                    <ColumnDefinition Width="2*"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" FontSize="24" >? Допомога</Button>
+                <TextBlock Grid.Column="3" FontSize="22" HorizontalAlignment="Center">
+                    <TextBlock.Text> Кількість товарів :</TextBlock.Text>
+                </TextBlock>
+                <TextBlock Grid.Column="4" 
                        FontSize="22"
                        Text="{Binding WaresQuantity, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" 
-                       HorizontalAlignment="Center" 
-                       VerticalAlignment="Center">
-            </TextBlock>
-        </Grid>
+                                   Mode=FindAncestor, AncestorType=Window}}" >
+                </TextBlock>
 
+            </Grid>
+        </Border>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="3*"></ColumnDefinition>
+                <ColumnDefinition Width="4*"></ColumnDefinition>
                 <ColumnDefinition Width="2*"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Label Grid.Column="0"
-                   FontSize="18"
-                   FontWeight="Bold"
-                   HorizontalAlignment="Left"
-                   VerticalAlignment="Center" Margin="20,0,0,0">Назва</Label>
-            <Label Grid.Column="1"
-                   FontSize="18"
-                   FontWeight="Bold"
-                   HorizontalAlignment="Left"
-                   VerticalAlignment="Center">Кількасть</Label>
-            <Label Grid.Column="2"
-                   FontSize="18"
-                   FontWeight="Bold"
-                   HorizontalAlignment="Left"
-                   VerticalAlignment="Center">Вага</Label>
-            <Label Grid.Column="3"
-                   FontSize="18"
-                   FontWeight="Bold"
-                   HorizontalAlignment="Left"
-                   VerticalAlignment="Center">Ціна</Label>
-            <Label Grid.Column="4"
-                   FontSize="18"
-                   FontWeight="Bold"
-                   HorizontalAlignment="Left"
-                   VerticalAlignment="Center">Знижка</Label>
-            <Label Grid.Column="5"
-                   FontSize="18"
-                   FontWeight="Bold"
-                   HorizontalAlignment="Left"
-                   VerticalAlignment="Center">Всього</Label>
+            <TextBlock Grid.Column="0">Назва</TextBlock>
+            <TextBlock Grid.Column="1">Кількість</TextBlock>
+            <TextBlock Grid.Column="2">Вага</TextBlock>
+            <TextBlock Grid.Column="3">Ціна</TextBlock>
+            <TextBlock Grid.Column="4">Знижка</TextBlock>
+            <TextBlock Grid.Column="5">Всього</TextBlock>
         </Grid>
 
 
@@ -80,9 +61,10 @@
         <ItemsControl Grid.Row="2" Name="WaresList">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Grid>
+                    <Border  BorderBrush="Silver" BorderThickness="0,1,0,1" >
+                    <Grid >
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="5*"></ColumnDefinition>
+                            <ColumnDefinition Width="4*"></ColumnDefinition>
                             <ColumnDefinition Width="2*"></ColumnDefinition>
                             <ColumnDefinition Width="1*"></ColumnDefinition>
                             <ColumnDefinition Width="1*"></ColumnDefinition>
@@ -90,26 +72,36 @@
                             <ColumnDefinition Width="1*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Margin="10" FontSize="18" FontWeight="Bold" Grid.Column="0" Text="{Binding NameWares}" />
-                        <StackPanel Grid.Column="1" Orientation="Horizontal">
-                            <Button Margin="5">Видалити</Button>
-                            <Button MinWidth="35" Margin="5">-</Button>
-                            <TextBlock Margin="10" FontSize="18" FontWeight="Bold"  Grid.Column="2" Text="{Binding Quantity}" />
-                            <Button MinWidth="35" Margin="5">+</Button>
-                        </StackPanel>
-                        <TextBlock Margin="10" FontSize="18" FontWeight="Bold"  Grid.Column="2" Text="{Binding Weight}" />
-                        <TextBlock Margin="10" FontSize="18" FontWeight="Bold"  Grid.Column="3" Text="{Binding Price}" />
-                        <TextBlock Margin="10" FontSize="18" FontWeight="Bold"  Grid.Column="4" Text="{Binding SumDiscount}" />
-                        <TextBlock Margin="10" FontSize="18" FontWeight="Bold"  Grid.Column="5" Text="{Binding Sum}" />
+                        <TextBlock Grid.Column="0" Text="{Binding NameWares}" />
+                        <Grid Grid.Column="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*"></ColumnDefinition>
+                                <ColumnDefinition Width="2*"></ColumnDefinition>
+                                <ColumnDefinition Width="3*"></ColumnDefinition>
+                                <ColumnDefinition Width="2*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+
+                            <Button Click="_Delete" >Видалити</Button>
+                            <Button Grid.Column="1">-</Button>
+                            <TextBlock Grid.Column="2" Text="{Binding Quantity}" />
+                            <Button  Grid.Column="3">+</Button>
+
+                        </Grid>
+
+                        <TextBlock Grid.Column="2" Text="{Binding WeightBrutto}" />
+                        <TextBlock Grid.Column="3" Text="{Binding Price}" />
+                        <TextBlock Grid.Column="4" Text="{Binding SumDiscount}" />
+                        <TextBlock Grid.Column="5" Text="{Binding Sum}" />
 
                     </Grid>
+                    </Border>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Label Margin="10" FontSize="22" FontWeight="Bold" Content="Всього :"/>
-            <TextBlock Margin="10"
+            <TextBlock FontSize="22" Text="Всього :"/>
+            <TextBlock MinWidth="50"
                        FontSize="22"
                        Text="{Binding MoneySum, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}">
@@ -117,7 +109,7 @@
         </StackPanel>
 
 
-        <Grid Grid.Row="4">
+        <Grid Grid.Row="4" Background="#e6ffff">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="3*"></ColumnDefinition>
@@ -125,11 +117,11 @@
                 <ColumnDefinition Width="3*"></ColumnDefinition>
                 <ColumnDefinition Width="5*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Margin="10" FontSize="22" FontWeight="Bold">Назад</Button>
-            <Button Grid.Column="1" Margin="10" FontSize="22" FontWeight="Bold">Пошук</Button>
-            <Button Grid.Column="2" Margin="10" FontSize="22" FontWeight="Bold">Власна сумка</Button>
-            <Button Grid.Column="3" Margin="10" FontSize="22" FontWeight="Bold">Придбати пакет</Button>
-            <Button Grid.Column="4" Margin="10" FontSize="22" FontWeight="Bold">Oплата</Button>
+            <Button Grid.Column="0" FontSize="22" >Назад</Button>
+            <Button Grid.Column="1" FontSize="22" >Пошук</Button>
+            <Button Grid.Column="2" FontSize="22" >Власна сумка</Button>
+            <Button Grid.Column="3" FontSize="22" >Придбати пакет</Button>
+            <Button Grid.Column="4" FontSize="22" >Oплата</Button>
         </Grid>
 
     </Grid>

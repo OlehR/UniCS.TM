@@ -1,9 +1,12 @@
 ﻿//using Hangfire.Annotations;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Controls;
 using Front.Models;
 using ModelMID;
 using SharedLib;
@@ -13,83 +16,38 @@ namespace Front
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        private string _waresQuantity;
-        public string WaresQuantity
-        {
-            private set
-            {
-                _waresQuantity = value;
-                OnPropertyChanged(nameof(WaresQuantity));
-            }
-            get
-            {
-                return _waresQuantity;
-            }
-        }
-
-        private string _moneySum;
-        public string MoneySum
-        {
-            private set
-            {
-                _moneySum = value;
-                OnPropertyChanged(nameof(MoneySum));
-            }
-            get
-            {
-                return _moneySum;
-            }
-        }
-
-
         public event PropertyChangedEventHandler PropertyChanged;
 
-   //     [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
-        }
+
+        public string WaresQuantity { get; set; }
+        public string MoneySum { get; set; }
+        public ObservableCollection<ReceiptWares> ListWares { get; set; }
+
+
 
         public MainWindow()
         {
-            WaresQuantity = "100500";
-            MoneySum = "200500 грн";
-            
-            /*
-            List<Ware> Wares = new List<Ware>();
+            WaresQuantity = "0";
+            MoneySum = "0";
 
-            Wares.Add(new Ware() { Name = "горох", Quantity = 1, Discount = 0.3m, Price = 1.9m, Weight = 200m, Sum = 500.0m });
-            Wares.Add(new Ware() { Name = "горох1", Quantity = 1, Discount = 0.3m, Price = 1.9m, Weight = 200m, Sum = 500.0m });
-            Wares.Add(new Ware() { Name = "Сіль ", Quantity = 1, Discount = 0.3m, Price = 1.9m, Weight = 200m, Sum = 500.0m });
-            */
 
             InitializeComponent();
-            
-            var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-          
-            var r = GetData();
 
-            WaresList.ItemsSource = r;// Wares;
+            MainWindowCS Processing = new MainWindowCS();
+
+            ListWares = new ObservableCollection<ReceiptWares>(Processing.GetData().ToList());
+
+            WaresQuantity = ListWares.Count.ToString();
+
+            WaresList.ItemsSource = ListWares;// Wares;
         }
 
-        private  IEnumerable<ReceiptWares> GetData()
+        private void _Delete(object sender, RoutedEventArgs e)
         {
-            var Bl = new BL(true);
-            //_ = await Bl.SyncDataAsync(true);
-            var TerminalId = Guid.Parse("1bb89aa9-dbdf-4eb0-b7a2-094665c3fdd0");
-            var ReciptId = Bl.GetNewIdReceipt(TerminalId);
-            Bl.AddWaresBarCode(ReciptId, "4823086109988", 10);
-            Bl.AddWaresBarCode(ReciptId, "7622300813437", 1);
-            Bl.AddWaresBarCode(ReciptId, "2201652300229", 3);
-            Bl.AddWaresBarCode(ReciptId, "1110011760018", 11);
-            return Bl.GetWaresReceipt(ReciptId);
+            Button btn = sender as Button;
+            ListWares.Remove((ReceiptWares)btn.DataContext);
         }
-        private async System.Threading.Tasks.Task LoadDataAsync() {
-            var Bl = new BL();
-            _ = await Bl.SyncDataAsync(true);}
-        }
-
     }
+}
