@@ -275,8 +275,8 @@ namespace ModernIntegration
                 varTags.Add(new Tag() { Key = "TimeRestricted", Id = 1, RuleValue = "{\"Start\":\"" + Global.AlcoholTimeStart + "\",\"Stop\":\"" + Global.AlcoholTimeStop + "\"}" });
 
             // Якщо немає ваги відключаємо її контроль 
-            //if (!receiptWares.IsWeight && receiptWares.WeightBrutto == 0)
-                //varTags.Add(new Tag { Id = 3, Key = "NoWeightedProduct" }); 
+            if (!receiptWares.IsWeight && LWI.Count() == 0)
+                varTags.Add(new Tag { Id = 3, Key = "AutoAcceptRule" }); 
 
             var Res = new ProductViewModel()
             {
