@@ -35,10 +35,10 @@ namespace Test
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-            await CreateDataBaseAsync(false); //Створення бази
+            //await CreateDataBaseAsync(false); //Створення бази
             //Thread.Sleep(10000);
             //TestKit();
-            //TestReceipt(); //
+            TestReceipt(); //
                            //CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
                            //            var o = new SharedLib.Oracle();
                            //var r =  o.Execute<ReceiptWares>("select w.code_wares CodeWares,w.name_wares as NameWares from dw.wares w where w.code_wares in (54882,54883)");
@@ -79,7 +79,10 @@ namespace Test
             var TerminalId = Guid.Parse("1bb89aa9-dbdf-4eb0-b7a2-094665c3fdd0");
             var ProductId = Guid.Parse("00000000-abcd-0000-0019-000000166767");
             var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009000");
+            var ReceiptId = Guid.Parse("00000062-ffff-2020-0326-000000000008");
             var api = new ApiPSU();
+
+            var rrr=api.GetReceiptViewModel(new IdReceipt {CodePeriod=20200326,IdWorkplace=62,CodeReceipt=8} );
 
             
             //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200212, IdWorkplace = 62, CodeReceipt = 10 });  return;
@@ -93,8 +96,9 @@ namespace Test
             var ddd1  = api.GetProductsByName(TerminalId, "", 1, false, FastGroup);
             var ddd2 = api.GetProductsByName(TerminalId, "пом", 0, false, FastGroup);
 
+            sd = api.AddProductByBarCode(TerminalId, "2201901100426", 1); //
 
-            var rrr= api.GetReceipts(DateTime.Parse("2020-02-03T00:00:00"), DateTime.Parse("2020-02-03T23:59:59.999"), TerminalId);
+            //var rrr= api.GetReceipts(DateTime.Parse("2020-02-03T00:00:00"), DateTime.Parse("2020-02-03T23:59:59.999"), TerminalId);
 
             //Thread.Sleep(1000000);
             //var reseipt = api.GetReceipts(DateTime.Now.Date, DateTime.Now.Date);
