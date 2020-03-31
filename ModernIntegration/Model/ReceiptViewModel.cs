@@ -202,8 +202,10 @@ namespace ModernIntegration.ViewModels
             Id = receipt.Id;
             FiscalNumber = receipt.FiscalNumber;
             Status = receipt.Status;
+            Amount = receipt.Amount;
             TerminalId = receipt.TerminalId;
             TotalAmount = receipt.TotalAmount;
+            Discount = receipt.Discount;
             Customer = customer;
             CreatedAt = receipt.CreatedAt;
             UpdatedAt = receipt.UpdatedAt;
