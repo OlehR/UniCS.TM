@@ -99,6 +99,7 @@ namespace ModernIntegration.Models
 		public decimal PosPaid { get; set; }
 
         public decimal PosAddAmount { get; set; }
+        public long InvoiceNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the created at.
