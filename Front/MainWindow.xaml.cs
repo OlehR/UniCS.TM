@@ -49,5 +49,27 @@ namespace Front
             Button btn = sender as Button;
             ListWares.Remove((ReceiptWares)btn.DataContext);
         }
+
+        private void _Minus(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            if (btn.DataContext is ReceiptWares)
+            {
+                ReceiptWares temp = btn.DataContext as ReceiptWares;
+                temp.Quantity--;
+                WaresList.Items.Refresh();
+            }
+        }
+
+        private void _Plus(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            if (btn.DataContext is ReceiptWares)
+            {
+                ReceiptWares temp = btn.DataContext as ReceiptWares;
+                temp.Quantity ++;
+                WaresList.Items.Refresh();
+            }
+        }
     }
 }

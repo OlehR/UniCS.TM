@@ -14,22 +14,22 @@
             <RowDefinition Height="100"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <Border Grid.Row="0" BorderBrush="Gray" BorderThickness="1"  CornerRadius="10">
-            
+        <Border Grid.Row="0" Margin="5" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
             <Border.Effect>
-                <DropShadowEffect ShadowDepth="0" BlurRadius="10"/>
+                <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
             </Border.Effect>
             <Grid  Grid.Row="0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"></ColumnDefinition>
                     <ColumnDefinition Width="1*"></ColumnDefinition>
-                    <ColumnDefinition Width="3*"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                    <ColumnDefinition Width="4*"></ColumnDefinition>
                     <ColumnDefinition Width="2*"></ColumnDefinition>
                     <ColumnDefinition Width="1*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" FontSize="24" >? Допомога</Button>
+
+                <Button Style="{StaticResource yelowButton}" Grid.Column="0" FontSize="24" >? Допомога</Button>
                 <TextBlock Grid.Column="3" FontSize="22" HorizontalAlignment="Center">
-                    <TextBlock.Text> Кількість товарів :</TextBlock.Text>
+                    <TextBlock.Text>Кількість товарів :</TextBlock.Text>
                 </TextBlock>
                 <TextBlock Grid.Column="4" 
                        FontSize="22"
@@ -39,7 +39,11 @@
 
             </Grid>
         </Border>
-        <Grid Grid.Row="1">
+        <Border Grid.Row="1"  Background="White" BorderThickness="0,0,0,1" >
+            <Border.Effect>
+                <DropShadowEffect ShadowDepth="5" BlurRadius="4" Color="#f2f2f2"/>
+            </Border.Effect>
+        <Grid Grid.Row="1" Margin="10,0,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="4*"></ColumnDefinition>
                 <ColumnDefinition Width="2*"></ColumnDefinition>
@@ -55,49 +59,109 @@
             <TextBlock Grid.Column="4">Знижка</TextBlock>
             <TextBlock Grid.Column="5">Всього</TextBlock>
         </Grid>
+        </Border>
 
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+            <ItemsControl Grid.Row="2" Name="WaresList">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border  BorderBrush="Silver" BorderThickness="0,0,0,1" >
+                            <Grid Margin="10,0,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="4*"></ColumnDefinition>
+                                    <ColumnDefinition Width="2*"></ColumnDefinition>
+                                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
 
+                                <TextBlock Grid.Column="0" Text="{Binding NameWares}" />
+                                <Grid Grid.Column="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
 
-        <ItemsControl Grid.Row="2" Name="WaresList">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Border  BorderBrush="Silver" BorderThickness="0,1,0,1" >
-                    <Grid >
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="4*"></ColumnDefinition>
-                            <ColumnDefinition Width="2*"></ColumnDefinition>
-                            <ColumnDefinition Width="1*"></ColumnDefinition>
-                            <ColumnDefinition Width="1*"></ColumnDefinition>
-                            <ColumnDefinition Width="1*"></ColumnDefinition>
-                            <ColumnDefinition Width="1*"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
+                                    <Button Click="_Delete" Style="{StaticResource yelowButton}">
+                                        <Image Margin="5" Source="icons\delete.png"></Image>
+                                    </Button>
+                                    <Button Click="_Minus" Grid.Column="1">
+                                        <Button.Content>
+                                            <Image Margin="15" Source="icons\minus.png"></Image>
+                                        </Button.Content>
+                                        <Button.Style>
+                                            <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                                                <Setter Property="IsEnabled" Value="true"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ElementName=QuantityText, Path=Text}" Value="1">
+                                                        <Setter Property="IsEnabled" Value="False"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                    <TextBlock x:Name="QuantityText" Grid.Column="2">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Margin" Value="10"></Setter>
+                                                <Setter Property="FontSize" Value="18"></Setter>
+                                                <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+                                                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                                <Setter Property="Text" Value="{Binding Quantity}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsWeight}" Value="True">
+                                                        <Setter Property="Text" Value="1"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                    <Button Click="_Plus" Grid.Column="3">
+                                        <Button.Content>
+                                            <Image Margin="15" Source="icons\plus.png"></Image>
+                                        </Button.Content>
+                                        <Button.Style>
+                                            <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                                                <Setter Property="IsEnabled" Value="true"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsWeight}" Value="True">
+                                                        <Setter Property="IsEnabled" Value="False"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style></Button>
 
-                        <TextBlock Grid.Column="0" Text="{Binding NameWares}" />
-                        <Grid Grid.Column="1">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="2*"></ColumnDefinition>
-                                <ColumnDefinition Width="2*"></ColumnDefinition>
-                                <ColumnDefinition Width="3*"></ColumnDefinition>
-                                <ColumnDefinition Width="2*"></ColumnDefinition>
-                            </Grid.ColumnDefinitions>
+                                </Grid>
 
-                            <Button Click="_Delete" >Видалити</Button>
-                            <Button Grid.Column="1">-</Button>
-                            <TextBlock Grid.Column="2" Text="{Binding Quantity}" />
-                            <Button  Grid.Column="3">+</Button>
+                                <TextBlock Grid.Column="2">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Margin" Value="10"></Setter>
+                                            <Setter Property="FontSize" Value="18"></Setter>
+                                            <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+                                            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                            <Setter Property="Text" Value="{Binding WeightBrutto}"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsWeight}" Value="True">
+                                                    <Setter Property="Text" Value="{Binding Quantity}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <TextBlock Grid.Column="3" Text="{Binding Price}" />
+                                <TextBlock Grid.Column="4" Text="{Binding SumDiscount}" />
+                                <TextBlock Grid.Column="5" Text="{Binding Sum}" />
 
-                        </Grid>
-
-                        <TextBlock Grid.Column="2" Text="{Binding WeightBrutto}" />
-                        <TextBlock Grid.Column="3" Text="{Binding Price}" />
-                        <TextBlock Grid.Column="4" Text="{Binding SumDiscount}" />
-                        <TextBlock Grid.Column="5" Text="{Binding Sum}" />
-
-                    </Grid>
-                    </Border>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
 
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
             <TextBlock FontSize="22" Text="Всього :"/>
@@ -109,7 +173,7 @@
         </StackPanel>
 
 
-        <Grid Grid.Row="4" Background="#e6ffff">
+        <Grid Grid.Row="4" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="3*"></ColumnDefinition>
@@ -117,11 +181,13 @@
                 <ColumnDefinition Width="3*"></ColumnDefinition>
                 <ColumnDefinition Width="5*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" FontSize="22" >Назад</Button>
-            <Button Grid.Column="1" FontSize="22" >Пошук</Button>
-            <Button Grid.Column="2" FontSize="22" >Власна сумка</Button>
-            <Button Grid.Column="3" FontSize="22" >Придбати пакет</Button>
-            <Button Grid.Column="4" FontSize="22" >Oплата</Button>
+            <Button Style="{StaticResource yelowButton}" Grid.Column="0" FontSize="22" >
+                <Image Margin="5" Source="icons\back.png"></Image>
+            </Button>
+            <Button  Style="{StaticResource Default}" Grid.Column="1" FontSize="22" >Пошук</Button>
+            <Button Style="{StaticResource Default}" Grid.Column="2" FontSize="22" >Власна сумка</Button>
+            <Button Style="{StaticResource yelowButton}" Grid.Column="3" FontSize="22" >Придбати пакет</Button>
+            <Button Style="{StaticResource Default}" Grid.Column="4" FontSize="22" >Oплата</Button>
         </Grid>
 
     </Grid>

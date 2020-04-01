@@ -7,12 +7,26 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="icons\back.png" />
+    <None Remove="icons\delete.png" />
+    <None Remove="icons\minus.png" />
+    <None Remove="icons\plus.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="PropertyChanged.Fody" Version="3.2.7" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ModelMID\ModelMID.csproj" />
     <ProjectReference Include="..\SharedLib\SharedLib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="icons\back.png" />
+    <Resource Include="icons\delete.png" />
+    <Resource Include="icons\minus.png" />
+    <Resource Include="icons\plus.png" />
   </ItemGroup>
 
   <ItemGroup>
