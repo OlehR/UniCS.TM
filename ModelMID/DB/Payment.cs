@@ -10,7 +10,10 @@ namespace ModelMID
         public decimal SumPay  { get; set;}
         public decimal SumExt { get; set; }
         public string NumberTerminal { get; set; }
-        public string NumberReceipt { get; set; }
+        /// <summary>
+        /// Номер чека
+        /// </summary>
+        public long NumberReceipt { get; set; }
         public string CodeAuthorization { get; set; }
         public string NumberSlip { get; set; }
         public string NumberCard { get; set; }
@@ -23,6 +26,7 @@ namespace ModelMID
         /// </summary>
         public decimal PosAddAmount { get; set; }
         public DateTime DateCreate { get; set; }
+        
         public Payment(Guid parReceipt) : base(parReceipt) { }
         public Payment(IdReceipt parIdReceipt) : base(parIdReceipt) { }
         public Payment() { }

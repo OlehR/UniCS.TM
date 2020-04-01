@@ -480,14 +480,15 @@ namespace ModernIntegration
             {
                 TypePay = (eTypePay)(int)parRP.PaymentType,
                 SumPay = parRP.PayIn,
-                NumberReceipt = parRP.TransactionId,
+                NumberReceipt =  parRP.InvoiceNumber, //parRP.TransactionId,
                 NumberCard = parRP.CardPan,
                 CodeAuthorization = parRP.TransactionCode, //RRN
                 NumberTerminal=parRP.PosTerminalId,
                 NumberSlip = parRP.PosAuthCode, //код авторизації
                 PosPaid =parRP.PosPaid,
                 PosAddAmount=parRP.PosAddAmount,
-                DateCreate=parRP.CreatedAt
+                DateCreate=parRP.CreatedAt,
+                 
             };
         }
 
@@ -497,7 +498,7 @@ namespace ModernIntegration
             {
                 PaymentType = (PaymentType)(int)parRP.TypePay,
                 PayIn = parRP.SumPay,
-                TransactionId = parRP.NumberReceipt,
+                InvoiceNumber = parRP.NumberReceipt,
                 CardPan = parRP.NumberCard,
                 TransactionCode = parRP.CodeAuthorization, //RRN
                 PosTerminalId = parRP.NumberTerminal,
