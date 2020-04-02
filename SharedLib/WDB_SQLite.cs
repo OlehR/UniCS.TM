@@ -191,10 +191,11 @@ namespace SharedLib
                     ParameterPromotion par;
                     var InfoClient = GetInfoClientByReceipt(parIdReceipt);
                     if (InfoClient.Count() == 1)
-                        par = InfoClient.First();
+                        par = InfoClient.First();                        
                     else
-                        par = new ParameterPromotion();
-
+                      par = new ParameterPromotion();                    
+                    
+                    //par.BirthDay = DateTime.Now.Date; Test
                     par.CodeWarehouse = Global.CodeWarehouse;
                     par.Time = Convert.ToInt32(RH.DateReceipt.ToString("HHmm"));
                     par.CodeDealer = Global.DefaultCodeDealer;

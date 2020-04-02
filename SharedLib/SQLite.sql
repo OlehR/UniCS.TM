@@ -328,8 +328,10 @@ select CODE_PS --,22 --*,strftime('%H%M',datetime('now','localtime'))
 union --День народження
 select CODE_PS --,23 --*,strftime('%H%M',datetime('now','localtime')) 
     from PROMOTION_SALE_FILTER PSF where  
-     PSF.TYPE_GROUP_FILTER=23  and 
-	 strftime('%m%d',date(@BirthDay)) between strftime('%m%d',date(date('now','localtime'), '-1 day')) and strftime('%m%d',date(date('now','localtime'), '+1 day'))     
+     PSF.TYPE_GROUP_FILTER=23  and  (date(@BirthDay)<date('1900-01-01')  or not (
+      date(date(@BirthDay), cast(cast(round((JulianDay(date('now','localtime')) - JulianDay(@BirthDay))/365.2425) as integer) as text)||' year') --найближчий день народження
+      between date(date('now','localtime'), '-1 day') and date(date('now','localtime'), '1 day') ) )
+	 --strftime('%m%d',date(@BirthDay)) between strftime('%m%d',date(date('now','localtime'), '-1 day')) and strftime('%m%d',date(date('now','localtime'), '+1 day')) )
 union  --Виключення по товару  
 select PSF.CODE_PS
 from PROMOTION_SALE_FILTER PSF where  PSF.TYPE_GROUP_FILTER=11 and PSF.RULE_GROUP_FILTER=-1 and   PSF.CODE_DATA=@CodeWares     
@@ -913,18 +915,24 @@ CREATE UNIQUE INDEX CLIENT_BC ON CLIENT ( BARCODE );
 
 CREATE UNIQUE INDEX PRICE_ID ON PRICE ( CODE_DEALER, CODE_WARES );
 
-CREATE INDEX FAST_GROUP_ID ON FAST_GROUP ( CODE_UP,Code_Fast_Group);
+CREATE UNIQUE INDEX FAST_GROUP_ID ON FAST_GROUP ( CODE_UP,Code_Fast_Group);
+
 CREATE UNIQUE INDEX FAST_WARES_ID ON FAST_WARES ( Code_Fast_Group,Code_WARES);
 
 CREATE UNIQUE INDEX PROMOTION_SALE_ID ON PROMOTION_SALE ( CODE_PS);
 
-CREATE INDEX PROMOTION_SALE_DEALER_ID ON PROMOTION_SALE_DEALER (Code_Wares,DATE_BEGIN,DATE_END);
+CREATE INDEX PROMOTION_SALE_DEALER_WD ON PROMOTION_SALE_DEALER (Code_Wares,DATE_BEGIN,DATE_END);
+CREATE UNIQUE INDEX PROMOTION_SALE_DEALER_ID ON PROMOTION_SALE_DEALER (CODE_PS,Code_Wares,DATE_BEGIN,DATE_END,CODE_DEALER);
+
+CREATE UNIQUE INDEX PROMOTION_SALE_FILTER_ID ON PROMOTION_SALE_FILTER (CODE_PS, CODE_GROUP_FILTER, TYPE_GROUP_FILTER, RULE_GROUP_FILTER, CODE_PROPERTY, CODE_CHOICE,CODE_DATA);
+
+CREATE UNIQUE INDEX PROMOTION_SALE_GIFT_ID ON PROMOTION_SALE_GIFT ( CODE_PS, NUMBER_GROUP,CODE_WARES,TYPE_DISCOUNT, DATA);
 
 CREATE UNIQUE INDEX PROMOTION_SALE_GROUP_WARES_ID ON PROMOTION_SALE_GROUP_WARES ( CODE_GROUP_WARES,CODE_GROUP_WARES_PS );
 
 CREATE UNIQUE INDEX PROMOTION_SALE_2_category_ID ON PROMOTION_SALE_2_category ( Code_WARES,CODE_PS );
 
-CREATE INDEX ADD_WEIGHT_W ON ADD_WEIGHT ( CODE_WARES );
+CREATE UNIQUE INDEX ADD_WEIGHT_W ON ADD_WEIGHT ( CODE_WARES,CODE_UNIT,WEIGHT );
 
 CREATE TABLE VER_MID ( ver INTEGER  NOT NULL);
 insert into VER_MID(ver) values (0);
@@ -962,8 +970,6 @@ replace into FAST_WARES ( Code_Fast_Group, Code_wares) values (@CodeFastGroup,@C
 replace into PROMOTION_SALE (CODE_PS, NAME_PS, CODE_PATTERN, STATE, DATE_BEGIN, DATE_END, TYPE, TYPE_DATA, PRIORITY, SUM_ORDER, TYPE_WORK_COUPON, BAR_CODE_COUPON, DATE_CREATE, USER_CREATE) values 
 							(@CodePS, @NamePs, @CodePattern,@State, @DateBegin, @DateEnd,@Type, @TypeData,@Priority, @SumOrder, @TypeWorkCoupon,  @BarCodeCoupon,  @DateCreate, @UserCreate);
 
-
-
 [SqlReplacePromotionSaleData]
 replace into PROMOTION_SALE_DATA (CODE_PS, NUMBER_GROUP, CODE_WARES, USE_INDICATIVE, TYPE_DISCOUNT,  ADDITIONAL_CONDITION, DATA , DATA_ADDITIONAL_CONDITION) 
                           values (@CodePS, @NumberGroup, @CodeWares, @UseIndicative, @TypeDiscount,  @AdditionalCondition, @Data ,@DataAdditionalCondition)
@@ -971,11 +977,7 @@ replace into PROMOTION_SALE_DATA (CODE_PS, NUMBER_GROUP, CODE_WARES, USE_INDICAT
 [SqlReplacePromotionSaleFilter]
 replace into PROMOTION_SALE_FILTER (CODE_PS, CODE_GROUP_FILTER, TYPE_GROUP_FILTER, RULE_GROUP_FILTER, CODE_CHOICE, CODE_DATA, CODE_DATA_END)
                           values (@CodePS, @CodeGroupFilter, @TypeGroupFilter,@RuleGroupFilter, @CodeChoice, @CodeData, @CodeDataEnd)
-
  
-[SqlReplacePromotionSaleGiff]
-
-
 [SqlReplacePromotionSaleDealer]
 replace into PROMOTION_SALE_DEALER ( CODE_PS,Code_Wares,DATE_BEGIN,DATE_END,Code_Dealer) values (@CodePS,@CodeWares,@DateBegin,@DateEnd,@CodeDealer);--@CodePS,@CodeWares,@DateBegin,@DateEnd,@CodeDealer
 
