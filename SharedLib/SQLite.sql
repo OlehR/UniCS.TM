@@ -706,7 +706,7 @@ update rc.receipt set CODE_PATTERN=2  where id_workplace=@IdWorkplaceReturn and 
 
 
 [SqlGetFastGroup]
-select code_up as CodeUp,CODE_FAST_GROUP as CodeFastGroup,NAME  from FAST_GROUP where code_up=@CodeUp
+select code_up as CodeUp,CODE_FAST_GROUP as CodeFastGroup,NAME  from FAST_GROUP where code_up=@CodeUp order by CODE_FAST_GROUP
 
 [SqlCreateMIDTable]
 
