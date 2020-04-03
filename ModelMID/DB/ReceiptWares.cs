@@ -182,29 +182,27 @@ namespace ModelMID
             Quantity = 0;
             IsSave = false;
         }
-        /* public override bool Equals(object obj)
-        {
-            var o = (IdReceiptWares)obj;
-            return IdWorkplace == o.IdWorkplace && CodePeriod == o.CodePeriod && CodeReceipt == o.CodeReceipt && CodeWares==o.CodeWares;
-        }
-               public virtual void SetWares(DataRow parRw, int parTypeFound = 0)
-                {
-                    Clear();
-                    if (parRw != null)
-                    {
-                        CodeWares = Convert.ToInt32(parRw["code_wares"]);
-                        NameWares = Convert.ToString(parRw["name_wares"]);
-                        NameWaresReceipt = Convert.ToString(parRw["name_wares_receipt"]);
-                        PercentVat = Convert.ToInt32(parRw["percent_vat"]);
-                        CodeUnit = Convert.ToInt32(parRw["code_unit"]);
-                        Price = Convert.ToDecimal(parRw["price_dealer"]);
-                        Coefficient = Convert.ToInt32(parRw["coefficient"]);
-                        TypeFound = Convert.ToInt32(parTypeFound);
-                        TypePrice = Convert.ToInt32(parRw["Type_Price"]);
-                        TypeVat = Convert.ToInt32(parRw["Type_Vat"]);
-                    }
+   
+        
+        /*
+             public virtual void SetWares(DataRow parRw, int parTypeFound = 0)
+              {
+                  Clear();
+                  if (parRw != null)
+                  {
+                      CodeWares = Convert.ToInt32(parRw["code_wares"]);
+                      NameWares = Convert.ToString(parRw["name_wares"]);
+                      NameWaresReceipt = Convert.ToString(parRw["name_wares_receipt"]);
+                      PercentVat = Convert.ToInt32(parRw["percent_vat"]);
+                      CodeUnit = Convert.ToInt32(parRw["code_unit"]);
+                      Price = Convert.ToDecimal(parRw["price_dealer"]);
+                      Coefficient = Convert.ToInt32(parRw["coefficient"]);
+                      TypeFound = Convert.ToInt32(parTypeFound);
+                      TypePrice = Convert.ToInt32(parRw["Type_Price"]);
+                      TypeVat = Convert.ToInt32(parRw["Type_Vat"]);
+                  }
 
-                }*/
+              }*/
 
     }
 }
