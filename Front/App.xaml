@@ -74,19 +74,19 @@
                                         <Storyboard>
                                             <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[0].(GradientStop.Color)" 
                                                                           Storyboard.TargetName="Border">
-                                                <EasingColorKeyFrame KeyTime="0" Value="#ace600" />
+                                                <EasingColorKeyFrame KeyTime="0" Value="#ff8000" />
                                             </ColorAnimationUsingKeyFrames>
                                             <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)" 
                                                                           Storyboard.TargetName="Border">
-                                                <EasingColorKeyFrame KeyTime="0" Value="#d2ff4d" />
+                                                <EasingColorKeyFrame KeyTime="0" Value="#ff9933" />
                                             </ColorAnimationUsingKeyFrames>
                                             <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[2].(GradientStop.Color)" 
                                                                           Storyboard.TargetName="Border">
-                                                <EasingColorKeyFrame KeyTime="0" Value="#d2ff4d" />
+                                                <EasingColorKeyFrame KeyTime="0" Value="#ff9933" />
                                             </ColorAnimationUsingKeyFrames>
                                             <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[3].(GradientStop.Color)" 
                                                                           Storyboard.TargetName="Border">
-                                                <EasingColorKeyFrame KeyTime="0" Value="#ace600" />
+                                                <EasingColorKeyFrame KeyTime="0" Value="#ff8000" />
                                             </ColorAnimationUsingKeyFrames>
                                         </Storyboard>
                                     </VisualState>
@@ -154,19 +154,19 @@
                                         <Storyboard>
                                             <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[0].(GradientStop.Color)" 
                                                                           Storyboard.TargetName="Border">
-                                                <EasingColorKeyFrame KeyTime="0" Value="#ace600" />
+                                                <EasingColorKeyFrame KeyTime="0" Value="#ff8000" />
                                             </ColorAnimationUsingKeyFrames>
                                             <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)" 
                                                                           Storyboard.TargetName="Border">
-                                                <EasingColorKeyFrame KeyTime="0" Value="#d2ff4d" />
+                                                <EasingColorKeyFrame KeyTime="0" Value="#ff9933" />
                                             </ColorAnimationUsingKeyFrames>
                                             <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[2].(GradientStop.Color)" 
                                                                           Storyboard.TargetName="Border">
-                                                <EasingColorKeyFrame KeyTime="0" Value="#d2ff4d" />
+                                                <EasingColorKeyFrame KeyTime="0" Value="#ff9933" />
                                             </ColorAnimationUsingKeyFrames>
                                             <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[3].(GradientStop.Color)" 
                                                                           Storyboard.TargetName="Border">
-                                                <EasingColorKeyFrame KeyTime="0" Value="#ace600" />
+                                                <EasingColorKeyFrame KeyTime="0" Value="#ff8000" />
                                             </ColorAnimationUsingKeyFrames>
                                         </Storyboard>
                                     </VisualState>

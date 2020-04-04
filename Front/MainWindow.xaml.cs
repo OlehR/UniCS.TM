@@ -23,6 +23,7 @@ namespace Front
 
         public string WaresQuantity { get; set; }
         public string MoneySum { get; set; }
+        public bool Volume { get; set; }
         public ObservableCollection<ReceiptWares> ListWares { get; set; }
 
 
@@ -31,7 +32,7 @@ namespace Front
         {
             WaresQuantity = "0";
             MoneySum = "0";
-
+            Volume = true;
 
             InitializeComponent();
 
@@ -70,6 +71,11 @@ namespace Front
                 temp.Quantity ++;
                 WaresList.Items.Refresh();
             }
+        }
+
+        private void _VolumeButton(object sender, RoutedEventArgs e)
+        {
+            Volume = !Volume;
         }
     }
 }
