@@ -313,7 +313,7 @@ namespace SharedLib
             if ( parWares != Guid.Empty)
                 CodeWares= new IdReceiptWares(new IdReceipt(), parWares).CodeWares;
 
-            return db.InsertWeight(new { BarCode = (parTypeSaveWeight == TypeSaveWeight.Add ? CodeWares.ToString() : parBarCode), Weight = (decimal)parWeight / 1000m, Status = parTypeSaveWeight });
+            return db.InsertWeight(new { BarCode = (parTypeSaveWeight == TypeSaveWeight.Add || parBarCode==null ? CodeWares.ToString() : parBarCode), Weight = (decimal)parWeight / 1000m, Status = parTypeSaveWeight });
 
             /*if (parBarCode != null)
                 return db.InsertWeight(new { BarCode = parBarCode, Weight = (decimal)parWeight / 1000m, Status = 0 });
