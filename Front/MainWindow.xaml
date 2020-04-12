@@ -28,7 +28,9 @@
                     <ColumnDefinition Width="1.5*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
-                <Button Style="{StaticResource yelowButton}" Grid.Column="0" FontSize="30" >? Допомога</Button>
+                <Button Style="{StaticResource yelowButton}" Grid.Column="0" FontSize="30" >
+                    <TextBlock FontSize="28" Text="{DynamicResource buttonHelp}"/>
+                </Button>
 
                 <Grid Grid.Column="1">
                     <Grid.ColumnDefinitions>
@@ -78,17 +80,15 @@
                         </Image>
                     </Button>
                 </Grid>
-                
-                <TextBlock Grid.Column="3" FontSize="22" HorizontalAlignment="Center">
-                    <TextBlock.Text>Кількість товарів :</TextBlock.Text>
-                </TextBlock>
+
+                <TextBlock Grid.Column="3" FontSize="22" HorizontalAlignment="Center" Text ="{DynamicResource markWaresQuantity}"/>
                 <TextBlock Grid.Column="4" 
                        FontSize="22"
                        Text="{Binding WaresQuantity, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" >
                 </TextBlock>
 
-                <TextBlock Grid.Column="5" FontSize="22" Text="Всього :"/>
+                <TextBlock Grid.Column="5" FontSize="22" Text="{DynamicResource markInAll}"/>
                 <TextBlock Grid.Column="6"
                            FontSize="48"
                            FontWeight="Bold"
@@ -112,13 +112,13 @@
                 <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0">Назва</TextBlock>
-            <TextBlock Grid.Column="1">Кількість</TextBlock>
-            <TextBlock Grid.Column="2">Вага</TextBlock>
-            <TextBlock Grid.Column="3">Ціна</TextBlock>
-            <TextBlock Grid.Column="4">Знижка</TextBlock>
-            <TextBlock Grid.Column="5">Всього</TextBlock>
-        </Grid>
+                <TextBlock Grid.Column="0" Text="{DynamicResource markWareName}"/>
+                <TextBlock Grid.Column="1" Text="{DynamicResource markWareQuantity}"/>
+                <TextBlock Grid.Column="2" Text="{DynamicResource markWareWeight}"/>
+                <TextBlock Grid.Column="3" Text="{DynamicResource markWarePrice}"/>
+                <TextBlock Grid.Column="4" Text="{DynamicResource markWareDiscount}"/>
+                <TextBlock Grid.Column="5" Text="{DynamicResource markWareInAll}"/>
+            </Grid>
         </Border>
 
         <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
@@ -239,10 +239,18 @@
             <Button Style="{StaticResource yelowButton}" Grid.Column="0" FontSize="22" >
                 <Image Margin="5" Source="icons\back.png"></Image>
             </Button>
-            <Button  Style="{StaticResource Default}" Grid.Column="1" FontSize="22" >Пошук</Button>
-            <Button Style="{StaticResource Default}" Grid.Column="2" FontSize="22" >Власна сумка</Button>
-            <Button Style="{StaticResource yelowButton}" Grid.Column="3" FontSize="22" >Придбати пакет</Button>
-            <Button Style="{StaticResource Default}" Grid.Column="4" FontSize="22" >Oплата</Button>
+            <Button  Style="{StaticResource Default}" Grid.Column="1" FontSize="22" >
+                <TextBlock FontSize="28" Text="{DynamicResource search}"/>
+            </Button>
+            <Button Style="{StaticResource Default}" Grid.Column="2" FontSize="22" >
+                <TextBlock FontSize="28" Text="{DynamicResource ownBag}"/>
+            </Button>
+            <Button Style="{StaticResource yelowButton}" Grid.Column="3" FontSize="22" >
+                <TextBlock FontSize="28" Text="{DynamicResource buyBag}"/>
+            </Button>
+            <Button Style="{StaticResource Default}" Grid.Column="4" FontSize="22" >
+                <TextBlock FontSize="28" Text="{DynamicResource payment}"/>
+            </Button>
         </Grid>
 
     </Grid>
