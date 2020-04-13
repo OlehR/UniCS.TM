@@ -280,7 +280,7 @@ namespace ModernIntegration
 
             // Товар не потрібно зважувати. FoodToGo
             if(receiptWares.WeightFact==-1)
-                varTags.Add(new Tag { Id = 4, Key = "NoWeightedProduct" });
+                varTags.Add(new Tag { Id = 4, Key = "DoNotUseScales" });
 
             var Res = new ProductViewModel()
             {
