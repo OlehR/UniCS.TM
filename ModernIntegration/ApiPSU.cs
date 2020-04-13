@@ -275,11 +275,12 @@ namespace ModernIntegration
                 varTags.Add(new Tag() { Key = "TimeRestricted", Id = 1, RuleValue = "{\"Start\":\"" + Global.AlcoholTimeStart + "\",\"Stop\":\"" + Global.AlcoholTimeStop + "\"}" });
 
             // Якщо немає ваги відключаємо її контроль 
-            if (!receiptWares.IsWeight && LWI.Count() == 0)
+            if (!receiptWares.IsWeight && LWI.Count() == 0 && receiptWares.WeightFact != -1)
                 varTags.Add(new Tag { Id = 3, Key = "AutoAcceptRule" });
 
-            //if()
-//                new Tag { Id = 4, Key = "NoWeightedProduct" });
+            // Товар не потрібно зважувати. FoodToGo
+            if(receiptWares.WeightFact==-1)
+                varTags.Add(new Tag { Id = 4, Key = "NoWeightedProduct" });
 
             var Res = new ProductViewModel()
             {

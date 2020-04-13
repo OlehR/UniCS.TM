@@ -48,6 +48,7 @@ namespace ModelMID
         /// </summary>
         public int TypeWares { get; set; }
         public decimal WeightBrutto { get; set; }
+        public decimal WeightFact { get; set; }
 
 
 
