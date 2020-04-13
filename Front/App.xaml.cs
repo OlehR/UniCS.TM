@@ -27,9 +27,13 @@ namespace Front
 
 		public App()
 		{
+			InitializeComponent();
+
 			m_Languages.Clear();
-			m_Languages.Add(new CultureInfo("ua-UA")); //Нейтральная культура для этого проекта
-			m_Languages.Add(new CultureInfo("en-UK"));
+			m_Languages.Add(new CultureInfo("ua")); //Нейтральная культура для этого проекта
+			m_Languages.Add(new CultureInfo("en"));
+			m_Languages.Add(new CultureInfo("hu"));
+			m_Languages.Add(new CultureInfo("pln"));
 		}
 
 		//Евент для оповещения всех окон приложения
@@ -53,11 +57,11 @@ namespace Front
 				ResourceDictionary dict = new ResourceDictionary();
 				switch (value.Name)
 				{
-					case "en-UK":
-						dict.Source = new Uri(String.Format("Resources/lang.{0}.xaml", value.Name), UriKind.Relative);
+					case "ua":
+						dict.Source = new Uri("Resources/lang.xaml", UriKind.Relative);
 						break;
 					default:
-						dict.Source = new Uri("Resources/lang.xaml", UriKind.Relative);
+						dict.Source = new Uri(String.Format("Resources/lang.{0}.xaml", value.Name), UriKind.Relative);
 						break;
 				}
 
