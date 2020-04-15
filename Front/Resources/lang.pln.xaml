@@ -1,0 +1,22 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:v1="http://schemas.microsoft.com/winfx/2009/xaml"
+                    xmlns:v="clr-namespace:System;assembly=System.Runtime">
+    <v:String x:Key="buttonHelp">? Wsparcie</v:String>
+    <v:String x:Key="markWaresQuantity">Ilość towaru :</v:String>
+    <v:String x:Key="markInAll">We wszystkim :</v:String>
+
+    <v:String x:Key="markWareName">Imię</v:String>
+    <v:String x:Key="markWareQuantity">Ilość</v:String>
+    <v:String x:Key="markWareWeight">Waga</v:String>
+    <v:String x:Key="markWarePrice">Cena</v:String>
+    <v:String x:Key="markWareDiscount">Zniżka</v:String>
+    <v:String x:Key="markWareInAll">We wszystkim</v:String>
+
+
+    <v:String x:Key="search">Szukanie</v:String>
+    <v:String x:Key="ownBag">Własna torba</v:String>
+    <v:String x:Key="buyBag">Kup torbę</v:String>
+    <v:String x:Key="payment">Płatność</v:String>
+
+</ResourceDictionary>

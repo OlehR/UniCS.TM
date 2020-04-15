@@ -1,0 +1,22 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:v1="http://schemas.microsoft.com/winfx/2009/xaml"
+                    xmlns:v="clr-namespace:System;assembly=System.Runtime">
+    <v:String x:Key="buttonHelp">? Segítség</v:String>
+    <v:String x:Key="markWaresQuantity">Áruk mennyisége :</v:String>
+    <v:String x:Key="markInAll">Mindenben :</v:String>
+
+    <v:String x:Key="markWareName">Név</v:String>
+    <v:String x:Key="markWareQuantity">Mennyiség</v:String>
+    <v:String x:Key="markWareWeight">Súly</v:String>
+    <v:String x:Key="markWarePrice">Ár</v:String>
+    <v:String x:Key="markWareDiscount">Kedvezmény</v:String>
+    <v:String x:Key="markWareInAll">Mindenben</v:String>
+
+
+    <v:String x:Key="search">Keresés</v:String>
+    <v:String x:Key="ownBag">Saját táska</v:String>
+    <v:String x:Key="buyBag">Vegyen egy csomagot</v:String>
+    <v:String x:Key="payment">Fizetés</v:String>
+
+</ResourceDictionary>
