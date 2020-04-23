@@ -4,11 +4,12 @@ using System.Text;
 
 namespace ModernIntegration.Enums
 {
+    [Flags]
     public enum PaymentType
     {
         Card = 1,
         Cash = 2,
-        Both = 3,
-        None = 0
+        None = 4,
+        Face = 8,
     }
 }
