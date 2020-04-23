@@ -35,7 +35,7 @@ namespace Test
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-           // await CreateDataBaseAsync(false); //Створення бази
+            await CreateDataBaseAsync(true); //Створення бази
             //Thread.Sleep(10000);
             //TestKit();
             TestReceipt(); //
@@ -74,10 +74,13 @@ namespace Test
             foreach (var el in a)
                 api.AddProductByBarCode(TerminalId, el, 2);
         }
+
+        
+
         static void TestReceipt()
         {
             var TerminalId = Guid.Parse("1bb89aa9-dbdf-4eb0-b7a2-094665c3fdd0");
-            var ProductId = Guid.Parse("00000000-abcd-0000-0019-000000159474");
+            var ProductId = Guid.Parse("00000000-abcd-0000-0007-000000088916");
             var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009000");
             var ReceiptId = Guid.Parse("00000062-ffff-2020-0326-000000000008");
             var api = new ApiPSU();
@@ -92,8 +95,14 @@ namespace Test
             var r2rr=api.GetBags();
             //api.Bl.SendAllReceipt();return;
 
-            sd = api.AddProductByProductId(TerminalId, ProductId, 1);
+            sd = api.AddProductByBarCode(TerminalId, "5449000054227", 1);
+            sd = api.AddProductByBarCode(TerminalId, "4820179280470", 1);
 
+            Thread.Sleep(2000);
+            var rr = api.GetRecieptByTerminalId(TerminalId);
+            return;
+            sd = api.AddProductByProductId(TerminalId, ProductId, 1046);
+            
             var ddd = api.GetProductsByName(TerminalId,"",0,false, FastGroup);
             var ddd1  = api.GetProductsByName(TerminalId, "", 1, false, FastGroup);
             var ddd2 = api.GetProductsByName(TerminalId, "пом", 0, false, FastGroup);
@@ -122,7 +131,7 @@ namespace Test
 
 
             sd = api.AddProductByBarCode(TerminalId, "30886", 1);
-
+            Console.WriteLine(sd.Name);
             var startTime = System.Diagnostics.Stopwatch.StartNew();
 
             //sd = api.AddProductByBarCode(TerminalId, "4823086109988", 1); // 1+1 Пельмені "Мішутка" Філейні 600г /Три ведмеді/
@@ -192,7 +201,7 @@ namespace Test
 
             
 
-            var rr = api.GetProduct(TerminalId);
+            var rrrrr = api.GetProduct(TerminalId);
             var Pay = new ReceiptPayment[] {
                 new ReceiptPayment
             {

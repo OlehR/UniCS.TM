@@ -26,6 +26,7 @@ namespace ModelMID
         }
 
         public Int64 CodePS { get; set; }
+        public string NamePS { get; set; }
         public int NumberGroup { get; set; }
         
         public string BarCode2Category { get; set; }

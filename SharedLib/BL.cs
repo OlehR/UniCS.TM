@@ -167,7 +167,7 @@ namespace SharedLib
             return null;
         }
 
-        public IEnumerable<ReceiptWares> ViewReceiptWares(IdReceipt parIdReceipt)
+        public IEnumerable<ReceiptWares> ViewReceiptWares(IdReceipt parIdReceipt,bool pIsReceiptWaresPromotion=false)
         {
 
             var Res = db.ViewReceiptWares(parIdReceipt);

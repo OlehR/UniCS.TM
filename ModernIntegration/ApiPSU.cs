@@ -279,8 +279,11 @@ namespace ModernIntegration
                 varTags.Add(new Tag { Id = 3, Key = "AutoAcceptRule" });
 
             // Товар не потрібно зважувати. FoodToGo
-            if(receiptWares.WeightFact==-1)
+            if (receiptWares.WeightFact == -1)
+            {
                 varTags.Add(new Tag { Id = 4, Key = "DoNotUseScales" });
+                varTags.Add(new Tag { Id = 4, Key = "CanBeDeletedByCustomer" });
+            }
 
             var Res = new ProductViewModel()
             {
@@ -289,7 +292,7 @@ namespace ModernIntegration
                 Name = receiptWares.NameWares,
                 AdditionalDescription = receiptWares.NameWaresReceipt, //!!!TMP;
                 Image = null,
-                Price = receiptWares.SumDiscount > 0 ? ( receiptWares.Price > 0 ? receiptWares.Price : receiptWares.PriceDealer): receiptWares.PriceDealer,
+                Price = receiptWares.SumDiscount > 0 ? ( receiptWares.Price > 0 ? receiptWares.Price : receiptWares.PriceDealer): (receiptWares.Price>receiptWares.PriceDealer ? receiptWares.Price:receiptWares.PriceDealer),
                 WeightCategory = 2, //вимірювання Похибки в відсотках,2 в грамах
                 Weight = (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : (receiptWares.WeightBrutto==0m? 100000 : Convert.ToDouble(receiptWares.WeightBrutto))),
                 DeltaWeight = Convert.ToDouble(Global.GetCoefDeltaWeight((receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto)) * (receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto)),

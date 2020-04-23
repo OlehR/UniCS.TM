@@ -103,7 +103,6 @@ SELECT b.bar_code FROM dbo.dw_am da
                                 if (i > 0)
                                     res = res.Substring(0, i - 12);
 
-
                                 res = Regex.Replace(res, "[ ]+", " ");
                                 res = Regex.Replace(res, "[\t]+", "\t");
 
@@ -151,7 +150,6 @@ SELECT b.bar_code FROM dbo.dw_am da
                 Res.Error = ex.Message;
                 // return false;
             }
-
             return Res;
         }
 

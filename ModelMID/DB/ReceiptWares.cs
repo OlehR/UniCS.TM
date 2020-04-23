@@ -5,10 +5,10 @@ using System.Text;
 namespace ModelMID
 {
     // - ділерська категорія - 2 ділерська категорія+знижка,3 -фіксація ціни,4-Обмеження по нижньому індикативу, 5-Обмеження по верхньому індикативу, 9 -акція
-    
+
     public class ReceiptWares : IdReceiptWares
     {
-               
+
         /// <summary>
         /// Код товару
         /// </summary>
@@ -41,7 +41,7 @@ namespace ModelMID
         /// <summary>
         /// ціна за текучу одиницю.
         /// </summary>
-        public decimal Price { get; set; } 
+        public decimal Price { get; set; }
         // Дилерська категорія.                                       
         //public int CodeDealer { get; set; }
 
@@ -69,10 +69,10 @@ namespace ModelMID
         public string NameDiscount { get; set; }
         public decimal Sum
         {
-            get { return Math.Round(Quantity * Price,2); }
-            set { Price = (Quantity > 0?value / Quantity:0); }
+            get { return Math.Round(Quantity * Price, 2); }
+            set { Price = (Quantity > 0 ? value / Quantity : 0); }
         }
-        private decimal? _vat=null;
+        private decimal? _vat = null;
         public decimal SumVat
         {
             get { return _vat == null ? (Sum * PercentVat) / 100m : (decimal)_vat; }
@@ -81,7 +81,7 @@ namespace ModelMID
         // Інформація по знайденому товару
         /// <summary>
 
-            /// Тип знайденої позиції 0-невідомо, 1 - по коду, 2 - По штрихкоду,  3- По штрихкоду - родичі. 4 - По назві
+        /// Тип знайденої позиції 0-невідомо, 1 - по коду, 2 - По штрихкоду,  3- По штрихкоду - родичі. 4 - По назві
         /// </summary>
         public int TypeFound { get; set; }
         /// <summary>
@@ -113,10 +113,10 @@ namespace ModelMID
         /// </summary>
         public bool IsSave { get; set; }
         public bool IsWeight
-            { get { return Global.WeightCodeUnit == CodeUnit; } }
+        { get { return Global.WeightCodeUnit == CodeUnit; } }
         public int Sort { get; set; }
         public int UserCreate { get; set; }
-      //  public int CodeWarehouse { get; set; }
+        //  public int CodeWarehouse { get; set; }
         public string Description { get; set; }
         public decimal AdditionN1 { get; set; }
         public decimal AdditionN2 { get; set; }
@@ -144,6 +144,19 @@ namespace ModelMID
         /// Додаткові ваги
         /// </summary>
         public IEnumerable<decimal> AdditionalWeights;
+        /// <summary>
+        /// 
+        /// </summary>
+        public IEnumerable<WaresReceiptPromotion> ReceiptWaresPromotions;
+
+        public string GetStrWaresReceiptPromotion {get{ 
+                string Res="";
+                foreach (var el in ReceiptWaresPromotions)
+                { var name= string.IsNullOrEmpty(el.NamePS) ? el.BarCode2Category : el.NamePS;
+                    Res += $"{name} - {el.Quantity} - {el.Sum}/n";
+                }
+                return Res; 
+            }}
         public decimal QuantityOld { get; set; }
 
         public int TotalRows { get; set; }

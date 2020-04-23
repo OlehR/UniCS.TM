@@ -1125,5 +1125,12 @@ select     ID_WORKPLACE as IdWorkplace,    CODE_PERIOD as CodePeriod,    CODE_RE
 [SqlDeleteReceiptEvent]
 delete from RECEIPT_Event where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt;
 
+[SqlGetReceiptWaresPromotion]
+select id_workplace IdWorkplace, code_period CodePeriod, code_receipt CodeReceipt,code_wares as CodeWares,Code_unit as CodeUnit,quantity as Quantity,sum as Sum,wrp.Code_Ps as CodePs ,
+ps.NAME_PS as NamePS, Number_Group as NumberGroup, BarCode_2_Category as  BarCode2Category
+     from WARES_RECEIPT_PROMOTION wrp 
+     left join PROMOTION_SALE ps on ps.CODE_PS=wrp.CODE_PS
+     where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt;
+
 [SqlEnd]
 */
