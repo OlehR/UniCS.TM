@@ -301,7 +301,7 @@ namespace ModernIntegration
                 IsAgeRestrictedConfirmed = false, //Обмеження по віку алкоголь Підтверджено не потрібно посилати.
                 Quantity = (receiptWares.IsWeight ? 1 : receiptWares.Quantity),
                 DiscountValue =Math.Round(receiptWares.SumDiscount>0 ? receiptWares.SumDiscount : (receiptWares.PriceDealer > receiptWares.Price ? (receiptWares.PriceDealer * receiptWares.Quantity - receiptWares.Sum):0),2),
-                DiscountName = receiptWares.NameDiscount,
+                DiscountName = (string.IsNullOrEmpty(receiptWares.NameDiscount) ?"": receiptWares.NameDiscount+"\n") +receiptWares.GetStrWaresReceiptPromotion,
                 WarningType = null, //!!! Не посилати 
                 CalculatedWeight = 0,
                 Tags = varTags,
