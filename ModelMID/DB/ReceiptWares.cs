@@ -8,7 +8,6 @@ namespace ModelMID
 
     public class ReceiptWares : IdReceiptWares
     {
-
         /// <summary>
         /// Код товару
         /// </summary>
@@ -18,20 +17,25 @@ namespace ModelMID
         /// Назва товару
         /// </summary>
         public string NameWares { get; set; }
+
         /// <summary>
         /// Назва для чека.
         /// </summary>
         public string NameWaresReceipt { get; set; }
+
         public int Articl { get; set; }
         public int CodeBrand { get; set; }
+
         /// <summary>
         /// % Ставки ПДВ (0 -0 ,20 -20%)
         /// </summary>
         public decimal PercentVat { get; set; }
+
         /// <summary>
         /// Код одиниці виміру позамовчуванню
         /// </summary>
         public int TypeVat { get; set; }
+
         public int CodeDefaultUnit { get; set; }
         /// <summary>
         /// Коефіцієнт одиниці виіру по замовчуванню
@@ -49,41 +53,50 @@ namespace ModelMID
         /// Ціна по ДК
         /// </summary>
         public decimal PriceDealer { get; set; }
+
         /// <summary>
         /// Тип ціноутворення ( 1 - ділерська категорія - 2 ділерська категорія+знижка,3 -фіксація ціни,4-Обмеження по нижньому індикативу, 5-Обмеження по верхньому індикативу, 9 -акція)
         /// </summary>
         public eTypePrice TypePrice { get; set; }
+
         /// <summary>
         ///  ДК,Код акції
         /// </summary>
         public long ParPrice1 { get; set; }
+
         //Номер набору, підставлена ДК тощо
         public long ParPrice2 { get; set; }
 
         public long ParPrice3 { get; set; }
+
         /// <summary>
         /// 
         /// </summary>
         public decimal SumDiscount { get; set; }
+
         //  Discount = // 
         public string NameDiscount { get; set; }
+
         public decimal Sum
         {
             get { return Math.Round(Quantity * Price, 2); }
             set { Price = (Quantity > 0 ? value / Quantity : 0); }
         }
+
         private decimal? _vat = null;
+
         public decimal SumVat
         {
-            get { return _vat == null ? (Sum * PercentVat) / 100m : (decimal)_vat; }
+            get { return _vat == null ? (Sum * PercentVat) / 100m : (decimal) _vat; }
             set { _vat = value; }
         }
+
         // Інформація по знайденому товару
         /// <summary>
-
         /// Тип знайденої позиції 0-невідомо, 1 - по коду, 2 - По штрихкоду,  3- По штрихкоду - родичі. 4 - По назві
         /// </summary>
         public int TypeFound { get; set; }
+
         /// <summary>
         /// Текуча одиниця виміру
         /// </summary>
@@ -92,30 +105,41 @@ namespace ModelMID
         /// Коефіцієнт текучої одиниці виміру
         /// </summary>
         public decimal Coefficient { get; set; }
+
         /// <summary>
         /// Авривіатура текучої одиниці виміру
         /// </summary>
         public string AbrUnit { get; set; }
+
         /// <summary>
         /// Кількість товару
         /// </summary>
         public decimal Quantity { get; set; }
+
         /// <summary>
         /// код періорду прихідної
         /// </summary>
         public int CodePeriodIncome { get; set; }
+
         /// <summary>
         /// Код прихідної
         /// </summary>
         public int CodeIncome { get; set; }
+
         /// <summary>
         /// 
         /// </summary>
         public bool IsSave { get; set; }
+
         public bool IsWeight
-        { get { return Global.WeightCodeUnit == CodeUnit; } }
+        {
+            get { return Global.WeightCodeUnit == CodeUnit; }
+        }
+
         public int Sort { get; set; }
+
         public int UserCreate { get; set; }
+
         //  public int CodeWarehouse { get; set; }
         public string Description { get; set; }
         public decimal AdditionN1 { get; set; }
@@ -123,10 +147,12 @@ namespace ModelMID
         public decimal AdditionN3 { get; set; }
         public string AdditionC1 { get; set; }
         public DateTime AdditionD1 { get; set; }
+
         /// <summary>
         /// 0-звичайний,1-алкоголь,2-тютюн
         /// </summary>
         public int TypeWares { get; set; }
+
         /// <summary>
         /// Штрихкод 2 категорії
         /// </summary>
@@ -140,42 +166,64 @@ namespace ModelMID
         public decimal WeightBrutto { get; set; }
 
         public decimal WeightFact { get; set; }
+
         /// <summary>
         /// Додаткові ваги
         /// </summary>
         public IEnumerable<decimal> AdditionalWeights;
+
         /// <summary>
         /// 
         /// </summary>
         public IEnumerable<WaresReceiptPromotion> ReceiptWaresPromotions;
 
-        public string GetStrWaresReceiptPromotion {get{ 
-                string Res="";
+        public string GetStrWaresReceiptPromotion
+        {
+            get
+            {
+                if (ReceiptWaresPromotions == null)
+                    return string.Empty;
+                
+                string Res = "";
                 foreach (var el in ReceiptWaresPromotions)
-                { var name= string.IsNullOrEmpty(el.NamePS) ? el.BarCode2Category : el.NamePS;
+                {
+                    var name = string.IsNullOrEmpty(el.NamePS) ? el.BarCode2Category : el.NamePS;
                     Res += $"{name} - {el.Quantity} - {el.Sum}/n";
                 }
-                return Res; 
-            }}
+
+                return Res;
+            }
+        }
+
         public decimal QuantityOld { get; set; }
 
         public int TotalRows { get; set; }
 
         public decimal RefundedQuantity { get; set; }
+
         /// <summary>
         /// Зафіксована похибка ваги відносно базової.
         /// </summary>
         public decimal FixWeight { get; set; }
+
         public ReceiptWares()
         {
             Clear();
         }
+
         public ReceiptWares(IdReceipt idReceipt, Guid parWaresId) : base(idReceipt, parWaresId)
-        { }
+        {
+        }
+
         public ReceiptWares(IdReceipt idReceipt) : base(idReceipt)
-        { }
-        public ReceiptWares(IdReceiptWares idReceiptWares) : base(idReceiptWares, idReceiptWares.CodeWares,idReceiptWares.CodeUnit)
-        { }
+        {
+        }
+
+        public ReceiptWares(IdReceiptWares idReceiptWares) : base(idReceiptWares, idReceiptWares.CodeWares,
+            idReceiptWares.CodeUnit)
+        {
+        }
+
         public void Clear()
         {
             CodeWares = 0;
@@ -197,8 +245,8 @@ namespace ModelMID
             Quantity = 0;
             IsSave = false;
         }
-   
-        
+
+
         /*
              public virtual void SetWares(DataRow parRw, int parTypeFound = 0)
               {
@@ -218,6 +266,5 @@ namespace ModelMID
                   }
 
               }*/
-
     }
 }
