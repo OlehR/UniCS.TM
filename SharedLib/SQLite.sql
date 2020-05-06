@@ -369,15 +369,16 @@ union all -- По групам товарів
   where EPS.CODE_PS is null
   and w.CODE_WARES=@CodeWares
 union all --По товарам
- select PSF.CODE_PS,0 as priority , 13 as Type_discont, PSD.DATA,PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice
+ select PSF.CODE_PS,0 as priority , PSD.TYPE_DISCOUNT as Type_discont, PSD.DATA,PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice
   from PROMOTION_SALE_FILTER PSF 
   join PROMOTION_SALE_DATA PSD on (PSD.CODE_WARES=0 and PSD.CODE_PS=PSF.CODE_PS ) 
   left join ExeptionPS EPS on  (PSF.CODE_PS=EPS.CODE_PS)
-  where  PSF.TYPE_GROUP_FILTER=11 and PSF.RULE_GROUP_FILTER=1 and   PSF.CODE_DATA=@CodeWares and EPS.CODE_PS is null  
+  where  PSF.TYPE_GROUP_FILTER=11 and PSF.RULE_GROUP_FILTER=1 and   PSF.CODE_DATA=@CodeWares and EPS.CODE_PS is null and PSD.TYPE_DISCOUNT<=20
 union all --акції для всіх товарів.
- select PSEW.CODE_PS,0 as priority , 13 as Type_discont, PSD.DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice
+ select PSEW.CODE_PS,0 as priority , PSD.TYPE_DISCOUNT as Type_discont, PSD.DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice
   from PSEW
   join PROMOTION_SALE_DATA PSD on (PSD.CODE_PS=PSEW.CODE_PS )
+  where PSD.TYPE_DISCOUNT<=20
 
 [SqlGetPricePromotionSale2Category]
 select CODE_PS from PROMOTION_SALE_2_CATEGORY where CODE_WARES=@CodeWares
