@@ -1,0 +1,22 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:v1="http://schemas.microsoft.com/winfx/2009/xaml"
+                    xmlns:v="clr-namespace:System;assembly=System.Runtime">
+    <v:String x:Key="buttonHelp">? Допомога</v:String>
+    <v:String x:Key="markWaresQuantity">Кількість товарів :</v:String>
+    <v:String x:Key="markInAll">Всього :</v:String>
+
+    <v:String x:Key="markWareName">Назва</v:String>
+    <v:String x:Key="markWareQuantity">Кількість</v:String>
+    <v:String x:Key="markWareWeight">Вага</v:String>
+    <v:String x:Key="markWarePrice">Ціна</v:String>
+    <v:String x:Key="markWareDiscount">Знижка</v:String>
+    <v:String x:Key="markWareInAll">Всього</v:String>
+
+    
+    <v:String x:Key="search">Пошук</v:String>
+    <v:String x:Key="ownBag">Власна сумка</v:String>
+    <v:String x:Key="buyBag">Придбати пакет</v:String>
+    <v:String x:Key="payment">Оплата</v:String>
+    
+</ResourceDictionary>

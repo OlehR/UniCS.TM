@@ -3,7 +3,7 @@
 [VerRC]
 1
 [VerMID]
-0
+1
 [VerConfig]
 0
 
@@ -65,7 +65,8 @@ select t.code_wares as CodeWares,w.name_wares NameWares,w.name_wares_receipt  as
 		CAST(ifnull(pd.price_dealer,0.0)  as decimal) as Price,
 		w.Type_Wares as TypeWares,
 		(select max(bc.BAR_CODE) from BAR_CODE bc where bc.code_wares=w.code_wares) as BarCode,
-		w.Weight_Brutto as WeightBrutto
+		w.Weight_Brutto as WeightBrutto,
+        w.Weight_Fact as WeightFact
         ,count(*) over() as TotalRows
 from t$1 t
 left join wares w on t.code_wares=w.code_wares
@@ -134,7 +135,7 @@ select wr.id_workplace as IdWorkplace, wr.code_period as CodePeriod, wr.code_rec
 					 ADDITION_N1 as AdditionN1,ADDITION_N2 as AdditionN2, ADDITION_N3 as AdditionN3,
  ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1,Price_Dealer as PriceDealer,BARCODE_2_CATEGORY as BarCode2Category,wr.DESCRIPTION as DESCRIPTION,w.TYPE_VAT as TypeVat
  ,(select max(bc.BAR_CODE) from BAR_CODE bc where bc.code_wares=wr.code_wares) as BarCode 
- ,w.Weight_Brutto as WeightBrutto,Refunded_Quantity as RefundedQuantity,Fix_Weight as FixWeight
+ ,w.Weight_Brutto as WeightBrutto,Refunded_Quantity as RefundedQuantity,Fix_Weight as FixWeight,Weight_Fact as WeightFact
  ,ps.NAME_PS as NameDiscount,Sum_Discount as SumDiscount
                      from wares_receipt wr
                      join wares w on (wr.code_wares =w.code_wares)
@@ -757,7 +758,8 @@ CREATE TABLE WARES (
 --    CODE_TRADE_MARK     INTEGER,
 --    KEEPING_TIME        NUMBER,
       Type_Wares		 INTEGER,   -- 0- Звичайний товар,1 - алкоголь, 2- тютюн.
-	  Weight_brutto    NUMBER
+	  Weight_brutto    NUMBER,
+      Weight_Fact    NUMBER
 
 );
 
@@ -945,8 +947,8 @@ replace into UNIT_DIMENSION ( CODE_UNIT, NAME_UNIT, ABR_UNIT) values (@CodeUnit,
 replace into  GROUP_WARES (CODE_GROUP_WARES,CODE_PARENT_GROUP_WARES,NAME)
              values (@CodeGroupWares,@CodeParentGroupWares,@Name);
 [SqlReplaceWares]
-replace into  Wares (CODE_WARES,CODE_GROUP,NAME_WARES,Name_Wares_Upper, ARTICL,CODE_BRAND, CODE_UNIT, Percent_Vat,Type_VAT,NAME_WARES_RECEIPT, DESCRIPTION,Type_Wares,Weight_brutto)
-             values (@CodeWares,@CodeGroup,@NameWares,@NameWaresUpper, @Articl,@CodeBrand,@CodeUnit, @PercentVat, @TypeVat,@NameWaresReceipt, @Description,@TypeWares,@WeightBrutto);
+replace into  Wares (CODE_WARES,CODE_GROUP,NAME_WARES,Name_Wares_Upper, ARTICL,CODE_BRAND, CODE_UNIT, Percent_Vat,Type_VAT,NAME_WARES_RECEIPT, DESCRIPTION,Type_Wares,Weight_brutto,Weight_Fact)
+             values (@CodeWares,@CodeGroup,@NameWares,@NameWaresUpper, @Articl,@CodeBrand,@CodeUnit, @PercentVat, @TypeVat,@NameWaresReceipt, @Description,@TypeWares,@WeightBrutto,@WeightFact);
 [SqlReplaceAdditionUnit]
 replace into  Addition_Unit (CODE_WARES, CODE_UNIT, COEFFICIENT, DEFAULT_UNIT, WEIGHT, WEIGHT_NET )
               values (@CodeWares,@CodeUnit,@Coefficient, @DefaultUnit, @Weight, @WeightNet);
@@ -1123,6 +1125,13 @@ select     ID_WORKPLACE as IdWorkplace,    CODE_PERIOD as CodePeriod,    CODE_RE
   from RECEIPT_Event  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt ;
 [SqlDeleteReceiptEvent]
 delete from RECEIPT_Event where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt;
+
+[SqlGetReceiptWaresPromotion]
+select id_workplace IdWorkplace, code_period CodePeriod, code_receipt CodeReceipt,code_wares as CodeWares,Code_unit as CodeUnit,quantity as Quantity,sum as Sum,wrp.Code_Ps as CodePs ,
+ps.NAME_PS as NamePS, Number_Group as NumberGroup, BarCode_2_Category as  BarCode2Category
+     from WARES_RECEIPT_PROMOTION wrp 
+     left join PROMOTION_SALE ps on ps.CODE_PS=wrp.CODE_PS
+     where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt;
 
 [SqlEnd]
 */

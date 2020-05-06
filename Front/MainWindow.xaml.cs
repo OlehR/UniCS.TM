@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -23,6 +24,7 @@ namespace Front
 
         public string WaresQuantity { get; set; }
         public string MoneySum { get; set; }
+        public bool Volume { get; set; }
         public ObservableCollection<ReceiptWares> ListWares { get; set; }
 
 
@@ -31,7 +33,7 @@ namespace Front
         {
             WaresQuantity = "0";
             MoneySum = "0";
-
+            Volume = true;
 
             InitializeComponent();
 
@@ -41,7 +43,17 @@ namespace Front
 
             WaresQuantity = ListWares.Count.ToString();
 
+            ua.Tag = new CultureInfo("ua");
+            en.Tag = new CultureInfo("en");
+            hu.Tag = new CultureInfo("hu");
+            pln.Tag = new CultureInfo("pln");
+
             WaresList.ItemsSource = ListWares;// Wares;
+
+
+            CultureInfo currLang = App.Language;
+
+
         }
 
         private void _Delete(object sender, RoutedEventArgs e)
@@ -71,5 +83,56 @@ namespace Front
                 WaresList.Items.Refresh();
             }
         }
+
+        private void _VolumeButton(object sender, RoutedEventArgs e)
+        {
+            Volume = !Volume;
+        }
+
+        private void _ChangeLanguage(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            try
+            {
+                if (btn!=null)
+                {
+                    if (btn.Tag is CultureInfo lang)
+                    {
+                        App.Language = lang;
+                    }
+                }
+            }
+            catch { }
+
+
+            switch (btn.Name)
+            {
+                case "ua":
+                    ua.Style = (Style)ua.FindResource("yelowButton");
+                    en.Style = (Style)en.FindResource("Default");
+                    hu.Style = (Style)hu.FindResource("Default");
+                    pln.Style = (Style)pln.FindResource("Default");
+                    break;
+                case "en":
+                    en.Style = (Style)en.FindResource("yelowButton");
+                    ua.Style = (Style)ua.FindResource("Default");
+                    hu.Style = (Style)hu.FindResource("Default");
+                    pln.Style = (Style)pln.FindResource("Default");
+                    break;
+                case "hu":
+                    hu.Style = (Style)hu.FindResource("yelowButton");
+                    ua.Style = (Style)ua.FindResource("Default");
+                    en.Style = (Style)en.FindResource("Default");
+                    pln.Style = (Style)pln.FindResource("Default");
+                    break;
+                case "pln":
+                    pln.Style = (Style)pln.FindResource("yelowButton");
+                    ua.Style = (Style)ua.FindResource("Default");
+                    en.Style = (Style)en.FindResource("Default");
+                    hu.Style = (Style)hu.FindResource("Default");
+                    break;
+            }
+        }
+
     }
 }

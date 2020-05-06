@@ -275,11 +275,15 @@ namespace ModernIntegration
                 varTags.Add(new Tag() { Key = "TimeRestricted", Id = 1, RuleValue = "{\"Start\":\"" + Global.AlcoholTimeStart + "\",\"Stop\":\"" + Global.AlcoholTimeStop + "\"}" });
 
             // Якщо немає ваги відключаємо її контроль 
-            if (!receiptWares.IsWeight && LWI.Count() == 0)
+            if (!receiptWares.IsWeight && LWI.Count() == 0 && receiptWares.WeightFact != -1)
                 varTags.Add(new Tag { Id = 3, Key = "AutoAcceptRule" });
 
-            //if()
-//                new Tag { Id = 4, Key = "NoWeightedProduct" });
+            // Товар не потрібно зважувати. FoodToGo
+            if (receiptWares.WeightFact == -1)
+            {
+                varTags.Add(new Tag { Id = 4, Key = "DoNotUseScales" });
+                varTags.Add(new Tag { Id = 4, Key = "CanBeDeletedByCustomer" });
+            }
 
             var Res = new ProductViewModel()
             {
@@ -288,16 +292,16 @@ namespace ModernIntegration
                 Name = receiptWares.NameWares,
                 AdditionalDescription = receiptWares.NameWaresReceipt, //!!!TMP;
                 Image = null,
-                Price = receiptWares.SumDiscount > 0 ? ( receiptWares.Price > 0 ? receiptWares.Price : receiptWares.PriceDealer): receiptWares.PriceDealer,
+                Price = receiptWares.SumDiscount > 0 ? ( receiptWares.Price > 0 ? receiptWares.Price : receiptWares.PriceDealer): (receiptWares.Price>receiptWares.PriceDealer ? receiptWares.Price:receiptWares.PriceDealer),
                 WeightCategory = 2, //вимірювання Похибки в відсотках,2 в грамах
                 Weight = (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : (receiptWares.WeightBrutto==0m? 100000 : Convert.ToDouble(receiptWares.WeightBrutto))),
                 DeltaWeight = Convert.ToDouble(Global.GetCoefDeltaWeight((receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto)) * (receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto)),
                 AdditionalWeights = LWI,
-                ProductWeightType =  receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByPiece, 
+                ProductWeightType =  receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByBarcode, 
                 IsAgeRestrictedConfirmed = false, //Обмеження по віку алкоголь Підтверджено не потрібно посилати.
                 Quantity = (receiptWares.IsWeight ? 1 : receiptWares.Quantity),
                 DiscountValue =Math.Round(receiptWares.SumDiscount>0 ? receiptWares.SumDiscount : (receiptWares.PriceDealer > receiptWares.Price ? (receiptWares.PriceDealer * receiptWares.Quantity - receiptWares.Sum):0),2),
-                DiscountName = receiptWares.NameDiscount,
+                DiscountName = (string.IsNullOrEmpty(receiptWares.NameDiscount) ?"": receiptWares.NameDiscount+"\n") +receiptWares.GetStrWaresReceiptPromotion,
                 WarningType = null, //!!! Не посилати 
                 CalculatedWeight = 0,
                 Tags = varTags,
@@ -365,7 +369,7 @@ namespace ModernIntegration
                 Res.PaidAmount = receiptMID.Payment.Sum(r => receipt.Amount);
                 var SumCash = receiptMID.Payment.Where(r=> r.TypePay== eTypePay.Cash).Sum(r => receipt.Amount);
                 var SumCard = receiptMID.Payment.Where(r => r.TypePay == eTypePay.Card).Sum(r => receipt.Amount);
-                Res.PaymentType = (SumCash > 0 && SumCard > 0 ? PaymentType.Both : (SumCash == 0 && SumCard == 0 ? PaymentType.None : (SumCash > 0?PaymentType.Cash: PaymentType.Card)));
+                Res.PaymentType = (SumCash > 0 && SumCard > 0 ? PaymentType.Card | PaymentType.Card : (SumCash == 0 && SumCard == 0 ? PaymentType.None : (SumCash > 0?PaymentType.Cash: PaymentType.Card)));
                 Res.PaymentInfo = PaymentToReceiptPayment(receiptMID.Payment.First());                
             }
             

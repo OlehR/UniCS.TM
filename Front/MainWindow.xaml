@@ -10,7 +10,6 @@
             <RowDefinition Height="100"></RowDefinition>
             <RowDefinition Height="50"></RowDefinition>
             <RowDefinition></RowDefinition>
-            <RowDefinition Height="60"></RowDefinition>
             <RowDefinition Height="100"></RowDefinition>
         </Grid.RowDefinitions>
 
@@ -20,21 +19,82 @@
             </Border.Effect>
             <Grid  Grid.Row="0">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*"></ColumnDefinition>
                     <ColumnDefinition Width="1*"></ColumnDefinition>
                     <ColumnDefinition Width="1*"></ColumnDefinition>
-                    <ColumnDefinition Width="4*"></ColumnDefinition>
                     <ColumnDefinition Width="2*"></ColumnDefinition>
                     <ColumnDefinition Width="1*"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                    <ColumnDefinition Width="1.5*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
-                <Button Style="{StaticResource yelowButton}" Grid.Column="0" FontSize="24" >? Допомога</Button>
-                <TextBlock Grid.Column="3" FontSize="22" HorizontalAlignment="Center">
-                    <TextBlock.Text>Кількість товарів :</TextBlock.Text>
-                </TextBlock>
+                <Button Style="{StaticResource yelowButton}" Grid.Column="0" FontSize="30" >
+                    <TextBlock FontSize="28" Text="{DynamicResource buttonHelp}"/>
+                </Button>
+
+                <Grid Grid.Column="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition  Height="1*"></RowDefinition>
+                        <RowDefinition  Height="1*"></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <Button x:Name="ua" Click="_ChangeLanguage" Style="{StaticResource yelowButton}">
+                        <Image Margin="3" Source="icons\ua.png"></Image>
+                    </Button>
+
+                    <Button x:Name="en" Click="_ChangeLanguage" Grid.Column="1" Style="{StaticResource Default}">
+                        <Image Margin="3" Source="icons\uk.png"></Image>
+                    </Button>
+
+                    <Button x:Name="hu" Click="_ChangeLanguage" Grid.Row="1" Style="{StaticResource Default}">
+                        <Image Margin="3" Source="icons\hu.png"></Image>
+                    </Button>
+
+                    <Button x:Name="pln" Click="_ChangeLanguage" Grid.Column="1" Grid.Row="1" Style="{StaticResource Default}">
+                        <Image Margin="3" Source="icons\pln.png"></Image>
+                    </Button>
+
+                </Grid>
+
+                <Grid Grid.Column="2">
+                    <Button Margin="20" Style="{StaticResource Default}" Click="_VolumeButton">
+                        <Image x:Name="ButtonImage">
+                            <Image.Style>
+                                <Style TargetType="{x:Type Image}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Volume, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                            <Setter Property="Source" Value="icons\volume.png" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Volume, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                            <Setter Property="Source" Value="icons\no_volume.png" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+                    </Button>
+                </Grid>
+
+                <TextBlock Grid.Column="3" FontSize="22" HorizontalAlignment="Center" Text ="{DynamicResource markWaresQuantity}"/>
                 <TextBlock Grid.Column="4" 
                        FontSize="22"
                        Text="{Binding WaresQuantity, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" >
+                </TextBlock>
+
+                <TextBlock Grid.Column="5" FontSize="22" Text="{DynamicResource markInAll}"/>
+                <TextBlock Grid.Column="6"
+                           FontSize="48"
+                           FontWeight="Bold"
+                           Foreground="#ff5500"
+                           Text="{Binding MoneySum, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}">
                 </TextBlock>
 
             </Grid>
@@ -52,13 +112,13 @@
                 <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0">Назва</TextBlock>
-            <TextBlock Grid.Column="1">Кількість</TextBlock>
-            <TextBlock Grid.Column="2">Вага</TextBlock>
-            <TextBlock Grid.Column="3">Ціна</TextBlock>
-            <TextBlock Grid.Column="4">Знижка</TextBlock>
-            <TextBlock Grid.Column="5">Всього</TextBlock>
-        </Grid>
+                <TextBlock Grid.Column="0" Text="{DynamicResource markWareName}"/>
+                <TextBlock Grid.Column="1" Text="{DynamicResource markWareQuantity}"/>
+                <TextBlock Grid.Column="2" Text="{DynamicResource markWareWeight}"/>
+                <TextBlock Grid.Column="3" Text="{DynamicResource markWarePrice}"/>
+                <TextBlock Grid.Column="4" Text="{DynamicResource markWareDiscount}"/>
+                <TextBlock Grid.Column="5" Text="{DynamicResource markWareInAll}"/>
+            </Grid>
         </Border>
 
         <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
@@ -164,16 +224,11 @@
         </ScrollViewer>
 
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
-            <TextBlock FontSize="22" Text="Всього :"/>
-            <TextBlock MinWidth="50"
-                       FontSize="22"
-                       Text="{Binding MoneySum, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}">
-            </TextBlock>
+            
         </StackPanel>
 
 
-        <Grid Grid.Row="4" >
+        <Grid Grid.Row="3" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="3*"></ColumnDefinition>
@@ -184,10 +239,18 @@
             <Button Style="{StaticResource yelowButton}" Grid.Column="0" FontSize="22" >
                 <Image Margin="5" Source="icons\back.png"></Image>
             </Button>
-            <Button  Style="{StaticResource Default}" Grid.Column="1" FontSize="22" >Пошук</Button>
-            <Button Style="{StaticResource Default}" Grid.Column="2" FontSize="22" >Власна сумка</Button>
-            <Button Style="{StaticResource yelowButton}" Grid.Column="3" FontSize="22" >Придбати пакет</Button>
-            <Button Style="{StaticResource Default}" Grid.Column="4" FontSize="22" >Oплата</Button>
+            <Button  Style="{StaticResource Default}" Grid.Column="1" FontSize="22" >
+                <TextBlock FontSize="28" Text="{DynamicResource search}"/>
+            </Button>
+            <Button Style="{StaticResource Default}" Grid.Column="2" FontSize="22" >
+                <TextBlock FontSize="28" Text="{DynamicResource ownBag}"/>
+            </Button>
+            <Button Style="{StaticResource yelowButton}" Grid.Column="3" FontSize="22" >
+                <TextBlock FontSize="28" Text="{DynamicResource buyBag}"/>
+            </Button>
+            <Button Style="{StaticResource Default}" Grid.Column="4" FontSize="22" >
+                <TextBlock FontSize="28" Text="{DynamicResource payment}"/>
+            </Button>
         </Grid>
 
     </Grid>

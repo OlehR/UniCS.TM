@@ -191,6 +191,8 @@ namespace SharedLib
         protected string SqlGetReceiptEvent = "";
         protected string SqlDeleteReceiptEvent = "";
         protected string SqlSetFixWeight = "";
+        protected string SqlGetReceiptWaresPromotion = "";
+
         public WDB(string parFileSQL)
         {
             this.ReadSQL(parFileSQL);
@@ -378,7 +380,7 @@ namespace SharedLib
                 var r = res.FirstOrDefault();
                 if (parWithDetail)
                 {
-                    r.Wares = ViewReceiptWares(parIdReceipt);
+                    r.Wares = ViewReceiptWares(parIdReceipt,true);
                     r.Payment = GetPayment(parIdReceipt);
                     r.ReceiptEvent = GetReceiptEvent(parIdReceipt);
 
@@ -393,14 +395,23 @@ namespace SharedLib
         /// </summary>
         /// <param name="parParameters"> </param>
         /// <returns></returns>
-     	public virtual IEnumerable<ReceiptWares> ViewReceiptWares(IdReceipt parIdReceipt)
+     	public virtual IEnumerable<ReceiptWares> ViewReceiptWares(IdReceipt parIdReceipt, bool pIsReceiptWaresPromotion = false)
         {
-            return ViewReceiptWares(new IdReceiptWares(parIdReceipt)); //this.db.Execute<IdReceipt, ReceiptWares>(SqlViewReceiptWares, parIdReceipt);
+            return ViewReceiptWares(new IdReceiptWares(parIdReceipt), pIsReceiptWaresPromotion); //this.db.Execute<IdReceipt, ReceiptWares>(SqlViewReceiptWares, parIdReceipt);
         }
-        public virtual IEnumerable<ReceiptWares> ViewReceiptWares(IdReceiptWares parIdReceiptWares)
+        public virtual IEnumerable<ReceiptWares> ViewReceiptWares(IdReceiptWares parIdReceiptWares, bool pIsReceiptWaresPromotion = false)
         {
-
-            return this.db.Execute<IdReceiptWares, ReceiptWares>(SqlViewReceiptWares, parIdReceiptWares);
+            var r = this.db.Execute<IdReceiptWares, ReceiptWares>(SqlViewReceiptWares, parIdReceiptWares);
+            if (r != null && pIsReceiptWaresPromotion)
+            {
+                var wrp = GetReceiptWaresPromotion(parIdReceiptWares);
+                if (wrp != null)
+                    foreach (var el in r)
+                    {
+                        el.ReceiptWaresPromotions = wrp.Where(rr=> ((IdReceiptWares)rr).Equals( (IdReceiptWares)el));
+                    }
+            }
+            return r;
         }
 
 
@@ -616,6 +627,8 @@ namespace SharedLib
             SqlDeleteReceiptEvent = GetSQL("SqlDeleteReceiptEvent");
 
             SqlSetFixWeight = GetSQL("SqlSetFixWeight");
+
+            SqlGetReceiptWaresPromotion = GetSQL("SqlGetReceiptWaresPromotion");
             return true;
         }
 
@@ -1048,6 +1061,14 @@ namespace SharedLib
                 return false;
             }
         }
+
+
+        public virtual IEnumerable<WaresReceiptPromotion> GetReceiptWaresPromotion(IdReceipt parIdReceipt)
+        {
+            return this.db.Execute<IdReceipt, WaresReceiptPromotion>(SqlGetReceiptWaresPromotion, parIdReceipt);            
+        }
+
+        
 
     }
 }

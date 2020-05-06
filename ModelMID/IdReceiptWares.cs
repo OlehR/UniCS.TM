@@ -40,6 +40,15 @@ namespace ModelMID
             Order = parOrder;
         }
 
+        public override bool Equals(object obj)
+        {
+            if (obj is IdReceiptWares)
+            {
+                var o = (IdReceiptWares)obj;
+                return CodeWares == o.CodeWares && base.Equals(o);
+            }
+            return false;
+        }
         public void SetIdReceiptWares(IdReceiptWares idReceiptWares)
         {
             SetIdReceipt((IdReceipt)idReceiptWares);

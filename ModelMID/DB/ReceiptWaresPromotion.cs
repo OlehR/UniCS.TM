@@ -21,11 +21,12 @@ namespace ModelMID
         public decimal _Sum = 0;
         public decimal Sum
         {
-            get { return (_Sum>0?_Sum:Quantity * Price); }
+            get { return Math.Round(_Sum>0?_Sum:Quantity * Price,2); }
             set { Price = (Quantity > 0 ? value / Quantity : 0); }
         }
 
         public Int64 CodePS { get; set; }
+        public string NamePS { get; set; }
         public int NumberGroup { get; set; }
         
         public string BarCode2Category { get; set; }
