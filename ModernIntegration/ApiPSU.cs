@@ -300,7 +300,7 @@ namespace ModernIntegration
                 ProductWeightType =  receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByBarcode, 
                 IsAgeRestrictedConfirmed = false, //Обмеження по віку алкоголь Підтверджено не потрібно посилати.
                 Quantity = (receiptWares.IsWeight ? 1 : receiptWares.Quantity),
-                DiscountValue =Math.Round(receiptWares.SumDiscount>0 ? receiptWares.SumDiscount : (receiptWares.PriceDealer > receiptWares.Price ? (receiptWares.PriceDealer * receiptWares.Quantity - receiptWares.Sum):0),2),
+                DiscountValue =Global.RoundDown(receiptWares.SumDiscount>0 ? receiptWares.SumDiscount : (receiptWares.PriceDealer > receiptWares.Price ? (receiptWares.PriceDealer * receiptWares.Quantity - receiptWares.Sum):0)),
                 DiscountName = (string.IsNullOrEmpty(receiptWares.NameDiscount) ?"": receiptWares.NameDiscount+"\n") +receiptWares.GetStrWaresReceiptPromotion,
                 WarningType = null, //!!! Не посилати 
                 CalculatedWeight = 0,
@@ -573,6 +573,13 @@ namespace ModernIntegration
 
             return res.Select(r=>GetReceiptViewModel(r));
             
+        }
+
+        public override ReceiptViewModel GetReceiptByNumber(Guid pTerminalId, string pFiscalNumber)
+        {
+             var IdWorkplace = Global.GetIdWorkplaceByTerminalId(pTerminalId);
+             var res = Bl.GetReceiptByFiscalNumber(IdWorkplace, pFiscalNumber);
+             return GetReceiptViewModel(res);
         }
 
         public override bool RefundReceipt(Guid parTerminalId, RefundReceiptViewModel parReceipt)

@@ -21,7 +21,7 @@ namespace ModelMID
         public decimal _Sum = 0;
         public decimal Sum
         {
-            get { return Math.Round(_Sum>0?_Sum:Quantity * Price,2); }
+            get { return Global.RoundDown(_Sum>0?_Sum:Quantity * Price); }
             set { Price = (Quantity > 0 ? value / Quantity : 0); }
         }
 

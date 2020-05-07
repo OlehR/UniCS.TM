@@ -350,6 +350,26 @@ namespace SharedLib
                 return res;
         }
 
+
+        public Receipt GetReceiptByFiscalNumber(int IdWorkplace,string pFiscalNumber, DateTime pStartDate= default(DateTime), DateTime pFinishDate= default(DateTime))
+        {
+            if (pStartDate == default(DateTime))
+                pStartDate = DateTime.Now.Date.AddDays(-14);
+            if (pFinishDate == default(DateTime))
+                pFinishDate = DateTime.Now;
+
+            var Ldc = pStartDate.Date;
+            while (Ldc <= pFinishDate.Date)
+            {
+                var ldb = new WDB_SQLite(null, false, Ldc);
+                var l = ldb.GetReceiptByFiscalNumber(IdWorkplace,pFiscalNumber, pStartDate, pFinishDate);
+                if (l != null && l.Count() >= 1)
+                    return l.First();
+                Ldc = Ldc.AddDays(1);
+            }
+            return null;
+        }
+
         public bool SaveRefundReceipt(Receipt parReceipt)       
         {
             db.ReplaceReceipt(parReceipt);

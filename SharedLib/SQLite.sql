@@ -291,7 +291,11 @@ delete from  wares_receipt
   ;
  insert into  WARES_RECEIPT_HISTORY ( ID_WORKPLACE,  CODE_PERIOD, CODE_RECEIPT, CODE_WARES, CODE_UNIT, QUANTITY, QUANTITY_OLD, CODE_OPERATION)     
 values ( @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit, 0, 0,-1);
-                     
+
+delete from  WARES_RECEIPT_PROMOTION
+   where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt 
+               and code_wares =  case when @CodeWares=0 then code_wares else @CodeWares end;
+                
 [SqlMoveMoney]
 [SqlAddZ]
 [SqlAddLog]
@@ -927,6 +931,8 @@ CREATE UNIQUE INDEX PROMOTION_SALE_ID ON PROMOTION_SALE ( CODE_PS);
 CREATE INDEX PROMOTION_SALE_DEALER_WD ON PROMOTION_SALE_DEALER (Code_Wares,DATE_BEGIN,DATE_END);
 CREATE UNIQUE INDEX PROMOTION_SALE_DEALER_ID ON PROMOTION_SALE_DEALER (CODE_PS,Code_Wares,DATE_BEGIN,DATE_END,CODE_DEALER);
 
+CREATE UNIQUE INDEX PROMOTION_SALE_DATA_ID ON PROMOTION_SALE_DATA ( CODE_PS,NUMBER_GROUP,CODE_WARES,USE_INDICATIVE,TYPE_DISCOUNT,ADDITIONAL_CONDITION,DATA,DATA_ADDITIONAL_CONDITION);
+
 CREATE UNIQUE INDEX PROMOTION_SALE_FILTER_ID ON PROMOTION_SALE_FILTER (CODE_PS, CODE_GROUP_FILTER, TYPE_GROUP_FILTER, RULE_GROUP_FILTER, CODE_PROPERTY, CODE_CHOICE,CODE_DATA);
 
 CREATE UNIQUE INDEX PROMOTION_SALE_GIFT_ID ON PROMOTION_SALE_GIFT ( CODE_PS, NUMBER_GROUP,CODE_WARES,TYPE_DISCOUNT, DATA);
@@ -1045,6 +1051,20 @@ sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_
  from receipt
  where ID_WORKPLACE = case when @IdWorkplace =0 then ID_WORKPLACE else @IdWorkplace end
  and DateReceipt between @StartDate and @FinishDate;   
+
+[SqlReceiptByFiscalNumbers]
+select  id_workplace IdWorkplace, code_period CodePeriod, code_receipt CodeReceipt, date_receipt DateReceipt,
+sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_receipt as StateReceipt, code_client as CodeClient,
+ number_cashier as NumberCashier, number_receipt NumberReceipt, code_discount as CodeDiscount, sum_discount as SumDiscount, percent_discount as PercentDiscount, 
+ code_bonus as CodeBonus, sum_bonus as SumBonus, sum_cash as SumCash, sum_credit_card as SumCreditCard, code_outcome as CodeOutcome, 
+ code_credit_card as CodeCreditCard, number_slip as NumberSlip, number_tax_income as NumberTaxIncome,USER_CREATE as UseCreate, Date_Create as DateCreate,
+ ADDITION_N1 as AdditionN1,ADDITION_N2 as AdditionN2, ADDITION_N3 as AdditionN3,
+ ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1
+ from receipt
+ where ID_WORKPLACE = case when @IdWorkplace =0 then ID_WORKPLACE else @IdWorkplace end and number_receipt=@NumberReceipt
+ and DateReceipt between @StartDate and @FinishDate;   
+
+
 [SqlAdditionalWeightsWares]
 select WEIGHT from WEIGHT where BARCODE=@CodeWares and  STATUS=-1
 
