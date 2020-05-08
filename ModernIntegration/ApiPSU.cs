@@ -637,7 +637,7 @@ namespace ModernIntegration
                 NameWares = receiptItem.ProductName,
                 BarCode = receiptItem.ProductBarcode,
                 PriceDealer = receiptItem.ProductPrice,
-                Price = receiptItem.FullPrice!=0 ? receiptItem.FullPrice: receiptItem.ProductPrice,
+                Price = receiptItem.FullPrice / receiptItem.ProductQuantity, //receiptItem.FullPrice!=0 ? receiptItem.FullPrice: receiptItem.ProductPrice,
                 WeightBrutto = receiptItem.ProductWeight / 1000m,
                 Quantity= receiptItem.ProductQuantity,
 //                TaxGroup = Global.GetTaxGroup(receiptItem.TypeVat, receiptItem.TypeWares),               
