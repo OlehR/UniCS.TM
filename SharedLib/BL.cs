@@ -93,8 +93,19 @@ namespace SharedLib
 
         public ReceiptWares AddWaresBarCode(IdReceipt parReceipt, string parBarCode, decimal parQuantity = 0)
         {
+            IEnumerable<ReceiptWares> w = null;
+            if (parBarCode.Trim().Length >= 8)
+                w = db.FindWares(parBarCode);//Пошук по штрихкоду
+            else// Можливо артикул товару
+            {
+                int Article;
+                if (int.TryParse(parBarCode, out Article))
+                    w = db.FindWares(null, null, 0, 0, 0, Article);
+                else
+                    return null;
+            }
 
-            var w = parBarCode.Trim().Length >= 8 ? db.FindWares(parBarCode) : db.FindWares(null, null, 0, 0, 0, Convert.ToInt32(parBarCode));
+
 
             //ReceiptWares W = null;
             if (w == null || w.Count() == 0) // Якщо не знайшли спробуем по ваговим і штучним штрихкодам.          
