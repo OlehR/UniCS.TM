@@ -585,20 +585,25 @@ namespace ModernIntegration
         public override bool RefundReceipt(Guid parTerminalId, RefundReceiptViewModel parReceipt)
         {
             var receipt = ReceiptViewModelToReceipt(parTerminalId,parReceipt);
-            return Bl.SaveRefundReceipt(receipt);
+            return Bl.SaveReceipt(receipt);
         }
 
-        
-        private ModelMID.Receipt ReceiptViewModelToReceipt(Guid parTerminalId,RefundReceiptViewModel parReceiptRVM)
+
+        public ModelMID.Receipt ReceiptViewModelToReceipt(Guid parTerminalId, ReceiptViewModel parReceiptRVM)
         {
             
             if (parReceiptRVM == null)
                 return null;
-            var receipt = new ModelMID.Receipt(Bl.GetNewIdReceipt(parTerminalId))
+            RefundReceiptViewModel RefundRVM = null;
+            if (parReceiptRVM is RefundReceiptViewModel)
+                RefundRVM = (RefundReceiptViewModel)parReceiptRVM;
+            
+
+                var receipt = new ModelMID.Receipt(RefundRVM == null ? new IdReceipt (parReceiptRVM.Id) :Bl.GetNewIdReceipt(parTerminalId))
             {
                 //ReceiptId  = parReceiptRVM.Id,
                 StateReceipt = (string.IsNullOrEmpty(parReceiptRVM.FiscalNumber)?(parReceiptRVM.PaymentInfo != null ? eStateReceipt.Pay: eStateReceipt.Prepare) : eStateReceipt.Print),
-                TypeReceipt = (parReceiptRVM.IdPrimary == null? eTypeReceipt.Sale:eTypeReceipt.Refund),
+                TypeReceipt = (RefundRVM == null? eTypeReceipt.Sale:eTypeReceipt.Refund),
                 NumberReceipt = parReceiptRVM.FiscalNumber,
                /* Status = (parReceiptRVM.SumCash > 0 || parReceiptRVM.SumCreditCard > 0
                     ? ReceiptStatusType.Paid
@@ -609,13 +614,17 @@ namespace ModernIntegration
                 //!!TMP TotalAmount = parReceiptRVM.SumReceipt - parReceiptRVM.SumBonus,
                 ///CustomerId = new Client(parReceiptRVM.CodeClient).ClientId,
                 DateCreate = parReceiptRVM.CreatedAt,
-                DateReceipt = (parReceiptRVM.UpdatedAt==default(DateTime)?DateTime.Now: parReceiptRVM.UpdatedAt),
+                DateReceipt = (parReceiptRVM.UpdatedAt==default(DateTime)?DateTime.Now: parReceiptRVM.UpdatedAt)
                 //ReceiptItems=
                 //Customer /// !!!TMP Модель клієнта
                 //PaymentInfo
-                RefundId= (parReceiptRVM.IdPrimary == null?null: new IdReceipt(parReceiptRVM.IdPrimary))
+                
             };
-            if(parReceiptRVM.PaymentInfo!=null)
+
+            if (RefundRVM!=null)
+               receipt.RefundId = (RefundRVM.IdPrimary == null ? null : new IdReceipt(RefundRVM.IdPrimary));            
+
+            if (parReceiptRVM.PaymentInfo!=null)
              receipt.Payment = new Payment[] { ReceiptPaymentToPayment(receipt, parReceiptRVM.PaymentInfo) };
 
             if(parReceiptRVM.ReceiptItems!=null)
@@ -637,7 +646,7 @@ namespace ModernIntegration
                 NameWares = receiptItem.ProductName,
                 BarCode = receiptItem.ProductBarcode,
                 PriceDealer = receiptItem.ProductPrice,
-                Price = receiptItem.FullPrice / receiptItem.ProductQuantity, //receiptItem.FullPrice!=0 ? receiptItem.FullPrice: receiptItem.ProductPrice,
+                Price = (receiptItem.FullPrice - receiptItem.Discount) / receiptItem.ProductQuantity, //receiptItem.FullPrice!=0 ? receiptItem.FullPrice: receiptItem.ProductPrice,
                 WeightBrutto = receiptItem.ProductWeight / 1000m,
                 Quantity= receiptItem.ProductQuantity,
 //                TaxGroup = Global.GetTaxGroup(receiptItem.TypeVat, receiptItem.TypeWares),               

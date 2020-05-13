@@ -703,13 +703,13 @@ from   users_link  ul
 order by type_access
 
 [SqlCopyWaresReturnReceipt]
-insert into rc.wares_receipt 
+insert into wares_receipt 
 (id_workplace,code_period,code_receipt,code_wares,code_unit,quantity,price,sum,sum_vat,sum_discount,
 type_price,par_price_1,par_price_2,type_vat,sort, addition_n1, addition_n2,addition_n3, user_create,BARCODE_2_CATEGORY )
 select @IdWorkplaceReturn,@CodePeriodReturn,@CodeReceiptReturn,code_wares,code_unit,0,price,0,0,0,
 0,0,0,type_vat,sort,@IdWorkplace, @CodePeriod, @CodeReceipt, @UserCreate,@barCode2Category
-from   rrc.wares_receipt wr where wr.id_workplace=@IdWorkplace and wr.code_period=@CodePeriod  and wr.code_receipt=@CodeReceipt;
-update rc.receipt set CODE_PATTERN=2  where id_workplace=@IdWorkplaceReturn and code_period=@CodePeriodReturn  and code_receipt=@CodeReceiptReturn;
+from   wares_receipt wr where wr.id_workplace=@IdWorkplace and wr.code_period=@CodePeriod  and wr.code_receipt=@CodeReceipt;
+update receipt set CODE_PATTERN=2  where id_workplace=@IdWorkplaceReturn and code_period=@CodePeriodReturn  and code_receipt=@CodeReceiptReturn;
 
 
 [SqlGetFastGroup]

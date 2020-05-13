@@ -17,6 +17,7 @@ namespace ModelMID
         public int NumberCashDesk { get; set; }
         public string Description { get; set; }
 
+        public UInt64 NumberReceipt { get; set; }
         public int CodeClientCard { get; set; }
         public int CodeWarehouse { get { return 9; } set { } }
 
@@ -33,7 +34,12 @@ namespace ModelMID
             TypeReceipt =  (parR.TypeReceipt== eTypeReceipt.Refund? eTypeReceipt.Refund:eTypeReceipt.Sale);
             NumberCashDesk = parR.IdWorkplace;            
             CodeClientCard = parR.CodeClient;
-            if(parR.Wares!=null) 
+
+            UInt64 nr=0;
+            if(UInt64.TryParse(parR.NumberReceipt,out nr))                
+             NumberReceipt = nr;
+
+            if (parR.Wares!=null) 
               Wares = parR.Wares.Select(r => new ReceiptWares1C(r));
 //            if (parR.Payment != null)
                 //Description = parR.Payment.Where(r => !string.IsNullOrEmpty(r.NumberSlip)).FirstOrDefault().NumberSlip;

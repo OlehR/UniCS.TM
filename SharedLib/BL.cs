@@ -134,10 +134,11 @@ namespace SharedLib
                             default:
                                 break;
                         }
-                        if (parQuantity > 0 && w != null && w.Count() == 1) //Знайшли що треба
+                        if (w != null && w.Count() == 1) //Знайшли що треба
                         {
                             //parQuantity = (w.First().CodeUnit == Global.WeightCodeUnit ? varValue / 1000m : varValue);
-                            parQuantity = varValue;
+                            if(parQuantity > 0)
+                              parQuantity = varValue;
                             break;
                         }
                     }
@@ -381,18 +382,27 @@ namespace SharedLib
             return null;
         }
 
-        public bool SaveRefundReceipt(Receipt parReceipt)       
+        public bool SaveReceipt(Receipt parReceipt,bool isRefund =true)       
         {
-            db.ReplaceReceipt(parReceipt);
-            db.ReplacePayment(parReceipt.Payment);
-            var dbr = parReceipt.CodePeriod == parReceipt.CodePeriodRefund ? db : new WDB_SQLite("", true, parReceipt.RefundId.DTPeriod);
+            
+            var ReceiptId = isRefund ? parReceipt.RefundId : (IdReceipt)parReceipt;            
+            
+            var dbR = parReceipt.CodePeriod == Global.GetCodePeriod()?db: new WDB_SQLite("", true, ReceiptId.DTPeriod);
 
+
+            dbR.ReplaceReceipt(parReceipt);
+            dbR.ReplacePayment(parReceipt.Payment);
+
+            var dbr = parReceipt.CodePeriod == parReceipt.CodePeriodRefund ? db : new WDB_SQLite("", true, ReceiptId.DTPeriod);
             foreach (var el in parReceipt.Wares)
             {
-                db.AddWares(el);
-                var w = new ReceiptWares(parReceipt.RefundId, el.WaresId);
-                w.Quantity = el.Quantity;
-                dbr.SetRefundedQuantity(w);
+                dbR.AddWares(el);
+                if (isRefund)
+                {
+                    var w = new ReceiptWares(ReceiptId, el.WaresId);
+                    w.Quantity = el.Quantity;
+                    dbr.SetRefundedQuantity(w);
+                }
             }
             return true;
         }
