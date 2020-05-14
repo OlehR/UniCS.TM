@@ -39,6 +39,7 @@ namespace SharedLib
         }
         public ReceiptWares AddReceiptWares(ReceiptWares parW)
         {
+            
             var Quantity = db.GetCountWares(parW);
             parW.QuantityOld = Quantity;
             parW.Quantity += Quantity;
@@ -48,6 +49,7 @@ namespace SharedLib
             else
                 db.AddWares(parW);
 
+            VR.SendMessageAsync(parW.IdWorkplace, parW.NameWares, parW.Articl, parW.Quantity, parW.Sum);
             if (ModelMID.Global.RecalcPriceOnLine)
                 db.RecalcPriceAsync(parW);
             return parW;
@@ -191,17 +193,23 @@ namespace SharedLib
         {
             var res = false;
             //var W = db.FindWares(null, null, parReceiptWaresId.CodeWares, parReceiptWaresId.CodeUnit);
-           // if (W.Count() == 1)
+            // if (W.Count() == 1)
             //{
-                if (parQuantity == 0)
-                    db.DeleteReceiptWares(parReceiptWaresId);
-                else
-                {
-                var w = new ReceiptWares(parReceiptWaresId);
-                    //w.SetIdReceiptWares();
-                    w.Quantity = parQuantity;
-                res=db.UpdateQuantityWares(w);
-                }
+            var w = new ReceiptWares(parReceiptWaresId);
+
+            if (parQuantity == 0)
+            {
+                db.DeleteReceiptWares(parReceiptWaresId);                
+                VR.SendMessageAsync(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum,VR.eTypeVRMessage.DeleteWares);
+
+            }
+            else
+            {               
+                //w.SetIdReceiptWares();
+                w.Quantity = parQuantity;
+                res = db.UpdateQuantityWares(w);
+                VR.SendMessageAsync(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum,VR.eTypeVRMessage.UpdateWares);
+            }
                 if (ModelMID.Global.RecalcPriceOnLine)
                     db.RecalcPriceAsync(parReceiptWaresId);
 

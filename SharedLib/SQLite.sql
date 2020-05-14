@@ -11,7 +11,11 @@
 alter TABLE WARES_RECEIPT 
     add Fix_Weight NUMBER NOT NULL DEFAULT 0;
 [SqlUpdateConfig_V1]
+alter table WORKPLACE add  Video_Camera_IP TEXT;
+alter table WORKPLACE add  Video_Recorder_IP TEXT;
 [SqlUpdateMID_V1]
+
+
 
 
 [SqlConfig]
@@ -470,7 +474,8 @@ insert into Weight ( BarCode,Weight,STATUS) values (@BarCode,@Weight,@Status);
  replace into WORKPLACE ( ID_WORKPLACE, NAME, Terminal_GUID) values (@IdWorkplace, @Name,@StrTerminalGUID);
 
 [SqlGetWorkplace]
-select ID_WORKPLACE as IdWorkplace, NAME as Name, Terminal_GUID as StrTerminalGUID from WORKPLACE;
+select ID_WORKPLACE as IdWorkplace, NAME as Name, Terminal_GUID as StrTerminalGUID, 
+       Video_Camera_IP as VideoCameraIP, Video_Recorder_IP  as VideoRecorderIP from WORKPLACE;
 
 [SqlFillQuickGroup]
 WITH RECURSIVE
@@ -491,7 +496,9 @@ WITH RECURSIVE
 CREATE TABLE WORKPLACE (
     ID_WORKPLACE      INTEGER  NOT NULL,
 	NAME TEXT,
-	Terminal_GUID TEXT
+	Terminal_GUID TEXT,
+    Video_Camera_IP   TEXT,
+    Video_Recorder_IP TEXT
 	);
 	CREATE UNIQUE INDEX id_WORKPLACE ON WORKPLACE(ID_WORKPLACE);
 	CREATE UNIQUE INDEX WORKPLACE_TG ON WORKPLACE(Terminal_GUID);

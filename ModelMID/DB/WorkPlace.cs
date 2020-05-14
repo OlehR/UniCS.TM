@@ -9,8 +9,10 @@ namespace ModelMID.DB
         public int IdWorkplace { get; set; }
         public string Name { get; set; }
         public Guid TerminalGUID { get; set; }
-
         public string  StrTerminalGUID { get { return TerminalGUID.ToString(); } set { TerminalGUID=Guid.Parse(value); } }
+
+        public string VideoCameraIP { get; set; }
+        public string VideoRecorderIP { get; set; }
 
     }
 }

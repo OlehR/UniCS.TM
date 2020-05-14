@@ -194,6 +194,12 @@ namespace ModelMID
             return "00";
         }
 
+        public static string GetVideoCameraIPByIdWorkplace(int parIdWorkPlace)
+        {
+            if (WorkPlaceByWorkplaceId.ContainsKey(parIdWorkPlace))
+                return WorkPlaceByWorkplaceId[parIdWorkPlace].VideoCameraIP;
+            return null;
+        }
         public static string GetTaxGroup(int parTypeVat, int parTypeWares = 0)
         {
             if (parTypeVat == 0 && parTypeWares == 0)
