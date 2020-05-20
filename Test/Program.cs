@@ -35,7 +35,7 @@ namespace Test
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-            await CreateDataBaseAsync(true); //Створення бази
+           // await CreateDataBaseAsync(false); //Створення бази
             //Thread.Sleep(10000);
             //TestKit();
             TestReceipt(); //
@@ -82,10 +82,10 @@ namespace Test
             var TerminalId = Guid.Parse("1bb89aa9-dbdf-4eb0-b7a2-094665c3fdd0");
             var ProductId = Guid.Parse("00000000-abcd-0000-0007-000000088916");
             var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009000");
-            var ReceiptId = Guid.Parse("00000062-ffff-2020-0326-000000000008");
+            var ReceiptId = Guid.Parse("00000062-ffff-2020-0423-000000000064");
             var api = new ApiPSU();
 
-            var rrr=api.GetReceiptViewModel(new IdReceipt {CodePeriod=20200326,IdWorkplace=62,CodeReceipt=8} );
+            var rrr=api.GetReceiptViewModel(new IdReceipt {CodePeriod=20200423,IdWorkplace=62,CodeReceipt=64} );
             
 
             //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200212, IdWorkplace = 62, CodeReceipt = 10 });  return;
@@ -95,7 +95,7 @@ namespace Test
             var r2rr=api.GetBags();
             //api.Bl.SendAllReceipt();return;
 
-            sd = api.AddProductByBarCode(TerminalId, "5449000054227", 1);
+            sd = api.AddProductByBarCode(TerminalId, "1110965100017", 1);
             sd = api.AddProductByBarCode(TerminalId, "4820179280470", 1);
 
             Thread.Sleep(2000);
