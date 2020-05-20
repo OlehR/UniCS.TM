@@ -70,7 +70,7 @@ namespace ModelMID
         public decimal Price { get; set; }
         public decimal SumDiscount { get; set; }
         public decimal Sum { get; set; }
-        public bool IsPromotion { get; set; }
+        public bool IsPromotion { get {return  (CodePS > 10000000); } }
         private Int64 CodePS { get; set; }
             
         public decimal SumBonus { get; set; }
@@ -86,9 +86,8 @@ namespace ModelMID
             AbrUnit = parRW.AbrUnit;
             Price = parRW.Price;
             SumDiscount = parRW.SumDiscount;
-            Sum = parRW.Sum- parRW.SumDiscount;
-            IsPromotion = (CodePS > 100000000);
-            CodePS = ( parRW.TypePrice==eTypePrice.Promotion || parRW.TypePrice == eTypePrice.PromotionIndicative ? parRW.ParPrice1:0);
+            Sum = parRW.Sum- parRW.SumDiscount;            
+            CodePS = ( parRW.TypePrice==eTypePrice.Promotion || parRW.TypePrice == eTypePrice.PromotionIndicative ? parRW.ParPrice1:0);            
             SumBonus = 0;//TMP!!! ще не реалізовано.
             BarCode2Category = parRW.BarCode2Category;
         }
