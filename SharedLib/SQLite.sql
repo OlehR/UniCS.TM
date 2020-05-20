@@ -11,7 +11,11 @@
 alter TABLE WARES_RECEIPT 
     add Fix_Weight NUMBER NOT NULL DEFAULT 0;
 [SqlUpdateConfig_V1]
+alter table WORKPLACE add  Video_Camera_IP TEXT;
+alter table WORKPLACE add  Video_Recorder_IP TEXT;
 [SqlUpdateMID_V1]
+
+
 
 
 [SqlConfig]
@@ -137,6 +141,7 @@ select wr.id_workplace as IdWorkplace, wr.code_period as CodePeriod, wr.code_rec
  ,(select max(bc.BAR_CODE) from BAR_CODE bc where bc.code_wares=wr.code_wares) as BarCode 
  ,w.Weight_Brutto as WeightBrutto,Refunded_Quantity as RefundedQuantity,Fix_Weight as FixWeight,Weight_Fact as WeightFact
  ,ps.NAME_PS as NameDiscount,Sum_Discount as SumDiscount
+ ,w.Type_Wares as TypeWares
                      from wares_receipt wr
                      join wares w on (wr.code_wares =w.code_wares)
                      join ADDITION_UNIT au on w.code_wares = au.code_wares and wr.code_unit=au.code_unit
@@ -291,7 +296,11 @@ delete from  wares_receipt
   ;
  insert into  WARES_RECEIPT_HISTORY ( ID_WORKPLACE,  CODE_PERIOD, CODE_RECEIPT, CODE_WARES, CODE_UNIT, QUANTITY, QUANTITY_OLD, CODE_OPERATION)     
 values ( @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit, 0, 0,-1);
-                     
+
+delete from  WARES_RECEIPT_PROMOTION
+   where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt 
+               and code_wares =  case when @CodeWares=0 then code_wares else @CodeWares end;
+                
 [SqlMoveMoney]
 [SqlAddZ]
 [SqlAddLog]
@@ -370,15 +379,16 @@ union all -- По групам товарів
   where EPS.CODE_PS is null
   and w.CODE_WARES=@CodeWares
 union all --По товарам
- select PSF.CODE_PS,0 as priority , 13 as Type_discont, PSD.DATA,PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice
+ select PSF.CODE_PS,0 as priority , PSD.TYPE_DISCOUNT as Type_discont, PSD.DATA,PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice
   from PROMOTION_SALE_FILTER PSF 
   join PROMOTION_SALE_DATA PSD on (PSD.CODE_WARES=0 and PSD.CODE_PS=PSF.CODE_PS ) 
   left join ExeptionPS EPS on  (PSF.CODE_PS=EPS.CODE_PS)
-  where  PSF.TYPE_GROUP_FILTER=11 and PSF.RULE_GROUP_FILTER=1 and   PSF.CODE_DATA=@CodeWares and EPS.CODE_PS is null  
+  where  PSF.TYPE_GROUP_FILTER=11 and PSF.RULE_GROUP_FILTER=1 and   PSF.CODE_DATA=@CodeWares and EPS.CODE_PS is null and PSD.TYPE_DISCOUNT<=20
 union all --акції для всіх товарів.
- select PSEW.CODE_PS,0 as priority , 13 as Type_discont, PSD.DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice
+ select PSEW.CODE_PS,0 as priority , PSD.TYPE_DISCOUNT as Type_discont, PSD.DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice
   from PSEW
   join PROMOTION_SALE_DATA PSD on (PSD.CODE_PS=PSEW.CODE_PS )
+  where PSD.TYPE_DISCOUNT<=20
 
 [SqlGetPricePromotionSale2Category]
 select CODE_PS from PROMOTION_SALE_2_CATEGORY where CODE_WARES=@CodeWares
@@ -464,7 +474,8 @@ insert into Weight ( BarCode,Weight,STATUS) values (@BarCode,@Weight,@Status);
  replace into WORKPLACE ( ID_WORKPLACE, NAME, Terminal_GUID) values (@IdWorkplace, @Name,@StrTerminalGUID);
 
 [SqlGetWorkplace]
-select ID_WORKPLACE as IdWorkplace, NAME as Name, Terminal_GUID as StrTerminalGUID from WORKPLACE;
+select ID_WORKPLACE as IdWorkplace, NAME as Name, Terminal_GUID as StrTerminalGUID, 
+       Video_Camera_IP as VideoCameraIP, Video_Recorder_IP  as VideoRecorderIP from WORKPLACE;
 
 [SqlFillQuickGroup]
 WITH RECURSIVE
@@ -485,7 +496,9 @@ WITH RECURSIVE
 CREATE TABLE WORKPLACE (
     ID_WORKPLACE      INTEGER  NOT NULL,
 	NAME TEXT,
-	Terminal_GUID TEXT
+	Terminal_GUID TEXT,
+    Video_Camera_IP   TEXT,
+    Video_Recorder_IP TEXT
 	);
 	CREATE UNIQUE INDEX id_WORKPLACE ON WORKPLACE(ID_WORKPLACE);
 	CREATE UNIQUE INDEX WORKPLACE_TG ON WORKPLACE(Terminal_GUID);
@@ -697,13 +710,13 @@ from   users_link  ul
 order by type_access
 
 [SqlCopyWaresReturnReceipt]
-insert into rc.wares_receipt 
+insert into wares_receipt 
 (id_workplace,code_period,code_receipt,code_wares,code_unit,quantity,price,sum,sum_vat,sum_discount,
 type_price,par_price_1,par_price_2,type_vat,sort, addition_n1, addition_n2,addition_n3, user_create,BARCODE_2_CATEGORY )
 select @IdWorkplaceReturn,@CodePeriodReturn,@CodeReceiptReturn,code_wares,code_unit,0,price,0,0,0,
 0,0,0,type_vat,sort,@IdWorkplace, @CodePeriod, @CodeReceipt, @UserCreate,@barCode2Category
-from   rrc.wares_receipt wr where wr.id_workplace=@IdWorkplace and wr.code_period=@CodePeriod  and wr.code_receipt=@CodeReceipt;
-update rc.receipt set CODE_PATTERN=2  where id_workplace=@IdWorkplaceReturn and code_period=@CodePeriodReturn  and code_receipt=@CodeReceiptReturn;
+from   wares_receipt wr where wr.id_workplace=@IdWorkplace and wr.code_period=@CodePeriod  and wr.code_receipt=@CodeReceipt;
+update receipt set CODE_PATTERN=2  where id_workplace=@IdWorkplaceReturn and code_period=@CodePeriodReturn  and code_receipt=@CodeReceiptReturn;
 
 
 [SqlGetFastGroup]
@@ -853,7 +866,7 @@ CREATE TABLE PROMOTION_SALE_FILTER (
     CODE_GROUP_FILTER INTEGER  NOT NULL,	
     TYPE_GROUP_FILTER INTEGER  NOT NULL,
     RULE_GROUP_FILTER INTEGER  NOT NULL,
-    CODE_PROPERTY     INTEGER  NULL,
+    --CODE_PROPERTY     INTEGER  NULL,
     CODE_CHOICE       INTEGER  NULL,
 	CODE_DATA		  INTEGER  NULL, 	
 	CODE_DATA_END     INTEGER  NULL, 	
@@ -926,7 +939,9 @@ CREATE UNIQUE INDEX PROMOTION_SALE_ID ON PROMOTION_SALE ( CODE_PS);
 CREATE INDEX PROMOTION_SALE_DEALER_WD ON PROMOTION_SALE_DEALER (Code_Wares,DATE_BEGIN,DATE_END);
 CREATE UNIQUE INDEX PROMOTION_SALE_DEALER_ID ON PROMOTION_SALE_DEALER (CODE_PS,Code_Wares,DATE_BEGIN,DATE_END,CODE_DEALER);
 
-CREATE UNIQUE INDEX PROMOTION_SALE_FILTER_ID ON PROMOTION_SALE_FILTER (CODE_PS, CODE_GROUP_FILTER, TYPE_GROUP_FILTER, RULE_GROUP_FILTER, CODE_PROPERTY, CODE_CHOICE,CODE_DATA);
+CREATE UNIQUE INDEX PROMOTION_SALE_DATA_ID ON PROMOTION_SALE_DATA ( CODE_PS,NUMBER_GROUP,CODE_WARES,USE_INDICATIVE,TYPE_DISCOUNT,ADDITIONAL_CONDITION,DATA,DATA_ADDITIONAL_CONDITION);
+
+CREATE UNIQUE INDEX PROMOTION_SALE_FILTER_ID ON PROMOTION_SALE_FILTER (CODE_PS, CODE_GROUP_FILTER, TYPE_GROUP_FILTER, RULE_GROUP_FILTER,  CODE_CHOICE,CODE_DATA);
 
 CREATE UNIQUE INDEX PROMOTION_SALE_GIFT_ID ON PROMOTION_SALE_GIFT ( CODE_PS, NUMBER_GROUP,CODE_WARES,TYPE_DISCOUNT, DATA);
 
@@ -1044,6 +1059,20 @@ sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_
  from receipt
  where ID_WORKPLACE = case when @IdWorkplace =0 then ID_WORKPLACE else @IdWorkplace end
  and DateReceipt between @StartDate and @FinishDate;   
+
+[SqlReceiptByFiscalNumbers]
+select  id_workplace IdWorkplace, code_period CodePeriod, code_receipt CodeReceipt, date_receipt DateReceipt,
+sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_receipt as StateReceipt, code_client as CodeClient,
+ number_cashier as NumberCashier, number_receipt NumberReceipt, code_discount as CodeDiscount, sum_discount as SumDiscount, percent_discount as PercentDiscount, 
+ code_bonus as CodeBonus, sum_bonus as SumBonus, sum_cash as SumCash, sum_credit_card as SumCreditCard, code_outcome as CodeOutcome, 
+ code_credit_card as CodeCreditCard, number_slip as NumberSlip, number_tax_income as NumberTaxIncome,USER_CREATE as UseCreate, Date_Create as DateCreate,
+ ADDITION_N1 as AdditionN1,ADDITION_N2 as AdditionN2, ADDITION_N3 as AdditionN3,
+ ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1
+ from receipt
+ where ID_WORKPLACE = case when @IdWorkplace =0 then ID_WORKPLACE else @IdWorkplace end and number_receipt=@NumberReceipt
+ and DateReceipt between @StartDate and @FinishDate;   
+
+
 [SqlAdditionalWeightsWares]
 select WEIGHT from WEIGHT where BARCODE=@CodeWares and  STATUS=-1
 

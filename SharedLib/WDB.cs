@@ -192,6 +192,7 @@ namespace SharedLib
         protected string SqlDeleteReceiptEvent = "";
         protected string SqlSetFixWeight = "";
         protected string SqlGetReceiptWaresPromotion = "";
+        protected string SqlReceiptByFiscalNumbers = "";
 
         public WDB(string parFileSQL)
         {
@@ -629,6 +630,7 @@ namespace SharedLib
             SqlSetFixWeight = GetSQL("SqlSetFixWeight");
 
             SqlGetReceiptWaresPromotion = GetSQL("SqlGetReceiptWaresPromotion");
+            SqlReceiptByFiscalNumbers = GetSQL("SqlReceiptByFiscalNumbers");
             return true;
         }
 
@@ -1009,6 +1011,13 @@ namespace SharedLib
         {
             return db.Execute< object, Receipt>(SqlGetReceipts, new { StartDate = parStartDate, FinishDate = parFinishDate, IdWorkPlace = parIdWorkPlace });
         }
+
+
+        public virtual IEnumerable<Receipt> GetReceiptByFiscalNumber(int pIdWorkPlace,string pFiscalNumber, DateTime pStartDate = default(DateTime), DateTime pFinishDate = default(DateTime))
+        {
+            return db.Execute<object, Receipt>(SqlReceiptByFiscalNumbers, new { StartDate = pStartDate, FinishDate = pFinishDate, IdWorkPlace = pIdWorkPlace, NumberReceipt = pFiscalNumber });
+        }
+        
 
         public virtual bool InsertAddWeight (AddWeight parAddWeight)
         {

@@ -113,11 +113,11 @@ namespace ModelMID
         public static string PathIni = @"D:\WORK\CS\UniCS.TM\SharedLib\";
 
         //public static Language Language = Language.uk_UA;
-        
+
         public static string ClientGuid = "1A3B944E-3632-467B-AFFA-";
 
         public static int CodeFastGroupBag = 0;
-        public static List<int> Bags ;
+        public static List<int> Bags;
         public static SortedList<int, string> Tax = new SortedList<int, string>();
         public static DeltaWeight[] DeltaWeight;
 
@@ -130,16 +130,19 @@ namespace ModelMID
 
         public static string AlcoholTimeStart = "07:00:00.0000";
         public static string AlcoholTimeStop = "23:00:00.0000";
-        
+
         /// <summary>
         /// Кількість помилкових запитів до сервера
         /// </summary>
         private static int _ErrorDiscountOnLine;
-        public static int ErrorDiscountOnLine { 
-            get { return _ErrorDiscountOnLine; } 
-            set { 
-                if (value == 0) FirstErrorDiscountOnLine= default(DateTime); 
-                _ErrorDiscountOnLine = value; } 
+        public static int ErrorDiscountOnLine
+        {
+            get { return _ErrorDiscountOnLine; }
+            set
+            {
+                if (value == 0) FirstErrorDiscountOnLine = default(DateTime);
+                _ErrorDiscountOnLine = value;
+            }
         }
         /// <summary>
         ///  час Першого помилкового запита до сервера 
@@ -191,6 +194,12 @@ namespace ModelMID
             return "00";
         }
 
+        public static string GetVideoCameraIPByIdWorkplace(int parIdWorkPlace)
+        {
+            if (WorkPlaceByWorkplaceId.ContainsKey(parIdWorkPlace))
+                return WorkPlaceByWorkplaceId[parIdWorkPlace].VideoCameraIP;
+            return null;
+        }
         public static string GetTaxGroup(int parTypeVat, int parTypeWares = 0)
         {
             if (parTypeVat == 0 && parTypeWares == 0)
@@ -201,15 +210,15 @@ namespace ModelMID
         public static eExchangeStatus GetExchangeStatus(DateTime parDT)
         {
             var Diff = DateTime.Now - parDT;
-            if (parDT == default(DateTime) || Diff.Minutes<15)
+            if (parDT == default(DateTime) || Diff.Minutes < 15)
                 return eExchangeStatus.Green;
-            
-            if(Diff.Minutes<30)
+
+            if (Diff.Minutes < 30)
                 return eExchangeStatus.LightGreen;
-            
+
             if (Diff.Hours < 1)
                 return eExchangeStatus.Yellow;
- 
+
             if (Diff.Hours < 3)
                 return eExchangeStatus.Orange;
 
@@ -217,17 +226,25 @@ namespace ModelMID
         }
 
         public static decimal GetCoefDeltaWeight(decimal parWeight)
-        { 
-           var res=0.5m;
-           for(int i =0;i<DeltaWeight.Length;i++)
+        {
+            var res = 0.5m;
+            for (int i = 0; i < DeltaWeight.Length; i++)
             {
                 if (DeltaWeight[i].Weight > parWeight)
                     break;
                 res = DeltaWeight[i].Coef;
             }
-
-             return res;
+            return res;
         }
+
+        public static decimal RoundDown(decimal pNumber)
+        {
+            decimal res = Math.Round(pNumber, 2);
+            if (res - pNumber == 0.005m)
+                res -= 0.01m;
+            return res;
+        }
+
 
     }
 }

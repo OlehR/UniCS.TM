@@ -13,7 +13,9 @@ namespace ModelMID.DB
         public string Data { get; set; }
         public decimal WeightUrl { get; set; }
         public DateTime DateUrl { get; set; }
-        public string Error { get; set; }
+        public string Error { get; set; }        
+        public string UrlPicture { get; set; }
+
     }
 
 }

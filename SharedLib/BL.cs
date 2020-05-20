@@ -39,6 +39,7 @@ namespace SharedLib
         }
         public ReceiptWares AddReceiptWares(ReceiptWares parW)
         {
+            
             var Quantity = db.GetCountWares(parW);
             parW.QuantityOld = Quantity;
             parW.Quantity += Quantity;
@@ -48,6 +49,7 @@ namespace SharedLib
             else
                 db.AddWares(parW);
 
+            VR.SendMessageAsync(parW.IdWorkplace, parW.NameWares, parW.Articl, parW.Quantity, parW.Sum);
             if (ModelMID.Global.RecalcPriceOnLine)
                 db.RecalcPriceAsync(parW);
             return parW;
@@ -93,8 +95,19 @@ namespace SharedLib
 
         public ReceiptWares AddWaresBarCode(IdReceipt parReceipt, string parBarCode, decimal parQuantity = 0)
         {
+            IEnumerable<ReceiptWares> w = null;
+            if (parBarCode.Trim().Length >= 8)
+                w = db.FindWares(parBarCode);//Пошук по штрихкоду
+            else// Можливо артикул товару
+            {
+                int Article;
+                if (int.TryParse(parBarCode, out Article))
+                    w = db.FindWares(null, null, 0, 0, 0, Article);
+                else
+                    return null;
+            }
 
-            var w = parBarCode.Trim().Length >= 8 ? db.FindWares(parBarCode) : db.FindWares(null, null, 0, 0, 0, Convert.ToInt32(parBarCode));
+
 
             //ReceiptWares W = null;
             if (w == null || w.Count() == 0) // Якщо не знайшли спробуем по ваговим і штучним штрихкодам.          
@@ -123,10 +136,11 @@ namespace SharedLib
                             default:
                                 break;
                         }
-                        if (parQuantity > 0 && w != null && w.Count() == 1) //Знайшли що треба
+                        if (w != null && w.Count() == 1) //Знайшли що треба
                         {
                             //parQuantity = (w.First().CodeUnit == Global.WeightCodeUnit ? varValue / 1000m : varValue);
-                            parQuantity = varValue;
+                            if(parQuantity > 0)
+                              parQuantity = varValue;
                             break;
                         }
                     }
@@ -179,17 +193,23 @@ namespace SharedLib
         {
             var res = false;
             //var W = db.FindWares(null, null, parReceiptWaresId.CodeWares, parReceiptWaresId.CodeUnit);
-           // if (W.Count() == 1)
+            // if (W.Count() == 1)
             //{
-                if (parQuantity == 0)
-                    db.DeleteReceiptWares(parReceiptWaresId);
-                else
-                {
-                var w = new ReceiptWares(parReceiptWaresId);
-                    //w.SetIdReceiptWares();
-                    w.Quantity = parQuantity;
-                res=db.UpdateQuantityWares(w);
-                }
+            var w = new ReceiptWares(parReceiptWaresId);
+
+            if (parQuantity == 0)
+            {
+                db.DeleteReceiptWares(parReceiptWaresId);                
+                VR.SendMessageAsync(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum,VR.eTypeVRMessage.DeleteWares);
+
+            }
+            else
+            {               
+                //w.SetIdReceiptWares();
+                w.Quantity = parQuantity;
+                res = db.UpdateQuantityWares(w);
+                VR.SendMessageAsync(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum,VR.eTypeVRMessage.UpdateWares);
+            }
                 if (ModelMID.Global.RecalcPriceOnLine)
                     db.RecalcPriceAsync(parReceiptWaresId);
 
@@ -350,18 +370,47 @@ namespace SharedLib
                 return res;
         }
 
-        public bool SaveRefundReceipt(Receipt parReceipt)       
-        {
-            db.ReplaceReceipt(parReceipt);
-            db.ReplacePayment(parReceipt.Payment);
-            var dbr = parReceipt.CodePeriod == parReceipt.CodePeriodRefund ? db : new WDB_SQLite("", true, parReceipt.RefundId.DTPeriod);
 
+        public Receipt GetReceiptByFiscalNumber(int IdWorkplace,string pFiscalNumber, DateTime pStartDate= default(DateTime), DateTime pFinishDate= default(DateTime))
+        {
+            if (pStartDate == default(DateTime))
+                pStartDate = DateTime.Now.Date.AddDays(-14);
+            if (pFinishDate == default(DateTime))
+                pFinishDate = DateTime.Now;
+
+            var Ldc = pStartDate.Date;
+            while (Ldc <= pFinishDate.Date)
+            {
+                var ldb = new WDB_SQLite(null, false, Ldc);
+                var l = ldb.GetReceiptByFiscalNumber(IdWorkplace,pFiscalNumber, pStartDate, pFinishDate);
+                if (l != null && l.Count() >= 1)
+                    return l.First();
+                Ldc = Ldc.AddDays(1);
+            }
+            return null;
+        }
+
+        public bool SaveReceipt(Receipt parReceipt,bool isRefund =true)       
+        {
+            
+            var ReceiptId = isRefund ? parReceipt.RefundId : (IdReceipt)parReceipt;            
+            
+            var dbR = parReceipt.CodePeriod == Global.GetCodePeriod()?db: new WDB_SQLite("", true, ReceiptId.DTPeriod);
+
+
+            dbR.ReplaceReceipt(parReceipt);
+            dbR.ReplacePayment(parReceipt.Payment);
+
+            var dbr = parReceipt.CodePeriod == parReceipt.CodePeriodRefund ? db : new WDB_SQLite("", true, ReceiptId.DTPeriod);
             foreach (var el in parReceipt.Wares)
             {
-                db.AddWares(el);
-                var w = new ReceiptWares(parReceipt.RefundId, el.WaresId);
-                w.Quantity = el.Quantity;
-                dbr.SetRefundedQuantity(w);
+                dbR.AddWares(el);
+                if (isRefund)
+                {
+                    var w = new ReceiptWares(ReceiptId, el.WaresId);
+                    w.Quantity = el.Quantity;
+                    dbr.SetRefundedQuantity(w);
+                }
             }
             return true;
         }

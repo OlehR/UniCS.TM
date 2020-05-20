@@ -75,15 +75,19 @@ namespace SharedLib
             {
                 db = new SQLite(MidFile);
                 db.ExecuteNonQuery("ATTACH '" + ConfigFile + "' AS con");
+                db.ExecuteNonQuery("ATTACH '" + varReceiptFile + "' AS rc");
             }
             else
-            {
-                db = new SQLite(ConfigFile);
+            {                
+                db = new SQLite(varReceiptFile);
                 db.ExecuteNonQuery("ATTACH '" + MidFile + "' AS mid");
+                db.ExecuteNonQuery("ATTACH '" + ConfigFile + "' AS con");
             }
 
+            db.ExecuteNonQuery("PRAGMA synchronous = full");
             //db.ExecuteNonQuery("ATTACH '" + MidFile + "' AS mid");
-            db.ExecuteNonQuery("ATTACH '" + varReceiptFile + "' AS rc");
+            
+            
             BildWorkplace();
         }
         

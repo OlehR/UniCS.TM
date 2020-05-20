@@ -71,7 +71,7 @@ namespace ModelMID
         public eRuleGroup RuleGroupFilter { get; set; }
 
         //int CodeProporty { get; set; }
-        public int? CodeChoice { get; set; }
+        public int CodeChoice { get; set; }
         public decimal CodeData { get; set; }
         public decimal? CodeDataEnd { get; set; }
 

@@ -56,6 +56,8 @@ namespace ModernIntegration
         public virtual IEnumerable<ReceiptViewModel> GetReceipts(DateTime parStartDate, DateTime parFinishDate, Guid? parTerminalId = null) 
             { throw new NotImplementedException(); }
 
+        public virtual ReceiptViewModel GetReceiptByNumber(Guid pTerminalId, string pFiscalNumber)
+        { throw new NotImplementedException(); }        
         public Action<SyncInformation> OnSyncInfoCollected { get; set; }
 
         public Action<IEnumerable<ProductViewModel>, Guid> OnProductsChanged { get; set; }
