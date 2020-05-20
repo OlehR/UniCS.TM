@@ -76,7 +76,7 @@ namespace ModelMID
         public decimal Price { get; set; }
         public decimal SumDiscount { get; set; }
         public decimal Sum { get; set; }
-        public bool IsPromotion { get {return  (CodePS > 10000000); } }
+        public bool IsPromotion { get {return  (CodePS > 1000000); } }
         private Int64 CodePS { get; set; }
             
         public decimal SumBonus { get; set; }
