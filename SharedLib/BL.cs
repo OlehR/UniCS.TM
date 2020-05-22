@@ -49,7 +49,7 @@ namespace SharedLib
             else
                 db.AddWares(parW);
 
-            VR.SendMessageAsync(parW.IdWorkplace, parW.NameWares, parW.Articl, parW.Quantity, parW.Sum);
+            _ = VR.SendMessageAsync(parW.IdWorkplace, parW.NameWares, parW.Articl, parW.Quantity, parW.Sum);
             if (ModelMID.Global.RecalcPriceOnLine)
                 db.RecalcPriceAsync(parW);
             return parW;
@@ -199,8 +199,8 @@ namespace SharedLib
 
             if (parQuantity == 0)
             {
-                db.DeleteReceiptWares(parReceiptWaresId);                
-                VR.SendMessageAsync(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum,VR.eTypeVRMessage.DeleteWares);
+                db.DeleteReceiptWares(parReceiptWaresId);
+                _ = VR.SendMessageAsync(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum, VR.eTypeVRMessage.DeleteWares);
 
             }
             else
@@ -208,7 +208,7 @@ namespace SharedLib
                 //w.SetIdReceiptWares();
                 w.Quantity = parQuantity;
                 res = db.UpdateQuantityWares(w);
-                VR.SendMessageAsync(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum,VR.eTypeVRMessage.UpdateWares);
+                _ = VR.SendMessageAsync(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum, VR.eTypeVRMessage.UpdateWares);
             }
                 if (ModelMID.Global.RecalcPriceOnLine)
                     db.RecalcPriceAsync(parReceiptWaresId);
