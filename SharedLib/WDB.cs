@@ -1079,7 +1079,7 @@ namespace SharedLib
             return this.db.Execute<IdReceipt, WaresReceiptPromotion>(SqlGetReceiptWaresPromotion, parIdReceipt);            
         }
 
-        void Close()
+        public virtual void Close()
         {
             if (db != null)
                 db.Close();
