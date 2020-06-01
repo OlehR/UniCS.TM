@@ -57,15 +57,76 @@ namespace ModernIntegration
             { throw new NotImplementedException(); }
 
         public virtual ReceiptViewModel GetReceiptByNumber(Guid pTerminalId, string pFiscalNumber)
-        { throw new NotImplementedException(); }        
+        { throw new NotImplementedException(); }
+
+        /// <summary>
+        ///  Зберігає Фактичну вагу для останнього товару в чеку.
+        /// </summary>
+        /// <param name="pTerminalId"></param>
+        /// <param name="pWeight"></param>
+        public virtual void  SaveWeight(Guid pTerminalId, double pWeight)
+        { throw new NotImplementedException(); }
+
+        public virtual void CloseDb()
+        { throw new NotImplementedException(); }
+
+        //Блок роботи з контрольними вагами.
+
+        /// <summary>
+        /// Отримуємо "середню" вагу попередньої позиції
+        /// Викликається після зчитаного штрихкода, чи добавленн товару іншим чином до добаввлення його в чек.(та перед оплатою) 
+        /// Зразу необхідно викликати SaveWeight(); а вже після цього метод для добавлення нової позиції
+        /// а коли прийде інформація про нову позицію - StartWeightNewGoogs
+        /// </summary>
+        public virtual double GetMidlWeight()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Початок провірки ваги нового товару має викликатись після GetMidlWeight().
+        /// </summary>
+        /// <param name="pWeight">Ваги 1 позиції</param>
+        /// <param name="pCount">кількість позицій при видалені - </param>
+        public virtual void StartWeightNewGoogs(IEnumerable<WeightInfo> pWeight, int pCount)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        /// <summary>
+        ///  "Фіксуємо" невірну вагу можливо тільки в стані eStateScale.BadWeight || eStateScale.WaitGoods
+        /// </summary>
+        /// <returns>Якщо зуміли зафіксувати</returns>
+        public virtual bool FixedWeight()
+        {
+            throw new NotImplementedException();        
+        }
+
+        /// <summary>
+        ///  Переводимо вагу в стан очистіть вагу.
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool WaitClearScale()
+        {
+            throw new NotImplementedException();
+        }
+
         public Action<SyncInformation> OnSyncInfoCollected { get; set; }
 
         public Action<IEnumerable<ProductViewModel>, Guid> OnProductsChanged { get; set; }
 
         public Action<Status> OnStatusChanged { get; set; }
+
+        /// <summary>
+        /// TMP!!! Мають бути модерновські статуси
+        /// </summary>
+        public Action<eStateScale> OnChangedStatusScale { get; set; }
         public Action<CustomerViewModel, Guid> OnCustomerChanged { get; set; }
 
 
     }
-    
+
+
+   
 }

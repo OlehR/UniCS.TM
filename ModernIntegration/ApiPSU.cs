@@ -54,6 +54,8 @@ namespace ModernIntegration
             
             Global.OnStatusChanged += (Status) => OnStatusChanged?.Invoke(Status);
 
+            Global.OnChangedStatusScale += (Status) => OnChangedStatusScale?.Invoke(Status);
+
             Global.OnClientChanged += (client, guid) =>
             {
                 Console.WriteLine($"Client.Wallet=> {client.Wallet} SumBonus=>{client.SumBonus} ");                
@@ -706,7 +708,42 @@ namespace ModernIntegration
 
         }
 
+        public override double GetMidlWeight()
+        {
+            return Bl.GetMidlWeight();
+        }
+
+       
+        public override void StartWeightNewGoogs(IEnumerable<WeightInfo> pWeight, int pCount)
+        {
+            WaitWeight[] res;
+            if (pCount > 0)
+                res = pWeight.Select(r => new WaitWeight() { Min = (double)pCount * (r.Weight - r.DeltaWeight), Max = (double)pCount * (r.Weight + r.DeltaWeight) }).ToArray();
+            else
+                res = pWeight.Select(r => new WaitWeight() { Min = (double)pCount * (r.Weight + r.DeltaWeight), Max = (double)pCount * (r.Weight - r.DeltaWeight) }).ToArray();
+
+            Bl.StartWeightNewGoogs(res);
+        }
 
 
+       
+        public override bool FixedWeight()
+        {
+            return Bl.FixedWeight();
+        }
+
+        public override bool WaitClearScale()
+        {
+            return Bl.WaitClearScale();
+        }
+
+
+        public override void CloseDb()
+        { 
+            Bl.CloseDB();
+        }
     }
+
+
+    
 }

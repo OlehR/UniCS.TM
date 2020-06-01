@@ -841,12 +841,14 @@ namespace SharedLib
             var Res = new PricePromotion() { Price = PriceDealer };
             foreach (var el in db.Execute<ParameterPromotion, PricePromotion>(SqlGetPrice, parPromotion))
             {
-                if (el.CalcPrice(PriceDealer) < Res.Price)
+                if ((el.CalcPrice(PriceDealer) < Res.Price && Res.Priority<=el.Priority) || Res.Priority < el.Priority)
                 {
-                    Res = el;
-                    Res.Price = el.CalcPrice(PriceDealer);
-                }
 
+                    var IsUsePrice = (Res.Priority == el.Priority);
+                    Res = el;                
+
+                    Res.Price = el.CalcPrice(PriceDealer, IsUsePrice);
+                }
             }
             return Res;
         }
@@ -1075,6 +1077,12 @@ namespace SharedLib
         public virtual IEnumerable<WaresReceiptPromotion> GetReceiptWaresPromotion(IdReceipt parIdReceipt)
         {
             return this.db.Execute<IdReceipt, WaresReceiptPromotion>(SqlGetReceiptWaresPromotion, parIdReceipt);            
+        }
+
+        void Close()
+        {
+            if (db != null)
+                db.Close();
         }
 
         

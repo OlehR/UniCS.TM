@@ -35,7 +35,7 @@ namespace Test
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-            //await CreateDataBaseAsync(true); //Створення бази
+           //await CreateDataBaseAsync(false); //Створення бази
             //Thread.Sleep(10000);
             //TestKit();
             TestReceipt(); //
@@ -86,7 +86,13 @@ namespace Test
             ProductViewModel sd;
 
 
-            sd = api.AddProductByProductId(TerminalId, ProductId, 1); return;
+            //sd = api.AddProductByProductId(TerminalId, ProductId, 1); return;
+
+            sd = api.AddProductByBarCode(TerminalId, "4820185100281", 2); //
+
+            //sd = api.AddProductByBarCode(Guid.Parse("5c1413f5-66fe-4c2e-9c4c-c354c79952ea"), "7622210653031", 2); //
+
+            return;
 
             /*var rrr=api.GetReceiptViewModel(new IdReceipt {CodePeriod=20200504,IdWorkplace=62,CodeReceipt=12} );
 

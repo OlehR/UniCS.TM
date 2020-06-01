@@ -13,6 +13,7 @@ alter TABLE WARES_RECEIPT
 [SqlUpdateConfig_V1]
 alter table WORKPLACE add  Video_Camera_IP TEXT;
 alter table WORKPLACE add  Video_Recorder_IP TEXT;
+alter TABLE WEIGHT   add  CODE_WARES  INTEGER  NOT NULL DEFAULT 0;
 [SqlUpdateMID_V1]
 
 
@@ -362,7 +363,7 @@ where psf.code_ps  is null
 and EPS.code_ps  is null
 )
 --select * from PSEW
-select psd.CODE_PS as CodePs,0 as Priority ,11 as TypeDiscont  ,p.PRICE_DEALER as Data,1 as IsIgnoreMinPrice
+select psd.CODE_PS as CodePs,1 as Priority ,11 as TypeDiscont  ,p.PRICE_DEALER as Data,1 as IsIgnoreMinPrice
 from  PROMOTION_SALE_DEALER psd
  join PRICE p on psd.CODE_DEALER=p.CODE_DEALER and psd.CODE_WARES=p.CODE_WARES 
 where 
@@ -515,6 +516,7 @@ CREATE UNIQUE INDEX id_CONFIG ON CONFIG(NAME_VAR);
 
 CREATE TABLE Weight (
     BarCode TEXT NOT NULL,
+    CODE_WARES  INTEGER  NOT NULL DEFAULT 0,
 	Weight NUMBER NOT NULL,
 	status integer NOT NULL DEFAULT 0,
 	DATE_CREATE       DATETIME  DEFAULT (datetime('now','localtime'))

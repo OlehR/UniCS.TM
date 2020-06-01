@@ -330,6 +330,11 @@ namespace SharedLib
             return FindWares(null, null, 0, 0, Global.CodeFastGroupBag);
         }
 
+         public override void Close()
+        {
+            if (db != null)
+                db.Close();
+        }
 
 
     }

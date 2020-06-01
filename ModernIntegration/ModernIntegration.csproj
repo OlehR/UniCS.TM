@@ -15,4 +15,10 @@
     <ProjectReference Include="..\SharedLib\SharedLib.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Mint.Hardware.ControlScales.BST106M60S">
+      <HintPath>dll\Mint.Hardware.ControlScales.BST106M60S.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

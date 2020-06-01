@@ -19,7 +19,8 @@ namespace SharedLib
         public WDB_SQLite db;
 
         public DataSync ds;
-        
+        public ControlScale CS = new ControlScale(); 
+
         //public Action<IEnumerable<ReceiptWares>, Guid> OnReceiptCalculationComplete { get; set; }
 
         /// <summary>
@@ -443,6 +444,35 @@ namespace SharedLib
         {
             return ds.SendReceiptTo1C(parIdReceipt);
         }
+
+
+        public  double GetMidlWeight()
+        {
+            return CS.GetMidlWeight();
+        }
+
+
+        public void StartWeightNewGoogs(WaitWeight[] pWeight)
+        {  
+            CS.StartWeightNewGoogs(pWeight);
+        }
+
+        public  bool FixedWeight()
+        {
+            return CS.FixedWeight();
+        }
+
+        public  bool WaitClearScale()
+        {
+            return CS.WaitClear();
+        }
+
+        public void CloseDB()
+        {
+            if (db != null)
+                db.Close();
+        }
+
     }
     
 
