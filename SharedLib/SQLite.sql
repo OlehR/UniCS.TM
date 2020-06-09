@@ -134,7 +134,8 @@ where ID_WORKPLACE = @IdWorkplace
    and CODE_RECEIPT = @CodeReceipt
 
 [SqlViewReceiptWares]
-select wr.id_workplace as IdWorkplace, wr.code_period as CodePeriod, wr.code_receipt as CodeReceipt,wr.code_wares as CodeWares, w.Name_Wares NameWares ,wr.quantity Quantity, ud.abr_unit as AbrUnit, wr.sum Sum, Type_Price TypePrice
+select wr.id_workplace as IdWorkplace, wr.code_period as CodePeriod, wr.code_receipt as CodeReceipt,wr.code_wares as CodeWares, w.Name_Wares as NameWares ,wr.quantity as Quantity, ud.abr_unit as AbrUnit, 
+Price as Price/*, wr.sum as Sum*/, Type_Price as TypePrice
 				,wr.code_unit as CodeUnit,w.Code_unit as CodeDefaultUnit, PAR_PRICE_1 as ParPrice1, PAR_PRICE_2 as ParPrice2,par_price_3 as ParPrice3,
                      au.COEFFICIENT as Coefficient,w.NAME_WARES_RECEIPT as  NameWaresReceipt,sort,
 					 ADDITION_N1 as AdditionN1,ADDITION_N2 as AdditionN2, ADDITION_N3 as AdditionN3,
@@ -576,7 +577,7 @@ CREATE TABLE WARES_RECEIPT (
     CODE_UNIT      INTEGER  NOT NULL,
 --    CODE_WAREHOUSE INTEGER  NOT NULL,
     QUANTITY       NUMBER   NOT NULL,
-    PRICE          INTEGER  NOT NULL,
+    PRICE          NUMBER   NOT NULL,
     SUM            NUMBER   NOT NULL,
     SUM_VAT        NUMBER   NOT NULL,
     SUM_DISCOUNT   NUMBER   NOT NULL,
