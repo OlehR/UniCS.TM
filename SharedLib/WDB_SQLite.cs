@@ -218,7 +218,8 @@ namespace SharedLib
                             RW.TypePrice = MPI.typePrice;
                             RW.ParPrice1 = Res.CodePs;
                             RW.ParPrice2 = (int)Res.TypeDiscont;
-                            RW.ParPrice3 = (int)Res.Data;
+                            RW.ParPrice3 = Res.Data;
+                            RW.Priority = Res.Priority;
                         }
 
                         ReplaceWaresReceipt(RW);

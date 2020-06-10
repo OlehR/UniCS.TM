@@ -14,6 +14,7 @@ alter TABLE WARES_RECEIPT
 alter table WORKPLACE add  Video_Camera_IP TEXT;
 alter table WORKPLACE add  Video_Recorder_IP TEXT;
 alter TABLE WEIGHT   add  CODE_WARES  INTEGER  NOT NULL DEFAULT 0;
+alter TABLE wares_receipt add Priority INTEGER  NOT NULL DEFAULT 0;
 [SqlUpdateMID_V1]
 
 
@@ -144,6 +145,7 @@ Price as Price/*, wr.sum as Sum*/, Type_Price as TypePrice
  ,w.Weight_Brutto as WeightBrutto,Refunded_Quantity as RefundedQuantity,Fix_Weight as FixWeight,Weight_Fact as WeightFact
  ,ps.NAME_PS as NameDiscount,Sum_Discount as SumDiscount
  ,w.Type_Wares as TypeWares
+ ,wr.Priority
                      from wares_receipt wr
                      join wares w on (wr.code_wares =w.code_wares)
                      join ADDITION_UNIT au on w.code_wares = au.code_wares and wr.code_unit=au.code_unit
@@ -206,13 +208,13 @@ select ID_WORKPLACE as IdWorkplace,CODE_PERIOD as CodePeriod, CODE_RECEIPT as Co
 [SqlInsertWaresReceipt]
 insert into wares_receipt (id_workplace, code_period, code_receipt, code_wares, code_unit,
   type_price,  quantity, price, Price_Dealer, sum, sum_vat,
-  PAR_PRICE_1,PAR_PRICE_2,PAR_PRICE_3, sum_discount, type_vat, sort, user_create,
+  Priority,PAR_PRICE_1,PAR_PRICE_2,PAR_PRICE_3, sum_discount, type_vat, sort, user_create,
  ADDITION_N1,ADDITION_N2,ADDITION_N3,
  ADDITION_C1,ADDITION_D1,BARCODE_2_CATEGORY,DESCRIPTION) 
  values (
   @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit,
   @TypePrice, @Quantity, @Price,@PriceDealer, @Sum, @SumVat,
-  @ParPrice1,@ParPrice2,@ParPrice3, round(@SumDiscount,2), @TypeVat, (select COALESCE(max(sort),0)+1 from wares_receipt  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt), @UserCreate,
+  @Priority,@ParPrice1,@ParPrice2,@ParPrice3, round(@SumDiscount,2), @TypeVat, (select COALESCE(max(sort),0)+1 from wares_receipt  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt), @UserCreate,
  @AdditionN1,@AdditionN2,@AdditionN3,
  @AdditionC1,@AdditionD1,@BARCODE2Category,@DESCRIPTION);
  ;
@@ -223,13 +225,13 @@ values ( @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit, @Quanti
  [SqlReplaceWaresReceipt]
 replace into wares_receipt (id_workplace, code_period, code_receipt, code_wares, code_unit,
   type_price,  quantity, price, Price_Dealer, sum, sum_vat,
-  PAR_PRICE_1,PAR_PRICE_2,PAR_PRICE_3, sum_discount, type_vat, sort, user_create,
+  Priority,PAR_PRICE_1,PAR_PRICE_2,PAR_PRICE_3, sum_discount, type_vat, sort, user_create,
  ADDITION_N1,ADDITION_N2,ADDITION_N3,
  ADDITION_C1,ADDITION_D1,BARCODE_2_CATEGORY,DESCRIPTION,Refunded_Quantity,Fix_Weight) 
  values (
   @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit,
   @TypePrice, @Quantity, @Price,@PriceDealer, @Sum, @SumVat,
-  @ParPrice1,@ParPrice2,@ParPrice3, @SumDiscount, @TypeVat, @Sort, @UserCreate,
+  @Priority,@ParPrice1,@ParPrice2,@ParPrice3, @SumDiscount, @TypeVat, @Sort, @UserCreate,
  @AdditionN1,@AdditionN2,@AdditionN3,
  @AdditionC1,@AdditionD1,@BARCODE2Category,@DESCRIPTION,@RefundedQuantity,@FixWeight)
 
@@ -582,6 +584,7 @@ CREATE TABLE WARES_RECEIPT (
     SUM_VAT        NUMBER   NOT NULL,
     SUM_DISCOUNT   NUMBER   NOT NULL,
 	PRICE_DEALER   NUMBER   NOT NULL,
+    Priority       INTEGER  NOT NULL DEFAULT 0,
     TYPE_PRICE     INTEGER  NOT NULL,
     PAR_PRICE_1    INTEGER  NOT NULL,
     PAR_PRICE_2    INTEGER  NOT NULL,
@@ -715,9 +718,9 @@ order by type_access
 [SqlCopyWaresReturnReceipt]
 insert into wares_receipt 
 (id_workplace,code_period,code_receipt,code_wares,code_unit,quantity,price,sum,sum_vat,sum_discount,
-type_price,par_price_1,par_price_2,type_vat,sort, addition_n1, addition_n2,addition_n3, user_create,BARCODE_2_CATEGORY )
+type_price,Priority,par_price_1,par_price_2,type_vat,sort, addition_n1, addition_n2,addition_n3, user_create,BARCODE_2_CATEGORY )
 select @IdWorkplaceReturn,@CodePeriodReturn,@CodeReceiptReturn,code_wares,code_unit,0,price,0,0,0,
-0,0,0,type_vat,sort,@IdWorkplace, @CodePeriod, @CodeReceipt, @UserCreate,@barCode2Category
+0,0,0,0,type_vat,sort,@IdWorkplace, @CodePeriod, @CodeReceipt, @UserCreate,@barCode2Category
 from   wares_receipt wr where wr.id_workplace=@IdWorkplace and wr.code_period=@CodePeriod  and wr.code_receipt=@CodeReceipt;
 update receipt set CODE_PATTERN=2  where id_workplace=@IdWorkplaceReturn and code_period=@CodePeriodReturn  and code_receipt=@CodeReceiptReturn;
 
