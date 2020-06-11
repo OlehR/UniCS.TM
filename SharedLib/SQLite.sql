@@ -1032,7 +1032,7 @@ select id_workplace as IdWorkplace, code_period as CodePeriod, code_receipt as C
 
 [SqlCheckLastWares2Cat]
 select  wr.id_workplace as IdWorkplace, wr.code_period as CodePeriod, wr.code_receipt as CodeReceipt, wr.code_wares as Codewares,
- wr.Quantity as Quantity, case when wr.price>0 and priority=1 then wr.price else wr.price_dealer end AS Price,  ps.code_ps as CodePS, 0 as NumberGroup, '' as BarCode2Category,wr.Priority as Priority
+ wr.Quantity as Quantity, case when wr.price>0 and wr.priority=1 then wr.price else wr.price_dealer end AS Price,  ps.code_ps as CodePS, 0 as NumberGroup, '' as BarCode2Category,wr.Priority as Priority
 from wares_receipt wr
 join PROMOTION_SALE_2_CATEGORY ps2c on ps2c.code_wares=wr.code_wares
 join PROMOTION_SALE ps on (ps.code_ps=ps2c.code_ps)
