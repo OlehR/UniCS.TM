@@ -35,15 +35,27 @@ namespace Test
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-           //await CreateDataBaseAsync(false); //Створення бази
+          //  await CreateDataBaseAsync(false);
+
+            //var bl = new BL();            bl.SyncDataAsync(isFull);
+            /*        var api = new ApiPSU();           
+                    for (int i = 0; i < 40; i++)
+                    {
+                        await api.RequestSyncInfo(false);
+                        Console.WriteLine($"\n Step=>{i}");
+                        Thread.Sleep(5000);
+                    };
+          */
+
+
             //Thread.Sleep(10000);
             //TestKit();
-            TestReceipt(); //
+             TestReceipt(); //
             //GetGoodUrl GoodUrl = new GetGoodUrl();
             //GoodUrl.RenameWares();//LoadWeightURLAsync();
-                           //CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
-                           //            var o = new SharedLib.Oracle();
-                           //var r =  o.Execute<ReceiptWares>("select w.code_wares CodeWares,w.name_wares as NameWares from dw.wares w where w.code_wares in (54882,54883)");
+            //CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
+            //            var o = new SharedLib.Oracle();
+            //var r =  o.Execute<ReceiptWares>("select w.code_wares CodeWares,w.name_wares as NameWares from dw.wares w where w.code_wares in (54882,54883)");
 
 
 
@@ -88,8 +100,8 @@ namespace Test
 
             //sd = api.AddProductByProductId(TerminalId, ProductId, 1); return;
 
-            sd = api.AddProductByBarCode(TerminalId, "4820185100281", 2); //
-
+            sd = api.AddProductByBarCode(TerminalId, "4820083908187", 2); //
+            //sd = api.AddProductByBarCode(TerminalId, "2201651902226", 1); //
             //sd = api.AddProductByBarCode(Guid.Parse("5c1413f5-66fe-4c2e-9c4c-c354c79952ea"), "7622210653031", 2); //
 
             return;
@@ -99,8 +111,8 @@ namespace Test
             foreach (var el in rrr.ReceiptItems)
                 Console.WriteLine($"{el.ProductName.Substring(0,7)} PP=> {el.ProductPrice } \t Discount=> { el.Discount} \t{el.ProductPrice*el.ProductQuantity*(el.ProductWeightType==ModernIntegration.Enums.ProductWeightType.ByWeight?1000:1 )- el.Discount} "); //FullPrice=>  {el.FullPrice}   TotalPrice=>{el.TotalPrice} 
             */
-            var dddd=api.GetAllCategories(TerminalId);
-            //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200212, IdWorkplace = 62, CodeReceipt = 10 });  return;
+            //var dddd=api.GetAllCategories(TerminalId);
+            api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200609, IdWorkplace = 62, CodeReceipt = 123 });  return;
             
             //api.Bl.ds.LoadWeightKasa(new DateTime(2020,02,17));return;
             //api.Bl.SendOldReceipt(); return;

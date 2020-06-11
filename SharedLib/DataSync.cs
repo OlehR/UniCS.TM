@@ -255,8 +255,9 @@ namespace SharedLib
                     Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace), Status = eSyncStatus.IncorectProductForDiscount });
                     return false;
                 }
-                Cat2.First().BarCode2Category = parBarCode;
-                Cat2.First().Price = Cat2.First().Price * (100m - (decimal)parPercent) / 100m;
+                var Cat2First = Cat2.First();
+                Cat2First.BarCode2Category = parBarCode;
+                Cat2First.Price = Cat2First.Price * (100m - (decimal)parPercent) / 100m;
 
                 bool isGood = true;
                 try
@@ -300,7 +301,7 @@ namespace SharedLib
                     //Cat2.First()._Sum = Cat2.First().Sum; //Трохи костиль !!!!
                     //Cat2.First().Quantity = 0;
                     db.ReplaceWaresReceiptPromotion(Cat2);
-                    db.InsertBarCode2Cat(Cat2.First());
+                    db.InsertBarCode2Cat(Cat2First);
                     db.RecalcHeadReceipt(parIdReceipt);
                     var r = bl.ViewReceiptWares(new IdReceiptWares(parIdReceipt, 0),true);//вертаємо весь чек.
                     Global.OnReceiptCalculationComplete?.Invoke(r, Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace));

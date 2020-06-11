@@ -132,7 +132,7 @@ namespace SharedLib
                                 w = db.FindWares(null, null, varCode);
                                 break;
                             case eTypeCode.PercentDiscount:
-                                ds.CheckDiscountBarCodeAsync(parReceipt, parBarCode, varCode);
+                                _ = ds.CheckDiscountBarCodeAsync(parReceipt, parBarCode, varCode);
                                 return new ReceiptWares(parReceipt);                                
                             default:
                                 break;
