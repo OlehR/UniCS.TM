@@ -79,12 +79,20 @@ SELECT DC.code_card as CodeClient ,DC.name as NameClient ,TD.TYPE_DISCOUNT  AS T
   AND eb.BarCode IS NULL
 
 [SqlGetDimFastGroup]
-  SELECT CONVERT(INT,wh.Code) AS CodeUp,CONVERT(INT,wh.Code)*1000+g.Order_Button AS CodeFastGroup,g.Name_Button AS Name
+SELECT CONVERT(INT,wh.Code) AS CodeUp,CONVERT(INT,wh.Code)*1000+g.Order_Button AS CodeFastGroup,MAX(CONVERT(VARCHAR,g.Name_Button)) AS Name
   FROM DW.dbo.V1C_DIM_OPTION_WPC O
   JOIN dw.dbo.WAREHOUSES wh ON o.Warehouse_RRef=wh._IDRRef
   JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_GROUP G ON o._IDRRef=G._Reference18850_IDRRef
   --JOIN DW.dbo.V1C_DIM_OPTION_WPC_FACT_WARES W ON G._Reference18850_IDRRef = W._Reference18850_IDRRef AND G. Order_Button = W.Order_Button
     WHERE wh.Code=9
+  GROUP BY wh.Code,g.Order_Button
+  /* Це правильний запит
+  SELECT CONVERT(INT,wh.Code) AS CodeUp,CONVERT(INT,wh.Code)*1000+g.Order_Button AS CodeFastGroup,g.Name_Button AS Name
+  FROM DW.dbo.V1C_DIM_OPTION_WPC O
+  JOIN dw.dbo.WAREHOUSES wh ON o.Warehouse_RRef=wh._IDRRef
+  JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_GROUP G ON o._IDRRef=G._Reference18850_IDRRef
+  --JOIN DW.dbo.V1C_DIM_OPTION_WPC_FACT_WARES W ON G._Reference18850_IDRRef = W._Reference18850_IDRRef AND G. Order_Button = W.Order_Button
+    WHERE wh.Code=9*/
 
 [SqlGetDimFastWares]
  SELECT CONVERT(INT,wh.Code)*1000+w.Order_Button CodeFastGroup,w1.code_wares AS CodeWares
