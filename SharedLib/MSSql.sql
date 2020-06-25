@@ -72,8 +72,11 @@ SELECT DC.code_card as CodeClient ,DC.name as NameClient ,TD.TYPE_DISCOUNT  AS T
   ,CASE WHEN rop.value_t!=CONVERT(DATE,'28.09.3958',103) AND rop.value_t>CONVERT(DATE,'01.01.3900',103) THEN DATEADD(YEAR,-2000, rop.value_t) ELSE null END AS BirthDay
   FROM  dbo.V1C_DIM_CARD DC
  LEFT  JOIN dbo.V1C_DIM_CARD_STATUS DCC ON DC.STATUS_CARD_RRef=DCC.STATUS_CARD_RRef
- JOIN DW.dbo.V1C_DIM_TYPE_DISCOUNT TD ON TD.TYPE_DISCOUNT_RRef =DC.TYPE_DISCOUNT_RRef
- LEFT JOIN (SELECT  [bar_code] AS BarCode FROM  dbo.V1C_DIM_CARD DC  GROUP BY [bar_code] HAVING COUNT(*)>1) eb ON eb.BarCode=DC.bar_code
+ LEFT JOIN DW.dbo.V1C_DIM_TYPE_DISCOUNT TD ON TD.TYPE_DISCOUNT_RRef =DC.TYPE_DISCOUNT_RRef
+ left JOIN (SELECT  [bar_code] AS BarCode FROM  dbo.V1C_DIM_CARD DC  
+            JOIN dbo.V1C_DIM_CARD_STATUS DCC ON DC.STATUS_CARD_RRef=DCC.STATUS_CARD_RRef
+  WHERE   DCC.CODE_STATUS_CARD=0 
+  GROUP BY [bar_code] HAVING COUNT(*)>1) eb ON eb.BarCode=DC.bar_code
  LEFT JOIN DW.dbo.V1C_reg_object_property rop ON (rop.[object_Ref]=DC.[kard_owner_RRef] and property_Ref=0xB3F7001B78074DDF11E0E922F57E4871 )
    WHERE  DCC.CODE_STATUS_CARD=0 AND [bar_code]<>''
   AND eb.BarCode IS NULL
@@ -95,10 +98,10 @@ SELECT CONVERT(INT,wh.Code) AS CodeUp,CONVERT(INT,wh.Code)*1000+g.Order_Button A
     WHERE wh.Code=9*/
 
 [SqlGetDimFastWares]
- SELECT CONVERT(INT,wh.Code)*1000+w.Order_Button CodeFastGroup,w1.code_wares AS CodeWares
+   SELECT CONVERT(INT,wh.Code)*1000+g.Order_Button CodeFastGroup,w1.code_wares AS CodeWares
   FROM DW.dbo.V1C_DIM_OPTION_WPC O
   JOIN dw.dbo.WAREHOUSES wh ON o.Warehouse_RRef=wh._IDRRef
-  --JOIN DW.dbo.V1C_DIM_OPTION_WPC_FACT_GROUP G ON o._IDRRef=G._Reference18850_IDRRef
+  JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_GROUP G ON o._IDRRef=G._Reference18850_IDRRef
   JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_WARES W ON o._IDRRef = W._Reference18850_IDRRef --AND G. Order_Button = W.Order_Button
   JOIN dw.dbo.Wares w1 ON w.Wares_RRef=w1._IDRRef
     WHERE wh.Code=9;
