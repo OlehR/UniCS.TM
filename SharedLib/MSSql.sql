@@ -98,13 +98,14 @@ SELECT CONVERT(INT,wh.Code) AS CodeUp,CONVERT(INT,wh.Code)*1000+g.Order_Button A
     WHERE wh.Code=9*/
 
 [SqlGetDimFastWares]
-   SELECT CONVERT(INT,wh.Code)*1000+g.Order_Button CodeFastGroup,w1.code_wares AS CodeWares
+     SELECT CONVERT(INT,wh.Code)*1000+g.Order_Button CodeFastGroup,w1.code_wares AS CodeWares
   FROM DW.dbo.V1C_DIM_OPTION_WPC O
   JOIN dw.dbo.WAREHOUSES wh ON o.Warehouse_RRef=wh._IDRRef
   JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_GROUP G ON o._IDRRef=G._Reference18850_IDRRef
-  JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_WARES W ON o._IDRRef = W._Reference18850_IDRRef --AND G. Order_Button = W.Order_Button
+  JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_WARES W ON o._IDRRef = W._Reference18850_IDRRef AND G.Order_Button_wares = W.Order_Button
   JOIN dw.dbo.Wares w1 ON w.Wares_RRef=w1._IDRRef
     WHERE wh.Code=9;
+
 
 [SqlGetPromotionSaleData]
 WITH wh_ex AS 
