@@ -1,4 +1,5 @@
-﻿using ModelMID;
+﻿using Microsoft.EntityFrameworkCore.Storage.Internal;
+using ModelMID;
 using ModelMID.DB;
 using System;
 using System.Collections.Generic;
@@ -28,7 +29,7 @@ namespace SharedLib
 
         public bool SendReceiptTo1C(IdReceipt parIdReceipt)
         {
-            var ldb = new WDB_SQLite(null, false, parIdReceipt.DTPeriod);
+            var ldb = new WDB_SQLite( parIdReceipt.DTPeriod);
             var r = ldb.ViewReceipt(parIdReceipt, true);
 
             
@@ -41,10 +42,12 @@ namespace SharedLib
         {
             try
             {
+              
                 var r = new Receipt1C(parReceipt);
 
                 var body = soapTo1C.GenBody("JSONCheck", new Parameters[] { new Parameters("JSONSting", r.GetBase64()) });
-                var res = await soapTo1C.RequestAsync(Global.Server1C, body, 45000, "application/json");
+
+                var res =  await soapTo1C.RequestAsync(Global.Server1C, body, 45000, "application/json");
 
                 /*
                                  HttpClient client = new HttpClient();
@@ -103,7 +106,7 @@ namespace SharedLib
             StringBuilder Log = new StringBuilder();
             try
             {
-                WDB_SQLite SQLite;
+                //WDB_SQLite SQLite;
 
                 if (!parIsFull)
                 {
@@ -124,33 +127,36 @@ namespace SharedLib
                     if (File.Exists(varMidFile))
                     {
                         Log.Append($"{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} Try Delete file{varMidFile}");
-                        bl.db.db.Close();
-                        bl.db = null;
+                        bl.db.Close(true);                     
                         File.Delete(varMidFile);
+                        bl.db = new WDB_SQLite(default(DateTime), varMidFile);
+                        db = bl.db;
                     }
-                    Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} Create New DB");
-                    SQLite = new WDB_SQLite(varMidFile, true);
+                    Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} Create New DB");                   
                     //SQLite.CreateMIDTable();
                 }
-                else
-                    SQLite = db;
 
-                var MsSQL = new WDB_MsSql();
-                var resS = MsSQL.LoadData(SQLite, parIsFull,Log);
 
-                if (parIsFull)
-                {
-                    Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} Create New DB");
-                    Debug.WriteLine("CreateMIDIndex Start");
-                    SQLite.CreateMIDIndex();                   
-                    SQLite.db.Close();
-                    bl.db = new WDB_SQLite();
-                    db = bl.db;
-                    bl.db.SetConfig<string>("Last_MID", varMidFile);
-                    Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} Set config");
-                    Debug.WriteLine("Set config");
-                }
-                db.SetConfig<DateTime>("Load_" + (parIsFull ? "Full" : "Update"), DateTime.Now /*String.Format("{0:u}", DateTime.Now)*/);
+                    var MsSQL = new WDB_MsSql();
+                    var varMessageNMax = MsSQL.LoadData(db, parIsFull, Log);
+
+                    if (parIsFull)
+                    {
+                        Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} Create New DB");
+                        Debug.WriteLine("CreateMIDIndex Start");
+                        db.CreateMIDIndex();
+                        
+                        
+                        db.SetConfig<string>("Last_MID", varMidFile);
+                        Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} Set config");
+                        Debug.WriteLine("Set config");
+                    }
+
+                   
+
+                    db.SetConfig<int>("MessageNo", varMessageNMax);
+                    db.SetConfig<DateTime>("Load_" + (parIsFull ? "Full" : "Update"), DateTime.Now /*String.Format("{0:u}", DateTime.Now)*/);
+                
                 Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} End");
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.SyncFinishedSuccess, StatusDescription = Log.ToString() });
                 }
@@ -158,7 +164,6 @@ namespace SharedLib
             {
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = (parIsFull ? eSyncStatus.Error: eSyncStatus.NoFatalError), StatusDescription = Log.ToString() });
                 Global.OnStatusChanged?.Invoke(db.GetStatus());
-
                 return false;
             }
 
@@ -202,7 +207,7 @@ namespace SharedLib
 
             while (Ldc < today)
             {
-                var ldb = new WDB_SQLite(null, false, Ldc);
+                var ldb = new WDB_SQLite( Ldc);
                 var t = SendAllReceipt(ldb);
                 t.Wait();
                 var res = ldb.GetIdReceiptbyState(eStateReceipt.Print);
@@ -213,7 +218,6 @@ namespace SharedLib
                     Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.NoFatalError, StatusDescription = $"SendOldReceipt => ErrorSend Date:{Ldc} Not Send => {res.Count()}" });
                     return;
                 }
-
                 Ldc = Ldc.AddDays(1);
             }
             //Перекидаємо лічильник на сьогодня.
@@ -263,7 +267,7 @@ namespace SharedLib
                 try
                 {
                     var body = soapTo1C.GenBody("GetRestOfLabel", new Parameters[] { new Parameters("CodeOfLabel", parBarCode) });
-                    var res = await soapTo1C.RequestAsync(Global.Server1C, body);
+                    var res = await soapTo1C.RequestAsync(Global.Server1C, body,5000);
                     isGood = res.Equals("1");
 
                     /*     string body = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
@@ -291,7 +295,7 @@ namespace SharedLib
                 catch (Exception ex)
                 {
                     Global.ErrorDiscountOnLine++;
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = ex.Message });
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "CheckDiscountBarCodeAsync=>" + ex.Message });
                     Global.OnStatusChanged?.Invoke(db.GetStatus());
 
                 }
@@ -343,13 +347,13 @@ namespace SharedLib
 -- commit tran";
 
                 var dbMs = new MSSQL();
-                var path = Path.Combine(ModelMID.Global.PathDB, "config.db");
-                var dbSqlite = new SQLite(path);
+                //var path = Path.Combine(ModelMID.Global.PathDB, "config.db");
+               // var dbSqlite = new SQLite(path);
                 var SqlSelect = @"select [barcode] as BarCode, weight as Weight, DATE_CREATE as Date,STATUS
 from ( SELECT [barcode],DATE_CREATE,STATUS,weight,ROW_NUMBER() OVER (PARTITION BY barcode ORDER BY DATE_CREATE DESC) as [nn]  FROM WEIGHT where  DATE_CREATE>=:parDT ) dd
 where nn=1 ";
                 Console.WriteLine("Start LoadWeightKasa");
-                var r = dbSqlite.Execute<object, BarCodeOut>(SqlSelect, new { parDT = parDT });
+                var r = db.db.Execute<object, BarCodeOut>(SqlSelect, new { parDT = parDT });
                 Console.WriteLine(r.Count().ToString());
                 dbMs.BulkExecuteNonQuery<BarCodeOut>(SQLUpdate, r);
                 Console.WriteLine("Finish LoadWeightKasa");

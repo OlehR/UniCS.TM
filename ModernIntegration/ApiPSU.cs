@@ -27,7 +27,7 @@ namespace ModernIntegration
                 Debug.WriteLine("=========================================================================");
                 foreach (var receiptWarese in wareses)
                 {
-                    Console.WriteLine($"{receiptWarese.NameWares} - {receiptWarese.Price} Quantity=> {receiptWarese.Quantity} SumDiscount=>{receiptWarese.SumDiscount}");
+                //    Console.WriteLine($"{receiptWarese.NameWares} - {receiptWarese.Price} Quantity=> {receiptWarese.Quantity} SumDiscount=>{receiptWarese.SumDiscount}");
                 }
                 //var r = wareses.Select(s => GetProductViewModel(s));
                 OnProductsChanged?.Invoke(wareses.Select(s => GetProductViewModel(s)), guid);

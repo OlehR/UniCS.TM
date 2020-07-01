@@ -8,7 +8,6 @@ using ModelMID;
 
 namespace SharedLib
 {
-/* */
 
     public class MSSQL:SQL
     {
@@ -86,6 +85,11 @@ namespace SharedLib
             CommitTransaction();
             return 0;
 
+        }
+
+        public override void Close(bool isWait = false)
+        {
+            connection.Close();
         }
 
 

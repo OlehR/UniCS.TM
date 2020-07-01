@@ -7,34 +7,56 @@ using Dapper;
 using ModelMID;
 using System.Threading;
 using System.Threading.Tasks;
-
+using Utils;
 namespace SharedLib
-{
-        
-    public class SQLite:SQL
+{        
+    public class SQLite:SQL,IDisposable
     {
         SQLiteConnection connection = null;
         SQLiteTransaction transaction = null;
+        private bool disposedValue;
 
         public SQLite(String varConectionString):base(varConectionString)
         {
-            connection = new SQLiteConnection( "Data Source="+varConectionString+ ";Version=3;");
+
+            var connectionString = new SQLiteConnectionStringBuilder("Data Source=" + varConectionString + ";Version=3;")
+            {
+                DefaultIsolationLevel = IsolationLevel.Serializable                
+            }.ToString();
+
+            connection = new SQLiteConnection(connectionString);
             connection.Open();
             TypeCommit = eTypeCommit.Auto;
         }
-        public override void Close()
+
+        ~SQLite()
         {
-            connection.Close();
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            Thread.Sleep(150); 
+            Close();
+        }
+        public override void Close(bool isWait = false)
+        {
+  //          $"[{GetType()} -{ GetHashCode()}] close connection".WriteLogMessage();
+            //Зупиняємо всі запити до БД і чекаємо 1/4 секунди. щоб встигли завершитись запити.
+
+            if (isWait)
+            {
+                SetLock(true);
+                Thread.Sleep(250);
+            }
+            if (connection != null)
+            {
+                connection.Close();
+                connection = null;
+            }
+            if (isWait)
+            {
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                Thread.Sleep(150);
+            }
         }
 
-        public void ExceptionIsLock() 
-        {
-            throw new Exception("SqlLite is Lock for FullUpdate");
-        }
-
+        
         public override IEnumerable<T1> Execute<T,T1>(string query, T parameters )
         {
             if (IsLock) ExceptionIsLock();
@@ -126,25 +148,62 @@ namespace SharedLib
             return connection.ExecuteScalarAsync<T1>(query, parameters);
         }
 
+
+        public  int ExecuteNonQuery<T>(string parQuery, T Parameters, SQLiteTransaction transaction)
+        {
+            if (IsLock) ExceptionIsLock();
+            return connection.Execute(parQuery, Parameters, transaction);
+        }
         public override int BulkExecuteNonQuery<T>(string parQuery, IEnumerable<T> Parameters)
         {
-            BeginTransaction();
+            if (IsLock) ExceptionIsLock();
+            transaction = connection.BeginTransaction(IsolationLevel.Serializable);
+          // FileLogger.ExtLogForClass(transaction.GetType(), transaction.GetHashCode(), "Begin transaction");
             try
             {
                 foreach (var el in Parameters)
-                    ExecuteNonQuery(parQuery, el);
+                    ExecuteNonQuery(parQuery, el, transaction);
             }
-            catch
+            catch(Exception ex)
             {
                 transaction.Rollback();
-                throw;
+                new Exception("BulkExecuteNonQuery =>"+ex.Message, ex);
             }
-            CommitTransaction();
+            transaction.Commit();
+            //FileLogger.ExtLogForClass(transaction.GetType(), transaction.GetHashCode(), "End transaction");
             return 0;
-
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    if (connection != null)
+                    {
+                        connection.Close();
+                        connection.Dispose();  
+                        connection = null;
+                    }
+                } 
+                disposedValue = true;
+            }
+ //           $"[{GetType()} -{ GetHashCode()}] Dispose connection".WriteLogMessage();
+        }
 
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~SQLite()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
 
+        void IDisposable.Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
     }
 }

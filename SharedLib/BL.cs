@@ -31,11 +31,10 @@ namespace SharedLib
 
         public BL(bool  pIsUseOldDB=false)
         {
-            db = new WDB_SQLite("",false,default(DateTime), pIsUseOldDB);
+            db = new WDB_SQLite(default(DateTime), null, pIsUseOldDB);
+            db.BildWorkplace();
             ds = new DataSync(this);
-            WorkId = new SortedList<Guid, int>();
-         //   Global.OnReceiptCalculationComplete = (wareses, guid) => OnReceiptCalculationComplete?.Invoke(wareses, guid);
-            
+            WorkId = new SortedList<Guid, int>();                  
 
         }
         public ReceiptWares AddReceiptWares(ReceiptWares parW)
@@ -224,7 +223,7 @@ namespace SharedLib
             if (Ldc == DateTime.Now.Date)
              return db.ViewReceipt(idReceipt, parWithDetail);
 
-            var ldb = new WDB_SQLite(null, false, Ldc);
+            var ldb = new WDB_SQLite(Ldc);
             return ldb.ViewReceipt(idReceipt, parWithDetail);
 
 
@@ -361,7 +360,7 @@ namespace SharedLib
                 var Ldc = parStartDate.Date;
                 while (Ldc <= parFinishDate.Date)
                 {
-                    var ldb = new WDB_SQLite(null, false, Ldc);
+                    var ldb = new WDB_SQLite( Ldc);
                     var l= ldb.GetReceipts(Ldc.Date, Ldc.Date.AddDays(1), IdWorkPlace);
                     res.AddRange(l);
                     Ldc = Ldc.AddDays(1);
@@ -382,7 +381,7 @@ namespace SharedLib
             var Ldc = pStartDate.Date;
             while (Ldc <= pFinishDate.Date)
             {
-                var ldb = new WDB_SQLite(null, false, Ldc);
+                var ldb = new WDB_SQLite( Ldc);
                 var l = ldb.GetReceiptByFiscalNumber(IdWorkplace,pFiscalNumber, pStartDate, pFinishDate);
                 if (l != null && l.Count() >= 1)
                     return l.First();
@@ -396,13 +395,13 @@ namespace SharedLib
             
             var ReceiptId = isRefund ? parReceipt.RefundId : (IdReceipt)parReceipt;            
             
-            var dbR = parReceipt.CodePeriod == Global.GetCodePeriod()?db: new WDB_SQLite("", true, ReceiptId.DTPeriod);
+            var dbR = parReceipt.CodePeriod == Global.GetCodePeriod()?db: new WDB_SQLite( ReceiptId.DTPeriod);
 
 
             dbR.ReplaceReceipt(parReceipt);
             dbR.ReplacePayment(parReceipt.Payment);
 
-            var dbr = parReceipt.CodePeriod == parReceipt.CodePeriodRefund ? db : new WDB_SQLite("", true, ReceiptId.DTPeriod);
+            var dbr = parReceipt.CodePeriod == parReceipt.CodePeriodRefund ? db : new WDB_SQLite( ReceiptId.DTPeriod);
             foreach (var el in parReceipt.Wares)
             {
                 dbR.AddWares(el);
@@ -430,8 +429,8 @@ namespace SharedLib
         public async Task<bool> SyncDataAsync(bool parIsFull)
         {
             var res=ds.SyncData(parIsFull);
-            await ds.SendAllReceipt().ConfigureAwait(false);
-            ds.LoadWeightKasa();
+            //await ds.SendAllReceipt().ConfigureAwait(false);
+            //ds.LoadWeightKasa();
             return res;
         }
 

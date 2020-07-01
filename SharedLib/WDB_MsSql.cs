@@ -51,7 +51,7 @@ namespace SharedLib
             SqlGetDimClient = GetSQL("SqlGetDimClient");*/
             return true;
         }
-        public bool LoadData(WDB parDB,bool parIsFull, StringBuilder Log)
+        public int LoadData(WDB parDB,bool parIsFull, StringBuilder Log)
         {
             string SQL;
             Log.Append($"{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} Start LoadData {parIsFull}");
@@ -199,9 +199,9 @@ namespace SharedLib
 
             }
 
-            parDB.SetConfig<int>("MessageNo", varMessageNoMax);
+        
             Log.Append($"{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} MessageNo {varMessageNoMax}");
-            return true;
+            return varMessageNoMax;
         }
 
 	}

@@ -35,34 +35,16 @@ namespace Test
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-          //  await CreateDataBaseAsync(false);
-
-            //var bl = new BL();            bl.SyncDataAsync(isFull);
-            /*        var api = new ApiPSU();           
-                    for (int i = 0; i < 40; i++)
-                    {
-                        await api.RequestSyncInfo(false);
-                        Console.WriteLine($"\n Step=>{i}");
-                        Thread.Sleep(5000);
-                    };
-          */
+           // await CreateDataBaseAsync(true);
 
 
             //Thread.Sleep(10000);
             //TestKit();
-             TestReceipt(); //
-            //GetGoodUrl GoodUrl = new GetGoodUrl();
-            //GoodUrl.RenameWares();//LoadWeightURLAsync();
-            //CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
-            //            var o = new SharedLib.Oracle();
-            //var r =  o.Execute<ReceiptWares>("select w.code_wares CodeWares,w.name_wares as NameWares from dw.wares w where w.code_wares in (54882,54883)");
+             TestReceipt(); //          
 
 
 
-            /*  string varMidFile = Path.Combine(GlobalVar.PathDB, @"MID.db");
-              var SQLite = new WDB_SQLite(varMidFile);
-              SQLite.RecalcPrice(new IdReceipt() { IdWorkplace = 140701, CodePeriod = 20190910, CodeReceipt = 12 });
-              */
+            //LoadReceiptJson();
             Console.WriteLine("Sleep");
 
             Thread.Sleep(10000000);
@@ -97,10 +79,19 @@ namespace Test
             var api = new ApiPSU();
             ProductViewModel sd;
 
+            for(int i = 8720; i<= 8720; i++)
+              api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200626, IdWorkplace = 62, CodeReceipt = i }); 
+            return;
+
+
+            var rrr= api.GetReceipts(DateTime.Parse("2020-06-24T00:00:00"), DateTime.Parse("2020-06-24T23:59:59.999"), TerminalId);
+
+            var n = rrr.Count();
+            //7667,7676,7677
 
             //sd = api.AddProductByProductId(TerminalId, ProductId, 1); return;
 
-            sd = api.AddProductByBarCode(TerminalId, "4820083908187", 2); //
+            sd = api.AddProductByBarCode(TerminalId, "4820207930056", 1); //
             //sd = api.AddProductByBarCode(TerminalId, "2201651902226", 1); //
             //sd = api.AddProductByBarCode(Guid.Parse("5c1413f5-66fe-4c2e-9c4c-c354c79952ea"), "7622210653031", 2); //
 
@@ -363,6 +354,49 @@ namespace Test
         }
 
 
+
+        public class mm
+        {
+            public ReceiptViewModel receipt { get; set; }
+        }
+        static void LoadReceiptJson()
+        {
+            string path = @"D:\DB\log\all.log";
+            var TerminalId = Guid.Parse("1bb89aa9-dbdf-4eb0-b7a2-094665c3fdd0");
+            var api = new ApiPSU();
+            if (File.Exists(path))
+            {
+                // Open the file to read from.
+                string[] readText = File.ReadAllLines(path);
+                for (int i=0; i<readText.Length;i++)
+                {
+                    if (readText[i].Contains("[METHODEXECUTIONTIME] - AddFiscalNumber"))
+                    {
+                        i++;
+                        //var r= l.Trim().Substring(1, l.Trim().Length - 2);
+                        var res = JsonConvert.DeserializeObject<mm[]>(readText[i]);
+                        var r = api.ReceiptViewModelToReceipt(TerminalId, res[0].receipt);
+                        int CR = Convert.ToInt32(r.NumberReceipt);
+                        r.CodeReceipt = CR;
+                        foreach (var l in r.Payment)
+                            l.CodeReceipt = CR;
+                        foreach (var l in r.Wares)
+                            l.CodeReceipt = CR;
+
+
+                        api.Bl.SaveReceipt(r, false);
+                    }
+                
+                
+                }
+
+
+            }
+
+
+        }
+
+
     }
     public class TestReceipt
     {
@@ -383,6 +417,9 @@ namespace Test
         public string BarCode2Category { get; set; }
 
     }
+
+
+
 
 
 }
