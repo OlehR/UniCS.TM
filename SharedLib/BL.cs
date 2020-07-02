@@ -429,8 +429,8 @@ namespace SharedLib
         public async Task<bool> SyncDataAsync(bool parIsFull)
         {
             var res=ds.SyncData(parIsFull);
-            //await ds.SendAllReceipt().ConfigureAwait(false);
-            //ds.LoadWeightKasa();
+            await ds.SendAllReceipt().ConfigureAwait(false);
+            ds.LoadWeightKasa();
             return res;
         }
 
