@@ -54,6 +54,7 @@ namespace SharedLib
                 GC.WaitForPendingFinalizers();
                 Thread.Sleep(150);
             }
+            SetLock(false);
         }
 
         
