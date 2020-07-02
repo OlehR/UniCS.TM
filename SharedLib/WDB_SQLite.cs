@@ -339,17 +339,7 @@ namespace SharedLib
 			return (this.db.ExecuteNonQuery(SqlCopyWaresReturnReceipt, parIdReceipt) ==0);
 		}
 
-        public bool CreateMIDTable()
-        {
-            db.ExecuteNonQuery(SqlCreateMIDTable);
-            return true;
-        }
-        public bool CreateMIDIndex()
-        {
-            db.ExecuteNonQuery(SqlCreateMIDIndex);
-            return true;
-        }
-
+        
         
         public override IEnumerable<ReceiptWares> GetWaresFromFastGroup(int parCodeFastGroup)
         {
@@ -608,7 +598,22 @@ namespace SharedLib
         }
         ////////////////////////// MID
 
-
+        public bool CreateMIDTable()
+        {
+            using (var DB = new SQLite(MidFile))
+            {
+                DB.ExecuteNonQuery(SqlCreateMIDTable);
+            }
+            return true;
+        }
+        public bool CreateMIDIndex()
+        {
+            using (var DB = new SQLite(MidFile))
+            {
+                DB.ExecuteNonQuery(SqlCreateMIDIndex);
+            }
+            return true;
+        }
 
         public override bool ReplaceUnitDimension(IEnumerable<UnitDimension> parData)
         {
