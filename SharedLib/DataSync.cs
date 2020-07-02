@@ -124,11 +124,13 @@ namespace SharedLib
                     Thread.Sleep(200);
                     DateTime varD = DateTime.Today;
 
+                    db.SetConfig<DateTime>("Load_Full", DateTime.Now.Date.AddDays(-1));
+                    db.SetConfig<DateTime>("Load_Update", DateTime.Now.Date.AddDays(-1));
+
                     if (File.Exists(varMidFile))
                     {
                         Log.Append($"{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} Try Delete file{varMidFile}");
-                        db.SetConfig<DateTime>("Load_Full", DateTime.Now.Date.AddDays(-1));
-                        db.SetConfig<DateTime>("Load_Update", DateTime.Now.Date.AddDays(-1));
+                        
 
                         bl.db.Close(true);                     
                         File.Delete(varMidFile);
