@@ -360,10 +360,12 @@ namespace SharedLib
                 var Ldc = parStartDate.Date;
                 while (Ldc <= parFinishDate.Date)
                 {
-                    var ldb = new WDB_SQLite( Ldc);
-                    var l= ldb.GetReceipts(Ldc.Date, Ldc.Date.AddDays(1), IdWorkPlace);
-                    res.AddRange(l);
-                    Ldc = Ldc.AddDays(1);
+                    using (var ldb = new WDB_SQLite(Ldc))
+                    {
+                        var l = ldb.GetReceipts(Ldc.Date, Ldc.Date.AddDays(1), IdWorkPlace);
+                        res.AddRange(l);
+                        Ldc = Ldc.AddDays(1);
+                    }
                 }
             }
                 //throw new NotImplementedException();

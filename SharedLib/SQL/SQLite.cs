@@ -31,7 +31,7 @@ namespace SharedLib
 
         ~SQLite()
         {
-            Close();
+            //Close();
         }
         public override void Close(bool isWait = false)
         {

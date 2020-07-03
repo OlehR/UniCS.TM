@@ -119,7 +119,7 @@ namespace SharedLib
         }
         ~WDB_SQLite()
         {
-            Close();
+            //Close();
         }
 
         private new bool InitSQL()
