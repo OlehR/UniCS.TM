@@ -15,6 +15,7 @@ using ModernIntegration.ViewModels;
 using System.Net.Http;
 using System.Text;
 using Newtonsoft.Json;
+using System.Globalization;
 //using System.Printing;
 
 namespace Test
@@ -26,24 +27,25 @@ namespace Test
         {
 
             //LocalPrintServer ps = new LocalPrintServer();
-          //  var pq = ps.GetPrintQueues(); 
+            //  var pq = ps.GetPrintQueues(); 
             //LoadWeightKasa();            return;
             // var R = await GetInfoBarcode("4823000920439");
             //var l = new GetGoodUrl();
             //l.LoadWeightURLAsync();
-            //Thread.Sleep(1000000000);
-
+            
+            //sendOverLayAsync();
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-            //await CreateDataBaseAsync(true); //Створення бази
+            //await CreateDataBaseAsync(false); //Створення бази
             //Thread.Sleep(10000);
             //TestKit();
             TestReceipt(); //
+            //LoadReceiptJson();
             //GetGoodUrl GoodUrl = new GetGoodUrl();
             //GoodUrl.RenameWares();//LoadWeightURLAsync();
-                           //CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
-                           //            var o = new SharedLib.Oracle();
-                           //var r =  o.Execute<ReceiptWares>("select w.code_wares CodeWares,w.name_wares as NameWares from dw.wares w where w.code_wares in (54882,54883)");
+            //CreateReceipDay();//Чеки на основі нового з провірочною інформацією.
+            //            var o = new SharedLib.Oracle();
+            //var r =  o.Execute<ReceiptWares>("select w.code_wares CodeWares,w.name_wares as NameWares from dw.wares w where w.code_wares in (54882,54883)");
 
 
 
@@ -61,7 +63,6 @@ namespace Test
         {
             //var bl = new BL();            bl.SyncDataAsync(isFull);
             var api = new ApiPSU();
-           
             await api.RequestSyncInfo(isFull);
         }
 
@@ -79,35 +80,44 @@ namespace Test
         static void TestReceipt()
         {
             var TerminalId = Guid.Parse("1bb89aa9-dbdf-4eb0-b7a2-094665c3fdd0");
-            var ProductId = Guid.Parse("00000000-abcd-0000-0019-000000161615");
+            var ProductId = Guid.Parse("00000000-abcd-0000-0019-000000066876");
             var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009000");
             var ReceiptId = Guid.Parse("00000062-ffff-2020-0326-000000000008");
             var api = new ApiPSU();
             ProductViewModel sd;
 
 
-            sd = api.AddProductByProductId(TerminalId, ProductId, 1); return;
 
-            /*var rrr=api.GetReceiptViewModel(new IdReceipt {CodePeriod=20200504,IdWorkplace=62,CodeReceipt=12} );
+            //Перезавантаження чеків.
+            api.Bl.SendReceiptTo1C(new IdReceipt { CodePeriod = 20200618, IdWorkplace = 62, CodeReceipt = 28 });            return;
 
-            foreach (var el in rrr.ReceiptItems)
+
+
+            //sd = api.AddProductByProductId(TerminalId, ProductId, 3); return;
+            //sd = api.AddProductByBarCode(TerminalId, "2202783316349", 2); return;//
+            //sd = api.AddProductByBarCode(TerminalId, "1110867180018", 0); //
+            //var xx = api.GetReceiptByNumber(TerminalId, "1420"); return;
+
+            //var rrr = api.GetReceiptViewModel(new IdReceipt { CodePeriod = 20200618, IdWorkplace = 62, CodeReceipt = 28 });        return;
+
+            /*foreach (var el in rrr.ReceiptItems)
                 Console.WriteLine($"{el.ProductName.Substring(0,7)} PP=> {el.ProductPrice } \t Discount=> { el.Discount} \t{el.ProductPrice*el.ProductQuantity*(el.ProductWeightType==ModernIntegration.Enums.ProductWeightType.ByWeight?1000:1 )- el.Discount} "); //FullPrice=>  {el.FullPrice}   TotalPrice=>{el.TotalPrice} 
             */
-            var dddd=api.GetAllCategories(TerminalId);
+            var dddd = api.GetAllCategories(TerminalId);
             //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200212, IdWorkplace = 62, CodeReceipt = 10 });  return;
-            
+
             //api.Bl.ds.LoadWeightKasa(new DateTime(2020,02,17));return;
             //api.Bl.SendOldReceipt(); return;
-            var r2rr=api.GetBags();
+            var r2rr = api.GetBags();
             //api.Bl.SendAllReceipt();return;
 
             sd = api.AddProductByBarCode(TerminalId, "4823086109988", 1); // 1+1 Пельмені "Мішутка" Філейні 600г /Три ведмеді/
 
-            var ddd = api.GetProductsByName(TerminalId,"",0,false, FastGroup);
-            var ddd1  = api.GetProductsByName(TerminalId, "", 1, false, FastGroup);
+            var ddd = api.GetProductsByName(TerminalId, "", 0, false, FastGroup);
+            var ddd1 = api.GetProductsByName(TerminalId, "", 1, false, FastGroup);
             var ddd2 = api.GetProductsByName(TerminalId, "пом", 0, false, FastGroup);
 
-            sd = api.AddProductByBarCode(TerminalId, "2206140307779", 1); //
+            sd = api.AddProductByBarCode(TerminalId, "2202783316349", 2); //
             return;
 
             //var rrr= api.GetReceipts(DateTime.Parse("2020-02-03T00:00:00"), DateTime.Parse("2020-02-03T23:59:59.999"), TerminalId);
@@ -146,13 +156,13 @@ namespace Test
             sd = api.AddProductByBarCode(TerminalId, "7622300813437", 1);//Барн
             sd = api.AddProductByProductId(TerminalId, ProductId, 1);
 
-          sd = api.AddProductByBarCode(TerminalId, "2201652300489", 1); //Морква
+            sd = api.AddProductByBarCode(TerminalId, "2201652300489", 1); //Морква
             //Thread.Sleep(1000);
             sd = api.AddProductByBarCode(TerminalId, "2201652300229", 1); //Морква
                                                                           //Thread.Sleep(1000);
 
-            var rssss=api.GetRecieptByTerminalId(TerminalId);
-            
+            var rssss = api.GetRecieptByTerminalId(TerminalId);
+
             //Thread.Sleep(1000);
             api.ChangeQuantity(TerminalId, sd.Id, 3);
             //Thread.Sleep(1000);
@@ -197,10 +207,10 @@ namespace Test
             //api.AddPayment(TerminalId, Pay);
             //api.ClearReceipt(TerminalId);
             //var rrrr = api.GetNoFinishReceipt(TerminalId);
-        
+
             var RId = api.GetCurrentReceiptByTerminalId(TerminalId).ReceiptId;
 
-            
+
 
             var rr = api.GetProduct(TerminalId);
             var Pay = new ReceiptPayment[] {
@@ -222,7 +232,7 @@ namespace Test
             } };
 
 
-           
+
             api.AddPayment(TerminalId, Pay);
             var r = api.AddFiscalNumber(TerminalId, "TRRF-1234");
 
@@ -231,14 +241,14 @@ namespace Test
             var sz = JsonConvert.SerializeObject(receipt);
             var RefoundReceipt = JsonConvert.DeserializeObject<RefundReceiptViewModel>(sz);
             RefoundReceipt.IdPrimary = RefoundReceipt.Id;
-      
-            var resRef=api.RefundReceipt(TerminalId, RefoundReceipt);
+
+            var resRef = api.RefundReceipt(TerminalId, RefoundReceipt);
 
 
             //           api.SendReceipt(RId);
-            var Rec=api.GetReciept(RId);
-            
-            
+            var Rec = api.GetReciept(RId);
+
+
             Console.WriteLine("End");
 
 
@@ -247,6 +257,56 @@ namespace Test
 
         }
 
+        static async Task sendOverLayAsync()
+        {
+            string parBody = "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n" +
+    "<TextOverlayList version=\"2.0\" xmlns=\"http://www.hikvision.com/ver20/XMLSchema\"> \n" +
+    "<TextOverlay> \n" +
+    "<id>1</id> \n" +
+    "<enabled>true</enabled> \n" +
+    "<positionX>0</positionX> \n" +
+    "<positionY>120</positionY> \n" +
+    "<displayText>Тест 11</displayText> \n" +
+    "</TextOverlay> \n" +
+    "<TextOverlay> \n" +
+    "<id>2</id> \n" +
+    "<enabled>true</enabled> \n" +
+    "<positionX>0</positionX> \n" +
+    "<positionY>90</positionY> \n" +
+    "<displayText>Тест 22</displayText> \n" +
+    "</TextOverlay> \n" +
+    "<TextOverlay> \n" +
+    "<id>3</id> \n" +
+    "<enabled>true</enabled> \n" +
+    "<positionX>0</positionX> \n" +
+    "<positionY>50</positionY> \n" +
+    "<displayText>Тест 44</displayText> \n" +
+    "</TextOverlay> \n" +
+    "\n" +
+    "<TextOverlay> \n" +
+    "<id>4</id> \n" +
+    "<enabled>true</enabled> \n" +
+    @"<positionX>0</positionX> 
+    <positionY>0</positionY>
+    <displayText>Тест 44777</displayText>
+    </TextOverlay>
+    </TextOverlayList>";
+
+            string parContex = "text/xml";
+            string res = null;
+
+
+            HttpClient client = new HttpClient();
+
+            client.Timeout = TimeSpan.FromMilliseconds(2000);
+            var byteArray = Encoding.ASCII.GetBytes("admin:Xa38dF79");
+            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+
+            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Put, "http://192.168.1.229/ISAPI/System/Video/inputs/channels/1/overlays/text");
+
+            requestMessage.Content = new StringContent(parBody, Encoding.UTF8, parContex);
+            var response = await client.SendAsync(requestMessage);
+        }
 
         static void CreateReceipDay()
         {
@@ -345,6 +405,32 @@ namespace Test
         }
 
 
+        public class mm {
+public ReceiptViewModel receipt { get; set; }
+    }
+        static void LoadReceiptJson()
+        {
+            string path = @"D:\DB\Receipts.txt";
+            var TerminalId = Guid.Parse("1bb89aa9-dbdf-4eb0-b7a2-094665c3fdd0");
+            var api = new ApiPSU();
+            if (File.Exists(path))
+            {
+                // Open the file to read from.
+                string[] readText = File.ReadAllLines(path);
+                foreach(var l in readText)
+                {
+                    //var r= l.Trim().Substring(1, l.Trim().Length - 2);
+                    var res = JsonConvert.DeserializeObject< mm[]> (l);
+                    var r = api.ReceiptViewModelToReceipt(TerminalId, res[0].receipt);
+                    api.Bl.SaveReceipt(r,false);
+                }
+
+
+            }
+
+            
+        }
+
     }
     public class TestReceipt
     {
@@ -365,6 +451,10 @@ namespace Test
         public string BarCode2Category { get; set; }
 
     }
+
+    
+
+
 
 
 }
