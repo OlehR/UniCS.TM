@@ -4,19 +4,19 @@ using System.Data;
 using System.Text;
 using System.Data.SqlClient;
 using Dapper;
-using ModelMID;
 
 namespace SharedLib
 {
+    /* */
 
-    public class MSSQL:SQL
+    public class MSSQL : SQL
     {
         SqlConnection connection = null;
         IDbTransaction transaction = null;
 
         //public TypeCommit TypeCommit { get; set; }
-        public MSSQL(String varConectionString= @"Server=10.1.0.22;Database=DW;Uid=dwreader;Pwd=DW_Reader;"/* "Server=SQLSRV1;Database=DW;Trusted_Connection=True;"*/) :base(varConectionString)
-        {            
+        public MSSQL(String varConectionString = @"Server=10.1.0.22;Database=DW;Uid=dwreader;Pwd=DW_Reader;"/* "Server=SQLSRV1;Database=DW;Trusted_Connection=True;"*/) : base(varConectionString)
+        {
             connection = new SqlConnection(varConectionString);
             connection.Open();
             TypeCommit = eTypeCommit.Auto;
@@ -41,7 +41,7 @@ namespace SharedLib
 
         public override void CommitTransaction()
         {
-           // transaction.Commit();
+            // transaction.Commit();
         }
 
         public override int ExecuteNonQuery<T>(string parQuery, T Parameters)
@@ -77,7 +77,7 @@ namespace SharedLib
                 foreach (var el in Parameters)
                     ExecuteNonQuery(parQuery, el);
             }
-            catch(Exception Ex)
+            catch (Exception Ex)
             {
                 transaction.Rollback();
                 throw;
@@ -85,11 +85,6 @@ namespace SharedLib
             CommitTransaction();
             return 0;
 
-        }
-
-        public override void Close(bool isWait = false)
-        {
-            connection.Close();
         }
 
 

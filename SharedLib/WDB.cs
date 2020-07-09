@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using ModelMID.DB;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Utils;
 
 //using DatabaseLib; // тимчасово для ParametersCollection
 namespace SharedLib
@@ -21,13 +22,12 @@ namespace SharedLib
     /// <summary>
     /// Клас з віртуальними методоами для доступу до БД (Work Data Base)
     /// </summary>
-    public class WDB
-    {
-
-
-        
+    public class WDB : IDisposable
+    {        
         public SQL db;
         protected Hashtable keySQL = new Hashtable();
+        private bool isDisposed;
+
         /// <summary>
         /// Для блокування деяких асинхронних операцій по касі.
         /// </summary>
@@ -115,12 +115,7 @@ namespace SharedLib
 
         protected string SqlLogin = "";
         protected string SqlGetPrice = "";
-        /*
-        protected string SqlPrepareLockFilterT1 = "";
-        protected string SqlPrepareLockFilterT2 = "";
-        protected string SqlPrepareLockFilterT3 = "";
-        protected string SqlPrepareLockFilterT4 = "";
-        protected string SqlPrepareLockFilterT5 = "";*/
+
         //protected string SqlListPS = "";
         protected string SqlUpdatePrice = "";
         protected string SqlGetMinPriceIndicative = "";
@@ -193,13 +188,22 @@ namespace SharedLib
         protected string SqlSetFixWeight = "";
         protected string SqlGetReceiptWaresPromotion = "";
         protected string SqlReceiptByFiscalNumbers = "";
+       
 
         public WDB(string parFileSQL)
         {
+            var start = DateTime.Now;
             this.ReadSQL(parFileSQL);
             InitSQL();
-
+            FileLogger.ExtLogForClassConstruct(GetType(), GetHashCode(), $"{(DateTime.Now-start).TotalMilliseconds} ms readand init sql");
         }
+
+        ~WDB()
+        {
+            FileLogger.ExtLogForClassDestruct(GetHashCode());
+            Dispose(false);
+        }
+    
         public void SetLock(bool parIsLock)
         {
             db.SetLock(parIsLock);
@@ -210,7 +214,7 @@ namespace SharedLib
                 WorkplaceIdLockers[parIdWorkplace] = new object();
             return WorkplaceIdLockers[parIdWorkplace];
         }
-        protected bool BildWorkplace()
+        public bool BildWorkplace()
         {
             Global.WorkPlaceByTerminalId = new SortedList<Guid, WorkPlace>();
             Global.WorkPlaceByWorkplaceId = new SortedList<int, WorkPlace>();
@@ -220,18 +224,12 @@ namespace SharedLib
                 Global.WorkPlaceByWorkplaceId.Add(el.IdWorkplace, el);
             }
             return true;
-
         }
-        /*		public WDB(CallWriteLogSQL parCallWriteLogSQL=null)
-                {
-                    this.varCallWriteLogSQL=parCallWriteLogSQL;
-                }
-                */
 
         public virtual bool SetConfig<T>(string parName, T parValue)
         {
             parValue.GetType().ToString();
-            this.db.ExecuteNonQuery<object>(this.SqlReplaceConfig, new { NameVar = parName, DataVar = parValue, @TypeVar = parValue.GetType().ToString() });
+            db.ExecuteNonQuery<object>(this.SqlReplaceConfig, new { NameVar = parName, DataVar = parValue, @TypeVar = parValue.GetType().ToString() });
             return true;
         }
 
@@ -240,31 +238,12 @@ namespace SharedLib
             return this.db.ExecuteScalar<object, T>(this.SqlConfig, new { NameVar = parStr });
             //;
         }
-        /// <summary>
-        /// Конектиться до бази та повертає табличку з правами.
-        /// </summary>
-        /// <param name="parLogin">Логін</param>
-        /// <param name="parPassword">Пароль</param>
-        /// <returns>row(код,назва,логін,пароль) Код користувача, -1 - Відсутній зв'язок з базою, -2  - неправильний логін/пароль</returns>
-
-        /*		public virtual DataRow Login (string parLogin,string parPassword)
-                {
-                    return null;
-                }*/
-
-        /*
-                public virtual DataTable RightOfAccess (int parCodeUser)
-                {
-                    return null;
-                }
-        */
 
         /// <summary>
         /// Повертає знайдений товар/товари
         /// </summary>
         public virtual IEnumerable<ReceiptWares> FindWares(string parBarCode = null, string parName = null, int parCodeWares = 0, int parCodeUnit = 0, int parCodeFastGroup = 0, int parArticl = -1, int parOffSet = -1, int parLimit = 10)
         {
-
             var Lim = parOffSet >= 0 ? $" limit {parLimit} offset {parOffSet}" : "";
             var Wares = this.db.Execute<object, ReceiptWares>(SqlFoundWares + Lim, new { CodeWares = parCodeWares, CodeUnit = parCodeUnit, BarCode = parBarCode, NameUpper = (parName == null ? null : "%" + parName.ToUpper() + "%"), CodeDealer = ModelMID.Global.DefaultCodeDealer, CodeFastGroup = parCodeFastGroup, Articl = parArticl });
             foreach (var el in Wares)
@@ -296,9 +275,13 @@ namespace SharedLib
         ///</returns>
         public virtual IdReceipt GetNewReceipt(IdReceipt parIdReceipt)
         {
-            if (parIdReceipt.CodePeriod == 0)
-                parIdReceipt.CodePeriod = Global.GetCodePeriod();
-            parIdReceipt.CodeReceipt = this.db.ExecuteScalar<IdReceipt, int>(SqlGetNewReceipt, parIdReceipt);
+
+            lock (GetObjectForLockByIdWorkplace(parIdReceipt.IdWorkplace))
+            {
+              if (parIdReceipt.CodePeriod == 0)
+                    parIdReceipt.CodePeriod = Global.GetCodePeriod();
+                parIdReceipt.CodeReceipt = this.db.ExecuteScalar<IdReceipt, int>(SqlGetNewReceipt, parIdReceipt);
+            }
             return parIdReceipt;
         }
 
@@ -306,11 +289,10 @@ namespace SharedLib
         /// <summary>
         /// Добавляє  чека в базу
         /// </summary>
-        /// <param name="parRow">Рядок з інформацією про чек</param>
+        /// <param name="parReceipt">Рядок з інформацією про чек</param>
         /// <returns>
         ///Успішно чи ні виконана операція
         ///</returns>
-
         public virtual bool AddReceipt(Receipt parReceipt)
         {
             return this.db.ExecuteNonQuery<Receipt>(SqlAddReceipt, parReceipt) == 0;
@@ -344,8 +326,6 @@ namespace SharedLib
         {
             return this.db.ExecuteNonQuery<ReceiptWares>(SqlInsertWaresReceipt, parReceiptWares) == 0 /*&& RecalcHeadReceipt((IdReceipt)parReceiptWares)*/;
         }
-
-
 
         public virtual bool ReplaceWaresReceipt(ReceiptWares parReceiptWares)
         {
@@ -438,18 +418,7 @@ namespace SharedLib
             return this.db.ExecuteNonQuery(SqlAddZ) == 0;
         }
 
-        /*		public virtual bool  AddLog(System.Data.DataRow parRow )
-                {
-                    return this.db.ExecuteNonQuery(SqlAddLog) == 0;
-                }
-        */
 
-        /*		
-                public virtual System.Data.DataRow GetPrice(int parCodeDealer, int parCodeWares, decimal parDiscount)
-                {
-                    return null;
-                }
-                */
         protected bool ReadSQL(String iniPath)
         {
             TextReader iniFile = null;
@@ -636,8 +605,6 @@ namespace SharedLib
 
         public virtual bool LoadDataFromFile(string parFile)
         {
-
-
             using (StreamReader streamReader = new StreamReader(parFile)) //Открываем файл для чтения)
             {
                 string varHead = "insert into " + Path.GetFileNameWithoutExtension(parFile) + "(" + streamReader.ReadLine() + ") values ";
@@ -650,68 +617,12 @@ namespace SharedLib
                 return true;
             }
         }
-
-        /*
-		public virtual int GetLastUseCodeEkka()
-		{
-            DataTable varDT = this.db.Execute(this.SqlGetLastUseCodeEkka);
-            if (varDT.Rows.Count > 0 && !DBNull.Value.Equals(varDT.Rows[0][0]))
-                return (Convert.ToInt32(varDT.Rows[0][0]));
-            else
-                return 0;
-        }
-        		public virtual bool AddWaresEkka(ParametersCollection parParameters )
-                {
-                    return db.ExecuteNonQuery(this.SqlAddWaresEkka,parParameters)==0;
-                }
-        public virtual bool DeleteWaresEkka()
-		{
-            return this.db.ExecuteNonQuery(this.SqlDeleteWaresEkka) == 0;
-        }
-
-        		public virtual int GetCodeEKKA(ParametersCollection parParameters )
-                {
-                     DataTable varDT = this.db.Execute(this.SqlGetCodeEKKA,parParameters);
-                            if(varDT.Rows.Count>0)
-                                return ( Convert.ToInt32(varDT.Rows[0][0]));
-                            else
-                                return 0;
-                }
-*/
-        /*        public virtual DataTable Translation(ParametersCollection parParameters )
-                                {
-                                    return  db.Execute(this.SqlTranslation,parParameters); 
-                                }
-
-                                public virtual DataTable FieldInfo(ParametersCollection parParameters = null)
-                                {
-                                    return  db.Execute(this.SqlFieldInfo,parParameters);
-                                }
-        */
+   
         public virtual bool RecalcHeadReceipt(IdReceipt parReceipt)
         {
             return this.db.ExecuteNonQuery<IdReceipt>(this.SqlRecalcHeadReceipt, parReceipt) == 0;
         }
-        /*
-                public virtual System.Data.DataTable GetAllPermissions(int parCodeUser)
-                {
-                    			Parameter[] varParameters = new Parameter[] { new Parameter { ColumnName= "parCodeUser", Value= parCodeUser} };
-			DataTable varDT=this.db.Execute(this.SqlGetAllPermissions,varParameters);
-			return varDT;
 
-                }
-
-                public virtual TypeAccess GetPermissions(int parCodeUser, CodeEvent parEvent)
-                {
-                    Parameter[] varParameters = new Parameter[] { new Parameter { ColumnName = "parCodeUser", Value = parCodeUser }, new Parameter { ColumnName = "parCodeAccess", Value = (int)parEvent }, };
-            
-			DataTable varDT=this.db.Execute(this.SqlGetAllPermissions,varParameters);
-			if(varDT!=null&&varDT.Rows.Count>0)
-				return (TypeAccess) varDT.Rows[0][0];
-			else
-				return TypeAccess.No;
-                }
-                */
         /// <summary>
         /// </summary>
         /// <param name="parParameters"></param>
@@ -719,9 +630,8 @@ namespace SharedLib
         /// <returns></returns>
         public virtual bool CopyWaresReturnReceipt(IdReceipt parIdReceipt, bool parIsCurrentDay = true)
         {
-            return false;
+            throw new NotImplementedException();
         }
-
 
         public virtual bool ReplaceUnitDimension(IEnumerable<UnitDimension> parData)
         {
@@ -795,13 +705,6 @@ namespace SharedLib
             return true;
         }
 
-        /*        public virtual bool ReplacePromotionGiff(IEnumerable<PromotionGiff> parData)
-                {
-                    db.BulkExecuteNonQuery<PromotionGiff>(SqlReplacePromotionGiff, parData);
-                    return true;
-                }*/
-
-
         public virtual bool ReplacePromotionSaleDealer(IEnumerable<PromotionSaleDealer> parData)
         {
             db.BulkExecuteNonQuery<PromotionSaleDealer>(SqlReplacePromotionSaleDealer, parData);
@@ -841,12 +744,14 @@ namespace SharedLib
             var Res = new PricePromotion() { Price = PriceDealer };
             foreach (var el in db.Execute<ParameterPromotion, PricePromotion>(SqlGetPrice, parPromotion))
             {
-                if (el.CalcPrice(PriceDealer) < Res.Price)
+                if ((el.CalcPrice(PriceDealer) < Res.Price && Res.Priority<=el.Priority) || Res.Priority < el.Priority)
                 {
-                    Res = el;
-                    Res.Price = el.CalcPrice(PriceDealer);
-                }
 
+                    var IsUsePrice = (Res.Priority == el.Priority);
+                    Res = el;                
+
+                    Res.Price = el.CalcPrice(PriceDealer, IsUsePrice);
+                }
             }
             return Res;
         }
@@ -868,8 +773,6 @@ namespace SharedLib
         {
             return db.Execute<IdReceipt, ParameterPromotion>(SqlGetInfoClientByReceipt, parIdReceipt);
         }
-
-
 
         public virtual MinPriceIndicative GetMinPriceIndicative(IdReceiptWares parIdReceiptWares)
         {
@@ -1077,7 +980,30 @@ namespace SharedLib
             return this.db.Execute<IdReceipt, WaresReceiptPromotion>(SqlGetReceiptWaresPromotion, parIdReceipt);            
         }
 
-        
+        public virtual void Close(bool isWait = false)
+        {
+            if (db != null)
+                db.Close(isWait);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (isDisposed) return;
+            if (disposing)
+            {
+                Close();
+            }
+            // free native resources if there are any.
+
+            isDisposed = true;
+        }
+
 
     }
 }

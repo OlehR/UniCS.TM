@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>netcoreapp2.2</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\ModelMID\ModelMID.csproj" />
+      <ProjectReference Include="..\ModernIntegration\ModernIntegration.csproj" />
+      <ProjectReference Include="..\SharedLib\SharedLib.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="appsettings.PSUprym.json" />
+      <Content Include="appsettings.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+</Project>

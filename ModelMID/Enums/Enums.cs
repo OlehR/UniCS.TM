@@ -191,4 +191,32 @@ namespace ModelMID
         Main = 0,
         Client=1
     }
+    public enum eStateScale
+    {
+        /// <summary>
+        /// Товар необхідно поставити на платформу.
+        /// </summary>
+        WaitGoods,
+        /// <summary>
+        /// Почала стабілізовуватись
+        /// </summary>
+        StartStabilized,
+        /// <summary>
+        /// Вага стабільна.
+        /// </summary>
+        Stabilized,
+        /// <summary>
+        /// вага не стабільна (Середне значення поза межами похибки)
+        /// </summary>
+        NotStabilized,
+        /// <summary>
+        /// Невірна вага(відносно стабільна)
+        /// </summary>
+        BadWeight,
+        /// <summary>
+        /// Очікуємо очистку ваги.
+        /// </summary>
+        WaitClear
+    }
+
 }

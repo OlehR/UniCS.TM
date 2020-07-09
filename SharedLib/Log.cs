@@ -16,12 +16,17 @@ namespace SharedLib
             //varD = DateTime.Now;
             //filePath = Path.Combine(Global.PathLog, $"Log_{varD:yyyyMMdd}.log");
         }
-        static async Task Write( string text)
+        static async Task Write( string pText,string pFilePath = null,bool pAddInfo=true)
         {
             var varD = DateTime.Now;
-            var filePath = Path.Combine(Global.PathLog, $"Log_{varD:yyyyMMdd}.log");
+            var filePath = pFilePath !=null? pFilePath: Path.Combine(Global.PathLog, $"Log_{varD:yyyyMMdd}.log");
 
-            text=$"/n{varD:yyyy-MM-dd h:mm:ss.fffffff} /n /t {text} /n";
+            var LogFilePath = Path.GetDirectoryName(filePath);
+            if (!Directory.Exists(LogFilePath))
+                Directory.CreateDirectory(LogFilePath);
+
+
+            var text= pAddInfo?$"/n{varD:yyyy-MM-dd h:mm:ss.fffffff} /n /t {pText} /n": pText;
             
             byte[] encodedText = Encoding.Unicode.GetBytes(text);
 

@@ -144,14 +144,14 @@ namespace ModelMID
         public decimal Data { get; set; }        
         public decimal Price { get; set; }
         public int IsIgnoreMinPrice { get; set; }
-        public decimal CalcPrice(decimal parPrice)
+        public decimal CalcPrice(decimal parPrice,bool IsUsePrice=true)
         {
 
             //decimal curPrice = 0;
             switch (TypeDiscont)
             {
                 case eTypeDiscount.Price:
-                    return (Data > 0 && Data < parPrice ? Data : parPrice);
+                    return ( (Data > 0 && (Data < parPrice || !IsUsePrice)) ? Data : parPrice);
                 case eTypeDiscount.PriceDiscount:
                     return parPrice - Data;
                 case eTypeDiscount.PercentDiscount:

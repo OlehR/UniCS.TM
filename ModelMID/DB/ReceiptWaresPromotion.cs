@@ -25,6 +25,10 @@ namespace ModelMID
             set { Price = (Quantity > 0 ? value / Quantity : 0); }
         }
 
+        /// <summary>
+        /// Приоритет спрацьованої акції
+        /// </summary>
+        public int Priority { get; set; }
         public Int64 CodePS { get; set; }
         public string NamePS { get; set; }
         public int NumberGroup { get; set; }

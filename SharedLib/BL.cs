@@ -19,7 +19,8 @@ namespace SharedLib
         public WDB_SQLite db;
 
         public DataSync ds;
-        
+        public ControlScale CS = new ControlScale(); 
+
         //public Action<IEnumerable<ReceiptWares>, Guid> OnReceiptCalculationComplete { get; set; }
 
         /// <summary>
@@ -30,11 +31,10 @@ namespace SharedLib
 
         public BL(bool  pIsUseOldDB=false)
         {
-            db = new WDB_SQLite("",false,default(DateTime), pIsUseOldDB);
+            db = new WDB_SQLite(default(DateTime), null, pIsUseOldDB);
+            db.BildWorkplace();
             ds = new DataSync(this);
-            WorkId = new SortedList<Guid, int>();
-         //   Global.OnReceiptCalculationComplete = (wareses, guid) => OnReceiptCalculationComplete?.Invoke(wareses, guid);
-            
+            WorkId = new SortedList<Guid, int>();                  
 
         }
         public ReceiptWares AddReceiptWares(ReceiptWares parW)
@@ -49,7 +49,7 @@ namespace SharedLib
             else
                 db.AddWares(parW);
 
-            VR.SendMessageAsync(parW.IdWorkplace, parW.NameWares, parW.Articl, parW.Quantity, parW.Sum);
+            _ = VR.SendMessageAsync(parW.IdWorkplace, parW.NameWares, parW.Articl, parW.Quantity, parW.Sum);
             if (ModelMID.Global.RecalcPriceOnLine)
                 db.RecalcPriceAsync(parW);
             return parW;
@@ -131,7 +131,7 @@ namespace SharedLib
                                 w = db.FindWares(null, null, varCode);
                                 break;
                             case eTypeCode.PercentDiscount:
-                                ds.CheckDiscountBarCodeAsync(parReceipt, parBarCode, varCode);
+                                _ = ds.CheckDiscountBarCodeAsync(parReceipt, parBarCode, varCode);
                                 return new ReceiptWares(parReceipt);                                
                             default:
                                 break;
@@ -199,8 +199,8 @@ namespace SharedLib
 
             if (parQuantity == 0)
             {
-                db.DeleteReceiptWares(parReceiptWaresId);                
-                VR.SendMessageAsync(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum,VR.eTypeVRMessage.DeleteWares);
+                db.DeleteReceiptWares(parReceiptWaresId);
+                _ = VR.SendMessageAsync(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum, VR.eTypeVRMessage.DeleteWares);
 
             }
             else
@@ -208,7 +208,7 @@ namespace SharedLib
                 //w.SetIdReceiptWares();
                 w.Quantity = parQuantity;
                 res = db.UpdateQuantityWares(w);
-                VR.SendMessageAsync(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum,VR.eTypeVRMessage.UpdateWares);
+                _ = VR.SendMessageAsync(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum, VR.eTypeVRMessage.UpdateWares);
             }
                 if (ModelMID.Global.RecalcPriceOnLine)
                     db.RecalcPriceAsync(parReceiptWaresId);
@@ -223,7 +223,7 @@ namespace SharedLib
             if (Ldc == DateTime.Now.Date)
              return db.ViewReceipt(idReceipt, parWithDetail);
 
-            var ldb = new WDB_SQLite(null, false, Ldc);
+            var ldb = new WDB_SQLite(Ldc);
             return ldb.ViewReceipt(idReceipt, parWithDetail);
 
 
@@ -360,10 +360,12 @@ namespace SharedLib
                 var Ldc = parStartDate.Date;
                 while (Ldc <= parFinishDate.Date)
                 {
-                    var ldb = new WDB_SQLite(null, false, Ldc);
-                    var l= ldb.GetReceipts(Ldc.Date, Ldc.Date.AddDays(1), IdWorkPlace);
-                    res.AddRange(l);
-                    Ldc = Ldc.AddDays(1);
+                    using (var ldb = new WDB_SQLite(Ldc))
+                    {
+                        var l = ldb.GetReceipts(Ldc.Date, Ldc.Date.AddDays(1), IdWorkPlace);
+                        res.AddRange(l);
+                        Ldc = Ldc.AddDays(1);
+                    }
                 }
             }
                 //throw new NotImplementedException();
@@ -381,7 +383,7 @@ namespace SharedLib
             var Ldc = pStartDate.Date;
             while (Ldc <= pFinishDate.Date)
             {
-                var ldb = new WDB_SQLite(null, false, Ldc);
+                var ldb = new WDB_SQLite( Ldc);
                 var l = ldb.GetReceiptByFiscalNumber(IdWorkplace,pFiscalNumber, pStartDate, pFinishDate);
                 if (l != null && l.Count() >= 1)
                     return l.First();
@@ -395,13 +397,13 @@ namespace SharedLib
             
             var ReceiptId = isRefund ? parReceipt.RefundId : (IdReceipt)parReceipt;            
             
-            var dbR = parReceipt.CodePeriod == Global.GetCodePeriod()?db: new WDB_SQLite("", true, ReceiptId.DTPeriod);
+            var dbR = parReceipt.CodePeriod == Global.GetCodePeriod()?db: new WDB_SQLite( ReceiptId.DTPeriod);
 
 
             dbR.ReplaceReceipt(parReceipt);
             dbR.ReplacePayment(parReceipt.Payment);
 
-            var dbr = parReceipt.CodePeriod == parReceipt.CodePeriodRefund ? db : new WDB_SQLite("", true, ReceiptId.DTPeriod);
+            var dbr = parReceipt.CodePeriod == parReceipt.CodePeriodRefund ? db : new WDB_SQLite( ReceiptId.DTPeriod);
             foreach (var el in parReceipt.Wares)
             {
                 dbR.AddWares(el);
@@ -443,6 +445,35 @@ namespace SharedLib
         {
             return ds.SendReceiptTo1C(parIdReceipt);
         }
+
+
+        public  double GetMidlWeight()
+        {
+            return CS.GetMidlWeight();
+        }
+
+
+        public void StartWeightNewGoogs(WaitWeight[] pWeight)
+        {  
+            CS.StartWeightNewGoogs(pWeight);
+        }
+
+        public  bool FixedWeight()
+        {
+            return CS.FixedWeight();
+        }
+
+        public  bool WaitClearScale()
+        {
+            return CS.WaitClear();
+        }
+
+        public void CloseDB()
+        {
+            if (db != null)
+                db.Close();
+        }
+
     }
     
 

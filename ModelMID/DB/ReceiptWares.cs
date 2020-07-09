@@ -55,6 +55,10 @@ namespace ModelMID
         public decimal PriceDealer { get; set; }
 
         /// <summary>
+        /// Приоритет спрацьованої акції
+        /// </summary>
+        public int Priority { get; set; }
+        /// <summary>
         /// Тип ціноутворення ( 1 - ділерська категорія - 2 ділерська категорія+знижка,3 -фіксація ціни,4-Обмеження по нижньому індикативу, 5-Обмеження по верхньому індикативу, 9 -акція)
         /// </summary>
         public eTypePrice TypePrice { get; set; }
@@ -63,11 +67,14 @@ namespace ModelMID
         ///  ДК,Код акції
         /// </summary>
         public long ParPrice1 { get; set; }
-
-        //Номер набору, підставлена ДК тощо
+        /// <summary>
+        ///Номер набору, підставлена ДК тощо
+        /// </summary>
         public long ParPrice2 { get; set; }
-
-        public long ParPrice3 { get; set; }
+        /// <summary>
+        /// Відсотки по акції тощо.
+        /// </summary>
+        public decimal ParPrice3 { get; set; }
 
         /// <summary>
         /// 
