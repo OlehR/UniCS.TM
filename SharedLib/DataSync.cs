@@ -14,7 +14,7 @@ namespace SharedLib
 {
     public class DataSync
     {
-        public WDB_SQLite db;
+        public WDB_SQLite db { get { return bl?.db; }}
         public BL bl;
         
         public SoapTo1C soapTo1C;
@@ -22,8 +22,7 @@ namespace SharedLib
         {
             
             soapTo1C = new SoapTo1C();
-            bl = parBL; ///!!!TMP Трохи костиль 
-            db = parBL.db;
+            bl = parBL; ///!!!TMP Трохи костиль             
         }
 
 
@@ -47,7 +46,7 @@ namespace SharedLib
 
                 var body = soapTo1C.GenBody("JSONCheck", new Parameters[] { new Parameters("JSONSting", r.GetBase64()) });
 
-                var res =  await soapTo1C.RequestAsync(Global.Server1C, body, 45000, "application/json");
+                var res =  await soapTo1C.RequestAsync(Global.Server1C, body, 80000, "application/json");
 
                 /*
                                  HttpClient client = new HttpClient();
@@ -129,13 +128,11 @@ namespace SharedLib
 
                     if (File.Exists(varMidFile))
                     {
-                        Log.Append($"{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} Try Delete file{varMidFile}");
-                        
+                        Log.Append($"{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} Try Delete file{varMidFile}");                      
 
                         bl.db.Close(true);                     
                         File.Delete(varMidFile);
-                        bl.db = new WDB_SQLite(default(DateTime), varMidFile);
-                        db = bl.db;
+                        bl.db = new WDB_SQLite(default(DateTime), varMidFile);                        
                     }
                     Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} Create New DB");                   
                     //SQLite.CreateMIDTable();
@@ -149,15 +146,12 @@ namespace SharedLib
                     {
                         Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} Create New DB");
                         Debug.WriteLine("CreateMIDIndex Start");
-                        db.CreateMIDIndex();
-                        
+                        db.CreateMIDIndex();                        
                         
                         db.SetConfig<string>("Last_MID", varMidFile);
                         Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} Set config");
                         Debug.WriteLine("Set config");
-                    }
-
-                   
+                    }                   
 
                     db.SetConfig<int>("MessageNo", varMessageNMax);
                     db.SetConfig<DateTime>("Load_" + (parIsFull ? "Full" : "Update"), DateTime.Now /*String.Format("{0:u}", DateTime.Now)*/);

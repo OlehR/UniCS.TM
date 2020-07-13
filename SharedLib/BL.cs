@@ -19,8 +19,9 @@ namespace SharedLib
         public WDB_SQLite db;
 
         public DataSync ds;
-        public ControlScale CS = new ControlScale(); 
+        public ControlScale CS = new ControlScale();
 
+        public static SortedList<int, int> UserIdbyWorkPlace;
         //public Action<IEnumerable<ReceiptWares>, Guid> OnReceiptCalculationComplete { get; set; }
 
         /// <summary>
@@ -88,6 +89,7 @@ namespace SharedLib
             var receipt = new Receipt(receiptId);
             receipt.NumberReceipt = parFiscalNumber;
             receipt.StateReceipt = eStateReceipt.Print;
+            receipt.UserCreate = GetUserIdbyWorkPlace(receiptId.IdWorkplace);
             //db.RecalcPrice(receiptId);
             db.CloseReceipt(receipt);
             return true;
@@ -431,7 +433,11 @@ namespace SharedLib
         public async Task<bool> SyncDataAsync(bool parIsFull)
         {
             var res=ds.SyncData(parIsFull);
-            await ds.SendAllReceipt().ConfigureAwait(false);
+            var CurDate = DateTime.Now;
+            // не обміннюємось чеками починаючи з 23:45 до 1:00
+            if( !( (CurDate.Hour==23 && CurDate.Minute>44)  || CurDate.Hour==0))
+               await ds.SendAllReceipt().ConfigureAwait(false);
+
             ds.LoadWeightKasa();
             return res;
         }
@@ -474,8 +480,28 @@ namespace SharedLib
                 db.Close();
         }
 
+        public void StartWork(int pIdWorkplace,int pCodeCashier)
+        {
+            if (UserIdbyWorkPlace.ContainsKey(pIdWorkplace))
+                UserIdbyWorkPlace[pIdWorkplace] = pCodeCashier;
+            else
+                UserIdbyWorkPlace.Add(pIdWorkplace, pCodeCashier);
+        }
+
+        public void StoptWork(int pIdWorkplace)
+        {
+            if (UserIdbyWorkPlace.ContainsKey(pIdWorkplace))
+                UserIdbyWorkPlace.Remove(pIdWorkplace);
+        }
+
+        private int GetUserIdbyWorkPlace(int pIdWorkplace)
+        {
+            if (UserIdbyWorkPlace.ContainsKey(pIdWorkplace))
+                return UserIdbyWorkPlace[pIdWorkplace];
+            return 0;
+        }
     }
-    
+
 
 
 }

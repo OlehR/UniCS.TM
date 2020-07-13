@@ -747,8 +747,23 @@ namespace ModernIntegration
         { 
             Bl.CloseDB();
         }
+
+        public override void StartWork(Guid pTerminalId,int pCodeCashier)
+        {
+           var IdWorkplace = Global.GetIdWorkplaceByTerminalId(pTerminalId);
+           Bl.StartWork(IdWorkplace, pCodeCashier);
+        }
+
+        public override void StopWork(Guid pTerminalId)
+        {
+            var IdWorkplace = Global.GetIdWorkplaceByTerminalId(pTerminalId);
+            Bl.StoptWork(IdWorkplace);
+        }
+
+
     }
 
 
-    
+
+
 }

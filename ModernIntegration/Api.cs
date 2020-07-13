@@ -112,6 +112,15 @@ namespace ModernIntegration
             throw new NotImplementedException();
         }
 
+
+        public virtual void StartWork(Guid pTerminalId, int pCodeCashier)
+        {
+            throw new NotImplementedException();
+        }
+        public virtual void StopWork(Guid pTerminalId)
+        {
+            throw new NotImplementedException();
+        }
         public Action<SyncInformation> OnSyncInfoCollected { get; set; }
 
         public Action<IEnumerable<ProductViewModel>, Guid> OnProductsChanged { get; set; }
