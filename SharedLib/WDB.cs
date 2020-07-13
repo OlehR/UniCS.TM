@@ -188,7 +188,8 @@ namespace SharedLib
         protected string SqlSetFixWeight = "";
         protected string SqlGetReceiptWaresPromotion = "";
         protected string SqlReceiptByFiscalNumbers = "";
-       
+        protected string SqlGetLastQuantity = "";
+
 
         public WDB(string parFileSQL)
         {
@@ -600,6 +601,7 @@ namespace SharedLib
 
             SqlGetReceiptWaresPromotion = GetSQL("SqlGetReceiptWaresPromotion");
             SqlReceiptByFiscalNumbers = GetSQL("SqlReceiptByFiscalNumbers");
+            SqlGetLastQuantity = GetSQL("SqlGetLastQuantity");
             return true;
         }
 
@@ -860,6 +862,10 @@ namespace SharedLib
             return db.Execute<IdReceipt, WaresReceiptPromotion>(SqlCheckLastWares2Cat, parIdReceipt);
         }
 
+        public virtual decimal GetLastQuantity(IdReceiptWares parIdReceiptWares)
+        {
+            return db.ExecuteScalar<IdReceiptWares, decimal>(SqlGetLastQuantity, parIdReceiptWares);
+        }
 
 
         public virtual bool IsWaresInPromotionKit(int parCodeWares)

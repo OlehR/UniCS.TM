@@ -259,6 +259,7 @@ namespace SharedLib
             try
             {
                 var Cat2 = db.CheckLastWares2Cat(parIdReceipt);
+                
                 if (Cat2 == null || Cat2.Count() == 0)
                 {
                     Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace), Status = eSyncStatus.IncorectProductForDiscount });
@@ -267,6 +268,7 @@ namespace SharedLib
                 var Cat2First = Cat2.First();
                 Cat2First.BarCode2Category = parBarCode;
                 Cat2First.Price = Cat2First.Price * (100m - (decimal)parPercent) / 100m;
+                Cat2First.Quantity = db.GetLastQuantity(Cat2First);
 
                 bool isGood = true;
                 try
@@ -275,26 +277,6 @@ namespace SharedLib
                     var res = await soapTo1C.RequestAsync(Global.Server1C, body,5000);
                     isGood = res.Equals("1");
 
-                    /*     string body = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
-                                      "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd = \"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n" +
-                         $"<soap:Body>\n<GetRestOfLabel xmlns=\"vopak\">\n<CodeOfLabel>{parBarCode}</CodeOfLabel> \n </GetRestOfLabel> \n </soap:Body>\n </soap:Envelope>";
-
-                         HttpClient client = new HttpClient();
-                         client.Timeout = TimeSpan.FromMilliseconds(5000);
-                         // Add a new Request Message
-                         HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, Global.Server1C);
-                         //requestMessage.Headers.Add("Accept", "application/vnd.github.v3+json");
-                         // Add our custom headers
-                         requestMessage.Content = new StringContent(body, Encoding.UTF8, "text/xml");
-                         var response = await client.SendAsync(requestMessage);
-
-                         if (response.IsSuccessStatusCode)
-                         {
-                             var res = await response.Content.ReadAsStringAsync();
-                             res = res.Substring(res.IndexOf(@"-instance"">") + 11);
-                             res = res.Substring(0, res.IndexOf("</m:return>")).Trim();
-                             isGood = res.Equals("1");
-                         }*/
                     Global.ErrorDiscountOnLine = 0;
                 }
                 catch (Exception ex)

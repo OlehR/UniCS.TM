@@ -1167,5 +1167,15 @@ ps.NAME_PS as NamePS, Number_Group as NumberGroup, BarCode_2_Category as  BarCod
      left join PROMOTION_SALE ps on ps.CODE_PS=wrp.CODE_PS
      where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt;
 
+[SqlGetLastQuantity]
+select QUANTITY from (
+SELECT QUANTITY- QUANTITY_OLD as QUANTITY, ROW_NUMBER ( )   OVER (  ORDER BY  DATE_CREATE DESC) AS nn  
+  FROM WARES_RECEIPT_HISTORY
+ where ID_WORKPLACE = @IdWorkplace
+   and CODE_PERIOD = @CodePeriod
+   and CODE_RECEIPT = @CodeReceipt
+   and Code_wares=@CodeWares
+  ) where nn=1
+ 
 [SqlEnd]
 */
