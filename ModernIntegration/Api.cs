@@ -113,7 +113,7 @@ namespace ModernIntegration
         }
 
 
-        public virtual void StartWork(Guid pTerminalId, int pCodeCashier)
+        public virtual void StartWork(Guid pTerminalId, string pBarCodeCashier)
         {
             throw new NotImplementedException();
         }

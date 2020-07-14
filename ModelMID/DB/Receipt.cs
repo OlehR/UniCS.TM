@@ -63,7 +63,7 @@ namespace ModelMID
         public Int64 NumberSlip { get; set; }
 
         public DateTime DateCreate { get; set; }
-        public int UserCreate { get; set; }
+        public long UserCreate { get; set; }
 
         public decimal AdditionN1 { get; set; }
         public decimal AdditionN2 { get; set; }

@@ -21,7 +21,7 @@ namespace SharedLib
         public DataSync ds;
         public ControlScale CS = new ControlScale();
 
-        public static SortedList<int, int> UserIdbyWorkPlace;
+        public static SortedList<int, long> UserIdbyWorkPlace;
         //public Action<IEnumerable<ReceiptWares>, Guid> OnReceiptCalculationComplete { get; set; }
 
         /// <summary>
@@ -186,7 +186,7 @@ namespace SharedLib
         public IEnumerable<ReceiptWares> ViewReceiptWares(IdReceipt parIdReceipt,bool pIsReceiptWaresPromotion=false)
         {
 
-            var Res = db.ViewReceiptWares(parIdReceipt);
+            var Res = db.ViewReceiptWares(parIdReceipt, pIsReceiptWaresPromotion);
             //var El = Res.First();
             return Res;
 
@@ -480,12 +480,14 @@ namespace SharedLib
                 db.Close();
         }
 
-        public void StartWork(int pIdWorkplace,int pCodeCashier)
+        public void StartWork(int pIdWorkplace,string pCodeCashier)
         {
+            //tmp 
+            long CodeCashier = long.Parse(pCodeCashier);
             if (UserIdbyWorkPlace.ContainsKey(pIdWorkplace))
-                UserIdbyWorkPlace[pIdWorkplace] = pCodeCashier;
+                UserIdbyWorkPlace[pIdWorkplace] = CodeCashier;
             else
-                UserIdbyWorkPlace.Add(pIdWorkplace, pCodeCashier);
+                UserIdbyWorkPlace.Add(pIdWorkplace, CodeCashier);
         }
 
         public void StoptWork(int pIdWorkplace)
@@ -494,7 +496,7 @@ namespace SharedLib
                 UserIdbyWorkPlace.Remove(pIdWorkplace);
         }
 
-        private int GetUserIdbyWorkPlace(int pIdWorkplace)
+        private long GetUserIdbyWorkPlace(int pIdWorkplace)
         {
             if (UserIdbyWorkPlace.ContainsKey(pIdWorkplace))
                 return UserIdbyWorkPlace[pIdWorkplace];

@@ -257,7 +257,9 @@ namespace SharedLib
                     GetPricePromotionKit(parIdReceipt, parIdReceipt.CodeWares);
                     RecalcHeadReceipt(parIdReceipt);
                     startTime.Stop();
-                    Console.WriteLine("RecalcPrice=>" + startTime.Elapsed);
+                    Console.WriteLine($"RecalcPrice=>{startTime.Elapsed}  {r?.Count()}");
+                    /*foreach (var RW in r)
+                        Console.WriteLine($"{RW.NameWares}");*/
 
                     return true;
                 }

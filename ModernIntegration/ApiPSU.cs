@@ -24,13 +24,14 @@ namespace ModernIntegration
             Bl = new BL();
             Global.OnReceiptCalculationComplete += (wareses, guid) =>
             {
-                Debug.WriteLine("=========================================================================");
+                Console.WriteLine("\n==========================Start===================================");
                 foreach (var receiptWarese in wareses)
                 {
-                //    Console.WriteLine($"{receiptWarese.NameWares} - {receiptWarese.Price} Quantity=> {receiptWarese.Quantity} SumDiscount=>{receiptWarese.SumDiscount}");
+                    Console.WriteLine($"\nNameDiscount=>{receiptWarese.NameDiscount} Promotion=>{receiptWarese.GetStrWaresReceiptPromotion.Trim()} \n{receiptWarese.NameWares} - {receiptWarese.Price} Quantity=> {receiptWarese.Quantity} SumDiscount=>{receiptWarese.SumDiscount}");
                 }
                 //var r = wareses.Select(s => GetProductViewModel(s));
                 OnProductsChanged?.Invoke(wareses.Select(s => GetProductViewModel(s)), guid);
+                Console.WriteLine("===========================End==========================================\n");
             };
             
             Global.OnSyncInfoCollected += (SyncInfo) =>
@@ -390,17 +391,8 @@ namespace ModernIntegration
 
         private List<ReceiptItem> GetReceiptItem(IdReceipt parIdReceipt)
         {
-            var res = Bl.ViewReceiptWares(parIdReceipt);//new ModelMID.IdReceipt { CodePeriod = 20190613, CodeReceipt = 1, IdWorkplace = 140701 }
-
-            return GetReceiptItem(res);
-            /*var Res = new List<ReceiptItem>();
-            var res = Bl.ViewReceiptWares(parIdReceipt);//new ModelMID.IdReceipt { CodePeriod = 20190613, CodeReceipt = 1, IdWorkplace = 140701 }
-            foreach (var el in res)
-            {
-                var PVM = this.GetProductViewModel(el);
-                Res.Add(PVM.ToReceiptItem());
-            }
-            return Res;*/
+            var res = Bl.ViewReceiptWares(parIdReceipt);
+            return GetReceiptItem(res);            
         }
 
         private List<ReceiptItem> GetReceiptItem(IEnumerable<ReceiptWares> res)
@@ -748,10 +740,10 @@ namespace ModernIntegration
             Bl.CloseDB();
         }
 
-        public override void StartWork(Guid pTerminalId,int pCodeCashier)
+        public override void StartWork(Guid pTerminalId, string pBarCodeCashier)
         {
            var IdWorkplace = Global.GetIdWorkplaceByTerminalId(pTerminalId);
-           Bl.StartWork(IdWorkplace, pCodeCashier);
+           Bl.StartWork(IdWorkplace, pBarCodeCashier);
         }
 
         public override void StopWork(Guid pTerminalId)

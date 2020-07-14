@@ -2,7 +2,7 @@
 using System.ServiceModel;
 using System.ServiceModel.Description;
 using System.ServiceProcess;
-using V83;
+//using V83;
 
 //using System.Windows.Controls;
 
@@ -76,12 +76,12 @@ namespace PrintServer
             }
         }
 
-        private static dynamic Get1CConnection()
+/*        private static dynamic Get1CConnection()
         {
             COMConnector comConnector = new COMConnector();
             dynamic connection = comConnector.Connect("File='D:\\1141';Usr='Администратор';pwd='';");
             return connection;
-        }
+        }*/
 
         private static void Start(string[] args)
         {
