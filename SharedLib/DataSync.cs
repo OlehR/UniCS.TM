@@ -46,7 +46,7 @@ namespace SharedLib
 
                 var body = soapTo1C.GenBody("JSONCheck", new Parameters[] { new Parameters("JSONSting", r.GetBase64()) });
 
-                var res =  await soapTo1C.RequestAsync(Global.Server1C, body, 80000, "application/json");
+                var res =  await soapTo1C.RequestAsync(Global.Server1C, body, 120000, "application/json");
 
                 /*
                                  HttpClient client = new HttpClient();
@@ -260,7 +260,7 @@ namespace SharedLib
                     return false;
                 }
                 var Cat2First = Cat2.First();
-                Cat2First.BarCode2Category = parBarCode;
+                Cat2First.BarCode2Category = parBarCode==null?"":parBarCode;
                 Cat2First.Price = Cat2First.Price * (100m - (decimal)parPercent) / 100m;
                 Cat2First.Quantity = db.GetLastQuantity(Cat2First);
 
