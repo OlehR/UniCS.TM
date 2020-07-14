@@ -22,6 +22,7 @@ namespace ModelMID
         public int CodeWarehouse { get { return 9; } set { } }
 
         public string RefundNumber { get; set; }
+        public string BarCodeCashier { get; set; }
         public IEnumerable<ReceiptWares1C> Wares;
 
         public Receipt1C() { }
@@ -34,6 +35,7 @@ namespace ModelMID
             TypeReceipt =  (parR.TypeReceipt== eTypeReceipt.Refund? eTypeReceipt.Refund:eTypeReceipt.Sale);
             NumberCashDesk = parR.IdWorkplace;            
             CodeClientCard = parR.CodeClient;
+            BarCodeCashier = parR.UserCreate.ToString();
 
             UInt64 nr=0;
             if(UInt64.TryParse(parR.NumberReceipt,out nr))                
