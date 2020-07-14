@@ -194,7 +194,7 @@ namespace ModelMID
                 string Res = "";
                 foreach (var el in ReceiptWaresPromotions)
                 {
-                    var name = string.IsNullOrEmpty(el.NamePS) ? el.BarCode2Category : el.NamePS;
+                    var name = string.IsNullOrEmpty(el.NamePS) ? el.BarCode2Category.Substring(3,2)+"%" : el.NamePS;
                     Res += $"{name} - {el.Quantity} - {el.Sum}\n";
                 }
 
