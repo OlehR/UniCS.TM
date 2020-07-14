@@ -21,7 +21,7 @@ namespace SharedLib
         public DataSync ds;
         public ControlScale CS = new ControlScale();
 
-        public static SortedList<int, long> UserIdbyWorkPlace;
+        public static SortedList<int, long> UserIdbyWorkPlace = new SortedList<int, long>();
         //public Action<IEnumerable<ReceiptWares>, Guid> OnReceiptCalculationComplete { get; set; }
 
         /// <summary>
