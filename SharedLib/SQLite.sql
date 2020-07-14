@@ -263,6 +263,8 @@ where   id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receip
 
 
 [SqlReplaceWaresReceiptPromotion]
+delete from WARES_RECEIPT_PROMOTION where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt
+        and length(@BarCode2Category)=13 and BARCODE_2_CATEGORY=@BarCode2Category;
 replace into WARES_RECEIPT_PROMOTION (id_workplace, code_period, code_receipt, code_wares, code_unit,
   quantity, sum, code_ps,NUMBER_GROUP,BARCODE_2_CATEGORY) 
  values (
@@ -273,7 +275,7 @@ replace into WARES_RECEIPT_PROMOTION (id_workplace, code_period, code_receipt, c
 
 [SqlDeleteWaresReceiptPromotion]
  delete from  WARES_RECEIPT_PROMOTION 
-   where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt and BARCODE_2_CATEGORY is null;
+   where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt and (BARCODE_2_CATEGORY is null or length(BARCODE_2_CATEGORY)=0);
 
 [SqlGetCountWares]
 select sum(wr.quantity) quantity 
