@@ -346,6 +346,8 @@ namespace ModernIntegration
 
         public ReceiptViewModel GetReceiptViewModel(IdReceipt parReceipt)
         {
+            if (parReceipt == null)
+                return null;
             var receiptMID = Bl.GetReceiptHead(parReceipt,true);
             if (receiptMID == null)
                 return null;
@@ -577,7 +579,7 @@ namespace ModernIntegration
         public override ReceiptViewModel GetReceiptByNumber(Guid pTerminalId, string pFiscalNumber)
         {
              var IdWorkplace = Global.GetIdWorkplaceByTerminalId(pTerminalId);
-             var res = Bl.GetReceiptByFiscalNumber(IdWorkplace, pFiscalNumber);
+             var res = Bl.GetReceiptByFiscalNumber(IdWorkplace, pFiscalNumber);             
              return GetReceiptViewModel(res);
         }
 
