@@ -250,6 +250,8 @@ namespace SharedLib
 
         public async Task<bool> CheckDiscountBarCodeAsync(IdReceipt parIdReceipt, string parBarCode, int parPercent)
         {
+            bool isGood = true;
+            decimal CountDiscount = 0; // На скільки товарів вже є знижка.
             try
             {
                 var Cat2 = db.CheckLastWares2Cat(parIdReceipt);
@@ -262,25 +264,36 @@ namespace SharedLib
                 var Cat2First = Cat2.First();
                 Cat2First.BarCode2Category = parBarCode==null?"":parBarCode;
                 Cat2First.Price = Cat2First.Price * (100m - (decimal)parPercent) / 100m;
-                Cat2First.Quantity = db.GetLastQuantity(Cat2First);
 
-                bool isGood = true;
-                try
+                var LastQuantyity= db.GetLastQuantity(Cat2First);
+                var pr = db.GetReceiptWaresPromotion(new IdReceiptWares(parIdReceipt, Cat2First.CodeWares));           
+
+                if (pr != null && pr.Count() > 0)
+                    CountDiscount = pr.Where(r => r.BarCode2Category.Length == 13).Sum(r => r.Quantity);
+
+                if (CountDiscount > Cat2First.Quantity - LastQuantyity)
+                    isGood = false;
+                else
                 {
-                    var body = soapTo1C.GenBody("GetRestOfLabel", new Parameters[] { new Parameters("CodeOfLabel", parBarCode) });
-                    var res = await soapTo1C.RequestAsync(Global.Server1C, body,5000);
-                    isGood = res.Equals("1");
+                    Cat2First.Quantity = db.GetLastQuantity(Cat2First);
 
-                    Global.ErrorDiscountOnLine = 0;
+
+                    try
+                    {
+                        var body = soapTo1C.GenBody("GetRestOfLabel", new Parameters[] { new Parameters("CodeOfLabel", parBarCode) });
+                    //    var res = await soapTo1C.RequestAsync(Global.Server1C, body, 5000);
+                    //    isGood = res.Equals("1");
+
+                        Global.ErrorDiscountOnLine = 0;
+                    }
+                    catch (Exception ex)
+                    {
+                        Global.ErrorDiscountOnLine++;
+                        Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "CheckDiscountBarCodeAsync=>" + ex.Message });
+                        Global.OnStatusChanged?.Invoke(db.GetStatus());
+
+                    }
                 }
-                catch (Exception ex)
-                {
-                    Global.ErrorDiscountOnLine++;
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "CheckDiscountBarCodeAsync=>" + ex.Message });
-                    Global.OnStatusChanged?.Invoke(db.GetStatus());
-
-                }
-
                 if (isGood)
                 {
                     //Cat2.First()._Sum = Cat2.First().Sum; //Трохи костиль !!!!

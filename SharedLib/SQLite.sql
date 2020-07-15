@@ -1168,7 +1168,8 @@ select id_workplace IdWorkplace, code_period CodePeriod, code_receipt CodeReceip
 ps.NAME_PS as NamePS, Number_Group as NumberGroup, BarCode_2_Category as  BarCode2Category
      from WARES_RECEIPT_PROMOTION wrp 
      left join PROMOTION_SALE ps on ps.CODE_PS=wrp.CODE_PS
-     where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt;
+     where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt
+     and code_wares = case when @CodeWares=0 then code_wares else @CodeWares end;
 
 [SqlGetLastQuantity]
 select QUANTITY from (

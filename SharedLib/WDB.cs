@@ -980,10 +980,14 @@ namespace SharedLib
             }
         }
 
-
+        public virtual IEnumerable<WaresReceiptPromotion> GetReceiptWaresPromotion(IdReceiptWares parIdReceiptWares)
+        {
+            return this.db.Execute<IdReceipt, WaresReceiptPromotion>(SqlGetReceiptWaresPromotion, parIdReceiptWares);
+        }
         public virtual IEnumerable<WaresReceiptPromotion> GetReceiptWaresPromotion(IdReceipt parIdReceipt)
         {
-            return this.db.Execute<IdReceipt, WaresReceiptPromotion>(SqlGetReceiptWaresPromotion, parIdReceipt);            
+
+            return GetReceiptWaresPromotion(new IdReceiptWares(parIdReceipt));
         }
 
         public virtual void Close(bool isWait = false)
