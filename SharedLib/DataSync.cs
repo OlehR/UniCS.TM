@@ -279,7 +279,7 @@ namespace SharedLib
                     isGood = false;
                 else
                 {
-                    Cat2First.Quantity = db.GetLastQuantity(Cat2First);
+                    Cat2First.Quantity = LastQuantyity;
 
 
                     try
