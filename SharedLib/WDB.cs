@@ -986,7 +986,7 @@ namespace SharedLib
         }
         public virtual IEnumerable<WaresReceiptPromotion> GetReceiptWaresPromotion(IdReceipt parIdReceipt)
         {
-
+            
             return GetReceiptWaresPromotion(new IdReceiptWares(parIdReceipt));
         }
 

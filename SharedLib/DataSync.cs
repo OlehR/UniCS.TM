@@ -266,6 +266,10 @@ namespace SharedLib
                 Cat2First.Price = Cat2First.Price * (100m - (decimal)parPercent) / 100m;
 
                 var LastQuantyity= db.GetLastQuantity(Cat2First);
+                //Якщо не ваговий - то знижка на 1 шт.
+                if (Cat2First.CodeUnit != Global.WeightCodeUnit && LastQuantyity > 0)
+                    LastQuantyity = 1;
+
                 var pr = db.GetReceiptWaresPromotion(new IdReceiptWares(parIdReceipt, Cat2First.CodeWares));           
 
                 if (pr != null && pr.Count() > 0)
@@ -281,8 +285,8 @@ namespace SharedLib
                     try
                     {
                         var body = soapTo1C.GenBody("GetRestOfLabel", new Parameters[] { new Parameters("CodeOfLabel", parBarCode) });
-                    //    var res = await soapTo1C.RequestAsync(Global.Server1C, body, 5000);
-                    //    isGood = res.Equals("1");
+                        var res = await soapTo1C.RequestAsync(Global.Server1C, body, 5000);
+                        isGood = res.Equals("1");
 
                         Global.ErrorDiscountOnLine = 0;
                     }
