@@ -213,6 +213,8 @@ namespace ModelMID
         /// </summary>
         public decimal FixWeight { get; set; }
 
+        public string CodeUKTZED { get; set; }
+
         public ReceiptWares()
         {
             Clear();

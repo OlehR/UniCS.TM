@@ -35,7 +35,7 @@ namespace Test
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-           // await CreateDataBaseAsync(true);
+            //await CreateDataBaseAsync(false);
 
 
             //Thread.Sleep(10000);
@@ -79,14 +79,36 @@ namespace Test
             var api = new ApiPSU();
             ProductViewModel sd;
 
-            for(int i = 8720; i<= 8720; i++)
-              api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200626, IdWorkplace = 62, CodeReceipt = i }); 
-            return;
+            //var ddd=api.GetReceiptByNumber(TerminalId, "55");
+            
+            api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200715, IdWorkplace = 68, CodeReceipt = 17 }); return;
+
+            //for(int i = 8720; i<= 8720; i++)
+            //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200706, IdWorkplace = 62, CodeReceipt = i }); 
+            //return;
+
+            sd = api.AddProductByBarCode(TerminalId, "1110716760019", 1); //хліб житній
+            Thread.Sleep(2000);
+            sd = api.AddProductByBarCode(TerminalId, "7773002160043", 1); //товар 2 кат
+            Thread.Sleep(2000);
+            sd = api.AddProductByBarCode(TerminalId, "1110716760019", 1); //хліб житній
+            Thread.Sleep(2000);
+            sd = api.AddProductByBarCode(TerminalId, "7773002160029", 1); //товар 2 кат
+
+            
+            sd = api.AddProductByBarCode(TerminalId, "2201652301489", 1); //Морква
+            Thread.Sleep(2000);
+            sd = api.AddProductByBarCode(TerminalId, "7773002160043", 1); //товар 2 кат
+
+            sd = api.AddProductByBarCode(TerminalId, "2201651902226", 1); //
+            Thread.Sleep(2000);
+            //sd = api.AddProductByBarCode(TerminalId, "7775006620509", 1); //товар 2 кат*/
+            Thread.Sleep(2000);
+            api.AddFiscalNumber(TerminalId, "1234567");
 
 
-            var rrr= api.GetReceipts(DateTime.Parse("2020-06-24T00:00:00"), DateTime.Parse("2020-06-24T23:59:59.999"), TerminalId);
-
-            var n = rrr.Count();
+            //var rrr = api.GetReceipts(DateTime.Parse("2020-06-24T00:00:00"), DateTime.Parse("2020-06-24T23:59:59.999"), TerminalId);
+            //            var n = rrr.Count();
             //7667,7676,7677
 
             //sd = api.AddProductByProductId(TerminalId, ProductId, 1); return;
@@ -112,7 +134,7 @@ namespace Test
 
             sd = api.AddProductByBarCode(TerminalId, "4823086109988", 1); // 1+1 Пельмені "Мішутка" Філейні 600г /Три ведмеді/
 
-            var ddd = api.GetProductsByName(TerminalId,"",0,false, FastGroup);
+            var recipt = api.GetProductsByName(TerminalId,"",0,false, FastGroup);
             var ddd1  = api.GetProductsByName(TerminalId, "", 1, false, FastGroup);
             var ddd2 = api.GetProductsByName(TerminalId, "пом", 0, false, FastGroup);
 
