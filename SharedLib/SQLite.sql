@@ -113,7 +113,9 @@ sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_
  ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1, 
  Id_Workplace_Refund as IdWorkplaceRefund,
 Code_Period_Refund as CodePeriodRefund,
-Code_Receipt_Refund as CodeReceiptRefund
+Code_Receipt_Refund as CodeReceiptRefund,
+USER_CREATE as UserCreate
+
  from receipt
  where ID_WORKPLACE = @IdWorkplace
    and CODE_PERIOD = @CodePeriod
