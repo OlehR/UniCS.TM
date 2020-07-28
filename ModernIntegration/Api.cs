@@ -133,6 +133,7 @@ namespace ModernIntegration
         public Action<eStateScale> OnChangedStatusScale { get; set; }
         public Action<CustomerViewModel, Guid> OnCustomerChanged { get; set; }
 
+        public virtual bool SetWeight(Guid pTerminalId, Guid pProductId,decimal pWaight) { throw new NotImplementedException(); }
 
     }
 

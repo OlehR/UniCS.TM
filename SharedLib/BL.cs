@@ -502,6 +502,14 @@ namespace SharedLib
                 return UserIdbyWorkPlace[pIdWorkplace];
             return 0;
         }
+
+        public bool FixWeight(IdReceipt pIdReceipt, Guid pProductId, decimal pWeight)
+        {
+            var RW = new ReceiptWares(pIdReceipt, pProductId);
+            RW.FixWeight = pWeight;
+            return db.FixWeight(RW);
+        }
+
     }
 
 
