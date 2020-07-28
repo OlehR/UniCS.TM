@@ -40,17 +40,20 @@ namespace SharedLib
         }
         public ReceiptWares AddReceiptWares(ReceiptWares parW)
         {
-            
-            var Quantity = db.GetCountWares(parW);
-            parW.QuantityOld = Quantity;
-            parW.Quantity += Quantity;
+            lock (db.GetObjectForLockByIdWorkplace(parW.IdWorkplace))
+            {
+                var Quantity = db.GetCountWares(parW);
+                parW.QuantityOld = Quantity;
+                parW.Quantity += Quantity;
 
-            if (Quantity > 0)
-                db.UpdateQuantityWares(parW);
-            else
-                db.AddWares(parW);
-
+                if (Quantity > 0)
+                    db.UpdateQuantityWares(parW);
+                else
+                    db.AddWares(parW);
+            }
+            //Кешконтроль
             _ = VR.SendMessageAsync(parW.IdWorkplace, parW.NameWares, parW.Articl, parW.Quantity, parW.Sum);
+            
             if (ModelMID.Global.RecalcPriceOnLine)
                 db.RecalcPriceAsync(parW);
             return parW;
@@ -217,8 +220,8 @@ namespace SharedLib
 
            // }
             return res;
-
         }
+
         public Receipt GetReceiptHead(IdReceipt idReceipt, bool parWithDetail = false)
         {
             DateTime Ldc = DateTime.ParseExact(idReceipt.CodePeriod.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture);
@@ -227,9 +230,6 @@ namespace SharedLib
 
             var ldb = new WDB_SQLite(Ldc);
             return ldb.ViewReceipt(idReceipt, parWithDetail);
-
-
-
         }
 
         public Client GetClientByBarCode(IdReceipt idReceipt, string parBarCode)
@@ -496,7 +496,7 @@ namespace SharedLib
                 UserIdbyWorkPlace.Remove(pIdWorkplace);
         }
 
-        private long GetUserIdbyWorkPlace(int pIdWorkplace)
+        public long GetUserIdbyWorkPlace(int pIdWorkplace)
         {
             if (UserIdbyWorkPlace.ContainsKey(pIdWorkplace))
                 return UserIdbyWorkPlace[pIdWorkplace];

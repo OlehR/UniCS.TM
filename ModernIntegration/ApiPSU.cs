@@ -9,7 +9,7 @@ using SharedLib;
 using ModelMID;
 using System.Linq;
 using Receipt = ModernIntegration.Models.Receipt;
-using ModelMID.DB;
+using ModelMID.DB;`
 using ModernIntegration.Model;
 using System.Threading.Tasks;
 
@@ -586,6 +586,7 @@ namespace ModernIntegration
         public override bool RefundReceipt(Guid parTerminalId, RefundReceiptViewModel parReceipt)
         {
             var receipt = ReceiptViewModelToReceipt(parTerminalId,parReceipt);
+            receipt.UserCreate = Bl.GetUserIdbyWorkPlace(receipt.IdWorkplace);
             return Bl.SaveReceipt(receipt);
         }
 
@@ -647,7 +648,7 @@ namespace ModernIntegration
                 NameWares = receiptItem.ProductName,
                 BarCode = receiptItem.ProductBarcode,
                 PriceDealer = receiptItem.ProductPrice,
-                Price = (receiptItem.FullPrice - receiptItem.Discount) / receiptItem.ProductQuantity, //receiptItem.FullPrice!=0 ? receiptItem.FullPrice: receiptItem.ProductPrice,
+                Price = receiptItem.FullPrice  / receiptItem.ProductQuantity, //receiptItem.FullPrice!=0 ? receiptItem.FullPrice: receiptItem.ProductPrice,
                 WeightBrutto = receiptItem.ProductWeight / 1000m,
                 Quantity= receiptItem.ProductQuantity,
 //                TaxGroup = Global.GetTaxGroup(receiptItem.TypeVat, receiptItem.TypeWares),               

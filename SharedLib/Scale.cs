@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Timers;
 using Mint.Hardware.ControlScales.BST106M60S;
+using Utils;
 
 namespace ModelMID
 {
@@ -133,7 +134,6 @@ namespace ModelMID
 
         public void StartWeightNewGoogs(WaitWeight [] pWeight, bool pIsIncrease=true)
         {
-                     
             IsIncrease = pIsIncrease;
             WaitWeight = pWeight;
 
@@ -161,8 +161,9 @@ namespace ModelMID
         {
             t.Stop();            
         }
-        private void OnScalesLog(string logLevel, string message)
+        private void OnScalesLog(string logLevel, string message="")
         {
+            FileLogger.ExtLogForClass(GetType(), GetHashCode(), $"Scales Log - {DateTime.Now:dd-MM-yyyy HH:mm:ss:ffff}: {logLevel} - {message}");
             Console.WriteLine($"Scales Log - {DateTime.Now:dd-MM-yyyy HH:mm:ss}: {logLevel} - {message}");
         }
         private void OnScalesData(double weight, bool isStable)
@@ -207,11 +208,12 @@ namespace ModelMID
             // Якщо змінився стан Повідомляєм головній програмі.
             if (OldeStateScale != StateScale)
                 NewEvent();
-            //Console.WriteLine($"Scales weight - {DateTime.Now:dd-MM-yyyy HH:mm:ss}: {weight * bst.GramMultiplier} - {isStable}");
+           
         }
         private void NewEvent()
         {
             Global.OnChangedStatusScale?.Invoke(StateScale);
+            OnScalesLog("NewEvent", StateScale.ToString());
         }
         
         private  void OnTimedEvent(Object source, ElapsedEventArgs e)
