@@ -74,6 +74,7 @@ select t.code_wares as CodeWares,w.name_wares NameWares,w.name_wares_receipt  as
 		w.Weight_Brutto as WeightBrutto,
         w.Weight_Fact as WeightFact
         ,count(*) over() as TotalRows
+        --,w.code_UKTZED as CodeUKTZED
 from t$1 t
 left join wares w on t.code_wares=w.code_wares
 left join price pd on ( pd.code_wares=t.code_wares and pd.code_dealer= @CodeDealer)
@@ -113,7 +114,9 @@ sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_
  ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1, 
  Id_Workplace_Refund as IdWorkplaceRefund,
 Code_Period_Refund as CodePeriodRefund,
-Code_Receipt_Refund as CodeReceiptRefund
+Code_Receipt_Refund as CodeReceiptRefund,
+USER_CREATE as UserCreate
+
  from receipt
  where ID_WORKPLACE = @IdWorkplace
    and CODE_PERIOD = @CodePeriod
@@ -146,6 +149,7 @@ Price as Price/*, wr.sum as Sum*/, Type_Price as TypePrice
  ,ps.NAME_PS as NameDiscount,Sum_Discount as SumDiscount
  ,w.Type_Wares as TypeWares
  ,wr.Priority
+ --,w.code_UKTZED as CodeUKTZED
                      from wares_receipt wr
                      join wares w on (wr.code_wares =w.code_wares)
                      join ADDITION_UNIT au on w.code_wares = au.code_wares and wr.code_unit=au.code_unit
@@ -780,7 +784,8 @@ CREATE TABLE WARES (
 --    KEEPING_TIME        NUMBER,
       Type_Wares		 INTEGER,   -- 0- Звичайний товар,1 - алкоголь, 2- тютюн.
 	  Weight_brutto    NUMBER,
-      Weight_Fact    NUMBER
+      Weight_Fact    NUMBER,
+      code_UKTZED TEXT
 
 );
 
