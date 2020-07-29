@@ -310,8 +310,7 @@ namespace ModernIntegration
                 IsAgeRestrictedConfirmed = false, //Обмеження по віку алкоголь Підтверджено не потрібно посилати.
                 Quantity = (receiptWares.IsWeight ? 1 : receiptWares.Quantity),               
                 DiscountName = (string.IsNullOrEmpty(receiptWares.NameDiscount) ?"": receiptWares.NameDiscount+"\n") +receiptWares.GetStrWaresReceiptPromotion,
-                WarningType = null, //!!! Не посилати 
-                CalculatedWeight = 0,
+                WarningType = null, //!!! Не посилати                 
                 Tags = varTags,
                 HasSecurityMark = false, //!!!TMP // Магнітна мітка, яку треба знімати.
                 TotalRows = receiptWares.TotalRows, //Сортування популярного.
@@ -320,7 +319,10 @@ namespace ModernIntegration
                 TaxGroup = Global.GetTaxGroup(receiptWares.TypeVat, receiptWares.TypeWares),
                 Barcode = receiptWares.BarCode,
                 //FullPrice = receiptWares.Sum
-                RefundedQuantity= receiptWares.RefundedQuantity
+                RefundedQuantity= receiptWares.RefundedQuantity,
+                CalculatedWeight= Convert.ToDouble(receiptWares.FixWeight*1000)
+
+
             };
             return Res;
         }
@@ -757,7 +759,7 @@ namespace ModernIntegration
         public override bool SetWeight(Guid pTerminalId, Guid pProductId, decimal pWaight)
         {
             var CurReceipt = GetCurrentReceiptByTerminalId(pTerminalId);          
-            return Bl.FixWeight(CurReceipt, pProductId, pWaight);  
+            return Bl.FixWeight(CurReceipt, pProductId, pWaight/1000m);  
         }
     }
 
