@@ -74,7 +74,7 @@ select t.code_wares as CodeWares,w.name_wares NameWares,w.name_wares_receipt  as
 		w.Weight_Brutto as WeightBrutto,
         w.Weight_Fact as WeightFact
         ,count(*) over() as TotalRows
-        --,w.code_UKTZED as CodeUKTZED
+        ,w.code_UKTZED as CodeUKTZED
 from t$1 t
 left join wares w on t.code_wares=w.code_wares
 left join price pd on ( pd.code_wares=t.code_wares and pd.code_dealer= @CodeDealer)
@@ -149,7 +149,7 @@ Price as Price/*, wr.sum as Sum*/, Type_Price as TypePrice
  ,ps.NAME_PS as NameDiscount,Sum_Discount as SumDiscount
  ,w.Type_Wares as TypeWares
  ,wr.Priority
- --,w.code_UKTZED as CodeUKTZED
+ ,w.code_UKTZED as CodeUKTZED
                      from wares_receipt wr
                      join wares w on (wr.code_wares =w.code_wares)
                      join ADDITION_UNIT au on w.code_wares = au.code_wares and wr.code_unit=au.code_unit
@@ -755,7 +755,7 @@ CREATE TABLE GROUP_WARES (
     NAME          TEXT     NOT NULL
 );
 
-CREATE TABLE WARES (
+CRATE TABLE WARES (
     CODE_WARES          INTEGER  NOT NULL,-- PRIMARY KEY, 
     CODE_GROUP          INTEGER  NOT NULL,
     NAME_WARES          TEXT     NOT NULL,

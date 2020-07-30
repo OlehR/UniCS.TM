@@ -212,8 +212,11 @@ namespace ModelMID
         /// Зафіксована похибка ваги відносно базової.
         /// </summary>
         public decimal FixWeight { get; set; }
-
+        /// <summary>
+        /// Код УКТЗЕТ
+        /// </summary>
         public string CodeUKTZED { get; set; }
+        public bool IsUseCodeUKTZED { get { return TypeWares==1|| TypeWares==2; } }
 
         public ReceiptWares()
         {

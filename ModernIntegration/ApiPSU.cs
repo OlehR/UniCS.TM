@@ -321,6 +321,8 @@ namespace ModernIntegration
                 //FullPrice = receiptWares.Sum
                 RefundedQuantity= receiptWares.RefundedQuantity,
                 CalculatedWeight= Convert.ToDouble(receiptWares.FixWeight*1000)
+                ,Uktzed= receiptWares.CodeUKTZED
+                ,IsUktzedNeedToPrint= receiptWares.IsUseCodeUKTZED
 
 
             };
@@ -650,7 +652,7 @@ namespace ModernIntegration
                 NameWares = receiptItem.ProductName,
                 BarCode = receiptItem.ProductBarcode,
                 PriceDealer = receiptItem.ProductPrice,
-                Price = (receiptItem.FullPrice - receiptItem.Discount) / receiptItem.ProductQuantity, //receiptItem.FullPrice!=0 ? receiptItem.FullPrice: receiptItem.ProductPrice,
+                Price = (receiptItem.FullPrice) / receiptItem.ProductQuantity, //receiptItem.FullPrice!=0 ? receiptItem.FullPrice: receiptItem.ProductPrice,
                 WeightBrutto = receiptItem.ProductWeight / 1000m,
                 Quantity= receiptItem.ProductQuantity,
 //                TaxGroup = Global.GetTaxGroup(receiptItem.TypeVat, receiptItem.TypeWares),               
