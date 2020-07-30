@@ -114,5 +114,21 @@ namespace ModernIntegration.Models
         /// </value>
         public decimal TotalPrice { get; set; }
         public string TaxGroup { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the UKTZED code.
+        /// </summary>
+        /// <value>
+        /// The UKTZED code.
+        /// </value>
+        public string Uktzed { get; set; }
+        
+        /// <summary>
+        /// Gets or sets a value indicating printing UKTZED code or not.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if printing the  UKTZED code; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsUktzedNeedToPrint { get; set; }
     }
 }
