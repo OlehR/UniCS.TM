@@ -156,7 +156,7 @@ namespace SharedLib
             if (w == null || w.Count() != 1)
                 return null;
             var W = w.First();
-            if (parQuantity == 0)
+            if (parQuantity == 0 || W.TypeWares==2) //Якщо сигарети не добававляємо товар.
                 return W;
             if (W.Price == 0)//Якщо немає ціни на товар !!!!TMP Краще обробляти на GUI буде пізніше
                 return null;
@@ -165,7 +165,7 @@ namespace SharedLib
             return AddReceiptWares(W);
         }
 
-        public ReceiptWares AddWaresCode(IdReceipt parReceipt, Guid parProductId, decimal parQuantity = 0)
+        public ReceiptWares AddWaresCode(IdReceipt parReceipt, Guid parProductId, decimal parQuantity = 0, decimal parPrice = 0)
         {
             int CodeWares = 0;
             if (int.TryParse(parProductId.ToString().Substring(24), out CodeWares))
@@ -179,8 +179,21 @@ namespace SharedLib
                     if (parQuantity == 0)
                         return W;
                     W.SetIdReceipt(parReceipt);
-                    W.Quantity = (W.CodeUnit==Global.WeightCodeUnit? parQuantity/1000m : parQuantity);//Хак для вагового товару Який приходить в грамах.
-                    return AddReceiptWares(W);
+                    if (parPrice > 0 || W.Prices==null || W.Prices.Count()==0)
+                    {
+                        W.Quantity = (W.CodeUnit == Global.WeightCodeUnit ? parQuantity / 1000m : parQuantity);//Хак для вагового товару Який приходить в грамах.
+                        if(parPrice > 0 && W.Prices != null && W.Prices.Count() > 0)
+                        {
+                            WaresReceiptPromotion[] r = new WaresReceiptPromotion[1] { new WaresReceiptPromotion(W) 
+                            {Price= parPrice, TypeDiscount=eTypeDiscount.Price,Quantity=parQuantity,CodePS=999999 } 
+                            };
+                            db.ReplaceWaresReceiptPromotion(r);
+                        }
+
+                        return AddReceiptWares(W);
+                    }
+                    else
+                        return W;
                 }
             }
             return null;
@@ -188,11 +201,9 @@ namespace SharedLib
 
         public IEnumerable<ReceiptWares> ViewReceiptWares(IdReceipt parIdReceipt,bool pIsReceiptWaresPromotion=false)
         {
-
             var Res = db.ViewReceiptWares(parIdReceipt, pIsReceiptWaresPromotion);
             //var El = Res.First();
             return Res;
-
         }
         public bool ChangeQuantity(IdReceiptWares parReceiptWaresId, decimal parQuantity)
         {

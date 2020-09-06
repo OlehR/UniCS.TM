@@ -123,6 +123,14 @@ namespace SharedLib
             parDB.ReplacePromotionSale2Category(PS2c);
             PS2c = null;
 
+
+            Log.Append($"{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetMRC");
+            Debug.WriteLine("SqlGetMRC");
+            SQL = GetSQL("SqlGetMRC");
+            var MRC = db.Execute<MRC>(SQL);
+            parDB.ReplaceMRC(MRC);
+            MRC = null;
+
             if (parIsFull)
             {
                 Log.Append($"{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetDimUnitDimension");

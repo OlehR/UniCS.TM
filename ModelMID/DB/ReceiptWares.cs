@@ -55,6 +55,16 @@ namespace ModelMID
         public decimal PriceDealer { get; set; }
 
         /// <summary>
+        /// Ціна для Касового апарата та для Модерна
+        /// </summary>
+        public decimal PriceEKKA { get { return (Priority == 1 ? Price : (Price > PriceDealer ? Price : PriceDealer)); } }
+
+        /// <summary>
+        /// Знижка для Касового апарата та для Модерна
+        /// </summary>
+        public decimal DiscountEKKA { get { return SumDiscount + (Priority == 1 ? 0 : (PriceDealer > Price ? (PriceDealer * Quantity - Sum) : 0)); }}
+                
+        /// <summary>
         /// Приоритет спрацьованої акції
         /// </summary>
         public int Priority { get; set; }
@@ -82,7 +92,7 @@ namespace ModelMID
         public decimal SumDiscount { get; set; }
 
         //  Discount = // 
-        public string NameDiscount { get; set; }
+        // public string NameDiscount { get; set; }
 
         public decimal Sum
         {
@@ -194,7 +204,7 @@ namespace ModelMID
                 string Res = "";
                 foreach (var el in ReceiptWaresPromotions)
                 {
-                    var name = string.IsNullOrEmpty(el.NamePS) ? el.BarCode2Category.Substring(3,2)+"%" : el.NamePS;
+                    var name =  el.TypeDiscount==eTypeDiscount.Price?($"Ціна => {el.Price}") :(  string.IsNullOrEmpty(el.NamePS) ? el.BarCode2Category.Substring(3,2)+"%" : el.NamePS);
                     Res += $"{name} - {el.Quantity} - {el.Sum}\n";
                 }
 
@@ -217,6 +227,10 @@ namespace ModelMID
         /// </summary>
         public string CodeUKTZED { get; set; }
         public bool IsUseCodeUKTZED { get { return TypeWares==1|| TypeWares==2; } }
+
+        public bool IsMultiplePrices { get; set; }
+
+        public IEnumerable<decimal> Prices;
 
         public ReceiptWares()
         {

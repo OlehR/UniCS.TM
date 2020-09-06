@@ -432,5 +432,8 @@ GROUP BY pw.doc_promotion_RRef
   AND pk.is_main=0
   AND wh_ex.doc_promotion_RRef IS null
 
+[SqlGetMRC]
+ SELECT code_wares as CodeWares,Price  FROM dbo.V1C_MRC
+
 [SqlEnd]
 */
