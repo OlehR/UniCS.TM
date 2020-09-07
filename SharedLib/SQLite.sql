@@ -10,6 +10,8 @@
 [SqlUpdateRC_V1]
 alter TABLE WARES_RECEIPT 
     add Fix_Weight NUMBER NOT NULL DEFAULT 0;
+alter TABLE WARES_RECEIPT_PROMOTION 
+    add TYPE_DISCOUNT  INTEGER  NOT NULL  DEFAULT (12);
 [SqlUpdateConfig_V1]
 alter table WORKPLACE add  Video_Camera_IP TEXT;
 alter table WORKPLACE add  Video_Recorder_IP TEXT;
@@ -74,7 +76,7 @@ select t.code_wares as CodeWares,w.name_wares NameWares,w.name_wares_receipt  as
 		w.Weight_Brutto as WeightBrutto,
         w.Weight_Fact as WeightFact
         ,count(*) over() as TotalRows
-        --,w.code_UKTZED as CodeUKTZED
+        ,w.code_UKTZED as CodeUKTZED
 from t$1 t
 left join wares w on t.code_wares=w.code_wares
 left join price pd on ( pd.code_wares=t.code_wares and pd.code_dealer= @CodeDealer)
@@ -149,7 +151,7 @@ Price as Price/*, wr.sum as Sum*/, Type_Price as TypePrice
  ,ps.NAME_PS as NameDiscount,Sum_Discount as SumDiscount
  ,w.Type_Wares as TypeWares
  ,wr.Priority
- --,w.code_UKTZED as CodeUKTZED
+ ,w.code_UKTZED as CodeUKTZED
                      from wares_receipt wr
                      join wares w on (wr.code_wares =w.code_wares)
                      join ADDITION_UNIT au on w.code_wares = au.code_wares and wr.code_unit=au.code_unit
@@ -328,6 +330,9 @@ SELECT u.CODE_USER code_user, p.NAME_FOR_PRINT name_user, u.login login, u.PassW
 
 [SqlGetPriceDealer]
  select p.PRICE_DEALER as PriceDealer from  PRICE p where p. CODE_DEALER = @CodeDealer and p.CODE_WARES = @CodeWares
+
+[SqlGetPricesMRC]
+select PRICE as Price from MRC where CODE_WARES = @CodeWares;
 
 [SqlGetPrice]
 With ExeptionPS as 
@@ -618,7 +623,8 @@ CREATE TABLE WARES_RECEIPT_PROMOTION (
     CODE_RECEIPT   INTEGER  NOT NULL,
     CODE_WARES     INTEGER  NOT NULL,
     CODE_UNIT      INTEGER  NOT NULL,    
-    QUANTITY       NUMBER   NOT NULL,    
+    QUANTITY       NUMBER   NOT NULL,
+    TYPE_DISCOUNT  INTEGER  NOT NULL  DEFAULT (12),
     SUM            NUMBER   NOT NULL,
 	CODE_PS        INTEGER  NOT NULL,
     NUMBER_GROUP   INTEGER  NOT NULL,
@@ -923,7 +929,10 @@ CREATE TABLE ADD_WEIGHT (
     WEIGHT      NUMBER   NOT NULL
 );
 
-
+CREATE TABLE MRC ( 
+    CODE_WARES     INTEGER  NOT NULL,
+    PRICE          NUMBER   NOT NULL
+);
 
 
 [SqlCreateMIDIndex]
@@ -965,6 +974,8 @@ CREATE UNIQUE INDEX PROMOTION_SALE_2_category_ID ON PROMOTION_SALE_2_category ( 
 
 CREATE UNIQUE INDEX ADD_WEIGHT_W ON ADD_WEIGHT ( CODE_WARES,CODE_UNIT,WEIGHT );
 
+CREATE UNIQUE INDEX MRC_ID ON MRC ( CODE_WARES,PRICE);
+
 CREATE TABLE VER_MID ( ver INTEGER  NOT NULL);
 insert into VER_MID(ver) values (0);
 
@@ -975,8 +986,8 @@ replace into UNIT_DIMENSION ( CODE_UNIT, NAME_UNIT, ABR_UNIT) values (@CodeUnit,
 replace into  GROUP_WARES (CODE_GROUP_WARES,CODE_PARENT_GROUP_WARES,NAME)
              values (@CodeGroupWares,@CodeParentGroupWares,@Name);
 [SqlReplaceWares]
-replace into  Wares (CODE_WARES,CODE_GROUP,NAME_WARES,Name_Wares_Upper, ARTICL,CODE_BRAND, CODE_UNIT, Percent_Vat,Type_VAT,NAME_WARES_RECEIPT, DESCRIPTION,Type_Wares,Weight_brutto,Weight_Fact)
-             values (@CodeWares,@CodeGroup,@NameWares,@NameWaresUpper, @Articl,@CodeBrand,@CodeUnit, @PercentVat, @TypeVat,@NameWaresReceipt, @Description,@TypeWares,@WeightBrutto,@WeightFact);
+replace into  Wares (CODE_WARES,CODE_GROUP,NAME_WARES,Name_Wares_Upper, ARTICL,CODE_BRAND, CODE_UNIT, Percent_Vat,Type_VAT,NAME_WARES_RECEIPT, DESCRIPTION,Type_Wares,Weight_brutto,Weight_Fact,CODE_UKTZED)
+             values (@CodeWares,@CodeGroup,@NameWares,@NameWaresUpper, @Articl,@CodeBrand,@CodeUnit, @PercentVat, @TypeVat,@NameWaresReceipt, @Description,@TypeWares,@WeightBrutto,@WeightFact,@CodeUKTZED);
 [SqlReplaceAdditionUnit]
 replace into  Addition_Unit (CODE_WARES, CODE_UNIT, COEFFICIENT, DEFAULT_UNIT, WEIGHT, WEIGHT_NET )
               values (@CodeWares,@CodeUnit,@Coefficient, @DefaultUnit, @Weight, @WeightNet);
@@ -1030,11 +1041,15 @@ Select min(case when CODE_DEALER=-888888  then PRICE_DEALER else null end) as Mi
  replace into  payment	(ID_WORKPLACE, CODE_PERIOD, CODE_RECEIPT, TYPE_PAY, SUM_PAY, SUM_ext, NUMBER_TERMINAL, NUMBER_RECEIPT, CODE_authorization, NUMBER_SLIP, Number_Card,Pos_Paid , Pos_Add_Amount , DATE_CREATE) values
                         (@IdWorkplace, @CodePeriod, @CodeReceipt, @TypePay, @SumPay, @SumExt, @NumberTerminal, @NumberReceipt, @CodeAuthorization, @NumberSlip, @NumberCard, @PosPaid, @PosAddAmount , @DateCreate);
 
+[SqlReplaceMRC]
+ replace into  MRC	(Code_Wares, Price) values  (@CodeWares, @Price);
+
+
 [SqlGetPayment]
 select id_workplace as IdWorkplace, code_period as CodePeriod, code_receipt as CodeReceipt, 
  TYPE_PAY as TypePay, SUM_PAY as SumPay, SUM_EXT as SumExt,
     NUMBER_TERMINAL as NumberTerminal,   NUMBER_RECEIPT as NumberReceipt, CODE_AUTHORIZATION as CodeAuthorization, NUMBER_SLIP as NumberSlip,
-    Pos_Paid as PosPaid, Pos_Add_Amount as PosAddAmount, DATE_CREATE as DateCreate
+    Pos_Paid as PosPaid, Pos_Add_Amount as PosAddAmount, DATE_CREATE as DateCreate,Number_Card as NumberCard
    from payment
   where   id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt
 

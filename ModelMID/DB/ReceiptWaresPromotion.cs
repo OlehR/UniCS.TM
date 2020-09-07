@@ -18,6 +18,8 @@ namespace ModelMID
         /// </summary>
         public decimal Quantity { get; set; }
 
+        public eTypeDiscount TypeDiscount { get; set; } = eTypeDiscount.PriceDiscount;
+
         public decimal _Sum = 0;
         public decimal Sum
         {

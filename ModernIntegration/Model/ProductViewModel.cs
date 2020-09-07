@@ -248,6 +248,22 @@ namespace ModernIntegration.ViewModels
         public Guid CategoryId { get; set; }
 
         public decimal RefundedQuantity { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the UKTZED code.
+        /// </summary>
+        /// <value>
+        /// The UKTZED code.
+        /// </value>
+        public string Uktzed { get; set; }
+        
+        /// <summary>
+        /// Gets or sets a value indicating printing UKTZED code or not.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if printing the  UKTZED code; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsUktzedNeedToPrint { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProductViewModel"/> class.
@@ -280,6 +296,8 @@ namespace ModernIntegration.ViewModels
             TotalRows = product.TotalRows;
             WeightCategory = product.WeightCategory;
             CategoryId = product.CategoryId;
+            Uktzed = product.Uktzed;
+            IsUktzedNeedToPrint = product.IsUktzedNeedToPrint;
         }
 
         /// <summary>
@@ -302,7 +320,9 @@ namespace ModernIntegration.ViewModels
                 IsAgeRestrictedConfirmed = IsAgeRestrictedConfirmed,
                 HasSecurityMark = HasSecurityMark,
                 WeightCategory = WeightCategory,
-                CategoryId = CategoryId
+                CategoryId = CategoryId,
+                Uktzed = Uktzed,
+                IsUktzedNeedToPrint = IsUktzedNeedToPrint
         };
         }
 
@@ -322,7 +342,9 @@ namespace ModernIntegration.ViewModels
                 ProductQuantity = ProductWeightType == ProductWeightType.ByWeight ? (decimal)Weight/1000M : Quantity,
                 ProductWeightType = ProductWeightType,
                 TaxGroup = TaxGroup,
-                RefundedQuantity= RefundedQuantity
+                RefundedQuantity= RefundedQuantity,
+                Uktzed = Uktzed,
+                IsUktzedNeedToPrint = IsUktzedNeedToPrint
             };
 
             item.TotalPrice = item.FullPrice - item.Discount;

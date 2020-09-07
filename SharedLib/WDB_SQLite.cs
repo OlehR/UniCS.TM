@@ -315,7 +315,7 @@ namespace SharedLib
                         decimal vPrice = el.Price;
                         if (el.TypeDiscount==eTypeDiscount.PercentDiscount)
                         {
-                            var Price= varQuantityReceipt = RW.Where(e => e.CodeWares == el.CodeWares).Sum(e => e.Price);
+                            var Price= RW.Where(e => e.CodeWares == el.CodeWares).Sum(e => e.Price);
                             vPrice = Price * el.DataDiscount / 100m;
                         }                      
 

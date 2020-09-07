@@ -41,7 +41,7 @@ namespace ModelMID
             if(UInt64.TryParse(parR.NumberReceipt,out nr))                
              NumberReceipt = nr;
 
-            if (parR.Wares!=null) 
+            if (parR.Wares!=null && parR.StateReceipt>0) 
               Wares = parR.Wares.Select(r => new ReceiptWares1C(r));
 //            if (parR.Payment != null)
                 //Description = parR.Payment.Where(r => !string.IsNullOrEmpty(r.NumberSlip)).FirstOrDefault().NumberSlip;

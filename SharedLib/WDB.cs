@@ -189,6 +189,8 @@ namespace SharedLib
         protected string SqlGetReceiptWaresPromotion = "";
         protected string SqlReceiptByFiscalNumbers = "";
         protected string SqlGetLastQuantity = "";
+        protected string SqlReplaceMRC = "";
+        protected string SqlGetPricesMRC = "";
 
 
         public WDB(string parFileSQL)
@@ -250,6 +252,7 @@ namespace SharedLib
             foreach (var el in Wares)
             {
                 el.AdditionalWeights = db.Execute <object ,decimal> (SqlAdditionalWeightsWares,new { CodeWares=el.CodeWares});
+                el.Prices = db.Execute<object, decimal>(SqlGetPricesMRC, new { CodeWares = el.CodeWares });
             }
             return Wares;
         }
@@ -602,6 +605,10 @@ namespace SharedLib
             SqlGetReceiptWaresPromotion = GetSQL("SqlGetReceiptWaresPromotion");
             SqlReceiptByFiscalNumbers = GetSQL("SqlReceiptByFiscalNumbers");
             SqlGetLastQuantity = GetSQL("SqlGetLastQuantity");
+
+            SqlReplaceMRC = GetSQL("SqlReplaceMRC");
+            SqlGetPricesMRC = GetSQL("SqlGetPricesMRC");
+
             return true;
         }
 
@@ -729,6 +736,12 @@ namespace SharedLib
         public virtual bool ReplacePromotionSale2Category(IEnumerable<PromotionSale2Category> parData)
         {
             db.BulkExecuteNonQuery<PromotionSale2Category>(SqlReplacePromotionSale2Category, parData);
+            return true;
+        }
+
+        public virtual bool ReplaceMRC(IEnumerable<MRC> parData)
+        {
+            db.BulkExecuteNonQuery<MRC>(SqlReplaceMRC, parData);
             return true;
         }
 

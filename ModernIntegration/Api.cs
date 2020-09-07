@@ -22,7 +22,7 @@ namespace ModernIntegration
         //public bool CreateReceipt(Guid parTerminalId, Guid parReceipt) { throw new NotImplementedException(); }
 
         public virtual ProductViewModel AddProductByBarCode(Guid parTerminalId,string parS, decimal parQuantity = 0) { throw new NotImplementedException(); }
-        public virtual ProductViewModel AddProductByProductId(Guid parTerminalId, Guid paparProductId,decimal parQuantity = 0) { throw new NotImplementedException(); }
+        public virtual ProductViewModel AddProductByProductId(Guid parTerminalId, Guid paparProductId,decimal parQuantity = 0,decimal parPrice=0 ) { throw new NotImplementedException(); }
         public virtual ReceiptViewModel ChangeQuantity(Guid parTerminalId, Guid parProductId, decimal parQuantity ) { throw new NotImplementedException(); }
         public virtual ReceiptViewModel GetReciept(Guid parReceipt) { throw new NotImplementedException(); }
         public virtual IEnumerable<ProductViewModel> GetProduct(Guid parTerminalId) { throw new NotImplementedException(); }
@@ -133,6 +133,7 @@ namespace ModernIntegration
         public Action<eStateScale> OnChangedStatusScale { get; set; }
         public Action<CustomerViewModel, Guid> OnCustomerChanged { get; set; }
 
+        public virtual bool SetWeight(Guid pTerminalId, Guid pProductId,decimal pWaight) { throw new NotImplementedException(); }
 
     }
 

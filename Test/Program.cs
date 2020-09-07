@@ -35,14 +35,18 @@ namespace Test
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
+<<<<<<< HEAD
             await CreateDataBaseAsync(false);
+=======
+           // await CreateDataBaseAsync(true);
+>>>>>>> 370ca31b2b105edf1eb41f81988ede6c13ac3736
+
+                       
+            
+             TestReceipt();
 
 
-            //Thread.Sleep(10000);
             //TestKit();
-             TestReceipt(); //          
-
-
 
             //LoadReceiptJson();
             Console.WriteLine("Sleep");
@@ -80,22 +84,33 @@ namespace Test
             ProductViewModel sd;
 
             //var ddd=api.GetReceiptByNumber(TerminalId, "55");
+<<<<<<< HEAD
             
             api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200714, IdWorkplace = 62, CodeReceipt = 3 }); return;
+=======
+
+            // api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200730, IdWorkplace = 68, CodeReceipt = 8}); return;
+>>>>>>> 370ca31b2b105edf1eb41f81988ede6c13ac3736
 
             //for(int i = 8720; i<= 8720; i++)
             //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200706, IdWorkplace = 62, CodeReceipt = i }); 
             //return;
 
-            sd = api.AddProductByBarCode(TerminalId, "1110716760019", 1); //хліб житній
+            sd = api.AddProductByBarCode(TerminalId, "4823003208107", 1); //хліб житній
+            api.AddProductByProductId(TerminalId, sd.Id, 4, 45.22M);
+            return;
+            sd = api.AddProductByBarCode(TerminalId, "4823021808778", 1); //хліб житній
             Thread.Sleep(2000);
+
+            //api.SetWeight(TerminalId, sd.Id, 321);           return;
             sd = api.AddProductByBarCode(TerminalId, "7773002160043", 1); //товар 2 кат
             Thread.Sleep(2000);
             sd = api.AddProductByBarCode(TerminalId, "1110716760019", 1); //хліб житній
             Thread.Sleep(2000);
             sd = api.AddProductByBarCode(TerminalId, "7773002160029", 1); //товар 2 кат
 
-            
+            var cl = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
+
             sd = api.AddProductByBarCode(TerminalId, "2201652301489", 1); //Морква
             Thread.Sleep(2000);
             sd = api.AddProductByBarCode(TerminalId, "7773002160043", 1); //товар 2 кат
@@ -104,7 +119,7 @@ namespace Test
             Thread.Sleep(2000);
             //sd = api.AddProductByBarCode(TerminalId, "7775006620509", 1); //товар 2 кат*/
             Thread.Sleep(2000);
-            api.AddFiscalNumber(TerminalId, "1234567");
+           // api.AddFiscalNumber(TerminalId, "1234567");
 
 
             //var rrr = api.GetReceipts(DateTime.Parse("2020-06-24T00:00:00"), DateTime.Parse("2020-06-24T23:59:59.999"), TerminalId);
@@ -116,6 +131,9 @@ namespace Test
             sd = api.AddProductByBarCode(TerminalId, "4820207930056", 1); //
             //sd = api.AddProductByBarCode(TerminalId, "2201651902226", 1); //
             //sd = api.AddProductByBarCode(Guid.Parse("5c1413f5-66fe-4c2e-9c4c-c354c79952ea"), "7622210653031", 2); //
+            
+            var RId = api.GetCurrentReceiptByTerminalId(TerminalId).ReceiptId;
+            var Rec = api.GetReciept(RId);
 
             return;
 
@@ -139,6 +157,9 @@ namespace Test
             var ddd2 = api.GetProductsByName(TerminalId, "пом", 0, false, FastGroup);
 
             sd = api.AddProductByBarCode(TerminalId, "2206140307779", 1); //
+
+          
+
             return;
 
             //var rrr= api.GetReceipts(DateTime.Parse("2020-02-03T00:00:00"), DateTime.Parse("2020-02-03T23:59:59.999"), TerminalId);
@@ -229,7 +250,7 @@ namespace Test
             //api.ClearReceipt(TerminalId);
             //var rrrr = api.GetNoFinishReceipt(TerminalId);
         
-            var RId = api.GetCurrentReceiptByTerminalId(TerminalId).ReceiptId;
+            //var RId = api.GetCurrentReceiptByTerminalId(TerminalId).ReceiptId;
 
             
 
@@ -267,7 +288,7 @@ namespace Test
 
 
             //           api.SendReceipt(RId);
-            var Rec=api.GetReciept(RId);
+           // var Rec=api.GetReciept(RId);
             
             
             Console.WriteLine("End");

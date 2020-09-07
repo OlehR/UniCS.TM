@@ -27,7 +27,7 @@ namespace ModernIntegration
                 Console.WriteLine("\n==========================Start===================================");
                 foreach (var receiptWarese in wareses)
                 {
-                    Console.WriteLine($"\nNameDiscount=>{receiptWarese.NameDiscount} Promotion=>{receiptWarese.GetStrWaresReceiptPromotion.Trim()} \n{receiptWarese.NameWares} - {receiptWarese.Price} Quantity=> {receiptWarese.Quantity} SumDiscount=>{receiptWarese.SumDiscount}");
+                    Console.WriteLine($"Promotion=>{receiptWarese.GetStrWaresReceiptPromotion.Trim()} \n{receiptWarese.NameWares} - {receiptWarese.Price} Quantity=> {receiptWarese.Quantity} SumDiscount=>{receiptWarese.SumDiscount}");
                 }
                 //var r = wareses.Select(s => GetProductViewModel(s));
                 OnProductsChanged?.Invoke(wareses.Select(s => GetProductViewModel(s)), guid);
@@ -73,11 +73,11 @@ namespace ModernIntegration
                 return null;
             return GetProductViewModel(RW);
         }
-        public override ProductViewModel AddProductByProductId(Guid parTerminalId, Guid parProductId, decimal parQuantity = 0)
+        public override ProductViewModel AddProductByProductId(Guid parTerminalId, Guid parProductId, decimal parQuantity = 0, decimal parPrice=0)
         {
             var CurReceipt = GetCurrentReceiptByTerminalId(parTerminalId);
             var g = CurReceipt.ReceiptId;
-            var RW = Bl.AddWaresCode(CurReceipt, parProductId, parQuantity);
+            var RW = Bl.AddWaresCode(CurReceipt, parProductId, parQuantity,parPrice);
             //TODO: OnReceiptChanged?.Invoke(receipt,terminalId);
             if (RW == null)
                 return null;
@@ -296,10 +296,10 @@ namespace ModernIntegration
                 Name = receiptWares.NameWares,
                 AdditionalDescription = receiptWares.NameWaresReceipt, //!!!TMP;
                 Image = null,
-                Price = (receiptWares.Priority==1? receiptWares.Price : (receiptWares.Price > receiptWares.PriceDealer ? receiptWares.Price : receiptWares.PriceDealer)),
+                Price = receiptWares.PriceEKKA,//(receiptWares.Priority==1? receiptWares.Price : (receiptWares.Price > receiptWares.PriceDealer ? receiptWares.Price : receiptWares.PriceDealer)),
                 //receiptWares.SumDiscount > 0 ? receiptWares.PriceDealer : (receiptWares.Price > 0 ? receiptWares.Price : receiptWares.PriceDealer),
                 //receiptWares.SumDiscount > 0 ? ( receiptWares.Price > 0 ? receiptWares.Price : receiptWares.PriceDealer): (receiptWares.Price>receiptWares.PriceDealer ? receiptWares.Price:receiptWares.PriceDealer),
-                DiscountValue = receiptWares.SumDiscount+ ( receiptWares.Priority == 1?0 : (receiptWares.PriceDealer > receiptWares.Price ? (receiptWares.PriceDealer * receiptWares.Quantity - receiptWares.Sum) : 0)),
+                DiscountValue = receiptWares.DiscountEKKA, //= receiptWares.SumDiscount+ ( receiptWares.Priority == 1?0 : (receiptWares.PriceDealer > receiptWares.Price ? (receiptWares.PriceDealer * receiptWares.Quantity - receiptWares.Sum) : 0)),
                 //receiptWares.SumDiscount > 0 ? receiptWares.SumDiscount : 0,
                 //Global.RoundDown(receiptWares.SumDiscount>0 ? receiptWares.SumDiscount : (receiptWares.PriceDealer > receiptWares.Price ? (receiptWares.PriceDealer * receiptWares.Quantity - receiptWares.Sum):0)),
                 WeightCategory = 2, //вимірювання Похибки в відсотках,2 в грамах
@@ -309,9 +309,8 @@ namespace ModernIntegration
                 ProductWeightType =  receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByBarcode, 
                 IsAgeRestrictedConfirmed = false, //Обмеження по віку алкоголь Підтверджено не потрібно посилати.
                 Quantity = (receiptWares.IsWeight ? 1 : receiptWares.Quantity),               
-                DiscountName = (string.IsNullOrEmpty(receiptWares.NameDiscount) ?"": receiptWares.NameDiscount+"\n") +receiptWares.GetStrWaresReceiptPromotion,
-                WarningType = null, //!!! Не посилати 
-                CalculatedWeight = 0,
+                DiscountName = /*(string.IsNullOrEmpty(receiptWares.NameDiscount) ?"": receiptWares.NameDiscount+"\n") +*/receiptWares.GetStrWaresReceiptPromotion,
+                WarningType = null, //!!! Не посилати                 
                 Tags = varTags,
                 HasSecurityMark = false, //!!!TMP // Магнітна мітка, яку треба знімати.
                 TotalRows = receiptWares.TotalRows, //Сортування популярного.
@@ -320,7 +319,12 @@ namespace ModernIntegration
                 TaxGroup = Global.GetTaxGroup(receiptWares.TypeVat, receiptWares.TypeWares),
                 Barcode = receiptWares.BarCode,
                 //FullPrice = receiptWares.Sum
-                RefundedQuantity= receiptWares.RefundedQuantity
+                RefundedQuantity= receiptWares.RefundedQuantity,
+                CalculatedWeight= Convert.ToDouble(receiptWares.FixWeight*1000)
+                ,Uktzed= receiptWares.CodeUKTZED
+                ,IsUktzedNeedToPrint= receiptWares.IsUseCodeUKTZED
+
+
             };
             return Res;
         }
@@ -338,7 +342,7 @@ namespace ModernIntegration
                 Price = varPWM.Price,
                 Quantity = varPWM.Quantity,
                 SumDiscount = varPWM.DiscountValue,
-                NameDiscount = varPWM.DiscountName,
+               // NameDiscount = varPWM.DiscountName,
                 Sort = varPWM.TotalRows //Сортування популярного.
             };
             return Res;
@@ -586,6 +590,7 @@ namespace ModernIntegration
         public override bool RefundReceipt(Guid parTerminalId, RefundReceiptViewModel parReceipt)
         {
             var receipt = ReceiptViewModelToReceipt(parTerminalId,parReceipt);
+            receipt.UserCreate = Bl.GetUserIdbyWorkPlace(receipt.IdWorkplace);
             return Bl.SaveReceipt(receipt);
         }
 
@@ -647,7 +652,7 @@ namespace ModernIntegration
                 NameWares = receiptItem.ProductName,
                 BarCode = receiptItem.ProductBarcode,
                 PriceDealer = receiptItem.ProductPrice,
-                Price = (receiptItem.FullPrice - receiptItem.Discount) / receiptItem.ProductQuantity, //receiptItem.FullPrice!=0 ? receiptItem.FullPrice: receiptItem.ProductPrice,
+                Price = (receiptItem.FullPrice>0?receiptItem.FullPrice: receiptItem.TotalPrice) / receiptItem.ProductQuantity, 
                 WeightBrutto = receiptItem.ProductWeight / 1000m,
                 Quantity= receiptItem.ProductQuantity,
 //                TaxGroup = Global.GetTaxGroup(receiptItem.TypeVat, receiptItem.TypeWares),               
@@ -753,8 +758,11 @@ namespace ModernIntegration
             var IdWorkplace = Global.GetIdWorkplaceByTerminalId(pTerminalId);
             Bl.StoptWork(IdWorkplace);
         }
-
-
+        public override bool SetWeight(Guid pTerminalId, Guid pProductId, decimal pWaight)
+        {
+            var CurReceipt = GetCurrentReceiptByTerminalId(pTerminalId);          
+            return Bl.FixWeight(CurReceipt, pProductId, pWaight/1000m);  
+        }
     }
 
 

@@ -152,6 +152,22 @@ namespace ModernIntegration.Models
         /// The category id.
         /// </value>
         public int WeightCategory { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the UKTZED code.
+        /// </summary>
+        /// <value>
+        /// The UKTZED code.
+        /// </value>
+        public string Uktzed { get; set; }
+        
+        /// <summary>
+        /// Gets or sets a value indicating printing UKTZED code or not.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if printing the  UKTZED code; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsUktzedNeedToPrint { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Product"/> class.

@@ -16,7 +16,7 @@ SELECT w.code_wares AS CodeWares, w.name_wares AS NameWares, w.code_group AS Cod
 		, CASE WHEN W.ARTICL='' OR W.ARTICL IS NULL THEN '-'+W.code_wares ELSE W.ARTICL END  AS Articl
 		, w.code_unit AS CodeUnit, w.VAT AS PercentVat , w.VAT_OPERATION AS TypeVat, w.code_brand AS CodeBrand,Type_wares as TypeWares
 		,Weight_Brutto as WeightBrutto
-        ,Weight_Fact as WeightFact
+        ,Weight_Fact as WeightFact,w.code_UKTZED AS CodeUKTZED
   FROM dbo.Wares w
   
 [SqlGetDimAdditionUnit]
@@ -431,6 +431,9 @@ GROUP BY pw.doc_promotion_RRef
   WHERE dp.d_end>getdate() 
   AND pk.is_main=0
   AND wh_ex.doc_promotion_RRef IS null
+
+[SqlGetMRC]
+ SELECT code_wares as CodeWares,Price  FROM dbo.V1C_MRC
 
 [SqlEnd]
 */
