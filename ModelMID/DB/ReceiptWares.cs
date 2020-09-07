@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Text;
 
 namespace ModelMID
@@ -232,6 +234,7 @@ namespace ModelMID
 
         public IEnumerable<decimal> Prices;
 
+        public string GetPrices { get { return Prices==null? null: string.Join(";", Prices.Select(n => n.ToString(CultureInfo.InvariantCulture)).ToArray()); } }
         public ReceiptWares()
         {
             Clear();

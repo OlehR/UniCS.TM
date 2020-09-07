@@ -286,8 +286,11 @@ namespace ModernIntegration
             if (receiptWares.WeightFact == -1)
             {
                 varTags.Add(new Tag { Id = 4, Key = "DoNotUseScales" });
-                varTags.Add(new Tag { Id = 4, Key = "CanBeDeletedByCustomer" });
+                varTags.Add(new Tag { Id = 5, Key = "CanBeDeletedByCustomer" });
             }
+
+            if (receiptWares.Prices != null && receiptWares.Prices.Count() > 0)
+                varTags.Add(new Tag { Id = 6, Key = "MultiplePrices", RuleValue = receiptWares.GetPrices }); 
 
             var Res = new ProductViewModel()
             {
