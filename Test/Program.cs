@@ -35,7 +35,7 @@ namespace Test
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-            //await CreateDataBaseAsync(false);
+            await CreateDataBaseAsync(false);
 
 
             //Thread.Sleep(10000);
@@ -81,7 +81,7 @@ namespace Test
 
             //var ddd=api.GetReceiptByNumber(TerminalId, "55");
             
-            api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200715, IdWorkplace = 68, CodeReceipt = 17 }); return;
+            api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200714, IdWorkplace = 62, CodeReceipt = 3 }); return;
 
             //for(int i = 8720; i<= 8720; i++)
             //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200706, IdWorkplace = 62, CodeReceipt = i }); 
