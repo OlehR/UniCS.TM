@@ -38,7 +38,7 @@ namespace SharedLib
             WorkId = new SortedList<Guid, int>();                  
 
         }
-        public ReceiptWares AddReceiptWares(ReceiptWares parW)
+        public ReceiptWares AddReceiptWares(ReceiptWares parW,bool pRecalcPriceOnLine=true)
         {
             lock (db.GetObjectForLockByIdWorkplace(parW.IdWorkplace))
             {
@@ -54,7 +54,7 @@ namespace SharedLib
             //Кешконтроль
             _ = VR.SendMessageAsync(parW.IdWorkplace, parW.NameWares, parW.Articl, parW.Quantity, parW.Sum);
             
-            if (ModelMID.Global.RecalcPriceOnLine)
+            if (pRecalcPriceOnLine && ModelMID.Global.RecalcPriceOnLine)
                 db.RecalcPriceAsync(parW);
             return parW;
         }
@@ -165,7 +165,7 @@ namespace SharedLib
             return AddReceiptWares(W);
         }
 
-        public ReceiptWares AddWaresCode(IdReceipt parReceipt, Guid parProductId, decimal parQuantity = 0, decimal parPrice = 0)
+        public ReceiptWares AddWaresCode(IdReceipt parIdReceipt, Guid parProductId, decimal parQuantity = 0, decimal parPrice = 0)
         {
             int CodeWares = 0;
             if (int.TryParse(parProductId.ToString().Substring(24), out CodeWares))
@@ -178,19 +178,23 @@ namespace SharedLib
                     var W = w.First();
                     if (parQuantity == 0)
                         return W;
-                    W.SetIdReceipt(parReceipt);
+                    W.SetIdReceipt(parIdReceipt);
                     if (parPrice > 0 || W.Prices==null || W.Prices.Count()==0)
                     {
                         W.Quantity = (W.CodeUnit == Global.WeightCodeUnit ? parQuantity / 1000m : parQuantity);//Хак для вагового товару Який приходить в грамах.
-                        if(parPrice > 0 && W.Prices != null && W.Prices.Count() > 0)
+                        var res= AddReceiptWares(W,false);
+                        if (parPrice > 0 && W.Prices != null && W.Prices.Count() > 0)
                         {
-                            WaresReceiptPromotion[] r = new WaresReceiptPromotion[1] { new WaresReceiptPromotion(W) 
-                            {Price= parPrice, TypeDiscount=eTypeDiscount.Price,Quantity=parQuantity,CodePS=999999 } 
+                            WaresReceiptPromotion[] r = new WaresReceiptPromotion[1] { new WaresReceiptPromotion(W)
+                            {CodeWares=W.CodeWares, Price= parPrice, TypeDiscount=eTypeDiscount.Price,Quantity=parQuantity,CodePS=999999 }
                             };
                             db.ReplaceWaresReceiptPromotion(r);
+                            db.RecalcHeadReceipt(parIdReceipt);
                         }
+                        if ( Global.RecalcPriceOnLine)
+                            db.RecalcPriceAsync(W);
+                        return res;
 
-                        return AddReceiptWares(W);
                     }
                     else
                         return W;

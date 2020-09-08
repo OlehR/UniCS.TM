@@ -315,8 +315,7 @@ namespace MID
 
 				this.db.ExecuteNonQuery(this.varSqlUpdatePrice,varParameters);
 				RecalcHeadReceipt(varParameters);
-			}
-			
+			}			
 		
 			return true;
 		}

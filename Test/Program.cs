@@ -35,15 +35,10 @@ namespace Test
 
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-<<<<<<< HEAD
-            await CreateDataBaseAsync(false);
-=======
-           // await CreateDataBaseAsync(true);
->>>>>>> 370ca31b2b105edf1eb41f81988ede6c13ac3736
 
-                       
-            
-             TestReceipt();
+            //await CreateDataBaseAsync(false);
+           
+            TestReceipt();
 
 
             //TestKit();
@@ -84,19 +79,20 @@ namespace Test
             ProductViewModel sd;
 
             //var ddd=api.GetReceiptByNumber(TerminalId, "55");
-<<<<<<< HEAD
-            
-            api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200714, IdWorkplace = 62, CodeReceipt = 3 }); return;
-=======
+
+
+            //            api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200714, IdWorkplace = 62, CodeReceipt = 3 }); return;
+
 
             // api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200730, IdWorkplace = 68, CodeReceipt = 8}); return;
->>>>>>> 370ca31b2b105edf1eb41f81988ede6c13ac3736
 
             //for(int i = 8720; i<= 8720; i++)
             //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200706, IdWorkplace = 62, CodeReceipt = i }); 
             //return;
 
-            sd = api.AddProductByBarCode(TerminalId, "4823003208107", 1); //хліб житній
+            //sd = api.AddProductByBarCode(TerminalId, "7613036939874", 1);
+
+            sd = api.AddProductByBarCode(TerminalId, "4823003208107", 1); 
             api.AddProductByProductId(TerminalId, sd.Id, 4, 45.22M);
             return;
             sd = api.AddProductByBarCode(TerminalId, "4823021808778", 1); //хліб житній

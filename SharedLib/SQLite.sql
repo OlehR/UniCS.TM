@@ -272,10 +272,10 @@ where   id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receip
 delete from WARES_RECEIPT_PROMOTION where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt
         and length(@BarCode2Category)=13 and BARCODE_2_CATEGORY=@BarCode2Category;
 replace into WARES_RECEIPT_PROMOTION (id_workplace, code_period, code_receipt, code_wares, code_unit,
-  quantity, sum, code_ps,NUMBER_GROUP,BARCODE_2_CATEGORY) 
+  quantity, sum, code_ps,NUMBER_GROUP,BARCODE_2_CATEGORY,TYPE_DISCOUNT) 
  values (
   @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit,
-  @Quantity, @Sum, @CodePS,@NumberGroup, @BarCode2Category --,(select COALESCE(max(sort),0)+1 from wares_receipt  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt)
+  @Quantity, @Sum, @CodePS,@NumberGroup, @BarCode2Category,@TypeDiscount --,(select COALESCE(max(sort),0)+1 from wares_receipt  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt)
   )
 
 
@@ -1186,7 +1186,7 @@ delete from RECEIPT_Event where id_workplace=@IdWorkplace and  code_period =@Cod
 
 [SqlGetReceiptWaresPromotion]
 select id_workplace IdWorkplace, code_period CodePeriod, code_receipt CodeReceipt,code_wares as CodeWares,Code_unit as CodeUnit,quantity as Quantity,sum as Sum,wrp.Code_Ps as CodePs ,
-ps.NAME_PS as NamePS, Number_Group as NumberGroup, BarCode_2_Category as  BarCode2Category
+ps.NAME_PS as NamePS, Number_Group as NumberGroup, BarCode_2_Category as  BarCode2Category,TYPE_DISCOUNT as TypeDiscount
      from WARES_RECEIPT_PROMOTION wrp 
      left join PROMOTION_SALE ps on ps.CODE_PS=wrp.CODE_PS
      where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt
