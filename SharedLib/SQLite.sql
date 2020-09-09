@@ -487,7 +487,7 @@ select * from FIELD_INFO
 insert into Weight ( BarCode,Weight,STATUS) values (@BarCode,@Weight,@Status);
 
 [SqlReplaceWorkplace]
- replace into WORKPLACE ( ID_WORKPLACE, NAME, Terminal_GUID) values (@IdWorkplace, @Name,@StrTerminalGUID);
+ INSERT OR IGNORE into WORKPLACE ( ID_WORKPLACE, NAME, Terminal_GUID) values (@IdWorkplace, @Name,@StrTerminalGUID);
 
 [SqlGetWorkplace]
 select ID_WORKPLACE as IdWorkplace, NAME as Name, Terminal_GUID as StrTerminalGUID, 

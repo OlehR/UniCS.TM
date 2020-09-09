@@ -206,7 +206,7 @@ namespace ModelMID
                 string Res = "";
                 foreach (var el in ReceiptWaresPromotions)
                 {
-                    var name =  el.TypeDiscount==eTypeDiscount.Price?($"Ціна => {el.Price}") :(  string.IsNullOrEmpty(el.NamePS) ? el.BarCode2Category.Substring(3,2)+"%" : el.NamePS);
+                    var name =  el.TypeDiscount==eTypeDiscount.Price?($"Ціна => {el.Price}") :(  string.IsNullOrEmpty(el.NamePS) ? (string.IsNullOrEmpty(el.BarCode2Category)?"" : el.BarCode2Category.Substring(3,2)+"%") : el.NamePS);
                     Res += $"{name} - {el.Quantity} - {el.Sum}\n";
                 }
 
