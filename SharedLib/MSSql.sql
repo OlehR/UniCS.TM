@@ -68,6 +68,10 @@ SELECT TypePrice_RRef,nomen_RRef, price_dealer    ,ROW_NUMBER ( )   OVER ( PARTI
 SELECT  Type_discount AS CodeTypeDiscount,Name AS Name,Percent_discount AS PercentDiscount  FROM DW.dbo.V1C_DIM_TYPE_DISCOUNT
 
 [SqlGetDimClient]
+SELECT cl.CodeClient, cl.NameClient, cl.TypeDiscount, cl.PersentDiscount, cl.BarCode, cl.StatusCard, cl.ViewCode, cl.BirthDay
+  ,CASE WHEN LEN(Phone.info)=13 AND SUBSTRING(Phone.info,1,3)='+38' THEN SUBSTRING(Phone.info,4,100) ELSE Phone.info END AS MainPhone FROM client cl
+    LEFT JOIN dbo.CONTACT  Phone ON (  cl.kard_owner_RRef=Phone.obj_RRRef AND  Phone.obj_type_RTRef= 0x00000051 AND  Phone.kind_contact_RRRef=0xA1C1001E67079A7C11E28C15AF2890C5)--Мобильный телефон контрагента 
+/*
 SELECT DC.code_card as CodeClient ,DC.name as NameClient ,TD.TYPE_DISCOUNT  AS TypeDiscount, CAST('' AS VARCHAR(10)) AS MainPhone, td.PERCENT_DISCOUNT as PersentDiscount,[bar_code] AS BarCode, DCC.CODE_STATUS_CARD  AS StatusCard,dc. view_code  as ViewCode--,dcc.*
   ,CASE WHEN rop.value_t!=CONVERT(DATE,'28.09.3958',103) AND rop.value_t>CONVERT(DATE,'01.01.3900',103) THEN DATEADD(YEAR,-2000, rop.value_t) ELSE null END AS BirthDay
   FROM  dbo.V1C_DIM_CARD DC
@@ -80,7 +84,7 @@ SELECT DC.code_card as CodeClient ,DC.name as NameClient ,TD.TYPE_DISCOUNT  AS T
  LEFT JOIN DW.dbo.V1C_reg_object_property rop ON (rop.[object_Ref]=DC.[kard_owner_RRef] and property_Ref=0xB3F7001B78074DDF11E0E922F57E4871 )
    WHERE  DCC.CODE_STATUS_CARD=0 AND [bar_code]<>''
   AND eb.BarCode IS NULL
-
+  */
 [SqlGetDimFastGroup]
 SELECT CONVERT(INT,wh.Code) AS CodeUp,CONVERT(INT,wh.Code)*1000+g.Order_Button AS CodeFastGroup,MAX(CONVERT(VARCHAR,g.Name_Button)) AS Name
   FROM DW.dbo.V1C_DIM_OPTION_WPC O

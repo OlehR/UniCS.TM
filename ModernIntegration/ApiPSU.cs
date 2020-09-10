@@ -429,7 +429,8 @@ namespace ModernIntegration
                 //LoyaltyPoints 
                 Bonuses = parClient.SumMoneyBonus,
                 //LoyaltyPointsTotal 
-                Wallet = parClient.Wallet
+                Wallet = parClient.Wallet,
+                PhoneNumber= parClient.MainPhone
             };
         }
 

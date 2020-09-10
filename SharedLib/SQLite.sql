@@ -98,7 +98,7 @@ union
  select code_client,1 from client p where barcode= @BarCode
 )
 select p.code_client as CodeClient, p.name_client as NameClient, 0 as TypeDiscount, p.percent_discount as PersentDiscount, 0 as CodeDealer, 
-	   0.00 as SumMoneyBonus, 0.00 as SumBonus,1 IsUseBonusFromRest, 1 IsUseBonusToRest,1 as IsUseBonusFromRest,barcode  as BarCode
+	   0.00 as SumMoneyBonus, 0.00 as SumBonus,1 IsUseBonusFromRest, 1 IsUseBonusToRest,1 as IsUseBonusFromRest,barcode  as BarCode,phone as MainPhone
 			from t$1 left join client p on (t$1.code_client=p.code_client)
 			
 [SqlAdditionUnit]
@@ -831,7 +831,7 @@ CREATE TABLE CLIENT (
     CODE_CLIENT INTEGER NOT NULL PRIMARY KEY,
     NAME_CLIENT TEXT NOT NULL,
     TYPE_DISCOUNT INTEGER,
-    PHONE            INTEGER,
+    PHONE            TEXT,
     PERCENT_DISCOUNT NUMBER,
     BARCODE          TEXT NOT NULL,
     STATUS_CARD INTEGER DEFAULT(0),
@@ -951,6 +951,7 @@ CREATE UNIQUE INDEX BAR_CODE_W_BC ON BAR_CODE ( CODE_WARES,BAR_CODE);
 CREATE UNIQUE INDEX TYPE_DISCOUNT_ID ON TYPE_DISCOUNT ( TYPE_DISCOUNT );
 CREATE UNIQUE INDEX CLIENT_ID ON CLIENT ( CODE_CLIENT );
 CREATE UNIQUE INDEX CLIENT_BC ON CLIENT ( BARCODE );
+CREATE INDEX CLIENT_PH ON CLIENT (PHONE);
 
 CREATE UNIQUE INDEX PRICE_ID ON PRICE ( CODE_DEALER, CODE_WARES );
 
