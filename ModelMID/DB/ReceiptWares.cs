@@ -230,7 +230,7 @@ namespace ModelMID
         public string CodeUKTZED { get; set; }
         public bool IsUseCodeUKTZED { get { return TypeWares==1|| TypeWares==2; } }
 
-        public bool IsMultiplePrices { get { return Prices != null && Prices.Count() > 0 && TypeWares == 2; } }
+        public bool IsMultiplePrices { get { return Prices != null && Prices.Count() > 1 && TypeWares == 2; } }
 
         public IEnumerable<decimal> Prices;
 

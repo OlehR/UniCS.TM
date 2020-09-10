@@ -93,7 +93,7 @@ namespace Test
             //sd = api.AddProductByBarCode(TerminalId, "7613036939874", 1);
 
             sd = api.AddProductByBarCode(TerminalId, "4823003208107", 1); 
-            sd= api.AddProductByProductId(TerminalId, sd.Id, 4, 45.22M);
+            sd= api.AddProductByProductId(TerminalId, sd.Id, 4, 45.00M);
             
             sd = api.AddProductByBarCode(TerminalId, "4823021808778", 1); 
                                                                          
