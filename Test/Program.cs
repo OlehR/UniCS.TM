@@ -36,7 +36,7 @@ namespace Test
 
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
 
-            //await CreateDataBaseAsync(false);
+           // await CreateDataBaseAsync(false);
            
             TestReceipt();
 
@@ -93,22 +93,22 @@ namespace Test
             //sd = api.AddProductByBarCode(TerminalId, "7613036939874", 1);
 
             sd = api.AddProductByBarCode(TerminalId, "4823003208107", 1); 
-            api.AddProductByProductId(TerminalId, sd.Id, 4, 45.22M);
-            return;
-            sd = api.AddProductByBarCode(TerminalId, "4823021808778", 1); //хліб житній
-            Thread.Sleep(2000);
-
+            sd= api.AddProductByProductId(TerminalId, sd.Id, 4, 45.22M);
+            
+            sd = api.AddProductByBarCode(TerminalId, "4823021808778", 1); 
+                                                                         
+            sd = api.AddProductByBarCode(TerminalId, "1110716760019", 1); //хліб житній
             //api.SetWeight(TerminalId, sd.Id, 321);           return;
             sd = api.AddProductByBarCode(TerminalId, "7773002160043", 1); //товар 2 кат
-            Thread.Sleep(2000);
+            //Thread.Sleep(2000);
             sd = api.AddProductByBarCode(TerminalId, "1110716760019", 1); //хліб житній
-            Thread.Sleep(2000);
+           // Thread.Sleep(2000);
             sd = api.AddProductByBarCode(TerminalId, "7773002160029", 1); //товар 2 кат
 
             var cl = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
 
             sd = api.AddProductByBarCode(TerminalId, "2201652301489", 1); //Морква
-            Thread.Sleep(2000);
+            //Thread.Sleep(2000);
             sd = api.AddProductByBarCode(TerminalId, "7773002160043", 1); //товар 2 кат
 
             sd = api.AddProductByBarCode(TerminalId, "2201651902226", 1); //

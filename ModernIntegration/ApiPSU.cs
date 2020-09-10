@@ -289,7 +289,7 @@ namespace ModernIntegration
                 varTags.Add(new Tag { Id = 5, Key = "CanBeDeletedByCustomer" });
             }
 
-            if (receiptWares.Prices != null && receiptWares.Prices.Count() > 0)
+            if (receiptWares.IsMultiplePrices)
                 varTags.Add(new Tag { Id = 6, Key = "MultiplePrices", RuleValue = receiptWares.GetPrices }); 
 
             var Res = new ProductViewModel()

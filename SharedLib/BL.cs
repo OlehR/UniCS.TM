@@ -10,6 +10,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using System.Diagnostics;
 
 namespace SharedLib
 {
@@ -52,8 +53,16 @@ namespace SharedLib
                     db.AddWares(parW);
             }
             //Кешконтроль
-            _ = VR.SendMessageAsync(parW.IdWorkplace, parW.NameWares, parW.Articl, parW.Quantity, parW.Sum);
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+            // Get the elapsed time as a TimeSpan value.
             
+
+            _ = VR.SendMessageAsync(parW.IdWorkplace, parW.NameWares, parW.Articl, parW.Quantity, parW.Sum);
+            stopWatch.Stop();
+            TimeSpan ts = stopWatch.Elapsed;
+            Console.WriteLine("\nVR=>" + ts.TotalMilliseconds+"\n");
+
             if (pRecalcPriceOnLine && ModelMID.Global.RecalcPriceOnLine)
                 db.RecalcPriceAsync(parW);
             return parW;
@@ -156,7 +165,7 @@ namespace SharedLib
             if (w == null || w.Count() != 1)
                 return null;
             var W = w.First();
-            if (parQuantity == 0 || W.TypeWares==2) //Якщо сигарети не добававляємо товар.
+            if (parQuantity == 0 || W.IsMultiplePrices) //Якщо сигарети не добававляємо товар.
                 return W;
             if (W.Price == 0)//Якщо немає ціни на товар !!!!TMP Краще обробляти на GUI буде пізніше
                 return null;
@@ -179,11 +188,11 @@ namespace SharedLib
                     if (parQuantity == 0)
                         return W;
                     W.SetIdReceipt(parIdReceipt);
-                    if (parPrice > 0 || W.Prices==null || W.Prices.Count()==0)
+                    if (parPrice > 0 || !W.IsMultiplePrices)
                     {
                         W.Quantity = (W.CodeUnit == Global.WeightCodeUnit ? parQuantity / 1000m : parQuantity);//Хак для вагового товару Який приходить в грамах.
                         var res= AddReceiptWares(W,false);
-                        if (parPrice > 0 && W.Prices != null && W.Prices.Count() > 0)
+                        if (parPrice > 0 && W.IsMultiplePrices)
                         {
                             WaresReceiptPromotion[] r = new WaresReceiptPromotion[1] { new WaresReceiptPromotion(W)
                             {CodeWares=W.CodeWares, Price= parPrice, TypeDiscount=eTypeDiscount.Price,Quantity=parQuantity,CodePS=999999 }

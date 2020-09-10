@@ -77,6 +77,7 @@ select t.code_wares as CodeWares,w.name_wares NameWares,w.name_wares_receipt  as
         w.Weight_Fact as WeightFact
         ,count(*) over() as TotalRows
         ,w.code_UKTZED as CodeUKTZED
+        ,w.Articl as Articl
 from t$1 t
 left join wares w on t.code_wares=w.code_wares
 left join price pd on ( pd.code_wares=t.code_wares and pd.code_dealer= @CodeDealer)
@@ -281,7 +282,7 @@ replace into WARES_RECEIPT_PROMOTION (id_workplace, code_period, code_receipt, c
 
 [SqlDeleteWaresReceiptPromotion]
  delete from  WARES_RECEIPT_PROMOTION 
-   where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt and (BARCODE_2_CATEGORY is null or length(BARCODE_2_CATEGORY)=0);
+   where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt and CODE_PS<>999999 and (BARCODE_2_CATEGORY is null or length(BARCODE_2_CATEGORY)=0 );
 
 [SqlGetCountWares]
 select sum(wr.quantity) quantity 
