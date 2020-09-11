@@ -312,7 +312,7 @@ namespace ModernIntegration
                 ProductWeightType =  receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByBarcode, 
                 IsAgeRestrictedConfirmed = false, //Обмеження по віку алкоголь Підтверджено не потрібно посилати.
                 Quantity = (receiptWares.IsWeight ? 1 : receiptWares.Quantity),               
-                DiscountName = /*(string.IsNullOrEmpty(receiptWares.NameDiscount) ?"": receiptWares.NameDiscount+"\n") +*/receiptWares.GetStrWaresReceiptPromotion,
+                DiscountName = receiptWares.GetStrWaresReceiptPromotion,
                 WarningType = null, //!!! Не посилати                 
                 Tags = varTags,
                 HasSecurityMark = false, //!!!TMP // Магнітна мітка, яку треба знімати.

@@ -93,8 +93,10 @@ namespace ModelMID
         /// </summary>
         public decimal SumDiscount { get; set; }
 
-        //  Discount = // 
-        // public string NameDiscount { get; set; }
+        /// <summary>
+        /// Назва акції для фіксованих цін. Тощо.
+        /// </summary>
+        public string NameDiscount { get; set; }
 
         public decimal Sum
         {
@@ -200,15 +202,14 @@ namespace ModelMID
         {
             get
             {
-                if (ReceiptWaresPromotions == null)
-                    return string.Empty;
-                
-                string Res = "";
-                foreach (var el in ReceiptWaresPromotions)
-                {
-                    var name =  el.TypeDiscount==eTypeDiscount.Price?($"Ціна => {el.Price}") :(  string.IsNullOrEmpty(el.NamePS) ? (string.IsNullOrEmpty(el.BarCode2Category)?"" : el.BarCode2Category.Substring(3,2)+"%") : el.NamePS);
-                    Res += $"{name} - {el.Quantity} - {el.Sum}\n";
-                }
+                string Res = (string.IsNullOrEmpty(NameDiscount) ? "" : NameDiscount + "\n");
+
+                if (ReceiptWaresPromotions != null)
+                    foreach (var el in ReceiptWaresPromotions)
+                    {
+                        var name = el.TypeDiscount == eTypeDiscount.Price ? ($"Ціна => {el.Price}") : (string.IsNullOrEmpty(el.NamePS) ? (string.IsNullOrEmpty(el.BarCode2Category) ? "" : el.BarCode2Category.Substring(3, 2) + "%") : el.NamePS);
+                        Res += $"{name} - {el.Quantity} - {el.Sum}\n";
+                    }
 
                 return Res;
             }
