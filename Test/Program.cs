@@ -78,9 +78,9 @@ namespace Test
             var api = new ApiPSU();
             ProductViewModel sd;
 
-            sd = api.AddProductByBarCode(TerminalId, "7613035603257", 1);
-            Thread.Sleep(2000);
-            return;
+            //sd = api.AddProductByBarCode(TerminalId, "7613035603257", 1);
+            //Thread.Sleep(2000);
+            //return;
             //var c = api.GetCustomerByPhone(TerminalId,"0503729543");
 
             //var ddd=api.GetReceiptByNumber(TerminalId, "55");
@@ -99,7 +99,7 @@ namespace Test
 
             sd = api.AddProductByBarCode(TerminalId, "4823003208107", 1); 
             sd= api.AddProductByProductId(TerminalId, sd.Id, 4, 45.00M);
-            
+            return;
             sd = api.AddProductByBarCode(TerminalId, "4823021808778", 1); 
                                                                          
             sd = api.AddProductByBarCode(TerminalId, "1110716760019", 1); //хліб житній
