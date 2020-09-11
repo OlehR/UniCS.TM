@@ -9,6 +9,7 @@
         ProductWithSecurityMark = 5,
         ReceiptWithRefund = 6,
         Paid = 7,
-        GarbageOnWeight = 8
+        GarbageOnWeight = 8,
+        OwnBag = 9
     }
 }
