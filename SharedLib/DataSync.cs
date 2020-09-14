@@ -230,12 +230,13 @@ namespace SharedLib
                 decimal Sum;
                 var body = soapTo1C.GenBody("GetBonusSum", new Parameters[] { new Parameters("CodeOfCard", parClient.BarCode) });
                 var res = await soapTo1C.RequestAsync(Global.Server1C, body);
-                res = res.Replace('.', ',');
+                res = res.Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
                 if (!string.IsNullOrEmpty(res) && decimal.TryParse(res, out Sum))
                     parClient.SumMoneyBonus = Sum; //!!!TMP
                 body = soapTo1C.GenBody("GetMoneySum", new Parameters[] { new Parameters("CodeOfCard", parClient.BarCode) });
                 res = await soapTo1C.RequestAsync(Global.Server1C, body);
-                res = res.Replace('.', ',');
+                
+                res = res.Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
                 if (!string.IsNullOrEmpty(res) && decimal.TryParse(res, out Sum))
                     parClient.Wallet = Sum;
                 Global.OnClientChanged?.Invoke(parClient, parTerminalId);
