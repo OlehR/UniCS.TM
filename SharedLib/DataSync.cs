@@ -103,13 +103,13 @@ namespace SharedLib
         public bool SyncData(bool parIsFull)
         {
             StringBuilder Log = new StringBuilder();
+            Log.Append($"parIsFull=>{parIsFull}\n");
             try
             {
                 //WDB_SQLite SQLite;
-
+                var TD = db.GetConfig<DateTime>("Load_Full");
                 if (!parIsFull)
-                {
-                    var TD = db.GetConfig<DateTime>("Load_Full");
+                {                    
                     if (TD == default(DateTime) || DateTime.Now.Date != TD.Date)
                         parIsFull = true;
                 }
@@ -117,24 +117,23 @@ namespace SharedLib
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = parIsFull ? eSyncStatus.StartedFullSync : eSyncStatus.StartedPartialSync });
                 
                 string varMidFile = db.GetCurrentMIDFile;
-
+                Log.Append($"varMidFile=>{varMidFile}\n Load_Full=>{TD:yyyy-MM-dd}\n");
                 if (parIsFull)
                 {
                     Thread.Sleep(200);
-                    DateTime varD = DateTime.Today;
-
+                    
                     db.SetConfig<DateTime>("Load_Full", DateTime.Now.Date.AddDays(-1));
                     db.SetConfig<DateTime>("Load_Update", DateTime.Now.Date.AddDays(-1));
 
                     if (File.Exists(varMidFile))
                     {
-                        Log.Append($"{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} Try Delete file{varMidFile}");                      
+                        Log.Append($"{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} Try Delete file{varMidFile}\n");                      
 
-                        bl.db.Close(true);                     
+                        db.Close(true);                     
                         File.Delete(varMidFile);
                         bl.db = new WDB_SQLite(default(DateTime), varMidFile);                        
                     }
-                    Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} Create New DB");                   
+                    Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} Create New DB\n");                   
                     //SQLite.CreateMIDTable();
                 }
 
@@ -144,19 +143,19 @@ namespace SharedLib
 
                     if (parIsFull)
                     {
-                        Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} Create New DB");
-                        Debug.WriteLine("CreateMIDIndex Start");
+                        Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} Create MIDIndex\n");
+                        
                         db.CreateMIDIndex();                        
                         
                         db.SetConfig<string>("Last_MID", varMidFile);
-                        Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} Set config");
-                        Debug.WriteLine("Set config");
+                        Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} Set config\n");
+                       
                     }                   
 
                     db.SetConfig<int>("MessageNo", varMessageNMax);
                     db.SetConfig<DateTime>("Load_" + (parIsFull ? "Full" : "Update"), DateTime.Now /*String.Format("{0:u}", DateTime.Now)*/);
                 
-                Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} End");
+                Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} End\n");
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.SyncFinishedSuccess, StatusDescription = Log.ToString() });
                 }
             catch (Exception ex)
@@ -341,7 +340,7 @@ namespace SharedLib
 
    if @@rowcount = 0
    begin
-      insert into barcode_out (bar_code, weight,Date) values ( @BarCode,@Weight,@Date)
+      insert into barcode_out (bar_code, weight,Date) values ( @BarCode,@Weight,@Date,)
    end
 -- commit tran";
 
@@ -363,6 +362,55 @@ where nn=1 ";
             }
         }
 
+        public void LoadWeightKasa2()
+        {
+            var Ldc = new DateTime(2020, 8, 1);
+            var today = DateTime.Now.Date;
+
+            if (Ldc == default(DateTime))
+                Ldc = today.AddDays(-10);
+            
+            while (Ldc < today)
+            {
+                LoadWeightKasa2(Ldc);
+                Ldc = Ldc.AddDays(1);
+            }
+        }
+
+
+        public void LoadWeightKasa2(DateTime parDT)
+        {
+            try
+            {
+                var ldb = new WDB_SQLite(parDT);
+                string SQLUpdate = @"insert into  DW.dbo.Weight_Receipt  (code_wares, weight,Date,ID_WORKPLACE, CODE_RECEIPT,QUANTITY) values ( @CodeWares,@Weight,@Date,@IdWorkplace,@CodeReceipt,@Quantity)";
+                var dbMs = new MSSQL();
+
+                var SqlSelect = "select CODE_WARES as CodeWares,FIX_WEIGHT as WEIGHT,DATE_CREATE as date, ID_WORKPLACE as IdWorkplace, CODE_RECEIPT as CodeReceipt, QUANTITY as Quantity  from WARES_RECEIPT where FIX_WEIGHT>0";
+                Console.WriteLine("Start LoadWeightKasa2");
+                var r = ldb.db.Execute<WeightReceipt>(SqlSelect);
+                Console.WriteLine(parDT.ToString()+ " " +r.Count().ToString());
+                dbMs.BulkExecuteNonQuery<WeightReceipt>(SQLUpdate, r);
+                Console.WriteLine("Finish LoadWeightKasa2");
+            }
+            catch (Exception ex)
+            {
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "LoadWeightKasa2=> " + ex.Message });
+            }
+        }
+
+
+    }
+
+    public class WeightReceipt
+    {
+        public int CodeWares { get; set; }
+       
+        public decimal Weight { get; set; }
+        public DateTime Date { get; set; }
+        public int IdWorkplace { get; set; }
+        public int CodeReceipt { get; set; }
+        public decimal Quantity { get; set; }
 
     }
 }

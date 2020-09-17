@@ -6,6 +6,7 @@ namespace ModelMID.DB
 {
     public class BarCodeOut
     {
+        public int CodeWares { get; set; }
         public string BarCode { get; set; }
         public decimal Weight { get; set; }
         public DateTime Date { get; set; }

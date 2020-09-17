@@ -54,7 +54,7 @@ namespace SharedLib
         public int LoadData(WDB parDB,bool parIsFull, StringBuilder Log)
         {
             string SQL;
-            Log.Append($"{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} Start LoadData {parIsFull}");
+            Log.Append($"{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} Start LoadData {parIsFull}\n");
             Debug.WriteLine("Start LoadData "+ parIsFull.ToString());
             SQL = GetSQL("SqlGetMessageNo");
             int varMessageNoMax = db.ExecuteScalar<int>(SQL);
@@ -133,7 +133,7 @@ namespace SharedLib
 
             if (parIsFull)
             {
-                Log.Append($"{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetDimUnitDimension");
+                Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetDimUnitDimension");
                 Debug.WriteLine("SqlGetDimUnitDimension");
                 SQL = GetSQL("SqlGetDimUnitDimension");
                 var UD = db.Execute<UnitDimension>(SQL);
@@ -208,7 +208,7 @@ namespace SharedLib
             }
 
         
-            Log.Append($"{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} MessageNo {varMessageNoMax}");
+            Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} MessageNo {varMessageNoMax}\n");
             return varMessageNoMax;
         }
 

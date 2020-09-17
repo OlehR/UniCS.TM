@@ -37,13 +37,18 @@ namespace Test
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
 
             await CreateDataBaseAsync(false);
-           
-            TestReceipt();
+
+            // TestReceipt();
 
 
             //TestKit();
 
             //LoadReceiptJson();
+
+
+            var api = new ApiPSU();
+            api.Bl.ds.LoadWeightKasa2();
+
             Console.WriteLine("Sleep");
 
             Thread.Sleep(10000000);
@@ -71,13 +76,17 @@ namespace Test
         }
         static void TestReceipt()
         {
-            var TerminalId = Guid.Parse("1bb89aa9-dbdf-4eb0-b7a2-094665c3fdd0");
+            //var TerminalId = Guid.Parse("1bb89aa9-dbdf-4eb0-b7a2-094665c3fdd0");//14
+            var TerminalId = Guid.Parse("27aaa6d3-8824-475d-a7d4-3269472ba950");//19
             var ProductId = Guid.Parse("00000000-abcd-0000-0019-000000161615");
             var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009000");
             var ReceiptId = Guid.Parse("00000062-ffff-2020-0326-000000000008");
             var api = new ApiPSU();
             ProductViewModel sd;
 
+            
+            var Recvm = api.GetReceiptViewModel(new IdReceipt { CodePeriod = 20200915, IdWorkplace = 72, CodeReceipt = 29 });
+            return;
             //sd = api.AddProductByBarCode(TerminalId, "7613035603257", 1);
             //Thread.Sleep(2000);
             //return;
