@@ -26,14 +26,14 @@ namespace Test
         {
 
             //LocalPrintServer ps = new LocalPrintServer();
-          //  var pq = ps.GetPrintQueues(); 
+            //  var pq = ps.GetPrintQueues(); 
             //LoadWeightKasa();            return;
             // var R = await GetInfoBarcode("4823000920439");
             //var l = new GetGoodUrl();
             //l.LoadWeightURLAsync();
             //Thread.Sleep(1000000000);
 
-
+            Console.WriteLine("Start");
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
 
             await CreateDataBaseAsync(false);
@@ -46,8 +46,8 @@ namespace Test
             //LoadReceiptJson();
 
 
-            var api = new ApiPSU();
-            api.Bl.ds.LoadWeightKasa2();
+           //  new ApiPSU().Bl.ds.LoadWeightKasa2(); 
+            
 
             Console.WriteLine("Sleep");
 

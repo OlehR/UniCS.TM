@@ -50,8 +50,7 @@ namespace SharedLib
             varVersion = "SQLite.0.0.1";
             InitSQL();
 
-            if(parD != default(DateTime))
-                DT=parD.Date;
+            DT=(parD != default(DateTime)?parD.Date:DateTime.Today.Date);
             
             if (!File.Exists(ConfigFile))
             {
