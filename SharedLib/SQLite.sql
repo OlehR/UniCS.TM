@@ -1106,7 +1106,7 @@ sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_
 
 
 [SqlAdditionalWeightsWares]
-select WEIGHT from WEIGHT where BARCODE=@CodeWares and  STATUS=-1
+select DISTINCT WEIGHT from WEIGHT where BARCODE=@CodeWares and  STATUS=-1
 
 [SqlInsertAddWeight]
 insert into ADD_WEIGHT ( CODE_WARES, CODE_UNIT, WEIGHT) values (@CodeWares, @CodeUnit,@Weight);
