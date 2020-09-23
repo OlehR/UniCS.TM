@@ -128,77 +128,77 @@ namespace SharedLib
             SqlGetPricePromotionKit= GetSQL("SqlGetPricePromotionKit");
             return true;
         }
-/*
-        public override eRezultFind FindData(string parStr, eTypeFind parTypeFind = eTypeFind.All)
-        {
-            eRezultFind varRezult;
-            varRezult.Count = 0;
-            varRezult.TypeFind = eTypeFind.All;
-            string varStr = parStr.Trim();
-            Int64 varNumber = 0;
-            Int64.TryParse(varStr, out varNumber);
-            this.db.ExecuteNonQuery("delete from T$1");
-            // Шукаемо Товар
-
-            if (parTypeFind != eTypeFind.Client)
-            {
-                varRezult.TypeFind = eTypeFind.Wares;
-                if (varNumber > 0)
+        /*
+                public override eRezultFind FindData(string parStr, eTypeFind parTypeFind = eTypeFind.All)
                 {
-                    if (varStr.Length >= GlobalVar.MinLenghtBarCodeWares)
-                    {//Шукаємо по штрихкоду
-                        this.db.ExecuteNonQuery(this.SqlFindWaresBar, new { BarCode = varStr });
-                    }
-                    else//Шукаемо по коду
+                    eRezultFind varRezult;
+                    varRezult.Count = 0;
+                    varRezult.TypeFind = eTypeFind.All;
+                    string varStr = parStr.Trim();
+                    Int64 varNumber = 0;
+                    Int64.TryParse(varStr, out varNumber);
+                    this.db.ExecuteNonQuery("delete from T$1");
+                    // Шукаемо Товар
+
+                    if (parTypeFind != eTypeFind.Client)
                     {
-                        if (GlobalVar.TypeFindWares < 2)
-                            this.db.ExecuteNonQuery(this.SqlFindWaresCode + varStr);
+                        varRezult.TypeFind = eTypeFind.Wares;
+                        if (varNumber > 0)
+                        {
+                            if (varStr.Length >= GlobalVar.MinLenghtBarCodeWares)
+                            {//Шукаємо по штрихкоду
+                                this.db.ExecuteNonQuery(this.SqlFindWaresBar, new { BarCode = varStr });
+                            }
+                            else//Шукаемо по коду
+                            {
+                                if (GlobalVar.TypeFindWares < 2)
+                                    this.db.ExecuteNonQuery(this.SqlFindWaresCode + varStr);
+                            }
+                        }
+                        else // Шукаємо по назві
+                        {
+                            if (GlobalVar.TypeFindWares == 0)//Можна шукати по назві
+                                this.db.ExecuteNonQuery(SqlFindWaresName + "'%" + varStr.ToUpper().Replace(" ", "%") + "%'");
+                        }
+                        varRezult.Count = this.GetCountT1();
+
+                        if (varRezult.Count > 0) return varRezult;//Знайшли товар
                     }
-                }
-                else // Шукаємо по назві
-                {
-                    if (GlobalVar.TypeFindWares == 0)//Можна шукати по назві
-                        this.db.ExecuteNonQuery(SqlFindWaresName + "'%" + varStr.ToUpper().Replace(" ", "%") + "%'");
-                }
-                varRezult.Count = this.GetCountT1();
+                    // ШукаемоКлієнта
 
-                if (varRezult.Count > 0) return varRezult;//Знайшли товар
-            }
-            // ШукаемоКлієнта
-
-            if (parTypeFind != eTypeFind.Wares)
-            {
-                varRezult.TypeFind = eTypeFind.Client;
-                if (varNumber > 0)
-                {
-                    if (varStr.Length >= GlobalVar.MinLenghtBarCodeClient)
-                    {//Шукаємо по штрихкоду
-
-                        this.db.ExecuteNonQuery(SqlFindClientBar, new { BarCode = varStr });
-
-                    }
-                    else
-                        if (GlobalVar.TypeFindClient < 2)
+                    if (parTypeFind != eTypeFind.Wares)
                     {
-                        this.db.ExecuteNonQuery<object>(SqlFindClientCode, new { CodePrivat = varStr });
+                        varRezult.TypeFind = eTypeFind.Client;
+                        if (varNumber > 0)
+                        {
+                            if (varStr.Length >= GlobalVar.MinLenghtBarCodeClient)
+                            {//Шукаємо по штрихкоду
+
+                                this.db.ExecuteNonQuery(SqlFindClientBar, new { BarCode = varStr });
+
+                            }
+                            else
+                                if (GlobalVar.TypeFindClient < 2)
+                            {
+                                this.db.ExecuteNonQuery<object>(SqlFindClientCode, new { CodePrivat = varStr });
+                            }
+                        }
+                        else // Пошук по назві
+                        {
+                            if (GlobalVar.TypeFindClient == 0)//Можна шукати по назві
+                                this.db.ExecuteNonQuery(SqlFindClientName + "'%" + varStr.Replace(" ", "%") + "%'");
+
+                        }
                     }
-                }
-                else // Пошук по назві
-                {
-                    if (GlobalVar.TypeFindClient == 0)//Можна шукати по назві
-                        this.db.ExecuteNonQuery(SqlFindClientName + "'%" + varStr.Replace(" ", "%") + "%'");
+                    varRezult.Count=this.GetCountT1();
+
+                    if( varRezult.Count==0) 
+                        varRezult.TypeFind=eTypeFind.All;
+
+                    return varRezult;
 
                 }
-            }
-			varRezult.Count=this.GetCountT1();
-
-			if( varRezult.Count==0) 
-				varRezult.TypeFind=eTypeFind.All;
-				
-			return varRezult;
-			
-		}
-        */
+                */
         public Task RecalcPriceAsync(IdReceiptWares parIdReceiptWares)
         {
             return Task.Run(() => RecalcPrice(parIdReceiptWares)).ContinueWith(async res =>
@@ -206,8 +206,16 @@ namespace SharedLib
                 if (await res)
                 {
                     //Console.WriteLine(OnReceiptCalculationComplete != null);
-                    var r = ViewReceiptWares(new IdReceiptWares(parIdReceiptWares,0),true);//вертаємо весь чек.
+                    var r = ViewReceiptWares(new IdReceiptWares(parIdReceiptWares, 0), true);//вертаємо весь чек.
                     Global.OnReceiptCalculationComplete?.Invoke(r, Global.GetTerminalIdByIdWorkplace(parIdReceiptWares.IdWorkplace));
+                    if (r == null || r.Count() == 0)
+                        return;
+                    var parW = r.Last();
+                    if (parW != null)
+                    {
+                        var SumAll = r.Sum(d => d.Sum - d.SumDiscount);
+                        _ = VR.SendMessageAsync(parW.IdWorkplace, parW.NameWares, parW.Articl, parW.Quantity, parW.Sum, VR.eTypeVRMessage.AddWares, SumAll);
+                    }
                 }
             });
         }

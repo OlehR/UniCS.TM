@@ -46,7 +46,7 @@ namespace SharedLib
 
                 var body = soapTo1C.GenBody("JSONCheck", new Parameters[] { new Parameters("JSONSting", r.GetBase64()) });
 
-                var res =  await soapTo1C.RequestAsync(Global.Server1C, body, 120000, "application/json");
+                var res =  await soapTo1C.RequestAsync(Global.Server1C, body, 240000, "application/json");
 
                 /*
                                  HttpClient client = new HttpClient();
@@ -357,31 +357,34 @@ where nn=1 ";
             }
         }
 
-        public void LoadWeightKasa2()
+        public void LoadWeightKasa2Period(DateTime Ldc, int pTypeSource = 0)
         {
-            var Ldc = new DateTime(2020, 8, 1);
+            //var Ldc = new DateTime(2020, 9, 16);
             var today = DateTime.Now.Date;
-
-            if (Ldc == default(DateTime))
-                Ldc = today.AddDays(-10);
+           
             
             while (Ldc < today)
             {
-                LoadWeightKasa2(Ldc);
+                LoadWeightKasa2(Ldc, pTypeSource);
                 Ldc = Ldc.AddDays(1);
             }
         }
 
 
-        public void LoadWeightKasa2(DateTime parDT)
+        public void LoadWeightKasa2(DateTime parDT,int TypeSource=0)
         {
             try
             {
                 var ldb = new WDB_SQLite(parDT);
-                string SQLUpdate = @"insert into  DW.dbo.Weight_Receipt  (code_wares, weight,Date,ID_WORKPLACE, CODE_RECEIPT,QUANTITY) values ( @CodeWares,@Weight,@Date,@IdWorkplace,@CodeReceipt,@Quantity)";
+                string SQLUpdate = @"insert into  DW.dbo.Weight_Receipt  (Type_Source,code_wares, weight,Date,ID_WORKPLACE, CODE_RECEIPT,QUANTITY) values (@TypeSource, @CodeWares,@Weight,@Date,@IdWorkplace,@CodeReceipt,@Quantity)";
                 var dbMs = new MSSQL();
 
-                var SqlSelect = "select CODE_WARES as CodeWares,FIX_WEIGHT as WEIGHT,DATE_CREATE as date, ID_WORKPLACE as IdWorkplace, CODE_RECEIPT as CodeReceipt, QUANTITY as Quantity  from WARES_RECEIPT where FIX_WEIGHT>0";
+                var SqlSelect = TypeSource == 0? "select 0 as TypeSource,CODE_WARES as CodeWares,FIX_WEIGHT as WEIGHT,DATE_CREATE as date, ID_WORKPLACE as IdWorkplace, CODE_RECEIPT as CodeReceipt, QUANTITY as Quantity  from WARES_RECEIPT where FIX_WEIGHT>0":
+                    @"select 1  as TypeSource,re.CODE_WARES as CodeWares,re.PRODUCT_CONFIRMED_WEIGHT/1000.0 as WEIGHT,wr.DATE_CREATE as date, re.ID_WORKPLACE as IdWorkplace, re.CODE_RECEIPT as CodeReceipt, wr.QUANTITY as Quantity,wr.FIX_WEIGHT
+from RECEIPT_EVENT RE 
+join WARES_RECEIPT wr on re.ID_WORKPLACE=wr.ID_WORKPLACE and wr.CODE_RECEIPT=re.CODE_RECEIPT and re.code_wares=wr.code_wares
+where RE.EVENT_TYPE=1"
+                    ;
                 Console.WriteLine("Start LoadWeightKasa2");
                 var r = ldb.db.Execute<WeightReceipt>(SqlSelect);
                 Console.WriteLine(parDT.ToString()+ " " +r.Count().ToString());
@@ -399,6 +402,7 @@ where nn=1 ";
 
     public class WeightReceipt
     {
+        public int TypeSource { get; set; }
         public int CodeWares { get; set; }
        
         public decimal Weight { get; set; }

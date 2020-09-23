@@ -36,9 +36,9 @@ namespace Test
             Console.WriteLine("Start");
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
 
-            await CreateDataBaseAsync(false);
+            //await CreateDataBaseAsync(false);
 
-            // TestReceipt();
+             //TestReceipt();
 
 
             //TestKit();
@@ -46,7 +46,7 @@ namespace Test
             //LoadReceiptJson();
 
 
-           //  new ApiPSU().Bl.ds.LoadWeightKasa2(); 
+             new ApiPSU().Bl.ds.LoadWeightKasa2Period(new DateTime(2020, 8, 1),1); 
             
 
             Console.WriteLine("Sleep");
@@ -85,8 +85,8 @@ namespace Test
             ProductViewModel sd;
 
             
-            var Recvm = api.GetReceiptViewModel(new IdReceipt { CodePeriod = 20200915, IdWorkplace = 72, CodeReceipt = 29 });
-            return;
+            //var Recvm = api.GetReceiptViewModel(new IdReceipt { CodePeriod = 20200915, IdWorkplace = 72, CodeReceipt = 29 }); return;
+
             //sd = api.AddProductByBarCode(TerminalId, "7613035603257", 1);
             //Thread.Sleep(2000);
             //return;
@@ -95,7 +95,7 @@ namespace Test
             //var ddd=api.GetReceiptByNumber(TerminalId, "55");
 
 
-            //            api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200714, IdWorkplace = 62, CodeReceipt = 3 }); return;
+            //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200920, IdWorkplace = 72, CodeReceipt = 21 }); return;
 
 
             // api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200730, IdWorkplace = 68, CodeReceipt = 8}); return;
