@@ -107,15 +107,18 @@ namespace SharedLib
             return true;
         }
 
-        public ReceiptWares AddWaresBarCode(IdReceipt parReceipt, string parBarCode, decimal parQuantity = 0)
+        public ReceiptWares AddWaresBarCode(IdReceipt pReceipt, string pBarCode, decimal pQuantity = 0)
         {
+            if (pBarCode == null)
+                return null;
             IEnumerable<ReceiptWares> w = null;
-            if (parBarCode.Trim().Length >= 8)
-                w = db.FindWares(parBarCode);//Пошук по штрихкоду
+            pBarCode = pBarCode.Trim();
+            if (pBarCode.Length >= 8)
+                w = db.FindWares(pBarCode);//Пошук по штрихкоду
             else// Можливо артикул товару
             {
                 int Article;
-                if (int.TryParse(parBarCode, out Article))
+                if (int.TryParse(pBarCode, out Article))
                     w = db.FindWares(null, null, 0, 0, 0, Article);
                 else
                     return null;
@@ -129,13 +132,13 @@ namespace SharedLib
                 foreach (var el in Global.CustomerBarCode.Where(el => el.KindBarCode == eKindBarCode.EAN13 /*&& (el.TypeBarCode == eTypeBarCode.WaresWeight || el.TypeBarCode == eTypeBarCode.WaresUnit )*/))
                 {
                     w = null;
-                    if (el.Prefix.Equals(parBarCode.Substring(0, el.Prefix.Length)))
+                    if (el.Prefix.Equals(pBarCode.Substring(0, el.Prefix.Length)))
                     {
-                        if(el.KindBarCode==eKindBarCode.EAN13 && parBarCode.Length!=13)
+                        if(el.KindBarCode==eKindBarCode.EAN13 && pBarCode.Length!=13)
                             break;
 
-                        int varCode = Convert.ToInt32(parBarCode.Substring(el.Prefix.Length, el.LenghtCode));
-                        int varValue = Convert.ToInt32(parBarCode.Substring(el.Prefix.Length + el.LenghtCode, el.LenghtQuantity));
+                        int varCode = Convert.ToInt32(pBarCode.Substring(el.Prefix.Length, el.LenghtCode));
+                        int varValue = Convert.ToInt32(pBarCode.Substring(el.Prefix.Length + el.LenghtCode, el.LenghtQuantity));
                         switch (el.TypeCode)
                         {
                             case eTypeCode.Article:
@@ -145,16 +148,16 @@ namespace SharedLib
                                 w = db.FindWares(null, null, varCode);
                                 break;
                             case eTypeCode.PercentDiscount:
-                                _ = ds.CheckDiscountBarCodeAsync(parReceipt, parBarCode, varCode);
-                                return new ReceiptWares(parReceipt);                                
+                                _ = ds.CheckDiscountBarCodeAsync(pReceipt, pBarCode, varCode);
+                                return new ReceiptWares(pReceipt);                                
                             default:
                                 break;
                         }
                         if (w != null && w.Count() == 1) //Знайшли що треба
                         {
                             //parQuantity = (w.First().CodeUnit == Global.WeightCodeUnit ? varValue / 1000m : varValue);
-                            if(parQuantity > 0)
-                              parQuantity = varValue;
+                            if(pQuantity > 0)
+                              pQuantity = varValue;
                             break;
                         }
                     }
@@ -164,13 +167,16 @@ namespace SharedLib
 
             if (w == null || w.Count() != 1)
                 return null;
+            
             var W = w.First();
-            if (parQuantity == 0 || W.IsMultiplePrices) //Якщо сигарети не добававляємо товар.
+            if (pBarCode.Length >= 8)
+                W.BarCode = pBarCode;
+                if (pQuantity == 0 || W.IsMultiplePrices) //Якщо сигарети не добававляємо товар.
                 return W;
             if (W.Price == 0)//Якщо немає ціни на товар !!!!TMP Краще обробляти на GUI буде пізніше
                 return null;
-            W.SetIdReceipt(parReceipt);
-            W.Quantity = (W.CodeUnit == Global.WeightCodeUnit ? parQuantity/1000m : parQuantity);// Вага приходить в грамах
+            W.SetIdReceipt(pReceipt);
+            W.Quantity = (W.CodeUnit == Global.WeightCodeUnit ? pQuantity/1000m : pQuantity);// Вага приходить в грамах
             return AddReceiptWares(W);
         }
 

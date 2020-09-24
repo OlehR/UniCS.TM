@@ -357,17 +357,25 @@ where nn=1 ";
             }
         }
 
-        public void LoadWeightKasa2Period(DateTime Ldc, int pTypeSource = 0)
+        public void LoadWeightKasa2Period(DateTime pDT, int pTypeSource = 0)
         {
-            //var Ldc = new DateTime(2020, 9, 16);
+            var pDT = pDT;
             var today = DateTime.Now.Date;
-           
-            
-            while (Ldc < today)
+            if (pDT == default(DateTime))
             {
-                LoadWeightKasa2(Ldc, pTypeSource);
-                Ldc = Ldc.AddDays(1);
+                pDT = db.GetConfig<DateTime>("Load_Weight");
+                if (pDT == default(DateTime))
+                    pDT = DateTime.Now.Date.AddDays(-1);
             }
+
+            while (pDT < today)
+            {
+                LoadWeightKasa2(pDT, pTypeSource);
+                pDT = pDT.AddDays(1);
+            }
+            pDT.AddDays(-1);
+
+            db.SetConfig<DateTime>("Load_Weight", pDT> pDT? pDT: pDT);
         }
 
 
