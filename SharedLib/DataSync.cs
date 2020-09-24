@@ -357,25 +357,26 @@ where nn=1 ";
             }
         }
 
-        public void LoadWeightKasa2Period(DateTime pDT, int pTypeSource = 0)
-        {
-            var pDT = pDT;
-            var today = DateTime.Now.Date;
+        public void LoadWeightKasa2Period(int pTypeSource = 0,DateTime pDT = default(DateTime))
+        {  
             if (pDT == default(DateTime))
             {
-                pDT = db.GetConfig<DateTime>("Load_Weight");
+                pDT = db.GetConfig<DateTime>($"Load_Weight{pTypeSource}");
                 if (pDT == default(DateTime))
                     pDT = DateTime.Now.Date.AddDays(-1);
             }
-
-            while (pDT < today)
+            bool isCalc = false;
+            while (pDT < DateTime.Now.Date)
             {
                 LoadWeightKasa2(pDT, pTypeSource);
                 pDT = pDT.AddDays(1);
+                isCalc = true;
             }
-            pDT.AddDays(-1);
-
-            db.SetConfig<DateTime>("Load_Weight", pDT> pDT? pDT: pDT);
+            if (isCalc)
+            {
+                pDT.AddDays(-1);
+                db.SetConfig<DateTime>($"Load_Weight{pTypeSource}", pDT);
+            }
         }
 
 
