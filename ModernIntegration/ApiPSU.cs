@@ -99,10 +99,10 @@ namespace ModernIntegration
             return Res;
         }
 
-        public override ReceiptViewModel GetRecieptByTerminalId(Guid parTerminalId)
+        public override ReceiptViewModel GetRecieptByTerminalId(Guid parTerminalId, bool pIsDetail = false)
         {
             var receiptId = GetCurrentReceiptByTerminalId(parTerminalId); 
-            return GetReceiptViewModel(receiptId);
+            return GetReceiptViewModel(receiptId, pIsDetail);
 
         }
         public override bool AddPayment(Guid parTerminalId, ReceiptPayment[] parPayment, Guid? parReceiptId = null)
@@ -351,11 +351,11 @@ namespace ModernIntegration
             return Res;
         }
 
-        public ReceiptViewModel GetReceiptViewModel(IdReceipt parReceipt)
+        public ReceiptViewModel GetReceiptViewModel(IdReceipt pReceipt, bool pIsDetail = false)
         {
-            if (parReceipt == null)
+            if (pReceipt == null)
                 return null;
-            var receiptMID = Bl.GetReceiptHead(parReceipt,true);
+            var receiptMID = Bl.GetReceiptHead(pReceipt,true);
             if (receiptMID == null)
                 return null;
             var receipt = new Receipt()
@@ -377,7 +377,7 @@ namespace ModernIntegration
                 //Customer /// !!!TMP Модель клієнта
                 //PaymentInfo
             };
-            var listReceiptItem = GetReceiptItem(receiptMID.Wares); //GetReceiptItem(parReceipt);
+            var listReceiptItem = GetReceiptItem(receiptMID.Wares,pIsDetail); //GetReceiptItem(parReceipt);
             var Res = new ReceiptViewModel(receipt, listReceiptItem, null, null)
             { CustomId = receiptMID.NumberReceipt1C };
             
@@ -404,13 +404,54 @@ namespace ModernIntegration
             return GetReceiptItem(res);            
         }
 
-        private List<ReceiptItem> GetReceiptItem(IEnumerable<ReceiptWares> res)
+        private List<ReceiptItem> GetReceiptItem(IEnumerable<ReceiptWares> res, bool IsDetail = false)
         {
             var Res = new List<ReceiptItem>();
             foreach (var el in res)
             {
-                var PVM = this.GetProductViewModel(el);
-                Res.Add(PVM.ToReceiptItem());
+               
+                decimal PromotionQuantity = 0;
+                IEnumerable<WaresReceiptPromotion> PromotionPrice = null;
+
+                if (el.ReceiptWaresPromotions != null)
+                {
+                    PromotionPrice = el.ReceiptWaresPromotions.Where(r => r.TypeDiscount == eTypeDiscount.Price);
+                    PromotionQuantity = PromotionPrice.Sum(r => r.Quantity);
+                }
+
+                if (IsDetail && PromotionQuantity > 0)
+                {
+                    decimal AllQuantity = el.Quantity;
+                    var OtherPromotion = el.ReceiptWaresPromotions.Where(r => r.TypeDiscount != eTypeDiscount.Price);
+                    el.ReceiptWaresPromotions = null;
+                    
+                    if (PromotionQuantity < AllQuantity)
+                    {
+                        var SumDiscount = OtherPromotion.Sum(r => r.Sum);
+                        var QuantityDiscount= OtherPromotion.Sum(r => r.Quantity);
+                        el.SumDiscount = QuantityDiscount * (el.Price - SumDiscount / QuantityDiscount);
+                        el.ReceiptWaresPromotions = OtherPromotion;
+                        el.Quantity = AllQuantity - PromotionQuantity;
+                        var PVM = this.GetProductViewModel(el);
+                        Res.Add(PVM.ToReceiptItem());
+                    }
+                    el.SumDiscount = 0;
+                    int i = 1;
+                    foreach (var p in PromotionPrice)
+                    {
+                        el.Quantity = p.Quantity;
+                        el.Price = p.Price;
+                        el.PriceDealer= p.Price;
+                        el.Order = i++;
+                        var PVM = this.GetProductViewModel(el);
+                        Res.Add(PVM.ToReceiptItem());
+                    }
+                }
+                else
+                {
+                    var PVM = this.GetProductViewModel(el);
+                    Res.Add(PVM.ToReceiptItem());
+                }
             }
             return Res;
         }

@@ -36,7 +36,7 @@ namespace Test
             Console.WriteLine("Start");
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
 
-            //await CreateDataBaseAsync(false);
+           // await CreateDataBaseAsync(false);
 
             TestReceipt();
 
@@ -110,7 +110,10 @@ namespace Test
             sd = api.AddProductByBarCode(TerminalId, "4823003208107", 1); 
             sd= api.AddProductByProductId(TerminalId, sd.Id, 4, 45.00M);
             sd = api.AddProductByProductId(TerminalId, sd.Id, 3, 40.00M);
+
+            var rr = api.GetRecieptByTerminalId(TerminalId, true);
             return;
+
             sd = api.AddProductByBarCode(TerminalId, "4823021808778", 1); 
                                                                          
             sd = api.AddProductByBarCode(TerminalId, "1110716760019", 1); //хліб житній
@@ -266,7 +269,7 @@ namespace Test
 
             
 
-            var rr = api.GetProduct(TerminalId);
+            var rr11 = api.GetProduct(TerminalId);
             var Pay = new ReceiptPayment[] {
                 new ReceiptPayment
             {
