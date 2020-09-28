@@ -36,15 +36,15 @@ namespace Test
             Console.WriteLine("Start");
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
 
-            //await CreateDataBaseAsync(true);
+            //await CreateDataBaseAsync(false);
 
-            //TestReceipt();
+            TestReceipt();
 
 
             //TestKit();
 
             //LoadReceiptJson();
-            new ApiPSU().Bl.ds.LoadWeightKasa2Period();
+            //new ApiPSU().Bl.ds.LoadWeightKasa2Period();
 
              //new ApiPSU().Bl.ds.LoadWeightKasa2Period(new DateTime(2020, 8, 1),1); 
 
@@ -84,8 +84,7 @@ namespace Test
             var api = new ApiPSU();
             ProductViewModel sd;
 
-            sd = api.AddProductByBarCode(TerminalId, "8887290101608", 1);
-            return;
+           // sd = api.AddProductByBarCode(TerminalId, "8887290101608", 1);  return;
 
             //var Recvm = api.GetReceiptViewModel(new IdReceipt { CodePeriod = 20200915, IdWorkplace = 72, CodeReceipt = 29 }); return;
 
@@ -110,6 +109,7 @@ namespace Test
 
             sd = api.AddProductByBarCode(TerminalId, "4823003208107", 1); 
             sd= api.AddProductByProductId(TerminalId, sd.Id, 4, 45.00M);
+            sd = api.AddProductByProductId(TerminalId, sd.Id, 3, 40.00M);
             return;
             sd = api.AddProductByBarCode(TerminalId, "4823021808778", 1); 
                                                                          

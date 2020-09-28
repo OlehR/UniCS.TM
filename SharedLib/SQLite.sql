@@ -277,8 +277,14 @@ replace into WARES_RECEIPT_PROMOTION (id_workplace, code_period, code_receipt, c
  values (
   @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit,
   @Quantity, @Sum, @CodePS,@NumberGroup, @BarCode2Category,@TypeDiscount --,(select COALESCE(max(sort),0)+1 from wares_receipt  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt)
-  )
-
+  );
+ update WARES_RECEIPT 
+set price = ifnull( (select  max( (0.000+wrp.sum)/wrp.QUANTITY)
+ from WARES_RECEIPT_PROMOTION wrp
+where wrp.id_workplace=@IdWorkplace and  wrp.code_period =@CodePeriod and  wrp.code_receipt=@CodeReceipt and  wrp.code_wares=WARES_RECEIPT.code_wares and Type_Discount=@TypeDiscount) 
+,price)
+where WARES_RECEIPT.id_workplace=@IdWorkplace and  WARES_RECEIPT.code_period =@CodePeriod and  WARES_RECEIPT.code_receipt=@CodeReceipt and WARES_RECEIPT.code_wares=@CodeWares
+and @TypeDiscount=11; 
 
 [SqlDeleteWaresReceiptPromotion]
  delete from  WARES_RECEIPT_PROMOTION 

@@ -358,24 +358,31 @@ where nn=1 ";
         }
 
         public void LoadWeightKasa2Period(DateTime pDT = default(DateTime))
-        {  
-            if (pDT == default(DateTime))
+        {
+            try
             {
-                pDT = db.GetConfig<DateTime>($"Load_Weight");
                 if (pDT == default(DateTime))
-                    pDT = DateTime.Now.Date.AddDays(-1);
+                {
+                    pDT = db.GetConfig<DateTime>($"Load_Weight");
+                    if (pDT == default(DateTime))
+                        pDT = DateTime.Now.Date.AddDays(-1);
+                }
+                bool isCalc = false;
+                while (pDT < DateTime.Now.Date)
+                {
+                    LoadWeightKasa2(pDT, 0);
+                    LoadWeightKasa2(pDT, 1);
+                    pDT = pDT.AddDays(1);
+                    isCalc = true;
+                }
+                if (isCalc)
+                {
+                    db.SetConfig<DateTime>($"Load_Weight", pDT);
+                }
             }
-            bool isCalc = false;
-            while (pDT < DateTime.Now.Date)
+            catch (Exception ex)
             {
-                LoadWeightKasa2(pDT, 0);
-                LoadWeightKasa2(pDT, 1);
-                pDT = pDT.AddDays(1);
-                isCalc = true;
-            }
-            if (isCalc)
-            {
-                db.SetConfig<DateTime>($"Load_Weight", pDT);
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "LoadWeightKasa2Period=> " + ex.Message });
             }
         }
 

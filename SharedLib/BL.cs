@@ -468,7 +468,11 @@ namespace SharedLib
             if( !( (CurDate.Hour==23 && CurDate.Minute>44)  || CurDate.Hour==0))
                await ds.SendAllReceipt().ConfigureAwait(false);
 
-            ds.LoadWeightKasa();
+            if (CurDate.Hour < 7)
+            {
+                ds.LoadWeightKasa();
+                ds.LoadWeightKasa2Period();
+            }
             return res;
         }
 

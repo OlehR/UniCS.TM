@@ -220,17 +220,17 @@ namespace SharedLib
             });
         }
 
-        public override bool RecalcPrice(IdReceiptWares parIdReceipt)
+        public override bool RecalcPrice(IdReceiptWares pIdReceiptWares)
         {
             var startTime = System.Diagnostics.Stopwatch.StartNew();
 
-            lock (GetObjectForLockByIdWorkplace(parIdReceipt.IdWorkplace))
+            lock (GetObjectForLockByIdWorkplace(pIdReceiptWares.IdWorkplace))
             {
                 try
                 {
-                    var RH = ViewReceipt(parIdReceipt);
+                    var RH = ViewReceipt(pIdReceiptWares);
                     ParameterPromotion par;
-                    var InfoClient = GetInfoClientByReceipt(parIdReceipt);
+                    var InfoClient = GetInfoClientByReceipt(pIdReceiptWares);
                     if (InfoClient.Count() == 1)
                         par = InfoClient.First();                        
                     else
@@ -241,7 +241,7 @@ namespace SharedLib
                     par.Time = Convert.ToInt32(RH.DateReceipt.ToString("HHmm"));
                     par.CodeDealer = Global.DefaultCodeDealer;
 
-                    var r = ViewReceiptWares(parIdReceipt);
+                    var r = ViewReceiptWares(pIdReceiptWares);
 
                     foreach (var RW in r)
                     {
@@ -249,7 +249,7 @@ namespace SharedLib
                         par.CodeWares = RW.CodeWares;
                         var Res = GetPrice(par);
 
-                        if (Res != null)
+                        if (Res != null && RW.ParPrice1 != 999999)//Не перераховуємо для  Сигарет
                         {
                             RW.Price = MPI.GetPrice(Res.Price, Res.IsIgnoreMinPrice == 0, Res.CodePs > 0);
                             RW.TypePrice = MPI.typePrice;
@@ -261,8 +261,8 @@ namespace SharedLib
 
                         ReplaceWaresReceipt(RW);
                     }
-                    GetPricePromotionKit(parIdReceipt, parIdReceipt.CodeWares);
-                    RecalcHeadReceipt(parIdReceipt);
+                    GetPricePromotionKit(pIdReceiptWares, pIdReceiptWares.CodeWares);
+                    RecalcHeadReceipt(pIdReceiptWares);
                     startTime.Stop();
                     Console.WriteLine($"RecalcPrice=>{startTime.Elapsed}  {r?.Count()}");
                     /*foreach (var RW in r)
@@ -272,7 +272,7 @@ namespace SharedLib
                 }
                 catch (Exception ex)
                 {
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace), Exception = ex, Status =eSyncStatus.Error,StatusDescription=ex.Message });
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceiptWares.IdWorkplace), Exception = ex, Status =eSyncStatus.Error,StatusDescription=ex.Message });
                     return false;
                 }
             }
@@ -488,13 +488,13 @@ namespace SharedLib
             }
         }
 
-        public override bool UpdateQuantityWares(ReceiptWares parIdReceiptWares)
+        public override bool UpdateQuantityWares(ReceiptWares parReceiptWares)
         {
             using (var DB = new SQLite(ReceiptFile))
             {
-                lock (GetObjectForLockByIdWorkplace(parIdReceiptWares.IdWorkplace))
+                lock (GetObjectForLockByIdWorkplace(parReceiptWares.IdWorkplace))
                 {
-                    return DB.ExecuteNonQuery(SqlUpdateQuantityWares, parIdReceiptWares) == 0 /*&& RecalcHeadReceipt(parParameters)*/;
+                    return DB.ExecuteNonQuery(SqlUpdateQuantityWares, parReceiptWares) == 0 /*&& RecalcHeadReceipt(parParameters)*/;
                 }
             }
         }
@@ -526,9 +526,23 @@ namespace SharedLib
 
         public override bool ReplaceWaresReceiptPromotion(IEnumerable<WaresReceiptPromotion> parData)
         {
+            var Sql = @" update WARES_RECEIPT 
+set price = ifnull( (select  max( (0.000+wrp.sum)/wrp.QUANTITY)
+ from WARES_RECEIPT_PROMOTION wrp
+where wrp.id_workplace=@IdWorkplace and  wrp.code_period =@CodePeriod and  wrp.code_receipt=@CodeReceipt and  wrp.code_wares=WARES_RECEIPT.code_wares and Type_Discount=@TypeDiscount) 
+,price)
+, sum =quantity* ifnull( (select  max( (0.000+wrp.sum)/wrp.QUANTITY)
+ from WARES_RECEIPT_PROMOTION wrp
+where wrp.id_workplace=@IdWorkplace and  wrp.code_period =@CodePeriod and  wrp.code_receipt=@CodeReceipt and  wrp.code_wares=WARES_RECEIPT.code_wares and Type_Discount=@TypeDiscount) 
+,price)
+,Type_Price=9
+,par_price_1=999999
+where WARES_RECEIPT.id_workplace=@IdWorkplace and  WARES_RECEIPT.code_period =@CodePeriod and  WARES_RECEIPT.code_receipt=@CodeReceipt and WARES_RECEIPT.code_wares=@CodeWares
+and @TypeDiscount=11; ";
             using (var DB = new SQLite(ReceiptFile))
             {
                 DB.BulkExecuteNonQuery<WaresReceiptPromotion>(SqlReplaceWaresReceiptPromotion, parData);
+                DB.BulkExecuteNonQuery<WaresReceiptPromotion>(Sql, parData);
             }
             return true;
         }
