@@ -9,3 +9,4 @@ obj
 /.vs
 /Test/Program.cs
 /packages
+/SharedLib/FileLogger.cs

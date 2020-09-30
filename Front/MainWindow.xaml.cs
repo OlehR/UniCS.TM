@@ -166,5 +166,34 @@ namespace Front
             }
         }
 
+        private void _Back(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void _Search(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void _ButtonHelp(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void _OwnBag(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void _BuyBag(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void _ButtonPayment(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
