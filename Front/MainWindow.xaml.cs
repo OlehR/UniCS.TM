@@ -21,13 +21,10 @@ namespace Front
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-
         public string WaresQuantity { get; set; }
         public string MoneySum { get; set; }
         public bool Volume { get; set; }
         public ObservableCollection<ReceiptWares> ListWares { get; set; }
-
-
 
         public MainWindow()
         {
@@ -50,9 +47,8 @@ namespace Front
 
             WaresList.ItemsSource = ListWares;// Wares;
 
-
             CultureInfo currLang = App.Language;
-
+            Recalc();
 
         }
 
@@ -60,6 +56,7 @@ namespace Front
         {
             Button btn = sender as Button;
             ListWares.Remove((ReceiptWares)btn.DataContext);
+            Recalc();            
         }
 
         private void _Minus(object sender, RoutedEventArgs e)
@@ -71,6 +68,7 @@ namespace Front
                 temp.Quantity--;
                 WaresList.Items.Refresh();
             }
+            Recalc();
         }
 
         private void _Plus(object sender, RoutedEventArgs e)
@@ -82,11 +80,19 @@ namespace Front
                 temp.Quantity ++;
                 WaresList.Items.Refresh();
             }
+            Recalc();
         }
 
         private void _VolumeButton(object sender, RoutedEventArgs e)
         {
             Volume = !Volume;
+        }
+
+        private void Recalc()
+        {
+            var Sum=ListWares.Sum(r => r.Sum);
+            MoneySum = Sum.ToString();
+            WaresQuantity = ListWares.Count().ToString();
         }
 
         private void _ChangeLanguage(object sender, RoutedEventArgs e)
@@ -103,7 +109,6 @@ namespace Front
                 }
             }
             catch { }
-
 
             switch (btn.Name)
             {
