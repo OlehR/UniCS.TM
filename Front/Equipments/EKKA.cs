@@ -9,9 +9,6 @@ namespace MID
     /// </summary>
     public class EKKA: Front.Equipments.Equipment
     {
-        
-   
- 
         protected bool varIsFiscal = true;
         protected int  varCodeEKKA = 0;
         protected int  varPort;
@@ -42,14 +39,12 @@ namespace MID
         ///
         /// </summary>
         /// <returns></returns>
-        virtual public  bool OpenEKKA(int parPort,int parBaudRate)
+        virtual public  bool Open(int parPort,int parBaudRate)
         {
             varPort=parPort;
             varBaudRate=parBaudRate;
             return false;
         }
-        
-          
 
         
         virtual public bool BeginReturnReceipt()
@@ -71,7 +66,7 @@ namespace MID
         
         virtual public bool CloseReceipt(decimal parSumReceipt = 0, decimal parMoneyCash = 0, decimal parMoneyPos = 0, decimal parMoneyDiscount = 0)
         {
-            return false;
+            throw new NotImplementedException();
         }
         
         /// <summary>
@@ -86,7 +81,7 @@ namespace MID
         
         virtual public bool AddLine(int parCodeEKKA, decimal  parQuantity, decimal parDiscount = 0 )
         {
-            return false;
+            throw new NotImplementedException();
         }
         
         
@@ -101,32 +96,32 @@ namespace MID
         
         virtual public int AddWares(int parCodeWares, int parGroupTax, string parNameWares, decimal parPrice)
         {
-            return 0;
+            throw new NotImplementedException();
         }
    
         virtual public bool AddDiscountReceipt(decimal parDiscount)
         {
-            return false;
+            throw new NotImplementedException();
         }
         
         virtual public bool PrintZ()
         {
-            return false;
+            throw new NotImplementedException();
         }
         
         virtual public bool PrintX()
         {
-            return false;
+            throw new NotImplementedException();
         }
 
         virtual public bool PrintMoveMoney(decimal parSum )
         {
-            return false;
+            throw new NotImplementedException();
         }
         
         virtual public  bool CloseEKKA()
         {
-            return false;
+            throw new NotImplementedException();
         }
         
   

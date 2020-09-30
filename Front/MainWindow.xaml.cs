@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -28,6 +29,32 @@ namespace Front
 
         public MainWindow()
         {
+            Global.OnReceiptCalculationComplete += (wareses, guid) =>
+            {
+
+                Debug.WriteLine("\n==========================Start===================================");
+                foreach (var receiptWarese in wareses)
+                {
+                    Debug.WriteLine($"Promotion=>{receiptWarese.GetStrWaresReceiptPromotion.Trim()} \n{receiptWarese.NameWares} - {receiptWarese.Price} Quantity=> {receiptWarese.Quantity} SumDiscount=>{receiptWarese.SumDiscount}");
+                }                
+
+                Debug.WriteLine("===========================End==========================================\n");
+            };
+
+            Global.OnSyncInfoCollected += (SyncInfo) =>
+            {
+                Console.WriteLine($"OnSyncInfoCollected Status=>{SyncInfo.Status} StatusDescription=>{SyncInfo.StatusDescription}"); 
+            };
+
+            Global.OnStatusChanged += (Status) => { };
+
+            Global.OnChangedStatusScale += (Status) => { };
+
+            Global.OnClientChanged += (client, guid) =>
+            {
+                Debug.WriteLine($"Client.Wallet=> {client.Wallet} SumBonus=>{client.SumBonus} ");               
+            };
+
             WaresQuantity = "0";
             MoneySum = "0";
             Volume = true;
