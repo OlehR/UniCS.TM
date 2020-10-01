@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using Front.Models;
@@ -25,13 +26,31 @@ namespace Front
         public string WaresQuantity { get; set; }
         public string MoneySum { get; set; }
         public bool Volume { get; set; }
+
+        public BL Bl;
+
+        IdReceipt ReciptId;
         public ObservableCollection<ReceiptWares> ListWares { get; set; }
 
         public MainWindow()
         {
+            var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
+            Bl = new BL(true);
+
             Global.OnReceiptCalculationComplete += (wareses, guid) =>
             {
-
+                try
+                {
+                    ListWares = new ObservableCollection<ReceiptWares>(wareses);
+                    Recalc();
+                    Dispatcher.BeginInvoke(
+                        new ThreadStart(() => WaresList.ItemsSource = ListWares));
+                    
+                }
+                catch(Exception ex)
+                {
+                    Debug.WriteLine("Error OnReceiptCalculationComplete" + ex.Message);
+                }
                 Debug.WriteLine("\n==========================Start===================================");
                 foreach (var receiptWarese in wareses)
                 {
@@ -55,6 +74,7 @@ namespace Front
                 Debug.WriteLine($"Client.Wallet=> {client.Wallet} SumBonus=>{client.SumBonus} ");               
             };
 
+
             WaresQuantity = "0";
             MoneySum = "0";
             Volume = true;
@@ -63,9 +83,7 @@ namespace Front
 
             MainWindowCS Processing = new MainWindowCS();
 
-            ListWares = new ObservableCollection<ReceiptWares>(Processing.GetData().ToList());
-
-            WaresQuantity = ListWares.Count.ToString();
+            ListWares = new ObservableCollection<ReceiptWares>(StartData());            
 
             ua.Tag = new CultureInfo("ua");
             en.Tag = new CultureInfo("en");
@@ -82,8 +100,13 @@ namespace Front
         private void _Delete(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
-            ListWares.Remove((ReceiptWares)btn.DataContext);
-            Recalc();            
+            if (btn.DataContext is ReceiptWares)
+            {
+                var el = btn.DataContext as ReceiptWares;
+                //ListWares.Remove((ReceiptWares)btn.DataContext);
+                Bl.ChangeQuantity(el, 0);
+            }
+                       
         }
 
         private void _Minus(object sender, RoutedEventArgs e)
@@ -93,9 +116,10 @@ namespace Front
             {
                 ReceiptWares temp = btn.DataContext as ReceiptWares;
                 temp.Quantity--;
-                WaresList.Items.Refresh();
+                Bl.ChangeQuantity(temp, temp.Quantity);
+              
             }
-            Recalc();
+            
         }
 
         private void _Plus(object sender, RoutedEventArgs e)
@@ -105,9 +129,9 @@ namespace Front
             {
                 ReceiptWares temp = btn.DataContext as ReceiptWares;
                 temp.Quantity ++;
-                WaresList.Items.Refresh();
+                Bl.ChangeQuantity(temp, temp.Quantity);
             }
-            Recalc();
+           
         }
 
         private void _VolumeButton(object sender, RoutedEventArgs e)
@@ -168,6 +192,13 @@ namespace Front
 
         private void _Back(object sender, RoutedEventArgs e)
         {
+            var rand = new Random();
+
+            string sql = @"select CODE_WARES from (select CODE_WARES,row_number() over (order by code_wares)  as nn from price p where p.code_DEALER=2)
+                        where nn=  cast(abs(random()/9223372036854775808.0)*1000 as int)";
+            var CodeWares = Bl.db.db.ExecuteScalar<int>(sql);
+            if(CodeWares>0)
+                Bl.AddWaresCode(ReciptId, CodeWares,0,Math.Round(1M +5M* rand.Next()/(decimal)int.MaxValue));
 
         }
 
@@ -194,6 +225,17 @@ namespace Front
         private void _ButtonPayment(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private IEnumerable<ReceiptWares> StartData()
+        {
+            var TerminalId = Guid.Parse("1bb89aa9-dbdf-4eb0-b7a2-094665c3fdd0");
+            ReciptId = Bl.GetNewIdReceipt(TerminalId);
+            Bl.AddWaresBarCode(ReciptId, "4823086109988", 10);
+            Bl.AddWaresBarCode(ReciptId, "7622300813437", 1);
+            Bl.AddWaresBarCode(ReciptId, "2201652300229", 3);
+            Bl.AddWaresBarCode(ReciptId, "1110011760018", 11);
+            return Bl.GetWaresReceipt(ReciptId);
         }
     }
 }

@@ -76,8 +76,9 @@ namespace ModernIntegration
         public override ProductViewModel AddProductByProductId(Guid parTerminalId, Guid parProductId, decimal parQuantity = 0, decimal parPrice=0)
         {
             var CurReceipt = GetCurrentReceiptByTerminalId(parTerminalId);
-            var g = CurReceipt.ReceiptId;
-            var RW = Bl.AddWaresCode(CurReceipt, parProductId, parQuantity,parPrice);
+            //var g = CurReceipt.ReceiptId;
+            var WId = new IdReceiptWares { WaresId = parProductId };
+            var RW = Bl.AddWaresCode(CurReceipt, WId.CodeWares, WId.CodeUnit,parPrice);
             //TODO: OnReceiptChanged?.Invoke(receipt,terminalId);
             if (RW == null)
                 return null;

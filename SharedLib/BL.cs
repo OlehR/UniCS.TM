@@ -180,31 +180,26 @@ namespace SharedLib
             return AddReceiptWares(W);
         }
 
-        public ReceiptWares AddWaresCode(IdReceipt parIdReceipt, Guid parProductId, decimal parQuantity = 0, decimal parPrice = 0)
+        public ReceiptWares AddWaresCode(IdReceipt pIdReceipt,int pCodeWares,int pCodeUnit, decimal pQuantity = 0, decimal pPrice = 0)
         {
-            int CodeWares = 0;
-            if (int.TryParse(parProductId.ToString().Substring(24), out CodeWares))
-            {
-                var WId = new IdReceiptWares { WaresId = parProductId };
-
-                var w = db.FindWares(null, null, WId.CodeWares, WId.CodeUnit);
+                var w = db.FindWares(null, null, pCodeWares, pCodeUnit);
                 if (w.Count() == 1)
                 {
                     var W = w.First();
-                    if (parQuantity == 0)
+                    if (pQuantity == 0)
                         return W;
-                    W.SetIdReceipt(parIdReceipt);
-                    if (parPrice > 0 || !W.IsMultiplePrices)
+                    W.SetIdReceipt(pIdReceipt);
+                    if (pPrice > 0 || !W.IsMultiplePrices)
                     {
-                        W.Quantity = (W.CodeUnit == Global.WeightCodeUnit ? parQuantity / 1000m : parQuantity);//Хак для вагового товару Який приходить в грамах.
+                        W.Quantity = (W.CodeUnit == Global.WeightCodeUnit ? pQuantity / 1000m : pQuantity);//Хак для вагового товару Який приходить в грамах.
                         var res= AddReceiptWares(W,false);
-                        if (parPrice > 0 && W.IsMultiplePrices)
+                        if (pPrice > 0 && W.IsMultiplePrices)
                         {
                             WaresReceiptPromotion[] r = new WaresReceiptPromotion[1] { new WaresReceiptPromotion(W)
-                            {CodeWares=W.CodeWares, Price= parPrice*(W.TypeWares==2?1.05M:1M), TypeDiscount=eTypeDiscount.Price,Quantity=parQuantity,CodePS=999999 }
+                            {CodeWares=W.CodeWares, Price= pPrice*(W.TypeWares==2?1.05M:1M), TypeDiscount=eTypeDiscount.Price,Quantity=pQuantity,CodePS=999999 }
                             };
                             db.ReplaceWaresReceiptPromotion(r);
-                            db.RecalcHeadReceipt(parIdReceipt);
+                            db.RecalcHeadReceipt(pIdReceipt);
                         }
                         if ( Global.RecalcPriceOnLine)
                             db.RecalcPriceAsync(W);
@@ -214,7 +209,7 @@ namespace SharedLib
                     else
                         return W;
                 }
-            }
+            
             return null;
         }
 
