@@ -231,7 +231,6 @@ namespace SharedLib
             {
                 db.DeleteReceiptWares(parReceiptWaresId);
                 _ = VR.SendMessageAsync(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum, VR.eTypeVRMessage.DeleteWares);
-
             }
             else
             {               

@@ -29,11 +29,21 @@
 
   <ItemGroup>
     <PackageReference Include="PropertyChanged.Fody" Version="3.2.7" />
+    <PackageReference Include="SerialPortStream" Version="2.2.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ModelMID\ModelMID.csproj" />
     <ProjectReference Include="..\SharedLib\SharedLib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Mint.Hardware.ControlScales.BST106M60S">
+      <HintPath>..\SharedLib\dll\Mint.Hardware.ControlScales.BST106M60S.dll</HintPath>
+    </Reference>
+    <Reference Include="Mint.Hardware.Lamps.Lamp">
+      <HintPath>..\SharedLib\dll\Mint.Hardware.Lamps.Lamp.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

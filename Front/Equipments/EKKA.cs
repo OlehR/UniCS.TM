@@ -20,8 +20,9 @@ namespace MID
         protected string varOperatorPass = "0000";
         protected int varCodeWorkPlace = 1;
         protected bool varIsAutoPrintOperator = false;
-        
-        
+
+        public EKKA(string pSerialPortName, int pBaudRate, Action<string, string> pLogger) : base(pSerialPortName, pBaudRate) { }
+
         public virtual bool SetOperatorName(string parOperatorName)
         {
             varOperatorName = parOperatorName;

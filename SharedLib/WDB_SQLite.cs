@@ -27,7 +27,8 @@ namespace SharedLib
 
         private string Connect = null;
         private string ConfigFile { get { return Path.Combine(ModelMID.Global.PathDB, "config.db"); } }
-        private string MidFile { get { return string.IsNullOrEmpty(Connect) ? Path.Combine(GetCurrentMIDFile) : Connect; } }
+        private string LastMidFile=null;
+        private string MidFile { get { return string.IsNullOrEmpty(Connect) ? (string.IsNullOrEmpty(LastMidFile)?  GetCurrentMIDFile: LastMidFile) : Connect; } }
 
         private string GetReceiptFile() { return Path.Combine(ModelMID.Global.PathDB, $"{DT:yyyyMM}", $"Rc_{ModelMID.Global.IdWorkPlace}_{DT:yyyyMMdd}.db"); }
 
@@ -76,10 +77,21 @@ namespace SharedLib
 
             if (!File.Exists(MidFile))
             {
-                var db = new SQLite(MidFile);
-                db.ExecuteNonQuery(SqlCreateMIDTable);
-                db.Close();
-                db = null;
+                if (pIsUseOldDB)
+                {
+                    db = new SQLite(ConfigFile);
+                    var varLastMidFile = GetConfig<string>("Last_MID");
+                    db = null;
+                    if (!string.IsNullOrEmpty(varLastMidFile) && File.Exists(varLastMidFile))
+                        LastMidFile = varLastMidFile;
+                }
+                if(!pIsUseOldDB || string.IsNullOrEmpty(LastMidFile))
+                {
+                    var db = new SQLite(MidFile);
+                    db.ExecuteNonQuery(SqlCreateMIDTable);
+                    db.Close();
+                    db = null;
+                }
             }
             /*
             if (pTypeDb == eTypeDb.AllMid || pTypeDb == eTypeDb.AllRC)
