@@ -42,9 +42,9 @@ namespace Front
                 try
                 {
                     ListWares = new ObservableCollection<ReceiptWares>(wareses);
-                    Recalc();
+                    
                     Dispatcher.BeginInvoke(
-                        new ThreadStart(() => WaresList.ItemsSource = ListWares));
+                        new ThreadStart(() => { WaresList.ItemsSource = ListWares; Recalc(); }));
                     
                 }
                 catch(Exception ex)
