@@ -19,11 +19,13 @@ namespace Front
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window//, INotifyPropertyChanged
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        //public event PropertyChangedEventHandler PropertyChanged;
+        
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public string WaresQuantity { get; set; }
+        
         public string MoneySum { get; set; }
         public bool Volume { get; set; }
 
