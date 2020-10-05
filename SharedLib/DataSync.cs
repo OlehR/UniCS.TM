@@ -280,7 +280,7 @@ namespace SharedLib
                     try
                     {
                         var body = soapTo1C.GenBody("GetRestOfLabel", new Parameters[] { new Parameters("CodeOfLabel", parBarCode) });
-                        var res = await soapTo1C.RequestAsync(Global.Server1C, body, 5000);
+                        var res = await soapTo1C.RequestAsync(Global.Server1C, body, 2000);
                         isGood = res.Equals("1");
 
                         Global.ErrorDiscountOnLine = 0;

@@ -298,9 +298,15 @@ select sum(wr.quantity) quantity
                      and wr.code_wares=@CodeWares and wr.code_unit = @CodeUnit --and sort <> @Sort
 
 [SqlInsertBarCode2Cat]
-update wares_receipt set  BARCODE_2_CATEGORY=@BarCode2Category
+update wares_receipt set  BARCODE_2_CATEGORY=@BarCode2Category,
+                     price = case when PRIORITY=0  then PRICE_DEALER  else price end,
+                     sum = case when PRIORITY=0  then round(PRICE_DEALER*QUANTITY,2)  else sum end,
+                     TYPE_PRICE = case when PRIORITY=0  then 0  else TYPE_PRICE end,
+                     PAR_PRICE_1 = case when PRIORITY=0  then 0  else PAR_PRICE_1 end,
+                     PAR_PRICE_2 = case when PRIORITY=0  then 0  else PAR_PRICE_2 end,
+                     PAR_PRICE_3 = case when PRIORITY=0  then 0  else PAR_PRICE_3 end
                      where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt 
-                     and code_wares=@CodeWares; -- and code_unit=@CodeUnit
+                     and code_wares=@CodeWares;
 [SqlUpdateQuantityWares]
 update wares_receipt set  quantity=  @Quantity, 
                             sort= case when @Sort=-1 then sort else  (select COALESCE(max(sort),0)+1 from wares_receipt  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt and code_wares<>@CodeWares) end,

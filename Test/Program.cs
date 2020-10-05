@@ -90,13 +90,14 @@ namespace Test
             sd = api.AddProductByBarCode(TerminalId, "2201652301489", 1); //Морква
             //Thread.Sleep(2000);
             sd = api.AddProductByBarCode(TerminalId, "7773002160043", 1); //товар 2 кат
+            sd = api.AddProductByBarCode(TerminalId, "4823086109988", 1);
 
             sd = api.AddProductByBarCode(TerminalId, "2201651902226", 1); //
          
-            sd = api.AddProductByBarCode(TerminalId, "7775006620509", 1); //товар 2 кат*/
-            Thread.Sleep(2000);
+         //   sd = api.AddProductByBarCode(TerminalId, "7775006620509", 1); //товар 2 кат*/
+            Thread.Sleep(4000);
 
-            var clf = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
+ //           var clf = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
 
 
             return;
