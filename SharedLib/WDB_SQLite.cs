@@ -261,7 +261,7 @@ namespace SharedLib
                         par.CodeWares = RW.CodeWares;
                         var Res = GetPrice(par);
 
-                        if (Res != null && RW.ParPrice1 != 999999)//Не перераховуємо для  Сигарет
+                        if (Res != null && RW.ParPrice1 != 999999 && (Res.Priority>0 || string.IsNullOrEmpty(RW.BarCode2Category) ))//Не перераховуємо для  Сигарет s для 2 категорії окрім пріоритет 1
                         {
                             RW.Price = MPI.GetPrice(Res.Price, Res.IsIgnoreMinPrice == 0, Res.CodePs > 0);
                             RW.TypePrice = MPI.typePrice;
@@ -270,6 +270,9 @@ namespace SharedLib
                             RW.ParPrice3 = Res.Data;
                             RW.Priority = Res.Priority;
                         }
+                        //Якщо друга категорія - перераховуємо на основі Роздрібної ціни.
+                        if (Res.Priority == 0 && !string.IsNullOrEmpty(RW.BarCode2Category) && RW.BarCode2Category.Length == 13)
+                            RW.Price = RW.PriceDealer;
 
                         ReplaceWaresReceipt(RW);
                     }
@@ -318,7 +321,8 @@ namespace SharedLib
                 if (Quantity > 0) // Надаєм знижку на інші позиції набору.
                 {
                     var varQuantityReceipt = RW.Where(e => e.CodeWares == el.CodeWares).Sum(e => e.Quantity);
-                    var varQuantityUsed = varRes.Where(e => e.CodeWares == el.CodeWares && e.NumberGroup==el.NumberGroup).Sum(e => e.Quantity);
+                    // Можливо поправить ситуацію з неправильно заведенеми акцічми.
+                    var varQuantityUsed = varRes.Where(e => e.CodeWares == el.CodeWares /*&& e.NumberGroup==el.NumberGroup*/).Sum(e => e.Quantity);
                     if (varQuantityReceipt - varQuantityUsed > 0) //Якщо ще можемо дати знижку на позицію
                     {
                         if (varQuantityReceipt - varQuantityUsed >= Quantity)

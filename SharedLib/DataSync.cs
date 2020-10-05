@@ -258,7 +258,7 @@ namespace SharedLib
                 }
                 var Cat2First = Cat2.First();
                 Cat2First.BarCode2Category = parBarCode==null?"":parBarCode;
-                Cat2First.Price = Cat2First.Price * (100m - (decimal)parPercent) / 100m;
+                Cat2First.Price =  Cat2First.Price * (100m - (decimal)parPercent) / 100m;
 
                 var LastQuantyity= db.GetLastQuantity(Cat2First);
                 //Якщо не ваговий - то знижка на 1 шт.

@@ -78,7 +78,7 @@ namespace ModernIntegration
             var CurReceipt = GetCurrentReceiptByTerminalId(parTerminalId);
             //var g = CurReceipt.ReceiptId;
             var WId = new IdReceiptWares { WaresId = parProductId };
-            var RW = Bl.AddWaresCode(CurReceipt, WId.CodeWares, WId.CodeUnit,parPrice);
+            var RW = Bl.AddWaresCode(CurReceipt, WId.CodeWares, WId.CodeUnit, parQuantity,parPrice);
             //TODO: OnReceiptChanged?.Invoke(receipt,terminalId);
             if (RW == null)
                 return null;

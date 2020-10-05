@@ -247,7 +247,7 @@ replace into wares_receipt (id_workplace, code_period, code_receipt, code_wares,
 
 [SqlRecalcHeadReceipt]
 update WARES_RECEIPT 
-set SUM_DISCOUNT = ifnull( ( select wrp.QUANTITY*wr.price-wrp.sum 
+set SUM_DISCOUNT = ifnull( ( select case when wrp.QUANTITY is null then 0 when wr.sum-(wrp.QUANTITY*wr.price-wrp.sum)>0 then  wrp.QUANTITY*wr.price-wrp.sum  else wr.sum-0.1 end
 from 
 (select sum( QUANTITY) as QUANTITY, sum(sum) as sum from WARES_RECEIPT_PROMOTION wrp
 where wrp.id_workplace=@IdWorkplace and  wrp.code_period =@CodePeriod and  wrp.code_receipt=@CodeReceipt and  wrp.code_wares=WARES_RECEIPT.code_wares) as wrp
@@ -256,6 +256,7 @@ join
     on  ( wr.id_workplace=@IdWorkplace and  wr.code_period =@CodePeriod and  wr.code_receipt=@CodeReceipt and wr.code_wares=WARES_RECEIPT.code_wares )
 ),0)
 where WARES_RECEIPT.id_workplace=@IdWorkplace and  WARES_RECEIPT.code_period =@CodePeriod and  WARES_RECEIPT.code_receipt=@CodeReceipt; 
+
 update receipt 
        set sum_receipt =ifnull(
            (select sum(wr.sum) from wares_receipt wr 
@@ -301,7 +302,8 @@ update wares_receipt set  BARCODE_2_CATEGORY=@BarCode2Category
                      where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt 
                      and code_wares=@CodeWares; -- and code_unit=@CodeUnit
 [SqlUpdateQuantityWares]
-update wares_receipt set  quantity= @Quantity, sort= (select COALESCE(max(sort),0)+1 from wares_receipt  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt and code_wares<>@CodeWares) ,
+update wares_receipt set  quantity=  @Quantity, 
+                            sort= case when @Sort=-1 then sort else  (select COALESCE(max(sort),0)+1 from wares_receipt  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt and code_wares<>@CodeWares) end,
 						   sum=@Quantity*price ---, Sum_Vat=@SumVat
                      where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt 
                      and code_wares=@CodeWares;-- and code_unit=@CodeUnit;

@@ -236,6 +236,7 @@ namespace SharedLib
             {               
                 //w.SetIdReceiptWares();
                 w.Quantity = parQuantity;
+                w.Sort = -1;
                 res = db.UpdateQuantityWares(w);
                 _ = VR.SendMessageAsync(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum, VR.eTypeVRMessage.UpdateWares);
             }
@@ -262,8 +263,7 @@ namespace SharedLib
             if (r.Count() == 1)
             {
                 var client = r.First();
-                UpdateClientInReceipt(idReceipt, client);
-               
+                UpdateClientInReceipt(idReceipt, client);               
                 return client;
             }
             return null;

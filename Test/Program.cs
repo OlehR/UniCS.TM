@@ -36,7 +36,7 @@ namespace Test
             Console.WriteLine("Start");
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
 
-            //await CreateDataBaseAsync(true);
+           //await CreateDataBaseAsync(true);
 
             TestReceipt();
 
@@ -78,13 +78,30 @@ namespace Test
         {
             //var TerminalId = Guid.Parse("1bb89aa9-dbdf-4eb0-b7a2-094665c3fdd0");//14
             var TerminalId = Guid.Parse("27aaa6d3-8824-475d-a7d4-3269472ba950");//19
-            var ProductId = Guid.Parse("00000000-abcd-0000-0019-000000161615");
+            var ProductId = Guid.Parse("00000000-abcd-0000-0019-000000159475");
             var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009000");
             var ReceiptId = Guid.Parse("00000062-ffff-2020-0326-000000000008");
             var api = new ApiPSU();
             ProductViewModel sd;
+            var rrr=api.AddProductByProductId(TerminalId, ProductId, 1);
 
-           // sd = api.AddProductByBarCode(TerminalId, "8887290101608", 1);  return;
+            var clff = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
+
+            sd = api.AddProductByBarCode(TerminalId, "2201652301489", 1); //Морква
+            //Thread.Sleep(2000);
+            sd = api.AddProductByBarCode(TerminalId, "7773002160043", 1); //товар 2 кат
+
+            sd = api.AddProductByBarCode(TerminalId, "2201651902226", 1); //
+         
+            sd = api.AddProductByBarCode(TerminalId, "7775006620509", 1); //товар 2 кат*/
+            Thread.Sleep(2000);
+
+            var clf = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
+
+
+            return;
+
+            // sd = api.AddProductByBarCode(TerminalId, "8887290101608", 1);  return;
 
             //var Recvm = api.GetReceiptViewModel(new IdReceipt { CodePeriod = 20200915, IdWorkplace = 72, CodeReceipt = 29 }); return;
 
@@ -98,12 +115,15 @@ namespace Test
 
             //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200920, IdWorkplace = 72, CodeReceipt = 21 }); return;
 
+            api.Bl.GetClientByBarCode(new IdReceipt() { CodePeriod = 20201005, IdWorkplace = 68, CodeReceipt = 27}, "8810005077387"); return;
 
             // api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200730, IdWorkplace = 68, CodeReceipt = 8}); return;
 
             //for(int i = 8720; i<= 8720; i++)
             //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200706, IdWorkplace = 62, CodeReceipt = i }); 
             //return;
+
+            //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200706, IdWorkplace = 62, CodeReceipt = i }); 
 
             //sd = api.AddProductByBarCode(TerminalId, "7613036939874", 1);
 
