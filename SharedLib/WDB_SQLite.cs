@@ -553,6 +553,11 @@ where wrp.id_workplace=@IdWorkplace and  wrp.code_period =@CodePeriod and  wrp.c
 ,price)
 ,Type_Price=9
 ,par_price_1=999999
+, PRIORITY=1
+, PRICE_DEALER= ifnull((select  max( (0.000+wrp.sum)/wrp.QUANTITY)
+ from WARES_RECEIPT_PROMOTION wrp
+where wrp.id_workplace=@IdWorkplace and  wrp.code_period =@CodePeriod and  wrp.code_receipt=@CodeReceipt and  wrp.code_wares=WARES_RECEIPT.code_wares and Type_Discount=@TypeDiscount) 
+,PRICE_DEALER)
 where WARES_RECEIPT.id_workplace=@IdWorkplace and  WARES_RECEIPT.code_period =@CodePeriod and  WARES_RECEIPT.code_receipt=@CodeReceipt and WARES_RECEIPT.code_wares=@CodeWares
 and @TypeDiscount=11; ";
             using (var DB = new SQLite(ReceiptFile))

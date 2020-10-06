@@ -36,7 +36,7 @@ namespace Test
             Console.WriteLine("Start");
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
 
-           //await CreateDataBaseAsync(true);
+       //    await CreateDataBaseAsync(true);
 
             TestReceipt();
 
@@ -83,7 +83,13 @@ namespace Test
             var ReceiptId = Guid.Parse("00000062-ffff-2020-0326-000000000008");
             var api = new ApiPSU();
             ProductViewModel sd;
-            var rrr=api.AddProductByProductId(TerminalId, ProductId, 1);
+
+
+            sd = api.AddProductByBarCode(TerminalId, "4823003208107", 1);
+            sd = api.AddProductByProductId(TerminalId, sd.Id, 1, 45.71M);
+
+            return;
+            var rrr =api.AddProductByProductId(TerminalId, ProductId, 1);
 
             var clff = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
 
