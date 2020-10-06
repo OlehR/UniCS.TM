@@ -64,8 +64,8 @@ namespace ModelMID
         /// <summary>
         /// Знижка для Касового апарата та для Модерна
         /// </summary>
-        public decimal DiscountEKKA { get { return SumDiscount + (Priority == 1 ? 0 : (PriceDealer > Price ? (PriceDealer * Quantity - Sum) : 0)); }}
-                
+        public decimal DiscountEKKA { get { return SumDiscount + (Priority == 1 ? 0 : (PriceDealer > Price ? (PriceDealer * Quantity - Sum) : 0)); } }
+
         /// <summary>
         /// Приоритет спрацьованої акції
         /// </summary>
@@ -108,7 +108,7 @@ namespace ModelMID
 
         public decimal SumVat
         {
-            get { return _vat == null ? (Sum * PercentVat) / 100m : (decimal) _vat; }
+            get { return _vat == null ? (Sum * PercentVat) / 100m : (decimal)_vat; }
             set { _vat = value; }
         }
 
@@ -212,7 +212,7 @@ namespace ModelMID
                             Res += $"{name} - {el.Quantity} - {el.Sum}\n";
                         }
                 }
-                catch(Exception e) {  }
+                catch (Exception e) { }
                 return Res;
             }
         }
@@ -231,13 +231,13 @@ namespace ModelMID
         /// Код УКТЗЕТ
         /// </summary>
         public string CodeUKTZED { get; set; }
-        public bool IsUseCodeUKTZED { get { return TypeWares==1|| TypeWares==2; } }
+        public bool IsUseCodeUKTZED { get { return TypeWares == 1 || TypeWares == 2; } }
 
         public bool IsMultiplePrices { get { return Prices != null && Prices.Count() > 1 && TypeWares == 2; } }
 
         public IEnumerable<decimal> Prices;
 
-        public string GetPrices { get { return Prices==null? null: string.Join(";", Prices.Select(n => n.ToString(CultureInfo.InvariantCulture)).ToArray()); } }
+        public string GetPrices { get { return Prices == null ? null : string.Join(";", Prices.Select(n => n.ToString(CultureInfo.InvariantCulture)).ToArray()); } }
         public ReceiptWares()
         {
             Clear();
@@ -277,7 +277,16 @@ namespace ModelMID
             Quantity = 0;
             IsSave = false;
         }
-
+        public void RecalcTobacco()
+        {
+            if (TypeWares == 2 && Prices != null && Prices.Count() == 1)
+            {
+                Price = 1.05M * Prices.First();
+                PriceDealer = Price;
+                Priority = 1;
+                ParPrice1 = 999999;
+            }
+        }
 
         /*
              public virtual void SetWares(DataRow parRw, int parTypeFound = 0)

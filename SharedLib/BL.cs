@@ -169,10 +169,12 @@ namespace SharedLib
                 return null;
             
             var W = w.First();
+            W.RecalcTobacco();
             if (pBarCode.Length >= 8)
                 W.BarCode = pBarCode;
                 if (pQuantity == 0 || W.IsMultiplePrices) //Якщо сигарети не добававляємо товар.
-                return W;
+                return W;            
+
             if (W.Price == 0)//Якщо немає ціни на товар !!!!TMP Краще обробляти на GUI буде пізніше
                 return null;
             W.SetIdReceipt(pReceipt);
@@ -186,7 +188,8 @@ namespace SharedLib
                 if (w.Count() == 1)
                 {
                     var W = w.First();
-                    if (pQuantity == 0)
+                    W.RecalcTobacco();
+                if (pQuantity == 0)
                         return W;
                     W.SetIdReceipt(pIdReceipt);
                     if (pPrice > 0 || !W.IsMultiplePrices)

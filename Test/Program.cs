@@ -88,7 +88,8 @@ namespace Test
             sd = api.AddProductByBarCode(TerminalId, "4823003208107", 1);
             sd = api.AddProductByProductId(TerminalId, sd.Id, 1, 45.71M);
 
-            return;
+            sd = api.AddProductByBarCode(TerminalId, "4820000536202", 1);
+
             var rrr =api.AddProductByProductId(TerminalId, ProductId, 1);
 
             var clff = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
