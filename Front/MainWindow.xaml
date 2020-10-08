@@ -105,8 +105,8 @@
             </Border.Effect>
         <Grid Grid.Row="1" Margin="10,0,0,0">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="8*"></ColumnDefinition>
                 <ColumnDefinition Width="4*"></ColumnDefinition>
-                <ColumnDefinition Width="2*"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
@@ -128,15 +128,15 @@
                         <Border  BorderBrush="Silver" BorderThickness="0,0,0,1" >
                             <Grid Margin="10,0,0,0">
                                 <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="8*"></ColumnDefinition>
                                     <ColumnDefinition Width="4*"></ColumnDefinition>
-                                    <ColumnDefinition Width="2*"></ColumnDefinition>
                                     <ColumnDefinition Width="1*"></ColumnDefinition>
                                     <ColumnDefinition Width="1*"></ColumnDefinition>
                                     <ColumnDefinition Width="1*"></ColumnDefinition>
                                     <ColumnDefinition Width="1*"></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
 
-                                <TextBlock Grid.Column="0" Text="{Binding NameWares}" />
+                                <TextBlock FontSize="24" Grid.Column="0" Text="{Binding NameWares}" />
                                 <Grid Grid.Column="1">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="1*"></ColumnDefinition>
@@ -214,7 +214,7 @@
                                 </TextBlock>
                                 <TextBlock Grid.Column="3" Text="{Binding Price}" />
                                 <TextBlock Grid.Column="4" Text="{Binding SumDiscount}" />
-                                <TextBlock Grid.Column="5" Text="{Binding Sum}" />
+                                <TextBlock Grid.Column="5" Text="{Binding Sum}" FontWeight="Bold" FontSize="20"/>
 
                             </Grid>
                         </Border>
