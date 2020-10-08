@@ -94,7 +94,7 @@ namespace Test
 
             var clff = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
 
-            sd = api.AddProductByBarCode(TerminalId, "2201652301489", 1); //Морква
+            sd = api.AddProductByBarCode(TerminalId, "2201652301489", 1); //Морква 
             //Thread.Sleep(2000);
             sd = api.AddProductByBarCode(TerminalId, "7773002160043", 1); //товар 2 кат
             sd = api.AddProductByBarCode(TerminalId, "4823086109988", 1);

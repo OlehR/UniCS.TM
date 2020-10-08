@@ -18,6 +18,7 @@ namespace SharedLib
     public class BL
     {
         public WDB_SQLite db;
+        public IdReceipt curReciptId;
 
         public DataSync ds;
         public ControlScale CS = new ControlScale();
@@ -85,7 +86,8 @@ namespace SharedLib
         public IdReceipt GetNewIdReceipt(Guid parTerminalId, int parCodePeriod = 0)
         {
             var idReceip = new IdReceipt() { IdWorkplace = GetIdWorkplaceByTerminalId(parTerminalId), CodePeriod = parCodePeriod };
-            return db.GetNewReceipt(idReceip);
+             curReciptId= db.GetNewReceipt(idReceip);
+            return curReciptId;
         }
 
         public Receipt GetLastReceipt(Guid parTerminalId, int parCodePeriod = 0)
@@ -105,6 +107,11 @@ namespace SharedLib
             //db.RecalcPrice(receiptId);
             db.CloseReceipt(receipt);
             return true;
+        }
+
+        public ReceiptWares AddWaresBarCode( string pBarCode, decimal pQuantity = 0)
+        {
+            return AddWaresBarCode(curReciptId, pBarCode, pQuantity);
         }
 
         public ReceiptWares AddWaresBarCode(IdReceipt pReceipt, string pBarCode, decimal pQuantity = 0)
@@ -182,6 +189,10 @@ namespace SharedLib
             return AddReceiptWares(W);
         }
 
+        public ReceiptWares AddWaresCode( int pCodeWares, int pCodeUnit, decimal pQuantity = 0, decimal pPrice = 0)
+        {
+            return AddWaresCode(curReciptId, pCodeWares, pCodeUnit, pQuantity = 0, pPrice);
+        }
         public ReceiptWares AddWaresCode(IdReceipt pIdReceipt,int pCodeWares,int pCodeUnit, decimal pQuantity = 0, decimal pPrice = 0)
         {
                 var w = db.FindWares(null, null, pCodeWares, pCodeUnit);
@@ -375,9 +386,9 @@ namespace SharedLib
         }
 
        
-		public IEnumerable<ReceiptWares> GetWaresReceipt(IdReceipt parIdReceipt)
+		public IEnumerable<ReceiptWares> GetWaresReceipt(IdReceipt pIdReceipt=null)
         {
-            return db.ViewReceiptWares(parIdReceipt);
+            return db.ViewReceiptWares(pIdReceipt==null?curReciptId:pIdReceipt);
         }
 
 

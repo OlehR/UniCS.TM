@@ -60,8 +60,7 @@ namespace SharedLib
             try
             {
                 Global.IdWorkPlace = 99;
-                Global.IdWorkPlace = Convert.ToInt32(AppConfiguration["MID:IdWorkPlace"]);
-               
+                Global.IdWorkPlace = Convert.ToInt32(AppConfiguration["MID:IdWorkPlace"]);               
             }
             catch
             { Global.IdWorkPlace = 99; }

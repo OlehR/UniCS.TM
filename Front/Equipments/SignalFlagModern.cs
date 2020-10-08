@@ -25,24 +25,21 @@ Methods
 
 namespace Front.Equipments
 {
-    class SignalFlagModern: SignalFlag
+    class SignalFlagModern : SignalFlag
     {
         FlagLamp lamp;
         public SignalFlagModern(string pSerialPortName, int pBaudRate = 9600, Action<string, string> pLogger = null) : base(pSerialPortName, pBaudRate, pLogger)
         {
-
-            lamp = new FlagLamp("COM3", pBaudRate, (w, s) => { Console.WriteLine($"Lamp Log - {DateTime.Now:dd-MM-yyyy HH:mm:ss}:{w} - {s}"); });
-            lamp.Init();
-            
-
+        //    lamp = new FlagLamp(pSerialPortName, pBaudRate, (w, s) => { Console.WriteLine($"Lamp Log - {DateTime.Now:dd-MM-yyyy HH:mm:ss}:{w} - {s}"); });
+         //   lamp.Init();
         }
-            public override void SwitchToColor(Color pColor) { lamp.SwitchToColor(pColor); }
-            public override Color GetCurrentColor() { throw new NotImplementedException();/*var color = lamp.GetInfo().Result;*/ }
+        public override void SwitchToColor(Color pColor) { lamp.SwitchToColor(pColor); }
+        public override Color GetCurrentColor() { throw new NotImplementedException();/*var color = lamp.GetInfo().Result;*/ }
 
         public override void Enable() { lamp.Enable(); base.Enable(); }
         public override void Disable() { lamp.Disable(); base.Disable(); }
 
-        
+
 
 
     }

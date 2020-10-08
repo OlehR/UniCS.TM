@@ -2,12 +2,12 @@
 using System.Data;
 // using System.Data.SQLite;
 //using DatabaseLib;
-namespace MID
+namespace Front.Equipments
 {
     /// <summary>
     /// Клас для роботи з касовим апаратом
     /// </summary>
-    public class EKKA: Front.Equipments.Equipment
+    public class EKKA: Equipment
     {
         protected bool varIsFiscal = true;
         protected int  varCodeEKKA = 0;

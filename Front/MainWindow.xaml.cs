@@ -10,7 +10,9 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using Front.Equipments;
 using Front.Models;
+using Microsoft.Extensions.Configuration;
 using ModelMID;
 using SharedLib;
 
@@ -21,35 +23,38 @@ namespace Front
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public string WaresQuantity { get; set; }
-        
+
         public string MoneySum { get; set; }
         public bool Volume { get; set; }
 
         public BL Bl;
+        EquipmentFront EF;
 
-        IdReceipt ReciptId;
         public ObservableCollection<ReceiptWares> ListWares { get; set; }
 
         public MainWindow()
         {
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
+            
+
             Bl = new BL(true);
+            EF = new EquipmentFront(Bl);
 
             Global.OnReceiptCalculationComplete += (wareses, guid) =>
             {
                 try
                 {
                     ListWares = new ObservableCollection<ReceiptWares>(wareses);
-                    
+
                     Dispatcher.BeginInvoke(
                         new ThreadStart(() => { WaresList.ItemsSource = ListWares; Recalc(); }));
-                    
+
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Debug.WriteLine("Error OnReceiptCalculationComplete" + ex.Message);
                 }
@@ -57,14 +62,14 @@ namespace Front
                 foreach (var receiptWarese in wareses)
                 {
                     Debug.WriteLine($"Promotion=>{receiptWarese.GetStrWaresReceiptPromotion.Trim()} \n{receiptWarese.NameWares} - {receiptWarese.Price} Quantity=> {receiptWarese.Quantity} SumDiscount=>{receiptWarese.SumDiscount}");
-                }                
+                }
 
                 Debug.WriteLine("===========================End==========================================\n");
             };
 
             Global.OnSyncInfoCollected += (SyncInfo) =>
             {
-                Console.WriteLine($"OnSyncInfoCollected Status=>{SyncInfo.Status} StatusDescription=>{SyncInfo.StatusDescription}"); 
+                Console.WriteLine($"OnSyncInfoCollected Status=>{SyncInfo.Status} StatusDescription=>{SyncInfo.StatusDescription}");
             };
 
             Global.OnStatusChanged += (Status) => { };
@@ -73,7 +78,7 @@ namespace Front
 
             Global.OnClientChanged += (client, guid) =>
             {
-                Debug.WriteLine($"Client.Wallet=> {client.Wallet} SumBonus=>{client.SumBonus} ");               
+                Debug.WriteLine($"Client.Wallet=> {client.Wallet} SumBonus=>{client.SumBonus} ");
             };
 
 
@@ -85,7 +90,7 @@ namespace Front
 
             MainWindowCS Processing = new MainWindowCS();
 
-            ListWares = new ObservableCollection<ReceiptWares>(StartData());            
+            ListWares = new ObservableCollection<ReceiptWares>(StartData());
 
             ua.Tag = new CultureInfo("ua");
             en.Tag = new CultureInfo("en");
@@ -108,7 +113,7 @@ namespace Front
                 //ListWares.Remove((ReceiptWares)btn.DataContext);
                 Bl.ChangeQuantity(el, 0);
             }
-                       
+
         }
 
         private void _Minus(object sender, RoutedEventArgs e)
@@ -119,9 +124,7 @@ namespace Front
                 ReceiptWares temp = btn.DataContext as ReceiptWares;
                 temp.Quantity--;
                 Bl.ChangeQuantity(temp, temp.Quantity);
-              
             }
-            
         }
 
         private void _Plus(object sender, RoutedEventArgs e)
@@ -130,10 +133,10 @@ namespace Front
             if (btn.DataContext is ReceiptWares)
             {
                 ReceiptWares temp = btn.DataContext as ReceiptWares;
-                temp.Quantity ++;
+                temp.Quantity++;
                 Bl.ChangeQuantity(temp, temp.Quantity);
             }
-           
+
         }
 
         private void _VolumeButton(object sender, RoutedEventArgs e)
@@ -143,7 +146,7 @@ namespace Front
 
         private void Recalc()
         {
-            var Sum=ListWares.Sum(r => r.Sum);
+            var Sum = ListWares.Sum(r => r.Sum);
             MoneySum = Sum.ToString();
             WaresQuantity = ListWares.Count().ToString();
         }
@@ -153,7 +156,7 @@ namespace Front
             Button btn = sender as Button;
             try
             {
-                if (btn!=null)
+                if (btn != null)
                 {
                     if (btn.Tag is CultureInfo lang)
                     {
@@ -199,8 +202,8 @@ namespace Front
             string sql = @"select CODE_WARES from (select CODE_WARES,row_number() over (order by code_wares)  as nn from price p where p.code_DEALER=2)
                         where nn=  cast(abs(random()/9223372036854775808.0)*1000 as int)";
             var CodeWares = Bl.db.db.ExecuteScalar<int>(sql);
-            if(CodeWares>0)
-                Bl.AddWaresCode(ReciptId, CodeWares,0,Math.Round(1M +5M* rand.Next()/(decimal)int.MaxValue));
+            if (CodeWares > 0)
+                Bl.AddWaresCode( CodeWares, 0, Math.Round(1M + 5M * rand.Next() / (decimal)int.MaxValue));
 
         }
 
@@ -232,12 +235,17 @@ namespace Front
         private IEnumerable<ReceiptWares> StartData()
         {
             var TerminalId = Guid.Parse("1bb89aa9-dbdf-4eb0-b7a2-094665c3fdd0");
-            ReciptId = Bl.GetNewIdReceipt(TerminalId);
-            Bl.AddWaresBarCode(ReciptId, "4823086109988", 10);
-            Bl.AddWaresBarCode(ReciptId, "7622300813437", 1);
-            Bl.AddWaresBarCode(ReciptId, "2201652300229", 3);
-            Bl.AddWaresBarCode(ReciptId, "1110011760018", 11);
-            return Bl.GetWaresReceipt(ReciptId);
+            Bl.GetNewIdReceipt(TerminalId);
+            Bl.AddWaresBarCode( "4823086109988", 10);
+            Bl.AddWaresBarCode( "7622300813437", 1);
+            Bl.AddWaresBarCode( "2201652300229", 3);
+            Bl.AddWaresBarCode( "1110011760018", 11);
+            return Bl.GetWaresReceipt();
         }
+        
+
+        
     }
+
+    
 }
