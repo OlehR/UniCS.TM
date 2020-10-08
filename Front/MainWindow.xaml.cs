@@ -239,7 +239,9 @@ namespace Front
             Bl.AddWaresBarCode( "4823086109988", 10);
             Bl.AddWaresBarCode( "7622300813437", 1);
             Bl.AddWaresBarCode( "2201652300229", 3);
-            Bl.AddWaresBarCode( "1110011760018", 11);
+            Bl.AddWaresBarCode("7775002160043", 1); //товар 2 кат
+            Bl.AddWaresBarCode( "1110011760218", 11);
+            Bl.AddWaresBarCode("7773002160043", 1); //товар 2 кат
             return Bl.GetWaresReceipt();
         }
         
