@@ -83,7 +83,7 @@ namespace SharedLib
             }
             catch (Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "SendReceiptTo1CAsync=>" + parReceipt.ReceiptId.ToString() + " " + ex.Message });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "SendReceiptTo1CAsync=>" + parReceipt.ReceiptId.ToString() + " " + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
                 return false;
             }
         }
@@ -155,7 +155,7 @@ namespace SharedLib
             }
             catch (Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = (parIsFull ? eSyncStatus.Error : eSyncStatus.NoFatalError), StatusDescription = Log.ToString() });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = (parIsFull ? eSyncStatus.Error : eSyncStatus.NoFatalError), StatusDescription = Log.ToString()+ '\n' + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
                 Global.OnStatusChanged?.Invoke(db.GetStatus());
                 return false;
             }
@@ -312,7 +312,7 @@ namespace SharedLib
 
             catch (Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.Error, StatusDescription = ex.Message });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.Error, StatusDescription = ex.Message+ '\n' + new System.Diagnostics.StackTrace().ToString() });
             }
             return true;
         }

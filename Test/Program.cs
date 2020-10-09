@@ -36,7 +36,7 @@ namespace Test
             Console.WriteLine("Start");
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
 
-       //    await CreateDataBaseAsync(true);
+          // await CreateDataBaseAsync(true);
 
             TestReceipt();
 
@@ -85,7 +85,9 @@ namespace Test
             ProductViewModel sd;
 
 
-            sd = api.AddProductByBarCode(TerminalId, "4823003208107", 1);
+            sd = api.AddProductByBarCode(TerminalId, "4823096003320", 1);
+
+            return;
             sd = api.AddProductByProductId(TerminalId, sd.Id, 1, 45.71M);
 
             sd = api.AddProductByBarCode(TerminalId, "4820000536202", 1);
