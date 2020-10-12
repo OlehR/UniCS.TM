@@ -82,7 +82,7 @@ namespace Test
             //Thread.Sleep(2000);
             //return;
             //var c = api.GetCustomerByPhone(TerminalId,"0503729543");
-
+            var c = api.GetCustomerByBarCode(TerminalId, "8810005077479");
             //var ddd=api.GetReceiptByNumber(TerminalId, "55");
 
 
