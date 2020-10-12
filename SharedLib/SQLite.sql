@@ -247,7 +247,7 @@ replace into wares_receipt (id_workplace, code_period, code_receipt, code_wares,
 
 [SqlRecalcHeadReceipt]
 update WARES_RECEIPT 
-set SUM_DISCOUNT = ifnull( ( select wrp.QUANTITY*wr.price-wrp.sum 
+set SUM_DISCOUNT = ifnull( ( select case when wrp.QUANTITY is null then 0 when wr.sum-(wrp.QUANTITY*wr.price-wrp.sum)>0 then  wrp.QUANTITY*wr.price-wrp.sum  else wr.sum-0.1 end
 from 
 (select sum( QUANTITY) as QUANTITY, sum(sum) as sum from WARES_RECEIPT_PROMOTION wrp
 where wrp.id_workplace=@IdWorkplace and  wrp.code_period =@CodePeriod and  wrp.code_receipt=@CodeReceipt and  wrp.code_wares=WARES_RECEIPT.code_wares) as wrp
@@ -256,6 +256,7 @@ join
     on  ( wr.id_workplace=@IdWorkplace and  wr.code_period =@CodePeriod and  wr.code_receipt=@CodeReceipt and wr.code_wares=WARES_RECEIPT.code_wares )
 ),0)
 where WARES_RECEIPT.id_workplace=@IdWorkplace and  WARES_RECEIPT.code_period =@CodePeriod and  WARES_RECEIPT.code_receipt=@CodeReceipt; 
+
 update receipt 
        set sum_receipt =ifnull(
            (select sum(wr.sum) from wares_receipt wr 
@@ -277,8 +278,14 @@ replace into WARES_RECEIPT_PROMOTION (id_workplace, code_period, code_receipt, c
  values (
   @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit,
   @Quantity, @Sum, @CodePS,@NumberGroup, @BarCode2Category,@TypeDiscount --,(select COALESCE(max(sort),0)+1 from wares_receipt  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt)
-  )
-
+  );
+ update WARES_RECEIPT 
+set price = ifnull( (select  max( (0.000+wrp.sum)/wrp.QUANTITY)
+ from WARES_RECEIPT_PROMOTION wrp
+where wrp.id_workplace=@IdWorkplace and  wrp.code_period =@CodePeriod and  wrp.code_receipt=@CodeReceipt and  wrp.code_wares=WARES_RECEIPT.code_wares and Type_Discount=@TypeDiscount) 
+,price)
+where WARES_RECEIPT.id_workplace=@IdWorkplace and  WARES_RECEIPT.code_period =@CodePeriod and  WARES_RECEIPT.code_receipt=@CodeReceipt and WARES_RECEIPT.code_wares=@CodeWares
+and @TypeDiscount=11; 
 
 [SqlDeleteWaresReceiptPromotion]
  delete from  WARES_RECEIPT_PROMOTION 
@@ -291,11 +298,18 @@ select sum(wr.quantity) quantity
                      and wr.code_wares=@CodeWares and wr.code_unit = @CodeUnit --and sort <> @Sort
 
 [SqlInsertBarCode2Cat]
-update wares_receipt set  BARCODE_2_CATEGORY=@BarCode2Category
+update wares_receipt set  BARCODE_2_CATEGORY=@BarCode2Category,
+                     price = case when PRIORITY=0  then PRICE_DEALER  else price end,
+                     sum = case when PRIORITY=0  then round(PRICE_DEALER*QUANTITY,2)  else sum end,
+                     TYPE_PRICE = case when PRIORITY=0  then 0  else TYPE_PRICE end,
+                     PAR_PRICE_1 = case when PRIORITY=0  then 0  else PAR_PRICE_1 end,
+                     PAR_PRICE_2 = case when PRIORITY=0  then 0  else PAR_PRICE_2 end,
+                     PAR_PRICE_3 = case when PRIORITY=0  then 0  else PAR_PRICE_3 end
                      where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt 
-                     and code_wares=@CodeWares; -- and code_unit=@CodeUnit
+                     and code_wares=@CodeWares;
 [SqlUpdateQuantityWares]
-update wares_receipt set  quantity= @Quantity, sort= (select COALESCE(max(sort),0)+1 from wares_receipt  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt and code_wares<>@CodeWares) ,
+update wares_receipt set  quantity=  @Quantity, 
+                            sort= case when @Sort=-1 then sort else  (select COALESCE(max(sort),0)+1 from wares_receipt  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt and code_wares<>@CodeWares) end,
 						   sum=@Quantity*price ---, Sum_Vat=@SumVat
                      where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt 
                      and code_wares=@CodeWares;-- and code_unit=@CodeUnit;
@@ -1106,7 +1120,7 @@ sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_
 
 
 [SqlAdditionalWeightsWares]
-select WEIGHT from WEIGHT where BARCODE=@CodeWares and  STATUS=-1
+select DISTINCT WEIGHT from WEIGHT where BARCODE=@CodeWares and  STATUS=-1
 
 [SqlInsertAddWeight]
 insert into ADD_WEIGHT ( CODE_WARES, CODE_UNIT, WEIGHT) values (@CodeWares, @CodeUnit,@Weight);

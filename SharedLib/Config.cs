@@ -57,11 +57,19 @@ namespace SharedLib
             Global.Server1C= AppConfiguration["MID:Server1C"];
             if (!string.IsNullOrWhiteSpace(AppConfiguration["MID:CodeFastGroupBag"]))
                 Global.CodeFastGroupBag = Convert.ToInt32( AppConfiguration["MID:CodeFastGroupBag"]);
-
+            try
+            {
+                Global.IdWorkPlace = 99;
+                Global.IdWorkPlace = Convert.ToInt32(AppConfiguration["MID:IdWorkPlace"]);               
+            }
+            catch
+            { Global.IdWorkPlace = 99; }
 
             //GlobalVar.DefaultCodeDealer = Convert.ToInt32(AppConfiguration["MID:DefaultCodeDealer"]);
             if (!Directory.Exists(Global.PathDB))
                 Directory.CreateDirectory(Global.PathDB);
+
+
         }
     }
 }

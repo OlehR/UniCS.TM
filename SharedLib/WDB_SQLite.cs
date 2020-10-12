@@ -27,7 +27,8 @@ namespace SharedLib
 
         private string Connect = null;
         private string ConfigFile { get { return Path.Combine(ModelMID.Global.PathDB, "config.db"); } }
-        private string MidFile { get { return string.IsNullOrEmpty(Connect) ? Path.Combine(GetCurrentMIDFile) : Connect; } }
+        private string LastMidFile=null;
+        private string MidFile { get { return string.IsNullOrEmpty(Connect) ? (string.IsNullOrEmpty(LastMidFile)?  GetCurrentMIDFile: LastMidFile) : Connect; } }
 
         private string GetReceiptFile() { return Path.Combine(ModelMID.Global.PathDB, $"{DT:yyyyMM}", $"Rc_{ModelMID.Global.IdWorkPlace}_{DT:yyyyMMdd}.db"); }
 
@@ -50,8 +51,7 @@ namespace SharedLib
             varVersion = "SQLite.0.0.1";
             InitSQL();
 
-            if(parD != default(DateTime))
-                DT=parD.Date;
+            DT=(parD != default(DateTime)?parD.Date:DateTime.Today.Date);
             
             if (!File.Exists(ConfigFile))
             {
@@ -77,10 +77,21 @@ namespace SharedLib
 
             if (!File.Exists(MidFile))
             {
-                var db = new SQLite(MidFile);
-                db.ExecuteNonQuery(SqlCreateMIDTable);
-                db.Close();
-                db = null;
+                if (pIsUseOldDB)
+                {
+                    db = new SQLite(ConfigFile);
+                    var varLastMidFile = GetConfig<string>("Last_MID");
+                    db = null;
+                    if (!string.IsNullOrEmpty(varLastMidFile) && File.Exists(varLastMidFile))
+                        LastMidFile = varLastMidFile;
+                }
+                if(!pIsUseOldDB || string.IsNullOrEmpty(LastMidFile))
+                {
+                    var db = new SQLite(MidFile);
+                    db.ExecuteNonQuery(SqlCreateMIDTable);
+                    db.Close();
+                    db = null;
+                }
             }
             /*
             if (pTypeDb == eTypeDb.AllMid || pTypeDb == eTypeDb.AllRC)
@@ -129,77 +140,77 @@ namespace SharedLib
             SqlGetPricePromotionKit= GetSQL("SqlGetPricePromotionKit");
             return true;
         }
-/*
-        public override eRezultFind FindData(string parStr, eTypeFind parTypeFind = eTypeFind.All)
-        {
-            eRezultFind varRezult;
-            varRezult.Count = 0;
-            varRezult.TypeFind = eTypeFind.All;
-            string varStr = parStr.Trim();
-            Int64 varNumber = 0;
-            Int64.TryParse(varStr, out varNumber);
-            this.db.ExecuteNonQuery("delete from T$1");
-            // Шукаемо Товар
-
-            if (parTypeFind != eTypeFind.Client)
-            {
-                varRezult.TypeFind = eTypeFind.Wares;
-                if (varNumber > 0)
+        /*
+                public override eRezultFind FindData(string parStr, eTypeFind parTypeFind = eTypeFind.All)
                 {
-                    if (varStr.Length >= GlobalVar.MinLenghtBarCodeWares)
-                    {//Шукаємо по штрихкоду
-                        this.db.ExecuteNonQuery(this.SqlFindWaresBar, new { BarCode = varStr });
-                    }
-                    else//Шукаемо по коду
+                    eRezultFind varRezult;
+                    varRezult.Count = 0;
+                    varRezult.TypeFind = eTypeFind.All;
+                    string varStr = parStr.Trim();
+                    Int64 varNumber = 0;
+                    Int64.TryParse(varStr, out varNumber);
+                    this.db.ExecuteNonQuery("delete from T$1");
+                    // Шукаемо Товар
+
+                    if (parTypeFind != eTypeFind.Client)
                     {
-                        if (GlobalVar.TypeFindWares < 2)
-                            this.db.ExecuteNonQuery(this.SqlFindWaresCode + varStr);
+                        varRezult.TypeFind = eTypeFind.Wares;
+                        if (varNumber > 0)
+                        {
+                            if (varStr.Length >= GlobalVar.MinLenghtBarCodeWares)
+                            {//Шукаємо по штрихкоду
+                                this.db.ExecuteNonQuery(this.SqlFindWaresBar, new { BarCode = varStr });
+                            }
+                            else//Шукаемо по коду
+                            {
+                                if (GlobalVar.TypeFindWares < 2)
+                                    this.db.ExecuteNonQuery(this.SqlFindWaresCode + varStr);
+                            }
+                        }
+                        else // Шукаємо по назві
+                        {
+                            if (GlobalVar.TypeFindWares == 0)//Можна шукати по назві
+                                this.db.ExecuteNonQuery(SqlFindWaresName + "'%" + varStr.ToUpper().Replace(" ", "%") + "%'");
+                        }
+                        varRezult.Count = this.GetCountT1();
+
+                        if (varRezult.Count > 0) return varRezult;//Знайшли товар
                     }
-                }
-                else // Шукаємо по назві
-                {
-                    if (GlobalVar.TypeFindWares == 0)//Можна шукати по назві
-                        this.db.ExecuteNonQuery(SqlFindWaresName + "'%" + varStr.ToUpper().Replace(" ", "%") + "%'");
-                }
-                varRezult.Count = this.GetCountT1();
+                    // ШукаемоКлієнта
 
-                if (varRezult.Count > 0) return varRezult;//Знайшли товар
-            }
-            // ШукаемоКлієнта
-
-            if (parTypeFind != eTypeFind.Wares)
-            {
-                varRezult.TypeFind = eTypeFind.Client;
-                if (varNumber > 0)
-                {
-                    if (varStr.Length >= GlobalVar.MinLenghtBarCodeClient)
-                    {//Шукаємо по штрихкоду
-
-                        this.db.ExecuteNonQuery(SqlFindClientBar, new { BarCode = varStr });
-
-                    }
-                    else
-                        if (GlobalVar.TypeFindClient < 2)
+                    if (parTypeFind != eTypeFind.Wares)
                     {
-                        this.db.ExecuteNonQuery<object>(SqlFindClientCode, new { CodePrivat = varStr });
+                        varRezult.TypeFind = eTypeFind.Client;
+                        if (varNumber > 0)
+                        {
+                            if (varStr.Length >= GlobalVar.MinLenghtBarCodeClient)
+                            {//Шукаємо по штрихкоду
+
+                                this.db.ExecuteNonQuery(SqlFindClientBar, new { BarCode = varStr });
+
+                            }
+                            else
+                                if (GlobalVar.TypeFindClient < 2)
+                            {
+                                this.db.ExecuteNonQuery<object>(SqlFindClientCode, new { CodePrivat = varStr });
+                            }
+                        }
+                        else // Пошук по назві
+                        {
+                            if (GlobalVar.TypeFindClient == 0)//Можна шукати по назві
+                                this.db.ExecuteNonQuery(SqlFindClientName + "'%" + varStr.Replace(" ", "%") + "%'");
+
+                        }
                     }
-                }
-                else // Пошук по назві
-                {
-                    if (GlobalVar.TypeFindClient == 0)//Можна шукати по назві
-                        this.db.ExecuteNonQuery(SqlFindClientName + "'%" + varStr.Replace(" ", "%") + "%'");
+                    varRezult.Count=this.GetCountT1();
+
+                    if( varRezult.Count==0) 
+                        varRezult.TypeFind=eTypeFind.All;
+
+                    return varRezult;
 
                 }
-            }
-			varRezult.Count=this.GetCountT1();
-
-			if( varRezult.Count==0) 
-				varRezult.TypeFind=eTypeFind.All;
-				
-			return varRezult;
-			
-		}
-        */
+                */
         public Task RecalcPriceAsync(IdReceiptWares parIdReceiptWares)
         {
             return Task.Run(() => RecalcPrice(parIdReceiptWares)).ContinueWith(async res =>
@@ -207,23 +218,31 @@ namespace SharedLib
                 if (await res)
                 {
                     //Console.WriteLine(OnReceiptCalculationComplete != null);
-                    var r = ViewReceiptWares(new IdReceiptWares(parIdReceiptWares,0),true);//вертаємо весь чек.
+                    var r = ViewReceiptWares(new IdReceiptWares(parIdReceiptWares, 0), true);//вертаємо весь чек.
                     Global.OnReceiptCalculationComplete?.Invoke(r, Global.GetTerminalIdByIdWorkplace(parIdReceiptWares.IdWorkplace));
+                    if (r == null || r.Count() == 0)
+                        return;
+                    var parW = r.Last();
+                    if (parW != null)
+                    {
+                        var SumAll = r.Sum(d => d.Sum - d.SumDiscount);
+                        _ = VR.SendMessageAsync(parW.IdWorkplace, parW.NameWares, parW.Articl, parW.Quantity, parW.Sum, VR.eTypeVRMessage.AddWares, SumAll);
+                    }
                 }
             });
         }
 
-        public override bool RecalcPrice(IdReceiptWares parIdReceipt)
+        public override bool RecalcPrice(IdReceiptWares pIdReceiptWares)
         {
             var startTime = System.Diagnostics.Stopwatch.StartNew();
 
-            lock (GetObjectForLockByIdWorkplace(parIdReceipt.IdWorkplace))
+            lock (GetObjectForLockByIdWorkplace(pIdReceiptWares.IdWorkplace))
             {
                 try
                 {
-                    var RH = ViewReceipt(parIdReceipt);
+                    var RH = ViewReceipt(pIdReceiptWares);
                     ParameterPromotion par;
-                    var InfoClient = GetInfoClientByReceipt(parIdReceipt);
+                    var InfoClient = GetInfoClientByReceipt(pIdReceiptWares);
                     if (InfoClient.Count() == 1)
                         par = InfoClient.First();                        
                     else
@@ -234,7 +253,7 @@ namespace SharedLib
                     par.Time = Convert.ToInt32(RH.DateReceipt.ToString("HHmm"));
                     par.CodeDealer = Global.DefaultCodeDealer;
 
-                    var r = ViewReceiptWares(parIdReceipt);
+                    var r = ViewReceiptWares(pIdReceiptWares);
 
                     foreach (var RW in r)
                     {
@@ -242,7 +261,7 @@ namespace SharedLib
                         par.CodeWares = RW.CodeWares;
                         var Res = GetPrice(par);
 
-                        if (Res != null)
+                        if (Res != null && RW.ParPrice1 != 999999 && (Res.Priority>0 || string.IsNullOrEmpty(RW.BarCode2Category) ))//Не перераховуємо для  Сигарет s для 2 категорії окрім пріоритет 1
                         {
                             RW.Price = MPI.GetPrice(Res.Price, Res.IsIgnoreMinPrice == 0, Res.CodePs > 0);
                             RW.TypePrice = MPI.typePrice;
@@ -251,11 +270,14 @@ namespace SharedLib
                             RW.ParPrice3 = Res.Data;
                             RW.Priority = Res.Priority;
                         }
+                        //Якщо друга категорія - перераховуємо на основі Роздрібної ціни.
+                        if (Res.Priority == 0 && !string.IsNullOrEmpty(RW.BarCode2Category) && RW.BarCode2Category.Length == 13)
+                            RW.Price = RW.PriceDealer;
 
                         ReplaceWaresReceipt(RW);
                     }
-                    GetPricePromotionKit(parIdReceipt, parIdReceipt.CodeWares);
-                    RecalcHeadReceipt(parIdReceipt);
+                    GetPricePromotionKit(pIdReceiptWares, pIdReceiptWares.CodeWares);
+                    RecalcHeadReceipt(pIdReceiptWares);
                     startTime.Stop();
                     Console.WriteLine($"RecalcPrice=>{startTime.Elapsed}  {r?.Count()}");
                     /*foreach (var RW in r)
@@ -265,7 +287,7 @@ namespace SharedLib
                 }
                 catch (Exception ex)
                 {
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace), Exception = ex, Status =eSyncStatus.Error,StatusDescription=ex.Message });
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceiptWares.IdWorkplace), Exception = ex, Status =eSyncStatus.Error,StatusDescription=ex.Message+'\n'+ new System.Diagnostics.StackTrace().ToString() });
                     return false;
                 }
             }
@@ -299,7 +321,8 @@ namespace SharedLib
                 if (Quantity > 0) // Надаєм знижку на інші позиції набору.
                 {
                     var varQuantityReceipt = RW.Where(e => e.CodeWares == el.CodeWares).Sum(e => e.Quantity);
-                    var varQuantityUsed = varRes.Where(e => e.CodeWares == el.CodeWares && e.NumberGroup==el.NumberGroup).Sum(e => e.Quantity);
+                    // Можливо поправить ситуацію з неправильно заведенеми акцічми.
+                    var varQuantityUsed = varRes.Where(e => e.CodeWares == el.CodeWares /*&& e.NumberGroup==el.NumberGroup*/).Sum(e => e.Quantity);
                     if (varQuantityReceipt - varQuantityUsed > 0) //Якщо ще можемо дати знижку на позицію
                     {
                         if (varQuantityReceipt - varQuantityUsed >= Quantity)
@@ -481,13 +504,13 @@ namespace SharedLib
             }
         }
 
-        public override bool UpdateQuantityWares(ReceiptWares parIdReceiptWares)
+        public override bool UpdateQuantityWares(ReceiptWares parReceiptWares)
         {
             using (var DB = new SQLite(ReceiptFile))
             {
-                lock (GetObjectForLockByIdWorkplace(parIdReceiptWares.IdWorkplace))
+                lock (GetObjectForLockByIdWorkplace(parReceiptWares.IdWorkplace))
                 {
-                    return DB.ExecuteNonQuery(SqlUpdateQuantityWares, parIdReceiptWares) == 0 /*&& RecalcHeadReceipt(parParameters)*/;
+                    return DB.ExecuteNonQuery(SqlUpdateQuantityWares, parReceiptWares) == 0 /*&& RecalcHeadReceipt(parParameters)*/;
                 }
             }
         }
@@ -519,9 +542,28 @@ namespace SharedLib
 
         public override bool ReplaceWaresReceiptPromotion(IEnumerable<WaresReceiptPromotion> parData)
         {
+            var Sql = @" update WARES_RECEIPT 
+set price = ifnull( (select  max( (0.000+wrp.sum)/wrp.QUANTITY)
+ from WARES_RECEIPT_PROMOTION wrp
+where wrp.id_workplace=@IdWorkplace and  wrp.code_period =@CodePeriod and  wrp.code_receipt=@CodeReceipt and  wrp.code_wares=WARES_RECEIPT.code_wares and Type_Discount=@TypeDiscount) 
+,price)
+, sum =quantity* ifnull( (select  max( (0.000+wrp.sum)/wrp.QUANTITY)
+ from WARES_RECEIPT_PROMOTION wrp
+where wrp.id_workplace=@IdWorkplace and  wrp.code_period =@CodePeriod and  wrp.code_receipt=@CodeReceipt and  wrp.code_wares=WARES_RECEIPT.code_wares and Type_Discount=@TypeDiscount) 
+,price)
+,Type_Price=9
+,par_price_1=999999
+, PRIORITY=1
+, PRICE_DEALER= ifnull((select  max( (0.000+wrp.sum)/wrp.QUANTITY)
+ from WARES_RECEIPT_PROMOTION wrp
+where wrp.id_workplace=@IdWorkplace and  wrp.code_period =@CodePeriod and  wrp.code_receipt=@CodeReceipt and  wrp.code_wares=WARES_RECEIPT.code_wares and Type_Discount=@TypeDiscount) 
+,PRICE_DEALER)
+where WARES_RECEIPT.id_workplace=@IdWorkplace and  WARES_RECEIPT.code_period =@CodePeriod and  WARES_RECEIPT.code_receipt=@CodeReceipt and WARES_RECEIPT.code_wares=@CodeWares
+and @TypeDiscount=11; ";
             using (var DB = new SQLite(ReceiptFile))
             {
                 DB.BulkExecuteNonQuery<WaresReceiptPromotion>(SqlReplaceWaresReceiptPromotion, parData);
+                DB.BulkExecuteNonQuery<WaresReceiptPromotion>(Sql, parData);
             }
             return true;
         }

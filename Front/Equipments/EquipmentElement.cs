@@ -1,0 +1,16 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Front.Equipments
+{
+    public class EquipmentElement
+    {
+        //public eTypeEquipment Type { get; set; }
+        public eTypeEquipment Type { get { return Model.GetTypeEquipment(); } }
+        public eModel Model { get; set; }
+        public Equipment Equipment  { get; set; }
+        public string Port { get; set; }
+        public int BaudRate { get; set; }
+    }
+}

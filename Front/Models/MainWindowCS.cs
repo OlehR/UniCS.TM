@@ -14,7 +14,9 @@ namespace Front.Models
         }
         public IEnumerable<ReceiptWares> GetData()
         {
+            //LoadDataAsync();
             var Bl = new BL(true);
+            
             //_ = await Bl.SyncDataAsync(true);
             var TerminalId = Guid.Parse("1bb89aa9-dbdf-4eb0-b7a2-094665c3fdd0");
             var ReciptId = Bl.GetNewIdReceipt(TerminalId);

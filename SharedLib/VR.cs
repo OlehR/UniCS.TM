@@ -15,13 +15,13 @@ namespace SharedLib
             UpdateWares,
             DeleteWares
         }
-        public static async Task<string> SendMessageAsync(int IdWorkplace, string pStr, int pCode, decimal pQuantity, decimal pSum, eTypeVRMessage peType = eTypeVRMessage.AddWares)
+        public static async Task<string> SendMessageAsync(int IdWorkplace, string pStr, int pCode, decimal pQuantity, decimal pSum, eTypeVRMessage peType = eTypeVRMessage.AddWares, decimal pSumAll=0)
         {
             string res = null;
             try
             {
                 string parContex = "text/xml";
-                string Body = GenBody(pStr, pCode, pQuantity, pSum);
+                string Body = GenBody(pStr, pCode, pQuantity, pSum, pSumAll);
                 if (string.IsNullOrEmpty(Body))
                     return null;
 
@@ -47,17 +47,19 @@ namespace SharedLib
             return res;
         }
 
-        static string GenBody(string pStr,int pCode ,decimal pQuantity, decimal pSum)
+        static string GenBody(string pStr,int pCode ,decimal pQuantity, decimal pSum, decimal pSumAll)
             {
             if (string.IsNullOrEmpty(pStr))
                 return null;
+            pStr = pStr.Replace('і', 'i').Replace('І', 'I').Replace('ї', 'i').Replace('Ї', 'I').Replace('є', 'е').Replace('Є', 'E');
 
             int Lenght = 22;
-            string Str1= pStr.Substring(0, pStr.Length>= Lenght ? Lenght : pStr.Length), Str2= pStr.Length > Lenght ? pStr.Substring(Lenght+1) : "";
+            string Str1= pStr.Substring(0, pStr.Length>= Lenght ? Lenght : pStr.Length), 
+                   Str2= pStr.Length > Lenght ? pStr.Substring(Lenght+1) : "";
             var Body = "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n <TextOverlayList version=\"2.0\" xmlns=\"http://www.hikvision.com/ver20/XMLSchema\"> \n" +
     $"<TextOverlay> \n <id>1</id> \n <enabled>true</enabled> \n <positionX>0</positionX> \n <positionY>120</positionY> \n <displayText>{Str1}</displayText> \n </TextOverlay> \n"+
     $"<TextOverlay> \n <id>2</id> \n <enabled>true</enabled> \n <positionX>0</positionX> \n <positionY>90</positionY> \n <displayText>{Str2}</displayText> \n </TextOverlay> \n" +
-    $"<TextOverlay> \n <id>3</id> \n <enabled>true</enabled> \n <positionX>0</positionX> \n <positionY>50</positionY> \n <displayText> {pCode} К-ть: {pQuantity} Сума: {pSum}</displayText> \n </TextOverlay> \n" +
+    $"<TextOverlay> \n <id>3</id> \n <enabled>true</enabled> \n <positionX>0</positionX> \n <positionY>50</positionY> \n <displayText> {pCode} К-ть: {pQuantity} Сума: {pSum} S={pSumAll}</displayText> \n </TextOverlay> \n" +
     $"<TextOverlay> \n <id>4</id> \n <enabled>true</enabled> \n <positionX>0</positionX> \n <positionY>0</positionY> \n <displayText>  </displayText> \n </TextOverlay> \n" +
     "</TextOverlayList>";
             return Body;

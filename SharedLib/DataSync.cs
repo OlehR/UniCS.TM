@@ -46,7 +46,7 @@ namespace SharedLib
 
                 var body = soapTo1C.GenBody("JSONCheck", new Parameters[] { new Parameters("JSONSting", r.GetBase64()) });
 
-                var res =  await soapTo1C.RequestAsync(Global.Server1C, body, 120000, "application/json");
+                var res =  await soapTo1C.RequestAsync(Global.Server1C, body, 240000, "application/json");
 
                 /*
                                  HttpClient client = new HttpClient();
@@ -83,7 +83,7 @@ namespace SharedLib
             }
             catch (Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "SendReceiptTo1CAsync=>" + parReceipt.ReceiptId.ToString() + " " + ex.Message });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "SendReceiptTo1CAsync=>" + parReceipt.ReceiptId.ToString() + " " + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
                 return false;
             }
         }
@@ -103,65 +103,59 @@ namespace SharedLib
         public bool SyncData(bool parIsFull)
         {
             StringBuilder Log = new StringBuilder();
+            Log.Append($"parIsFull=>{parIsFull}\n");
             try
             {
                 //WDB_SQLite SQLite;
-
+                var TD = db.GetConfig<DateTime>("Load_Full");
                 if (!parIsFull)
                 {
-                    var TD = db.GetConfig<DateTime>("Load_Full");
                     if (TD == default(DateTime) || DateTime.Now.Date != TD.Date)
                         parIsFull = true;
                 }
-                 
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = parIsFull ? eSyncStatus.StartedFullSync : eSyncStatus.StartedPartialSync });
-                
-                string varMidFile = db.GetCurrentMIDFile;
 
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = parIsFull ? eSyncStatus.StartedFullSync : eSyncStatus.StartedPartialSync });
+
+                string varMidFile = db.GetCurrentMIDFile;
+                Log.Append($"varMidFile=>{varMidFile}\n Load_Full=>{TD:yyyy-MM-dd}\n");
                 if (parIsFull)
                 {
-                    Thread.Sleep(200);
-                    DateTime varD = DateTime.Today;
-
                     db.SetConfig<DateTime>("Load_Full", DateTime.Now.Date.AddDays(-1));
                     db.SetConfig<DateTime>("Load_Update", DateTime.Now.Date.AddDays(-1));
+                    db.Close(true);
 
                     if (File.Exists(varMidFile))
                     {
-                        Log.Append($"{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} Try Delete file{varMidFile}");                      
-
-                        bl.db.Close(true);                     
+                        Thread.Sleep(200);
+                        Log.Append($"{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} Try Delete file{varMidFile}\n");
                         File.Delete(varMidFile);
-                        bl.db = new WDB_SQLite(default(DateTime), varMidFile);                        
                     }
-                    Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} Create New DB");                   
-                    //SQLite.CreateMIDTable();
+                    Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} Create New DB\n");
+                    bl.db = new WDB_SQLite(default(DateTime), varMidFile);
                 }
 
 
-                    var MsSQL = new WDB_MsSql();
-                    var varMessageNMax = MsSQL.LoadData(db, parIsFull, Log);
+                var MsSQL = new WDB_MsSql();
+                var varMessageNMax = MsSQL.LoadData(db, parIsFull, Log);
 
-                    if (parIsFull)
-                    {
-                        Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} Create New DB");
-                        Debug.WriteLine("CreateMIDIndex Start");
-                        db.CreateMIDIndex();                        
-                        
-                        db.SetConfig<string>("Last_MID", varMidFile);
-                        Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} Set config");
-                        Debug.WriteLine("Set config");
-                    }                   
+                if (parIsFull)
+                {
+                    Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} Create MIDIndex\n");
 
-                    db.SetConfig<int>("MessageNo", varMessageNMax);
-                    db.SetConfig<DateTime>("Load_" + (parIsFull ? "Full" : "Update"), DateTime.Now /*String.Format("{0:u}", DateTime.Now)*/);
-                
-                Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} End");
+                    db.CreateMIDIndex();
+                    Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} Set config\n");
+                    db.SetConfig<string>("Last_MID", varMidFile);
+                }
+
+                db.SetConfig<int>("MessageNo", varMessageNMax);
+                db.SetConfig<DateTime>("Load_" + (parIsFull ? "Full" : "Update"), DateTime.Now /*String.Format("{0:u}", DateTime.Now)*/);
+
+                Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} End\n");
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.SyncFinishedSuccess, StatusDescription = Log.ToString() });
-                }
+            }
             catch (Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = (parIsFull ? eSyncStatus.Error: eSyncStatus.NoFatalError), StatusDescription = Log.ToString() });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = (parIsFull ? eSyncStatus.Error : eSyncStatus.NoFatalError), StatusDescription = Log.ToString()+ '\n' + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
                 Global.OnStatusChanged?.Invoke(db.GetStatus());
                 return false;
             }
@@ -230,12 +224,13 @@ namespace SharedLib
                 decimal Sum;
                 var body = soapTo1C.GenBody("GetBonusSum", new Parameters[] { new Parameters("CodeOfCard", parClient.BarCode) });
                 var res = await soapTo1C.RequestAsync(Global.Server1C, body);
-                res = res.Replace('.', ',');
+                res = res.Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
                 if (!string.IsNullOrEmpty(res) && decimal.TryParse(res, out Sum))
                     parClient.SumMoneyBonus = Sum; //!!!TMP
                 body = soapTo1C.GenBody("GetMoneySum", new Parameters[] { new Parameters("CodeOfCard", parClient.BarCode) });
                 res = await soapTo1C.RequestAsync(Global.Server1C, body);
-                res = res.Replace('.', ',');
+                
+                res = res.Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
                 if (!string.IsNullOrEmpty(res) && decimal.TryParse(res, out Sum))
                     parClient.Wallet = Sum;
                 Global.OnClientChanged?.Invoke(parClient, parTerminalId);
@@ -263,7 +258,7 @@ namespace SharedLib
                 }
                 var Cat2First = Cat2.First();
                 Cat2First.BarCode2Category = parBarCode==null?"":parBarCode;
-                Cat2First.Price = Cat2First.Price * (100m - (decimal)parPercent) / 100m;
+                Cat2First.Price =  Cat2First.Price * (100m - (decimal)parPercent) / 100m;
 
                 var LastQuantyity= db.GetLastQuantity(Cat2First);
                 //Якщо не ваговий - то знижка на 1 шт.
@@ -285,7 +280,7 @@ namespace SharedLib
                     try
                     {
                         var body = soapTo1C.GenBody("GetRestOfLabel", new Parameters[] { new Parameters("CodeOfLabel", parBarCode) });
-                        var res = await soapTo1C.RequestAsync(Global.Server1C, body, 5000);
+                        var res = await soapTo1C.RequestAsync(Global.Server1C, body, 2000);
                         isGood = res.Equals("1");
 
                         Global.ErrorDiscountOnLine = 0;
@@ -317,7 +312,7 @@ namespace SharedLib
 
             catch (Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.Error, StatusDescription = ex.Message });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.Error, StatusDescription = ex.Message+ '\n' + new System.Diagnostics.StackTrace().ToString() });
             }
             return true;
         }
@@ -340,7 +335,7 @@ namespace SharedLib
 
    if @@rowcount = 0
    begin
-      insert into barcode_out (bar_code, weight,Date) values ( @BarCode,@Weight,@Date)
+      insert into barcode_out (bar_code, weight,Date) values ( @BarCode,@Weight,@Date,)
    end
 -- commit tran";
 
@@ -362,6 +357,75 @@ where nn=1 ";
             }
         }
 
+        public void LoadWeightKasa2Period(DateTime pDT = default(DateTime))
+        {
+            try
+            {
+                if (pDT == default(DateTime))
+                {
+                    pDT = db.GetConfig<DateTime>($"Load_Weight");
+                    if (pDT == default(DateTime))
+                        pDT = DateTime.Now.Date.AddDays(-1);
+                }
+                bool isCalc = false;
+                while (pDT < DateTime.Now.Date)
+                {
+                    LoadWeightKasa2(pDT, 0);
+                    LoadWeightKasa2(pDT, 1);
+                    pDT = pDT.AddDays(1);
+                    isCalc = true;
+                }
+                if (isCalc)
+                {
+                    db.SetConfig<DateTime>($"Load_Weight", pDT);
+                }
+            }
+            catch (Exception ex)
+            {
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "LoadWeightKasa2Period=> " + ex.Message });
+            }
+        }
+
+
+        public void LoadWeightKasa2(DateTime parDT,int TypeSource=0)
+        {
+            try
+            {
+                var ldb = new WDB_SQLite(parDT);
+                string SQLUpdate = @"insert into  DW.dbo.Weight_Receipt  (Type_Source,code_wares, weight,Date,ID_WORKPLACE, CODE_RECEIPT,QUANTITY) values (@TypeSource, @CodeWares,@Weight,@Date,@IdWorkplace,@CodeReceipt,@Quantity)";
+                var dbMs = new MSSQL();
+
+                var SqlSelect = TypeSource == 0? "select 0 as TypeSource,CODE_WARES as CodeWares,FIX_WEIGHT as WEIGHT,DATE_CREATE as date, ID_WORKPLACE as IdWorkplace, CODE_RECEIPT as CodeReceipt, QUANTITY as Quantity  from WARES_RECEIPT where FIX_WEIGHT>0":
+                    @"select 1  as TypeSource,re.CODE_WARES as CodeWares,re.PRODUCT_CONFIRMED_WEIGHT/1000.0 as WEIGHT,wr.DATE_CREATE as date, re.ID_WORKPLACE as IdWorkplace, re.CODE_RECEIPT as CodeReceipt, wr.QUANTITY as Quantity,wr.FIX_WEIGHT
+from RECEIPT_EVENT RE 
+join WARES_RECEIPT wr on re.ID_WORKPLACE=wr.ID_WORKPLACE and wr.CODE_RECEIPT=re.CODE_RECEIPT and re.code_wares=wr.code_wares
+where RE.EVENT_TYPE=1"
+                    ;
+                Console.WriteLine("Start LoadWeightKasa2");
+                var r = ldb.db.Execute<WeightReceipt>(SqlSelect);
+                Console.WriteLine(parDT.ToString()+ " " +r.Count().ToString());
+                dbMs.BulkExecuteNonQuery<WeightReceipt>(SQLUpdate, r);
+                Console.WriteLine("Finish LoadWeightKasa2");
+            }
+            catch (Exception ex)
+            {
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "LoadWeightKasa2=> " + ex.Message });
+            }
+        }
+
+
+    }
+
+    public class WeightReceipt
+    {
+        public int TypeSource { get; set; }
+        public int CodeWares { get; set; }
+       
+        public decimal Weight { get; set; }
+        public DateTime Date { get; set; }
+        public int IdWorkplace { get; set; }
+        public int CodeReceipt { get; set; }
+        public decimal Quantity { get; set; }
 
     }
 }
