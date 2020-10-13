@@ -79,14 +79,15 @@ namespace Front
         public void PrintReceipt() { }
         public void Pay() { }
 
-        public void Config(string settingsFilePath)
+        public IConfiguration Config(string settingsFilePath)
         {
             var CurDir = AppDomain.CurrentDomain.BaseDirectory;
             var AppConfiguration = new ConfigurationBuilder()
                 .SetBasePath(CurDir)
                 .AddJsonFile(settingsFilePath).Build();
            
-            AppConfiguration.GetSection("MID:Equipment").Bind(ListEquipment);           
+            AppConfiguration.GetSection("MID:Equipment").Bind(ListEquipment);
+            return AppConfiguration;
         }
 
         private void GetBarCode(string pBarCode, string pTypeBarCode)
