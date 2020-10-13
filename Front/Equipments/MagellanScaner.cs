@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
-using ModernExpo.SelfCheckout.Devices.Magellan9300SingleCable;
+//using ModernExpo.SelfCheckout.Devices.Magellan9300SingleCable;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,13 +8,13 @@ namespace Front.Equipments
 {
     public class MagellanScaner: Scaner
     {
-        Magellan9300SingleCable Magellan9300;
+        Magellan9300S Magellan9300;
         public MagellanScaner(string pSerialPortName, int pBaudRate, Action<string, string> pLogger, Action<string, string> pOnBarCode) : base(pSerialPortName, pBaudRate, pLogger, pOnBarCode) 
         {
             var AppConfiguration = new ConfigurationBuilder()
                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                .AddJsonFile("appsettings.json").Build();
-            Magellan9300 = new Magellan9300SingleCable(AppConfiguration, null);
+            Magellan9300 = new Magellan9300S(AppConfiguration, null);
 
 
             var s = AppConfiguration["Devices:Magellan9300SingleCable:Port"];

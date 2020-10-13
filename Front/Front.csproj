@@ -44,15 +44,6 @@
     <Reference Include="Mint.Hardware.Lamps.Lamp">
       <HintPath>..\SharedLib\dll\Mint.Hardware.Lamps.Lamp.dll</HintPath>
     </Reference>
-    <Reference Include="ModernExpo.SelfCheckout.Devices.Magellan9300SingleCable">
-      <HintPath>..\SharedLib\dll\ModernExpo.SelfCheckout.Devices.Magellan9300SingleCable.dll</HintPath>
-    </Reference>
-    <Reference Include="ModernExpo.SelfCheckout.Entities">
-      <HintPath>..\SharedLib\dll\ModernExpo.SelfCheckout.Entities.dll</HintPath>
-    </Reference>
-    <Reference Include="ModernExpo.SelfCheckout.Utils">
-      <HintPath>..\SharedLib\dll\ModernExpo.SelfCheckout.Utils.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>
