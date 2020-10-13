@@ -16,7 +16,13 @@ namespace Front.Equipments
                .AddJsonFile("appsettings.json").Build();
             Magellan9300 = new Magellan9300SingleCable(AppConfiguration, null);
 
+
+            var s = AppConfiguration["Devices:Magellan9300SingleCable:Port"];
+
+            Magellan9300.Init();
             var aa =  Magellan9300.GetDeviceStatus();
+
+
 
             var zz = aa.Result;
 
