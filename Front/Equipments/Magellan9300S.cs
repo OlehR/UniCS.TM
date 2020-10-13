@@ -631,7 +631,8 @@ namespace Front.Equipments
                     byte[] numArray = new byte[this._serialDevice.ReadBufferSize];
                     this._serialDevice.Read(numArray, 0, numArray.Length);
                     string str = Encoding.ASCII.GetString(numArray);
-                    this._logger.LogDebug("[Magellan9300S] - Initialization message - " + str);
+                    if(_logger!=null)
+                        _logger.LogDebug("[Magellan9300S] - Initialization message - " + str);
                     bool flag = str.ContainsIgnoreCase("OK");
                     Action<DeviceLog> onDeviceWarning3 = this.OnDeviceWarning;
                     if (onDeviceWarning3 != null)

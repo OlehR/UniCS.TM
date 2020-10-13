@@ -91,7 +91,7 @@ namespace ModelMID
         public ControlScale(Scales pScales=null,double pDelta= 0.010d,int pTimeInterval = 250)
         {
             if (pScales == null)            
-                bst = new Scales("COM2", 115200, OnScalesLog);
+                bst = new Scales("COM10", 115200, OnScalesLog);
             else
                 bst = pScales;
             Delta = pDelta;
