@@ -30,7 +30,8 @@ namespace Front
 
         public string MoneySum { get; set; }
         public bool Volume { get; set; }
-
+        public string Weight { get; set; }
+        public string WeightControl { get; set; }
         public BL Bl;
         EquipmentFront EF;
 
@@ -42,7 +43,7 @@ namespace Front
             
 
             Bl = new BL(true);
-            EF = new EquipmentFront(Bl);
+            EF = new EquipmentFront(Bl, MainWindow);
 
             Global.OnReceiptCalculationComplete += (wareses, guid) =>
             {

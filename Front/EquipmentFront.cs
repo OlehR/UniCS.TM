@@ -11,6 +11,7 @@ namespace Front
     {
         private List<EquipmentElement> ListEquipment = new List<EquipmentElement>();
         BL Bl;
+        MainWindow MW;
         Scaner Scaner;
         Scale Scale;
         Scale ControlScale;
@@ -20,9 +21,10 @@ namespace Front
         EKKA EKKA;
 
 
-        public EquipmentFront(BL pBL) 
+        public EquipmentFront(BL pBL, MainWindow pMW) 
         {
             Bl = pBL;
+            MW = pMW;
             Config("appsettings.json");
 
             //Scaner
@@ -36,7 +38,7 @@ namespace Front
             //Scale
             ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Scale).First();
             if (ElEquipment.Model == eModel.MagellanScale)
-                ElEquipment.Equipment = new MagellanScale(ElEquipment.Port, ElEquipment.BaudRate, null, GetScale);
+                ElEquipment.Equipment = new MagellanScale(((MagellanScaner)Scaner).Magellan9300, GetScale); //MagellanScale(ElEquipment.Port, ElEquipment.BaudRate, null, GetScale);
             else
                 ElEquipment.Equipment = new Scale(ElEquipment.Port, ElEquipment.BaudRate, null, GetScale);
             Scale = (Scale)ElEquipment.Equipment;
@@ -97,12 +99,12 @@ namespace Front
 
         private void GetScale(double pWeight, bool pIsStable)
         {
-            
+            MW.Weight = pWeight.ToString();
         }
 
         private void GetControlScale(double pWeight, bool pIsStable)
         {
-
+            MW.WeightControl = pWeight.ToString();
         }
 
     }

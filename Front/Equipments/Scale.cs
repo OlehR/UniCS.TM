@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,7 +7,10 @@ namespace Front.Equipments
 {
     public class Scale:Equipment
     {
+        public Scale() { };
         public Scale(string pSerialPortName, int pBaudRate, Action<string, string> pLogger, Action<double, bool > pOnScalesData) : base(pSerialPortName, pBaudRate) { }
+
+        public Scale(IConfiguration pConfiguration, Action<string, string> pLogger, Action<double, bool> pOnScalesData) : base(pConfiguration) { }
         /// <summary>
         ///  Калібрування Ваги
         /// </summary>
@@ -20,5 +24,11 @@ namespace Front.Equipments
         public virtual bool CalibrateZero() { throw new NotImplementedException(); }
         //public override void Enable() { base.Enable(); }
         //public override void Disable() { base.Disable(); }
+
+        public virtual void StartWeight() { throw new NotImplementedException(); }
+
+        public virtual void StopWeight() { throw new NotImplementedException();
     }
+
+}
 }
