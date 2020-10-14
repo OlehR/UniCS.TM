@@ -165,7 +165,9 @@ namespace ModelMID
         Always,
         WhenErrored,
     }
-
+    /// <summary>
+    /// Стан обміну()
+    /// </summary>
     public enum eExchangeStatus
     {
         Green = 0,
@@ -189,7 +191,7 @@ namespace ModelMID
     {
         Add = -1,
         Main = 0,
-        Client=1
+        Client = 1
     }
     public enum eStateScale
     {
@@ -217,6 +219,41 @@ namespace ModelMID
         /// Очікуємо очистку ваги.
         /// </summary>
         WaitClear
+    }
+
+
+    public enum eState
+    {
+        NotDefine = 0,
+
+        OkWaitStart ,
+        OkWaitScan,
+        OkWaitPay,
+
+        /// <summary>
+        /// Очікуємо адміна
+        /// </summary>
+        WaitAdmin,
+
+        /// <summary>
+        /// Очікуєм підтвердження 18 років
+        /// </summary>
+        WaitConfirm18,
+
+        /// <summary>
+        /// Невірна вага(відносно стабільна)
+        /// </summary>
+        BadWeight,
+        /// <summary>
+        /// вага не стабільна (Середне значення поза межами похибки)
+        /// </summary>
+        NotStabilized,
+
+        /// <summary>
+        /// Очікуємо очистку ваги.
+        /// </summary>
+        WaitClearWeight,
+
     }
 
 }

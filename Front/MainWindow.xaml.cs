@@ -43,7 +43,7 @@ namespace Front
             
 
             Bl = new BL(true);
-            EF = new EquipmentFront(Bl, MainWindow);
+            EF = new EquipmentFront(Bl, this);
 
             Global.OnReceiptCalculationComplete += (wareses, guid) =>
             {

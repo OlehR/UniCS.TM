@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using ModernExpo.SelfCheckout.Devices.CustomFlagLamp;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
-using Mint.Hardware.Lamps.Lamp;
 
 /*
   Mint.Hardware.Lamps.Lamp
@@ -27,14 +28,15 @@ namespace Front.Equipments
 {
     class SignalFlagModern : SignalFlag
     {
-        FlagLamp lamp;
-        public SignalFlagModern(string pSerialPortName, int pBaudRate = 9600, Action<string, string> pLogger = null) : base(pSerialPortName, pBaudRate, pLogger)
+        CustomFlagLamp lamp;
+        public SignalFlagModern(IConfiguration pConfiguration, Action<string, string> pLogger = null) : base(pConfiguration, pLogger)
         {
-        //    lamp = new FlagLamp(pSerialPortName, pBaudRate, (w, s) => { Console.WriteLine($"Lamp Log - {DateTime.Now:dd-MM-yyyy HH:mm:ss}:{w} - {s}"); });
-         //   lamp.Init();
+            lamp = new CustomFlagLamp(pConfiguration, null);
+            lamp.Init();
         }
+
         public override void SwitchToColor(Color pColor) { lamp.SwitchToColor(pColor); }
-        public override Color GetCurrentColor() { throw new NotImplementedException();/*var color = lamp.GetInfo().Result;*/ }
+        public override Color GetCurrentColor() { throw new NotImplementedException();}
 
         public override void Enable() { lamp.Enable(); base.Enable(); }
         public override void Disable() { lamp.Disable(); base.Disable(); }

@@ -1,5 +1,7 @@
-﻿using System;
-using Mint.Hardware.ControlScales.BST106M60S;
+﻿using Microsoft.Extensions.Configuration;
+using ModernExpo.SelfCheckout.Devices.BST106M60S;
+using System;
+
 using System.Collections.Generic;
 using System.Text;
 /*
@@ -27,9 +29,9 @@ namespace Front.Equipments
     public class ScaleModern:Scale
     {
         Scales bst;
-        public ScaleModern(string pSerialPortName, int pBaudRate = 115200, Action<string, string> pLogger = null, Action<double, bool> pOnScalesData=null) : base(pSerialPortName, pBaudRate, pLogger, pOnScalesData) 
+        public ScaleModern(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<double, bool> pOnScalesData=null) : base(pConfiguration, pLogger, pOnScalesData) 
         {
-            bst = new Scales(pSerialPortName, pBaudRate, pLogger);
+            bst = new Scales(pConfiguration, null);
             bst.OnControlWeightChanged = pOnScalesData;
             bst.Init();
         }
@@ -37,7 +39,7 @@ namespace Front.Equipments
         public override eState TestDevice() 
         {
             var r=bst.TestDevice().Result;
-            State = r ? eState.Ok : eState.Error;
+            State = r==ModernExpo.SelfCheckout.Entities.Enums.Device.DeviceConnectionStatus.Enabled ? eState.Ok : eState.Error;
             return State;
         }
 

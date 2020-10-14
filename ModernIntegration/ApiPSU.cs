@@ -757,7 +757,7 @@ namespace ModernIntegration
             };
 
         }
-
+        /*
         public override double GetMidlWeight()
         {
             return Bl.GetMidlWeight();
@@ -775,7 +775,6 @@ namespace ModernIntegration
             Bl.StartWeightNewGoogs(res);
         }
 
-
        
         public override bool FixedWeight()
         {
@@ -786,7 +785,7 @@ namespace ModernIntegration
         {
             return Bl.WaitClearScale();
         }
-
+        */
 
         public override void CloseDb()
         { 

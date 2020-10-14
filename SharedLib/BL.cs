@@ -21,7 +21,9 @@ namespace SharedLib
         public IdReceipt curReciptId;
 
         public DataSync ds;
-        public ControlScale CS = new ControlScale();
+        public ControlScale CS= new ControlScale();
+
+        public eState State { get; set; } = eState.NotDefine;
 
         public static SortedList<int, long> UserIdbyWorkPlace = new SortedList<int, long>();
         //public Action<IEnumerable<ReceiptWares>, Guid> OnReceiptCalculationComplete { get; set; }
@@ -494,7 +496,7 @@ namespace SharedLib
             return ds.SendReceiptTo1C(parIdReceipt);
         }
 
-
+        /*
         public  double GetMidlWeight()
         {
             return CS.GetMidlWeight();
@@ -515,7 +517,7 @@ namespace SharedLib
         {
             return CS.WaitClear();
         }
-
+        */
         public void CloseDB()
         {
             if (db != null)

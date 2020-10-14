@@ -25,12 +25,12 @@ namespace Front
         {
             Bl = pBL;
             MW = pMW;
-            Config("appsettings.json");
+            var config= Config("appsettings.json");
 
             //Scaner
             var ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Scaner).First();
             if (ElEquipment.Model == eModel.MagellanScaner)
-                ElEquipment.Equipment = new MagellanScaner(ElEquipment.Port, ElEquipment.BaudRate,null, GetBarCode);
+                ElEquipment.Equipment = new MagellanScaner(config, null, GetBarCode);
             else
                 ElEquipment.Equipment = new Scaner(ElEquipment.Port, ElEquipment.BaudRate, null, GetBarCode);
             Scaner = (Scaner)ElEquipment.Equipment;
@@ -46,7 +46,7 @@ namespace Front
             //ControlScale
             ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.ControlScale).First();
             if (ElEquipment.Model == eModel.ScaleModern)
-                ElEquipment.Equipment = new ScaleModern(ElEquipment.Port, ElEquipment.BaudRate, null, GetControlScale);
+                ElEquipment.Equipment = new ScaleModern(config, null, GetControlScale);
             else
                 ElEquipment.Equipment = new Scale(ElEquipment.Port, ElEquipment.BaudRate, null, GetControlScale);
             ControlScale = (Scale)ElEquipment.Equipment;
@@ -104,6 +104,7 @@ namespace Front
 
         private void GetControlScale(double pWeight, bool pIsStable)
         {
+            Bl.CS.OnScalesData(pWeight, pIsStable);
             MW.WeightControl = pWeight.ToString();
         }
 

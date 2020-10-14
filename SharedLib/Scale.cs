@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Timers;
-using Mint.Hardware.ControlScales.BST106M60S;
+
 using Utils;
 
 namespace ModelMID
@@ -82,22 +82,23 @@ namespace ModelMID
         WaitWeight[] WaitWeight;
         int TimeInterval;
         Timer t;
-        private Scales bst;
+       // private Scales bst;
 
         bool TooLightWeight;
 
         MidlWeight BeforeMidlWeight, MidlWeight = new MidlWeight();
 
-        public ControlScale(Scales pScales=null,double pDelta= 0.010d,int pTimeInterval = 250)
+        public ControlScale(double pDelta= 0.010d,int pTimeInterval = 250)
         {
-            if (pScales == null)            
+            /*if (pScales == null)            
                 bst = new Scales("COM10", 115200, OnScalesLog);
             else
-                bst = pScales;
-            Delta = pDelta;
+            
+            bst = pScales;
+            Delta = pDelta;*/
             TimeInterval = pTimeInterval;
-            bst.OnControlWeightChanged = OnScalesData;
-            bst.Init();
+            //bst.OnControlWeightChanged = OnScalesData;
+            //bst.Init();
         }
 
         bool IsRightWeight(double pWeight)
@@ -161,12 +162,12 @@ namespace ModelMID
         {
             t.Stop();            
         }
-        private void OnScalesLog(string logLevel, string message="")
+        public void OnScalesLog(string logLevel, string message="")
         {
             FileLogger.ExtLogForClass(GetType(), GetHashCode(), $"Scales Log - {DateTime.Now:dd-MM-yyyy HH:mm:ss:ffff}: {logLevel} - {message}");
             Console.WriteLine($"Scales Log - {DateTime.Now:dd-MM-yyyy HH:mm:ss}: {logLevel} - {message}");
         }
-        private void OnScalesData(double weight, bool isStable)
+        public void OnScalesData(double weight, bool isStable)
         {
             eStateScale OldeStateScale = StateScale;
             СurrentlyWeight = BeforeWeight - weight;
