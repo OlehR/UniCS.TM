@@ -7,7 +7,7 @@ namespace Front.Equipments
 {
     public class Scale:Equipment
     {
-        public Scale() { };
+        public Scale() { }
         public Scale(string pSerialPortName, int pBaudRate, Action<string, string> pLogger, Action<double, bool > pOnScalesData) : base(pSerialPortName, pBaudRate) { }
 
         public Scale(IConfiguration pConfiguration, Action<string, string> pLogger, Action<double, bool> pOnScalesData) : base(pConfiguration) { }

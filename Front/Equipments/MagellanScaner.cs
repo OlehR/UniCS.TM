@@ -6,23 +6,23 @@ using System.Text;
 
 namespace Front.Equipments
 {
-    public class MagellanScaner: Scaner
+    public class MagellanScaner : Scaner
     {
         public Magellan9300S Magellan9300;
-        public MagellanScaner(string pSerialPortName, int pBaudRate, Action<string, string> pLogger, Action<string, string> pOnBarCode) : base(pSerialPortName, pBaudRate, pLogger, pOnBarCode) 
+        public MagellanScaner(string pSerialPortName, int pBaudRate, Action<string, string> pLogger, Action<string, string> pOnBarCode) : base(pSerialPortName, pBaudRate, pLogger, pOnBarCode)
         {
             var AppConfiguration = new ConfigurationBuilder()
                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                .AddJsonFile("appsettings.json").Build();
-            
+
             Magellan9300 = new Magellan9300S(AppConfiguration, null);
 
             Magellan9300.Init();
-            
 
-            Magellan9300.OnBarcodeScannerChange += (BarCode) => 
-            { 
-                pOnBarCode(BarCode, null); 
+
+            Magellan9300.OnBarcodeScannerChange += (BarCode) =>
+            {
+                pOnBarCode(BarCode, null);
             };
         }
 
@@ -38,4 +38,5 @@ namespace Front.Equipments
             };
 
         }
+    }
 }

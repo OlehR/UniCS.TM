@@ -23,7 +23,7 @@ namespace SharedLib
         public DataSync ds;
         public ControlScale CS= new ControlScale();
 
-        public eState State { get; set; } = eState.NotDefine;
+        private eState State { get; set; } = eState.NotDefine;
 
         public static SortedList<int, long> UserIdbyWorkPlace = new SortedList<int, long>();
         //public Action<IEnumerable<ReceiptWares>, Guid> OnReceiptCalculationComplete { get; set; }
@@ -552,6 +552,12 @@ namespace SharedLib
             var RW = new ReceiptWares(pIdReceipt, pProductId);
             RW.FixWeight = pWeight;
             return db.FixWeight(RW);
+        }
+
+        public eState SetState(eState pState)
+        {
+            State = pState;
+            return State;
         }
 
     }

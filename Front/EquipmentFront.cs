@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using SharedLib;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 
 namespace Front
@@ -54,7 +55,7 @@ namespace Front
             //Flag
             ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Signal).First();
             if (ElEquipment.Model == eModel.SignalFlagModern)
-                ElEquipment.Equipment = new SignalFlagModern(ElEquipment.Port, ElEquipment.BaudRate, null);
+                ElEquipment.Equipment = new SignalFlagModern(config, null);
             else
                 ElEquipment.Equipment = new SignalFlag(ElEquipment.Port, ElEquipment.BaudRate, null);
             Signal = (SignalFlag)ElEquipment.Equipment;
@@ -106,6 +107,11 @@ namespace Front
         {
             Bl.CS.OnScalesData(pWeight, pIsStable);
             MW.WeightControl = pWeight.ToString();
+        }
+
+        public void SetColor(Color pColor)
+        {
+            Signal.SwitchToColor(pColor);
         }
 
     }

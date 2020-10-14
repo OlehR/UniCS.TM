@@ -20,12 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Mint.Hardware.ControlScales.BST106M60S">
-      <HintPath>..\ModernIntegration\dll\Mint.Hardware.ControlScales.BST106M60S.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="MSSql.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
