@@ -31,8 +31,13 @@ namespace Front.Equipments
         CustomFlagLamp lamp;
         public SignalFlagModern(IConfiguration pConfiguration, Action<string, string> pLogger = null) : base(pConfiguration, pLogger)
         {
-            lamp = new CustomFlagLamp(pConfiguration, null);
-            lamp.Init();
+            try
+            {
+                lamp = new CustomFlagLamp(pConfiguration, null);
+                lamp.Init();
+            }
+            catch (Exception Ex)
+            { };
         }
 
         public override void SwitchToColor(Color pColor) { lamp.SwitchToColor(pColor); }

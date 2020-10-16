@@ -30,10 +30,10 @@ namespace Front
 			InitializeComponent();
 
 			m_Languages.Clear();
-			m_Languages.Add(new CultureInfo("ua")); //Нейтральная культура для этого проекта
+			//m_Languages.Add(new CultureInfo("ua")); //Нейтральная культура для этого проекта
 			m_Languages.Add(new CultureInfo("en"));
 			m_Languages.Add(new CultureInfo("hu"));
-			m_Languages.Add(new CultureInfo("pln"));
+			//m_Languages.Add(new CultureInfo("pln"));
 		}
 
 		//Евент для оповещения всех окон приложения

@@ -69,16 +69,9 @@ SELECT  Type_discount AS CodeTypeDiscount,Name AS Name,Percent_discount AS Perce
 
 [SqlGetDimClient]
 SELECT cl.CodeClient, cl.NameClient, cl.TypeDiscount, cl.PersentDiscount, cl.BarCode, cl.StatusCard, cl.ViewCode, cl.BirthDay,
-CASE WHEN Phone.info IS NULL THEN 
-      CASE WHEN LEN(Phone2.info)=13 AND SUBSTRING(Phone2.info,1,3)='+38' THEN SUBSTRING(Phone2.info,4,100) ELSE Phone2.info END 
-     else
-      CASE WHEN LEN(Phone.info)=13 AND SUBSTRING(Phone.info,1,3)='+38' THEN SUBSTRING(Phone.info,4,100) ELSE Phone.info END
-     END 
-  AS MainPhone
-  FROM client cl
-    LEFT JOIN dbo.CONTACT  Phone ON  (  cl.kard_owner_RRef=Phone.obj_RRRef AND   Phone.obj_type_RTRef= 0x00000051 AND   Phone.kind_contact_RRRef=0xA1C1001E67079A7C11E28C15AF2890C5)--Мобильный телефон контрагента 
-    LEFT JOIN dbo.CONTACT  Phone2 ON (  cl.kard_owner_RRef=Phone2.obj_RRRef AND  Phone2.obj_type_RTRef= 0x00000051 AND  Phone2.kind_contact_RRRef=0x8A12A42CBF99A84548BAC3B0C5BB357F)--Телефон контрагента 
-    /*
+  ISNULL(cl.MainPhone,cl.Phone) AS MainPhone
+  FROM client  cl WITH (NOLOCK)
+  /*
 SELECT DC.code_card as CodeClient ,DC.name as NameClient ,TD.TYPE_DISCOUNT  AS TypeDiscount, CAST('' AS VARCHAR(10)) AS MainPhone, td.PERCENT_DISCOUNT as PersentDiscount,[bar_code] AS BarCode, DCC.CODE_STATUS_CARD  AS StatusCard,dc. view_code  as ViewCode--,dcc.*
   ,CASE WHEN rop.value_t!=CONVERT(DATE,'28.09.3958',103) AND rop.value_t>CONVERT(DATE,'01.01.3900',103) THEN DATEADD(YEAR,-2000, rop.value_t) ELSE null END AS BirthDay
   FROM  dbo.V1C_DIM_CARD DC

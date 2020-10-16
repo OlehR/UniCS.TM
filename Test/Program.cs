@@ -36,17 +36,17 @@ namespace Test
             Console.WriteLine("Start");
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
 
-           await CreateDataBaseAsync(true);
+            await CreateDataBaseAsync(true);
 
-            TestReceipt();
+            //TestReceipt();
 
 
             //TestKit();
-
+            //all_bag();
             //LoadReceiptJson();
             //new ApiPSU().Bl.ds.LoadWeightKasa2Period();
 
-             //new ApiPSU().Bl.ds.LoadWeightKasa2Period(new DateTime(2020, 8, 1),1); 
+            //new ApiPSU().Bl.ds.LoadWeightKasa2Period(new DateTime(2020, 8, 1),1); 
 
 
             Console.WriteLine("Sleep");
@@ -442,6 +442,46 @@ namespace Test
             }
 
 
+
+
+        }
+
+        public static void all_bag()
+        {
+            DateTime pDT = new DateTime(2020, 9, 1);
+
+            List<int> Weight = new List<int>();
+
+            while (pDT < DateTime.Now.Date)
+            {
+                var r = LoadOwnBag(pDT);
+                pDT = pDT.AddDays(1);
+                Weight.AddRange(r);
+            }
+
+            var singleString = string.Join(",", Weight.OrderBy(r=>r).ToArray());
+            Console.WriteLine(singleString);
+        }
+
+        static IEnumerable<int> LoadOwnBag(DateTime parDT)
+        {
+            try
+            {
+                var ldb = new WDB_SQLite(parDT);
+
+                var dbMs = new MSSQL();
+
+                var SqlSelect = "select PRODUCT_WEIGHT from RECEIPT_EVENT where EVENT_TYPE = 9"
+                    ;
+                Console.WriteLine("Start OwnBag");
+                var r = ldb.db.Execute<int>(SqlSelect);
+                return r;
+            }
+            catch (Exception ex)
+            {
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "LoadWeightKasa2=> " + ex.Message });
+            }
+            return null;
         }
 
 
@@ -509,6 +549,7 @@ namespace Test
 
     }
 
+    
 
 
 
