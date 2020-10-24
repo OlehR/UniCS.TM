@@ -23,5 +23,22 @@ namespace Front.Equipments
             EquipmentIngenico.Refund(Convert.ToDouble(pAmount), pRRN);
         }
 
+        public override bool PrintZ()
+        {
+            EquipmentIngenico.PrintBatchTotals();
+            return true;
+        }
+
+        public override bool PrintX()
+        {
+            EquipmentIngenico.PrintBatchTotals();
+            return true;
+        }
+
+        public override eState TestDevice() 
+        { 
+            EquipmentIngenico.TestDeviceSync();
+            return eState.Ok;
+        }
     }
 }

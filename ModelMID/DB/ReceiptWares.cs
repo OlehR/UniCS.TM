@@ -198,6 +198,8 @@ namespace ModelMID
         /// </summary>
         public IEnumerable<WaresReceiptPromotion> ReceiptWaresPromotions;
 
+        public bool IsReceiptPromotion { get { return !string.IsNullOrEmpty(GetStrWaresReceiptPromotion); } }
+    
         public string GetStrWaresReceiptPromotion
         {
             get
@@ -213,7 +215,9 @@ namespace ModelMID
                         }
                 }
                 catch (Exception e) { }
-                return Res;
+                if (string.IsNullOrEmpty(Res))
+                    return Res;
+                return Res?.Substring(0,Res.Length-2);
             }
         }
 

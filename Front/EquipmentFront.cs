@@ -18,15 +18,18 @@ namespace Front
         Scale ControlScale;
         SignalFlag Signal;
 
-        BankTerminal Terminal;
-        EKKA EKKA;
+        public BankTerminal Terminal;
+        public EKKA EKKA;
+
+        static EquipmentFront sEquipmentFront;
 
 
-        public EquipmentFront(BL pBL, MainWindow pMW) 
+        public EquipmentFront(BL pBL, MainWindow pMW)
         {
             Bl = pBL;
             MW = pMW;
-            var config= Config("appsettings.json");
+            sEquipmentFront = this;
+            var config = Config("appsettings.json");
 
             //Scaner
             var ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Scaner).First();
@@ -79,6 +82,9 @@ namespace Front
 
         }
 
+        public static EquipmentFront GetEquipmentFront { get { return sEquipmentFront; } }
+
+        public IEnumerable<EquipmentElement> GetListEquipment { get { return ListEquipment; } }
         public void PrintReceipt() { }
         public void Pay() { }
 

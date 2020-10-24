@@ -9,6 +9,10 @@
     <NeutralLanguage>uk-UA</NeutralLanguage>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <WarningLevel>1</WarningLevel>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="icons\back.png" />
     <None Remove="icons\delete.png" />

@@ -10,6 +10,8 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Navigation;
 using Front.Equipments;
 using Front.Models;
 using Microsoft.Extensions.Configuration;
@@ -24,6 +26,7 @@ namespace Front
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
 
+        
         public event PropertyChangedEventHandler PropertyChanged;
 
         public string WaresQuantity { get; set; }
@@ -44,7 +47,7 @@ namespace Front
 
             Bl = new BL(true);
             EF = new EquipmentFront(Bl, this);
-
+            //ad =  new Admin();
             Global.OnReceiptCalculationComplete += (wareses, guid) =>
             {
                 try
@@ -210,12 +213,20 @@ namespace Front
 
         private void _Search(object sender, RoutedEventArgs e)
         {
-
+            FindWaresWin FWW = new FindWaresWin();
+            //this.Visibility = Visibility.Visible;
+            FWW.Show();
         }
 
         private void _ButtonHelp(object sender, RoutedEventArgs e)
         {
+            // NavigationService navService = NavigationService.GetNavigationService(this);
 
+            //navService.Navigate(ad);
+
+            //ad.Visibility = Visibility.Visible;
+            Admin ad = new Admin();
+            ad.Show();
         }
 
         private void _OwnBag(object sender, RoutedEventArgs e)
@@ -245,10 +256,43 @@ namespace Front
             Bl.AddWaresBarCode("7773002160043", 1); //товар 2 кат
             return Bl.GetWaresReceipt();
         }
-        
 
         
+
     }
 
-    
+
+    [ValueConversion(typeof(bool), typeof(Visibility))]
+    public sealed class BoolToVisibilityConverter : IValueConverter
+    {
+        public Visibility TrueValue { get; set; }
+        public Visibility FalseValue { get; set; }
+
+        public BoolToVisibilityConverter()
+        {
+            // set defaults
+            TrueValue = Visibility.Visible;
+            FalseValue = Visibility.Collapsed;
+        }
+
+        public object Convert(object value, Type targetType,
+            object parameter, CultureInfo culture)
+        {
+            if (!(value is bool))
+                return null;
+            return (bool)value ? TrueValue : FalseValue;
+        }
+
+        public object ConvertBack(object value, Type targetType,
+            object parameter, CultureInfo culture)
+        {
+            if (Equals(value, TrueValue))
+                return true;
+            if (Equals(value, FalseValue))
+                return false;
+            return null;
+        }
+    }
+
+
 }

@@ -17,6 +17,7 @@ namespace SharedLib
 
     public class BL
     {
+        static BL sBL;
         public WDB_SQLite db;
         public IdReceipt curReciptId;
 
@@ -39,9 +40,10 @@ namespace SharedLib
             db = new WDB_SQLite(default(DateTime), null, pIsUseOldDB);
             db.BildWorkplace();
             ds = new DataSync(this);
-            WorkId = new SortedList<Guid, int>();                  
-
+            WorkId = new SortedList<Guid, int>();
+            sBL = this;
         }
+        public static BL GetBL { get { return sBL; } }
         public ReceiptWares AddReceiptWares(ReceiptWares parW,bool pRecalcPriceOnLine=true)
         {
             lock (db.GetObjectForLockByIdWorkplace(parW.IdWorkplace))
