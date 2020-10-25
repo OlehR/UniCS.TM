@@ -171,7 +171,7 @@
 
                                
                                 <StackPanel Orientation="Vertical">
-                                    <TextBlock Margin="0" Grid.Row="0" FontSize="12"  Text="{Binding GetStrWaresReceiptPromotion} " Visibility="{Binding IsReceiptPromotion,Converter={StaticResource BoolToHiddenConverter}}"/>
+                                    <TextBlock Margin="0" Grid.Row="0" FontSize="12"  Text="{Binding GetStrWaresReceiptPromotion}" Visibility="{Binding IsReceiptPromotion,Converter={StaticResource BoolToHiddenConverter}}"/>
                                     <TextBlock Margin="0" Grid.Row="1" FontSize="24"  Text="{Binding NameWares}" />
                                 </StackPanel>
                                 

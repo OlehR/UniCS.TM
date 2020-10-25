@@ -1,0 +1,140 @@
+﻿<Window x:Class="Front.Admin"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Front"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="Admin">
+
+    <Grid>
+
+
+        <TabControl Name="TabAdmin" Margin="0,10,0,0" SelectionChanged="TabControl_SelectionChanged" >
+            <TabItem Header="Зміна">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="441*"/>
+                        <ColumnDefinition Width="353*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <GroupBox Header="POS-термінал" HorizontalAlignment="Left" Height="281" Margin="21,14,0,0" VerticalAlignment="Top" Width="203">
+                        <StackPanel>
+                            <Button x:Name="POS_X" Content="X звіт" HorizontalAlignment="Center" Height="44"  VerticalAlignment="Top"  Width="138" Click="POS_X_Click"/>
+                            <Button x:Name="POS_Z" Content="Z звіт" Height="44" Width="138" Click="POS_Z_Click"/>
+                            <Button x:Name="POS_X_Copy" Content="X звіт(копія)" HorizontalAlignment="Center" Height="44"  VerticalAlignment="Top" Width="138" Click="POS_X_Copy_Click"/>
+                        </StackPanel>
+
+
+
+                    </GroupBox>
+                    <GroupBox Header="Фіскальний реєстратор" HorizontalAlignment="Left" Height="281" Margin="259,14,0,0" VerticalAlignment="Top" Width="225" Grid.ColumnSpan="2">
+                        <StackPanel>
+                            <Button x:Name="EKKA_X" Content="X звіт" HorizontalAlignment="Center" Height="44"  VerticalAlignment="Top"  Width="170" Click="EKKA_X_Click"/>
+                            <Button x:Name="EKKA_Z" Content="Z звіт" Height="44" Width="170" Click="EKKA_Z_Click"/>
+                            <Button x:Name="EKKA_Z_Period" Content="Z-звіт(Періодичний))" HorizontalAlignment="Center" Height="44"  VerticalAlignment="Top" Width="170" Click="EKKA_Z_Period_Click"/>
+                            <Button x:Name="EKKA_Copy" Content="Копія Квитанції" HorizontalAlignment="Center" Height="44"  VerticalAlignment="Top" Width="170" Click="EKKA_Copy_Click"/>
+                        </StackPanel>
+
+
+
+                    </GroupBox>
+                    <GroupBox Header="Зміна" HorizontalAlignment="Left" Height="281" Margin="101,14,0,0" VerticalAlignment="Top" Width="225" Grid.Column="1">
+                        <StackPanel>
+                            <Button x:Name="WorkStart" Content="Почати зміну" HorizontalAlignment="Center" Height="44"  Width="171" Click="WorkStart_Click"/>
+                            <Button x:Name="WorkFinish" Content="Завершити зміну" HorizontalAlignment="Center" Height="44" Width="171" Click="WorkFinish_Click" />
+                            <Button x:Name="CloseDay" Content="Закриття дня" HorizontalAlignment="Center" Height="44" Width="171" Click="CloseDay_Click" />
+
+
+
+                        </StackPanel>
+
+
+
+                    </GroupBox>
+
+
+                </Grid>
+            </TabItem>
+            <TabItem Header="Пристрої">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="5*"></RowDefinition>
+                        <RowDefinition Height="1*"></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl Grid.Row="0" Name="ListEquipment">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border  BorderBrush="Silver" BorderThickness="0,0,0,1" >
+                                        <Grid Margin="10,0,0,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="7*"></ColumnDefinition>
+                                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Grid.Column="0" Text="{Binding StrType}" FontWeight="Bold" FontSize="20"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                    <Button Name="Сalibration" Content="Калібрування" HorizontalAlignment="Left" Margin="10,0,0,0" Grid.Row="1" VerticalAlignment="Center" Width="140"/>
+                    <Button Name="Сalibration0" Content="Тарування" HorizontalAlignment="Left" Margin="180,0,0,0" Grid.Row="1" VerticalAlignment="Center" Width="140"/>
+                    <Button Name="Weighing" Content="Зважування" HorizontalAlignment="Left" Margin="350,0,0,0" Grid.Row="1" VerticalAlignment="Center" Width="144"/>
+                    <Label Name="Weight" Content="0 гр" Margin="503,0,0,0" Grid.Row="1" Height="41" Width="99"/>
+                </Grid>
+            </TabItem>
+            <TabItem Name="TabHistory" Header="Історія">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"></RowDefinition>
+                    <RowDefinition Height="7*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Button   Grid.Row="0" Name="DateButton" Content="2020-10-20" HorizontalAlignment="Left" Margin="10,0,0,0"  VerticalAlignment="Center" Width="140"/>
+                    <Calendar Grid.Row="0"  Visibility="Hidden" ></Calendar>
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl Grid.Row="0" Name="ListReceipts">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border  BorderBrush="Silver" BorderThickness="0,0,0,1" >
+                                        <Grid Margin="10,0,0,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Grid.Column="0" Text="{Binding CodeReceipt}" FontWeight="Bold" FontSize="20"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding NumberReceipt}" FontWeight="Bold" FontSize="20"/>
+                                            <TextBlock Grid.Column="2" Text="{Binding CodePeriod}" FontWeight="Bold" FontSize="20"/>
+                                            <TextBlock Grid.Column="3" Text="{Binding StateReceipt}" FontWeight="Bold" FontSize="20"/>
+                                            <TextBlock Grid.Column="4" Text="{Binding SumReceipt}" FontWeight="Bold" FontSize="20"/>
+                                            
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Помилки">
+                <Grid Background="#FFE5E5E5"/>
+            </TabItem>
+            <Button Content="Button"/>
+            <Button Content="Button"/>
+            <Button Content="Button"/>
+        </TabControl>
+        <Button x:Name="Exit" Content="Вихід" HorizontalAlignment="Right" Height="39" Margin="0,0,0,0" VerticalAlignment="Top" Width="95" Click="Exit_Click"/>
+
+    </Grid>
+</Window>
