@@ -18,7 +18,7 @@ alter table WORKPLACE add  Video_Recorder_IP TEXT;
 alter TABLE WEIGHT   add  CODE_WARES  INTEGER  NOT NULL DEFAULT 0;
 alter TABLE wares_receipt add Priority INTEGER  NOT NULL DEFAULT 0;
 [SqlUpdateMID_V1]
-
+alter TABLE wares add Weight_Delta INTEGER  DEFAULT 0;
 
 
 
@@ -75,6 +75,7 @@ select t.code_wares as CodeWares,w.name_wares NameWares,w.name_wares_receipt  as
 		(select max(bc.BAR_CODE) from BAR_CODE bc where bc.code_wares=w.code_wares) as BarCode,
 		w.Weight_Brutto as WeightBrutto,
         w.Weight_Fact as WeightFact
+        ,w.Weight_Delta as WeightDelta
         ,count(*) over() as TotalRows
         ,w.code_UKTZED as CodeUKTZED
         ,w.Articl as Articl
@@ -148,7 +149,7 @@ Price as Price/*, wr.sum as Sum*/, Type_Price as TypePrice
 					 ADDITION_N1 as AdditionN1,ADDITION_N2 as AdditionN2, ADDITION_N3 as AdditionN3,
  ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1,Price_Dealer as PriceDealer,BARCODE_2_CATEGORY as BarCode2Category,wr.DESCRIPTION as DESCRIPTION,w.TYPE_VAT as TypeVat
  ,(select max(bc.BAR_CODE) from BAR_CODE bc where bc.code_wares=wr.code_wares) as BarCode 
- ,w.Weight_Brutto as WeightBrutto,Refunded_Quantity as RefundedQuantity,Fix_Weight as FixWeight,Weight_Fact as WeightFact
+ ,w.Weight_Brutto as WeightBrutto,Refunded_Quantity as RefundedQuantity,Fix_Weight as FixWeight,Weight_Fact as WeightFact,w.Weight_Delta as WeightDelta
  ,ps.NAME_PS as NameDiscount,Sum_Discount as SumDiscount
  ,w.Type_Wares as TypeWares
  ,wr.Priority
@@ -804,8 +805,9 @@ CREATE TABLE WARES (
 --    CODE_TRADE_MARK     INTEGER,
 --    KEEPING_TIME        NUMBER,
       Type_Wares		 INTEGER,   -- 0- Звичайний товар,1 - алкоголь, 2- тютюн.
-	  Weight_brutto    NUMBER,
-      Weight_Fact    NUMBER,
+	  Weight_brutto     NUMBER,
+      Weight_Fact       NUMBER,
+      Weight_Delta      NUMBER,
       code_UKTZED TEXT
 
 );
@@ -1002,8 +1004,8 @@ replace into UNIT_DIMENSION ( CODE_UNIT, NAME_UNIT, ABR_UNIT) values (@CodeUnit,
 replace into  GROUP_WARES (CODE_GROUP_WARES,CODE_PARENT_GROUP_WARES,NAME)
              values (@CodeGroupWares,@CodeParentGroupWares,@Name);
 [SqlReplaceWares]
-replace into  Wares (CODE_WARES,CODE_GROUP,NAME_WARES,Name_Wares_Upper, ARTICL,CODE_BRAND, CODE_UNIT, Percent_Vat,Type_VAT,NAME_WARES_RECEIPT, DESCRIPTION,Type_Wares,Weight_brutto,Weight_Fact,CODE_UKTZED)
-             values (@CodeWares,@CodeGroup,@NameWares,@NameWaresUpper, @Articl,@CodeBrand,@CodeUnit, @PercentVat, @TypeVat,@NameWaresReceipt, @Description,@TypeWares,@WeightBrutto,@WeightFact,@CodeUKTZED);
+replace into  Wares (CODE_WARES,CODE_GROUP,NAME_WARES,Name_Wares_Upper, ARTICL,CODE_BRAND, CODE_UNIT, Percent_Vat,Type_VAT,NAME_WARES_RECEIPT, DESCRIPTION,Type_Wares,Weight_brutto,Weight_Fact,Weight_Delta,CODE_UKTZED)
+             values (@CodeWares,@CodeGroup,@NameWares,@NameWaresUpper, @Articl,@CodeBrand,@CodeUnit, @PercentVat, @TypeVat,@NameWaresReceipt, @Description,@TypeWares,@WeightBrutto,@WeightFact,@WeightDelta,@CodeUKTZED);
 [SqlReplaceAdditionUnit]
 replace into  Addition_Unit (CODE_WARES, CODE_UNIT, COEFFICIENT, DEFAULT_UNIT, WEIGHT, WEIGHT_NET )
               values (@CodeWares,@CodeUnit,@Coefficient, @DefaultUnit, @Weight, @WeightNet);

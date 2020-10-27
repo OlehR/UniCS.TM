@@ -187,6 +187,7 @@ namespace ModelMID
         public decimal WeightBrutto { get; set; }
 
         public decimal WeightFact { get; set; }
+        public decimal WeightDelta { get; set; }
 
         /// <summary>
         /// Додаткові ваги

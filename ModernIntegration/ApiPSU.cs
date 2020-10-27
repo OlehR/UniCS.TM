@@ -263,12 +263,12 @@ namespace ModernIntegration
               LWI.Add(      
                     new WeightInfo() {
                         Weight = (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : Convert.ToDouble(receiptWares.WeightBrutto)),
-                        DeltaWeight = Convert.ToDouble(Global.GetCoefDeltaWeight(
+                        DeltaWeight = Convert.ToDouble(receiptWares.WeightDelta)+ Convert.ToDouble(Global.GetCoefDeltaWeight(
                             (receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto))* (receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto))  }                    
             );
             if (!receiptWares.IsWeight && receiptWares.AdditionalWeights != null)
                 foreach (var el in receiptWares.AdditionalWeights)
-                    LWI.Add(new WeightInfo { DeltaWeight = Convert.ToDouble(Global.GetCoefDeltaWeight(el))*Convert.ToDouble(el), Weight = Convert.ToDouble(el) });
+                    LWI.Add(new WeightInfo { DeltaWeight = Convert.ToDouble(receiptWares.WeightDelta) + Convert.ToDouble(Global.GetCoefDeltaWeight(el))*Convert.ToDouble(el), Weight = Convert.ToDouble(el) });
             var varTags = (receiptWares.TypeWares > 0 || (!receiptWares.IsWeight && receiptWares.WeightBrutto == 0))
                     ? new List<Tag>() : null; //!!!TMP // Різні мітки алкоголь, обмеження по часу.
 
@@ -308,7 +308,7 @@ namespace ModernIntegration
                 //Global.RoundDown(receiptWares.SumDiscount>0 ? receiptWares.SumDiscount : (receiptWares.PriceDealer > receiptWares.Price ? (receiptWares.PriceDealer * receiptWares.Quantity - receiptWares.Sum):0)),
                 WeightCategory = 2, //вимірювання Похибки в відсотках,2 в грамах
                 Weight = (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : (receiptWares.WeightBrutto==0m? 100000 : Convert.ToDouble(receiptWares.WeightBrutto))),
-                DeltaWeight = Convert.ToDouble(Global.GetCoefDeltaWeight((receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto)) * (receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto)),
+                DeltaWeight = Convert.ToDouble(receiptWares.WeightDelta)+Convert.ToDouble(Global.GetCoefDeltaWeight((receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto)) * (receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto)),
                 AdditionalWeights = LWI,
                 ProductWeightType =  receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByBarcode, 
                 IsAgeRestrictedConfirmed = false, //Обмеження по віку алкоголь Підтверджено не потрібно посилати.
