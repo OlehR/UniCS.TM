@@ -1,5 +1,6 @@
 ﻿using Front.Equipments;
 using Microsoft.Extensions.Configuration;
+using ModernExpo.SelfCheckout.Entities.Pos;
 using SharedLib;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace Front
     public class EquipmentFront
     {
         private List<EquipmentElement> ListEquipment = new List<EquipmentElement>();
-        BL Bl;
+        BL Bl; //!!!!костиль.
         MainWindow MW;
         Scaner Scaner;
         Scale Scale;
@@ -21,8 +22,34 @@ namespace Front
         public BankTerminal Terminal;
         public EKKA EKKA;
 
-        static EquipmentFront sEquipmentFront;
+        
+        eStateEquipment _State = eStateEquipment.Off;
+        public eStateEquipment State
+        {
+            get { return _State; }
+            set
+            {
+                if (_State != value)
+                    if (value == eStateEquipment.Error)
+                        _State = value;
+                    else
+                      if (value == eStateEquipment.Ok)
+                    {
+                        eStateEquipment st = eStateEquipment.Ok;
+                        foreach (var el in ListEquipment)
+                        {
+                            if (el.Equipment.State == eStateEquipment.Off)
+                                st = eStateEquipment.Off;
+                        }
+                        _State = st;
+                    }
+                if (_State != value)
+                    SetState?.Invoke(_State);
+            }
+        }
+        public static Action<eStateEquipment> SetState { get; set; }
 
+        static EquipmentFront sEquipmentFront;
 
         public EquipmentFront(BL pBL, MainWindow pMW)
         {
@@ -50,9 +77,9 @@ namespace Front
             //ControlScale
             ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.ControlScale).First();
             if (ElEquipment.Model == eModel.ScaleModern)
-                ElEquipment.Equipment = new ScaleModern(config, null, GetControlScale);
+                ElEquipment.Equipment = new ScaleModern(config, null, Bl.CS.OnScalesData);
             else
-                ElEquipment.Equipment = new Scale(ElEquipment.Port, ElEquipment.BaudRate, null, GetControlScale);
+                ElEquipment.Equipment = new Scale(ElEquipment.Port, ElEquipment.BaudRate, null, Bl.CS.OnScalesData);
             ControlScale = (Scale)ElEquipment.Equipment;
 
             //Flag
@@ -66,7 +93,7 @@ namespace Front
             //Terminal
             ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.BankTerminal).First();
             if (ElEquipment.Model == eModel.Ingenico)
-                ElEquipment.Equipment = new Ingenico(ElEquipment.Port, ElEquipment.BaudRate, null);
+                ElEquipment.Equipment = new Ingenico(config, null, aPosStatus);
             else
                 ElEquipment.Equipment = new BankTerminal(ElEquipment.Port, ElEquipment.BaudRate, null);
             Terminal = (BankTerminal)ElEquipment.Equipment;
@@ -109,16 +136,30 @@ namespace Front
             MW.Weight = pWeight.ToString();
         }
 
-        private void GetControlScale(double pWeight, bool pIsStable)
+       /* private void GetControlScale(double pWeight, bool pIsStable)
         {
             Bl.CS.OnScalesData(pWeight, pIsStable);
             MW.WeightControl = pWeight.ToString();
-        }
+        }*/
 
         public void SetColor(Color pColor)
         {
             Signal.SwitchToColor(pColor);
         }
 
+       /* Action<IPosStatus> aPosStatus = (ww) => 
+        { 
+            if(ww is PosStatus status)
+            {
+                Bl.PosStatus  = status.Status.GetPosStatusFromStatus();                
+            }
+        };*/
+        void aPosStatus(IPosStatus ww)
+        {
+            if (ww is PosStatus status)
+            {
+                Bl.PosStatus = status.Status.GetPosStatusFromStatus();
+            }
+        }
     }
 }

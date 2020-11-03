@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="BarCode" Version="2020.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ModelMID\ModelMID.csproj" />
     <ProjectReference Include="..\ModernIntegration\ModernIntegration.csproj" />
     <ProjectReference Include="..\SharedLib\SharedLib.csproj" />

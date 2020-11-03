@@ -36,7 +36,6 @@ namespace Front.Equipments
             {
                 pOnBarCode(BarCode, null);
             };
-
         }
     }
 }

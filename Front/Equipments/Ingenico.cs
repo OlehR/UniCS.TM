@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using ModernExpo.SelfCheckout.Entities.Pos;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,36 +10,39 @@ namespace Front.Equipments
     {
         ModernExpo.SelfCheckout.Devices.Ingenico.Ingenico EquipmentIngenico;
         public Ingenico(string pSerialPortName, int pBaudRate = 9600, Action<string, string> pLogger = null) : base(pSerialPortName, pBaudRate, pLogger) { }
-        public Ingenico(IConfiguration pConfiguration, Action<string, string> pLogger = null) : base(pConfiguration, pLogger) 
+        public Ingenico(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<IPosStatus> pActionStatus = null) : base(pConfiguration, pLogger) 
         {
             EquipmentIngenico = new ModernExpo.SelfCheckout.Devices.Ingenico.Ingenico(pConfiguration, null);
+            EquipmentIngenico.OnStatus += pActionStatus;
         }
 
-        public override void Purchase(decimal pAmount) 
+        public override PaymentResultModel Purchase(decimal pAmount) 
         {
-            EquipmentIngenico.Purchase( Convert.ToDouble(pAmount));
+            return EquipmentIngenico.Purchase( Convert.ToDouble(pAmount)).Result;
         }
-        public override void Refund(decimal pAmount, string pRRN) 
+        public override PaymentResultModel Refund(decimal pAmount, string pRRN)
         {
-            EquipmentIngenico.Refund(Convert.ToDouble(pAmount), pRRN);
-        }
-
-        public override bool PrintZ()
-        {
-            EquipmentIngenico.PrintBatchTotals();
-            return true;
+            return EquipmentIngenico.Refund(Convert.ToDouble(pAmount), pRRN).Result;
         }
 
-        public override bool PrintX()
+        public override BatchTotals PrintZ()
         {
-            EquipmentIngenico.PrintBatchTotals();
-            return true;
+            var r=EquipmentIngenico.GetBatchTotals();
+            return r.Result;
         }
 
-        public override eState TestDevice() 
+        public override BatchTotals PrintX()
+        {
+            var r = EquipmentIngenico.GetBatchTotals();
+            return r.Result;
+        }
+
+        public override eStateEquipment TestDevice() 
         { 
             EquipmentIngenico.TestDeviceSync();
-            return eState.Ok;
+            return eStateEquipment.Ok;
         }
+
+
     }
 }

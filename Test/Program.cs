@@ -15,6 +15,8 @@ using ModernIntegration.ViewModels;
 using System.Net.Http;
 using System.Text;
 using Newtonsoft.Json;
+
+using IronBarCode;
 //using System.Printing;
 
 namespace Test
@@ -38,8 +40,8 @@ namespace Test
 
             //await CreateDataBaseAsync(true);
 
-            TestReceipt();
-
+            //TestReceipt();
+            CreateBarCode();
 
             //TestKit();
             //all_bag();
@@ -347,7 +349,36 @@ namespace Test
 
         }
 
+        static void CreateBarCode()
+        {
+            
 
+            string dataDir = @"d:\temp\BarCode\";
+string sql = @"SELECT w.code_wares as CodeWares ,w.name_wares as NameWares,b.bar_code as BarCode
+    FROM dbo.Wares w
+     JOIN dbo.barcode b ON w.code_wares = b.code_wares
+  WHERE w.type_wares = 2
+  --AND substring(w.name_wares,1,4)<> 'Пиво'
+  AND w.name_group IN('Цигарки','Сигари')
+  AND w.is_old = 0
+  ORDER BY w.name_wares";
+            var MsSQL = new WDB_MsSql();
+            var W = MsSQL.db.Execute<ReceiptWares>(sql);
+            // Instantiate barcode object and set differnt barcode properties
+            foreach (var el in W)
+            {
+
+                var bb = BarcodeWriter.CreateBarcode(el.BarCode, el.BarCode.Length == 13 ? BarcodeWriterEncoding.EAN13 : BarcodeWriterEncoding.Code128,250,100);
+            
+                    bb.SaveAsJpeg(dataDir + el.NameWares.Replace('\\', ' ').Replace('/', ' ').Replace("\"", "'").Replace("*", "x") + " " + el.BarCode + ".jpg");
+                // BarcodeGenerator generator = new BarcodeGenerator(el.BarCode.Length==13? EncodeTypes.EAN13: EncodeTypes.Code128, el.BarCode);
+                // generator.Parameters.Barcode.XDimension.Millimeters = 1f;
+
+                // Save the image to your system and set its image format to Jpeg
+                // generator.Save(dataDir + el.NameWares.Replace('\\',' ' ).Replace('/',' '). Replace("\"","'")+" "+ el.BarCode+".jpg", BarCodeImageFormat.Jpeg);
+            }
+
+        }
         static void CreateReceipDay()
         {
             var SQLGetReceipt = @"SELECT top(500) ISNULL(td.PERCENT_DISCOUNT,0) AS PERCENT_DISCOUNT, dc.bar_code,  dr.number,dr.date_time

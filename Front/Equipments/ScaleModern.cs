@@ -36,10 +36,10 @@ namespace Front.Equipments
             bst.Init();
         }
 
-        public override eState TestDevice() 
+        public override eStateEquipment TestDevice() 
         {
             var r=bst.TestDevice().Result;
-            State = r==ModernExpo.SelfCheckout.Entities.Enums.Device.DeviceConnectionStatus.Enabled ? eState.Ok : eState.Error;
+            State = r==ModernExpo.SelfCheckout.Entities.Enums.Device.DeviceConnectionStatus.Enabled ? eStateEquipment.Ok : eStateEquipment.Error;
             return State;
         }
 

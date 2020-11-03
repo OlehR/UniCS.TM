@@ -22,9 +22,12 @@ namespace SharedLib
         public IdReceipt curReciptId;
 
         public DataSync ds;
-        public ControlScale CS= new ControlScale();
+        public ControlScale CS = new ControlScale();
 
-        private eState State { get; set; } = eState.NotDefine;
+        public eState State { get; set; } = eState.NotDefine;
+        //public ePosTypeError PosTypeError  { get; set;} =ePosTypeError.NotDefine;
+
+        public ePosStatus PosStatus { get; set; } = ePosStatus.StatusCodeIsNotAvailable;
 
         public static SortedList<int, long> UserIdbyWorkPlace = new SortedList<int, long>();
         //public Action<IEnumerable<ReceiptWares>, Guid> OnReceiptCalculationComplete { get; set; }
@@ -556,12 +559,7 @@ namespace SharedLib
             return db.FixWeight(RW);
         }
 
-        public eState SetState(eState pState)
-        {
-            State = pState;
-            return State;
-        }
-
+        
     }
 
 

@@ -10,6 +10,9 @@
     <Compile Update="Admin.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="WaitAdmin.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Admin.xaml">
@@ -28,6 +31,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Resources\lang.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="WaitAdmin.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

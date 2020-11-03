@@ -23,11 +23,12 @@ namespace Front.Equipments
             Configuration = pConfiguration;
         }
         public bool IsReady { get; set; } = false;
-        public eState State { get; set; } = eState.Off;
-        public  virtual eState TestDevice() { throw new NotImplementedException(); }
-        public virtual void Enable() { State=eState.Ok; }
-        public virtual void Disable() { State = eState.Off; }        
-
+        private eStateEquipment _State=eStateEquipment.Off;
+        public eStateEquipment State { get { return _State; } set { _State = value; SetState?.Invoke(value); } }
+        public static Action<eStateEquipment> SetState { get; set; }
+        public  virtual eStateEquipment TestDevice() { throw new NotImplementedException(); }
+        public virtual void Enable() { State=eStateEquipment.Ok; }
+        public virtual void Disable() { State = eStateEquipment.Off; }  
     }
-    public enum eState {Ok,Off,Error}
+    public enum eStateEquipment {Ok,Off,Error}
 }

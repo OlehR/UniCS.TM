@@ -226,7 +226,7 @@ namespace ModelMID
     {
         NotDefine = 0,
 
-        OkWaitStart ,
+        OkWaitStart,
         OkWaitScan,
         OkWaitPay,
 
@@ -253,7 +253,6 @@ namespace ModelMID
         /// Очікуємо очистку ваги.
         /// </summary>
         WaitClearWeight,
-
     }
-
-}
+   
+}  
