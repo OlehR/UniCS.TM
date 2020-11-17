@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using ModernExpo.SelfCheckout.Entities.Pos;
 using System;
 using System.Collections.Generic;
@@ -12,8 +13,11 @@ namespace Front.Equipments
         public Ingenico(string pSerialPortName, int pBaudRate = 9600, Action<string, string> pLogger = null) : base(pSerialPortName, pBaudRate, pLogger) { }
         public Ingenico(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<IPosStatus> pActionStatus = null) : base(pConfiguration, pLogger) 
         {
-            EquipmentIngenico = new ModernExpo.SelfCheckout.Devices.Ingenico.Ingenico(pConfiguration, null);
-            EquipmentIngenico.OnStatus += pActionStatus;
+            ILoggerFactory loggerFactory = new LoggerFactory().AddConsole((_, __) => true);
+            ILogger<ModernExpo.SelfCheckout.Devices.Ingenico.Ingenico> logger = loggerFactory.CreateLogger<ModernExpo.SelfCheckout.Devices.Ingenico.Ingenico>();
+
+           //EquipmentIngenico = new ModernExpo.SelfCheckout.Devices.Ingenico.Ingenico(pConfiguration, logger);
+//EquipmentIngenico.OnStatus += pActionStatus;
         }
 
         public override PaymentResultModel Purchase(decimal pAmount) 

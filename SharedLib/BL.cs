@@ -37,8 +37,9 @@ namespace SharedLib
         /// </summary>
         SortedList<Guid, int> WorkId;
 
-
-        public BL(bool  pIsUseOldDB=false)
+        double LastWeight;
+        int LastCodeWares;
+        public BL(bool pIsUseOldDB = false)
         {
             db = new WDB_SQLite(default(DateTime), null, pIsUseOldDB);
             db.BildWorkplace();
@@ -47,7 +48,7 @@ namespace SharedLib
             sBL = this;
         }
         public static BL GetBL { get { return sBL; } }
-        public ReceiptWares AddReceiptWares(ReceiptWares parW,bool pRecalcPriceOnLine=true)
+        public ReceiptWares AddReceiptWares(ReceiptWares parW, bool pRecalcPriceOnLine = true)
         {
             lock (db.GetObjectForLockByIdWorkplace(parW.IdWorkplace))
             {
@@ -63,13 +64,12 @@ namespace SharedLib
             //Кешконтроль
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
-            // Get the elapsed time as a TimeSpan value.
-            
+            // Get the elapsed time as a TimeSpan value.            
 
             _ = VR.SendMessageAsync(parW.IdWorkplace, parW.NameWares, parW.Articl, parW.Quantity, parW.Sum);
             stopWatch.Stop();
             TimeSpan ts = stopWatch.Elapsed;
-            Console.WriteLine("\nVR=>" + ts.TotalMilliseconds+"\n");
+            Console.WriteLine("\nVR=>" + ts.TotalMilliseconds + "\n");
 
             if (pRecalcPriceOnLine && ModelMID.Global.RecalcPriceOnLine)
                 db.RecalcPriceAsync(parW);
@@ -93,16 +93,21 @@ namespace SharedLib
         public IdReceipt GetNewIdReceipt(Guid parTerminalId, int parCodePeriod = 0)
         {
             var idReceip = new IdReceipt() { IdWorkplace = GetIdWorkplaceByTerminalId(parTerminalId), CodePeriod = parCodePeriod };
-             curReciptId= db.GetNewReceipt(idReceip);
+            curReciptId = db.GetNewReceipt(idReceip);
             return curReciptId;
         }
 
         public Receipt GetLastReceipt(Guid parTerminalId, int parCodePeriod = 0)
         {
-            var idReceip = new IdReceipt() { IdWorkplace = GetIdWorkplaceByTerminalId(parTerminalId), CodePeriod = (parCodePeriod == 0? Global.GetCodePeriod():parCodePeriod) };
+            var idReceip = new IdReceipt() { IdWorkplace = GetIdWorkplaceByTerminalId(parTerminalId), CodePeriod = (parCodePeriod == 0 ? Global.GetCodePeriod() : parCodePeriod) };
             return db.GetLastReceipt(idReceip);
         }
 
+        public Receipt GetLastReceipt(int pIdWorkplace, int parCodePeriod = 0)
+        {
+            var idReceip = new IdReceipt() { IdWorkplace = pIdWorkplace, CodePeriod = (parCodePeriod == 0 ? Global.GetCodePeriod() : parCodePeriod) };
+            return db.GetLastReceipt(idReceip);
+        }
 
 
         public bool UpdateReceiptFiscalNumber(IdReceipt receiptId, string parFiscalNumber)
@@ -115,8 +120,8 @@ namespace SharedLib
             db.CloseReceipt(receipt);
             return true;
         }
-
-        public ReceiptWares AddWaresBarCode( string pBarCode, decimal pQuantity = 0)
+        [Obsolete("This metod  is deprecated")]
+        public ReceiptWares AddWaresBarCode(string pBarCode, decimal pQuantity = 0)
         {
             return AddWaresBarCode(curReciptId, pBarCode, pQuantity);
         }
@@ -148,7 +153,7 @@ namespace SharedLib
                     w = null;
                     if (el.Prefix.Equals(pBarCode.Substring(0, el.Prefix.Length)))
                     {
-                        if(el.KindBarCode==eKindBarCode.EAN13 && pBarCode.Length!=13)
+                        if (el.KindBarCode == eKindBarCode.EAN13 && pBarCode.Length != 13)
                             break;
 
                         int varCode = Convert.ToInt32(pBarCode.Substring(el.Prefix.Length, el.LenghtCode));
@@ -163,15 +168,15 @@ namespace SharedLib
                                 break;
                             case eTypeCode.PercentDiscount:
                                 _ = ds.CheckDiscountBarCodeAsync(pReceipt, pBarCode, varCode);
-                                return new ReceiptWares(pReceipt);                                
+                                return new ReceiptWares(pReceipt);
                             default:
                                 break;
                         }
                         if (w != null && w.Count() == 1) //Знайшли що треба
                         {
                             //parQuantity = (w.First().CodeUnit == Global.WeightCodeUnit ? varValue / 1000m : varValue);
-                            if(pQuantity > 0)
-                              pQuantity = varValue;
+                            if (pQuantity > 0)
+                                pQuantity = varValue;
                             break;
                         }
                     }
@@ -181,60 +186,60 @@ namespace SharedLib
 
             if (w == null || w.Count() != 1)
                 return null;
-            
+
             var W = w.First();
             W.RecalcTobacco();
             if (pBarCode.Length >= 8)
                 W.BarCode = pBarCode;
-                if (pQuantity == 0 || W.IsMultiplePrices) //Якщо сигарети не добававляємо товар.
-                return W;            
+            if (pQuantity == 0 || W.IsMultiplePrices) //Якщо сигарети не добававляємо товар.
+                return W;
 
             if (W.Price == 0)//Якщо немає ціни на товар !!!!TMP Краще обробляти на GUI буде пізніше
                 return null;
             W.SetIdReceipt(pReceipt);
-            W.Quantity = (W.CodeUnit == Global.WeightCodeUnit ? pQuantity/1000m : pQuantity);// Вага приходить в грамах
+            W.Quantity = (W.CodeUnit == Global.WeightCodeUnit ? pQuantity / 1000m : pQuantity);// Вага приходить в грамах
             return AddReceiptWares(W);
         }
 
-        public ReceiptWares AddWaresCode( int pCodeWares, int pCodeUnit, decimal pQuantity = 0, decimal pPrice = 0)
+        public ReceiptWares AddWaresCode(int pCodeWares, int pCodeUnit, decimal pQuantity = 0, decimal pPrice = 0)
         {
             return AddWaresCode(curReciptId, pCodeWares, pCodeUnit, pQuantity = 0, pPrice);
         }
-        public ReceiptWares AddWaresCode(IdReceipt pIdReceipt,int pCodeWares,int pCodeUnit, decimal pQuantity = 0, decimal pPrice = 0)
+        public ReceiptWares AddWaresCode(IdReceipt pIdReceipt, int pCodeWares, int pCodeUnit, decimal pQuantity = 0, decimal pPrice = 0)
         {
-                var w = db.FindWares(null, null, pCodeWares, pCodeUnit);
-                if (w.Count() == 1)
-                {
-                    var W = w.First();
-                    W.RecalcTobacco();
+            var w = db.FindWares(null, null, pCodeWares, pCodeUnit);
+            if (w.Count() == 1)
+            {
+                var W = w.First();
+                W.RecalcTobacco();
                 if (pQuantity == 0)
-                        return W;
-                    W.SetIdReceipt(pIdReceipt);
-                    if (pPrice > 0 || !W.IsMultiplePrices)
+                    return W;
+                W.SetIdReceipt(pIdReceipt);
+                if (pPrice > 0 || !W.IsMultiplePrices)
+                {
+                    W.Quantity = (W.CodeUnit == Global.WeightCodeUnit ? pQuantity / 1000m : pQuantity);//Хак для вагового товару Який приходить в грамах.
+                    var res = AddReceiptWares(W, false);
+                    if (pPrice > 0 && W.IsMultiplePrices)
                     {
-                        W.Quantity = (W.CodeUnit == Global.WeightCodeUnit ? pQuantity / 1000m : pQuantity);//Хак для вагового товару Який приходить в грамах.
-                        var res= AddReceiptWares(W,false);
-                        if (pPrice > 0 && W.IsMultiplePrices)
-                        {
-                            WaresReceiptPromotion[] r = new WaresReceiptPromotion[1] { new WaresReceiptPromotion(W)
+                        WaresReceiptPromotion[] r = new WaresReceiptPromotion[1] { new WaresReceiptPromotion(W)
                             {CodeWares=W.CodeWares, Price= pPrice*(W.TypeWares==2?1.05M:1M), TypeDiscount=eTypeDiscount.Price,Quantity=pQuantity,CodePS=999999 }
                             };
-                            db.ReplaceWaresReceiptPromotion(r);
-                            db.RecalcHeadReceipt(pIdReceipt);
-                        }
-                        if ( Global.RecalcPriceOnLine)
-                            db.RecalcPriceAsync(W);
-                        return res;
-
+                        db.ReplaceWaresReceiptPromotion(r);
+                        db.RecalcHeadReceipt(pIdReceipt);
                     }
-                    else
-                        return W;
+                    if (Global.RecalcPriceOnLine)
+                        db.RecalcPriceAsync(W);
+                    return res;
+
                 }
-            
+                else
+                    return W;
+            }
+
             return null;
         }
 
-        public IEnumerable<ReceiptWares> ViewReceiptWares(IdReceipt parIdReceipt,bool pIsReceiptWaresPromotion=false)
+        public IEnumerable<ReceiptWares> ViewReceiptWares(IdReceipt parIdReceipt, bool pIsReceiptWaresPromotion = false)
         {
             var Res = db.ViewReceiptWares(parIdReceipt, pIsReceiptWaresPromotion);
             //var El = Res.First();
@@ -254,17 +259,17 @@ namespace SharedLib
                 _ = VR.SendMessageAsync(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum, VR.eTypeVRMessage.DeleteWares);
             }
             else
-            {               
+            {
                 //w.SetIdReceiptWares();
                 w.Quantity = parQuantity;
                 w.Sort = -1;
                 res = db.UpdateQuantityWares(w);
                 _ = VR.SendMessageAsync(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum, VR.eTypeVRMessage.UpdateWares);
             }
-                if (ModelMID.Global.RecalcPriceOnLine)
-                    db.RecalcPriceAsync(parReceiptWaresId);
+            if (ModelMID.Global.RecalcPriceOnLine)
+                db.RecalcPriceAsync(parReceiptWaresId);
 
-           // }
+            // }
             return res;
         }
 
@@ -272,7 +277,7 @@ namespace SharedLib
         {
             DateTime Ldc = DateTime.ParseExact(idReceipt.CodePeriod.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture);
             if (Ldc == DateTime.Now.Date)
-             return db.ViewReceipt(idReceipt, parWithDetail);
+                return db.ViewReceipt(idReceipt, parWithDetail);
 
             var ldb = new WDB_SQLite(Ldc);
             return ldb.ViewReceipt(idReceipt, parWithDetail);
@@ -284,7 +289,7 @@ namespace SharedLib
             if (r.Count() == 1)
             {
                 var client = r.First();
-                UpdateClientInReceipt(idReceipt, client);               
+                UpdateClientInReceipt(idReceipt, client);
                 return client;
             }
             return null;
@@ -370,17 +375,17 @@ namespace SharedLib
             return true;
         }
 
-      
+
         public bool InsertWeight(string parBarCode, int parWeight, Guid parWares, TypeSaveWeight parTypeSaveWeight)
         {
             var CodeWares = 0;
 
-            if (string.IsNullOrEmpty(parBarCode)&& parWares==Guid.Empty )
+            if (string.IsNullOrEmpty(parBarCode) && parWares == Guid.Empty)
                 return false;
-            if ( parWares != Guid.Empty)
-                CodeWares= new IdReceiptWares(new IdReceipt(), parWares).CodeWares;
+            if (parWares != Guid.Empty)
+                CodeWares = new IdReceiptWares(new IdReceipt(), parWares).CodeWares;
 
-            return db.InsertWeight(new { BarCode = (parTypeSaveWeight == TypeSaveWeight.Add || parBarCode==null ? CodeWares.ToString() : parBarCode), Weight = (decimal)parWeight / 1000m, Status = parTypeSaveWeight });
+            return db.InsertWeight(new { BarCode = (parTypeSaveWeight == TypeSaveWeight.Add || parBarCode == null ? CodeWares.ToString() : parBarCode), Weight = (decimal)parWeight / 1000m, Status = parTypeSaveWeight });
 
             /*if (parBarCode != null)
                 return db.InsertWeight(new { BarCode = parBarCode, Weight = (decimal)parWeight / 1000m, Status = 0 });
@@ -392,14 +397,14 @@ namespace SharedLib
             */
         }
 
-       
-		public IEnumerable<ReceiptWares> GetWaresReceipt(IdReceipt pIdReceipt=null)
+
+        public IEnumerable<ReceiptWares> GetWaresReceipt(IdReceipt pIdReceipt = null)
         {
-            return db.ViewReceiptWares(pIdReceipt==null?curReciptId:pIdReceipt);
+            return db.ViewReceiptWares(pIdReceipt == null ? curReciptId : pIdReceipt);
         }
 
 
-        public IEnumerable<Receipt> GetReceipts(DateTime parStartDate, DateTime parFinishDate,int IdWorkPlace)
+        public IEnumerable<Receipt> GetReceipts(DateTime parStartDate, DateTime parFinishDate, int IdWorkPlace)
         {
             var res = db.GetReceipts(parStartDate.Date, parFinishDate.Date.AddDays(1), IdWorkPlace).ToList();
             if (parStartDate.Date != DateTime.Now.Date || parFinishDate.Date != DateTime.Now.Date)
@@ -415,12 +420,12 @@ namespace SharedLib
                     }
                 }
             }
-                //throw new NotImplementedException();
-                return res;
+            //throw new NotImplementedException();
+            return res;
         }
 
 
-        public Receipt GetReceiptByFiscalNumber(int IdWorkplace,string pFiscalNumber, DateTime pStartDate= default(DateTime), DateTime pFinishDate= default(DateTime))
+        public Receipt GetReceiptByFiscalNumber(int IdWorkplace, string pFiscalNumber, DateTime pStartDate = default(DateTime), DateTime pFinishDate = default(DateTime))
         {
             if (pStartDate == default(DateTime))
                 pStartDate = DateTime.Now.Date.AddDays(-14);
@@ -430,8 +435,8 @@ namespace SharedLib
             var Ldc = pStartDate.Date;
             while (Ldc <= pFinishDate.Date)
             {
-                var ldb = new WDB_SQLite( Ldc);
-                var l = ldb.GetReceiptByFiscalNumber(IdWorkplace,pFiscalNumber, pStartDate, pFinishDate);
+                var ldb = new WDB_SQLite(Ldc);
+                var l = ldb.GetReceiptByFiscalNumber(IdWorkplace, pFiscalNumber, pStartDate, pFinishDate);
                 if (l != null && l.Count() >= 1)
                     return l.First();
                 Ldc = Ldc.AddDays(1);
@@ -439,18 +444,18 @@ namespace SharedLib
             return null;
         }
 
-        public bool SaveReceipt(Receipt parReceipt,bool isRefund =true)       
+        public bool SaveReceipt(Receipt parReceipt, bool isRefund = true)
         {
-            
-            var ReceiptId = isRefund ? parReceipt.RefundId : (IdReceipt)parReceipt;            
-            
-            var dbR = parReceipt.CodePeriod == Global.GetCodePeriod()?db: new WDB_SQLite( ReceiptId.DTPeriod);
+
+            var ReceiptId = isRefund ? parReceipt.RefundId : (IdReceipt)parReceipt;
+
+            var dbR = parReceipt.CodePeriod == Global.GetCodePeriod() ? db : new WDB_SQLite(ReceiptId.DTPeriod);
 
 
             dbR.ReplaceReceipt(parReceipt);
             dbR.ReplacePayment(parReceipt.Payment);
 
-            var dbr = parReceipt.CodePeriod == parReceipt.CodePeriodRefund ? db : new WDB_SQLite( ReceiptId.DTPeriod);
+            var dbr = parReceipt.CodePeriod == parReceipt.CodePeriodRefund ? db : new WDB_SQLite(ReceiptId.DTPeriod);
             foreach (var el in parReceipt.Wares)
             {
                 dbR.AddWares(el);
@@ -464,7 +469,7 @@ namespace SharedLib
             return true;
         }
 
-     
+
         public bool SaveReceiptEvents(IEnumerable<ReceiptEvent> parRE)
         {
             if (parRE != null && parRE.Count() > 0)
@@ -477,11 +482,11 @@ namespace SharedLib
 
         public async Task<bool> SyncDataAsync(bool parIsFull)
         {
-            var res=ds.SyncData(parIsFull);
+            var res = ds.SyncData(parIsFull);
             var CurDate = DateTime.Now;
             // не обміннюємось чеками починаючи з 23:45 до 1:00
-            if( !( (CurDate.Hour==23 && CurDate.Minute>44)  || CurDate.Hour==0))
-               await ds.SendAllReceipt().ConfigureAwait(false);
+            if (!((CurDate.Hour == 23 && CurDate.Minute > 44) || CurDate.Hour == 0))
+                await ds.SendAllReceipt().ConfigureAwait(false);
 
             if (CurDate.Hour < 7)
             {
@@ -501,35 +506,13 @@ namespace SharedLib
             return ds.SendReceiptTo1C(parIdReceipt);
         }
 
-        /*
-        public  double GetMidlWeight()
-        {
-            return CS.GetMidlWeight();
-        }
-
-
-        public void StartWeightNewGoogs(WaitWeight[] pWeight)
-        {  
-            CS.StartWeightNewGoogs(pWeight);
-        }
-
-        public  bool FixedWeight()
-        {
-            return CS.FixedWeight();
-        }
-
-        public  bool WaitClearScale()
-        {
-            return CS.WaitClear();
-        }
-        */
         public void CloseDB()
         {
             if (db != null)
                 db.Close();
         }
 
-        public void StartWork(int pIdWorkplace,string pCodeCashier)
+        public void StartWork(int pIdWorkplace, string pCodeCashier)
         {
             //tmp 
             long CodeCashier = long.Parse(pCodeCashier);
@@ -558,11 +541,41 @@ namespace SharedLib
             RW.FixWeight = pWeight;
             return db.FixWeight(RW);
         }
+        /// <summary>
+        /// Отриманий штрихкод з Обладнання.
+        /// </summary>
+        /// <param name="pBarCode"></param>
+        /// <param name="pTypeBarCode"></param>
+        public void GetBarCode(string pBarCode, string pTypeBarCode)
+        {            
+            AddWaresBarCode(GetLastReceipt(Global.IdWorkPlace),pBarCode, 1);
+        }
+        /// <summary>
+        /// Отримана вага з Обладннааняю
+        /// </summary>
+        /// <param name="pWeight"></param>
+        /// <param name="pIsStable"></param>
+        public void GetScale(double pWeight, bool pIsStable)
+        {
+            if (pIsStable)
+                LastWeight = pWeight;
+            //MW.Weight = pWeight.ToString();
+        }
 
-        
+        public void StartScale(int pCodeWares = 0)
+        {
+            LastCodeWares = pCodeWares;
+            LastWeight = 0d;
+        }
+        /// <summary>
+        /// Добавляє зважений товар в базу.
+        /// </summary>
+        public void AddWeightWares()
+        {
+            AddWaresCode(LastCodeWares, 0, Convert.ToDecimal(LastWeight));
+        }
+
     }
-
-
 
 }
 

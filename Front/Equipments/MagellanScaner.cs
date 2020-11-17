@@ -19,8 +19,8 @@ namespace Front.Equipments
 
             Magellan9300.Init();
 
-
-            Magellan9300.OnBarcodeScannerChange += (BarCode) =>
+            if (pOnBarCode != null)
+                Magellan9300.OnBarcodeScannerChange += (BarCode) =>
             {
                 pOnBarCode(BarCode, null);
             };
@@ -31,11 +31,11 @@ namespace Front.Equipments
         {
             Magellan9300 = new Magellan9300S(pConfiguration, null);
             Magellan9300.Init();
-
-            Magellan9300.OnBarcodeScannerChange += (BarCode) =>
-            {
-                pOnBarCode(BarCode, null);
-            };
+            if (pOnBarCode != null)
+                Magellan9300.OnBarcodeScannerChange += (BarCode) =>
+                {
+                    pOnBarCode(BarCode, null);
+                };
         }
     }
 }

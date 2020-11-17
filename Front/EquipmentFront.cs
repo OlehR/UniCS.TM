@@ -13,7 +13,7 @@ namespace Front
     {
         private List<EquipmentElement> ListEquipment = new List<EquipmentElement>();
         BL Bl; //!!!!костиль.
-        MainWindow MW;
+        //MainWindow MW;
         Scaner Scaner;
         Scale Scale;
         Scale ControlScale;
@@ -51,27 +51,27 @@ namespace Front
 
         static EquipmentFront sEquipmentFront;
 
-        public EquipmentFront(BL pBL, MainWindow pMW)
+        public EquipmentFront(BL pBL)
         {
             Bl = pBL;
-            MW = pMW;
+            //MW = pMW;
             sEquipmentFront = this;
             var config = Config("appsettings.json");
 
             //Scaner
             var ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Scaner).First();
             if (ElEquipment.Model == eModel.MagellanScaner)
-                ElEquipment.Equipment = new MagellanScaner(config, null, GetBarCode);
+                ElEquipment.Equipment = new MagellanScaner(config, null, Bl.GetBarCode);
             else
-                ElEquipment.Equipment = new Scaner(ElEquipment.Port, ElEquipment.BaudRate, null, GetBarCode);
+                ElEquipment.Equipment = new Scaner(ElEquipment.Port, ElEquipment.BaudRate, null, Bl.GetBarCode);
             Scaner = (Scaner)ElEquipment.Equipment;
 
             //Scale
             ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Scale).First();
             if (ElEquipment.Model == eModel.MagellanScale)
-                ElEquipment.Equipment = new MagellanScale(((MagellanScaner)Scaner).Magellan9300, GetScale); //MagellanScale(ElEquipment.Port, ElEquipment.BaudRate, null, GetScale);
+                ElEquipment.Equipment = new MagellanScale(((MagellanScaner)Scaner).Magellan9300, Bl.GetScale); //MagellanScale(ElEquipment.Port, ElEquipment.BaudRate, null, GetScale);
             else
-                ElEquipment.Equipment = new Scale(ElEquipment.Port, ElEquipment.BaudRate, null, GetScale);
+                ElEquipment.Equipment = new Scale(ElEquipment.Port, ElEquipment.BaudRate, null, Bl.GetScale);
             Scale = (Scale)ElEquipment.Equipment;
 
             //ControlScale
@@ -126,34 +126,14 @@ namespace Front
             return AppConfiguration;
         }
 
-        private void GetBarCode(string pBarCode, string pTypeBarCode)
-        {
-            Bl.AddWaresBarCode( pBarCode, 1);
-        }
-
-        private void GetScale(double pWeight, bool pIsStable)
-        {
-            MW.Weight = pWeight.ToString();
-        }
-
-       /* private void GetControlScale(double pWeight, bool pIsStable)
-        {
-            Bl.CS.OnScalesData(pWeight, pIsStable);
-            MW.WeightControl = pWeight.ToString();
-        }*/
-
+               
+       
         public void SetColor(Color pColor)
         {
             Signal.SwitchToColor(pColor);
         }
 
-       /* Action<IPosStatus> aPosStatus = (ww) => 
-        { 
-            if(ww is PosStatus status)
-            {
-                Bl.PosStatus  = status.Status.GetPosStatusFromStatus();                
-            }
-        };*/
+       
         void aPosStatus(IPosStatus ww)
         {
             if (ww is PosStatus status)

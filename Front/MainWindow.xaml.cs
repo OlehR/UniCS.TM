@@ -46,7 +46,7 @@ namespace Front
             
 
             Bl = new BL(true);
-            EF = new EquipmentFront(Bl, this);
+            EF = new EquipmentFront(Bl);
             //ad =  new Admin();
             Global.OnReceiptCalculationComplete += (wareses, guid) =>
             {
@@ -247,13 +247,13 @@ namespace Front
         private IEnumerable<ReceiptWares> StartData()
         {
             var TerminalId = Guid.Parse("1bb89aa9-dbdf-4eb0-b7a2-094665c3fdd0");
-            Bl.GetNewIdReceipt(TerminalId);
-            Bl.AddWaresBarCode( "4823086109988", 10);
-            Bl.AddWaresBarCode( "7622300813437", 1);
-            Bl.AddWaresBarCode( "2201652300229", 3);
-            Bl.AddWaresBarCode("7775002160043", 1); //товар 2 кат
-            Bl.AddWaresBarCode( "1110011760218", 11);
-            Bl.AddWaresBarCode("7773002160043", 1); //товар 2 кат
+            var RId=Bl.GetNewIdReceipt(TerminalId);
+            Bl.AddWaresBarCode(RId, "4823086109988", 10);
+            Bl.AddWaresBarCode(RId, "7622300813437", 1);
+            Bl.AddWaresBarCode(RId, "2201652300229", 3);
+            Bl.AddWaresBarCode(RId,"7775002160043", 1); //товар 2 кат
+            Bl.AddWaresBarCode(RId,"1110011760218", 11);
+            Bl.AddWaresBarCode(RId,"7773002160043", 1); //товар 2 кат
             return Bl.GetWaresReceipt();
         }
 

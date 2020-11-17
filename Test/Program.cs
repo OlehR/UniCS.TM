@@ -38,10 +38,10 @@ namespace Test
             Console.WriteLine("Start");
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
 
-            //await CreateDataBaseAsync(true);
+            await CreateDataBaseAsync(true);
 
             //TestReceipt();
-            CreateBarCode();
+            //CreateBarCode();
 
             //TestKit();
             //all_bag();
