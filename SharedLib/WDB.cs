@@ -774,7 +774,6 @@ namespace SharedLib
         public virtual Int64 GetPricePromotionSale2Category(IdReceiptWares parIdReceiptWares)
         {
             return db.ExecuteScalar<IdReceiptWares, Int64>(SqlGetPricePromotionSale2Category, parIdReceiptWares);
-
         }
 
 
