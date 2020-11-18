@@ -394,9 +394,14 @@ where psf.code_ps  is null
 and EPS.code_ps  is null
 )
 --select * from PSEW
-select psd.CODE_PS as CodePs,1 as Priority ,11 as TypeDiscont  ,p.PRICE_DEALER as Data,1 as IsIgnoreMinPrice
+select psd.CODE_PS as CodePs,ps.PRIORITY as Priority ,11 as TypeDiscont  ,p.PRICE_DEALER as Data,1 as IsIgnoreMinPrice
 from  PROMOTION_SALE_DEALER psd
+ join PROMOTION_SALE ps on ps.CODE_PS=psd.CODE_PS 
  join PRICE p on psd.CODE_DEALER=p.CODE_DEALER and psd.CODE_WARES=p.CODE_WARES 
+where 
+ psd.CODE_WARES = @CodeWares and 
+ datetime('now','localtime') between psd.Date_begin and psd.DATE_END
+ and p.PRICE_DEALER>0
 where 
  psd.CODE_WARES = @CodeWares
  and datetime('now','localtime') between psd.Date_begin and psd.DATE_END

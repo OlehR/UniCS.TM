@@ -84,13 +84,14 @@ SELECT DC.code_card as CodeClient ,DC.name as NameClient ,TD.TYPE_DISCOUNT  AS T
    WHERE  DCC.CODE_STATUS_CARD=0 AND [bar_code]<>''
   AND eb.BarCode IS NULL
   */
+
 [SqlGetDimFastGroup]
 SELECT CONVERT(INT,wh.Code) AS CodeUp,CONVERT(INT,wh.Code)*1000+g.Order_Button AS CodeFastGroup,MAX(CONVERT(VARCHAR,g.Name_Button)) AS Name
   FROM DW.dbo.V1C_DIM_OPTION_WPC O
   JOIN dw.dbo.WAREHOUSES wh ON o.Warehouse_RRef=wh._IDRRef
   JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_GROUP G ON o._IDRRef=G._Reference18850_IDRRef
   --JOIN DW.dbo.V1C_DIM_OPTION_WPC_FACT_WARES W ON G._Reference18850_IDRRef = W._Reference18850_IDRRef AND G. Order_Button = W.Order_Button
-    WHERE wh.Code=9
+    WHERE wh.Code=9 AND g.Order_Button<>2 -- хак для групи Овочі 1
   GROUP BY wh.Code,g.Order_Button
   /* Це правильний запит
   SELECT CONVERT(INT,wh.Code) AS CodeUp,CONVERT(INT,wh.Code)*1000+g.Order_Button AS CodeFastGroup,g.Name_Button AS Name
@@ -101,14 +102,14 @@ SELECT CONVERT(INT,wh.Code) AS CodeUp,CONVERT(INT,wh.Code)*1000+g.Order_Button A
     WHERE wh.Code=9*/
 
 [SqlGetDimFastWares]
-     SELECT CONVERT(INT,wh.Code)*1000+g.Order_Button CodeFastGroup,w1.code_wares AS CodeWares
+SELECT CONVERT(INT,wh.Code)*1000+CASE WHEN g.Order_Button=2 THEN 1 ELSE g.Order_Button END CodeFastGroup, -- хак для групи Овочі 1
+    w1.code_wares AS CodeWares
   FROM DW.dbo.V1C_DIM_OPTION_WPC O
   JOIN dw.dbo.WAREHOUSES wh ON o.Warehouse_RRef=wh._IDRRef
   JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_GROUP G ON o._IDRRef=G._Reference18850_IDRRef
   JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_WARES W ON o._IDRRef = W._Reference18850_IDRRef AND G.Order_Button_wares = W.Order_Button
   JOIN dw.dbo.Wares w1 ON w.Wares_RRef=w1._IDRRef
     WHERE wh.Code=9;
-
 
 [SqlGetPromotionSaleData]
 WITH wh_ex AS 
@@ -205,7 +206,7 @@ SELECT
 --  ,dp.time_end
   ,1 AS Type
   ,0 AS TypeData
-  ,1 AS Priority
+  ,0 AS Priority
   ,dp.mim_money AS SumOrder
 --  ,dp.[percent]
 --  ,dp.kind_promotion
@@ -232,7 +233,9 @@ SELECT DISTINCT
  ,pg.date_end AS DateEnd
   ,1 AS Type
   ,0 AS TypeData
-  ,1 AS Priority
+  ,(SELECT  isnull(MAX(pp.Priority),0) AS Priority FROM DW.dbo.V1C_dim_type_price tp 
+      LEFT JOIN dbo.V1C_DIM_Priority_Promotion PP ON  tp.Priority_Promotion_RRef=pp.Priority_Promotion_RRef
+    WHERE tp.type_price_RRef= pg.price_type_RRef) AS Priority
   , 0.00 AS SumOrder
   ,0 AS TypeWorkCoupon
   ,NULL AS BarCodeCoupon
