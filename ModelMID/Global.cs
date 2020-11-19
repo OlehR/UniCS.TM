@@ -189,6 +189,14 @@ namespace ModelMID
             return Guid.Empty;
         }
 
+        public static WorkPlace GetWorkPlaceByIdWorkplace(int parIdWorkPlace)
+        {
+            if (WorkPlaceByWorkplaceId.ContainsKey(parIdWorkPlace))
+                return WorkPlaceByWorkplaceId[parIdWorkPlace];
+            return null;
+        }
+
+
         public static string GetNumberCashDeskByIdWorkplace(int parIdWorkPlace)
         {
             if (WorkPlaceByWorkplaceId.ContainsKey(parIdWorkPlace))

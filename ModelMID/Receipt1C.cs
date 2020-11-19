@@ -25,6 +25,7 @@ namespace ModelMID
         public string BarCodeCashier { get; set; }
         public IEnumerable<ReceiptWares1C> Wares;
 
+        public int CodeBank { get; set; }
         public Receipt1C() { }
         public Receipt1C(Receipt parR)
         {
@@ -43,8 +44,11 @@ namespace ModelMID
 
             if (parR.Wares!=null && parR.StateReceipt>0) 
               Wares = parR.Wares.Select(r => new ReceiptWares1C(r));
-//            if (parR.Payment != null)
-                //Description = parR.Payment.Where(r => !string.IsNullOrEmpty(r.NumberSlip)).FirstOrDefault().NumberSlip;
+            //            if (parR.Payment != null)
+            //Description = parR.Payment.Where(r => !string.IsNullOrEmpty(r.NumberSlip)).FirstOrDefault().NumberSlip;
+            var wp = Global.GetWorkPlaceByIdWorkplace(parR.IdWorkplace);
+            if (wp != null)
+                CodeBank = (int)wp.TypePOS;
         }
 
         public string GetBase64()

@@ -8,19 +8,19 @@
 0
 
 [SqlUpdateRC_V1]
-alter TABLE WARES_RECEIPT 
-    add Fix_Weight NUMBER NOT NULL DEFAULT 0;
-alter TABLE WARES_RECEIPT_PROMOTION 
-    add TYPE_DISCOUNT  INTEGER  NOT NULL  DEFAULT (12);
+alter TABLE WARES_RECEIPT            add Fix_Weight NUMBER NOT NULL DEFAULT 0;
+alter TABLE WARES_RECEIPT_PROMOTION  add TYPE_DISCOUNT  INTEGER  NOT NULL  DEFAULT (12);
+alter TABLE wares_receipt            add Priority INTEGER  NOT NULL DEFAULT 0;
 
 [SqlUpdateConfig_V1]
 alter table WORKPLACE add  Video_Camera_IP TEXT;
 alter table WORKPLACE add  Video_Recorder_IP TEXT;
-alter TABLE WEIGHT   add  CODE_WARES  INTEGER  NOT NULL DEFAULT 0;
-alter TABLE wares_receipt add Priority INTEGER  NOT NULL DEFAULT 0;
+alter TABLE WEIGHT    add  CODE_WARES  INTEGER  NOT NULL DEFAULT 0;
+alter table WORKPLACE add  Type_POS NUMBER   NOT NULL DEFAULT 0;
+
 [SqlUpdateMID_V1]
 alter TABLE wares add Weight_Delta INTEGER  DEFAULT 0;
-alter TABLE PROMOTION_SALE_DEALER add PRIORITY INTEGER NOT NULL DEFAULT 0;
+alter TABLE PROMOTION_SALE_DEALER add PRIORITY INTEGER NOT NULL DEFAULT 1;
 
 
 
@@ -404,10 +404,6 @@ where
  psd.CODE_WARES = @CodeWares and 
  datetime('now','localtime') between psd.Date_begin and psd.DATE_END
  and p.PRICE_DEALER>0
-where 
- psd.CODE_WARES = @CodeWares
- and datetime('now','localtime') between psd.Date_begin and psd.DATE_END
- and p.PRICE_DEALER>0
 union all -- По групам товарів
  select PSF.CODE_PS,0 as priority , 13 as Type_discont, PSD.DATA,PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice
   from wares w 
@@ -514,7 +510,7 @@ insert into Weight ( BarCode,Weight,STATUS) values (@BarCode,@Weight,@Status);
 
 [SqlGetWorkplace]
 select ID_WORKPLACE as IdWorkplace, NAME as Name, Terminal_GUID as StrTerminalGUID, 
-       Video_Camera_IP as VideoCameraIP, Video_Recorder_IP  as VideoRecorderIP from WORKPLACE;
+       Video_Camera_IP as VideoCameraIP, Video_Recorder_IP  as VideoRecorderIP , Type_POS as TypePOS from WORKPLACE;
 
 [SqlFillQuickGroup]
 WITH RECURSIVE
@@ -537,7 +533,8 @@ CREATE TABLE WORKPLACE (
 	NAME TEXT,
 	Terminal_GUID TEXT,
     Video_Camera_IP   TEXT,
-    Video_Recorder_IP TEXT
+    Video_Recorder_IP TEXT,
+    Type_POS NUMBER   NOT NULL DEFAULT 0 
 	);
 	CREATE UNIQUE INDEX id_WORKPLACE ON WORKPLACE(ID_WORKPLACE);
 	CREATE UNIQUE INDEX WORKPLACE_TG ON WORKPLACE(Terminal_GUID);
