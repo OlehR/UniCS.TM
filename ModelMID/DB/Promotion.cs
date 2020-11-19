@@ -107,9 +107,12 @@ namespace ModelMID
         public int CodeWares { get; set; }
         public DateTime DateBegin { get; set; }
         public DateTime DateEnd { get; set; }
-        public int CodeDealer { get; set; }
+        public int CodeDealer { get; set; }        
+        public int Priority { get; set; }
         public DateTime DateCreate { get; set; }
         public int UserCreate { get; set; }
+        
+        
 
     }
 

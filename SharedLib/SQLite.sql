@@ -12,6 +12,7 @@ alter TABLE WARES_RECEIPT
     add Fix_Weight NUMBER NOT NULL DEFAULT 0;
 alter TABLE WARES_RECEIPT_PROMOTION 
     add TYPE_DISCOUNT  INTEGER  NOT NULL  DEFAULT (12);
+
 [SqlUpdateConfig_V1]
 alter table WORKPLACE add  Video_Camera_IP TEXT;
 alter table WORKPLACE add  Video_Recorder_IP TEXT;
@@ -19,6 +20,7 @@ alter TABLE WEIGHT   add  CODE_WARES  INTEGER  NOT NULL DEFAULT 0;
 alter TABLE wares_receipt add Priority INTEGER  NOT NULL DEFAULT 0;
 [SqlUpdateMID_V1]
 alter TABLE wares add Weight_Delta INTEGER  DEFAULT 0;
+alter TABLE PROMOTION_SALE_DEALER add PRIORITY INTEGER NOT NULL DEFAULT 0;
 
 
 
@@ -394,9 +396,9 @@ where psf.code_ps  is null
 and EPS.code_ps  is null
 )
 --select * from PSEW
-select psd.CODE_PS as CodePs,ps.PRIORITY as Priority ,11 as TypeDiscont  ,p.PRICE_DEALER as Data,1 as IsIgnoreMinPrice
+select psd.CODE_PS as CodePs,psd.PRIORITY as Priority ,11 as TypeDiscont  ,p.PRICE_DEALER as Data,1 as IsIgnoreMinPrice
 from  PROMOTION_SALE_DEALER psd
- join PROMOTION_SALE ps on ps.CODE_PS=psd.CODE_PS 
+ --join PROMOTION_SALE ps on ps.CODE_PS=psd.CODE_PS 
  join PRICE p on psd.CODE_DEALER=p.CODE_DEALER and psd.CODE_WARES=p.CODE_WARES 
 where 
  psd.CODE_WARES = @CodeWares and 
@@ -932,7 +934,8 @@ CREATE TABLE PROMOTION_SALE_DEALER (
     Code_Wares  INTEGER  NOT NULL,
     DATE_BEGIN       DATETIME NOT NULL,
     DATE_END         DATETIME NOT NULL,
-    Code_Dealer INTEGER NOT NULL    
+    Code_Dealer INTEGER NOT NULL,   
+    PRIORITY         INTEGER  NOT NULL DEFAULT 0
 );
 
 CREATE TABLE PROMOTION_SALE_GROUP_WARES (
@@ -1044,7 +1047,7 @@ replace into PROMOTION_SALE_FILTER (CODE_PS, CODE_GROUP_FILTER, TYPE_GROUP_FILTE
                           values (@CodePS, @CodeGroupFilter, @TypeGroupFilter,@RuleGroupFilter, @CodeChoice, @CodeData, @CodeDataEnd)
  
 [SqlReplacePromotionSaleDealer]
-replace into PROMOTION_SALE_DEALER ( CODE_PS,Code_Wares,DATE_BEGIN,DATE_END,Code_Dealer) values (@CodePS,@CodeWares,@DateBegin,@DateEnd,@CodeDealer);--@CodePS,@CodeWares,@DateBegin,@DateEnd,@CodeDealer
+replace into PROMOTION_SALE_DEALER ( CODE_PS,Code_Wares,DATE_BEGIN,DATE_END,Code_Dealer,Priority) values (@CodePS,@CodeWares,@DateBegin,@DateEnd,@CodeDealer,@Priority);--@CodePS,@CodeWares,@DateBegin,@DateEnd,@CodeDealer
 
 [SqlReplacePromotionSaleGroupWares]
 replace into PROMOTION_SALE_GROUP_WARES (CODE_GROUP_WARES_PS ,CODE_GROUP_WARES) values (@CodeGroupWaresPS, @CodeGroupWares )
