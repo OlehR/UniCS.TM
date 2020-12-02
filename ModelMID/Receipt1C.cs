@@ -43,8 +43,8 @@ namespace ModelMID
 
             if (parR.Wares!=null && parR.StateReceipt>0) 
               Wares = parR.Wares.Select(r => new ReceiptWares1C(r));
-//            if (parR.Payment != null)
-                //Description = parR.Payment.Where(r => !string.IsNullOrEmpty(r.NumberSlip)).FirstOrDefault().NumberSlip;
+            if (parR.Payment != null)
+                Description = parR.Payment.Where(r => !string.IsNullOrEmpty(r.NumberSlip)).FirstOrDefault().NumberSlip;
         }
 
         public string GetBase64()
