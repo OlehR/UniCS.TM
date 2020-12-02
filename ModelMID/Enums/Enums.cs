@@ -254,5 +254,10 @@ namespace ModelMID
         /// </summary>
         WaitClearWeight,
     }
-   
+    public enum eTypePOS
+    {
+        NotDefine = 0,
+        PrivatBank =3,
+        Oschadbank =11
+    }
 }  

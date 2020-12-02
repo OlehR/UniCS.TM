@@ -38,9 +38,9 @@ namespace Test
             Console.WriteLine("Start");
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
 
-            await CreateDataBaseAsync(true);
+            //await CreateDataBaseAsync(true);
 
-            //TestReceipt();
+            TestReceipt();
             //CreateBarCode();
 
             //TestKit();
@@ -86,6 +86,10 @@ namespace Test
             var api = new ApiPSU();
             ProductViewModel sd;
 
+            api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20201119, IdWorkplace = 72, CodeReceipt = 4 }); return;
+
+            sd = api.AddProductByBarCode(TerminalId, "4820062531863",1);
+            return;
 
             var ccc = api.GetCustomerByPhone(TerminalId,"0666672818");
 
@@ -123,9 +127,11 @@ namespace Test
             //Thread.Sleep(2000);
             //return;
             //var c = api.GetCustomerByPhone(TerminalId,"0503729543");
-            var c = api.GetCustomerByBarCode(TerminalId, "8810005077479");
+            //var c = api.GetCustomerByBarCode(TerminalId, "8810005077479");
             //var ddd=api.GetReceiptByNumber(TerminalId, "55");
 
+
+            
 
             //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200920, IdWorkplace = 72, CodeReceipt = 21 }); return;
 
@@ -193,7 +199,7 @@ namespace Test
                 Console.WriteLine($"{el.ProductName.Substring(0,7)} PP=> {el.ProductPrice } \t Discount=> { el.Discount} \t{el.ProductPrice*el.ProductQuantity*(el.ProductWeightType==ModernIntegration.Enums.ProductWeightType.ByWeight?1000:1 )- el.Discount} "); //FullPrice=>  {el.FullPrice}   TotalPrice=>{el.TotalPrice} 
             */
             //var dddd=api.GetAllCategories(TerminalId);
-            api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200609, IdWorkplace = 62, CodeReceipt = 123 });  return;
+            
             
             //api.Bl.ds.LoadWeightKasa(new DateTime(2020,02,17));return;
             //api.Bl.SendOldReceipt(); return;

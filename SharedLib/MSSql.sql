@@ -175,12 +175,14 @@ SELECT -- Кількість товари  набору (Основні)
   GROUP BY CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number),pk.number_kit
 
 [SqlGetPromotionSaleDealer]
-SELECT 9000000000+CONVERT( INT,YEAR(dpg.date_time)*100000+dpg.number) AS CodePS,   CONVERT(INT,dn.code) AS CodeWares, pg.date_beg AS DateBegin,pg.date_end AS DateEnd,CONVERT(INT,tp.code) AS CodeDealer
+  SELECT 9000000000+CONVERT( INT,YEAR(dpg.date_time)*100000+dpg.number) AS CodePS,   CONVERT(INT,dn.code) AS CodeWares, pg.date_beg AS DateBegin,pg.date_end AS DateEnd,CONVERT(INT,tp.code) AS CodeDealer
+    ,isnull(pp.Priority,0) AS Priority 
   FROM dbo.V1C_reg_promotion_gal pg
   JOIN dbo.V1C_doc_promotion_gal dpg ON pg.doc_RRef = dpg.doc_RRef
   JOIN dbo.V1C_dim_nomen dn ON pg.nomen_RRef=dn.IDRRef
   JOIN dbo.V1C_dim_type_price tp ON pg.price_type_RRef=tp.type_price_RRef
   JOIN dbo.V1C_dim_warehouse wh ON wh.subdivision_RRef=pg.subdivision_RRef
+  LEFT JOIN dbo.V1C_DIM_Priority_Promotion PP ON  tp.Priority_Promotion_RRef=pp.Priority_Promotion_RRef
   where pg.date_end>GETDATE()
   AND wh.code =9
 
@@ -233,9 +235,7 @@ SELECT DISTINCT
  ,pg.date_end AS DateEnd
   ,1 AS Type
   ,0 AS TypeData
-  ,(SELECT  isnull(MAX(pp.Priority),0) AS Priority FROM DW.dbo.V1C_dim_type_price tp 
-      LEFT JOIN dbo.V1C_DIM_Priority_Promotion PP ON  tp.Priority_Promotion_RRef=pp.Priority_Promotion_RRef
-    WHERE tp.type_price_RRef= pg.price_type_RRef) AS Priority
+  ,1 AS Priority
   , 0.00 AS SumOrder
   ,0 AS TypeWorkCoupon
   ,NULL AS BarCodeCoupon
