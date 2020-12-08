@@ -240,6 +240,11 @@ namespace ModelMID
 
         public bool IsMultiplePrices { get { return Prices != null && Prices.Count() > 1 && TypeWares == 2; } }
 
+        /// <summary>
+        /// Вікові обмеження (Піротехніка)
+        /// </summary>
+        public decimal LimitAge { get; set; }
+
         public IEnumerable<decimal> Prices;
 
         public string GetPrices { get { return Prices == null ? null : string.Join(";", Prices.Select(n => n.ToString(CultureInfo.InvariantCulture)).ToArray()); } }

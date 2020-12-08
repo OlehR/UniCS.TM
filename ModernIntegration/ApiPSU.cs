@@ -269,11 +269,11 @@ namespace ModernIntegration
             if (!receiptWares.IsWeight && receiptWares.AdditionalWeights != null)
                 foreach (var el in receiptWares.AdditionalWeights)
                     LWI.Add(new WeightInfo { DeltaWeight = Convert.ToDouble(receiptWares.WeightDelta) + Convert.ToDouble(Global.GetCoefDeltaWeight(el))*Convert.ToDouble(el), Weight = Convert.ToDouble(el) });
-            var varTags = (receiptWares.TypeWares > 0 || (!receiptWares.IsWeight && receiptWares.WeightBrutto == 0))
+            var varTags = (receiptWares.TypeWares > 0 || receiptWares.LimitAge > 0 || (!receiptWares.IsWeight && receiptWares.WeightBrutto == 0))
                     ? new List<Tag>() : null; //!!!TMP // Різні мітки алкоголь, обмеження по часу.
 
             //Якщо алкоголь чи тютюн
-            if (receiptWares.TypeWares > 0)
+            if (receiptWares.TypeWares > 0 || receiptWares.LimitAge>0)
                 varTags.Add(new Tag() { Key = "AgeRestricted", Id = 0 });
             //Якщо алкоголь обмеження по часу
             if (receiptWares.TypeWares == 1)
