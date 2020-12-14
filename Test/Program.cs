@@ -93,7 +93,7 @@ namespace Test
 
             //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20201119, IdWorkplace = 72, CodeReceipt = 4 }); return;
 
-            sd = api.AddProductByBarCode(TerminalId, "4820150762100", 1);
+            sd = api.AddProductByBarCode(TerminalId, "4820150762452", 1);
             return;
        
 
