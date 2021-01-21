@@ -41,8 +41,8 @@ namespace Test
             //await CreateDataBaseAsync(true);
 
             TestReceipt();
+            
             //CreateBarCode();
-
             //TestKit();
             //all_bag();
             //LoadReceiptJson();
@@ -86,9 +86,9 @@ namespace Test
             var api = new ApiPSU();
             ProductViewModel sd;
 
-            api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20201119, IdWorkplace = 72, CodeReceipt = 4 }); return;
+            //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20201119, IdWorkplace = 72, CodeReceipt = 8}); return;
 
-            sd = api.AddProductByBarCode(TerminalId, "4820062531863",1);
+            sd = api.AddProductByBarCode(TerminalId, "8710671155382", 1);
             return;
 
             var ccc = api.GetCustomerByPhone(TerminalId,"0666672818");
