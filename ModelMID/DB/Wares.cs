@@ -51,8 +51,9 @@ namespace ModelMID
         public decimal WeightFact { get; set; }
         public decimal WeightDelta { get; set; }
         public string CodeUKTZED { get; set; }
-
-
-
+        /// <summary>
+        /// Вікові обмеження (Піротехніка)
+        /// </summary>
+        public decimal LimitAge { get; set; }
     }
 }

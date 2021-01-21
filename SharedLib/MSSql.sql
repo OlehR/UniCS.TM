@@ -15,7 +15,7 @@ SELECT CODE_GROUP_WARES AS CodeGroupWares,CODE_PARENT_GROUP_WARES AS CodeParentG
 SELECT w.code_wares AS CodeWares, w.name_wares AS NameWares, w.code_group AS CodeGroup
 		, CASE WHEN W.ARTICL='' OR W.ARTICL IS NULL THEN '-'+W.code_wares ELSE W.ARTICL END  AS Articl
 		, w.code_unit AS CodeUnit, w.VAT AS PercentVat , w.VAT_OPERATION AS TypeVat, w.code_brand AS CodeBrand,Type_wares as TypeWares
-		,Weight_Brutto as WeightBrutto, Weight_Fact as WeightFact, w.Weight_Delta as WeightDelta, w.code_UKTZED AS CodeUKTZED
+		,Weight_Brutto as WeightBrutto, Weight_Fact as WeightFact, w.Weight_Delta as WeightDelta, w.code_UKTZED AS CodeUKTZED,w.Limit_age as LimitAge
   FROM dbo.Wares w
   
 [SqlGetDimAdditionUnit]
@@ -89,10 +89,13 @@ SELECT DC.code_card as CodeClient ,DC.name as NameClient ,TD.TYPE_DISCOUNT  AS T
 SELECT CONVERT(INT,wh.Code) AS CodeUp,CONVERT(INT,wh.Code)*1000+g.Order_Button AS CodeFastGroup,MAX(CONVERT(VARCHAR,g.Name_Button)) AS Name
   FROM DW.dbo.V1C_DIM_OPTION_WPC O
   JOIN dw.dbo.WAREHOUSES wh ON o.Warehouse_RRef=wh._IDRRef
-  JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_GROUP G ON o._IDRRef=G._Reference18850_IDRRef
+  JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_GROUP G ON o._IDRRef=G._Reference18850_IDRRef 
+    JOIN DW.dbo.V1C_DIM_OPTION_WPC_CASH_place CP ON o._IDRRef=cp._Reference18850_IDRRef
   --JOIN DW.dbo.V1C_DIM_OPTION_WPC_FACT_WARES W ON G._Reference18850_IDRRef = W._Reference18850_IDRRef AND G. Order_Button = W.Order_Button
     WHERE wh.Code=9 AND g.Order_Button<>2 -- хак для групи Овочі 1
-  GROUP BY wh.Code,g.Order_Button
+    AND cp.CashPlaceRRef= 0x81380050569E814D11E9E4D62A0CF9ED-- 14 касановий
+  GROUP BY wh.Code,g.Order_Button;
+
   /* Це правильний запит
   SELECT CONVERT(INT,wh.Code) AS CodeUp,CONVERT(INT,wh.Code)*1000+g.Order_Button AS CodeFastGroup,g.Name_Button AS Name
   FROM DW.dbo.V1C_DIM_OPTION_WPC O
@@ -109,7 +112,9 @@ SELECT CONVERT(INT,wh.Code)*1000+CASE WHEN g.Order_Button=2 THEN 1 ELSE g.Order_
   JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_GROUP G ON o._IDRRef=G._Reference18850_IDRRef
   JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_WARES W ON o._IDRRef = W._Reference18850_IDRRef AND G.Order_Button_wares = W.Order_Button
   JOIN dw.dbo.Wares w1 ON w.Wares_RRef=w1._IDRRef
-    WHERE wh.Code=9;
+  JOIN DW.dbo.V1C_DIM_OPTION_WPC_CASH_place CP ON o._IDRRef=cp._Reference18850_IDRRef
+    WHERE wh.Code=9
+ AND cp.CashPlaceRRef= 0x81380050569E814D11E9E4D62A0CF9ED-- 14 касановий;
 
 [SqlGetPromotionSaleData]
 WITH wh_ex AS 

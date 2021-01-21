@@ -44,8 +44,8 @@ namespace ModelMID
 
             if (parR.Wares!=null && parR.StateReceipt>0) 
               Wares = parR.Wares.Select(r => new ReceiptWares1C(r));
-            //            if (parR.Payment != null)
-            //Description = parR.Payment.Where(r => !string.IsNullOrEmpty(r.NumberSlip)).FirstOrDefault().NumberSlip;
+            if (parR.Payment != null)
+             Description = parR.Payment.Where(r => !string.IsNullOrEmpty(r.CodeAuthorization)).FirstOrDefault().CodeAuthorization;
             var wp = Global.GetWorkPlaceByIdWorkplace(parR.IdWorkplace);
             if (wp != null)
                 CodeBank = (int)wp.TypePOS;
