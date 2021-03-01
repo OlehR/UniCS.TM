@@ -43,7 +43,7 @@ namespace Test
 
 
 
-              //  await CreateDataBaseAsync(true);
+               // await CreateDataBaseAsync(true);
 
                 TestReceipt();
             //CreateBarCode();
@@ -93,7 +93,7 @@ namespace Test
 
             //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20201119, IdWorkplace = 72, CodeReceipt = 4 }); return;
 
-            sd = api.AddProductByBarCode(TerminalId, "4820150762452", 1);
+            sd = api.AddProductByBarCode(TerminalId, "5900857007793", 1);
             return;
        
 
