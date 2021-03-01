@@ -18,7 +18,7 @@ namespace ModernIntegration
     public class ApiPSU : Api
     {
         public BL Bl;
-        Dictionary<Guid, ModelMID.IdReceipt> Receipts = new Dictionary<Guid, ModelMID.IdReceipt>();
+        public Dictionary<Guid, ModelMID.IdReceipt> Receipts = new Dictionary<Guid, ModelMID.IdReceipt>();
         public ApiPSU()
         {
             Bl = new BL();

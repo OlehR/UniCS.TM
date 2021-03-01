@@ -10,3 +10,5 @@ obj
 /Test/Program.cs
 /packages
 /SharedLib/FileLogger.cs
+
+.DS_Store
