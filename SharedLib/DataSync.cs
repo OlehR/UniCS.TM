@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -412,9 +413,55 @@ where RE.EVENT_TYPE=1"
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "LoadWeightKasa2=> " + ex.Message });
             }
         }
+        public async Task<string> GetQrCoffe(IdReceipt pIdReceipt, int pPlu,int pOrder,int pWait =10)
+        {
+            var Url = "https://dashboard.prostopay.net/api/v1/qreceipt/generate";
+            string res = null;
+            string Body = @"{
+""pos""=1
+""till"": 1,
+""number"": {Order},
+""created-at"": 0,
+""ttl"": 1,
+""ttl-type"": 0,
+""amount"": 100,
+""amount-base"": 3,
+""plu-from"": {PLU},
+""plu-to"": 0
+}".Replace("{Order}", pOrder.ToString()).Replace("{PLU}",pPlu.ToString());
+            
+          
+            try
+            {
+                HttpClient client = new HttpClient();
+                client.Timeout = TimeSpan.FromMilliseconds(pWait);
+                
+
+                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, Url);
+                requestMessage.Headers.Add("X-API-KEY", "98e071c0-7177-4132-b249-9244464c97fb");
+                requestMessage.Content = new StringContent(Body, Encoding.UTF8, "application/json");
+                var response = await client.SendAsync(requestMessage);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    res = await response.Content.ReadAsStringAsync();                    
+                }
+                else
+                {
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = null, Status = eSyncStatus.NoFatalError, StatusDescription = "RequestAsync=>" + response.RequestMessage });
+                }
+            }
+
+            catch (Exception ex)
+            {
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.Error, StatusDescription = ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
+            }
+            return res;
+        }
 
 
     }
+    
 
     public class WeightReceipt
     {

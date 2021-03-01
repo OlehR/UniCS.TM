@@ -55,5 +55,9 @@ namespace ModelMID
         /// Вікові обмеження (Піротехніка)
         /// </summary>
         public decimal LimitAge { get; set; }
+        /// <summary>
+        /// PLU - кавомашини
+        /// </summary>
+        public  int PLU { get; set; }
     }
 }
