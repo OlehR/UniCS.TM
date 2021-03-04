@@ -11,6 +11,7 @@
 alter TABLE WARES_RECEIPT            add Fix_Weight NUMBER NOT NULL DEFAULT 0;
 alter TABLE WARES_RECEIPT_PROMOTION  add TYPE_DISCOUNT  INTEGER  NOT NULL  DEFAULT (12);
 alter TABLE wares_receipt            add Priority INTEGER  NOT NULL DEFAULT 0;
+alter TABLE wares_receipt            add QR TEXT;
 
 [SqlUpdateConfig_V1]
 alter table WORKPLACE add  Video_Camera_IP TEXT;
