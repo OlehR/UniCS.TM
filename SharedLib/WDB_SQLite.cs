@@ -806,5 +806,14 @@ and @TypeDiscount=11; ";
             return true;
         }
 
+        public override bool UpdateQR(ReceiptWares pRW)
+        {
+            using (var DB = new SQLite(ReceiptFile))
+            {
+                 return DB.ExecuteNonQuery<ReceiptWares>(SqlUpdateQR, pRW) > 0;
+            }
+            //return true;
+        }
+
     }
 }

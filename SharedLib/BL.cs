@@ -48,35 +48,63 @@ namespace SharedLib
             sBL = this;
         }
         public static BL GetBL { get { return sBL; } }
-        public ReceiptWares AddReceiptWares(ReceiptWares parW, bool pRecalcPriceOnLine = true)
+        public ReceiptWares AddReceiptWares(ReceiptWares pW, bool pRecalcPriceOnLine = true)
         {
-            lock (db.GetObjectForLockByIdWorkplace(parW.IdWorkplace))
+            lock (db.GetObjectForLockByIdWorkplace(pW.IdWorkplace))
             {
-                var Quantity = db.GetCountWares(parW);
-                parW.QuantityOld = Quantity;
-                parW.Quantity += Quantity;
+                var Quantity = db.GetCountWares(pW);
+                pW.QuantityOld = Quantity;
+                pW.Quantity += Quantity;
 
                 if (Quantity > 0)
-                    db.UpdateQuantityWares(parW);
+                    db.UpdateQuantityWares(pW);
                 else
-                    db.AddWares(parW);
+                    db.AddWares(pW);
             }
+
             //Кешконтроль
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
             // Get the elapsed time as a TimeSpan value.            
 
-            _ = VR.SendMessageAsync(parW.IdWorkplace, parW.NameWares, parW.Articl, parW.Quantity, parW.Sum);
+            _ = VR.SendMessageAsync(pW.IdWorkplace, pW.NameWares, pW.Articl, pW.Quantity, pW.Sum);
             stopWatch.Stop();
             TimeSpan ts = stopWatch.Elapsed;
-            Console.WriteLine("\nVR=>" + ts.TotalMilliseconds + "\n");
+            Console.WriteLine("\nVR=>" + ts.TotalMilliseconds + "\n");           
 
             if (pRecalcPriceOnLine && ModelMID.Global.RecalcPriceOnLine)
-                db.RecalcPriceAsync(parW);
-            return parW;
+                db.RecalcPriceAsync(pW);
+
+            if (pW.PLU > 0)
+            {
+                GenQRAsync(pW);
+            }
+
+            return pW;
         }
 
-        public bool AddReceipt(IdReceipt parReceipt)
+        private Task GenQRAsync(ReceiptWares pRW)
+        {
+            return Task.Run(() => GenQRAsync1(pRW));
+         }
+
+        public async Task<bool> GenQRAsync1(ReceiptWares pW)
+        {
+            StringBuilder QRs = new StringBuilder();
+            for (int i = 0; i < pW.Quantity; i++)
+            {
+                var QR = await ds.GetQrCoffe(pW, pW.PLU, i * 100 + pW.Order);
+                QRs.Append((QRs.Length > 0 ? "," : "") + QR);
+            }
+            pW.QR = QRs.ToString();
+            return db.UpdateQR(pW);
+        }
+        public IEnumerable<QR> GetQR(IdReceipt pIdR)
+        {
+            return db.GetQR(pIdR);
+        }
+
+            public bool AddReceipt(IdReceipt parReceipt)
         {
             var receipt = new Receipt(parReceipt);
             return db.AddReceipt(receipt);
@@ -203,7 +231,7 @@ namespace SharedLib
 
         public ReceiptWares AddWaresCode(int pCodeWares, int pCodeUnit, decimal pQuantity = 0, decimal pPrice = 0)
         {
-            return AddWaresCode(curReciptId, pCodeWares, pCodeUnit, pQuantity = 0, pPrice);
+            return AddWaresCode(curReciptId, pCodeWares, pCodeUnit, pQuantity, pPrice);
         }
         public ReceiptWares AddWaresCode(IdReceipt pIdReceipt, int pCodeWares, int pCodeUnit, decimal pQuantity = 0, decimal pPrice = 0)
         {

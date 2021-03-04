@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Storage.Internal;
-using ModelMID;
+﻿using ModelMID;
 using ModelMID.DB;
 using System;
 using System.Collections.Generic;
@@ -413,12 +412,12 @@ where RE.EVENT_TYPE=1"
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "LoadWeightKasa2=> " + ex.Message });
             }
         }
-        public async Task<string> GetQrCoffe(IdReceipt pIdReceipt, int pPlu,int pOrder,int pWait =10)
+        public async Task<string> GetQrCoffe(IdReceipt pIdReceipt, int pPlu,int pOrder,int pWait =5)
         {
             var Url = "https://dashboard.prostopay.net/api/v1/qreceipt/generate";
             string res = null;
             string Body = @"{
-""pos""=1
+""pos"":1,
 ""till"": 1,
 ""number"": {Order},
 ""created-at"": 0,
@@ -428,14 +427,12 @@ where RE.EVENT_TYPE=1"
 ""amount-base"": 3,
 ""plu-from"": {PLU},
 ""plu-to"": 0
-}".Replace("{Order}", pOrder.ToString()).Replace("{PLU}",pPlu.ToString());
-            
+}".Replace("{Order}", (++pOrder).ToString()).Replace("{PLU}",pPlu.ToString());            
           
             try
             {
                 HttpClient client = new HttpClient();
-                client.Timeout = TimeSpan.FromMilliseconds(pWait);
-                
+                client.Timeout = TimeSpan.FromMilliseconds(pWait*1000);                
 
                 HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, Url);
                 requestMessage.Headers.Add("X-API-KEY", "98e071c0-7177-4132-b249-9244464c97fb");
@@ -454,7 +451,7 @@ where RE.EVENT_TYPE=1"
 
             catch (Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.Error, StatusDescription = ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
             }
             return res;
         }
@@ -473,6 +470,5 @@ where RE.EVENT_TYPE=1"
         public int IdWorkplace { get; set; }
         public int CodeReceipt { get; set; }
         public decimal Quantity { get; set; }
-
     }
 }

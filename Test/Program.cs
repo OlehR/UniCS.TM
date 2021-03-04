@@ -38,20 +38,11 @@ namespace Test
             Console.WriteLine("Start");
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
 
-            //await CreateDataBaseAsync(true);
-
-<<<<<<< HEAD
+            await CreateDataBaseAsync(true);
 
 
+               TestReceiptAsync();
 
-
-               // await CreateDataBaseAsync(true);
-
-                TestReceipt();
-=======
-            TestReceipt();
-            
->>>>>>> d7756e063e145c3ee4f2746c8f6a4d7d3e606db5
             //CreateBarCode();
             //TestKit();
             //all_bag();
@@ -86,7 +77,7 @@ namespace Test
             foreach (var el in a)
                 api.AddProductByBarCode(TerminalId, el, 2);
         }
-        static void TestReceipt()
+        static async Task TestReceiptAsync()
         {
             //var TerminalId = Guid.Parse("1bb89aa9-dbdf-4eb0-b7a2-094665c3fdd0");//14
             var TerminalId = Guid.Parse("27aaa6d3-8824-475d-a7d4-3269472ba950");//19
@@ -98,16 +89,27 @@ namespace Test
 
             //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20201119, IdWorkplace = 72, CodeReceipt = 8}); return;
 
-<<<<<<< HEAD
-            sd = api.AddProductByBarCode(TerminalId, "5900857007793", 1);
-=======
-            sd = api.AddProductByBarCode(TerminalId, "8710671155382", 1);
->>>>>>> d7756e063e145c3ee4f2746c8f6a4d7d3e606db5
-            return;
 
-            var ccc = api.GetCustomerByPhone(TerminalId,"0666672818");
+          //  sd = api.AddProductByBarCode(TerminalId, "5900857007793", 1);
+
+         //   sd = api.AddProductByBarCode(TerminalId, "8710671155382", 1);
+
+            //return;
+
+           //var ccc = api.GetCustomerByPhone(TerminalId,"0666672818");
 
             sd = api.AddProductByBarCode(TerminalId, "2211794601924", 1);
+            var QR = await api.Bl.ds.GetQrCoffe(null, 7, 2);
+            Console.WriteLine($"QR=>{QR}");
+            //return;
+            api.Bl.AddWaresCode(159478, 19, 2);
+            api.Bl.AddWaresCode(159474, 19, 3);
+            api.Bl.AddWaresCode(162571, 19, 1);
+            api.Bl.AddWaresCode(177830, 19, 1);
+            Thread.Sleep(4000);
+
+            var ssssqq = api.GetQR(TerminalId);
+            
 
             return;
             sd = api.AddProductByProductId(TerminalId, sd.Id, 1, 45.71M);
@@ -128,6 +130,7 @@ namespace Test
          //   sd = api.AddProductByBarCode(TerminalId, "7775006620509", 1); //товар 2 кат*/
             Thread.Sleep(4000);
 
+           
  //           var clf = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
 
 

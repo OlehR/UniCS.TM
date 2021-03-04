@@ -135,6 +135,8 @@ namespace ModernIntegration
 
         public virtual bool SetWeight(Guid pTerminalId, Guid pProductId,decimal pWaight) { throw new NotImplementedException(); }
 
+        public virtual IEnumerable<QRDefinitions> GetQR(Guid pTerminalId) { throw new NotImplementedException(); }
+        
     }
 
 

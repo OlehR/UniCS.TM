@@ -808,6 +808,21 @@ namespace ModernIntegration
             var CurReceipt = GetCurrentReceiptByTerminalId(pTerminalId);          
             return Bl.FixWeight(CurReceipt, pProductId, pWaight/1000m);  
         }
+
+         public override IEnumerable<QRDefinitions> GetQR(Guid pTerminalId) 
+        {
+            List<QRDefinitions> res=new List<QRDefinitions>();
+            var QR = Bl.GetQR(GetCurrentReceiptByTerminalId(pTerminalId));
+            foreach(var el in QR)
+            {
+               foreach(var qr in  el.Qr.Split(','))
+                {
+                    res.Add(new QRDefinitions() { Caption = el.Name, Data = qr });
+                }
+            }
+
+            return res;
+        }
     }
 
 

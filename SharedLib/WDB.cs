@@ -191,6 +191,8 @@ namespace SharedLib
         protected string SqlGetLastQuantity = "";
         protected string SqlReplaceMRC = "";
         protected string SqlGetPricesMRC = "";
+        protected string SqlUpdateQR = "";
+        protected string SqlGetQR = "";
 
 
         public WDB(string parFileSQL)
@@ -609,6 +611,11 @@ namespace SharedLib
             SqlReplaceMRC = GetSQL("SqlReplaceMRC");
             SqlGetPricesMRC = GetSQL("SqlGetPricesMRC");
 
+            SqlUpdateQR = GetSQL("SqlUpdateQR");
+            SqlGetQR = GetSQL("SqlGetQR");
+
+
+
             return true;
         }
 
@@ -969,6 +976,14 @@ namespace SharedLib
             return db.ExecuteNonQuery<ReceiptWares>(SqlSetFixWeight, parIdReceipt) > 0;
         }
 
+        public virtual bool UpdateQR(ReceiptWares pRW)
+        {
+            return db.ExecuteNonQuery<ReceiptWares>(SqlUpdateQR, pRW) > 0;
+        }
+        public virtual IEnumerable<QR> GetQR(IdReceipt pR)
+        {
+            return db.Execute<IdReceipt, QR>(SqlGetQR, pR);
+        }
         public virtual int GetVersion(string varDB)
         {
             try

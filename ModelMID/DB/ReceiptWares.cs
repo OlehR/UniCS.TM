@@ -247,6 +247,16 @@ namespace ModelMID
 
         public IEnumerable<decimal> Prices;
 
+        /// <summary>
+        /// PLU - кавомашини
+        /// </summary>
+        public int PLU { get; set; }
+
+        /// <summary>
+        /// QR кавомашин
+        /// </summary>
+        public string QR { get; set; }
+
         public string GetPrices { get { return Prices == null ? null : string.Join(";", Prices.Select(n => n.ToString(CultureInfo.InvariantCulture)).ToArray()); } }
         public ReceiptWares()
         {

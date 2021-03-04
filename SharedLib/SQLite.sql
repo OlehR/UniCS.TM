@@ -162,6 +162,7 @@ Price as Price/*, wr.sum as Sum*/, Type_Price as TypePrice
  ,w.code_UKTZED as CodeUKTZED
  ,w.Limit_Age as LimitAge
  ,w.PLU as PLU
+ ,wr.QR
                      from wares_receipt wr
                      join wares w on (wr.code_wares =w.code_wares)
                      join ADDITION_UNIT au on w.code_wares = au.code_wares and wr.code_unit=au.code_unit
@@ -244,13 +245,13 @@ replace into wares_receipt (id_workplace, code_period, code_receipt, code_wares,
   type_price,  quantity, price, Price_Dealer, sum, sum_vat,
   Priority,PAR_PRICE_1,PAR_PRICE_2,PAR_PRICE_3, sum_discount, type_vat, sort, user_create,
  ADDITION_N1,ADDITION_N2,ADDITION_N3,
- ADDITION_C1,ADDITION_D1,BARCODE_2_CATEGORY,DESCRIPTION,Refunded_Quantity,Fix_Weight) 
+ ADDITION_C1,ADDITION_D1,BARCODE_2_CATEGORY,DESCRIPTION,Refunded_Quantity,Fix_Weight,QR) 
  values (
   @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit,
   @TypePrice, @Quantity, @Price,@PriceDealer, @Sum, @SumVat,
   @Priority,@ParPrice1,@ParPrice2,@ParPrice3, @SumDiscount, @TypeVat, @Sort, @UserCreate,
  @AdditionN1,@AdditionN2,@AdditionN3,
- @AdditionC1,@AdditionD1,@BARCODE2Category,@DESCRIPTION,@RefundedQuantity,@FixWeight)
+ @AdditionC1,@AdditionD1,@BARCODE2Category,@DESCRIPTION,@RefundedQuantity,@FixWeight,@QR)
 
 
 
@@ -1234,5 +1235,14 @@ SELECT QUANTITY- QUANTITY_OLD as QUANTITY, ROW_NUMBER ( )   OVER (  ORDER BY  DA
    and Code_wares=@CodeWares
   ) where nn=1
  
+ [SqlUpdateQR]
+update wares_receipt set  QR= @QR
+                     where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt 
+                     and code_wares=@CodeWares;
+ [SqlGetQR]
+select wr.QR,w.name_wares as name from wares_receipt  wr
+    join wares w on wr.code_wares=w.code_wares
+        where wr.id_workplace=@IdWorkplace and  wr.code_period =@CodePeriod and  wr.code_receipt=@CodeReceipt and QR is not null;
+                     
 [SqlEnd]
 */
