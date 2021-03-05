@@ -393,7 +393,8 @@ namespace ModernIntegration
             
             if (receiptMID.ReceiptEvent != null && receiptMID.ReceiptEvent.Count() > 0)
                 Res.ReceiptEvents = receiptMID.ReceiptEvent.Select(r => GetReceiptEvent(r)).ToList();
-
+            if(pIsDetail)
+                Bl.GenQRAsync(receiptMID.Wares);
             return Res;
         }
 

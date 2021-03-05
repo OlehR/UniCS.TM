@@ -38,7 +38,7 @@ namespace Test
             Console.WriteLine("Start");
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
 
-            await CreateDataBaseAsync(true);
+            //await CreateDataBaseAsync(true);
 
 
                TestReceiptAsync();
@@ -106,6 +106,7 @@ namespace Test
             api.Bl.AddWaresCode(159474, 19, 3);
             api.Bl.AddWaresCode(162571, 19, 1);
             api.Bl.AddWaresCode(177830, 19, 1);
+            api.GetRecieptByTerminalId(TerminalId, true);
             Thread.Sleep(4000);
 
             var ssssqq = api.GetQR(TerminalId);

@@ -75,29 +75,34 @@ namespace SharedLib
             if (pRecalcPriceOnLine && ModelMID.Global.RecalcPriceOnLine)
                 db.RecalcPriceAsync(pW);
 
-            if (pW.PLU > 0)
+           /*if (pW.PLU > 0)
             {
                 GenQRAsync(pW);
             }
-
+           */
             return pW;
         }
 
-        private Task GenQRAsync(ReceiptWares pRW)
+        public Task GenQRAsync(IEnumerable<ReceiptWares> pRW)
         {
             return Task.Run(() => GenQRAsync1(pRW));
          }
 
-        public async Task<bool> GenQRAsync1(ReceiptWares pW)
+        public async Task<bool> GenQRAsync1(IEnumerable<ReceiptWares> pW)
         {
+            bool res = true; 
+            foreach(var el in pW.Where(r=> r.PLU>0))
+            { 
             StringBuilder QRs = new StringBuilder();
-            for (int i = 0; i < pW.Quantity; i++)
+            for (int i = 0; i < el.Quantity; i++)
             {
-                var QR = await ds.GetQrCoffe(pW, pW.PLU, i * 100 + pW.Order);
+                var QR = await ds.GetQrCoffe(el, el.PLU, i * 100 + el.Order);
                 QRs.Append((QRs.Length > 0 ? "," : "") + QR);
             }
-            pW.QR = QRs.ToString();
-            return db.UpdateQR(pW);
+            el.QR = QRs.ToString();
+            res&= db.UpdateQR(el);
+            }
+            return res;
         }
         public IEnumerable<QR> GetQR(IdReceipt pIdR)
         {
