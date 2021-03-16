@@ -99,15 +99,15 @@ namespace Test
            //var ccc = api.GetCustomerByPhone(TerminalId,"0666672818");
 
             sd = api.AddProductByBarCode(TerminalId, "2211794601924", 1);
-            var QR = await api.Bl.ds.GetQrCoffe(null, 7, 2);
-            Console.WriteLine($"QR=>{QR}");
+            //var QR = await api.Bl.ds.GetQrCoffe(null, 7, 2);
+            //Console.WriteLine($"QR=>{QR}");
             //return;
             api.Bl.AddWaresCode(159478, 19, 2);
             api.Bl.AddWaresCode(159474, 19, 3);
             api.Bl.AddWaresCode(162571, 19, 1);
             api.Bl.AddWaresCode(177830, 19, 1);
             api.GetRecieptByTerminalId(TerminalId, true);
-            Thread.Sleep(4000);
+            Thread.Sleep(6000);
 
             var ssssqq = api.GetQR(TerminalId);
             

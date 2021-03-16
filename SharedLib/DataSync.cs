@@ -429,6 +429,7 @@ where RE.EVENT_TYPE=1"
 ""plu-to"": 0
 }".Replace("{Order}", (++pOrder).ToString()).Replace("{PLU}",pPlu.ToString());            
           
+            List <ReceiptEvent> rr= new List <ReceiptEvent> { new ReceiptEvent(pIdReceipt) {EventType=ReceiptEventType.AskQR,EventName=Body} };
             try
             {
                 HttpClient client = new HttpClient();
@@ -452,7 +453,11 @@ where RE.EVENT_TYPE=1"
             catch (Exception ex)
             {
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
+                rr.Add(new ReceiptEvent(pIdReceipt) { EventType = ReceiptEventType.ErrorQR,  EventName = ex.Message });
             }
+            res=res.Replace("\"","");
+            rr.Add(new ReceiptEvent(pIdReceipt){EventType= ReceiptEventType.AnswerQR, EventName=res});
+            bl.db.InsertReceiptEvent(rr);
             return res;
         }
 

@@ -1214,9 +1214,9 @@ select     ID_WORKPLACE as IdWorkplace,    CODE_PERIOD as CodePeriod,    CODE_RE
     Fiscal_Number as FiscalNumber,
     Payment_Type as PaymentType,
     Total_Amount  as TotalAmount
-  from RECEIPT_Event  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt ;
+  from RECEIPT_Event  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt and EVENT_TYPE>0;
 [SqlDeleteReceiptEvent]
-delete from RECEIPT_Event where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt;
+delete from RECEIPT_Event where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt and EVENT_TYPE>0;
 
 [SqlGetReceiptWaresPromotion]
 select id_workplace IdWorkplace, code_period CodePeriod, code_receipt CodeReceipt,code_wares as CodeWares,Code_unit as CodeUnit,quantity as Quantity,sum as Sum,wrp.Code_Ps as CodePs ,
@@ -1241,7 +1241,7 @@ update wares_receipt set  QR= @QR
                      where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt 
                      and code_wares=@CodeWares;
  [SqlGetQR]
-select wr.QR,w.name_wares as name from wares_receipt  wr
+select wr.QR,'('|| w.PLU || ')-'|| w.name_wares as name from wares_receipt  wr
     join wares w on wr.code_wares=w.code_wares
         where wr.id_workplace=@IdWorkplace and  wr.code_period =@CodePeriod and  wr.code_receipt=@CodeReceipt and QR is not null;
                      

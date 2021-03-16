@@ -6,10 +6,15 @@ namespace ModelMID.DB
 {
     public class ReceiptEvent:IdReceiptWares
     {
+        public ReceiptEvent() { }
+
+        public ReceiptEvent(IdReceipt idReceipt, int parCodeWares = 0, int parCodeUnit = 0, int parOrder = 0) : base(idReceipt, parCodeWares, parCodeUnit, parOrder) { }
+
         /// <summary>
         /// Gets or sets the identifier.
         /// </summary>
         /// <value>The identifier.</value>
+
         public Guid Id { get; set; }
 
         public string IdGUID { get { return Id.ToString(); }set { Id = Guid.Parse(value); } }

@@ -178,6 +178,9 @@ namespace ModelMID
     }
     public enum ReceiptEventType
     {
+        ErrorQR = -9,
+        AnswerQR = -2,
+        AskQR =-1,
         IncorrectWeight = 1,
         AgeRestrictedProduct = 2,
         ManualChangeGiving = 3,
@@ -185,7 +188,8 @@ namespace ModelMID
         ProductWithSecurityMark = 5,
         ReceiptWithRefund = 6,
         Paid = 7,
-        GarbageOnWeight = 8
+        GarbageOnWeight = 8,
+        Other =9
     }
     public enum TypeSaveWeight
     {
