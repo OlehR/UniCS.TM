@@ -96,7 +96,7 @@ namespace SharedLib
             StringBuilder QRs = new StringBuilder();
             for (int i = 0; i < el.Quantity; i++)
             {
-                var QR = await ds.GetQrCoffe(el, el.PLU, i * 100 + el.Order);
+                var QR = await ds.GetQrCoffe(el, i * 100 + el.Order);
                 QRs.Append((QRs.Length > 0 ? "," : "") + QR);
             }
             el.QR = QRs.ToString();

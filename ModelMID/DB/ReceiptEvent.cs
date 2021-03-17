@@ -8,6 +8,7 @@ namespace ModelMID.DB
     {
         public ReceiptEvent() { }
 
+        public ReceiptEvent(IdReceiptWares pRW) : base(pRW) { }
         public ReceiptEvent(IdReceipt idReceipt, int parCodeWares = 0, int parCodeUnit = 0, int parOrder = 0) : base(idReceipt, parCodeWares, parCodeUnit, parOrder) { }
 
         /// <summary>

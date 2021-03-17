@@ -33,6 +33,13 @@ namespace ModelMID
             CodeWares = Convert.ToInt32(strWaresId.Substring(24, 12));
         }
 
+        public IdReceiptWares(IdReceiptWares pIdReceiptWares):base(pIdReceiptWares) 
+        {
+            CodeWares = pIdReceiptWares.CodeWares;
+            CodeUnit = pIdReceiptWares.CodeUnit;
+            Order = pIdReceiptWares.Order;
+        }
+
         public IdReceiptWares (IdReceipt idReceipt,int parCodeWares=0,int parCodeUnit=0,int parOrder =0) : base(idReceipt)
         {
             CodeWares = parCodeWares;
