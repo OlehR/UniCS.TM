@@ -91,7 +91,7 @@ namespace SharedLib
         public async Task<bool> GenQRAsync1(IEnumerable<ReceiptWares> pW)
         {
             bool res = true;
-            int Number=1;
+            int Number=0;
             foreach(var el in pW.Where(r=> r.PLU>0))
             { 
             StringBuilder QRs = new StringBuilder();
