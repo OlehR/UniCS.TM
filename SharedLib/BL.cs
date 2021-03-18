@@ -90,13 +90,14 @@ namespace SharedLib
 
         public async Task<bool> GenQRAsync1(IEnumerable<ReceiptWares> pW)
         {
-            bool res = true; 
+            bool res = true;
+            int Number=1;
             foreach(var el in pW.Where(r=> r.PLU>0))
             { 
             StringBuilder QRs = new StringBuilder();
             for (int i = 0; i < el.Quantity; i++)
             {
-                var QR = await ds.GetQrCoffe(el, i+1);
+                var QR = await ds.GetQrCoffe(el, Number++);
                 QRs.Append((QRs.Length > 0 ? "," : "") + QR);
             }
             el.QR = QRs.ToString();

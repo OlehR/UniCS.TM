@@ -418,7 +418,7 @@ where RE.EVENT_TYPE=1"
             string res = null;
             string Body = @"{
 ""pos"":1,
-""till"": 1,
+""till"": {Kassa},
 ""number"": {Order},
 ""created-at"": 0,
 ""ttl"": 1,
@@ -427,7 +427,7 @@ where RE.EVENT_TYPE=1"
 ""amount-base"": 3,
 ""plu-from"": {PLU},
 ""plu-to"": 0
-}".Replace("{Order}", (++pOrder).ToString()).Replace("{PLU}", pReceiptWares.PLU.ToString());            
+}".Replace("{Order}", (++pOrder).ToString()).Replace("{PLU}", pReceiptWares.PLU.ToString()).Replace("{Kassa}", (pReceiptWares.IdWorkplace - 60).ToString());            
           
             List <ReceiptEvent> rr= new List <ReceiptEvent> { new ReceiptEvent(pReceiptWares) {EventType=ReceiptEventType.AskQR,EventName=Body, CreatedAt = DateTime.Now } };
             try
