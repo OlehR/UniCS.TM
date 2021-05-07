@@ -24,6 +24,15 @@ namespace Test
 
     class Program
     {
+        static DateTime FirstDayWeek(DateTime pDT)
+        {
+            int dd_d = (int)pDT.DayOfWeek;
+            if (dd_d == 0)
+                dd_d = 7;
+            dd_d--;
+            return pDT.AddDays(-dd_d);
+        }
+
         static async Task Main(string[] args)
         {
 
@@ -34,14 +43,19 @@ namespace Test
             //var l = new GetGoodUrl();
             //l.LoadWeightURLAsync();
             //Thread.Sleep(1000000000);
-
+        
             Console.WriteLine("Start");
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
 
-            await CreateDataBaseAsync(true);
 
 
-               TestReceiptAsync();
+
+
+            
+            //await CreateDataBaseAsync(true);
+
+
+                TestReceiptAsync();
 
             //CreateBarCode();
             //TestKit();
@@ -87,26 +101,26 @@ namespace Test
             var api = new ApiPSU();
             ProductViewModel sd;
 
-            //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20201119, IdWorkplace = 72, CodeReceipt = 8}); return;
+            api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20210416, IdWorkplace = 62, CodeReceipt = 5}); return;
 
 
-          //  sd = api.AddProductByBarCode(TerminalId, "5900857007793", 1);
+            //  sd = api.AddProductByBarCode(TerminalId, "5900857007793", 1);
 
-         //   sd = api.AddProductByBarCode(TerminalId, "8710671155382", 1);
+               sd = api.AddProductByBarCode(TerminalId, "8710671155382", 1);
 
             //return;
 
-           //var ccc = api.GetCustomerByPhone(TerminalId,"0666672818");
+            var ccc = api.GetCustomerByPhone(TerminalId,"0666672818");
 
-            sd = api.AddProductByBarCode(TerminalId, "2211794601924", 1);
+            //sd = api.AddProductByBarCode(TerminalId, "2211794601924", 1);
             //var QR = await api.Bl.ds.GetQrCoffe(null, 7, 2);
             //Console.WriteLine($"QR=>{QR}");
             //return;
-            api.Bl.AddWaresCode(159478, 19, 2);
-            api.Bl.AddWaresCode(159474, 19, 3);
-            api.Bl.AddWaresCode(162571, 19, 1);
-            api.Bl.AddWaresCode(177830, 19, 1);
-            api.GetRecieptByTerminalId(TerminalId, true);
+           
+                api.Bl.AddWaresCode(169118, 7, 1);
+
+                var rrr = api.GetRecieptByTerminalId(TerminalId, true);
+            
             Thread.Sleep(6000);
 
             var ssssqq = api.GetQR(TerminalId);
@@ -117,7 +131,7 @@ namespace Test
 
             sd = api.AddProductByBarCode(TerminalId, "4820000536202", 1);
 
-            var rrr =api.AddProductByProductId(TerminalId, ProductId, 1);
+            var rgggrr =api.AddProductByProductId(TerminalId, ProductId, 1);
 
             var clff = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
 

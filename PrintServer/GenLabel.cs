@@ -10,6 +10,7 @@ using System.Drawing;
 using System.Drawing.Printing;
 using System.Windows.Forms;
 using System.Drawing.Drawing2D;
+using System.Globalization;
 
 namespace PrintServer
 {
@@ -20,6 +21,8 @@ namespace PrintServer
         MSSQL db = new MSSQL();//("Server = SQLSRV2; Database=DW;Trusted_Connection=True;"
         QRCodeGenerator qrGenerator = new QRCodeGenerator();
         Image logo;// = Image.FromFile("D:\\Vopak.bmp");
+        Image logo2;
+        Image CurLogo;
         //int CodeWarehouse = 1;
         //string NamePrinter = "";
         //string NamePrinterYelow;
@@ -34,6 +37,9 @@ namespace PrintServer
             string PathLogo = System.Configuration.ConfigurationManager.AppSettings["PathLogo"];
             if (!string.IsNullOrEmpty(PathLogo))
                 logo = Image.FromFile(PathLogo);
+            PathLogo = System.Configuration.ConfigurationManager.AppSettings["PathLogo2"];
+            if (!string.IsNullOrEmpty(PathLogo))
+                logo2 = Image.FromFile(PathLogo);
 
             //NamePrinterYelow = System.Configuration.ConfigurationManager.AppSettings["NamePrinterYelow"];
             //NamePrinter = System.Configuration.ConfigurationManager.AppSettings["NamePrinter"];
@@ -64,8 +70,9 @@ namespace PrintServer
             var price = JsonConvert.DeserializeObject<cPrice>(json);
             return price;
         }
-        public void Print(IEnumerable<cPrice> parPrice,string parNamePrinter, string parNamePrinterYelow, string parNameDocument = null)
+        public void Print(IEnumerable<cPrice> parPrice,string parNamePrinter, string parNamePrinterYelow, string parNameDocument = null,bool isMainLogo=true)
         {
+            CurLogo = (isMainLogo || logo2 == null ? logo : logo2);
             current = 0;
             if (string.IsNullOrEmpty(parNamePrinterYelow))
             {
@@ -182,13 +189,14 @@ namespace PrintServer
             if (Name2.Length > LengthName + 3)
                 Name2 = Name2.Substring(0, LengthName + 3);
 
-            string BarCodePrice = parPrice.Code.ToString() + "-" + parPrice.Price.ToString() + (parPrice.PriceOpt == 0 ? "" : "-" + parPrice.PriceOpt.ToString());
+            
 
-
-            e.Graphics.DrawImage(logo, 10, 0);
+            if(CurLogo!=null)
+                e.Graphics.DrawImage(CurLogo, 10, 0);
             e.Graphics.DrawString(DateTime.Now.ToString("dd/MM/yyyy H:mm"), new Font("Arial", 8), Brushes.Black, 120, 0); //Час
-
-            var strPrice = parPrice.Price.ToString().Replace(",","");
+            
+            //string BarCodePrice = parPrice.Code.ToString() + "-" + parPrice.Price.ToString() + (parPrice.PriceOpt == 0 ? "" : "-" + parPrice.PriceOpt.ToString());
+            int strPrice =((int)(parPrice.Price*100M));
             var qrCodeData = qrGenerator.CreateQrCode($"{parPrice.Code}-{strPrice}" , QRCodeGenerator.ECCLevel.Q);
             var qrCode = new QRCode(qrCodeData);
             e.Graphics.DrawImage(qrCode.GetGraphic(2), 165, 50);
@@ -199,7 +207,7 @@ namespace PrintServer
 
             int LeftBill = 0, LeftCoin = 135;
             float coef=1;
-            var price = parPrice.Price.ToString().Split(',');
+            var price =parPrice.StrPrice.Split('.');
             //price[0] = "4293";
             switch (price[0].Count())
             {
@@ -234,10 +242,9 @@ namespace PrintServer
             //e.Graphics.DrawString(price[0], new Font("Arial Black", 35), Brushes.Black, LeftBill, 35);
             e.Graphics.DrawString(price[1], new Font("Arial Black", 18), Brushes.Black, LeftCoin, 50);
             e.Graphics.DrawString("грн", new Font("Arial", 13,FontStyle.Bold), Brushes.Black, LeftCoin+3, 75);
-            if (parPrice.Unit.Count() > 2)
-                parPrice.Unit = parPrice.Unit.ToLower().Substring(0, 2);
+          
             
-            e.Graphics.DrawString(parPrice.Unit.ToLower().Substring(0,2), new Font("Arial", 14), Brushes.Black, LeftCoin + 3, 90);
+            e.Graphics.DrawString(parPrice.StrUnit, new Font("Arial", 14), Brushes.Black, LeftCoin + 3, 90);
             if (parPrice.BarCodes != null)
             {
                 if (parPrice.BarCodes.Length > 27)
@@ -257,7 +264,9 @@ namespace PrintServer
         public string Name { get; set; }
         public int Article { get; set; }
         public string Unit { get; set; }
+        public string StrUnit { get { return (Is100g && Unit.ToLower().Equals("кг") ? "г" :  ((Unit.Count() > 2)? Unit.ToLower().Substring(0, 2):Unit.ToLower())); } }
         public decimal Price { get; set; }
+        public string StrPrice { get { return (Is100g && Unit.ToLower().Equals("кг") ? Price/10m : Price).ToString("F", (IFormatProvider)CultureInfo.GetCultureInfo("en-US")); } }
         public decimal PriceOpt { get; set; }
         public decimal Rest { get; set; }
         public int ActionType { get; set; }
@@ -269,7 +278,7 @@ namespace PrintServer
         public decimal PriceMain { get; set; }
         public decimal Sum { get; set; }
         public string BarCodes { get; set; }
-
+        public bool Is100g { get; set; } = false;
     }
 }
 

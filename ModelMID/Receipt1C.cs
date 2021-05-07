@@ -89,6 +89,8 @@ namespace ModelMID
         public string BarCode2Category { get; set; }
         public int YearPS { get { return CodePS>20000000 ? Convert.ToInt32(CodePS.ToString().Substring((CodePS > 100000000 ? 1 : 0), 4)):0; } }
         public int NumberPS { get { return CodePS > 20000000 ? Convert.ToInt32(CodePS.ToString().Substring((CodePS > 100000000 ? 1 : 0)+4)):0; } }
+        public string ManualPercentDiscount { get { return string.IsNullOrEmpty(BarCode2Category) || BarCode2Category.Length != 13 ? null : BarCode2Category.Substring(3, 2); } }
+        public int TypeDiscount { get { return string.IsNullOrEmpty(BarCode2Category) || BarCode2Category.Length != 13 ? 0:1; } }
         public ReceiptWares1C() { }
         public ReceiptWares1C(ReceiptWares parRW)
         {
@@ -102,6 +104,7 @@ namespace ModelMID
             CodePS = ( parRW.TypePrice==eTypePrice.Promotion || parRW.TypePrice == eTypePrice.PromotionIndicative ? parRW.ParPrice1:0);            
             SumBonus = 0;//TMP!!! ще не реалізовано.
             BarCode2Category = parRW.BarCode2Category;
+
         }
 
     }

@@ -39,7 +39,7 @@ namespace PrintServer
 
                 //int  x = 343 / y;
                 var ListWares = GL.GetCode(parWares.CodeWarehouse,parWares.CodeWares);//"000140296,000055083,000055053"
-                GL.Print(ListWares, NamePrinter, NamePrinterYelow, "Супер тест");  //PrintPreview();
+                GL.Print(ListWares, NamePrinter, NamePrinterYelow, "Супер тест", parWares.CodeWarehouse<30);  //PrintPreview();
                 return $"Print=>{ListWares.Count()}"; 
 
             }
