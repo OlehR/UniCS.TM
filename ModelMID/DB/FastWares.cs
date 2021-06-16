@@ -8,5 +8,6 @@ namespace ModelMID.DB
     {
         public int CodeFastGroup { get; set; }
         public int CodeWares { get; set; }
+        public int OrderWares { get; set; }
     }
 }

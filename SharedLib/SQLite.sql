@@ -36,33 +36,34 @@ replace into CONFIG  (Name_Var,Data_Var,Type_Var) values (@NameVar,@DataVar,@Typ
 [SqlFoundWares]
 with t$1 as 
 (
-select w.code_wares ,case when @CodeUnit=0 then au.CODE_UNIT else @CodeUnit end as code_unit
+select w.code_wares ,case when @CodeUnit=0 then au.CODE_UNIT else @CodeUnit end as code_unit,0 as orders
     from wares w 
     join addition_unit au on (w.CODE_WARES=au.code_wares and au.DEFAULT_UNIT=1)
     where w.code_wares=@CodeWares 
 union 
-select w.code_wares ,case when @CodeUnit=0 then au.CODE_UNIT else @CodeUnit end as code_unit
+select w.code_wares ,case when @CodeUnit=0 then au.CODE_UNIT else @CodeUnit end as code_unit,0 as orders
     from wares w 
     join addition_unit au on (w.CODE_WARES=au.code_wares and au.DEFAULT_UNIT=1)
     where w.articl=@Articl 
 union
-select ifnull(w.code_wares,bc.code_wares),bc.code_unit
+select ifnull(w.code_wares,bc.code_wares),bc.code_unit,0 as orders
                  from bar_code bc left join wares w
                  on w.CODE_WARES= bc.code_wares
                  where bc.bar_code=@BarCode
 union
- select w.code_wares, au.CODE_UNIT
+ select w.code_wares, au.CODE_UNIT,0 as orders
  from wares w 
  join addition_unit au on (w.CODE_WARES=au.code_wares and au.DEFAULT_UNIT=1)
  where @NameUpper is not null and  @CodeFastGroup=0 and w.name_wares_upper like @NameUpper
 union 
- select w.code_wares, au.CODE_UNIT
+ select w.code_wares, au.CODE_UNIT,fw.Order_Wares as orders
  from wares w 
  join FAST_WARES fw on (fw.code_fast_group=@CodeFastGroup and fw.CODE_WARES=w.code_wares)
  join addition_unit au on (w.CODE_WARES=au.code_wares and au.DEFAULT_UNIT=1)
  where @NameUpper is not null and  @CodeFastGroup<>0 and w.name_wares_upper like @NameUpper
 union
-select w.code_wares,au.CODE_UNIT from FAST_WARES w 
+select w.code_wares,au.CODE_UNIT,w.Order_Wares as orders
+    from FAST_WARES w 
      join addition_unit au on (w.CODE_WARES=au.code_wares and au.DEFAULT_UNIT=1)
 	 where @CodeFastGroup<>0 and @NameUpper is null and code_fast_group=@CodeFastGroup
 )
@@ -94,6 +95,7 @@ left join unit_dimension ud on (t.code_unit =ud.code_unit)
 left join addition_unit aud on (aud.DEFAULT_UNIT=1 and t.code_wares=aud.code_wares)
 left join unit_dimension udd on (aud.code_unit =udd.code_unit)
 where @NameUpper is null or pd.price_dealer>0
+order by t.orders
 
 [SqlFoundClient]
 with 
@@ -880,7 +882,8 @@ CREATE TABLE FAST_GROUP
 CREATE TABLE FAST_WARES
 (
  Code_Fast_Group       INTEGER  NOT NULL,
- Code_WARES     NOT NULL
+ Code_WARES     INTEGER NOT NULL,
+ Order_Wares INTEGER NOT NULL
 );
 
 CREATE TABLE PROMOTION_SALE (
@@ -1039,7 +1042,7 @@ replace into CLIENT (CODE_CLIENT, NAME_CLIENT, TYPE_DISCOUNT,PHONE,      PERCENT
 replace into FAST_GROUP ( CODE_UP,Code_Fast_Group, Name) values (@CodeUp,@CodeFastGroup,@Name);
 
 [SqlReplaceFastWares]
-replace into FAST_WARES ( Code_Fast_Group, Code_wares) values (@CodeFastGroup,@CodeWares);
+replace into FAST_WARES ( Code_Fast_Group, Code_wares,Order_Wares) values (@CodeFastGroup,@CodeWares,@OrderWares);
 
 
 [SqlReplacePromotionSale]

@@ -106,7 +106,7 @@ SELECT CONVERT(INT,wh.Code) AS CodeUp,CONVERT(INT,wh.Code)*1000+g.Order_Button A
 
 [SqlGetDimFastWares]
 SELECT CONVERT(INT,wh.Code)*1000+CASE WHEN g.Order_Button=2 THEN 1 ELSE g.Order_Button END CodeFastGroup, -- хак для групи Овочі 1
-    w1.code_wares AS CodeWares
+    w1.code_wares AS CodeWares,w.OrderWares
   FROM DW.dbo.V1C_DIM_OPTION_WPC O
   JOIN dw.dbo.WAREHOUSES wh ON o.Warehouse_RRef=wh._IDRRef
   JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_GROUP G ON o._IDRRef=G._Reference18850_IDRRef
