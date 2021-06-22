@@ -103,7 +103,7 @@ namespace SharedLib
         public bool SyncData(bool parIsFull)
         {
             StringBuilder Log = new StringBuilder();
-            Log.Append($"parIsFull=>{parIsFull}\n");
+            Log.Append($"\nparIsFull=>{parIsFull}\n");
             try
             {
                 //WDB_SQLite SQLite;
@@ -117,7 +117,7 @@ namespace SharedLib
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = parIsFull ? eSyncStatus.StartedFullSync : eSyncStatus.StartedPartialSync });
 
                 string varMidFile = db.GetCurrentMIDFile;
-                Log.Append($"varMidFile=>{varMidFile}\n Load_Full=>{TD:yyyy-MM-dd}\n");
+                Log.Append($"\nvarMidFile=>{varMidFile}\n Load_Full=>{TD:yyyy-MM-dd}\n");
                 if (parIsFull)
                 {
                     db.SetConfig<DateTime>("Load_Full", DateTime.Now.Date.AddDays(-1));
@@ -127,10 +127,10 @@ namespace SharedLib
                     if (File.Exists(varMidFile))
                     {
                         Thread.Sleep(200);
-                        Log.Append($"{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} Try Delete file{varMidFile}\n");
+                        Log.Append($"\n{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} Try Delete file{varMidFile}\n");
                         File.Delete(varMidFile);
                     }
-                    Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} Create New DB\n");
+                    Log.Append($"\n{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} Create New DB\n");
                     bl.db = new WDB_SQLite(default(DateTime), varMidFile);
                 }
 
@@ -140,17 +140,17 @@ namespace SharedLib
 
                 if (parIsFull)
                 {
-                    Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} Create MIDIndex\n");
+                    Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} Create MIDIndex");
 
                     db.CreateMIDIndex();
-                    Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} Set config\n");
+                    Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} Set config");
                     db.SetConfig<string>("Last_MID", varMidFile);
                 }
 
                 db.SetConfig<int>("MessageNo", varMessageNMax);
                 db.SetConfig<DateTime>("Load_" + (parIsFull ? "Full" : "Update"), DateTime.Now /*String.Format("{0:u}", DateTime.Now)*/);
 
-                Log.Append($"{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} End\n");
+                Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} End");
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.SyncFinishedSuccess, StatusDescription = Log.ToString() });
             }
             catch (Exception ex)

@@ -52,9 +52,9 @@ namespace Test
 
 
             
-            //await CreateDataBaseAsync(true);
+            await CreateDataBaseAsync(false);
 
-
+            return;
                 TestReceiptAsync();
 
             //CreateBarCode();

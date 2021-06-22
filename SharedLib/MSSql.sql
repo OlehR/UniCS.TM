@@ -17,19 +17,24 @@ SELECT w.code_wares AS CodeWares, w.name_wares AS NameWares, w.code_group AS Cod
 		, w.code_unit AS CodeUnit, w.VAT AS PercentVat , w.VAT_OPERATION AS TypeVat, w.code_brand AS CodeBrand,Type_wares as TypeWares
 		,Weight_Brutto as WeightBrutto, Weight_Fact as WeightFact, w.Weight_Delta as WeightDelta, w.code_UKTZED AS CodeUKTZED,w.Limit_age as LimitAge,w.PLU
   FROM dbo.Wares w
+   WHERE w.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull=1
   
 [SqlGetDimAdditionUnit]
 SELECT code_wares AS CodeWares,code_unit AS CodeUnit, coef AS Coefficient, weight AS weight, CASE WHEN DEFAULT_UNIT='Y' then 1 ELSE 0 END as DefaultUnit 
-  FROM dbo.addition_unit;
+  FROM dbo.addition_unit au
+   WHERE au.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull=1;
 
 [SqlGetDimBarCode]
     SELECT code_wares CodeWares,code_unit AS CodeUnit,RTRIM(LTRIM(bar_code)) AS BarCode, coef AS Coefficient 
-  FROM dbo.barcode where LEN(bar_code)>6;
+  FROM dbo.barcode where LEN(bar_code)>6
+   and MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull=1
+  ;
 
 [SqlGetDimPrice]
   SELECT p.CODE_DEALER AS CodeDealer, p.code_wares AS CodeWares, p.price AS PriceDealer 
     FROM dbo.price p
     WHERE p.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull=1
+
 [SqlGetDimPriceOld]
 SELECT tp.code AS CodeDealer, w.code_wares AS CodeWares, pd.price_dealer AS PriceDealer FROM 
   ( 
@@ -70,6 +75,7 @@ SELECT  Type_discount AS CodeTypeDiscount,Name AS Name,Percent_discount AS Perce
 SELECT cl.CodeClient, cl.NameClient, cl.TypeDiscount, cl.PersentDiscount, cl.BarCode, cl.StatusCard, cl.ViewCode, cl.BirthDay,
   ISNULL(cl.MainPhone,cl.Phone) AS MainPhone
   FROM client  cl WITH (NOLOCK)
+  WHERE cl.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull=1
   /*
 SELECT DC.code_card as CodeClient ,DC.name as NameClient ,TD.TYPE_DISCOUNT  AS TypeDiscount, CAST('' AS VARCHAR(10)) AS MainPhone, td.PERCENT_DISCOUNT as PersentDiscount,[bar_code] AS BarCode, DCC.CODE_STATUS_CARD  AS StatusCard,dc. view_code  as ViewCode--,dcc.*
   ,CASE WHEN rop.value_t!=CONVERT(DATE,'28.09.3958',103) AND rop.value_t>CONVERT(DATE,'01.01.3900',103) THEN DATEADD(YEAR,-2000, rop.value_t) ELSE null END AS BirthDay
