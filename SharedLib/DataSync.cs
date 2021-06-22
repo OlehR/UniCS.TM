@@ -103,7 +103,7 @@ namespace SharedLib
         public bool SyncData(bool parIsFull)
         {
             StringBuilder Log = new StringBuilder();
-            Log.Append($"\nparIsFull=>{parIsFull}\n");
+            Log.Append($"\n{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} parIsFull=>{parIsFull}");
             try
             {
                 //WDB_SQLite SQLite;
@@ -117,7 +117,7 @@ namespace SharedLib
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = parIsFull ? eSyncStatus.StartedFullSync : eSyncStatus.StartedPartialSync });
 
                 string varMidFile = db.GetCurrentMIDFile;
-                Log.Append($"\nvarMidFile=>{varMidFile}\n Load_Full=>{TD:yyyy-MM-dd}\n");
+                Log.Append($"\n{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} varMidFile=>{varMidFile}\n\tLoad_Full=>{TD:yyyy-MM-dd}");
                 if (parIsFull)
                 {
                     db.SetConfig<DateTime>("Load_Full", DateTime.Now.Date.AddDays(-1));
@@ -127,13 +127,12 @@ namespace SharedLib
                     if (File.Exists(varMidFile))
                     {
                         Thread.Sleep(200);
-                        Log.Append($"\n{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} Try Delete file{varMidFile}\n");
+                        Log.Append($"\n{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} Try Delete file {varMidFile}");
                         File.Delete(varMidFile);
                     }
-                    Log.Append($"\n{ DateTime.Now:yyyy - MM - dd h: mm: ss.fffffff} Create New DB\n");
+                    Log.Append($"\n{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} Create New DB");
                     bl.db = new WDB_SQLite(default(DateTime), varMidFile);
                 }
-
 
                 var MsSQL = new WDB_MsSql();
                 var varMessageNMax = MsSQL.LoadData(db, parIsFull, Log);

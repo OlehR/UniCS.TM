@@ -54,7 +54,7 @@ namespace SharedLib
         public int LoadData(WDB parDB,bool parIsFull, StringBuilder Log)
         {
             string SQL;
-            Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} Start LoadData {parIsFull}\n");
+            Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} Start LoadData {parIsFull}");
             Debug.WriteLine("Start LoadData "+ parIsFull.ToString());
             SQL = GetSQL("SqlGetMessageNo");
             int varMessageNoMax = db.ExecuteScalar<int>(SQL);
@@ -65,7 +65,7 @@ namespace SharedLib
             Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetDimPrice");
             Debug.WriteLine("SqlGetDimPrice");
             SQL = GetSQL("SqlGetDimPrice");
-            var PD = db.Execute<object,Price>(SQL, oMessage/* new { IsFull= parIsFull?1:0}*/);
+            var PD = db.Execute<object,Price>(SQL, oMessage);
             parDB.ReplacePrice(PD);
             PD = null;
 
