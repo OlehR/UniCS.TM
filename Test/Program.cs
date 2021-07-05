@@ -47,9 +47,9 @@ namespace Test
             Console.WriteLine("Start");
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
 
-            await CreateDataBaseAsync(false);
+            //await CreateDataBaseAsync(false);
 
-            return;
+            
                 TestReceiptAsync();
 
             //CreateBarCode();
@@ -123,13 +123,11 @@ namespace Test
 
                 var rrr = api.GetRecieptByTerminalId(TerminalId, true);
             
-            Thread.Sleep(6000);
+            //Thread.Sleep(6000);
 
-            var ssssqq = api.GetQR(TerminalId);
-            
+//            var ssssqq = api.GetQR(TerminalId);
 
-            return;
-            sd = api.AddProductByProductId(TerminalId, sd.Id, 1, 45.71M);
+           // sd = api.AddProductByProductId(TerminalId, sd.Id, 1, 45.71M);
 
             sd = api.AddProductByBarCode(TerminalId, "4820000536202", 1);
 
@@ -145,13 +143,13 @@ namespace Test
             sd = api.AddProductByBarCode(TerminalId, "2201651902226", 1); //
          
          //   sd = api.AddProductByBarCode(TerminalId, "7775006620509", 1); //товар 2 кат*/
-            Thread.Sleep(4000);
+          //  Thread.Sleep(4000);
 
            
  //           var clf = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
 
 
-            return;
+          //  return;
 
             // sd = api.AddProductByBarCode(TerminalId, "8887290101608", 1);  return;
 

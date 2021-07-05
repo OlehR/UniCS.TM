@@ -17,10 +17,11 @@ namespace ModelMID
             }
             set
             {
-                var IdStr = value.ToString();
+                SetGuid(value);
+                /*var IdStr = value.ToString();
                 IdWorkplace = Convert.ToInt32(IdStr.Substring(0, 8));
                 CodePeriod = Convert.ToInt32(IdStr.Substring(14, 9).Replace("-",""));
-                CodeReceipt = Convert.ToInt32(IdStr.Substring(24, 12));
+                CodeReceipt = Convert.ToInt32(IdStr.Substring(24, 12));*/
             }
 
         }
@@ -52,12 +53,27 @@ namespace ModelMID
 
         public IdReceipt(Guid parReceiptId)
         {
-            var strReceiptId = parReceiptId.ToString();
+            SetGuid(parReceiptId);
+            /*var strReceiptId = parReceiptId.ToString();
             IdWorkplace = Convert.ToInt32(strReceiptId.Substring(0, 8));
             CodePeriod = Convert.ToInt32(strReceiptId.Substring(14, 4)) * 10000 + Convert.ToInt32(strReceiptId.Substring(19, 4));
             CodeReceipt = Convert.ToInt32(strReceiptId.Substring(24, 12));
+        */
         }
 
+        public void  SetGuid(Guid parReceiptId)
+        {
+            var strReceiptId = parReceiptId.ToString();
+            int v;
+            IdWorkplace = int.TryParse(strReceiptId.Substring(0, 8), out v) ? v : 0;
+            //IdWorkplace = Convert.ToInt32(strReceiptId.Substring(0, 8));
+
+            CodePeriod = int.TryParse(strReceiptId.Substring(14, 9).Replace("-", ""), out v) ? v:0;
+            //CodePeriod = Convert.ToInt32(strReceiptId.Substring(14, 4)) * 10000 + Convert.ToInt32(strReceiptId.Substring(19, 4));
+
+            CodeReceipt = int.TryParse(strReceiptId.Substring(24, 12), out v) ? v : 0;
+            //CodeReceipt = Convert.ToInt32(strReceiptId.Substring(24, 12));
+        }
         public void SetIdReceipt(IdReceipt idReceipt)
         {
             IdWorkplace = idReceipt.IdWorkplace;
