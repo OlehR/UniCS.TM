@@ -515,7 +515,7 @@ namespace SharedLib
             }
         }
 
-        public override bool DeleteReceiptWares(IdReceiptWares parIdReceiptWares)
+        public override bool DeleteReceiptWares(ReceiptWares parIdReceiptWares)
         {
             using (var DB = new SQLite(ReceiptFile))
             {

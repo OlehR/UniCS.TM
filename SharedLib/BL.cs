@@ -289,7 +289,7 @@ namespace SharedLib
 
             if (parQuantity == 0)
             {
-                db.DeleteReceiptWares(parReceiptWaresId);
+                db.DeleteReceiptWares(w);
                 _ = VR.SendMessageAsync(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum, VR.eTypeVRMessage.DeleteWares);
             }
             else

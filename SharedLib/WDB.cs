@@ -193,6 +193,7 @@ namespace SharedLib
         protected string SqlGetPricesMRC = "";
         protected string SqlUpdateQR = "";
         protected string SqlGetQR = "";
+        protected string SqlGetReceiptWaresDeleted = "";
 
 
         public WDB(string parFileSQL)
@@ -355,7 +356,7 @@ namespace SharedLib
         }
 
 
-        public virtual bool DeleteReceiptWares(IdReceiptWares parIdReceiptWares)
+        public virtual bool DeleteReceiptWares(ReceiptWares parIdReceiptWares)
         {
             return this.db.ExecuteNonQuery<IdReceiptWares>(SqlDeleteReceiptWares, parIdReceiptWares) == 0 /*&& RecalcHeadReceipt(parParameters)*/;
         }
@@ -613,7 +614,7 @@ namespace SharedLib
 
             SqlUpdateQR = GetSQL("SqlUpdateQR");
             SqlGetQR = GetSQL("SqlGetQR");
-
+            SqlGetReceiptWaresDeleted = GetSQL("SqlGetReceiptWaresDeleted");
 
 
             return true;
@@ -1017,6 +1018,11 @@ namespace SharedLib
             return GetReceiptWaresPromotion(new IdReceiptWares(parIdReceipt));
         }
 
+        public virtual IEnumerable<ReceiptWaresDeleted1C> GetReceiptWaresDeleted()
+        {
+            return this.db.Execute<ReceiptWaresDeleted1C>(SqlGetReceiptWaresDeleted);            
+        }
+
         public virtual void Close(bool isWait = false)
         {
             if (db != null)
@@ -1040,6 +1046,8 @@ namespace SharedLib
 
             isDisposed = true;
         }
+
+
 
 
     }

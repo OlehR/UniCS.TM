@@ -12,6 +12,7 @@ alter TABLE WARES_RECEIPT            add Fix_Weight NUMBER NOT NULL DEFAULT 0;
 alter TABLE WARES_RECEIPT_PROMOTION  add TYPE_DISCOUNT  INTEGER  NOT NULL  DEFAULT (12);
 alter TABLE wares_receipt            add Priority INTEGER  NOT NULL DEFAULT 0;
 alter TABLE wares_receipt            add QR TEXT;
+alter TABLE WARES_RECEIPT_HISTORY    add SORT INTEGER  NOT NULL default 0;  
 
 [SqlUpdateConfig_V1]
 alter table WORKPLACE add  Video_Camera_IP TEXT;
@@ -336,7 +337,7 @@ delete from  wares_receipt
     		   and code_unit = case when @CodeUnit=0 then code_unit else @CodeUnit end
   ;
  insert into  WARES_RECEIPT_HISTORY ( ID_WORKPLACE,  CODE_PERIOD, CODE_RECEIPT, CODE_WARES, CODE_UNIT, QUANTITY, QUANTITY_OLD, CODE_OPERATION)     
-values ( @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit, 0, 0,-1);
+values ( @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit, 0, @Quantity,-1);
 
 delete from  WARES_RECEIPT_PROMOTION
    where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt 
@@ -672,6 +673,7 @@ CREATE TABLE WARES_RECEIPT_HISTORY (
 --    CODE_WAREHOUSE INTEGER  NOT NULL,
     QUANTITY       NUMBER   NOT NULL, 
     QUANTITY_OLD       NUMBER   NOT NULL default 0,  
+    SORT           INTEGER  NOT NULL default 0,
     CODE_OPERATION INTEGER  NOT NULL,
      DATE_CREATE    DATETIME NOT NULL default (datetime('now','localtime'))
 	);
@@ -1247,6 +1249,28 @@ update wares_receipt set  QR= @QR
 select wr.QR,'('|| w.PLU || ')-'|| w.name_wares as name from wares_receipt  wr
     join wares w on wr.code_wares=w.code_wares
         where wr.id_workplace=@IdWorkplace and  wr.code_period =@CodePeriod and  wr.code_receipt=@CodeReceipt and QR is not null;
-                     
+          
+[SqlGetReceiptWaresDeleted]
+select  wrh.id_workplace IdWorkplace, wrh.code_period CodePeriod, wrh.code_receipt CodeReceipt, r.date_receipt Date,wrh.id_workplace NumberCashDesk, r.USER_CREATE as BarCodeCashier,
+--Sort as "Order", 
+Code_wares as CodeWares,
+wrh.DATE_CREATE as DateCreate, wrh.QUANTITY as Quantity,wrh.QUANTITY_OLD as QuantityOld
+
+from WARES_RECEIPT_HISTORY wrh
+left join RECEIPT r on (r.ID_WORKPLACE =wrh.Id_Workplace    and r.CODE_PERIOD = wrh.Code_Period    and r.CODE_RECEIPT = wrh.Code_Receipt)
+where (CODE_OPERATION=-1 or QUANTITY<QUANTITY_OLD)
+-- and wrh.DATE_CREATE>=beginDate and   wrh.DATE_CREATE<EndDate
+union all
+
+select  wrh.id_workplace IdWorkplace, wrh.code_period CodePeriod, wrh.code_receipt CodeReceipt, r.date_receipt Date,wrh.id_workplace NumberCashDesk, r.USER_CREATE as BarCodeCashier,
+--Sort as "Order", 
+Code_wares as CodeWares,
+wrh.DATE_CREATE as DateCreate,0 as Quantity,wrh.QUANTITY as QuantityOld
+
+from WARES_RECEIPT wrh
+left join RECEIPT r on (r.ID_WORKPLACE =wrh.Id_Workplace    and r.CODE_PERIOD = wrh.Code_Period    and r.CODE_RECEIPT = wrh.Code_Receipt)
+where r.STATE_RECEIPT=-1
+ --and r.DATE_RECEIPT>=BeginDate and   wrh.DATE_CREATE<EndDate
+
 [SqlEnd]
 */

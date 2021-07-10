@@ -39,13 +39,15 @@ namespace PrintServer
     //[DataContract]
     public class Wares
     {
-       // [DataMember]
         public string CodeWares { get; set; }
         public string Article { get; set; }
         public string NameDocument { get; set; }
         public int CodeWarehouse { get; set; }
         public DateTime Date { get; set; }
-
+        public string  SerialNumber { get; set; }
+        public string NameDCT { get; set; }
+        public string Login { get; set; }
+       
     }
 }
 

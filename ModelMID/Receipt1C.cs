@@ -8,20 +8,30 @@ namespace ModelMID
 {
     public class Receipt1C
     {
+        /// <summary>
+        /// Дата чека
+        /// </summary>
         public DateTime Date { get; set; }
+        /// <summary>
+        /// Номер чека 1С
+        /// </summary>
         public string Number { get; set; }
         /// <summary>
         /// 1 - звичайний, -1 - повернення
         /// </summary>
         public eTypeReceipt TypeReceipt { get; set; }
+        /// <summary>
+        /// Номер каси
+        /// </summary>
         public int NumberCashDesk { get; set; }
         public string Description { get; set; }
-
         public UInt64 NumberReceipt { get; set; }
         public int CodeClientCard { get; set; }
         public int CodeWarehouse { get { return 9; } set { } }
-
         public string RefundNumber { get; set; }
+        /// <summary>
+        /// Штрихкод касирів
+        /// </summary>
         public string BarCodeCashier { get; set; }
         public IEnumerable<ReceiptWares1C> Wares;
 
@@ -75,6 +85,7 @@ namespace ModelMID
     
     public class ReceiptWares1C
     {
+
         public int Order { get; set; }
         public int CodeWares { get; set; }
         public decimal Quantity { get; set; }
@@ -107,5 +118,36 @@ namespace ModelMID
 
         }
 
+    }
+
+    public class ReceiptWaresDeleted1C : IdReceipt
+    {
+        /// <summary>
+        /// Дата чека
+        /// </summary>
+        public DateTime Date { get; set; }
+        /// <summary>
+        /// Номер часу 1С
+        /// </summary>
+        public string Number { get { return NumberReceipt1C; } }        
+        /// <summary>
+        /// Номер каси
+        /// </summary>
+        public int NumberCashDesk { get; set; }        
+        /// <summary>
+        /// Штрихкод касирів
+        /// </summary>
+        public string BarCodeCashier { get; set; }
+        /// <summary>
+        /// Порядок (Sort)
+        /// </summary>
+        public int Order { get; set; }
+        public int CodeWares { get; set; }
+        /// <summary>
+        /// Час вставки рядка.
+        /// </summary>
+        public DateTime  DateCreate { get; set; }
+        public decimal Quantity { get; set; }
+        public decimal QuantityOld { get; set; }
     }
 }

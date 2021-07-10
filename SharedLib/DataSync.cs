@@ -1,5 +1,6 @@
 ﻿using ModelMID;
 using ModelMID.DB;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,13 +15,13 @@ namespace SharedLib
 {
     public class DataSync
     {
-        public WDB_SQLite db { get { return bl?.db; }}
+        public WDB_SQLite db { get { return bl?.db; } }
         public BL bl;
-        
+
         public SoapTo1C soapTo1C;
         public DataSync(BL parBL)
         {
-            
+
             soapTo1C = new SoapTo1C();
             bl = parBL; ///!!!TMP Трохи костиль             
         }
@@ -28,10 +29,10 @@ namespace SharedLib
 
         public bool SendReceiptTo1C(IdReceipt parIdReceipt)
         {
-            var ldb = new WDB_SQLite( parIdReceipt.DTPeriod);
+            var ldb = new WDB_SQLite(parIdReceipt.DTPeriod);
             var r = ldb.ViewReceipt(parIdReceipt, true);
 
-            
+
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             SendReceiptTo1CAsync(r, ldb);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
@@ -41,12 +42,12 @@ namespace SharedLib
         {
             try
             {
-              
+
                 var r = new Receipt1C(parReceipt);
 
                 var body = soapTo1C.GenBody("JSONCheck", new Parameters[] { new Parameters("JSONSting", r.GetBase64()) });
 
-                var res =  await soapTo1C.RequestAsync(Global.Server1C, body, 240000, "application/json");
+                var res = await soapTo1C.RequestAsync(Global.Server1C, body, 240000, "application/json");
 
                 /*
                                  HttpClient client = new HttpClient();
@@ -71,7 +72,7 @@ namespace SharedLib
                                      return false;
                                  }
                                 */
-                
+
                 if (!string.IsNullOrEmpty(res) && res.Equals("0"))
                 {
                     parReceipt.StateReceipt = eStateReceipt.Send;
@@ -154,7 +155,7 @@ namespace SharedLib
             }
             catch (Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = (parIsFull ? eSyncStatus.Error : eSyncStatus.NoFatalError), StatusDescription = Log.ToString()+ '\n' + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = (parIsFull ? eSyncStatus.Error : eSyncStatus.NoFatalError), StatusDescription = Log.ToString() + '\n' + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
                 Global.OnStatusChanged?.Invoke(db.GetStatus());
                 return false;
             }
@@ -199,7 +200,7 @@ namespace SharedLib
 
             while (Ldc < today)
             {
-                var ldb = new WDB_SQLite( Ldc);
+                var ldb = new WDB_SQLite(Ldc);
                 var t = SendAllReceipt(ldb);
                 t.Wait();
                 var res = ldb.GetIdReceiptbyState(eStateReceipt.Print);
@@ -228,7 +229,7 @@ namespace SharedLib
                     parClient.SumMoneyBonus = Sum; //!!!TMP
                 body = soapTo1C.GenBody("GetMoneySum", new Parameters[] { new Parameters("CodeOfCard", parClient.BarCode) });
                 res = await soapTo1C.RequestAsync(Global.Server1C, body);
-                
+
                 res = res.Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
                 if (!string.IsNullOrEmpty(res) && decimal.TryParse(res, out Sum))
                     parClient.Wallet = Sum;
@@ -249,22 +250,22 @@ namespace SharedLib
             try
             {
                 var Cat2 = db.CheckLastWares2Cat(parIdReceipt);
-                
+
                 if (Cat2 == null || Cat2.Count() == 0)
                 {
                     Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace), Status = eSyncStatus.IncorectProductForDiscount });
                     return false;
                 }
                 var Cat2First = Cat2.First();
-                Cat2First.BarCode2Category = parBarCode==null?"":parBarCode;
-                Cat2First.Price =  Cat2First.Price * (100m - (decimal)parPercent) / 100m;
+                Cat2First.BarCode2Category = parBarCode == null ? "" : parBarCode;
+                Cat2First.Price = Cat2First.Price * (100m - (decimal)parPercent) / 100m;
 
-                var LastQuantyity= db.GetLastQuantity(Cat2First);
+                var LastQuantyity = db.GetLastQuantity(Cat2First);
                 //Якщо не ваговий - то знижка на 1 шт.
                 if (Cat2First.CodeUnit != Global.WeightCodeUnit && LastQuantyity > 0)
                     LastQuantyity = 1;
 
-                var pr = db.GetReceiptWaresPromotion(new IdReceiptWares(parIdReceipt, Cat2First.CodeWares));           
+                var pr = db.GetReceiptWaresPromotion(new IdReceiptWares(parIdReceipt, Cat2First.CodeWares));
 
                 if (pr != null && pr.Count() > 0)
                     CountDiscount = pr.Where(r => r.BarCode2Category.Length == 13).Sum(r => r.Quantity);
@@ -299,7 +300,7 @@ namespace SharedLib
                     db.ReplaceWaresReceiptPromotion(Cat2);
                     db.InsertBarCode2Cat(Cat2First);
                     db.RecalcHeadReceipt(parIdReceipt);
-                    var r = bl.ViewReceiptWares(new IdReceiptWares(parIdReceipt, 0),true);//вертаємо весь чек.
+                    var r = bl.ViewReceiptWares(new IdReceiptWares(parIdReceipt, 0), true);//вертаємо весь чек.
                     Global.OnReceiptCalculationComplete?.Invoke(r, Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace));
                 }
                 else
@@ -311,7 +312,7 @@ namespace SharedLib
 
             catch (Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.Error, StatusDescription = ex.Message+ '\n' + new System.Diagnostics.StackTrace().ToString() });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.Error, StatusDescription = ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
             }
             return true;
         }
@@ -340,7 +341,7 @@ namespace SharedLib
 
                 var dbMs = new MSSQL();
                 //var path = Path.Combine(ModelMID.Global.PathDB, "config.db");
-               // var dbSqlite = new SQLite(path);
+                // var dbSqlite = new SQLite(path);
                 var SqlSelect = @"select [barcode] as BarCode, weight as Weight, DATE_CREATE as Date,STATUS
 from ( SELECT [barcode],DATE_CREATE,STATUS,weight,ROW_NUMBER() OVER (PARTITION BY barcode ORDER BY DATE_CREATE DESC) as [nn]  FROM WEIGHT where  DATE_CREATE>=:parDT ) dd
 where nn=1 ";
@@ -350,12 +351,11 @@ where nn=1 ";
                 dbMs.BulkExecuteNonQuery<BarCodeOut>(SQLUpdate, r);
                 Console.WriteLine("Finish LoadWeightKasa");
             }
-             catch (Exception ex)
+            catch (Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "LoadWeightKasa=> "+ ex.Message });                
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "LoadWeightKasa=> " + ex.Message });
             }
         }
-
         public void LoadWeightKasa2Period(DateTime pDT = default(DateTime))
         {
             try
@@ -384,9 +384,7 @@ where nn=1 ";
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "LoadWeightKasa2Period=> " + ex.Message });
             }
         }
-
-
-        public void LoadWeightKasa2(DateTime parDT,int TypeSource=0)
+        public void LoadWeightKasa2(DateTime parDT, int TypeSource = 0)
         {
             try
             {
@@ -394,7 +392,7 @@ where nn=1 ";
                 string SQLUpdate = @"insert into  DW.dbo.Weight_Receipt  (Type_Source,code_wares, weight,Date,ID_WORKPLACE, CODE_RECEIPT,QUANTITY) values (@TypeSource, @CodeWares,@Weight,@Date,@IdWorkplace,@CodeReceipt,@Quantity)";
                 var dbMs = new MSSQL();
 
-                var SqlSelect = TypeSource == 0? "select 0 as TypeSource,CODE_WARES as CodeWares,FIX_WEIGHT as WEIGHT,DATE_CREATE as date, ID_WORKPLACE as IdWorkplace, CODE_RECEIPT as CodeReceipt, QUANTITY as Quantity  from WARES_RECEIPT where FIX_WEIGHT>0":
+                var SqlSelect = TypeSource == 0 ? "select 0 as TypeSource,CODE_WARES as CodeWares,FIX_WEIGHT as WEIGHT,DATE_CREATE as date, ID_WORKPLACE as IdWorkplace, CODE_RECEIPT as CodeReceipt, QUANTITY as Quantity  from WARES_RECEIPT where FIX_WEIGHT>0" :
                     @"select 1  as TypeSource,re.CODE_WARES as CodeWares,re.PRODUCT_CONFIRMED_WEIGHT/1000.0 as WEIGHT,wr.DATE_CREATE as date, re.ID_WORKPLACE as IdWorkplace, re.CODE_RECEIPT as CodeReceipt, wr.QUANTITY as Quantity,wr.FIX_WEIGHT
 from RECEIPT_EVENT RE 
 join WARES_RECEIPT wr on re.ID_WORKPLACE=wr.ID_WORKPLACE and wr.CODE_RECEIPT=re.CODE_RECEIPT and re.code_wares=wr.code_wares
@@ -402,7 +400,7 @@ where RE.EVENT_TYPE=1"
                     ;
                 Console.WriteLine("Start LoadWeightKasa2");
                 var r = ldb.db.Execute<WeightReceipt>(SqlSelect);
-                Console.WriteLine(parDT.ToString()+ " " +r.Count().ToString());
+                Console.WriteLine(parDT.ToString() + " " + r.Count().ToString());
                 dbMs.BulkExecuteNonQuery<WeightReceipt>(SQLUpdate, r);
                 Console.WriteLine("Finish LoadWeightKasa2");
             }
@@ -411,7 +409,7 @@ where RE.EVENT_TYPE=1"
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "LoadWeightKasa2=> " + ex.Message });
             }
         }
-        public async Task<string> GetQrCoffe(ReceiptWares pReceiptWares, int pOrder,int pWait =5)
+        public async Task<string> GetQrCoffe(ReceiptWares pReceiptWares, int pOrder, int pWait = 5)
         {
             var Url = "https://dashboard.prostopay.net/api/v1/qreceipt/generate";
             string res = null;
@@ -426,13 +424,13 @@ where RE.EVENT_TYPE=1"
 ""amount-base"": 3,
 ""plu-from"": {PLU},
 ""plu-to"": 0
-}".Replace("{Order}", (++pOrder).ToString()).Replace("{PLU}", pReceiptWares.PLU.ToString()).Replace("{Kassa}", (pReceiptWares.IdWorkplace - 60).ToString());            
-          
-            List <ReceiptEvent> rr= new List <ReceiptEvent> { new ReceiptEvent(pReceiptWares) {EventType=ReceiptEventType.AskQR,EventName=Body, CreatedAt = DateTime.Now } };
+}".Replace("{Order}", (++pOrder).ToString()).Replace("{PLU}", pReceiptWares.PLU.ToString()).Replace("{Kassa}", (pReceiptWares.IdWorkplace - 60).ToString());
+
+            List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(pReceiptWares) { EventType = ReceiptEventType.AskQR, EventName = Body, CreatedAt = DateTime.Now } };
             try
             {
                 HttpClient client = new HttpClient();
-                client.Timeout = TimeSpan.FromMilliseconds(pWait*1000);                
+                client.Timeout = TimeSpan.FromMilliseconds(pWait * 1000);
 
                 HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, Url);
                 requestMessage.Headers.Add("X-API-KEY", "98e071c0-7177-4132-b249-9244464c97fb");
@@ -441,7 +439,7 @@ where RE.EVENT_TYPE=1"
 
                 if (response.IsSuccessStatusCode)
                 {
-                    res = await response.Content.ReadAsStringAsync();                    
+                    res = await response.Content.ReadAsStringAsync();
                 }
                 else
                 {
@@ -452,17 +450,72 @@ where RE.EVENT_TYPE=1"
             catch (Exception ex)
             {
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pReceiptWares.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
-                rr.Add(new ReceiptEvent(pReceiptWares) { EventType = ReceiptEventType.ErrorQR,  EventName = ex.Message, CreatedAt = DateTime.Now });
+                rr.Add(new ReceiptEvent(pReceiptWares) { EventType = ReceiptEventType.ErrorQR, EventName = ex.Message, CreatedAt = DateTime.Now });
             }
-            res=res.Replace("\"","");
-            rr.Add(new ReceiptEvent(pReceiptWares) {EventType= ReceiptEventType.AnswerQR, EventName=res,CreatedAt=DateTime.Now});
+            res = res.Replace("\"", "");
+            rr.Add(new ReceiptEvent(pReceiptWares) { EventType = ReceiptEventType.AnswerQR, EventName = res, CreatedAt = DateTime.Now });
             bl.db.InsertReceiptEvent(rr);
             return res;
         }
 
 
+        public async Task SendRWDeleteAsync()
+        {
+            var Ldc = db.GetConfig<DateTime>("LastDaySendDeleted");
+            var today = DateTime.Now.Date;
+
+            if (Ldc == default(DateTime))
+                Ldc = today.AddDays(-10);
+
+            while (Ldc < today)
+            {
+                var ldb = new WDB_SQLite(Ldc);
+
+                var t = ldb.GetReceiptWaresDeleted();
+                var res = await Send1CReceiptWaresDeletedAsync(t);
+                if (res)
+                    db.SetConfig<DateTime>("LastDaySendDeleted", Ldc);
+                else
+                    break;
+                //SendAllReceipt(ldb);
+
+                //     Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.NoFatalError, StatusDescription = $"SendOldReceipt => ErrorSend Date:{Ldc} Not Send => {res.Count()}" });
+
+                Ldc = Ldc.AddDays(1);
+            }
+            //Перекидаємо лічильник на сьогодня.
+            // db.SetConfig<DateTime>("LastDaySendDeleted", Ldc);
+        }
+
+        async Task<bool> Send1CReceiptWaresDeletedAsync(IEnumerable<ReceiptWaresDeleted1C> pRWD)
+        {
+            if (pRWD == null)
+                return false;
+            try
+            {
+                var r = JsonConvert.SerializeObject(pRWD);
+                var plainTextBytes = Encoding.UTF8.GetBytes(r);
+                var resBase64 = Convert.ToBase64String(plainTextBytes);
+                //var r = new Receipt1C(parReceipt);
+                var body = soapTo1C.GenBody("DeletedItemsInTheCheck", new Parameters[] { new Parameters("JSONSting", resBase64) });
+
+                var res = await soapTo1C.RequestAsync(Global.Server1C, body, 60000, "application/json");
+
+                if (!string.IsNullOrEmpty(res) && res.Equals("0"))
+                    return true;
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                var el = pRWD.First();
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(el.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "Send1CReceiptWaresDeletedAsync=>" + el.CodePeriod.ToString() + " " + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
+                return false;
+            }
+        }
+
+        //db.GetReceiptWaresDeleted();
     }
-    
 
     public class WeightReceipt
     {
@@ -475,4 +528,6 @@ where RE.EVENT_TYPE=1"
         public int CodeReceipt { get; set; }
         public decimal Quantity { get; set; }
     }
+
+
 }

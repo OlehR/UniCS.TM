@@ -93,5 +93,15 @@ namespace ModelMID
         {
             return IdWorkplace * 100000 + CodePeriod * 1000 + CodeReceipt;
         }
+
+        public string NumberReceipt1C
+        {
+            get
+            {
+                var d = Convert.ToInt32(Math.Floor((DTPeriod - new DateTime(2019, 01, 01)).TotalDays)).ToString("D4");
+                return Global.PrefixWarehouse + Global.GetNumberCashDeskByIdWorkplace(IdWorkplace) + d + CodeReceipt.ToString("D4");
+            }
+        }
+
     }
 }
