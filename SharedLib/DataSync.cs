@@ -152,6 +152,8 @@ namespace SharedLib
 
                 Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} End");
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.SyncFinishedSuccess, StatusDescription = Log.ToString() });
+                if (parIsFull)
+                    SendRWDeleteAsync();
             }
             catch (Exception ex)
             {
