@@ -65,6 +65,15 @@ namespace SharedLib
             catch
             { Global.IdWorkPlace = 99; }
 
+
+            try
+            {
+                Global.CodeWarehouse = 9;
+                Global.CodeWarehouse = Convert.ToInt32(AppConfiguration["MID:CodeWarehouse"]);
+            }
+            catch
+            { Global.CodeWarehouse = 9; }
+
             //GlobalVar.DefaultCodeDealer = Convert.ToInt32(AppConfiguration["MID:DefaultCodeDealer"]);
             if (!Directory.Exists(Global.PathDB))
                 Directory.CreateDirectory(Global.PathDB);

@@ -47,7 +47,7 @@ namespace Test
             Console.WriteLine("Start");
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
 
-            //await CreateDataBaseAsync(false);
+            //await CreateDataBaseAsync(true);
 
             
                 TestReceiptAsync();

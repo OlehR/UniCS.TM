@@ -31,9 +31,16 @@ SELECT code_wares AS CodeWares,code_unit AS CodeUnit, coef AS Coefficient, weigh
   ;
 
 [SqlGetDimPrice]
-  SELECT p.CODE_DEALER AS CodeDealer, p.code_wares AS CodeWares, p.price AS PriceDealer 
+ SELECT p.CODE_DEALER AS CodeDealer, p.code_wares AS CodeWares, p.price AS PriceDealer 
     FROM dbo.price p
-    WHERE p.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull=1
+    WHERE (p.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull=1) and
+       (
+           p.DEALER_RRef in ( 0xA8D3001E67079A7C11E1907E920EFE12 /*Акція жовті цінники*/, 0x81660050569E814D11EB28B4A16E4599 /*Акція буклет Вопак*/,0x99999999999999999999999999999999 /*індикатив*/)
+                or 
+            (@CodeWarehouse=9   and  DEALER_RRef in ( 0xB7A3001517DE370411DF7DD82E29EFF6 /*Роздрібні Новий*/,  0xA481001E67079A7C11E18A1966EECFE6 /*Акція Новий*/,0x88888888888888888888888888888888 /*Мін. ціна*/ ))
+                or 
+            (@CodeWarehouse=15  and  DEALER_RRef in ( 0xA90F001517DE370411E03FABEDFCE454 /*Акція Білочка*/, 0xB7A3001517DE370411DF835234FF0C73 /*Роздрібні Білочка*/))
+        )
 
 [SqlGetDimPriceOld]
 SELECT tp.code AS CodeDealer, w.code_wares AS CodeWares, pd.price_dealer AS PriceDealer FROM 
@@ -98,7 +105,7 @@ SELECT CONVERT(INT,wh.Code) AS CodeUp,CONVERT(INT,wh.Code)*1000+g.Order_Button A
   JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_GROUP G ON o._IDRRef=G._Reference18850_IDRRef 
     JOIN DW.dbo.V1C_DIM_OPTION_WPC_CASH_place CP ON o._IDRRef=cp._Reference18850_IDRRef
   --JOIN DW.dbo.V1C_DIM_OPTION_WPC_FACT_WARES W ON G._Reference18850_IDRRef = W._Reference18850_IDRRef AND G. Order_Button = W.Order_Button
-    WHERE wh.Code=9 AND g.Order_Button<>2 -- хак для групи Овочі 1
+    WHERE wh.Code=@CodeWarehouse AND g.Order_Button<>2 -- хак для групи Овочі 1
     AND cp.CashPlaceRRef= 0x81380050569E814D11E9E4D62A0CF9ED -- 14 касановий
   GROUP BY wh.Code,g.Order_Button;
 
@@ -119,17 +126,17 @@ SELECT CONVERT(INT,wh.Code)*1000+CASE WHEN g.Order_Button=2 THEN 1 ELSE g.Order_
   JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_WARES W ON o._IDRRef = W._Reference18850_IDRRef AND G.Order_Button_wares = W.Order_Button
   JOIN dw.dbo.Wares w1 ON w.Wares_RRef=w1._IDRRef
   JOIN DW.dbo.V1C_DIM_OPTION_WPC_CASH_place CP ON o._IDRRef=cp._Reference18850_IDRRef
-    WHERE wh.Code=9
+    WHERE wh.Code = @CodeWarehouse
  AND cp.CashPlaceRRef= 0x81380050569E814D11E9E4D62A0CF9ED -- 14 касановий;
 
 [SqlGetPromotionSaleData]
 WITH wh_ex AS 
   (SELECT pw.doc_promotion_RRef,
-    SUM(CASE WHEN CONVERT(INT,dw.code)= 9 THEN 1 ELSE 0 END) AS Wh,COUNT(*) AS all_wh
+    SUM(CASE WHEN CONVERT(INT,dw.code) = @CodeWarehouse THEN 1 ELSE 0 END) AS Wh,COUNT(*) AS all_wh
     FROM DW.dbo.V1C_doc_promotion_warehouse pw
     JOIN DW.dbo.V1C_dim_warehouse dw ON dw.warehouse_RRef=pw.warehouse_RRef
 GROUP BY pw.doc_promotion_RRef
-  HAVING SUM(CASE WHEN dw.code=9 THEN 1 ELSE 0 END) = 0)  
+  HAVING SUM(CASE WHEN dw.code = @CodeWarehouse THEN 1 ELSE 0 END) = 0)  
 
 SELECT
    CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
@@ -195,7 +202,7 @@ SELECT -- Кількість товари  набору (Основні)
   JOIN dbo.V1C_dim_warehouse wh ON wh.subdivision_RRef=pg.subdivision_RRef
   LEFT JOIN dbo.V1C_DIM_Priority_Promotion PP ON  tp.Priority_Promotion_RRef=pp.Priority_Promotion_RRef
   where pg.date_end>GETDATE()
-  AND wh.code =9
+  AND wh.code = @CodeWarehouse;
 
 [SqlGetPromotionSale]
 SELECT  
@@ -230,11 +237,11 @@ SELECT
   ,NULL AS BarCodeCoupon
     FROM DW.dbo.V1C_doc_promotion dp
   LEFT JOIN (SELECT pw.doc_promotion_RRef,
-    SUM(CASE WHEN CONVERT(INT,dw.code)= 9 THEN 1 ELSE 0 END) AS Wh,COUNT(*) AS all_wh
+    SUM(CASE WHEN CONVERT(INT,dw.code) = @CodeWarehouse THEN 1 ELSE 0 END) AS Wh,COUNT(*) AS all_wh
     FROM DW.dbo.V1C_doc_promotion_warehouse pw
     JOIN DW.dbo.V1C_dim_warehouse dw ON dw.warehouse_RRef=pw.warehouse_RRef
 GROUP BY pw.doc_promotion_RRef
-  HAVING SUM(CASE WHEN dw.code=9 THEN 1 ELSE 0 END) = 0) wh_ex ON wh_ex.doc_promotion_RRef=dp._IDRRef
+  HAVING SUM(CASE WHEN dw.code = @CodeWarehouse THEN 1 ELSE 0 END) = 0) wh_ex ON wh_ex.doc_promotion_RRef=dp._IDRRef
   WHERE dp.d_end>getdate() AND wh_ex.doc_promotion_RRef IS null
 UNION ALL 
 SELECT DISTINCT 
@@ -254,17 +261,17 @@ SELECT DISTINCT
   JOIN  dbo.V1C_doc_promotion_gal dpg ON pg.doc_RRef = dpg.doc_RRef
   JOIN  dbo.V1C_dim_warehouse wh ON wh.subdivision_RRef=pg.subdivision_RRef
   where pg.date_end>GETDATE()  
-AND wh.code=9;
+AND wh.code = @CodeWarehouse;
 
 
 [SqlGetPromotionSaleFilter]
 WITH wh_ex AS 
   (SELECT pw.doc_promotion_RRef,
-    SUM(CASE WHEN CONVERT(INT,dw.code)= 9 THEN 1 ELSE 0 END) AS Wh,COUNT(*) AS all_wh
+    SUM(CASE WHEN CONVERT(INT,dw.code) = @CodeWarehouse THEN 1 ELSE 0 END) AS Wh,COUNT(*) AS all_wh
     FROM DW.dbo.V1C_doc_promotion_warehouse pw
     JOIN DW.dbo.V1C_dim_warehouse dw ON dw.warehouse_RRef=pw.warehouse_RRef
 GROUP BY pw.doc_promotion_RRef
-  HAVING SUM(CASE WHEN dw.code=9 THEN 1 ELSE 0 END) = 0)  
+  HAVING SUM(CASE WHEN dw.code = @CodeWarehouse THEN 1 ELSE 0 END) = 0)  
 
 SELECT  --Склади дії
     CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS
@@ -440,11 +447,11 @@ SELECT -- Товари  набору (Основні)
   JOIN DW.dbo.V1C_doc_promotion dp ON dp._IDRRef=pk.doc_promotion_RRef
   LEFT JOIN DW.dbo.V1C_doc_promotion_kit pk_k ON (pk_k.doc_promotion_RRef=pk.doc_promotion_RRef AND pk.nomen_RRef = pk_k.nomen_RRef AND pk.number_kit = pk_k.number_kit AND pk_k.is_main=0x01)
   LEFT JOIN (SELECT pw.doc_promotion_RRef,
-    SUM(CASE WHEN CONVERT(INT,dw.code)= 9 THEN 1 ELSE 0 END) AS Wh,COUNT(*) AS all_wh
+    SUM(CASE WHEN CONVERT(INT,dw.code) = @CodeWarehouse THEN 1 ELSE 0 END) AS Wh,COUNT(*) AS all_wh
     FROM DW.dbo.V1C_doc_promotion_warehouse pw
     JOIN DW.dbo.V1C_dim_warehouse dw ON dw.warehouse_RRef=pw.warehouse_RRef
 GROUP BY pw.doc_promotion_RRef
-  HAVING SUM(CASE WHEN dw.code=9 THEN 1 ELSE 0 END) = 0) wh_ex ON wh_ex.doc_promotion_RRef=dp._IDRRef
+  HAVING SUM(CASE WHEN dw.code = @CodeWarehouse THEN 1 ELSE 0 END) = 0) wh_ex ON wh_ex.doc_promotion_RRef=dp._IDRRef
   WHERE dp.d_end>getdate() 
   AND pk.is_main=0
   AND wh_ex.doc_promotion_RRef IS null

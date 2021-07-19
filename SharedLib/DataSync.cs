@@ -493,7 +493,8 @@ where RE.EVENT_TYPE=1"
                 return false;
             try
             {
-                var r = JsonConvert.SerializeObject(pRWD);
+                var d = new {data= pRWD };
+                var r = JsonConvert.SerializeObject(d);
                 var plainTextBytes = Encoding.UTF8.GetBytes(r);
                 var resBase64 = Convert.ToBase64String(plainTextBytes);
                 //var r = new Receipt1C(parReceipt);
