@@ -476,24 +476,32 @@ where RE.EVENT_TYPE=1"
 
         public async Task SendRWDeleteAsync()
         {
+
             var Ldc = db.GetConfig<DateTime>("LastDaySendDeleted");
             var today = DateTime.Now.Date;
 
-            if (Ldc == default(DateTime))
-                Ldc = today.AddDays(-10);
-
-            while (Ldc < today)
+            try
             {
-                var ldb = new WDB_SQLite(Ldc);
+                if (Ldc == default(DateTime))
+                    Ldc = today.AddDays(-10);
 
-                var t = ldb.GetReceiptWaresDeleted();
-                var res = await Send1CReceiptWaresDeletedAsync(t);
-                if (res)
-                    db.SetConfig<DateTime>("LastDaySendDeleted", Ldc);
-                else
-                    break;
+                while (Ldc < today)
+                {
+                    var ldb = new WDB_SQLite(Ldc);
 
-                Ldc = Ldc.AddDays(1);
+                    var t = ldb.GetReceiptWaresDeleted();
+                    var res = await Send1CReceiptWaresDeletedAsync(t);
+                    if (res)
+                        db.SetConfig<DateTime>("LastDaySendDeleted", Ldc);
+                    else
+                        break;
+
+                    Ldc = Ldc.AddDays(1);
+                }
+            }
+            catch (Exception ex)
+            {
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation {  Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "SendRWDeleteAsync=>" + Ldc.ToString() + " " + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });             
             }
 
         }
