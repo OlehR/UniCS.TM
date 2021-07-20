@@ -516,7 +516,7 @@ namespace SharedLib
 
         public async Task<bool> SyncDataAsync(bool parIsFull)
         {
-            var res = ds.SyncData(parIsFull);
+            var res = ds.SyncData(ref parIsFull);
             var CurDate = DateTime.Now;
             // не обміннюємось чеками починаючи з 23:45 до 1:00
             if (!((CurDate.Hour == 23 && CurDate.Minute > 44) || CurDate.Hour == 0))
@@ -527,6 +527,9 @@ namespace SharedLib
                 ds.LoadWeightKasa();
                 ds.LoadWeightKasa2Period();
             }
+            if (parIsFull)
+                _ = ds.SendRWDeleteAsync();
+
             return res;
         }
 
