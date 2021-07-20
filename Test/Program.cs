@@ -47,7 +47,7 @@ namespace Test
             Console.WriteLine("Start");
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
 
-            await CreateDataBaseAsync(true);
+            await CreateDataBaseAsync(false);
 
             
                 //TestReceiptAsync();
@@ -98,8 +98,7 @@ namespace Test
 
             //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20210416, IdWorkplace = 62, CodeReceipt = 5}); return;
 
-            api.Bl.ds.SendRWDeleteAsync();
-            return;
+            //api.Bl.ds.SendRWDeleteAsync();        return;
 
             //  sd = api.AddProductByBarCode(TerminalId, "5900857007793", 1);
             try

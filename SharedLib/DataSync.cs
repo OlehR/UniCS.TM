@@ -107,6 +107,17 @@ namespace SharedLib
             Log.Append($"\n{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} parIsFull=>{parIsFull}");
             try
             {
+                string varMidFile = db.GetCurrentMIDFile;
+                if (!parIsFull && !File.Exists(varMidFile)) //Якщо відсутній файл
+                    parIsFull = true;
+
+                if (!parIsFull && File.Exists(varMidFile) ) // Якщо база порожня.
+                {
+                    int i = db.db.ExecuteScalar<int>("select count(*) from wares");
+                    if(i==0)
+                        parIsFull = true;
+                }
+
                 //WDB_SQLite SQLite;
                 var TD = db.GetConfig<DateTime>("Load_Full");
                 if (!parIsFull)
@@ -114,11 +125,14 @@ namespace SharedLib
                     if (TD == default(DateTime) || DateTime.Now.Date != TD.Date)
                         parIsFull = true;
                 }
+                
+               
 
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = parIsFull ? eSyncStatus.StartedFullSync : eSyncStatus.StartedPartialSync });
 
-                string varMidFile = db.GetCurrentMIDFile;
                 Log.Append($"\n{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} varMidFile=>{varMidFile}\n\tLoad_Full=>{TD:yyyy-MM-dd}");
+                
+
                 if (parIsFull)
                 {
                     db.SetConfig<DateTime>("Load_Full", DateTime.Now.Date.AddDays(-1));
