@@ -101,7 +101,7 @@ namespace SharedLib
         }
 
         //async Task<bool>
-        public bool SyncData(bool parIsFull)
+        public bool SyncData(ref bool parIsFull)
         {
             StringBuilder Log = new StringBuilder();
             Log.Append($"\n{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} parIsFull=>{parIsFull}");
@@ -152,6 +152,7 @@ namespace SharedLib
 
                 Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} End");
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.SyncFinishedSuccess, StatusDescription = Log.ToString() });
+               
             }
             catch (Exception ex)
             {
@@ -477,14 +478,10 @@ where RE.EVENT_TYPE=1"
                     db.SetConfig<DateTime>("LastDaySendDeleted", Ldc);
                 else
                     break;
-                //SendAllReceipt(ldb);
-
-                //     Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.NoFatalError, StatusDescription = $"SendOldReceipt => ErrorSend Date:{Ldc} Not Send => {res.Count()}" });
 
                 Ldc = Ldc.AddDays(1);
             }
-            //Перекидаємо лічильник на сьогодня.
-            // db.SetConfig<DateTime>("LastDaySendDeleted", Ldc);
+
         }
 
         async Task<bool> Send1CReceiptWaresDeletedAsync(IEnumerable<ReceiptWaresDeleted1C> pRWD)
