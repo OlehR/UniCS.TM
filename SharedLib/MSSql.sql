@@ -106,7 +106,10 @@ SELECT CONVERT(INT,wh.Code) AS CodeUp,CONVERT(INT,wh.Code)*1000+g.Order_Button A
     JOIN DW.dbo.V1C_DIM_OPTION_WPC_CASH_place CP ON o._IDRRef=cp._Reference18850_IDRRef
   --JOIN DW.dbo.V1C_DIM_OPTION_WPC_FACT_WARES W ON G._Reference18850_IDRRef = W._Reference18850_IDRRef AND G. Order_Button = W.Order_Button
     WHERE wh.Code=@CodeWarehouse AND g.Order_Button<>2 -- хак для групи Овочі 1
-    AND cp.CashPlaceRRef= 0x81380050569E814D11E9E4D62A0CF9ED -- 14 касановий
+   AND cp.CashPlaceRRef= CASE 
+        WHEN @CodeWarehouse=9 THEN 0x81380050569E814D11E9E4D62A0CF9ED -- 14 касановий
+        WHEN @CodeWarehouse=15 THEN 0x817E0050569E814D11EC0030B1FA9530 -- 6(Каса ККМ СО Білочка №10)
+        end
   GROUP BY wh.Code,g.Order_Button;
 
   /* Це правильний запит
@@ -118,8 +121,8 @@ SELECT CONVERT(INT,wh.Code) AS CodeUp,CONVERT(INT,wh.Code)*1000+g.Order_Button A
     WHERE wh.Code=9*/
 
 [SqlGetDimFastWares]
-SELECT CONVERT(INT,wh.Code)*1000+CASE WHEN g.Order_Button=2 THEN 1 ELSE g.Order_Button END CodeFastGroup, -- хак для групи Овочі 1
-    w1.code_wares AS CodeWares,w.OrderWares
+SELECT CONVERT(INT,wh.Code)*1000+CASE WHEN g.Order_Button=2 and @CodeWarehouse=9 THEN 1 ELSE g.Order_Button END CodeFastGroup, -- хак для групи Овочі 1
+    w1.code_wares AS CodeWares,max(w.OrderWares) as OrderWares
   FROM DW.dbo.V1C_DIM_OPTION_WPC O
   JOIN dw.dbo.WAREHOUSES wh ON o.Warehouse_RRef=wh._IDRRef
   JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_GROUP G ON o._IDRRef=G._Reference18850_IDRRef
@@ -127,8 +130,11 @@ SELECT CONVERT(INT,wh.Code)*1000+CASE WHEN g.Order_Button=2 THEN 1 ELSE g.Order_
   JOIN dw.dbo.Wares w1 ON w.Wares_RRef=w1._IDRRef
   JOIN DW.dbo.V1C_DIM_OPTION_WPC_CASH_place CP ON o._IDRRef=cp._Reference18850_IDRRef
     WHERE wh.Code = @CodeWarehouse
- AND cp.CashPlaceRRef= 0x81380050569E814D11E9E4D62A0CF9ED -- 14 касановий;
-
+ AND cp.CashPlaceRRef= CASE 
+        WHEN @CodeWarehouse=9 THEN 0x81380050569E814D11E9E4D62A0CF9ED -- 14 касановий
+        WHEN @CodeWarehouse=15 THEN 0x817E0050569E814D11EC0030B1FA9530 -- 6(Каса ККМ СО Білочка №10)
+        end
+        group by wh.Code,g.Order_Button,  w1.code_wares;
 [SqlGetPromotionSaleData]
 WITH wh_ex AS 
   (SELECT pw.doc_promotion_RRef,

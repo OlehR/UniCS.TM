@@ -65,6 +65,14 @@ namespace SharedLib
             catch
             { Global.IdWorkPlace = 99; }
 
+            try
+            {
+                Global.DefaultCodeDealer = 99;
+                Global.DefaultCodeDealer = Convert.ToInt32(AppConfiguration["MID:DefaultCodeDealer"]);
+            }
+            catch
+            { Global.DefaultCodeDealer = 99; }
+
 
             try
             {
