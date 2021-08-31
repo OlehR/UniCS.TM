@@ -91,6 +91,9 @@ namespace SharedLib
         public async Task<bool> GenQRAsync1(IEnumerable<ReceiptWares> pW)
         {
             bool res = true;
+            if (!Global.IsGenQrCoffe) 
+                return res;
+            
             int Number=0;
             foreach(var el in pW.Where(r=> r.PLU>0))
             { 

@@ -67,11 +67,11 @@ namespace SharedLib
 
             try
             {
-                Global.DefaultCodeDealer = 99;
-                Global.DefaultCodeDealer = Convert.ToInt32(AppConfiguration["MID:DefaultCodeDealer"]);
+                Global.IsGenQrCoffe = false;       
+                Global.IsGenQrCoffe = AppConfiguration["MID:IsGenQrCoffe"].Equals("True");
             }
             catch
-            { Global.DefaultCodeDealer = 99; }
+            { Global.IsGenQrCoffe = false; }
 
 
             try
@@ -81,6 +81,8 @@ namespace SharedLib
             }
             catch
             { Global.CodeWarehouse = 9; }
+
+            
 
             //GlobalVar.DefaultCodeDealer = Convert.ToInt32(AppConfiguration["MID:DefaultCodeDealer"]);
             if (!Directory.Exists(Global.PathDB))
