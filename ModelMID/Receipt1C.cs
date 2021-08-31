@@ -27,7 +27,7 @@ namespace ModelMID
         public string Description { get; set; }
         public UInt64 NumberReceipt { get; set; }
         public int CodeClientCard { get; set; }
-        public int CodeWarehouse { get { return 9; } set { } }
+        public int CodeWarehouse { get; set; }
         public string RefundNumber { get; set; }
         /// <summary>
         /// Штрихкод касирів
@@ -47,6 +47,7 @@ namespace ModelMID
             NumberCashDesk = parR.IdWorkplace;            
             CodeClientCard = parR.CodeClient;
             BarCodeCashier = parR.UserCreate.ToString();
+            CodeWarehouse = Global.CodeWarehouse;
 
             UInt64 nr=0;
             if(UInt64.TryParse(parR.NumberReceipt,out nr))                

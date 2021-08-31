@@ -105,7 +105,7 @@ SELECT CONVERT(INT,wh.Code) AS CodeUp,CONVERT(INT,wh.Code)*1000+g.Order_Button A
   JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_GROUP G ON o._IDRRef=G._Reference18850_IDRRef 
     JOIN DW.dbo.V1C_DIM_OPTION_WPC_CASH_place CP ON o._IDRRef=cp._Reference18850_IDRRef
   --JOIN DW.dbo.V1C_DIM_OPTION_WPC_FACT_WARES W ON G._Reference18850_IDRRef = W._Reference18850_IDRRef AND G. Order_Button = W.Order_Button
-    WHERE wh.Code=@CodeWarehouse AND g.Order_Button<>2 -- хак для групи Овочі 1
+    WHERE wh.Code=@CodeWarehouse AND  (g.Order_Button<>2 or wh.Code<>9 ) -- хак для групи Овочі 1
    AND cp.CashPlaceRRef= CASE 
         WHEN @CodeWarehouse=9 THEN 0x81380050569E814D11E9E4D62A0CF9ED -- 14 касановий
         WHEN @CodeWarehouse=15 THEN 0x817E0050569E814D11EC0030B1FA9530 -- 6(Каса ККМ СО Білочка №10)

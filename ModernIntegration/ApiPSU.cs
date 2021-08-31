@@ -138,7 +138,7 @@ namespace ModernIntegration
         public override List<ProductCategory> GetAllCategories(Guid parTerminalId)
         {
             var Res = new List<ProductCategory>();
-            var ct = 9;//TMP!!! Треба брати з налаштувань.
+            var ct = Global.CodeWarehouse;  //Поправив. TMP!!! Треба брати з налаштувань.
             var wr = Bl.db.GetFastGroup(ct);
             if (wr != null)
                 foreach (var el in wr)
