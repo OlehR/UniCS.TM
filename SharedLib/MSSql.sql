@@ -463,7 +463,7 @@ GROUP BY pw.doc_promotion_RRef
   AND wh_ex.doc_promotion_RRef IS null
 
 [SqlGetMRC]
- SELECT code_wares as CodeWares,Price  FROM dbo.V1C_MRC
+ SELECT code_wares as CodeWares,Price  FROM dbo.V1C_MRC where Code_Warehouse = @CodeWarehouse;
 
 [SqlEnd]
 */
