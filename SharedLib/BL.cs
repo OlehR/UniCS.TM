@@ -259,7 +259,7 @@ namespace SharedLib
                     if (pPrice > 0 && W.IsMultiplePrices)
                     {
                         WaresReceiptPromotion[] r = new WaresReceiptPromotion[1] { new WaresReceiptPromotion(W)
-                            {CodeWares=W.CodeWares, Price= pPrice*(W.TypeWares==2?1.05M:1M), TypeDiscount=eTypeDiscount.Price,Quantity=pQuantity,CodePS=999999 }
+                            {CodeWares=W.CodeWares, Price=Math.Round(pPrice*(W.TypeWares==2?1.05M:1M),2), TypeDiscount=eTypeDiscount.Price,Quantity=pQuantity,CodePS=999999 }
                             };
                         db.ReplaceWaresReceiptPromotion(r);
                         db.RecalcHeadReceipt(pIdReceipt);
