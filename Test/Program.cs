@@ -93,6 +93,26 @@ namespace Test
             var ProductId = Guid.Parse("00000000-abcd-0000-0019-000000162794");
             var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009001");
             var ReceiptId = Guid.Parse("00000062-ffff-2020-0326-000000000008");
+            var Pay = new ReceiptPayment[] {
+                new ReceiptPayment
+            {
+                Id = Guid.Parse("9e960928-1070-457d-aec3-14672adf3e9b"),
+                ReceiptId = Guid.Parse("00000062-ffff-2020-0116-000000000007"),
+                PaymentType = ModernIntegration.Enums.PaymentType.Card,
+                PayIn = 25.9M,
+                PayOut = 0.0M,
+                CardPan = "XXXXXXXXXXXX2520",
+                IsPayOutSuccess = null,
+                TransactionId = "2",
+                TransactionCode = "039177601652",
+                TransactionStatus = "Àâòîðèçàö³ÿ ç áàíêîì",
+                PosAuthCode = null,
+                PosTerminalId = null,
+                CardHolder ="CardHolder",
+                IssuerName ="IssuerName",
+                Bank = "Masterksrd",
+                CreatedAt = DateTime.Now
+            } };
             var api = new ApiPSU();
             ProductViewModel sd;
 
@@ -122,6 +142,7 @@ namespace Test
 
            
             var l =api.AddProductByProductId(TerminalId, ProductId, 3, 55.24M);
+            api.AddPayment(TerminalId, Pay);
             //   api.Bl.AddWaresCode(169118, 7, 1);
             Thread.Sleep(2000);
             var rrr = api.GetRecieptByTerminalId(TerminalId, true);
@@ -335,7 +356,7 @@ namespace Test
             api.ChangeQuantity(TerminalId, sd.Id, 0);
 
 
-            //api.AddPayment(TerminalId, Pay);
+            
             //api.ClearReceipt(TerminalId);
             //var rrrr = api.GetNoFinishReceipt(TerminalId);
         
@@ -344,23 +365,7 @@ namespace Test
             
 
             var rr11 = api.GetProduct(TerminalId);
-            var Pay = new ReceiptPayment[] {
-                new ReceiptPayment
-            {
-                Id = Guid.Parse("9e960928-1070-457d-aec3-14672adf3e9b"),
-                ReceiptId = Guid.Parse("00000062-ffff-2020-0116-000000000007"),
-                PaymentType = ModernIntegration.Enums.PaymentType.Card,
-                PayIn = 25.9M,
-                PayOut = 0.0M,
-                CardPan = "XXXXXXXXXXXX2520",
-                IsPayOutSuccess = null,
-                TransactionId = "2",
-                TransactionCode = "039177601652",
-                TransactionStatus = "Àâòîðèçàö³ÿ ç áàíêîì",
-                PosAuthCode = null,
-                PosTerminalId = null,
-                CreatedAt = DateTime.Now
-            } };
+           
 
 
            

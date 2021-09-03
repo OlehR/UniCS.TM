@@ -101,6 +101,11 @@ namespace ModernIntegration.Models
         public decimal PosAddAmount { get; set; }
         public long InvoiceNumber { get; set; }
 
+        public string CardHolder { get; set; } //НОВЕ! Власник картки
+
+        public string IssuerName { get; set; } //НОВЕ! Платіжна система
+
+        public string Bank { get; set; } //НОВЕ! Банк еквайр
         /// <summary>
         /// Gets or sets the created at.
         /// </summary>
