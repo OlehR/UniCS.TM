@@ -138,7 +138,7 @@ namespace ModernIntegration
         public override List<ProductCategory> GetAllCategories(Guid parTerminalId)
         {
             var Res = new List<ProductCategory>();
-            var ct = 9;//TMP!!! Треба брати з налаштувань.
+            var ct = Global.CodeWarehouse;  //Поправив. TMP!!! Треба брати з налаштувань.
             var wr = Bl.db.GetFastGroup(ct);
             if (wr != null)
                 foreach (var el in wr)
@@ -528,40 +528,47 @@ namespace ModernIntegration
         /// <summary>
         /// Convert ReceiptPayment->Payment
         /// </summary>
-        /// <param name="parRP"></param>
+        /// <param name="pRP"></param>
         /// <returns></returns>
-        public Payment ReceiptPaymentToPayment(IdReceipt parIdReceipt, ReceiptPayment parRP)
+        public Payment ReceiptPaymentToPayment(IdReceipt parIdReceipt, ReceiptPayment pRP)
         {
             return new Payment(parIdReceipt)
             {
-                TypePay = (eTypePay)(int)parRP.PaymentType,
-                SumPay = parRP.PayIn,
-                NumberReceipt =  parRP.InvoiceNumber, //parRP.TransactionId,
-                NumberCard = parRP.CardPan,
-                CodeAuthorization = parRP.TransactionCode, //RRN
-                NumberTerminal=parRP.PosTerminalId,
-                NumberSlip = parRP.PosAuthCode, //код авторизації
-                PosPaid =parRP.PosPaid,
-                PosAddAmount=parRP.PosAddAmount,
-                DateCreate=parRP.CreatedAt,
-                 
+                TypePay = (eTypePay)(int)pRP.PaymentType,
+                SumPay = pRP.PayIn,
+                NumberReceipt =  pRP.InvoiceNumber, //parRP.TransactionId,
+                NumberCard = pRP.CardPan,
+                CodeAuthorization = pRP.TransactionCode, //RRN
+                NumberTerminal=pRP.PosTerminalId,
+                NumberSlip = pRP.PosAuthCode, //код авторизації
+                PosPaid =pRP.PosPaid,
+                PosAddAmount=pRP.PosAddAmount,
+                DateCreate=pRP.CreatedAt,
+                CardHolder= pRP.CardHolder,
+                IssuerName =pRP.IssuerName,
+                Bank= pRP.Bank
+
+
             };
         }
 
-        public ReceiptPayment PaymentToReceiptPayment( Payment parRP)
+        public ReceiptPayment PaymentToReceiptPayment( Payment pRP)
         {
             return new ReceiptPayment()
             {
-                PaymentType = (PaymentType)(int)parRP.TypePay,
-                PayIn = parRP.SumPay,
-                InvoiceNumber = parRP.NumberReceipt,
-                CardPan = parRP.NumberCard,
-                TransactionCode = parRP.CodeAuthorization, //RRN
-                PosTerminalId = parRP.NumberTerminal,
-                PosAuthCode = parRP.NumberSlip, //код авторизації
-                PosPaid = parRP.PosPaid,
-                PosAddAmount = parRP.PosAddAmount,
-                CreatedAt = parRP.DateCreate
+                PaymentType = (PaymentType)(int)pRP.TypePay,
+                PayIn = pRP.SumPay,
+                InvoiceNumber = pRP.NumberReceipt,
+                CardPan = pRP.NumberCard,
+                TransactionCode = pRP.CodeAuthorization, //RRN
+                PosTerminalId = pRP.NumberTerminal,
+                PosAuthCode = pRP.NumberSlip, //код авторизації
+                PosPaid = pRP.PosPaid,
+                PosAddAmount = pRP.PosAddAmount,
+                CardHolder = pRP.CardHolder,
+                IssuerName = pRP.IssuerName,
+                Bank = pRP.Bank,
+                CreatedAt = pRP.DateCreate
             };
         }
 

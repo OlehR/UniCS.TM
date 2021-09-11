@@ -50,9 +50,11 @@ namespace ModelMID
         /// Id робочого місця
         /// </summary>
         public static int IdWorkPlace = 62;
-        public static string PrefixWarehouse = "K";
+        public static string PrefixWarehouse { get { switch (CodeWarehouse) { case 9: return "K"; case 15: return "B"; default: return "X"; } } }
 
         public static int CodeWarehouse = 9;
+
+        public static bool IsGenQrCoffe = true;
         /// <summary>
         /// Тип періоду документів (0 - Глобальний, 1- рік, 2 -місяць, 3 - день.)
         /// </summary>

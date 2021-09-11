@@ -218,7 +218,7 @@ namespace ModelMID
                 catch (Exception e) { }
                 if (string.IsNullOrEmpty(Res))
                     return Res;
-                return Res?.Substring(0,Res.Length-2);
+                return Res?.Substring(0,Res.Length-1);
             }
         }
 

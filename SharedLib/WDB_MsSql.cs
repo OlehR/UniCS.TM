@@ -136,7 +136,7 @@ namespace SharedLib
             
             Debug.WriteLine("SqlGetMRC");
             SQL = GetSQL("SqlGetMRC");
-            var MRC = db.Execute<MRC>(SQL);
+            var MRC = db.Execute<pWarehouse,MRC>(SQL, oWarehouse);
             parDB.ReplaceMRC(MRC);
             Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetMRC => {MRC.Count()}");
             MRC = null;

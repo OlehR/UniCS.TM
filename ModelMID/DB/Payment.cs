@@ -25,6 +25,18 @@ namespace ModelMID
         /// Сума бонусів (Приват)
         /// </summary>
         public decimal PosAddAmount { get; set; }
+        /// <summary>
+        /// Власник картки
+        /// </summary>
+        public string CardHolder { get; set; } //НОВЕ! 
+        /// <summary>
+        /// Платіжна система
+        /// </summary>
+        public string IssuerName { get; set; } //НОВЕ!
+        /// <summary>
+        /// Банк еквайр
+        /// </summary>
+        public string Bank { get; set; } //НОВЕ!
         public DateTime DateCreate { get; set; }
         
         public Payment(Guid parReceipt) : base(parReceipt) { }

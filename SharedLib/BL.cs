@@ -91,6 +91,9 @@ namespace SharedLib
         public async Task<bool> GenQRAsync1(IEnumerable<ReceiptWares> pW)
         {
             bool res = true;
+            if (!Global.IsGenQrCoffe) 
+                return res;
+            
             int Number=0;
             foreach(var el in pW.Where(r=> r.PLU>0))
             { 
@@ -257,7 +260,7 @@ namespace SharedLib
                     if (pPrice > 0 && W.IsMultiplePrices)
                     {
                         WaresReceiptPromotion[] r = new WaresReceiptPromotion[1] { new WaresReceiptPromotion(W)
-                            {CodeWares=W.CodeWares, Price= pPrice*(W.TypeWares==2?1.05M:1M), TypeDiscount=eTypeDiscount.Price,Quantity=pQuantity,CodePS=999999 }
+                            {CodeWares=W.CodeWares, Price=Math.Round(pPrice*(W.TypeWares==2?1.05M:1M),2), TypeDiscount=eTypeDiscount.Price,Quantity=pQuantity,CodePS=999999 }
                             };
                         db.ReplaceWaresReceiptPromotion(r);
                         db.RecalcHeadReceipt(pIdReceipt);
@@ -517,7 +520,7 @@ namespace SharedLib
 
         public async Task<bool> SyncDataAsync(bool parIsFull)
         {
-            var res = ds.SyncData(parIsFull);
+            var res = ds.SyncData(ref parIsFull);
             var CurDate = DateTime.Now;
             // не обміннюємось чеками починаючи з 23:45 до 1:00
             if (!((CurDate.Hour == 23 && CurDate.Minute > 44) || CurDate.Hour == 0))
@@ -528,6 +531,9 @@ namespace SharedLib
                 ds.LoadWeightKasa();
                 ds.LoadWeightKasa2Period();
             }
+            if (parIsFull)
+                _ = ds.SendRWDeleteAsync();
+
             return res;
         }
 

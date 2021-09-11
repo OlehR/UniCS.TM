@@ -47,7 +47,7 @@ namespace Test
             Console.WriteLine("Start");
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
 
-            await CreateDataBaseAsync(true);
+            //await CreateDataBaseAsync(true);
 
             
                 TestReceiptAsync();
@@ -90,40 +90,62 @@ namespace Test
         {
             //var TerminalId = Guid.Parse("1bb89aa9-dbdf-4eb0-b7a2-094665c3fdd0");//14
             var TerminalId = Guid.Parse("27aaa6d3-8824-475d-a7d4-3269472ba950");//19
-            var ProductId = Guid.Parse("00000000-abcd-0000-0019-000000159475");
+            var ProductId = Guid.Parse("00000000-abcd-0000-0019-000000162794");
             var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009001");
             var ReceiptId = Guid.Parse("00000062-ffff-2020-0326-000000000008");
+            var Pay = new ReceiptPayment[] {
+                new ReceiptPayment
+            {
+                Id = Guid.Parse("9e960928-1070-457d-aec3-14672adf3e9b"),
+                ReceiptId = Guid.Parse("00000062-ffff-2020-0116-000000000007"),
+                PaymentType = ModernIntegration.Enums.PaymentType.Card,
+                PayIn = 25.9M,
+                PayOut = 0.0M,
+                CardPan = "XXXXXXXXXXXX2520",
+                IsPayOutSuccess = null,
+                TransactionId = "2",
+                TransactionCode = "039177601652",
+                TransactionStatus = "Àâòîðèçàö³ÿ ç áàíêîì",
+                PosAuthCode = null,
+                PosTerminalId = null,
+                CardHolder ="CardHolder",
+                IssuerName ="IssuerName",
+                Bank = "Masterksrd",
+                CreatedAt = DateTime.Now
+            } };
             var api = new ApiPSU();
             ProductViewModel sd;
 
             //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20210416, IdWorkplace = 62, CodeReceipt = 5}); return;
 
-            api.Bl.ds.SendRWDeleteAsync();
-            return;
+            //api.Bl.ds.SendRWDeleteAsync();        return;
 
             //  sd = api.AddProductByBarCode(TerminalId, "5900857007793", 1);
-            try
-            {
-                sd = api.AddProductByBarCode(TerminalId, "8710671155382", 1);
-                var recipt = api.GetProductsByName(TerminalId, "", 0, false, FastGroup);
-                var ddd1 = api.GetProductsByName(TerminalId, "", 1, false, FastGroup);
-                var ddd2 = api.GetProductsByName(TerminalId, "пом", 0, false, FastGroup);
-                //return;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-            var ccc = api.GetCustomerByPhone(TerminalId,"0666672818");
+            //try
+            //{
+            //    sd = api.AddProductByBarCode(TerminalId, "8710671155382", 1);
+            //    var recipt = api.GetProductsByName(TerminalId, "", 0, false, FastGroup);
+            //    var ddd1 = api.GetProductsByName(TerminalId, "", 1, false, FastGroup);
+            //    var ddd2 = api.GetProductsByName(TerminalId, "пом", 0, false, FastGroup);
+            //    //return;
+            //}
+            //catch (Exception e)
+            //{
+            //    Console.WriteLine(e.Message);
+            //}
+            //var ccc = api.GetCustomerByPhone(TerminalId,"0666672818");
 
             //sd = api.AddProductByBarCode(TerminalId, "2211794601924", 1);
             //var QR = await api.Bl.ds.GetQrCoffe(null, 7, 2);
             //Console.WriteLine($"QR=>{QR}");
             //return;
-           
-                api.Bl.AddWaresCode(169118, 7, 1);
 
-                var rrr = api.GetRecieptByTerminalId(TerminalId, true);
+           
+            var l =api.AddProductByProductId(TerminalId, ProductId, 3, 55.24M);
+            api.AddPayment(TerminalId, Pay);
+            //   api.Bl.AddWaresCode(169118, 7, 1);
+            Thread.Sleep(2000);
+            var rrr = api.GetRecieptByTerminalId(TerminalId, true);
             
             //Thread.Sleep(6000);
 
@@ -334,7 +356,7 @@ namespace Test
             api.ChangeQuantity(TerminalId, sd.Id, 0);
 
 
-            //api.AddPayment(TerminalId, Pay);
+            
             //api.ClearReceipt(TerminalId);
             //var rrrr = api.GetNoFinishReceipt(TerminalId);
         
@@ -343,23 +365,7 @@ namespace Test
             
 
             var rr11 = api.GetProduct(TerminalId);
-            var Pay = new ReceiptPayment[] {
-                new ReceiptPayment
-            {
-                Id = Guid.Parse("9e960928-1070-457d-aec3-14672adf3e9b"),
-                ReceiptId = Guid.Parse("00000062-ffff-2020-0116-000000000007"),
-                PaymentType = ModernIntegration.Enums.PaymentType.Card,
-                PayIn = 25.9M,
-                PayOut = 0.0M,
-                CardPan = "XXXXXXXXXXXX2520",
-                IsPayOutSuccess = null,
-                TransactionId = "2",
-                TransactionCode = "039177601652",
-                TransactionStatus = "Àâòîðèçàö³ÿ ç áàíêîì",
-                PosAuthCode = null,
-                PosTerminalId = null,
-                CreatedAt = DateTime.Now
-            } };
+           
 
 
            

@@ -65,6 +65,14 @@ namespace SharedLib
             catch
             { Global.IdWorkPlace = 99; }
 
+            try
+            {
+                Global.IsGenQrCoffe = false;       
+                Global.IsGenQrCoffe = AppConfiguration["MID:IsGenQrCoffe"].Equals("True");
+            }
+            catch
+            { Global.IsGenQrCoffe = false; }
+
 
             try
             {
@@ -73,6 +81,8 @@ namespace SharedLib
             }
             catch
             { Global.CodeWarehouse = 9; }
+
+            
 
             //GlobalVar.DefaultCodeDealer = Convert.ToInt32(AppConfiguration["MID:DefaultCodeDealer"]);
             if (!Directory.Exists(Global.PathDB))
