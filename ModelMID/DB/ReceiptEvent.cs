@@ -108,6 +108,8 @@ namespace ModelMID.DB
         /// <value>The fiscal number.</value>
         public string FiscalNumber { get; set; }
 
+        public decimal SumFiscal { get; set; }
+
         public eTypePayment PaymentType { get; set; }
 
         public decimal TotalAmount { get; set; }

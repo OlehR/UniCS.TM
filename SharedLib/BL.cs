@@ -144,12 +144,13 @@ namespace SharedLib
         }
 
 
-        public bool UpdateReceiptFiscalNumber(IdReceipt receiptId, string parFiscalNumber)
+        public bool UpdateReceiptFiscalNumber(IdReceipt receiptId, string pFiscalNumber,decimal pSumFiscal=0)
         {
             var receipt = new Receipt(receiptId);
-            receipt.NumberReceipt = parFiscalNumber;
+            receipt.NumberReceipt = pFiscalNumber;
             receipt.StateReceipt = eStateReceipt.Print;
             receipt.UserCreate = GetUserIdbyWorkPlace(receiptId.IdWorkplace);
+            receipt.SumFiscal = pSumFiscal;
             //db.RecalcPrice(receiptId);
             db.CloseReceipt(receipt);
             return true;

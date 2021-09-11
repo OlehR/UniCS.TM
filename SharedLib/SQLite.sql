@@ -13,6 +13,7 @@ alter TABLE WARES_RECEIPT_PROMOTION  add TYPE_DISCOUNT  INTEGER  NOT NULL  DEFAU
 alter TABLE wares_receipt            add Priority INTEGER  NOT NULL DEFAULT 0;
 alter TABLE wares_receipt            add QR TEXT;
 alter TABLE WARES_RECEIPT_HISTORY    add SORT INTEGER  NOT NULL default 0;  
+alter TABLE RECEIPT                  add Sum_Fiscal        NUMBER;
 
 [SqlUpdateConfig_V1]
 alter table WORKPLACE add  Video_Camera_IP TEXT;
@@ -25,7 +26,6 @@ alter TABLE wares add Weight_Delta INTEGER  DEFAULT 0;
 alter TABLE PROMOTION_SALE_DEALER add PRIORITY INTEGER NOT NULL DEFAULT 1;
 alter TABLE wares add Limit_Age NUMBER;
 alter TABLE wares add PLU INTEGER;
-
 
 
 [SqlConfig]
@@ -585,6 +585,7 @@ CREATE TABLE RECEIPT (
     CODE_CLIENT       INTEGER  NOT NULL DEFAULT 0,
     NUMBER_CASHIER    INTEGER  NOT NULL DEFAULT 0,
     NUMBER_RECEIPT    TEXT,
+    Sum_Fiscal        NUMBER,
     CODE_DISCOUNT     INTEGER,
     SUM_DISCOUNT      NUMBER   NOT NULL DEFAULT 0,
     PERCENT_DISCOUNT  INTEGER,
