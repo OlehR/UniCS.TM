@@ -382,9 +382,10 @@ namespace SharedLib
                     }
                 }
             }
+            else
+                parName = null;
 
-
-            var r = db.FindWares(null, parName, 0, 0, parCodeFastGroup, -1, parOffSet, parLimit);
+                var r = db.FindWares(null, parName, 0, 0, parCodeFastGroup, -1, parOffSet, parLimit);
             if (r.Count() > 0)
             {
                 return r;
