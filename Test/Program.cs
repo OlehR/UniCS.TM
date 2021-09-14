@@ -91,7 +91,7 @@ namespace Test
             //var TerminalId = Guid.Parse("1bb89aa9-dbdf-4eb0-b7a2-094665c3fdd0");//14
             var TerminalId = Guid.Parse("27aaa6d3-8824-475d-a7d4-3269472ba950");//19
             var ProductId = Guid.Parse("00000000-abcd-0000-0019-000000162794");
-            var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000015005");
+            var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000015001");
             var ReceiptId = Guid.Parse("00000062-ffff-2020-0326-000000000008");
             var Pay = new ReceiptPayment[] {
                 new ReceiptPayment
@@ -116,7 +116,7 @@ namespace Test
             var api = new ApiPSU();
             ProductViewModel sd;
 
-            //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20210416, IdWorkplace = 62, CodeReceipt = 5}); return;
+            api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20210902, IdWorkplace = 74, CodeReceipt = 1}); return;
 
             //api.Bl.ds.SendRWDeleteAsync();        return;
 
@@ -140,7 +140,7 @@ namespace Test
             //Console.WriteLine($"QR=>{QR}");
             //return;
             //var w = api.GetProductsByCategoryId(TerminalId, FastGroup);
-            var wwwww=api.GetProductsByName(TerminalId, "", 0, false, FastGroup);
+            var wwwww=api.GetProductsByName(TerminalId, "БАК", 0, false, FastGroup);
 
             var l =api.AddProductByProductId(TerminalId, ProductId, 3, 55.24M);
             api.AddPayment(TerminalId, Pay);

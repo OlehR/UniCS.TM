@@ -16,7 +16,7 @@ namespace ModelMID
         public static Action<Status> OnStatusChanged { get; set; }
 
         public static Action<eStateScale> OnChangedStatusScale { get; set; }
-        
+
         public static Action<Client, Guid> OnClientChanged { get; set; }
 
         public static SortedList<Guid, WorkPlace> WorkPlaceByTerminalId;
@@ -74,7 +74,7 @@ namespace ModelMID
 
         public static int DefaultCodePatternReturnReceipt = -2;
 
-        public static int DefaultCodeDealer = 2;
+        public static int DefaultCodeDealer { get { switch (CodeWarehouse) { case 9: return 2; case 15: return 4; default: return 0; } } }//!!!!TMP
 
         //public static int DefaultCodeClient = 0;
 

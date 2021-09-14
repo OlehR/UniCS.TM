@@ -13,10 +13,11 @@ alter TABLE WARES_RECEIPT_PROMOTION  add TYPE_DISCOUNT  INTEGER  NOT NULL  DEFAU
 alter TABLE wares_receipt            add Priority INTEGER  NOT NULL DEFAULT 0;
 alter TABLE wares_receipt            add QR TEXT;
 alter TABLE WARES_RECEIPT_HISTORY    add SORT INTEGER  NOT NULL default 0;  
+alter TABLE RECEIPT    add Sum_Fiscal        NUMBER;
 alter TABLE payment    add Card_Holder  TEXT;
 alter TABLE payment    add Issuer_Name  TEXT;
 alter TABLE payment    add Bank  TEXT;
-alter TABLE RECEIPT                  add Sum_Fiscal        NUMBER;
+
 
 [SqlUpdateConfig_V1]
 alter table WORKPLACE add  Video_Camera_IP TEXT;

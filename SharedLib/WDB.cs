@@ -368,10 +368,16 @@ namespace SharedLib
                 var r = res.FirstOrDefault();
                 if (parWithDetail)
                 {
-                    r.Wares = ViewReceiptWares(parIdReceipt,true);
-                    r.Payment = GetPayment(parIdReceipt);
-                    r.ReceiptEvent = GetReceiptEvent(parIdReceipt);
-
+                    try
+                    {
+                        r.Wares = ViewReceiptWares(parIdReceipt, true);
+                        r.Payment = GetPayment(parIdReceipt);
+                        r.ReceiptEvent = GetReceiptEvent(parIdReceipt);
+                    }
+                    catch(Exception e)
+                    {
+                        var er = e.Message;
+                    }
                 }
                 return r;
             }
