@@ -815,5 +815,15 @@ and @TypeDiscount=11; ";
             //return true;
         }
 
+        public override bool UpdateExciseStamp(IEnumerable<ReceiptWares> pRW)
+        {
+            using (var DB = new SQLite(ReceiptFile))
+            {
+                return db.BulkExecuteNonQuery<ReceiptWares>(SqlUpdateExciseStamp, pRW) > 0;
+            }
+            //return true;
+        }
+
+    
     }
 }

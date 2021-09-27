@@ -617,6 +617,11 @@ namespace SharedLib
             AddWaresCode(LastCodeWares, 0, Convert.ToDecimal(LastWeight));
         }
 
+
+        public bool UpdateExciseStamp(IEnumerable<ReceiptWares> pRW )
+        {
+            return db.UpdateExciseStamp(pRW);
+        }
     }
 
 }

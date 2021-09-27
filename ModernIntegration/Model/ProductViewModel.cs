@@ -265,6 +265,8 @@ namespace ModernIntegration.ViewModels
         /// </value>
         public bool IsUktzedNeedToPrint { get; set; }
 
+
+        public List<string> Excises { get; set; }
         /// <summary>
         /// Initializes a new instance of the <see cref="ProductViewModel"/> class.
         /// </summary>
@@ -298,6 +300,7 @@ namespace ModernIntegration.ViewModels
             CategoryId = product.CategoryId;
             Uktzed = product.Uktzed;
             IsUktzedNeedToPrint = product.IsUktzedNeedToPrint;
+            Excises = product.Excises;
         }
 
         /// <summary>
@@ -322,8 +325,9 @@ namespace ModernIntegration.ViewModels
                 WeightCategory = WeightCategory,
                 CategoryId = CategoryId,
                 Uktzed = Uktzed,
-                IsUktzedNeedToPrint = IsUktzedNeedToPrint
-        };
+                IsUktzedNeedToPrint = IsUktzedNeedToPrint,
+                 Excises = Excises
+            };
         }
 
         public ReceiptItem ToReceiptItem()
@@ -344,7 +348,8 @@ namespace ModernIntegration.ViewModels
                 TaxGroup = TaxGroup,
                 RefundedQuantity= RefundedQuantity,
                 Uktzed = Uktzed,
-                IsUktzedNeedToPrint = IsUktzedNeedToPrint
+                IsUktzedNeedToPrint = IsUktzedNeedToPrint,
+                Excises= Excises
             };
 
             item.TotalPrice = item.FullPrice - item.Discount;

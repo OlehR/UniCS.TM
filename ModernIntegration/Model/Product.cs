@@ -169,6 +169,7 @@ namespace ModernIntegration.Models
         /// </value>
         public bool IsUktzedNeedToPrint { get; set; }
 
+        public List<string> Excises { get; set; }
         /// <summary>
         /// Initializes a new instance of the <see cref="Product"/> class.
         /// </summary>

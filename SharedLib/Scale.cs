@@ -164,7 +164,7 @@ namespace ModelMID
         }
         public void OnScalesLog(string logLevel, string message="")
         {
-            FileLogger.ExtLogForClass(GetType(), GetHashCode(), $"Scales Log - {DateTime.Now:dd-MM-yyyy HH:mm:ss:ffff}: {logLevel} - {message}");
+            //FileLogger.ExtLogForClass(GetType(), GetHashCode(), $"Scales Log - {DateTime.Now:dd-MM-yyyy HH:mm:ss:ffff}: {logLevel} - {message}");
             Console.WriteLine($"Scales Log - {DateTime.Now:dd-MM-yyyy HH:mm:ss}: {logLevel} - {message}");
         }
         public void OnScalesData(double weight, bool isStable)

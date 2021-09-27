@@ -115,283 +115,287 @@ namespace Test
             } };
             var api = new ApiPSU();
             ProductViewModel sd;
+            try
+            {
+                //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20210902, IdWorkplace = 74, CodeReceipt = 1}); return;
 
-            api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20210902, IdWorkplace = 74, CodeReceipt = 1}); return;
+                //api.Bl.ds.SendRWDeleteAsync();        return;
 
-            //api.Bl.ds.SendRWDeleteAsync();        return;
+                //  sd = api.AddProductByBarCode(TerminalId, "5900857007793", 1);
+                //try
+                //{
+                //    sd = api.AddProductByBarCode(TerminalId, "8710671155382", 1);
+                //    var recipt = api.GetProductsByName(TerminalId, "", 0, false, FastGroup);
+                //    var ddd1 = api.GetProductsByName(TerminalId, "", 1, false, FastGroup);
+                //    var ddd2 = api.GetProductsByName(TerminalId, "пом", 0, false, FastGroup);
+                //    //return;
+                //}
+                //catch (Exception e)
+                //{
+                //    Console.WriteLine(e.Message);
+                //}
+                //var ccc = api.GetCustomerByPhone(TerminalId,"0666672818");
 
-            //  sd = api.AddProductByBarCode(TerminalId, "5900857007793", 1);
-            //try
-            //{
-            //    sd = api.AddProductByBarCode(TerminalId, "8710671155382", 1);
-            //    var recipt = api.GetProductsByName(TerminalId, "", 0, false, FastGroup);
-            //    var ddd1 = api.GetProductsByName(TerminalId, "", 1, false, FastGroup);
-            //    var ddd2 = api.GetProductsByName(TerminalId, "пом", 0, false, FastGroup);
-            //    //return;
-            //}
-            //catch (Exception e)
-            //{
-            //    Console.WriteLine(e.Message);
-            //}
-            //var ccc = api.GetCustomerByPhone(TerminalId,"0666672818");
+                //sd = api.AddProductByBarCode(TerminalId, "2211794601924", 1);
+                //var QR = await api.Bl.ds.GetQrCoffe(null, 7, 2);
+                //Console.WriteLine($"QR=>{QR}");
+                //return;
+                //var w = api.GetProductsByCategoryId(TerminalId, FastGroup);
+                var wwwww = api.GetProductsByName(TerminalId, "БАК", 0, false, FastGroup);
 
-            //sd = api.AddProductByBarCode(TerminalId, "2211794601924", 1);
-            //var QR = await api.Bl.ds.GetQrCoffe(null, 7, 2);
-            //Console.WriteLine($"QR=>{QR}");
-            //return;
-            //var w = api.GetProductsByCategoryId(TerminalId, FastGroup);
-            var wwwww=api.GetProductsByName(TerminalId, "БАК", 0, false, FastGroup);
+                var l = api.AddProductByProductId(TerminalId, ProductId, 3, 55.24M);
+                api.AddPayment(TerminalId, Pay);
+                //   api.Bl.AddWaresCode(169118, 7, 1);
+                Thread.Sleep(2000);
+                var rrr = api.GetRecieptByTerminalId(TerminalId, true);
 
-            var l =api.AddProductByProductId(TerminalId, ProductId, 3, 55.24M);
-            api.AddPayment(TerminalId, Pay);
-            //   api.Bl.AddWaresCode(169118, 7, 1);
-            Thread.Sleep(2000);
-            var rrr = api.GetRecieptByTerminalId(TerminalId, true);
-            
-            //Thread.Sleep(6000);
+                //Thread.Sleep(6000);
 
-//            var ssssqq = api.GetQR(TerminalId);
+                //            var ssssqq = api.GetQR(TerminalId);
 
-           // sd = api.AddProductByProductId(TerminalId, sd.Id, 1, 45.71M);
+                // sd = api.AddProductByProductId(TerminalId, sd.Id, 1, 45.71M);
 
-            sd = api.AddProductByBarCode(TerminalId, "4820000536202", 1);
+                sd = api.AddProductByBarCode(TerminalId, "4820000536202", 1);
 
-            var rgggrr =api.AddProductByProductId(TerminalId, ProductId, 1);
+                var rgggrr = api.AddProductByProductId(TerminalId, ProductId, 1);
 
-            var clff = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
+                var clff = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
 
-            sd = api.AddProductByBarCode(TerminalId, "2201652301489", 1); //Морква 
-            //Thread.Sleep(2000);
-            sd = api.AddProductByBarCode(TerminalId, "7773002160043", 1); //товар 2 кат
-            sd = api.AddProductByBarCode(TerminalId, "4823086109988", 1);
+                sd = api.AddProductByBarCode(TerminalId, "2201652301489", 1); //Морква 
+                                                                              //Thread.Sleep(2000);
+                sd = api.AddProductByBarCode(TerminalId, "7773002160043", 1); //товар 2 кат
+                sd = api.AddProductByBarCode(TerminalId, "4823086109988", 1);
 
-            sd = api.AddProductByBarCode(TerminalId, "2201651902226", 1); //
-         
-         //   sd = api.AddProductByBarCode(TerminalId, "7775006620509", 1); //товар 2 кат*/
-          //  Thread.Sleep(4000);
+                sd = api.AddProductByBarCode(TerminalId, "2201651902226", 1); //
 
-           
- //           var clf = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
+                //   sd = api.AddProductByBarCode(TerminalId, "7775006620509", 1); //товар 2 кат*/
+                //  Thread.Sleep(4000);
 
 
-          //  return;
+                //           var clf = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
 
-            // sd = api.AddProductByBarCode(TerminalId, "8887290101608", 1);  return;
 
-            //var Recvm = api.GetReceiptViewModel(new IdReceipt { CodePeriod = 20200915, IdWorkplace = 72, CodeReceipt = 29 }); return;
+                //  return;
 
-            //sd = api.AddProductByBarCode(TerminalId, "7613035603257", 1);
-            //Thread.Sleep(2000);
-            //return;
-            //var c = api.GetCustomerByPhone(TerminalId,"0503729543");
-            //var c = api.GetCustomerByBarCode(TerminalId, "8810005077479");
-            //var ddd=api.GetReceiptByNumber(TerminalId, "55");
+                // sd = api.AddProductByBarCode(TerminalId, "8887290101608", 1);  return;
 
+                //var Recvm = api.GetReceiptViewModel(new IdReceipt { CodePeriod = 20200915, IdWorkplace = 72, CodeReceipt = 29 }); return;
 
-            
+                //sd = api.AddProductByBarCode(TerminalId, "7613035603257", 1);
+                //Thread.Sleep(2000);
+                //return;
+                //var c = api.GetCustomerByPhone(TerminalId,"0503729543");
+                //var c = api.GetCustomerByBarCode(TerminalId, "8810005077479");
+                //var ddd=api.GetReceiptByNumber(TerminalId, "55");
 
-            //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200920, IdWorkplace = 72, CodeReceipt = 21 }); return;
 
-            api.Bl.GetClientByBarCode(new IdReceipt() { CodePeriod = 20201005, IdWorkplace = 68, CodeReceipt = 27}, "8810005077387"); return;
 
-            // api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200730, IdWorkplace = 68, CodeReceipt = 8}); return;
 
-            //for(int i = 8720; i<= 8720; i++)
-            //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200706, IdWorkplace = 62, CodeReceipt = i }); 
-            //return;
+                //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200920, IdWorkplace = 72, CodeReceipt = 21 }); return;
 
-            //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200706, IdWorkplace = 62, CodeReceipt = i }); 
+                api.Bl.GetClientByBarCode(new IdReceipt() { CodePeriod = 20201005, IdWorkplace = 68, CodeReceipt = 27 }, "8810005077387"); return;
 
-            //sd = api.AddProductByBarCode(TerminalId, "7613036939874", 1);
+                // api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200730, IdWorkplace = 68, CodeReceipt = 8}); return;
 
-            sd = api.AddProductByBarCode(TerminalId, "4820000534642", 1); 
-            sd= api.AddProductByProductId(TerminalId, sd.Id, 4, 10.00M);
-            sd = api.AddProductByBarCode(TerminalId, "4820000534741", 1);
-            sd = api.AddProductByProductId(TerminalId, sd.Id, 3, 20.00M);
+                //for(int i = 8720; i<= 8720; i++)
+                //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200706, IdWorkplace = 62, CodeReceipt = i }); 
+                //return;
 
-           var rr = api.GetRecieptByTerminalId(TerminalId, true);
-            return;
+                //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20200706, IdWorkplace = 62, CodeReceipt = i }); 
 
-            sd = api.AddProductByBarCode(TerminalId, "4823021808778", 1); 
-                                                                         
-            sd = api.AddProductByBarCode(TerminalId, "1110716760019", 1); //хліб житній
-            //api.SetWeight(TerminalId, sd.Id, 321);           return;
-            sd = api.AddProductByBarCode(TerminalId, "7773002160043", 1); //товар 2 кат
-            //Thread.Sleep(2000);
-            sd = api.AddProductByBarCode(TerminalId, "1110716760019", 1); //хліб житній
-           // Thread.Sleep(2000);
-            sd = api.AddProductByBarCode(TerminalId, "7773002160029", 1); //товар 2 кат
+                //sd = api.AddProductByBarCode(TerminalId, "7613036939874", 1);
 
-            var cl = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
+                sd = api.AddProductByBarCode(TerminalId, "4820000534642", 1);
+                sd = api.AddProductByProductId(TerminalId, sd.Id, 4, 10.00M);
+                sd = api.AddProductByBarCode(TerminalId, "4820000534741", 1);
+                sd = api.AddProductByProductId(TerminalId, sd.Id, 3, 20.00M);
 
-            sd = api.AddProductByBarCode(TerminalId, "2201652301489", 1); //Морква
-            //Thread.Sleep(2000);
-            sd = api.AddProductByBarCode(TerminalId, "7773002160043", 1); //товар 2 кат
+                var rr = api.GetRecieptByTerminalId(TerminalId, true);
+                return;
 
-            sd = api.AddProductByBarCode(TerminalId, "2201651902226", 1); //
-            Thread.Sleep(2000);
-            //sd = api.AddProductByBarCode(TerminalId, "7775006620509", 1); //товар 2 кат*/
-            Thread.Sleep(2000);
-           // api.AddFiscalNumber(TerminalId, "1234567");
+                sd = api.AddProductByBarCode(TerminalId, "4823021808778", 1);
 
+                sd = api.AddProductByBarCode(TerminalId, "1110716760019", 1); //хліб житній
+                                                                              //api.SetWeight(TerminalId, sd.Id, 321);           return;
+                sd = api.AddProductByBarCode(TerminalId, "7773002160043", 1); //товар 2 кат
+                                                                              //Thread.Sleep(2000);
+                sd = api.AddProductByBarCode(TerminalId, "1110716760019", 1); //хліб житній
+                                                                              // Thread.Sleep(2000);
+                sd = api.AddProductByBarCode(TerminalId, "7773002160029", 1); //товар 2 кат
 
-            //var rrr = api.GetReceipts(DateTime.Parse("2020-06-24T00:00:00"), DateTime.Parse("2020-06-24T23:59:59.999"), TerminalId);
-            //            var n = rrr.Count();
-            //7667,7676,7677
+                var cl = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
 
-            //sd = api.AddProductByProductId(TerminalId, ProductId, 1); return;
+                sd = api.AddProductByBarCode(TerminalId, "2201652301489", 1); //Морква
+                                                                              //Thread.Sleep(2000);
+                sd = api.AddProductByBarCode(TerminalId, "7773002160043", 1); //товар 2 кат
 
-            sd = api.AddProductByBarCode(TerminalId, "4820207930056", 1); //
-            //sd = api.AddProductByBarCode(TerminalId, "2201651902226", 1); //
-            //sd = api.AddProductByBarCode(Guid.Parse("5c1413f5-66fe-4c2e-9c4c-c354c79952ea"), "7622210653031", 2); //
-            
-            var RId = api.GetCurrentReceiptByTerminalId(TerminalId).ReceiptId;
-            var Rec = api.GetReciept(RId);
+                sd = api.AddProductByBarCode(TerminalId, "2201651902226", 1); //
+                Thread.Sleep(2000);
+                //sd = api.AddProductByBarCode(TerminalId, "7775006620509", 1); //товар 2 кат*/
+                Thread.Sleep(2000);
+                // api.AddFiscalNumber(TerminalId, "1234567");
 
-            return;
 
-            /*var rrr=api.GetReceiptViewModel(new IdReceipt {CodePeriod=20200504,IdWorkplace=62,CodeReceipt=12} );
+                //var rrr = api.GetReceipts(DateTime.Parse("2020-06-24T00:00:00"), DateTime.Parse("2020-06-24T23:59:59.999"), TerminalId);
+                //            var n = rrr.Count();
+                //7667,7676,7677
 
-            foreach (var el in rrr.ReceiptItems)
-                Console.WriteLine($"{el.ProductName.Substring(0,7)} PP=> {el.ProductPrice } \t Discount=> { el.Discount} \t{el.ProductPrice*el.ProductQuantity*(el.ProductWeightType==ModernIntegration.Enums.ProductWeightType.ByWeight?1000:1 )- el.Discount} "); //FullPrice=>  {el.FullPrice}   TotalPrice=>{el.TotalPrice} 
-            */
-            //var dddd=api.GetAllCategories(TerminalId);
-            
-            
-            //api.Bl.ds.LoadWeightKasa(new DateTime(2020,02,17));return;
-            //api.Bl.SendOldReceipt(); return;
-            var r2rr=api.GetBags();
-            //api.Bl.SendAllReceipt();return;
+                //sd = api.AddProductByProductId(TerminalId, ProductId, 1); return;
 
-            sd = api.AddProductByBarCode(TerminalId, "4823086109988", 1); // 1+1 Пельмені "Мішутка" Філейні 600г /Три ведмеді/
+                sd = api.AddProductByBarCode(TerminalId, "4820207930056", 1); //
+                                                                              //sd = api.AddProductByBarCode(TerminalId, "2201651902226", 1); //
+                                                                              //sd = api.AddProductByBarCode(Guid.Parse("5c1413f5-66fe-4c2e-9c4c-c354c79952ea"), "7622210653031", 2); //
 
-            
+                var RId = api.GetCurrentReceiptByTerminalId(TerminalId).ReceiptId;
+                var Rec = api.GetReciept(RId);
 
-            sd = api.AddProductByBarCode(TerminalId, "2206140307779", 1); //
+                return;
 
-          
+                /*var rrr=api.GetReceiptViewModel(new IdReceipt {CodePeriod=20200504,IdWorkplace=62,CodeReceipt=12} );
 
-            return;
+                foreach (var el in rrr.ReceiptItems)
+                    Console.WriteLine($"{el.ProductName.Substring(0,7)} PP=> {el.ProductPrice } \t Discount=> { el.Discount} \t{el.ProductPrice*el.ProductQuantity*(el.ProductWeightType==ModernIntegration.Enums.ProductWeightType.ByWeight?1000:1 )- el.Discount} "); //FullPrice=>  {el.FullPrice}   TotalPrice=>{el.TotalPrice} 
+                */
+                //var dddd=api.GetAllCategories(TerminalId);
 
-            //var rrr= api.GetReceipts(DateTime.Parse("2020-02-03T00:00:00"), DateTime.Parse("2020-02-03T23:59:59.999"), TerminalId);
 
-            //Thread.Sleep(1000000);
-            //var reseipt = api.GetReceipts(DateTime.Now.Date, DateTime.Now.Date);
+                //api.Bl.ds.LoadWeightKasa(new DateTime(2020,02,17));return;
+                //api.Bl.SendOldReceipt(); return;
+                var r2rr = api.GetBags();
+                //api.Bl.SendAllReceipt();return;
 
-            //var cl = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
+                sd = api.AddProductByBarCode(TerminalId, "4823086109988", 1); // 1+1 Пельмені "Мішутка" Філейні 600г /Три ведмеді/
 
 
-            // var rrrr = api.GetNoFinishReceipt(TerminalId);
-            //var aa=api.Bl.db.GetConfig<DateTime>("Load_Full__");
-            //sd =api.AddProductByBarCode(TerminalId, "4820197006205", 1);
-            // sd = api.AddProductByBarCode(TerminalId, "4820198091002", 1);
 
-            //Console.WriteLine("var cl = api.AddProductByBarCode(TerminalId, \"4820048481960\");");
-            //Console.WriteLine(sd.Name);
-            //          var cl = api.GetCustomerByBarCode(TerminalId, "4820220980229");
+                sd = api.AddProductByBarCode(TerminalId, "2206140307779", 1); //
 
-            //api.RequestSyncInfo(false);
-            //Thread.Sleep(100000);
 
 
-            sd = api.AddProductByBarCode(TerminalId, "30886", 1);
+                return;
 
-            var startTime = System.Diagnostics.Stopwatch.StartNew();
+                //var rrr= api.GetReceipts(DateTime.Parse("2020-02-03T00:00:00"), DateTime.Parse("2020-02-03T23:59:59.999"), TerminalId);
 
-            //sd = api.AddProductByBarCode(TerminalId, "4823086109988", 1); // 1+1 Пельмені "Мішутка" Філейні 600г /Три ведмеді/
-            //sd = api.AddProductByBarCode(TerminalId, "2201652300489", 1); //Морква
-            //Thread.Sleep(1000);
+                //Thread.Sleep(1000000);
+                //var reseipt = api.GetReceipts(DateTime.Now.Date, DateTime.Now.Date);
 
-            return;
+                //var cl = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
 
-            sd = api.AddProductByBarCode(TerminalId, "4823000916524", 2); //АРТЕК 
-            sd = api.AddProductByBarCode(TerminalId, "22970558", 0);
-            sd = api.AddProductByBarCode(TerminalId, "7622300813437", 1);//Барн
-            sd = api.AddProductByProductId(TerminalId, ProductId, 1);
 
-          sd = api.AddProductByBarCode(TerminalId, "2201652300489", 1); //Морква
-            //Thread.Sleep(1000);
-            sd = api.AddProductByBarCode(TerminalId, "2201652300229", 1); //Морква
-                                                                          //Thread.Sleep(1000);
+                // var rrrr = api.GetNoFinishReceipt(TerminalId);
+                //var aa=api.Bl.db.GetConfig<DateTime>("Load_Full__");
+                //sd =api.AddProductByBarCode(TerminalId, "4820197006205", 1);
+                // sd = api.AddProductByBarCode(TerminalId, "4820198091002", 1);
 
-            var rssss=api.GetRecieptByTerminalId(TerminalId);
-            
-            //Thread.Sleep(1000);
-            api.ChangeQuantity(TerminalId, sd.Id, 3);
-            //Thread.Sleep(1000);
-            api.ChangeQuantity(TerminalId, sd.Id, 4);
-            //Thread.Sleep(1000);
-            api.ChangeQuantity(TerminalId, sd.Id, 3);
-            // Thread.Sleep(1000);
-            api.ChangeQuantity(TerminalId, sd.Id, 2);
-            //Thread.Sleep(100000);
+                //Console.WriteLine("var cl = api.AddProductByBarCode(TerminalId, \"4820048481960\");");
+                //Console.WriteLine(sd.Name);
+                //          var cl = api.GetCustomerByBarCode(TerminalId, "4820220980229");
 
+                //api.RequestSyncInfo(false);
+                //Thread.Sleep(100000);
 
-            //            startTime.Stop();
-            //            Console.WriteLine( startTime.Elapsed);
-            //            startTime.Restart();
 
-            sd = api.AddProductByBarCode(TerminalId, "1111622770010", 1);
+                sd = api.AddProductByBarCode(TerminalId, "30886", 1);
 
-            startTime.Stop();
-            Console.WriteLine(startTime.Elapsed);
-            startTime.Restart();
+                var startTime = System.Diagnostics.Stopwatch.StartNew();
 
-            sd = api.AddProductByBarCode(TerminalId, "7622300813437", 2);//Барн
+                //sd = api.AddProductByBarCode(TerminalId, "4823086109988", 1); // 1+1 Пельмені "Мішутка" Філейні 600г /Три ведмеді/
+                //sd = api.AddProductByBarCode(TerminalId, "2201652300489", 1); //Морква
+                //Thread.Sleep(1000);
 
-            //startTime.Stop();
-            Console.WriteLine(startTime.Elapsed);
-            //startTime.Restart();
+                return;
 
-            //            sd = api.AddProductByBarCode( TerminalId, "2201652300489",1); //Морква
-            /*sd = api.AddProductByBarCode(TerminalId, "1110867180018", 1); //Хліб
-            sd = api.AddProductByBarCode(TerminalId, "40804927", 1);
-            sd = api.AddProductByBarCode(TerminalId, "1110011760018", 1); //КІВІ ВАГОВІ 2 кат*/
-            sd = api.AddProductByBarCode(TerminalId, "2201652300489", 1); //Морква
-            sd = api.AddProductByBarCode(TerminalId, "7775006620509", 1); //товар 2 кат
-            //Thread.Sleep(1000);
-            /*sd =api.AddProductByBarCode( TerminalId, "5903154545623", 1); //Суміш овочева "Семикомпонентна" 400г /Рудь/ акція 1+1
-            sd = api.AddProductByBarCode(TerminalId, "7622300813437", 5);//Барн*/
-            sd = api.AddProductByBarCode(TerminalId, "4823097403457", 5);//Майонез "Провансаль" 67% д/п 350г /Щедро/
-            sd = api.AddProductByBarCode(TerminalId, "4823097405932", 7);//Кетчуп "Лагідний" д/п 250г /Щедро/*/
-            api.ChangeQuantity(TerminalId, sd.Id, 0);
+                sd = api.AddProductByBarCode(TerminalId, "4823000916524", 2); //АРТЕК 
+                sd = api.AddProductByBarCode(TerminalId, "22970558", 0);
+                sd = api.AddProductByBarCode(TerminalId, "7622300813437", 1);//Барн
+                sd = api.AddProductByProductId(TerminalId, ProductId, 1);
 
+                sd = api.AddProductByBarCode(TerminalId, "2201652300489", 1); //Морква
+                                                                              //Thread.Sleep(1000);
+                sd = api.AddProductByBarCode(TerminalId, "2201652300229", 1); //Морква
+                                                                              //Thread.Sleep(1000);
 
-            
-            //api.ClearReceipt(TerminalId);
-            //var rrrr = api.GetNoFinishReceipt(TerminalId);
-        
-            //var RId = api.GetCurrentReceiptByTerminalId(TerminalId).ReceiptId;
+                var rssss = api.GetRecieptByTerminalId(TerminalId);
 
-            
+                //Thread.Sleep(1000);
+                api.ChangeQuantity(TerminalId, sd.Id, 3);
+                //Thread.Sleep(1000);
+                api.ChangeQuantity(TerminalId, sd.Id, 4);
+                //Thread.Sleep(1000);
+                api.ChangeQuantity(TerminalId, sd.Id, 3);
+                // Thread.Sleep(1000);
+                api.ChangeQuantity(TerminalId, sd.Id, 2);
+                //Thread.Sleep(100000);
 
-            var rr11 = api.GetProduct(TerminalId);
-           
 
+                //            startTime.Stop();
+                //            Console.WriteLine( startTime.Elapsed);
+                //            startTime.Restart();
 
-           
-            api.AddPayment(TerminalId, Pay);
-            var r = api.AddFiscalNumber(TerminalId, "TRRF-1234");
+                sd = api.AddProductByBarCode(TerminalId, "1111622770010", 1);
 
-            var receipt = api.GetReciept(RId);
+                startTime.Stop();
+                Console.WriteLine(startTime.Elapsed);
+                startTime.Restart();
 
-            var sz = JsonConvert.SerializeObject(receipt);
-            var RefoundReceipt = JsonConvert.DeserializeObject<RefundReceiptViewModel>(sz);
-            RefoundReceipt.IdPrimary = RefoundReceipt.Id;
-      
-            var resRef=api.RefundReceipt(TerminalId, RefoundReceipt);
+                sd = api.AddProductByBarCode(TerminalId, "7622300813437", 2);//Барн
 
+                //startTime.Stop();
+                Console.WriteLine(startTime.Elapsed);
+                //startTime.Restart();
 
-            //           api.SendReceipt(RId);
-           // var Rec=api.GetReciept(RId);
-            
-            
-            Console.WriteLine("End");
+                //            sd = api.AddProductByBarCode( TerminalId, "2201652300489",1); //Морква
+                /*sd = api.AddProductByBarCode(TerminalId, "1110867180018", 1); //Хліб
+                sd = api.AddProductByBarCode(TerminalId, "40804927", 1);
+                sd = api.AddProductByBarCode(TerminalId, "1110011760018", 1); //КІВІ ВАГОВІ 2 кат*/
+                sd = api.AddProductByBarCode(TerminalId, "2201652300489", 1); //Морква
+                sd = api.AddProductByBarCode(TerminalId, "7775006620509", 1); //товар 2 кат
+                                                                              //Thread.Sleep(1000);
+                /*sd =api.AddProductByBarCode( TerminalId, "5903154545623", 1); //Суміш овочева "Семикомпонентна" 400г /Рудь/ акція 1+1
+                sd = api.AddProductByBarCode(TerminalId, "7622300813437", 5);//Барн*/
+                sd = api.AddProductByBarCode(TerminalId, "4823097403457", 5);//Майонез "Провансаль" 67% д/п 350г /Щедро/
+                sd = api.AddProductByBarCode(TerminalId, "4823097405932", 7);//Кетчуп "Лагідний" д/п 250г /Щедро/*/
+                api.ChangeQuantity(TerminalId, sd.Id, 0);
 
 
-            //169316+169316 4823086109988 Пельмені "Мішутка" Філейні 600г /Три ведмеді/
-            //156727+169583 4823097403457+4823097405932 Майонез "Провансаль" 67% д/п 350г /Щедро/  Кетчуп "Лагідний" д/п 250г /Щедро/
 
+                //api.ClearReceipt(TerminalId);
+                //var rrrr = api.GetNoFinishReceipt(TerminalId);
+
+                //var RId = api.GetCurrentReceiptByTerminalId(TerminalId).ReceiptId;
+
+
+
+                var rr11 = api.GetProduct(TerminalId);
+
+
+
+
+                api.AddPayment(TerminalId, Pay);
+                var r = api.AddFiscalNumber(TerminalId, "TRRF-1234");
+
+                var receipt = api.GetReciept(RId);
+
+                var sz = JsonConvert.SerializeObject(receipt);
+                var RefoundReceipt = JsonConvert.DeserializeObject<RefundReceiptViewModel>(sz);
+                RefoundReceipt.IdPrimary = RefoundReceipt.Id;
+
+                var resRef = api.RefundReceipt(TerminalId, RefoundReceipt);
+
+
+                //           api.SendReceipt(RId);
+                // var Rec=api.GetReciept(RId);
+
+
+                Console.WriteLine("End");
+
+
+                //169316+169316 4823086109988 Пельмені "Мішутка" Філейні 600г /Три ведмеді/
+                //156727+169583 4823097403457+4823097405932 Майонез "Провансаль" 67% д/п 350г /Щедро/  Кетчуп "Лагідний" д/п 250г /Щедро/
+            }catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
 
         static void CreateBarCode()

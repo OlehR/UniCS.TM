@@ -159,6 +159,8 @@ namespace ModelMID
 
         public int Sort { get; set; }
 
+        public string ExciseStamp { get; set; }
+
         public int UserCreate { get; set; }
 
         //  public int CodeWarehouse { get; set; }

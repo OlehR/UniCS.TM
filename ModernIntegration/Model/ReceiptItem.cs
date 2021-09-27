@@ -130,5 +130,7 @@ namespace ModernIntegration.Models
         ///   <c>true</c> if printing the  UKTZED code; otherwise, <c>false</c>.
         /// </value>
         public bool IsUktzedNeedToPrint { get; set; }
+
+        public  List<string> Excises { get; set; }
     }
 }

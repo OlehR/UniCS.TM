@@ -179,7 +179,9 @@ namespace ModernIntegration
             if (parReceipt!=null && parReceipt.ReceiptEvents!=null)
             {
                 var RE = parReceipt.ReceiptEvents.Select(r => GetReceiptEvent(r));
-                return Bl.SaveReceiptEvents(RE);
+                Bl.SaveReceiptEvents(RE);
+                var WR = parReceipt.ReceiptItems.Where(r=> r.Excises!=null && r.Excises.Count()>0).Select(r =>  GetReceiptWaresFromReceiptItem( new IdReceipt( parReceipt.Id),r ));
+                Bl.UpdateExciseStamp(WR);
             }
             return false;
         }
@@ -278,6 +280,9 @@ namespace ModernIntegration
             //Якщо алкоголь обмеження по часу
             if (receiptWares.TypeWares == 1)
                 varTags.Add(new Tag() { Key = "TimeRestricted", Id = 1, RuleValue = "{\"Start\":\"" + Global.AlcoholTimeStart + "\",\"Stop\":\"" + Global.AlcoholTimeStop + "\"}" });
+            //Якщо алкоголь ввід Марки.
+            if (receiptWares.TypeWares == 1)
+                varTags.Add(new Tag() { Key = "NeedExcise", Id = 2 });
 
             // Якщо немає ваги відключаємо її контроль 
             if (!receiptWares.IsWeight && LWI.Count() == 0 && receiptWares.WeightFact != -1)
@@ -327,7 +332,7 @@ namespace ModernIntegration
                 CalculatedWeight= Convert.ToDouble(receiptWares.FixWeight*1000)
                 ,Uktzed= receiptWares.CodeUKTZED
                 ,IsUktzedNeedToPrint= receiptWares.IsUseCodeUKTZED
-
+                ,
 
             };
             return Res;
@@ -712,7 +717,10 @@ namespace ModernIntegration
 //                TaxGroup = Global.GetTaxGroup(receiptItem.TypeVat, receiptItem.TypeWares),               
                 //FullPrice = receiptItem.Sum
                 RefundedQuantity = receiptItem.RefundedQuantity
+                
             };
+            if(receiptItem.Excises!=null)
+                Res.ExciseStamp = String.Join(", ", receiptItem.Excises.ToArray());
             return Res;
         }
 

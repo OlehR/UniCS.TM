@@ -22,7 +22,7 @@ namespace SharedLib
 
         ~SQL()
         {
-            FileLogger.ExtLogForClassDestruct( GetHashCode(), ConectionString);
+           // FileLogger.ExtLogForClassDestruct( GetHashCode(), ConectionString);
         }
         public void SetLock(bool parIsLock)
         {

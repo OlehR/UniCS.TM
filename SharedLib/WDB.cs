@@ -194,6 +194,7 @@ namespace SharedLib
         protected string SqlUpdateQR = "";
         protected string SqlGetQR = "";
         protected string SqlGetReceiptWaresDeleted = "";
+        protected string SqlUpdateExciseStamp = "";
 
 
         public WDB(string parFileSQL)
@@ -201,12 +202,12 @@ namespace SharedLib
             var start = DateTime.Now;
             this.ReadSQL(parFileSQL);
             InitSQL();
-            FileLogger.ExtLogForClassConstruct(GetType(), GetHashCode(), $"{(DateTime.Now-start).TotalMilliseconds} ms readand init sql");
+            //FileLogger.ExtLogForClassConstruct(GetType(), GetHashCode(), $"{(DateTime.Now-start).TotalMilliseconds} ms readand init sql");
         }
 
         ~WDB()
         {
-            FileLogger.ExtLogForClassDestruct(GetHashCode());
+            //FileLogger.ExtLogForClassDestruct(GetHashCode());
             Dispose(false);
         }
     
@@ -368,16 +369,10 @@ namespace SharedLib
                 var r = res.FirstOrDefault();
                 if (parWithDetail)
                 {
-                    try
-                    {
-                        r.Wares = ViewReceiptWares(parIdReceipt, true);
-                        r.Payment = GetPayment(parIdReceipt);
-                        r.ReceiptEvent = GetReceiptEvent(parIdReceipt);
-                    }
-                    catch(Exception e)
-                    {
-                        var er = e.Message;
-                    }
+                    r.Wares = ViewReceiptWares(parIdReceipt,true);
+                    r.Payment = GetPayment(parIdReceipt);
+                    r.ReceiptEvent = GetReceiptEvent(parIdReceipt);
+
                 }
                 return r;
             }
@@ -621,6 +616,8 @@ namespace SharedLib
             SqlUpdateQR = GetSQL("SqlUpdateQR");
             SqlGetQR = GetSQL("SqlGetQR");
             SqlGetReceiptWaresDeleted = GetSQL("SqlGetReceiptWaresDeleted");
+            SqlUpdateExciseStamp = GetSQL(" SqlUpdateExciseStamp");
+
 
 
             return true;
@@ -1029,6 +1026,13 @@ namespace SharedLib
             return this.db.Execute<ReceiptWaresDeleted1C>(SqlGetReceiptWaresDeleted);            
         }
 
+        public virtual bool UpdateExciseStamp(IEnumerable<ReceiptWares> pRW)
+        {
+            return db.BulkExecuteNonQuery<ReceiptWares>(SqlUpdateExciseStamp, pRW)>0;
+           // return true;
+        }
+
+        
         public virtual void Close(bool isWait = false)
         {
             if (db != null)
@@ -1052,9 +1056,6 @@ namespace SharedLib
 
             isDisposed = true;
         }
-
-
-
 
     }
 }

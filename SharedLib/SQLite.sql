@@ -24,6 +24,8 @@ alter table WORKPLACE add  Video_Camera_IP TEXT;
 alter table WORKPLACE add  Video_Recorder_IP TEXT;
 alter TABLE WEIGHT    add  CODE_WARES  INTEGER  NOT NULL DEFAULT 0;
 alter table WORKPLACE add  Type_POS NUMBER   NOT NULL DEFAULT 0;
+alter table WORKPLACE add  Code_Warehouse INTEGER  NOT NULL DEFAULT 0;
+alter table WORKPLACE add  CODE_DEALER INTEGER  NOT NULL DEFAULT 0;
 
 [SqlUpdateMID_V1]
 alter TABLE wares add Weight_Delta INTEGER  DEFAULT 0;
@@ -91,7 +93,7 @@ select t.code_wares as CodeWares,w.name_wares NameWares,w.name_wares_receipt  as
         ,w.code_UKTZED as CodeUKTZED
         ,w.Articl as Articl
         ,w.Limit_Age as LimitAge
-        ,w.PLU
+        ,w.PLU        
 from t$1 t
 left join wares w on t.code_wares=w.code_wares
 left join price pd on ( pd.code_wares=t.code_wares and pd.code_dealer= @CodeDealer)
@@ -171,6 +173,7 @@ Price as Price/*, wr.sum as Sum*/, Type_Price as TypePrice
  ,w.Limit_Age as LimitAge
  ,w.PLU as PLU
  ,wr.QR
+ ,wr.Excise_Stamp as ExciseStamp
                      from wares_receipt wr
                      join wares w on (wr.code_wares =w.code_wares)
                      join ADDITION_UNIT au on w.code_wares = au.code_wares and wr.code_unit=au.code_unit
@@ -234,13 +237,13 @@ select ID_WORKPLACE as IdWorkplace,CODE_PERIOD as CodePeriod, CODE_RECEIPT as Co
 [SqlInsertWaresReceipt]
 insert into wares_receipt (id_workplace, code_period, code_receipt, code_wares, code_unit,
   type_price,  quantity, price, Price_Dealer, sum, sum_vat,
-  Priority,PAR_PRICE_1,PAR_PRICE_2,PAR_PRICE_3, sum_discount, type_vat, sort, user_create,
+  Priority,PAR_PRICE_1,PAR_PRICE_2,PAR_PRICE_3, sum_discount, type_vat, sort, Excise_Stamp,user_create,
  ADDITION_N1,ADDITION_N2,ADDITION_N3,
  ADDITION_C1,ADDITION_D1,BARCODE_2_CATEGORY,DESCRIPTION) 
  values (
   @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit,
   @TypePrice, @Quantity, @Price,@PriceDealer, @Sum, @SumVat,
-  @Priority,@ParPrice1,@ParPrice2,@ParPrice3, round(@SumDiscount,2), @TypeVat, (select COALESCE(max(sort),0)+1 from wares_receipt  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt), @UserCreate,
+  @Priority,@ParPrice1,@ParPrice2,@ParPrice3, round(@SumDiscount,2), @TypeVat, (select COALESCE(max(sort),0)+1 from wares_receipt  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt), @ExciseStamp,@UserCreate,
  @AdditionN1,@AdditionN2,@AdditionN3,
  @AdditionC1,@AdditionD1,@BARCODE2Category,@DESCRIPTION);
  ;
@@ -251,13 +254,13 @@ values ( @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit, @Quanti
  [SqlReplaceWaresReceipt]
 replace into wares_receipt (id_workplace, code_period, code_receipt, code_wares, code_unit,
   type_price,  quantity, price, Price_Dealer, sum, sum_vat,
-  Priority,PAR_PRICE_1,PAR_PRICE_2,PAR_PRICE_3, sum_discount, type_vat, sort, user_create,
+  Priority,PAR_PRICE_1,PAR_PRICE_2,PAR_PRICE_3, sum_discount, type_vat, sort,Excise_Stamp, user_create,
  ADDITION_N1,ADDITION_N2,ADDITION_N3,
  ADDITION_C1,ADDITION_D1,BARCODE_2_CATEGORY,DESCRIPTION,Refunded_Quantity,Fix_Weight,QR) 
  values (
   @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit,
   @TypePrice, @Quantity, @Price,@PriceDealer, @Sum, @SumVat,
-  @Priority,@ParPrice1,@ParPrice2,@ParPrice3, @SumDiscount, @TypeVat, @Sort, @UserCreate,
+  @Priority,@ParPrice1,@ParPrice2,@ParPrice3, @SumDiscount, @TypeVat, @Sort,@ExciseStamp, @UserCreate,
  @AdditionN1,@AdditionN2,@AdditionN3,
  @AdditionC1,@AdditionD1,@BARCODE2Category,@DESCRIPTION,@RefundedQuantity,@FixWeight,@QR)
 
@@ -521,11 +524,12 @@ select * from FIELD_INFO
 insert into Weight ( BarCode,Weight,STATUS) values (@BarCode,@Weight,@Status);
 
 [SqlReplaceWorkplace]
- INSERT OR IGNORE into WORKPLACE ( ID_WORKPLACE, NAME, Terminal_GUID) values (@IdWorkplace, @Name,@StrTerminalGUID);
+ INSERT OR IGNORE into WORKPLACE ( ID_WORKPLACE, NAME, Terminal_GUID, Video_Camera_IP, Video_Recorder_IP, Type_POS, Code_Warehouse, CODE_DEALER) values 
+                                 (@IdWorkplace, @Name, @StrTerminalGUID, @VideoCameraIP, @VideoRecorderIP,@TypePOS, @CodeWarehouse, @CodeDealer);
 
 [SqlGetWorkplace]
 select ID_WORKPLACE as IdWorkplace, NAME as Name, Terminal_GUID as StrTerminalGUID, 
-       Video_Camera_IP as VideoCameraIP, Video_Recorder_IP  as VideoRecorderIP , Type_POS as TypePOS from WORKPLACE;
+       Video_Camera_IP as VideoCameraIP, Video_Recorder_IP  as VideoRecorderIP , Type_POS as TypePOS,Code_Warehouse as CodeWarehouse ,CODE_DEALER as CodeDealer from WORKPLACE;
 
 [SqlFillQuickGroup]
 WITH RECURSIVE
@@ -549,7 +553,9 @@ CREATE TABLE WORKPLACE (
 	Terminal_GUID TEXT,
     Video_Camera_IP   TEXT,
     Video_Recorder_IP TEXT,
-    Type_POS NUMBER   NOT NULL DEFAULT 0 
+    Type_POS NUMBER   NOT NULL DEFAULT 0,
+    Code_Warehouse INTEGER  NOT NULL DEFAULT 0,
+    CODE_DEALER INTEGER  NOT NULL DEFAULT 0
 	);
 	CREATE UNIQUE INDEX id_WORKPLACE ON WORKPLACE(ID_WORKPLACE);
 	CREATE UNIQUE INDEX WORKPLACE_TG ON WORKPLACE(Terminal_GUID);
@@ -639,6 +645,7 @@ CREATE TABLE WARES_RECEIPT (
 	PAR_PRICE_3    INTEGER  NOT NULL,
     TYPE_VAT       INTEGER  NOT NULL,
     SORT           INTEGER  NOT NULL,
+    Excise_Stamp   TEXT,
     DESCRIPTION    TEXT,
     ADDITION_N1    NUMBER,
     ADDITION_N2    NUMBER,
@@ -772,9 +779,9 @@ order by type_access
 [SqlCopyWaresReturnReceipt]
 insert into wares_receipt 
 (id_workplace,code_period,code_receipt,code_wares,code_unit,quantity,price,sum,sum_vat,sum_discount,
-type_price,Priority,par_price_1,par_price_2,type_vat,sort, addition_n1, addition_n2,addition_n3, user_create,BARCODE_2_CATEGORY )
+type_price,Priority,par_price_1,par_price_2,type_vat,sort,Excise_Stamp,addition_n1, addition_n2,addition_n3, user_create,BARCODE_2_CATEGORY )
 select @IdWorkplaceReturn,@CodePeriodReturn,@CodeReceiptReturn,code_wares,code_unit,0,price,0,0,0,
-0,0,0,0,type_vat,sort,@IdWorkplace, @CodePeriod, @CodeReceipt, @UserCreate,@barCode2Category
+0,0,0,0,type_vat,sort,Excise_Stamp,@IdWorkplace, @CodePeriod, @CodeReceipt, @UserCreate,@barCode2Category
 from   wares_receipt wr where wr.id_workplace=@IdWorkplace and wr.code_period=@CodePeriod  and wr.code_receipt=@CodeReceipt;
 update receipt set CODE_PATTERN=2  where id_workplace=@IdWorkplaceReturn and code_period=@CodePeriodReturn  and code_receipt=@CodeReceiptReturn;
 
@@ -1104,7 +1111,7 @@ select id_workplace as IdWorkplace, code_period as CodePeriod, code_receipt as C
 [SqlCheckLastWares2Cat]
 select  wr.id_workplace as IdWorkplace, wr.code_period as CodePeriod, wr.code_receipt as CodeReceipt, wr.code_wares as Codewares,
  wr.Quantity as Quantity, case when wr.price>0 and wr.priority=1 then wr.price else wr.price_dealer end AS Price,  ps.code_ps as CodePS, 0 as NumberGroup
- , '' as BarCode2Category,wr.Priority as Priority,wr.Code_unit as CodeUnit
+ , '' as BarCode2Category,wr.Priority as Priority,wr.Code_unit as CodeUnit,wr.Excise_Stamp
 from wares_receipt wr
 join PROMOTION_SALE_2_CATEGORY ps2c on ps2c.code_wares=wr.code_wares
 join PROMOTION_SALE ps on (ps.code_ps=ps2c.code_ps)
@@ -1280,6 +1287,11 @@ from WARES_RECEIPT wrh
 left join RECEIPT r on (r.ID_WORKPLACE =wrh.Id_Workplace    and r.CODE_PERIOD = wrh.Code_Period    and r.CODE_RECEIPT = wrh.Code_Receipt)
 where r.STATE_RECEIPT=-1
  --and r.DATE_RECEIPT>=BeginDate and   wrh.DATE_CREATE<EndDate
+
+  [SqlUpdateExciseStamp]
+    update wares_receipt set  Excise_Stamp= @ExciseStamp
+                     where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt 
+                     and code_wares=@CodeWares;
 
 [SqlEnd]
 */
