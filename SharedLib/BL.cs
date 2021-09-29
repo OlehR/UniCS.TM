@@ -361,6 +361,9 @@ namespace SharedLib
 
         public IEnumerable<ReceiptWares> GetProductsByName(IdReceipt parReceipt, string parName, int parOffSet = -1, int parLimit = 10, int parCodeFastGroup = 0)
         {
+            if (parReceipt == null)
+                parReceipt = curReciptId;
+
             parName = parName.Trim();
             // Якщо пошук по штрихкоду і назва похожа на штрихкод або артикул
             if (!string.IsNullOrEmpty(parName))

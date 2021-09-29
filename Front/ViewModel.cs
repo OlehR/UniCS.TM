@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using OnScreenKeyboardControl;
+using System.Windows;
+using System.Windows.Input;
 
 namespace OnScreenKeyboardControl
 {
@@ -15,5 +17,12 @@ namespace OnScreenKeyboardControl
 		{
 			MessageBox.Show("Save button pressed");
 		}));
-	}
+
+        private RelayCommand cancelCommand2;
+        public ICommand CancelCommand2 => cancelCommand2 ??= new RelayCommand(Cancel);
+
+        private void Cancel()
+        {
+        }
+    }
 }

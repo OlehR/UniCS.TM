@@ -10,6 +10,10 @@ namespace OnScreenKeyboardControl.Keyboard
 {
 	public class OnScreenKeyboard : Grid
 	{
+		public OnScreenKeyboard() 
+		{
+			
+		}
 		#region dependency properties
 
 		public static readonly DependencyProperty ToggleButtonStyleProperty = DependencyProperty.Register("ToggleButtonStyle",
@@ -122,12 +126,13 @@ namespace OnScreenKeyboardControl.Keyboard
 
 		private readonly List<OnScreenKeyboardSection> _sections = new List<OnScreenKeyboardSection>();
 		private readonly List<OnScreenKey> _allOnScreenKeys = new List<OnScreenKey>();
-		private readonly List<OnScreenKeyStateModifier> _activeKeyModifiers = new List<OnScreenKeyStateModifier>();
+		private readonly List<OnScreenKeyStateModifier> _activeKeyModifiers = new List<OnScreenKeyStateModifier>() { new OnScreenKeyStateModifier(OnScreenKeyModifierType.Special, false, false)};
 
 		public override void BeginInit()
 		{
 			SetValue(FocusManager.IsFocusScopeProperty, true);
 
+			//_activeKeyModifiers.Add(new OnScreenKeyStateModifier(OnScreenKeyModifierType.Special, false, false));
 			var mainSection = new OnScreenKeyboardSection();
 			var mainKeys = new ObservableCollection<OnScreenKey>
 			{
@@ -195,7 +200,7 @@ namespace OnScreenKeyboardControl.Keyboard
 				new OnScreenKeyModifier(3, 11, new[] {"Shift"}, OnScreenKeyModifierType.Shift){GridWidth = new GridLength(2.4, GridUnitType.Star)       },
 
 				new OnScreenKeySpecial(4, 00,  "Clear", ExecuteDelegateFunctions.ClearExecuteDelegate),
-				new OnScreenKeyToggle(4, 01, new [] { "Special"}, OnScreenKeyModifierType.Special),
+				new OnScreenKeyToggle(4, 01, new [] { "En"}, OnScreenKeyModifierType.Special),
 				new OnScreenKeySpecial(4, 02,  string.Empty, " "){GridWidth = new GridLength(5, GridUnitType.Star)},
 				new OnScreenKeySpecial(4, 03,  "Save",  nameof(SaveCommand)) {ClickCommand = nameof(SaveCommand)},
 				new OnScreenKeySpecial(4, 04, "Cancel",  nameof(CancelCommand)) {ClickCommand = nameof(CancelCommand)},
@@ -237,6 +242,7 @@ namespace OnScreenKeyboardControl.Keyboard
 			Loaded += OnScreenKeyboard_Loaded;
 
 			base.BeginInit();
+			_allOnScreenKeys.ForEach(i => i.Update(_activeKeyModifiers));
 		}
 
 		private void OnScreenKeyboard_Loaded(object sender, RoutedEventArgs e)

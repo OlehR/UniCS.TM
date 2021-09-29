@@ -17,6 +17,7 @@ alter TABLE RECEIPT    add Sum_Fiscal        NUMBER;
 alter TABLE payment    add Card_Holder  TEXT;
 alter TABLE payment    add Issuer_Name  TEXT;
 alter TABLE payment    add Bank  TEXT;
+alter TABLE WARES_RECEIPT  add Excise_Stamp   TEXT;
 
 
 [SqlUpdateConfig_V1]

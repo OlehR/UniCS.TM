@@ -246,7 +246,7 @@ namespace Front
 
         private IEnumerable<ReceiptWares> StartData()
         {
-            var TerminalId = Guid.Parse("1bb89aa9-dbdf-4eb0-b7a2-094665c3fdd0");
+            var TerminalId = Guid.Parse("b017dbcc-b5b3-4e2f-ac06-af48e87ce274");
             var RId=Bl.GetNewIdReceipt(TerminalId);
             Bl.AddWaresBarCode(RId, "4823086109988", 10);
             Bl.AddWaresBarCode(RId, "7622300813437", 1);

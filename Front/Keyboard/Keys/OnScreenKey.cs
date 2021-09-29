@@ -29,6 +29,8 @@ namespace OnScreenKeyboardControl.Keyboard.Keys
 			GridColumn = column;
 
 			Click += KeyPressEventHandler;
+
+			//Modifiers.Add(new OnScreenKeyStateModifier(OnScreenKeyModifierType.Special, false, false));
 		}
 
 		public virtual void CanType(bool canPress) => IsEnabled = canPress;

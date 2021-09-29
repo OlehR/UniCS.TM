@@ -10,9 +10,9 @@ namespace SharedLib
 {
     public class Config
     {
-        IConfigurationRoot AppConfiguration;
+        static IConfigurationRoot AppConfiguration;
 
-        public Config(string settingsFilePath)
+         public Config(string settingsFilePath= "appsettings.json")
         {
             var CurDir = AppDomain.CurrentDomain.BaseDirectory;
             AppConfiguration = new ConfigurationBuilder()
@@ -88,7 +88,10 @@ namespace SharedLib
             if (!Directory.Exists(Global.PathDB))
                 Directory.CreateDirectory(Global.PathDB);
 
-
+        }
+        public IConfigurationRoot GetConfiguration()
+        {
+            return AppConfiguration;
         }
     }
 }
