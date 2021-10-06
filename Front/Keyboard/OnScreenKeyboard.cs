@@ -10,9 +10,10 @@ namespace OnScreenKeyboardControl.Keyboard
 {
 	public class OnScreenKeyboard : Grid
 	{
-		public OnScreenKeyboard() 
+		//public OnScreenKeyboard() { }
+		public void SetInput(FrameworkElement pFixedActiveControl ) 
 		{
-			
+			FixedActiveControl = pFixedActiveControl;
 		}
 		#region dependency properties
 
@@ -106,6 +107,7 @@ namespace OnScreenKeyboardControl.Keyboard
 		}
 
 		private FrameworkElement _activeControl;
+		static private FrameworkElement FixedActiveControl=null;
 
 		#endregion
 
@@ -258,7 +260,7 @@ namespace OnScreenKeyboardControl.Keyboard
 		{
 			if (e.StateModifier == null)
 			{
-				e.Execute(_activeControl);
+				e.Execute(FixedActiveControl ==null ?_activeControl: FixedActiveControl);
 				var singleInstance = _activeKeyModifiers.Where(i => i.SingleInstance).Select(k => k).ToList();
 				singleInstance.ForEach(j => _activeKeyModifiers.Remove(j));
 			}

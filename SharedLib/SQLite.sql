@@ -33,6 +33,7 @@ alter TABLE wares add Weight_Delta INTEGER  DEFAULT 0;
 alter TABLE PROMOTION_SALE_DEALER add PRIORITY INTEGER NOT NULL DEFAULT 1;
 alter TABLE wares add Limit_Age NUMBER;
 alter TABLE wares add PLU INTEGER;
+alter TABLE wares add Code_Direction INTEGER;
 
 
 [SqlConfig]
@@ -94,7 +95,8 @@ select t.code_wares as CodeWares,w.name_wares NameWares,w.name_wares_receipt  as
         ,w.code_UKTZED as CodeUKTZED
         ,w.Articl as Articl
         ,w.Limit_Age as LimitAge
-        ,w.PLU        
+        ,w.PLU    
+        ,w.Code_Direction as CodeDirection
 from t$1 t
 left join wares w on t.code_wares=w.code_wares
 left join price pd on ( pd.code_wares=t.code_wares and pd.code_dealer= @CodeDealer)
@@ -175,6 +177,7 @@ Price as Price/*, wr.sum as Sum*/, Type_Price as TypePrice
  ,w.PLU as PLU
  ,wr.QR
  ,wr.Excise_Stamp as ExciseStamp
+ ,w.Code_Direction as CodeDirection
                      from wares_receipt wr
                      join wares w on (wr.code_wares =w.code_wares)
                      join ADDITION_UNIT au on w.code_wares = au.code_wares and wr.code_unit=au.code_unit
@@ -843,7 +846,8 @@ CREATE TABLE WARES (
       Weight_Delta      NUMBER,
       code_UKTZED TEXT,
       Limit_Age NUMBER,
-      PLU INTEGER
+      PLU INTEGER,
+      Code_Direction INTEGER
 
 );
 
@@ -1041,8 +1045,8 @@ replace into UNIT_DIMENSION ( CODE_UNIT, NAME_UNIT, ABR_UNIT) values (@CodeUnit,
 replace into  GROUP_WARES (CODE_GROUP_WARES,CODE_PARENT_GROUP_WARES,NAME)
              values (@CodeGroupWares,@CodeParentGroupWares,@Name);
 [SqlReplaceWares]
-replace into  Wares (CODE_WARES,CODE_GROUP,NAME_WARES,Name_Wares_Upper, ARTICL,CODE_BRAND, CODE_UNIT, Percent_Vat,Type_VAT,NAME_WARES_RECEIPT, DESCRIPTION,Type_Wares,Weight_brutto,Weight_Fact,Weight_Delta,CODE_UKTZED,Limit_Age,PLU)
-             values (@CodeWares,@CodeGroup,@NameWares,@NameWaresUpper, @Articl,@CodeBrand,@CodeUnit, @PercentVat, @TypeVat,@NameWaresReceipt, @Description,@TypeWares,@WeightBrutto,@WeightFact,@WeightDelta,@CodeUKTZED,@LimitAge,@PLU);
+replace into  Wares (CODE_WARES,CODE_GROUP,NAME_WARES,Name_Wares_Upper, ARTICL,CODE_BRAND, CODE_UNIT, Percent_Vat,Type_VAT,NAME_WARES_RECEIPT, DESCRIPTION,Type_Wares,Weight_brutto,Weight_Fact,Weight_Delta,CODE_UKTZED,Limit_Age,PLU,Code_Direction)
+             values (@CodeWares,@CodeGroup,@NameWares,@NameWaresUpper, @Articl,@CodeBrand,@CodeUnit, @PercentVat, @TypeVat,@NameWaresReceipt, @Description,@TypeWares,@WeightBrutto,@WeightFact,@WeightDelta,@CodeUKTZED,@LimitAge,@PLU,@CodeDirection);
 [SqlReplaceAdditionUnit]
 replace into  Addition_Unit (CODE_WARES, CODE_UNIT, COEFFICIENT, DEFAULT_UNIT, WEIGHT, WEIGHT_NET )
               values (@CodeWares,@CodeUnit,@Coefficient, @DefaultUnit, @Weight, @WeightNet);

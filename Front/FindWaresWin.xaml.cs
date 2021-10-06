@@ -8,6 +8,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using System.Windows.Controls.Primitives;
 
 namespace Front
 {
@@ -16,42 +17,64 @@ namespace Front
 	/// </summary>
 	public partial class FindWaresWin : Window
 	{
+		GW CurW=null;
 		BL Bl;
-		int CodeFastGroup=0;
+		int CodeFastGroup = 0;
+		int OffSet = 0;
+		int Limit = 10;
+		int MaxPage = 0;
+		public bool IsUp{ get { return CodeFastGroup > 0;  } }
+		public bool Volume { get; set; }
 		public FindWaresWin()
 		{
 			InitializeComponent();
 			WindowState = WindowState.Maximized;
 			//WindowStyle = WindowStyle.None;
 			Bl = BL.GetBL;
-
-			OnScreenKeyboardControl.Keyboard.OnScreenKeyboard bb = new OnScreenKeyboardControl.Keyboard.OnScreenKeyboard();
+			KB.SetInput(WaresName);
+			//OnScreenKeyboardControl.Keyboard.OnScreenKeyboard bb = new OnScreenKeyboardControl.Keyboard.OnScreenKeyboard(WaresName);
+			//WaresName
 			NewB();
 		}
 
 		void NewB()
-        {
+		{
 			IEnumerable<GW> WG = null;
-			if (CodeFastGroup == 0 && WaresName.Text.Length==0)
+			if (CodeFastGroup == 0 && WaresName.Text.Length == 0)
 			{
-				WG = Bl.db.GetFastGroup(ModelMID.Global.CodeWarehouse).Select(r => new GW(r));
+				var aa = Bl.db.GetFastGroup(Global.CodeWarehouse)?.Select(r => new GW(r)).ToList();
+				MaxPage = aa.Count() / Limit;
+				for (int i=0;i<Limit*OffSet; i++)
+					aa.RemoveAt(0);
+
+				WG = aa;
 			}
 			else
 			{
-				WG = Bl.GetProductsByName(null, WaresName.Text, -1, 10, CodeFastGroup).Select(r => new GW(r)); ;
+				WG = Bl.GetProductsByName(null, (WaresName.Text.Length > 1 ? WaresName.Text : ""), OffSet, Limit, CodeFastGroup)?.Select(r => new GW(r));
+				if (WG != null)
+					MaxPage = WG.First().TotalRows / Limit;
+				else
+					MaxPage = 0;
+				
 			}
+			ButtonUp.IsEnabled = IsUp;
+			ButtonLeft.IsEnabled = (OffSet >0);
+			ButtonRight.IsEnabled = (OffSet < MaxPage);
 			BildButtom(WG);
 
 		}
 		void BildButtom(IEnumerable<GW> pGW)
-        {
-			//Wr = Wrx;
-			int i = 0;
-			int j = 0;
+		{
 			PictureGrid.Children.Clear();
+			if (pGW == null)
+				return;
+
+			int i = 0, j = 0;
+
 			foreach (var el in pGW)
 			{
-				var Bt = new Button();
+				var Bt = new ToggleButton();
 				Bt.Name = el.GetName;// $"BtGr{el.Code}";				
 				if (File.Exists(el.Pictures))
 					Bt.Content = new Image
@@ -62,40 +85,90 @@ namespace Front
 				else
 					Bt.Content = el.Name;
 				Bt.Click += BtClick;
+				Bt.Tag = el;
 				Grid.SetColumn(Bt, i);
 				Grid.SetRow(Bt, j);
 				PictureGrid.Children.Add(Bt);
 				if (++i >= 5)
 				{ j++; i = 0; }
+				if (j >=2) break;
 			}
 		}
 
 		private void BtClick(object sender, RoutedEventArgs e)
 		{
-			Button aa = (Button) sender;
-			int Code= Convert.ToInt32(aa.Name.Substring(1));
-			if (aa.Name.Substring(0,1).Equals("G"))
-            {
-				CodeFastGroup = Code;
-				NewB();
-			}
-            else 
+			ToggleButton aa = (ToggleButton)sender;
+			GW Gw = aa.Tag as GW;
+			if(Gw != null)			
+			if (Gw.Type==1)
 			{
-				Close(Code);
-			}	
+				CodeFastGroup = Gw.Code;
+					NewB();
+				
+			}
+			else
+			{
+					if(Gw.CodeUnit==Global.WeightCodeUnit)
+                    {
+						CurW = Gw;
+						WeightWares.Visibility = Visibility.Visible;
+
+					}
+					else
+						Close(Gw.Code,Gw.CodeUnit,1m);
+			}
 		}
 
-		private void Close(int pCodeWares)
-        {
-			if(pCodeWares>0)
-            {
-				Bl.AddWaresCode(pCodeWares, 0, 1);
-            }
+		private void Close(int pCodeWares,int pCodeUnit=0,decimal pQuantity=0m)
+		{
+			
+			if (pCodeWares > 0)
+			{
+				Bl.AddWaresCode(pCodeWares, pCodeUnit, pQuantity);
+			}
 			Close();
 		}
-		
-	}
+		private void WaresName_Changed(object sender, TextChangedEventArgs e)
+		{
+			NewB();
+		}
+		private void ClickButtonUp(object sender, RoutedEventArgs e)
+		{
+			if (CodeFastGroup > 0)
+			{
+				CodeFastGroup = 0;
+				NewB();
+			}
+		}
+		private void ClickButtonLeft(object sender, RoutedEventArgs e)
+		{
+			if (OffSet > 0)
+			{
+				OffSet--;
+				NewB();
+			}
+		}
+		private void ClickButtonRight(object sender, RoutedEventArgs e)
+		{
+			if (OffSet < MaxPage)
+			{
+				OffSet++;
+				NewB();
+			}
+		}
 
+		private void ClickButtonOk(object sender, RoutedEventArgs e)
+		{
+			Bl.AddWaresCode(CurW.Code, CurW.CodeUnit, 555M);
+			Close();
+		}
+
+		private void ClickButtonCancel(object sender, RoutedEventArgs e)
+		{
+			Close();
+		}
+
+	}
 	public class GW
 	{
 		public GW(FastGroup pFG)
@@ -108,15 +181,19 @@ namespace Front
 		}
 		public GW(ReceiptWares pFG)
 		{
-			
 			Type = 0;
 			Name = pFG.NameWares;
-			Code = pFG.CodeWares;			
+			Code = pFG.CodeWares;
+			TotalRows = pFG.TotalRows;
+			CodeUnit = pFG.CodeUnit;
 		}
-		int Type { get; set; }
+		public int Type { get; set; }
 		public string Name { get; set; }
 		public int Code { get; set; }
 		//public string Pictures { get; set; }
+		public int TotalRows { get; set; }
+		public int CodeUnit { get; set; }
+
 		public string GetName { get { return (Type == 1 ? "G" : "W") + Code.ToString(); } }
 		public string Pictures { get { return $"D:\\Pictures\\{(Type == 1 ? "Categories" : "Products")}\\{Code.ToString("D9")}.jpg"; } }
 	}

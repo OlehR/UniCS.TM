@@ -96,10 +96,10 @@ namespace Front
 
             ListWares = new ObservableCollection<ReceiptWares>(StartData());
 
-            //ua.Tag = new CultureInfo("ua");
+            ua.Tag = new CultureInfo("ua");
             en.Tag = new CultureInfo("en");
             hu.Tag = new CultureInfo("hu");
-            //pln.Tag = new CultureInfo("pln");
+            pln.Tag = new CultureInfo("pln");
 
             WaresList.ItemsSource = ListWares;// Wares;
 

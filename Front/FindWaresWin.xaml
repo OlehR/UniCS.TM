@@ -6,6 +6,7 @@
         xmlns:keyboard="clr-namespace:OnScreenKeyboardControl.Keyboard"
         xmlns:onScreenKeyboardControl="clr-namespace:OnScreenKeyboardControl"
         Title="Пошук товару"
+        WindowStyle="None"
         Width="825"
         Height="450"
         mc:Ignorable="d">
@@ -128,10 +129,9 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="1.2*" />
-            <RowDefinition Height="5*" />
+            <RowDefinition Height="5.5*" />
             <RowDefinition Height="1*" />
-            <RowDefinition Height="auto" />
-           
+            <RowDefinition Height="5*" />
         </Grid.RowDefinitions>        
 
         <Grid  Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3"  >
@@ -201,6 +201,10 @@
                     </Image>
                 </Button>
             </Grid>
+            <Button Grid.Column="5"  Style="{StaticResource Default}" HorizontalAlignment="Left" Click="ClickButtonCancel" >
+                <!-- Click="_VolumeButton"-->
+                <Image Source="icons\Close.png" Stretch="Fill"/>
+            </Button>
 
         </Grid>
 
@@ -215,7 +219,43 @@
                 <RowDefinition Height="1*" />               
             </Grid.RowDefinitions>
 
-                <Grid Grid.Column="1"  Name="PictureGrid"> <!--Grid.ColumnSpan="4"-->
+            <!---->
+            <Button Grid.Column="0" Grid.Row="0" Click="ClickButtonUp" Name="ButtonUp" ><!--Style="{StaticResource yelowButton}"-->
+                <Image Source="icons\Up.png" Stretch="Fill">
+                    <Image.Style>
+                        <Style TargetType="Image">
+                            <Style.Triggers>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Opacity" Value="0.5" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                </Image>
+
+                <!--<Image  Source="icons\Up.png" Stretch="Fill"></Image>-->
+
+                <!--<Button.Style>
+                    <Style TargetType="Button">
+                        
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsUp, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                <Setter Property="IsEnabled" Value="True" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsUp, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                <Setter Property="IsEnabled" Value="False" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                        
+                        
+                    </Style>
+                </Button.Style>-->
+
+            </Button>
+            
+            <Grid Grid.Column="1"  Name="PictureGrid"> <!--Grid.ColumnSpan="4"-->
                     <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"></ColumnDefinition>
                     <ColumnDefinition Width="1*"></ColumnDefinition>
@@ -229,19 +269,136 @@
                 </Grid.RowDefinitions>
 
                 </Grid>
+            
+            <Grid Grid.Column="2"  Name="LR">
+                <!--Grid.ColumnSpan="4"-->
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                    
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                </Grid.RowDefinitions>
+                <Button Grid.Column="0" Grid.Row="0" Click="ClickButtonLeft" Name="ButtonLeft" Style="{StaticResource yelowButton}">
+                    <!-- Click="_ChangeLanguage" -->
+                    <Image  Source="icons\back.png">
+                    <Image.Style>
+                        <Style TargetType="Image">
+                            <Style.Triggers>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Opacity" Value="0.5" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                    </Image>
+                </Button>
+                <Button Grid.Column="0" Grid.Row="1" Click="ClickButtonRight" Name ="ButtonRight" Style="{StaticResource yelowButton}">
+                    <!-- Click="_ChangeLanguage" -->
+                    <Image  Source="icons\right.png">
+                        <Image.Style>
+                        <Style TargetType="Image">
+                            <Style.Triggers>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Opacity" Value="0.5" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                        </Image.Style>
+                    </Image>
+                </Button>
+            </Grid>
+
         </Grid>
         <TextBlock Grid.Row="2" Grid.Column="0" FontSize="25" Text="Назва" />
 
-        <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" TabIndex="1" Name="WaresName" FontSize="25"    />
+        <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" TabIndex="1" Name="WaresName" FontSize="25"  TextChanged="WaresName_Changed"  VerticalAlignment="Center" />
 
         <keyboard:OnScreenKeyboard Grid.Row="3"
 		                           Grid.Column="0"
 		                           Grid.ColumnSpan="4"
-		                           Height="300" 
+		                           Height="300"
+                                   x:Name="KB"                                  
 		                           VerticalAlignment="Bottom" 
-															 ToggleButtonStyle="{StaticResource DefaultTouchToggleButtonStyle}"
+								   ToggleButtonStyle="{StaticResource DefaultTouchToggleButtonStyle}"
 		                           ActiveContainer="{Binding ElementName=MainGrid}"
-		                           CancelCommand="{Binding CancelCommand2}"
-		                           SaveCommand="{Binding SaveCommand}" />
+		                           CancelCommand="{Binding CancelCommand2}"/>
+
+
+
+        <Grid Name="WeightWares" Visibility="Collapsed" Grid.ZIndex="2"
+              Grid.Row="1" Grid.RowSpan="4"
+              Grid.Column="0" Grid.ColumnSpan="4"
+              
+              >
+            <Grid.Resources>
+                <Style TargetType="{x:Type TextBlock}">
+                    <Setter Property="Foreground" Value="Red" />
+                </Style>
+                <Style TargetType="{x:Type TextBox}">
+                    <Setter Property="Foreground" Value="Red" />
+                </Style>
+            </Grid.Resources>
+            <!--<Border Background="WhiteSmoke" />
+            <Border Grid.Row="1" Background="WhiteSmoke" />
+            <Border Grid.Row="2" Background="WhiteSmoke" />
+            <Border Grid.Row="3" Background="WhiteSmoke" />
+            <Border Grid.Row="4" Background="WhiteSmoke" />-->
+            <Grid.RowDefinitions>
+                <RowDefinition  Height="1*"></RowDefinition>
+                <RowDefinition  Height="4*"></RowDefinition>
+                <RowDefinition  Height="1*"></RowDefinition>
+                <RowDefinition  Height="1*"></RowDefinition>
+                <RowDefinition  Height="1*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Label 
+                                 Grid.Column="0" Grid.ColumnSpan="1" Grid.Row="0" Grid.RowSpan="1" Margin="3,-2,0,-2" HorizontalAlignment="Center" VerticalAlignment="Stretch" 
+                                FontSize="10" Height="Auto" BorderThickness="3,0,0,0"
+                                Content="Покладіть товар на вагу" />
+            <Label 
+                                x:Name="NameWares" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Grid.RowSpan="1" Margin="3,-2,0,-2" HorizontalAlignment="Center" VerticalAlignment="Stretch" 
+                                FontSize="12" Height="Auto" BorderThickness="3,0,0,0"
+                                Content="Кавун" />
+            <Label 
+                                 Grid.Column="0" Grid.ColumnSpan="1" Grid.Row="3" Grid.RowSpan="1" Margin="3,-2,0,-2" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                FontSize="10" Height="Auto" BorderThickness="3,0,0,0"
+                                Content="0.123 kg" />
+
+            <Grid Grid.Row="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                    <ColumnDefinition Width="2*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="1" Grid.Row="0" Click="ClickButtonOk" Name="ButtonOk" Style="{StaticResource yelowButton}">
+                    <Image  Source="icons\back.png">
+                        <Image.Style>
+                            <Style TargetType="Image">
+                                <Style.Triggers>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter Property="Opacity" Value="0.5" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Image.Style>
+                    </Image>
+                </Button>
+                <Button Grid.Column="2" Grid.Row="0" Click="ClickButtonCancel" Name="ButtonCancel" Style="{StaticResource yelowButton}">
+                    <Image  Source="icons\Up.png">
+                        <Image.Style>
+                            <Style TargetType="Image">
+                                <Style.Triggers>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter Property="Opacity" Value="0.5" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Image.Style>
+                    </Image>
+                </Button>
+            </Grid>
+        </Grid>
     </Grid>
 </Window>

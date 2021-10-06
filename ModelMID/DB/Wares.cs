@@ -59,5 +59,9 @@ namespace ModelMID
         /// PLU - кавомашини
         /// </summary>
         public  int PLU { get; set; }
+        /// <summary>
+        /// Напрямок
+        /// </summary>
+        public int CodeDirection { get; set; }
     }
 }

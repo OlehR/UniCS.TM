@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <ApplicationIcon />
     <Win32Resource />
@@ -15,19 +15,24 @@
 
   <ItemGroup>
     <None Remove="icons\back.png" />
+    <None Remove="icons\Close.png" />
     <None Remove="icons\delete.png" />
     <None Remove="icons\hu.png" />
     <None Remove="icons\minus.png" />
     <None Remove="icons\no_volume.png" />
     <None Remove="icons\pln.png" />
     <None Remove="icons\plus.png" />
+    <None Remove="icons\right.png" />
     <None Remove="icons\ua.png" />
     <None Remove="icons\uk.png" />
+    <None Remove="icons\Up.png" />
     <None Remove="icons\volume.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="icons\Close.png" />
     <Resource Include="icons\no_volume.png" />
+    <Resource Include="icons\right.png" />
     <Resource Include="icons\ua.png" />
   </ItemGroup>
 
@@ -70,6 +75,9 @@
     <Resource Include="icons\pln.png" />
     <Resource Include="icons\plus.png" />
     <Resource Include="icons\uk.png" />
+    <Resource Include="icons\Up.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="icons\volume.png" />
   </ItemGroup>
 

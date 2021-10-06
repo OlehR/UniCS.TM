@@ -484,20 +484,19 @@ where RE.EVENT_TYPE=1"
             {
                 if (Ldc == default(DateTime))
                     Ldc = today.AddDays(-10);
-
-                while (Ldc < today)
+                do
                 {
+                    Ldc = Ldc.AddDays(1);
                     var ldb = new WDB_SQLite(Ldc);
-
                     var t = ldb.GetReceiptWaresDeleted();
                     var res = await Send1CReceiptWaresDeletedAsync(t);
+                   
                     if (res)
                         db.SetConfig<DateTime>("LastDaySendDeleted", Ldc);
                     else
                         break;
 
-                    Ldc = Ldc.AddDays(1);
-                }
+                } while (Ldc < today);
             }
             catch (Exception ex)
             {
@@ -508,8 +507,8 @@ where RE.EVENT_TYPE=1"
 
         async Task<bool> Send1CReceiptWaresDeletedAsync(IEnumerable<ReceiptWaresDeleted1C> pRWD)
         {
-            if (pRWD == null)
-                return false;
+            if (pRWD == null || pRWD.Count()==0)
+                return true;
             try
             {
                 var d = new {data= pRWD };

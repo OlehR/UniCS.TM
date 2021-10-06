@@ -5,7 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"   
         xmlns:local="clr-namespace:Front"
         mc:Ignorable="d"
-        Title="MainWindow" Height="768" Width="1366">
+        Title="MainWindow" 
+        WindowState="Maximized"
+        WindowStyle="None"
+        Height="768" Width="1366"
+        >
+
+    <!---->
     <Window.Resources>
         <local:BoolToVisibilityConverter
          x:Key="BoolToHiddenConverter"

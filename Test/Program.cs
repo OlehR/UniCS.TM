@@ -47,10 +47,10 @@ namespace Test
             Console.WriteLine("Start");
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
 
-            //await CreateDataBaseAsync(true);
+            await CreateDataBaseAsync(false);
 
             
-                TestReceiptAsync();
+              // TestReceiptAsync();
 
             //CreateBarCode();
             //TestKit();
@@ -156,6 +156,7 @@ namespace Test
                 // sd = api.AddProductByProductId(TerminalId, sd.Id, 1, 45.71M);
 
                 sd = api.AddProductByBarCode(TerminalId, "4820000536202", 1);
+                sd = api.AddProductByBarCode(TerminalId, "2510188500004", 1);
 
                 var rgggrr = api.AddProductByProductId(TerminalId, ProductId, 1);
 
