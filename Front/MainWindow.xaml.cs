@@ -20,17 +20,26 @@ using SharedLib;
 
 namespace Front
 {
+    public enum StateMainWindows 
+    { 
+      StartWindow,
+      WaitInput,
+      WaitInputPrice,
+      WaitExciseStamp,
+      WaitFindWares,
+      ProblemWeight,
+      WaitAdmin
+    }
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        StateMainWindows State= StateMainWindows.StartWindow;
 
-        
         public event PropertyChangedEventHandler PropertyChanged;
 
         public string WaresQuantity { get; set; }
-
         public string MoneySum { get; set; }
         public bool Volume { get; set; }
         public string Weight { get; set; }
@@ -39,11 +48,11 @@ namespace Front
         EquipmentFront EF;
 
         public ObservableCollection<ReceiptWares> ListWares { get; set; }
+        //public ObservableCollection<decimal> Prices { get; set; } = new ObservableCollection<decimal>;
 
         public MainWindow()
         {
-            var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-            
+            var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)            
 
             Bl = new BL(true);
             EF = new EquipmentFront(Bl);
@@ -85,7 +94,6 @@ namespace Front
                 Debug.WriteLine($"Client.Wallet=> {client.Wallet} SumBonus=>{client.SumBonus} ");
             };
 
-
             WaresQuantity = "0";
             MoneySum = "0";
             Volume = true;
@@ -103,9 +111,37 @@ namespace Front
 
             WaresList.ItemsSource = ListWares;// Wares;
 
+
             CultureInfo currLang = App.Language;
             Recalc();
 
+        }
+
+        void SetStateView(StateMainWindows pSMV)
+        {
+            State = pSMV;
+            ExciseStamp.Visibility = Visibility.Collapsed;
+            ChoicePrice.Visibility = Visibility.Collapsed;
+
+            switch (State)
+            {
+                case StateMainWindows.WaitInputPrice:
+                    Prices.ItemsSource = new ObservableCollection<decimal>(CurWares.Prices/*.Select(r=>Convert.ToString(r))*/);
+                    ChoicePrice.Visibility = Visibility.Visible;
+                    break;
+                case StateMainWindows.WaitExciseStamp:
+                    ExciseStamp.Visibility = Visibility.Visible;
+                    break;
+
+                case StateMainWindows.WaitFindWares:
+                    FindWaresWin FWW = new FindWaresWin(this);
+                    FWW.Show();
+                    break;
+                case StateMainWindows.WaitInput:
+                default:
+                    break;
+                
+            }
         }
 
         private void _Delete(object sender, RoutedEventArgs e)
@@ -153,6 +189,8 @@ namespace Front
             var Sum = ListWares.Sum(r => r.Sum);
             MoneySum = Sum.ToString();
             WaresQuantity = ListWares.Count().ToString();
+            SV_WaresList.ScrollToEnd();
+
         }
 
         private void _ChangeLanguage(object sender, RoutedEventArgs e)
@@ -213,18 +251,49 @@ namespace Front
 
         private void _Search(object sender, RoutedEventArgs e)
         {
-            FindWaresWin FWW = new FindWaresWin();
-            //this.Visibility = Visibility.Visible;
-            FWW.Show();
+            SetStateView(StateMainWindows.WaitFindWares);
+        }
+
+        public ReceiptWares CurWares { get; set; } = null;
+        public void AddWares(int pCodeWares, int pCodeUnit = 0, decimal pQuantity = 0m,decimal pPrice=0m)
+        {
+            if (pCodeWares > 0)
+            {
+                CurWares = Bl.AddWaresCode(pCodeWares, pCodeUnit, pQuantity, pPrice);
+
+               
+
+                if (CurWares != null)
+                {
+                    if (CurWares.TypeWares == 1)
+                    {
+                        SetStateView(StateMainWindows.WaitExciseStamp);
+                        return;
+                    }
+
+                    if (CurWares.Price == 0) //Повідомлення Про відсутність ціни
+                    {
+
+                    }
+                    if (CurWares.Prices != null && pPrice == 0m) //Меню з вибором ціни. Сигарети.
+                    {
+                        if (CurWares.Prices.Count() > 1)
+                        {
+                            
+                            SetStateView(StateMainWindows.WaitInputPrice);
+                        }
+                        else
+                            if (CurWares.Prices.Count() == 1)
+                            Bl.AddWaresCode(pCodeWares, pCodeUnit, pQuantity, CurWares.Prices.First());
+
+                    }
+
+                }
+            }
         }
 
         private void _ButtonHelp(object sender, RoutedEventArgs e)
         {
-            // NavigationService navService = NavigationService.GetNavigationService(this);
-
-            //navService.Navigate(ad);
-
-            //ad.Visibility = Visibility.Visible;
             Admin ad = new Admin();
             ad.Show();
         }
@@ -244,23 +313,39 @@ namespace Front
 
         }
 
+
+        private void _AddWaresPrice(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            try
+            {
+                if (btn != null)
+                {
+                    TextBlock Tb = btn.Content as TextBlock;
+                    if (Tb != null)
+                    {
+                        decimal Pr = Convert.ToDecimal(Tb.Tag);
+                        AddWares(CurWares.CodeWares, CurWares.CodeUnit, 1, Pr);
+                    }
+                }
+            }
+            catch { }
+            SetStateView(StateMainWindows.WaitInput);
+        }
         private IEnumerable<ReceiptWares> StartData()
         {
             var TerminalId = Guid.Parse("b017dbcc-b5b3-4e2f-ac06-af48e87ce274");
             var RId=Bl.GetNewIdReceipt(TerminalId);
             Bl.AddWaresBarCode(RId, "4823086109988", 10);
-            Bl.AddWaresBarCode(RId, "7622300813437", 1);
+            //Bl.AddWaresBarCode(RId, "7622300813437", 1);
             Bl.AddWaresBarCode(RId, "2201652300229", 3);
             Bl.AddWaresBarCode(RId,"7775002160043", 1); //товар 2 кат
-            Bl.AddWaresBarCode(RId,"1110011760218", 11);
-            Bl.AddWaresBarCode(RId,"7773002160043", 1); //товар 2 кат
+           //Bl.AddWaresBarCode(RId,"1110011760218", 11);
+            //Bl.AddWaresBarCode(RId,"7773002160043", 1); //товар 2 кат
             return Bl.GetWaresReceipt();
         }
 
-        
-
-    }
-
+   }
 
     [ValueConversion(typeof(bool), typeof(Visibility))]
     public sealed class BoolToVisibilityConverter : IValueConverter
@@ -293,6 +378,5 @@ namespace Front
             return null;
         }
     }
-
 
 }

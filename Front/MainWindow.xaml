@@ -134,7 +134,7 @@
             </Grid>
         </Border>
 
-        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Name="SV_WaresList">
             <ItemsControl Grid.Row="2" Name="WaresList">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -297,5 +297,83 @@
             </Button>
         </Grid>
 
+        <!-- Ввід цін на сегарети    -->
+        <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="1" Grid.RowSpan="3"
+              Grid.Column="0" Grid.ColumnSpan="4"
+                 Name="ChoicePrice" Visibility="Collapsed" Grid.ZIndex="2" 
+                CornerRadius="10">
+
+            <Grid  >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"></RowDefinition>
+                    <RowDefinition Height="3*"></RowDefinition>
+                    <RowDefinition Height="1*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <TextBlock FontSize="28" Text="{DynamicResource ChoicePriceTobacco }"/>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Name="SV_Prices">
+                    <ItemsControl  Name="Prices">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Click="_AddWaresPrice"   >
+                                    <TextBlock FontSize="28" Text="{Binding }" Tag="{Binding}"/>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <Button Grid.Row="2" Style="{StaticResource Default}"  FontSize="22" Click="_ButtonPayment" >
+                    <TextBlock FontSize="28" Text="{DynamicResource payment}"/>
+                </Button>
+            </Grid>
+        </Border>
+
+
+        <!-- Ввід Акцизної марки    -->
+        <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="1" Grid.RowSpan="3"
+              Grid.Column="0" Grid.ColumnSpan="4"
+                 Name="ExciseStamp" Visibility="Collapsed" Grid.ZIndex="2" 
+                CornerRadius="10">
+
+            <Grid  >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"></RowDefinition>
+                    <RowDefinition Height="3*"></RowDefinition>
+                    <RowDefinition Height="1*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <TextBlock FontSize="28" Text="{DynamicResource ChoiceExciseStamp }"/>
+
+                <TextBox Grid.Row="1" TabIndex="1" Name="TBExciseStamp" FontSize="25"    VerticalAlignment="Center" />
+
+                <Button Grid.Row="2" Style="{StaticResource Default}"  FontSize="22" Click="_ButtonPayment" >
+                    <TextBlock FontSize="28" Text="{DynamicResource payment}"/>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- Очікування Адміністратора   -->
+        <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="1" Grid.RowSpan="3"
+              Grid.Column="0" Grid.ColumnSpan="4"
+                 Name="WaitAdmin" Visibility="Collapsed" Grid.ZIndex="2" 
+                CornerRadius="10">
+            <Grid  >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"></RowDefinition>
+                    <RowDefinition Height="3*"></RowDefinition>
+                    <RowDefinition Height="1*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <TextBlock FontSize="28" Text="{DynamicResource WaitAdmin }"/>                
+
+                <Button Grid.Row="2" Style="{StaticResource Default}"  FontSize="22" Click="_ButtonPayment" >
+                    <TextBlock FontSize="28" Text="{DynamicResource payment}"/>
+                </Button>
+            </Grid>
+        </Border>
+
     </Grid>
+    
 </Window>

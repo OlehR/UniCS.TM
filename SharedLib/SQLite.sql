@@ -5,7 +5,7 @@
 [VerMID]
 1
 [VerConfig]
-0
+1
 
 [SqlUpdateRC_V1]
 alter TABLE WARES_RECEIPT            add Fix_Weight NUMBER NOT NULL DEFAULT 0;

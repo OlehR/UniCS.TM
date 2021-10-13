@@ -186,7 +186,7 @@ namespace OnScreenKeyboardControl.Keyboard
 				new OnScreenKeyNormal(2, 09, new[] {"l", "L", "д", "Д"}, CaptionUpdateDelegateDelegateFunction.ShiftAndSpecial),
 				new OnScreenKeyNormal(2, 10, new[] {";", ":", "ж", "Ж"}, CaptionUpdateDelegateDelegateFunction.ShiftAndSpecial),
 				new OnScreenKeyNormal(2, 11, new[] {"\"", "'", "є", "Є"}, CaptionUpdateDelegateDelegateFunction.ShiftAndSpecial),
-				new OnScreenKeySpecial(2, 12, "Enter", ExecuteDelegateFunctions.MoveNextExecuteDelegate) {GridWidth = new GridLength(1.8, GridUnitType.Star)},
+				new OnScreenKeySpecial(2, 12, "Enter", ExecuteDelegateFunctions.MoveNextExecuteDelegate,false) {GridWidth = new GridLength(1.8, GridUnitType.Star)},
 
 				new OnScreenKeyModifier(3, 00, new[] {"Shift"}, OnScreenKeyModifierType.Shift){GridWidth = new GridLength(2.4, GridUnitType.Star)},
 				new OnScreenKeyNormal(3, 01, new[] {"z", "Z", "я", "Я"}, CaptionUpdateDelegateDelegateFunction.ShiftAndSpecial),
@@ -204,8 +204,8 @@ namespace OnScreenKeyboardControl.Keyboard
 				new OnScreenKeySpecial(4, 00,  "Clear", ExecuteDelegateFunctions.ClearExecuteDelegate),
 				new OnScreenKeyToggle(4, 01, new [] { "En"}, OnScreenKeyModifierType.Special),
 				new OnScreenKeySpecial(4, 02,  string.Empty, " "){GridWidth = new GridLength(5, GridUnitType.Star)},
-				new OnScreenKeySpecial(4, 03,  "Save",  nameof(SaveCommand)) {ClickCommand = nameof(SaveCommand)},
-				new OnScreenKeySpecial(4, 04, "Cancel",  nameof(CancelCommand)) {ClickCommand = nameof(CancelCommand)},
+				new OnScreenKeySpecial(4, 03,  "Save",  nameof(SaveCommand),false) {ClickCommand = nameof(SaveCommand)},
+				new OnScreenKeySpecial(4, 04, "Cancel",  nameof(CancelCommand),false) {ClickCommand = nameof(CancelCommand)},
 			};
 
 			mainSection.Keys = mainKeys;
@@ -215,33 +215,33 @@ namespace OnScreenKeyboardControl.Keyboard
 			Children.Add(mainSection);
 			_allOnScreenKeys.AddRange(mainSection.Keys);
 
-			//var specialSection = new OnScreenKeyboardSection();
-			//var specialKeys = new ObservableCollection<OnScreenKey>
-			//                      {
-			//                          new OnScreenKeyNormal ( 0,  0, Key = new ChordKey("Select All", VirtualKeyCode.CONTROL, VirtualKeyCode.VK__A), GridWidth = new GridLength(2, GridUnitType.Star)},
-			//                          new OnScreenKeyNormal ( 0,  1, Key = new ChordKey("Undo", VirtualKeyCode.CONTROL, VirtualKeyCode.VK__Z) },
-			//                          new OnScreenKeyNormal ( 1,  0, Key = new ChordKey("Copy", VirtualKeyCode.CONTROL, VirtualKeyCode.VK__C) },
-			//                          new OnScreenKeyNormal ( 1,  1, Key = new ChordKey("Cut", VirtualKeyCode.CONTROL, VirtualKeyCode.VK__X) },
-			//                          new OnScreenKeyNormal ( 1,  2, Key = new ChordKey("Paste", VirtualKeyCode.CONTROL, VirtualKeyCode.VK__V) },
-			//                          new OnScreenKeyNormal ( 2,  0, Key = new VirtualKey(VirtualKeyCode.DELETE, "Del") },
-			//                          new OnScreenKeyNormal ( 2,  1, Key = new VirtualKey(VirtualKeyCode.HOME, "Home") },
-			//                          new OnScreenKeyNormal ( 2,  2, Key = new VirtualKey(VirtualKeyCode.END, "End") },
-			//                          new OnScreenKeyNormal ( 3,  0, Key = new VirtualKey(VirtualKeyCode.PRIOR, "PgUp") },
-			//                          new OnScreenKeyNormal ( 3,  1, Key = new VirtualKey(VirtualKeyCode.UP, "Up") },
-			//                          new OnScreenKeyNormal ( 3,  2, Key = new VirtualKey(VirtualKeyCode.NEXT, "PgDn") },
-			//                          new OnScreenKeyNormal ( 4,  0, Key = new VirtualKey(VirtualKeyCode.LEFT, "Left") },
-			//                          new OnScreenKeyNormal ( 4,  1, Key = new VirtualKey(VirtualKeyCode.DOWN, "Down") },
-			//                          new OnScreenKeyNormal ( 4,  2, Key = new VirtualKey(VirtualKeyCode.RIGHT, "Right") },
-			//                      };
+            //var specialSection = new OnScreenKeyboardSection();
+            //var specialKeys = new ObservableCollection<OnScreenKey>
+            //                      {
+            //                          new OnScreenKeyNormal ( 0,  0, Key = new ChordKey("Select All", VirtualKeyCode.CONTROL, VirtualKeyCode.VK__A), GridWidth = new GridLength(2, GridUnitType.Star)},
+            //                          new OnScreenKeyNormal ( 0,  1, Key = new ChordKey("Undo", VirtualKeyCode.CONTROL, VirtualKeyCode.VK__Z) },
+            //                          new OnScreenKeyNormal ( 1,  0, Key = new ChordKey("Copy", VirtualKeyCode.CONTROL, VirtualKeyCode.VK__C) },
+            //                          new OnScreenKeyNormal ( 1,  1, Key = new ChordKey("Cut", VirtualKeyCode.CONTROL, VirtualKeyCode.VK__X) },
+            //                          new OnScreenKeyNormal ( 1,  2, Key = new ChordKey("Paste", VirtualKeyCode.CONTROL, VirtualKeyCode.VK__V) },
+            //                          new OnScreenKeyNormal ( 2,  0, Key = new VirtualKey(VirtualKeyCode.DELETE, "Del") },
+            //                          new OnScreenKeyNormal ( 2,  1, Key = new VirtualKey(VirtualKeyCode.HOME, "Home") },
+            //                          new OnScreenKeyNormal ( 2,  2, Key = new VirtualKey(VirtualKeyCode.END, "End") },
+            //                          new OnScreenKeyNormal ( 3,  0, Key = new VirtualKey(VirtualKeyCode.PRIOR, "PgUp") },
+            //                          new OnScreenKeyNormal ( 3,  1, Key = new VirtualKey(VirtualKeyCode.UP, "Up") },
+            //                          new OnScreenKeyNormal ( 3,  2, Key = new VirtualKey(VirtualKeyCode.NEXT, "PgDn") },
+            //                          new OnScreenKeyNormal ( 4,  0, Key = new VirtualKey(VirtualKeyCode.LEFT, "Left") },
+            //                          new OnScreenKeyNormal ( 4,  1, Key = new VirtualKey(VirtualKeyCode.DOWN, "Down") },
+            //                          new OnScreenKeyNormal ( 4,  2, Key = new VirtualKey(VirtualKeyCode.RIGHT, "Right") },
+            //                      };
 
-			//specialSection.Keys = specialKeys;
-			//specialSection.SetValue(ColumnProperty, 1);
-			//_sections.Add(specialSection);
-			//ColumnDefinitions.Add(new ColumnDefinition());
-			//Children.Add(specialSection);
-			//_allOnScreenKeys.AddRange(specialSection.Keys);
+            //specialSection.Keys = specialKeys;
+            //specialSection.SetValue(ColumnProperty, 1);
+            //_sections.Add(specialSection);
+            //ColumnDefinitions.Add(new ColumnDefinition());
+            //Children.Add(specialSection);
+            //_allOnScreenKeys.AddRange(specialSection.Keys);
 
-			Loaded += OnScreenKeyboard_Loaded;
+            Loaded += OnScreenKeyboard_Loaded;
 
 			base.BeginInit();
 			_allOnScreenKeys.ForEach(i => i.Update(_activeKeyModifiers));

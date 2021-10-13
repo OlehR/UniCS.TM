@@ -9,6 +9,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Windows.Controls.Primitives;
+using System.ComponentModel;
+using System.Windows.Media;
 
 namespace Front
 {
@@ -17,7 +19,9 @@ namespace Front
 	/// </summary>
 	public partial class FindWaresWin : Window
 	{
-		GW CurW=null;
+		public event PropertyChangedEventHandler PropertyChanged;
+		public GW CurW { get; set;} = null;
+		//public string NameW { get { return CurW?.Name; } }
 		BL Bl;
 		int CodeFastGroup = 0;
 		int OffSet = 0;
@@ -25,17 +29,22 @@ namespace Front
 		int MaxPage = 0;
 		public bool IsUp{ get { return CodeFastGroup > 0;  } }
 		public bool Volume { get; set; }
-		public FindWaresWin()
+		MainWindow MW;
+		public FindWaresWin(MainWindow pMW)
 		{
 			InitializeComponent();
 			WindowState = WindowState.Maximized;
 			//WindowStyle = WindowStyle.None;
+
+			MW = pMW;
 			Bl = BL.GetBL;
 			KB.SetInput(WaresName);
 			//OnScreenKeyboardControl.Keyboard.OnScreenKeyboard bb = new OnScreenKeyboardControl.Keyboard.OnScreenKeyboard(WaresName);
 			//WaresName
 			NewB();
 		}
+
+		
 
 		void NewB()
 		{
@@ -99,33 +108,41 @@ namespace Front
 		{
 			ToggleButton aa = (ToggleButton)sender;
 			GW Gw = aa.Tag as GW;
-			if(Gw != null)			
-			if (Gw.Type==1)
-			{
-				CodeFastGroup = Gw.Code;
+			if (Gw != null)
+				if (Gw.Type == 1)
+				{
+					CodeFastGroup = Gw.Code;
 					NewB();
-				
-			}
-			else
-			{
-					if(Gw.CodeUnit==Global.WeightCodeUnit)
-                    {
+				}
+				else
+				{
+					if (Gw.CodeUnit == Global.WeightCodeUnit)
+					{
 						CurW = Gw;
-						WeightWares.Visibility = Visibility.Visible;
+						NameWares.Content = CurW.Name;
 
+						if (File.Exists(CurW.Pictures))
+						{
+							Image im = new Image
+							{
+								Source = new BitmapImage(new Uri(CurW.Pictures)),
+								VerticalAlignment = VerticalAlignment.Center
+							};
+							//Grid.SetColumn(Bt, i);
+							Grid.SetRow(im, 1);
+							GridWeightWares.Children.Add(im);
+						}
+
+						WeightWares.Visibility = Visibility.Visible;
 					}
 					else
-						Close(Gw.Code,Gw.CodeUnit,1m);
-			}
+						Close(Gw.Code, Gw.CodeUnit, 1m);
+				}
 		}
 
 		private void Close(int pCodeWares,int pCodeUnit=0,decimal pQuantity=0m)
 		{
-			
-			if (pCodeWares > 0)
-			{
-				Bl.AddWaresCode(pCodeWares, pCodeUnit, pQuantity);
-			}
+			MW?.AddWares(pCodeWares, pCodeUnit, pQuantity);
 			Close();
 		}
 		private void WaresName_Changed(object sender, TextChangedEventArgs e)
@@ -137,6 +154,7 @@ namespace Front
 			if (CodeFastGroup > 0)
 			{
 				CodeFastGroup = 0;
+				OffSet = 0;
 				NewB();
 			}
 		}
@@ -159,8 +177,7 @@ namespace Front
 
 		private void ClickButtonOk(object sender, RoutedEventArgs e)
 		{
-			Bl.AddWaresCode(CurW.Code, CurW.CodeUnit, 555M);
-			Close();
+			Close(CurW.Code, CurW.CodeUnit, 555M);
 		}
 
 		private void ClickButtonCancel(object sender, RoutedEventArgs e)
@@ -172,8 +189,7 @@ namespace Front
 	public class GW
 	{
 		public GW(FastGroup pFG)
-		{
-			
+		{			
 			Type = 1;
 			Name = pFG.Name;
 			Code = pFG.CodeFastGroup;

@@ -326,21 +326,15 @@
 		                           CancelCommand="{Binding CancelCommand2}"/>
 
 
-
-        <Grid Name="WeightWares" Visibility="Collapsed" Grid.ZIndex="2"
-              Grid.Row="1" Grid.RowSpan="4"
+        <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
+                Margin="200,0,200,50"
+                 Grid.Row="1" Grid.RowSpan="3"
               Grid.Column="0" Grid.ColumnSpan="4"
-              
-              >
-            <Grid.Resources>
-                <Style TargetType="{x:Type TextBlock}">
-                    <Setter Property="Foreground" Value="Red" />
-                </Style>
-                <Style TargetType="{x:Type TextBox}">
-                    <Setter Property="Foreground" Value="Red" />
-                </Style>
-            </Grid.Resources>
-            <!--<Border Background="WhiteSmoke" />
+                 Name="WeightWares" Visibility="Collapsed" Grid.ZIndex="2" 
+                CornerRadius="10">
+            <Grid Name="GridWeightWares">
+   
+            <!--<Name="WeightWares"Border Background="WhiteSmoke" />
             <Border Grid.Row="1" Background="WhiteSmoke" />
             <Border Grid.Row="2" Background="WhiteSmoke" />
             <Border Grid.Row="3" Background="WhiteSmoke" />
@@ -353,16 +347,16 @@
                 <RowDefinition  Height="1*"></RowDefinition>
             </Grid.RowDefinitions>
             <Label 
-                                 Grid.Column="0" Grid.ColumnSpan="1" Grid.Row="0" Grid.RowSpan="1" Margin="3,-2,0,-2" HorizontalAlignment="Center" VerticalAlignment="Stretch" 
-                                FontSize="10" Height="Auto" BorderThickness="3,0,0,0"
+                                 Grid.ColumnSpan="1" Grid.Row="0" Grid.RowSpan="1" Margin="3,-2,0,-2" HorizontalAlignment="Center" VerticalAlignment="Stretch" 
+                                FontSize="12" Height="Auto" BorderThickness="3,0,0,0"
                                 Content="Покладіть товар на вагу" />
             <Label 
-                                x:Name="NameWares" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Grid.RowSpan="1" Margin="3,-2,0,-2" HorizontalAlignment="Center" VerticalAlignment="Stretch" 
-                                FontSize="12" Height="Auto" BorderThickness="3,0,0,0"
-                                Content="Кавун" />
+                                x:Name="NameWares"  Grid.ColumnSpan="2" Grid.Row="2" Grid.RowSpan="1" Margin="3,-2,0,-2" HorizontalAlignment="Center" VerticalAlignment="Stretch" 
+                                FontSize="18" Height="Auto"
+                                Content="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=CurW.Name}" /> <!--{Binding NameW, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}-->
             <Label 
-                                 Grid.Column="0" Grid.ColumnSpan="1" Grid.Row="3" Grid.RowSpan="1" Margin="3,-2,0,-2" HorizontalAlignment="Center" VerticalAlignment="Center" 
-                                FontSize="10" Height="Auto" BorderThickness="3,0,0,0"
+                                 Grid.ColumnSpan="1" Grid.Row="3" Grid.RowSpan="1" Margin="3,-2,0,-2" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                FontSize="14" Height="Auto" BorderThickness="3,0,0,0"
                                 Content="0.123 kg" />
 
             <Grid Grid.Row="4">
@@ -400,5 +394,6 @@
                 </Button>
             </Grid>
         </Grid>
+        </Border>    
     </Grid>
 </Window>
