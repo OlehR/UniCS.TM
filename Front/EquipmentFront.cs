@@ -65,6 +65,15 @@ namespace Front
             sEquipmentFront = this;
             var config = Config("appsettings.json");
 
+            //TMP!!! Треба забрати на рівень вище.
+            SetBarCode += Bl.GetBarCode;// (pBarCode, pTypeBarCode) => { Bl.GetBarCode(pBarCode, pTypeBarCode); };
+            SetControlWeight += Bl.CS.OnScalesData; // (pWeight, isStable)=>{ }
+            SetWeight += (pWeight, isStable) => {
+                Console.WriteLine(pWeight);
+
+            };
+
+
             //Scaner
             var ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Scaner).First();
             if (ElEquipment.Model == eModel.MagellanScaner)
@@ -116,14 +125,7 @@ namespace Front
 
             Scale.StartWeight();
 
-            //TMP!!! Треба забрати на рівень вище.
-            SetBarCode += Bl.GetBarCode;// (pBarCode, pTypeBarCode) => { Bl.GetBarCode(pBarCode, pTypeBarCode); };
-            SetControlWeight  += Bl.CS.OnScalesData   ; // (pWeight, isStable)=>{ }
-            SetWeight += (pWeight, isStable) => { 
-                Console.WriteLine(pWeight); 
             
-            };
-
             
 
         }
