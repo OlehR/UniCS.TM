@@ -114,10 +114,18 @@ namespace Front
                 ElEquipment.Equipment = new EKKA(ElEquipment.Port, ElEquipment.BaudRate, null);
             EKKA = (EKKA)ElEquipment.Equipment;
 
+            Scale.StartWeight();
+
             //TMP!!! Треба забрати на рівень вище.
             SetBarCode += Bl.GetBarCode;// (pBarCode, pTypeBarCode) => { Bl.GetBarCode(pBarCode, pTypeBarCode); };
             SetControlWeight  += Bl.CS.OnScalesData   ; // (pWeight, isStable)=>{ }
-            SetWeight += (pWeight, isStable) => { Console.WriteLine(pWeight); };
+            SetWeight += (pWeight, isStable) => { 
+                Console.WriteLine(pWeight); 
+            
+            };
+
+            
+
         }
 
         public static EquipmentFront GetEquipmentFront { get { return sEquipmentFront; } }
