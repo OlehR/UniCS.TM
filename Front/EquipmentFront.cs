@@ -11,19 +11,22 @@ namespace Front
 {
     public class EquipmentFront
     {
+        public static Action<double,bool> SetWeight { get; set; }
+        public static Action<double, bool> SetControlWeight { get; set; }
+        public static Action<string,string> SetBarCode { get; set; }
+
         private List<EquipmentElement> ListEquipment = new List<EquipmentElement>();
+        eStateEquipment _State = eStateEquipment.Off;
+
         BL Bl; //!!!!костиль.
         //MainWindow MW;
         Scaner Scaner;
         Scale Scale;
         Scale ControlScale;
         SignalFlag Signal;
-
         public BankTerminal Terminal;
-        public EKKA EKKA;
-
+        public EKKA EKKA;        
         
-        eStateEquipment _State = eStateEquipment.Off;
         public eStateEquipment State
         {
             get { return _State; }
@@ -47,13 +50,17 @@ namespace Front
                     SetState?.Invoke(_State);
             }
         }
+
         public static Action<eStateEquipment> SetState { get; set; }
 
         static EquipmentFront sEquipmentFront;
 
         public EquipmentFront(BL pBL)
         {
-            Bl = pBL;
+            //public static Action<IEnumerable<ReceiptWares>, Guid> OnReceiptCalculationComplete { get; set; }
+
+        Bl = pBL;
+
             //MW = pMW;
             sEquipmentFront = this;
             var config = Config("appsettings.json");
@@ -61,25 +68,25 @@ namespace Front
             //Scaner
             var ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Scaner).First();
             if (ElEquipment.Model == eModel.MagellanScaner)
-                ElEquipment.Equipment = new MagellanScaner(config, null, Bl.GetBarCode);
+                ElEquipment.Equipment = new MagellanScaner(config, null, SetBarCode);
             else
-                ElEquipment.Equipment = new Scaner(ElEquipment.Port, ElEquipment.BaudRate, null, Bl.GetBarCode);
+                ElEquipment.Equipment = new Scaner(ElEquipment.Port, ElEquipment.BaudRate, null, SetBarCode);
             Scaner = (Scaner)ElEquipment.Equipment;
 
             //Scale
             ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Scale).First();
             if (ElEquipment.Model == eModel.MagellanScale)
-                ElEquipment.Equipment = new MagellanScale(((MagellanScaner)Scaner).Magellan9300, Bl.GetScale); //MagellanScale(ElEquipment.Port, ElEquipment.BaudRate, null, GetScale);
+                ElEquipment.Equipment = new MagellanScale(((MagellanScaner)Scaner).Magellan9300, SetWeight); //MagellanScale(ElEquipment.Port, ElEquipment.BaudRate, null, GetScale);
             else
-                ElEquipment.Equipment = new Scale(ElEquipment.Port, ElEquipment.BaudRate, null, Bl.GetScale);
+                ElEquipment.Equipment = new Scale(ElEquipment.Port, ElEquipment.BaudRate, null, SetWeight);
             Scale = (Scale)ElEquipment.Equipment;
 
             //ControlScale
             ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.ControlScale).First();
             if (ElEquipment.Model == eModel.ScaleModern)
-                ElEquipment.Equipment = new ScaleModern(config, null, Bl.CS.OnScalesData);
+                ElEquipment.Equipment = new ScaleModern(config, null, SetControlWeight);
             else
-                ElEquipment.Equipment = new Scale(ElEquipment.Port, ElEquipment.BaudRate, null, Bl.CS.OnScalesData);
+                ElEquipment.Equipment = new Scale(ElEquipment.Port, ElEquipment.BaudRate, null, SetControlWeight);
             ControlScale = (Scale)ElEquipment.Equipment;
 
             //Flag
@@ -107,12 +114,18 @@ namespace Front
                 ElEquipment.Equipment = new EKKA(ElEquipment.Port, ElEquipment.BaudRate, null);
             EKKA = (EKKA)ElEquipment.Equipment;
 
+            //TMP!!! Треба забрати на рівень вище.
+            SetBarCode += Bl.GetBarCode;// (pBarCode, pTypeBarCode) => { Bl.GetBarCode(pBarCode, pTypeBarCode); };
+            SetControlWeight  += Bl.CS.OnScalesData   ; // (pWeight, isStable)=>{ }
+            SetWeight += (pWeight, isStable) => { Console.WriteLine(pWeight); };
         }
 
         public static EquipmentFront GetEquipmentFront { get { return sEquipmentFront; } }
 
         public IEnumerable<EquipmentElement> GetListEquipment { get { return ListEquipment; } }
+        
         public void PrintReceipt() { }
+        
         public void Pay() { }
 
         public IConfiguration Config(string settingsFilePath)
@@ -125,15 +138,12 @@ namespace Front
             AppConfiguration.GetSection("MID:Equipment").Bind(ListEquipment);
             return AppConfiguration;
         }
-
-               
-       
+        
         public void SetColor(Color pColor)
         {
             Signal.SwitchToColor(pColor);
         }
-
-       
+               
         void aPosStatus(IPosStatus ww)
         {
             if (ww is PosStatus status)

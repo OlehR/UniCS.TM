@@ -616,7 +616,7 @@ namespace SharedLib
             SqlUpdateQR = GetSQL("SqlUpdateQR");
             SqlGetQR = GetSQL("SqlGetQR");
             SqlGetReceiptWaresDeleted = GetSQL("SqlGetReceiptWaresDeleted");
-            SqlUpdateExciseStamp = GetSQL(" SqlUpdateExciseStamp");
+            SqlUpdateExciseStamp = GetSQL("SqlUpdateExciseStamp");
 
 
 
