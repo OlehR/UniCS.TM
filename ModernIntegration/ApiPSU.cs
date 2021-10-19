@@ -296,7 +296,7 @@ namespace ModernIntegration
             }
 
             if (receiptWares.IsMultiplePrices)
-                varTags.Add(new Tag { Id = 6, Key = "MultiplePrices", RuleValue = receiptWares.GetPrices }); 
+                varTags.Add(new Tag { Id = 6, Key = "MultiplePrices", RuleValue = receiptWares.GetPrices });
 
             var Res = new ProductViewModel()
             {
@@ -312,12 +312,12 @@ namespace ModernIntegration
                 //receiptWares.SumDiscount > 0 ? receiptWares.SumDiscount : 0,
                 //Global.RoundDown(receiptWares.SumDiscount>0 ? receiptWares.SumDiscount : (receiptWares.PriceDealer > receiptWares.Price ? (receiptWares.PriceDealer * receiptWares.Quantity - receiptWares.Sum):0)),
                 WeightCategory = 2, //вимірювання Похибки в відсотках,2 в грамах
-                Weight = (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : (receiptWares.WeightBrutto==0m? 100000 : Convert.ToDouble(receiptWares.WeightBrutto))),
-                DeltaWeight = Convert.ToDouble(receiptWares.WeightDelta)+Convert.ToDouble(Global.GetCoefDeltaWeight((receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto)) * (receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto)),
+                Weight = (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : (receiptWares.WeightBrutto == 0m ? 100000 : Convert.ToDouble(receiptWares.WeightBrutto))),
+                DeltaWeight = Convert.ToDouble(receiptWares.WeightDelta) + Convert.ToDouble(Global.GetCoefDeltaWeight((receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto)) * (receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto)),
                 AdditionalWeights = LWI,
-                ProductWeightType =  receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByBarcode, 
+                ProductWeightType = receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByBarcode,
                 IsAgeRestrictedConfirmed = false, //Обмеження по віку алкоголь Підтверджено не потрібно посилати.
-                Quantity = (receiptWares.IsWeight ? 1 : receiptWares.Quantity),               
+                Quantity = (receiptWares.IsWeight ? 1 : receiptWares.Quantity),
                 DiscountName = receiptWares.GetStrWaresReceiptPromotion,
                 WarningType = null, //!!! Не посилати                 
                 Tags = varTags,
@@ -328,11 +328,11 @@ namespace ModernIntegration
                 TaxGroup = Global.GetTaxGroup(receiptWares.TypeVat, receiptWares.TypeWares),
                 Barcode = receiptWares.BarCode,
                 //FullPrice = receiptWares.Sum
-                RefundedQuantity= receiptWares.RefundedQuantity,
-                CalculatedWeight= Convert.ToDouble(receiptWares.FixWeight*1000)
-                ,Uktzed= receiptWares.CodeUKTZED
-                ,IsUktzedNeedToPrint= receiptWares.IsUseCodeUKTZED
-                ,
+                RefundedQuantity = receiptWares.RefundedQuantity,
+                CalculatedWeight = Convert.ToDouble(receiptWares.FixWeight * 1000)
+                , Uktzed = receiptWares.CodeUKTZED
+                , IsUktzedNeedToPrint = receiptWares.IsUseCodeUKTZED
+                , Excises = receiptWares.ExciseStamp.Split(' ').ToList()
 
             };
             return Res;
