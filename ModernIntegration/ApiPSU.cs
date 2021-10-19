@@ -332,7 +332,7 @@ namespace ModernIntegration
                 CalculatedWeight = Convert.ToDouble(receiptWares.FixWeight * 1000)
                 , Uktzed = receiptWares.CodeUKTZED
                 , IsUktzedNeedToPrint = receiptWares.IsUseCodeUKTZED
-                , Excises = receiptWares.ExciseStamp.Split(' ').ToList()
+                , Excises = receiptWares.ExciseStamp?.Split(',').ToList()
 
             };
             return Res;
@@ -720,7 +720,7 @@ namespace ModernIntegration
                 
             };
             if(receiptItem.Excises!=null)
-                Res.ExciseStamp = String.Join(", ", receiptItem.Excises.ToArray());
+                Res.ExciseStamp = String.Join(",", receiptItem.Excises.ToArray());
             return Res;
         }
 

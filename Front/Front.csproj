@@ -56,9 +56,6 @@
     <Reference Include="ModernExpo.SelfCheckout.Devices.Ingenico">
       <HintPath>..\SharedLib\dll\ModernExpo.SelfCheckout.Devices.Ingenico.dll</HintPath>
     </Reference>
-    <Reference Include="ModernExpo.SelfCheckout.Devices.Magellan9300SingleCable">
-      <HintPath>..\SharedLib\dll\ModernExpo.SelfCheckout.Devices.Magellan9300SingleCable.dll</HintPath>
-    </Reference>
     <Reference Include="ModernExpo.SelfCheckout.Entities">
       <HintPath>..\SharedLib\dll\ModernExpo.SelfCheckout.Entities.dll</HintPath>
     </Reference>
