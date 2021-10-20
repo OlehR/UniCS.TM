@@ -104,10 +104,10 @@ namespace Front
 
             ListWares = new ObservableCollection<ReceiptWares>(StartData());
 
-            //ua.Tag = new CultureInfo("ua");
+            ua.Tag = new CultureInfo("uk");
             en.Tag = new CultureInfo("en");
             hu.Tag = new CultureInfo("hu");
-            //pln.Tag = new CultureInfo("pln");
+            pln.Tag = new CultureInfo("pl");
 
             WaresList.ItemsSource = ListWares;// Wares;
 
@@ -310,7 +310,8 @@ namespace Front
 
         private void _ButtonPayment(object sender, RoutedEventArgs e)
         {
-
+            var r=EF.Terminal.Purchase(1.08m);
+            Console.WriteLine(r.TransactionStatus);
         }
 
 

@@ -1,11 +1,11 @@
 ﻿using Front.Equipments;
 using Microsoft.Extensions.Configuration;
-using ModernExpo.SelfCheckout.Entities.Pos;
 using SharedLib;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+
 
 namespace Front
 {
@@ -58,8 +58,8 @@ namespace Front
         public EquipmentFront(BL pBL)
         {
             //public static Action<IEnumerable<ReceiptWares>, Guid> OnReceiptCalculationComplete { get; set; }
-
-        Bl = pBL;
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            Bl = pBL;
 
             //MW = pMW;
             sEquipmentFront = this;
@@ -105,11 +105,11 @@ namespace Front
             else
                 ElEquipment.Equipment = new SignalFlag(ElEquipment.Port, ElEquipment.BaudRate, null);
             Signal = (SignalFlag)ElEquipment.Equipment;
-
+            
             //Terminal
             ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.BankTerminal).First();
             if (ElEquipment.Model == eModel.Ingenico)
-                ElEquipment.Equipment = new Ingenico(config, null, aPosStatus);
+                ElEquipment.Equipment = new IngenicoH(config, null, aPosStatus);
             else
                 ElEquipment.Equipment = new BankTerminal(ElEquipment.Port, ElEquipment.BaudRate, null);
             Terminal = (BankTerminal)ElEquipment.Equipment;
@@ -154,11 +154,12 @@ namespace Front
             Signal.SwitchToColor(pColor);
         }
                
-        void aPosStatus(IPosStatus ww)
+        void aPosStatus(Front.Equipments.Ingenico.IPosStatus ww)
         {
-            if (ww is PosStatus status)
+            if (ww is Front.Equipments.Ingenico.PosStatus status)
             {
-                Bl.PosStatus = status.Status.GetPosStatusFromStatus();
+                //TMP!!!!
+                //Bl.PosStatus = status.Status. GetPosStatusFromStatus();
             }
         }
     }

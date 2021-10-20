@@ -326,11 +326,11 @@ namespace ModernIntegration
                 IsProductOnProcessing = false, //
                 ///CategoryId=   !!!TMP Групи 1 рівня.
                 TaxGroup = Global.GetTaxGroup(receiptWares.TypeVat, receiptWares.TypeWares),
-                Barcode = receiptWares.BarCode,
+                Barcode = receiptWares.TypeWares > 0 ? receiptWares.BarCode:null,
                 //FullPrice = receiptWares.Sum
                 RefundedQuantity = receiptWares.RefundedQuantity,
                 CalculatedWeight = Convert.ToDouble(receiptWares.FixWeight * 1000)
-                , Uktzed = receiptWares.CodeUKTZED
+                , Uktzed = receiptWares.TypeWares>0? receiptWares.CodeUKTZED:null
                 , IsUktzedNeedToPrint = receiptWares.IsUseCodeUKTZED
                 , Excises = receiptWares.ExciseStamp?.Split(',').ToList()
 
