@@ -9,15 +9,15 @@ namespace Front.Equipments
 {
     public class Ingenico:BankTerminal
     {
-        ModernExpo.SelfCheckout.Devices.Ingenico.Ingenico EquipmentIngenico;
+        ModernExpo.SelfCheckout.Devices.Ingenico.Ingenico EquipmentIngenico =null;
         public Ingenico(string pSerialPortName, int pBaudRate = 9600, Action<string, string> pLogger = null) : base(pSerialPortName, pBaudRate, pLogger) { }
         public Ingenico(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<IPosStatus> pActionStatus = null) : base(pConfiguration, pLogger) 
-        {
+        {            
             ILoggerFactory loggerFactory = new LoggerFactory().AddConsole((_, __) => true);
             ILogger<ModernExpo.SelfCheckout.Devices.Ingenico.Ingenico> logger = loggerFactory.CreateLogger<ModernExpo.SelfCheckout.Devices.Ingenico.Ingenico>();
-
-           //EquipmentIngenico = new ModernExpo.SelfCheckout.Devices.Ingenico.Ingenico(pConfiguration, logger);
-//EquipmentIngenico.OnStatus += pActionStatus;
+            EquipmentIngenico = new ModernExpo.SelfCheckout.Devices.Ingenico.Ingenico(pConfiguration, logger);
+            
+            EquipmentIngenico.OnStatus += pActionStatus;
         }
 
         public override PaymentResultModel Purchase(decimal pAmount) 
