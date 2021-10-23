@@ -56,7 +56,7 @@ namespace Front
         static EquipmentFront sEquipmentFront;
 
         public EquipmentFront(BL pBL)
-        {
+        {            
             //public static Action<IEnumerable<ReceiptWares>, Guid> OnReceiptCalculationComplete { get; set; }
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             Bl = pBL;
@@ -72,7 +72,6 @@ namespace Front
                 Console.WriteLine(pWeight);
 
             };
-
 
             //Scaner
             var ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Scaner).First();
@@ -121,13 +120,7 @@ namespace Front
                 ElEquipment.Equipment = new Exelio(ElEquipment.Port, ElEquipment.BaudRate, null);
             else
                 ElEquipment.Equipment = new EKKA(ElEquipment.Port, ElEquipment.BaudRate, null);
-            EKKA = (EKKA)ElEquipment.Equipment;
-
-            Scale.StartWeight();
-
-            
-            
-
+            EKKA = (EKKA)ElEquipment.Equipment;            
         }
 
         public static EquipmentFront GetEquipmentFront { get { return sEquipmentFront; } }

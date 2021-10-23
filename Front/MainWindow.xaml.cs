@@ -255,6 +255,7 @@ namespace Front
         }
 
         public ReceiptWares CurWares { get; set; } = null;
+
         public void AddWares(int pCodeWares, int pCodeUnit = 0, decimal pQuantity = 0m,decimal pPrice=0m)
         {
             if (pCodeWares > 0)
