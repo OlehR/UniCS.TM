@@ -89,7 +89,7 @@ namespace SharedLib
                 Directory.CreateDirectory(Global.PathDB);
 
         }
-        public IConfigurationRoot GetConfiguration()
+        public static IConfigurationRoot GetConfiguration()
         {
             return AppConfiguration;
         }

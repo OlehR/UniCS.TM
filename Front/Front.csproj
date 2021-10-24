@@ -39,6 +39,7 @@
   <ItemGroup>
     <PackageReference Include="PropertyChanged.Fody" Version="3.2.7" />
     <PackageReference Include="SerialPortStream" Version="2.2.2" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -47,17 +48,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Interop.ECRCommXLib">
+      <HintPath>..\SharedLib\dll\Interop.ECRCommXLib.dll</HintPath>
+    </Reference>
     <Reference Include="ModernExpo.SelfCheckout.Devices.BST106M60S">
       <HintPath>..\SharedLib\dll\ModernExpo.SelfCheckout.Devices.BST106M60S.dll</HintPath>
     </Reference>
     <Reference Include="ModernExpo.SelfCheckout.Devices.CustomFlagLamp">
       <HintPath>..\SharedLib\dll\ModernExpo.SelfCheckout.Devices.CustomFlagLamp.dll</HintPath>
-    </Reference>
-    <Reference Include="ModernExpo.SelfCheckout.Devices.Ingenico">
-      <HintPath>..\SharedLib\dll\ModernExpo.SelfCheckout.Devices.Ingenico.dll</HintPath>
-    </Reference>
-    <Reference Include="ModernExpo.SelfCheckout.Devices.Magellan9300SingleCable">
-      <HintPath>..\SharedLib\dll\ModernExpo.SelfCheckout.Devices.Magellan9300SingleCable.dll</HintPath>
     </Reference>
     <Reference Include="ModernExpo.SelfCheckout.Entities">
       <HintPath>..\SharedLib\dll\ModernExpo.SelfCheckout.Entities.dll</HintPath>

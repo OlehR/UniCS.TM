@@ -13,7 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 
-namespace ModernExpo.SelfCheckout.Utils
+namespace Front.Equipments.Utils
 {
     public class SerialPortStreamWrapper : SerialPortStream
     {

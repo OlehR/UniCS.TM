@@ -73,6 +73,7 @@ namespace Front
 			BildButtom(WG);
 
 		}
+
 		void BildButtom(IEnumerable<GW> pGW)
 		{
 			PictureGrid.Children.Clear();

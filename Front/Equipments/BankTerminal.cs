@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
-using ModernExpo.SelfCheckout.Entities.Pos;
+//using ModernExpo.SelfCheckout.Entities.Pos;
+using Front.Equipments.Ingenico;
 using System;
 using System.Collections.Generic;
 using System.Text;
