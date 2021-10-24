@@ -1,40 +1,32 @@
 ﻿[SqlBegin]
 /*
-[VerRC]
-1
-[VerMID]
-1
-[VerConfig]
-1
+[SqlUpdateConfig]
+alter table WORKPLACE add  Video_Camera_IP TEXT;--Ver=>0
+alter table WORKPLACE add  Video_Recorder_IP TEXT;--Ver=>0
+alter TABLE WEIGHT    add  CODE_WARES  INTEGER  NOT NULL DEFAULT 0;--Ver=>0
+alter table WORKPLACE add  Type_POS NUMBER   NOT NULL DEFAULT 0;--Ver=>0
+alter table WORKPLACE add  Code_Warehouse INTEGER  NOT NULL DEFAULT 0;--Ver=>0
+alter table WORKPLACE add  CODE_DEALER INTEGER  NOT NULL DEFAULT 0;--Ver=>0
 
-[SqlUpdateRC_V1]
-alter TABLE WARES_RECEIPT            add Fix_Weight NUMBER NOT NULL DEFAULT 0;
-alter TABLE WARES_RECEIPT_PROMOTION  add TYPE_DISCOUNT  INTEGER  NOT NULL  DEFAULT (12);
-alter TABLE wares_receipt            add Priority INTEGER  NOT NULL DEFAULT 0;
-alter TABLE wares_receipt            add QR TEXT;
-alter TABLE WARES_RECEIPT_HISTORY    add SORT INTEGER  NOT NULL default 0;  
-alter TABLE RECEIPT    add Sum_Fiscal        NUMBER;
-alter TABLE payment    add Card_Holder  TEXT;
-alter TABLE payment    add Issuer_Name  TEXT;
-alter TABLE payment    add Bank  TEXT;
-alter TABLE WARES_RECEIPT  add Excise_Stamp   TEXT;
+[SqlUpdateRC]
+alter TABLE WARES_RECEIPT            add Fix_Weight NUMBER NOT NULL DEFAULT 0;--Ver=>0
+alter TABLE WARES_RECEIPT_PROMOTION  add TYPE_DISCOUNT  INTEGER  NOT NULL  DEFAULT (12);--Ver=>0
+alter TABLE wares_receipt            add Priority INTEGER  NOT NULL DEFAULT 0;--Ver=>0
+alter TABLE wares_receipt            add QR TEXT;--Ver=>0
+alter TABLE WARES_RECEIPT_HISTORY    add SORT INTEGER  NOT NULL default 0;--Ver=>0
+alter TABLE RECEIPT    add Sum_Fiscal        NUMBER;--Ver=>0
+alter TABLE payment    add Card_Holder  TEXT;--Ver=>0
+alter TABLE payment    add Issuer_Name  TEXT;--Ver=>0
+alter TABLE payment    add Bank  TEXT;--Ver=>0
+alter TABLE WARES_RECEIPT  add Excise_Stamp   TEXT;--Ver=>0
 
-
-[SqlUpdateConfig_V1]
-alter table WORKPLACE add  Video_Camera_IP TEXT;
-alter table WORKPLACE add  Video_Recorder_IP TEXT;
-alter TABLE WEIGHT    add  CODE_WARES  INTEGER  NOT NULL DEFAULT 0;
-alter table WORKPLACE add  Type_POS NUMBER   NOT NULL DEFAULT 0;
-alter table WORKPLACE add  Code_Warehouse INTEGER  NOT NULL DEFAULT 0;
-alter table WORKPLACE add  CODE_DEALER INTEGER  NOT NULL DEFAULT 0;
-
-[SqlUpdateMID_V1]
-alter TABLE wares add Weight_Delta INTEGER  DEFAULT 0;
-alter TABLE PROMOTION_SALE_DEALER add PRIORITY INTEGER NOT NULL DEFAULT 1;
-alter TABLE wares add Limit_Age NUMBER;
-alter TABLE wares add PLU INTEGER;
-alter TABLE wares add Code_Direction INTEGER;
-
+[SqlUpdateMID]
+alter TABLE wares add Weight_Delta INTEGER  DEFAULT 0;--Ver=>0
+alter TABLE PROMOTION_SALE_DEALER add PRIORITY INTEGER NOT NULL DEFAULT 1;--Ver=>0
+alter TABLE wares add Limit_Age NUMBER;--Ver=>0
+alter TABLE wares add PLU INTEGER;--Ver=>0
+alter TABLE wares add Code_Direction INTEGER;--Ver=>0;
+--Ver=>1;Reload;
 
 [SqlConfig]
 SELECT Data_Var  FROM CONFIG  WHERE UPPER(Name_Var) = UPPER(trim(@NameVar));

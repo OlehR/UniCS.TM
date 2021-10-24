@@ -824,6 +824,11 @@ and @TypeDiscount=11; ";
             //return true;
         }
 
-    
+        /// <summary>
+        /// Оновлення структури бази даних
+        /// </summary>       
+        protected override void UpdateDB() 
+        {
+        }
     }
 }

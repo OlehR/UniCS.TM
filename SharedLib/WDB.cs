@@ -18,7 +18,6 @@ using Utils;
 //using DatabaseLib; // тимчасово для ParametersCollection
 namespace SharedLib
 {
-
     /// <summary>
     /// Клас з віртуальними методоами для доступу до БД (Work Data Base)
     /// </summary>
@@ -195,7 +194,9 @@ namespace SharedLib
         protected string SqlGetQR = "";
         protected string SqlGetReceiptWaresDeleted = "";
         protected string SqlUpdateExciseStamp = "";
-
+        protected string SqlUpdateConfig = "";
+        protected string SqlUpdateRC = "";
+        protected string SqlUpdateMID = "";
 
         public WDB(string parFileSQL)
         {
@@ -616,7 +617,10 @@ namespace SharedLib
             SqlUpdateQR = GetSQL("SqlUpdateQR");
             SqlGetQR = GetSQL("SqlGetQR");
             SqlGetReceiptWaresDeleted = GetSQL("SqlGetReceiptWaresDeleted");
-            SqlUpdateExciseStamp = GetSQL(" SqlUpdateExciseStamp");
+            SqlUpdateExciseStamp = GetSQL("SqlUpdateExciseStamp");
+            SqlUpdateConfig = GetSQL("SqlUpdateConfig");
+            SqlUpdateRC = GetSQL("SqlUpdateRC");
+            SqlUpdateMID = GetSQL("SqlUpdateMID");
 
 
 
@@ -1057,5 +1061,9 @@ namespace SharedLib
             isDisposed = true;
         }
 
+        /// <summary>
+        /// Оновлення структури бази даних
+        /// </summary>       
+        protected virtual void UpdateDB() {}
     }
 }
