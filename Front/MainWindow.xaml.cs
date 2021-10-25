@@ -122,11 +122,14 @@ namespace Front
             State = pSMV;
             ExciseStamp.Visibility = Visibility.Collapsed;
             ChoicePrice.Visibility = Visibility.Collapsed;
+            ChoicePriceBackground.Visibility = Visibility.Collapsed;
+           
 
             switch (State)
             {
                 case StateMainWindows.WaitInputPrice:
                     Prices.ItemsSource = new ObservableCollection<decimal>(CurWares.Prices/*.Select(r=>Convert.ToString(r))*/);
+                    ChoicePriceBackground.Visibility = Visibility.Visible;
                     ChoicePrice.Visibility = Visibility.Visible;
                     break;
                 case StateMainWindows.WaitExciseStamp:
@@ -308,7 +311,10 @@ namespace Front
         {
 
         }
-
+        private void _Cencel(object sender, RoutedEventArgs e)
+        {
+            SetStateView(StateMainWindows.WaitInput);
+        }
         private void _ButtonPayment(object sender, RoutedEventArgs e)
         {
             var r=EF.Terminal.Purchase(1.08m);
@@ -347,7 +353,8 @@ namespace Front
             return Bl.GetWaresReceipt();
         }
 
-   }
+
+    }
 
     [ValueConversion(typeof(bool), typeof(Visibility))]
     public sealed class BoolToVisibilityConverter : IValueConverter
