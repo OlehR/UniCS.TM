@@ -16,7 +16,7 @@ namespace SharedLib
     {
         //private SQLite db;
         //public SQLite db_receipt;
-        
+        private static bool IsFirstStart=true;
    
 
         protected string SqlCreateMIDTable = @"";
@@ -30,9 +30,9 @@ namespace SharedLib
         private string LastMidFile=null;
         private string MidFile { get { return string.IsNullOrEmpty(Connect) ? (string.IsNullOrEmpty(LastMidFile)?  GetCurrentMIDFile: LastMidFile) : Connect; } }
 
-        private string GetReceiptFile() { return Path.Combine(ModelMID.Global.PathDB, $"{DT:yyyyMM}", $"Rc_{ModelMID.Global.IdWorkPlace}_{DT:yyyyMMdd}.db"); }
+        private string GetReceiptFile(DateTime pDT) { return Path.Combine(ModelMID.Global.PathDB, $"{pDT:yyyyMM}", $"Rc_{ModelMID.Global.IdWorkPlace}_{pDT:yyyyMMdd}.db"); }
 
-        private string ReceiptFile { get { return GetReceiptFile(); } }
+        private string ReceiptFile { get { return GetReceiptFile(DT); } }
 
         /*if (pIsUseOldDB &&!File.Exists(MidFile) && string.IsNullOrEmpty(parConnect))
             {
@@ -49,9 +49,13 @@ namespace SharedLib
         {
             Connect = parConnect;
             varVersion = "SQLite.0.0.1";
+            DT = parD != default(DateTime) ? parD.Date : DateTime.Today.Date;
             InitSQL();
 
-            DT=(parD != default(DateTime)?parD.Date:DateTime.Today.Date);
+
+            if(IsFirstStart)
+                UpdateDB(ref pIsUseOldDB);
+            
             
             if (!File.Exists(ConfigFile))
             {
@@ -389,12 +393,15 @@ namespace SharedLib
 
         ///////////////// Config
 
-        public override bool SetConfig<T>(string parName, T parValue)
+        public override bool SetConfig<T>(string parName, T parValue,SQL pDB=null)
         {
             using (var DB = new SQLite(ConfigFile))
             {
-                parValue.GetType().ToString();
-                DB.ExecuteNonQuery<object>(this.SqlReplaceConfig, new { NameVar = parName, DataVar = parValue, @TypeVar = parValue.GetType().ToString() });
+                
+                if(pDB == null)
+                    DB.ExecuteNonQuery<object>(this.SqlReplaceConfig, new { NameVar = parName, DataVar = parValue, @TypeVar = parValue.GetType().ToString() });
+                else
+                    pDB.ExecuteNonQuery<object>(this.SqlReplaceConfig, new { NameVar = parName, DataVar = parValue, @TypeVar = parValue.GetType().ToString() });
             }
             return true;
         }
@@ -827,8 +834,100 @@ and @TypeDiscount=11; ";
         /// <summary>
         /// Оновлення структури бази даних
         /// </summary>       
-        protected override void UpdateDB() 
+        protected override void UpdateDB(ref bool pIsUseOld) 
         {
+            try
+            {
+                IsFirstStart = false;
+                int CurVerConfig = 0, CurVerMid = 0, CurVerRC = 0;
+                var Lines = SqlUpdateConfig.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+
+                SQLite dbC = new SQLite(ConfigFile);
+                var wDB = new WDB(Path.Combine(Global.PathIni, "SQLite.sql"), dbC);
+
+                CurVerConfig = wDB.GetConfig<int>("VerConfig");
+                CurVerMid = wDB.GetConfig<int>("VerMid");
+                CurVerRC = wDB.GetConfig<int>("VerRC");
+
+                //Config
+                var (Ver, IsReload) = Parse(Lines, CurVerConfig, dbC);
+                if (Ver != CurVerConfig)
+                    wDB.SetConfig<int>("VerConfig", Ver);
+
+                //Mid
+                var dbMID = new SQLite(MidFile);
+                CurVerMid = wDB.GetConfig<int>("VerMID");
+                Lines = SqlUpdateMID.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                (Ver, IsReload) = Parse(Lines, CurVerMid, dbMID);
+                dbMID.Close(true);
+                if (IsReload)
+                {
+                    if (File.Exists(MidFile)) File.Delete(MidFile);
+                    pIsUseOld = false;
+
+                }
+                if (Ver != CurVerMid)
+                    wDB.SetConfig<int>("VerMID", Ver);
+
+                //RC
+                CurVerRC = wDB.GetConfig<int>("VerRC");
+
+                var cDT = DateTime.Now.Date.AddDays(-10);
+
+                while (cDT <= DateTime.Now.Date)
+                {
+                    if (File.Exists(GetReceiptFile(cDT)))
+                    {
+                        var dbRC = new SQLite(GetReceiptFile(cDT));
+                        Lines = SqlUpdateRC.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                        (Ver, IsReload) = Parse(Lines, CurVerRC, dbRC);
+                    }
+                    cDT = cDT.AddDays(1);
+                }
+                if (Ver != CurVerRC)
+                    wDB.SetConfig<int>("VerRC", Ver);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        protected (int,bool) Parse(string[] pLines,int pCurVersion, SQLite pDB)
+        {
+            int NewVer = pCurVersion,Ver;
+            bool isReload=false;
+
+            foreach (var el in pLines)
+            {
+                var i = el.IndexOf("VER=>");
+                if (i >= 0)
+                {
+                    string str = el.Substring(i + 5);
+                    string[] All = str.Split(';');
+                    if (int.TryParse(All[0], out Ver))
+                    {
+                        if (Ver > pCurVersion)
+                            try
+                            {
+                                pDB.ExecuteNonQuery(el);
+                            }
+                            catch (Exception e)
+                            {
+                                if (e.Message.IndexOf("duplicate column name:") == -1)
+                                    throw new Exception(e.Message, e);
+                            }
+
+                        if (All.Length>1 && All[1].Equals("Reload".ToUpper()))
+                            isReload = true;
+                            
+                        if (NewVer <= Ver)
+                            NewVer = Ver;
+                    }
+                }
+            }
+
+            return (NewVer, isReload);
         }
     }
 }

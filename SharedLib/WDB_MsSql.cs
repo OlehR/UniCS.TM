@@ -233,6 +233,6 @@ namespace SharedLib
     {
         public int IsFull { get; set; }
         public int MessageNoMin { get; set; }
-        public int MessageNoMax { get; set; }        
+        public int MessageNoMax { get; set; }
     }
 }

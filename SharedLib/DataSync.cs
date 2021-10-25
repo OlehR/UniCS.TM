@@ -88,6 +88,7 @@ namespace SharedLib
                 return false;
             }
         }
+       
         public async Task<bool> SendAllReceipt(WDB_SQLite parDB = null)
         {
             var varDB = (parDB == null ? db : parDB);
@@ -177,6 +178,7 @@ namespace SharedLib
 
             return true;
         }
+  
         public class TableStruc
         {
             public int Cid { get; set; }
@@ -185,6 +187,7 @@ namespace SharedLib
             public string Dflt_value { get; set; }
             public int PK { get; set; }
         }
+   
         public string BildSqlUpdate(string parTableName)
         {
             var r = db.db.Execute<TableStruc>($"PRAGMA table_info('{parTableName}');");
@@ -232,6 +235,7 @@ namespace SharedLib
             db.SetConfig<DateTime>("LastDaySend", Ldc);
 
         }
+        
         public async Task GetBonusAsync(Client parClient, Guid parTerminalId)
         {
             try
@@ -331,6 +335,7 @@ namespace SharedLib
             }
             return true;
         }
+    
         public void LoadWeightKasa(DateTime parDT = default(DateTime))
         {
             try
@@ -371,6 +376,7 @@ where nn=1 ";
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "LoadWeightKasa=> " + ex.Message });
             }
         }
+     
         public void LoadWeightKasa2Period(DateTime pDT = default(DateTime))
         {
             try
@@ -399,6 +405,7 @@ where nn=1 ";
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "LoadWeightKasa2Period=> " + ex.Message });
             }
         }
+   
         public void LoadWeightKasa2(DateTime parDT, int TypeSource = 0)
         {
             try
@@ -424,6 +431,7 @@ where RE.EVENT_TYPE=1"
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "LoadWeightKasa2=> " + ex.Message });
             }
         }
+   
         public async Task<string> GetQrCoffe(ReceiptWares pReceiptWares, int pOrder, int pWait = 5)
         {
             var Url = "https://dashboard.prostopay.net/api/v1/qreceipt/generate";
@@ -473,7 +481,6 @@ where RE.EVENT_TYPE=1"
             return res;
         }
 
-
         public async Task SendRWDeleteAsync()
         {
             var Ldc = db.GetConfig<DateTime>("LastDaySendDeleted");
@@ -506,7 +513,7 @@ where RE.EVENT_TYPE=1"
 
         }
 
-        async Task<bool> Send1CReceiptWaresDeletedAsync(IEnumerable<ReceiptWaresDeleted1C> pRWD)
+        public async Task<bool> Send1CReceiptWaresDeletedAsync(IEnumerable<ReceiptWaresDeleted1C> pRWD)
         {
             if (pRWD == null || pRWD.Count()==0)
                 return true;

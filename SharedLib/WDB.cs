@@ -198,13 +198,16 @@ namespace SharedLib
         protected string SqlUpdateRC = "";
         protected string SqlUpdateMID = "";
 
-        public WDB(string parFileSQL)
+        public WDB(string pFileSQL,SQL pDB=null)
         {
             var start = DateTime.Now;
-            this.ReadSQL(parFileSQL);
+            this.ReadSQL(pFileSQL);
             InitSQL();
+            if (pDB != null)
+                db = pDB;
             //FileLogger.ExtLogForClassConstruct(GetType(), GetHashCode(), $"{(DateTime.Now-start).TotalMilliseconds} ms readand init sql");
         }
+
 
         ~WDB()
         {
@@ -234,16 +237,18 @@ namespace SharedLib
             return true;
         }
 
-        public virtual bool SetConfig<T>(string parName, T parValue)
+        public virtual bool SetConfig<T>(string parName, T parValue, SQL pDB = null)
         {
-            parValue.GetType().ToString();
-            db.ExecuteNonQuery<object>(this.SqlReplaceConfig, new { NameVar = parName, DataVar = parValue, @TypeVar = parValue.GetType().ToString() });
+            if(pDB==null)
+                db.ExecuteNonQuery<object>(this.SqlReplaceConfig, new { NameVar = parName, DataVar = parValue, @TypeVar = parValue.GetType().ToString() });
+            else
+                pDB.ExecuteNonQuery<object>(this.SqlReplaceConfig, new { NameVar = parName, DataVar = parValue, @TypeVar = parValue.GetType().ToString() });
             return true;
         }
 
-        public virtual T GetConfig<T>(string parStr)
+        public virtual T GetConfig<T>(string pStr,SQL pDB=null)
         {
-            return this.db.ExecuteScalar<object, T>(this.SqlConfig, new { NameVar = parStr });
+            return pDB == null?db.ExecuteScalar<object, T>(SqlConfig, new { NameVar = pStr }): pDB.ExecuteScalar<object, T>(SqlConfig, new { NameVar = pStr });
             //;
         }
 
@@ -767,7 +772,6 @@ namespace SharedLib
             return db.Execute<FastGroup, FastGroup>(SqlGetFastGroup, FG);
         }
 
-
         public virtual PricePromotion GetPrice(ParameterPromotion parPromotion)
         {
             var PriceDealer = db.ExecuteScalar<ParameterPromotion, decimal>(SqlGetPriceDealer, parPromotion);
@@ -1064,6 +1068,6 @@ namespace SharedLib
         /// <summary>
         /// Оновлення структури бази даних
         /// </summary>       
-        protected virtual void UpdateDB() {}
+        protected virtual void UpdateDB(ref bool pIsUseOld) {}
     }
 }

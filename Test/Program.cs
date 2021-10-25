@@ -43,14 +43,14 @@ namespace Test
             //var l = new GetGoodUrl();
             //l.LoadWeightURLAsync();
             //Thread.Sleep(1000000000);
-        
+
             Console.WriteLine("Start");
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
 
-            await CreateDataBaseAsync(false);
+            //await CreateDataBaseAsync(false);
 
-            
-               TestReceiptAsync();
+
+            TestReceiptAsync();
 
             //CreateBarCode();
             //TestKit();
@@ -71,7 +71,7 @@ namespace Test
         {
             //var bl = new BL();            bl.SyncDataAsync(isFull);
             var api = new ApiPSU();
-           
+
             await api.RequestSyncInfo(isFull);
         }
 
@@ -114,6 +114,8 @@ namespace Test
                 CreatedAt = DateTime.Now
             } };
             var api = new ApiPSU();
+            Send1CReceiptWaresDeletedAsync(api.Bl); return;
+
             ProductViewModel sd;
             try
             {
@@ -394,7 +396,8 @@ namespace Test
 
                 //169316+169316 4823086109988 Пельмені "Мішутка" Філейні 600г /Три ведмеді/
                 //156727+169583 4823097403457+4823097405932 Майонез "Провансаль" 67% д/п 350г /Щедро/  Кетчуп "Лагідний" д/п 250г /Щедро/
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message);
             }
@@ -402,10 +405,10 @@ namespace Test
 
         static void CreateBarCode()
         {
-            
+
 
             string dataDir = @"d:\temp\BarCode\";
-string sql = @"SELECT w.code_wares as CodeWares ,w.name_wares as NameWares,b.bar_code as BarCode
+            string sql = @"SELECT w.code_wares as CodeWares ,w.name_wares as NameWares,b.bar_code as BarCode
     FROM dbo.Wares w
      JOIN dbo.barcode b ON w.code_wares = b.code_wares
   WHERE w.type_wares = 2
@@ -419,9 +422,9 @@ string sql = @"SELECT w.code_wares as CodeWares ,w.name_wares as NameWares,b.bar
             foreach (var el in W)
             {
 
-                var bb = BarcodeWriter.CreateBarcode(el.BarCode, el.BarCode.Length == 13 ? BarcodeWriterEncoding.EAN13 : BarcodeWriterEncoding.Code128,250,100);
-            
-                    bb.SaveAsJpeg(dataDir + el.NameWares.Replace('\\', ' ').Replace('/', ' ').Replace("\"", "'").Replace("*", "x") + " " + el.BarCode + ".jpg");
+                var bb = BarcodeWriter.CreateBarcode(el.BarCode, el.BarCode.Length == 13 ? BarcodeWriterEncoding.EAN13 : BarcodeWriterEncoding.Code128, 250, 100);
+
+                bb.SaveAsJpeg(dataDir + el.NameWares.Replace('\\', ' ').Replace('/', ' ').Replace("\"", "'").Replace("*", "x") + " " + el.BarCode + ".jpg");
                 // BarcodeGenerator generator = new BarcodeGenerator(el.BarCode.Length==13? EncodeTypes.EAN13: EncodeTypes.Code128, el.BarCode);
                 // generator.Parameters.Barcode.XDimension.Millimeters = 1f;
 
@@ -541,7 +544,7 @@ string sql = @"SELECT w.code_wares as CodeWares ,w.name_wares as NameWares,b.bar
                 Weight.AddRange(r);
             }
 
-            var singleString = string.Join(",", Weight.OrderBy(r=>r).ToArray());
+            var singleString = string.Join(",", Weight.OrderBy(r => r).ToArray());
             Console.WriteLine(singleString);
         }
 
@@ -581,7 +584,7 @@ string sql = @"SELECT w.code_wares as CodeWares ,w.name_wares as NameWares,b.bar
             {
                 // Open the file to read from.
                 string[] readText = File.ReadAllLines(path);
-                for (int i=0; i<readText.Length;i++)
+                for (int i = 0; i < readText.Length; i++)
                 {
                     if (readText[i].Contains("[METHODEXECUTIONTIME] - AddFiscalNumber"))
                     {
@@ -599,8 +602,8 @@ string sql = @"SELECT w.code_wares as CodeWares ,w.name_wares as NameWares,b.bar
 
                         api.Bl.SaveReceipt(r, false);
                     }
-                
-                
+
+
                 }
 
 
@@ -609,8 +612,33 @@ string sql = @"SELECT w.code_wares as CodeWares ,w.name_wares as NameWares,b.bar
 
         }
 
+        static async Task Send1CReceiptWaresDeletedAsync(BL pBL)
+        {
+            var Ldc = new DateTime(2021, 05, 1);
+            var today = new DateTime(2021, 08, 24);
 
+            try
+            {
+                while (Ldc < today)
+                {
+                    var ldb = new WDB_SQLite(Ldc);
+                    var t = ldb.GetReceiptWaresDeleted();
+                    var res = await pBL.ds.Send1CReceiptWaresDeletedAsync(t);
+                    Console.WriteLine(t?.Count()+" "+res.ToString()+" "+Ldc);
+                    Ldc = Ldc.AddDays(1);
+
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message + "  " + Ldc);
+            }
+        }
     }
+
+
+
+
     public class TestReceipt
     {
         public decimal Percent_Discount { get; set; }
@@ -630,10 +658,5 @@ string sql = @"SELECT w.code_wares as CodeWares ,w.name_wares as NameWares,b.bar
         public string BarCode2Category { get; set; }
 
     }
-
-    
-
-
-
 
 }

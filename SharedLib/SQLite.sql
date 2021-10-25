@@ -20,13 +20,15 @@ alter TABLE payment    add Issuer_Name  TEXT;--Ver=>0
 alter TABLE payment    add Bank  TEXT;--Ver=>0
 alter TABLE WARES_RECEIPT  add Excise_Stamp   TEXT;--Ver=>0
 
+
 [SqlUpdateMID]
+--Ver=>0;Reload;
 alter TABLE wares add Weight_Delta INTEGER  DEFAULT 0;--Ver=>0
 alter TABLE PROMOTION_SALE_DEALER add PRIORITY INTEGER NOT NULL DEFAULT 1;--Ver=>0
 alter TABLE wares add Limit_Age NUMBER;--Ver=>0
 alter TABLE wares add PLU INTEGER;--Ver=>0
 alter TABLE wares add Code_Direction INTEGER;--Ver=>0;
---Ver=>1;Reload;
+
 
 [SqlConfig]
 SELECT Data_Var  FROM CONFIG  WHERE UPPER(Name_Var) = UPPER(trim(@NameVar));

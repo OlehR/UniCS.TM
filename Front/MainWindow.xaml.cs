@@ -210,7 +210,7 @@ namespace Front
 
             switch (btn.Name)
             {
-                case "ua":
+                case "uk":
                     ua.Style = (Style)ua.FindResource("yelowButton");
                     en.Style = (Style)en.FindResource("Default");
                     hu.Style = (Style)hu.FindResource("Default");
@@ -228,7 +228,7 @@ namespace Front
                     en.Style = (Style)en.FindResource("Default");
                     pln.Style = (Style)pln.FindResource("Default");
                     break;
-                case "pln":
+                case "pl":
                     pln.Style = (Style)pln.FindResource("yelowButton");
                     ua.Style = (Style)ua.FindResource("Default");
                     en.Style = (Style)en.FindResource("Default");
