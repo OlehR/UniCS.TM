@@ -18,6 +18,7 @@
     <v:String x:Key="ownBag">Власна сумка</v:String>
     <v:String x:Key="buyBag">Придбати пакет</v:String>
     <v:String x:Key="payment">Оплата</v:String>
+    <v:String x:Key="cancel">Відмінити</v:String>
 
     <v:String x:Key="ChoicePriceTobacco">Виберіть вірну ціну</v:String>
     <v:String x:Key="ChoiceExciseStamp">Проскануйте або введіть акцизну марку</v:String>

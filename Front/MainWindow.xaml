@@ -56,19 +56,19 @@
                     </Grid.RowDefinitions>
 
                     <Button x:Name="ua" Click="_ChangeLanguage" Style="{StaticResource yelowButton}">
-                        <Image Margin="3" Source="icons\ua.png"></Image>
+                        <Image Margin="3" Source="icons\ua.png"/>
                     </Button>
 
                     <Button x:Name="en" Click="_ChangeLanguage" Grid.Column="1" Style="{StaticResource Default}">
-                        <Image Margin="3" Source="icons\uk.png"></Image>
+                        <Image Margin="3" Source="icons\uk.png"/>
                     </Button>
 
                     <Button x:Name="hu" Click="_ChangeLanguage" Grid.Row="1" Style="{StaticResource Default}">
-                        <Image Margin="3" Source="icons\hu.png"></Image>
+                        <Image Margin="3" Source="icons\hu.png"/>
                     </Button>
 
                     <Button x:Name="pln" Click="_ChangeLanguage" Grid.Column="1" Grid.Row="1" Style="{StaticResource Default}">
-                        <Image Margin="3" Source="icons\pln.png"></Image>
+                        <Image Margin="3" Source="icons\pln.png"/>
                     </Button>
 
                 </Grid>
@@ -98,8 +98,7 @@
                 <TextBlock Grid.Column="4" 
                        FontSize="22"
                        Text="{Binding WaresQuantity, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" >
-                </TextBlock>
+                                   Mode=FindAncestor, AncestorType=Window}}" />
 
                 <TextBlock Grid.Column="5" FontSize="22" Text="{DynamicResource markInAll}"/>
                 <TextBlock Grid.Column="6"
@@ -107,8 +106,7 @@
                            FontWeight="Bold"
                            Foreground="#ff5500"
                            Text="{Binding MoneySum, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}">
-                </TextBlock>
+                                   Mode=FindAncestor, AncestorType=Window}}"/>
 
             </Grid>
         </Border>
@@ -116,15 +114,15 @@
             <Border.Effect>
                 <DropShadowEffect ShadowDepth="5" BlurRadius="4" Color="#f2f2f2"/>
             </Border.Effect>
-        <Grid Grid.Row="1" Margin="10,0,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="7*"></ColumnDefinition>
-                <ColumnDefinition Width="3*"></ColumnDefinition>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
+            <Grid Grid.Row="1" Margin="10,0,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="7*"></ColumnDefinition>
+                    <ColumnDefinition Width="3*"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Text="{DynamicResource markWareName}"/>
                 <TextBlock Grid.Column="1" Text="{DynamicResource markWareQuantity}"/>
                 <TextBlock Grid.Column="2" Text="{DynamicResource markWareWeight}"/>
@@ -153,7 +151,7 @@
                                 <!-- Устанавливаем две строки -->
 
                                 <Grid ShowGridLines="True" Visibility="Collapsed">
-                            
+
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="1*"></RowDefinition>
                                         <RowDefinition Height="3*"></RowDefinition>
@@ -170,17 +168,17 @@
                                         </TextBlock.Resources>
             -->
 
-                                    </TextBlock> 
-                                    <TextBlock Margin="0" Grid.Row="1" FontSize="24"  Text="{Binding NameWares}" />                                    
+                                    </TextBlock>
+                                    <TextBlock Margin="0" Grid.Row="1" FontSize="24"  Text="{Binding NameWares}" />
                                 </Grid>
 
 
-                               
+
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Margin="0" Grid.Row="0" FontSize="12"  Text="{Binding GetStrWaresReceiptPromotion}" Visibility="{Binding IsReceiptPromotion,Converter={StaticResource BoolToHiddenConverter}}"/>
                                     <TextBlock Margin="0" Grid.Row="1" FontSize="24"  Text="{Binding NameWares}" />
                                 </StackPanel>
-                                
+
                                 <Grid Grid.Column="1">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="1*"></ColumnDefinition>
@@ -236,7 +234,8 @@
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
-                                        </Button.Style></Button>
+                                        </Button.Style>
+                                    </Button>
 
                                 </Grid>
 
@@ -267,9 +266,7 @@
             </ItemsControl>
         </ScrollViewer>
 
-        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
-            
-        </StackPanel>
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right"/>
 
 
         <Grid Grid.Row="3" >
@@ -281,7 +278,7 @@
                 <ColumnDefinition Width="5*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Button Style="{StaticResource yelowButton}" Grid.Column="0" FontSize="22"   Click="_Back">
-                <Image Margin="5" Source="icons\back.png"></Image>
+                <Image Margin="5" Source="icons\back.png"/>
             </Button>
             <Button  Style="{StaticResource Default}" Grid.Column="1" FontSize="22" Click="_Search">
                 <TextBlock FontSize="28" Text="{DynamicResource search}"/>
@@ -289,7 +286,7 @@
             <Button Style="{StaticResource Default}" Grid.Column="2" FontSize="22" Click="_OwnBag">
                 <TextBlock FontSize="28" Text="{DynamicResource ownBag}"/>
             </Button>
-            <Button Style="{StaticResource yelowButton}" Grid.Column="3" FontSize="22" Click="_BuyBag">
+            <Button  Style="{StaticResource yelowButton}" Grid.Column="3" FontSize="22" Click="_BuyBag">
                 <TextBlock FontSize="28" Text="{DynamicResource buyBag}"/>
             </Button>
             <Button Style="{StaticResource Default}" Grid.Column="4" FontSize="22" Click="_ButtonPayment">
@@ -298,37 +295,52 @@
         </Grid>
 
         <!-- Ввід цін на сегарети    -->
-        <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
-                 Grid.Row="1" Grid.RowSpan="3"
-              Grid.Column="0" Grid.ColumnSpan="4"
-                 Name="ChoicePrice" Visibility="Collapsed" Grid.ZIndex="2" 
-                CornerRadius="10">
 
-            <Grid  >
+        <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="1" Grid.RowSpan="3"
+                Grid.Column="0" Grid.ColumnSpan="4"
+                 Name="ChoicePrice" Visibility="Collapsed" Grid.ZIndex="2" 
+                CornerRadius="10" HorizontalAlignment="Center" Margin="70">
+            <Border.Effect>
+                <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+            </Border.Effect>
+
+            <Grid Width="800" >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*"></RowDefinition>
                     <RowDefinition Height="3*"></RowDefinition>
                     <RowDefinition Height="1*"></RowDefinition>
                 </Grid.RowDefinitions>
-                <TextBlock FontSize="28" Text="{DynamicResource ChoicePriceTobacco }"/>
+                <TextBlock Grid.Row="0" HorizontalAlignment="Center" FontSize="28" Text="{DynamicResource ChoicePriceTobacco }"/>
 
                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Name="SV_Prices">
                     <ItemsControl  Name="Prices">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Button Click="_AddWaresPrice"   >
+                                <Button Click="_AddWaresPrice"  Height="60"  Width="500" Margin="1" Style="{StaticResource yelowButton}">
                                     <TextBlock FontSize="28" Text="{Binding }" Tag="{Binding}"/>
+                                    <Button.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="7" />
+                                        </Style>
+                                    </Button.Resources>
                                 </Button>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </ScrollViewer>
 
-                <Button Grid.Row="2" Style="{StaticResource Default}"  FontSize="22" Click="_ButtonPayment" >
-                    <TextBlock FontSize="28" Text="{DynamicResource payment}"/>
+                <Button Grid.Row="2" Style="{StaticResource Default}"  FontSize="22" Click="_Cencel" 
+                        Height="80" Width="300">
+                    <TextBlock FontSize="28" Text="{DynamicResource cancel}"/>
                 </Button>
             </Grid>
         </Border>
+        <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="1" Grid.RowSpan="3"
+                Grid.Column="0" Grid.ColumnSpan="4"
+                 Name="ChoicePriceBackground" Visibility="Collapsed" Grid.ZIndex="1" 
+                Opacity="0.9"/>
 
 
         <!-- Ввід Акцизної марки    -->
@@ -366,7 +378,7 @@
                     <RowDefinition Height="3*"></RowDefinition>
                     <RowDefinition Height="1*"></RowDefinition>
                 </Grid.RowDefinitions>
-                <TextBlock FontSize="28" Text="{DynamicResource WaitAdmin }"/>                
+                <TextBlock FontSize="28" Text="{DynamicResource WaitAdmin }"/>
 
                 <Button Grid.Row="2" Style="{StaticResource Default}"  FontSize="22" Click="_ButtonPayment" >
                     <TextBlock FontSize="28" Text="{DynamicResource payment}"/>
@@ -375,5 +387,5 @@
         </Border>
 
     </Grid>
-    
+
 </Window>
