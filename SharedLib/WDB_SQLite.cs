@@ -855,20 +855,22 @@ and @TypeDiscount=11; ";
                     wDB.SetConfig<int>("VerConfig", Ver);
 
                 //Mid
-                var dbMID = new SQLite(MidFile);
-                CurVerMid = wDB.GetConfig<int>("VerMID");
-                Lines = SqlUpdateMID.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-                (Ver, IsReload) = Parse(Lines, CurVerMid, dbMID);
-                dbMID.Close(true);
-                if (IsReload)
+                if (File.Exists(MidFile))
                 {
-                    if (File.Exists(MidFile)) File.Delete(MidFile);
-                    pIsUseOld = false;
+                    var dbMID = new SQLite(MidFile);
+                    CurVerMid = wDB.GetConfig<int>("VerMID");
+                    Lines = SqlUpdateMID.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                    (Ver, IsReload) = Parse(Lines, CurVerMid, dbMID);
+                    dbMID.Close(true);
+                    if (IsReload)
+                    {
+                        if (File.Exists(MidFile)) File.Delete(MidFile);
+                        pIsUseOld = false;
 
+                    }
+                    if (Ver != CurVerMid)
+                        wDB.SetConfig<int>("VerMID", Ver);
                 }
-                if (Ver != CurVerMid)
-                    wDB.SetConfig<int>("VerMID", Ver);
-
                 //RC
                 CurVerRC = wDB.GetConfig<int>("VerRC");
 
@@ -911,6 +913,8 @@ and @TypeDiscount=11; ";
                             try
                             {
                                 pDB.ExecuteNonQuery(el);
+                                if (All.Length > 1 && All[1].Equals("Reload".ToUpper()))
+                                    isReload = true;
                             }
                             catch (Exception e)
                             {
@@ -918,8 +922,6 @@ and @TypeDiscount=11; ";
                                     throw new Exception(e.Message, e);
                             }
 
-                        if (All.Length>1 && All[1].Equals("Reload".ToUpper()))
-                            isReload = true;
                             
                         if (NewVer <= Ver)
                             NewVer = Ver;
