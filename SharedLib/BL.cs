@@ -516,8 +516,15 @@ namespace SharedLib
         {
             if (parRE != null && parRE.Count() > 0)
             {
-                db.DeleteReceiptEvent(parRE.First());
-                db.InsertReceiptEvent(parRE);
+                try
+                {
+                    db.DeleteReceiptEvent(parRE.First());
+                    db.InsertReceiptEvent(parRE);
+                }
+                catch(Exception e)
+                {
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = e, Status = eSyncStatus.NoFatalError, StatusDescription = "SaveReceiptEvents N=>" + parRE?.Count().ToString() + '\n' + e.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
+                }
             }
             return true;
         }
@@ -623,7 +630,17 @@ namespace SharedLib
 
         public bool UpdateExciseStamp(IEnumerable<ReceiptWares> pRW )
         {
-            return db.UpdateExciseStamp(pRW);
+            var r = pRW.Where(e => e.ExciseStamp != null && e.ExciseStamp.Length > 0);
+            try
+            {
+               
+                return db.UpdateExciseStamp(r);
+            }catch(Exception e)
+            {
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = e, Status= eSyncStatus.NoFatalError, StatusDescription = "UpdateExciseStamp N=>"+r?.Count().ToString() + '\n' + e.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
+                
+           }
+            return false;
         }
     }
 
