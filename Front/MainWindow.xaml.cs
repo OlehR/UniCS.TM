@@ -122,14 +122,16 @@ namespace Front
             State = pSMV;
             ExciseStamp.Visibility = Visibility.Collapsed;
             ChoicePrice.Visibility = Visibility.Collapsed;
-            ChoicePriceBackground.Visibility = Visibility.Collapsed;
-           
+            Background.Visibility = Visibility.Collapsed;
+            WaitAdmin.Visibility = Visibility.Collapsed;
+
+
 
             switch (State)
             {
                 case StateMainWindows.WaitInputPrice:
                     Prices.ItemsSource = new ObservableCollection<decimal>(CurWares.Prices/*.Select(r=>Convert.ToString(r))*/);
-                    ChoicePriceBackground.Visibility = Visibility.Visible;
+                    Background.Visibility = Visibility.Visible;
                     ChoicePrice.Visibility = Visibility.Visible;
                     break;
                 case StateMainWindows.WaitExciseStamp:

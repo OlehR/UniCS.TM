@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <None Remove="icons\back.png" />
+    <None Remove="icons\clock.png" />
     <None Remove="icons\Close.png" />
     <None Remove="icons\delete.png" />
     <None Remove="icons\hu.png" />
@@ -27,9 +28,11 @@
     <None Remove="icons\uk.png" />
     <None Remove="icons\Up.png" />
     <None Remove="icons\volume.png" />
+    <None Remove="icons\X.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="icons\clock.png" />
     <Resource Include="icons\Close.png" />
     <Resource Include="icons\no_volume.png" />
     <Resource Include="icons\right.png" />
@@ -77,6 +80,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="icons\volume.png" />
+    <Resource Include="icons\X.png" />
   </ItemGroup>
 
   <ItemGroup>

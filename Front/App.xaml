@@ -35,7 +35,7 @@
                             <Border TextBlock.Foreground="Black"
                                 TextBlock.FontWeight="Bold"
                                 x:Name="Border"
-                                CornerRadius="7"
+                                CornerRadius="20"
                                 BorderThickness="1">
                                 <Border.Background>
                                     <LinearGradientBrush StartPoint="0.0, 0" EndPoint="0.0, 1">
@@ -114,15 +114,15 @@
                             <Border TextBlock.Foreground="Black"
                                 TextBlock.FontWeight="Bold"
                                 x:Name="Border"
-                                CornerRadius="7"
+                                CornerRadius="20"
                                 BorderThickness="1">
                                 <Border.Background>
                                     <LinearGradientBrush StartPoint="0.0, 0" EndPoint="0.0, 1">
                                         <GradientStopCollection>
-                                            <GradientStop Color="#e6b800" Offset="0" />
-                                            <GradientStop Color="#ffd11a" Offset="0.1" />
-                                            <GradientStop Color="#ffd11a" Offset="0.9" />
-                                            <GradientStop Color="#e6b800" Offset="1" />
+                                            <GradientStop Color="#BFA330" Offset="0" />
+                                            <GradientStop Color="#FFCD00" Offset="0.1" />
+                                            <GradientStop Color="#FFCD00" Offset="0.9" />
+                                            <GradientStop Color="#BFA330" Offset="1" />
                                         </GradientStopCollection>
                                     </LinearGradientBrush>
                                 </Border.Background>

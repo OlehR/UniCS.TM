@@ -318,7 +318,7 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Button Click="_AddWaresPrice"  Height="60"  Width="500" Margin="1" Style="{StaticResource yelowButton}">
-                                    <TextBlock FontSize="28" Text="{Binding }" Tag="{Binding}"/>
+                                    <TextBlock FontSize="28" Text="{Binding StringFormat= {} {0} ₴ }" Tag="{Binding}"/>
                                     <Button.Resources>
                                         <Style TargetType="Border">
                                             <Setter Property="CornerRadius" Value="7" />
@@ -339,7 +339,7 @@
         <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="1" Grid.RowSpan="3"
                 Grid.Column="0" Grid.ColumnSpan="4"
-                 Name="ChoicePriceBackground" Visibility="Collapsed" Grid.ZIndex="1" 
+                 Name="Background" Visibility="Visible" Grid.ZIndex="1" 
                 Opacity="0.9"/>
 
 
@@ -370,18 +370,29 @@
         <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="1" Grid.RowSpan="3"
               Grid.Column="0" Grid.ColumnSpan="4"
-                 Name="WaitAdmin" Visibility="Collapsed" Grid.ZIndex="2" 
-                CornerRadius="10">
-            <Grid  >
+                 Name="WaitAdmin" Visibility="Visible" Grid.ZIndex="2" 
+                CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Border.Effect>
+                <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+            </Border.Effect>
+            
+            <Grid  Width="700" Height="500">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="1*"></RowDefinition>
                     <RowDefinition Height="3*"></RowDefinition>
                     <RowDefinition Height="1*"></RowDefinition>
                 </Grid.RowDefinitions>
-                <TextBlock FontSize="28" Text="{DynamicResource WaitAdmin }"/>
 
-                <Button Grid.Row="2" Style="{StaticResource Default}"  FontSize="22" Click="_ButtonPayment" >
-                    <TextBlock FontSize="28" Text="{DynamicResource payment}"/>
+                <StackPanel Grid.Row="0" VerticalAlignment="Center">
+                    <Image  Source="icons\clock.png" Width="50" Margin="15"/>
+                    <TextBlock  HorizontalAlignment="Center" FontSize="28" Text="{DynamicResource WaitAdmin }"/>
+                </StackPanel>
+
+                <Button Grid.Row="1" Style="{StaticResource Default}"  FontSize="22" Click="_Cencel" 
+                        Height="80" Width="300" VerticalAlignment="Top">
+                    <StackPanel Orientation="Horizontal">
+                        <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
+                        <TextBlock FontSize="28" Text="{DynamicResource cancel}" Margin="5,0,0,5"/>
+                    </StackPanel>
                 </Button>
             </Grid>
         </Border>
