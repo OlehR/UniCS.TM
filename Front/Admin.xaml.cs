@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace Front
 {
@@ -33,12 +34,23 @@ namespace Front
             InitializeComponent();
             if(EF!=null)
                LE = new ObservableCollection<EquipmentElement>(EF.GetListEquipment);  
-            ListEquipment.ItemsSource = LE;           
+            ListEquipment.ItemsSource = LE;
+            //поточний час
+            DispatcherTimer timer = new DispatcherTimer();
+            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.Tick += timer_Tick;
+            timer.Start();
+        }
+
+        void timer_Tick(object sender, EventArgs e)
+        {
+            lblTime.Content = DateTime.Now.ToShortTimeString();
         }
 
         private void Exit_Click(object sender, RoutedEventArgs e)
         {
-           // this.NavigationService.GoBack();
+            Close();
+            // this.NavigationService.GoBack();
         }
         private void POS_X_Click(object sender, RoutedEventArgs e)
         {
