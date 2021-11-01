@@ -122,8 +122,6 @@ namespace Front
             WeightWares.Visibility = Visibility.Collapsed;
 
 
-
-
             switch (State)
             {
                 case StateMainWindows.WaitInputPrice:
@@ -302,7 +300,6 @@ namespace Front
                         else
                             if (CurWares.Prices.Count() == 1)
                             Bl.AddWaresCode(pCodeWares, pCodeUnit, pQuantity, CurWares.Prices.First());
-
                     }
 
                 }
