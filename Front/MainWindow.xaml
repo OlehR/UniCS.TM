@@ -313,11 +313,11 @@
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" HorizontalAlignment="Center" FontSize="28" Text="{DynamicResource ChoicePriceTobacco }"/>
 
-                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Name="SV_Prices">
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Name="SV_Prices" Width="600">
                     <ItemsControl  Name="Prices">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Button Click="_AddWaresPrice"  Height="60"  Width="500" Margin="1" Style="{StaticResource yelowButton}">
+                                <Button Click="_AddWaresPrice"  Height="100"  Width="500" Margin="1" Style="{StaticResource yelowButton}">
                                     <TextBlock FontSize="28" Text="{Binding StringFormat= {} {0} ₴ }" Tag="{Binding}"/>
                                     <Button.Resources>
                                         <Style TargetType="Border">

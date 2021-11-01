@@ -84,10 +84,10 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </ScrollViewer>
-                    <Button Name="Сalibration" Style="{StaticResource Default}" Content="Калібрування" HorizontalAlignment="Left" Margin="10,0,0,0" Grid.Row="1" VerticalAlignment="Center" Width="160" Height="60"/>
-                    <Button Name="Сalibration0" Style="{StaticResource Default}" Content="Тарування" HorizontalAlignment="Left" Margin="180,0,0,0" Grid.Row="1" VerticalAlignment="Center" Width="160" Height="60"/>
-                    <Button Name="Weighing" Style="{StaticResource Default}" Content="Зважування" HorizontalAlignment="Left" Margin="350,0,0,0" Grid.Row="1" VerticalAlignment="Center" Width="160" Height="60"/>
-                    <Label Name="Weight"  Content="0 гр" Margin="520,5,0,0" Grid.Row="1" Height="60" Width="100"/>
+                    <Button Name="Сalibration" Style="{StaticResource Default}" Content="Калібрування" HorizontalAlignment="Left" Margin="10,0,0,0" Grid.Row="1" VerticalAlignment="Bottom" Width="160" Height="60"/>
+                    <Button Name="Сalibration0" Style="{StaticResource Default}" Content="Тарування" HorizontalAlignment="Left" Margin="180,0,0,0" Grid.Row="1" VerticalAlignment="Bottom" Width="160" Height="60"/>
+                    <Button Name="Weighing" Style="{StaticResource Default}" Content="Зважування" HorizontalAlignment="Left" Margin="350,0,0,0" Grid.Row="1" VerticalAlignment="Bottom" Width="160" Height="60"/>
+                    <Label Name="Weight"  Content="0 гр" Margin="520,5,0,0" Grid.Row="1" Height="60" Width="100" VerticalAlignment="Bottom"/>
                 </Grid>
             </TabItem>
             <TabItem Name="TabHistory" Header="Історія">
