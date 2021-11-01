@@ -5,12 +5,14 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using Front.Equipments;
 using Front.Models;
@@ -20,16 +22,7 @@ using SharedLib;
 
 namespace Front
 {
-    public enum StateMainWindows 
-    { 
-      StartWindow,
-      WaitInput,
-      WaitInputPrice,
-      WaitExciseStamp,
-      WaitFindWares,
-      ProblemWeight,
-      WaitAdmin
-    }
+   
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -45,9 +38,12 @@ namespace Front
         /// <summary>
         /// Вага з основної ваги
         /// </summary>
-        public double Weight { get; set; }
+        public double Weight { get; set; } = 0.111d;
         
         public string WeightControl { get; set; }
+
+        public GW CurW { get; set; } = null;
+
         public BL Bl;
         EquipmentFront EF;
 
@@ -123,6 +119,8 @@ namespace Front
             ChoicePrice.Visibility = Visibility.Collapsed;
             Background.Visibility = Visibility.Collapsed;
             WaitAdmin.Visibility = Visibility.Collapsed;
+            WeightWares.Visibility = Visibility.Collapsed;
+
 
 
 
@@ -136,6 +134,9 @@ namespace Front
                 case StateMainWindows.WaitExciseStamp:
                     ExciseStamp.Visibility = Visibility.Visible;
                     break;
+                case StateMainWindows.WaitWeight:
+                    WeightWares.Visibility = Visibility.Visible;
+                    break;
 
                 case StateMainWindows.WaitFindWares:
                     FindWaresWin FWW = new FindWaresWin(this);
@@ -143,8 +144,7 @@ namespace Front
                     break;
                 case StateMainWindows.WaitInput:
                 default:
-                    break;
-                
+                    break;                
             }
         }
 
@@ -249,8 +249,30 @@ namespace Front
 
         public ReceiptWares CurWares { get; set; } = null;
 
-        public void AddWares(int pCodeWares, int pCodeUnit = 0, decimal pQuantity = 0m,decimal pPrice=0m)
+        public void AddWares(int pCodeWares, int pCodeUnit = 0, decimal pQuantity = 0m,decimal pPrice=0m,GW pGV=null)
         {
+            if(pGV!=null)
+            {
+                CurW = pGV;
+                NameWares.Content = CurW.Name;
+
+                if (File.Exists(CurW.Pictures))
+                {
+                    Image im = new Image
+                    {
+                        Source = new BitmapImage(new Uri(CurW.Pictures)),
+                        VerticalAlignment = VerticalAlignment.Center
+                    };
+                    //Grid.SetColumn(Bt, i);
+                    Grid.SetRow(im, 1);
+                    GridWeightWares.Children.Add(im);
+                }
+
+                WeightWares.Visibility = Visibility.Visible;
+                return;
+            }
+
+
             if (pCodeWares > 0)
             {
                 CurWares = Bl.AddWaresCode(pCodeWares, pCodeUnit, pQuantity, pPrice);
@@ -357,6 +379,18 @@ namespace Front
         public void SetWeight(double pWeight, bool pIsStable)
         {
             Weight = pWeight;
+        }
+
+
+        private void ClickButtonOk(object sender, RoutedEventArgs e)
+        {
+            AddWares(CurW.Code, CurW.CodeUnit,Convert.ToDecimal(Weight)*1000);
+            SetStateView(StateMainWindows.WaitInput);
+        }
+
+        private void ClickButtonCancel(object sender, RoutedEventArgs e)
+        {
+            SetStateView(StateMainWindows.WaitInput);
         }
     }
 

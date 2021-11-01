@@ -11,6 +11,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Controls.Primitives;
 using System.ComponentModel;
 using System.Windows.Media;
+using Front.Models;
 
 namespace Front
 {
@@ -20,7 +21,7 @@ namespace Front
 	public partial class FindWaresWin : Window
 	{
 		public event PropertyChangedEventHandler PropertyChanged;
-		public GW CurW { get; set;} = null;
+		
 		//public string NameW { get { return CurW?.Name; } }
 		BL Bl;
 		int CodeFastGroup = 0;
@@ -117,37 +118,23 @@ namespace Front
 				{
 					if (Gw.CodeUnit == Global.WeightCodeUnit)
 					{
-						CurW = Gw;
-						NameWares.Content = CurW.Name;
-
-						if (File.Exists(CurW.Pictures))
-						{
-							Image im = new Image
-							{
-								Source = new BitmapImage(new Uri(CurW.Pictures)),
-								VerticalAlignment = VerticalAlignment.Center
-							};
-							//Grid.SetColumn(Bt, i);
-							Grid.SetRow(im, 1);
-							GridWeightWares.Children.Add(im);
-						}
-
-						WeightWares.Visibility = Visibility.Visible;
+						Close(Gw.Code, Gw.CodeUnit, 0, Gw);
 					}
 					else
 						Close(Gw.Code, Gw.CodeUnit, 1m);
 				}
 		}
 
-		private void Close(int pCodeWares,int pCodeUnit=0,decimal pQuantity=0m)
+		private void Close(int pCodeWares,int pCodeUnit=0,decimal pQuantity=0m,GW pGW=null)
 		{
-			MW?.AddWares(pCodeWares, pCodeUnit, pQuantity);
+			MW?.AddWares(pCodeWares, pCodeUnit, pQuantity,0m,pGW);
 			Close();
 		}
 		private void WaresName_Changed(object sender, TextChangedEventArgs e)
 		{
 			NewB();
 		}
+		
 		private void ClickButtonUp(object sender, RoutedEventArgs e)
 		{
 			if (CodeFastGroup > 0)
@@ -174,42 +161,12 @@ namespace Front
 			}
 		}
 
-		private void ClickButtonOk(object sender, RoutedEventArgs e)
-		{
-			Close(CurW.Code, CurW.CodeUnit, Convert.ToDecimal( MW.Weight));
-		}
-
 		private void ClickButtonCancel(object sender, RoutedEventArgs e)
 		{
 			Close();
 		}
+
 	}
 
-	public class GW
-	{
-		public GW(FastGroup pFG)
-		{			
-			Type = 1;
-			Name = pFG.Name;
-			Code = pFG.CodeFastGroup;
-			//Pictures = $"{PathPicture}0000{Code}.jpg";
-		}
-		public GW(ReceiptWares pFG)
-		{
-			Type = 0;
-			Name = pFG.NameWares;
-			Code = pFG.CodeWares;
-			TotalRows = pFG.TotalRows;
-			CodeUnit = pFG.CodeUnit;
-		}
-		public int Type { get; set; }
-		public string Name { get; set; }
-		public int Code { get; set; }
-		//public string Pictures { get; set; }
-		public int TotalRows { get; set; }
-		public int CodeUnit { get; set; }
-
-		public string GetName { get { return (Type == 1 ? "G" : "W") + Code.ToString(); } }
-		public string Pictures { get { return $"D:\\Pictures\\{(Type == 1 ? "Categories" : "Products")}\\{Code.ToString("D9")}.jpg"; } }
-	}
+	
 }
