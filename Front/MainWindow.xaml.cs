@@ -55,7 +55,7 @@ namespace Front
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)          
 
             Bl = new BL(true);
-            EF = new EquipmentFront(Bl.GetBarCode, null, Bl.CS.OnScalesData);
+            EF = new EquipmentFront(Bl.GetBarCode, SetWeight, Bl.CS.OnScalesData);
 
                 //SetBarCode += Bl.GetBarCode;// (pBarCode, pTypeBarCode) => { Bl.GetBarCode(pBarCode, pTypeBarCode); };
                 //SetControlWeight += Bl.CS.OnScalesData; // (pWeight, isStable)=>{ });
