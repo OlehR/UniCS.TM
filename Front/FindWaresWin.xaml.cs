@@ -42,9 +42,7 @@ namespace Front
 			//OnScreenKeyboardControl.Keyboard.OnScreenKeyboard bb = new OnScreenKeyboardControl.Keyboard.OnScreenKeyboard(WaresName);
 			//WaresName
 			NewB();
-		}
-
-		
+		}		
 
 		void NewB()
 		{
@@ -178,15 +176,15 @@ namespace Front
 
 		private void ClickButtonOk(object sender, RoutedEventArgs e)
 		{
-			Close(CurW.Code, CurW.CodeUnit, 555M);
+			Close(CurW.Code, CurW.CodeUnit, Convert.ToDecimal( MW.Weight));
 		}
 
 		private void ClickButtonCancel(object sender, RoutedEventArgs e)
 		{
 			Close();
 		}
-
 	}
+
 	public class GW
 	{
 		public GW(FastGroup pFG)

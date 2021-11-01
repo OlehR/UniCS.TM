@@ -7,7 +7,7 @@ namespace Front.Equipments
     /// <summary>
     /// Клас для роботи з касовим апаратом
     /// </summary>
-    public class EKKA: Equipment
+    public class Rro: Equipment
     {
         protected bool varIsFiscal = true;
         protected int  varCodeEKKA = 0;
@@ -21,7 +21,7 @@ namespace Front.Equipments
         protected int varCodeWorkPlace = 1;
         protected bool varIsAutoPrintOperator = false;
 
-        public EKKA(string pSerialPortName, int pBaudRate, Action<string, string> pLogger) : base(pSerialPortName, pBaudRate) { }
+        public Rro(string pSerialPortName, int pBaudRate, Action<string, string> pLogger) : base(pSerialPortName, pBaudRate) { }
 
         public virtual bool SetOperatorName(string parOperatorName)
         {

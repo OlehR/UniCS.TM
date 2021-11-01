@@ -1,5 +1,7 @@
 ﻿using Front.Equipments;
+using Front.Equipments.Ingenico;
 using Microsoft.Extensions.Configuration;
+using ModelMID;
 using SharedLib;
 using System;
 using System.Collections.Generic;
@@ -18,8 +20,8 @@ namespace Front
         Scale Scale;
         Scale ControlScale;
         SignalFlag Signal;
-        public BankTerminal Terminal;
-        public EKKA EKKA;        
+        BankTerminal Terminal;
+        Rro RRO;        
         
         public eStateEquipment State
         {
@@ -55,12 +57,7 @@ namespace Front
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             
             sEquipmentFront = this;
-            var config = Config("appsettings.json");
-
-            //TMP!!! Треба забрати на рівень вище.
-          /*  SetBarCode += Bl.GetBarCode;// (pBarCode, pTypeBarCode) => { Bl.GetBarCode(pBarCode, pTypeBarCode); };
-            SetControlWeight += Bl.CS.OnScalesData; // (pWeight, isStable)=>{ }
-            SetWeight += (pWeight, isStable) => { Console.WriteLine(pWeight); };*/
+            var config = Config("appsettings.json");          
 
             //Scaner
             var ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Scaner).First();
@@ -108,17 +105,84 @@ namespace Front
             if (ElEquipment.Model == eModel.Ingenico)
                 ElEquipment.Equipment = new Exelio(ElEquipment.Port, ElEquipment.BaudRate, null);
             else
-                ElEquipment.Equipment = new EKKA(ElEquipment.Port, ElEquipment.BaudRate, null);
-            EKKA = (EKKA)ElEquipment.Equipment;            
+                ElEquipment.Equipment = new Rro(ElEquipment.Port, ElEquipment.BaudRate, null);
+            RRO = (Rro)ElEquipment.Equipment;            
         }
 
         public static EquipmentFront GetEquipmentFront { get { return sEquipmentFront; } }
 
         public IEnumerable<EquipmentElement> GetListEquipment { get { return ListEquipment; } }
         
-        public void PrintReceipt() { }
+        /// <summary>
+        /// Друк чека
+        /// </summary>
+        public bool PrintReceipt(Receipt pReceipt) 
+        {
+            return false;
+        }
+
+
+        public bool RroPrintX()
+        {
+            return RRO.PrintX();
+        }
+
+        public bool RroPrintZ()
+        {
+            return RRO.PrintZ();
+        }
+
+        public bool RroPrintCopyReceipt()
+        {
+            return RRO.PrintCopyReceipt();
+        }
+
+        /// <summary>
+        /// Оплата по банківському терміналу
+        /// </summary>
+        /// <param name="pSum">Власне сума</param>
+        /// <returns></returns>
+        public PaymentResultModel Purchase(decimal pSum) {
+            return Terminal.Purchase(pSum);
+        }
+
+        /// <summary>
+        /// Повернення покупцю грошей по банківському терміналу
+        /// </summary>
+        /// <param name="pSum"></param>
+        /// <param name="pRNN"></param>
+        /// <returns></returns>
+        public PaymentResultModel RE(decimal pSum,string pRNN)
+        {
+            return Terminal.Refund(pSum, pRNN);
+        }
+
+        public bool PosPrintX()
+        {
+            Terminal.PrintX();
+            return true;
+        }
+
+        public bool PosPrintZ()
+        {
+             RRO.PrintZ();
+            return true;
+        }
+
         
-        public void Pay() { }
+
+        /// <summary>
+        /// Статус банківського термінала (Очікуєм карточки, Очікуєм підтвердження і ТД) 
+        /// </summary>
+        /// <param name="ww"></param>
+        void aPosStatus(Front.Equipments.Ingenico.IPosStatus ww)
+        {
+            if (ww is Front.Equipments.Ingenico.PosStatus status)
+            {
+                //TMP!!!!
+                //Bl.PosStatus = status.Status. GetPosStatusFromStatus();
+            }
+        }
 
         public IConfiguration Config(string settingsFilePath)
         {
@@ -131,20 +195,44 @@ namespace Front
             return AppConfiguration;
         }
         
+        /// <summary>
+        /// Зміна кольору прапорця
+        /// </summary>
+        /// <param name="pColor">Власне на який колір</param>
         public void SetColor(Color pColor)
         {
-            Signal.SwitchToColor(pColor);
+            Signal?.SwitchToColor(pColor);
         }
-               
-        void aPosStatus(Front.Equipments.Ingenico.IPosStatus ww)
+          
+        /// <summary>
+        /// Початок зважування на основній вазі
+        /// </summary>
+        void StartWeight()
         {
-            if (ww is Front.Equipments.Ingenico.PosStatus status)
-            {
-                //TMP!!!!
-                //Bl.PosStatus = status.Status. GetPosStatusFromStatus();
-            }
+            Scale?.StartWeight();
         }
 
-        
+        /// <summary>
+        /// Завершення зважування на основній вазі
+        /// </summary>
+        void StoptWeight()
+        {
+            Scale?.StopWeight();
+        }
+
+        public  bool ControlScaleCalibrateMax(double maxValue)
+        {
+            return ControlScale.CalibrateMax(maxValue);
+        }
+
+        /// <summary>
+        ///  Калібрація нуля
+        /// </summary>
+        /// <returns></returns>
+        public bool ControlScaleCalibrateZero()
+        {
+            return ControlScale.CalibrateZero();
+        }
+
     }
 }

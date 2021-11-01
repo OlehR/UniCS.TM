@@ -54,12 +54,12 @@ namespace Front
         }
         private void POS_X_Click(object sender, RoutedEventArgs e)
         {
-            EF.Terminal.PrintX();
+            EF.PosPrintX();
         }
 
         private void POS_Z_Click(object sender, RoutedEventArgs e)
         {
-            EF.Terminal.PrintZ();
+            EF.PosPrintZ();
         }
 
         private void POS_X_Copy_Click(object sender, RoutedEventArgs e)
@@ -69,12 +69,12 @@ namespace Front
 
         private void EKKA_X_Click(object sender, RoutedEventArgs e)
         {
-            EF.EKKA.PrintX();
+            EF.RroPrintX();
         }
 
         private void EKKA_Z_Click(object sender, RoutedEventArgs e)
         {
-            EF.EKKA.PrintZ();
+            EF.RroPrintZ();
         }
         private void EKKA_Z_Period_Click(object sender, RoutedEventArgs e)
         {
@@ -83,7 +83,7 @@ namespace Front
 
         private void EKKA_Copy_Click(object sender, RoutedEventArgs e)
         {
-            EF.EKKA.PrintCopyReceipt();
+            EF.RroPrintCopyReceipt();
         }
 
         private void WorkStart_Click(object sender, RoutedEventArgs e)
