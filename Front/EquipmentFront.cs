@@ -11,15 +11,9 @@ namespace Front
 {
     public class EquipmentFront
     {
-        public static Action<double,bool> SetWeight { get; set; }
-        public static Action<double, bool> SetControlWeight { get; set; }
-        public static Action<string,string> SetBarCode { get; set; }
-
         private List<EquipmentElement> ListEquipment = new List<EquipmentElement>();
         eStateEquipment _State = eStateEquipment.Off;
-
-        BL Bl; //!!!!костиль.
-        //MainWindow MW;
+       
         Scaner Scaner;
         Scale Scale;
         Scale ControlScale;
@@ -55,46 +49,41 @@ namespace Front
 
         static EquipmentFront sEquipmentFront;
 
-        public EquipmentFront(BL pBL)
+        public EquipmentFront(Action<string, string> pSetBarCode, Action<double, bool> pSetWeight, Action<double, bool> pSetControlWeight)
         {            
             //public static Action<IEnumerable<ReceiptWares>, Guid> OnReceiptCalculationComplete { get; set; }
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-            Bl = pBL;
-
-            //MW = pMW;
+            
             sEquipmentFront = this;
             var config = Config("appsettings.json");
 
             //TMP!!! Треба забрати на рівень вище.
-            SetBarCode += Bl.GetBarCode;// (pBarCode, pTypeBarCode) => { Bl.GetBarCode(pBarCode, pTypeBarCode); };
+          /*  SetBarCode += Bl.GetBarCode;// (pBarCode, pTypeBarCode) => { Bl.GetBarCode(pBarCode, pTypeBarCode); };
             SetControlWeight += Bl.CS.OnScalesData; // (pWeight, isStable)=>{ }
-            SetWeight += (pWeight, isStable) => {
-                Console.WriteLine(pWeight);
-
-            };
+            SetWeight += (pWeight, isStable) => { Console.WriteLine(pWeight); };*/
 
             //Scaner
             var ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Scaner).First();
             if (ElEquipment.Model == eModel.MagellanScaner)
-                ElEquipment.Equipment = new MagellanScaner(config, null, SetBarCode);
+                ElEquipment.Equipment = new MagellanScaner(config, null, pSetBarCode);
             else
-                ElEquipment.Equipment = new Scaner(ElEquipment.Port, ElEquipment.BaudRate, null, SetBarCode);
+                ElEquipment.Equipment = new Scaner(ElEquipment.Port, ElEquipment.BaudRate, null, pSetBarCode);
             Scaner = (Scaner)ElEquipment.Equipment;
 
             //Scale
             ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Scale).First();
             if (ElEquipment.Model == eModel.MagellanScale)
-                ElEquipment.Equipment = new MagellanScale(((MagellanScaner)Scaner).Magellan9300, SetWeight); //MagellanScale(ElEquipment.Port, ElEquipment.BaudRate, null, GetScale);
+                ElEquipment.Equipment = new MagellanScale(((MagellanScaner)Scaner).Magellan9300, pSetWeight); //MagellanScale(ElEquipment.Port, ElEquipment.BaudRate, null, GetScale);
             else
-                ElEquipment.Equipment = new Scale(ElEquipment.Port, ElEquipment.BaudRate, null, SetWeight);
+                ElEquipment.Equipment = new Scale(ElEquipment.Port, ElEquipment.BaudRate, null, pSetWeight);
             Scale = (Scale)ElEquipment.Equipment;
 
             //ControlScale
             ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.ControlScale).First();
             if (ElEquipment.Model == eModel.ScaleModern)
-                ElEquipment.Equipment = new ScaleModern(config, null, SetControlWeight);
+                ElEquipment.Equipment = new ScaleModern(config, null, pSetControlWeight);
             else
-                ElEquipment.Equipment = new Scale(ElEquipment.Port, ElEquipment.BaudRate, null, SetControlWeight);
+                ElEquipment.Equipment = new Scale(ElEquipment.Port, ElEquipment.BaudRate, null, pSetControlWeight);
             ControlScale = (Scale)ElEquipment.Equipment;
 
             //Flag
@@ -155,5 +144,7 @@ namespace Front
                 //Bl.PosStatus = status.Status. GetPosStatusFromStatus();
             }
         }
+
+        
     }
 }
