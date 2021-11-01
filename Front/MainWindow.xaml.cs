@@ -268,6 +268,7 @@ namespace Front
                     GridWeightWares.Children.Add(im);
                 }
 
+                EF.StartWeight();
                 WeightWares.Visibility = Visibility.Visible;
                 return;
             }
@@ -385,11 +386,12 @@ namespace Front
         private void ClickButtonOk(object sender, RoutedEventArgs e)
         {
             AddWares(CurW.Code, CurW.CodeUnit,Convert.ToDecimal(Weight)*1000);
-            SetStateView(StateMainWindows.WaitInput);
+            ClickButtonCancel(sender, e);
         }
 
         private void ClickButtonCancel(object sender, RoutedEventArgs e)
         {
+            EF.StoptWeight();
             SetStateView(StateMainWindows.WaitInput);
         }
     }

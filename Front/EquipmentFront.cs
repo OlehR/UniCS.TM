@@ -207,17 +207,26 @@ namespace Front
         /// <summary>
         /// Початок зважування на основній вазі
         /// </summary>
-        void StartWeight()
+        public void StartWeight()
         {
-            Scale?.StartWeight();
+            try
+            {
+                Scale?.StartWeight();
+            }
+            catch (Exception) { }//Необхідна обробка коли немає обладнання !!!TMP
         }
 
         /// <summary>
         /// Завершення зважування на основній вазі
         /// </summary>
-        void StoptWeight()
+        public void StoptWeight()
         {
-            Scale?.StopWeight();
+            try
+            {
+                Scale?.StopWeight();
+            }
+            catch (Exception) { }//Необхідна обробка коли немає обладнання!!!TMP
+
         }
 
         public  bool ControlScaleCalibrateMax(double maxValue)
