@@ -5,60 +5,59 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Front"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      Height="768" Width="1366"
+      WindowStyle="None"
+      WindowState="Maximized"
       Title="Admin">
 
     <Grid>
 
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="10*"/>
+        </Grid.RowDefinitions>
 
-        <TabControl Name="TabAdmin" Margin="0,10,0,0" SelectionChanged="TabControl_SelectionChanged" >
-            <TabItem Header="Зміна">
-                <Grid Background="#FFE5E5E5">
+        <Label Grid.Row="0"  Content="Kasa number" Name="kasaNumber" FontSize="80" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <Label Grid.Row="0"  Content="Error" Name="lblTime" FontSize="48" HorizontalAlignment="Right" VerticalAlignment="Top" />
+        <Label Grid.Row="0"  Content="Adminastrator Name" Name="adminastratorName" FontSize="48" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+        <TabControl Grid.Row="1" Name="TabAdmin" Margin="20" SelectionChanged="TabControl_SelectionChanged" >
+            <TabItem Header="Зміна" >
+                <Grid >
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="441*"/>
-                        <ColumnDefinition Width="353*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <GroupBox Header="POS-термінал" HorizontalAlignment="Left" Height="281" Margin="21,14,0,0" VerticalAlignment="Top" Width="203">
+                    <GroupBox Grid.Column="0" Header="POS-термінал" Margin="20, 20 , 10 ,20">
                         <StackPanel>
-                            <Button x:Name="POS_X" Content="X звіт" HorizontalAlignment="Center" Height="44"  VerticalAlignment="Top"  Width="138" Click="POS_X_Click"/>
-                            <Button x:Name="POS_Z" Content="Z звіт" Height="44" Width="138" Click="POS_Z_Click"/>
-                            <Button x:Name="POS_X_Copy" Content="X звіт(копія)" HorizontalAlignment="Center" Height="44"  VerticalAlignment="Top" Width="138" Click="POS_X_Copy_Click"/>
+                            <Button x:Name="POS_X" Style="{StaticResource Default}" Content="X звіт"  Height="60"  Width="280" Click="POS_X_Click"/>
+                            <Button x:Name="POS_Z" Style="{StaticResource Default}" Content="Z звіт" Height="60" Width="280" Click="POS_Z_Click"/>
+                            <Button x:Name="POS_X_Copy" Style="{StaticResource Default}" Content="X звіт(копія)"  Height="60"  Width="280" Click="POS_X_Copy_Click"/>
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Grid.Column="1" Header="Фіскальний реєстратор" Margin="10, 20, 10, 20">
+                        <StackPanel>
+                            <Button x:Name="EKKA_X" Style="{StaticResource Default}" Content="X звіт"  Height="60"  VerticalAlignment="Top"  Width="280" Click="EKKA_X_Click"/>
+                            <Button x:Name="EKKA_Z" Style="{StaticResource Default}" Content="Z звіт" Height="60" Width="280" Click="EKKA_Z_Click"/>
+                            <Button x:Name="EKKA_Z_Period" Style="{StaticResource Default}" Content="Z-звіт(Періодичний))"  Height="60"  Width="280" Click="EKKA_Z_Period_Click"/>
+                            <Button x:Name="EKKA_Copy" Style="{StaticResource Default}" Content="Копія Квитанції"  Height="60"  VerticalAlignment="Top" Width="280" Click="EKKA_Copy_Click"/>
                         </StackPanel>
 
 
 
                     </GroupBox>
-                    <GroupBox Header="Фіскальний реєстратор" HorizontalAlignment="Left" Height="281" Margin="259,14,0,0" VerticalAlignment="Top" Width="225" Grid.ColumnSpan="2">
+                    <GroupBox Grid.Column="2" Header="Зміна" Margin="10, 20 , 20 ,20">
                         <StackPanel>
-                            <Button x:Name="EKKA_X" Content="X звіт" HorizontalAlignment="Center" Height="44"  VerticalAlignment="Top"  Width="170" Click="EKKA_X_Click"/>
-                            <Button x:Name="EKKA_Z" Content="Z звіт" Height="44" Width="170" Click="EKKA_Z_Click"/>
-                            <Button x:Name="EKKA_Z_Period" Content="Z-звіт(Періодичний))" HorizontalAlignment="Center" Height="44"  VerticalAlignment="Top" Width="170" Click="EKKA_Z_Period_Click"/>
-                            <Button x:Name="EKKA_Copy" Content="Копія Квитанції" HorizontalAlignment="Center" Height="44"  VerticalAlignment="Top" Width="170" Click="EKKA_Copy_Click"/>
+                            <Button x:Name="WorkStart" Style="{StaticResource Default}" Content="Почати зміну"  Height="60"  Width="280" Click="WorkStart_Click"/>
+                            <Button x:Name="WorkFinish" Style="{StaticResource Default}" Content="Завершити зміну"  Height="60" Width="280" Click="WorkFinish_Click" />
+                            <Button x:Name="CloseDay" Style="{StaticResource Default}" Content="Закриття дня" Height="60" Width="280" Click="CloseDay_Click" />
                         </StackPanel>
-
-
-
                     </GroupBox>
-                    <GroupBox Header="Зміна" HorizontalAlignment="Left" Height="281" Margin="101,14,0,0" VerticalAlignment="Top" Width="225" Grid.Column="1">
-                        <StackPanel>
-                            <Button x:Name="WorkStart" Content="Почати зміну" HorizontalAlignment="Center" Height="44"  Width="171" Click="WorkStart_Click"/>
-                            <Button x:Name="WorkFinish" Content="Завершити зміну" HorizontalAlignment="Center" Height="44" Width="171" Click="WorkFinish_Click" />
-                            <Button x:Name="CloseDay" Content="Закриття дня" HorizontalAlignment="Center" Height="44" Width="171" Click="CloseDay_Click" />
-
-
-
-                        </StackPanel>
-
-
-
-                    </GroupBox>
-
-
                 </Grid>
             </TabItem>
-            <TabItem Header="Пристрої">
-                <Grid Background="#FFE5E5E5">
+            <TabItem Header="Пристрої" >
+                <Grid >
                     <Grid.RowDefinitions>
                         <RowDefinition Height="5*"></RowDefinition>
                         <RowDefinition Height="1*"></RowDefinition>
@@ -85,19 +84,19 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </ScrollViewer>
-                    <Button Name="Сalibration" Content="Калібрування" HorizontalAlignment="Left" Margin="10,0,0,0" Grid.Row="1" VerticalAlignment="Center" Width="140"/>
-                    <Button Name="Сalibration0" Content="Тарування" HorizontalAlignment="Left" Margin="180,0,0,0" Grid.Row="1" VerticalAlignment="Center" Width="140"/>
-                    <Button Name="Weighing" Content="Зважування" HorizontalAlignment="Left" Margin="350,0,0,0" Grid.Row="1" VerticalAlignment="Center" Width="144"/>
-                    <Label Name="Weight" Content="0 гр" Margin="503,0,0,0" Grid.Row="1" Height="41" Width="99"/>
+                    <Button Name="Сalibration" Style="{StaticResource Default}" Content="Калібрування" HorizontalAlignment="Left" Margin="10,0,0,0" Grid.Row="1" VerticalAlignment="Center" Width="160" Height="60"/>
+                    <Button Name="Сalibration0" Style="{StaticResource Default}" Content="Тарування" HorizontalAlignment="Left" Margin="180,0,0,0" Grid.Row="1" VerticalAlignment="Center" Width="160" Height="60"/>
+                    <Button Name="Weighing" Style="{StaticResource Default}" Content="Зважування" HorizontalAlignment="Left" Margin="350,0,0,0" Grid.Row="1" VerticalAlignment="Center" Width="160" Height="60"/>
+                    <Label Name="Weight"  Content="0 гр" Margin="520,5,0,0" Grid.Row="1" Height="60" Width="100"/>
                 </Grid>
             </TabItem>
             <TabItem Name="TabHistory" Header="Історія">
-                <Grid Background="#FFE5E5E5">
+                <Grid >
                     <Grid.RowDefinitions>
                     <RowDefinition Height="1*"></RowDefinition>
                     <RowDefinition Height="7*"></RowDefinition>
                     </Grid.RowDefinitions>
-                    <Button   Grid.Row="0" Name="DateButton" Content="2020-10-20" HorizontalAlignment="Left" Margin="10,0,0,0"  VerticalAlignment="Center" Width="140"/>
+                    <DatePicker Name="dataHistori" FontSize="30" DisplayDate="2021-10-29" Width="200" Height="50" HorizontalAlignment="Left"></DatePicker>
                     <Calendar Grid.Row="0"  Visibility="Hidden" ></Calendar>
                     <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                         <ItemsControl Grid.Row="0" Name="ListReceipts">
@@ -128,13 +127,10 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Помилки">
-                <Grid Background="#FFE5E5E5"/>
+                <Grid />
             </TabItem>
-            <Button Content="Button"/>
-            <Button Content="Button"/>
-            <Button Content="Button"/>
         </TabControl>
-        <Button x:Name="Exit" Content="Вихід" HorizontalAlignment="Right" Height="39" Margin="0,0,0,0" VerticalAlignment="Top" Width="95" Click="Exit_Click"/>
+        <Button Grid.Row="1" x:Name="Exit" Style="{StaticResource Default}" Content="Вихід" Height="50" Width="110" Margin="0, 15,20,0"  HorizontalAlignment="Right" VerticalAlignment="Top"  Click="Exit_Click"/>
 
     </Grid>
 </Window>
