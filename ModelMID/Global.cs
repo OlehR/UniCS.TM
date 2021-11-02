@@ -19,6 +19,8 @@ namespace ModelMID
 
         public static Action<Client, Guid> OnClientChanged { get; set; }
 
+        public static Action<Client, Guid> OnAdminBarCode { get; set; }
+
         public static SortedList<Guid, WorkPlace> WorkPlaceByTerminalId;
         public static SortedList<int, WorkPlace> WorkPlaceByWorkplaceId;
         /// <summary>

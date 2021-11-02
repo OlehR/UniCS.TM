@@ -16,6 +16,7 @@ namespace Front
         private List<EquipmentElement> ListEquipment = new List<EquipmentElement>();
         eStateEquipment _State = eStateEquipment.Off;
        
+        bool IsAdminBarCode
         Scaner Scaner;
         Scale Scale;
         Scale ControlScale;
@@ -165,7 +166,7 @@ namespace Front
 
         public bool PosPrintZ()
         {
-             RRO.PrintZ();
+             Terminal.PrintZ();
             return true;
         }
 

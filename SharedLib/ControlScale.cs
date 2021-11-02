@@ -177,11 +177,11 @@ namespace ModelMID
                 {
                     if (IsRightWeight(СurrentlyWeight))
                     {
-                        if (!(StateScale == eStateScale.StartStabilized || StateScale == eStateScale.Stabilized))
-                        {
+                        //if (!(StateScale == eStateScale.StartStabilized || StateScale == eStateScale.Stabilized))
+                        //{
                             StateScale = eStateScale.StartStabilized;
                             //StartTimer();
-                        }
+                        //}
                         //else
                           //  MidlWeight.AddValue(СurrentlyWeight);
                     }

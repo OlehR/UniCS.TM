@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:v1="http://schemas.microsoft.com/winfx/2009/xaml"
                     xmlns:v="clr-namespace:System;assembly=System.Runtime">
-    <v:String x:Key="buttonHelp">? Допомога</v:String>
+    <v:String x:Key="buttonHelp">Допомога</v:String>
     <v:String x:Key="markWaresQuantity">Кількість товарів :</v:String>
     <v:String x:Key="markInAll">Всього :</v:String>
 
@@ -19,6 +19,7 @@
     <v:String x:Key="buyBag">Придбати пакет</v:String>
     <v:String x:Key="payment">Оплата</v:String>
     <v:String x:Key="cancel">Відмінити</v:String>
+    <v:String x:Key="ok">Ok</v:String>
 
     <v:String x:Key="ChoicePriceTobacco">Виберіть вірну ціну</v:String>
     <v:String x:Key="ChoiceExciseStamp">Проскануйте або введіть акцизну марку</v:String>

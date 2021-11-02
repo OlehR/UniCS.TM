@@ -41,8 +41,12 @@ namespace Front.Models
         /// </summary>
         WaitAdmin,
         /// <summary>
-        /// Очікуємо ручного вводу пароля адміністратора
+        /// Очікуємо логін адміністратора
         /// </summary>
-        WaitAdminPassWord
+        WaitAdminLogin,
+        /// <summary>
+        /// Очікуємо пароль адміністратора
+        /// </summary>
+        WaitAdminPassword
     }
 }
