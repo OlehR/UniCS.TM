@@ -986,6 +986,15 @@ CREATE TABLE MRC (
     PRICE          NUMBER   NOT NULL
 );
 
+CREATE TABLE USER (
+    CODE_USER   INTEGER NOT NULL,
+    NAME_USER   TEXT NOT NULL,
+    BAR_CODE    TEXT NOT NULL,
+    Code_Right  INTEGER NOT NULL,
+    LOGIN       TEXT NOT NULL,
+    PASSWORD    TEXT NOT NULL
+);
+
 
 [SqlCreateMIDIndex]
 
@@ -1097,6 +1106,8 @@ Select min(case when CODE_DEALER=-888888  then PRICE_DEALER else null end) as Mi
 [SqlReplaceMRC]
  replace into  MRC	(Code_Wares, Price) values  (@CodeWares, @Price);
 
+[SqlReplaceUser] 
+replace into User (CODE_USER, NAME_USER,  BAR_CODE,Code_Right, LOGIN, PASSWORD) as (@CodeUser,@NameUser,@BarCode,@CodeRight, @Login,@Password)
 
 [SqlGetPayment]
 select id_workplace as IdWorkplace, code_period as CodePeriod, code_receipt as CodeReceipt, 
@@ -1281,16 +1292,18 @@ select  wrh.id_workplace IdWorkplace, wrh.code_period CodePeriod, wrh.code_recei
 --Sort as "Order", 
 Code_wares as CodeWares,
 wrh.DATE_CREATE as DateCreate,0 as Quantity,wrh.QUANTITY as QuantityOld
-
 from WARES_RECEIPT wrh
 left join RECEIPT r on (r.ID_WORKPLACE =wrh.Id_Workplace    and r.CODE_PERIOD = wrh.Code_Period    and r.CODE_RECEIPT = wrh.Code_Receipt)
 where r.STATE_RECEIPT=-1
  --and r.DATE_RECEIPT>=BeginDate and   wrh.DATE_CREATE<EndDate
 
-  [SqlUpdateExciseStamp]
+[SqlUpdateExciseStamp]
     update wares_receipt set  Excise_Stamp= @ExciseStamp
                      where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt 
                      and code_wares=@CodeWares;
+[SqlGetUser]
+ select CODE_USER as CodeUser, NAME_USER  as NameUser,  BAR_CODE as BarCode, Code_Right as CodeRight, LOGIN, PASSWORD from USER
+    where (Login=@Login and Password=@Password) or BAR_CODE=@BarCode;
 
 [SqlEnd]
 */

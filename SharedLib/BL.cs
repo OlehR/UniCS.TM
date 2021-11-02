@@ -593,14 +593,32 @@ namespace SharedLib
             RW.FixWeight = pWeight;
             return db.FixWeight(RW);
         }
+
+
         /// <summary>
         /// Отриманий штрихкод з Обладнання.
         /// </summary>
         /// <param name="pBarCode"></param>
         /// <param name="pTypeBarCode"></param>
         public void GetBarCode(string pBarCode, string pTypeBarCode)
-        {            
-            AddWaresBarCode(GetLastReceipt(Global.IdWorkPlace),pBarCode, 1);
+        {
+
+            var r = GetLastReceipt(Global.IdWorkPlace);
+            var w=AddWaresBarCode(r,pBarCode, 1);
+            if(w==null) //Можливо штрихкод не товар
+            {
+                var c = GetClientByBarCode(r, pBarCode);
+                if(c==null)
+                {
+                    var u = GetUserByBarCode(pBarCode);
+                    if (u != null)
+                        Global.OnAdminBarCode?.Invoke(u);
+                }
+                else
+                { _ = GetBonusAsync(c, new Guid()); }
+            }
+
+
         }
         /// <summary>
         /// Отримана вага з Обладннааняю
@@ -619,6 +637,7 @@ namespace SharedLib
             LastCodeWares = pCodeWares;
             LastWeight = 0d;
         }
+        
         /// <summary>
         /// Добавляє зважений товар в базу.
         /// </summary>
@@ -626,7 +645,6 @@ namespace SharedLib
         {
             AddWaresCode(LastCodeWares, 0, Convert.ToDecimal(LastWeight));
         }
-
 
         public bool UpdateExciseStamp(IEnumerable<ReceiptWares> pRW )
         {
@@ -641,6 +659,14 @@ namespace SharedLib
                 
            }
             return false;
+        }
+    
+        public User GetUserByBarCode(string pBarCode)
+        {
+            var u = db.GetUser(new User() { BarCode = pBarCode });
+            if (u.Count() > 0)
+                return u.First();
+            return null;
         }
     }
 

@@ -14,9 +14,8 @@ namespace Front
     public class EquipmentFront
     {
         private List<EquipmentElement> ListEquipment = new List<EquipmentElement>();
-        eStateEquipment _State = eStateEquipment.Off;
-       
-        bool IsAdminBarCode
+        eStateEquipment _State = eStateEquipment.Off;       
+        
         Scaner Scaner;
         Scale Scale;
         Scale ControlScale;

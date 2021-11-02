@@ -827,10 +827,16 @@ and @TypeDiscount=11; ";
             using (var DB = new SQLite(ReceiptFile))
             {
                 return db.BulkExecuteNonQuery<ReceiptWares>(SqlUpdateExciseStamp, pRW) > 0;
-            }
-            //return true;
+            }            
         }
 
+        public override bool ReplaceUser(IEnumerable<User> pUser)
+        {
+            using (var DB = new SQLite(ReceiptFile))
+            {
+                return db.BulkExecuteNonQuery<User>(SqlReplaceUser, pUser) > 0;
+            }        
+        }
         /// <summary>
         /// Оновлення структури бази даних
         /// </summary>       

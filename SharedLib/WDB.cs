@@ -197,6 +197,8 @@ namespace SharedLib
         protected string SqlUpdateConfig = "";
         protected string SqlUpdateRC = "";
         protected string SqlUpdateMID = "";
+        protected string SqlReplaceUser = "";
+        protected string SqlGetUser = "";
 
         public WDB(string pFileSQL,SQL pDB=null)
         {
@@ -627,6 +629,8 @@ namespace SharedLib
             SqlUpdateConfig = GetSQL("SqlUpdateConfig");
             SqlUpdateRC = GetSQL("SqlUpdateRC");
             SqlUpdateMID = GetSQL("SqlUpdateMID");
+            SqlReplaceUser = GetSQL("SqlReplaceUser");
+            SqlGetUser = GetSQL("SqlGetUser");
 
 
             return true;
@@ -1040,7 +1044,17 @@ namespace SharedLib
            // return true;
         }
 
-        
+        public virtual bool ReplaceUser(IEnumerable<User> pUser)
+        {
+            db.BulkExecuteNonQuery<User>(SqlReplaceUser, pUser);
+            return true;
+        }
+
+        public virtual IEnumerable<User> GetUser(User pUser)
+        {
+            return db.Execute<User,User>(SqlGetUser, pUser);            
+        }
+
         public virtual void Close(bool isWait = false)
         {
             if (db != null)
@@ -1052,6 +1066,8 @@ namespace SharedLib
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
+       
 
         protected virtual void Dispose(bool disposing)
         {
