@@ -8,6 +8,9 @@ namespace Front.Models
 {
     public enum StateMainWindows
     {
+        /// <summary>
+        /// Стартове вікно
+        /// </summary>
         StartWindow,
         /// <summary>
         /// Основний стан - очікування події сканування та інших
@@ -36,6 +39,10 @@ namespace Front.Models
         /// <summary>
         /// Очікуємо адміністратора
         /// </summary>
-        WaitAdmin
+        WaitAdmin,
+        /// <summary>
+        /// Очікуємо ручного вводу пароля адміністратора
+        /// </summary>
+        WaitAdminPassWord
     }
 }

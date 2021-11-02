@@ -20,8 +20,7 @@ using Microsoft.Extensions.Configuration;
 using ModelMID;
 using SharedLib;
 
-namespace Front
-{
+namespace Front{
    
     /// <summary>
     /// Interaction logic for MainWindow.xaml

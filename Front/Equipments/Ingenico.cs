@@ -31,6 +31,7 @@ namespace Front.Equipments
         {
             return EquipmentIngenico.Purchase(Convert.ToDouble(pAmount)).Result;
         }
+
         public override PaymentResultModel Refund(decimal pAmount, string pRRN)
         {
             return EquipmentIngenico.Refund(Convert.ToDouble(pAmount), pRRN).Result;
@@ -53,8 +54,6 @@ namespace Front.Equipments
             EquipmentIngenico.TestDeviceSync();
             return eStateEquipment.Ok;
         }
-
-
     }
 }
 
@@ -573,6 +572,7 @@ namespace Front.Equipments
     public interface IPosResponse
     {
     }
+    
     public class PayPosResponse : IPosResponse
     {
         public PaymentResultModel Response { get; set; }
@@ -606,6 +606,7 @@ namespace Front.Equipments
 
         List<string> GetLastReceipt();
     }
+    
     public interface IBaseDevice : IDisposable
     {
         Action<DeviceLog> OnDeviceWarning { get; set; }
@@ -620,6 +621,7 @@ namespace Front.Equipments
 
         Task<string> GetInfo();
     }
+    
     public class Ingenico : IPosTerminal, IBaseDevice, IDisposable
     {
         private const string KeyPrefix = "Devices:Ingenico:";

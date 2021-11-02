@@ -9,7 +9,7 @@ using Utils;
 
 namespace ModelMID
 {
-    
+
     /// <summary>
     /// Показники ваги.
     /// </summary>
@@ -22,17 +22,17 @@ namespace ModelMID
         public double Sum { get; set; }
         public int Count { get; set; }
 
-        public double Midl { get {return  (Count > 0? Sum /Count:0); } }
-        public MidlWeight() { Init();}
+        public double Midl { get { return (Count > 0 ? Sum / Count : 0); } }
+        public MidlWeight() { Init(); }
 
         public bool IsStabile(double Delta)
         {
-            return (Max - Min) <  Delta;
+            return (Max - Min) < Delta;
         }
         public void Init()
         {
             Min = double.MaxValue;
-            Last=First = Sum = Max = 0d;
+            Last = First = Sum = Max = 0d;
             Count = 0;
         }
         public void AddValue(double pWeight)
@@ -55,7 +55,7 @@ namespace ModelMID
         /// Стан ваги (Не поставили товар, вірна вага, вага не вірна)
         /// </summary>
         eStateScale StateScale;
-       
+
         /// <summary>
         /// True - якщо чікуєм збільшення ваги, False - Якщо зменшення.
         /// </summary>
@@ -63,7 +63,7 @@ namespace ModelMID
         /// <summary>
         /// Базова Вага, Відносно якої рахуємо очікуване збільшення ваги. 
         /// </summary>
-        double BaseWeight=0;
+        double BaseWeight = 0;
         /// <summary>
         ///Допустима похибка ваги на вітер 
         /// </summary>
@@ -71,7 +71,7 @@ namespace ModelMID
         /// <summary>
         /// Попередня "стабільна" вага
         /// </summary>
-        double BeforeWeight=0;
+        double BeforeWeight = 0;
         /// <summary>
         /// Текуче значення ваги
         /// </summary>
@@ -82,23 +82,15 @@ namespace ModelMID
         WaitWeight[] WaitWeight;
         int TimeInterval;
         Timer t;
-       // private Scales bst;
+        // private Scales bst;
 
         bool TooLightWeight;
 
         MidlWeight BeforeMidlWeight, MidlWeight = new MidlWeight();
 
-        public ControlScale(double pDelta= 0.010d,int pTimeInterval = 250)
+        public ControlScale(double pDelta = 0.010d, int pTimeInterval = 250)
         {
-            /*if (pScales == null)            
-                bst = new Scales("COM10", 115200, OnScalesLog);
-            else
-            
-            bst = pScales;
-            Delta = pDelta;*/
             TimeInterval = pTimeInterval;
-            //bst.OnControlWeightChanged = OnScalesData;
-            //bst.Init();
         }
 
         bool IsRightWeight(double pWeight)
@@ -111,9 +103,9 @@ namespace ModelMID
 
         public double GetMidlWeight()
         {
-            if(StateScale != eStateScale.Stabilized)
+            if (StateScale != eStateScale.Stabilized)
                 return double.MinValue;
-                var current = BeforeMidlWeight == null? MidlWeight.Midl: BeforeMidlWeight.Midl + MidlWeight.Midl / 2;
+            var current = BeforeMidlWeight == null ? MidlWeight.Midl : BeforeMidlWeight.Midl + MidlWeight.Midl / 2;
             BeforeWeight += current;
             return current;
         }
@@ -124,7 +116,7 @@ namespace ModelMID
             {
                 Array.Resize(ref WaitWeight, WaitWeight.Length + 1);
                 WaitWeight[WaitWeight.Length - 1] =
-                    new WaitWeight { Min = СurrentlyWeight - Delta, Max = СurrentlyWeight + Delta};
+                    new WaitWeight { Min = СurrentlyWeight - Delta, Max = СurrentlyWeight + Delta };
                 StateScale = eStateScale.Stabilized;
                 NewEvent();
                 return true;
@@ -133,91 +125,109 @@ namespace ModelMID
                 return false;
         }
 
-        public void StartWeightNewGoogs(WaitWeight [] pWeight, bool pIsIncrease=true)
+        public void StartWeightNewGoogs(WaitWeight[] pWeight, bool pIsIncrease = true)
         {
             IsIncrease = pIsIncrease;
             WaitWeight = pWeight;
 
-            TooLightWeight = WaitWeight.Min(r => r.Min) <= Delta;
-            
+            //if(WaitWeight.Max(r => r.Max) <= Delta)
+
+            TooLightWeight = WaitWeight.Max(r => r.Max) <= Delta;
+
             StateScale = eStateScale.WaitGoods;
             NewEvent();
         }
 
-        void StartTimer()
-        {
-            if (t == null)
-            {
-                t = new Timer(TimeInterval);
-                t.AutoReset = true;
-                t.Elapsed += new ElapsedEventHandler(OnTimedEvent);
-            }
-            else
-                t.Stop();
-            t.Start();
-            BeforeMidlWeight = null;
-            MidlWeight.Init();
-        }
-        void StopTimer()
-        {
-            t.Stop();            
-        }
-        public void OnScalesLog(string logLevel, string message="")
+
+        public void OnScalesLog(string logLevel, string message = "")
         {
             //FileLogger.ExtLogForClass(GetType(), GetHashCode(), $"Scales Log - {DateTime.Now:dd-MM-yyyy HH:mm:ss:ffff}: {logLevel} - {message}");
             Console.WriteLine($"Scales Log - {DateTime.Now:dd-MM-yyyy HH:mm:ss}: {logLevel} - {message}");
         }
+
+        /// <summary>
+        /// Подія від контрольної ваги.
+        /// </summary>
+        /// <param name="weight">Власне вага</param>
+        /// <param name="isStable">Чи платформа стабільна</param>
         public void OnScalesData(double weight, bool isStable)
         {
             eStateScale OldeStateScale = StateScale;
+
             СurrentlyWeight = BeforeWeight - weight;
-            if (BeforeWeight == 0d) // Якщо товару на вазі не повинно бути
+            if (BeforeWeight == 0d && WaitWeight == null) // Якщо товару на вазі не повинно бути (Завершений/анулюваний/Новий чек )
             {
-                if (StateScale!=eStateScale.WaitGoods)
+                if (StateScale != eStateScale.WaitGoods)
                     StateScale = Math.Abs(СurrentlyWeight) <= Delta ? eStateScale.Stabilized : eStateScale.WaitClear;
             }
             else //
             {
+                if(WaitWeight == null) //Якщо не чекаємо товар але вага змінилась.
+                {
+                    //Якщо вийшли за межі похибки
+                    if (Math.Abs(СurrentlyWeight) > Delta)
+                    {
+                        StateScale = eStateScale.NotStabilized;
+                        //StartTimer();
+                    }
+                    else
+                        StateScale = eStateScale.Stabilized;
+                }
+                else //Якщо очікуємо на товар
+                {
+                    if (IsRightWeight(СurrentlyWeight))
+                    {
+                        if (!(StateScale == eStateScale.StartStabilized || StateScale == eStateScale.Stabilized))
+                        {
+                            StateScale = eStateScale.StartStabilized;
+                            //StartTimer();
+                        }
+                        //else
+                          //  MidlWeight.AddValue(СurrentlyWeight);
+                    }
+
+                }
+
                 //Якщо вийшли за межі похибки
                 if (StateScale == eStateScale.WaitGoods && Math.Abs(СurrentlyWeight) > Delta)
                 {
                     StateScale = eStateScale.NotStabilized;
-                    StartTimer();
+                    //StartTimer();
                 }
+
 
                 if (IsRightWeight(СurrentlyWeight))
                 {
                     if (!(StateScale == eStateScale.StartStabilized || StateScale == eStateScale.Stabilized))
                     {
-                        StateScale = eStateScale.StartStabilized;
-                        StartTimer();
+                        StateScale = eStateScale.Stabilized;
+                        //StartTimer();
                     }
-                    else
-                        MidlWeight.AddValue(СurrentlyWeight);
+                   // else
+                      //  MidlWeight.AddValue(СurrentlyWeight);
                 }
                 else
                 {
                     if (StateScale == eStateScale.StartStabilized || StateScale == eStateScale.Stabilized)
                     {
-                        StopTimer();
+                        //StopTimer();
                         StateScale = eStateScale.NotStabilized;
-                        StartTimer();
+                        //StartTimer();
                     }
                 }
-
             }
             // Якщо змінився стан Повідомляєм головній програмі.
             if (OldeStateScale != StateScale)
                 NewEvent();
-           
         }
         private void NewEvent()
         {
             Global.OnChangedStatusScale?.Invoke(StateScale);
             OnScalesLog("NewEvent", StateScale.ToString());
         }
-        
-        private  void OnTimedEvent(Object source, ElapsedEventArgs e)
+
+
+        private void OnTimedEvent(Object source, ElapsedEventArgs e)
         {
             eStateScale OldeStateScale = StateScale;
 
@@ -239,7 +249,26 @@ namespace ModelMID
                 NewEvent();
         }
 
-        public bool WaitClear() 
+        void StartTimer()
+        {
+            if (t == null)
+            {
+                t = new Timer(TimeInterval);
+                t.AutoReset = true;
+                t.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+            }
+            else
+                t.Stop();
+            t.Start();
+            BeforeMidlWeight = null;
+            MidlWeight.Init();
+        }
+        void StopTimer()
+        {
+            t.Stop();
+        }
+
+        public bool WaitClear()
         {
             WaitWeight = null;
             var LastWeight = СurrentlyWeight + BeforeWeight;
