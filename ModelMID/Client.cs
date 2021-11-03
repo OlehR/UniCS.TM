@@ -9,12 +9,14 @@ namespace ModelMID
     /// </summary>
     public class Client
     {
+        string ClientGuid = "1A3B944E-3632-467B-AFFA-";
+
         public Guid ClientId
         {
             get
             {
                 var strGuid = new String('0', 12) + CodeClient.ToString();
-                strGuid = Global.ClientGuid + strGuid.Substring(strGuid.Length - 12);
+                strGuid = ClientGuid + strGuid.Substring(strGuid.Length - 12);
                 return Guid.Parse(strGuid);
             }
         }

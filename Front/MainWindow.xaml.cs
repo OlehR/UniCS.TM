@@ -27,7 +27,7 @@ namespace Front{
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        StateMainWindows State= StateMainWindows.StartWindow;
+        eStateMainWindows State= eStateMainWindows.StartWindow;
         public event PropertyChangedEventHandler PropertyChanged;
 
         public string WaresQuantity { get; set; }
@@ -112,7 +112,7 @@ namespace Front{
             Recalc();
         }
 
-        void SetStateView(StateMainWindows pSMV)
+        void SetStateView(eStateMainWindows pSMV)
         {
             State = pSMV;
             ExciseStamp.Visibility = Visibility.Collapsed;
@@ -125,36 +125,36 @@ namespace Front{
 
             switch (State)
             {
-                case StateMainWindows.WaitInputPrice:
+                case eStateMainWindows.WaitInputPrice:
                     Prices.ItemsSource = new ObservableCollection<decimal>(CurWares.Prices/*.Select(r=>Convert.ToString(r))*/);
                     Background.Visibility = Visibility.Visible;
                     ChoicePrice.Visibility = Visibility.Visible;
                     break;
-                case StateMainWindows.WaitExciseStamp:
+                case eStateMainWindows.WaitExciseStamp:
                     ExciseStamp.Visibility = Visibility.Visible;
                     break;
-                case StateMainWindows.WaitWeight:
+                case eStateMainWindows.WaitWeight:
                     WeightWares.Visibility = Visibility.Visible;
                     break;
-                case StateMainWindows.WaitAdmin:
+                case eStateMainWindows.WaitAdmin:
                     WaitAdmin.Visibility = Visibility.Visible;
                     Background.Visibility = Visibility.Visible;
                     KB.SetInput(LoginTextBlock);
                     break;
-                case StateMainWindows.WaitAdminLogin:
+                case eStateMainWindows.WaitAdminLogin:
                     WaitAdminLogin.Visibility = Visibility.Visible;
                     break;
-                case StateMainWindows.WaitAdminPassword:
+                case eStateMainWindows.WaitAdminPassword:
                     WaitAdminLogin.Visibility = Visibility.Visible;
                     WaitAdminLoginGrid.Visibility = Visibility.Collapsed;
                     WaitAdminPasswordGrid.Visibility = Visibility.Visible;
                     KB.SetInput(PasswordTextBlock);
                     break;
-                case StateMainWindows.WaitFindWares:
+                case eStateMainWindows.WaitFindWares:
                     FindWaresWin FWW = new FindWaresWin(this);
                     FWW.Show();
                     break;
-                case StateMainWindows.WaitInput:
+                case eStateMainWindows.WaitInput:
                 default:
                     break;                
             }
@@ -256,7 +256,7 @@ namespace Front{
 
         private void _Search(object sender, RoutedEventArgs e)
         {
-            SetStateView(StateMainWindows.WaitFindWares);
+            SetStateView(eStateMainWindows.WaitFindWares);
         }
 
         public ReceiptWares CurWares { get; set; } = null;
@@ -296,7 +296,7 @@ namespace Front{
                 {
                     if (CurWares.TypeWares == 1)
                     {
-                        SetStateView(StateMainWindows.WaitExciseStamp);
+                        SetStateView(eStateMainWindows.WaitExciseStamp);
                         return;
                     }
 
@@ -309,7 +309,7 @@ namespace Front{
                         if (CurWares.Prices.Count() > 1)
                         {
                             
-                            SetStateView(StateMainWindows.WaitInputPrice);
+                            SetStateView(eStateMainWindows.WaitInputPrice);
                         }
                         else
                             if (CurWares.Prices.Count() == 1)
@@ -322,7 +322,7 @@ namespace Front{
 
         private void _ButtonHelp(object sender, RoutedEventArgs e)
         {
-            SetStateView(StateMainWindows.WaitAdmin);
+            SetStateView(eStateMainWindows.WaitAdmin);
         }
 
         private void _OwnBag(object sender, RoutedEventArgs e)
@@ -336,7 +336,7 @@ namespace Front{
         }
         private void _Cancel(object sender, RoutedEventArgs e)
         {
-            SetStateView(StateMainWindows.WaitInput);
+            SetStateView(eStateMainWindows.WaitInput);
         }
 
         private void _ButtonPayment(object sender, RoutedEventArgs e)
@@ -366,7 +366,7 @@ namespace Front{
                 }
             }
             catch { }
-            SetStateView(StateMainWindows.WaitInput);
+            SetStateView(eStateMainWindows.WaitInput);
         }
        
         private IEnumerable<ReceiptWares> StartData()
@@ -402,12 +402,12 @@ namespace Front{
         private void ClickButtonCancel(object sender, RoutedEventArgs e)
         {
             EF.StoptWeight();
-            SetStateView(StateMainWindows.WaitInput);
+            SetStateView(eStateMainWindows.WaitInput);
         }
 
         private void ButtonAdmin(object sender, RoutedEventArgs e)
         {
-            SetStateView(StateMainWindows.WaitAdminLogin);
+            SetStateView(eStateMainWindows.WaitAdminLogin);
         }
 
         private void LoginButton(object sender, RoutedEventArgs e)
@@ -429,7 +429,7 @@ namespace Front{
 
         private void LoginButtonNext(object sender, RoutedEventArgs e)
         {
-            SetStateView(StateMainWindows.WaitAdminPassword);
+            SetStateView(eStateMainWindows.WaitAdminPassword);
         }
     }
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Front.Models
 {
-    public enum StateMainWindows
+    public enum eStateMainWindows
     {
         /// <summary>
         /// Стартове вікно
@@ -49,4 +49,6 @@ namespace Front.Models
         /// </summary>
         WaitAdminPassword
     }
+
+    
 }

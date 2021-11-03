@@ -7,6 +7,8 @@ namespace ModelMID
 {
     public class IdReceipt
     {
+        protected string PrefixWarehouse { get { switch (Global.CodeWarehouse) { case 9: return "K"; case 15: return "B"; default: return "X"; } } }
+
         public Guid ReceiptId
         {
             get
@@ -99,7 +101,7 @@ namespace ModelMID
             get
             {
                 var d = Convert.ToInt32(Math.Floor((DTPeriod - new DateTime(2019, 01, 01)).TotalDays)).ToString("D4");
-                return Global.PrefixWarehouse + Global.GetNumberCashDeskByIdWorkplace(IdWorkplace) + d + CodeReceipt.ToString("D4");
+                return PrefixWarehouse + Global.GetNumberCashDeskByIdWorkplace(IdWorkplace) + d + CodeReceipt.ToString("D4");
             }
         }
 

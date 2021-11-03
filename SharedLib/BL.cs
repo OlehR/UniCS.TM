@@ -14,7 +14,6 @@ using System.Diagnostics;
 
 namespace SharedLib
 {
-
     public class BL
     {
         static BL sBL;
@@ -416,7 +415,6 @@ namespace SharedLib
             db.CloseReceipt(receipt);
             return true;
         }
-
 
         public bool InsertWeight(string parBarCode, int parWeight, Guid parWares, TypeSaveWeight parTypeSaveWeight)
         {
