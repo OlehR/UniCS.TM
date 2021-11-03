@@ -414,6 +414,7 @@ namespace Front{
 
         private void LoginButton(object sender, RoutedEventArgs e)
         {
+            SetStateView(eStateMainWindows.WaitInput);
             Admin ad = new Admin();
             ad.Show();
             MessageBox.Show("Ви залогінились!!! Но поки це не точно((");
@@ -432,6 +433,12 @@ namespace Front{
         private void LoginButtonNext(object sender, RoutedEventArgs e)
         {
             SetStateView(eStateMainWindows.WaitAdminPassword);
+        }
+
+        private void AddExciseStamp(object sender, RoutedEventArgs e)
+        {
+            //Додання акцизноії марки до алкоголю
+            SetStateView(eStateMainWindows.WaitInput);
         }
     }
 

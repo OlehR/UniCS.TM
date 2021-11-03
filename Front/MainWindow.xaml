@@ -9,7 +9,7 @@
         Title="MainWindow" 
         WindowState="Maximized"
         WindowStyle="None"
-        Height="768" Width="1366"
+        Height="1080" Width="1920"
         >
     <Window.DataContext>
         <onScreenKeyboardControl:ViewModel/>
@@ -20,7 +20,7 @@
          x:Key="BoolToHiddenConverter"
          TrueValue="Visible" FalseValue="Hidden" />
     </Window.Resources>
-    
+
 
 
     <Grid>
@@ -341,12 +341,12 @@
                 </Button>
             </Grid>
         </Border>
-        
-        
+
+
         <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="1" Grid.RowSpan="3"
                 Grid.Column="0" Grid.ColumnSpan="4"
-                 Name="Background" Visibility="Collapsed" Grid.ZIndex="1" 
+                 Name="Background" Visibility="Visible" Grid.ZIndex="1" 
                 Opacity="0.9"/>
 
 
@@ -354,22 +354,55 @@
         <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="1" Grid.RowSpan="3"
               Grid.Column="0" Grid.ColumnSpan="4"
-                 Name="ExciseStamp" Visibility="Collapsed" Grid.ZIndex="2" 
-                CornerRadius="10">
+                 Name="ExciseStamp" Visibility="Visible" Grid.ZIndex="2" 
+                CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Border.Effect>
+                <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+            </Border.Effect>
+            <Grid Width="1600" Height="900">
 
-            <Grid  >
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="1*"></RowDefinition>
-                    <RowDefinition Height="3*"></RowDefinition>
-                    <RowDefinition Height="1*"></RowDefinition>
-                </Grid.RowDefinitions>
-                <TextBlock FontSize="28" Text="{DynamicResource ChoiceExciseStamp }"/>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="5*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="2" BorderBrush="Transparent" Background="Transparent" Width="50" Height="50" 
+                        HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10"
+                        Click="_Cancel"/>
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="69*"></RowDefinition>
+                        <RowDefinition Height="138*"></RowDefinition>
+                        <RowDefinition Height="138*"></RowDefinition>
+                        <RowDefinition Height="69*"></RowDefinition>
+                        <RowDefinition Height="69*"></RowDefinition>
+                        <RowDefinition Height="149*"></RowDefinition>
+                        <RowDefinition Height="266*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock HorizontalAlignment="Center" FontSize="28" Text="{DynamicResource ChoiceExciseStamp }"/>
+                    <TextBlock Grid.Row="1" HorizontalAlignment="Center" FontSize="28" Text="Product name"/>
 
-                <TextBox Grid.Row="1" TabIndex="1" Name="TBExciseStamp" FontSize="25"    VerticalAlignment="Center" />
+                    <Button Grid.Row="2"  Style="{StaticResource Default}" HorizontalAlignment="Right" VerticalAlignment="Bottom"  FontSize="22" Click="_Cancel" 
+                        Height="60" Width="400" Margin="0,0,5,5">
+                        <TextBlock FontSize="28" Text="{DynamicResource ExciseStampEmpty}" Margin="5,0,0,5"/>
+                    </Button>
+                    <Button Grid.Row="2"  Style="{StaticResource yelowButton}" HorizontalAlignment="Left" VerticalAlignment="Bottom"  FontSize="22" Click="AddExciseStamp" 
+                        Height="60" Width="200" Margin="5,0,0,5">
+                        <TextBlock FontSize="28" Text="{DynamicResource ok}" Margin="5,0,0,5"/>
+                    </Button>
 
-                <Button Grid.Row="2" Style="{StaticResource Default}"  FontSize="22" Click="_ButtonPayment" >
-                    <TextBlock FontSize="28" Text="{DynamicResource payment}"/>
-                </Button>
+                    <TextBox Grid.Row="3" TabIndex="1" Name="TBExciseStamp" FontSize="25"    VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="4" Foreground="Red" HorizontalAlignment="Center" FontSize="20"  VerticalAlignment="Top"
+                               Text="Не валідний aкцизний штрихкод" Margin="0,10,0,0"/>
+                    <keyboard:OnScreenKeyboard Grid.Row="5"
+		                           Height="300"
+                                   x:Name="KB2"                                  
+		                           VerticalAlignment="Top" 
+		                           ActiveContainer="{Binding ElementName=MainGrid}"
+                                   ToggleButtonStyle="{StaticResource DefaultTouchToggleButtonStyle}"
+		                           CancelCommand="{Binding CancelCommand2}" Grid.RowSpan="2"/>
+                </Grid>
+
             </Grid>
         </Border>
 
@@ -382,7 +415,7 @@
             <Border.Effect>
                 <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
             </Border.Effect>
-            
+
             <Grid  Width="700" Height="500">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="3*"></RowDefinition>
