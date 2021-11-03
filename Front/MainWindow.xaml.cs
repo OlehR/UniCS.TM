@@ -34,6 +34,10 @@ namespace Front{
         public string MoneySum { get; set; }
         public bool Volume { get; set; }
         /// <summary>
+        /// Чи зчитано штрихкод Адміна.
+        /// </summary>
+        public bool  IsAdminBarCode { get; set; }
+        /// <summary>
         /// Вага з основної ваги
         /// </summary>
         public double Weight { get; set; } = 0.111d;
@@ -88,6 +92,7 @@ namespace Front{
             {
                 Debug.WriteLine($"Client.Wallet=> {client.Wallet} SumBonus=>{client.SumBonus} ");
             };
+            Global.OnAdminBarCode += (pUser)=> { IsAdminBarCode = true; SetStateView(eStateMainWindows.NotDefine,true); };
 
             WaresQuantity = "0";
             MoneySum = "0";
@@ -112,16 +117,17 @@ namespace Front{
             Recalc();
         }
 
-        void SetStateView(eStateMainWindows pSMV)
+        void SetStateView(eStateMainWindows pSMV= eStateMainWindows.NotDefine,bool pIsBarCodeAdmin=false)
         {
-            State = pSMV;
+            if(pSMV != eStateMainWindows.NotDefine)
+                State = pSMV;
+
             ExciseStamp.Visibility = Visibility.Collapsed;
             ChoicePrice.Visibility = Visibility.Collapsed;
             Background.Visibility = Visibility.Collapsed;
             WaitAdmin.Visibility = Visibility.Collapsed;
             WaitAdminLogin.Visibility = Visibility.Collapsed;
             WeightWares.Visibility = Visibility.Collapsed;
-
 
             switch (State)
             {

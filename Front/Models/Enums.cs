@@ -8,6 +8,7 @@ namespace Front.Models
 {
     public enum eStateMainWindows
     {
+        NotDefine,
         /// <summary>
         /// Стартове вікно
         /// </summary>
