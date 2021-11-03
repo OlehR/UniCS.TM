@@ -100,10 +100,6 @@ namespace Front{
 
             InitializeComponent();
 
-           
-
-            MainWindowCS Processing = new MainWindowCS();
-
             ListWares = new ObservableCollection<ReceiptWares>(StartData());
             WaresList.ItemsSource = ListWares;// Wares;
 
