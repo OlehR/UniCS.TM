@@ -62,7 +62,7 @@ namespace Utils
                 {
                     var date = DateTime.Now;
                     File.AppendAllText(
-                        $"{Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"{date.Year}_{date.Month}_{date.Day}.log")}",
+                        $"{Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"{date.Year}{date.Month}{date.Day}.log")}",
                         $@"[{date:dd-MM-yyyy HH:mm:ss}] {message}{Environment.NewLine}");
                 }
             });

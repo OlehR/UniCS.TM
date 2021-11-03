@@ -14,5 +14,7 @@ namespace ModelMID
         {
             return pWeight >= Min && pWeight <= Max;
         }
+        public override string ToString() { return $"[{Min},{Max}]"; } 
+
     }
 }

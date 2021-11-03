@@ -158,7 +158,7 @@ namespace OnScreenKeyboardControl.Keyboard
 				new OnScreenKeyNormal(1, 02, new[] {"w", "W","ц","Ц"}, CaptionUpdateDelegateDelegateFunction.ShiftAndSpecial),
 				new OnScreenKeyNormal(1, 03, new[] {"e", "E", "у","У"}, CaptionUpdateDelegateDelegateFunction.ShiftAndSpecial),
 				new OnScreenKeyNormal(1, 04, new[] {"r", "R","к","К"}, CaptionUpdateDelegateDelegateFunction.ShiftAndSpecial),
-				new OnScreenKeyNormal(1, 05, new[] {"t", "T","к","К"}, CaptionUpdateDelegateDelegateFunction.ShiftAndSpecial),
+				new OnScreenKeyNormal(1, 05, new[] {"t", "T","е","Е"}, CaptionUpdateDelegateDelegateFunction.ShiftAndSpecial),
 				new OnScreenKeyNormal(1, 06, new[] {"y", "Y", "н", "Н"}, CaptionUpdateDelegateDelegateFunction.ShiftAndSpecial),
 				new OnScreenKeyNormal(1, 07, new[] {"u", "U", "г", "Г"}, CaptionUpdateDelegateDelegateFunction.ShiftAndSpecial),
 				new OnScreenKeyNormal(1, 08, new[] {"i", "I", "ш", "Ш"}, CaptionUpdateDelegateDelegateFunction.ShiftAndSpecial),

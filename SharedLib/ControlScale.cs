@@ -9,7 +9,6 @@ using Utils;
 
 namespace ModelMID
 {
-
     /// <summary>
     /// Показники ваги.
     /// </summary>
@@ -127,6 +126,8 @@ namespace ModelMID
 
         public void StartWeightNewGoogs(WaitWeight[] pWeight, bool pIsIncrease = true)
         {
+             OnScalesLog($"StartWeightNewGoogs=>{string.Join(",", pWeight.ToList())}");
+
             IsIncrease = pIsIncrease;
             WaitWeight = pWeight;
 
@@ -137,14 +138,7 @@ namespace ModelMID
             StateScale = eStateScale.WaitGoods;
             NewEvent();
         }
-
-
-        public void OnScalesLog(string logLevel, string message = "")
-        {
-            //FileLogger.ExtLogForClass(GetType(), GetHashCode(), $"Scales Log - {DateTime.Now:dd-MM-yyyy HH:mm:ss:ffff}: {logLevel} - {message}");
-            Console.WriteLine($"Scales Log - {DateTime.Now:dd-MM-yyyy HH:mm:ss}: {logLevel} - {message}");
-        }
-
+        
         /// <summary>
         /// Подія від контрольної ваги.
         /// </summary>
@@ -152,6 +146,7 @@ namespace ModelMID
         /// <param name="isStable">Чи платформа стабільна</param>
         public void OnScalesData(double weight, bool isStable)
         {
+            OnScalesLog($"OnScalesData weight{weight} isStable {isStable}");
             eStateScale OldeStateScale = StateScale;
 
             СurrentlyWeight = BeforeWeight - weight;
@@ -220,13 +215,30 @@ namespace ModelMID
             if (OldeStateScale != StateScale)
                 NewEvent();
         }
+
         private void NewEvent()
         {
             Global.OnChangedStatusScale?.Invoke(StateScale);
             OnScalesLog("NewEvent", StateScale.ToString());
         }
 
+        public bool WaitClear()
+        {
+            OnScalesLog("WaitClear");
+            WaitWeight = null;
+            var LastWeight = СurrentlyWeight + BeforeWeight;
+            BeforeWeight = 0d;
+            OnScalesData(LastWeight, false);
+            return true;
+        }
 
+        public void OnScalesLog(string logLevel, string message = "")
+        {
+            FileLogger.WriteLogMessage($"ScalesLog - {DateTime.Now:dd-MM-yyyy HH:mm:ss:ffff}: {logLevel} StateScale=>{StateScale} BeforeWeight=>{BeforeWeight} СurrentlyWeight=>{СurrentlyWeight} {message}");
+            // Console.WriteLine($"Scales Log - {DateTime.Now:dd-MM-yyyy HH:mm:ss}: {logLevel} - {message}");
+        }
+
+        /*
         private void OnTimedEvent(Object source, ElapsedEventArgs e)
         {
             eStateScale OldeStateScale = StateScale;
@@ -267,14 +279,7 @@ namespace ModelMID
         {
             t.Stop();
         }
+        */
 
-        public bool WaitClear()
-        {
-            WaitWeight = null;
-            var LastWeight = СurrentlyWeight + BeforeWeight;
-            BeforeWeight = 0d;
-            OnScalesData(LastWeight, false);
-            return true;
-        }
     }
 }

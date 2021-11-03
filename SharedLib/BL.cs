@@ -180,8 +180,6 @@ namespace SharedLib
                     return null;
             }
 
-
-
             //ReceiptWares W = null;
             if (w == null || w.Count() == 0) // Якщо не знайшли спробуем по ваговим і штучним штрихкодам.          
             {

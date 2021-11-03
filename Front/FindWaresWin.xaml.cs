@@ -15,14 +15,11 @@ using Front.Models;
 
 namespace Front
 {
-	/// <summary>
-	/// Interaction logic for MainWindow.xaml
-	/// </summary>
+	
 	public partial class FindWaresWin : Window
 	{
 		public event PropertyChangedEventHandler PropertyChanged;
 		
-		//public string NameW { get { return CurW?.Name; } }
 		BL Bl;
 		int CodeFastGroup = 0;
 		int OffSet = 0;
@@ -40,8 +37,6 @@ namespace Front
 			MW = pMW;
 			Bl = BL.GetBL;
 			KB.SetInput(WaresName);
-			//OnScreenKeyboardControl.Keyboard.OnScreenKeyboard bb = new OnScreenKeyboardControl.Keyboard.OnScreenKeyboard(WaresName);
-			//WaresName
 			NewB();
 		}		
 
