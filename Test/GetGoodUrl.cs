@@ -1,6 +1,7 @@
 ﻿using ModelMID.DB;
 using SharedLib;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -20,34 +21,31 @@ namespace Test
     public class GetGoodUrl
     {
 
-        public async Task LoadWeightURLAsync()
+        static public async Task LoadWeightURLAsync()
         {
             string varSQLUpdate = @"
             --begin tran
   update barcode_out with(serializable) set weight_Url = @WeightUrl, Date_Url = @DateUrl,Data=@Data,Error=@Error,url=@Url,Url_Picture=@UrlPicture
    where bar_code = @BarCode
-
    if @@rowcount = 0
    begin
       insert into barcode_out(bar_code, weight_Url, Date_Url,Data,Error,Url,Url_Picture) values(@BarCode, @WeightUrl, @DateUrl,@Data,@Error,@Url,@UrlPicture)
    end
 -- commit tran";
 
-            string varSQLSelect = @"
-SELECT b.bar_code FROM dbo.dw_am da 
+            string varSQLSelect = @"SELECT b.bar_code as BarCode,b.code_wares CodeWares  FROM dbo.dw_am da 
   JOIN dbo.barcode b ON da.code_wares=b.code_wares
   LEFT JOIN dbo.barcode_out bo ON b.bar_code=bo.bar_code
   WHERE da.code_warehouse=9 AND da.Quantity_Min>0 
  AND  bo.error IS null
   --AND  ( bo.bar_code IS NULL OR (bo.weight=0 and bo.error IS null))
-  -- AND SUBSTRING(b.bar_code,1,3)='482'";
+   AND b.bar_code like'482%'";
 
-            varSQLSelect = @"SELECT b.bar_code as BarCode,ww.code_wares CodeWares,ww.articl
-  --FROM dbo.tmp_wares w
+           /* varSQLSelect = @"SELECT b.bar_code as BarCode,ww.code_wares CodeWares,ww.articl  
   from dbo.wares ww  --ON w.code_wares=ww.code_wares
   JOIN dbo.barcode b ON ww.code_wares=b.code_wares
   JOIN dbo.barcode_out bo ON b.bar_code=bo.bar_code
-  WHERE bo.Error='Ok' and Url_Picture is  null";
+  WHERE bo.Error='Ok' and Url_Picture is  null";*/
 
             var dbMs = new MSSQL();
             var rand = new Random();
@@ -58,20 +56,17 @@ SELECT b.bar_code FROM dbo.dw_am da
             {
                 try
                 {
-
                     var r = await GetInfoBarcode(el.BarCode, el.CodeWares);
+                    Console.WriteLine(r.BarCode + " " + r.Error + " " + r.WeightUrl + " " + r.Url + " " + el.BarCode);
                     dbMs.ExecuteNonQuery<BarCodeOut>(varSQLUpdate, r);
-                    Console.WriteLine(r.BarCode + " " + r.Error + " " + r.WeightUrl + " " + r.Url);
-                    Thread.Sleep(1000 * rand.Next(3, 7));
-
-
+                   
+                    Thread.Sleep(10000 +  rand.Next(1000, 10000));
                 }
                 catch (Exception ex)
                 {
-                    var r = ex.Message;
+                    Console.WriteLine(ex.Message);
                 }
             }
-
         }
 
         public static async Task<BarCodeOut> GetInfoBarcode(string parBarCode = "4823000916524", string pArticle = "")
@@ -132,7 +127,6 @@ SELECT b.bar_code FROM dbo.dw_am da
                                     }
                                 }
 
-
                                 i = res.IndexOf("<p class=\"product-specifications-title\"");
                                 if (i > 0)
                                     res = res.Substring(i);
@@ -166,7 +160,7 @@ SELECT b.bar_code FROM dbo.dw_am da
                                     r = r.Substring(0, i);
                                 else return Res;
 
-                                Res.WeightUrl = Decimal.Parse(r.Replace('.', ','));
+                                Res.WeightUrl = Decimal.Parse(r, CultureInfo.InvariantCulture); // .Replace('.', ','));
                             }
                             else
                                 Res.Error = "Bad Request Product";
@@ -174,8 +168,6 @@ SELECT b.bar_code FROM dbo.dw_am da
                         else
                             Res.Error = "Product Not Found";
                     }
-
-
                 }
                 else
                 {
@@ -218,26 +210,8 @@ SELECT b.bar_code FROM dbo.dw_am da
                         continue;
                     }
                 };
-
                 File.Move(FileName, $"d:\\pictures\\new\\{ el.CodeWares.Trim()}.{ex}");
-
-
             }
-
-
         }
-
-
-
     }
-
-
-
-
-
-
-
-
-
-
 }
