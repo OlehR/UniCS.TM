@@ -100,6 +100,8 @@ namespace Front{
 
             InitializeComponent();
 
+            KB2.SetInput(TBExciseStamp);
+
             ListWares = new ObservableCollection<ReceiptWares>(StartData());
             WaresList.ItemsSource = ListWares;// Wares;
 
@@ -134,6 +136,7 @@ namespace Front{
                     break;
                 case eStateMainWindows.WaitExciseStamp:
                     ExciseStamp.Visibility = Visibility.Visible;
+                    
                     break;
                 case eStateMainWindows.WaitWeight:
                     WeightWares.Visibility = Visibility.Visible;
