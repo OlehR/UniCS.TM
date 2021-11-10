@@ -39,7 +39,8 @@ namespace Test
   WHERE da.code_warehouse=9 AND da.Quantity_Min>0 
  AND  bo.error IS null
   --AND  ( bo.bar_code IS NULL OR (bo.weight=0 and bo.error IS null))
-   AND b.bar_code like'482%'";
+   --AND b.bar_code like'482%'
+and LEN(b.bar_code)>=8";
 
            /* varSQLSelect = @"SELECT b.bar_code as BarCode,ww.code_wares CodeWares,ww.articl  
   from dbo.wares ww  --ON w.code_wares=ww.code_wares
