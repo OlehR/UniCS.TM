@@ -9,12 +9,53 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
+
 namespace Test
 {
+    public class Unit
+    {
+        public string BarCode { get; set; }
+        /// <summary>
+        /// Назва
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Кількість
+        /// </summary>
+        public decimal Quantity { get; set; } = 1;
+
+        /// <summary>
+        /// Кількість коробок для шару і Палетти
+        /// </summary>
+        public decimal QuantityBox { get; set; } = 1;
+        /// <summary>
+        /// Кількість шарів у Палетти
+        /// </summary>
+        public decimal QuantityLayer { get; set; } = 1;
+        /// <summary>
+        /// Висота
+        /// </summary>
+        public decimal Height { get; set; }
+        /// <summary>
+        /// Ширина
+        /// </summary>
+        public decimal Width { get; set; }
+        /// <summary>
+        /// Глибина
+        /// </summary>
+        public decimal Depth { get; set; }
+        /// <summary>
+        /// Вага брутто
+        /// </summary>
+        public decimal GrossWeight { get; set; }
+    }
+
     public class data
     {
         public string BarCode { get; set; }
         public string CodeWares { get; set; }
+        public string NameWares { get; set; }
         public string Article { get; set; }
     }
 
@@ -25,22 +66,29 @@ namespace Test
         {
             string varSQLUpdate = @"
             --begin tran
-  update barcode_out with(serializable) set weight_Url = @WeightUrl, Date_Url = @DateUrl,Data=@Data,Error=@Error,url=@Url,Url_Picture=@UrlPicture
-   where bar_code = @BarCode
+  update barcode_out with(serializable) 
+    set CodeWares=@CodeWares, NameWares=@NameWares, WeightUrl = @WeightUrl, DateUrl = @DateUrl, Data=@Data, Error=@Error, url=@Url, UrlPicture=@UrlPicture
+        , IsActual=@IsActual, IsVerification=@IsVerification
+        , Unit1=@Unit1, Unit2=@Unit2, Unit3=@Unit3, Unit4=@Unit4, Unit5=@Unit5, Name=@Name, NameShort=@NameShort, Other=@Other
+        , UKTZED=UKTZED,VAT=@VAT,ExpirationDay=@ExpirationDay,UnitSale=@UnitSale,PaletteLayer=@PaletteLayer,Palette=@Palette
+    where bar_code = @BarCode
    if @@rowcount = 0
    begin
-      insert into barcode_out(bar_code, weight_Url, Date_Url,Data,Error,Url,Url_Picture) values(@BarCode, @WeightUrl, @DateUrl,@Data,@Error,@Url,@UrlPicture)
+      insert into barcode_out(bar_code, CodeWares, NameWares, weightUrl, DateUrl, Data, Error, Url, UrlPicture, IsActual, IsVerification, Site, Unit1, Unit2, Unit3, Unit4, Unit5, Name, NameShort, Other, UKTZED, VAT, ExpirationDay, UnitSale, PaletteLayer, Palette) values
+                             (@BarCode,@CodeWares,@NameWares,@WeightUrl,@DateUrl,@Data,@Error,@Url,@UrlPicture,@IsActual,@IsVerification,@Site,@Unit1,@Unit2,@Unit3,@Unit4,@Unit5,@Name,@NameShort,@Other,@UKTZED,@VAT,@ExpirationDay,@UnitSale,@PaletteLayer,@Palette)
    end
 -- commit tran";
 
-            string varSQLSelect = @"SELECT b.bar_code as BarCode,b.code_wares CodeWares  FROM dbo.dw_am da 
+            string varSQLSelect = @"SELECT b.bar_code as BarCode, b.code_wares CodeWares, w.name_wares AS NameWares
+  FROM  (SELECT DISTINCT da.code_wares  FROM  dbo.dw_am da WHERE   da.Quantity_Min>0  ) AS da
   JOIN dbo.barcode b ON da.code_wares=b.code_wares
+  LEFT JOIN dbo.Wares w ON da.code_wares = w.code_wares
   LEFT JOIN dbo.barcode_out bo ON b.bar_code=bo.bar_code
-  WHERE da.code_warehouse=9 AND da.Quantity_Min>0 
- AND  bo.error IS null
-  --AND  ( bo.bar_code IS NULL OR (bo.weight=0 and bo.error IS null))
-   --AND b.bar_code like'482%'
-and LEN(b.bar_code)>=8";
+  LEFT JOIN (SELECT DISTINCT CodeWares FROM barcode_out bo WHERE bo.error IS NOT NULL) bco ON b.code_wares=bco.CodeWares
+  WHERE bo.error IS NULL
+      AND LEN(b.bar_code)>=13  
+      AND bco.CodeWares IS null
+  -- AND b.bar_code like'482%'  ";
 
            /* varSQLSelect = @"SELECT b.bar_code as BarCode,ww.code_wares CodeWares,ww.articl  
   from dbo.wares ww  --ON w.code_wares=ww.code_wares
@@ -58,9 +106,11 @@ and LEN(b.bar_code)>=8";
                 try
                 {
                     var r = await GetInfoBarcode(el.BarCode, el.CodeWares);
-                    Console.WriteLine(r.BarCode + " " + r.Error + " " + r.WeightUrl + " " + r.Url + " " + el.BarCode);
+                    r.CodeWares = Convert.ToInt32( el.CodeWares);
+                    r.NameWares = el.NameWares;
+                    Console.WriteLine(r.NameWares + " " + r.Error + " " + r.WeightUrl + " " + r.Url + " " + el.BarCode);
                     dbMs.ExecuteNonQuery<BarCodeOut>(varSQLUpdate, r);
-                   
+                    
                     Thread.Sleep(10000 +  rand.Next(1000, 10000));
                 }
                 catch (Exception ex)
@@ -185,7 +235,6 @@ and LEN(b.bar_code)>=8";
 
         public void RenameWares()
         {
-
             string varSQLSelect = @"SELECT b.bar_code as BarCode,ww.code_wares CodeWares,ww.articl Article
   --FROM dbo.tmp_wares w
   from dbo.wares ww  --ON w.code_wares=ww.code_wares
@@ -194,7 +243,7 @@ and LEN(b.bar_code)>=8";
   WHERE bo.Error='Ok' and Url_Picture is not  null";
 
             var dbMs = new MSSQL();
-            var rand = new Random();
+            //var rand = new Random();
             Console.WriteLine("Get BarCode");
             var s = dbMs.Execute<data>(varSQLSelect);
             foreach (var el in s)

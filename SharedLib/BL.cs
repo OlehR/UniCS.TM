@@ -535,7 +535,7 @@ namespace SharedLib
 
             if (CurDate.Hour < 7)
             {
-                ds.LoadWeightKasa();
+               //  ds.LoadWeightKasa();
                 ds.LoadWeightKasa2Period();
             }
             if (parIsFull)
