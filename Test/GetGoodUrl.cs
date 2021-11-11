@@ -12,44 +12,7 @@ using System.Threading.Tasks;
 
 namespace Test
 {
-    public class Unit
-    {
-        public string BarCode { get; set; }
-        /// <summary>
-        /// Назва
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Кількість
-        /// </summary>
-        public decimal Quantity { get; set; } = 1;
-
-        /// <summary>
-        /// Кількість коробок для шару і Палетти
-        /// </summary>
-        public decimal QuantityBox { get; set; } = 1;
-        /// <summary>
-        /// Кількість шарів у Палетти
-        /// </summary>
-        public decimal QuantityLayer { get; set; } = 1;
-        /// <summary>
-        /// Висота
-        /// </summary>
-        public decimal Height { get; set; }
-        /// <summary>
-        /// Ширина
-        /// </summary>
-        public decimal Width { get; set; }
-        /// <summary>
-        /// Глибина
-        /// </summary>
-        public decimal Depth { get; set; }
-        /// <summary>
-        /// Вага брутто
-        /// </summary>
-        public decimal GrossWeight { get; set; }
-    }
+    
 
     public class data
     {
@@ -68,14 +31,13 @@ namespace Test
             --begin tran
   update barcode_out with(serializable) 
     set CodeWares=@CodeWares, NameWares=@NameWares, WeightUrl = @WeightUrl, DateUrl = @DateUrl, Data=@Data, Error=@Error, url=@Url, UrlPicture=@UrlPicture
-        , IsActual=@IsActual, IsVerification=@IsVerification
-        , Unit1=@Unit1, Unit2=@Unit2, Unit3=@Unit3, Unit4=@Unit4, Unit5=@Unit5, Name=@Name, NameShort=@NameShort, Other=@Other
+        , IsActual=@IsActual, IsVerification=@IsVerification, Unit=@Unit, Name=@Name, NameShort=@NameShort, Other=@Other
         , UKTZED=UKTZED,VAT=@VAT,ExpirationDay=@ExpirationDay,UnitSale=@UnitSale,PaletteLayer=@PaletteLayer,Palette=@Palette
     where bar_code = @BarCode
    if @@rowcount = 0
    begin
-      insert into barcode_out(bar_code, CodeWares, NameWares, weightUrl, DateUrl, Data, Error, Url, UrlPicture, IsActual, IsVerification, Site, Unit1, Unit2, Unit3, Unit4, Unit5, Name, NameShort, Other, UKTZED, VAT, ExpirationDay, UnitSale, PaletteLayer, Palette) values
-                             (@BarCode,@CodeWares,@NameWares,@WeightUrl,@DateUrl,@Data,@Error,@Url,@UrlPicture,@IsActual,@IsVerification,@Site,@Unit1,@Unit2,@Unit3,@Unit4,@Unit5,@Name,@NameShort,@Other,@UKTZED,@VAT,@ExpirationDay,@UnitSale,@PaletteLayer,@Palette)
+      insert into barcode_out(bar_code, CodeWares, NameWares, weightUrl, DateUrl, Data, Error, Url, UrlPicture, IsActual, IsVerification, Site, Unit, Name, NameShort, Other, UKTZED, VAT, ExpirationDay, UnitSale, PaletteLayer, Palette) values
+                             (@BarCode,@CodeWares,@NameWares,@WeightUrl,@DateUrl,@Data,@Error,@Url,@UrlPicture,@IsActual,@IsVerification,@Site,@Unit,@Name,@NameShort,@Other,@UKTZED,@VAT,@ExpirationDay,@UnitSale,@PaletteLayer,@Palette)
    end
 -- commit tran";
 

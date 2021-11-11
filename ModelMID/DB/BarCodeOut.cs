@@ -4,6 +4,44 @@ using System.Text;
 
 namespace ModelMID.DB
 {
+    public class Unit
+    {
+        public string BarCode { get; set; }
+        /// <summary>
+        /// Назва
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Кількість
+        /// </summary>
+        public decimal Quantity { get; set; } = 1;
+
+        /// <summary>
+        /// Кількість коробок для шару і Палетти
+        /// </summary>
+        public decimal QuantityBox { get; set; } = 1;
+        /// <summary>
+        /// Кількість шарів у Палетти
+        /// </summary>
+        public decimal QuantityLayer { get; set; } = 1;
+        /// <summary>
+        /// Висота
+        /// </summary>
+        public decimal Height { get; set; }
+        /// <summary>
+        /// Ширина
+        /// </summary>
+        public decimal Width { get; set; }
+        /// <summary>
+        /// Глибина
+        /// </summary>
+        public decimal Depth { get; set; }
+        /// <summary>
+        /// Вага брутто
+        /// </summary>
+        public decimal GrossWeight { get; set; }
+    }
     public class BarCodeOut
     {
         public int CodeWares { get; set; }
@@ -26,11 +64,10 @@ namespace ModelMID.DB
         /// </summary>
         public bool IsVerification { get; set; }
         public string Site { get; set; }
-        public string Unit1 { get; set; }
-        public string Unit2 { get; set; }
-        public string Unit3 { get; set; }
-        public string Unit4 { get; set; }
-        public string Unit5 { get; set; }
+        /// <summary>
+        /// IEnumerable<Unit> конвертований в JSON
+        /// </summary>
+        public string Unit { get; set; }        
         public string Name { get; set; }
         public string NameShort { get; set; }
         public string Other { get; set; }
