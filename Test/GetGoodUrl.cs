@@ -221,7 +221,12 @@ namespace Test
             return null;
         }
 
-        public void RenameWares()
+       static public void Parse()
+        {
+
+        }
+
+        /*public void RenameWares()
         {
             string varSQLSelect = @"SELECT b.bar_code as BarCode,ww.code_wares CodeWares,ww.articl Article
   --FROM dbo.tmp_wares w
@@ -250,6 +255,6 @@ namespace Test
                 };
                 File.Move(FileName, $"d:\\pictures\\new\\{ el.CodeWares.Trim()}.{ex}");
             }
-        }
+        }*/
     }
 }
