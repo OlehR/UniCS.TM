@@ -24,10 +24,7 @@ namespace Test
 
     public class GetGoodUrl
     {
-
-        static public async Task LoadWeightURLAsync()
-        {
-            string varSQLUpdate = @"
+        static readonly string SQLUpdate = @"
             --begin tran
   update barcode_out with(serializable) 
     set CodeWares=@CodeWares, NameWares=@NameWares, WeightUrl = @WeightUrl, DateUrl = @DateUrl, Data=@Data, Error=@Error, url=@Url, UrlPicture=@UrlPicture
@@ -41,6 +38,9 @@ namespace Test
    end
 -- commit tran";
 
+        static public async Task LoadWeightURLAsync()
+        {
+            
             string varSQLSelect = @"SELECT b.bar_code as BarCode, b.code_wares CodeWares, w.name_wares AS NameWares
   FROM  (SELECT DISTINCT da.code_wares  FROM  dbo.dw_am da WHERE   da.Quantity_Min>0  ) AS da
   JOIN dbo.barcode b ON da.code_wares=b.code_wares
@@ -71,7 +71,7 @@ namespace Test
                     r.CodeWares = Convert.ToInt32( el.CodeWares);
                     r.NameWares = el.NameWares;
                     Console.WriteLine(r.NameWares + " " + r.Error + " " + r.WeightUrl + " " + r.Url + " " + el.BarCode);
-                    dbMs.ExecuteNonQuery<BarCodeOut>(varSQLUpdate, r);
+                    dbMs.ExecuteNonQuery<BarCodeOut>(SQLUpdate, r);
                     
                     Thread.Sleep(10000 +  rand.Next(1000, 10000));
                 }
@@ -223,6 +223,23 @@ namespace Test
 
        static public void Parse()
         {
+            string varSQLSelect = @"SELECT TOP 10 bo.bar_code as BarCode, bo.CodeWares, bo.NameWares, bo.Weight, bo.Date, bo.URL, bo.Data, bo.WeightUrl, bo.DateUrl, bo.Error, bo.UrlPicture, bo.IsActual, bo.IsVerification, bo.Site, bo.Unit, bo.Name, bo.NameShort, bo.Other, bo.UKTZED, bo.VAT, bo.ExpirationDay, bo.UnitSale, bo.PaletteLayer, bo.Palette 
+      FROM  dbo.barcode_out bo 
+    WHERE bo.error ='Ok' AND DATA IS NOT NULL AND DateUrl>'2021-10-10' AND bo.Unit IS NULL";
+
+            var dbMs = new MSSQL();
+            var rand = new Random();
+            Console.WriteLine("Get BarCode");
+            var s = dbMs.Execute<BarCodeOut>(varSQLSelect);
+
+            foreach (var el in s)
+            {
+                var str = GetElement(el.Data, "Вагогабаритні характеристики");
+                var r = GetElement(str, "Вага брутто, кг", "<td>", "</td>");
+                if(!string.IsNullOrEmpty(r))
+                    el.WeightUrl = decimal.Parse(r, CultureInfo.InvariantCulture); // .Replace('.', ','));
+                dbMs.ExecuteNonQuery<BarCodeOut>(SQLUpdate, el);
+            }
 
         }
 

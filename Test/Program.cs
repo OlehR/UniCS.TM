@@ -41,7 +41,8 @@ namespace Test
             //LoadWeightKasa();            return;
             // var R = await GetInfoBarcode("4823000920439");
             //var l = new GetGoodUrl();
-             await GetGoodUrl.LoadWeightURLAsync();//GetInfoBarcode("4820009350588");
+            //await GetGoodUrl.LoadWeightURLAsync();//GetInfoBarcode("4820009350588");
+            GetGoodUrl.Parse();
             //Thread.Sleep(1000000000);
 
             Console.WriteLine("Start");
