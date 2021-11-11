@@ -153,7 +153,7 @@ namespace Test
                                 Res.Data = res;
 
                                 var s = GetElement(res, "Вагогабаритні характеристики");
-                                 r = GetElement(s, "Вага брутто, кг", "<td>", "</td>");
+                                r = GetElement(s, "Вага брутто, кг", "<td>", "</td>");
 
                                 /*i = res.IndexOf("Вагогабаритні характеристики");
                                 if (i > 0)
@@ -234,9 +234,74 @@ namespace Test
 
             foreach (var el in s)
             {
+                //var r5 = GetElement(el.Data, "single-product__verification-label cursor-pointer notverified");
+                //r5 = r5.Substring(0, 2);
+                //Console.WriteLine("Верифікація: " + r5);
                 var str = GetElement(el.Data, "Вагогабаритні характеристики");
+                var aa = str;
+                //Перехід до всіх типів штрихкодів
+                for (int i = aa.IndexOf("fa fa-barcode"); ;)
+                {
+                    aa = GetElement(aa, "fa fa-barcode");
+                    i = aa.IndexOf("fa fa-barcode");
+                    var r10 = GetElement(aa, "strong", ">", "</strong>");
+
+                    if (i != -1)
+                    {
+                        aa = GetElement(aa, "<th>");
+                        var r11 = GetElement(aa, "strong", ">", "</strong>");
+                        var r6 = GetElement(aa, "Висота, см", "<td>", "</td>");
+                        var r7 = GetElement(aa, "Глибина, см", "<td>", "</td>");
+                        var r8 = GetElement(aa, "Ширина, см", "<td>", "</td>");
+                        var r9 = GetElement(aa, "Вага брутто, кг", "<td>", "</td>");
+                        Console.WriteLine("Штрихкод: " + r10);
+                        if (r11.Length < 3) r11 = r11.Substring(2);
+                        else r11 = r11.Substring(2, r11.Length - 4);
+                        Console.WriteLine("Вид товару: " + r11);
+                        Console.WriteLine("Висота, см: " + r6);
+                        Console.WriteLine("Глибина, см: " + r7);
+                        Console.WriteLine("Ширина, см: " + r8);
+                        Console.WriteLine("Вага брутто, кг: " + r9);
+                        Console.WriteLine("----------------------------------");
+                    }
+                    else
+                    {
+                        var r12 = GetElement(aa, "Шар:", "</b>", "<br>");
+                        var r13 = GetElement(aa, "Груз:", "</b>", "<br>");
+                        var r14 = GetElement(aa, "</span>:</b", ">", "</div>");
+                        r12 = r12.Substring(1, r12.Length - 4);
+                        r13 = r13.Substring(1, r13.Length - 4);
+                        r14 = r14.Substring(1, r14.Length - 4);
+                        Console.WriteLine("Шар: " + r12);
+                        Console.WriteLine("Груз: " + r13);
+                        Console.WriteLine("Палета: " + r14);
+                        break;
+                    }
+
+
+                   
+                   
+                }
+
+                var r2 = GetElement(str, "Назва (укр.)", "<td>", "</td>");
+                r2 = r2.Substring(2, r2.Length - 5);
+                Console.WriteLine("Назва: " + r2);
+
+                var r3 = GetElement(str, "Коротка назва (укр.)", "<td>", "</td>");
+                r3 = r3.Substring(2, r3.Length - 5);
+                Console.WriteLine("Коротка назва: " + r3);
+
+                var r4 = GetElement(str, "Код УКТ ЗЕД", "<td>", "</td>");
+                r4 = r4.Substring(2, r4.Length - 5);
+                Console.WriteLine("Код УКТ ЗЕД: " + r4);
+                Console.WriteLine();
+                Console.WriteLine("///////////////////////   IНШИЙ ТОВАР   ////////////////////////////");
+                Console.WriteLine();
+
+
                 var r = GetElement(str, "Вага брутто, кг", "<td>", "</td>");
-                if(!string.IsNullOrEmpty(r))
+                
+                if (!string.IsNullOrEmpty(r))
                     el.WeightUrl = decimal.Parse(r, CultureInfo.InvariantCulture); // .Replace('.', ','));
                 dbMs.ExecuteNonQuery<BarCodeOut>(SQLUpdate, el);
             }
