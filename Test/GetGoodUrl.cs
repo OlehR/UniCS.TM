@@ -190,7 +190,10 @@ namespace Test
 
                                 Res.Data = res;
 
-                                i = res.IndexOf("Вагогабаритні характеристики");
+                                var s = GetElement(res, "Вагогабаритні характеристики");
+                                 r = GetElement(s, "Вага брутто, кг", "<td>", "</td>");
+
+                                /*i = res.IndexOf("Вагогабаритні характеристики");
                                 if (i > 0)
                                     r = res.Substring(i);
                                 else return Res;
@@ -210,7 +213,7 @@ namespace Test
                                 if (i > 0)
                                     r = r.Substring(0, i);
                                 else return Res;
-
+                                */
                                 Res.WeightUrl = Decimal.Parse(r, CultureInfo.InvariantCulture); // .Replace('.', ','));
                             }
                             else
@@ -231,6 +234,29 @@ namespace Test
                 // return false;
             }
             return Res;
+        }
+
+       static string GetElement(string pStr,string pSeek,string pStart=null,string pStop=null )
+        {
+            int i = pStr.IndexOf(pSeek);
+            if (i > 0)
+                pStr = pStr.Substring(i+ pSeek.Length);
+            else return null;
+
+            if (!string.IsNullOrEmpty(pStart))
+            {
+                i = pStr.IndexOf(pStart);
+                if (i < 0)
+                    return null;
+                pStr = pStr.Substring(i + pStart.Length);                
+            }
+            if (string.IsNullOrEmpty(pStop)) return pStr;
+
+            i = pStr.IndexOf(pStop);
+            if (i > 0)
+                return pStr.Substring(0, i);
+            
+            return null;
         }
 
         public void RenameWares()

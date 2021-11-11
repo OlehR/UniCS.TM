@@ -50,14 +50,18 @@ namespace SharedLib
             }
             if (isWait)
             {
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-                Thread.Sleep(150);
+                WaitCollect(150);
             }
             SetLock(false);
         }
 
-        
+        void WaitCollect(int pMs=150)
+        {
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            Thread.Sleep(pMs);
+        }
+
         public override IEnumerable<T1> Execute<T,T1>(string query, T parameters )
         {
             if (IsLock) ExceptionIsLock();
@@ -91,21 +95,50 @@ namespace SharedLib
             transaction.Commit();
         }
 
-        public override int ExecuteNonQuery<T>(string parQuery, T Parameters )
+        public override int ExecuteNonQuery<T>(string pQuery, T Parameters, int CountTry = 3)
         {
             if (IsLock) ExceptionIsLock();
-            if (TypeCommit==eTypeCommit.Auto)
-             return connection.Execute(parQuery, Parameters);
-            else
-             return connection.Execute(parQuery, Parameters,transaction);
+            try
+            {
+                if (TypeCommit == eTypeCommit.Auto)
+                    return connection.Execute(pQuery, Parameters);
+                else
+                    return connection.Execute(pQuery, Parameters, transaction);
+            }
+            catch(Exception e) 
+            {
+                CountTry--;
+                if(CountTry>0 && e.Message.Contains("database is locked"))
+                {
+                    FileLogger.WriteLogMessage($"ExecuteNonQuery<T> CountTry=>{CountTry} SQL=>{pQuery}");
+                    WaitCollect(100);
+                    return ExecuteNonQuery(pQuery, Parameters, CountTry);
+                }
+                throw new Exception(e.Message,e);
+            }
         }
-        public override int ExecuteNonQuery(string parQuery)
+
+        public override int ExecuteNonQuery(string pQuery, int CountTry = 3)
         {
             if (IsLock) ExceptionIsLock();
-            if (TypeCommit == eTypeCommit.Auto)
-                return connection.Execute(parQuery);
+            try
+            {
+                if (TypeCommit == eTypeCommit.Auto)
+                return connection.Execute(pQuery);
             else
-                return connection.Execute(parQuery,null,transaction);
+                return connection.Execute(pQuery,null,transaction);
+            }
+            catch (Exception e)
+            {
+                CountTry--;
+                if (CountTry > 0 && e.Message.Contains("database is locked"))
+                {
+                    FileLogger.WriteLogMessage($"ExecuteNonQuery CountTry=>{CountTry} SQL=>{pQuery}");
+                    WaitCollect(100);
+                    return ExecuteNonQuery(pQuery,  CountTry);
+                }
+                throw new Exception(e.Message, e);
+            }
         }
 
         public override Task<int> ExecuteNonQueryAsync<T>(string parQuery, T Parameters)

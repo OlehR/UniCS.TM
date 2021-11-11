@@ -67,11 +67,11 @@ namespace SharedLib
             throw new NotImplementedException();
         }
 
-        public virtual int ExecuteNonQuery<T>(string parQuery, T Parameters)
+        public virtual int ExecuteNonQuery<T>(string parQuery, T Parameters, int CountTry = 3)
         {
             throw new NotImplementedException();
         }
-        public virtual int ExecuteNonQuery(string parQuery)
+        public virtual int ExecuteNonQuery(string parQuery, int CountTry = 3)
         {
             throw new NotImplementedException();
         }

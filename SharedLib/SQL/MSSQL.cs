@@ -44,14 +44,14 @@ namespace SharedLib
            // transaction.Commit();
         }
 
-        public override int ExecuteNonQuery<T>(string parQuery, T Parameters)
+        public override int ExecuteNonQuery<T>(string parQuery, T Parameters, int CountTry = 3)
         {
             if (TypeCommit == eTypeCommit.Auto)
                 return connection.Execute(parQuery, Parameters);
             else
                 return connection.Execute(parQuery, Parameters, transaction);
         }
-        public override int ExecuteNonQuery(string parQuery)
+        public override int ExecuteNonQuery(string parQuery, int CountTry = 3)
         {
             if (TypeCommit == eTypeCommit.Auto)
                 return connection.Execute(parQuery);
