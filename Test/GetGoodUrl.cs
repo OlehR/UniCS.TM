@@ -204,7 +204,7 @@ namespace Test
 
        static public void Parse()
         {
-            string varSQLSelect = @"SELECT TOP 10 bo.bar_code as BarCode, bo.CodeWares, bo.NameWares, bo.Weight, bo.Date, bo.URL, bo.Data, bo.WeightUrl, bo.DateUrl, bo.Error, bo.UrlPicture, bo.IsActual, bo.IsVerification, bo.Site, bo.Unit, bo.Name, bo.NameShort, bo.Other, bo.UKTZED, bo.VAT, bo.ExpirationDay, bo.UnitSale, bo.PaletteLayer, bo.Palette 
+            string varSQLSelect = @"SELECT TOP 100 bo.bar_code as BarCode, bo.CodeWares, bo.NameWares, bo.Weight, bo.Date, bo.URL, bo.Data, bo.WeightUrl, bo.DateUrl, bo.Error, bo.UrlPicture, bo.IsActual, bo.IsVerification, bo.Site, bo.Unit, bo.Name, bo.NameShort, bo.Other, bo.UKTZED, bo.VAT, bo.ExpirationDay, bo.UnitSale, bo.PaletteLayer, bo.Palette 
       FROM  dbo.barcode_out bo 
     WHERE bo.error ='Ok' AND DATA IS NOT NULL AND DateUrl>'2021-10-10' AND bo.Unit IS NULL";
 
@@ -218,65 +218,146 @@ namespace Test
                 //var r5 = GetElement(el.Data, "single-product__verification-label cursor-pointer notverified");
                 //r5 = r5.Substring(0, 2);
                 //Console.WriteLine("Верифікація: " + r5);
+                if (el.Data.IndexOf("Вагогабаритні характеристики") == -1)
+                {
+                    continue;
+                }
                 var str = GetElement(el.Data, "Вагогабаритні характеристики");
                 var aa = str;
+                var countData = str;
                 string Str;
+                int countPalet = 0, countBarCode = 0;
+                for (; ; countPalet++) // рахуємо кількість палет
+                {
+                    if (countData.IndexOf("Шар:") == -1) break;
+                    else
+                    {
+                        countData = GetElement(countData, "Шар:");
+                        continue;
+                    }
+                }
+                countData = str;
+                for (; ; countBarCode++) // рахуємо кількість штрихкодів на сторінці
+                {
+                    if (countData.IndexOf("fa fa-barcode") == -1) break;
+                    else
+                    {
+                        countData = GetElement(countData, "fa fa-barcode");
+                        continue;
+                    }
+                }
                 //Перехід до всіх типів штрихкодів
                 for (int i = aa.IndexOf("fa fa-barcode"); ;)
                 {
                    
                     Unit unit = new Unit();
                     aa = GetElement(aa, "fa fa-barcode");
-                    i = aa.IndexOf("fa fa-barcode");     
+                    if (string.IsNullOrEmpty(aa)) //якщо штрихкодів більше немає - відразу вийти
+                    {
+                        break;
+                    }
+
+                    Console.WriteLine(countPalet + "  paleta");
+                    Console.WriteLine(countBarCode + "  code");
                     unit.BarCode= GetElement(aa, "strong", ">", "</strong>");
-                    if (i != -1)
+                    if (countPalet == 0)  //якщо немає опису палети 
                     {
                         aa = GetElement(aa, "<th>");
-                        
+
                         unit.Height = ToDecimal(GetElement(aa, "Висота, см", "<td>", "</td>"));
-                        unit.Depth= ToDecimal(GetElement(aa, "Глибина, см", "<td>", "</td>"));
+                        unit.Depth = ToDecimal(GetElement(aa, "Глибина, см", "<td>", "</td>"));
                         unit.Width = ToDecimal(GetElement(aa, "Ширина, см", "<td>", "</td>"));
-                        unit.GrossWeight = ToDecimal( GetElement(aa, "Вага брутто, кг", "<td>", "</td>"));
+                        unit.GrossWeight = ToDecimal(GetElement(aa, "Вага брутто, кг", "<td>", "</td>"));
 
                         Str = GetElement(aa, "strong", ">", "</strong>");
                         if (Str.Length < 3) Str = Str.Substring(2);
                         else Str = Str.Substring(2, Str.Length - 4);
                         unit.Name = Str;
                         Units.Add(unit);
+
                     }
-                    else
+                    else // є опис палети
                     {
-                        var r12 = GetElement(aa, "Шар:", "</b>", "<br>");
-                        var r13 = GetElement(aa, "Груз:", "</b>", "<br>");
-                        var r14 = GetElement(aa, "</span>:</b", ">", "</div>");
-                        r12 = r12.Substring(1, r12.Length - 4);
-                        r13 = r13.Substring(1, r13.Length - 4);
-                        r14 = r14.Substring(1, r14.Length - 4);
-                        Console.WriteLine("Шар: " + r12);
-                        Console.WriteLine("Груз: " + r13);
-                        Console.WriteLine("Палета: " + r14);
-                        break;
+                        if (countBarCode-countPalet != 0) // палета завжди остання тому перевіряємо чи це не останній такий клас
+                        {
+                            aa = GetElement(aa, "<th>");
+                            if (string.IsNullOrEmpty(aa)) Console.WriteLine("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"); ;
+                            unit.Height = ToDecimal(GetElement(aa, "Висота, см", "<td>", "</td>"));
+                            unit.Depth = ToDecimal(GetElement(aa, "Глибина, см", "<td>", "</td>"));
+                            unit.Width = ToDecimal(GetElement(aa, "Ширина, см", "<td>", "</td>"));
+                            unit.GrossWeight = ToDecimal(GetElement(aa, "Вага брутто, кг", "<td>", "</td>"));
+
+                            Str = GetElement(aa, "strong", ">", "</strong>");
+                            if (Str.Length < 3) Str = Str.Substring(2);
+                            else Str = Str.Substring(2, Str.Length - 4);
+                            unit.Name = Str;
+                            Units.Add(unit);
+                            countBarCode--;
+                        }
+
+                        else // дані палети
+                        {
+                            for (; countPalet > 0 ; countPalet--)
+                            {
+                                var r12 = GetElement(aa, "Шар:", "</b>", "<br>");
+                                var r13 = GetElement(aa, "Груз:", "</b>", "<br>");
+                                var r14 = GetElement(aa, "</span>:</b", ">", "</div>");
+                                r12 = r12.Substring(1, r12.Length - 4);
+                                r13 = r13.Substring(1, r13.Length - 4);
+                                r14 = r14.Substring(1, r14.Length - 4);
+                                Console.WriteLine("Шар: " + r12);
+                                Console.WriteLine("Груз: " + r13);
+                                Console.WriteLine("Палета: " + r14);
+                            }
+                            break;
+                        }
                     }
+                    Console.WriteLine(unit.Name);
+                    Console.WriteLine(unit.Height);
 
                 }
+                if (str.IndexOf("Назва (укр.)") == -1)//якщо немає назви беремо із заголовку
+                {
+                    Str = GetElement(el.Data, "product-specifications-title", "\">", "</p>");
+                    Str = Str.Substring(0, Str.Length - 2);
+                    el.Name = Str.Replace("Характеристики ", "");
+                    el.NameShort = "";
+                    
+                }
+                else if (str.IndexOf("Коротка назва (укр.)") == -1) //якщо є звичайна назва але немає короткої
+                {
+                    el.NameShort = "";
+                }
+                else// всі назви є
+                {
+                    Str = GetElement(str, "Назва (укр.)", "<td>", "</td>");
+                    el.Name = Str.Substring(2, Str.Length - 5);
+                    Str = GetElement(str, "Коротка назва (укр.)", "<td>", "</td>");
+                    el.NameShort = Str.Substring(2, Str.Length - 5);
+                }
+                Console.WriteLine(el.Name);
 
-                Str = GetElement(str, "Назва (укр.)", "<td>", "</td>");
-                el.Name= Str.Substring(2, Str.Length - 5);
 
 
-                Str = GetElement(str, "Коротка назва (укр.)", "<td>", "</td>");
-                el.NameShort = Str.Substring(2, Str.Length - 5);
-
-                Str = GetElement(str, "Код УКТ ЗЕД", "<td>", "</td>");
-                el.UKTZED = Str.Substring(2, Str.Length - 5);
+                if (str.IndexOf("Код УКТ ЗЕД") != -1)//якщо код присутній
+                {
+                    Str = GetElement(str, "Код УКТ ЗЕД", "<td>", "</td>");
+                    Str = Str.Substring(2, Str.Length - 5);
+                    String[] words = Str.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    el.UKTZED = words[0];
+                }
+                else el.UKTZED = ""; //якщо кода немає
+                Console.WriteLine( el.UKTZED);
                
                 el.Unit= JsonConvert.SerializeObject(Units);
+                
                 //{
                 Console.WriteLine(JsonConvert.SerializeObject(el, Formatting.Indented));
                 Console.WriteLine("///////////////////////   IНШИЙ ТОВАР   ////////////////////////////");
                 Console.WriteLine();
                 
                 dbMs.ExecuteNonQuery<BarCodeOut>(SQLUpdate, el);
+                Units.Clear();
             }
 
         }
