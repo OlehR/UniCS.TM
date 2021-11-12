@@ -75,7 +75,7 @@ namespace Test
                     Console.WriteLine(r.NameWares + " " + r.Error + " " + r.WeightUrl + " " + r.Url + " " + el.BarCode);
                     dbMs.ExecuteNonQuery<BarCodeOut>(SQLUpdate, r);
                     
-                    Thread.Sleep(10000 +  rand.Next(1000, 10000));
+                    Thread.Sleep(5000 +  rand.Next(1000, 10000));
                 }
                 catch (Exception ex)
                 {
