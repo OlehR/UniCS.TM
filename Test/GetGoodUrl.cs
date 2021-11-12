@@ -1,6 +1,8 @@
 ﻿using ModelMID.DB;
+using Newtonsoft.Json;
 using SharedLib;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Net;
@@ -154,28 +156,7 @@ namespace Test
 
                                 var s = GetElement(res, "Вагогабаритні характеристики");
                                 r = GetElement(s, "Вага брутто, кг", "<td>", "</td>");
-
-                                /*i = res.IndexOf("Вагогабаритні характеристики");
-                                if (i > 0)
-                                    r = res.Substring(i);
-                                else return Res;
-                                i = r.IndexOf(parBarCode);
-                                if (i > 0)
-                                    r = r.Substring(i);
-                                //else return Res;
-                                i = r.IndexOf("Вага брутто, кг");
-                                if (i > 0)
-                                    r = r.Substring(i);
-                                else return Res;
-                                i = r.IndexOf("<td>");
-                                if (i > 0)
-                                    r = r.Substring(i + 4);
-                                else return Res;
-                                i = r.IndexOf("</td>");
-                                if (i > 0)
-                                    r = r.Substring(0, i);
-                                else return Res;
-                                */
+                                
                                 Res.WeightUrl = Decimal.Parse(r, CultureInfo.InvariantCulture); // .Replace('.', ','));
                             }
                             else
@@ -231,7 +212,7 @@ namespace Test
             var rand = new Random();
             Console.WriteLine("Get BarCode");
             var s = dbMs.Execute<BarCodeOut>(varSQLSelect);
-
+            var Units = new List<Unit>();
             foreach (var el in s)
             {
                 //var r5 = GetElement(el.Data, "single-product__verification-label cursor-pointer notverified");
@@ -239,30 +220,29 @@ namespace Test
                 //Console.WriteLine("Верифікація: " + r5);
                 var str = GetElement(el.Data, "Вагогабаритні характеристики");
                 var aa = str;
+                string Str;
                 //Перехід до всіх типів штрихкодів
                 for (int i = aa.IndexOf("fa fa-barcode"); ;)
                 {
+                   
+                    Unit unit = new Unit();
                     aa = GetElement(aa, "fa fa-barcode");
-                    i = aa.IndexOf("fa fa-barcode");
-                    var r10 = GetElement(aa, "strong", ">", "</strong>");
-
+                    i = aa.IndexOf("fa fa-barcode");     
+                    unit.BarCode= GetElement(aa, "strong", ">", "</strong>");
                     if (i != -1)
                     {
                         aa = GetElement(aa, "<th>");
-                        var r11 = GetElement(aa, "strong", ">", "</strong>");
-                        var r6 = GetElement(aa, "Висота, см", "<td>", "</td>");
-                        var r7 = GetElement(aa, "Глибина, см", "<td>", "</td>");
-                        var r8 = GetElement(aa, "Ширина, см", "<td>", "</td>");
-                        var r9 = GetElement(aa, "Вага брутто, кг", "<td>", "</td>");
-                        Console.WriteLine("Штрихкод: " + r10);
-                        if (r11.Length < 3) r11 = r11.Substring(2);
-                        else r11 = r11.Substring(2, r11.Length - 4);
-                        Console.WriteLine("Вид товару: " + r11);
-                        Console.WriteLine("Висота, см: " + r6);
-                        Console.WriteLine("Глибина, см: " + r7);
-                        Console.WriteLine("Ширина, см: " + r8);
-                        Console.WriteLine("Вага брутто, кг: " + r9);
-                        Console.WriteLine("----------------------------------");
+                        
+                        unit.Height = ToDecimal(GetElement(aa, "Висота, см", "<td>", "</td>"));
+                        unit.Depth= ToDecimal(GetElement(aa, "Глибина, см", "<td>", "</td>"));
+                        unit.Width = ToDecimal(GetElement(aa, "Ширина, см", "<td>", "</td>"));
+                        unit.GrossWeight = ToDecimal( GetElement(aa, "Вага брутто, кг", "<td>", "</td>"));
+
+                        Str = GetElement(aa, "strong", ">", "</strong>");
+                        if (Str.Length < 3) Str = Str.Substring(2);
+                        else Str = Str.Substring(2, Str.Length - 4);
+                        unit.Name = Str;
+                        Units.Add(unit);
                     }
                     else
                     {
@@ -278,34 +258,32 @@ namespace Test
                         break;
                     }
 
-
-                   
-                   
                 }
 
-                var r2 = GetElement(str, "Назва (укр.)", "<td>", "</td>");
-                r2 = r2.Substring(2, r2.Length - 5);
-                Console.WriteLine("Назва: " + r2);
+                Str = GetElement(str, "Назва (укр.)", "<td>", "</td>");
+                el.Name= Str.Substring(2, Str.Length - 5);
 
-                var r3 = GetElement(str, "Коротка назва (укр.)", "<td>", "</td>");
-                r3 = r3.Substring(2, r3.Length - 5);
-                Console.WriteLine("Коротка назва: " + r3);
 
-                var r4 = GetElement(str, "Код УКТ ЗЕД", "<td>", "</td>");
-                r4 = r4.Substring(2, r4.Length - 5);
-                Console.WriteLine("Код УКТ ЗЕД: " + r4);
-                Console.WriteLine();
+                Str = GetElement(str, "Коротка назва (укр.)", "<td>", "</td>");
+                el.NameShort = Str.Substring(2, Str.Length - 5);
+
+                Str = GetElement(str, "Код УКТ ЗЕД", "<td>", "</td>");
+                el.UKTZED = Str.Substring(2, Str.Length - 5);
+               
+                el.Unit= JsonConvert.SerializeObject(Units);
+                //{
+                Console.WriteLine(JsonConvert.SerializeObject(el, Formatting.Indented));
                 Console.WriteLine("///////////////////////   IНШИЙ ТОВАР   ////////////////////////////");
                 Console.WriteLine();
-
-
-                var r = GetElement(str, "Вага брутто, кг", "<td>", "</td>");
                 
-                if (!string.IsNullOrEmpty(r))
-                    el.WeightUrl = decimal.Parse(r, CultureInfo.InvariantCulture); // .Replace('.', ','));
                 dbMs.ExecuteNonQuery<BarCodeOut>(SQLUpdate, el);
             }
 
+        }
+
+        static decimal ToDecimal(string pD)
+        {
+            return decimal.Parse(pD, CultureInfo.InvariantCulture);
         }
 
         /*public void RenameWares()

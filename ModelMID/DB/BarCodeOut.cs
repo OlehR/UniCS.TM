@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -50,6 +51,7 @@ namespace ModelMID.DB
         public decimal Weight { get; set; }
         public DateTime Date { get; set; }
         public string Url { get; set; }
+        [JsonIgnore]
         public string Data { get; set; }
         public decimal WeightUrl { get; set; }
         public DateTime DateUrl { get; set; }
