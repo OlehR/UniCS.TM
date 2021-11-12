@@ -41,18 +41,18 @@ namespace Test
 -- commit tran";
 
         static public async Task LoadWeightURLAsync()
-        {
-            
+        {            
             string varSQLSelect = @"SELECT b.bar_code as BarCode, b.code_wares CodeWares, w.name_wares AS NameWares
   FROM  (SELECT DISTINCT da.code_wares  FROM  dbo.dw_am da WHERE   da.Quantity_Min>0  ) AS da
   JOIN dbo.barcode b ON da.code_wares=b.code_wares
   LEFT JOIN dbo.Wares w ON da.code_wares = w.code_wares
   LEFT JOIN dbo.barcode_out bo ON b.bar_code=bo.bar_code
-  LEFT JOIN (SELECT DISTINCT CodeWares FROM barcode_out bo WHERE bo.error IS NOT NULL) bco ON b.code_wares=bco.CodeWares
-  WHERE bo.error IS NULL
-      AND LEN(b.bar_code)>=13  
-      AND bco.CodeWares IS null
-  -- AND b.bar_code like'482%'  ";
+  WHERE 
+    bo.error = 'Ok' AND --IS NOT NULL AND 
+    bo.DateUrl< CONVERT(DATE,'20211101',112) AND
+    LEN(b.bar_code)>=13 AND 
+    NOT EXISTS (SELECT bou.CodeWares FROM barcode_out bou WHERE bo.error='Ok' AND  da.code_wares=bou.CodeWares AND bou.bar_code<>bo.bar_code )
+   -- AND b.bar_code like'482%'  ";
 
            /* varSQLSelect = @"SELECT b.bar_code as BarCode,ww.code_wares CodeWares,ww.articl  
   from dbo.wares ww  --ON w.code_wares=ww.code_wares
@@ -107,7 +107,7 @@ namespace Test
 
                     if (!string.IsNullOrEmpty(res))
                     {
-                        var i = res.IndexOf("<a href=\"/product/");
+                        var i = res.IndexOf("<a href=\"/product/");////"<section class=\"site-content\">"
                         var j = 0;
                         if (i > 0)
                         {
@@ -142,12 +142,12 @@ namespace Test
                                     }
                                 }
 
-                                i = res.IndexOf("<p class=\"product-specifications-title\"");
+                                i = res.IndexOf("<section class=\"site-content\">");//("<p class=\"product-specifications-title\"");
                                 if (i > 0)
                                     res = res.Substring(i);
-                                i = res.IndexOf("panel panel-transparent product-info-tab");
+                                i = res.IndexOf("<footer class=\"site-footer\">");//"panel panel-transparent product-info-tab");//
                                 if (i > 0)
-                                    res = res.Substring(0, i - 12);
+                                    res = res.Substring(0, i);
 
                                 res = Regex.Replace(res, "[ ]+", " ");
                                 res = Regex.Replace(res, "[\t]+", "\t");
@@ -155,9 +155,12 @@ namespace Test
                                 Res.Data = res;
 
                                 var s = GetElement(res, "Вагогабаритні характеристики");
-                                r = GetElement(s, "Вага брутто, кг", "<td>", "</td>");
-                                
-                                Res.WeightUrl = Decimal.Parse(r, CultureInfo.InvariantCulture); // .Replace('.', ','));
+                                if (!string.IsNullOrEmpty(s))
+                                {
+                                    r = GetElement(s, "Вага брутто, кг", "<td>", "</td>");
+
+                                    Res.WeightUrl = Decimal.Parse(r, CultureInfo.InvariantCulture); // .Replace('.', ','));
+                                }
                             }
                             else
                                 Res.Error = "Bad Request Product";
