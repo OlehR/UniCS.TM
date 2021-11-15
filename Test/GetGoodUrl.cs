@@ -48,7 +48,7 @@ namespace Test
   LEFT JOIN dbo.Wares w ON da.code_wares = w.code_wares
   LEFT JOIN dbo.barcode_out bo ON b.bar_code=bo.bar_code
   WHERE 
-    bo.error = 'Ok' AND --IS NOT NULL AND 
+    bo.error <> 'Ok' AND --IS NOT NULL AND 
     bo.DateUrl< CONVERT(DATE,'20211101',112) AND
     LEN(b.bar_code)>=13 AND 
     NOT EXISTS (SELECT bou.CodeWares FROM barcode_out bou WHERE bo.error='Ok' AND  da.code_wares=bou.CodeWares AND bou.bar_code<>bo.bar_code )
