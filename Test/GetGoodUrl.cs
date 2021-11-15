@@ -209,7 +209,7 @@ namespace Test
         {
             string varSQLSelect = @"SELECT TOP 100 bo.bar_code as BarCode, bo.CodeWares, bo.NameWares, bo.Weight, bo.Date, bo.URL, bo.Data, bo.WeightUrl, bo.DateUrl, bo.Error, bo.UrlPicture, bo.IsActual, bo.IsVerification, bo.Site, bo.Unit, bo.Name, bo.NameShort, bo.Other, bo.UKTZED, bo.VAT, bo.ExpirationDay, bo.UnitSale, bo.PaletteLayer, bo.Palette 
       FROM  dbo.barcode_out bo 
-    WHERE bo.error ='Ok' AND DATA IS NOT NULL AND DateUrl>'2021-10-10' AND bo.Unit IS NULL";
+    WHERE bo.error ='Ok' AND DATA IS NOT NULL AND DateUrlCONVERT(DATE,'20211112',112) AND bo.Unit IS NULL";
 
             var dbMs = new MSSQL();
             var rand = new Random();
