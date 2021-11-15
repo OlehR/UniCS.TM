@@ -218,7 +218,7 @@ namespace Test
             var Units = new List<Unit>();
             foreach (var el in s)
             {
-                //var r5 = GetElement(el.Data, "single-product__verification-label cursor-pointer notverified");
+                //var r5 = GetElement(el.Data, "single-product__verification-label cursor-pointer");
                 //r5 = r5.Substring(0, 2);
                 //Console.WriteLine("Верифікація: " + r5);
                 if (el.Data.IndexOf("Вагогабаритні характеристики") == -1)
@@ -305,9 +305,9 @@ namespace Test
                                 var r12 = GetElement(aa, "Шар:", "</b>", "<br>");
                                 var r13 = GetElement(aa, "Груз:", "</b>", "<br>");
                                 var r14 = GetElement(aa, "</span>:</b", ">", "</div>");
-                                r12 = r12.Substring(1, r12.Length - 4);
-                                r13 = r13.Substring(1, r13.Length - 4);
-                                r14 = r14.Substring(1, r14.Length - 4);
+                                r12 = r12.Substring(1, r12.Length - 3);
+                                r13 = r13.Substring(1, r13.Length - 3);
+                                r14 = r14.Substring(1, r14.Length - 3);
                                 Console.WriteLine("Шар: " + r12);
                                 Console.WriteLine("Груз: " + r13);
                                 Console.WriteLine("Палета: " + r14);
@@ -351,7 +351,10 @@ namespace Test
                 }
                 else el.UKTZED = ""; //якщо кода немає
                 Console.WriteLine( el.UKTZED);
-               
+
+                Str = GetElement(str, "ПДВ, %", "<td>", "</td>");
+                el.VAT = int.Parse( Str.Substring(2, Str.Length - 3));
+                Console.WriteLine(el.VAT);
                 el.Unit= JsonConvert.SerializeObject(Units);
                 
                 //{
