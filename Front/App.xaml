@@ -10,7 +10,7 @@
                 <ResourceDictionary Source="Resources/defaultButton.xaml" /> <!-- Звичайна кнопка -->
                 <ResourceDictionary Source="Resources/yelowButton.xaml" />   <!-- Жовта кнопка -->
                 <ResourceDictionary Source="Resources/scrollViewer.xaml" />  <!-- scrollViewer -->
-                <ResourceDictionary Source="Resources/keyboardButton.xaml" />  <!-- scrollViewer -->
+                <ResourceDictionary Source="Resources/keyboardButton.xaml" />  <!-- Кнопочки клавіатури -->
             </ResourceDictionary.MergedDictionaries>
             
             
