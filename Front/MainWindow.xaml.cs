@@ -40,7 +40,7 @@ namespace Front{
         /// <summary>
         /// Вага з основної ваги
         /// </summary>
-        public double Weight { get; set; } = 0.111d;
+        public double Weight { get; set; } = 0d;
         
         public string WeightControl { get; set; }
 
@@ -139,6 +139,7 @@ namespace Front{
                     
                     break;
                 case eStateMainWindows.WaitWeight:
+                    EF.StartWeight();
                     WeightWares.Visibility = Visibility.Visible;
                     break;
                 case eStateMainWindows.WaitAdmin:
@@ -273,9 +274,18 @@ namespace Front{
                 CurW = pGV;
                 NameWares.Content = CurW.Name;
 
+                Image im=null;
+                foreach (var el in GridWeightWares.Children)
+                {
+                        im = el as Image;
+                    if (im != null)
+                        break;
+                }
+                if (im != null)
+                    GridWeightWares.Children.Remove(im);
                 if (File.Exists(CurW.Pictures))
                 {
-                    Image im = new Image
+                    im = new Image
                     {
                         Source = new BitmapImage(new Uri(CurW.Pictures)),
                         VerticalAlignment = VerticalAlignment.Center
@@ -283,19 +293,19 @@ namespace Front{
                     //Grid.SetColumn(Bt, i);
                     Grid.SetRow(im, 1);
                     GridWeightWares.Children.Add(im);
-                }
+                }                
+                
+                
+                    //GridWeightWares.Children.Clear();
 
-                EF.StartWeight();
-                WeightWares.Visibility = Visibility.Visible;
+                SetStateView(eStateMainWindows.WaitWeight);
                 return;
             }
 
 
             if (pCodeWares > 0)
             {
-                CurWares = Bl.AddWaresCode(pCodeWares, pCodeUnit, pQuantity, pPrice);
-
-               
+                CurWares = Bl.AddWaresCode(pCodeWares, pCodeUnit, pQuantity, pPrice);               
 
                 if (CurWares != null)
                 {
@@ -376,8 +386,8 @@ namespace Front{
        
         private IEnumerable<ReceiptWares> StartData()
         {
-            var TerminalId = Guid.Parse("b017dbcc-b5b3-4e2f-ac06-af48e87ce274");
-            var RId=Bl.GetNewIdReceipt(TerminalId);
+            
+            var RId=Bl.GetNewIdReceipt();
             Bl.AddWaresBarCode(RId, "4823086109988", 10);
             //Bl.AddWaresBarCode(RId, "7622300813437", 1);
             Bl.AddWaresBarCode(RId, "2201652300229", 3);
@@ -395,12 +405,15 @@ namespace Front{
         public void SetWeight(double pWeight, bool pIsStable)
         {
             Weight = pWeight;
+            Debug.WriteLine(Weight);
+            //LWeight.re
+
         }
 
 
         private void ClickButtonOk(object sender, RoutedEventArgs e)
         {
-            AddWares(CurW.Code, CurW.CodeUnit,Convert.ToDecimal(Weight)*1000);
+            AddWares(CurW.Code, CurW.CodeUnit,Convert.ToDecimal(Weight));
             ClickButtonCancel(sender, e);
         }
 
@@ -408,6 +421,7 @@ namespace Front{
         {
             EF.StoptWeight();
             SetStateView(eStateMainWindows.WaitInput);
+            Weight = 0d;
         }
 
         private void ButtonAdmin(object sender, RoutedEventArgs e)

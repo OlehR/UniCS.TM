@@ -126,22 +126,31 @@ namespace SharedLib
         {
             return Global.GetIdWorkplaceByTerminalId(parTerminalId);
         }
+
         public IdReceipt GetNewIdReceipt(Guid parTerminalId, int parCodePeriod = 0)
         {
-            var idReceip = new IdReceipt() { IdWorkplace = GetIdWorkplaceByTerminalId(parTerminalId), CodePeriod = parCodePeriod };
-            curReciptId = db.GetNewReceipt(idReceip);
+            return GetNewIdReceipt(GetIdWorkplaceByTerminalId(parTerminalId));
+            //var idReceip = new IdReceipt() { IdWorkplace = GetIdWorkplaceByTerminalId(parTerminalId), CodePeriod = parCodePeriod };
+            //curReciptId = db.GetNewReceipt(idReceip);
+            //return curReciptId;
+        }
+
+        public IdReceipt GetNewIdReceipt(int pIdWorkplace=0, int pCodePeriod = 0)
+        {
+            var idReceip = new IdReceipt() { IdWorkplace = (pIdWorkplace==0?Global.IdWorkPlace: pIdWorkplace),  CodePeriod = (pCodePeriod == 0 ? Global.GetCodePeriod() : pCodePeriod) };
+            curReciptId= db.GetNewReceipt(idReceip);
             return curReciptId;
         }
-
-        public Receipt GetLastReceipt(Guid parTerminalId, int parCodePeriod = 0)
+        public Receipt GetLastReceipt(Guid parTerminalId, int pCodePeriod = 0)
         {
-            var idReceip = new IdReceipt() { IdWorkplace = GetIdWorkplaceByTerminalId(parTerminalId), CodePeriod = (parCodePeriod == 0 ? Global.GetCodePeriod() : parCodePeriod) };
-            return db.GetLastReceipt(idReceip);
+            return GetLastReceipt(GetIdWorkplaceByTerminalId(parTerminalId), pCodePeriod);
+            //var idReceip = new IdReceipt() { IdWorkplace = , CodePeriod = (pCodePeriod == 0 ? Global.GetCodePeriod() : pCodePeriod) };
+            //return db.GetLastReceipt(idReceip);
         }
 
-        public Receipt GetLastReceipt(int pIdWorkplace, int parCodePeriod = 0)
+        public Receipt GetLastReceipt(int pIdWorkplace=0, int parCodePeriod = 0)
         {
-            var idReceip = new IdReceipt() { IdWorkplace = pIdWorkplace, CodePeriod = (parCodePeriod == 0 ? Global.GetCodePeriod() : parCodePeriod) };
+            var idReceip = new IdReceipt() { IdWorkplace = (pIdWorkplace == 0 ? Global.IdWorkPlace : pIdWorkplace), CodePeriod = (parCodePeriod == 0 ? Global.GetCodePeriod() : parCodePeriod) };
             return db.GetLastReceipt(idReceip);
         }
 
@@ -599,7 +608,7 @@ namespace SharedLib
         public void GetBarCode(string pBarCode, string pTypeBarCode)
         {
 
-            var r = GetLastReceipt(Global.IdWorkPlace);
+            var r = GetLastReceipt();
             var w=AddWaresBarCode(r,pBarCode, 1);
             if(w==null) //Можливо штрихкод не товар
             {
