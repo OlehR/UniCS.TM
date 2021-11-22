@@ -84,7 +84,9 @@ namespace ModelMID.DB
         public string  UnitSaleName { get; set; }
         public string PaletteLayer { get; set; }
         public string Palette { get; set; }
- 
+        public string UrlPictureRozetka { get; set; }
+        public string UrlPictureGoogle { get; set; }
+
     }
 
 }
