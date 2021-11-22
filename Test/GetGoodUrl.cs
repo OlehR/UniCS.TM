@@ -49,8 +49,8 @@ namespace Test
   LEFT JOIN dbo.Wares w ON da.code_wares = w.code_wares
   LEFT JOIN dbo.barcode_out bo ON b.bar_code=bo.bar_code
   WHERE 
-    bo.error = 'Ok' AND --IS NOT NULL AND 
-    bo.DateUrl< CONVERT(DATE,'20211112',112) AND
+    bo.error <> 'Ok' AND --IS NOT NULL AND 
+   -- bo.DateUrl< CONVERT(DATE,'20211112',112) AND
     LEN(b.bar_code)>=13 AND 
     NOT EXISTS (SELECT bou.CodeWares FROM barcode_out bou WHERE bo.error='Ok' AND  da.code_wares=bou.CodeWares AND bou.bar_code<>bo.bar_code )
    -- AND b.bar_code like'482%'  ";
@@ -70,13 +70,13 @@ namespace Test
             {
                 try
                 {
-                    var r = await GetInfoBarcode(el.BarCode, el.CodeWares);
-                    r.CodeWares = Convert.ToInt32(el.CodeWares);
-                    r.NameWares = el.NameWares;
-                    Console.WriteLine(r.NameWares + " " + r.Error + " " + r.WeightUrl + " " + r.Url + " " + el.BarCode);
-                    dbMs.ExecuteNonQuery<BarCodeOut>(SQLUpdate, r);
+                    var r = await GetInfoRozetka(el.BarCode, el.CodeWares);
+                    //r.CodeWares = Convert.ToInt32(el.CodeWares);
+                    //r.NameWares = el.NameWares;
+                    //Console.WriteLine(r.NameWares + " " + r.Error + " " + r.WeightUrl + " " + r.Url + " " + el.BarCode);
+                    //dbMs.ExecuteNonQuery<BarCodeOut>(SQLUpdate, r);
 
-                    Thread.Sleep(5000 + rand.Next(1000, 10000));
+                    Thread.Sleep(2000 + rand.Next(1000, 3000));
                 }
                 catch (Exception ex)
                 {
@@ -181,6 +181,71 @@ namespace Test
                 // return false;
             }
             return Res;
+        }
+
+
+        public static async Task<BarCodeOut> GetInfoRozetka(string parBarCode = "3162049200920", string pArticle = "")
+        {
+            var Res = new BarCodeOut() { BarCode = parBarCode, Error = "Ok", DateUrl = DateTime.Now };
+            if (string.IsNullOrEmpty(pArticle))
+                pArticle = parBarCode;
+            try
+            {
+                var url = $"https://search.rozetka.com.ua/ua/search/api/v6/autocomplete/?front-type=xl&country=UA&lang=ua&text={parBarCode}";
+                HttpClient client = new HttpClient();
+                WebClient webClient = new WebClient();
+                // Add a new Request Message
+                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
+                //requestMessage.Headers.Add("Accept", "application/vnd.github.v3+json");
+                // Add our custom headers
+                //requestMessage.Content = new StringContent("", Encoding.UTF8, "application/json");
+                var response = await client.SendAsync(requestMessage);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var res = await response.Content.ReadAsStringAsync();
+
+                    if (!string.IsNullOrEmpty(res))
+                    {
+                        var i = res.IndexOf("goods");////"<section class=\"site-content\">"
+                        var j = 0;
+                        if (i > 0)
+                        {
+                            i = res.IndexOf("image");
+                            if (i > 0)
+                            {
+                                var res1 = res.Substring(i + 8, 300);
+                                var ex = "jpg";
+                                i = res1.IndexOf(".jpg");
+                                j = res1.IndexOf(".png");
+                                if (j > 0 && i <= 0)
+                                {
+                                    i = j;
+                                    ex = "png";
+                                }
+                                if (i > 0)
+                                {
+                                    res1 = res1.Substring(0, i + 4);
+                                    Res.UrlPicture = res1;
+                                    webClient.DownloadFile(res1, $"d:\\pictures\\rozetkaImg\\{pArticle.Trim()}.{ex}");
+                                }
+                            }
+                        }
+                        else
+                            Res.Error = "Product Not Found";
+                    }
+                }
+                else
+                {
+                    Res.Error = "Bad Request";
+                }
+            }
+            catch (Exception ex)
+            {
+                Res.Error = ex.Message;
+                // return false;
+            }
+            return null;
         }
 
         static string GetElement(string pStr, string pSeek, string pStart = null, string pStop = null)
