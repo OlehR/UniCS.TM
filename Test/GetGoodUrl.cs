@@ -49,8 +49,8 @@ namespace Test
   LEFT JOIN dbo.Wares w ON da.code_wares = w.code_wares
   LEFT JOIN dbo.barcode_out bo ON b.bar_code=bo.bar_code
   WHERE 
-    bo.error <> 'Ok' AND --IS NOT NULL AND 
-    bo.DateUrl< CONVERT(DATE,'20211101',112) AND
+    bo.error = 'Ok' AND --IS NOT NULL AND 
+    bo.DateUrl< CONVERT(DATE,'20211112',112) AND
     LEN(b.bar_code)>=13 AND 
     NOT EXISTS (SELECT bou.CodeWares FROM barcode_out bou WHERE bo.error='Ok' AND  da.code_wares=bou.CodeWares AND bou.bar_code<>bo.bar_code )
    -- AND b.bar_code like'482%'  ";
@@ -123,7 +123,7 @@ namespace Test
                             {// "<p class=\"product-specifications-title\"" "panel panel-transparent product-info-tab"
                                 res = await response.Content.ReadAsStringAsync();
 
-                                i = res.IndexOf("src=\"https://icf.listex.info/300x200/");
+                               /* i = res.IndexOf("src=\"https://icf.listex.info/300x200/");
                                 if (i > 0)
                                 {
                                     var res1 = res.Substring(i + 5, 300);
@@ -141,7 +141,7 @@ namespace Test
                                         Res.UrlPicture = res1;
                                         webClient.DownloadFile(res1, $"d:\\pictures\\{pArticle.Trim()}.{ex}");
                                     }
-                                }
+                                }*/
 
                                 i = res.IndexOf("<section class=\"site-content\">");//("<p class=\"product-specifications-title\"");
                                 if (i > 0)
