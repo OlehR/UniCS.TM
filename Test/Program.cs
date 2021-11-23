@@ -35,21 +35,13 @@ namespace Test
 
         static async Task Main(string[] args)
         {
-
-            //LocalPrintServer ps = new LocalPrintServer();
-            //  var pq = ps.GetPrintQueues(); 
-            //LoadWeightKasa();            return;
-            // var R = await GetInfoBarcode("4823000920439");
-            //var l = new GetGoodUrl();
-            await GetGoodUrl.LoadWeightURLAsync();//GetInfoBarcode("4820009350588");
-           // GetGoodUrl.Parse();
-            //Thread.Sleep(1000000000);
-
             Console.WriteLine("Start");
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
 
+            var l = new GetGoodUrl();
+            await l.LoadRozetka();//GetInfoBarcode("4820009350588");
+           
            // await CreateDataBaseAsync(true);
-
 
             //TestReceiptAsync();
 
@@ -61,11 +53,9 @@ namespace Test
 
             //new ApiPSU().Bl.ds.LoadWeightKasa2Period(new DateTime(2020, 8, 1),1); 
 
-
             Console.WriteLine("Sleep");
 
             Thread.Sleep(10000000);
-
         }
 
         static async Task CreateDataBaseAsync(bool isFull = true)

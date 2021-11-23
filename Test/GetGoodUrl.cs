@@ -26,7 +26,8 @@ namespace Test
 
     public class GetGoodUrl
     {
-        static readonly string SQLUpdate = @"
+         Random rand = new Random();
+         readonly string SQLUpdate = @"
             --begin tran
   update barcode_out with(serializable) 
     set CodeWares=@CodeWares, NameWares=@NameWares, WeightUrl = @WeightUrl, DateUrl = @DateUrl, Data=@Data, Error=@Error, url=@Url, UrlPicture=@UrlPicture
@@ -41,7 +42,7 @@ namespace Test
    end
 -- commit tran";
 
-        static public async Task LoadWeightURLAsync()
+         public async Task LoadListex()
         {
             string varSQLSelect = @"SELECT b.bar_code as BarCode, b.code_wares CodeWares, w.name_wares AS NameWares
   FROM  (SELECT DISTINCT da.code_wares  FROM  dbo.dw_am da WHERE   da.Quantity_Min>0  ) AS da
@@ -53,13 +54,7 @@ namespace Test
    -- bo.DateUrl< CONVERT(DATE,'20211112',112) AND
     LEN(b.bar_code)>=13 AND 
     NOT EXISTS (SELECT bou.CodeWares FROM barcode_out bou WHERE bo.error='Ok' AND  da.code_wares=bou.CodeWares AND bou.bar_code<>bo.bar_code )
-   -- AND b.bar_code like'482%'  ";
-
-            /* varSQLSelect = @"SELECT b.bar_code as BarCode,ww.code_wares CodeWares,ww.articl  
-   from dbo.wares ww  --ON w.code_wares=ww.code_wares
-   JOIN dbo.barcode b ON ww.code_wares=b.code_wares
-   JOIN dbo.barcode_out bo ON b.bar_code=bo.bar_code
-   WHERE bo.Error='Ok' and Url_Picture is  null";*/
+   -- AND b.bar_code like'482%'  ";            
 
             var dbMs = new MSSQL();
             var rand = new Random();
@@ -70,13 +65,42 @@ namespace Test
             {
                 try
                 {
-                    var r = await GetInfoRozetka(el.BarCode, el.CodeWares);
-                    //r.CodeWares = Convert.ToInt32(el.CodeWares);
-                    //r.NameWares = el.NameWares;
-                    //Console.WriteLine(r.NameWares + " " + r.Error + " " + r.WeightUrl + " " + r.Url + " " + el.BarCode);
-                    //dbMs.ExecuteNonQuery<BarCodeOut>(SQLUpdate, r);
+                    var r = await GetInfoListex(el.BarCode,el.CodeWares);
+                    r.CodeWares = Convert.ToInt32(el.CodeWares);
+                    r.NameWares = el.NameWares;
+                    Console.WriteLine(r.Error + " " +  r.NameWares + " " + r.WeightUrl + " " + r.Url + " " + el.BarCode);
+                    dbMs.ExecuteNonQuery<BarCodeOut>(SQLUpdate, r);                    
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                Thread.Sleep(2000 + rand.Next(1000, 3000));
+            }
+        }
 
-                    Thread.Sleep(2000 + rand.Next(1000, 3000));
+         public async Task LoadRozetka()
+        {
+            string varSQLSelect = @"SELECT bar_code as BarCode, CodeWares, NameWares, weightUrl, DateUrl, Data, Error, Url, UrlPicture, IsActual, IsVerification, Site, Unit, Name, NameShort, Other, UKTZED, VAT, ExpirationDay, UnitSale, PaletteLayer, Palette, UrlPictureRozetka, UrlPictureGoogle FROM  dbo.barcode_out bo 
+  WHERE 
+    bo.error <> 'Ok' AND 
+    bo.DateUrl< CONVERT(DATE,'20211122',112) AND
+    LEN(bo.bar_code)>=13 AND 
+    NOT EXISTS (SELECT bou.CodeWares FROM barcode_out bou WHERE bo.error='Ok' AND  bo.codeWares=bou.CodeWares AND bou.bar_code<>bo.bar_code )
+    AND SUBSTRING( bo.bar_code,1,1)<>'2'";
+
+            var dbMs = new MSSQL();           
+            Console.WriteLine("Get BarCode");
+            var s = dbMs.Execute<BarCodeOut>(varSQLSelect);
+
+            foreach (var el in s)
+            {
+                try
+                {
+                    var r = await GetInfoRozetka(el);                   
+                    Console.WriteLine(r.Error + " " + el.BarCode + " " +  r.NameWares + " " +  r.WeightUrl + " " + r.Url  );
+                    dbMs.ExecuteNonQuery<BarCodeOut>(SQLUpdate, r);
+                    Thread.Sleep(1000 + rand.Next(1000, 2000));
                 }
                 catch (Exception ex)
                 {
@@ -85,7 +109,7 @@ namespace Test
             }
         }
 
-        public static async Task<BarCodeOut> GetInfoBarcode(string parBarCode = "4823000916524", string pArticle = "")
+        public  async Task<BarCodeOut> GetInfoListex(string parBarCode = "4823000916524", string pArticle = "")
         {
             var Res = new BarCodeOut() { BarCode = parBarCode, Error = "Ok", DateUrl = DateTime.Now };
             if (string.IsNullOrEmpty(pArticle))
@@ -184,14 +208,17 @@ namespace Test
         }
 
 
-        public static async Task<BarCodeOut> GetInfoRozetka(string parBarCode = "3162049200920", string pArticle = "")
+        public  async Task<BarCodeOut> GetInfoRozetka(BarCodeOut pBCO)
         {
-            var Res = new BarCodeOut() { BarCode = parBarCode, Error = "Ok", DateUrl = DateTime.Now };
-            if (string.IsNullOrEmpty(pArticle))
-                pArticle = parBarCode;
+             string  CodeWares = pBCO.CodeWares.ToString();
+
+            pBCO.Site = "Rozetka";
+            //var pBCO = new BarCodeOut() { BarCode = parBarCode, Error = "Ok", DateUrl = DateTime.Now ,Site="Rozetka"};
+            if (string.IsNullOrEmpty(CodeWares))
+                CodeWares = pBCO.BarCode;
             try
             {
-                var url = $"https://search.rozetka.com.ua/ua/search/api/v6/autocomplete/?front-type=xl&country=UA&lang=ua&text={parBarCode}";
+                var url = $"https://search.rozetka.com.ua/ua/search/api/v6/autocomplete/?front-type=xl&country=UA&lang=ua&text={pBCO.BarCode}";
                 HttpClient client = new HttpClient();
                 WebClient webClient = new WebClient();
                 // Add a new Request Message
@@ -226,29 +253,31 @@ namespace Test
                                 if (i > 0)
                                 {
                                     res1 = res1.Substring(0, i + 4);
-                                    Res.UrlPicture = res1;
-                                    webClient.DownloadFile(res1, $"d:\\pictures\\rozetkaImg\\{pArticle.Trim()}.{ex}");
+                                    pBCO.UrlPictureRozetka = res1;
+                                    webClient.DownloadFile(res1, $"d:\\pictures\\rozetkaImg\\{CodeWares.Trim()}.{ex}");
+                                    pBCO.Error = "Ok";
                                 }
                             }
                         }
                         else
-                            Res.Error = "Product Not Found";
+                            pBCO.Error = "Product Not Found";
                     }
                 }
                 else
                 {
-                    Res.Error = "Bad Request";
+                    pBCO.Error = "Bad Request";
                 }
             }
             catch (Exception ex)
             {
-                Res.Error = ex.Message;
+                pBCO.Error = ex.Message;
                 // return false;
             }
-            return null;
+            pBCO.DateUrl = DateTime.Now;
+            return pBCO;
         }
 
-        static string GetElement(string pStr, string pSeek, string pStart = null, string pStop = null)
+         string GetElement(string pStr, string pSeek, string pStart = null, string pStop = null)
         {
             int i = pStr.IndexOf(pSeek);
             if (i > 0)
@@ -271,7 +300,7 @@ namespace Test
             return null;
         }
 
-        static public void Parse()
+         public void Parse()
         {
             string varSQLSelect = @"SELECT TOP 100 bo.bar_code as BarCode, bo.CodeWares, bo.NameWares, bo.Weight, bo.Date, bo.URL, bo.Data, bo.WeightUrl, bo.DateUrl, bo.Error, bo.UrlPicture, bo.IsActual, bo.IsVerification, bo.Site, bo.Unit, bo.Name, bo.NameShort, bo.Other, bo.UKTZED, bo.VAT, bo.ExpirationDay, bo.UnitSale, bo.PaletteLayer, bo.Palette 
       FROM  dbo.barcode_out bo 
@@ -439,7 +468,7 @@ namespace Test
 
         }
 
-        static decimal ToDecimal(string pD)
+         decimal ToDecimal(string pD)
         {
             return decimal.Parse(pD, CultureInfo.InvariantCulture);
         }
