@@ -98,7 +98,7 @@ namespace Test
                 try
                 {
                     var r = await GetInfoRozetka(el);                   
-                    Console.WriteLine(r.Error + " " + el.BarCode + " " +  r.NameWares + " " +  r.WeightUrl + " " + r.Url  );
+                    Console.WriteLine(r.Error + " \r\n" + el.BarCode + "\r\n " +  r.NameWares + " \r\n" +  r.WeightUrl + " \r\n" + r.Url + "\r\n-------------------------------------- \r\n");
                     dbMs.ExecuteNonQuery<BarCodeOut>(SQLUpdate, r);
                     Thread.Sleep(1000 + rand.Next(1000, 2000));
                 }
@@ -256,6 +256,31 @@ namespace Test
                                     pBCO.UrlPictureRozetka = res1;
                                     webClient.DownloadFile(res1, $"d:\\pictures\\rozetkaImg\\{CodeWares.Trim()}.{ex}");
                                     pBCO.Error = "Ok";
+                                }
+                            }
+                            i = res.IndexOf("href");
+                            var r = res.Substring(i + 7);
+                            i = r.IndexOf("\"");
+                            r = r.Substring(0, i);
+                            url = r + "characteristics/";
+                            pBCO.Url = url;
+                            requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
+                            response = await client.SendAsync(requestMessage);
+                            if (response.IsSuccessStatusCode)
+                            {
+                                res = await response.Content.ReadAsStringAsync();
+                                i = res.IndexOf("<product-tab-characteristics");
+                                if (i > 0)
+                                    res = res.Substring(i);
+                                i = res.IndexOf("</product-tab-characteristics>");
+                                if (i > 0)
+                                    res = res.Substring(0, i);
+                                pBCO.Data = res;
+                                if (res.IndexOf("<span>Вага</span>") > 0)
+                                {
+                                    var str = GetElement(res, "<span>Вага</span>");
+                                    string t = GetElement(str, "<span class=\"ng-star-inserted\"", ">", "</span>");
+                                    pBCO.WeightUrl = ToDecimal(t.Substring(0, t.Length - 3));
                                 }
                             }
                         }
