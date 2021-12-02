@@ -10,6 +10,7 @@ namespace ModelMID
         Month,
         Day
     }
+
     public enum eTypeAccess
     {
         Question = -3, //Виводити вікно для введення логіна які розширять права на цю операцію. Якщо не введено не дозволяти цю операцію. 
@@ -47,6 +48,7 @@ namespace ModelMID
         Client,
         Action
     }
+    
     public struct eRezultFind
     {
         public eTypeFind TypeFind;
@@ -61,6 +63,7 @@ namespace ModelMID
         MoneyBox
 
     }
+   
     public enum eTypeCommit
     {
         Auto,
@@ -81,6 +84,7 @@ namespace ModelMID
         All = 1,  //на всі товари, 
         Coupon = 2 //тільки на товар зчитаний перед купоном.
     }
+    
     public enum eRuleGroup
     {
         Not = -1,
@@ -99,7 +103,6 @@ namespace ModelMID
         Promotion = 9,
         PromotionIndicative = 10
     }
-
 
     public enum eTypeDiscount
     {
@@ -129,6 +132,7 @@ namespace ModelMID
         /// </summary>
         Gift = 41
     }
+    
     public enum eStateReceipt
     {
         /// <summary>
@@ -159,6 +163,7 @@ namespace ModelMID
         Refund = -1,
         Sale = 1
     }
+    
     public enum eMethodExecutionLoggingType
     {
         MoreThenMillis = 0,
@@ -176,6 +181,7 @@ namespace ModelMID
         Orange = 3,
         Red = 4
     }
+    
     public enum ReceiptEventType
     {
         ErrorQR = -9,
@@ -191,12 +197,14 @@ namespace ModelMID
         GarbageOnWeight = 8,
         Other =9
     }
+
     public enum TypeSaveWeight
     {
         Add = -1,
         Main = 0,
         Client = 1
     }
+
     public enum eStateScale
     {
         /// <summary>
@@ -223,41 +231,8 @@ namespace ModelMID
         /// Очікуємо очистку ваги.
         /// </summary>
         WaitClear
-    }
-
-
-    public enum eState
-    {
-        NotDefine = 0,
-
-        OkWaitStart,
-        OkWaitScan,
-        OkWaitPay,
-
-        /// <summary>
-        /// Очікуємо адміна
-        /// </summary>
-        WaitAdmin,
-
-        /// <summary>
-        /// Очікуєм підтвердження 18 років
-        /// </summary>
-        WaitConfirm18,
-
-        /// <summary>
-        /// Невірна вага(відносно стабільна)
-        /// </summary>
-        BadWeight,
-        /// <summary>
-        /// вага не стабільна (Середне значення поза межами похибки)
-        /// </summary>
-        NotStabilized,
-
-        /// <summary>
-        /// Очікуємо очистку ваги.
-        /// </summary>
-        WaitClearWeight,
-    }
+    }    
+        
     public enum eTypePOS
     {
         NotDefine = 0,

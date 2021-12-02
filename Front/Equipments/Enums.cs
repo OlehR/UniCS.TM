@@ -18,7 +18,7 @@ namespace Front.Equipments
         EKKA
     }
 
-    public enum eModel
+    public enum eModelEquipment
     {
         NotDefined,
         MagellanScaner,
@@ -26,32 +26,58 @@ namespace Front.Equipments
         ScaleModern,
         SignalFlagModern,
         Ingenico,
-        Exelio
+        Exelio,
+        pRRO_SG
+    }
+
+    public enum eStatusRRO
+    {
+        /// <summary>
+        /// Очікування команди
+        /// </summary>
+        Wait,
+        /// <summary>
+        /// Очікуєм відповідь від РРО
+        /// </summary>
+        WaitAnswer,
+        /// <summary>
+        /// Обробка результату
+        /// </summary>
+        ParseResult,
+        /// <summary>
+        /// Успішне виконаання
+        /// </summary>
+        OK,
+        /// <summary>
+        /// Виникла помилка під час операції
+        /// </summary>
+        Error
+
     }
 
     static class ModelMethods
     {
-
-        public static ePosStatus GetPosStatusFromStatus(this ModernExpo.SelfCheckout.Entities.Pos.Status pModel)
+        public static ePosStatus GetPosStatusFromStatus(this Front.Equipments.Ingenico.Status pModel)
         {
             return (ePosStatus)(int)pModel;
         }
 
-            public static eTypeEquipment GetTypeEquipment(this eModel pModel)
+        public static eTypeEquipment GetTypeEquipment(this eModelEquipment pModel)
         {
             switch (pModel)
             {
-                case eModel.MagellanScaner:
+                case eModelEquipment.MagellanScaner:
                     return eTypeEquipment.Scaner;
-                case eModel.MagellanScale:
+                case eModelEquipment.MagellanScale:
                     return eTypeEquipment.Scale;
-                case eModel.ScaleModern:
+                case eModelEquipment.ScaleModern:
                     return eTypeEquipment.ControlScale;
-                case eModel.SignalFlagModern:
+                case eModelEquipment.SignalFlagModern:
                     return eTypeEquipment.Signal;
-                case eModel.Ingenico:
+                case eModelEquipment.Ingenico:
                     return eTypeEquipment.BankTerminal;
-                case eModel.Exelio:
+                case eModelEquipment.Exelio:
+                case eModelEquipment.pRRO_SG:
                     return eTypeEquipment.EKKA;
                 default:
                     return eTypeEquipment.NotDefined;
@@ -179,6 +205,5 @@ namespace Front.Equipments
             }
             
         }
-
     }
 }

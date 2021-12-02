@@ -349,6 +349,7 @@ namespace Front{
         {
 
         }
+        
         private void _Cancel(object sender, RoutedEventArgs e)
         {
             SetStateView(eStateMainWindows.WaitInput);
@@ -357,7 +358,7 @@ namespace Front{
         private void _ButtonPayment(object sender, RoutedEventArgs e)
         {
             var r=EF.Purchase(1.08m);
-            Console.WriteLine(r.TransactionStatus);
+            //Console.WriteLine(r.TransactionStatus);
         }
 
         /// <summary>
@@ -410,7 +411,6 @@ namespace Front{
 
         }
 
-
         private void ClickButtonOk(object sender, RoutedEventArgs e)
         {
             AddWares(CurW.Code, CurW.CodeUnit,Convert.ToDecimal(Weight));
@@ -456,6 +456,11 @@ namespace Front{
         {
             //Додання акцизноії марки до алкоголю
             SetStateView(eStateMainWindows.WaitInput);
+        }
+
+        public void SetState(eStatusRRO pStatus)
+        { 
+
         }
     }
 

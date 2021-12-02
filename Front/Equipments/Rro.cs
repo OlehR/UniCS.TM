@@ -1,5 +1,9 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using ModelMID;
+using ModelMID.DB;
+using System;
 using System.Data;
+using System.Threading.Tasks;
 // using System.Data.SQLite;
 //using DatabaseLib;
 namespace Front.Equipments
@@ -9,34 +13,43 @@ namespace Front.Equipments
     /// </summary>
     public class Rro: Equipment
     {
-        protected bool varIsFiscal = true;
+        /*protected bool varIsFiscal = true;
         protected int  varCodeEKKA = 0;
         protected int  varPort;
         protected int  varBaudRate;
         protected int  varCodeError = -1;
         protected string varStrError;
-        protected int varOperatorNumber = 1;
-        protected string varOperatorName;
-        protected string varOperatorPass = "0000";
-        protected int varCodeWorkPlace = 1;
-        protected bool varIsAutoPrintOperator = false;
+        protected int varOperatorNumber = 1;*/
+        protected string OperatorName;
+        /* protected string varOperatorPass = "0000";
+         protected int varCodeWorkPlace = 1;
+         protected bool varIsAutoPrintOperator = false;*/
 
-        public Rro(string pSerialPortName, int pBaudRate, Action<string, string> pLogger) : base(pSerialPortName, pBaudRate) { }
+        protected Action<eStatusRRO> ActionStatus;
 
-        public virtual bool SetOperatorName(string parOperatorName)
+        protected void SetStatus(eStatusRRO pStatus)
         {
-            varOperatorName = parOperatorName;
-            return false;
+            if (ActionStatus != null)
+                ActionStatus(pStatus);
+        }
+
+        public Rro(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<eStatusRRO> pActionStatus = null) : base(pConfiguration) 
+        {
+            ActionStatus = pActionStatus;
         }
         
-        public virtual bool PrintCopyReceipt(int parNCopy=1)
+        public virtual void SetOperatorName(string pOperatorName)
         {
-            return false;
+            OperatorName = pOperatorName;
         }
         
-       
+        public virtual LogRRO PrintCopyReceipt(int parNCopy=1)
+        {
+            throw new NotImplementedException();
+        }
+         
         
-        /// <summary>
+   /*     /// <summary>
         ///
         /// </summary>
         /// <returns></returns>
@@ -46,7 +59,6 @@ namespace Front.Equipments
             varBaudRate=parBaudRate;
             return false;
         }
-
         
         virtual public bool BeginReturnReceipt()
         {
@@ -56,8 +68,7 @@ namespace Front.Equipments
         virtual public bool CloseReturnReceipt()
         {
             return false;
-        }
-        
+        }        
         
         virtual public  bool BeginReceipt(bool parIsFiscal = true)
         {
@@ -104,27 +115,47 @@ namespace Front.Equipments
         {
             throw new NotImplementedException();
         }
-        
-        virtual public bool PrintZ()
+        */
+
+        virtual public async Task<LogRRO> PrintZAsync(IdReceipt pIdR)
         {
-            throw new NotImplementedException();
+            return null;//throw new NotImplementedException();
         }
         
-        virtual public bool PrintX()
+        virtual public async Task<LogRRO>  PrintXAsync(IdReceipt pIdR)
         {
-            throw new NotImplementedException();
+            return null;//throw new NotImplementedException();
         }
 
-        virtual public bool PrintMoveMoney(decimal parSum )
+        /// <summary>
+        /// Внесення/Винесення коштів коштів. pSum>0 - внесення
+        /// </summary>
+        /// <param name="pSum"></param>
+        /// <returns></returns>
+        virtual public LogRRO MoveMoney(decimal pSum )
         {
-            throw new NotImplementedException();
+            return null;//throw new NotImplementedException();
         }
-        
-        virtual public  bool CloseEKKA()
+
+        virtual public async Task<LogRRO> MoveMoneyAsync(decimal pSum, IdReceipt pIdR)
         {
-            throw new NotImplementedException();
+            return null;//throw new NotImplementedException();
         }
-        
-  
+
+        /// <summary>
+        /// Друк чека
+        /// </summary>
+        /// <param name="pR"></param>
+        /// <returns></returns>
+        virtual public async Task<LogRRO> PrintReceiptAsync(Receipt pR)
+        {
+            return null; //throw new NotImplementedException();
+        }
+
+        /* virtual public  bool CloseEKKA()
+         {
+             throw new NotImplementedException();
+         }  */
+
     }
 }

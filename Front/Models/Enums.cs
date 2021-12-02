@@ -48,8 +48,11 @@ namespace Front.Models
         /// <summary>
         /// Очікуємо пароль адміністратора
         /// </summary>
-        WaitAdminPassword
+        WaitAdminPassword,
+            /// <summary>
+            /// Очікуєм підтвердження 18 років
+            /// </summary>
+        WaitConfirm18
     }
-
-    
+   
 }

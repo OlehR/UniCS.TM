@@ -29,7 +29,6 @@ alter TABLE wares add Limit_Age NUMBER;--Ver=>0
 alter TABLE wares add PLU INTEGER;--Ver=>0
 alter TABLE wares add Code_Direction INTEGER;--Ver=>0;
 
-
 [SqlConfig]
 SELECT Data_Var  FROM CONFIG  WHERE UPPER(Name_Var) = UPPER(trim(@NameVar));
 
@@ -209,14 +208,14 @@ update receipt set code_client=@CodeClientw.Type_Wares
 update receipt
    set STATE_RECEIPT    = @StateReceipt,
        NUMBER_RECEIPT=@NumberReceipt,
-	   Date_receipt = datetime('now','localtime'),
+	   Date_receipt = @DateReceipt, -- datetime('now','localtime'),
        USER_CREATE = @UserCreate
  --      SUM_RECEIPT      = @SumReceipt,
  --      VAT_RECEIPT      = @VatReceipt,
  --      SUM_CASH         = @SumCash,
  --      SUM_CREDIT_CARD  = @SumCreditCard,
  --      CODE_CREDIT_CARD = @CodeCreditCard,
- --      NUMBER_SLIP		= @NumberSlip
+ --      NUMBER_SLIP		= @NumberSlip         
 
  where ID_WORKPLACE = @IdWorkplace
    and CODE_PERIOD = @CodePeriod
@@ -575,10 +574,9 @@ CREATE TABLE Weight (
 	status integer NOT NULL DEFAULT 0,
 	DATE_CREATE       DATETIME  DEFAULT (datetime('now','localtime'))
 	);
-CREATE TABLE VER_CONFIG ( ver INTEGER  NOT NULL);
-insert into VER_CONFIG(ver) values (0);
-[SqlCreateReceiptTable]
 
+
+[SqlCreateReceiptTable]
 CREATE TABLE RECEIPT (
     ID_WORKPLACE      INTEGER  NOT NULL,
     CODE_PERIOD       INTEGER  NOT NULL,
@@ -749,8 +747,21 @@ CREATE TABLE RECEIPT_Event (
     );
 CREATE INDEX id_RECEIPT_Event ON RECEIPT_Event (CODE_RECEIPT,CODE_WARES,ID_WORKPLACE,CODE_PERIOD);
 
-CREATE TABLE VER_RC ( ver INTEGER  NOT NULL);
-insert into VER_RC(ver) values (0);
+CREATE TABLE Log_RRO (
+    ID_WORKPLACE      INTEGER  NOT NULL,
+    CODE_PERIOD       INTEGER  NOT NULL,
+    CODE_RECEIPT      INTEGER  NOT NULL,
+    Number_Operation  INTEGER  NOT NULL DEFAULT 0,
+    Type_Operation    INTEGER  NOT NULL DEFAULT 0,
+    SUM               NUMBER   NOT NULL DEFAULT 0, 
+    Type_RRO          TEXT,
+    JSON              TEXT,
+    Text_Receipt      TEXT,
+    Error             TEXT,
+    DATE_CREATE       DATETIME NOT NULL DEFAULT (datetime('now','localtime')),
+    USER_CREATE       INTEGER  NOT NULL DEFAULT 0
+);
+CREATE INDEX id_RRO ON RRO(CODE_RECEIPT,ID_WORKPLACE,CODE_PERIOD);
 
 [SqlGetAllPermissions]
 select ua.code_access as code_access,ua.type_access as type_access 
@@ -1038,8 +1049,7 @@ CREATE UNIQUE INDEX ADD_WEIGHT_W ON ADD_WEIGHT ( CODE_WARES,CODE_UNIT,WEIGHT );
 
 CREATE UNIQUE INDEX MRC_ID ON MRC ( CODE_WARES,PRICE);
 
-CREATE TABLE VER_MID ( ver INTEGER  NOT NULL);
-insert into VER_MID(ver) values (0);
+
 
 
 [SqlReplaceUnitDimension]
@@ -1304,6 +1314,12 @@ where r.STATE_RECEIPT=-1
 [SqlGetUser]
  select CODE_USER as CodeUser, NAME_USER  as NameUser,  BAR_CODE as BarCode, Code_Right as CodeRight, LOGIN, PASSWORD from USER
     where (Login=@Login and Password=@Password) or BAR_CODE=@BarCode;
+
+[SqlInsertLogRRO]
+insert into Log_RRO  (
+      ID_WORKPLACE,CODE_PERIOD,CODE_RECEIPT,Number_Operation,Type_Operation, SUM ,Type_RRO,JSON, Text_Receipt,Error, USER_CREATE) VALUES
+    (@IdWorkplace, @CodePeriod,@CodeReceipt,@NumberOperation,@TypeOperation,@SUM,@TypeRRO,@JSON,@TextReceipt,@Error,@UserCreate)
+
 
 [SqlEnd]
 */

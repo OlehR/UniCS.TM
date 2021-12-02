@@ -39,11 +39,11 @@ namespace Test
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
 
             var l = new GetGoodUrl();
-            await l.LoadRozetka();//GetInfoBarcode("4820009350588");
+            //await l.LoadRozetka();//GetInfoBarcode("4820009350588");
            
-           // await CreateDataBaseAsync(true);
+            //await CreateDataBaseAsync(true);
 
-            //TestReceiptAsync();
+            TestReceiptAsync();
 
             //CreateBarCode();
             //TestKit();
@@ -161,6 +161,8 @@ namespace Test
                 sd = api.AddProductByBarCode(TerminalId, "4823086109988", 1);
 
                 sd = api.AddProductByBarCode(TerminalId, "2201651902226", 1); //
+
+                var r = api.AddFiscalNumber(TerminalId, "TRRF-1234"); return;
 
                 //   sd = api.AddProductByBarCode(TerminalId, "7775006620509", 1); //товар 2 кат*/
                 //  Thread.Sleep(4000);
@@ -363,10 +365,8 @@ namespace Test
                 var rr11 = api.GetProduct(TerminalId);
 
 
-
-
                 api.AddPayment(TerminalId, Pay);
-                var r = api.AddFiscalNumber(TerminalId, "TRRF-1234");
+                var rrrr = api.AddFiscalNumber(TerminalId, "TRRF-1234");
 
                 var receipt = api.GetReciept(RId);
 

@@ -1,12 +1,15 @@
 ﻿using Front.Equipments;
 using Front.Equipments.Ingenico;
+using Front.Equipments.pRRO_SG;
 using Microsoft.Extensions.Configuration;
 using ModelMID;
+using ModelMID.DB;
 using SharedLib;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Threading.Tasks;
 
 
 namespace Front
@@ -51,7 +54,7 @@ namespace Front
 
         static EquipmentFront sEquipmentFront;
 
-        public EquipmentFront(Action<string, string> pSetBarCode, Action<double, bool> pSetWeight, Action<double, bool> pSetControlWeight)
+        public EquipmentFront(Action<string, string> pSetBarCode, Action<double, bool> pSetWeight, Action<double, bool> pSetControlWeight, Action<eStatusRRO> pActionStatus = null)
         {            
             //public static Action<IEnumerable<ReceiptWares>, Guid> OnReceiptCalculationComplete { get; set; }
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
@@ -61,7 +64,7 @@ namespace Front
 
             //Scaner
             var ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Scaner).First();
-            if (ElEquipment.Model == eModel.MagellanScaner)
+            if (ElEquipment.Model == eModelEquipment.MagellanScaner)
                 ElEquipment.Equipment = new MagellanScaner(config, null, pSetBarCode);
             else
                 ElEquipment.Equipment = new Scaner(ElEquipment.Port, ElEquipment.BaudRate, null, pSetBarCode);
@@ -69,7 +72,7 @@ namespace Front
 
             //Scale
             ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Scale).First();
-            if (ElEquipment.Model == eModel.MagellanScale)
+            if (ElEquipment.Model == eModelEquipment.MagellanScale)
                 ElEquipment.Equipment = new MagellanScale(((MagellanScaner)Scaner).Magellan9300, pSetWeight); //MagellanScale(ElEquipment.Port, ElEquipment.BaudRate, null, GetScale);
             else
                 ElEquipment.Equipment = new Scale(ElEquipment.Port, ElEquipment.BaudRate, null, pSetWeight);
@@ -77,7 +80,7 @@ namespace Front
 
             //ControlScale
             ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.ControlScale).First();
-            if (ElEquipment.Model == eModel.ScaleModern)
+            if (ElEquipment.Model == eModelEquipment.ScaleModern)
                 ElEquipment.Equipment = new ScaleModern(config, null, pSetControlWeight);
             else
                 ElEquipment.Equipment = new Scale(ElEquipment.Port, ElEquipment.BaudRate, null, pSetControlWeight);
@@ -85,7 +88,7 @@ namespace Front
 
             //Flag
             ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Signal).First();
-            if (ElEquipment.Model == eModel.SignalFlagModern)
+            if (ElEquipment.Model == eModelEquipment.SignalFlagModern)
                 ElEquipment.Equipment = new SignalFlagModern(config, null);
             else
                 ElEquipment.Equipment = new SignalFlag(ElEquipment.Port, ElEquipment.BaudRate, null);
@@ -93,19 +96,21 @@ namespace Front
             
             //Terminal
             ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.BankTerminal).First();
-            if (ElEquipment.Model == eModel.Ingenico)
+            if (ElEquipment.Model == eModelEquipment.Ingenico)
                 ElEquipment.Equipment = new IngenicoH(config, null, aPosStatus);
             else
                 ElEquipment.Equipment = new BankTerminal(ElEquipment.Port, ElEquipment.BaudRate, null);
             Terminal = (BankTerminal)ElEquipment.Equipment;
 
-
             //EKKA
             ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.EKKA).First();
-            if (ElEquipment.Model == eModel.Ingenico)
-                ElEquipment.Equipment = new Exelio(ElEquipment.Port, ElEquipment.BaudRate, null);
+            if (ElEquipment.Model == eModelEquipment.Ingenico)
+                ElEquipment.Equipment = new Exelio(config, null);
             else
-                ElEquipment.Equipment = new Rro(ElEquipment.Port, ElEquipment.BaudRate, null);
+            if (ElEquipment.Model == eModelEquipment.pRRO_SG)
+                ElEquipment.Equipment = new pRRO_SG(config, null, pActionStatus);
+            else
+                ElEquipment.Equipment = new Rro(config, null);
             RRO = (Rro)ElEquipment.Equipment;            
         }
 
@@ -116,23 +121,23 @@ namespace Front
         /// <summary>
         /// Друк чека
         /// </summary>
-        public bool PrintReceipt(Receipt pReceipt) 
-        {
-            return false;
+        public LogRRO PrintReceipt(Receipt pReceipt) 
+        {  
+            return RRO.PrintReceiptAsync(pReceipt).Result;
         }
 
 
-        public bool RroPrintX()
+        public LogRRO RroPrintX()
         {
-            return RRO.PrintX();
+            return RRO.PrintXAsync(null).Result;
         }
 
-        public bool RroPrintZ()
+        public LogRRO RroPrintZ()
         {
-            return RRO.PrintZ();
+            return RRO.PrintZAsync(null).Result;
         }
 
-        public bool RroPrintCopyReceipt()
+        public LogRRO RroPrintCopyReceipt()
         {
             return RRO.PrintCopyReceipt();
         }
@@ -175,12 +180,12 @@ namespace Front
         /// Статус банківського термінала (Очікуєм карточки, Очікуєм підтвердження і ТД) 
         /// </summary>
         /// <param name="ww"></param>
-        void aPosStatus(Front.Equipments.Ingenico.IPosStatus ww)
+        void aPosStatus(IPosStatus ww)
         {
-            if (ww is Front.Equipments.Ingenico.PosStatus status)
+            if (ww is PosStatus status)
             {
                 //TMP!!!!
-                //Bl.PosStatus = status.Status. GetPosStatusFromStatus();
+                var e = status.Status.GetPosStatusFromStatus();
             }
         }
 

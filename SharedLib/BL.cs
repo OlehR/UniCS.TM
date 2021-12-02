@@ -21,13 +21,8 @@ namespace SharedLib
         public IdReceipt curReciptId;
 
         public DataSync ds;
-        public ControlScale CS = new ControlScale();
-
-        public eState State { get; set; } = eState.NotDefine;
-        //public ePosTypeError PosTypeError  { get; set;} =ePosTypeError.NotDefine;
-
-        public ePosStatus PosStatus { get; set; } = ePosStatus.StatusCodeIsNotAvailable;
-
+        public ControlScale CS = new ControlScale();        
+        
         public static SortedList<int, long> UserIdbyWorkPlace = new SortedList<int, long>();
         //public Action<IEnumerable<ReceiptWares>, Guid> OnReceiptCalculationComplete { get; set; }
 
@@ -154,18 +149,25 @@ namespace SharedLib
             return db.GetLastReceipt(idReceip);
         }
 
-
-        public bool UpdateReceiptFiscalNumber(IdReceipt receiptId, string pFiscalNumber,decimal pSumFiscal=0)
+        public bool UpdateReceiptFiscalNumber(IdReceipt receiptId, string pFiscalNumber,decimal pSumFiscal=0,DateTime pDateFiscal = default(DateTime))
         {
+            if (pDateFiscal == default(DateTime))
+                pDateFiscal = DateTime.Now;
             var receipt = new Receipt(receiptId);
             receipt.NumberReceipt = pFiscalNumber;
             receipt.StateReceipt = eStateReceipt.Print;
             receipt.UserCreate = GetUserIdbyWorkPlace(receiptId.IdWorkplace);
             receipt.SumFiscal = pSumFiscal;
-            //db.RecalcPrice(receiptId);
-            db.CloseReceipt(receipt);
+            receipt.DateReceipt = pDateFiscal;            
+         
+            DateTime Ldc = receiptId.DTPeriod;
+
+            WDB_SQLite ldb = (Ldc == DateTime.Now.Date ? db : new WDB_SQLite(Ldc));
+
+            ldb.CloseReceipt(receipt);
             return true;
         }
+
         [Obsolete("This metod  is deprecated")]
         public ReceiptWares AddWaresBarCode(string pBarCode, decimal pQuantity = 0)
         {
@@ -319,7 +321,7 @@ namespace SharedLib
 
         public Receipt GetReceiptHead(IdReceipt idReceipt, bool parWithDetail = false)
         {
-            DateTime Ldc = DateTime.ParseExact(idReceipt.CodePeriod.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture);
+            DateTime Ldc = idReceipt.DTPeriod;
             if (Ldc == DateTime.Now.Date)
                 return db.ViewReceipt(idReceipt, parWithDetail);
 
@@ -409,18 +411,16 @@ namespace SharedLib
             return true;
         }
 
-        public bool MoveReceipt(IdReceipt parIdReceipt, IdReceipt parIdReceiptTo)
+        public bool MoveReceipt(IdReceipt pIdReceipt, IdReceipt pIdReceiptTo)
         {
-            var param = new ParamMoveReceipt(parIdReceipt) { NewCodePeriod = parIdReceiptTo.CodePeriod, NewCodeReceipt = parIdReceiptTo.CodePeriod, NewIdWorkplace = parIdReceiptTo.IdWorkplace };
+            var param = new ParamMoveReceipt(pIdReceipt) { NewCodePeriod = pIdReceiptTo.CodePeriod, NewCodeReceipt = pIdReceiptTo.CodePeriod, NewIdWorkplace = pIdReceiptTo.IdWorkplace };
             return db.MoveReceipt(param);
         }
 
-        public bool SetStateReceipt(IdReceipt receiptId, eStateReceipt parSrateReceipt)
+        public bool SetStateReceipt(IdReceipt pIdReceipt, eStateReceipt pStateReceipt)
         {
-            var receipt = new Receipt(receiptId);
-            receipt.StateReceipt = parSrateReceipt;
-            db.CloseReceipt(receipt);
-            return true;
+            var receipt = new Receipt(pIdReceipt) { StateReceipt = pStateReceipt, DateReceipt = DateTime.Now, UserCreate = GetUserIdbyWorkPlace(pIdReceipt.IdWorkplace)  };                    
+            return db.CloseReceipt(receipt);
         }
 
         public bool InsertWeight(string parBarCode, int parWeight, Guid parWares, TypeSaveWeight parTypeSaveWeight)

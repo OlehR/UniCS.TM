@@ -1,10 +1,4 @@
-﻿/*
- * Created by SharpDevelop.
- * User: gelo
- * Date: 09.10.2013
- * Time: 9:51
- */
-using System;
+﻿using System;
 using System.IO;
 using System.Data;
 using System.Collections;
@@ -199,6 +193,7 @@ namespace SharedLib
         protected string SqlUpdateMID = "";
         protected string SqlReplaceUser = "";
         protected string SqlGetUser = "";
+        protected string SqlInsertLogRRO = "";
 
         public WDB(string pFileSQL,SQL pDB=null)
         {
@@ -631,6 +626,7 @@ namespace SharedLib
             SqlUpdateMID = GetSQL("SqlUpdateMID");
             SqlReplaceUser = GetSQL("SqlReplaceUser");
             SqlGetUser = GetSQL("SqlGetUser");
+            SqlInsertLogRRO = GetSQL("SqlInsertLogRRO");
 
 
             return true;
@@ -1049,6 +1045,13 @@ namespace SharedLib
             db.BulkExecuteNonQuery<User>(SqlReplaceUser, pUser);
             return true;
         }
+
+
+        public virtual bool InsertLogRRO(LogRRO pLog)
+        {
+            return db.ExecuteNonQuery<LogRRO>(SqlInsertLogRRO, pLog) > 0;
+        }
+
 
         public virtual IEnumerable<User> GetUser(User pUser)
         {

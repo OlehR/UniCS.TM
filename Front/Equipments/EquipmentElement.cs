@@ -8,7 +8,7 @@ namespace Front.Equipments
     {        
         public eTypeEquipment Type { get { return Model.GetTypeEquipment(); } }
         public string StrType { get { return Type.ToString(); } }
-        public eModel Model { get; set; }
+        public eModelEquipment Model { get; set; }
         public Equipment Equipment  { get; set; }
         public string Port { get; set; }
         public int BaudRate { get; set; }

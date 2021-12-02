@@ -826,7 +826,7 @@ and @TypeDiscount=11; ";
         {
             using (var DB = new SQLite(ReceiptFile))
             {
-                return db.BulkExecuteNonQuery<ReceiptWares>(SqlUpdateExciseStamp, pRW) > 0;
+                return DB.BulkExecuteNonQuery<ReceiptWares>(SqlUpdateExciseStamp, pRW) > 0;
             }            
         }
 
@@ -834,8 +834,16 @@ and @TypeDiscount=11; ";
         {
             using (var DB = new SQLite(ReceiptFile))
             {
-                return db.BulkExecuteNonQuery<User>(SqlReplaceUser, pUser) > 0;
+                return DB.BulkExecuteNonQuery<User>(SqlReplaceUser, pUser) > 0;
             }        
+        }
+
+        public override bool InsertLogRRO(LogRRO pLog)
+        {
+            using (var DB = new SQLite(ReceiptFile))
+            {
+                return DB.ExecuteNonQuery<LogRRO>(SqlInsertLogRRO, pLog) > 0;
+            }
         }
         /// <summary>
         /// Оновлення структури бази даних
@@ -927,7 +935,6 @@ and @TypeDiscount=11; ";
                                 if (e.Message.IndexOf("duplicate column name:") == -1)
                                     throw new Exception(e.Message, e);
                             }
-
                             
                         if (NewVer <= Ver)
                             NewVer = Ver;
