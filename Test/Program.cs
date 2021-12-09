@@ -41,7 +41,7 @@ namespace Test
             var l = new GetGoodUrl();
             //await l.LoadRozetka();//GetInfoBarcode("4820009350588");
            
-            //await CreateDataBaseAsync(true);
+            //await CreateDataBaseAsync(true); return;
 
             TestReceiptAsync();
 
@@ -109,34 +109,40 @@ namespace Test
             ProductViewModel sd;
             try
             {
-                //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20210902, IdWorkplace = 74, CodeReceipt = 1}); return;
+                sd = api.AddProductByBarCode(TerminalId, "4820240031727",1); 
+                var c = api.GetCustomerByPhone(TerminalId, "0667464631");
+                sd = api.AddProductByBarCode(TerminalId, "4820000536202", 1); return;
+                 //var c = api.GetCustomerByPhone(TerminalId, "0667464631");return;
+                 //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20210902, IdWorkplace = 74, CodeReceipt = 1}); return;
 
-                //api.Bl.ds.SendRWDeleteAsync();        return;
+                 //api.Bl.ds.SendRWDeleteAsync();        return;
 
-                //  sd = api.AddProductByBarCode(TerminalId, "5900857007793", 1);
-                //try
-                //{
-                //    sd = api.AddProductByBarCode(TerminalId, "8710671155382", 1);
-                //    var recipt = api.GetProductsByName(TerminalId, "", 0, false, FastGroup);
-                //    var ddd1 = api.GetProductsByName(TerminalId, "", 1, false, FastGroup);
-                //    var ddd2 = api.GetProductsByName(TerminalId, "пом", 0, false, FastGroup);
-                //    //return;
-                //}
-                //catch (Exception e)
-                //{
-                //    Console.WriteLine(e.Message);
-                //}
-                //var ccc = api.GetCustomerByPhone(TerminalId,"0666672818");
+                 //  sd = api.AddProductByBarCode(TerminalId, "5900857007793", 1);
+                 //try
+                 //{
+                 //    sd = api.AddProductByBarCode(TerminalId, "8710671155382", 1);
+                 //    var recipt = api.GetProductsByName(TerminalId, "", 0, false, FastGroup);
+                 //    var ddd1 = api.GetProductsByName(TerminalId, "", 1, false, FastGroup);
+                 //    var ddd2 = api.GetProductsByName(TerminalId, "пом", 0, false, FastGroup);
+                 //    //return;
+                 //}
+                 //catch (Exception e)
+                 //{
+                 //    Console.WriteLine(e.Message);
+                 //}
+                 //var ccc = api.GetCustomerByPhone(TerminalId,"0666672818");
 
-                //sd = api.AddProductByBarCode(TerminalId, "2211794601924", 1);
-                //var QR = await api.Bl.ds.GetQrCoffe(null, 7, 2);
-                //Console.WriteLine($"QR=>{QR}");
-                //return;
-                //var w = api.GetProductsByCategoryId(TerminalId, FastGroup);
-                var wwwww = api.GetProductsByName(TerminalId, "БАК", 0, false, FastGroup);
+                 //sd = api.AddProductByBarCode(TerminalId, "2211794601924", 1);
+                 //var QR = await api.Bl.ds.GetQrCoffe(null, 7, 2);
+                 //Console.WriteLine($"QR=>{QR}");
+                 //return;
+                 //var w = api.GetProductsByCategoryId(TerminalId, FastGroup);
+                 var wwwww = api.GetProductsByName(TerminalId, "БАК", 0, false, FastGroup);
 
                 var sss = api.GetBags();
                 var l = api.AddProductByProductId(TerminalId, ProductId, 3, 55.24M);
+
+      
                 api.AddPayment(TerminalId, Pay);
                 //   api.Bl.AddWaresCode(169118, 7, 1);
                 Thread.Sleep(2000);

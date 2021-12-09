@@ -310,7 +310,27 @@ SELECT  --Вид дисконтної карти (Тип Клієнта)
   WHERE kind_promotion= 0xA6F61431ECE9ED4646ECAA3A735174ED
     AND  dp.d_end>getdate()
     AND wh_ex.doc_promotion_RRef IS null
+ UNION all --Акція галушки тільки власників карток 
+ SELECT 9000000000+CONVERT( INT,YEAR(dpg.date_time)*100000+dpg.number) AS CodePS
+    ,1 AS CodeGroupFilter
+    ,32 AS TypeGroupFilter 
+    ,-1 AS RuleGroupFilter
+    ,0 AS CodeProporty
+    ,0 AS CodeChoice 
+    ,0 as CodeData --AS CodeWarehouse
+    ,CONVERT(NUMERIC,NULL) AS CodeDataEnd
   
+  FROM dbo.V1C_reg_promotion_gal pg
+  JOIN dbo.V1C_doc_promotion_gal dpg ON pg.doc_RRef = dpg.doc_RRef
+  JOIN dbo.V1C_dim_nomen dn ON pg.nomen_RRef=dn.IDRRef
+  JOIN dbo.V1C_dim_type_price tp ON pg.price_type_RRef=tp.type_price_RRef
+  JOIN dbo.V1C_dim_warehouse wh ON wh.subdivision_RRef=pg.subdivision_RRef
+  LEFT JOIN dbo.V1C_DIM_Priority_Promotion PP ON  tp.Priority_Promotion_RRef=pp.Priority_Promotion_RRef
+  where pg.date_end>GETDATE()
+  AND wh.code = 9
+  GROUP BY CONVERT( INT,YEAR(dpg.date_time)*100000+dpg.number)
+  HAVING  SUM(CASE WHEN pg.IsOnlyCard=1 THEN 1 ELSE 0 end)>0 AND SUM(CASE WHEN pg.IsOnlyCard=1 THEN 0 ELSE 1 end)=0
+
 UNION all
 SELECT -- Товари чи групи тварів
    CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number) AS CodePS

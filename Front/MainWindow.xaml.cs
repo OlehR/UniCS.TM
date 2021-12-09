@@ -357,8 +357,10 @@ namespace Front{
 
         private void _ButtonPayment(object sender, RoutedEventArgs e)
         {
-            var r=EF.Purchase(1.08m);
+            //var r=EF.Purchase(1.08m);
             //Console.WriteLine(r.TransactionStatus);
+            var r=Bl.GetReceiptHead(Bl.curReciptId,true);
+            EF.PrintReceipt(r);
         }
 
         /// <summary>

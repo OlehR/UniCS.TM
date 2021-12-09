@@ -51,6 +51,7 @@ namespace Front.Equipments.pRRO_SG
 
     public class Record
     {
+       
         public eTypeRecord type { get; set; }
         public int number { get; set; }
         public Record(eTypeRecord pType = eTypeRecord.SKU) { type = pType; }
@@ -64,7 +65,8 @@ namespace Front.Equipments.pRRO_SG
             SKU = pRW.CodeWares;
             UKTZED = pRW.CodeUKTZED;
             barcode = pRW.BarCode;
-            excises = pRW.ExciseStamp.Split(',');
+            if(!string.IsNullOrEmpty( pRW.ExciseStamp))
+                excises = pRW.ExciseStamp.Split(',');
             name = pRW.NameWares;
             price = Convert.ToInt32(pRW.PriceEKKA * 100);
             quantity = pRW.Quantity;
@@ -169,10 +171,20 @@ namespace Front.Equipments.pRRO_SG
     public class RecordPay : Record
     {
         public RecordPay() : base(eTypeRecord.PAY) { }
+        public RecordPay(Payment pP) : base(eTypeRecord.PAY) 
+        {
+            sum = Convert.ToInt32( pP.SumPay*100m);
+            returnSum = 0;
+            typePay = (pP.TypePay == ModelMID.eTypePay.Card ? eTypePay.Card : eTypePay.Cash);
+            if(pP.TypePay == ModelMID.eTypePay.Card)
+            {
+                cards = new List<Card>() { new Card(pP, sum>0) };
+            }
+        }
         public int sum { get; set; }
         public int returnSum { get; set; }
         public eTypePay typePay { get; set; }
-        public Card cards { get; set; }
+        public IEnumerable<Card> cards { get; set; }
     }
 
     public class pRroRequestBaseSG
@@ -194,6 +206,13 @@ namespace Front.Equipments.pRRO_SG
             Sum = pR.SumReceipt;
             docSubType = pR.TypeReceipt == eTypeReceipt.Refund ? eTypeDoc.Refund : eTypeDoc.Sale;
             id = pR.ReceiptId;
+            var b= new List<Record>();
+            foreach (var el in pR.Wares)
+                b.Add(new RecordSKU(el));
+
+            foreach (var el in pR.Payment)
+                b.Add(new RecordPay(el));
+            body = b;
         }
 
         public int roundDiscount { get; set; } = 0;

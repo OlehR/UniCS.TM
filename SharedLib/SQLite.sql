@@ -379,7 +379,7 @@ select CODE_PS --,32--,count(*),sum(case when CODE_DATA=13  then 1 else 0 end) -
     from PROMOTION_SALE_FILTER 
     where TYPE_GROUP_FILTER=32
     group by CODE_PS
-    having sum(case when CODE_DATA=@TypeCard  then 1 else 0 end)=0
+    having SUM(CASE WHEN (CODE_DATA=@TYPECARD and  RULE_GROUP_FILTER=1) or (CODE_DATA<>@TYPECARD and  RULE_GROUP_FILTER=-1) THEN 1 ELSE 0 END)=0
 union --
 select CODE_PS --,22 --*,strftime('%H%M',datetime('now','localtime')) 
     from PROMOTION_SALE_FILTER PSF where  
@@ -415,7 +415,9 @@ select psd.CODE_PS as CodePs,psd.PRIORITY as Priority ,11 as TypeDiscont  ,p.PRI
 from  PROMOTION_SALE_DEALER psd
  --join PROMOTION_SALE ps on ps.CODE_PS=psd.CODE_PS 
  join PRICE p on psd.CODE_DEALER=p.CODE_DEALER and psd.CODE_WARES=p.CODE_WARES 
-where 
+LEFT JOIN EXEPTIONPS EPS ON  (psd.CODE_PS=EPS.CODE_PS)
+WHERE EPS.CODE_PS IS NULL
+and  
  psd.CODE_WARES = @CodeWares and 
  datetime('now','localtime') between psd.Date_begin and psd.DATE_END
  and p.PRICE_DEALER>0

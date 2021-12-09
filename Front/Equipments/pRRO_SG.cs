@@ -29,21 +29,29 @@ namespace Front.Equipments.pRRO_SG
 
         async Task<(string, HttpStatusCode)> HttpAsync(string pMetod, string pBody)
         {
+            
             string res = null;
             HttpStatusCode Response = HttpStatusCode.Conflict;
            
             using (HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, PathApi + pMetod))
             {
-                requestMessage.Content = new StringContent(pBody, Encoding.UTF8, "application/json");
-                SetStatus(eStatusRRO.WaitAnswer);
-                var response = await client.SendAsync(requestMessage);
-                SetStatus(eStatusRRO.ParseResult);
-                Response = response.StatusCode;
-                if (response.IsSuccessStatusCode)
+                try
                 {
-                    res = await response.Content.ReadAsStringAsync();                 
+                    requestMessage.Content = new StringContent(pBody, Encoding.UTF8, "application/json");
+                    SetStatus(eStatusRRO.WaitAnswer);
+                    var response = await client.SendAsync(requestMessage);
+                    SetStatus(eStatusRRO.ParseResult);
+                    Response = response.StatusCode;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        res = await response.Content.ReadAsStringAsync();
+                    }
+                    else
+                    {
+                        SetStatus(eStatusRRO.Error);
+                    }
                 }
-                else
+                catch(Exception e)
                 {
                     SetStatus(eStatusRRO.Error);
                 }
@@ -56,7 +64,8 @@ namespace Front.Equipments.pRRO_SG
             string res;
             var Res = new LogRRO(pR);
             HttpStatusCode Response;
-            var Body = JsonConvert.SerializeObject(new pRroRequestSG(pR));
+            var r = new pRroRequestSG(pR);
+            var Body = JsonConvert.SerializeObject(r);
             (res, Response) = await HttpAsync("/innovate/printreceipt", Body);
             if (Response == HttpStatusCode.OK)
             {
