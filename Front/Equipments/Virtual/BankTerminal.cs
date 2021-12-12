@@ -11,7 +11,7 @@ namespace Front.Equipments
     {
         public BankTerminal(string pSerialPortName, int pBaudRate = 9600, Action<string, string> pLogger = null) : base(pSerialPortName, pBaudRate) { }
 
-        public BankTerminal(IConfiguration pConfiguration, Action<string, string> pLogger = null) : base(pConfiguration) { }
+        public BankTerminal(IConfiguration pConfiguration, Action<string, string> pLogger = null, eModelEquipment pModelEquipment = eModelEquipment.NotDefined) : base(pConfiguration, pModelEquipment) { }
         virtual public BatchTotals PrintZ()
         {
             throw new NotImplementedException();

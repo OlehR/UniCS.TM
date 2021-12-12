@@ -11,6 +11,8 @@ using System.Threading;
 using Newtonsoft.Json;
 using System.Linq;
 using Front.Equipments.Ingenico;
+using ModelMID;
+
 namespace Front.Equipments
 {
     public class IngenicoH : BankTerminal
@@ -18,7 +20,7 @@ namespace Front.Equipments
 
         Ingenico.Ingenico EquipmentIngenico = null;
         //public IngenicoH(string pSerialPortName, int pBaudRate = 9600, Action<string, string> pLogger = null) : base(pSerialPortName, pBaudRate, pLogger) { }
-        public IngenicoH(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<IPosStatus> pActionStatus = null) : base(pConfiguration, pLogger)
+        public IngenicoH(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<IPosStatus> pActionStatus = null) : base(pConfiguration, pLogger, eModelEquipment.Ingenico)
         {
             ILoggerFactory loggerFactory = new LoggerFactory().AddConsole((_, __) => true);
             ILogger<Ingenico.Ingenico> logger = loggerFactory.CreateLogger<Ingenico.Ingenico>();
@@ -57,7 +59,7 @@ namespace Front.Equipments
     }
 }
 
-    namespace Front.Equipments.Ingenico
+namespace Front.Equipments.Ingenico
 {
 
     public enum ReturnCodes
@@ -90,7 +92,7 @@ namespace Front.Equipments
         Disabled = 4,
     }
 
-    public enum Status
+    /*public enum ePosStatus
     {
         StatusCodeIsNotAvailable,
         CardWasRead,
@@ -177,15 +179,13 @@ namespace Front.Equipments
         DuplicationOfTransmissionNetworkError,
         GeneralSystemMalfunction,
         UnableToSendEncryptedMessage,
-    }
+    }*/
 
-    public interface IPosStatus
-    {
-    }
+    public interface IPosStatus {}
 
     public class PosStatus : IPosStatus
     {
-        public Status Status { get; set; }
+        public ePosStatus Status { get; set; }
 
         public byte MsgCode { get; set; }
 
@@ -240,7 +240,7 @@ namespace Front.Equipments
         public PaymentResultModel() => this.IsSuccess = false;
     }
 
-    public class BPOSClient
+    /*public class BPOSClient
     {
         private const string BPOSLib = "libBPOSLib.so";
         private const string CommLibX = "libCommLibX.so";
@@ -563,7 +563,8 @@ namespace Front.Equipments
         [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
         public static extern int ExchangeStatuses(byte bECRStatus);
     }
-
+    */
+    
     public class PosDeviceLog : DeviceLog
     {
         public PosDeviceLog() => this.DeviceType = DeviceType.PosTerminal;
@@ -852,7 +853,7 @@ namespace Front.Equipments
                     if (onStatus != null)
                         onStatus((IPosStatus)new PosStatus()
                         {
-                            Status = Status.TransactionCanceledByUser
+                            Status = ePosStatus.TransactionCanceledByUser
                         });
                     return new PaymentResultModel()
                     {
@@ -870,7 +871,7 @@ namespace Front.Equipments
                     if (onStatus != null)
                         onStatus((IPosStatus)new PosStatus()
                         {
-                            Status = Status.TransactionCanceledByUser
+                            Status = ePosStatus.TransactionCanceledByUser
                         });
                     return new PaymentResultModel()
                     {
@@ -894,7 +895,7 @@ namespace Front.Equipments
                 if (onStatus != null)
                     onStatus((IPosStatus)new PosStatus()
                     {
-                        Status = Status.SuccessfullyFulfilled
+                        Status = ePosStatus.SuccessfullyFulfilled
                     });
                 return new PaymentResultModel()
                 {
@@ -929,7 +930,7 @@ namespace Front.Equipments
                         if (onStatus1 != null)
                             onStatus1((IPosStatus)new PosStatus()
                             {
-                                Status = Status.ErrorOpeningCOMPort
+                                Status = ePosStatus.ErrorOpeningCOMPort
                             });
                         Action<DeviceLog> onDeviceWarning1 = this.OnDeviceWarning;
                         if (onDeviceWarning1 != null)
@@ -946,7 +947,7 @@ namespace Front.Equipments
                         if (onStatus2 != null)
                             onStatus2((IPosStatus)new PosStatus()
                             {
-                                Status = Status.NeedToOpenCOMPort
+                                Status = ePosStatus.NeedToOpenCOMPort
                             });
                         Action<DeviceLog> onDeviceWarning2 = this.OnDeviceWarning;
                         if (onDeviceWarning2 != null)
@@ -963,7 +964,7 @@ namespace Front.Equipments
                         if (onStatus3 != null)
                             onStatus3((IPosStatus)new PosStatus()
                             {
-                                Status = Status.ErrorConnectingWithTerminal
+                                Status = ePosStatus.ErrorConnectingWithTerminal
                             });
                         Action<DeviceLog> onDeviceWarning3 = this.OnDeviceWarning;
                         if (onDeviceWarning3 != null)
@@ -996,7 +997,7 @@ namespace Front.Equipments
                         break;
                     onStatus1((IPosStatus)new PosStatus()
                     {
-                        Status = Status.ApprovedAndCompleted
+                        Status = ePosStatus.ApprovedAndCompleted
                     });
                     break;
                 case 1:
@@ -1005,7 +1006,7 @@ namespace Front.Equipments
                         break;
                     onStatus2((IPosStatus)new PosStatus()
                     {
-                        Status = Status.AuthorizationDenied
+                        Status = ePosStatus.AuthorizationDenied
                     });
                     break;
                 case 2:
@@ -1014,7 +1015,7 @@ namespace Front.Equipments
                         break;
                     onStatus3((IPosStatus)new PosStatus()
                     {
-                        Status = Status.AuthorizationDenied
+                        Status = ePosStatus.AuthorizationDenied
                     });
                     break;
                 case 3:
@@ -1023,7 +1024,7 @@ namespace Front.Equipments
                         break;
                     onStatus4((IPosStatus)new PosStatus()
                     {
-                        Status = Status.UnregisteredTradingPoint
+                        Status = ePosStatus.UnregisteredTradingPoint
                     });
                     break;
                 case 4:
@@ -1032,7 +1033,7 @@ namespace Front.Equipments
                         break;
                     onStatus5((IPosStatus)new PosStatus()
                     {
-                        Status = Status.AuthorizationRejectedWithdrawTheCardAtTheBanksRequest
+                        Status = ePosStatus.AuthorizationRejectedWithdrawTheCardAtTheBanksRequest
                     });
                     break;
                 case 5:
@@ -1041,7 +1042,7 @@ namespace Front.Equipments
                         break;
                     onStatus6((IPosStatus)new PosStatus()
                     {
-                        Status = Status.AuthorizationRejectedNoPayment
+                        Status = ePosStatus.AuthorizationRejectedNoPayment
                     });
                     break;
                 case 6:
@@ -1049,7 +1050,7 @@ namespace Front.Equipments
                     if (onStatus7 != null)
                         onStatus7((IPosStatus)new PosStatus()
                         {
-                            Status = Status.CommonErrorNeedToRepeat
+                            Status = ePosStatus.CommonErrorNeedToRepeat
                         });
                     Action<DeviceLog> onDeviceWarning1 = this.OnDeviceWarning;
                     if (onDeviceWarning1 == null)
@@ -1065,7 +1066,7 @@ namespace Front.Equipments
                         break;
                     onStatus8((IPosStatus)new PosStatus()
                     {
-                        Status = Status.AuthorizationRejectedWithdrawTheCardAtTheBanksRequest
+                        Status = ePosStatus.AuthorizationRejectedWithdrawTheCardAtTheBanksRequest
                     });
                     break;
                 case 12:
@@ -1073,7 +1074,7 @@ namespace Front.Equipments
                     if (onStatus9 != null)
                         onStatus9((IPosStatus)new PosStatus()
                         {
-                            Status = Status.InvalidTransactionNetworkErrorNeedToRepeat
+                            Status = ePosStatus.InvalidTransactionNetworkErrorNeedToRepeat
                         });
                     Action<DeviceLog> onDeviceWarning2 = this.OnDeviceWarning;
                     if (onDeviceWarning2 == null)
@@ -1089,7 +1090,7 @@ namespace Front.Equipments
                         break;
                     onStatus10((IPosStatus)new PosStatus()
                     {
-                        Status = Status.IncorrectAmountEntered
+                        Status = ePosStatus.IncorrectAmountEntered
                     });
                     break;
                 case 14:
@@ -1098,7 +1099,7 @@ namespace Front.Equipments
                         break;
                     onStatus11((IPosStatus)new PosStatus()
                     {
-                        Status = Status.InvalidCardNumber
+                        Status = ePosStatus.InvalidCardNumber
                     });
                     break;
                 case 15:
@@ -1107,7 +1108,7 @@ namespace Front.Equipments
                         break;
                     onStatus12((IPosStatus)new PosStatus()
                     {
-                        Status = Status.BankNodeIsNotFoundOnTheNetwork
+                        Status = ePosStatus.BankNodeIsNotFoundOnTheNetwork
                     });
                     break;
                 case 17:
@@ -1116,7 +1117,7 @@ namespace Front.Equipments
                         break;
                     onStatus13((IPosStatus)new PosStatus()
                     {
-                        Status = Status.CanceledByTheClient
+                        Status = ePosStatus.CanceledByTheClient
                     });
                     break;
                 case 21:
@@ -1125,7 +1126,7 @@ namespace Front.Equipments
                         break;
                     onStatus14((IPosStatus)new PosStatus()
                     {
-                        Status = Status.ActionsNotCompletedDidNotMatchData
+                        Status = ePosStatus.ActionsNotCompletedDidNotMatchData
                     });
                     break;
                 case 28:
@@ -1133,7 +1134,7 @@ namespace Front.Equipments
                     if (onStatus15 != null)
                         onStatus15((IPosStatus)new PosStatus()
                         {
-                            Status = Status.NoResponseFileIsTemporarilyUnavailable
+                            Status = ePosStatus.NoResponseFileIsTemporarilyUnavailable
                         });
                     Action<DeviceLog> onDeviceWarning3 = this.OnDeviceWarning;
                     if (onDeviceWarning3 == null)
@@ -1148,7 +1149,7 @@ namespace Front.Equipments
                     if (onStatus16 != null)
                         onStatus16((IPosStatus)new PosStatus()
                         {
-                            Status = Status.WrongFormatNeedToRepeat
+                            Status = ePosStatus.WrongFormatNeedToRepeat
                         });
                     Action<DeviceLog> onDeviceWarning4 = this.OnDeviceWarning;
                     if (onDeviceWarning4 == null)
@@ -1164,7 +1165,7 @@ namespace Front.Equipments
                         break;
                     onStatus17((IPosStatus)new PosStatus()
                     {
-                        Status = Status.TheIssuerIsNotFoundInThePaymentSystem
+                        Status = ePosStatus.TheIssuerIsNotFoundInThePaymentSystem
                     });
                     break;
                 case 32:
@@ -1173,7 +1174,7 @@ namespace Front.Equipments
                         break;
                     onStatus18((IPosStatus)new PosStatus()
                     {
-                        Status = Status.PartiallyCompleted
+                        Status = ePosStatus.PartiallyCompleted
                     });
                     break;
                 case 33:
@@ -1182,7 +1183,7 @@ namespace Front.Equipments
                         break;
                     onStatus19((IPosStatus)new PosStatus()
                     {
-                        Status = Status.TheValidityPeriodOfTheCardHasExpiredTheCardHasBeenWithdrawnAtTheBanksRequest
+                        Status = ePosStatus.TheValidityPeriodOfTheCardHasExpiredTheCardHasBeenWithdrawnAtTheBanksRequest
                     });
                     break;
                 case 36:
@@ -1191,7 +1192,7 @@ namespace Front.Equipments
                         break;
                     onStatus20((IPosStatus)new PosStatus()
                     {
-                        Status = Status.ForbiddenCardRemove
+                        Status = ePosStatus.ForbiddenCardRemove
                     });
                     break;
                 case 37:
@@ -1200,7 +1201,7 @@ namespace Front.Equipments
                         break;
                     onStatus21((IPosStatus)new PosStatus()
                     {
-                        Status = Status.WithdrawnByTheIssuerRemovedFromTheCardAndContactedByTheAcquirer
+                        Status = ePosStatus.WithdrawnByTheIssuerRemovedFromTheCardAndContactedByTheAcquirer
                     });
                     break;
                 case 38:
@@ -1209,7 +1210,7 @@ namespace Front.Equipments
                         break;
                     onStatus22((IPosStatus)new PosStatus()
                     {
-                        Status = Status.ThereAreNoAttemptsToEnterThePINRemoveTheCard
+                        Status = ePosStatus.ThereAreNoAttemptsToEnterThePINRemoveTheCard
                     });
                     break;
                 case 39:
@@ -1218,7 +1219,7 @@ namespace Front.Equipments
                         break;
                     onStatus23((IPosStatus)new PosStatus()
                     {
-                        Status = Status.NoClientsCreditAccount
+                        Status = ePosStatus.NoClientsCreditAccount
                     });
                     break;
                 case 41:
@@ -1227,7 +1228,7 @@ namespace Front.Equipments
                         break;
                     onStatus24((IPosStatus)new PosStatus()
                     {
-                        Status = Status.CardIslostRemoved
+                        Status = ePosStatus.CardIslostRemoved
                     });
                     break;
                 case 43:
@@ -1236,7 +1237,7 @@ namespace Front.Equipments
                         break;
                     onStatus25((IPosStatus)new PosStatus()
                     {
-                        Status = Status.CardIsStolenRemoved
+                        Status = ePosStatus.CardIsStolenRemoved
                     });
                     break;
                 case 51:
@@ -1245,7 +1246,7 @@ namespace Front.Equipments
                         break;
                     onStatus26((IPosStatus)new PosStatus()
                     {
-                        Status = Status.NotEnoughMoney
+                        Status = ePosStatus.NotEnoughMoney
                     });
                     break;
                 case 52:
@@ -1254,7 +1255,7 @@ namespace Front.Equipments
                         break;
                     onStatus27((IPosStatus)new PosStatus()
                     {
-                        Status = Status.NoSettlementSpecifiedClienAccount
+                        Status = ePosStatus.NoSettlementSpecifiedClienAccount
                     });
                     break;
                 case 53:
@@ -1263,7 +1264,7 @@ namespace Front.Equipments
                         break;
                     onStatus28((IPosStatus)new PosStatus()
                     {
-                        Status = Status.ThereIsNoCumulativeAccountOfTheClient
+                        Status = ePosStatus.ThereIsNoCumulativeAccountOfTheClient
                     });
                     break;
                 case 54:
@@ -1272,7 +1273,7 @@ namespace Front.Equipments
                         break;
                     onStatus29((IPosStatus)new PosStatus()
                     {
-                        Status = Status.TheExpirationDateOfTheCardExpires
+                        Status = ePosStatus.TheExpirationDateOfTheCardExpires
                     });
                     break;
                 case 55:
@@ -1281,7 +1282,7 @@ namespace Front.Equipments
                         break;
                     onStatus30((IPosStatus)new PosStatus()
                     {
-                        Status = Status.WrongPIN
+                        Status = ePosStatus.WrongPIN
                     });
                     break;
                 case 57:
@@ -1290,7 +1291,7 @@ namespace Front.Equipments
                         break;
                     onStatus31((IPosStatus)new PosStatus()
                     {
-                        Status = Status.ThisTransactionTypeIsNotProvidedForTheGivenCard
+                        Status = ePosStatus.ThisTransactionTypeIsNotProvidedForTheGivenCard
                     });
                     break;
                 case 58:
@@ -1299,7 +1300,7 @@ namespace Front.Equipments
                         break;
                     onStatus32((IPosStatus)new PosStatus()
                     {
-                        Status = Status.ThisTypeOfTransactionIsNotProvidedForPOSTerminal
+                        Status = ePosStatus.ThisTypeOfTransactionIsNotProvidedForPOSTerminal
                     });
                     break;
                 case 61:
@@ -1308,7 +1309,7 @@ namespace Front.Equipments
                         break;
                     onStatus33((IPosStatus)new PosStatus()
                     {
-                        Status = Status.TheAamountOfAuthorizationExceededTheExpenseLimitOnTheCard
+                        Status = ePosStatus.TheAamountOfAuthorizationExceededTheExpenseLimitOnTheCard
                     });
                     break;
                 case 62:
@@ -1317,7 +1318,7 @@ namespace Front.Equipments
                         break;
                     onStatus34((IPosStatus)new PosStatus()
                     {
-                        Status = Status.IncorrectServiceCodeForbiddenCardCanNotBeSeized
+                        Status = ePosStatus.IncorrectServiceCodeForbiddenCardCanNotBeSeized
                     });
                     break;
                 case 64:
@@ -1326,7 +1327,7 @@ namespace Front.Equipments
                         break;
                     onStatus35((IPosStatus)new PosStatus()
                     {
-                        Status = Status.TheAmountOfTheCancellationAuthorizationIsDifferentFromTheAmountOfTheOriginalAuthorization
+                        Status = ePosStatus.TheAmountOfTheCancellationAuthorizationIsDifferentFromTheAmountOfTheOriginalAuthorization
                     });
                     break;
                 case 65:
@@ -1335,7 +1336,7 @@ namespace Front.Equipments
                         break;
                     onStatus36((IPosStatus)new PosStatus()
                     {
-                        Status = Status.TheExpenseLimitExpiredOnTheAccount
+                        Status = ePosStatus.TheExpenseLimitExpiredOnTheAccount
                     });
                     break;
                 case 66:
@@ -1344,7 +1345,7 @@ namespace Front.Equipments
                         break;
                     onStatus37((IPosStatus)new PosStatus()
                     {
-                        Status = Status.TheCardIsVoidCanNotBeSeized
+                        Status = ePosStatus.TheCardIsVoidCanNotBeSeized
                     });
                     break;
                 case 67:
@@ -1353,7 +1354,7 @@ namespace Front.Equipments
                         break;
                     onStatus38((IPosStatus)new PosStatus()
                     {
-                        Status = Status.CardIsWithdrawnFromATM
+                        Status = ePosStatus.CardIsWithdrawnFromATM
                     });
                     break;
                 case 68:
@@ -1362,7 +1363,7 @@ namespace Front.Equipments
                         break;
                     onStatus39((IPosStatus)new PosStatus()
                     {
-                        Status = Status.ItIsTooLateToReceiveAnAnswerFromTheNetworkItIsNecessaryToRepeat
+                        Status = ePosStatus.ItIsTooLateToReceiveAnAnswerFromTheNetworkItIsNecessaryToRepeat
                     });
                     break;
                 case 75:
@@ -1371,7 +1372,7 @@ namespace Front.Equipments
                         break;
                     onStatus40((IPosStatus)new PosStatus()
                     {
-                        Status = Status.TheNumberOfIncorrectlyEnteredPINsExceededTheAmountDischarged
+                        Status = ePosStatus.TheNumberOfIncorrectlyEnteredPINsExceededTheAmountDischarged
                     });
                     break;
                 case 76:
@@ -1380,7 +1381,7 @@ namespace Front.Equipments
                         break;
                     onStatus41((IPosStatus)new PosStatus()
                     {
-                        Status = Status.TheNumberOfIncorrectlyEnteredPINsExceededTheAmountDischarged
+                        Status = ePosStatus.TheNumberOfIncorrectlyEnteredPINsExceededTheAmountDischarged
                     });
                     break;
                 case 77:
@@ -1389,7 +1390,7 @@ namespace Front.Equipments
                         break;
                     onStatus42((IPosStatus)new PosStatus()
                     {
-                        Status = Status.ActionsAreNotCompletedIncompleteDataItIsNecessaryToRollbackOrRepeat
+                        Status = ePosStatus.ActionsAreNotCompletedIncompleteDataItIsNecessaryToRollbackOrRepeat
                     });
                     break;
                 case 78:
@@ -1398,7 +1399,7 @@ namespace Front.Equipments
                         break;
                     onStatus43((IPosStatus)new PosStatus()
                     {
-                        Status = Status.NoAccount
+                        Status = ePosStatus.NoAccount
                     });
                     break;
                 case 79:
@@ -1407,7 +1408,7 @@ namespace Front.Equipments
                         break;
                     onStatus44((IPosStatus)new PosStatus()
                     {
-                        Status = Status.AlreadyCanceledWhenTurnedOn
+                        Status = ePosStatus.AlreadyCanceledWhenTurnedOn
                     });
                     break;
                 case 80:
@@ -1415,7 +1416,7 @@ namespace Front.Equipments
                     if (onStatus45 != null)
                         onStatus45((IPosStatus)new PosStatus()
                         {
-                            Status = Status.GeneralNetworkErrorIncorrectData
+                            Status = ePosStatus.GeneralNetworkErrorIncorrectData
                         });
                     Action<DeviceLog> onDeviceWarning5 = this.OnDeviceWarning;
                     if (onDeviceWarning5 == null)
@@ -1431,7 +1432,7 @@ namespace Front.Equipments
                         break;
                     onStatus46((IPosStatus)new PosStatus()
                     {
-                        Status = Status.RemoteNetworkErrorOrPINEncryption
+                        Status = ePosStatus.RemoteNetworkErrorOrPINEncryption
                     });
                     break;
                 case 82:
@@ -1440,7 +1441,7 @@ namespace Front.Equipments
                         break;
                     onStatus47((IPosStatus)new PosStatus()
                     {
-                        Status = Status.TimeoutWhenConnectedWithTheIssuersNodeOrWrongCVVOrCacheIsNotApprovedTheCashbackSumLimitIsExceeded
+                        Status = ePosStatus.TimeoutWhenConnectedWithTheIssuersNodeOrWrongCVVOrCacheIsNotApprovedTheCashbackSumLimitIsExceeded
                     });
                     break;
                 case 83:
@@ -1448,7 +1449,7 @@ namespace Front.Equipments
                     if (onStatus48 != null)
                         onStatus48((IPosStatus)new PosStatus()
                         {
-                            Status = Status.ThePINVerificationTransactionIsUnsuccessfulNetworkError
+                            Status = ePosStatus.ThePINVerificationTransactionIsUnsuccessfulNetworkError
                         });
                     Action<DeviceLog> onDeviceWarning6 = this.OnDeviceWarning;
                     if (onDeviceWarning6 == null)
@@ -1464,7 +1465,7 @@ namespace Front.Equipments
                         break;
                     onStatus49((IPosStatus)new PosStatus()
                     {
-                        Status = Status.TheCardIsInOrderThereIsNoReasonToRefuse
+                        Status = ePosStatus.TheCardIsInOrderThereIsNoReasonToRefuse
                     });
                     break;
                 case 86:
@@ -1472,7 +1473,7 @@ namespace Front.Equipments
                     if (onStatus50 != null)
                         onStatus50((IPosStatus)new PosStatus()
                         {
-                            Status = Status.PINCanNotBeCheckedNetworkError
+                            Status = ePosStatus.PINCanNotBeCheckedNetworkError
                         });
                     Action<DeviceLog> onDeviceWarning7 = this.OnDeviceWarning;
                     if (onDeviceWarning7 == null)
@@ -1487,7 +1488,7 @@ namespace Front.Equipments
                     if (onStatus51 != null)
                         onStatus51((IPosStatus)new PosStatus()
                         {
-                            Status = Status.PINEncryptionErrorNetworkError
+                            Status = ePosStatus.PINEncryptionErrorNetworkError
                         });
                     Action<DeviceLog> onDeviceWarning8 = this.OnDeviceWarning;
                     if (onDeviceWarning8 == null)
@@ -1502,7 +1503,7 @@ namespace Front.Equipments
                     if (onStatus52 != null)
                         onStatus52((IPosStatus)new PosStatus()
                         {
-                            Status = Status.IdentificationErrorIsANetworkError
+                            Status = ePosStatus.IdentificationErrorIsANetworkError
                         });
                     Action<DeviceLog> onDeviceWarning9 = this.OnDeviceWarning;
                     if (onDeviceWarning9 == null)
@@ -1517,7 +1518,7 @@ namespace Front.Equipments
                     if (onStatus53 != null)
                         onStatus53((IPosStatus)new PosStatus()
                         {
-                            Status = Status.NoConnectionWithTheBankByTheIssuerNetworkError
+                            Status = ePosStatus.NoConnectionWithTheBankByTheIssuerNetworkError
                         });
                     Action<DeviceLog> onDeviceWarning10 = this.OnDeviceWarning;
                     if (onDeviceWarning10 == null)
@@ -1532,7 +1533,7 @@ namespace Front.Equipments
                     if (onStatus54 != null)
                         onStatus54((IPosStatus)new PosStatus()
                         {
-                            Status = Status.UnsuccessfulRequestRoutingIsNotPossibleNetworkError
+                            Status = ePosStatus.UnsuccessfulRequestRoutingIsNotPossibleNetworkError
                         });
                     Action<DeviceLog> onDeviceWarning11 = this.OnDeviceWarning;
                     if (onDeviceWarning11 == null)
@@ -1548,7 +1549,7 @@ namespace Front.Equipments
                         break;
                     onStatus55((IPosStatus)new PosStatus()
                     {
-                        Status = Status.TheTransactionCanNotBeCompletedTheIssuerDeclineAuthorizationDueToAViolationOfTheRules
+                        Status = ePosStatus.TheTransactionCanNotBeCompletedTheIssuerDeclineAuthorizationDueToAViolationOfTheRules
                     });
                     break;
                 case 94:
@@ -1556,7 +1557,7 @@ namespace Front.Equipments
                     if (onStatus56 != null)
                         onStatus56((IPosStatus)new PosStatus()
                         {
-                            Status = Status.DuplicationOfTransmissionNetworkError
+                            Status = ePosStatus.DuplicationOfTransmissionNetworkError
                         });
                     Action<DeviceLog> onDeviceWarning12 = this.OnDeviceWarning;
                     if (onDeviceWarning12 == null)
@@ -1572,7 +1573,7 @@ namespace Front.Equipments
                         break;
                     onStatus57((IPosStatus)new PosStatus()
                     {
-                        Status = Status.GeneralSystemMalfunction
+                        Status = ePosStatus.GeneralSystemMalfunction
                     });
                     break;
                 case 119:
@@ -1581,7 +1582,7 @@ namespace Front.Equipments
                         break;
                     onStatus58((IPosStatus)new PosStatus()
                     {
-                        Status = Status.UnableToSendEncryptedMessage
+                        Status = ePosStatus.UnableToSendEncryptedMessage
                     });
                     break;
                 case 1000:
@@ -1589,7 +1590,7 @@ namespace Front.Equipments
                     if (onStatus59 != null)
                         onStatus59((IPosStatus)new PosStatus()
                         {
-                            Status = Status.GeneralError
+                            Status = ePosStatus.GeneralError
                         });
                     Action<DeviceLog> onDeviceWarning13 = this.OnDeviceWarning;
                     if (onDeviceWarning13 == null)
@@ -1605,7 +1606,7 @@ namespace Front.Equipments
                         break;
                     onStatus60((IPosStatus)new PosStatus()
                     {
-                        Status = Status.TransactionCanceledByUser
+                        Status = ePosStatus.TransactionCanceledByUser
                     });
                     break;
                 case 1002:
@@ -1614,7 +1615,7 @@ namespace Front.Equipments
                         break;
                     onStatus61((IPosStatus)new PosStatus()
                     {
-                        Status = Status.EMVDecline
+                        Status = ePosStatus.EMVDecline
                     });
                     break;
                 case 1003:
@@ -1623,7 +1624,7 @@ namespace Front.Equipments
                         break;
                     onStatus62((IPosStatus)new PosStatus()
                     {
-                        Status = Status.TransactionLogIsFullNeedCloseBatch
+                        Status = ePosStatus.TransactionLogIsFullNeedCloseBatch
                     });
                     break;
                 case 1004:
@@ -1631,7 +1632,7 @@ namespace Front.Equipments
                     if (onStatus63 != null)
                         onStatus63((IPosStatus)new PosStatus()
                         {
-                            Status = Status.NoConnectionWithHost
+                            Status = ePosStatus.NoConnectionWithHost
                         });
                     Action<DeviceLog> onDeviceWarning14 = this.OnDeviceWarning;
                     if (onDeviceWarning14 == null)
@@ -1646,7 +1647,7 @@ namespace Front.Equipments
                     if (onStatus64 != null)
                         onStatus64((IPosStatus)new PosStatus()
                         {
-                            Status = Status.NoPaperInPrinter
+                            Status = ePosStatus.NoPaperInPrinter
                         });
                     Action<DeviceLog> onDeviceWarning15 = this.OnDeviceWarning;
                     if (onDeviceWarning15 == null)
@@ -1662,7 +1663,7 @@ namespace Front.Equipments
                         break;
                     onStatus65((IPosStatus)new PosStatus()
                     {
-                        Status = Status.ErrorCryptoKeys
+                        Status = ePosStatus.ErrorCryptoKeys
                     });
                     break;
                 case 1007:
@@ -1671,7 +1672,7 @@ namespace Front.Equipments
                         break;
                     onStatus66((IPosStatus)new PosStatus()
                     {
-                        Status = Status.CardReaderIsNotConnected
+                        Status = ePosStatus.CardReaderIsNotConnected
                     });
                     break;
                 case 1008:
@@ -1680,7 +1681,7 @@ namespace Front.Equipments
                         break;
                     onStatus67((IPosStatus)new PosStatus()
                     {
-                        Status = Status.TransactionIsAlreadyComplete
+                        Status = ePosStatus.TransactionIsAlreadyComplete
                     });
                     break;
             }
@@ -1696,7 +1697,7 @@ namespace Front.Equipments
                         break;
                     onStatus1((IPosStatus)new PosStatus()
                     {
-                        Status = Status.CardWasRead
+                        Status = ePosStatus.CardWasRead
                     });
                     break;
                 case 2:
@@ -1705,7 +1706,7 @@ namespace Front.Equipments
                         break;
                     onStatus2((IPosStatus)new PosStatus()
                     {
-                        Status = Status.UsedAChipCard
+                        Status = ePosStatus.UsedAChipCard
                     });
                     break;
                 case 3:
@@ -1714,7 +1715,7 @@ namespace Front.Equipments
                         break;
                     onStatus3((IPosStatus)new PosStatus()
                     {
-                        Status = Status.AuthorizationInProgress
+                        Status = ePosStatus.AuthorizationInProgress
                     });
                     break;
                 case 4:
@@ -1723,7 +1724,7 @@ namespace Front.Equipments
                         break;
                     onStatus4((IPosStatus)new PosStatus()
                     {
-                        Status = Status.WaitingForCashierAction
+                        Status = ePosStatus.WaitingForCashierAction
                     });
                     break;
                 case 5:
@@ -1732,7 +1733,7 @@ namespace Front.Equipments
                         break;
                     onStatus5((IPosStatus)new PosStatus()
                     {
-                        Status = Status.PrintingReceipt
+                        Status = ePosStatus.PrintingReceipt
                     });
                     break;
                 case 6:
@@ -1741,7 +1742,7 @@ namespace Front.Equipments
                         break;
                     onStatus6((IPosStatus)new PosStatus()
                     {
-                        Status = Status.PinEntryIsNeeded
+                        Status = ePosStatus.PinEntryIsNeeded
                     });
                     break;
                 case 7:
@@ -1750,7 +1751,7 @@ namespace Front.Equipments
                         break;
                     onStatus7((IPosStatus)new PosStatus()
                     {
-                        Status = Status.CardWasRemoved
+                        Status = ePosStatus.CardWasRemoved
                     });
                     break;
                 case 8:
@@ -1759,7 +1760,7 @@ namespace Front.Equipments
                         break;
                     onStatus8((IPosStatus)new PosStatus()
                     {
-                        Status = Status.EMVMultiAids
+                        Status = ePosStatus.EMVMultiAids
                     });
                     break;
                 case 9:
@@ -1768,7 +1769,7 @@ namespace Front.Equipments
                         break;
                     onStatus9((IPosStatus)new PosStatus()
                     {
-                        Status = Status.WaitingForCard
+                        Status = ePosStatus.WaitingForCard
                     });
                     break;
                 case 10:
@@ -1777,7 +1778,7 @@ namespace Front.Equipments
                         break;
                     onStatus10((IPosStatus)new PosStatus()
                     {
-                        Status = Status.InProgress
+                        Status = ePosStatus.InProgress
                     });
                     break;
                 case 11:
@@ -1786,7 +1787,7 @@ namespace Front.Equipments
                         break;
                     onStatus11((IPosStatus)new PosStatus()
                     {
-                        Status = Status.CorrectTransaction
+                        Status = ePosStatus.CorrectTransaction
                     });
                     break;
                 case 12:
@@ -1795,7 +1796,7 @@ namespace Front.Equipments
                         break;
                     onStatus12((IPosStatus)new PosStatus()
                     {
-                        Status = Status.PinInputWaitKey
+                        Status = ePosStatus.PinInputWaitKey
                     });
                     break;
                 case 13:
@@ -1804,7 +1805,7 @@ namespace Front.Equipments
                         break;
                     onStatus13((IPosStatus)new PosStatus()
                     {
-                        Status = Status.PinInputBackspacePressed
+                        Status = ePosStatus.PinInputBackspacePressed
                     });
                     break;
                 case 14:
@@ -1813,7 +1814,7 @@ namespace Front.Equipments
                         break;
                     onStatus14((IPosStatus)new PosStatus()
                     {
-                        Status = Status.PinInputKeyPressed
+                        Status = ePosStatus.PinInputKeyPressed
                     });
                     break;
             }
@@ -1893,7 +1894,7 @@ namespace Front.Equipments
                 if (onStatus != null)
                     onStatus((IPosStatus)new PosStatus()
                     {
-                        Status = Status.WaitingForCard
+                        Status = ePosStatus.WaitingForCard
                     });
                 PaymentResultModel result = this.WaitPosRespone();
                 ILogger<Ingenico> logger = this._logger;
@@ -1990,7 +1991,5 @@ namespace Front.Equipments
             _bpos1LibClass = (BPOS1LibClass)null;
         }
     }
-
-
 }
 

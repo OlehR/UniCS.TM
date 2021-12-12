@@ -1,6 +1,7 @@
 ﻿using Front.Equipments;
 using Front.Equipments.Ingenico;
 using Front.Equipments.pRRO_SG;
+using Front.Equipments.Virtual;
 using Microsoft.Extensions.Configuration;
 using ModelMID;
 using ModelMID.DB;
@@ -9,8 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using Front.Equipments.Implementation;
 using System.Threading.Tasks;
-
+using System.Diagnostics;
 
 namespace Front
 {
@@ -50,7 +52,9 @@ namespace Front
             }
         }
 
-        public static Action<eStateEquipment> SetState { get; set; }
+        public  Action<StatusEquipment> SetStatus { get; set; }        
+
+        public  Action<eStateEquipment> SetState { get; set; }
 
         static EquipmentFront sEquipmentFront;
 
@@ -94,12 +98,20 @@ namespace Front
                 ElEquipment.Equipment = new SignalFlag(ElEquipment.Port, ElEquipment.BaudRate, null);
             Signal = (SignalFlag)ElEquipment.Equipment;
             
-            //Terminal
+            //Bank Pos Terminal
             ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.BankTerminal).First();
-            if (ElEquipment.Model == eModelEquipment.Ingenico)
-                ElEquipment.Equipment = new IngenicoH(config, null, aPosStatus);
-            else
-                ElEquipment.Equipment = new BankTerminal(ElEquipment.Port, ElEquipment.BaudRate, null);
+            switch (ElEquipment.Model)
+            {
+                case eModelEquipment.Ingenico:
+                    ElEquipment.Equipment = new IngenicoH(config, null, PosStatus);
+                    break;
+                case eModelEquipment.VirtualBankPOS:
+                    ElEquipment.Equipment = new VirtualBankPOS(config, null, PosStatus);
+                    break;
+                default:                
+                    ElEquipment.Equipment = new BankTerminal(ElEquipment.Port, ElEquipment.BaudRate, null);
+                    break;
+            }
             Terminal = (BankTerminal)ElEquipment.Equipment;
 
             //EKKA
@@ -126,7 +138,6 @@ namespace Front
             return RRO.PrintReceiptAsync(pReceipt).Result;
         }
 
-
         public LogRRO RroPrintX()
         {
             return RRO.PrintXAsync(null).Result;
@@ -147,8 +158,8 @@ namespace Front
         /// </summary>
         /// <param name="pSum">Власне сума</param>
         /// <returns></returns>
-        public PaymentResultModel Purchase(decimal pSum) {
-            return Terminal.Purchase(pSum);
+        public Payment PosPurchase(decimal pSum) {
+            return PaymentResultModelToPayment(Terminal.Purchase(pSum));
         }
 
         /// <summary>
@@ -157,9 +168,9 @@ namespace Front
         /// <param name="pSum"></param>
         /// <param name="pRNN"></param>
         /// <returns></returns>
-        public PaymentResultModel RE(decimal pSum,string pRNN)
+        public Payment PosRefund(decimal pSum,string pRNN)
         {
-            return Terminal.Refund(pSum, pRNN);
+            return PaymentResultModelToPayment(Terminal.Refund(pSum, pRNN))  ;
         }
 
         public bool PosPrintX()
@@ -173,19 +184,18 @@ namespace Front
              Terminal.PrintZ();
             return true;
         }
-
-        
+                
 
         /// <summary>
         /// Статус банківського термінала (Очікуєм карточки, Очікуєм підтвердження і ТД) 
         /// </summary>
         /// <param name="ww"></param>
-        void aPosStatus(IPosStatus ww)
+        void PosStatus(IPosStatus ww)
         {
             if (ww is PosStatus status)
             {
-                //TMP!!!!
-                var e = status.Status.GetPosStatusFromStatus();
+                SetStatus?.Invoke(new StatusEquipment(Terminal.ModelEquipment, (int)status.Status, $"{status.MsgDescription} {status.Status.ToString()}"));
+                Debug.WriteLine($"{DateTime.Now} {Terminal.ModelEquipment} {status.MsgDescription} {status.Status.ToString()}");
             }
         }
 
@@ -234,6 +244,11 @@ namespace Front
 
         }
 
+        /// <summary>
+        /// Калібрування контрольної ваги
+        /// </summary>
+        /// <param name="maxValue"></param>
+        /// <returns></returns>
         public  bool ControlScaleCalibrateMax(double maxValue)
         {
             return ControlScale.CalibrateMax(maxValue);
@@ -247,6 +262,27 @@ namespace Front
         {
             return ControlScale.CalibrateZero();
         }
+
+         Payment PaymentResultModelToPayment( PaymentResultModel pRP, ModelMID.eTypePay pTypePay= ModelMID.eTypePay.Card)
+        {
+            return new Payment()
+            {
+                TypePay = pTypePay,
+                SumPay = pRP.PosPaid,
+                NumberReceipt = pRP.InvoiceNumber, //parRP.TransactionId,
+                NumberCard = pRP.CardPan,
+                CodeAuthorization = pRP.TransactionCode, //RRN
+                NumberTerminal = pRP.TerminalId,
+                NumberSlip = pRP.AuthCode, //код авторизації
+                PosPaid = pRP.PosPaid,
+                PosAddAmount = pRP.PosAddAmount,
+                DateCreate = pRP.OperationDateTime,
+                CardHolder = pRP.CardHolder,
+                IssuerName = pRP.IssuerName,
+                Bank = pRP.Bank
+            };
+        }
+
 
     }
 }

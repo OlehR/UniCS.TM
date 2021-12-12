@@ -54,5 +54,6 @@ namespace Front.Models
             /// </summary>
         WaitConfirm18
     }
+
    
 }

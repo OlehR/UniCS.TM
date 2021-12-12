@@ -18,11 +18,14 @@ namespace Front.Equipments
             SerialPortName = pSerialPortName;
             BaudRat = pBaudRate;
         }
-        public Equipment(IConfiguration pConfiguration)
+        public Equipment(IConfiguration pConfiguration, eModelEquipment pModelEquipment  = eModelEquipment.NotDefined)
         {
             Configuration = pConfiguration;
+            ModelEquipment = pModelEquipment;
         }
         public bool IsReady { get; set; } = false;
+        public eModelEquipment ModelEquipment { get; set; } = eModelEquipment.NotDefined;
+
         private eStateEquipment _State=eStateEquipment.Off;
         public eStateEquipment State { get { return _State; } set { _State = value; SetState?.Invoke(value); } }
         public static Action<eStateEquipment> SetState { get; set; }
@@ -30,5 +33,5 @@ namespace Front.Equipments
         public virtual void Enable() { State=eStateEquipment.Ok; }
         public virtual void Disable() { State = eStateEquipment.Off; }  
     }
-    public enum eStateEquipment {Ok,Off,Error}
+    
 }

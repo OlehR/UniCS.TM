@@ -101,7 +101,7 @@ namespace Test
                 PosTerminalId = null,
                 CardHolder ="CardHolder",
                 IssuerName ="IssuerName",
-                Bank = "Masterksrd",
+                Bank = "MasterСаrd",
                 CreatedAt = DateTime.Now
             } };
             var api = new ApiPSU();            
