@@ -14,7 +14,7 @@ namespace Front.Equipments.Implementation
     {
         int AuthCode = 123456000;
         long NumberReceipt = 0;
-        int TransactionCode = 7700000;       
+        int TransactionCode = 7700000;
         decimal Sum =0m, SumRefund = 0m;
         uint Count=0, CountRefund = 0;
         Action<IPosStatus> ActionStatus;
@@ -27,7 +27,6 @@ namespace Front.Equipments.Implementation
         {
             return new Payment()
             {
-
                 Bank = "Приват",
                 CardHolder = "VISA",
                 NumberReceipt = NumberReceipt++,
@@ -62,7 +61,6 @@ namespace Front.Equipments.Implementation
 
         BatchTotals GetBatchTotals()
         {
-
             return new BatchTotals() { CencelledCount = 0, CencelledSum = 0, CreditCount = Count, CreditSum = (uint)Sum, DebitCount = CountRefund, DebitSum = (uint)SumRefund };
         }
 
