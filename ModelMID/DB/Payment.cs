@@ -14,6 +14,9 @@ namespace ModelMID
         /// Номер чека
         /// </summary>
         public long NumberReceipt { get; set; }
+        /// <summary>
+        /// RRN
+        /// </summary>
         public string CodeAuthorization { get; set; }
         public string NumberSlip { get; set; }
         public string NumberCard { get; set; }

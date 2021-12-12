@@ -29,14 +29,14 @@ namespace Front.Equipments
             EquipmentIngenico.OnStatus += pActionStatus;
         }
 
-        public override PaymentResultModel Purchase(decimal pAmount)
+        public override Payment Purchase(decimal pAmount)
         {
-            return EquipmentIngenico.Purchase(Convert.ToDouble(pAmount)).Result;
+            return PaymentResultModelToPayment(EquipmentIngenico.Purchase(Convert.ToDouble(pAmount)).Result);
         }
 
-        public override PaymentResultModel Refund(decimal pAmount, string pRRN)
+        public override Payment Refund(decimal pAmount, string pRRN)
         {
-            return EquipmentIngenico.Refund(Convert.ToDouble(pAmount), pRRN).Result;
+            return PaymentResultModelToPayment(EquipmentIngenico.Refund(Convert.ToDouble(pAmount), pRRN).Result);
         }
 
         public override BatchTotals PrintZ()
@@ -55,6 +55,26 @@ namespace Front.Equipments
         {
             EquipmentIngenico.TestDeviceSync();
             return eStateEquipment.Ok;
+        }
+
+        Payment PaymentResultModelToPayment(PaymentResultModel pRP, ModelMID.eTypePay pTypePay = ModelMID.eTypePay.Card)
+        {
+            return new Payment()
+            {
+                TypePay = pTypePay,
+                SumPay = pRP.PosPaid,
+                NumberReceipt = pRP.InvoiceNumber, //parRP.TransactionId,
+                NumberCard = pRP.CardPan,
+                CodeAuthorization = pRP.TransactionCode, //RRN
+                NumberTerminal = pRP.TerminalId,
+                NumberSlip = pRP.AuthCode, //код авторизації
+                PosPaid = pRP.PosPaid,
+                PosAddAmount = pRP.PosAddAmount,
+                DateCreate = pRP.OperationDateTime,
+                CardHolder = pRP.CardHolder,
+                IssuerName = pRP.IssuerName,
+                Bank = pRP.Bank
+            };
         }
     }
 }

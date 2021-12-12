@@ -159,7 +159,7 @@ namespace Front
         /// <param name="pSum">Власне сума</param>
         /// <returns></returns>
         public Payment PosPurchase(decimal pSum) {
-            return PaymentResultModelToPayment(Terminal.Purchase(pSum));
+            return Terminal.Purchase(pSum);
         }
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace Front
         /// <returns></returns>
         public Payment PosRefund(decimal pSum,string pRNN)
         {
-            return PaymentResultModelToPayment(Terminal.Refund(pSum, pRNN))  ;
+            return Terminal.Refund(pSum, pRNN);
         }
 
         public bool PosPrintX()
@@ -263,26 +263,7 @@ namespace Front
             return ControlScale.CalibrateZero();
         }
 
-         Payment PaymentResultModelToPayment( PaymentResultModel pRP, ModelMID.eTypePay pTypePay= ModelMID.eTypePay.Card)
-        {
-            return new Payment()
-            {
-                TypePay = pTypePay,
-                SumPay = pRP.PosPaid,
-                NumberReceipt = pRP.InvoiceNumber, //parRP.TransactionId,
-                NumberCard = pRP.CardPan,
-                CodeAuthorization = pRP.TransactionCode, //RRN
-                NumberTerminal = pRP.TerminalId,
-                NumberSlip = pRP.AuthCode, //код авторизації
-                PosPaid = pRP.PosPaid,
-                PosAddAmount = pRP.PosAddAmount,
-                DateCreate = pRP.OperationDateTime,
-                CardHolder = pRP.CardHolder,
-                IssuerName = pRP.IssuerName,
-                Bank = pRP.Bank
-            };
-        }
-
+         
 
     }
 }

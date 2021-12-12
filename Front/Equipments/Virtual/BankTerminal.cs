@@ -4,6 +4,7 @@ using Front.Equipments.Ingenico;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ModelMID;
 
 namespace Front.Equipments
 {
@@ -21,8 +22,8 @@ namespace Front.Equipments
         {
             throw new NotImplementedException();
         }
-        public virtual PaymentResultModel Purchase(decimal pAmount) { throw new NotImplementedException(); }
-        public virtual PaymentResultModel Refund(decimal pAmount, string pRRN) { throw new NotImplementedException(); }
+        public virtual Payment Purchase(decimal pAmount) { throw new NotImplementedException(); }
+        public virtual Payment Refund(decimal pAmount, string pRRN) { throw new NotImplementedException(); }
 
 
     }

@@ -1,5 +1,6 @@
 ﻿using Front.Equipments.Ingenico;
 using Microsoft.Extensions.Configuration;
+using ModelMID;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +13,8 @@ namespace Front.Equipments.Implementation
     public class VirtualBankPOS:BankTerminal
     {
         int AuthCode = 123456000;
-        long InvoiceNumber = 100000;
-        int TransactionCode = 7700000;
-        int TransactionId = 8880000;
+        long NumberReceipt = 0;
+        int TransactionCode = 7700000;       
         decimal Sum =0m, SumRefund = 0m;
         uint Count=0, CountRefund = 0;
         Action<IPosStatus> ActionStatus;
@@ -23,28 +23,28 @@ namespace Front.Equipments.Implementation
         {
             ActionStatus = pActionStatus;
         }
-        PaymentResultModel GetPaymentResultModel(decimal pAmount)
+        Payment GetPaymentResultModel(decimal pAmount)
         {
-            return new PaymentResultModel()
+            return new Payment()
             {
-                IsSuccess = true,
+
                 Bank = "Приват",
-                AuthCode = $"{++AuthCode}",
                 CardHolder = "VISA",
-                CardPan = "CardPan",
-                InvoiceNumber = InvoiceNumber++,
+                NumberReceipt = NumberReceipt++,
                 IssuerName = "NoName",
-                OperationDateTime = DateTime.Now,
-                TerminalId = "88888",
-                TransactionStatus = "Ok",
+                DateCreate = DateTime.Now,
                 PosAddAmount = 0,
                 PosPaid = pAmount,
-                TransactionCode = $"{TransactionCode++}",
-                TransactionId = $"{TransactionId++}"
+                SumPay = pAmount,
+                SumExt =0,
+                NumberCard ="******0123",                
+                CodeAuthorization = $"{AuthCode++}",
+                NumberTerminal = "SML_Local",                
+                NumberSlip= $"{TransactionCode++}"
             };
         }
 
-        public override PaymentResultModel Purchase(decimal pAmount)
+        public override Payment Purchase(decimal pAmount)
         {
             ActionStatus?.Invoke(new PosStatus() {Status=ePosStatus.WaitingForCard,MsgCode=(byte)(ePosStatus.WaitingForCard), MsgDescription= ePosStatus.WaitingForCard.ToString() });
             Thread.Sleep(200);
@@ -55,7 +55,7 @@ namespace Front.Equipments.Implementation
             return GetPaymentResultModel(pAmount);
         }
 
-        public override PaymentResultModel Refund(decimal pAmount, string pRRN)
+        public override Payment Refund(decimal pAmount, string pRRN)
         {
             return GetPaymentResultModel(pAmount);
         }
