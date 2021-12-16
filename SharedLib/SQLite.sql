@@ -763,7 +763,7 @@ CREATE TABLE Log_RRO (
     DATE_CREATE       DATETIME NOT NULL DEFAULT (datetime('now','localtime')),
     USER_CREATE       INTEGER  NOT NULL DEFAULT 0
 );
-CREATE INDEX id_RRO ON RRO(CODE_RECEIPT,ID_WORKPLACE,CODE_PERIOD);
+CREATE INDEX id_RRO ON Log_RRO(CODE_RECEIPT,ID_WORKPLACE,CODE_PERIOD);
 
 [SqlGetAllPermissions]
 select ua.code_access as code_access,ua.type_access as type_access 
