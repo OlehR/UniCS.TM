@@ -66,6 +66,9 @@
     <Reference Include="ModernExpo.SelfCheckout.Utils">
       <HintPath>..\SharedLib\dll\ModernExpo.SelfCheckout.Utils.dll</HintPath>
     </Reference>
+    <Reference Include="Resonance.OLEManager">
+      <HintPath>..\DLL\Resonance.OLEManager.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

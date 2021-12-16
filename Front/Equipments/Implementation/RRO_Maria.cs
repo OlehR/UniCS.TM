@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using ModelMID;
 using ModelMID.DB;
+using Resonance;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +12,10 @@ namespace Front.Equipments.Implementation
 {
     public class RRO_Maria:Rro
     {
+        M304ManagerApplication M304 = new M304ManagerApplication() { ThrowExceptionsOnError = true };
         public RRO_Maria(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<eStatusRRO> pActionStatus = null) : base(pConfiguration,pLogger, pActionStatus)
         {
-           
+            M304.Open();
         }
 
         public override void SetOperatorName(string pOperatorName)
