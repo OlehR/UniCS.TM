@@ -12,17 +12,17 @@ namespace Front.Equipments
     /// Клас для роботи з касовим апаратом
     /// </summary>
     public class Rro: Equipment
-    {
-        /*protected bool varIsFiscal = true;
-        protected int  varCodeEKKA = 0;
-        protected int  varPort;
-        protected int  varBaudRate;
-        protected int  varCodeError = -1;
-        protected string varStrError;
-        protected int varOperatorNumber = 1;*/
+    { 
+        protected string Port;
         protected string OperatorName;
-        /* protected string varOperatorPass = "0000";
-         protected int varCodeWorkPlace = 1;
+        protected string OperatorPass = "0000";
+        protected int CodeError = -1;
+        protected string StrError;
+        /*protected int  varBaudRate;
+       protected bool varIsFiscal = true;
+        protected int  varCodeEKKA = 0;
+        protected int varOperatorNumber = 1;
+        protected int varCodeWorkPlace = 1;
          protected bool varIsAutoPrintOperator = false;*/
 
         protected Action<eStatusRRO> ActionStatus;
@@ -156,6 +156,11 @@ namespace Front.Equipments
          {
              throw new NotImplementedException();
          }  */
+
+        virtual public bool PutToDisplay(string ptext )
+        {
+            throw new NotImplementedException();
+        }
 
     }
 }
