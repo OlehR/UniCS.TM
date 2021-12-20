@@ -173,6 +173,11 @@ namespace Front.Equipments
 
     }
 
+    //public enum eDirectMoveCash { In=1,Out=0}
+
+    public enum eTypeOperarionRRO 
+    { MoveCash,PrintReceipt }
+
     static class ModelMethods
     {
         /*public static ePosStatus GetPosStatusFromStatus(this Front.Equipments.Ingenico.ePosStatus pModel)

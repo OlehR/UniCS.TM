@@ -11,7 +11,12 @@ namespace ModelMID.DB
         MoneyIn = 2,
         MoneyOut = 4,
         NoFiscalReceipt = 100,
-        CanceledCheck = 101
+        CanceledCheck = 101,
+        ZReport =1000,
+        XReport = 1001,
+        PeriodZReport = 1002,
+        CopyReceipt =1010,
+        
     }
     public class LogRRO: IdReceipt
     {
@@ -23,7 +28,8 @@ namespace ModelMID.DB
         public string TypeRRO { get; set; }
         public string JSON { get; set; }
         public string TextReceipt { get; set; }
-        public string Error { get; set;}
+        public string Error { get; set; } = null;
+        public int CodeError { get; set; } = 0;
         public int UserCreate { get; set;}
        
     }

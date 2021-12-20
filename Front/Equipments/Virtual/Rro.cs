@@ -127,17 +127,13 @@ namespace Front.Equipments
             return null;//throw new NotImplementedException();
         }
 
+        
         /// <summary>
         /// Внесення/Винесення коштів коштів. pSum>0 - внесення
         /// </summary>
         /// <param name="pSum"></param>
         /// <returns></returns>
-        virtual public LogRRO MoveMoney(decimal pSum )
-        {
-            return null;//throw new NotImplementedException();
-        }
-
-        virtual public async Task<LogRRO> MoveMoneyAsync(decimal pSum, IdReceipt pIdR)
+        virtual public async Task<LogRRO> MoveMoneyAsync(decimal pSum, IdReceipt pIdR=null)
         {
             return null;//throw new NotImplementedException();
         }
@@ -161,6 +157,10 @@ namespace Front.Equipments
         {
             throw new NotImplementedException();
         }
-
+        virtual public bool PeriodZReport(DateTime pBegin, DateTime pEnd,bool IsFull=true)
+        {
+            throw new NotImplementedException();
+        }
+        
     }
 }
