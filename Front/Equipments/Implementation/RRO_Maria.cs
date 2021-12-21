@@ -12,13 +12,18 @@ namespace Front.Equipments.Implementation
 {
     public class RRO_Maria:Rro
     {
-       
+        IConfiguration _configuration;
         bool IsInit=false;
         bool IsError = false;
 
-        M304ManagerApplication M304 = new M304ManagerApplication() { ThrowExceptionsOnError = true };
+        M304ManagerApplication M304;
         public RRO_Maria(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<eStatusRRO> pActionStatus = null) : base(pConfiguration,pLogger, pActionStatus)
         {
+            M304 = new M304ManagerApplication();
+            _configuration = pConfiguration;
+            Port = this._configuration["Devices:Maria:Port"];
+            OperatorName = this._configuration["Devices:Maria:OperatorName"];
+            OperatorPass =this._configuration["Devices:Maria:OperatorPass"];            
             M304.Open();
         }
 

@@ -27,6 +27,7 @@ namespace Front.Equipments.Implementation
         {
             return new Payment()
             {
+                TypePay= eTypePay.Card,
                 Bank = "Приват",
                 CardHolder = "VISA",
                 NumberReceipt = NumberReceipt++,

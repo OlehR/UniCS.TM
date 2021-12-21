@@ -207,7 +207,6 @@ namespace Test
             return Res;
         }
 
-
         public  async Task<BarCodeOut> GetInfoRozetka(BarCodeOut pBCO)
         {
              string  CodeWares = pBCO.CodeWares.ToString();

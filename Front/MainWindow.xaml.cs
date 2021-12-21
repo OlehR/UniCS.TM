@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -357,11 +358,17 @@ namespace Front{
 
         private void _ButtonPayment(object sender, RoutedEventArgs e)
         {
-            var pay=EF.PosPurchase(1.08m);
+            decimal sum= ListWares.Sum(r => r.Sum); //Треба переробити
+            var pay=EF.PosPurchase(sum);
+            pay.SetIdReceipt(Bl.curReciptId);
             Bl.db.ReplacePayment(new List<Payment>() { pay });
             //Console.WriteLine(r.TransactionStatus);
             var r=Bl.GetReceiptHead(Bl.curReciptId,true);
-            EF.PrintReceipt(r);
+
+            var task = Task.Run(async () =>  EF.PrintReceipt(r));
+            var result = task.Result;
+
+            
         }
 
         /// <summary>

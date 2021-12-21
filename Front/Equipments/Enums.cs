@@ -145,7 +145,8 @@ namespace Front.Equipments
         Ingenico,
         VirtualBankPOS,
         Exelio,
-        pRRO_SG
+        pRRO_SG,
+        Maria
     }
 
     public enum eStatusRRO
@@ -202,6 +203,7 @@ namespace Front.Equipments
                     return eTypeEquipment.BankTerminal;
                 case eModelEquipment.Exelio:
                 case eModelEquipment.pRRO_SG:
+                case eModelEquipment.Maria:
                     return eTypeEquipment.EKKA;
                 default:
                     return eTypeEquipment.NotDefined;
