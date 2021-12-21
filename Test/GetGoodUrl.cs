@@ -29,20 +29,20 @@ namespace Test
             {
                 try
                 {
-                    string imageName = el.CodeWares.ToString()+".jpg";
+                    string imageName = el.CodeWares.ToString() + ".jpg";
                     string filePath = @"d:\pictures\highPhoto\";
                     if (!Directory.Exists(filePath))
                     {
                         Directory.CreateDirectory(filePath);
                     }
-                    if (!File.Exists(filePath+imageName))
+                    if (!File.Exists(filePath + imageName))
                     {
                         await LoadImg(el);
-                        Console.WriteLine("Downloadet: "+ imageName);
+                        Console.WriteLine("Downloadet: " + imageName);
                         Thread.Sleep(1000 + rand.Next(8000, 12000));
                     }
                     else continue;
-                        
+
                 }
                 catch (Exception ex)
                 {
@@ -71,6 +71,56 @@ namespace Test
                 Console.WriteLine(ex);
             }
         }
+    }
+
+    public class SortImg
+    {
+        
+        public void SortPhoto()
+        {
+            int[] count = new int[32] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            int a = 0;
+            string PhotoPath = @"d:\AllPhoto\";  //які фото сортувати   
+            string newCatalog = @"d:\pictures\SortedPhotos\"; //куди сортувати
+            if (!Directory.Exists(newCatalog)) // створює дерикторію якщо її немає
+                Directory.CreateDirectory(newCatalog);
+
+            for (int i = 0; i < 32; i++) //створює підкаталоги якщо їх немає
+            {
+                if (!Directory.Exists(newCatalog + i))
+                {
+                    Directory.CreateDirectory(newCatalog + i);
+                }
+
+            }
+            string[] dirs = Directory.GetFiles(PhotoPath);// шляхи до всіх фото
+            foreach (var item in dirs)
+            {
+                string photoName = Path.GetFileNameWithoutExtension(item); // ім'я фото
+                int del = Convert.ToInt32(photoName) % 32; 
+                Console.WriteLine(del);
+                string pathWhere = newCatalog + Convert.ToString(del)+@"\" + photoName + ".jpg";
+                if (File.Exists(pathWhere))// видалити фото з таким самим ім'ям якщо присутнє
+
+                {
+                    File.Delete(pathWhere);
+                }
+                File.Move(item, pathWhere); //перемістити фото
+                count[del] = count[del]+1; //підрахунок кількості фото
+            }
+            Console.WriteLine("---------------------------------------");
+            Console.WriteLine("-----------------ЗВІТ!-----------------");
+            Console.WriteLine("---------------------------------------");
+
+            foreach (int i in count)
+            {
+                Console.Write("Записано в "+ a+ " папку: ");
+                Console.Write(i);
+                Console.WriteLine();
+                a = a++;
+            }
+        }
+
     }
 
     public class data
