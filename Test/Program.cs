@@ -38,7 +38,9 @@ namespace Test
             Console.WriteLine("Start");
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
 
-            var l = new GetGoodUrl();
+            //var l = new GetGoodUrl();
+            var img = new ImageListex();
+            await img.LoadImgListex();
             //await l.LoadRozetka();//GetInfoBarcode("4820009350588");
            
             //await CreateDataBaseAsync(true); return;

@@ -14,7 +14,64 @@ using System.Threading.Tasks;
 
 namespace Test
 {
+    public class ImageListex
+    {
 
+        public async Task LoadImgListex()
+        {
+            var dbMs = new MSSQL();
+            var rand = new Random();
+            string SQLBarcode = @"SELECT  bo.CodeWares, REPLACE(bo.UrlPicture,'300x200','med') AS UrlPicture FROM barcode_out bo WHERE bo.UrlPicture IS NOT NULL AND bo.UrlPicture LIKE '%listex.info%'";
+            Console.WriteLine("Get BarCode");
+            var s = dbMs.Execute<BarCodeOut>(SQLBarcode);
+
+            foreach (var el in s)
+            {
+                try
+                {
+                    string imageName = el.CodeWares.ToString()+".jpg";
+                    string filePath = @"d:\pictures\highPhoto\";
+                    if (!Directory.Exists(filePath))
+                    {
+                        Directory.CreateDirectory(filePath);
+                    }
+                    if (!File.Exists(filePath+imageName))
+                    {
+                        await LoadImg(el);
+                        Console.WriteLine("Downloadet: "+ imageName);
+                        Thread.Sleep(1000 + rand.Next(8000, 12000));
+                    }
+                    else continue;
+                        
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
+        }
+        private async Task LoadImg(BarCodeOut bar)
+        {
+            string CodeWares = bar.CodeWares.ToString();
+
+            try
+            {
+                var url = bar.UrlPicture;
+                HttpClient client = new HttpClient();
+                WebClient webClient = new WebClient();
+
+                string ex = "jpg";
+                webClient.DownloadFile(url, $"d:\\pictures\\highPhoto\\{CodeWares.Trim()}.{ex}");
+                Console.WriteLine("Ok");
+
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
+    }
 
     public class data
     {
@@ -26,8 +83,8 @@ namespace Test
 
     public class GetGoodUrl
     {
-         Random rand = new Random();
-         readonly string SQLUpdate = @"
+        Random rand = new Random();
+        readonly string SQLUpdate = @"
             --begin tran
   update barcode_out with(serializable) 
     set CodeWares=@CodeWares, NameWares=@NameWares, WeightUrl = @WeightUrl, DateUrl = @DateUrl, Data=@Data, Error=@Error, url=@Url, UrlPicture=@UrlPicture
@@ -42,7 +99,7 @@ namespace Test
    end
 -- commit tran";
 
-         public async Task LoadListex()
+        public async Task LoadListex()
         {
             string varSQLSelect = @"SELECT b.bar_code as BarCode, b.code_wares CodeWares, w.name_wares AS NameWares
   FROM  (SELECT DISTINCT da.code_wares  FROM  dbo.dw_am da WHERE   da.Quantity_Min>0  ) AS da
@@ -54,7 +111,7 @@ namespace Test
    -- bo.DateUrl< CONVERT(DATE,'20211112',112) AND
     LEN(b.bar_code)>=13 AND 
     NOT EXISTS (SELECT bou.CodeWares FROM barcode_out bou WHERE bo.error='Ok' AND  da.code_wares=bou.CodeWares AND bou.bar_code<>bo.bar_code )
-   -- AND b.bar_code like'482%'  ";            
+   -- AND b.bar_code like'482%'  ";
 
             var dbMs = new MSSQL();
             var rand = new Random();
@@ -65,11 +122,11 @@ namespace Test
             {
                 try
                 {
-                    var r = await GetInfoListex(el.BarCode,el.CodeWares);
+                    var r = await GetInfoListex(el.BarCode, el.CodeWares);
                     r.CodeWares = Convert.ToInt32(el.CodeWares);
                     r.NameWares = el.NameWares;
-                    Console.WriteLine(r.Error + " " +  r.NameWares + " " + r.WeightUrl + " " + r.Url + " " + el.BarCode);
-                    dbMs.ExecuteNonQuery<BarCodeOut>(SQLUpdate, r);                    
+                    Console.WriteLine(r.Error + " " + r.NameWares + " " + r.WeightUrl + " " + r.Url + " " + el.BarCode);
+                    dbMs.ExecuteNonQuery<BarCodeOut>(SQLUpdate, r);
                 }
                 catch (Exception ex)
                 {
@@ -79,7 +136,7 @@ namespace Test
             }
         }
 
-         public async Task LoadRozetka()
+        public async Task LoadRozetka()
         {
             string varSQLSelect = @"SELECT bar_code as BarCode, CodeWares, NameWares, weightUrl, DateUrl, Data, Error, Url, UrlPicture, IsActual, IsVerification, Site, Unit, Name, NameShort, Other, UKTZED, VAT, ExpirationDay, UnitSale, PaletteLayer, Palette, UrlPictureRozetka, UrlPictureGoogle FROM  dbo.barcode_out bo 
   WHERE 
@@ -89,7 +146,7 @@ namespace Test
     NOT EXISTS (SELECT bou.CodeWares FROM barcode_out bou WHERE bo.error='Ok' AND  bo.codeWares=bou.CodeWares AND bou.bar_code<>bo.bar_code )
     AND SUBSTRING( bo.bar_code,1,1)<>'2'";
 
-            var dbMs = new MSSQL();           
+            var dbMs = new MSSQL();
             Console.WriteLine("Get BarCode");
             var s = dbMs.Execute<BarCodeOut>(varSQLSelect);
 
@@ -97,8 +154,8 @@ namespace Test
             {
                 try
                 {
-                    var r = await GetInfoRozetka(el);                   
-                    Console.WriteLine(r.Error + " \r\n" + el.BarCode + "\r\n " +  r.NameWares + " \r\n" +  r.WeightUrl + " \r\n" + r.Url + "\r\n-------------------------------------- \r\n");
+                    var r = await GetInfoRozetka(el);
+                    Console.WriteLine(r.Error + " \r\n" + el.BarCode + "\r\n " + r.NameWares + " \r\n" + r.WeightUrl + " \r\n" + r.Url + "\r\n-------------------------------------- \r\n");
                     dbMs.ExecuteNonQuery<BarCodeOut>(SQLUpdate, r);
                     Thread.Sleep(1000 + rand.Next(1000, 2000));
                 }
@@ -109,7 +166,7 @@ namespace Test
             }
         }
 
-        public  async Task<BarCodeOut> GetInfoListex(string parBarCode = "4823000916524", string pArticle = "")
+        public async Task<BarCodeOut> GetInfoListex(string parBarCode = "4823000916524", string pArticle = "")
         {
             var Res = new BarCodeOut() { BarCode = parBarCode, Error = "Ok", DateUrl = DateTime.Now };
             if (string.IsNullOrEmpty(pArticle))
@@ -147,25 +204,25 @@ namespace Test
                             {// "<p class=\"product-specifications-title\"" "panel panel-transparent product-info-tab"
                                 res = await response.Content.ReadAsStringAsync();
 
-                               /* i = res.IndexOf("src=\"https://icf.listex.info/300x200/");
-                                if (i > 0)
-                                {
-                                    var res1 = res.Substring(i + 5, 300);
-                                    var ex = "jpg";
-                                    i = res1.IndexOf(".jpg");
-                                    j = res1.IndexOf(".png");
-                                    if (j > 0 && i <= 0)
-                                    {
-                                        i = j;
-                                        ex = "png";
-                                    }
-                                    if (i > 0)
-                                    {
-                                        res1 = res1.Substring(0, i + 4);
-                                        Res.UrlPicture = res1;
-                                        webClient.DownloadFile(res1, $"d:\\pictures\\{pArticle.Trim()}.{ex}");
-                                    }
-                                }*/
+                                /* i = res.IndexOf("src=\"https://icf.listex.info/300x200/");
+                                 if (i > 0)
+                                 {
+                                     var res1 = res.Substring(i + 5, 300);
+                                     var ex = "jpg";
+                                     i = res1.IndexOf(".jpg");
+                                     j = res1.IndexOf(".png");
+                                     if (j > 0 && i <= 0)
+                                     {
+                                         i = j;
+                                         ex = "png";
+                                     }
+                                     if (i > 0)
+                                     {
+                                         res1 = res1.Substring(0, i + 4);
+                                         Res.UrlPicture = res1;
+                                         webClient.DownloadFile(res1, $"d:\\pictures\\{pArticle.Trim()}.{ex}");
+                                     }
+                                 }*/
 
                                 i = res.IndexOf("<section class=\"site-content\">");//("<p class=\"product-specifications-title\"");
                                 if (i > 0)
@@ -208,9 +265,9 @@ namespace Test
         }
 
 
-        public  async Task<BarCodeOut> GetInfoRozetka(BarCodeOut pBCO)
+        public async Task<BarCodeOut> GetInfoRozetka(BarCodeOut pBCO)
         {
-             string  CodeWares = pBCO.CodeWares.ToString();
+            string CodeWares = pBCO.CodeWares.ToString();
 
             pBCO.Site = "Rozetka";
             //var pBCO = new BarCodeOut() { BarCode = parBarCode, Error = "Ok", DateUrl = DateTime.Now ,Site="Rozetka"};
@@ -302,7 +359,7 @@ namespace Test
             return pBCO;
         }
 
-         string GetElement(string pStr, string pSeek, string pStart = null, string pStop = null)
+        string GetElement(string pStr, string pSeek, string pStart = null, string pStop = null)
         {
             int i = pStr.IndexOf(pSeek);
             if (i > 0)
@@ -325,7 +382,7 @@ namespace Test
             return null;
         }
 
-         public void Parse()
+        public void Parse()
         {
             string varSQLSelect = @"SELECT TOP 100 bo.bar_code as BarCode, bo.CodeWares, bo.NameWares, bo.Weight, bo.Date, bo.URL, bo.Data, bo.WeightUrl, bo.DateUrl, bo.Error, bo.UrlPicture, bo.IsActual, bo.IsVerification, bo.Site, bo.Unit, bo.Name, bo.NameShort, bo.Other, bo.UKTZED, bo.VAT, bo.ExpirationDay, bo.UnitSale, bo.PaletteLayer, bo.Palette 
       FROM  dbo.barcode_out bo 
@@ -338,7 +395,7 @@ namespace Test
             var Units = new List<Unit>();
             foreach (var el in s)
             {
-                
+
                 if (el.Data.IndexOf("Вагогабаритні характеристики") == -1)
                 {
                     continue;
@@ -427,15 +484,15 @@ namespace Test
                         {
                             //for (; countPalet > 0; countPalet--) //якщо потрібні всі палети
                             //{
-                                var r12 = GetElement(aa, "Шар:", "</b>", "<br>");
-                                var r13 = GetElement(aa, "Груз:", "</b>", "<br>");
-                                var r14 = GetElement(aa, "</span>:</b", ">", "</div>");
-                                r12 = r12.Substring(1, r12.Length - 3);
-                                r13 = r13.Substring(1, r13.Length - 3);
-                                r14 = r14.Substring(1, r14.Length - 3);
-                                Console.WriteLine("Шар: " + r12);
-                                Console.WriteLine("Груз: " + r13);
-                                Console.WriteLine("Палета: " + r14);
+                            var r12 = GetElement(aa, "Шар:", "</b>", "<br>");
+                            var r13 = GetElement(aa, "Груз:", "</b>", "<br>");
+                            var r14 = GetElement(aa, "</span>:</b", ">", "</div>");
+                            r12 = r12.Substring(1, r12.Length - 3);
+                            r13 = r13.Substring(1, r13.Length - 3);
+                            r14 = r14.Substring(1, r14.Length - 3);
+                            Console.WriteLine("Шар: " + r12);
+                            Console.WriteLine("Груз: " + r13);
+                            Console.WriteLine("Палета: " + r14);
                             //}
                             break;
                         }
@@ -493,7 +550,7 @@ namespace Test
 
         }
 
-         decimal ToDecimal(string pD)
+        decimal ToDecimal(string pD)
         {
             return decimal.Parse(pD, CultureInfo.InvariantCulture);
         }
