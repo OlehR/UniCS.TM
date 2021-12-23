@@ -154,7 +154,7 @@ namespace Front{
                     case eStateMainWindows.WaitAdminPassword:
                         WaitAdminLogin.Visibility = Visibility.Visible;
                         WaitAdminLoginGrid.Visibility = Visibility.Collapsed;
-                        WaitAdminPasswordGrid.Visibility = Visibility.Visible;
+                        //WaitAdminPasswordGrid.Visibility = Visibility.Visible;
                         KB.SetInput(PasswordTextBlock);
                         break;
                     case eStateMainWindows.WaitFindWares:
