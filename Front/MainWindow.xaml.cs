@@ -155,6 +155,10 @@ namespace Front{
                     FindWaresWin FWW = new FindWaresWin(this);
                     FWW.Show();
                     break;
+                case eStateMainWindows.ProcessPay:
+                    break;
+                case eStateMainWindows.ProcessPrintReceipt:
+                    break;
                 case eStateMainWindows.WaitInput:
                 default:
                     break;                
@@ -360,9 +364,7 @@ namespace Front{
             var r=Bl.GetReceiptHead(Bl.curReciptId,true);
 
             var task = Task.Run(async () =>  EF.PrintReceipt(r));
-            var result = task.Result;
-
-            
+            var result = task.Result;            
         }
 
         /// <summary>

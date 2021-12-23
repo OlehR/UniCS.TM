@@ -48,7 +48,17 @@ namespace Front.Models
             /// <summary>
             /// Очікуєм підтвердження 18 років
             /// </summary>
-        WaitConfirm18
+        WaitConfirm18,
+        /// <summary>
+        /// Процес оплати
+        /// </summary>
+        ProcessPay,
+        /// <summary>
+        /// Процес оплати
+        /// </summary>
+        ProcessPrintReceipt
+        
+
     }
 
    
