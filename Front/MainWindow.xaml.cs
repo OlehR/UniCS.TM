@@ -118,52 +118,55 @@ namespace Front{
 
         void SetStateView(eStateMainWindows pSMV= eStateMainWindows.NotDefine,bool pIsBarCodeAdmin=false)
         {
-            if(pSMV != eStateMainWindows.NotDefine)
-                State = pSMV;
+            Dispatcher.BeginInvoke(new ThreadStart(()=>
+                {
+                if (pSMV != eStateMainWindows.NotDefine)
+                    State = pSMV;
 
-            ExciseStamp.Visibility = Visibility.Collapsed;
-            ChoicePrice.Visibility = Visibility.Collapsed;
-            Background.Visibility = Visibility.Collapsed;
-            WaitAdmin.Visibility = Visibility.Collapsed;
-            WaitAdminLogin.Visibility = Visibility.Collapsed;
-            WeightWares.Visibility = Visibility.Collapsed;
+                ExciseStamp.Visibility = Visibility.Collapsed;
+                ChoicePrice.Visibility = Visibility.Collapsed;
+                Background.Visibility = Visibility.Collapsed;
+                WaitAdmin.Visibility = Visibility.Collapsed;
+                WaitAdminLogin.Visibility = Visibility.Collapsed;
+                WeightWares.Visibility = Visibility.Collapsed;
 
-            switch (State)
-            {
-                case eStateMainWindows.WaitInputPrice:
-                    Prices.ItemsSource = new ObservableCollection<decimal>(CurWares.Prices/*.Select(r=>Convert.ToString(r))*/);
-                    Background.Visibility = Visibility.Visible;
-                    ChoicePrice.Visibility = Visibility.Visible;
-                    break;
-                case eStateMainWindows.WaitExciseStamp:
-                    ExciseStamp.Visibility = Visibility.Visible;
-                    
-                    break;
-                case eStateMainWindows.WaitWeight:
-                    EF.StartWeight();
-                    WeightWares.Visibility = Visibility.Visible;
-                    break;
-                case eStateMainWindows.WaitAdmin:
-                    WaitAdmin.Visibility = Visibility.Visible;
-                    Background.Visibility = Visibility.Visible;
-                    KB.SetInput(LoginTextBlock);
-                    break;
-                case eStateMainWindows.WaitAdminLogin:
-                    WaitAdminLogin.Visibility = Visibility.Visible;
-                    Background.Visibility = Visibility.Visible;
-                    break;
-                case eStateMainWindows.WaitFindWares:
-                    FindWaresWin FWW = new FindWaresWin(this);
-                    FWW.Show();
-                    break;
-                case eStateMainWindows.ProcessPay:
-                    break;
-                case eStateMainWindows.ProcessPrintReceipt:
-                    break;
-                case eStateMainWindows.WaitInput:
-                default:
-                    break;                
-            }
+                switch (State)
+                {
+                    case eStateMainWindows.WaitInputPrice:
+                        Prices.ItemsSource = new ObservableCollection<decimal>(CurWares.Prices/*.Select(r=>Convert.ToString(r))*/);
+                        Background.Visibility = Visibility.Visible;
+                        ChoicePrice.Visibility = Visibility.Visible;
+                        break;
+                    case eStateMainWindows.WaitExciseStamp:
+                        ExciseStamp.Visibility = Visibility.Visible;
+
+                        break;
+                    case eStateMainWindows.WaitWeight:
+                        EF.StartWeight();
+                        WeightWares.Visibility = Visibility.Visible;
+                        break;
+                    case eStateMainWindows.WaitAdmin:
+                        WaitAdmin.Visibility = Visibility.Visible;
+                        Background.Visibility = Visibility.Visible;
+                        KB.SetInput(LoginTextBlock);
+                        break;
+                    case eStateMainWindows.WaitAdminLogin:
+                        WaitAdminLogin.Visibility = Visibility.Visible;
+                        Background.Visibility = Visibility.Visible;
+                        break;
+                    case eStateMainWindows.WaitFindWares:
+                        FindWaresWin FWW = new FindWaresWin(this);
+                        FWW.Show();
+                        break;
+                    case eStateMainWindows.ProcessPay:
+                        break;
+                    case eStateMainWindows.ProcessPrintReceipt:
+                        break;
+                    case eStateMainWindows.WaitInput:
+                    default:
+                        break;
+                }
+            }));
         }
 
         private void _Delete(object sender, RoutedEventArgs e)
@@ -357,15 +360,41 @@ namespace Front{
 
         private void _ButtonPayment(object sender, RoutedEventArgs e)
         {
-            decimal sum= ListWares.Sum(r => r.Sum); //Треба переробити
-            var pay=EF.PosPurchase(sum);
-            pay.SetIdReceipt(Bl.curReciptId);
-            Bl.db.ReplacePayment(new List<Payment>() { pay });
-            //Console.WriteLine(r.TransactionStatus);
-            var r=Bl.GetReceiptHead(Bl.curReciptId,true);
+            var task = Task.Run(() => PrintAndCloseReceipt());
+            //var result = task.Result;            
+        }
 
-            var task = Task.Run(async () =>  EF.PrintReceipt(r));
-            var result = task.Result;            
+        /// <summary>
+        /// Безготівкова оплата і Друк чека.
+        /// </summary>
+        /// <returns></returns>
+        bool PrintAndCloseReceipt()
+        {
+            decimal sum = ListWares.Sum(r => r.Sum); //Треба переробити
+            SetStateView(eStateMainWindows.ProcessPay);
+            var pay = EF.PosPurchase(sum);
+            if (pay != null)
+            {
+                pay.SetIdReceipt(Bl.curReciptId);
+                Bl.db.ReplacePayment(new List<Payment>() { pay });
+            }
+            else
+                SetStateView(eStateMainWindows.WaitInput);
+
+            SetStateView(eStateMainWindows.ProcessPrintReceipt);
+            var R = Bl.GetReceiptHead(Bl.curReciptId, true);
+            var res = EF.PrintReceipt(R);
+            Bl.InsertLogRRO(res);
+            if (res.CodeError == 0)
+            {
+                Bl.UpdateReceiptFiscalNumber(R, res.FiscalNumber, res.SUM);
+                var r = Bl.GetNewIdReceipt();
+                Global.OnReceiptCalculationComplete?.Invoke(new List<ReceiptWares>(), Global.GetTerminalIdByIdWorkplace(Global.IdWorkPlace));
+                SetStateView(eStateMainWindows.WaitInput);
+                return true;
+            }
+            SetStateView(eStateMainWindows.WaitInput);
+            return false;
         }
 
         /// <summary>
