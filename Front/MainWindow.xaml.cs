@@ -50,8 +50,7 @@ namespace Front{
         public BL Bl;
         EquipmentFront EF;
 
-        public ObservableCollection<ReceiptWares> ListWares { get; set; }
-        //public ObservableCollection<decimal> Prices { get; set; } = new ObservableCollection<decimal>;
+        public ObservableCollection<ReceiptWares> ListWares { get; set; }        
 
         public MainWindow()
         {
@@ -109,8 +108,7 @@ namespace Front{
             ua.Tag = new CultureInfo("uk");
             en.Tag = new CultureInfo("en");
             hu.Tag = new CultureInfo("hu");
-            pln.Tag = new CultureInfo("pl");        
-
+            pln.Tag = new CultureInfo("pl");
 
             CultureInfo currLang = App.Language;
             Recalc();
@@ -118,53 +116,60 @@ namespace Front{
 
         void SetStateView(eStateMainWindows pSMV= eStateMainWindows.NotDefine,bool pIsBarCodeAdmin=false)
         {
-            if(pSMV != eStateMainWindows.NotDefine)
-                State = pSMV;
-
-            ExciseStamp.Visibility = Visibility.Collapsed;
-            ChoicePrice.Visibility = Visibility.Collapsed;
-            Background.Visibility = Visibility.Collapsed;
-            WaitAdmin.Visibility = Visibility.Collapsed;
-            WaitAdminLogin.Visibility = Visibility.Collapsed;
-            WeightWares.Visibility = Visibility.Collapsed;
-
-            switch (State)
+            Dispatcher.BeginInvoke(new ThreadStart(() =>
             {
-                case eStateMainWindows.WaitInputPrice:
-                    Prices.ItemsSource = new ObservableCollection<decimal>(CurWares.Prices/*.Select(r=>Convert.ToString(r))*/);
-                    Background.Visibility = Visibility.Visible;
-                    ChoicePrice.Visibility = Visibility.Visible;
-                    break;
-                case eStateMainWindows.WaitExciseStamp:
-                    ExciseStamp.Visibility = Visibility.Visible;
-                    
-                    break;
-                case eStateMainWindows.WaitWeight:
-                    EF.StartWeight();
-                    WeightWares.Visibility = Visibility.Visible;
-                    break;
-                case eStateMainWindows.WaitAdmin:
-                    WaitAdmin.Visibility = Visibility.Visible;
-                    Background.Visibility = Visibility.Visible;
-                    KB.SetInput(LoginTextBlock);
-                    break;
-                case eStateMainWindows.WaitAdminLogin:
-                    WaitAdminLogin.Visibility = Visibility.Visible;
-                    break;
-                case eStateMainWindows.WaitAdminPassword:
-                    WaitAdminLogin.Visibility = Visibility.Visible;
-                    WaitAdminLoginGrid.Visibility = Visibility.Collapsed;
-                    WaitAdminPasswordGrid.Visibility = Visibility.Visible;
-                    KB.SetInput(PasswordTextBlock);
-                    break;
-                case eStateMainWindows.WaitFindWares:
-                    FindWaresWin FWW = new FindWaresWin(this);
-                    FWW.Show();
-                    break;
-                case eStateMainWindows.WaitInput:
-                default:
-                    break;                
-            }
+                if (pSMV != eStateMainWindows.NotDefine)
+                    State = pSMV;
+
+                ExciseStamp.Visibility = Visibility.Collapsed;
+                ChoicePrice.Visibility = Visibility.Collapsed;
+                Background.Visibility = Visibility.Collapsed;
+                WaitAdmin.Visibility = Visibility.Collapsed;
+                WaitAdminLogin.Visibility = Visibility.Collapsed;
+                WeightWares.Visibility = Visibility.Collapsed;
+
+                switch (State)
+                {
+                    case eStateMainWindows.WaitInputPrice:
+                        Prices.ItemsSource = new ObservableCollection<decimal>(CurWares.Prices/*.Select(r=>Convert.ToString(r))*/);
+                        Background.Visibility = Visibility.Visible;
+                        ChoicePrice.Visibility = Visibility.Visible;
+                        break;
+                    case eStateMainWindows.WaitExciseStamp:
+                        ExciseStamp.Visibility = Visibility.Visible;
+
+                        break;
+                    case eStateMainWindows.WaitWeight:
+                        EF.StartWeight();
+                        WeightWares.Visibility = Visibility.Visible;
+                        break;
+                    case eStateMainWindows.WaitAdmin:
+                        WaitAdmin.Visibility = Visibility.Visible;
+                        Background.Visibility = Visibility.Visible;
+                        KB.SetInput(LoginTextBlock);
+                        break;
+                    case eStateMainWindows.WaitAdminLogin:
+                        WaitAdminLogin.Visibility = Visibility.Visible;
+                        break;
+                    case eStateMainWindows.WaitAdminPassword:
+                        WaitAdminLogin.Visibility = Visibility.Visible;
+                        WaitAdminLoginGrid.Visibility = Visibility.Collapsed;
+                        WaitAdminPasswordGrid.Visibility = Visibility.Visible;
+                        KB.SetInput(PasswordTextBlock);
+                        break;
+                    case eStateMainWindows.WaitFindWares:
+                        FindWaresWin FWW = new FindWaresWin(this);
+                        FWW.Show();
+                        break;
+                    case eStateMainWindows.ProcessPay:
+                        break;
+                    case eStateMainWindows.ProcessPrintReceipt:
+                        break;
+                    case eStateMainWindows.WaitInput:
+                    default:
+                        break;
+                }
+            }));
         }
 
         private void _Delete(object sender, RoutedEventArgs e)
@@ -176,7 +181,6 @@ namespace Front{
                 //ListWares.Remove((ReceiptWares)btn.DataContext);
                 Bl.ChangeQuantity(el, 0);
             }
-
         }
 
         private void _Minus(object sender, RoutedEventArgs e)
@@ -278,9 +282,8 @@ namespace Front{
                 Image im=null;
                 foreach (var el in GridWeightWares.Children)
                 {
-                        im = el as Image;
-                    if (im != null)
-                        break;
+                    im = el as Image;
+                    if (im != null) break;
                 }
                 if (im != null)
                     GridWeightWares.Children.Remove(im);
@@ -294,9 +297,8 @@ namespace Front{
                     //Grid.SetColumn(Bt, i);
                     Grid.SetRow(im, 1);
                     GridWeightWares.Children.Add(im);
-                }                
-                
-                
+                }
+
                     //GridWeightWares.Children.Clear();
 
                 SetStateView(eStateMainWindows.WaitWeight);
@@ -356,19 +358,43 @@ namespace Front{
             SetStateView(eStateMainWindows.WaitInput);
         }
 
-        private void _ButtonPayment(object sender, RoutedEventArgs e)
+        private void ClickButtonPayment(object sender, RoutedEventArgs e)
         {
-            decimal sum= ListWares.Sum(r => r.Sum); //Треба переробити
-            var pay=EF.PosPurchase(sum);
-            pay.SetIdReceipt(Bl.curReciptId);
-            Bl.db.ReplacePayment(new List<Payment>() { pay });
-            //Console.WriteLine(r.TransactionStatus);
-            var r=Bl.GetReceiptHead(Bl.curReciptId,true);
+            var task = Task.Run(() => PrintAndCloseReceipt());
+            //var result = task.Result;            
+        }
 
-            var task = Task.Run(async () =>  EF.PrintReceipt(r));
-            var result = task.Result;
+        /// <summary>
+        /// Безготівкова оплата і Друк чека.
+        /// </summary>
+        /// <returns></returns>
+        bool PrintAndCloseReceipt()
+        {
+            decimal sum = ListWares.Sum(r => r.Sum); //Треба переробити
+            SetStateView(eStateMainWindows.ProcessPay);
+            var pay = EF.PosPurchase(sum);
+            if (pay != null)
+            {
+                pay.SetIdReceipt(Bl.curReciptId);
+                Bl.db.ReplacePayment(new List<Payment>() { pay });
+            }
+            else
+                SetStateView(eStateMainWindows.WaitInput);
 
-            
+            SetStateView(eStateMainWindows.ProcessPrintReceipt);
+            var R = Bl.GetReceiptHead(Bl.curReciptId, true);
+            var res = EF.PrintReceipt(R);
+            Bl.InsertLogRRO(res);
+            if(res.CodeError==0)
+            {
+                Bl.UpdateReceiptFiscalNumber(R, res.FiscalNumber, res.SUM);
+                var r=Bl.GetNewIdReceipt();
+                Global.OnReceiptCalculationComplete?.Invoke( new List<ReceiptWares>(), Global.GetTerminalIdByIdWorkplace(Global.IdWorkPlace));
+                SetStateView(eStateMainWindows.WaitInput);
+                return true;
+            }
+            SetStateView(eStateMainWindows.WaitInput);
+            return false;
         }
 
         /// <summary>
@@ -397,14 +423,13 @@ namespace Front{
        
         private IEnumerable<ReceiptWares> StartData()
         {
-            
             var RId=Bl.GetNewIdReceipt();
-            Bl.AddWaresBarCode(RId, "4823086109988", 10);
+            Bl.AddWaresBarCode(RId, "4823086109988", 5);
             //Bl.AddWaresBarCode(RId, "7622300813437", 1);
             Bl.AddWaresBarCode(RId, "2201652300229", 3);
             Bl.AddWaresBarCode(RId,"7775002160043", 1); //товар 2 кат
-           //Bl.AddWaresBarCode(RId,"1110011760218", 11);
-            //Bl.AddWaresBarCode(RId,"7773002160043", 1); //товар 2 кат
+           Bl.AddWaresBarCode(RId,"1110011760218", 11);
+            Bl.AddWaresBarCode(RId,"7773002160043", 1); //товар 2 кат
             return Bl.GetWaresReceipt();
         }
 
@@ -418,7 +443,6 @@ namespace Front{
             Weight = pWeight;
             Debug.WriteLine(Weight);
             //LWeight.re
-
         }
 
         private void ClickButtonOk(object sender, RoutedEventArgs e)
@@ -474,37 +498,5 @@ namespace Front{
         }
     }
 
-    [ValueConversion(typeof(bool), typeof(Visibility))]
-    public sealed class BoolToVisibilityConverter : IValueConverter
-    {
-        public Visibility TrueValue { get; set; }
-        public Visibility FalseValue { get; set; }
-
-        public BoolToVisibilityConverter()
-        {
-            // set defaults
-            TrueValue = Visibility.Visible;
-            FalseValue = Visibility.Collapsed;
-        }
-
-        public object Convert(object value, Type targetType,
-            object parameter, CultureInfo culture)
-        {
-            if (!(value is bool))
-                return null;
-            return (bool)value ? TrueValue : FalseValue;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (Equals(value, TrueValue))
-                return true;
-            if (Equals(value, FalseValue))
-                return false;
-            return null;
-        }
-
-       
-    }
-
+   
 }

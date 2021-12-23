@@ -190,7 +190,7 @@ namespace Front.Equipments.pRRO_SG
     public class pRroRequestBaseSG
     {
         public eTypeDoc docSubType { get; set; }
-        [JsonIgnore]
+//        [JsonIgnore]
         
         public decimal sum { get; set; }
         public Guid? id { get; set; }

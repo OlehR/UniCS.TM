@@ -21,8 +21,8 @@ namespace SharedLib
         public IdReceipt curReciptId;
 
         public DataSync ds;
-        public ControlScale CS = new ControlScale();        
-        
+        public ControlScale CS = new ControlScale();
+
         public static SortedList<int, long> UserIdbyWorkPlace = new SortedList<int, long>();
         //public Action<IEnumerable<ReceiptWares>, Guid> OnReceiptCalculationComplete { get; set; }
 
@@ -64,41 +64,41 @@ namespace SharedLib
             _ = VR.SendMessageAsync(pW.IdWorkplace, pW.NameWares, pW.Articl, pW.Quantity, pW.Sum);
             stopWatch.Stop();
             TimeSpan ts = stopWatch.Elapsed;
-            Console.WriteLine("\nVR=>" + ts.TotalMilliseconds + "\n");           
+            Console.WriteLine("\nVR=>" + ts.TotalMilliseconds + "\n");
 
             if (pRecalcPriceOnLine && ModelMID.Global.RecalcPriceOnLine)
                 db.RecalcPriceAsync(pW);
 
-           /*if (pW.PLU > 0)
-            {
-                GenQRAsync(pW);
-            }
-           */
+            /*if (pW.PLU > 0)
+             {
+                 GenQRAsync(pW);
+             }
+            */
             return pW;
         }
 
         public Task GenQRAsync(IEnumerable<ReceiptWares> pRW)
         {
             return Task.Run(() => GenQRAsync1(pRW));
-         }
+        }
 
         public async Task<bool> GenQRAsync1(IEnumerable<ReceiptWares> pW)
         {
             bool res = true;
-            if (!Global.IsGenQrCoffe) 
+            if (!Global.IsGenQrCoffe)
                 return res;
-            
-            int Number=0;
-            foreach(var el in pW.Where(r=> r.PLU>0))
-            { 
-            StringBuilder QRs = new StringBuilder();
-            for (int i = 0; i < el.Quantity; i++)
+
+            int Number = 0;
+            foreach (var el in pW.Where(r => r.PLU > 0))
             {
-                var QR = await ds.GetQrCoffe(el, Number++);
-                QRs.Append((QRs.Length > 0 ? "," : "") + QR);
-            }
-            el.QR = QRs.ToString();
-            res&= db.UpdateQR(el);
+                StringBuilder QRs = new StringBuilder();
+                for (int i = 0; i < el.Quantity; i++)
+                {
+                    var QR = await ds.GetQrCoffe(el, Number++);
+                    QRs.Append((QRs.Length > 0 ? "," : "") + QR);
+                }
+                el.QR = QRs.ToString();
+                res &= db.UpdateQR(el);
             }
             return res;
         }
@@ -107,7 +107,7 @@ namespace SharedLib
             return db.GetQR(pIdR);
         }
 
-            public bool AddReceipt(IdReceipt parReceipt)
+        public bool AddReceipt(IdReceipt parReceipt)
         {
             var receipt = new Receipt(parReceipt);
             return db.AddReceipt(receipt);
@@ -130,10 +130,10 @@ namespace SharedLib
             //return curReciptId;
         }
 
-        public IdReceipt GetNewIdReceipt(int pIdWorkplace=0, int pCodePeriod = 0)
+        public IdReceipt GetNewIdReceipt(int pIdWorkplace = 0, int pCodePeriod = 0)
         {
-            var idReceip = new IdReceipt() { IdWorkplace = (pIdWorkplace==0?Global.IdWorkPlace: pIdWorkplace),  CodePeriod = (pCodePeriod == 0 ? Global.GetCodePeriod() : pCodePeriod) };
-            curReciptId= db.GetNewReceipt(idReceip);
+            var idReceip = new IdReceipt() { IdWorkplace = (pIdWorkplace == 0 ? Global.IdWorkPlace : pIdWorkplace), CodePeriod = (pCodePeriod == 0 ? Global.GetCodePeriod() : pCodePeriod) };
+            curReciptId = db.GetNewReceipt(idReceip);
             return curReciptId;
         }
         public Receipt GetLastReceipt(Guid parTerminalId, int pCodePeriod = 0)
@@ -143,13 +143,13 @@ namespace SharedLib
             //return db.GetLastReceipt(idReceip);
         }
 
-        public Receipt GetLastReceipt(int pIdWorkplace=0, int parCodePeriod = 0)
+        public Receipt GetLastReceipt(int pIdWorkplace = 0, int parCodePeriod = 0)
         {
             var idReceip = new IdReceipt() { IdWorkplace = (pIdWorkplace == 0 ? Global.IdWorkPlace : pIdWorkplace), CodePeriod = (parCodePeriod == 0 ? Global.GetCodePeriod() : parCodePeriod) };
             return db.GetLastReceipt(idReceip);
         }
 
-        public bool UpdateReceiptFiscalNumber(IdReceipt receiptId, string pFiscalNumber,decimal pSumFiscal=0,DateTime pDateFiscal = default(DateTime))
+        public bool UpdateReceiptFiscalNumber(IdReceipt receiptId, string pFiscalNumber, decimal pSumFiscal = 0, DateTime pDateFiscal = default(DateTime))
         {
             if (pDateFiscal == default(DateTime))
                 pDateFiscal = DateTime.Now;
@@ -158,8 +158,8 @@ namespace SharedLib
             receipt.StateReceipt = eStateReceipt.Print;
             receipt.UserCreate = GetUserIdbyWorkPlace(receiptId.IdWorkplace);
             receipt.SumFiscal = pSumFiscal;
-            receipt.DateReceipt = pDateFiscal;            
-         
+            receipt.DateReceipt = pDateFiscal;
+
             DateTime Ldc = receiptId.DTPeriod;
 
             WDB_SQLite ldb = (Ldc == DateTime.Now.Date ? db : new WDB_SQLite(Ldc));
@@ -396,7 +396,7 @@ namespace SharedLib
             else
                 parName = null;
 
-                var r = db.FindWares(null, parName, 0, 0, parCodeFastGroup, -1, parOffSet, parLimit);
+            var r = db.FindWares(null, parName, 0, 0, parCodeFastGroup, -1, parOffSet, parLimit);
             if (r.Count() > 0)
             {
                 return r;
@@ -419,7 +419,7 @@ namespace SharedLib
 
         public bool SetStateReceipt(IdReceipt pIdReceipt, eStateReceipt pStateReceipt)
         {
-            var receipt = new Receipt(pIdReceipt) { StateReceipt = pStateReceipt, DateReceipt = DateTime.Now, UserCreate = GetUserIdbyWorkPlace(pIdReceipt.IdWorkplace)  };                    
+            var receipt = new Receipt(pIdReceipt) { StateReceipt = pStateReceipt, DateReceipt = DateTime.Now, UserCreate = GetUserIdbyWorkPlace(pIdReceipt.IdWorkplace) };
             return db.CloseReceipt(receipt);
         }
 
@@ -526,7 +526,7 @@ namespace SharedLib
                     db.DeleteReceiptEvent(parRE.First());
                     db.InsertReceiptEvent(parRE);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = e, Status = eSyncStatus.NoFatalError, StatusDescription = "SaveReceiptEvents N=>" + parRE?.Count().ToString() + '\n' + e.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
                 }
@@ -544,7 +544,7 @@ namespace SharedLib
 
             if (CurDate.Hour < 7)
             {
-               //  ds.LoadWeightKasa();
+                //  ds.LoadWeightKasa();
                 ds.LoadWeightKasa2Period();
             }
             if (parIsFull)
@@ -609,11 +609,11 @@ namespace SharedLib
         {
 
             var r = GetLastReceipt();
-            var w=AddWaresBarCode(r,pBarCode, 1);
-            if(w==null) //Можливо штрихкод не товар
+            var w = AddWaresBarCode(r, pBarCode, 1);
+            if (w == null) //Можливо штрихкод не товар
             {
                 var c = GetClientByBarCode(r, pBarCode);
-                if(c==null)
+                if (c == null)
                 {
                     var u = GetUserByBarCode(pBarCode);
                     if (u != null)
@@ -642,7 +642,7 @@ namespace SharedLib
             LastCodeWares = pCodeWares;
             LastWeight = 0d;
         }
-        
+
         /// <summary>
         /// Добавляє зважений товар в базу.
         /// </summary>
@@ -651,21 +651,21 @@ namespace SharedLib
             AddWaresCode(LastCodeWares, 0, Convert.ToDecimal(LastWeight));
         }
 
-        public bool UpdateExciseStamp(IEnumerable<ReceiptWares> pRW )
+        public bool UpdateExciseStamp(IEnumerable<ReceiptWares> pRW)
         {
             var r = pRW.Where(e => e.ExciseStamp != null && e.ExciseStamp.Length > 0);
             try
             {
-               
                 return db.UpdateExciseStamp(r);
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = e, Status= eSyncStatus.NoFatalError, StatusDescription = "UpdateExciseStamp N=>"+r?.Count().ToString() + '\n' + e.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
-                
-           }
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = e, Status = eSyncStatus.NoFatalError, StatusDescription = "UpdateExciseStamp N=>" + r?.Count().ToString() + '\n' + e.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
+
+            }
             return false;
         }
-    
+
         public User GetUserByBarCode(string pBarCode)
         {
             var u = db.GetUser(new User() { BarCode = pBarCode });
@@ -673,10 +673,11 @@ namespace SharedLib
                 return u.First();
             return null;
         }
+
+        public bool InsertLogRRO(LogRRO pL)
+        {
+           return db.InsertLogRRO(pL);
+        }
+
     }
-
 }
-
-
-
-

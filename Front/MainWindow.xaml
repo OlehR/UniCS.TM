@@ -294,7 +294,7 @@
             <Button  Style="{StaticResource yelowButton}" Grid.Column="3" FontSize="22" Click="_BuyBag">
                 <TextBlock FontSize="28" Text="{DynamicResource buyBag}"/>
             </Button>
-            <Button Style="{StaticResource Default}" Grid.Column="4" FontSize="22" Click="_ButtonPayment">
+            <Button Style="{StaticResource Default}" Grid.Column="4" FontSize="22" Click="ClickButtonPayment">
                 <TextBlock FontSize="28" Text="{DynamicResource payment}"/>
             </Button>
         </Grid>

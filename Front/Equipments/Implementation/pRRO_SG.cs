@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Front.Equipments.pRRO_SG
@@ -31,14 +30,13 @@ namespace Front.Equipments.pRRO_SG
 
         async Task<(string, HttpStatusCode)> HttpAsync(string pMetod, string pBody)
         {
-  
             string res = null;
             HttpStatusCode Response = HttpStatusCode.Conflict;
             
             try
             {
                 HttpClient client = new HttpClient();
-                client.Timeout = TimeSpan.FromMilliseconds(3000);
+                client.Timeout = TimeSpan.FromMilliseconds(15000);
             
                 using (HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, PathApi + pMetod))
                 {
@@ -80,7 +78,7 @@ namespace Front.Equipments.pRRO_SG
             return (res, Response);
         }
 
-        override public async Task<LogRRO> PrintReceiptAsync(Receipt pR) 
+        override public async Task<LogRRO> PrintReceiptAsync(Receipt pR)
         {
             string res;
             var Res = new LogRRO(pR);
@@ -94,6 +92,7 @@ namespace Front.Equipments.pRRO_SG
             if (Response == HttpStatusCode.OK)
             {
                 var xx = JsonConvert.DeserializeObject<pRroAnswerSG>(res);
+                Res.TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund;
                 Res.NumberOperation = xx.receiptNumber;
                 Res.TextReceipt = xx.text;
                 Res.SUM = xx.sum;
@@ -102,24 +101,22 @@ namespace Front.Equipments.pRRO_SG
                 SetStatus(eStatusRRO.OK);
             }
             else
+            {
                 Res.Error = Response.ToString();
+                Res.CodeError = -1;
+            }
             return Res;
         }
 
         override public async Task<LogRRO> PrintZAsync(IdReceipt pIdR)
         {
-            //innovate/zreport
-            //throw new NotImplementedException();
             return await PrintXYAsync(false, pIdR);
         }
 
         override public async Task<LogRRO> PrintXAsync(IdReceipt pIdR)
         {
-            ///innovate/xreport 
-            //throw new NotImplementedException();
             return await PrintXYAsync(true, pIdR);
         }
-
 
         public async Task<LogRRO>  PrintXYAsync(bool pIsX, IdReceipt pIdR)
         {
@@ -128,10 +125,11 @@ namespace Front.Equipments.pRRO_SG
             Res.CodeReceipt = 0;
             HttpStatusCode Response;
             
-            (res, Response) = await HttpAsync($"/innovate/{(pIsX?"x":"z")}report", "{}");
+            (res, Response) = await HttpAsync($"/innovate/{(pIsX?"x":"z")}report", "{\"cashierName\": \"" + OperatorName +"\"}");
             if (Response == HttpStatusCode.OK)
             {
                 var xx = JsonConvert.DeserializeObject<pRroAnswerSG>(res);
+                Res.TypeOperation = pIsX ? eTypeOperation.XReport : eTypeOperation.ZReport;
                 Res.NumberOperation = xx.receiptNumber;
                 Res.TextReceipt = xx.text;
                 Res.SUM = Convert.ToDecimal(xx.sum) / 100m;
@@ -139,7 +137,10 @@ namespace Front.Equipments.pRRO_SG
                 SetStatus(eStatusRRO.OK);
             }
             else
+            {
                 Res.Error = Response.ToString();
+                Res.CodeError = -1;
+            }
             return Res;
         }
 
@@ -163,6 +164,7 @@ namespace Front.Equipments.pRRO_SG
             if (Response == HttpStatusCode.OK)
             {
                 var xx = JsonConvert.DeserializeObject<pRroAnswerSG>(res);
+                Res.TypeOperation = pSum > 0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyOut;
                 Res.TextReceipt = xx.text;
                 Res.SUM = xx.sum;
                 Res.NumberOperation = xx.receiptNumber;

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -69,12 +70,24 @@ namespace Front
 
         private void EKKA_X_Click(object sender, RoutedEventArgs e)
         {
-            EF.RroPrintX();
+            var task = Task.Run(() =>
+            {
+                var r=EF.RroPrintX();
+                r.IdWorkplace = Global.IdWorkPlace;
+                r.CodePeriod = Global.GetCodePeriod();
+                Bl.InsertLogRRO(r);
+             });
         }
 
         private void EKKA_Z_Click(object sender, RoutedEventArgs e)
         {
-            EF.RroPrintZ();
+            var task = Task.Run(() =>
+            {
+                var r = EF.RroPrintZ();
+                r.IdWorkplace = Global.IdWorkPlace;
+                r.CodePeriod = Global.GetCodePeriod();
+                Bl.InsertLogRRO(r);
+            });
         }
         private void EKKA_Z_Period_Click(object sender, RoutedEventArgs e)
         {
