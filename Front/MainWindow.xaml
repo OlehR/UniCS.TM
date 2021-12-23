@@ -441,10 +441,14 @@
 
         <!-- Автентифікація адміністратора   -->
         <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
-                 Grid.Row="0" Grid.RowSpan="4"
+                 Grid.Row="1" Grid.RowSpan="2"
               Grid.Column="0" Grid.ColumnSpan="4"
-                 Name="WaitAdminLogin" Visibility="Collapsed" Grid.ZIndex="2" 
+                Margin="100"
+                 Name="WaitAdminLogin" Visibility="Visible" Grid.ZIndex="2" 
                 CornerRadius="10" >
+            <Border.Effect>
+                <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+            </Border.Effect>
             <Grid>
 
                 <Grid.ColumnDefinitions>
@@ -453,7 +457,7 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="1.5*" />
+                    <RowDefinition Height="1.2*" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
@@ -463,10 +467,14 @@
                         <RowDefinition Height="*" />
                         <RowDefinition Height="*" />
                         <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0"  FontSize="25" Text="Login" HorizontalAlignment="Center" VerticalAlignment="Bottom" />
-                    <TextBox Grid.Row="1" TabIndex="1" Name="LoginTextBlock" FontSize="25" TextChanged="TextLoginChanged"  VerticalAlignment="Center" />
-                    <Button Grid.Row="2"  Style="{StaticResource Default}" HorizontalAlignment="Center" VerticalAlignment="Top"  FontSize="22" Click="LoginButtonNext" 
+                    <TextBox Grid.Row="1" TabIndex="1" Name="LoginTextBlock" FontSize="25" TextChanged="TextLoginChanged"  VerticalAlignment="Center"  />
+                    <TextBlock Grid.Row="2" FontSize="25" Text="Password" HorizontalAlignment="Center" VerticalAlignment="Bottom" />
+                    <TextBox Grid.Row="3" TabIndex="2" Name="PasswordTextBlock" FontSize="25" TextChanged="TextPasswordChanged"  VerticalAlignment="Center" />
+                    <Button Grid.Row="4"  Style="{StaticResource Default}" HorizontalAlignment="Center" VerticalAlignment="Top"  FontSize="22" Click="LoginButtonNext" 
                         Height="60" Width="200">
                         <StackPanel Orientation="Horizontal">
                             <!-- <Image  Height="20" Width="20"  Source="icons\right.png"></Image>-->
@@ -475,7 +483,7 @@
                     </Button>
                 </Grid>
                 <!-- Пароль адміністратора-->
-                <Grid Grid.Row="0" Grid.Column="1" Visibility="Collapsed" Name="WaitAdminPasswordGrid">
+                <!--<Grid Grid.Row="0" Grid.Column="1" Visibility="Collapsed" Name="WaitAdminPasswordGrid">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
                         <RowDefinition Height="*" />
@@ -486,11 +494,11 @@
                     <Button Grid.Row="2"  Style="{StaticResource Default}" HorizontalAlignment="Center" VerticalAlignment="Top"  FontSize="22" Click="LoginButton" 
                         Height="60" Width="200">
                         <StackPanel Orientation="Horizontal">
-                            <!-- <Image  Height="20" Width="20"  Source="icons\right.png"></Image>-->
+                             <Image  Height="20" Width="20"  Source="icons\right.png"></Image>
                             <TextBlock FontSize="28" Text="{DynamicResource ok}" Margin="5,0,0,5"/>
                         </StackPanel>
                     </Button>
-                </Grid>
+                </Grid>-->
 
                 <keyboard:OnScreenKeyboard Grid.Row="1"
 		                           Grid.Column="0"
