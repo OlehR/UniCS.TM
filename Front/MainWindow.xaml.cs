@@ -150,6 +150,7 @@ namespace Front{
                     break;
                 case eStateMainWindows.WaitAdminLogin:
                     WaitAdminLogin.Visibility = Visibility.Visible;
+                    Background.Visibility = Visibility.Visible;
                     break;
                 case eStateMainWindows.WaitFindWares:
                     FindWaresWin FWW = new FindWaresWin(this);
