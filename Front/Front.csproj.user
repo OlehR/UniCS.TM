@@ -13,9 +13,6 @@
     <Compile Update="Admin.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="WaitAdmin.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Update="AddWeightWares.xaml">
@@ -49,9 +46,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Resources\yelowButton.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="WaitAdmin.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

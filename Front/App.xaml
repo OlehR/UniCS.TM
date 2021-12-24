@@ -29,8 +29,7 @@
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
-            </Style>
-            
+            </Style>            
             
 
             <Style  TargetType="{x:Type TabControl}">
