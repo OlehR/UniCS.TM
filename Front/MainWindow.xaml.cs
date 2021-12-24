@@ -21,28 +21,30 @@ using Microsoft.Extensions.Configuration;
 using ModelMID;
 using SharedLib;
 
-namespace Front{
-   
+namespace Front
+{
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        eStateMainWindows State= eStateMainWindows.StartWindow;
+        eStateMainWindows State = eStateMainWindows.StartWindow;
         public event PropertyChangedEventHandler PropertyChanged;
 
         public string WaresQuantity { get; set; }
         public string MoneySum { get; set; }
+        public string EquipmentInfo { get; set; }
         public bool Volume { get; set; }
         /// <summary>
         /// Чи зчитано штрихкод Адміна.
         /// </summary>
-        public bool  IsAdminBarCode { get; set; }
+        public bool IsAdminBarCode { get; set; }
         /// <summary>
         /// Вага з основної ваги
         /// </summary>
         public double Weight { get; set; } = 0d;
-        
+
         public string WeightControl { get; set; }
 
         public GW CurW { get; set; } = null;
@@ -60,9 +62,13 @@ namespace Front{
             Bl = new BL(true);
             EF = new EquipmentFront(Bl.GetBarCode, SetWeight, Bl.CS.OnScalesData);
 
-                //SetBarCode += Bl.GetBarCode;// (pBarCode, pTypeBarCode) => { Bl.GetBarCode(pBarCode, pTypeBarCode); };
-                //SetControlWeight += Bl.CS.OnScalesData; // (pWeight, isStable)=>{ });
-                //ad =  new Admin();
+            //SetBarCode += Bl.GetBarCode;// (pBarCode, pTypeBarCode) => { Bl.GetBarCode(pBarCode, pTypeBarCode); };
+            //SetControlWeight += Bl.CS.OnScalesData; // (pWeight, isStable)=>{ });
+            //ad =  new Admin();
+            EF.SetStatus += (info) =>
+            {
+                EquipmentInfo = info.TextState;
+            };
             Global.OnReceiptCalculationComplete += (wareses, guid) =>
             {
                 try
@@ -93,7 +99,7 @@ namespace Front{
             {
                 Debug.WriteLine($"Client.Wallet=> {client.Wallet} SumBonus=>{client.SumBonus} ");
             };
-            Global.OnAdminBarCode += (pUser)=> { IsAdminBarCode = true; SetStateView(eStateMainWindows.NotDefine,true); };
+            Global.OnAdminBarCode += (pUser) => { IsAdminBarCode = true; SetStateView(eStateMainWindows.NotDefine, true); };
 
             WaresQuantity = "0";
             MoneySum = "0";
@@ -109,64 +115,67 @@ namespace Front{
             ua.Tag = new CultureInfo("uk");
             en.Tag = new CultureInfo("en");
             hu.Tag = new CultureInfo("hu");
-            pln.Tag = new CultureInfo("pl");        
+            pln.Tag = new CultureInfo("pl");
 
 
             CultureInfo currLang = App.Language;
             Recalc();
         }
 
-        void SetStateView(eStateMainWindows pSMV= eStateMainWindows.NotDefine,bool pIsBarCodeAdmin=false)
+        void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine, bool pIsBarCodeAdmin = false)
         {
-            Dispatcher.BeginInvoke(new ThreadStart(()=>
+            Dispatcher.BeginInvoke(new ThreadStart(() =>
                 {
-                if (pSMV != eStateMainWindows.NotDefine)
-                    State = pSMV;
+                    if (pSMV != eStateMainWindows.NotDefine)
+                        State = pSMV;
 
-                ExciseStamp.Visibility = Visibility.Collapsed;
-                ChoicePrice.Visibility = Visibility.Collapsed;
-                Background.Visibility = Visibility.Collapsed;
-                WaitAdmin.Visibility = Visibility.Collapsed;
-                WaitAdminLogin.Visibility = Visibility.Collapsed;
-                WeightWares.Visibility = Visibility.Collapsed;
+                    ExciseStamp.Visibility = Visibility.Collapsed;
+                    ChoicePrice.Visibility = Visibility.Collapsed;
+                    Background.Visibility = Visibility.Collapsed;
+                    WaitAdmin.Visibility = Visibility.Collapsed;
+                    WaitAdminLogin.Visibility = Visibility.Collapsed;
+                    WeightWares.Visibility = Visibility.Collapsed;
+                    WaitPayment.Visibility = Visibility.Collapsed;
 
-                switch (State)
-                {
-                    case eStateMainWindows.WaitInputPrice:
-                        Prices.ItemsSource = new ObservableCollection<decimal>(CurWares.Prices/*.Select(r=>Convert.ToString(r))*/);
-                        Background.Visibility = Visibility.Visible;
-                        ChoicePrice.Visibility = Visibility.Visible;
-                        break;
-                    case eStateMainWindows.WaitExciseStamp:
-                        ExciseStamp.Visibility = Visibility.Visible;
+                    switch (State)
+                    {
+                        case eStateMainWindows.WaitInputPrice:
+                            Prices.ItemsSource = new ObservableCollection<decimal>(CurWares.Prices/*.Select(r=>Convert.ToString(r))*/);
+                            Background.Visibility = Visibility.Visible;
+                            ChoicePrice.Visibility = Visibility.Visible;
+                            break;
+                        case eStateMainWindows.WaitExciseStamp:
+                            ExciseStamp.Visibility = Visibility.Visible;
 
-                        break;
-                    case eStateMainWindows.WaitWeight:
-                        EF.StartWeight();
-                        WeightWares.Visibility = Visibility.Visible;
-                        break;
-                    case eStateMainWindows.WaitAdmin:
-                        WaitAdmin.Visibility = Visibility.Visible;
-                        Background.Visibility = Visibility.Visible;
-                        KB.SetInput(LoginTextBlock);
-                        break;
-                    case eStateMainWindows.WaitAdminLogin:
-                        WaitAdminLogin.Visibility = Visibility.Visible;
-                        Background.Visibility = Visibility.Visible;
-                        break;
-                    case eStateMainWindows.WaitFindWares:
-                        FindWaresWin FWW = new FindWaresWin(this);
-                        FWW.Show();
-                        break;
-                    case eStateMainWindows.ProcessPay:
-                        break;
-                    case eStateMainWindows.ProcessPrintReceipt:
-                        break;
-                    case eStateMainWindows.WaitInput:
-                    default:
-                        break;
-                }
-            }));
+                            break;
+                        case eStateMainWindows.WaitWeight:
+                            EF.StartWeight();
+                            WeightWares.Visibility = Visibility.Visible;
+                            break;
+                        case eStateMainWindows.WaitAdmin:
+                            WaitAdmin.Visibility = Visibility.Visible;
+                            Background.Visibility = Visibility.Visible;
+                            KB.SetInput(LoginTextBlock);
+                            break;
+                        case eStateMainWindows.WaitAdminLogin:
+                            WaitAdminLogin.Visibility = Visibility.Visible;
+                            Background.Visibility = Visibility.Visible;
+                            break;
+                        case eStateMainWindows.WaitFindWares:
+                            FindWaresWin FWW = new FindWaresWin(this);
+                            FWW.Show();
+                            break;
+                        case eStateMainWindows.ProcessPay:
+                            WaitPayment.Visibility = Visibility.Visible;
+                            Background.Visibility = Visibility.Visible;
+                            break;
+                        case eStateMainWindows.ProcessPrintReceipt:
+                            break;
+                        case eStateMainWindows.WaitInput:
+                        default:
+                            break;
+                    }
+                }));
         }
 
         private void _Delete(object sender, RoutedEventArgs e)
@@ -238,16 +247,16 @@ namespace Front{
             switch (btn.Name)
             {
                 case "uk":
-                    ua.Style = (Style)ua.FindResource("yelowButton");                     
+                    ua.Style = (Style)ua.FindResource("yelowButton");
                     break;
                 case "en":
-                    en.Style = (Style)en.FindResource("yelowButton");                    
+                    en.Style = (Style)en.FindResource("yelowButton");
                     break;
                 case "hu":
-                    hu.Style = (Style)hu.FindResource("yelowButton");                    
+                    hu.Style = (Style)hu.FindResource("yelowButton");
                     break;
                 case "pl":
-                    pln.Style = (Style)pln.FindResource("yelowButton");                    
+                    pln.Style = (Style)pln.FindResource("yelowButton");
                     break;
             }
         }
@@ -260,7 +269,7 @@ namespace Front{
                         where nn=  cast(abs(random()/9223372036854775808.0)*1000 as int)";
             var CodeWares = Bl.db.db.ExecuteScalar<int>(sql);
             if (CodeWares > 0)
-                Bl.AddWaresCode( CodeWares, 0, Math.Round(1M + 5M * rand.Next() / (decimal)int.MaxValue));
+                Bl.AddWaresCode(CodeWares, 0, Math.Round(1M + 5M * rand.Next() / (decimal)int.MaxValue));
         }
 
         private void _Search(object sender, RoutedEventArgs e)
@@ -270,17 +279,17 @@ namespace Front{
 
         public ReceiptWares CurWares { get; set; } = null;
 
-        public void AddWares(int pCodeWares, int pCodeUnit = 0, decimal pQuantity = 0m,decimal pPrice=0m,GW pGV=null)
+        public void AddWares(int pCodeWares, int pCodeUnit = 0, decimal pQuantity = 0m, decimal pPrice = 0m, GW pGV = null)
         {
-            if(pGV!=null)
+            if (pGV != null)
             {
                 CurW = pGV;
                 NameWares.Content = CurW.Name;
 
-                Image im=null;
+                Image im = null;
                 foreach (var el in GridWeightWares.Children)
                 {
-                        im = el as Image;
+                    im = el as Image;
                     if (im != null)
                         break;
                 }
@@ -296,10 +305,10 @@ namespace Front{
                     //Grid.SetColumn(Bt, i);
                     Grid.SetRow(im, 1);
                     GridWeightWares.Children.Add(im);
-                }                
-                
-                
-                    //GridWeightWares.Children.Clear();
+                }
+
+
+                //GridWeightWares.Children.Clear();
 
                 SetStateView(eStateMainWindows.WaitWeight);
                 return;
@@ -308,7 +317,7 @@ namespace Front{
 
             if (pCodeWares > 0)
             {
-                CurWares = Bl.AddWaresCode(pCodeWares, pCodeUnit, pQuantity, pPrice);               
+                CurWares = Bl.AddWaresCode(pCodeWares, pCodeUnit, pQuantity, pPrice);
 
                 if (CurWares != null)
                 {
@@ -326,7 +335,7 @@ namespace Front{
                     {
                         if (CurWares.Prices.Count() > 1)
                         {
-                            
+
                             SetStateView(eStateMainWindows.WaitInputPrice);
                         }
                         else
@@ -352,7 +361,7 @@ namespace Front{
         {
 
         }
-        
+
         private void _Cancel(object sender, RoutedEventArgs e)
         {
             SetStateView(eStateMainWindows.WaitInput);
@@ -420,17 +429,17 @@ namespace Front{
             catch { }
             SetStateView(eStateMainWindows.WaitInput);
         }
-       
+
         private IEnumerable<ReceiptWares> StartData()
         {
-            
-            var RId=Bl.GetNewIdReceipt();
+
+            var RId = Bl.GetNewIdReceipt();
             Bl.AddWaresBarCode(RId, "4823086109988", 10);
             //Bl.AddWaresBarCode(RId, "7622300813437", 1);
             Bl.AddWaresBarCode(RId, "2201652300229", 3);
-            Bl.AddWaresBarCode(RId,"7775002160043", 1); //товар 2 кат
-           //Bl.AddWaresBarCode(RId,"1110011760218", 11);
-            //Bl.AddWaresBarCode(RId,"7773002160043", 1); //товар 2 кат
+            Bl.AddWaresBarCode(RId, "7775002160043", 1); //товар 2 кат
+                                                         //Bl.AddWaresBarCode(RId,"1110011760218", 11);
+                                                         //Bl.AddWaresBarCode(RId,"7773002160043", 1); //товар 2 кат
             return Bl.GetWaresReceipt();
         }
 
@@ -449,7 +458,7 @@ namespace Front{
 
         private void ClickButtonOk(object sender, RoutedEventArgs e)
         {
-            AddWares(CurW.Code, CurW.CodeUnit,Convert.ToDecimal(Weight));
+            AddWares(CurW.Code, CurW.CodeUnit, Convert.ToDecimal(Weight));
             ClickButtonCancel(sender, e);
         }
 
@@ -490,10 +499,10 @@ namespace Front{
         }
 
         public void SetState(eStatusRRO pStatus)
-        { 
+        {
 
         }
     }
-    
+
 
 }
