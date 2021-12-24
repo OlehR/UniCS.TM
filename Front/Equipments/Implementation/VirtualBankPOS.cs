@@ -47,11 +47,11 @@ namespace Front.Equipments.Implementation
         public override Payment Purchase(decimal pAmount)
         {
             ActionStatus?.Invoke(new PosStatus() {Status=ePosStatus.WaitingForCard,MsgCode=(byte)(ePosStatus.WaitingForCard), MsgDescription= ePosStatus.WaitingForCard.ToString() });
-            Thread.Sleep(200);
+            Thread.Sleep(2000);
             ActionStatus?.Invoke(new PosStatus() { Status = ePosStatus.PinInputWaitKey, MsgCode = (byte)(ePosStatus.PinInputWaitKey), MsgDescription = ePosStatus.PinInputWaitKey.ToString() });
-            Thread.Sleep(300);
+            Thread.Sleep(3000);
             ActionStatus?.Invoke(new PosStatus() { Status = ePosStatus.TransactionIsAlreadyComplete, MsgCode = (byte)(ePosStatus.TransactionIsAlreadyComplete), MsgDescription = ePosStatus.TransactionIsAlreadyComplete.ToString() });
-            Thread.Sleep(100);
+            Thread.Sleep(1000);
             return GetPaymentResultModel(pAmount);
         }
 
