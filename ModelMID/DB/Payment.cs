@@ -40,6 +40,11 @@ namespace ModelMID
         /// Банк еквайр
         /// </summary>
         public string Bank { get; set; } //НОВЕ!
+        /// <summary>
+        /// Ймовірно транзакція в межах відкритої зміни
+        /// </summary>
+        public string  TransactionId { get; set; } //НОВЕ!
+        
         public DateTime DateCreate { get; set; }
         
         public Payment(Guid parReceipt) : base(parReceipt) { }

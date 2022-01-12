@@ -368,11 +368,11 @@ namespace Front
         private void _ButtonPayment(object sender, RoutedEventArgs e)
         {
 
-            var pay=EF.PosPurchase(_MoneySum);
+          /*  var pay=EF.PosPurchase(_MoneySum);
             pay.SetIdReceipt(Bl.curReciptId);
             Bl.db.ReplacePayment(new List<Payment>() { pay });            
             var r=Bl.GetReceiptHead(Bl.curReciptId,true);
-
+            */
             var task = Task.Run(() => PrintAndCloseReceipt());
             //var result = task.Result;            
         }
@@ -408,7 +408,7 @@ namespace Front
             }
             SetStateView(eStateMainWindows.WaitInput);
             return false;
->>>>>>> f1bef70f3fd91a9af4428c1f0d5fe889de1d523d
+
         }
 
         /// <summary>

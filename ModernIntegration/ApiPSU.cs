@@ -551,7 +551,8 @@ namespace ModernIntegration
                 DateCreate=pRP.CreatedAt,
                 CardHolder= pRP.CardHolder,
                 IssuerName =pRP.IssuerName,
-                Bank= pRP.Bank
+                Bank= pRP.Bank,
+                TransactionId =pRP.TransactionId
 
 
             };
@@ -573,6 +574,7 @@ namespace ModernIntegration
                 CardHolder = pRP.CardHolder,
                 IssuerName = pRP.IssuerName,
                 Bank = pRP.Bank,
+                TransactionId = pRP.TransactionId,
                 CreatedAt = pRP.DateCreate
             };
         }

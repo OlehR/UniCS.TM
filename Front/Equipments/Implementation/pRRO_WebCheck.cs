@@ -22,6 +22,7 @@ namespace Front.Equipments.Implementation
             {
                 FN = pConfiguration["Devices:pRRO_WebCheck:FN"];
               OperatorName = pConfiguration["Devices:pRRO_WebCheck:OperatorID"];
+                // !!!TMP Перенести асинхронно бо дуже довго
                 bool r = WCh.Initialization($"<InputParameters> <Parameters FN = \"{FN}\"/> </InputParameters>");
                 var rr = WCh.StatusBarXML();
             }catch(Exception e)
@@ -39,7 +40,7 @@ namespace Front.Equipments.Implementation
 
         string ToXMLString(string pStr)
         {
-            return pStr.Replace("&", "&amp;").Replace("\"", "&quot;").Replace("'", "&apos;").Replace("<", "&lt;").Replace(">", "&gt;").Replace(".", "&period;");
+            return pStr.Replace("&", "&amp;").Replace("\"", "&quot;").Replace("'", "&apos;").Replace("<", "&lt;").Replace(">", "&gt;");//.Replace(".", "&period;");
         }
         string XmlWares(ReceiptWares pRW)
         {
@@ -73,7 +74,7 @@ namespace Front.Equipments.Implementation
         {
             string xml = $"<Check Number=\"4\" FN = \"{FN}\" OperationType=\"{(pR.TypeReceipt == eTypeReceipt.Sale ? 0 : 1)}\" uuid=\"{pR.ReceiptId}\">\n" +
                 GenL(pR) + "\n" + GenGoods(pR.Wares) +
-                $"\n<Payments> <Payment ID=\"1\" Sum = \"{pR.SumCreditCard}\"/></Payments>\n</Check>";
+                $"\n<Payments> <Payment ID=\"0\" Sum = \"{pR.SumCreditCard}\"/></Payments>\n</Check>";
 
             bool r = WCh.FiscalReceipt(xml);
             string ResXML = WCh.StatusBarXML();

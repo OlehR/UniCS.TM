@@ -37,8 +37,8 @@ namespace Test
         {
             Console.WriteLine("Start");
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-            var sort = new SortImg();
-            sort.SortPhoto(); // cортування фото
+            //var sort = new SortImg();
+           // sort.SortPhoto(); // cортування фото
 
             //var l = new GetGoodUrl();
             // var img = new ImageListex(); 
@@ -89,29 +89,35 @@ namespace Test
             var TerminalId = Guid.Parse("c2211a23-b856-4dd4-ba29-3ec2d043efbf");// --Guid.Parse("27aaa6d3-8824-475d-a7d4-3269472ba950");//19
             var ProductId = Guid.Parse("00000000-abcd-0000-0019-000000162794");
             var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009007");
-            var ReceiptId = Guid.Parse("00000072-ffff-2021-1217-000000000024");
+            var ReceiptId = Guid.Parse("00000072-ffff-2022-0112-000000000028");
             var Pay = new ReceiptPayment[] {
                 new ReceiptPayment
             {
                 Id = Guid.Parse("9e960928-1070-457d-aec3-14672adf3e9b"),
-                ReceiptId = Guid.Parse("00000062-ffff-2020-0116-000000000007"),
+                ReceiptId = ReceiptId,//Guid.Parse("00000072-ffff-2022-0112-000000000007"),
                 PaymentType = ModernIntegration.Enums.PaymentType.Card,
                 PayIn = 25.9M,
                 PayOut = 0.0M,
+                PosPaid = 25M,
                 CardPan = "XXXXXXXXXXXX2520",
                 IsPayOutSuccess = null,
                 TransactionId = "2",
                 TransactionCode = "039177601652",
-                TransactionStatus = "Àâòîðèçàö³ÿ ç áàíêîì",
-                PosAuthCode = null,
-                PosTerminalId = null,
+                InvoiceNumber =12345,
+                TransactionStatus = "OK TransactionStatus",
+                PosAuthCode = "444444444",
+                PosTerminalId = "PSP0011",
                 CardHolder ="CardHolder",
                 IssuerName ="IssuerName",
-                Bank = "MasterСаrd",
+                Bank = "Privat",
                 CreatedAt = DateTime.Now
             } };
+
             var api = new ApiPSU();
-            //var xx = api.GetReciept(ReceiptId);
+            api.AddPayment(TerminalId, Pay); 
+
+            var xx = api.GetReciept(ReceiptId);
+            return;
             // var recipt = api.GetProductsByName(TerminalId, "", 0, false, FastGroup,12);
 
             ProductViewModel sd;

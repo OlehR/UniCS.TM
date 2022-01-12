@@ -18,9 +18,13 @@ namespace Front.Equipments.Implementation
         decimal Sum =0m, SumRefund = 0m;
         uint Count=0, CountRefund = 0;
         Action<IPosStatus> ActionStatus;
-
+      
         public VirtualBankPOS(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<IPosStatus> pActionStatus = null) : base(pConfiguration, pLogger,eModelEquipment.VirtualBankPOS)
         {
+            Random rnd = new Random();
+            NumberReceipt = rnd.Next(1, 100000);
+            AuthCode+= rnd.Next(1, 1000000);
+            TransactionCode += rnd.Next(1, 1000000);
             ActionStatus = pActionStatus;
         }
         Payment GetPaymentResultModel(decimal pAmount)
