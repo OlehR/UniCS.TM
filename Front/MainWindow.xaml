@@ -441,19 +441,23 @@
 
         <!-- Автентифікація адміністратора   -->
         <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
-                 Grid.Row="0" Grid.RowSpan="4"
+                 Grid.Row="1" Grid.RowSpan="2"
               Grid.Column="0" Grid.ColumnSpan="4"
                  Name="WaitAdminLogin" Visibility="Collapsed" Grid.ZIndex="2" 
+                HorizontalAlignment="Center" VerticalAlignment="Center"
                 CornerRadius="10" >
-            <Grid>
+            <Border.Effect>
+                <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+            </Border.Effect>
 
+            <Grid Width="1000" Height="500">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.5*" />
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="0.5*" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="1.5*" />
+                    <RowDefinition Height="*" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
@@ -464,18 +468,33 @@
                         <RowDefinition Height="*" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0"  FontSize="25" Text="Login" HorizontalAlignment="Center" VerticalAlignment="Bottom" />
-                    <TextBox Grid.Row="1" TabIndex="1" Name="LoginTextBlock" FontSize="25" TextChanged="TextLoginChanged"  VerticalAlignment="Center" />
-                    <Button Grid.Row="2"  Style="{StaticResource Default}" HorizontalAlignment="Center" VerticalAlignment="Top"  FontSize="22" Click="LoginButtonNext" 
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" FontSize="25" Text="Login" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" TabIndex="1" Name="LoginTextBlock" FontSize="25" TextChanged="TextLoginChanged"  VerticalAlignment="Center"  />
+                    <TextBlock Grid.Row="1" Grid.Column="0" FontSize="25" Text="Password" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" TabIndex="2" Name="PasswordTextBlock" FontSize="25" TextChanged="TextPasswordChanged"  VerticalAlignment="Center" />
+                    <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"  Style="{StaticResource Default}" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="22" Click="LoginButton" 
                         Height="60" Width="200">
                         <StackPanel Orientation="Horizontal">
-                            <!-- <Image  Height="20" Width="20"  Source="icons\right.png"></Image>-->
-                            <TextBlock FontSize="28" Text="Next" Margin="5,0,0,5"/>
+                            <Image  Height="20" Width="20"  Source="icons\right.png"></Image>
+                            <TextBlock FontSize="28" Text="{DynamicResource ok}" Margin="5,0,0,5"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="3" Style="{StaticResource Default}" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="22" Click="_Cancel" 
+                        Height="60" Width="200">
+                        <StackPanel Orientation="Horizontal">
+                            <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
+                            <TextBlock FontSize="28" Text="{DynamicResource cancel}" Margin="5,0,0,5"/>
                         </StackPanel>
                     </Button>
                 </Grid>
                 <!-- Пароль адміністратора-->
-                <Grid Grid.Row="0" Grid.Column="1" Visibility="Collapsed" Name="WaitAdminPasswordGrid">
+                <!--<Grid Grid.Row="0" Grid.Column="1" Visibility="Collapsed" Name="WaitAdminPasswordGrid">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
                         <RowDefinition Height="*" />
@@ -486,28 +505,23 @@
                     <Button Grid.Row="2"  Style="{StaticResource Default}" HorizontalAlignment="Center" VerticalAlignment="Top"  FontSize="22" Click="LoginButton" 
                         Height="60" Width="200">
                         <StackPanel Orientation="Horizontal">
-                            <!-- <Image  Height="20" Width="20"  Source="icons\right.png"></Image>-->
+                             <Image  Height="20" Width="20"  Source="icons\right.png"></Image>
                             <TextBlock FontSize="28" Text="{DynamicResource ok}" Margin="5,0,0,5"/>
                         </StackPanel>
                     </Button>
-                </Grid>
+                </Grid>-->
 
                 <keyboard:OnScreenKeyboard Grid.Row="1"
 		                           Grid.Column="0"
 		                           Grid.ColumnSpan="3"
-		                           Height="300"
+		                           Height="250"
                                    x:Name="KB"                                  
 		                           VerticalAlignment="Bottom" 
 		                           ActiveContainer="{Binding ElementName=MainGrid}"
+                                   ToggleButtonStyle="{StaticResource DefaultTouchToggleButtonStyle}"
 		                           CancelCommand="{Binding CancelCommand2}"/>
 
-                <Button Grid.Row="0" Grid.Column="2" Style="{StaticResource Default}" HorizontalAlignment="Right" VerticalAlignment="Top"  FontSize="22" Click="_Cancel" 
-                        Height="80" Width="300">
-                    <StackPanel Orientation="Horizontal">
-                        <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
-                        <TextBlock FontSize="28" Text="{DynamicResource cancel}" Margin="5,0,0,5"/>
-                    </StackPanel>
-                </Button>
+
             </Grid>
         </Border>
 
@@ -597,6 +611,68 @@
                         </StackPanel>
                     </Button>
                 </Grid>
+            </Grid>
+        </Border>
+
+        <!-- ОПЛАТА   -->
+        <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="1" Grid.RowSpan="3"
+              Grid.Column="0" Grid.ColumnSpan="4"
+                 Name="WaitPayment" Visibility="Visible" Grid.ZIndex="2" 
+                CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Border.Effect>
+                <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+            </Border.Effect>
+
+            <Grid  Width="1000" Height="600">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"></RowDefinition>
+                    <RowDefinition Height="3*"></RowDefinition>
+                    <RowDefinition Height="1*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                    <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="28" 
+                                Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0"
+                                Text="{DynamicResource WaitPayment }"/>
+                <Image  Grid.Column="1" Grid.Row="1"
+                    Source="icons\paymentTerminal.png" Width="250" Margin="15"/>
+                
+                <Grid Grid.Column="0" Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="0.5*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28" 
+                                Grid.Column="0"  Grid.Row="0"
+                                Text="{DynamicResource AmountPayment}"/>
+                    <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28" 
+                                Grid.Column="1"  Grid.Row="0"
+                                Text="{Binding MoneySum, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}"/>
+                    <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28" 
+                                Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="1"
+                                Text="{DynamicResource PaymentStatus}"/>
+                    <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="28" 
+                                Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="2"
+                                Text="{Binding EquipmentInfo, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}"/>
+                </Grid>
+                <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource Default}"  FontSize="22" Click="_Cancel" 
+                        Height="80" Width="300" VerticalAlignment="Top">
+                    <StackPanel Orientation="Horizontal">
+                        <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
+                        <TextBlock FontSize="28" Text="{DynamicResource cancel}" Margin="5,0,0,5"/>
+                    </StackPanel>
+                </Button>
             </Grid>
         </Border>
 

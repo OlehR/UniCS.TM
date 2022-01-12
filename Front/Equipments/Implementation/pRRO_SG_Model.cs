@@ -68,10 +68,10 @@ namespace Front.Equipments.pRRO_SG
             if (!string.IsNullOrEmpty(pRW.ExciseStamp))
                 excises = pRW.ExciseStamp.Split(',');
             name = pRW.NameWares;
-            price = Convert.ToInt32(pRW.PriceEKKA * 100);
+            price = pRW.PriceEKKA;
             quantity = pRW.Quantity;
-            discountSum = Convert.ToInt32(pRW.DiscountEKKA * 100);
-            amount = Convert.ToInt32(pRW.Sum * 100);
+            discountSum = pRW.DiscountEKKA;
+            amount = pRW.Sum ;
             vatGroup = Global.GetTaxGroup(pRW.TypeVat, pRW.TypeWares);
             codeUnit = pRW.CodeUnit;
             unitName = pRW.AbrUnit;
@@ -100,10 +100,10 @@ namespace Front.Equipments.pRRO_SG
         public string barcode { get; set; }
         public IEnumerable<string> excises { get; set; }
         public string name { get; set; }
-        public int price { get; set; }
+        public decimal price { get; set; }
         public decimal quantity { get; set; }
-        public int discountSum { get; set; }
-        public int amount { get; set; }
+        public decimal discountSum { get; set; }
+        public decimal amount { get; set; }
         public string vatGroup { get; set; }
         public string registeredArticle { get; set; }
         public int codeUnit { get; set; }
@@ -115,7 +115,7 @@ namespace Front.Equipments.pRRO_SG
         public Card() { }
         public Card(Payment pP, bool pIsSale)
         {
-            sumPay = Convert.ToInt32(pP.SumPay * 100);
+            sumPay = pP.SumPay;
             comission = 0;//???
             acquirer = pP.Bank;
             posId = pP.NumberTerminal;
@@ -129,7 +129,7 @@ namespace Front.Equipments.pRRO_SG
         /// <summary>
         /// 3699 – Сума оплати в копійках
         /// </summary>
-        public int sumPay { get; set; }
+        public decimal sumPay { get; set; }
         /// <summary>
         /// 0???– Комісія банку
         /// </summary>
@@ -173,7 +173,7 @@ namespace Front.Equipments.pRRO_SG
         public RecordPay() : base(eTypeRecord.PAY) { }
         public RecordPay(Payment pP) : base(eTypeRecord.PAY)
         {
-            sum = Convert.ToInt32(pP.SumPay * 100m);
+            sum = pP.SumPay;
             returnSum = 0;
             typePay = (pP.TypePay == ModelMID.eTypePay.Card ? eTypePay.Card : eTypePay.Cash);
             if (pP.TypePay == ModelMID.eTypePay.Card)
@@ -181,7 +181,7 @@ namespace Front.Equipments.pRRO_SG
                 cards = new List<Card>() { new Card(pP, sum > 0) };
             }
         }
-        public int sum { get; set; }
+        public decimal sum { get; set; }
         public int returnSum { get; set; }
         public eTypePay typePay { get; set; }
         public IEnumerable<Card> cards { get; set; }
@@ -190,9 +190,9 @@ namespace Front.Equipments.pRRO_SG
     public class pRroRequestBaseSG
     {
         public eTypeDoc docSubType { get; set; }
-        [JsonIgnore]
-        public decimal? Sum;
-        public int? sum { get { return Convert.ToInt32(Sum * 100); } set { Sum = Convert.ToDecimal(value) / 100m; } }
+//        [JsonIgnore]
+        
+        public decimal sum { get; set; }
         public Guid? id { get; set; }
         public string cashierName { get; set; }
     }
@@ -203,7 +203,7 @@ namespace Front.Equipments.pRRO_SG
         public pRroRequestSG(Receipt pR)
         {
             if (pR == null) return;
-            Sum = pR.SumReceipt;
+            sum = pR.SumReceipt;
             docSubType = pR.TypeReceipt == eTypeReceipt.Refund ? eTypeDoc.Refund : eTypeDoc.Sale;
             id = pR.ReceiptId;
             var b = new List<Record>();

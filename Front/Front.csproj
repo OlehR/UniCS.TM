@@ -21,6 +21,7 @@
     <None Remove="icons\hu.png" />
     <None Remove="icons\minus.png" />
     <None Remove="icons\no_volume.png" />
+    <None Remove="icons\paymentTerminal.png" />
     <None Remove="icons\pln.png" />
     <None Remove="icons\plus.png" />
     <None Remove="icons\right.png" />
@@ -35,6 +36,7 @@
     <Resource Include="icons\clock.png" />
     <Resource Include="icons\Close.png" />
     <Resource Include="icons\no_volume.png" />
+    <Resource Include="icons\paymentTerminal.png" />
     <Resource Include="icons\right.png" />
     <Resource Include="icons\ua.png" />
   </ItemGroup>

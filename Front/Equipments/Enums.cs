@@ -146,6 +146,7 @@ namespace Front.Equipments
         VirtualBankPOS,
         Exelio,
         pRRO_SG,
+        Maria,
         pRRo_WebCheck
 
     }
@@ -205,6 +206,8 @@ namespace Front.Equipments
                 case eModelEquipment.Exelio:
                 case eModelEquipment.pRRO_SG:
                 case eModelEquipment.pRRo_WebCheck:
+                case eModelEquipment.Maria:
+
                     return eTypeEquipment.EKKA;
                 default:
                     return eTypeEquipment.NotDefined;

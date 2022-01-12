@@ -78,6 +78,8 @@ namespace ModelMID
         }
         public void SetIdReceipt(IdReceipt idReceipt)
         {
+            if (idReceipt == null)
+                return;
             IdWorkplace = idReceipt.IdWorkplace;
             CodePeriod = idReceipt.CodePeriod;
             CodeReceipt = idReceipt.CodeReceipt;

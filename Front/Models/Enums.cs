@@ -45,14 +45,20 @@ namespace Front.Models
         /// Очікуємо логін адміністратора
         /// </summary>
         WaitAdminLogin,
-        /// <summary>
-        /// Очікуємо пароль адміністратора
-        /// </summary>
-        WaitAdminPassword,
             /// <summary>
             /// Очікуєм підтвердження 18 років
             /// </summary>
-        WaitConfirm18
+        WaitConfirm18,
+        /// <summary>
+        /// Процес оплати
+        /// </summary>
+        ProcessPay,
+        /// <summary>
+        /// Процес оплати
+        /// </summary>
+        ProcessPrintReceipt
+        
+
     }
 
    
