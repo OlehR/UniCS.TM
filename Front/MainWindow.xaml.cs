@@ -31,6 +31,7 @@ namespace Front{
         public event PropertyChangedEventHandler PropertyChanged;
 
         public string WaresQuantity { get; set; }
+        decimal _MoneySum;
         public string MoneySum { get; set; }
         public bool Volume { get; set; }
         /// <summary>
@@ -208,8 +209,8 @@ namespace Front{
 
         private void Recalc()
         {
-            var Sum = ListWares.Sum(r => r.Sum);
-            MoneySum = Sum.ToString();
+            _MoneySum = ListWares.Sum(r => r.Sum);
+            MoneySum = _MoneySum.ToString();
             WaresQuantity = ListWares.Count().ToString();
             SV_WaresList.ScrollToEnd();
         }
@@ -357,9 +358,9 @@ namespace Front{
 
         private void _ButtonPayment(object sender, RoutedEventArgs e)
         {
-            var pay=EF.PosPurchase(1.08m);
-            Bl.db.ReplacePayment(new List<Payment>() { pay });
-            //Console.WriteLine(r.TransactionStatus);
+            var pay=EF.PosPurchase(_MoneySum);
+            pay.SetIdReceipt(Bl.curReciptId);
+            Bl.db.ReplacePayment(new List<Payment>() { pay });            
             var r=Bl.GetReceiptHead(Bl.curReciptId,true);
             EF.PrintReceipt(r);
         }

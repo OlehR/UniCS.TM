@@ -1,7 +1,9 @@
 ﻿using ModelMID.DB;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+
 
 namespace ModelMID
 {
@@ -57,10 +59,14 @@ namespace ModelMID
         /// Оплачено Готівкою
         /// </summary>
         public decimal SumCash { get; set; }
+
+        decimal _SumCreditCard;
         /// <summary>
         /// Сума оплачена Кредиткою
         /// </summary>
-        public decimal SumCreditCard { get; set; }
+        public decimal SumCreditCard { 
+            get { return (Payment != null && Payment.Count() > 0 ? Payment.Sum(el => el.SumPay) : _SumCreditCard);  } 
+            set { _SumCreditCard = value; } }
         /// <summary>
         /// Сума використаних бонусних грн.
         /// </summary>

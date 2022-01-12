@@ -291,7 +291,7 @@ namespace SharedLib
                 }
                 catch (Exception ex)
                 {
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceiptWares.IdWorkplace), Exception = ex, Status =eSyncStatus.Error,StatusDescription=ex.Message+'\n'+ new System.Diagnostics.StackTrace().ToString() });
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceiptWares.IdWorkplace), Exception = ex, Status =eSyncStatus.Error,StatusDescription= "RecalcPrice=>" + ex.Message+'\n'+ new System.Diagnostics.StackTrace().ToString() });
                     return false;
                 }
             }

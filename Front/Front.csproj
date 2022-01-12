@@ -69,6 +69,9 @@
     <Reference Include="Resonance.OLEManager">
       <HintPath>..\DLL\Resonance.OLEManager.dll</HintPath>
     </Reference>
+    <Reference Include="WebCheck">
+      <HintPath>C:\Program Files (x86)\WebCheck\PRRO64\WebCheck.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
