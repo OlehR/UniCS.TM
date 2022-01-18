@@ -188,6 +188,7 @@ namespace SharedLib
             if (IsLock) ExceptionIsLock();
             return connection.Execute(parQuery, Parameters, transaction);
         }
+
         public override int BulkExecuteNonQuery<T>(string parQuery, IEnumerable<T> Parameters)
         {
             if (IsLock) ExceptionIsLock();
@@ -197,13 +198,14 @@ namespace SharedLib
             {
                 foreach (var el in Parameters)
                     ExecuteNonQuery(parQuery, el, transaction);
+                transaction.Commit();
             }
             catch(Exception ex)
             {
                 transaction.Rollback();
                 new Exception("BulkExecuteNonQuery =>"+ex.Message, ex);
             }
-            transaction.Commit();
+           
             //FileLogger.ExtLogForClass(transaction.GetType(), transaction.GetHashCode(), "End transaction");
             return 0;
         }

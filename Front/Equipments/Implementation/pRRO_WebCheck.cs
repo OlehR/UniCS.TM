@@ -11,9 +11,7 @@ namespace Front.Equipments.Implementation
 {
     public class pRRO_WebCheck : Rro
     {
-        string FN = "700000512";
-
-
+        string FN;
         WebCheck.ClassFiscal WCh = new WebCheck.ClassFiscal();
         public pRRO_WebCheck(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<eStatusRRO> pActionStatus = null) :
                        base(pConfiguration, pLogger, pActionStatus)
@@ -45,11 +43,33 @@ namespace Front.Equipments.Implementation
         string XmlWares(ReceiptWares pRW)
         {
             string Add = (pRW.IsUseCodeUKTZED ? $"UKTZED={pRW.CodeUKTZED}" : "") +
-                         (!string.IsNullOrEmpty(pRW.ExciseStamp) ? " ExciseStamp={pRW.ExciseStamp}" : "") +
-                         (!string.IsNullOrEmpty(pRW.BarCode) ? $"Barcode=\"{pRW.BarCode}\"" : "");
+                         (!string.IsNullOrEmpty(pRW.ExciseStamp) ? " ExciseStamp=\"{pRW.ExciseStamp}\"" : "") +
+                         (!string.IsNullOrEmpty(pRW.BarCode) ? $" Barcode=\"{pRW.BarCode}\"" : "");
             return $"<Good Code=\"{pRW.CodeWares}\" Name=\"{ToXMLString(pRW.NameWares) }\" Quantity=\"{pRW.Quantity}\" Price=\"{pRW.Price}\" Sum=\"{pRW.Sum}\" TaxRate=\"1\"  {Add} />";
         }
 
+        string GetElement(string pStr, string pSeek, string pStart = null, string pStop = null)
+        {
+            int i = pStr.IndexOf(pSeek);
+            if (i > 0)
+                pStr = pStr.Substring(i + pSeek.Length);
+            else return null;
+
+            if (!string.IsNullOrEmpty(pStart))
+            {
+                i = pStr.IndexOf(pStart);
+                if (i < 0)
+                    return null;
+                pStr = pStr.Substring(i + pStart.Length);
+            }
+            if (string.IsNullOrEmpty(pStop)) return pStr;
+
+            i = pStr.IndexOf(pStop);
+            if (i > 0)
+                return pStr.Substring(0, i);
+
+            return null;
+        }
         string GenGoods(IEnumerable<ReceiptWares> pRW)
         {
             StringBuilder xml = new StringBuilder("<Goods>");
@@ -64,7 +84,7 @@ namespace Front.Equipments.Implementation
             if (pR.Payment != null && pR.Payment.Count() > 0)
             {
                 var el = pR.Payment.First();
-                pay = $"PA=\"АТ ОЩАДБАНК\" PB=\"{el.NumberTerminal}\" PC=\"{(pR.TypeReceipt == eTypeReceipt.Sale ? "СПЛАТА" : "Повернення")}\" PD=\"{el.NumberCard}\" PE=\"{el.NumberSlip}\" PSNM=\"\" RRN=\"{el.NumberSlip}\"";
+                pay = $"PA=\"{el.Bank}\" PB=\"{el.NumberTerminal}\" PC=\"{(pR.TypeReceipt == eTypeReceipt.Sale ? "СПЛАТА" : "Повернення")}\" PD=\"{el.NumberCard}\" PE=\"{el.NumberSlip}\" PSNM=\"{el.CardHolder}\" RRN=\"{el.CodeAuthorization}\"";
             }
             return $"<L {pay}/>";
         }
@@ -72,17 +92,21 @@ namespace Front.Equipments.Implementation
 
         override public async Task<LogRRO> PrintReceiptAsync(Receipt pR)
         {
-            string xml = $"<Check Number=\"4\" FN = \"{FN}\" OperationType=\"{(pR.TypeReceipt == eTypeReceipt.Sale ? 0 : 1)}\" uuid=\"{pR.ReceiptId}\">\n" +
+            string xml = $"<Check Number=\"{pR.CodeReceipt}\" FN = \"{FN}\" OperationType=\"{(pR.TypeReceipt == eTypeReceipt.Sale ? 0 : 1)}\" uuid=\"{pR.ReceiptId}\">\n" +
                 GenL(pR) + "\n" + GenGoods(pR.Wares) +
-                $"\n<Payments> <Payment ID=\"0\" Sum = \"{pR.SumCreditCard}\"/></Payments>\n</Check>";
+                $"\n<Payments> <Payment ID=\"{1}\" Sum = \"{pR.SumCreditCard}\"/></Payments>\n</Check>";
 
             bool r = WCh.FiscalReceipt(xml);
             string ResXML = WCh.StatusBarXML();
+            
 
+            var FiscalNumber = GetElement(ResXML, "CheckID", "\"", "\"");
+            string Error = GetElement(ResXML, "ErrHelp", "\"", "\"");
+            string CodeError = GetElement(ResXML, "Err", "\"", "\"");
 
-            var Res = new LogRRO(pR) { JSON = GetCheckByFiscalNumber(""), Error = "" };
+            var Res = new LogRRO(pR) {  FiscalNumber= FiscalNumber,SUM= pR.SumCreditCard, TypeRRO= "WebCheck", JSON = GetCheckByFiscalNumber(FiscalNumber), Error = Error,CodeError=int.Parse(CodeError) };
 
-            WCh.FiscalReceipt(xml);
+            
             return Res;
         }
 

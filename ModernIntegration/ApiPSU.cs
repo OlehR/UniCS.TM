@@ -179,9 +179,14 @@ namespace ModernIntegration
             if (parReceipt!=null && parReceipt.ReceiptEvents!=null)
             {
                 var RE = parReceipt.ReceiptEvents.Select(r => GetReceiptEvent(r));
-                Bl.SaveReceiptEvents(RE);
-                var WR = parReceipt.ReceiptItems.Where(r=> r.Excises!=null && r.Excises.Count()>0).Select(r =>  GetReceiptWaresFromReceiptItem( new IdReceipt( parReceipt.Id),r ));
-                Bl.UpdateExciseStamp(WR);
+                if(RE!=null)
+                    Bl.SaveReceiptEvents(RE);
+                if (parReceipt.ReceiptItems != null)
+                {
+                    var WR = parReceipt.ReceiptItems.Where(r => r.Excises != null && r.Excises.Count() > 0).Select(r => GetReceiptWaresFromReceiptItem(new IdReceipt(parReceipt.Id), r));
+                    if (WR != null && WR.Count() > 0)
+                        Bl.UpdateExciseStamp(WR);
+                }
             }
             return false;
         }
