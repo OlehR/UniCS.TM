@@ -25,6 +25,8 @@
     <None Remove="icons\pln.png" />
     <None Remove="icons\plus.png" />
     <None Remove="icons\right.png" />
+    <None Remove="icons\shoppingBag.png" />
+    <None Remove="icons\sparVideo.mp4" />
     <None Remove="icons\ua.png" />
     <None Remove="icons\uk.png" />
     <None Remove="icons\Up.png" />
@@ -38,6 +40,8 @@
     <Resource Include="icons\no_volume.png" />
     <Resource Include="icons\paymentTerminal.png" />
     <Resource Include="icons\right.png" />
+    <Resource Include="icons\shoppingBag.png" />
+    <Resource Include="icons\sparVideo.mp4" />
     <Resource Include="icons\ua.png" />
   </ItemGroup>
 

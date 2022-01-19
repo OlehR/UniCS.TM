@@ -618,7 +618,7 @@
         <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="1" Grid.RowSpan="3"
               Grid.Column="0" Grid.ColumnSpan="4"
-                 Name="WaitPayment" Visibility="Visible" Grid.ZIndex="2" 
+                 Name="WaitPayment" Visibility="Collapsed" Grid.ZIndex="2" 
                 CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
             <Border.Effect>
                 <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
@@ -673,6 +673,54 @@
                         <TextBlock FontSize="28" Text="{DynamicResource cancel}" Margin="5,0,0,5"/>
                     </StackPanel>
                 </Button>
+            </Grid>
+        </Border>
+
+
+        <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="0" Grid.RowSpan="4"
+                Grid.Column="0" Grid.ColumnSpan="4"
+                 Name="StartShopping" Visibility="Visible" Grid.ZIndex="2" >
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock TextWrapping="Wrap" Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type GroupBox}}, Path=ActualWidth}"  
+                    HorizontalAlignment="Center" VerticalAlignment="Bottom" FontSize="48" 
+                                Grid.Column="0"  Grid.Row="1">
+                    Доброго дня, ласкаво просимо до нашого магазину
+                </TextBlock>
+                <Button Grid.Row="2" Grid.Column="0"  Style="{StaticResource greenButton}"  FontSize="48" Click="_Cancel" 
+                        HorizontalAlignment="Center" VerticalAlignment="Bottom"
+                        Height="100" Width="500"
+                        Margin="20">
+                    <StackPanel Orientation="Horizontal">
+                        <Image  Height="40" Width="40"  Source="icons\shoppingBag.png"></Image>
+                        <TextBlock FontSize="48" Text="{DynamicResource startShopping}" Margin="5,0,0,5"/>
+                    </StackPanel>
+                </Button>
+                <Button Grid.Row="3" Grid.Column="0"  Style="{StaticResource greenButton}"  FontSize="48" Click="_Cancel" 
+                        HorizontalAlignment="Center" VerticalAlignment="Top"
+                        Height="100" Width="500"
+                        Margin="20">
+                    <StackPanel Orientation="Horizontal">
+                        <Image  Height="40" Width="40"  Source="icons\shoppingBag.png"></Image>
+                        <TextBlock FontSize="48" Text="{DynamicResource buyBag}" Margin="5,0,0,5"/>
+                    </StackPanel>
+                </Button>
+                <Grid Grid.Row="1" Grid.RowSpan="3" Grid.Column="1" Grid.ColumnSpan="2">
+                    <MediaElement  Name="VideoElement" Source="icons\sparVideo.mp4" LoadedBehavior="Play" Volume="0" UnloadedBehavior="Play" />
+                </Grid>
             </Grid>
         </Border>
 

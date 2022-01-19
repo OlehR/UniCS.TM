@@ -134,6 +134,7 @@ namespace Front
                     WaitAdminLogin.Visibility = Visibility.Collapsed;
                     WeightWares.Visibility = Visibility.Collapsed;
                     WaitPayment.Visibility = Visibility.Collapsed;
+                    StartShopping.Visibility = Visibility.Collapsed;
 
                     switch (State)
                     {

@@ -20,6 +20,7 @@
     <v:String x:Key="payment">Оплата</v:String>
     <v:String x:Key="cancel">Відмінити</v:String>
     <v:String x:Key="ok">Ok</v:String>
+    <v:String x:Key="startShopping">Почати покупки</v:String>
 
     <v:String x:Key="ChoicePriceTobacco">Виберіть вірну ціну</v:String>
     <v:String x:Key="ChoiceExciseStamp">Проскануйте або введіть акцизну марку</v:String>
@@ -28,5 +29,6 @@
     <v:String x:Key="WaitPayment">Оплата товару</v:String>
     <v:String x:Key="AmountPayment">До оплати: </v:String>
     <v:String x:Key="PaymentStatus">Статус оплати:</v:String>
+    
 
 </ResourceDictionary>
