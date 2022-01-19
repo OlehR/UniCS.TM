@@ -306,25 +306,25 @@ namespace SharedLib
         ///</returns>
         public virtual bool AddReceipt(Receipt parReceipt)
         {
-            return this.db.ExecuteNonQuery<Receipt>(SqlAddReceipt, parReceipt) == 0;
+            return this.db.ExecuteNonQuery<Receipt>(SqlAddReceipt, parReceipt) > 0;
         }
 
         public virtual bool ReplaceReceipt(Receipt parReceipt)
         {
-            return this.db.ExecuteNonQuery<Receipt>(SqlReplaceReceipt, parReceipt) == 0;
+            return this.db.ExecuteNonQuery<Receipt>(SqlReplaceReceipt, parReceipt) > 0;
         }
 
         public virtual bool UpdateClient(IdReceipt parIdReceipt, int parCodeClient)
         {
             lock (GetObjectForLockByIdWorkplace(parIdReceipt.IdWorkplace))
             {
-                return this.db.ExecuteNonQuery<IdReceipt>(SqlUpdateClient, parIdReceipt) == 0;
+                return this.db.ExecuteNonQuery<IdReceipt>(SqlUpdateClient, parIdReceipt) > 0;
             }
         }
 
         public virtual bool CloseReceipt(Receipt parReceipt)
         {
-            return this.db.ExecuteNonQuery<Receipt>(SqlCloseReceipt, parReceipt) == 0;
+            return this.db.ExecuteNonQuery<Receipt>(SqlCloseReceipt, parReceipt) > 0;
         }
 
 
@@ -335,13 +335,13 @@ namespace SharedLib
         /// <returns></returns>
         public virtual bool AddWares(ReceiptWares parReceiptWares)
         {
-            return this.db.ExecuteNonQuery<ReceiptWares>(SqlInsertWaresReceipt, parReceiptWares) == 0 /*&& RecalcHeadReceipt((IdReceipt)parReceiptWares)*/;
+            return this.db.ExecuteNonQuery<ReceiptWares>(SqlInsertWaresReceipt, parReceiptWares) > 0 /*&& RecalcHeadReceipt((IdReceipt)parReceiptWares)*/;
         }
 
         public virtual bool ReplaceWaresReceipt(ReceiptWares parReceiptWares)
         {
 
-            return this.db.ExecuteNonQuery<ReceiptWares>(SqlReplaceWaresReceipt, parReceiptWares) == 0 /*&& RecalcHeadReceipt((IdReceipt)parReceiptWares)*/;
+            return this.db.ExecuteNonQuery<ReceiptWares>(SqlReplaceWaresReceipt, parReceiptWares) > 0 /*&& RecalcHeadReceipt((IdReceipt)parReceiptWares)*/;
         }
 
 
@@ -355,14 +355,14 @@ namespace SharedLib
         {
             lock (GetObjectForLockByIdWorkplace(parIdReceiptWares.IdWorkplace))
             {
-                return this.db.ExecuteNonQuery(SqlUpdateQuantityWares, parIdReceiptWares) == 0 /*&& RecalcHeadReceipt(parParameters)*/;
+                return this.db.ExecuteNonQuery(SqlUpdateQuantityWares, parIdReceiptWares) > 0 /*&& RecalcHeadReceipt(parParameters)*/;
             }
         }
 
 
         public virtual bool DeleteReceiptWares(ReceiptWares parIdReceiptWares)
         {
-            return this.db.ExecuteNonQuery<IdReceiptWares>(SqlDeleteReceiptWares, parIdReceiptWares) == 0 /*&& RecalcHeadReceipt(parParameters)*/;
+            return this.db.ExecuteNonQuery<IdReceiptWares>(SqlDeleteReceiptWares, parIdReceiptWares) > 0 /*&& RecalcHeadReceipt(parParameters)*/;
         }
         public virtual Receipt ViewReceipt(IdReceipt parIdReceipt, bool parWithDetail = false)
         {
@@ -421,12 +421,12 @@ namespace SharedLib
 
         public virtual bool InputOutputMoney(decimal parMany)
         {
-            return this.db.ExecuteNonQuery(SqlInputOutputMoney) == 0;
+            return this.db.ExecuteNonQuery(SqlInputOutputMoney) > 0;
         }
 
         public virtual bool AddZ(System.Data.DataRow parRow)
         {
-            return this.db.ExecuteNonQuery(SqlAddZ) == 0;
+            return this.db.ExecuteNonQuery(SqlAddZ) > 0;
         }
 
 
@@ -649,7 +649,7 @@ namespace SharedLib
    
         public virtual bool RecalcHeadReceipt(IdReceipt parReceipt)
         {
-            return this.db.ExecuteNonQuery<IdReceipt>(this.SqlRecalcHeadReceipt, parReceipt) == 0;
+            return this.db.ExecuteNonQuery<IdReceipt>(this.SqlRecalcHeadReceipt, parReceipt) > 0;
         }
 
         /// <summary>

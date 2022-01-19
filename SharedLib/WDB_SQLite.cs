@@ -365,7 +365,7 @@ namespace SharedLib
         public override bool CopyWaresReturnReceipt(IdReceipt parIdReceipt, bool parIsCurrentDay = true)
 		{
 			string SqlCopyWaresReturnReceipt=(parIsCurrentDay? this.SqlCopyWaresReturnReceipt.Replace("RRC.","RC.") : this.SqlCopyWaresReturnReceipt ) ;
-			return (this.db.ExecuteNonQuery(SqlCopyWaresReturnReceipt, parIdReceipt) ==0);
+			return (this.db.ExecuteNonQuery(SqlCopyWaresReturnReceipt, parIdReceipt) > 0);
 		}
 
         
@@ -456,7 +456,7 @@ namespace SharedLib
         {
             using (var DB = new SQLite(ReceiptFile))
             {
-                return DB.ExecuteNonQuery<Receipt>(SqlAddReceipt, parReceipt) == 0;
+                return DB.ExecuteNonQuery<Receipt>(SqlAddReceipt, parReceipt) > 0;
             }
         }
 
@@ -464,7 +464,7 @@ namespace SharedLib
         {
             using (var DB = new SQLite(ReceiptFile))
             {
-                return DB.ExecuteNonQuery<Receipt>(SqlReplaceReceipt, parReceipt) == 0;
+                return DB.ExecuteNonQuery<Receipt>(SqlReplaceReceipt, parReceipt) > 0;
             }
         }
 
@@ -474,7 +474,7 @@ namespace SharedLib
             {
                 lock (GetObjectForLockByIdWorkplace(parIdReceipt.IdWorkplace))
                 {
-                    return DB.ExecuteNonQuery<IdReceipt>(SqlUpdateClient, parIdReceipt) == 0;
+                    return DB.ExecuteNonQuery<IdReceipt>(SqlUpdateClient, parIdReceipt) > 0;
                 }
             }
         }
@@ -485,7 +485,7 @@ namespace SharedLib
             {
                 lock (GetObjectForLockByIdWorkplace(parReceipt.IdWorkplace))
                 {
-                    return DB.ExecuteNonQuery<Receipt>(SqlCloseReceipt, parReceipt) == 0;
+                    return DB.ExecuteNonQuery<Receipt>(SqlCloseReceipt, parReceipt) > 0;
                 }
             }
         }
@@ -499,7 +499,7 @@ namespace SharedLib
         {
             using (var DB = new SQLite(ReceiptFile))
             {
-                return DB.ExecuteNonQuery<ReceiptWares>(SqlInsertWaresReceipt, parReceiptWares) == 0 /*&& RecalcHeadReceipt((IdReceipt)parReceiptWares)*/;
+                return DB.ExecuteNonQuery<ReceiptWares>(SqlInsertWaresReceipt, parReceiptWares) > 0 /*&& RecalcHeadReceipt((IdReceipt)parReceiptWares)*/;
             }
         }
 
@@ -507,7 +507,7 @@ namespace SharedLib
         {
             using (var DB = new SQLite(ReceiptFile))
             {
-                return DB.ExecuteNonQuery<ReceiptWares>(SqlReplaceWaresReceipt, parReceiptWares) == 0;
+                return DB.ExecuteNonQuery<ReceiptWares>(SqlReplaceWaresReceipt, parReceiptWares) > 0;
             }
         }
 
@@ -517,7 +517,7 @@ namespace SharedLib
             {
                 lock (GetObjectForLockByIdWorkplace(parReceiptWares.IdWorkplace))
                 {
-                    return DB.ExecuteNonQuery(SqlUpdateQuantityWares, parReceiptWares) == 0 /*&& RecalcHeadReceipt(parParameters)*/;
+                    return DB.ExecuteNonQuery(SqlUpdateQuantityWares, parReceiptWares) > 0 /*&& RecalcHeadReceipt(parParameters)*/;
                 }
             }
         }
@@ -526,7 +526,7 @@ namespace SharedLib
         {
             using (var DB = new SQLite(ReceiptFile))
             {
-                return DB.ExecuteNonQuery<IdReceiptWares>(SqlDeleteReceiptWares, parIdReceiptWares) == 0 /*&& RecalcHeadReceipt(parParameters)*/;
+                return DB.ExecuteNonQuery<IdReceiptWares>(SqlDeleteReceiptWares, parIdReceiptWares) > 0 /*&& RecalcHeadReceipt(parParameters)*/;
             }
         }
 
@@ -534,7 +534,7 @@ namespace SharedLib
         {
             using (var DB = new SQLite(ReceiptFile))
             {
-                return DB.ExecuteNonQuery<IdReceipt>(this.SqlRecalcHeadReceipt, parReceipt) == 0;
+                return DB.ExecuteNonQuery<IdReceipt>(this.SqlRecalcHeadReceipt, parReceipt) > 0;
             }
         }
 

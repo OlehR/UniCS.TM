@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using ModelMID;
 
 namespace SharedLib
 {
@@ -16,7 +15,8 @@ namespace SharedLib
             //varD = DateTime.Now;
             //filePath = Path.Combine(Global.PathLog, $"Log_{varD:yyyyMMdd}.log");
         }
-        static async Task Write( string pText,string pFilePath = null,bool pAddInfo=true)
+
+        /*static async Task Write( string pText,string pFilePath = null,bool pAddInfo=true)
         {
             var varD = DateTime.Now;
             var filePath = pFilePath !=null? pFilePath: Path.Combine(Global.PathLog, $"Log_{varD:yyyyMMdd}.log");
@@ -36,6 +36,6 @@ namespace SharedLib
             {
                 await sourceStream.WriteAsync(encodedText, 0, encodedText.Length);
             };
-        }
+        }*/
     }
 }

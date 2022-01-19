@@ -209,7 +209,7 @@ update receipt set code_client=@CodeClientw.Type_Wares
 update receipt
    set STATE_RECEIPT    = @StateReceipt,
        NUMBER_RECEIPT=@NumberReceipt,
-	   Date_receipt = max(@DateReceipt,Date_receipt), -- datetime('now','localtime'),
+	   Date_receipt = datetime('now','localtime'), --max(@DateReceipt,Date_receipt), -- 
        USER_CREATE = @UserCreate
  --      SUM_RECEIPT      = @SumReceipt,
  --      VAT_RECEIPT      = @VatReceipt,

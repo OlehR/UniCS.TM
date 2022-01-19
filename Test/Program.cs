@@ -48,7 +48,6 @@ namespace Test
            
            //await CreateDataBaseAsync(true); return;
 
-
             TestReceiptAsync();
 
             //CreateBarCode();
@@ -73,7 +72,6 @@ namespace Test
         }
 
 
-
         static void TestKit()
         {
             var a = new string[] //{ "4820083903205", "4820083900990", "4820083900617", "4820083900198", "4820083900037" };
@@ -83,6 +81,7 @@ namespace Test
             foreach (var el in a)
                 api.AddProductByBarCode(TerminalId, el, 2);
         }
+
         static async Task TestReceiptAsync()
         {
             //var TerminalId = Guid.Parse("1bb89aa9-dbdf-4eb0-b7a2-094665c3fdd0");//14
@@ -90,6 +89,13 @@ namespace Test
             var ProductId = Guid.Parse("00000000-abcd-0000-0019-000000162794");
             var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009007");
             var ReceiptId = Guid.Parse("00000072-ffff-2022-0112-000000000028");
+
+
+            var receipt= JsonConvert.DeserializeObject<ModelMID.Receipt>(File.ReadAllText(@"d:\mid\receipt.json "));
+
+
+            
+
             var Pay = new ReceiptPayment[] {
                 new ReceiptPayment
             {
@@ -114,10 +120,14 @@ namespace Test
             } };
 
             var api = new ApiPSU();
-            api.AddPayment(TerminalId, Pay); 
 
-            var xx = api.GetReciept(ReceiptId);
-            return;
+
+            var rrrrrrrr=api.Bl.db.CloseReceipt(receipt);
+
+
+            // api.AddPayment(TerminalId, Pay); 
+
+            // var xx = api.GetReciept(ReceiptId);            return;
             // var recipt = api.GetProductsByName(TerminalId, "", 0, false, FastGroup,12);
 
             ProductViewModel sd;
@@ -127,7 +137,7 @@ namespace Test
                // var c = api.GetCustomerByPhone(TerminalId, "0667464631");
                 //sd = api.AddProductByBarCode(TerminalId, "4820000536202", 1); return;
                  //var c = api.GetCustomerByPhone(TerminalId, "0667464631");return;
-                 api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20210902, IdWorkplace = 74, CodeReceipt = 1}); return;
+                 //api.Bl.ds.SendReceiptTo1C(new IdReceipt() { CodePeriod = 20210902, IdWorkplace = 74, CodeReceipt = 1}); return;
 
                  //api.Bl.ds.SendRWDeleteAsync();        return;
 
@@ -183,6 +193,7 @@ namespace Test
                 sd = api.AddProductByBarCode(TerminalId, "2201651902226", 1); //
 
                 var r = api.AddFiscalNumber(TerminalId, "TRRF-1234"); return;
+
 
                 //   sd = api.AddProductByBarCode(TerminalId, "7775006620509", 1); //товар 2 кат*/
                 //  Thread.Sleep(4000);
@@ -388,7 +399,7 @@ namespace Test
                 api.AddPayment(TerminalId, Pay);
                 var rrrr = api.AddFiscalNumber(TerminalId, "TRRF-1234");
 
-                var receipt = api.GetReciept(RId);
+                var ReceiptF = api.GetReciept(RId);
 
                 var sz = JsonConvert.SerializeObject(receipt);
                 var RefoundReceipt = JsonConvert.DeserializeObject<RefundReceiptViewModel>(sz);
@@ -443,6 +454,7 @@ namespace Test
             }
 
         }
+        
         static void CreateReceipDay()
         {
             var SQLGetReceipt = @"SELECT top(500) ISNULL(td.PERCENT_DISCOUNT,0) AS PERCENT_DISCOUNT, dc.bar_code,  dr.number,dr.date_time
@@ -537,8 +549,6 @@ namespace Test
             }
 
 
-
-
         }
 
         public static void all_bag()
@@ -612,10 +622,7 @@ namespace Test
 
                         api.Bl.SaveReceipt(r, false);
                     }
-
-
                 }
-
 
             }
 
@@ -645,8 +652,6 @@ namespace Test
             }
         }
     }
-
-
 
 
     public class TestReceipt

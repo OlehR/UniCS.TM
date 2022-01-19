@@ -101,7 +101,11 @@ namespace SharedLib
             try
             {
                 if (TypeCommit == eTypeCommit.Auto)
-                    return connection.Execute(pQuery, Parameters);
+                {
+                    int i= connection.Execute(pQuery, Parameters);
+                    //FileLogger.WriteLogMessage($"ExecuteNonQuery<T> CountTry=>{CountTry} SQL=>{pQuery} res=>{i}",eTypeLog.Full);
+                    return i;
+                }
                 else
                     return connection.Execute(pQuery, Parameters, transaction);
             }
@@ -110,7 +114,7 @@ namespace SharedLib
                 CountTry--;
                 if(CountTry>0 && e.Message.Contains("database is locked"))
                 {
-                    FileLogger.WriteLogMessage($"ExecuteNonQuery<T> CountTry=>{CountTry} SQL=>{pQuery}");
+                    FileLogger.WriteLogMessage($"ExecuteNonQuery<T> CountTry=>{CountTry} SQL=>{pQuery}", eTypeLog.Error);
                     WaitCollect(100);
                     return ExecuteNonQuery(pQuery, Parameters, CountTry);
                 }
