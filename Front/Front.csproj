@@ -41,7 +41,9 @@
     <Resource Include="icons\paymentTerminal.png" />
     <Resource Include="icons\right.png" />
     <Resource Include="icons\shoppingBag.png" />
-    <Resource Include="icons\sparVideo.mp4" />
+    <Content Include="icons\sparVideo.mp4">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Resource Include="icons\ua.png" />
   </ItemGroup>
 

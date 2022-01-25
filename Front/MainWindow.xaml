@@ -398,7 +398,7 @@
 		                           Height="300"
                                    x:Name="KB2"                                  
 		                           VerticalAlignment="Top" 
-		                           ActiveContainer="{Binding ElementName=MainGrid}"
+		                           ActiveContainer="{Binding ElementName=ExciseStamp}"
                                    ToggleButtonStyle="{StaticResource DefaultTouchToggleButtonStyle}"
 		                           CancelCommand="{Binding CancelCommand2}" Grid.RowSpan="2"/>
                 </Grid>
@@ -517,7 +517,7 @@
 		                           Height="250"
                                    x:Name="KB"                                  
 		                           VerticalAlignment="Bottom" 
-		                           ActiveContainer="{Binding ElementName=MainGrid}"
+		                           ActiveContainer="{Binding ElementName=WaitAdminLoginGrid}"
                                    ToggleButtonStyle="{StaticResource DefaultTouchToggleButtonStyle}"
 		                           CancelCommand="{Binding CancelCommand2}"/>
 
@@ -635,12 +635,12 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                    <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="28" 
+                <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="28" 
                                 Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0"
                                 Text="{DynamicResource WaitPayment }"/>
                 <Image  Grid.Column="1" Grid.Row="1"
                     Source="icons\paymentTerminal.png" Width="250" Margin="15"/>
-                
+
                 <Grid Grid.Column="0" Grid.Row="1">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"></RowDefinition>
@@ -695,7 +695,7 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock TextWrapping="Wrap" Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type GroupBox}}, Path=ActualWidth}"  
+                <TextBlock TextWrapping="Wrap"   
                     HorizontalAlignment="Center" VerticalAlignment="Bottom" FontSize="48" 
                                 Grid.Column="0"  Grid.Row="1">
                     Доброго дня, ласкаво просимо до нашого магазину
@@ -718,9 +718,24 @@
                         <TextBlock FontSize="48" Text="{DynamicResource buyBag}" Margin="5,0,0,5"/>
                     </StackPanel>
                 </Button>
-                <Grid Grid.Row="1" Grid.RowSpan="3" Grid.Column="1" Grid.ColumnSpan="2">
-                    <MediaElement  Name="VideoElement" Source="icons\sparVideo.mp4" LoadedBehavior="Play" Volume="0" UnloadedBehavior="Play" />
+                <Grid Grid.Row="1" Grid.RowSpan="3" Grid.Column="1" Grid.ColumnSpan="2" >
+                    <!--<MediaElement   Name="StartVideo" Source="icons\sparVideo.mp4" LoadedBehavior="Manual" Volume="0"   />-->
+                    <MediaElement Name="StartVideo" Volume="0" LoadedBehavior="Manual">
+                        <MediaElement.Triggers>
+                            <EventTrigger RoutedEvent="MediaElement.Loaded">
+                                <EventTrigger.Actions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <MediaTimeline Source="icons\sparVideo.mp4" Storyboard.TargetName="StartVideo"  
+                                                           RepeatBehavior="Forever" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger.Actions>
+                            </EventTrigger>
+                        </MediaElement.Triggers>
+                    </MediaElement>
                 </Grid>
+
             </Grid>
         </Border>
 

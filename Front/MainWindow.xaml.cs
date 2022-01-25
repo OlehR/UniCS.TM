@@ -105,7 +105,6 @@ namespace Front
 
             InitializeComponent();
 
-            KB2.SetInput(TBExciseStamp);
 
             ListWares = new ObservableCollection<ReceiptWares>(StartData());
             WaresList.ItemsSource = ListWares;// Wares;
@@ -135,9 +134,14 @@ namespace Front
                     WeightWares.Visibility = Visibility.Collapsed;
                     WaitPayment.Visibility = Visibility.Collapsed;
                     StartShopping.Visibility = Visibility.Collapsed;
+                    StartVideo.Close();
 
                     switch (State)
                     {
+                        case eStateMainWindows.StartWindow:
+                            StartShopping.Visibility = Visibility.Visible;
+                            StartVideo.Play();
+                            break;
                         case eStateMainWindows.WaitInputPrice:
                             Prices.ItemsSource = new ObservableCollection<decimal>(CurWares.Prices/*.Select(r=>Convert.ToString(r))*/);
                             Background.Visibility = Visibility.Visible;
@@ -145,7 +149,8 @@ namespace Front
                             break;
                         case eStateMainWindows.WaitExciseStamp:
                             ExciseStamp.Visibility = Visibility.Visible;
-
+                            Background.Visibility = Visibility.Visible;
+                            TBExciseStamp.Focus();
                             break;
                         case eStateMainWindows.WaitWeight:
                             EF.StartWeight();
@@ -154,11 +159,11 @@ namespace Front
                         case eStateMainWindows.WaitAdmin:
                             WaitAdmin.Visibility = Visibility.Visible;
                             Background.Visibility = Visibility.Visible;
-                            KB.SetInput(LoginTextBlock);
                             break;
                         case eStateMainWindows.WaitAdminLogin:
                             WaitAdminLogin.Visibility = Visibility.Visible;
                             Background.Visibility = Visibility.Visible;
+                            LoginTextBlock.Focus();
                             break;
                         case eStateMainWindows.WaitFindWares:
                             FindWaresWin FWW = new FindWaresWin(this);
@@ -353,12 +358,12 @@ namespace Front
 
         private void _OwnBag(object sender, RoutedEventArgs e)
         {
-
+            SetStateView(eStateMainWindows.WaitExciseStamp);
         }
 
         private void _BuyBag(object sender, RoutedEventArgs e)
         {
-
+            SetStateView(eStateMainWindows.StartWindow);
         }
 
         private void _Cancel(object sender, RoutedEventArgs e)
