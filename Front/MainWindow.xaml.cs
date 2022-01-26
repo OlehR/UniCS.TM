@@ -112,7 +112,7 @@ namespace Front
             ua.Tag = new CultureInfo("uk");
             en.Tag = new CultureInfo("en");
             hu.Tag = new CultureInfo("hu");
-            pln.Tag = new CultureInfo("pl");
+            pln.Tag = new CultureInfo("pln");
 
 
             CultureInfo currLang = App.Language;
@@ -134,12 +134,20 @@ namespace Front
                     WeightWares.Visibility = Visibility.Collapsed;
                     WaitPayment.Visibility = Visibility.Collapsed;
                     StartShopping.Visibility = Visibility.Collapsed;
+                    textWaresQuantity.Visibility = Visibility.Visible;
+                    valueWaresQuantity.Visibility = Visibility.Visible;
+                    textInAll.Visibility = Visibility.Visible;
+                    valueInAll.Visibility = Visibility.Visible;
                     StartVideo.Close();
 
                     switch (State)
                     {
                         case eStateMainWindows.StartWindow:
                             StartShopping.Visibility = Visibility.Visible;
+                            textWaresQuantity.Visibility = Visibility.Collapsed;
+                            valueWaresQuantity.Visibility = Visibility.Collapsed;
+                            textInAll.Visibility = Visibility.Collapsed;
+                            valueInAll.Visibility = Visibility.Collapsed;
                             StartVideo.Play();
                             break;
                         case eStateMainWindows.WaitInputPrice:
@@ -259,7 +267,7 @@ namespace Front
                 case "hu":
                     hu.Style = (Style)hu.FindResource("yelowButton");
                     break;
-                case "pl":
+                case "pln":
                     pln.Style = (Style)pln.FindResource("yelowButton");
                     break;
             }

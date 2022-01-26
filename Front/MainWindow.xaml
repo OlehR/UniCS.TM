@@ -99,14 +99,18 @@
                     </Button>
                 </Grid>
 
-                <TextBlock Grid.Column="3" FontSize="22" HorizontalAlignment="Center" Text ="{DynamicResource markWaresQuantity}"/>
+                <TextBlock  Grid.Column="3" FontSize="22" HorizontalAlignment="Center" Text ="{DynamicResource markWaresQuantity}"
+                            Visibility="Collapsed" Name="textWaresQuantity" />
                 <TextBlock Grid.Column="4" 
-                       FontSize="22"
+                       FontSize="22" 
+                       Visibility="Collapsed" Name="valueWaresQuantity"
                        Text="{Binding WaresQuantity, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" />
 
-                <TextBlock Grid.Column="5" FontSize="22" Text="{DynamicResource markInAll}"/>
+                <TextBlock Grid.Column="5" FontSize="22" Text="{DynamicResource markInAll}" 
+                           Visibility="Collapsed" Name="textInAll"/>
                 <TextBlock Grid.Column="6"
+                           Name="valueInAll" Visibility="Collapsed"
                            FontSize="48"
                            FontWeight="Bold"
                            Foreground="#ff5500"
@@ -676,9 +680,9 @@
             </Grid>
         </Border>
 
-
+         <!--Початок покупки - стартове вікно-->
         <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
-                 Grid.Row="0" Grid.RowSpan="4"
+                 Grid.Row="1" Grid.RowSpan="4"
                 Grid.Column="0" Grid.ColumnSpan="4"
                  Name="StartShopping" Visibility="Visible" Grid.ZIndex="2" >
             <Grid>
@@ -695,11 +699,12 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock TextWrapping="Wrap"   
+
+                    <TextBlock TextWrapping="Wrap"   
                     HorizontalAlignment="Center" VerticalAlignment="Bottom" FontSize="48" 
                                 Grid.Column="0"  Grid.Row="1">
                     Доброго дня, ласкаво просимо до нашого магазину
-                </TextBlock>
+                    </TextBlock>
                 <Button Grid.Row="2" Grid.Column="0"  Style="{StaticResource greenButton}"  FontSize="48" Click="_Cancel" 
                         HorizontalAlignment="Center" VerticalAlignment="Bottom"
                         Height="100" Width="500"
