@@ -18,5 +18,16 @@
     <v:String x:Key="ownBag">Saját táska</v:String>
     <v:String x:Key="buyBag">Vegyen egy csomagot</v:String>
     <v:String x:Key="payment">Fizetés</v:String>
+    <v:String x:Key="cancel">Megszünteti</v:String>
+    <v:String x:Key="ok">Ok</v:String>
+    <v:String x:Key="startShopping">Kezdje el a vásárlást</v:String>
+
+    <v:String x:Key="ChoicePriceTobacco">Válassza ki a megfelelő árat</v:String>
+    <v:String x:Key="ChoiceExciseStamp">Szkennelje be vagy írja be a jövedéki bélyeget</v:String>
+    <v:String x:Key="ExciseStampEmpty">Jövedéki kód nincs</v:String>
+    <v:String x:Key="WaitAdmin">Kérjük, várja meg az adminisztrátort!</v:String>
+    <v:String x:Key="WaitPayment">Fizetés az árukért</v:String>
+    <v:String x:Key="AmountPayment">Fizetni:</v:String>
+    <v:String x:Key="PaymentStatus">Fizetési állapot:</v:String>
 
 </ResourceDictionary>

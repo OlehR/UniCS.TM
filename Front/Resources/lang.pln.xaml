@@ -18,5 +18,16 @@
     <v:String x:Key="ownBag">Własna torba</v:String>
     <v:String x:Key="buyBag">Kup torbę</v:String>
     <v:String x:Key="payment">Płatność</v:String>
+    <v:String x:Key="cancel">Anuluj</v:String>
+    <v:String x:Key="ok">Оk</v:String>
+    <v:String x:Key="startShopping">Rozpocznij zakupy</v:String>
+
+    <v:String x:Key="ChoicePriceTobacco">Wybierz odpowiednią cenę</v:String>
+    <v:String x:Key="ChoiceExciseStamp">Zeskanuj lub wpisz znaczek akcyzy</v:String>
+    <v:String x:Key="ExciseStampEmpty">Nie ma kodu akcyzowego</v:String>
+    <v:String x:Key="WaitAdmin">Proszę czekać na administratora!</v:String>
+    <v:String x:Key="WaitPayment">Zapłata za towary</v:String>
+    <v:String x:Key="AmountPayment">Płacić:</v:String>
+    <v:String x:Key="PaymentStatus">Status płatności:</v:String>
 
 </ResourceDictionary>

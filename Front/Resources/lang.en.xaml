@@ -18,5 +18,16 @@
     <v:String x:Key="ownBag">Own bag</v:String>
     <v:String x:Key="buyBag">Buy a bag</v:String>
     <v:String x:Key="payment">Payment</v:String>
+    <v:String x:Key="cancel">Cancel</v:String>
+    <v:String x:Key="ok">Ok</v:String>
+    <v:String x:Key="startShopping">Start shopping</v:String>
+
+    <v:String x:Key="ChoicePriceTobacco">Choose the right price</v:String>
+    <v:String x:Key="ChoiceExciseStamp">Scan or enter the excise stamp</v:String>
+    <v:String x:Key="ExciseStampEmpty">There is no excise code</v:String>
+    <v:String x:Key="WaitAdmin">There is no ehtsise tsode!</v:String>
+    <v:String x:Key="WaitPayment">Payment for goods</v:String>
+    <v:String x:Key="AmountPayment">To pay:</v:String>
+    <v:String x:Key="PaymentStatus">Payment status:</v:String>
 
 </ResourceDictionary>
