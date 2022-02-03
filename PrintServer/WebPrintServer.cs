@@ -18,37 +18,38 @@ namespace PrintServer
         {
             var PathLog = System.Configuration.ConfigurationManager.AppSettings["PathLog"];
             string now = DateTime.Now.ToString("yyyyMMdd");
-            fileName = Path.Combine(PathLog, $"\\PrintServer_{now}.log");
+            fileName = Path.Combine(PathLog, $"PrintServer_{now}.log");
             //y = 0;
         }
-        public string Print(Wares parWares) 
+        public string Print(Wares pWares)
         {
             try
             {
-                if (parWares == null)
+                if (pWares == null)
                     return "Bad input Data: Wares";
-                Console.WriteLine(parWares.CodeWares);
+                Console.WriteLine(pWares.CodeWares);
 
-                if (parWares.CodeWarehouse == 0)
+                if (pWares.CodeWarehouse == 0)
                     return "Bad input Data:CodeWarehouse";
-                
-                var NamePrinterYelow = System.Configuration.ConfigurationManager.AppSettings[$"NamePrinterYelow_{parWares.CodeWarehouse}"];
-                var NamePrinter = System.Configuration.ConfigurationManager.AppSettings[$"NamePrinter_{parWares.CodeWarehouse}"];
-                if(string.IsNullOrEmpty( NamePrinter))
-                    return $"Відсутній принтер: NamePrinter_{parWares.CodeWarehouse}";
+
+                var NamePrinterYelow = System.Configuration.ConfigurationManager.AppSettings[$"NamePrinterYelow_{pWares.CodeWarehouse}"];
+                var NamePrinter = System.Configuration.ConfigurationManager.AppSettings[$"NamePrinter_{pWares.CodeWarehouse}"];
+                if (string.IsNullOrEmpty(NamePrinter))
+                    return $"Відсутній принтер: NamePrinter_{pWares.CodeWarehouse}";
 
                 //int  x = 343 / y;
-                var ListWares = GL.GetCode(parWares.CodeWarehouse,parWares.CodeWares);//"000140296,000055083,000055053"
-                GL.Print(ListWares, NamePrinter, NamePrinterYelow, "Супер тест", parWares.CodeWarehouse<30);  //PrintPreview();
-                File.AppendAllText(fileName, $"\n{DateTime.Now.ToString()} Warehouse=>{parWares.CodeWares} Count=> {ListWares.Count()} Login=>{parWares.Login} SN=>{parWares.SerialNumber} NameDCT=> {parWares.NameDCT}");
+                var ListWares = GL.GetCode(pWares.CodeWarehouse, pWares.CodeWares);//"000140296,000055083,000055053"
+                if (ListWares.Count() > 0)
+                    GL.Print(ListWares, NamePrinter, NamePrinterYelow, $"Label_{pWares.NameDCT}_{pWares.Login}", pWares.CodeWarehouse < 30);  //PrintPreview();
+                File.AppendAllText(fileName, $"\n{DateTime.Now.ToString()} Warehouse=> {pWares.CodeWarehouse} Count=> {ListWares.Count()} Login=>{pWares.Login} SN=>{pWares.SerialNumber} NameDCT=> {pWares.NameDCT} \n Wares=>{pWares.CodeWares}");
 
-                return $"Print=>{ListWares.Count()}"; 
+                return $"Print=>{ListWares.Count()}";
 
             }
-            catch(Exception ex)
-            {                
-                File.AppendAllText(fileName, $"\n{DateTime.Now.ToString()}\nInputData=>{parWares.CodeWares}\n{ex.Message } \n{ex.StackTrace}");
-                return "Error=>"+ex.Message;
+            catch (Exception ex)
+            {
+                File.AppendAllText(fileName, $"\n{DateTime.Now.ToString()}\nInputData=>{pWares.CodeWares}\n{ex.Message } \n{ex.StackTrace}");
+                return "Error=>" + ex.Message;
             }
         }
 

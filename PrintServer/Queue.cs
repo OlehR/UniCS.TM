@@ -9,27 +9,25 @@ namespace PrintServer
 {
     public class MyQueue
     {
-
         public string GetQueue()
         {
-            string jobList = "";
+            StringBuilder jobList = new StringBuilder("Черга друку");
             LocalPrintServer ps = new LocalPrintServer();
-
+          
             // Get the default print queue
-            PrintQueue pq = ps.DefaultPrintQueue;
-            // foreach (PrintQueue pq in myPrintQueues)
-            // {
-            pq.Refresh();
-            PrintJobInfoCollection jobs = pq.GetPrintJobInfoCollection();
-            foreach (PrintSystemJobInfo job in jobs)
+            //PrintQueue pq = ps.DefaultPrintQueue;
+            foreach (PrintQueue pq in ps.GetPrintQueues())
             {
-                jobList = jobList + "\n\tQueue:" + pq.Name;
-                jobList = jobList + "\n\tLocation:" + pq.Location;
-                jobList = jobList + "\n\t\tJob: " + job.JobName + " ID: " + job.JobIdentifier;
-
-            }// end for each print job    
-             // }// end for e
-            return jobList;
+                jobList.Append("\n" + pq.FullName);
+                pq.Refresh();
+                PrintJobInfoCollection jobs = pq.GetPrintJobInfoCollection();
+                jobList.Append($"\n\tQueue:{pq.Name} \tLocation:{ pq.Location}");
+                foreach (PrintSystemJobInfo job in jobs)
+                {
+                    jobList.Append($"\nJob: {job.JobName} ID: {job.JobIdentifier} Document Name: {job.Name} Page:{job.NumberOfPages} Time:{job.TimeJobSubmitted}");
+                }
+            }
+            return jobList.ToString();
         }
         public string ClearQueue()
         {
@@ -40,4 +38,4 @@ namespace PrintServer
         }
     }
 
-    }
+}

@@ -47,9 +47,10 @@ namespace PrintServer
 
         public List<cPrice> GetCode(int parCodeWarehouse,string parCodeWares )
         {
-            if (string.IsNullOrEmpty(parCodeWares))
-                return null;
             var L = new List<cPrice>();
+            if (string.IsNullOrEmpty(parCodeWares))
+                return L;
+            
             foreach (var el in parCodeWares.Split(','))
             {
                 int CodeWares;
@@ -61,6 +62,7 @@ namespace PrintServer
             }
             return L;           
         }
+
         public cPrice GetPrice(int parCodeWarehouse,int? parCodeWares, int? parArticle = null)
         {
             var Sql = "select dbo.GetPrice(@CodeWarehouse ,@CodeWares,null,@Article,1)";
@@ -70,7 +72,8 @@ namespace PrintServer
             var price = JsonConvert.DeserializeObject<cPrice>(json);
             return price;
         }
-        public void Print(IEnumerable<cPrice> parPrice,string parNamePrinter, string parNamePrinterYelow, string parNameDocument = null,bool isMainLogo=true)
+
+        public void Print(IEnumerable<cPrice> parPrice,string parNamePrinter, string parNamePrinterYelow, string pNameDocument = null,bool isMainLogo=true)
         {
             CurLogo = (isMainLogo || logo2 == null ? logo : logo2);
             current = 0;
@@ -78,33 +81,29 @@ namespace PrintServer
             {
                 price = parPrice.ToArray();
                 if (price.Count() > 0)
-                    PrintServer(parNamePrinter);
+                    PrintServer(parNamePrinter, pNameDocument);
             }
             else
             {
                 price = parPrice.Where(el => el.ActionType == 0).ToArray();
                 if (price.Count() > 0)
-                    PrintServer(parNamePrinter);
+                    PrintServer(parNamePrinter, pNameDocument);
                 current = 0;
                 price = parPrice.Where(el => el.ActionType != 0).ToArray();
                 if(price.Count()>0)
-                    PrintServer(parNamePrinterYelow);
+                    PrintServer(parNamePrinterYelow, pNameDocument);
             }
-            NameDocument = parNameDocument;
-            if(string.IsNullOrEmpty(NameDocument))
-            {
-
-            }
-
-
+            
         }
-        public void PrintServer(string varNamePrinter)
+        
+        public void PrintServer(string pNamePrinter,string pNameDoc="Label")
         {
             // объект для печати
             PrintDocument printDocument = new PrintDocument();
 
             // обработчик события печати
             printDocument.PrintPage += PrintPageHandler;
+            printDocument.DocumentName = $"{pNameDoc}_{price.Count()}";
             printDocument.DefaultPageSettings.PaperSize = new PaperSize("54 x 60 mm", 230, 130);
 
             // диалог настройки печати
@@ -114,7 +113,7 @@ namespace PrintServer
             printDialog.Document = printDocument;
 
             //System.Drawing.Printing.PrinterSettings newSettings = new System.Drawing.Printing.PrinterSettings();
-            printDialog.PrinterSettings.PrinterName = varNamePrinter;//newSettings.PrinterName;
+            printDialog.PrinterSettings.PrinterName = pNamePrinter;//newSettings.PrinterName;
             printDialog.Document.Print(); // печатаем
             if(!string.IsNullOrEmpty(NameDocument))//Друкуємо підсумок по документу.
             {
@@ -122,11 +121,9 @@ namespace PrintServer
                 printDocument.PrintPage += PrintTotal;
                 printDialog.Document.Print();
             }
-
         }
 
-
-        public void PrintPreview()
+        /*public void PrintPreview()
         {
             PrintPreviewDialog pd = new PrintPreviewDialog();
 
@@ -148,8 +145,8 @@ namespace PrintServer
 
             pd.ShowDialog();
             //printDialog.Document.Print(); // печатаем
-        }
-
+        }*/
+        
         void PrintPageHandler(object sender, PrintPageEventArgs e)
         {
             if (price == null)
@@ -162,7 +159,6 @@ namespace PrintServer
                 if (current != price.Count())
                     return;
             }
-
         }
 
         void PrintTotal(object sender, PrintPageEventArgs e)
@@ -170,9 +166,9 @@ namespace PrintServer
             e.Graphics.DrawString(NameDocument, new Font("Arial", 22), Brushes.Black, 0,20);
             e.Graphics.DrawString($"Вcього:{price.Count()}", new Font("Arial", 22), Brushes.Black, 0, 20);
         }
+
         public void PrintLabel(cPrice parPrice, PrintPageEventArgs e)
         {
-
             int LengthName = 28;
             string Name1, Name2 = "";
             if (parPrice.Name.Length < LengthName)
@@ -187,9 +183,7 @@ namespace PrintServer
             }
             Name1 = new string(' ', ((LengthName - Name1.Length) / 2)) + Name1;
             if (Name2.Length > LengthName + 3)
-                Name2 = Name2.Substring(0, LengthName + 3);
-
-            
+                Name2 = Name2.Substring(0, LengthName + 3);            
 
             if(CurLogo!=null)
                 e.Graphics.DrawImage(CurLogo, 10, 0);
@@ -199,8 +193,7 @@ namespace PrintServer
             int strPrice =((int)(parPrice.Price*100M));
             var qrCodeData = qrGenerator.CreateQrCode($"{parPrice.Code}-{strPrice}" , QRCodeGenerator.ECCLevel.Q);
             var qrCode = new QRCode(qrCodeData);
-            e.Graphics.DrawImage(qrCode.GetGraphic(2), 165, 50);
-            
+            e.Graphics.DrawImage(qrCode.GetGraphic(2), 165, 50);            
 
             e.Graphics.DrawString(Name1, new Font("Arial", 11, FontStyle.Bold), Brushes.Black, 0, 16);
             e.Graphics.DrawString(Name2, new Font("Arial", 11, FontStyle.Bold), Brushes.Black, 0, 33);
@@ -231,7 +224,6 @@ namespace PrintServer
                     break;                    
             }
 
-
             Graphics gr = e.Graphics;
             GraphicsState state = gr.Save();
             gr.ResetTransform();
@@ -241,10 +233,9 @@ namespace PrintServer
             
             //e.Graphics.DrawString(price[0], new Font("Arial Black", 35), Brushes.Black, LeftBill, 35);
             e.Graphics.DrawString(price[1], new Font("Arial Black", 18), Brushes.Black, LeftCoin, 50);
-            e.Graphics.DrawString("грн", new Font("Arial", 13,FontStyle.Bold), Brushes.Black, LeftCoin+3, 75);
-          
+            e.Graphics.DrawString("грн", new Font("Arial", 13,FontStyle.Bold), Brushes.Black, LeftCoin+3, 75);          
             
-            e.Graphics.DrawString(parPrice.StrUnit, new Font("Arial", 14), Brushes.Black, LeftCoin + 3, 90);
+            e.Graphics.DrawString(parPrice.StrUnit, new Font("Arial", 14), Brushes.Black, LeftCoin + 3, 93);
             if (parPrice.BarCodes != null)
             {
                 if (parPrice.BarCodes.Length > 27)
@@ -255,7 +246,6 @@ namespace PrintServer
             e.Graphics.DrawLine(new Pen(Color.Black, 1), 0, 133, 150, 133);
             //e.Graphics.DrawString(parPrice.Article.ToString(), new Font("Arial", 8), Brushes.Black, 170, 120);
         }
-
     }
 
     public class cPrice
@@ -264,7 +254,7 @@ namespace PrintServer
         public string Name { get; set; }
         public int Article { get; set; }
         public string Unit { get; set; }
-        public string StrUnit { get { return (Is100g && Unit.ToLower().Equals("кг") ? "г" :  ((Unit.Count() > 2)? Unit.ToLower().Substring(0, 2):Unit.ToLower())); } }
+        public string StrUnit { get { return (Is100g && Unit.ToLower().Equals("кг") ? "100г" :  ((Unit.Count() > 2)? Unit.ToLower().Substring(0, 2):Unit.ToLower())); } }
         public decimal Price { get; set; }
         public string StrPrice { get { return (Is100g && Unit.ToLower().Equals("кг") ? Price/10m : Price).ToString("F", (IFormatProvider)CultureInfo.GetCultureInfo("en-US")); } }
         public decimal PriceOpt { get; set; }
@@ -281,7 +271,3 @@ namespace PrintServer
         public bool Is100g { get; set; } = false;
     }
 }
-
-
-
-
