@@ -28,8 +28,11 @@ namespace PrintServer
          BodyStyle = WebMessageBodyStyle.Bare)]
         string Print(Wares parWares);
 
-        [WebGet]
-        [WebMethod]
+        [WebInvoke(
+        Method = "GET",
+        UriTemplate = "/GetQueue",       
+        ResponseFormat = WebMessageFormat.Json,
+         BodyStyle = WebMessageBodyStyle.Bare)]
         string GetQueue();
         [WebGet]
         [WebMethod]
