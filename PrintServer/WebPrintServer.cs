@@ -40,7 +40,7 @@ namespace PrintServer
                 //int  x = 343 / y;
                 var ListWares = GL.GetCode(pWares.CodeWarehouse, pWares.CodeWares);//"000140296,000055083,000055053"
                 if (ListWares.Count() > 0)
-                    GL.Print(ListWares, NamePrinter, NamePrinterYelow, $"Label_{pWares.NameDCT}_{pWares.Login}", pWares.CodeWarehouse < 30);  //PrintPreview();
+                    GL.Print(ListWares, NamePrinter, NamePrinterYelow, $"Label_{pWares.NameDCT}_{pWares.Login}", pWares.CodeWarehouse < 30, pWares.CodeWarehouse != 89);  //PrintPreview();
                 File.AppendAllText(fileName, $"\n{DateTime.Now.ToString()} Warehouse=> {pWares.CodeWarehouse} Count=> {ListWares.Count()} Login=>{pWares.Login} SN=>{pWares.SerialNumber} NameDCT=> {pWares.NameDCT} \n Wares=>{pWares.CodeWares}");
 
                 return $"Print=>{ListWares.Count()}";
