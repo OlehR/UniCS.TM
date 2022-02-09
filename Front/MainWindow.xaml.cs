@@ -138,7 +138,7 @@ namespace Front
                     valueWaresQuantity.Visibility = Visibility.Visible;
                     textInAll.Visibility = Visibility.Visible;
                     valueInAll.Visibility = Visibility.Visible;
-                    StartVideo.Close();
+                    StartVideo.Stop();
 
                     switch (State)
                     {
@@ -169,6 +169,8 @@ namespace Front
                             Background.Visibility = Visibility.Visible;
                             break;
                         case eStateMainWindows.WaitAdminLogin:
+                            LoginTextBlock.Text = "";
+                            PasswordTextBlock.Text = "";
                             WaitAdminLogin.Visibility = Visibility.Visible;
                             Background.Visibility = Visibility.Visible;
                             LoginTextBlock.Focus();

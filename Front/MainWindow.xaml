@@ -308,7 +308,7 @@
         <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="1" Grid.RowSpan="3"
                 Grid.Column="0" Grid.ColumnSpan="4"
-                 Name="ChoicePrice" Visibility="Collapsed" Grid.ZIndex="2" 
+                 Name="ChoicePrice" Visibility="Visible" Grid.ZIndex="2" 
                 CornerRadius="10" HorizontalAlignment="Center" Margin="70">
             <Border.Effect>
                 <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
@@ -684,7 +684,7 @@
         <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="1" Grid.RowSpan="4"
                 Grid.Column="0" Grid.ColumnSpan="4"
-                 Name="StartShopping" Visibility="Visible" Grid.ZIndex="2" >
+                 Name="StartShopping" Visibility="Collapsed" Grid.ZIndex="2" >
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
