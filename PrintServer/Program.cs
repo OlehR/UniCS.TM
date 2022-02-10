@@ -63,7 +63,7 @@ namespace PrintServer
             };
 
             _serviceHost =
-                new ServiceHost(typeof(WebPrintServer), new Uri(Url)) //"http://localhost:8080/WebPrintServer"
+                new ServiceHost(typeof(WebPrintServer), new Uri(Url)) 
                 {
                     OpenTimeout = TimeSpan.FromMinutes(4),
                     CloseTimeout = TimeSpan.FromMinutes(4)
