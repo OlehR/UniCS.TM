@@ -317,16 +317,26 @@ namespace PrintServer
             switch (price[0].Count())
             {
                 case 1:
-                    LeftBill = 10;
-                    LeftCoin = 55;
+                    LeftBill = 30;
+                    LeftCoin = 75;
                     LeftBillTwo = 130;
                     LeftCoinTwo = 190;
+                    if (parPrice.QuantityOpt == 0)
+                    {
+                        LeftBillTwo = 130;
+                        LeftCoinTwo = 210;
+                    }
                     break;
                 case 2:
                     LeftBill = 10;
                     LeftCoin = 90;
                     LeftBillTwo = 120;
                     LeftCoinTwo = 220;
+                    if (parPrice.QuantityOpt == 0)
+                    {
+                        LeftBillTwo = 90;
+                        LeftCoinTwo = 230;
+                    }
                     break;
                 case 3:
                     LeftBill = 5;
@@ -335,7 +345,8 @@ namespace PrintServer
                     LeftCoinTwo = 220;
                     if (parPrice.QuantityOpt == 0)
                     {
-                        LeftBillTwo = 140;
+                        LeftBillTwo = 110;
+                        LeftCoinTwo = 230;
                     }
                     coef = 0.7f;
                     break;
@@ -346,7 +357,8 @@ namespace PrintServer
                     LeftCoinTwo = 210;
                     if (parPrice.QuantityOpt == 0)
                     {
-                        LeftBillTwo = 180;
+                        LeftBillTwo = 150;
+                        LeftCoinTwo = 230;
                     }
                     coef = 0.50f;
                     break;
@@ -355,13 +367,12 @@ namespace PrintServer
             Graphics gr = e.Graphics;
             GraphicsState state = gr.Save();
 
-            Console.WriteLine(parPrice.PriceOpt);
             if (parPrice.QuantityOpt != 0)
             {
                 gr.ResetTransform();
                 gr.ScaleTransform(coef, 1.0f);
                 e.Graphics.DrawString(price[0], new Font("Arial Black", 40), Brushes.Black, LeftBill, 15);
-                e.Graphics.DrawString(priceOpt[0], new Font("Arial Black", 50), Brushes.Black, LeftBillTwo, 30);
+                e.Graphics.DrawString(priceOpt[0], new Font("Arial Black", 50), Brushes.Black, LeftBillTwo, 40);
                 gr.Restore(state);
 
                 //e.Graphics.DrawString(price[0], new Font("Arial Black", 35), Brushes.Black, LeftBill, 35);
@@ -370,19 +381,19 @@ namespace PrintServer
                 e.Graphics.DrawString(parPrice.StrUnit, new Font("Arial", 10), Brushes.Black, LeftCoin + 3, 60);
 
                 //ОПТОВА ЦІНА
-                e.Graphics.DrawString(priceOpt[1], new Font("Arial Black", 18), Brushes.Black, LeftCoinTwo, 45);
-                e.Graphics.DrawString("від", new Font("Arial", 12, FontStyle.Bold), Brushes.Black, LeftCoinTwo + 3, 70);
-                e.Graphics.DrawString(parPrice.QuantityOpt.ToString() + " шт.", new Font("Arial", 12), Brushes.Black, LeftCoinTwo + 3, 90);
+                e.Graphics.DrawString(priceOpt[1], new Font("Arial Black", 18), Brushes.Black, LeftCoinTwo, 55);
+                e.Graphics.DrawString("від", new Font("Arial", 12, FontStyle.Bold), Brushes.Black, LeftCoinTwo + 3, 80);
+                e.Graphics.DrawString(parPrice.QuantityOpt.ToString() + " шт.", new Font("Arial", 12), Brushes.Black, LeftCoinTwo + 3, 100);
             }
             else
             {
                 gr.ResetTransform();
                 gr.ScaleTransform(coef, 1.0f);
-                e.Graphics.DrawString(price[0], new Font("Arial Black", 50), Brushes.Black, LeftBillTwo - 50, 20);
+                e.Graphics.DrawString(price[0], new Font("Arial Black", 70), Brushes.Black, LeftBillTwo - 50, 10);
                 gr.Restore(state);
-                e.Graphics.DrawString(price[1], new Font("Arial Black", 18), Brushes.Black, LeftCoinTwo - 50, 35);
-                e.Graphics.DrawString("грн", new Font("Arial", 12, FontStyle.Bold), Brushes.Black, LeftCoinTwo + 3 - 50, 60);
-                e.Graphics.DrawString(parPrice.StrUnit, new Font("Arial", 12), Brushes.Black, LeftCoinTwo + 3 - 50, 80);
+                e.Graphics.DrawString(price[1], new Font("Arial Black", 26), Brushes.Black, LeftCoinTwo - 50, 35);
+                e.Graphics.DrawString("грн", new Font("Arial", 16, FontStyle.Bold), Brushes.Black, LeftCoinTwo + 3 - 50, 70);
+                e.Graphics.DrawString(parPrice.StrUnit, new Font("Arial", 16), Brushes.Black, LeftCoinTwo + 3 - 50, 90);
             }
 
             if (parPrice.BarCodes != null)
