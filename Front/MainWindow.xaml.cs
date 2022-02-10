@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using Front.Equipments;
@@ -23,6 +24,27 @@ using SharedLib;
 
 namespace Front
 {
+    public class Price
+    {
+        //public static bool isFirst = true;
+        public Price(decimal pPrice) //, bool pIsEnable = false
+        {
+            price = pPrice;
+          //  IsEnable = isFirst;
+            //if(isFirst)
+              //  { isFirst = false; }             
+        }
+        public decimal price { get; set; }
+        public string StrPrice{ get { return $"{price.ToString("n2",CultureInfo.InvariantCulture)} ₴"; }}
+        public bool IsEnable { get; set; }
+        public Brush BackGroundColor
+        {
+            get
+            {
+                return new SolidColorBrush(IsEnable ? Color.FromArgb(20, 100, 100, 100) : Color.FromArgb(50, 100, 0, 0));
+            }
+        }
+    }
 
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
@@ -112,7 +134,7 @@ namespace Front
             ua.Tag = new CultureInfo("uk");
             en.Tag = new CultureInfo("en");
             hu.Tag = new CultureInfo("hu");
-            pln.Tag = new CultureInfo("pln");
+            //pln.Tag = new CultureInfo("pln");
 
 
             CultureInfo currLang = App.Language;
@@ -151,7 +173,17 @@ namespace Front
                             StartVideo.Play();
                             break;
                         case eStateMainWindows.WaitInputPrice:
-                            Prices.ItemsSource = new ObservableCollection<decimal>(CurWares.Prices/*.Select(r=>Convert.ToString(r))*/);
+                            
+                            //TMP!!! Гребаний костиль бо First вертає копію обєкта замість посилання
+                            //Price.isFirst = true;
+                            var rr=CurWares.Prices.OrderByDescending(r=>r).Select( r => new Price(r));
+                            //var el = rr.ElementAt(0);  //rr.First();
+                            //el.IsEnable = true;
+                            var rrr=new ObservableCollection<Price>(rr);
+                            rrr.First().IsEnable = true;
+
+                            Prices.ItemsSource = rrr;//new ObservableCollection<Price>(rr);
+
                             Background.Visibility = Visibility.Visible;
                             ChoicePrice.Visibility = Visibility.Visible;
                             break;
@@ -434,16 +466,18 @@ namespace Front
         /// <param name="e"></param>
         private void _AddWaresPrice(object sender, RoutedEventArgs e)
         {
-            Button btn = sender as Button;
             try
             {
+                Button btn = sender as Button;
                 if (btn != null)
                 {
+                    var price = btn.DataContext as Price;
+                
                     TextBlock Tb = btn.Content as TextBlock;
                     if (Tb != null)
                     {
-                        decimal Pr = Convert.ToDecimal(Tb.Tag);
-                        AddWares(CurWares.CodeWares, CurWares.CodeUnit, 1, Pr);
+                        //decimal Pr = Convert.ToDecimal(Tb.Tag);
+                        AddWares(CurWares.CodeWares, CurWares.CodeUnit, 1, price.price);
                     }
                 }
             }

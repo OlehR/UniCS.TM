@@ -294,7 +294,7 @@ namespace PrintServer
                 Name2 = Name2.Substring(0, LengthName + 3);
 
             if (CurLogo != null)
-                e.Graphics.DrawImage(CurLogo, 265, 5);
+                e.Graphics.DrawImage(CurLogo, 245, 5);
             e.Graphics.DrawString(DateTime.Now.ToString("dd/MM/yyyy H:mm"), new Font("Arial", 8), Brushes.Black, 215, 120); //Час
 
             //string BarCodePrice = parPrice.Code.ToString() + "-" + parPrice.Price.ToString() + (parPrice.PriceOpt == 0 ? "" : "-" + parPrice.PriceOpt.ToString());

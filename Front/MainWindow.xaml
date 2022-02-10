@@ -326,8 +326,10 @@
                     <ItemsControl  Name="Prices">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Button Click="_AddWaresPrice"  Height="100"  Width="500" Margin="1" Style="{StaticResource yelowButton}">
-                                    <TextBlock FontSize="28" Text="{Binding StringFormat= {} {0} ₴ }" Tag="{Binding}"/>
+                                <Button Click="_AddWaresPrice"  Height="100"  Width="500" Margin="1" Style="{StaticResource yelowButton}" Background="{Binding BackGroundColor}"
+                                        IsEnabled="{Binding IsEnable}"
+                                        >
+                                    <TextBlock FontSize="28" Text="{Binding StrPrice}" Tag="{Binding}" />
                                     <Button.Resources>
                                         <Style TargetType="Border">
                                             <Setter Property="CornerRadius" Value="7" />
