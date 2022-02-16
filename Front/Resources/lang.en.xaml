@@ -29,5 +29,9 @@
     <v:String x:Key="WaitPayment">Payment for goods</v:String>
     <v:String x:Key="AmountPayment">To pay:</v:String>
     <v:String x:Key="PaymentStatus">Payment status:</v:String>
+    <v:String x:Key="ConfirmAge">Proof of age!</v:String>
+    <v:String x:Key="ConfirmAgeYesOrNo">Confirm age?</v:String>
+    <v:String x:Key="Yes">Yes</v:String>
+    <v:String x:Key="No">No</v:String>
 
 </ResourceDictionary>

@@ -14,6 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="icons\18plus.png" />
     <None Remove="icons\back.png" />
     <None Remove="icons\clock.png" />
     <None Remove="icons\Close.png" />
@@ -24,6 +25,7 @@
     <None Remove="icons\paymentTerminal.png" />
     <None Remove="icons\pln.png" />
     <None Remove="icons\plus.png" />
+    <None Remove="icons\receipt.png" />
     <None Remove="icons\right.png" />
     <None Remove="icons\shoppingBag.png" />
     <None Remove="icons\sparVideo.mp4" />
@@ -35,10 +37,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="icons\18plus.png" />
     <Resource Include="icons\clock.png" />
     <Resource Include="icons\Close.png" />
     <Resource Include="icons\no_volume.png" />
     <Resource Include="icons\paymentTerminal.png" />
+    <Resource Include="icons\receipt.png" />
     <Resource Include="icons\right.png" />
     <Resource Include="icons\shoppingBag.png" />
     <Content Include="icons\sparVideo.mp4">

@@ -29,5 +29,9 @@
     <v:String x:Key="WaitPayment">Fizetés az árukért</v:String>
     <v:String x:Key="AmountPayment">Fizetni:</v:String>
     <v:String x:Key="PaymentStatus">Fizetési állapot:</v:String>
+    <v:String x:Key="ConfirmAge">Életkor igazolás!</v:String>
+    <v:String x:Key="ConfirmAgeYesOrNo">Életkor megerősítése?</v:String>
+    <v:String x:Key="Yes">Így</v:String>
+    <v:String x:Key="No">Nem</v:String>
 
 </ResourceDictionary>

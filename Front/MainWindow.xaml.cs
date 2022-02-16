@@ -160,6 +160,8 @@ namespace Front
                     valueWaresQuantity.Visibility = Visibility.Visible;
                     textInAll.Visibility = Visibility.Visible;
                     valueInAll.Visibility = Visibility.Visible;
+                    ConfirmAgeMessage.Visibility = Visibility.Collapsed;
+                    ConfirmAge.Visibility = Visibility.Collapsed;
                     StartVideo.Stop();
 
                     switch (State)
@@ -214,8 +216,12 @@ namespace Front
                         case eStateMainWindows.ProcessPay:
                             WaitPayment.Visibility = Visibility.Visible;
                             Background.Visibility = Visibility.Visible;
+                            //PaymentImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/paymentTerminal.png"));
                             break;
                         case eStateMainWindows.ProcessPrintReceipt:
+                            PaymentImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/receipt.png"));
+                            WaitPayment.Visibility = Visibility.Visible;
+                            Background.Visibility = Visibility.Visible;
                             break;
                         case eStateMainWindows.WaitInput:
                         default:

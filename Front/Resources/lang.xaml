@@ -29,6 +29,9 @@
     <v:String x:Key="WaitPayment">Оплата товару</v:String>
     <v:String x:Key="AmountPayment">До оплати: </v:String>
     <v:String x:Key="PaymentStatus">Статус оплати:</v:String>
-    
+    <v:String x:Key="ConfirmAge">Підтвердження віку!</v:String>
+    <v:String x:Key="ConfirmAgeYesOrNo">Підтвердити вік?</v:String>
+    <v:String x:Key="Yes">Так</v:String>
+    <v:String x:Key="No">Ні</v:String>
 
 </ResourceDictionary>
