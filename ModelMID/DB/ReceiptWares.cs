@@ -194,8 +194,9 @@ namespace ModelMID
         /// <summary>
         /// Додаткові ваги
         /// </summary>
-        public IEnumerable<decimal> AdditionalWeights;
+        public IEnumerable<decimal> AdditionalWeights { get; set; }
 
+        public int AmountSalesBan { get; set; }
         /// <summary>
         /// 
         /// </summary>

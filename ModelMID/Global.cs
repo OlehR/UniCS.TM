@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using ModelMID.DB;
+using Utils;
+
 namespace ModelMID
 {
     /// <summary>
@@ -12,11 +14,13 @@ namespace ModelMID
         public static Action<SyncInformation> OnSyncInfoCollected { get; set; }
         public static Action<Status> OnStatusChanged { get; set; }
         public static Action<eStateScale> OnChangedStatusScale { get; set; }
-         public static Action<Client, Guid> OnClientChanged { get; set; }
+        public static Action<Client, Guid> OnClientChanged { get; set; }
         /// <summary>
         /// Виникає, коли зчитали штрихкод адміністратора в режимі КСО
         /// </summary>
         public static Action<User> OnAdminBarCode { get; set; }
+
+        public static Action<int, eTypeWindows,string> OnClientWindows { get; set; }
 
         public static SortedList<Guid, WorkPlace> WorkPlaceByTerminalId;
         public static SortedList<int, WorkPlace> WorkPlaceByWorkplaceId;
@@ -104,6 +108,8 @@ namespace ModelMID
         public static string AlcoholTimeStart = "07:00:00.0000";
         public static string AlcoholTimeStop = "23:00:00.0000";
 
+        public static bool IsOldInterface = true;
+       
         /// <summary>
         ///  час Першого помилкового запита до сервера 
         /// </summary>

@@ -51,7 +51,7 @@ namespace SharedLib
             SqlGetDimClient = GetSQL("SqlGetDimClient");*/
             return true;
         }
-        public int LoadData(WDB parDB, bool parIsFull, StringBuilder Log)
+        public int LoadData(WDB pDB, bool parIsFull, StringBuilder Log)
         {
 
             string SQL;
@@ -59,24 +59,32 @@ namespace SharedLib
             Debug.WriteLine("Start LoadData " + parIsFull.ToString());
             SQL = GetSQL("SqlGetMessageNo");
             int varMessageNoMax = db.ExecuteScalar<int>(SQL);
-            int varMessageNoMin = parDB.GetConfig<int>("MessageNo");
+            int varMessageNoMin = pDB.GetConfig<int>("MessageNo");
 
             var oWarehouse = new pWarehouse() { CodeWarehouse = Global.CodeWarehouse };
             var oMessage = new pMessage() { IsFull = parIsFull ? 1 : 0, MessageNoMin = varMessageNoMin, MessageNoMax = varMessageNoMax, CodeWarehouse = Global.CodeWarehouse };
 
             
+
             Debug.WriteLine("SqlGetDimPrice");
             SQL = GetSQL("SqlGetDimPrice");
             var PD = db.Execute<pMessage, Price>(SQL, oMessage);
-            parDB.ReplacePrice(PD);
+            pDB.ReplacePrice(PD);
             Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetDimPrice => {PD.Count()}");
             PD = null;
 
-            
+            Debug.WriteLine("SqlSalesBan");
+            SQL = GetSQL("SqlSalesBan");
+            var SB = db.Execute<pWarehouse, SalesBan>(SQL, oWarehouse);
+            pDB.ReplaceSalesBan(SB);
+            Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlSalesBan => {SB.Count()}");
+            SB = null;
+
+
             Debug.WriteLine("SqlGetPromotionSaleGift");
             SQL = GetSQL("SqlGetPromotionSaleGift");
             var PSGf = db.Execute<pWarehouse,PromotionSaleGift>(SQL,oWarehouse);
-            parDB.ReplacePromotionSaleGift(PSGf);
+            pDB.ReplacePromotionSaleGift(PSGf);
             Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetPromotionSaleGift => {PSGf.Count()}");
             PSGf = null;
 
@@ -87,7 +95,7 @@ namespace SharedLib
             var PSGW = db.Execute<pWarehouse, PromotionSaleGroupWares>(SQL, oWarehouse);
             if (PSGW != null)
             {
-                parDB.ReplacePromotionSaleGroupWares(PSGW);
+                pDB.ReplacePromotionSaleGroupWares(PSGW);
                 Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetPromotionSaleGroupWares => {PSGW.Count()}");
                 PSGW = null;
             }
@@ -95,7 +103,7 @@ namespace SharedLib
             Debug.WriteLine("SqlGetPromotionSale");
             SQL = GetSQL("SqlGetPromotionSale");
             var PS = db.Execute<pWarehouse, PromotionSale>(SQL, oWarehouse);
-            parDB.ReplacePromotionSale(PS);
+            pDB.ReplacePromotionSale(PS);
             Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetPromotionSale => {PS.Count()}");
             PS = null;
 
@@ -103,7 +111,7 @@ namespace SharedLib
             Debug.WriteLine("SqlGetPromotionSaleFilter");
             SQL = GetSQL("SqlGetPromotionSaleFilter");
             var PSF = db.Execute<pWarehouse, PromotionSaleFilter>(SQL, oWarehouse);
-            parDB.ReplacePromotionSaleFilter(PSF);
+            pDB.ReplacePromotionSaleFilter(PSF);
             Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetPromotionSaleFilter => {PSF.Count()}");
             PSF = null;
 
@@ -111,7 +119,7 @@ namespace SharedLib
             Debug.WriteLine("SqlGetPromotionSaleData");
             SQL = GetSQL("SqlGetPromotionSaleData");
             var PSD = db.Execute<pWarehouse, PromotionSaleData>(SQL, oWarehouse);
-            parDB.ReplacePromotionSaleData(PSD);
+            pDB.ReplacePromotionSaleData(PSD);
             Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetPromotionSaleData => {PSD.Count()}");
             PSD = null;
 
@@ -120,7 +128,7 @@ namespace SharedLib
             Debug.WriteLine("SqlGetPromotionSaleDealer");
             SQL = GetSQL("SqlGetPromotionSaleDealer");
             var PSP = db.Execute<pWarehouse, PromotionSaleDealer>(SQL, oWarehouse);
-            parDB.ReplacePromotionSaleDealer(PSP);
+            pDB.ReplacePromotionSaleDealer(PSP);
             Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetPromotionSaleDealer =>{PSP.Count()}");
             PSP = null;
 
@@ -128,7 +136,7 @@ namespace SharedLib
             Debug.WriteLine("SqlGetPromotionSale2Category");
             SQL = GetSQL("SqlGetPromotionSale2Category");
             var PS2c = db.Execute<pWarehouse, PromotionSale2Category>(SQL, oWarehouse);
-            parDB.ReplacePromotionSale2Category(PS2c);
+            pDB.ReplacePromotionSale2Category(PS2c);
             Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetPromotionSale2Category => {PS2c.Count()}");
             PS2c = null;
 
@@ -137,7 +145,7 @@ namespace SharedLib
             Debug.WriteLine("SqlGetMRC");
             SQL = GetSQL("SqlGetMRC");
             var MRC = db.Execute<pWarehouse,MRC>(SQL, oWarehouse);
-            parDB.ReplaceMRC(MRC);
+            pDB.ReplaceMRC(MRC);
             Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetMRC => {MRC.Count()}");
             MRC = null;
 
@@ -145,7 +153,7 @@ namespace SharedLib
             Debug.WriteLine("SqlGetDimClient");
             SQL = GetSQL("SqlGetDimClient");
             var Cl = db.Execute<pMessage, Client>(SQL, oMessage);
-            parDB.ReplaceClient(Cl);
+            pDB.ReplaceClient(Cl);
             Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetDimClient => {Cl.Count()}");
             Cl = null;
 
@@ -153,7 +161,7 @@ namespace SharedLib
             Debug.WriteLine("SqlGetDimWares");
             SQL = GetSQL("SqlGetDimWares");
             var W = db.Execute<pMessage, Wares>(SQL, oMessage);
-            parDB.ReplaceWares(W);
+            pDB.ReplaceWares(W);
             Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetDimWares => {W.Count()}");
             W = null;
 
@@ -161,7 +169,7 @@ namespace SharedLib
             Debug.WriteLine("SqlGetDimAdditionUnit");
             SQL = GetSQL("SqlGetDimAdditionUnit");
             var AU = db.Execute<pMessage, AdditionUnit>(SQL, oMessage);
-            parDB.ReplaceAdditionUnit(AU);
+            pDB.ReplaceAdditionUnit(AU);
             Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetDimAdditionUnit => {AU.Count()}");
             AU = null;
 
@@ -169,7 +177,7 @@ namespace SharedLib
             Debug.WriteLine("SqlGetDimBarCode");
             SQL = GetSQL("SqlGetDimBarCode");
             var BC = db.Execute<pMessage, Barcode>(SQL, oMessage);
-            parDB.ReplaceBarCode(BC);
+            pDB.ReplaceBarCode(BC);
             Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetDimBarCode => { BC.Count()}");
             BC = null;
 
@@ -178,7 +186,7 @@ namespace SharedLib
             Debug.WriteLine("SqlGetDimUnitDimension");
             SQL = GetSQL("SqlGetDimUnitDimension");
             var UD = db.Execute<UnitDimension>(SQL);
-            parDB.ReplaceUnitDimension(UD);
+            pDB.ReplaceUnitDimension(UD);
             Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetDimUnitDimension => { UD.Count()}");
             UD = null;
 
@@ -186,7 +194,7 @@ namespace SharedLib
             Debug.WriteLine("SqlGetDimGroupWares");
             SQL = GetSQL("SqlGetDimGroupWares");
             var GW = db.Execute<GroupWares>(SQL);
-            parDB.ReplaceGroupWares(GW);
+            pDB.ReplaceGroupWares(GW);
             Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetDimGroupWares => { GW.Count()}");
             GW = null;
 
@@ -194,7 +202,7 @@ namespace SharedLib
             Debug.WriteLine("SqlGetDimTypeDiscount");
             SQL = GetSQL("SqlGetDimTypeDiscount");
             var TD = db.Execute<TypeDiscount>(SQL);
-            parDB.ReplaceTypeDiscount(TD);
+            pDB.ReplaceTypeDiscount(TD);
             Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetDimTypeDiscount => { TD.Count()}");
             TD = null;
 
@@ -202,14 +210,14 @@ namespace SharedLib
             Debug.WriteLine("SqlGetDimFastGroup");
             SQL = GetSQL("SqlGetDimFastGroup");
             var FG = db.Execute<pWarehouse, FastGroup>(SQL, oWarehouse);
-            parDB.ReplaceFastGroup(FG);
+            pDB.ReplaceFastGroup(FG);
             Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetDimFastGroup => { FG.Count()}");
             FG = null;
 
             Debug.WriteLine("SqlGetDimFastWares");
             SQL = GetSQL("SqlGetDimFastWares");
             var FW = db.Execute<pWarehouse, FastWares>(SQL, oWarehouse);
-            parDB.ReplaceFastWares(FW);
+            pDB.ReplaceFastWares(FW);
             Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetDimFastWares => { FW.Count()}");
             FW = null;
 
@@ -218,7 +226,7 @@ namespace SharedLib
             foreach (var el in Global.Bags)
                 GWL.Add(new FastWares { CodeFastGroup = Global.CodeFastGroupBag, CodeWares = el });
 
-            parDB.ReplaceFastWares(GWL);
+            pDB.ReplaceFastWares(GWL);
             Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} FastWares => { GWL.Count()}");
             GWL = null;
 

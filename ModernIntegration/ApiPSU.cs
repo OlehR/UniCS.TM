@@ -12,6 +12,8 @@ using Receipt = ModernIntegration.Models.Receipt;
 using ModelMID.DB;
 using ModernIntegration.Model;
 using System.Threading.Tasks;
+using Utils;
+using Newtonsoft.Json;
 
 namespace ModernIntegration
 {
@@ -24,45 +26,55 @@ namespace ModernIntegration
             Bl = new BL();
             Global.OnReceiptCalculationComplete += (wareses, guid) =>
             {
-                Console.WriteLine("\n==========================Start===================================");
+                FileLogger.WriteLogMessage($"OnReceiptCalculationComplete =>Start", eTypeLog.Expanded);
                 foreach (var receiptWarese in wareses)
                 {
-                    Console.WriteLine($"Promotion=>{receiptWarese.GetStrWaresReceiptPromotion.Trim()} \n{receiptWarese.NameWares} - {receiptWarese.Price} Quantity=> {receiptWarese.Quantity} SumDiscount=>{receiptWarese.SumDiscount}");
+                    FileLogger.WriteLogMessage($"OnReceiptCalculationComplete Promotion=>{receiptWarese.GetStrWaresReceiptPromotion.Trim()} \n{receiptWarese.NameWares} - {receiptWarese.Price} Quantity=> {receiptWarese.Quantity} SumDiscount=>{receiptWarese.SumDiscount}", eTypeLog.Expanded);
                 }
-                //var r = wareses.Select(s => GetProductViewModel(s));
+                
                 OnProductsChanged?.Invoke(wareses.Select(s => GetProductViewModel(s)), guid);
-                Console.WriteLine("===========================End==========================================\n");
+                FileLogger.WriteLogMessage($"OnReceiptCalculationComplete =>End", eTypeLog.Expanded);
             };
-            
-            Global.OnSyncInfoCollected += (SyncInfo) =>
-            {
-                Console.WriteLine($"OnSyncInfoCollected Status=>{SyncInfo.Status} StatusDescription=>{SyncInfo.StatusDescription}");
-                /*
-                if (SyncInfo.Status== eSyncStatus.SyncFinishedSuccess)
-                {
-                    try
-                    {
-                        var r= GetBags();
-                    }
-                    catch (Exception ex)
-                    {
-                        var e = ex.Message;
-                    }
 
-                }*/
-                                
+            Global.OnSyncInfoCollected += (SyncInfo) =>
+            {    
                 OnSyncInfoCollected?.Invoke(SyncInfo);
+                FileLogger.WriteLogMessage($"OnSyncInfoCollected Status=>{SyncInfo.Status} StatusDescription=>{SyncInfo.StatusDescription}",eTypeLog.Expanded);
             };
-            
+
             Global.OnStatusChanged += (Status) => OnStatusChanged?.Invoke(Status);
 
             Global.OnChangedStatusScale += (Status) => OnChangedStatusScale?.Invoke(Status);
 
             Global.OnClientChanged += (client, guid) =>
-            {
-                Console.WriteLine($"Client.Wallet=> {client.Wallet} SumBonus=>{client.SumBonus} ");                
+            {               
                 OnCustomerChanged?.Invoke(GetCustomerViewModelByClient(client), guid);
+                FileLogger.WriteLogMessage($"Client.Wallet=> {client.Wallet} SumBonus=>{client.SumBonus} ", eTypeLog.Expanded);
             };
+
+            Global.OnClientWindows += (pTerminalId,pTypeWindows, pMessage) =>
+             {
+                 TerminalCustomWindowModel TCV=null;
+                 if (pTypeWindows == eTypeWindows.LimitSales)
+                 {
+                     TCV = new TerminalCustomWindowModel()
+                     {
+                         TerminalId = Global.GetTerminalIdByIdWorkplace(pTerminalId),
+                         CustomWindow = new CustomWindowModel()
+                         {
+                             Caption = "",
+                             Text = pMessage,
+                             AnswerRequired = false,
+                             Type = CustomWindowInputType.Buttons,
+                             Buttons = new List<CustomWindowButton>() { new CustomWindowButton() { ActionData = "Ok", DisplayName = "Ok" } }
+                         }
+                     };                     
+                 }
+                 OnShowCustomWindow(TCV);
+                 string sTCV= JsonConvert.SerializeObject(TCV);
+                 FileLogger.WriteLogMessage($"OnClientWindows => {pTypeWindows} TerminalId=>{pTerminalId}{Environment.NewLine} Message=> {pMessage} {Environment.NewLine} TCV=>{sTCV}",eTypeLog.Expanded);
+             };
+        
         }
 
         public override ProductViewModel AddProductByBarCode(Guid parTerminalId, string parBarCode, decimal parQuantity = 0)
@@ -779,36 +791,7 @@ namespace ModernIntegration
                 TotalAmount = RE.TotalAmount
             };
 
-        }
-        /*
-        public override double GetMidlWeight()
-        {
-            return Bl.GetMidlWeight();
-        }
-
-       
-        public override void StartWeightNewGoogs(IEnumerable<WeightInfo> pWeight, int pCount)
-        {
-            WaitWeight[] res;
-            if (pCount > 0)
-                res = pWeight.Select(r => new WaitWeight() { Min = (double)pCount * (r.Weight - r.DeltaWeight), Max = (double)pCount * (r.Weight + r.DeltaWeight) }).ToArray();
-            else
-                res = pWeight.Select(r => new WaitWeight() { Min = (double)pCount * (r.Weight + r.DeltaWeight), Max = (double)pCount * (r.Weight - r.DeltaWeight) }).ToArray();
-
-            Bl.StartWeightNewGoogs(res);
-        }
-
-       
-        public override bool FixedWeight()
-        {
-            return Bl.FixedWeight();
-        }
-
-        public override bool WaitClearScale()
-        {
-            return Bl.WaitClearScale();
-        }
-        */
+        }       
 
         public override void CloseDb()
         { 
@@ -845,6 +828,12 @@ namespace ModernIntegration
             }
 
             return res;
+        }
+
+        public override bool ProcessCustomWindowResult(Guid pTerminalId, string pCustomWindowResult)
+        {
+            FileLogger.WriteLogMessage($"pTerminalId=>{pTerminalId} pCustomWindowResult=>{pCustomWindowResult}",eTypeLog.Expanded);
+            return true;            
         }
     }
 }

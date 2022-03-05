@@ -44,12 +44,21 @@ namespace SharedLib
         public static BL GetBL { get { return sBL; } }
         public ReceiptWares AddReceiptWares(ReceiptWares pW, bool pRecalcPriceOnLine = true)
         {
+            bool isZeroPrice=false;
             lock (db.GetObjectForLockByIdWorkplace(pW.IdWorkplace))
             {
                 var Quantity = db.GetCountWares(pW);
                 pW.QuantityOld = Quantity;
                 pW.Quantity += Quantity;
 
+                if (pW.AmountSalesBan>0 && pW.Quantity>pW.AmountSalesBan && (pW.CodeUnit != Global.WeightCodeUnit && pW.CodeUnit != Global.WeightCodeUnit))
+                {
+                    pW.Quantity = pW.AmountSalesBan;
+                    if (Global.IsOldInterface)
+                        isZeroPrice = true;
+                    else
+                        Global.OnClientWindows?.Invoke(pW.IdWorkplace,eTypeWindows.LimitSales, $"Даний товар {pW.NameWares} {Environment.NewLine} має обмеження в кількості {pW.AmountSalesBan} шт");
+                }
                 if (Quantity > 0)
                     db.UpdateQuantityWares(pW);
                 else
@@ -74,6 +83,11 @@ namespace SharedLib
                  GenQRAsync(pW);
              }
             */
+            if (isZeroPrice)
+            {
+                pW.Price = 0;
+                pW.PriceDealer = 0;
+            }
             return pW;
         }
 

@@ -253,4 +253,9 @@ namespace ModelMID
         /// </summary>
         CashPlace
     }
+
+    public enum eTypeWindows
+    {
+        LimitSales
+    }
 }  

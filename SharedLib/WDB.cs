@@ -194,6 +194,8 @@ namespace SharedLib
         protected string SqlReplaceUser = "";
         protected string SqlGetUser = "";
         protected string SqlInsertLogRRO = "";
+        protected string SqlReplaceSalesBan = "";
+        protected string SqlGetQuantitySalesBan = "";
 
         public WDB(string pFileSQL,SQL pDB=null)
         {
@@ -627,6 +629,9 @@ namespace SharedLib
             SqlReplaceUser = GetSQL("SqlReplaceUser");
             SqlGetUser = GetSQL("SqlGetUser");
             SqlInsertLogRRO = GetSQL("SqlInsertLogRRO");
+            SqlReplaceSalesBan = GetSQL("SqlReplaceSalesBan");
+
+            SqlGetQuantitySalesBan = GetSQL("SqlGetQuantitySalesBan");
 
 
             return true;
@@ -1052,6 +1057,16 @@ namespace SharedLib
             return db.ExecuteNonQuery<LogRRO>(SqlInsertLogRRO, pLog) > 0;
         }
 
+        public virtual bool ReplaceSalesBan(IEnumerable<SalesBan> pSB)
+        {
+            return db.BulkExecuteNonQuery<SalesBan>(SqlReplaceSalesBan, pSB) > 0;
+        }
+
+        public virtual int GetQuantitySalesBan(IdReceiptWares pSB)
+        {
+            return db.ExecuteScalar<IdReceiptWares, int>(SqlGetQuantitySalesBan, pSB);
+        }
+        
 
         public virtual IEnumerable<User> GetUser(User pUser)
         {

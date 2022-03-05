@@ -91,6 +91,7 @@ select t.code_wares as CodeWares,w.name_wares NameWares,w.name_wares_receipt  as
         ,w.Limit_Age as LimitAge
         ,w.PLU    
         ,w.Code_Direction as CodeDirection
+        ,(select max(AMOUNT)  as AMOUNT from SALES_BAN sb where sb.CODE_GROUP_WARES=w.CODE_GROUP) as AmountSalesBan
 from t$1 t
 left join wares w on t.code_wares=w.code_wares
 left join price pd on ( pd.code_wares=t.code_wares and pd.code_dealer= @CodeDealer)
@@ -1010,6 +1011,10 @@ CREATE TABLE USER (
     PASSWORD    TEXT NOT NULL
 );
 
+CREATE TABLE SALES_BAN (
+    CODE_GROUP_WARES INTEGER  NOT NULL,
+     Amount INTEGER  NOT NULL
+);
 
 [SqlCreateMIDIndex]
 
@@ -1053,7 +1058,7 @@ CREATE UNIQUE INDEX ADD_WEIGHT_W ON ADD_WEIGHT ( CODE_WARES,CODE_UNIT,WEIGHT );
 
 CREATE UNIQUE INDEX MRC_ID ON MRC ( CODE_WARES,PRICE);
 
-
+CREATE INDEX Sales_Ban_ID  on Sales_Ban (CODE_GROUP_WARES);
 
 
 [SqlReplaceUnitDimension]
@@ -1122,6 +1127,9 @@ Select min(case when CODE_DEALER=-888888  then PRICE_DEALER else null end) as Mi
 
 [SqlReplaceUser] 
 replace into User (CODE_USER, NAME_USER,  BAR_CODE,Code_Right, LOGIN, PASSWORD) as (@CodeUser,@NameUser,@BarCode,@CodeRight, @Login,@Password)
+
+[SqlReplaceSalesBan]
+ replace into  Sales_Ban (CODE_GROUP_WARES, Amount) values  (@CodeGroupWares, @Amount);
 
 [SqlGetPayment]
 select id_workplace as IdWorkplace, code_period as CodePeriod, code_receipt as CodeReceipt, 

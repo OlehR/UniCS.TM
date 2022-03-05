@@ -14,7 +14,7 @@ namespace Utils
     public static class FileLogger
     {
         private static string PathLog= Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"Log");
-        private static eTypeLog TypeLog = eTypeLog.Full;
+        public static eTypeLog TypeLog = eTypeLog.Full;
 
         private static Dictionary<int, Type> _types = new Dictionary<int, Type>();
 

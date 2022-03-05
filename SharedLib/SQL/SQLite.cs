@@ -8,6 +8,8 @@ using ModelMID;
 using System.Threading;
 using System.Threading.Tasks;
 using Utils;
+using System.Linq;
+
 namespace SharedLib
 {        
     public class SQLite:SQL,IDisposable
@@ -208,10 +210,11 @@ namespace SharedLib
             {
                 transaction.Rollback();
                 new Exception("BulkExecuteNonQuery =>"+ex.Message, ex);
+                return -1;
             }
            
             //FileLogger.ExtLogForClass(transaction.GetType(), transaction.GetHashCode(), "End transaction");
-            return 0;
+            return Parameters.Count();
         }
 
         protected virtual void Dispose(bool disposing)

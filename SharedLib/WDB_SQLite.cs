@@ -835,7 +835,14 @@ and @TypeDiscount=11; ";
             using (var DB = new SQLite(ReceiptFile))
             {
                 return DB.BulkExecuteNonQuery<User>(SqlReplaceUser, pUser) > 0;
-            }        
+            }
+        }
+        public override bool ReplaceSalesBan(IEnumerable<SalesBan> pSB)
+        {
+            using (var DB = new SQLite(MidFile))
+            {
+                return DB.BulkExecuteNonQuery <SalesBan>(SqlReplaceSalesBan, pSB) > 0;
+            }
         }
 
         public override bool InsertLogRRO(LogRRO pLog)

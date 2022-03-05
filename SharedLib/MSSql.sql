@@ -485,5 +485,12 @@ GROUP BY pw.doc_promotion_RRef
 [SqlGetMRC]
  SELECT code_wares as CodeWares,Price  FROM dbo.V1C_MRC where Code_Warehouse = @CodeWarehouse;
 
+[SqlSalesBan]
+SELECT CODE_GROUP_WARES AS CodeGroupWares, amount
+  FROM  dbo.GetSalesBan (CASE 
+        WHEN @CodeWarehouse=9 THEN 0x81380050569E814D11E9E4D62A0CF9ED -- 14 касановий
+        WHEN @CodeWarehouse=15 THEN 0x817E0050569E814D11EC0030B1FA9530 -- 6(Каса ККМ СО Білочка №10)
+        end) ;
+
 [SqlEnd]
 */

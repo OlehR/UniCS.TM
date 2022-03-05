@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using ModelMID;
 using ModelMID.DB;
+using Utils;
 
 namespace SharedLib
 {
@@ -82,6 +83,19 @@ namespace SharedLib
             catch
             { Global.CodeWarehouse = 9; }
 
+            try
+            {
+                FileLogger.TypeLog = (eTypeLog)Enum.Parse(typeof(eTypeLog), AppConfiguration["MID:TypeLog"], true);                
+            }
+            catch
+            { FileLogger.TypeLog = eTypeLog.Error;}
+
+            try
+            {               
+                Global.IsOldInterface = Convert.ToBoolean(AppConfiguration["MID:IsOldInterface"]);
+            }
+            catch
+            { Global.IsOldInterface = true; }
             
 
             //GlobalVar.DefaultCodeDealer = Convert.ToInt32(AppConfiguration["MID:DefaultCodeDealer"]);

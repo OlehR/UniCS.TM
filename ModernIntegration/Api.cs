@@ -122,6 +122,12 @@ namespace ModernIntegration
         {
             throw new NotImplementedException();
         }
+
+        public virtual  bool ProcessCustomWindowResult(Guid terminalId, string customWindowResult)
+        {
+            throw new NotImplementedException();
+        }
+
         public Action<SyncInformation> OnSyncInfoCollected { get; set; }
 
         public Action<IEnumerable<ProductViewModel>, Guid> OnProductsChanged { get; set; }
@@ -133,6 +139,9 @@ namespace ModernIntegration
         /// </summary>
         public Action<eStateScale> OnChangedStatusScale { get; set; }
         public Action<CustomerViewModel, Guid> OnCustomerChanged { get; set; }
+
+        public Action<TerminalCustomWindowModel> OnShowCustomWindow { get; set; }
+       
 
         public virtual bool SetWeight(Guid pTerminalId, Guid pProductId, decimal pWaight) { throw new NotImplementedException(); }
 
