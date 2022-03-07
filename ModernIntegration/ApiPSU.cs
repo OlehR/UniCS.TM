@@ -832,7 +832,7 @@ namespace ModernIntegration
 
         public override bool ProcessCustomWindowResult(Guid pTerminalId, string pCustomWindowResult)
         {
-            FileLogger.WriteLogMessage($"pTerminalId=>{pTerminalId} pCustomWindowResult=>{pCustomWindowResult}",eTypeLog.Expanded);
+            FileLogger.WriteLogMessage($"ApiPSU.ProcessCustomWindowResult( pTerminalId=>{pTerminalId}, pCustomWindowResult=>{pCustomWindowResult})",eTypeLog.Expanded);
             return true;            
         }
     }

@@ -306,7 +306,7 @@ namespace SharedLib
             //var El = Res.First();
             return Res;
         }
-        public bool ChangeQuantity(IdReceiptWares pReceiptWaresId, decimal parQuantity)
+        public bool ChangeQuantity(IdReceiptWares pReceiptWaresId, decimal pQuantity)
         {
             bool isZeroPrice = false;
             var res = false;
@@ -319,9 +319,8 @@ namespace SharedLib
             if (W.Count() == 1)
             {
                 var w = W.First();
-
-
-                if (parQuantity == 0)
+                w.SetIdReceipt(pReceiptWaresId);
+                if (pQuantity == 0)
                 {
                     db.DeleteReceiptWares(w);
                     _ = VR.SendMessageAsync(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum, VR.eTypeVRMessage.DeleteWares);
@@ -329,7 +328,7 @@ namespace SharedLib
                 else
                 {
                     //w.SetIdReceiptWares();
-                    w.Quantity = parQuantity;
+                    w.Quantity = pQuantity;
                     w.Sort = -1;
                     if (w.AmountSalesBan > 0 && w.Quantity > w.AmountSalesBan && (w.CodeUnit != Global.WeightCodeUnit && w.CodeUnit != Global.WeightCodeUnit))
                     {

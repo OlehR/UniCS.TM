@@ -125,7 +125,11 @@ namespace Test
 
             var pp = api.AddProductByBarCode(TerminalId, "7622100815594", 1);
 
-            api.ChangeQuantity(TerminalId, pp.Id  , 4);
+            api.ChangeQuantity(TerminalId, pp.Id  , 2);
+
+            api.ChangeQuantity(TerminalId, pp.Id, 3);
+
+            api.ChangeQuantity(TerminalId, pp.Id, 1);
 
             //var rrrrrrrr=api.Bl.db.CloseReceipt(receipt);
 
