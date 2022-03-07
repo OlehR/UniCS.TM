@@ -22,11 +22,20 @@ namespace Utils
         private static readonly object DictionaryLocker = new object();
         static FileLogger()
         {
-            if (!Directory.Exists(PathLog))
-                Directory.CreateDirectory(PathLog);
-
+            CreateDirectoryLog();
+        }
+        public static void SetPath(string pPathLog)
+        {
+            if (!string.IsNullOrEmpty(pPathLog))
+                PathLog = pPathLog;
+            CreateDirectoryLog();
         }
 
+        public static void CreateDirectoryLog()
+        {
+            if (!Directory.Exists(PathLog))
+                Directory.CreateDirectory(PathLog);
+        }
         public static void ExtLogForClass(Type type, int hashCode, string message, string parameters = null)
         {
             if (!string.IsNullOrWhiteSpace(parameters))

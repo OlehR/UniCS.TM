@@ -96,11 +96,20 @@ namespace SharedLib
             }
             catch
             { Global.IsOldInterface = true; }
-            
+
+            try
+            {
+                var PathLog = AppConfiguration["MID:PathLog"];
+                if (!string.IsNullOrEmpty(PathLog))
+                    FileLogger.SetPath(PathLog);
+            }
+            catch
+            { }
 
             //GlobalVar.DefaultCodeDealer = Convert.ToInt32(AppConfiguration["MID:DefaultCodeDealer"]);
             if (!Directory.Exists(Global.PathDB))
                 Directory.CreateDirectory(Global.PathDB);
+
 
         }
         public static IConfigurationRoot GetConfiguration()

@@ -68,9 +68,9 @@ namespace ModernIntegration
                              Type = CustomWindowInputType.Buttons,
                              Buttons = new List<CustomWindowButton>() { new CustomWindowButton() { ActionData = "Ok", DisplayName = "Ok" } }
                          }
-                     };                     
+                     };
                  }
-                 OnShowCustomWindow(TCV);
+                 OnShowCustomWindow?.Invoke(TCV);
                  string sTCV= JsonConvert.SerializeObject(TCV);
                  FileLogger.WriteLogMessage($"OnClientWindows => {pTypeWindows} TerminalId=>{pTerminalId}{Environment.NewLine} Message=> {pMessage} {Environment.NewLine} TCV=>{sTCV}",eTypeLog.Expanded);
              };

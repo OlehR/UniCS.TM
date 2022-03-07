@@ -178,19 +178,19 @@ namespace Test
 
                 // sd = api.AddProductByProductId(TerminalId, sd.Id, 1, 45.71M);
 
-                sd = api.AddProductByBarCode(TerminalId, "4820000536202", 1);
-                sd = api.AddProductByBarCode(TerminalId, "2510188500004", 1);
+                sd = api.AddProductByBarCode(TerminalId, "4820000536202", 8);
+                sd = api.AddProductByBarCode(TerminalId, "2510188500004", 8);
 
-                var rgggrr = api.AddProductByProductId(TerminalId, ProductId, 1);
+                var rgggrr = api.AddProductByProductId(TerminalId, ProductId, 8);
 
                 var clff = api.GetCustomerByBarCode(TerminalId, "8810005077387"); //Моя карточка 7%
 
                 sd = api.AddProductByBarCode(TerminalId, "2201652301489", 1); //Морква 
                                                                               //Thread.Sleep(2000);
-                sd = api.AddProductByBarCode(TerminalId, "7773002160043", 1); //товар 2 кат
-                sd = api.AddProductByBarCode(TerminalId, "4823086109988", 1);
+                sd = api.AddProductByBarCode(TerminalId, "7773002160043", 8); //товар 2 кат
+                sd = api.AddProductByBarCode(TerminalId, "4823086109988", 8);
 
-                sd = api.AddProductByBarCode(TerminalId, "2201651902226", 1); //
+                sd = api.AddProductByBarCode(TerminalId, "2201651902226", 8); //
 
                 var r = api.AddFiscalNumber(TerminalId, "TRRF-1234"); return;
 
@@ -232,21 +232,21 @@ namespace Test
 
                 //sd = api.AddProductByBarCode(TerminalId, "7613036939874", 1);
 
-                sd = api.AddProductByBarCode(TerminalId, "4820000534642", 1);
+                sd = api.AddProductByBarCode(TerminalId, "4820000534642", 7);
                 sd = api.AddProductByProductId(TerminalId, sd.Id, 4, 10.00M);
-                sd = api.AddProductByBarCode(TerminalId, "4820000534741", 1);
+                sd = api.AddProductByBarCode(TerminalId, "4820000534741", 8);
                 sd = api.AddProductByProductId(TerminalId, sd.Id, 3, 20.00M);
 
                 var rr = api.GetRecieptByTerminalId(TerminalId, true);
                 return;
 
-                sd = api.AddProductByBarCode(TerminalId, "4823021808778", 1);
+                sd = api.AddProductByBarCode(TerminalId, "4823021808778", 8);
 
-                sd = api.AddProductByBarCode(TerminalId, "1110716760019", 1); //хліб житній
+                sd = api.AddProductByBarCode(TerminalId, "1110716760019", 8); //хліб житній
                                                                               //api.SetWeight(TerminalId, sd.Id, 321);           return;
-                sd = api.AddProductByBarCode(TerminalId, "7773002160043", 1); //товар 2 кат
+                sd = api.AddProductByBarCode(TerminalId, "7773002160043", 8); //товар 2 кат
                                                                               //Thread.Sleep(2000);
-                sd = api.AddProductByBarCode(TerminalId, "1110716760019", 1); //хліб житній
+                sd = api.AddProductByBarCode(TerminalId, "1110716760019", 8); //хліб житній
                                                                               // Thread.Sleep(2000);
                 sd = api.AddProductByBarCode(TerminalId, "7773002160029", 1); //товар 2 кат
 
