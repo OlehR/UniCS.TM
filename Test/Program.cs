@@ -122,7 +122,12 @@ namespace Test
             var api = new ApiPSU();
 
 
-            var rrrrrrrr=api.Bl.db.CloseReceipt(receipt);
+
+            var pp = api.AddProductByBarCode(TerminalId, "7622100815594", 1);
+
+            api.ChangeQuantity(TerminalId, pp.Id  , 4);
+
+            //var rrrrrrrr=api.Bl.db.CloseReceipt(receipt);
 
 
             // api.AddPayment(TerminalId, Pay); 

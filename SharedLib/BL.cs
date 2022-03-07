@@ -265,6 +265,7 @@ namespace SharedLib
         {
             return AddWaresCode(curReciptId, pCodeWares, pCodeUnit, pQuantity, pPrice);
         }
+
         public ReceiptWares AddWaresCode(IdReceipt pIdReceipt, int pCodeWares, int pCodeUnit, decimal pQuantity = 0, decimal pPrice = 0)
         {
             var w = db.FindWares(null, null, pCodeWares, pCodeUnit);
@@ -305,31 +306,47 @@ namespace SharedLib
             //var El = Res.First();
             return Res;
         }
-        public bool ChangeQuantity(IdReceiptWares parReceiptWaresId, decimal parQuantity)
+        public bool ChangeQuantity(IdReceiptWares pReceiptWaresId, decimal parQuantity)
         {
+            bool isZeroPrice = false;
             var res = false;
             //var W = db.FindWares(null, null, parReceiptWaresId.CodeWares, parReceiptWaresId.CodeUnit);
             // if (W.Count() == 1)
             //{
-            var w = new ReceiptWares(parReceiptWaresId);
+            //var w= new ReceiptWares(parReceiptWaresId);
+            var W = db.FindWares(null, null, pReceiptWaresId.CodeWares, pReceiptWaresId.CodeUnit);
 
-            if (parQuantity == 0)
+            if (W.Count() == 1)
             {
-                db.DeleteReceiptWares(w);
-                _ = VR.SendMessageAsync(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum, VR.eTypeVRMessage.DeleteWares);
-            }
-            else
-            {
-                //w.SetIdReceiptWares();
-                w.Quantity = parQuantity;
-                w.Sort = -1;
-                res = db.UpdateQuantityWares(w);
-                _ = VR.SendMessageAsync(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum, VR.eTypeVRMessage.UpdateWares);
-            }
-            if (ModelMID.Global.RecalcPriceOnLine)
-                db.RecalcPriceAsync(parReceiptWaresId);
+                var w = W.First();
 
-            // }
+
+                if (parQuantity == 0)
+                {
+                    db.DeleteReceiptWares(w);
+                    _ = VR.SendMessageAsync(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum, VR.eTypeVRMessage.DeleteWares);
+                }
+                else
+                {
+                    //w.SetIdReceiptWares();
+                    w.Quantity = parQuantity;
+                    w.Sort = -1;
+                    if (w.AmountSalesBan > 0 && w.Quantity > w.AmountSalesBan && (w.CodeUnit != Global.WeightCodeUnit && w.CodeUnit != Global.WeightCodeUnit))
+                    {
+                        w.Quantity = w.AmountSalesBan;
+                        if (Global.IsOldInterface)
+                            isZeroPrice = true;
+                        else
+                            Global.OnClientWindows?.Invoke(w.IdWorkplace, eTypeWindows.LimitSales, $"Даний товар {w.NameWares} {Environment.NewLine} має обмеження в кількості {w.AmountSalesBan} шт");
+                    }
+
+                    res = db.UpdateQuantityWares(w);
+                    _ = VR.SendMessageAsync(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum, VR.eTypeVRMessage.UpdateWares);
+                }
+                if (Global.RecalcPriceOnLine)
+                    db.RecalcPriceAsync(pReceiptWaresId);
+
+            }
             return res;
         }
 
