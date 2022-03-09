@@ -17,7 +17,10 @@ using System.Text;
 using Newtonsoft.Json;
 
 using IronBarCode;
+using System.IO.Packaging;
+using System.Reflection;
 //using System.Printing;
+
 
 namespace Test
 {
@@ -37,16 +40,19 @@ namespace Test
         {
             Console.WriteLine("Start");
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-            //var sort = new SortImg();
-           // sort.SortPhoto(); // cортування фото
+                                                   //var sort = new SortImg();
+                                                   // sort.SortPhoto(); // cортування фото
 
             //var l = new GetGoodUrl();
             // var img = new ImageListex(); 
             //await img.LoadImgListex(); // завантаження фото
             //await l.LoadRozetka();//GetInfoBarcode("4820009350588");
 
-           
-           //await CreateDataBaseAsync(true); return;
+
+            //await CreateDataBaseAsync(true); return;
+            //var aa= Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+            //var bl = new BL();
+            //var aaaaa=bl.Ver;
 
             TestReceiptAsync();
 

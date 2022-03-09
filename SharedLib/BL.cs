@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace SharedLib
 {
@@ -25,7 +26,9 @@ namespace SharedLib
 
         public static SortedList<int, long> UserIdbyWorkPlace = new SortedList<int, long>();
         //public Action<IEnumerable<ReceiptWares>, Guid> OnReceiptCalculationComplete { get; set; }
-
+        
+       // public string Ver = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+        
         /// <summary>
         /// Для швидкого пошуку 
         /// </summary>
@@ -55,9 +58,13 @@ namespace SharedLib
                 {
                     pW.Quantity = pW.AmountSalesBan;
                     if (Global.IsOldInterface)
+                    {
                         isZeroPrice = true;
+                        return null;
+                    }
                     else
-                        Global.OnClientWindows?.Invoke(pW.IdWorkplace,eTypeWindows.LimitSales, $"Даний товар {pW.NameWares} {Environment.NewLine} має обмеження в кількості {pW.AmountSalesBan} шт");
+                        Global.OnClientWindows?.Invoke(pW.IdWorkplace, eTypeWindows.LimitSales, $"Даний товар {pW.NameWares} {Environment.NewLine} має обмеження в кількості {pW.AmountSalesBan} шт");
+                
                 }
                 if (Quantity > 0)
                     db.UpdateQuantityWares(pW);
@@ -78,11 +85,8 @@ namespace SharedLib
             if (pRecalcPriceOnLine && ModelMID.Global.RecalcPriceOnLine)
                 db.RecalcPriceAsync(pW);
 
-            /*if (pW.PLU > 0)
-             {
-                 GenQRAsync(pW);
-             }
-            */
+            /*if (pW.PLU > 0)             
+                 GenQRAsync(pW);*/
             if (isZeroPrice)
             {
                 pW.Price = 0;
@@ -344,7 +348,6 @@ namespace SharedLib
                 }
                 if (Global.RecalcPriceOnLine)
                     db.RecalcPriceAsync(pReceiptWaresId);
-
             }
             return res;
         }
