@@ -20,6 +20,8 @@ namespace ModernIntegration
     }
     public class Api
     {
+        private static Api _instance;
+        public static Api Instance = _instance ?? (_instance = new ApiPSU());
         //public bool CreateReceipt(Guid parTerminalId, Guid parReceipt) { throw new NotImplementedException(); }
 
         public virtual ProductViewModel AddProductByBarCode(Guid parTerminalId, string parS, decimal parQuantity = 0) { throw new NotImplementedException(); }

@@ -17,7 +17,7 @@ using Newtonsoft.Json;
 
 namespace ModernIntegration
 {
-    public class ApiPSU : Api
+    public partial class ApiPSU:Api 
     {
         public BL Bl;
         public Dictionary<Guid, ModelMID.IdReceipt> Receipts = new Dictionary<Guid, ModelMID.IdReceipt>();
@@ -90,7 +90,7 @@ namespace ModernIntegration
             }
             catch (Exception e)
             {
-                FileLogger.WriteLogMessage($"ApiPSU.AddProductByBarCode Exception =>(pTerminalId=>{pTerminalId},pBarCode=>{pBarCode},pQuantity={pQuantity}) => ({res.ToJSON()}){Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace}", eTypeLog.Error);
+                FileLogger.WriteLogMessage($"ApiPSU.AddProductByBarCode Exception =>(pTerminalId=>{pTerminalId},pBarCode=>{pBarCode},pQuantity={pQuantity}) => ({res?.ToJSON()}){Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace}", eTypeLog.Error);
                 throw new Exception("ApiPSU.AddProductByBarCode", e);
             }
             return res;
@@ -179,7 +179,7 @@ namespace ModernIntegration
                 IdReceipt receiptId = (pReceiptId != null && pReceiptId != Guid.Empty) ? new IdReceipt(pReceiptId.Value) : GetCurrentReceiptByTerminalId(pTerminalId);
                 Bl.db.ReplacePayment(pPayment.Select(r => ReceiptPaymentToPayment(receiptId, r)));
                 res= Bl.SetStateReceipt(receiptId, eStateReceipt.Pay);
-                FileLogger.WriteLogMessage($"ApiPSU.AddPayment Exception =>( pTerminalId=>{pTerminalId},pPayment=> {pPayment},pReceiptId={pReceiptId}) => ({res.ToJSON()})", eTypeLog.Full);
+                FileLogger.WriteLogMessage($"ApiPSU.AddPayment Exception =>( pTerminalId=>{pTerminalId},pPayment=> {pPayment},pReceiptId={pReceiptId}) => ({res})", eTypeLog.Full);
             }
             catch (Exception e)
             {
@@ -237,57 +237,92 @@ namespace ModernIntegration
         public override List<ProductCategory> GetAllCategories(Guid pTerminalId)
         {
             var Res = new List<ProductCategory>();
-            var ct = Global.CodeWarehouse;  //Поправив. TMP!!! Треба брати з налаштувань.
-            var wr = Bl.db.GetFastGroup(ct);
-            if (wr != null)
-                foreach (var el in wr)
-                    Res.Add(GetProductCategory(el));
+            try
+            {
+                var wr = Bl.db.GetFastGroup(Global.CodeWarehouse);
+                if (wr != null)
+                    foreach (var el in wr)
+                        Res.Add(GetProductCategory(el));
+                FileLogger.WriteLogMessage($"ApiPSU.GetAllCategories =>( pTerminalId=>{pTerminalId}) => ({Res?.ToJSON()})", eTypeLog.Full);
+            }
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage($"ApiPSU.GetAllCategories Exception =>(pTerminalId=>{pTerminalId}) => (){Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace}", eTypeLog.Error);
+                throw new Exception("ApiPSU.GetAllCategories", e);
+            }
             return Res;
         }
 
         public override List<ProductCategory> GetCategoriesByParentId(Guid pTerminalId, Guid categoryId) {throw new NotImplementedException();}
 
-        public override List<ProductViewModel> GetProductsByCategoryId(Guid pTerminalId, Guid categoryId)
+        public override List<ProductViewModel> GetProductsByCategoryId(Guid pTerminalId, Guid pCategoryId)
         {
             var Res = new List<ProductViewModel>();
-            var ct = new FastGroup { FastGroupId = categoryId };
-            var wr = Bl.db.GetWaresFromFastGroup(ct.CodeFastGroup);
-            if (wr != null)
-                foreach (var el in wr)
-                    Res.Add(GetProductViewModel(el));
+            try
+            {
+                var ct = new FastGroup { FastGroupId = pCategoryId };
+                var wr = Bl.db.GetWaresFromFastGroup(ct.CodeFastGroup);
+                if (wr != null)
+                    foreach (var el in wr)
+                        Res.Add(GetProductViewModel(el));
+                FileLogger.WriteLogMessage($"ApiPSU.GetProductsByCategoryId =>( pTerminalId=>{pTerminalId},pCategoryId=>{pCategoryId}) => ({Res?.ToJSON()})", eTypeLog.Full);
+            }
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage($"ApiPSU.GetProductsByCategoryId Exception =>(pTerminalId=>{pTerminalId},pCategoryId=>{pCategoryId}) => (){Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace}", eTypeLog.Error);
+                throw new Exception("ApiPSU.GetProductsByCategoryId", e);
+            }
             return Res;
         }
 
-        public override IEnumerable<ProductViewModel> GetProductsByName(Guid pTerminalId, string parName, int pageNumber = 0, bool excludeWeightProduct = false, Guid? categoryId = null, int parLimit = 10)
+        public override IEnumerable<ProductViewModel> GetProductsByName(Guid pTerminalId, string pName, int pPageNumber = 0, bool pExcludeWeightProduct = false, Guid? pCategoryId = null, int pLimit = 10)
         {
+            IEnumerable<ProductViewModel> Res = null;
+            try
+            {
+                FastGroup fastGroup = (pCategoryId == null ? new FastGroup() : new FastGroup(pCategoryId.Value));
 
-            FastGroup fastGroup =( categoryId == null ? new FastGroup() : new FastGroup(categoryId.Value));
-
-            var receiptId = GetCurrentReceiptByTerminalId(pTerminalId);
-            //int Limit = 10;
-            var res = Bl.GetProductsByName(receiptId, parName.Replace(' ', '%').Trim(), pageNumber * parLimit, parLimit, fastGroup.CodeFastGroup);
-            if (res == null)
-                return null;
-            return res.Select(r => (GetProductViewModel(r)));
+                var receiptId = GetCurrentReceiptByTerminalId(pTerminalId);
+                //int Limit = 10;
+                var res = Bl.GetProductsByName(receiptId, pName.Replace(' ', '%').Trim(), pPageNumber * pLimit, pLimit, fastGroup.CodeFastGroup);
+                if (res != null)
+                    Res= res.Select(r => (GetProductViewModel(r)));
+                FileLogger.WriteLogMessage($"ApiPSU.GetProductsByName =>( pTerminalId=>{pTerminalId},pName=>{pName},pPageNumber=>{pPageNumber},pExcludeWeightProduct=>{pExcludeWeightProduct},pCategoryId=>{pCategoryId},pLimit={pLimit}) => ({Res?.ToJSON()})", eTypeLog.Full);
+            }
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage($"ApiPSU.GetProductsByName Exception =>( pTerminalId=>{pTerminalId},pName=>{pName},pPageNumber=>{pPageNumber},pExcludeWeightProduct=>{pExcludeWeightProduct},pCategoryId=>{pCategoryId},pLimit={pLimit}) => (){Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace}", eTypeLog.Error);
+                throw new Exception("ApiPSU.GetProductsByName", e);
+            }
+            return Res;
         }
 
         //Зберігає
         public override bool UpdateReceipt(ReceiptViewModel pReceipt)
         {
-            // throw new NotImplementedException();
-            if (pReceipt!=null && pReceipt.ReceiptEvents!=null)
+            bool Res = false;
+            try
             {
-                var RE = pReceipt.ReceiptEvents.Select(r => GetReceiptEvent(r));
-                if(RE!=null)
-                    Bl.SaveReceiptEvents(RE);
-                if (pReceipt.ReceiptItems != null)
+                if (pReceipt != null && pReceipt.ReceiptEvents != null)
                 {
-                    var WR = pReceipt.ReceiptItems.Where(r => r.Excises != null && r.Excises.Count() > 0).Select(r => GetReceiptWaresFromReceiptItem(new IdReceipt(pReceipt.Id), r));
-                    if (WR != null && WR.Count() > 0)
-                        Bl.UpdateExciseStamp(WR);
+                    var RE = pReceipt.ReceiptEvents.Select(r => GetReceiptEvent(r));
+                    if (RE != null)
+                        Bl.SaveReceiptEvents(RE);
+                    if (pReceipt.ReceiptItems != null)
+                    {
+                        var WR = pReceipt.ReceiptItems.Where(r => r.Excises != null && r.Excises.Count() > 0).Select(r => GetReceiptWaresFromReceiptItem(new IdReceipt(pReceipt.Id), r));
+                        if (WR != null && WR.Count() > 0)
+                            Res=Bl.UpdateExciseStamp(WR);
+                    }
                 }
+                FileLogger.WriteLogMessage($"ApiPSU.UpdateReceipt =>(pTerminalId=>{pReceipt?.ToJSON()}) => ({Res})", eTypeLog.Full);
             }
-            return false;
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage($"ApiPSU.UpdateReceipt Exception =>(pTerminalId=>{pReceipt?.ToJSON()}) => ({Res}){Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace}", eTypeLog.Error);
+                throw new Exception("ApiPSU.UpdateReceipt", e);
+            }
+            return Res;
         }
 
         public override TypeSend SendReceipt(Guid pReceipt)
@@ -296,315 +331,50 @@ namespace ModernIntegration
             return TypeSend.NotReady;
         }
 
-        public override TypeSend GetStatusReceipt(Guid pReceipt)
-        {
-            throw new NotImplementedException();
-            //return TypeSend.NotReady; 
-        }
+        public override TypeSend GetStatusReceipt(Guid pReceipt) { throw new NotImplementedException();}
 
-        public override CustomerViewModel GetCustomerByBarCode(Guid pTerminalId, string parS)
+        public override CustomerViewModel GetCustomerByBarCode(Guid pTerminalId, string pS)
         {
-            var CM = Bl.GetClientByBarCode(GetCurrentReceiptByTerminalId(pTerminalId), parS);
-            if (CM == null)
-                return null;
-            _ = Bl.GetBonusAsync(CM, pTerminalId);
-            return GetCustomerViewModelByClient(CM);
+            CustomerViewModel Res = null;
+            try
+            {               
+                var CM = Bl.GetClientByBarCode(GetCurrentReceiptByTerminalId(pTerminalId), pS);
+                if (CM != null)
+                {
+                    _ = Bl.GetBonusAsync(CM, pTerminalId);
+                    Res = GetCustomerViewModelByClient(CM);
+                }
+                FileLogger.WriteLogMessage($"ApiPSU.GetCustomerByBarCode =>( pTerminalId=>{pTerminalId},pS=>{pS}) => ({Res?.ToJSON()})", eTypeLog.Full);
+            }
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage($"ApiPSU.GetCustomerByBarCode Exception =>( pTerminalId=>{pTerminalId},pS=>{pS}) => (){Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace}", eTypeLog.Error);
+                throw new Exception("ApiPSU.GetCustomerByBarCode", e);
+            }
+            return Res;
         }
 
         public override CustomerViewModel GetCustomerByPhone(Guid pTerminalId, string pPhone)
         {
-            var CM = Bl.GetClientByPhone(GetCurrentReceiptByTerminalId(pTerminalId), pPhone);
-            if (CM == null)
-                return null;
-            _ = Bl.GetBonusAsync(CM, pTerminalId);
-            return GetCustomerViewModelByClient(CM);
-        }
-
-        // Допоміжні методи
-        /// <summary>
-        /// Clears the receipt by receipt identifier.
-        /// </summary>
-        /// <param name="idReceipt">The identifier receipt.</param>
-        /// <returns></returns>
-        public bool ClearReceiptByReceiptId(IdReceipt idReceipt)
-        {
-            if (Receipts != null)
-                foreach (var el in Receipts)
-                {
-                    if (el.Value != null && el.Value.Equals(idReceipt))
-                    {
-                        Receipts[el.Key] = null;
-                        return true;
-                    }
-                }
-            return false;
-        }
-
-        /// <summary>
-        /// Gets the current receipt by terminal identifier.
-        /// </summary>
-        /// <param name="pTerminalId">The par terminal identifier.</param>
-        /// <returns></returns>
-        public ModelMID.IdReceipt GetCurrentReceiptByTerminalId(Guid pTerminalId)
-        {
-            if (!Receipts.ContainsKey(pTerminalId) || Receipts[pTerminalId] == null)
+            CustomerViewModel Res = null;
+            try
             {
-                var idReceipt = Bl.GetNewIdReceipt(pTerminalId);
-                Receipts[pTerminalId] = new ModelMID.Receipt(idReceipt);
-                //Bl.AddReceipt(Receipts[pTerminalId]);
+                var CM = Bl.GetClientByPhone(GetCurrentReceiptByTerminalId(pTerminalId), pPhone);
+                if (CM != null)
+                {
+                    _ = Bl.GetBonusAsync(CM, pTerminalId);
+                    Res = GetCustomerViewModelByClient(CM);
+                }
+                FileLogger.WriteLogMessage($"ApiPSU.GetCustomerByPhone =>( pTerminalId=>{pTerminalId},pPhone=>{pPhone}) => ({Res?.ToJSON()})", eTypeLog.Full);
             }
-            return Receipts[pTerminalId];
-        }
-
-        /// <summary>
-        /// Convert MID.ReceiptWares->ProductViewModel
-        /// </summary>
-        /// <param name="receiptWares"></param>
-        /// <returns></returns>
-        private ProductViewModel GetProductViewModel(ReceiptWares receiptWares)
-        {
-            var LWI = new List<WeightInfo>();
-            if(receiptWares.IsWeight || receiptWares.WeightBrutto>0)
-              LWI.Add(      
-                    new WeightInfo() {
-                        Weight = (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : Convert.ToDouble(receiptWares.WeightBrutto)),
-                        DeltaWeight = Convert.ToDouble(receiptWares.WeightDelta)+ Convert.ToDouble(Global.GetCoefDeltaWeight(
-                            (receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto))* (receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto))  }                    
-            );
-            if (!receiptWares.IsWeight && receiptWares.AdditionalWeights != null)
-                foreach (var el in receiptWares.AdditionalWeights)
-                    LWI.Add(new WeightInfo { DeltaWeight = Convert.ToDouble(receiptWares.WeightDelta) + Convert.ToDouble(Global.GetCoefDeltaWeight(el))*Convert.ToDouble(el), Weight = Convert.ToDouble(el) });
-            var varTags = (receiptWares.TypeWares > 0 || receiptWares.LimitAge > 0 || (!receiptWares.IsWeight && receiptWares.WeightBrutto == 0))
-                    ? new List<Tag>() : null; //!!!TMP // Різні мітки алкоголь, обмеження по часу.
-
-            //Якщо алкоголь чи тютюн
-            if (receiptWares.TypeWares > 0 || receiptWares.LimitAge>0)
-                varTags.Add(new Tag() { Key = "AgeRestricted", Id = 0 });
-            //Якщо алкоголь обмеження по часу
-            if (receiptWares.TypeWares == 1)
-                varTags.Add(new Tag() { Key = "TimeRestricted", Id = 1, RuleValue = "{\"Start\":\"" + Global.AlcoholTimeStart + "\",\"Stop\":\"" + Global.AlcoholTimeStop + "\"}" });
-            //Якщо алкоголь ввід Марки.
-            if (receiptWares.TypeWares == 1)
-                varTags.Add(new Tag() { Key = "NeedExcise", Id = 2 });
-
-            // Якщо немає ваги відключаємо її контроль 
-            if (!receiptWares.IsWeight && LWI.Count() == 0 && receiptWares.WeightFact != -1)
-                varTags.Add(new Tag { Id = 3, Key = "AutoAcceptRule" });
-
-            // Товар не потрібно зважувати. FoodToGo
-            if (receiptWares.WeightFact == -1)
+            catch (Exception e)
             {
-                varTags.Add(new Tag { Id = 4, Key = "DoNotUseScales" });
-                varTags.Add(new Tag { Id = 5, Key = "CanBeDeletedByCustomer" });
-            }
-
-            if (receiptWares.IsMultiplePrices)
-                varTags.Add(new Tag { Id = 6, Key = "MultiplePrices", RuleValue = receiptWares.GetPrices });
-
-            var Res = new ProductViewModel()
-            {
-                Id = receiptWares.WaresId,
-                Code = receiptWares.CodeWares,
-                Name = receiptWares.NameWares,
-                AdditionalDescription = receiptWares.NameWaresReceipt, //!!!TMP;
-                Image = null,
-                Price = receiptWares.PriceEKKA,//(receiptWares.Priority==1? receiptWares.Price : (receiptWares.Price > receiptWares.PriceDealer ? receiptWares.Price : receiptWares.PriceDealer)),
-                //receiptWares.SumDiscount > 0 ? receiptWares.PriceDealer : (receiptWares.Price > 0 ? receiptWares.Price : receiptWares.PriceDealer),
-                //receiptWares.SumDiscount > 0 ? ( receiptWares.Price > 0 ? receiptWares.Price : receiptWares.PriceDealer): (receiptWares.Price>receiptWares.PriceDealer ? receiptWares.Price:receiptWares.PriceDealer),
-                DiscountValue = receiptWares.DiscountEKKA, //= receiptWares.SumDiscount+ ( receiptWares.Priority == 1?0 : (receiptWares.PriceDealer > receiptWares.Price ? (receiptWares.PriceDealer * receiptWares.Quantity - receiptWares.Sum) : 0)),
-                //receiptWares.SumDiscount > 0 ? receiptWares.SumDiscount : 0,
-                //Global.RoundDown(receiptWares.SumDiscount>0 ? receiptWares.SumDiscount : (receiptWares.PriceDealer > receiptWares.Price ? (receiptWares.PriceDealer * receiptWares.Quantity - receiptWares.Sum):0)),
-                WeightCategory = 2, //вимірювання Похибки в відсотках,2 в грамах
-                Weight = (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity) : (receiptWares.WeightBrutto == 0m ? 100000 : Convert.ToDouble(receiptWares.WeightBrutto))),
-                DeltaWeight = Convert.ToDouble(receiptWares.WeightDelta) + Convert.ToDouble(Global.GetCoefDeltaWeight((receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto)) * (receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto)),
-                AdditionalWeights = LWI,
-                ProductWeightType = receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByBarcode,
-                IsAgeRestrictedConfirmed = false, //Обмеження по віку алкоголь Підтверджено не потрібно посилати.
-                Quantity = (receiptWares.IsWeight ? 1 : receiptWares.Quantity),
-                DiscountName = receiptWares.GetStrWaresReceiptPromotion,
-                WarningType = null, //!!! Не посилати                 
-                Tags = varTags,
-                HasSecurityMark = false, //!!!TMP // Магнітна мітка, яку треба знімати.
-                TotalRows = receiptWares.TotalRows, //Сортування популярного.
-                IsProductOnProcessing = false, //
-                ///CategoryId=   !!!TMP Групи 1 рівня.
-                TaxGroup = Global.GetTaxGroup(receiptWares.TypeVat, receiptWares.TypeWares),
-                Barcode = receiptWares.TypeWares > 0 ? receiptWares.BarCode:null,
-                //FullPrice = receiptWares.Sum
-                RefundedQuantity = receiptWares.RefundedQuantity,
-                CalculatedWeight = Convert.ToDouble(receiptWares.FixWeight * 1000)
-                , Uktzed = receiptWares.TypeWares>0? receiptWares.CodeUKTZED:null
-                , IsUktzedNeedToPrint = receiptWares.IsUseCodeUKTZED
-                , Excises = receiptWares.ExciseStamp?.Split(',').ToList()
-
-            };
-            return Res;
-        }
-
-        private ReceiptWares GetReceiptWares(ProductViewModel varPWM)
-        {
-            if (varPWM == null)
-                return null;
-            var Res = new ReceiptWares()
-            {
-                WaresId = varPWM.Id,
-                CodeWares = varPWM.Code,
-                NameWares = varPWM.Name,
-                NameWaresReceipt = varPWM.AdditionalDescription, //!!!TMP;
-                Price = varPWM.Price,
-                Quantity = varPWM.Quantity,
-                SumDiscount = varPWM.DiscountValue,
-               // NameDiscount = varPWM.DiscountName,
-                Sort = varPWM.TotalRows //Сортування популярного.
-            };
-            return Res;
-        }
-
-        public ReceiptViewModel GetReceiptViewModel(IdReceipt pReceipt, bool pIsDetail = false)
-        {
-            if (pReceipt == null)
-                return null;
-            var receiptMID = Bl.GetReceiptHead(pReceipt,true);
-            if (receiptMID == null)
-                return null;
-            var receipt = new Receipt()
-            {
-                Id = receiptMID.ReceiptId,
-                FiscalNumber = receiptMID.NumberReceipt,
-                Status = (receiptMID.SumCash > 0 || receiptMID.SumCreditCard > 0
-                    ? ReceiptStatusType.Paid
-                    : ReceiptStatusType.Created), //!!!TMP Треба врахувати повернення
-                TerminalId = receiptMID.TerminalId,
-                Amount = receiptMID.SumReceipt, //!!!TMP Сума чека.
-                Discount = receiptMID.SumDiscount,
-                TotalAmount = receiptMID.SumReceipt - receiptMID.SumBonus- receiptMID.SumDiscount,
-                CustomerId = new Client(receiptMID.CodeClient).ClientId,
-                CreatedAt = receiptMID.DateCreate,
-                UpdatedAt = receiptMID.DateReceipt, 
-
-                //ReceiptItems=
-                //Customer /// !!!TMP Модель клієнта
-                //PaymentInfo
-            };
-            var listReceiptItem = GetReceiptItem(receiptMID.Wares,pIsDetail); //GetReceiptItem(pReceipt);
-            var Res = new ReceiptViewModel(receipt, listReceiptItem, null, null)
-            { CustomId = receiptMID.NumberReceipt1C };
-            
-            if (receiptMID.Payment != null && receiptMID.Payment.Count()>0)
-            {
-                Res.PaidAmount = receiptMID.Payment.Sum(r => receipt.Amount);
-                var SumCash = receiptMID.Payment.Where(r=> r.TypePay== eTypePay.Cash).Sum(r => receipt.Amount);
-                var SumCard = receiptMID.Payment.Where(r => r.TypePay == eTypePay.Card).Sum(r => receipt.Amount);
-                Res.PaymentType = (SumCash > 0 && SumCard > 0 ? PaymentType.Card | PaymentType.Card : (SumCash == 0 && SumCard == 0 ? PaymentType.None : (SumCash > 0?PaymentType.Cash: PaymentType.Card)));
-                Res.PaymentInfo = PaymentToReceiptPayment(receiptMID.Payment.First());                
-            }
-            
-            if (receiptMID.ReceiptEvent != null && receiptMID.ReceiptEvent.Count() > 0)
-                Res.ReceiptEvents = receiptMID.ReceiptEvent.Select(r => GetReceiptEvent(r)).ToList();
-            if(pIsDetail)
-                Bl.GenQRAsync(receiptMID.Wares);
-            return Res;
-        }
-
-        private List<ReceiptItem> GetReceiptItem(IdReceipt parIdReceipt)
-        {
-            var res = Bl.ViewReceiptWares(parIdReceipt);
-            return GetReceiptItem(res);            
-        }
-
-        private List<ReceiptItem> GetReceiptItem(IEnumerable<ReceiptWares> res, bool IsDetail = false)
-        {
-            var Res = new List<ReceiptItem>();
-            foreach (var el in res)
-            {
-               
-                decimal PromotionQuantity = 0;
-                IEnumerable<WaresReceiptPromotion> PromotionPrice = null;
-
-                if (el.ReceiptWaresPromotions != null)
-                {
-                    PromotionPrice = el.ReceiptWaresPromotions.Where(r => r.TypeDiscount == eTypeDiscount.Price);
-                    PromotionQuantity = PromotionPrice.Sum(r => r.Quantity);
-                }
-
-                if (IsDetail && PromotionQuantity > 0)
-                {
-                    decimal AllQuantity = el.Quantity;
-                    var OtherPromotion = el.ReceiptWaresPromotions.Where(r => r.TypeDiscount != eTypeDiscount.Price);
-                    el.ReceiptWaresPromotions = null;
-                    
-                    if (PromotionQuantity < AllQuantity)
-                    {
-                        var SumDiscount = OtherPromotion.Sum(r => r.Sum);
-                        var QuantityDiscount= OtherPromotion.Sum(r => r.Quantity);
-                        el.SumDiscount = QuantityDiscount * (el.Price - SumDiscount / QuantityDiscount);
-                        el.ReceiptWaresPromotions = OtherPromotion;
-                        el.Quantity = AllQuantity - PromotionQuantity;
-                        var PVM = this.GetProductViewModel(el);
-                        Res.Add(PVM.ToReceiptItem());
-                    }
-                    el.SumDiscount = 0;
-                    int i = 1;
-                    foreach (var p in PromotionPrice)
-                    {
-                        el.Quantity = p.Quantity;
-                        el.Price = p.Price;
-                        el.PriceDealer= p.Price;
-                        el.Order = i++;
-                        var PVM = this.GetProductViewModel(el);
-                        Res.Add(PVM.ToReceiptItem());
-                    }
-                }
-                else
-                {
-                    var PVM = this.GetProductViewModel(el);
-                    Res.Add(PVM.ToReceiptItem());
-                }
+                FileLogger.WriteLogMessage($"ApiPSU.GetCustomerByPhone Exception =>( pTerminalId=>{pTerminalId},pPhone=>{pPhone}) => (){Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace}", eTypeLog.Error);
+                throw new Exception("ApiPSU.GetCustomerByPhone", e);
             }
             return Res;
         }
-
-        private CustomerViewModel GetCustomerViewModelByClient(Client parClient)
-        {
-            if (parClient == null)
-                return null;
-            return new CustomerViewModel()
-            {
-                Id = parClient.ClientId,
-                CustomerId = parClient.CodeClient.ToString(),
-                Name = parClient.NameClient,
-                DiscountPercent = Convert.ToDouble(parClient.PersentDiscount),
-                //LoyaltyPoints 
-                Bonuses = parClient.SumMoneyBonus,
-                //LoyaltyPointsTotal 
-                Wallet = parClient.Wallet,
-                PhoneNumber= parClient.MainPhone
-            };
-        }
-
-        private ProductCategory GetProductCategory(FastGroup parFG)
-        {
-            if (parFG == null)
-                return null;
-            var Parrent = new FastGroup { CodeFastGroup = parFG.CodeUp };
-
-            return new ProductCategory
-            {
-                Id = parFG.FastGroupId,
-                ParentId = null,
-                Name = parFG.Name,
-                Language = null,
-                CustomId = null,
-                Description = parFG.Name,
-                Image = "",
-                HasChildren = false,
-                HasProducts = true,
-                Tags = null
-            };
-
-
-        }
-
+       
         /// <summary>
         /// Terminalses the specified terminals.
         /// </summary>
@@ -612,8 +382,7 @@ namespace ModernIntegration
         /// <returns></returns>
         public override bool Terminals(List<Terminal> terminals)
         {
-            Bl.UpdateWorkPlace(terminals.Select(r => new WorkPlace() { IdWorkplace = r.CustomerId, Name = r.DisplayName, TerminalGUID = r.Id }));
-            return false;
+            return Bl.UpdateWorkPlace(terminals.Select(r => new WorkPlace() { IdWorkplace = r.CustomerId, Name = r.DisplayName, TerminalGUID = r.Id }));             
         }
 
         public override bool MoveSessionToAnotherTerminal(Guid firstTerminalId, Guid secondTerminalId)
@@ -630,116 +399,87 @@ namespace ModernIntegration
             else
                 return false;
         }
-
-        /// <summary>
-        /// Convert ReceiptPayment->Payment
-        /// </summary>
-        /// <param name="pRP"></param>
-        /// <returns></returns>
-        public Payment ReceiptPaymentToPayment(IdReceipt parIdReceipt, ReceiptPayment pRP)
-        {
-            return new Payment(parIdReceipt)
-            {
-                TypePay = (eTypePay)(int)pRP.PaymentType,
-                SumPay = pRP.PayIn,
-                NumberReceipt =  pRP.InvoiceNumber, //parRP.TransactionId,
-                NumberCard = pRP.CardPan,
-                CodeAuthorization = pRP.TransactionCode, //RRN
-                NumberTerminal=pRP.PosTerminalId,
-                NumberSlip = pRP.PosAuthCode, //код авторизації
-                PosPaid =pRP.PosPaid,
-                PosAddAmount=pRP.PosAddAmount,
-                DateCreate=pRP.CreatedAt,
-                CardHolder= pRP.CardHolder,
-                IssuerName =pRP.IssuerName,
-                Bank= pRP.Bank,
-                TransactionId =pRP.TransactionId
-
-
-            };
-        }
-
-        public ReceiptPayment PaymentToReceiptPayment( Payment pRP)
-        {
-            return new ReceiptPayment()
-            {
-                PaymentType = (PaymentType)(int)pRP.TypePay,
-                PayIn = pRP.SumPay,
-                InvoiceNumber = pRP.NumberReceipt,
-                CardPan = pRP.NumberCard,
-                TransactionCode = pRP.CodeAuthorization, //RRN
-                PosTerminalId = pRP.NumberTerminal,
-                PosAuthCode = pRP.NumberSlip, //код авторизації
-                PosPaid = pRP.PosPaid,
-                PosAddAmount = pRP.PosAddAmount,
-                CardHolder = pRP.CardHolder,
-                IssuerName = pRP.IssuerName,
-                Bank = pRP.Bank,
-                TransactionId = pRP.TransactionId,
-                CreatedAt = pRP.DateCreate
-            };
-        }
-
- 
+      
         public override bool UpdateProductWeight(string parData, int parWeight, Guid parWares, TypeSaveWeight parTypeSaveWeight)
         {
             return Bl.InsertWeight(parData, parWeight, parWares, parTypeSaveWeight);
         }
 
-        public override async Task RequestSyncInfo(bool parIsFull = false)
+        public override async Task RequestSyncInfo(bool pIsFull = false)
         {
             // TODO: check status
             try
             {
-                var res = await Bl.SyncDataAsync(parIsFull);                
+                var res = await Bl.SyncDataAsync(pIsFull);                
             }
             catch (Exception ex)
             {
-                var info = new SyncInformation();
-                info.Status = eSyncStatus.SyncFinishedError;
-                info.StatusDescription = ex.Message;
-                info.SyncData = ex;
-                OnSyncInfoCollected?.Invoke(info);
+                var SyncInfo = new SyncInformation() { Status = eSyncStatus.SyncFinishedError, StatusDescription = ex.Message, SyncData = ex };
+                FileLogger.WriteLogMessage($"OnSyncInfoCollected Status=>{SyncInfo.Status} StatusDescription=>{SyncInfo.StatusDescription}", eTypeLog.Expanded);
+                OnSyncInfoCollected?.Invoke(SyncInfo);
             }
         }
 
         public override IEnumerable<ProductViewModel> GetProduct(Guid pTerminalId)
         {
+            IEnumerable<ProductViewModel> Res = null;
+            try
+            {
+                var receiptId = GetCurrentReceiptByTerminalId(pTerminalId);
 
-            var receiptId = GetCurrentReceiptByTerminalId(pTerminalId);
-
-            var res = Bl.GetWaresReceipt(new IdReceipt(receiptId));
-            if (res == null)
-                return null;
-            return res.Select(r => (GetProductViewModel(r)));
+                var res = Bl.GetWaresReceipt(new IdReceipt(receiptId));
+                if (res != null)
+                    Res = res.Select(r => (GetProductViewModel(r)));
+                FileLogger.WriteLogMessage($"ApiPSU.GetProduct =>( pTerminalId=>{pTerminalId}) => ({Res?.ToJSON()})", eTypeLog.Full);
+            }
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage($"ApiPSU.GetProduct Exception =>( pTerminalId=>{pTerminalId}) => (){Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace}", eTypeLog.Error);
+                throw new Exception("ApiPSU.GetProduct", e);
+            }
+            return Res;
         }
-
-        private static Api _instance;
-        public static Api Instance = _instance ?? (_instance = new ApiPSU());
 
         public override ReceiptViewModel GetNoFinishReceipt(Guid pTerminalId)
         {
-            var receipt = Bl.GetLastReceipt(pTerminalId);
-            if (receipt == null)
-                return null;
-            if (receipt.StateReceipt != eStateReceipt.Prepare)
-                return null;
-            Receipts[pTerminalId] = new ModelMID.Receipt(receipt);
-
-            return GetReceiptViewModel(receipt);
+            ReceiptViewModel Res = null;
+            try
+            {
+                var receipt = Bl.GetLastReceipt(pTerminalId);
+                if (receipt != null && receipt.StateReceipt == eStateReceipt.Prepare)
+                {
+                    Receipts[pTerminalId] = new ModelMID.Receipt(receipt);
+                    Res = GetReceiptViewModel(receipt);
+                }
+                FileLogger.WriteLogMessage($"ApiPSU.GetNoFinishReceipt =>( pTerminalId=>{pTerminalId}) => ({Res?.ToJSON()})", eTypeLog.Full);
+            }
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage($"ApiPSU.GetNoFinishReceipt Exception =>( pTerminalId=>{pTerminalId}) => (){Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace}", eTypeLog.Error);
+                throw new Exception("ApiPSU.GetNoFinishReceipt", e);
+            }
+            return Res;
         }
 
-        public override IEnumerable<ReceiptViewModel> GetReceipts(DateTime parStartDate, DateTime parFinishDate, Guid? pTerminalId = null)
+        public override IEnumerable<ReceiptViewModel> GetReceipts(DateTime pStartDate, DateTime pFinishDate, Guid? pTerminalId = null)
         {
-
-            int IdWorkplace = 0;
+            IEnumerable<ReceiptViewModel> Res = null;
+            try
+            {
+                int IdWorkplace = 0;
                 if (pTerminalId != null)
-                IdWorkplace=Global.GetIdWorkplaceByTerminalId(pTerminalId.Value);
+                    IdWorkplace = Global.GetIdWorkplaceByTerminalId(pTerminalId.Value);
 
-            var res=Bl.GetReceipts(parStartDate, parFinishDate, IdWorkplace);
-
-            return res.Select(r=>GetReceiptViewModel(r));
-            
+                var res = Bl.GetReceipts(pStartDate, pFinishDate, IdWorkplace);
+                Res = res.Select(r => GetReceiptViewModel(r));
+                FileLogger.WriteLogMessage($"ApiPSU.GetReceipts =>( pTerminalId=>{pTerminalId},pStartDate=>{pStartDate},pFinishDate=>{pFinishDate}) => ({Res?.Count()})", eTypeLog.Full);
+            }
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage($"ApiPSU.GetReceipts Exception =>( pTerminalId=>{pTerminalId}) => (){Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace}", eTypeLog.Error);
+                throw new Exception("ApiPSU.GetReceipts", e);
+            }
+            return Res;
         }
 
         public override ReceiptViewModel GetReceiptByNumber(Guid pTerminalId, string pFiscalNumber)
@@ -755,126 +495,6 @@ namespace ModernIntegration
             receipt.UserCreate = Bl.GetUserIdbyWorkPlace(receipt.IdWorkplace);
             return Bl.SaveReceipt(receipt);
         }
-
-        public ModelMID.Receipt ReceiptViewModelToReceipt(Guid pTerminalId, ReceiptViewModel pReceiptRVM)
-        {
-            
-            if (pReceiptRVM == null)
-                return null;
-            RefundReceiptViewModel RefundRVM = null;
-            if (pReceiptRVM is RefundReceiptViewModel)
-                RefundRVM = (RefundReceiptViewModel)pReceiptRVM;
-            
-
-                var receipt = new ModelMID.Receipt(RefundRVM == null ? new IdReceipt (pReceiptRVM.Id) :Bl.GetNewIdReceipt(pTerminalId))
-            {
-                //ReceiptId  = pReceiptRVM.Id,
-                StateReceipt = (string.IsNullOrEmpty(pReceiptRVM.FiscalNumber)?(pReceiptRVM.PaymentInfo != null ? eStateReceipt.Pay: eStateReceipt.Prepare) : eStateReceipt.Print),
-                TypeReceipt = (RefundRVM == null? eTypeReceipt.Sale:eTypeReceipt.Refund),
-                NumberReceipt = pReceiptRVM.FiscalNumber,
-               /* Status = (pReceiptRVM.SumCash > 0 || pReceiptRVM.SumCreditCard > 0
-                    ? ReceiptStatusType.Paid
-                    : ReceiptStatusType.Created), //!!!TMP Треба врахувати повернення*/
-                TerminalId = pReceiptRVM.TerminalId,
-                SumReceipt = pReceiptRVM.Amount, //!!!TMP Сума чека.
-                SumDiscount = pReceiptRVM.Discount,
-                //!!TMP TotalAmount = pReceiptRVM.SumReceipt - pReceiptRVM.SumBonus,
-                ///CustomerId = new Client(pReceiptRVM.CodeClient).ClientId,
-                DateCreate = pReceiptRVM.CreatedAt,
-                DateReceipt = (pReceiptRVM.UpdatedAt==default(DateTime)?DateTime.Now: pReceiptRVM.UpdatedAt)
-                //ReceiptItems=
-                //Customer /// !!!TMP Модель клієнта
-                //PaymentInfo
-                
-            };
-
-            if (RefundRVM!=null)
-               receipt.RefundId = (RefundRVM.IdPrimary == null ? null : new IdReceipt(RefundRVM.IdPrimary));            
-
-            if (pReceiptRVM.PaymentInfo!=null)
-             receipt.Payment = new Payment[] { ReceiptPaymentToPayment(receipt, pReceiptRVM.PaymentInfo) };
-
-            if(pReceiptRVM.ReceiptItems!=null)
-            receipt.Wares = pReceiptRVM.ReceiptItems.Select(r=>GetReceiptWaresFromReceiptItem(receipt, r));
-
-            //if(pReceiptRVM.ReceiptEvents!=null)
-            //    receipt.ReceiptEvent= pReceiptRVM.ReceiptEvent
-
-
-            return receipt;
-        }
-
-        private ReceiptWares GetReceiptWaresFromReceiptItem(IdReceipt parIdReceipt, ReceiptItem receiptItem)
-        {
-            var Res = new ReceiptWares(parIdReceipt, receiptItem.ProductId)
-            {
-                //WaresId = receiptItem.ProductId,
-                //CodeWares = receiptItem.Code,
-                NameWares = receiptItem.ProductName,
-                BarCode = receiptItem.ProductBarcode,
-                PriceDealer = receiptItem.ProductPrice,
-                Price = (receiptItem.FullPrice>0?receiptItem.FullPrice: receiptItem.TotalPrice) / receiptItem.ProductQuantity, 
-                WeightBrutto = receiptItem.ProductWeight / 1000m,
-                Quantity= receiptItem.ProductQuantity,
-//                TaxGroup = Global.GetTaxGroup(receiptItem.TypeVat, receiptItem.TypeWares),               
-                //FullPrice = receiptItem.Sum
-                RefundedQuantity = receiptItem.RefundedQuantity
-                
-            };
-            if(receiptItem.Excises!=null)
-                Res.ExciseStamp = String.Join(",", receiptItem.Excises.ToArray());
-            return Res;
-        }
-
-        private ModernIntegration.Models.ReceiptEvent GetReceiptEvent(ModelMID.DB.ReceiptEvent RE)
-        {
-            return new ModernIntegration.Models.ReceiptEvent()
-            {
-                Id = RE.Id,
-                MobileDeviceId = RE.MobileDeviceId,
-                ReceiptId = RE.ReceiptId,
-                ReceiptItemId = RE.ReceiptItemId,
-                ProductName = RE.ProductName,
-                EventType = (Enums.ReceiptEventType)(int)RE.EventType,
-                EventName = RE.EventName,
-                ProductWeight = RE.ProductWeight,
-                ProductConfirmedWeight = RE.ProductConfirmedWeight,
-                UserId = RE.UserId,
-                UserName = RE.UserName,
-                CreatedAt = RE.CreatedAt,
-                ResolvedAt = RE.ResolvedAt,
-                RefundAmount = RE.RefundAmount,
-                FiscalNumber = RE.FiscalNumber,
-                PaymentType = (Enums.PaymentType)(int)RE.PaymentType,
-                TotalAmount = RE.TotalAmount
-            };
-        
-        }
-
-        private ModelMID.DB.ReceiptEvent GetReceiptEvent(ModernIntegration.Models.ReceiptEvent RE)
-        {
-            return new ModelMID.DB.ReceiptEvent()
-            {
-                Id = RE.Id,
-                MobileDeviceId = RE.MobileDeviceId,
-                ReceiptId = RE.ReceiptId,
-                ReceiptItemId = RE.ReceiptItemId,
-                ProductName = RE.ProductName,
-                EventType = (ModelMID.ReceiptEventType)(int)RE.EventType,
-                EventName = RE.EventName,
-                ProductWeight = RE.ProductWeight,
-                ProductConfirmedWeight = RE.ProductConfirmedWeight,
-                UserId = RE.UserId,
-                UserName = RE.UserName,
-                CreatedAt = RE.CreatedAt,
-                ResolvedAt = RE.ResolvedAt,
-                RefundAmount = RE.RefundAmount,
-                FiscalNumber = RE.FiscalNumber,
-                PaymentType =(ModelMID.eTypePayment)(int) RE.PaymentType,
-                TotalAmount = RE.TotalAmount
-            };
-
-        }       
 
         public override void CloseDb()
         { 
@@ -899,19 +519,27 @@ namespace ModernIntegration
             return Bl.FixWeight(CurReceipt, pProductId, pWaight/1000m);  
         }
 
-        public override IEnumerable<QRDefinitions> GetQR(Guid pTerminalId) 
+        public override IEnumerable<QRDefinitions> GetQR(Guid pTerminalId)
         {
-            List<QRDefinitions> res=new List<QRDefinitions>();
-            var QR = Bl.GetQR(GetCurrentReceiptByTerminalId(pTerminalId));
-            foreach(var el in QR)
+            List<QRDefinitions> Res = new List<QRDefinitions>();
+            try
             {
-               foreach(var qr in  el.Qr.Split(','))
+                var QR = Bl.GetQR(GetCurrentReceiptByTerminalId(pTerminalId));
+                foreach (var el in QR)
                 {
-                    res.Add(new QRDefinitions() { Caption = el.Name, Data = qr });
+                    foreach (var qr in el.Qr.Split(','))
+                    {
+                        Res.Add(new QRDefinitions() { Caption = el.Name, Data = qr });
+                    }
                 }
+                FileLogger.WriteLogMessage($"ApiPSU.GetQR =>( pTerminalId=>{pTerminalId}) => ({Res?.ToJSON()})", eTypeLog.Full);
             }
-
-            return res;
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage($"ApiPSU.GetQR Exception =>( pTerminalId=>{pTerminalId}) => (){Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace}", eTypeLog.Error);
+                throw new Exception("ApiPSU.GetQR", e);
+            }
+            return Res;
         }
 
         public override bool ProcessCustomWindowResult(Guid pTerminalId, string pCustomWindowResult)

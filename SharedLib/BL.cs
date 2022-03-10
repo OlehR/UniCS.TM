@@ -466,15 +466,6 @@ namespace SharedLib
                 CodeWares = new IdReceiptWares(new IdReceipt(), parWares).CodeWares;
 
             return db.InsertWeight(new { BarCode = (parTypeSaveWeight == TypeSaveWeight.Add || parBarCode == null ? CodeWares.ToString() : parBarCode), Weight = (decimal)parWeight / 1000m, Status = parTypeSaveWeight });
-
-            /*if (parBarCode != null)
-                return db.InsertWeight(new { BarCode = parBarCode, Weight = (decimal)parWeight / 1000m, Status = 0 });
-            else
-            {
-                
-                return db.InsertWeight(new { BarCode = Wares.CodeWares.ToString(), Weight = (decimal)parWeight / 1000m, Status = -1 });
-            }
-            */
         }
 
 
