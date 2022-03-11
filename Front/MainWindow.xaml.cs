@@ -214,6 +214,7 @@ namespace Front
                             FWW.Show();
                             break;
                         case eStateMainWindows.ProcessPay:
+                            PaymentImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/paymentTerminal.png"));
                             WaitPayment.Visibility = Visibility.Visible;
                             Background.Visibility = Visibility.Visible;
                             //PaymentImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/paymentTerminal.png"));
@@ -252,7 +253,20 @@ namespace Front
                 Bl.ChangeQuantity(temp, temp.Quantity);
             }
         }
-
+        private void _ChangeCountWares(object sender, RoutedEventArgs e)
+        {
+            Background.Visibility = Visibility.Visible;
+            KeyPad mainWindow = new KeyPad(this);
+            Button btn = sender as Button;
+            if (btn.DataContext is ReceiptWares)
+            {
+                ReceiptWares temp = btn.DataContext as ReceiptWares;
+                if (mainWindow.ShowDialog() == true)
+                    temp.Quantity = Convert.ToDecimal(mainWindow.Result);
+                Bl.ChangeQuantity(temp, temp.Quantity);
+            }
+            Background.Visibility = Visibility.Collapsed;
+        }
         private void _Plus(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
@@ -563,6 +577,8 @@ namespace Front
         {
 
         }
+
+
     }
 
 
