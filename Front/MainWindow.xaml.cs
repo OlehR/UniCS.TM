@@ -260,12 +260,15 @@ namespace Front
             Button btn = sender as Button;
             if (btn.DataContext is ReceiptWares)
             {
+                
                 ReceiptWares temp = btn.DataContext as ReceiptWares;
+                mainWindow.productNameChanges.Text = Convert.ToString(temp.NameWares);
+                mainWindow.Result = Convert.ToString( temp.Quantity);
                 if (mainWindow.ShowDialog() == true)
                     temp.Quantity = Convert.ToDecimal(mainWindow.Result);
                 Bl.ChangeQuantity(temp, temp.Quantity);
+                Background.Visibility = Visibility.Collapsed;
             }
-            Background.Visibility = Visibility.Collapsed;
         }
         private void _Plus(object sender, RoutedEventArgs e)
         {

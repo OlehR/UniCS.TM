@@ -23,7 +23,7 @@ namespace Front
         public string Result
         {
             get { return _result; }
-            private set { _result = value; this.OnPropertyChanged("Result"); }
+            set { _result = value; this.OnPropertyChanged("Result"); }
         }
 
         #endregion

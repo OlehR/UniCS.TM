@@ -218,7 +218,7 @@
                                     <Button Grid.Column="2" Background="Transparent" BorderBrush="Transparent"
                                             Click="_ChangeCountWares">
                                         <Button.Style>
-                                            <Style  TargetType="Button">
+                                            <Style BasedOn="{StaticResource yelowButton}"  TargetType="Button">
                                                 <Setter Property="IsEnabled" Value="true"/>
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsWeight}" Value="True">
@@ -227,24 +227,25 @@
                                                 </Style.Triggers>
                                             </Style>
                                         </Button.Style>
+                                        <TextBlock x:Name="QuantityText" Grid.Column="2">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Margin" Value="10"></Setter>
+                                                    <Setter Property="FontSize" Value="18"></Setter>
+                                                    <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+                                                    <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                                    <Setter Property="Text" Value="{Binding Quantity}"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsWeight}" Value="True">
+                                                            <Setter Property="Text" Value="1"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
                                     </Button>
 
-                                    <TextBlock x:Name="QuantityText" Grid.Column="2">
-                                        <TextBlock.Style>
-                                            <Style TargetType="TextBlock">
-                                                <Setter Property="Margin" Value="10"></Setter>
-                                                <Setter Property="FontSize" Value="18"></Setter>
-                                                <Setter Property="HorizontalAlignment" Value="Center"></Setter>
-                                                <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                                                <Setter Property="Text" Value="{Binding Quantity}"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsWeight}" Value="True">
-                                                        <Setter Property="Text" Value="1"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
+                                    
                                     <Button Click="_Plus" Grid.Column="3">
                                         <Button.Content>
                                             <Image Margin="15" Source="icons\plus.png"></Image>

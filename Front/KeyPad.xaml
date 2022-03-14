@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Front"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="500" ShowInTaskbar="False" WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
+        Title="MainWindow" Height="400" Width="300" ShowInTaskbar="False" 
+        WindowStartupLocation="Manual" Left="1500" Top="400" ResizeMode="NoResize"
         WindowStyle="None" Background="LightGray">
 
 
@@ -13,6 +14,7 @@
 
     <Grid >
         <Grid.RowDefinitions>
+            <RowDefinition />
             <RowDefinition />
             <RowDefinition />
             <RowDefinition />
@@ -26,76 +28,79 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <Grid  Grid.Row="1">
+        <Grid Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="0">
+            <TextBlock x:Name="productNameChanges" HorizontalAlignment="Center" TextWrapping="Wrap"  FontWeight="Bold"></TextBlock>
+        </Grid>
+        <Grid  Grid.Row="2">
 
             <Button Style="{StaticResource yelowButton}" Name="button5" Background="WhiteSmoke" BorderThickness="1" 
 				Command="{Binding Path=PressAndRelease}" CommandParameter="NUMPAD7" Click="button_Click">7</Button>
         </Grid>
-        <Grid Grid.Column="1" Grid.Row="1">
+        <Grid Grid.Column="1" Grid.Row="2">
             <Button Style="{StaticResource yelowButton}" x:Name="button6" Background="WhiteSmoke"
 				Command="{Binding PressAndRelease}" CommandParameter="NUMPAD8" Click="button_Click" BorderThickness="1" Content="8" />
         </Grid>
-        <Grid Grid.Column="2" Grid.Row="1">
+        <Grid Grid.Column="2" Grid.Row="2">
 
             <Button Style="{StaticResource yelowButton}" x:Name="button7" Background="WhiteSmoke"
 				Command="{Binding PressAndRelease}" CommandParameter="NUMPAD9" Click="button_Click" Content="9" />
         </Grid>
-        <Grid Grid.Column="3" Grid.Row="1">
+        <Grid Grid.Column="3" Grid.Row="2">
 
             <Button Style="{StaticResource yelowButton}" x:Name="button8" Command="{Binding PressAndRelease}" CommandParameter="BACK" Click="button_Click">
                 <Path Stretch="Fill" Width="36" Height="24" Data="F1M555.0371,274.4893L552.7871,276.7383L549.9861,273.9373L547.1991,276.7243L545.1131,274.6393L547.9001,271.8523L545.0101,268.9603L547.2601,266.7113L550.1501,269.6023L552.8921,266.8613L554.9761,268.9463L552.2361,271.6883z M555.3751,264.0003L544.8751,264.0003C543.1251,264.1253,535.0001,270.7503,535.0001,272.2503C535.0001,273.7503,543.1251,279.3753,544.8751,279.5003L555.3751,279.5003C558.8751,279.5003,559.3751,277.7093,559.3751,275.5003L559.3751,268.0003C559.3751,265.7913,558.7501,264.0003,555.3751,264.0003" Fill="#FF333333"/>
             </Button>
         </Grid>
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="3">
 
             <Button Style="{StaticResource yelowButton}" x:Name="button9" Background="WhiteSmoke"
 				Command="{Binding PressAndRelease}" CommandParameter="NUMPAD4" Click="button_Click" Content="4"/>
         </Grid>
-        <Grid Grid.Column="1" Grid.Row="2">
+        <Grid Grid.Column="1" Grid.Row="3">
 
             <Button Style="{StaticResource yelowButton}" x:Name="button10" Background="WhiteSmoke"
 				Command="{Binding PressAndRelease}" CommandParameter="NUMPAD5" Click="button_Click" Content="5" />
         </Grid>
-        <Grid Grid.Column="2" Grid.Row="2">
+        <Grid Grid.Column="2" Grid.Row="3">
 
             <Button Style="{StaticResource yelowButton}" x:Name="button11" Background="WhiteSmoke"
 				Command="{Binding PressAndRelease}" CommandParameter="NUMPAD6" Click="button_Click" Content="6" />
         </Grid>
-        <Grid Grid.Row="3">
+        <Grid Grid.Row="4">
 
             <Button Style="{StaticResource yelowButton}" x:Name="button13" Background="WhiteSmoke"
 				Command="{Binding PressAndRelease}" CommandParameter="NUMPAD1" Click="button_Click" Content="1"/>
         </Grid>
-        <Grid Grid.Column="1" Grid.Row="3">
+        <Grid Grid.Column="1" Grid.Row="4">
 
             <Button Style="{StaticResource yelowButton}" x:Name="button14" Background="WhiteSmoke"
 				Command="{Binding PressAndRelease}" CommandParameter="NUMPAD2" Click="button_Click" Content="2"/>
         </Grid>
-        <Grid Grid.Column="2" Grid.Row="3">
+        <Grid Grid.Column="2" Grid.Row="4">
 
             <Button Style="{StaticResource yelowButton}" x:Name="button15" Background="WhiteSmoke"
 				Command="{Binding PressAndRelease}" CommandParameter="NUMPAD3" Click="button_Click" Content="3" />
         </Grid>
-        <Grid Grid.Column="3" Grid.Row="2" Grid.RowSpan="3">
+        <Grid Grid.Column="3" Grid.Row="3" Grid.RowSpan="3">
 
             <Button Style="{StaticResource yelowButton}"  x:Name="button16"
 				Command="{Binding PressAndRelease}" CommandParameter="RETURN" Click="button_Click" Content="Enter"/>
         </Grid>
-        <Grid Grid.ColumnSpan="2" Grid.Row="4">
+        <Grid Grid.ColumnSpan="2" Grid.Row="5">
 
             <Button Style="{StaticResource yelowButton}" x:Name="button17" Background="WhiteSmoke"
 				Command="{Binding PressAndRelease}" CommandParameter="NUMPAD0" Click="button_Click" Content="0" />
         </Grid>
-        <Grid Grid.Column="2" Grid.Row="4">
+        <Grid Grid.Column="2" Grid.Row="5">
 
             <Button Style="{StaticResource yelowButton}" x:Name="button19" Background="WhiteSmoke"
 				Command="{Binding PressAndRelease}" CommandParameter="DECIMAL"	Click="button_Click" Content="." />
         </Grid>
-        <Grid Grid.ColumnSpan="3" Margin="5">
+        <Grid Grid.Row="1" Grid.ColumnSpan="3" Margin="5">
             <Border  Background="LightGray"  CornerRadius="10" BorderBrush="Gray" BorderThickness="2" />
             <Label HorizontalAlignment="Center" Content="{Binding Result}" HorizontalContentAlignment="Right"  Margin="4"/>
         </Grid>
-        <Grid Grid.Column="3" >
+        <Grid Grid.Column="3" Grid.Row="1" >
 
             <Button Style="{StaticResource yelowButton}" x:Name="buttonEsc" Grid.Row="0" 
 				Command="{Binding PressAndRelease}" CommandParameter="ESC" Click="button_Click" Content="Esc"/>
