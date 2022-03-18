@@ -256,16 +256,16 @@ namespace Front
         private void _ChangeCountWares(object sender, RoutedEventArgs e)
         {
             Background.Visibility = Visibility.Visible;
-            KeyPad mainWindow = new KeyPad(this);
+            KeyPad keyPad = new KeyPad(this);
             Button btn = sender as Button;
             if (btn.DataContext is ReceiptWares)
             {
                 
                 ReceiptWares temp = btn.DataContext as ReceiptWares;
-                mainWindow.productNameChanges.Text = Convert.ToString(temp.NameWares);
-                mainWindow.Result = Convert.ToString( temp.Quantity);
-                if (mainWindow.ShowDialog() == true)
-                    temp.Quantity = Convert.ToDecimal(mainWindow.Result);
+                keyPad.productNameChanges.Text = Convert.ToString(temp.NameWares);
+                keyPad.Result = Convert.ToString( temp.Quantity);
+                if (keyPad.ShowDialog() == true)
+                    temp.Quantity = Convert.ToDecimal(keyPad.Result);
                 Bl.ChangeQuantity(temp, temp.Quantity);
                 Background.Visibility = Visibility.Collapsed;
             }
