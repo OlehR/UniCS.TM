@@ -25,6 +25,7 @@ namespace Front
             get { return _result; }
             set { _result = value; this.OnPropertyChanged("Result"); }
         }
+        public int firs = 0;
 
         #endregion
 
@@ -38,6 +39,7 @@ namespace Front
         private void button_Click(object sender, RoutedEventArgs e)
         {
             Button button = sender as Button;
+            
             switch (button.CommandParameter.ToString())
             {
                 case "ESC":
@@ -54,6 +56,9 @@ namespace Front
                     break;
 
                 default:
+                    if (firs == 0)
+                        Result = "";
+                    firs++;
                     Result += button.Content.ToString();
                     break;
             }
