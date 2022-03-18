@@ -110,8 +110,14 @@ namespace SharedLib
             if (!Directory.Exists(Global.PathDB))
                 Directory.CreateDirectory(Global.PathDB);
 
-
+            try
+            {
+                Global.TypeWorkplace = (eTypeWorkplace)Enum.Parse(typeof(eTypeWorkplace), AppConfiguration["MID:TypeWorkplace"], true);
+            }
+            catch
+            { Global.TypeWorkplace = eTypeWorkplace.SelfServicCheckout; }
         }
+
         public static IConfigurationRoot GetConfiguration()
         {
             return AppConfiguration;

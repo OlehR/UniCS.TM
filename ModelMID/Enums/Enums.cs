@@ -4,20 +4,18 @@ using System.Text;
 
 namespace ModelMID
 {
+    public enum eTypeWorkplace
+    {
+        SelfServicCheckout,
+        СashRegister
+    }
+
     public enum ePeriod
     {
         Year,
         Month,
         Day
-    }
-
-    public enum eTypeAccess
-    {
-        Question = -3, //Виводити вікно для введення логіна які розширять права на цю операцію. Якщо не введено не дозволяти цю операцію. 
-        NoErrorAccess = -2, //не виконувати дію Видавати повідомленя про відсутність прав. Не виводити вікно для введення логіна які розширять права на цю операцію			
-        No = -1, // не виконувати дію не видавати жодних повідомлень.
-        Yes = 0 // Є права на зазначену операцію.		
-    }
+    }    
 
     public enum eTypePay
     {
@@ -48,7 +46,7 @@ namespace ModelMID
         Client,
         Action
     }
-    
+
     public struct eRezultFind
     {
         public eTypeFind TypeFind;
@@ -63,7 +61,7 @@ namespace ModelMID
         MoneyBox
 
     }
-   
+
     public enum eTypeCommit
     {
         Auto,
@@ -84,7 +82,7 @@ namespace ModelMID
         All = 1,  //на всі товари, 
         Coupon = 2 //тільки на товар зчитаний перед купоном.
     }
-    
+
     public enum eRuleGroup
     {
         Not = -1,
@@ -132,7 +130,7 @@ namespace ModelMID
         /// </summary>
         Gift = 41
     }
-    
+
     public enum eStateReceipt
     {
         /// <summary>
@@ -163,7 +161,7 @@ namespace ModelMID
         Refund = -1,
         Sale = 1
     }
-    
+
     public enum eMethodExecutionLoggingType
     {
         MoreThenMillis = 0,
@@ -181,12 +179,12 @@ namespace ModelMID
         Orange = 3,
         Red = 4
     }
-    
+
     public enum ReceiptEventType
     {
         ErrorQR = -9,
         AnswerQR = -2,
-        AskQR =-1,
+        AskQR = -1,
         IncorrectWeight = 1,
         AgeRestrictedProduct = 2,
         ManualChangeGiving = 3,
@@ -195,7 +193,7 @@ namespace ModelMID
         ReceiptWithRefund = 6,
         Paid = 7,
         GarbageOnWeight = 8,
-        Other =9
+        Other = 9
     }
 
     public enum TypeSaveWeight
@@ -231,13 +229,13 @@ namespace ModelMID
         /// Очікуємо очистку ваги.
         /// </summary>
         WaitClear
-    }    
-        
+    }
+
     public enum eTypePOS
     {
         NotDefine = 0,
-        PrivatBank =3,
-        Oschadbank =11
+        PrivatBank = 3,
+        Oschadbank = 11
     }
     /// <summary>
     /// Тип робочого місця (КСО,Звичайна каса)
@@ -254,8 +252,75 @@ namespace ModelMID
         CashPlace
     }
 
+    /// <summary>
+    /// Кастомні вікна
+    /// </summary>
     public enum eTypeWindows
     {
         LimitSales
     }
-}  
+
+    /// <summary>
+    /// Типи користувачів системи
+    /// </summary>
+    public enum eTypeUser
+    {
+        /// <summary>
+        /// Клієнт КСО
+        /// </summary>
+        Client = 1,
+        /// <summary>
+        /// Касир
+        /// </summary>
+        Сashier = 2,
+        /// <summary>
+        /// Адміністратор self-service checkout 
+        /// </summary>
+        AdminSSC = 3,       
+        /// <summary>
+        /// Охоронець
+        /// </summary>
+        Guardian = 4,
+        /// <summary>
+        /// Адміністратор Дозвіл на всі операції
+        /// </summary>
+        Admin = 9
+    }
+
+  /*  public enum eСonfirmationActions
+    {
+        NoDefinition = 0,
+        DelWares = 1,
+        DelReciept = 2,
+        ChoicePrice = 3,
+        ConfirmAge = 4,
+        ExciseStamp = 5,
+        FixWeight = 6,
+        AddNewWeight=7,
+        Cr
+        //Неспівпадіння ваги і невідповідність.
+    }*/
+
+    public enum eTypeAccess
+    {
+        NoDefinition = 0,
+        DelWares = 1,
+        DelReciept = 2,
+        ChoicePrice = 3,
+        ConfirmAge = 4,
+        ExciseStamp = 5,
+        FixWeight = 6,
+        AddNewWeight = 7,
+        ReturnReceipt =8,
+    }
+
+    public enum eTypeAccessAnsver
+    {
+        Question = -3, //Виводити вікно для введення логіна які розширять права на цю операцію. Якщо не введено не дозволяти цю операцію. 
+        NoErrorAccess = -2, //не виконувати дію Видавати повідомленя про відсутність прав. Не виводити вікно для введення логіна які розширять права на цю операцію			
+        No = -1, // не виконувати дію не видавати жодних повідомлень.
+        Yes = 0 // Є права на зазначену операцію.		
+    }
+
+
+}

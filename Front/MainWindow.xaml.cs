@@ -253,6 +253,7 @@ namespace Front
                 Bl.ChangeQuantity(temp, temp.Quantity);
             }
         }
+
         private void _ChangeCountWares(object sender, RoutedEventArgs e)
         {
             Background.Visibility = Visibility.Visible;
@@ -270,6 +271,7 @@ namespace Front
                 Background.Visibility = Visibility.Collapsed;
             }
         }
+
         private void _Plus(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
@@ -583,6 +585,4 @@ namespace Front
 
 
     }
-
-
 }

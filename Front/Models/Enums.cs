@@ -53,13 +53,11 @@ namespace Front.Models
         /// Процес оплати
         /// </summary>
         ProcessPay,
+
         /// <summary>
         /// Процес оплати
         /// </summary>
-        ProcessPrintReceipt
-        
+        ProcessPrintReceipt        
 
-    }
-
-   
+    }   
 }

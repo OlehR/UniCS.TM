@@ -25,6 +25,7 @@ namespace ModelMID
         public static SortedList<Guid, WorkPlace> WorkPlaceByTerminalId;
         public static SortedList<int, WorkPlace> WorkPlaceByWorkplaceId;
 
+        public static eTypeWorkplace TypeWorkplace = eTypeWorkplace.SelfServicCheckout;
         /// <summary>
         /// Id робочого місця
         /// </summary>
@@ -236,35 +237,17 @@ namespace ModelMID
         /// <summary>
         /// Текучий чек (1-3) з масиву Receipts
         /// </summary>
-        //public static int CurrentReceipt = 0;
-
-        /// <summary>
-        /// тип пошуку товара (0 - без обмежень, 1 - штрихкод , код, 2 - штрихкод)
-        /// </summary>
-        ///public static int TypeFindWares = 0;
-        /// <summary>
-        /// тип пошуку клієнта (0 - без обмежень, 1 - штрихкод , код, 2 - штрихкод)
-        /// </summary>
-        //public static int TypeFindClient = 1;
+        public static int CurrentReceipt = 0;        
 
         /// <summary>
         /// Список чеків (0-немає чека)
         /// </summary>
-        //public static int[] Receipts = { 0, 0, 0 };
+        public static IdReceipt[] Receipts = new IdReceipt[QuantityOpenReceipt];
 
         /// <summary>
         /// Кількість пос-терміналів на касі.
         /// </summary>
-        //public static int QuantityPos = 2;
-        /// <summary>
-        /// Присутній пос-термінал на касі -1 - Ні, 0 - так без автоматизації, >0 код моделі(драйвера)
-        /// </summary>
-        //public static int[] ModelPos = { 1, 0, -1 };
-
-        /// <summary>
-        /// Чи встановлено конект з POS.
-        /// </summary>
-        //public static bool IsPosConnect = false;
+        public static int QuantityPos = 2;        
 
         //public static Language Language = Language.uk_UA;
 

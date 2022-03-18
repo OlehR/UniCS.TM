@@ -5,7 +5,7 @@ using System.Text;
 namespace ModelMID
 {
     public class CustomWindow
-    {
+    {        
         /// <summary>
         /// Id вікна. Буде в відповіді
         /// </summary>
@@ -70,7 +70,6 @@ namespace ModelMID
         /// Id натиснененої кнопки. (-1 -скасувати)
         /// </summary>
         public int IdButton { get; set; }
-
     }
 
 }
