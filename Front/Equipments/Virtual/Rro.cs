@@ -18,8 +18,8 @@ namespace Front.Equipments
         protected string OperatorPass = "0000";
         protected int CodeError = -1;
         protected string StrError;
-        /*protected int  varBaudRate;
-       protected bool varIsFiscal = true;
+       protected int  BaudRate;
+        /*protected bool varIsFiscal = true;
         protected int  varCodeEKKA = 0;
         protected int varOperatorNumber = 1;
         protected int varCodeWorkPlace = 1;

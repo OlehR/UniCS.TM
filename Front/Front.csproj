@@ -63,6 +63,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Exellio">
+      <HintPath>..\DLL\Exellio.DLL</HintPath>
+    </Reference>
     <Reference Include="Interop.ECRCommXLib">
       <HintPath>..\SharedLib\dll\Interop.ECRCommXLib.dll</HintPath>
     </Reference>

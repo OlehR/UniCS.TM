@@ -34,10 +34,13 @@ namespace ModelMID
         public decimal PercentVat { get; set; }
 
         /// <summary>
-        /// Код одиниці виміру позамовчуванню
+        /// 
         /// </summary>
         public int TypeVat { get; set; }
 
+        /// <summary>
+        /// Код одиниці виміру позамовчуванню
+        /// </summary>
         public int CodeDefaultUnit { get; set; }
         /// <summary>
         /// Коефіцієнт одиниці виіру по замовчуванню

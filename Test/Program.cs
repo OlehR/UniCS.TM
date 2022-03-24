@@ -20,6 +20,7 @@ using IronBarCode;
 using System.IO.Packaging;
 using System.Reflection;
 //using System.Printing;
+using Exellio;
 
 
 namespace Test
