@@ -19,15 +19,19 @@ namespace Front
     public class EquipmentFront
     {
         private List<EquipmentElement> ListEquipment = new List<EquipmentElement>();
-        eStateEquipment _State = eStateEquipment.Off;       
-        
+        eStateEquipment _State = eStateEquipment.Off;
+
         Scaner Scaner;
         Scale Scale;
         Scale ControlScale;
         SignalFlag Signal;
         BankTerminal Terminal;
         Rro RRO;        
-        
+
+        public IEnumerable<EquipmentElement> GetBankTerminal { get { return ListEquipment.Where(e => e.Type == eTypeEquipment.BankTerminal); } }
+       
+        public int CountTerminal { get { return GetBankTerminal.Count(); } }
+
         public eStateEquipment State
         {
             get { return _State; }
@@ -97,26 +101,30 @@ namespace Front
             else
                 ElEquipment.Equipment = new SignalFlag(ElEquipment.Port, ElEquipment.BaudRate, null);
             Signal = (SignalFlag)ElEquipment.Equipment;
-            
-            //Bank Pos Terminal
-            ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.BankTerminal).First();
-            switch (ElEquipment.Model)
+
+            //Bank Pos Terminal           
+            foreach (var el in GetBankTerminal)
             {
-                case eModelEquipment.Ingenico:
-                    ElEquipment.Equipment = new IngenicoH(config, null, PosStatus);
-                    break;
-                case eModelEquipment.VirtualBankPOS:
-                    ElEquipment.Equipment = new VirtualBankPOS(config, null, PosStatus);
-                    break;
-                default:                
-                    ElEquipment.Equipment = new BankTerminal(ElEquipment.Port, ElEquipment.BaudRate, null);
-                    break;
+                ElEquipment = el;
+
+                switch (ElEquipment.Model)
+                {
+                    case eModelEquipment.Ingenico:
+                        ElEquipment.Equipment = new IngenicoH(config, null, PosStatus);
+                        break;
+                    case eModelEquipment.VirtualBankPOS:
+                        ElEquipment.Equipment = new VirtualBankPOS(config, null, PosStatus);
+                        break;
+                    default:
+                        ElEquipment.Equipment = new BankTerminal(ElEquipment.Port, ElEquipment.BaudRate, null);
+                        break;
+                }
+                Terminal = (BankTerminal)ElEquipment.Equipment;
             }
-            Terminal = (BankTerminal)ElEquipment.Equipment;
 
             //EKKA
             ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.EKKA).First();
-            if (ElEquipment.Model == eModelEquipment.Exelio)
+            if (ElEquipment.Model == eModelEquipment.Exellio)
                 ElEquipment.Equipment = new Equipments.ExellioFP(config, null);
             else
             if (ElEquipment.Model == eModelEquipment.pRRO_SG)
@@ -267,8 +275,5 @@ namespace Front
         {
             return ControlScale.CalibrateZero();
         }
-
-         
-
     }
 }

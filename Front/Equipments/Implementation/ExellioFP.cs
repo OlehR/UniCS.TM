@@ -112,7 +112,21 @@ namespace Front.Equipments
             return true;
         }
 
+        override public  eStateEquipment TestDevice() 
+        {
 
-        
+            //!!!TMP Треба розібратись про реальну поведінку з помилками.
+            eStateEquipment Res = eStateEquipment.Ok;
+            FP.GetErrorDetails("CLEAR");
+            FP.CheckConnect(Port, BaudRate);
+            FP.GetErrorDetails("Cmd");
+            StrError = $"FPModel={FP.FPModel}{Environment.NewLine}Version{FP.Version}{Environment.NewLine}LibFileName={FP.LibFileName}{Environment.NewLine}" +
+                $"IsPaperOut={FP.IsPaperOut}{Environment.NewLine} IsFiscalised={FP.IsFiscalised}{Environment.NewLine} LogFileDir=>{FP.LogFileDir}{Environment.NewLine}" +
+                $"IsFiscalised={FP.IsFiscalised}{Environment.NewLine}IsFiscalOpen={FP.IsFiscalOpen}" +
+                $"ErrCode=>{FP.s2} LastErrorText=>{FP.LastErrorText}";
+
+            return Res;
+        }
+
     }
 }

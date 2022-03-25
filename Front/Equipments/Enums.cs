@@ -144,7 +144,7 @@ namespace Front.Equipments
         SignalFlagModern,
         Ingenico,
         VirtualBankPOS,
-        Exelio,
+        Exellio,
         pRRO_SG,
         Maria,
         pRRo_WebCheck
@@ -203,7 +203,7 @@ namespace Front.Equipments
                 case eModelEquipment.Ingenico:
                 case eModelEquipment.VirtualBankPOS:
                     return eTypeEquipment.BankTerminal;
-                case eModelEquipment.Exelio:
+                case eModelEquipment.Exellio:
                 case eModelEquipment.pRRO_SG:
                 case eModelEquipment.pRRo_WebCheck:
                 case eModelEquipment.Maria:

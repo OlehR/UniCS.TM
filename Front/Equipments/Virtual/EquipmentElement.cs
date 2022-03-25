@@ -12,6 +12,7 @@ namespace Front.Equipments
         public Equipment Equipment  { get; set; }
         public string Port { get; set; }
         public int BaudRate { get; set; }
+        public string Name { get; set; }
     }
 }
  

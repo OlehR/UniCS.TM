@@ -116,6 +116,13 @@ namespace SharedLib
             }
             catch
             { Global.TypeWorkplace = eTypeWorkplace.SelfServicCheckout; }
+
+            try
+            {
+                Global.IsCash = Convert.ToBoolean(AppConfiguration["MID:IsCash"]);
+            }
+            catch
+            { Global.IsCash = false; }
         }
 
         public static IConfigurationRoot GetConfiguration()

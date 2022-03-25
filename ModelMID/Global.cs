@@ -40,6 +40,10 @@ namespace ModelMID
         public static bool IsGenQrCoffe = true;
 
         /// <summary>
+        /// Чи можна розраховуватись готівкою.
+        /// </summary>
+        public static bool IsCash = false;
+        /// <summary>
         /// Шлях до SqlLite бази
         /// </summary>
         public static string PathDB = @"c:\mid\";
