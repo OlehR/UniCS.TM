@@ -29,7 +29,7 @@ namespace Front
         Rro RRO;        
 
         public IEnumerable<EquipmentElement> GetBankTerminal { get { return ListEquipment.Where(e => e.Type == eTypeEquipment.BankTerminal); } }
-       
+        public void SetBankTerminal(BankTerminal pBT) { Terminal = pBT; }
         public int CountTerminal { get { return GetBankTerminal.Count(); } }
 
         public eStateEquipment State
@@ -63,12 +63,12 @@ namespace Front
         static EquipmentFront sEquipmentFront;
 
         public EquipmentFront(Action<string, string> pSetBarCode, Action<double, bool> pSetWeight, Action<double, bool> pSetControlWeight, Action<eStatusRRO> pActionStatus = null)
-        {            
+        {
             //public static Action<IEnumerable<ReceiptWares>, Guid> OnReceiptCalculationComplete { get; set; }
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             
             sEquipmentFront = this;
-            var config = Config("appsettings.json");          
+            var config = Config("appsettings.json");
 
             //Scaner
             var ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Scaner).First();
