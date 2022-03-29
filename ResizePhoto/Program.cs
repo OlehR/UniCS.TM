@@ -35,10 +35,9 @@ namespace ResizePhoto
             //{
             //    await writer.WriteLineAsync(text);
             //}
-            // добавление в файл
             try
             {
-                using (StreamWriter writer = new StreamWriter(pathLog, true))
+                using (StreamWriter writer = new StreamWriter(pathLog, false))
                 {
                     await writer.WriteLineAsync("//////////////////////////////////////////");
                     await writer.WriteLineAsync("Запуск програми: " + DateTime.Now.ToString());
