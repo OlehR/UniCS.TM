@@ -26,11 +26,14 @@ namespace Front
         Scale ControlScale;
         SignalFlag Signal;
         BankTerminal Terminal;
-        Rro RRO;        
+        Rro RRO;
+
 
         public IEnumerable<EquipmentElement> GetBankTerminal { get { return ListEquipment.Where(e => e.Type == eTypeEquipment.BankTerminal); } }
         public void SetBankTerminal(BankTerminal pBT) { Terminal = pBT; }
         public int CountTerminal { get { return GetBankTerminal.Count(); } }
+
+        eTypeAccess OperationWaitAccess { get; set; } = eTypeAccess.NoDefinition;
 
         public eStateEquipment State
         {

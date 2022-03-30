@@ -20,6 +20,7 @@ using Front.Equipments;
 using Front.Models;
 using Microsoft.Extensions.Configuration;
 using ModelMID;
+using ModelMID.DB;
 using SharedLib;
 
 namespace Front
@@ -51,15 +52,16 @@ namespace Front
         eStateMainWindows State = eStateMainWindows.StartWindow;
         public event PropertyChangedEventHandler PropertyChanged;
 
+        Access Access = Access.GetAccess();
+
         public string WaresQuantity { get; set; }
         decimal _MoneySum;
         public string MoneySum { get; set; }
         public string EquipmentInfo { get; set; }
         public bool Volume { get; set; }
-        /// <summary>
-        /// Чи зчитано штрихкод Адміна.
-        /// </summary>
-        public bool IsAdminBarCode { get; set; }
+
+        
+       
         /// <summary>
         /// Вага з основної ваги
         /// </summary>
@@ -119,7 +121,7 @@ namespace Front
             {
                 Debug.WriteLine($"Client.Wallet=> {client.Wallet} SumBonus=>{client.SumBonus} ");
             };
-            Global.OnAdminBarCode += (pUser) => { IsAdminBarCode = true; SetStateView(eStateMainWindows.NotDefine, true); };
+            Global.OnAdminBarCode += (pUser) => { SetConfirm(pUser); };
 
             WaresQuantity = "0";
             MoneySum = "0";
@@ -139,6 +141,39 @@ namespace Front
 
             CultureInfo currLang = App.Language;
             Recalc();
+        }
+
+        void SetConfirm(User pUser)
+        {
+            if (TypeAccessWait == eTypeAccess.NoDefinition)
+                return;
+            if(!Access.GetRight(pUser, TypeAccessWait))
+            {
+                //!!!TMP Треба зробити повідомлення що прав не достатньо.
+                return;
+            }
+
+            switch(TypeAccessWait)
+            {
+                case eTypeAccess.DelWares:
+                    Bl.ChangeQuantity(CurWares, 0);
+                    break;
+                case eTypeAccess.DelReciept:
+                    Bl.SetStateReceipt(null, eStateReceipt.Canceled);
+                    break;
+            }
+            
+            SetStateView(eStateMainWindows.NotDefine, true);
+        }
+
+        public eTypeAccess TypeAccessWait { get; set; }
+       // public ReceiptWares ReceiptWaresWait { get; set; }
+
+        void SetWaitConfirm(eTypeAccess pTypeAccess, ReceiptWares pRW)
+        {
+            TypeAccessWait = pTypeAccess;
+            CurWares = pRW;
+            SetStateView(eStateMainWindows.WaitAdmin);
         }
 
         void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine, bool pIsBarCodeAdmin = false)
@@ -237,10 +272,15 @@ namespace Front
             if (btn.DataContext is ReceiptWares)
             {
                 var el = btn.DataContext as ReceiptWares;
-                //ListWares.Remove((ReceiptWares)btn.DataContext);
-                Bl.ChangeQuantity(el, 0);
+                if(el==null)
+                {
+                    return;
+                }
+                if (Access.GetRight(eTypeAccess.DelWares))
+                    Bl.ChangeQuantity(el, 0);
+                else
+                    SetWaitConfirm(eTypeAccess.DelWares, el);
             }
-
         }
 
         private void _Minus(object sender, RoutedEventArgs e)
@@ -339,6 +379,13 @@ namespace Front
             var CodeWares = Bl.db.db.ExecuteScalar<int>(sql);
             if (CodeWares > 0)
                 Bl.AddWaresCode(CodeWares, 0, Math.Round(1M + 5M * rand.Next() / (decimal)int.MaxValue));
+            
+            /* // Правильний блок.
+            if (Access.GetRight(eTypeAccess.DelReciept))
+                Bl.SetStateReceipt(null, eStateReceipt.Canceled);
+            else
+                SetWaitConfirm(eTypeAccess.DelReciept, null);
+            */
         }
 
         private void _Search(object sender, RoutedEventArgs e)
@@ -453,19 +500,21 @@ namespace Front
         /// <returns></returns>
         bool PrintAndCloseReceipt()
         {
+            var R = Bl.GetReceiptHead(Bl.curReciptId, true);
             decimal sum = ListWares.Sum(r => r.Sum); //Треба переробити
+
             SetStateView(eStateMainWindows.ProcessPay);
             var pay = EF.PosPurchase(sum);
             if (pay != null)
             {
-                pay.SetIdReceipt(Bl.curReciptId);
+                pay.SetIdReceipt(R);
                 Bl.db.ReplacePayment(new List<Payment>() { pay });
             }
             else
                 SetStateView(eStateMainWindows.WaitInput);
 
             SetStateView(eStateMainWindows.ProcessPrintReceipt);
-            var R = Bl.GetReceiptHead(Bl.curReciptId, true);
+            
             var res = EF.PrintReceipt(R);
             Bl.InsertLogRRO(res);
             if (res.CodeError == 0)

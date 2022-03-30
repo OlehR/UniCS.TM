@@ -452,6 +452,8 @@ namespace SharedLib
 
         public bool SetStateReceipt(IdReceipt pIdReceipt, eStateReceipt pStateReceipt)
         {
+            if (pIdReceipt == null)
+                pIdReceipt = curReciptId;
             var receipt = new Receipt(pIdReceipt) { StateReceipt = pStateReceipt, DateReceipt = DateTime.Now, UserCreate = GetUserIdbyWorkPlace(pIdReceipt.IdWorkplace) };
             return db.CloseReceipt(receipt);
         }
@@ -490,8 +492,7 @@ namespace SharedLib
                         Ldc = Ldc.AddDays(1);
                     }
                 }
-            }
-            //throw new NotImplementedException();
+            }            
             return res;
         }
 
