@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Front"
         mc:Ignorable="d"
         Title="MainWindow" Height="400" Width="300" ShowInTaskbar="False" 
-        WindowStartupLocation="Manual" Left="1500" Top="400" ResizeMode="NoResize"
+        HorizontalAlignment="Right" VerticalAlignment="Center"
         WindowStyle="None" Background="LightGray">
 
 

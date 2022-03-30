@@ -32,6 +32,9 @@ namespace Front
         public KeyPad(Window owner)
         {
             InitializeComponent();
+            var primaryMonitorArea = SystemParameters.WorkArea;
+            Left = primaryMonitorArea.Right - Width - 10;
+            Top = primaryMonitorArea.Bottom - Height - 100;
             this.Owner = owner;
             this.DataContext = this;
         }

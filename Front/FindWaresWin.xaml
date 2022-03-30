@@ -7,7 +7,8 @@
         xmlns:onScreenKeyboardControl="clr-namespace:OnScreenKeyboardControl"
         Title="Пошук товару"
         WindowStyle="None"
-        Height="768" Width="1366"
+        WindowState="Maximized"
+        Height="768" Width="1024"
         mc:Ignorable="d">
     <Window.DataContext>
         <onScreenKeyboardControl:ViewModel/>
@@ -97,7 +98,7 @@
             </Grid>
 
             <Button Grid.Column="5" Grid.ColumnSpan="6" Style="{StaticResource Default}"  FontSize="22" Click="ClickButtonCancel" 
-                        Height="80" Width="300" VerticalAlignment="Center">
+                        Height="60"  VerticalAlignment="Center">
                 <StackPanel Orientation="Horizontal">
                     <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
                     <TextBlock FontSize="28" Text="{DynamicResource cancel}" Margin="5,0,0,5"/>
