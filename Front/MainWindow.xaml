@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:Front" xmlns:onScreenKeyboardControl="clr-namespace:OnScreenKeyboardControl"
         mc:Ignorable="d"
         Title="MainWindow" 
-        WindowState="Minimized"
+        WindowState="Maximized"
         WindowStyle="None"
         Height="768" Width="1024"
         >
@@ -174,8 +174,6 @@
                                         <ColumnDefinition Width="1*"></ColumnDefinition>
                                         <ColumnDefinition Width="1.5*"></ColumnDefinition>
                                     </Grid.ColumnDefinitions>
-
-
                                     <!-- Устанавливаем две строки -->
 
                                     <Grid ShowGridLines="True" Visibility="Collapsed">
@@ -199,9 +197,6 @@
                                         </TextBlock>
                                         <TextBlock Margin="0" Grid.Row="1" FontSize="24"  Text="{Binding NameWares}" />
                                     </Grid>
-
-
-
                                     <StackPanel Orientation="Vertical">
                                         <TextBlock Margin="0" Grid.Row="0" FontSize="12"  Text="{Binding GetStrWaresReceiptPromotion}" Visibility="{Binding IsReceiptPromotion,Converter={StaticResource BoolToHiddenConverter}}"/>
                                         <TextBlock Margin="0" Grid.Row="1" FontSize="24"  Text="{Binding NameWares}" />
@@ -309,6 +304,14 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
+            <!--ФОН-->
+            <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="0" Grid.RowSpan="6"
+                Grid.Column="0" Grid.ColumnSpan="6"
+                 Name="BackgroundWares" Visibility="Collapsed" Grid.ZIndex="2" 
+                Opacity="0.9"/>
+
+
             <!-- Ввід Акцизної марки    -->
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
@@ -358,9 +361,384 @@
                     </Grid>
                 </Grid>
             </Border>
+
+            <!-- Ввід цін на сегарети    -->
+
+            <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="0" Grid.RowSpan="6"
+                Grid.Column="1" Grid.ColumnSpan="4"
+                 Name="ChoicePrice" Visibility="Collapsed" Grid.ZIndex="2" 
+                CornerRadius="10" HorizontalAlignment="Center"  Width="500" Height="500">
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+                </Border.Effect>
+
+                <Grid >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*"></RowDefinition>
+                        <RowDefinition Height="3*"></RowDefinition>
+                        <RowDefinition Height="1.5*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" HorizontalAlignment="Center" FontSize="28" Text="{DynamicResource ChoicePriceTobacco }"/>
+
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Name="SV_Prices"  Background='#f2f2f2'>
+                        <ItemsControl  Name="Prices">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Click="_AddWaresPrice"  Height="50"  Width="450" Margin="1" Style="{StaticResource yelowButton}" Background="{Binding BackGroundColor}"
+                                        IsEnabled="{Binding IsEnable}"
+                                        >
+                                        <TextBlock FontSize="28" Text="{Binding StrPrice}" Tag="{Binding}" />
+                                        <Button.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="7" />
+                                            </Style>
+                                        </Button.Resources>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+
+                    <Button Grid.Row="2" Style="{StaticResource Default}"  FontSize="22" Click="_Cancel" 
+                        Height="80" Width="300" Margin="10">
+                        <TextBlock FontSize="28" Text="{DynamicResource cancel}"/>
+                    </Button>
+                </Grid>
+            </Border>
+
+
+
+            <!-- Очікування Адміністратора   -->
+            <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="0" Grid.RowSpan="6"
+                Grid.Column="1" Grid.ColumnSpan="4"
+                 Name="WaitAdmin" Visibility="Collapsed" Grid.ZIndex="2" 
+                CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+                </Border.Effect>
+
+                <Grid  Width="700" Height="500">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="3*"></RowDefinition>
+                        <RowDefinition Height="1*"></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" VerticalAlignment="Center">
+                        <Image  Source="icons\clock.png" Width="50" Margin="15"/>
+                        <TextBlock  HorizontalAlignment="Center" FontSize="28" Text="{DynamicResource WaitAdmin }"/>
+                    </StackPanel>
+                    <Button BorderBrush="Transparent" Background="Transparent" Width="50" Height="50" 
+                        HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,30,0"
+                        Click="ButtonAdmin"/>
+                    <Button Grid.Row="1" Style="{StaticResource Default}"  FontSize="22" Click="_Cancel" 
+                        Height="80" Width="300" VerticalAlignment="Top">
+                        <StackPanel Orientation="Horizontal">
+                            <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
+                            <TextBlock FontSize="28" Text="{DynamicResource cancel}" Margin="5,0,0,5"/>
+                        </StackPanel>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- Автентифікація адміністратора   -->
+            <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="0" Grid.RowSpan="6"
+                Grid.Column="0" Grid.ColumnSpan="6"
+                 Name="WaitAdminLogin" Visibility="Collapsed" Grid.ZIndex="2" 
+                HorizontalAlignment="Center" VerticalAlignment="Center"
+                CornerRadius="10" Margin="10" >
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+                </Border.Effect>
+
+                <Grid Width="1000" Height="500">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.5*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="0.5*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <!-- Логін адміністратора-->
+                    <Grid Grid.Row="0" Grid.Column="1" Visibility="Visible" Name="WaitAdminLoginGrid">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0" FontSize="25" Text="Login" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" TabIndex="1" Name="LoginTextBlock" FontSize="25" TextChanged="TextLoginChanged"  VerticalAlignment="Center"  />
+                        <TextBlock Grid.Row="1" Grid.Column="0" FontSize="25" Text="Password" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" TabIndex="2" Name="PasswordTextBlock" FontSize="25" TextChanged="TextPasswordChanged"  VerticalAlignment="Center" />
+                        <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"  Style="{StaticResource Default}" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="22" Click="LoginButton" 
+                        Height="60" Width="200">
+                            <StackPanel Orientation="Horizontal">
+                                <Image  Height="20" Width="20"  Source="icons\right.png"></Image>
+                                <TextBlock FontSize="28" Text="{DynamicResource ok}" Margin="5,0,0,5"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="3" Style="{StaticResource Default}" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="22" Click="_Cancel" 
+                        Height="60" Width="200">
+                            <StackPanel Orientation="Horizontal">
+                                <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
+                                <TextBlock FontSize="28" Text="{DynamicResource cancel}" Margin="5,0,0,5"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                    <keyboard:OnScreenKeyboard Grid.Row="1"
+		                           Grid.Column="0"
+		                           Grid.ColumnSpan="3"
+		                           Height="250"
+                                   x:Name="KB"                                  
+		                           VerticalAlignment="Bottom" 
+		                           ActiveContainer="{Binding ElementName=WaitAdminLoginGrid}"
+                                   ToggleButtonStyle="{StaticResource DefaultTouchToggleButtonStyle}"
+		                           CancelCommand="{Binding CancelCommand2}"/>
+
+
+                </Grid>
+            </Border>
+
+            <!--Очікування ваги-->
+            <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="0" Grid.RowSpan="6"
+                Grid.Column="1" Grid.ColumnSpan="4"
+                 Name="WeightWares" Visibility="Collapsed" Grid.ZIndex="2" 
+                CornerRadius="10">
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+                </Border.Effect>
+
+                <Grid Name="GridWeightWares">
+                    <!--<Name="WeightWares"Border Background="WhiteSmoke" />
+            <Border Grid.Row="1" Background="WhiteSmoke" />
+            <Border Grid.Row="2" Background="WhiteSmoke" />
+            <Border Grid.Row="3" Background="WhiteSmoke" />
+            <Border Grid.Row="4" Background="WhiteSmoke" />-->
+                    <Grid.RowDefinitions>
+                        <RowDefinition  Height="1*"></RowDefinition>
+                        <RowDefinition  Height="4*"></RowDefinition>
+                        <RowDefinition  Height="1*"></RowDefinition>
+                        <RowDefinition  Height="1*"></RowDefinition>
+                        <RowDefinition  Height="1*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Label 
+                                 Grid.ColumnSpan="1" Grid.Row="0" Grid.RowSpan="1" Margin="3,-2,0,-2" HorizontalAlignment="Center" VerticalAlignment="Stretch" 
+                                FontSize="12" Height="Auto" BorderThickness="3,0,0,0"
+                                Content="Покладіть товар на вагу" />
+                    <Label 
+                                x:Name="NameWares"  Grid.ColumnSpan="2" Grid.Row="2" Grid.RowSpan="1" Margin="3,-2,0,-2" HorizontalAlignment="Center" VerticalAlignment="Stretch" 
+                                FontSize="18" Height="Auto"
+                                Content="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=CurW.Name}" />
+                    <!--{Binding NameW, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}-->
+                    <Label Name="LWeight"
+                                 Grid.ColumnSpan="1" Grid.Row="3" Grid.RowSpan="1" Margin="3,-2,0,-2" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                FontSize="14" Height="Auto" BorderThickness="3,0,0,0"
+                                Content="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=Weight}" />
+
+                    <Grid Grid.Row="4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"></ColumnDefinition>
+                            <ColumnDefinition Width="1*"></ColumnDefinition>
+                            <ColumnDefinition Width="1*"></ColumnDefinition>
+                            <ColumnDefinition Width="2*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <!--<Button Grid.Column="1" Grid.Row="0" Click="ClickButtonOk" Name="ButtonOk" Style="{StaticResource yelowButton}">
+                        <Image  Source="icons\back.png">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter Property="Opacity" Value="0.5" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+                    </Button>-->
+                        <Button Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Style="{StaticResource yelowButton}" HorizontalAlignment="Right" VerticalAlignment="Center"  FontSize="22" Name="ButtonOk" 
+                        Height="60" Width="250" Click="ClickButtonOk">
+                            <StackPanel Orientation="Horizontal">
+                                <!-- <Image  Height="20" Width="20"  Source="icons\right.png"></Image>-->
+                                <TextBlock FontSize="28" Text="{DynamicResource ok}" Margin="5,0,0,5"/>
+                            </StackPanel>
+                        </Button>
+                        <!--<Button Grid.Column="2" Grid.Row="0" Click="ClickButtonCancel" Name="ButtonCancel" Style="{StaticResource yelowButton}">
+                        <Image  Source="icons\Up.png">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter Property="Opacity" Value="0.5" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+                    </Button>-->
+                        <Button Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="3" Style="{StaticResource Default}"  FontSize="22" Click="_Cancel" 
+                        Height="60" Width="250" VerticalAlignment="Center" HorizontalAlignment="Left">
+                            <StackPanel Orientation="Horizontal">
+                                <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
+                                <TextBlock FontSize="28" Text="{DynamicResource cancel}" Margin="5,0,0,5"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <!-- ОПЛАТА   -->
+            <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="0" Grid.RowSpan="6"
+                 Grid.Column="0" Grid.ColumnSpan="6"
+                 Name="WaitPayment" Visibility="Collapsed" Grid.ZIndex="2" 
+                CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+                </Border.Effect>
+
+                <Grid  Width="1000" Height="600">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*"></RowDefinition>
+                        <RowDefinition Height="3*"></RowDefinition>
+                        <RowDefinition Height="1*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="28" 
+                                Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0"
+                                Text="{DynamicResource WaitPayment }"/>
+                    <Image  Grid.Column="1" Grid.Row="1" x:Name="PaymentImage"
+                        Source="/icons/paymentTerminal.png"
+                     Width="250" Margin="15"/>
+
+                    <Grid Grid.Column="0" Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"></RowDefinition>
+                            <RowDefinition Height="0.5*"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28" 
+                                Grid.Column="0"  Grid.Row="0"
+                                Text="{DynamicResource AmountPayment}"/>
+                        <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28" 
+                                Grid.Column="1"  Grid.Row="0"
+                                Text="{Binding MoneySum, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}"/>
+                        <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28" 
+                                Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="1"
+                                Text="{DynamicResource PaymentStatus}"/>
+                        <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="28" 
+                                Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="2"
+                                Text="{Binding EquipmentInfo, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}"/>
+                    </Grid>
+                    <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource Default}"  FontSize="22" Click="_Cancel" 
+                        Height="80" Width="300" VerticalAlignment="Top">
+                        <StackPanel Orientation="Horizontal">
+                            <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
+                            <TextBlock FontSize="28" Text="{DynamicResource cancel}" Margin="5,0,0,5"/>
+                        </StackPanel>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- Підтвердження віку ПОПЕРЕДЖЕННЯ  -->
+            <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="0" Grid.RowSpan="5"
+                 Grid.Column="1" Grid.ColumnSpan="4"
+                 Name="ConfirmAgeMessage" Visibility="Collapsed" Grid.ZIndex="2" 
+                CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+                </Border.Effect>
+
+                <Grid  Width="700" Height="500">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="3*"></RowDefinition>
+                        <RowDefinition Height="1*"></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" VerticalAlignment="Center">
+                        <Image  Source="icons\18plus.png" Width="50" Margin="15"/>
+                        <TextBlock  HorizontalAlignment="Center" FontSize="28" Text="{DynamicResource ConfirmAge }"/>
+                        <TextBlock  HorizontalAlignment="Center" FontSize="28" Text="{DynamicResource WaitAdmin }"/>
+                    </StackPanel>
+                    <Button BorderBrush="Transparent" Background="Transparent" Width="50" Height="50" 
+                        HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10"
+                        Click="ButtonAdmin"/>
+                    <Button Grid.Row="1" Style="{StaticResource Default}"  FontSize="22" Click="_Cancel" 
+                        Height="80" Width="300" VerticalAlignment="Top">
+                        <StackPanel Orientation="Horizontal">
+                            <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
+                            <TextBlock FontSize="28" Text="{DynamicResource cancel}" Margin="5,0,0,5"/>
+                        </StackPanel>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- Підтвердити вік ТАК/НІ   -->
+            <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="0" Grid.RowSpan="4"
+                 Grid.Column="1" Grid.ColumnSpan="4"
+                 Name="ConfirmAge" Visibility="Collapsed" Grid.ZIndex="2" 
+                CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+                </Border.Effect>
+
+                <Grid  Width="700" Height="400">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="3*"></RowDefinition>
+                        <RowDefinition Height="1*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Row="0" VerticalAlignment="Center" Grid.Column="0" Grid.ColumnSpan="2">
+                        <Image  Source="icons\18plus.png" Width="50" Margin="15"/>
+                        <TextBlock  HorizontalAlignment="Center" FontSize="28" Text="{DynamicResource ConfirmAgeYesOrNo }"/>
+                    </StackPanel>
+                    <Button Grid.Row="1" Grid.Column="0"
+                        Style="{StaticResource greenButton}"  FontSize="22" Click="_Cancel" 
+                        Height="60" Width="250" VerticalAlignment="Top">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontSize="28" Text="{DynamicResource Yes}" Margin="5,0,0,5"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Grid.Row="1" Grid.Column="1"
+                        Style="{StaticResource Default}"  FontSize="22" Click="_Cancel" 
+                        Height="60" Width="250" VerticalAlignment="Top">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontSize="28" Text="{DynamicResource No}" Margin="5,0,0,5"/>
+                        </StackPanel>
+                    </Button>
+                </Grid>
+            </Border>
+            <!--кінець-->
         </Grid>
 
-        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right"/>
+        <!--<StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right"/>-->
 
 
         <Grid Grid.Row="3" >
@@ -391,50 +769,7 @@
             </Button>
         </Grid>
 
-        <!-- Ввід цін на сегарети    -->
-
-        <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
-                 Grid.Row="1" Grid.RowSpan="3"
-                Grid.Column="0" Grid.ColumnSpan="4"
-                 Name="ChoicePrice" Visibility="Collapsed" Grid.ZIndex="2" 
-                CornerRadius="10" HorizontalAlignment="Center" Margin="70">
-            <Border.Effect>
-                <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
-            </Border.Effect>
-
-            <Grid Width="800" >
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="1*"></RowDefinition>
-                    <RowDefinition Height="3*"></RowDefinition>
-                    <RowDefinition Height="1*"></RowDefinition>
-                </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" HorizontalAlignment="Center" FontSize="28" Text="{DynamicResource ChoicePriceTobacco }"/>
-
-                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Name="SV_Prices" Width="600" Background='#f2f2f2'>
-                    <ItemsControl  Name="Prices">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Button Click="_AddWaresPrice"  Height="100"  Width="500" Margin="1" Style="{StaticResource yelowButton}" Background="{Binding BackGroundColor}"
-                                        IsEnabled="{Binding IsEnable}"
-                                        >
-                                    <TextBlock FontSize="28" Text="{Binding StrPrice}" Tag="{Binding}" />
-                                    <Button.Resources>
-                                        <Style TargetType="Border">
-                                            <Setter Property="CornerRadius" Value="7" />
-                                        </Style>
-                                    </Button.Resources>
-                                </Button>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
-
-                <Button Grid.Row="2" Style="{StaticResource Default}"  FontSize="22" Click="_Cancel" 
-                        Height="80" Width="300">
-                    <TextBlock FontSize="28" Text="{DynamicResource cancel}"/>
-                </Button>
-            </Grid>
-        </Border>
+       
 
 
         <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
@@ -444,284 +779,12 @@
                 Opacity="0.9"/>
 
 
-        
-
-        <!-- Очікування Адміністратора   -->
-        <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
-                 Grid.Row="1" Grid.RowSpan="3"
-              Grid.Column="0" Grid.ColumnSpan="4"
-                 Name="WaitAdmin" Visibility="Collapsed" Grid.ZIndex="2" 
-                CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Border.Effect>
-                <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
-            </Border.Effect>
-
-            <Grid  Width="700" Height="500">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="3*"></RowDefinition>
-                    <RowDefinition Height="1*"></RowDefinition>
-                </Grid.RowDefinitions>
-
-                <StackPanel Grid.Row="0" VerticalAlignment="Center">
-                    <Image  Source="icons\clock.png" Width="50" Margin="15"/>
-                    <TextBlock  HorizontalAlignment="Center" FontSize="28" Text="{DynamicResource WaitAdmin }"/>
-                </StackPanel>
-                <Button BorderBrush="Transparent" Background="Transparent" Width="50" Height="50" 
-                        HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10"
-                        Click="ButtonAdmin"/>
-                <Button Grid.Row="1" Style="{StaticResource Default}"  FontSize="22" Click="_Cancel" 
-                        Height="80" Width="300" VerticalAlignment="Top">
-                    <StackPanel Orientation="Horizontal">
-                        <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
-                        <TextBlock FontSize="28" Text="{DynamicResource cancel}" Margin="5,0,0,5"/>
-                    </StackPanel>
-                </Button>
-            </Grid>
-        </Border>
-
-        <!-- Автентифікація адміністратора   -->
-        <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
-                 Grid.Row="1" Grid.RowSpan="2"
-              Grid.Column="0" Grid.ColumnSpan="4"
-                 Name="WaitAdminLogin" Visibility="Collapsed" Grid.ZIndex="2" 
-                HorizontalAlignment="Center" VerticalAlignment="Center"
-                CornerRadius="10" >
-            <Border.Effect>
-                <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
-            </Border.Effect>
-
-            <Grid Width="1000" Height="500">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="0.5*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="0.5*" />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-
-                <!-- Логін адміністратора-->
-                <Grid Grid.Row="0" Grid.Column="1" Visibility="Visible" Name="WaitAdminLoginGrid">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Row="0" Grid.Column="0" FontSize="25" Text="Login" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" TabIndex="1" Name="LoginTextBlock" FontSize="25" TextChanged="TextLoginChanged"  VerticalAlignment="Center"  />
-                    <TextBlock Grid.Row="1" Grid.Column="0" FontSize="25" Text="Password" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" TabIndex="2" Name="PasswordTextBlock" FontSize="25" TextChanged="TextPasswordChanged"  VerticalAlignment="Center" />
-                    <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"  Style="{StaticResource Default}" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="22" Click="LoginButton" 
-                        Height="60" Width="200">
-                        <StackPanel Orientation="Horizontal">
-                            <Image  Height="20" Width="20"  Source="icons\right.png"></Image>
-                            <TextBlock FontSize="28" Text="{DynamicResource ok}" Margin="5,0,0,5"/>
-                        </StackPanel>
-                    </Button>
-                    <Button Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="3" Style="{StaticResource Default}" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="22" Click="_Cancel" 
-                        Height="60" Width="200">
-                        <StackPanel Orientation="Horizontal">
-                            <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
-                            <TextBlock FontSize="28" Text="{DynamicResource cancel}" Margin="5,0,0,5"/>
-                        </StackPanel>
-                    </Button>
-                </Grid>
-                <!-- Пароль адміністратора-->
-                <!--<Grid Grid.Row="0" Grid.Column="1" Visibility="Collapsed" Name="WaitAdminPasswordGrid">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0"  FontSize="25" Text="Password" HorizontalAlignment="Center" VerticalAlignment="Bottom" />
-                    <TextBox Grid.Row="1" TabIndex="1" Name="PasswordTextBlock" FontSize="25" TextChanged="TextPasswordChanged"  VerticalAlignment="Center" />
-                    <Button Grid.Row="2"  Style="{StaticResource Default}" HorizontalAlignment="Center" VerticalAlignment="Top"  FontSize="22" Click="LoginButton" 
-                        Height="60" Width="200">
-                        <StackPanel Orientation="Horizontal">
-                             <Image  Height="20" Width="20"  Source="icons\right.png"></Image>
-                            <TextBlock FontSize="28" Text="{DynamicResource ok}" Margin="5,0,0,5"/>
-                        </StackPanel>
-                    </Button>
-                </Grid>-->
-
-                <keyboard:OnScreenKeyboard Grid.Row="1"
-		                           Grid.Column="0"
-		                           Grid.ColumnSpan="3"
-		                           Height="250"
-                                   x:Name="KB"                                  
-		                           VerticalAlignment="Bottom" 
-		                           ActiveContainer="{Binding ElementName=WaitAdminLoginGrid}"
-                                   ToggleButtonStyle="{StaticResource DefaultTouchToggleButtonStyle}"
-		                           CancelCommand="{Binding CancelCommand2}"/>
-
-
-            </Grid>
-        </Border>
-
-        <!--Очікування ваги-->
-        <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
-                Margin="200,0,200,50"
-                 Grid.Row="1" Grid.RowSpan="3"
-              Grid.Column="0" Grid.ColumnSpan="4"
-                 Name="WeightWares" Visibility="Collapsed" Grid.ZIndex="2" 
-                CornerRadius="10">
-            <Border.Effect>
-                <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
-            </Border.Effect>
-
-            <Grid Name="GridWeightWares">
-                <!--<Name="WeightWares"Border Background="WhiteSmoke" />
-            <Border Grid.Row="1" Background="WhiteSmoke" />
-            <Border Grid.Row="2" Background="WhiteSmoke" />
-            <Border Grid.Row="3" Background="WhiteSmoke" />
-            <Border Grid.Row="4" Background="WhiteSmoke" />-->
-                <Grid.RowDefinitions>
-                    <RowDefinition  Height="1*"></RowDefinition>
-                    <RowDefinition  Height="4*"></RowDefinition>
-                    <RowDefinition  Height="1*"></RowDefinition>
-                    <RowDefinition  Height="1*"></RowDefinition>
-                    <RowDefinition  Height="1*"></RowDefinition>
-                </Grid.RowDefinitions>
-                <Label 
-                                 Grid.ColumnSpan="1" Grid.Row="0" Grid.RowSpan="1" Margin="3,-2,0,-2" HorizontalAlignment="Center" VerticalAlignment="Stretch" 
-                                FontSize="12" Height="Auto" BorderThickness="3,0,0,0"
-                                Content="Покладіть товар на вагу" />
-                <Label 
-                                x:Name="NameWares"  Grid.ColumnSpan="2" Grid.Row="2" Grid.RowSpan="1" Margin="3,-2,0,-2" HorizontalAlignment="Center" VerticalAlignment="Stretch" 
-                                FontSize="18" Height="Auto"
-                                Content="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=CurW.Name}" />
-                <!--{Binding NameW, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}-->
-                <Label Name="LWeight"
-                                 Grid.ColumnSpan="1" Grid.Row="3" Grid.RowSpan="1" Margin="3,-2,0,-2" HorizontalAlignment="Center" VerticalAlignment="Center" 
-                                FontSize="14" Height="Auto" BorderThickness="3,0,0,0"
-                                Content="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=Weight}" />
-
-                <Grid Grid.Row="4">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*"></ColumnDefinition>
-                        <ColumnDefinition Width="1*"></ColumnDefinition>
-                        <ColumnDefinition Width="1*"></ColumnDefinition>
-                        <ColumnDefinition Width="2*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <!--<Button Grid.Column="1" Grid.Row="0" Click="ClickButtonOk" Name="ButtonOk" Style="{StaticResource yelowButton}">
-                        <Image  Source="icons\back.png">
-                            <Image.Style>
-                                <Style TargetType="Image">
-                                    <Style.Triggers>
-                                        <Trigger Property="IsEnabled" Value="False">
-                                            <Setter Property="Opacity" Value="0.5" />
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Image.Style>
-                        </Image>
-                    </Button>-->
-                    <Button Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Style="{StaticResource yelowButton}" HorizontalAlignment="Right" VerticalAlignment="Center"  FontSize="22" Name="ButtonOk" 
-                        Height="80" Width="300" Click="ClickButtonOk">
-                        <StackPanel Orientation="Horizontal">
-                            <!-- <Image  Height="20" Width="20"  Source="icons\right.png"></Image>-->
-                            <TextBlock FontSize="28" Text="{DynamicResource ok}" Margin="5,0,0,5"/>
-                        </StackPanel>
-                    </Button>
-                    <!--<Button Grid.Column="2" Grid.Row="0" Click="ClickButtonCancel" Name="ButtonCancel" Style="{StaticResource yelowButton}">
-                        <Image  Source="icons\Up.png">
-                            <Image.Style>
-                                <Style TargetType="Image">
-                                    <Style.Triggers>
-                                        <Trigger Property="IsEnabled" Value="False">
-                                            <Setter Property="Opacity" Value="0.5" />
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Image.Style>
-                        </Image>
-                    </Button>-->
-                    <Button Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="3" Style="{StaticResource Default}"  FontSize="22" Click="_Cancel" 
-                        Height="80" Width="300" VerticalAlignment="Center" HorizontalAlignment="Left">
-                        <StackPanel Orientation="Horizontal">
-                            <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
-                            <TextBlock FontSize="28" Text="{DynamicResource cancel}" Margin="5,0,0,5"/>
-                        </StackPanel>
-                    </Button>
-                </Grid>
-            </Grid>
-        </Border>
-
-        <!-- ОПЛАТА   -->
-        <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
-                 Grid.Row="1" Grid.RowSpan="3"
-              Grid.Column="0" Grid.ColumnSpan="4"
-                 Name="WaitPayment" Visibility="Collapsed" Grid.ZIndex="2" 
-                CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Border.Effect>
-                <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
-            </Border.Effect>
-
-            <Grid  Width="1000" Height="600">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="1*"></RowDefinition>
-                    <RowDefinition Height="3*"></RowDefinition>
-                    <RowDefinition Height="1*"></RowDefinition>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-
-                <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="28" 
-                                Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0"
-                                Text="{DynamicResource WaitPayment }"/>
-                <Image  Grid.Column="1" Grid.Row="1" x:Name="PaymentImage"
-                        Source="/icons/paymentTerminal.png"
-                     Width="250" Margin="15"/>
-
-                <Grid Grid.Column="0" Grid.Row="1">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"></RowDefinition>
-                        <RowDefinition Height="0.5*"></RowDefinition>
-                        <RowDefinition Height="*"></RowDefinition>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28" 
-                                Grid.Column="0"  Grid.Row="0"
-                                Text="{DynamicResource AmountPayment}"/>
-                    <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28" 
-                                Grid.Column="1"  Grid.Row="0"
-                                Text="{Binding MoneySum, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}"/>
-                    <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28" 
-                                Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="1"
-                                Text="{DynamicResource PaymentStatus}"/>
-                    <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="28" 
-                                Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="2"
-                                Text="{Binding EquipmentInfo, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}"/>
-                </Grid>
-                <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource Default}"  FontSize="22" Click="_Cancel" 
-                        Height="80" Width="300" VerticalAlignment="Top">
-                    <StackPanel Orientation="Horizontal">
-                        <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
-                        <TextBlock FontSize="28" Text="{DynamicResource cancel}" Margin="5,0,0,5"/>
-                    </StackPanel>
-                </Button>
-            </Grid>
-        </Border>
 
         <!--Початок покупки - стартове вікно-->
         <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="1" Grid.RowSpan="4"
                 Grid.Column="0" Grid.ColumnSpan="4"
-                 Name="StartShopping" Visibility="Visible" Grid.ZIndex="2" >
+                 Name="StartShopping" Visibility="Collapsed" Grid.ZIndex="2" >
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -774,80 +837,6 @@
                     </MediaElement>
                 </Grid>
 
-            </Grid>
-        </Border>
-
-        <!-- Підтвердження віку ПОПЕРЕДЖЕННЯ  -->
-        <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
-                 Grid.Row="1" Grid.RowSpan="3"
-              Grid.Column="0" Grid.ColumnSpan="4"
-                 Name="ConfirmAgeMessage" Visibility="Collapsed" Grid.ZIndex="2" 
-                CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Border.Effect>
-                <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
-            </Border.Effect>
-
-            <Grid  Width="700" Height="500">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="3*"></RowDefinition>
-                    <RowDefinition Height="1*"></RowDefinition>
-                </Grid.RowDefinitions>
-
-                <StackPanel Grid.Row="0" VerticalAlignment="Center">
-                    <Image  Source="icons\18plus.png" Width="50" Margin="15"/>
-                    <TextBlock  HorizontalAlignment="Center" FontSize="28" Text="{DynamicResource ConfirmAge }"/>
-                    <TextBlock  HorizontalAlignment="Center" FontSize="28" Text="{DynamicResource WaitAdmin }"/>
-                </StackPanel>
-                <Button BorderBrush="Transparent" Background="Transparent" Width="50" Height="50" 
-                        HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10"
-                        Click="ButtonAdmin"/>
-                <Button Grid.Row="1" Style="{StaticResource Default}"  FontSize="22" Click="_Cancel" 
-                        Height="80" Width="300" VerticalAlignment="Top">
-                    <StackPanel Orientation="Horizontal">
-                        <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
-                        <TextBlock FontSize="28" Text="{DynamicResource cancel}" Margin="5,0,0,5"/>
-                    </StackPanel>
-                </Button>
-            </Grid>
-        </Border>
-        <!-- Підтвердити вік ТАК/НІ   -->
-        <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
-                 Grid.Row="1" Grid.RowSpan="3"
-              Grid.Column="0" Grid.ColumnSpan="4"
-                 Name="ConfirmAge" Visibility="Collapsed" Grid.ZIndex="2" 
-                CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Border.Effect>
-                <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
-            </Border.Effect>
-
-            <Grid  Width="700" Height="400">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="3*"></RowDefinition>
-                    <RowDefinition Height="1*"></RowDefinition>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-
-                <StackPanel Grid.Row="0" VerticalAlignment="Center" Grid.Column="0" Grid.ColumnSpan="2">
-                    <Image  Source="icons\18plus.png" Width="50" Margin="15"/>
-                    <TextBlock  HorizontalAlignment="Center" FontSize="28" Text="{DynamicResource ConfirmAgeYesOrNo }"/>
-                </StackPanel>
-                <Button Grid.Row="1" Grid.Column="0"
-                        Style="{StaticResource greenButton}"  FontSize="22" Click="_Cancel" 
-                        Height="80" Width="300" VerticalAlignment="Top">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock FontSize="28" Text="{DynamicResource Yes}" Margin="5,0,0,5"/>
-                    </StackPanel>
-                </Button>
-                <Button Grid.Row="1" Grid.Column="1"
-                        Style="{StaticResource Default}"  FontSize="22" Click="_Cancel" 
-                        Height="80" Width="300" VerticalAlignment="Top">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock FontSize="28" Text="{DynamicResource No}" Margin="5,0,0,5"/>
-                    </StackPanel>
-                </Button>
             </Grid>
         </Border>
     </Grid>

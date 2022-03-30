@@ -186,6 +186,7 @@ namespace Front
                     ExciseStamp.Visibility = Visibility.Collapsed;
                     ChoicePrice.Visibility = Visibility.Collapsed;
                     Background.Visibility = Visibility.Collapsed;
+                    BackgroundWares.Visibility = Visibility.Collapsed;
                     WaitAdmin.Visibility = Visibility.Collapsed;
                     WaitAdminLogin.Visibility = Visibility.Collapsed;
                     WeightWares.Visibility = Visibility.Collapsed;
@@ -222,11 +223,13 @@ namespace Front
                             Prices.ItemsSource = rrr;//new ObservableCollection<Price>(rr);
 
                             Background.Visibility = Visibility.Visible;
+                            BackgroundWares.Visibility = Visibility.Visible;
                             ChoicePrice.Visibility = Visibility.Visible;
                             break;
                         case eStateMainWindows.WaitExciseStamp:
                             ExciseStamp.Visibility = Visibility.Visible;
                             Background.Visibility = Visibility.Visible;
+                            BackgroundWares.Visibility = Visibility.Visible;
                             TBExciseStamp.Focus();
                             break;
                         case eStateMainWindows.WaitWeight:
@@ -236,12 +239,14 @@ namespace Front
                         case eStateMainWindows.WaitAdmin:
                             WaitAdmin.Visibility = Visibility.Visible;
                             Background.Visibility = Visibility.Visible;
+                            BackgroundWares.Visibility = Visibility.Visible;
                             break;
                         case eStateMainWindows.WaitAdminLogin:
                             LoginTextBlock.Text = "";
                             PasswordTextBlock.Text = "";
                             WaitAdminLogin.Visibility = Visibility.Visible;
                             Background.Visibility = Visibility.Visible;
+                            BackgroundWares.Visibility = Visibility.Visible;
                             LoginTextBlock.Focus();
                             break;
                         case eStateMainWindows.WaitFindWares:
@@ -252,12 +257,14 @@ namespace Front
                             PaymentImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/paymentTerminal.png"));
                             WaitPayment.Visibility = Visibility.Visible;
                             Background.Visibility = Visibility.Visible;
+                            BackgroundWares.Visibility = Visibility.Visible;
                             //PaymentImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/paymentTerminal.png"));
                             break;
                         case eStateMainWindows.ProcessPrintReceipt:
                             PaymentImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/receipt.png"));
                             WaitPayment.Visibility = Visibility.Visible;
                             Background.Visibility = Visibility.Visible;
+                            BackgroundWares.Visibility = Visibility.Visible;
                             break;
                         case eStateMainWindows.WaitInput:
                         default:
@@ -297,6 +304,7 @@ namespace Front
         private void _ChangeCountWares(object sender, RoutedEventArgs e)
         {
             Background.Visibility = Visibility.Visible;
+            BackgroundWares.Visibility = Visibility.Visible;
             KeyPad keyPad = new KeyPad(this);
             Button btn = sender as Button;
             if (btn.DataContext is ReceiptWares)
@@ -308,6 +316,7 @@ namespace Front
                     temp.Quantity = Convert.ToDecimal(keyPad.Result);
                 Bl.ChangeQuantity(temp, temp.Quantity);
                 Background.Visibility = Visibility.Collapsed;
+                BackgroundWares.Visibility = Visibility.Collapsed;
             }
         }
 
