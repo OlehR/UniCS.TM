@@ -287,19 +287,19 @@ namespace ModelMID
         Admin = 9
     }
 
-  /*  public enum eСonfirmationActions
-    {
-        NoDefinition = 0,
-        DelWares = 1,
-        DelReciept = 2,
-        ChoicePrice = 3,
-        ConfirmAge = 4,
-        ExciseStamp = 5,
-        FixWeight = 6,
-        AddNewWeight=7,
-        Cr
-        //Неспівпадіння ваги і невідповідність.
-    }*/
+    /*  public enum eСonfirmationActions
+      {
+          NoDefinition = 0,
+          DelWares = 1,
+          DelReciept = 2,
+          ChoicePrice = 3,
+          ConfirmAge = 4,
+          ExciseStamp = 5,
+          FixWeight = 6,
+          AddNewWeight=7,
+          Cr
+          //Неспівпадіння ваги і невідповідність.
+      }*/
 
     public enum eTypeAccess
     {
@@ -311,7 +311,7 @@ namespace ModelMID
         ExciseStamp = 5,
         FixWeight = 6,
         AddNewWeight = 7,
-        ReturnReceipt =8,
+        ReturnReceipt = 8,
     }
 
     public enum eTypeAccessAnsver

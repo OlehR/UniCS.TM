@@ -213,6 +213,7 @@ namespace Front.Equipments
                     return eTypeEquipment.NotDefined;
             }
         }
+
         /// <summary>
         /// треба обробити всі статуси.
         /// </summary>
@@ -337,4 +338,4 @@ namespace Front.Equipments
         }
     }
 
-}
+   }

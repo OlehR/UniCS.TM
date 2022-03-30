@@ -261,7 +261,6 @@ namespace Front
             Button btn = sender as Button;
             if (btn.DataContext is ReceiptWares)
             {
-                
                 ReceiptWares temp = btn.DataContext as ReceiptWares;
                 keyPad.productNameChanges.Text = Convert.ToString(temp.NameWares);
                 keyPad.Result = Convert.ToString( temp.Quantity);
@@ -281,7 +280,6 @@ namespace Front
                 temp.Quantity++;
                 Bl.ChangeQuantity(temp, temp.Quantity);
             }
-
         }
 
         private void _VolumeButton(object sender, RoutedEventArgs e)
@@ -377,7 +375,6 @@ namespace Front
                     Grid.SetRow(im, 1);
                     GridWeightWares.Children.Add(im);
                 }
-
 
                 //GridWeightWares.Children.Clear();
 

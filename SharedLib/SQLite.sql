@@ -367,7 +367,7 @@ SELECT u.CODE_USER code_user, p.NAME_FOR_PRINT name_user, u.login login, u.PassW
  select p.PRICE_DEALER as PriceDealer from  PRICE p where p. CODE_DEALER = @CodeDealer and p.CODE_WARES = @CodeWares
 
 [SqlGetPricesMRC]
-select PRICE as Price from MRC where CODE_WARES = @CodeWares;
+select PRICE as Price from MRC where CODE_WARES = @CodeWares order by PRICE desc ;
 
 [SqlGetPrice]
 With ExeptionPS as 

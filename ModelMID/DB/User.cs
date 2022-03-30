@@ -11,5 +11,6 @@ namespace ModelMID.DB
         public string BarCode { get; set; }
         public string Login { get; set; }
         public string PassWord { get; set; }
+        public eTypeUser TypeUser { get; set; }
     }
 }
