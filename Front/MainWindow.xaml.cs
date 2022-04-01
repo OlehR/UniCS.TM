@@ -162,17 +162,20 @@ namespace Front
             {
                 case eTypeAccess.DelWares:
                     Bl.ChangeQuantity(CurWares, 0);
+                    TypeAccessWait = eTypeAccess.NoDefinition;
                     break;
                 case eTypeAccess.DelReciept:
                     Bl.SetStateReceipt(null, eStateReceipt.Canceled);
+                    TypeAccessWait = eTypeAccess.NoDefinition;
                     break;
                 case eTypeAccess.ConfirmAge:
                     Bl.AddEventAge();
                     PrintAndCloseReceipt();
+                    TypeAccessWait = eTypeAccess.NoDefinition;
                     break;
             }
             
-            SetStateView(eStateMainWindows.NotDefine, true);
+            SetStateView(eStateMainWindows.WaitInput, true);
         }
 
         public eTypeAccess TypeAccessWait { get; set; }
@@ -588,9 +591,9 @@ namespace Front
         {
 
             var RId = Bl.GetNewIdReceipt();
-            Bl.AddWaresBarCode(RId, "4823086109988", 10);
-            //Bl.AddWaresBarCode(RId, "7622300813437", 1);
-            Bl.AddWaresBarCode(RId, "2201652300229", 3);
+            Bl.AddWaresBarCode(RId, "4823086109988", 3);
+            Bl.AddWaresBarCode(RId, "7622300813437", 1);
+            Bl.AddWaresBarCode(RId, "2201652300229", 2);
             Bl.AddWaresBarCode(RId, "7775002160043", 1); //товар 2 кат
                                                          //Bl.AddWaresBarCode(RId,"1110011760218", 11);
                                                          //Bl.AddWaresBarCode(RId,"7773002160043", 1); //товар 2 кат
@@ -605,9 +608,7 @@ namespace Front
         public void SetWeight(double pWeight, bool pIsStable)
         {
             Weight = pWeight;
-            Debug.WriteLine(Weight);
-            //LWeight.re
-
+            Debug.WriteLine(Weight);           
         }
 
         private void ClickButtonOk(object sender, RoutedEventArgs e)
@@ -630,15 +631,28 @@ namespace Front
 
         private void LoginButton(object sender, RoutedEventArgs e)
         {
-            Bl.GetUserByBarCode
-            //LoginTextBlock.Text 
-            //PasswordTextBlock.Text
-            //MessageBox.Show("Ви залогінились!!! Но поки це не точно((");
-            
-            SetStateView(eStateMainWindows.WaitInput);
-            Admin ad = new Admin();
-            ad.Show();
-            
+            var U = Bl.GetUserByLogin(LoginTextBlock.Text, PasswordTextBlock.Text);
+            if (U == null)
+            {
+                MessageBox.Show("Не вірний логін чи пароль");
+                return;
+            }
+
+            if (TypeAccessWait != eTypeAccess.NoDefinition)
+            {
+                SetConfirm(U);
+                return;
+            }
+
+            if (Access.GetRight(U, eTypeAccess.AdminPanel))
+            {
+                SetStateView(eStateMainWindows.WaitInput);
+                Admin ad = new Admin();
+                ad.Show();
+            }else
+            {
+                MessageBox.Show($"Не достатньо прав на вхід в адмін панель для  {U.NameUser}") ;
+            }
         }
 
         private void TextLoginChanged(object sender, TextChangedEventArgs e)

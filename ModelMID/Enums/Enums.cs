@@ -312,6 +312,7 @@ namespace ModelMID
         FixWeight = 6,
         AddNewWeight = 7,
         ReturnReceipt = 8,
+        AdminPanel =9
     }
 
     public enum eTypeAccessAnsver

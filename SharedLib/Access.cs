@@ -31,7 +31,8 @@ namespace SharedLib
             Right.Add(eTypeAccess.ExciseStamp, eTypeUser.Сashier);
             Right.Add(eTypeAccess.FixWeight, eTypeUser.AdminSSC);
             Right.Add(eTypeAccess.AddNewWeight, eTypeUser.AdminSSC);
-            Right.Add(eTypeAccess.ReturnReceipt, eTypeUser.Сashier);            
+            Right.Add(eTypeAccess.ReturnReceipt, eTypeUser.Сashier);
+            Right.Add(eTypeAccess.AdminPanel, eTypeUser.AdminSSC); 
         }
 
         public bool GetRight(eTypeUser pTypeUser, eTypeAccess pTypeRight)
