@@ -598,7 +598,7 @@
                 </Grid>
             </Border>
 
-            <!-- ОПЛАТА   -->
+            <!-- ОПЛАТА  САМООБСЛУГОВУВАННЯ  -->
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
                  Grid.Column="0" Grid.ColumnSpan="6"
@@ -608,7 +608,7 @@
                     <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
                 </Border.Effect>
 
-                <Grid  Width="1000" Height="600">
+                <Grid  Width="1000" Height="550">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="1*"></RowDefinition>
                         <RowDefinition Height="3*"></RowDefinition>
@@ -658,6 +658,202 @@
                             <TextBlock FontSize="28" Text="{DynamicResource cancel}" Margin="5,0,0,5"/>
                         </StackPanel>
                     </Button>
+                </Grid>
+            </Border>
+
+            <!-- ОПЛАТА ЗВИЧАЙНА КАСА  -->
+            <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="0" Grid.RowSpan="6"
+                 Grid.Column="0" Grid.ColumnSpan="6"
+                 Name="WaitKashier" Visibility="Visible" Grid.ZIndex="2" 
+                CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+                </Border.Effect>
+
+                <Grid  Width="1000" Height="550">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*"></RowDefinition>
+                        <RowDefinition Height="0.4*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="0.75*"></RowDefinition>
+                        <RowDefinition Height="1*"></RowDefinition>
+                        <RowDefinition Height="1*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button x:Name="F5" Margin="5" Height="60" Style="{StaticResource Default}" VerticalAlignment="Top">F5</Button>
+                    <TextBlock Grid.Column="2" Grid.Row="0" VerticalAlignment="Top" FontSize="24">Всього (грн.):</TextBlock>
+                    <TextBlock Grid.Column="2" Grid.Row="0"  FontSize="24">Решта (грн.):</TextBlock>
+                    <TextBlock Grid.Column="3" Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="24"
+                               Text="{Binding MoneySum, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" />
+                    <TextBlock Grid.Column="3" Grid.Row="0" HorizontalAlignment="Center"  FontSize="24">0,00</TextBlock>
+                    <TextBlock Grid.Column="0" Grid.Row="1">Сума оплати:</TextBlock>
+                    <TextBox Grid.Column="1" Grid.Row="1" Margin="5" FontSize="24" Text="{Binding MoneySum, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}"></TextBox>
+                    <Button Grid.Row="2" Grid.Column="0" Style="{StaticResource Default}"  FontSize="22" Margin="10" Click="_Cancel">
+                        <StackPanel Orientation="Horizontal">
+                            <Image  Height="15" Width="15"  Source="icons\X.png"></Image>
+                            <TextBlock FontSize="24" Text="{DynamicResource cancel}" Margin="5,0,0,5"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource greenButton}" Grid.Column="1"  Grid.Row="2"  FontSize="22"
+                            Margin="10" Click="_ButtonPayment">
+                        <TextBlock FontSize="28" Text="Приват"/>
+                    </Button>
+                    <Button Style="{StaticResource greenButton}" Grid.Column="2"  Grid.Row="2"  FontSize="22"
+                            Margin="10" Click="_ButtonPayment">
+                        <TextBlock FontSize="28" Text="Ощад"/>
+                    </Button>
+                    <Button Style="{StaticResource yelowButton}" Grid.Column="3"  Grid.Row="2"  FontSize="22"
+                            Margin="10" Click="_ButtonPayment">
+                        <TextBlock FontSize="28" Text="Готівка"/>
+                    </Button>
+                    <Border Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="3" 
+                            Background="GhostWhite" BorderBrush="Gainsboro"
+                            CornerRadius="10" BorderThickness="1" Margin="10,0,10,0">
+                        <Border.Effect>
+                            <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+                        </Border.Effect>
+                        <StackPanel Orientation="Horizontal" >
+                            <Button Style="{StaticResource Default}" Margin="10"
+                                    Width="120" Height="50"
+                                    >
+                                <TextBlock FontSize="14" TextWrapping="Wrap" Text="Вiдмінити  видачу готівки" Margin="5,0,0,5"/>
+                            </Button>
+                            <TextBlock> Сума видачі грошових коштів:</TextBlock>
+                            <TextBox Width="100" Height="30" 
+                                     FontSize="20"
+                                     HorizontalContentAlignment="Right" VerticalContentAlignment="Center">0</TextBox>
+                            <Button Style="{StaticResource yelowButton}" Margin="10"
+                                    Width="120" Height="50"
+                                    >
+                                <TextBlock FontSize="14" TextWrapping="Wrap" Text="Ввести суму видачі готівки" Margin="5,0,0,5"/>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+                    <Grid Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="2" Grid.RowSpan="4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <Button Content="7" Style="{StaticResource Default}" Margin="10"/>
+                        <Button Grid.Column="1" Grid.Row="0"
+                                Content="8" Style="{StaticResource Default}" Margin="10"/>
+                        <Button Grid.Column="2" Grid.Row="0"
+                                Content="9" Style="{StaticResource Default}" Margin="10"/>
+                        
+                        <Button Grid.Column="0" Grid.Row="1"
+                                Content="4" Style="{StaticResource Default}" Margin="10"/>
+                        <Button Grid.Column="1" Grid.Row="1"
+                                Content="5" Style="{StaticResource Default}" Margin="10"/>
+                        <Button Grid.Column="2" Grid.Row="1"
+                                Content="6" Style="{StaticResource Default}" Margin="10"/>
+
+                        <Button Grid.Column="0" Grid.Row="2"
+                                Content="1" Style="{StaticResource Default}" Margin="10"/>
+                        <Button Grid.Column="1" Grid.Row="2"
+                                Content="2" Style="{StaticResource Default}" Margin="10"/>
+                        <Button Grid.Column="2" Grid.Row="2"
+                                Content="3" Style="{StaticResource Default}" Margin="10"/>
+
+                        <Button Grid.Column="0" Grid.Row="3"
+                                Content="0" Style="{StaticResource Default}" Margin="10"/>
+                        <Button Grid.Column="1" Grid.Row="3"
+                                Content="," Style="{StaticResource Default}" Margin="10"/>
+                        <Button Grid.Column="2" Grid.Row="3"
+                                Content="C" Style="{StaticResource Default}" Margin="10"/>
+                    </Grid>
+                    <Border Grid.Column="0" Grid.ColumnSpan="6" Grid.Row="4" Grid.RowSpan="2" 
+                            Background="GhostWhite" BorderBrush="Gainsboro"
+                            CornerRadius="10" BorderThickness="1" Margin="10">
+                        <Border.Effect>
+                            <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+                        </Border.Effect>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Orientation="Vertical" Grid.Row="0" >
+                                <TextBlock> Сума відкласти:</TextBlock>
+                                <TextBox Width="100" Height="30" 
+                                     FontSize="20"
+                                     HorizontalContentAlignment="Right" VerticalContentAlignment="Center">0</TextBox>
+                            </StackPanel>
+                            <Button Grid.Row="0" Grid.Column="1"
+                                    Style="{StaticResource Default}" Margin="10"
+                                    >
+                                <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 10коп." Margin="5,0,0,5"/>
+                            </Button>
+                            <Button Grid.Row="0" Grid.Column="2"
+                                    Style="{StaticResource Default}" Margin="10"
+                                    >
+                                <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 50коп." Margin="5,0,0,5"/>
+                            </Button>
+                            <Button Grid.Row="0" Grid.Column="3"
+                                    Style="{StaticResource Default}" Margin="10"
+                                    >
+                                <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 1грн" Margin="5,0,0,5"/>
+                            </Button>
+                            <Button Grid.Row="0" Grid.Column="4"
+                                    Style="{StaticResource Default}" Margin="10"
+                                    >
+                                <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 2грн" Margin="5,0,0,5"/>
+                            </Button>
+                            <Button Grid.Row="0" Grid.Column="5"
+                                    Style="{StaticResource Default}" Margin="10"
+                                    >
+                                <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 5грн" Margin="5,0,0,5"/>
+                            </Button>
+                            <StackPanel Orientation="Vertical" Grid.Row="1">
+                                <TextBlock> Сума списати:</TextBlock>
+                                <TextBox Width="100" Height="30" 
+                                     FontSize="20"
+                                     HorizontalContentAlignment="Right" VerticalContentAlignment="Center">0</TextBox>
+                            </StackPanel>
+                            <Button Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"
+                                    Style="{StaticResource Default}" Margin="10"
+                                    >
+                                <TextBlock FontSize="14" TextWrapping="Wrap" Text=" " Margin="5,0,0,5"/>
+                            </Button>
+                            <Button Grid.Row="1" Grid.Column="4"
+                                    Style="{StaticResource Default}" Margin="10"
+                                    >
+                                <TextBlock FontSize="14" TextWrapping="Wrap" Text="Списати до 1грн" Margin="5,0,0,5"/>
+                            </Button>
+                            <Button Grid.Row="1" Grid.Column="5"
+                                    Style="{StaticResource Default}" Margin="10"
+                                    >
+                                <TextBlock FontSize="14" TextWrapping="Wrap" Text="Відміна заокруглень та списань" Margin="5,0,0,5"/>
+                            </Button>
+                        </Grid>
+
+                    </Border>
                 </Grid>
             </Border>
 
@@ -769,7 +965,7 @@
             </Button>
         </Grid>
 
-       
+
 
 
         <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
