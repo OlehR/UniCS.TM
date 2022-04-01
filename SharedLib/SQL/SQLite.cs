@@ -209,7 +209,7 @@ namespace SharedLib
             catch(Exception ex)
             {
                 transaction.Rollback();
-                new Exception("BulkExecuteNonQuery =>"+ex.Message, ex);
+                throw new Exception("BulkExecuteNonQuery =>"+ex.Message, ex);
                 return -1;
             }
            

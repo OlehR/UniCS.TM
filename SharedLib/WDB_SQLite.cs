@@ -832,7 +832,7 @@ and @TypeDiscount=11; ";
 
         public override bool ReplaceUser(IEnumerable<User> pUser)
         {
-            using (var DB = new SQLite(ReceiptFile))
+            using (var DB = new SQLite(MidFile))
             {
                 return DB.BulkExecuteNonQuery<User>(SqlReplaceUser, pUser) > 0;
             }

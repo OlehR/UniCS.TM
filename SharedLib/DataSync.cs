@@ -126,8 +126,6 @@ namespace SharedLib
                     if (TD == default(DateTime) || DateTime.Now.Date != TD.Date)
                         parIsFull = true;
                 }
-                
-               
 
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = parIsFull ? eSyncStatus.StartedFullSync : eSyncStatus.StartedPartialSync,StatusDescription= "SendAllReceipt" });
 

@@ -79,7 +79,12 @@ namespace Front
 
         public MainWindow()
         {
-            var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)          
+            
+            var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
+            
+            //Для касового місця Запит логін пароль.
+            if (Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout)
+                Access.СurUser = new User() { TypeUser = eTypeUser.Client, CodeUser = 99999999, Login = "Client", NameUser = "Client"};
 
             Bl = new BL(true);
             EF = new EquipmentFront(Bl.GetBarCode, SetWeight, Bl.CS.OnScalesData);
@@ -148,8 +153,8 @@ namespace Front
             if (TypeAccessWait == eTypeAccess.NoDefinition)
                 return;
             if(!Access.GetRight(pUser, TypeAccessWait))
-            {
-                //!!!TMP Треба зробити повідомлення що прав не достатньо.
+            {               
+                MessageBox.Show( $"Не достатньо прав для операції {TypeAccessWait} в {pUser.NameUser}");
                 return;
             }
 
@@ -161,6 +166,10 @@ namespace Front
                 case eTypeAccess.DelReciept:
                     Bl.SetStateReceipt(null, eStateReceipt.Canceled);
                     break;
+                case eTypeAccess.ConfirmAge:
+                    Bl.AddEventAge();
+                    PrintAndCloseReceipt();
+                    break;
             }
             
             SetStateView(eStateMainWindows.NotDefine, true);
@@ -169,7 +178,7 @@ namespace Front
         public eTypeAccess TypeAccessWait { get; set; }
        // public ReceiptWares ReceiptWaresWait { get; set; }
 
-        void SetWaitConfirm(eTypeAccess pTypeAccess, ReceiptWares pRW)
+        void SetWaitConfirm(eTypeAccess pTypeAccess, ReceiptWares pRW=null)
         {
             TypeAccessWait = pTypeAccess;
             CurWares = pRW;
@@ -510,33 +519,43 @@ namespace Front
         bool PrintAndCloseReceipt()
         {
             var R = Bl.GetReceiptHead(Bl.curReciptId, true);
-            decimal sum = ListWares.Sum(r => r.Sum); //Треба переробити
-
-            SetStateView(eStateMainWindows.ProcessPay);
-            var pay = EF.PosPurchase(sum);
-            if (pay != null)
+            if(R.Wares.Where(el=>el.TypeWares>0).Count()>0 && R.ReceiptEvent.Where(el => el.EventType == ReceiptEventType.AgeRestrictedProduct).Count()==0)
             {
-                pay.SetIdReceipt(R);
-                Bl.db.ReplacePayment(new List<Payment>() { pay });
+                SetWaitConfirm(eTypeAccess.ConfirmAge);
             }
-            else
-                SetStateView(eStateMainWindows.WaitInput);
 
-            SetStateView(eStateMainWindows.ProcessPrintReceipt);
-            
-            var res = EF.PrintReceipt(R);
-            Bl.InsertLogRRO(res);
-            if (res.CodeError == 0)
+            if (R.StateReceipt == eStateReceipt.Prepare)
             {
-                Bl.UpdateReceiptFiscalNumber(R, res.FiscalNumber, res.SUM);
-                var r = Bl.GetNewIdReceipt();
-                Global.OnReceiptCalculationComplete?.Invoke(new List<ReceiptWares>(), Global.GetTerminalIdByIdWorkplace(Global.IdWorkPlace));
-                SetStateView(eStateMainWindows.WaitInput);
-                return true;
+                decimal sum = R.Wares.Sum(r => r.Sum); //TMP!!!Треба переробити
+                SetStateView(eStateMainWindows.ProcessPay);
+                var pay = EF.PosPurchase(sum);
+                if (pay != null)
+                {
+                    pay.SetIdReceipt(R);
+                    Bl.db.ReplacePayment(new List<Payment>() { pay });
+                    Bl.SetStateReceipt(null, eStateReceipt.Pay);
+                }
+                else
+                    SetStateView(eStateMainWindows.WaitInput);
             }
-            SetStateView(eStateMainWindows.WaitInput);
+
+            if (R.StateReceipt == eStateReceipt.Pay)
+            {
+                SetStateView(eStateMainWindows.ProcessPrintReceipt);
+                Bl.SetStateReceipt(null, eStateReceipt.Canceled);
+                var res = EF.PrintReceipt(R);
+                Bl.InsertLogRRO(res);
+                if (res.CodeError == 0)
+                {
+                    Bl.UpdateReceiptFiscalNumber(R, res.FiscalNumber, res.SUM);
+                    var r = Bl.GetNewIdReceipt();
+                    Global.OnReceiptCalculationComplete?.Invoke(new List<ReceiptWares>(), Global.GetTerminalIdByIdWorkplace(Global.IdWorkPlace));
+                    SetStateView(eStateMainWindows.WaitInput);
+                    return true;
+                }
+                SetStateView(eStateMainWindows.WaitInput);               
+            }
             return false;
-
         }
 
         /// <summary>
@@ -611,10 +630,15 @@ namespace Front
 
         private void LoginButton(object sender, RoutedEventArgs e)
         {
+            Bl.GetUserByBarCode
+            //LoginTextBlock.Text 
+            //PasswordTextBlock.Text
+            //MessageBox.Show("Ви залогінились!!! Но поки це не точно((");
+            
             SetStateView(eStateMainWindows.WaitInput);
             Admin ad = new Admin();
             ad.Show();
-            MessageBox.Show("Ви залогінились!!! Но поки це не точно((");
+            
         }
 
         private void TextLoginChanged(object sender, TextChangedEventArgs e)

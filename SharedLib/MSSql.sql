@@ -491,6 +491,7 @@ SELECT CODE_GROUP_WARES AS CodeGroupWares, amount
         WHEN @CodeWarehouse=9 THEN 0x81380050569E814D11E9E4D62A0CF9ED -- 14 касановий
         WHEN @CodeWarehouse=15 THEN 0x817E0050569E814D11EC0030B1FA9530 -- 6(Каса ККМ СО Білочка №10)
         end) ;
-
+[SqlGetUser]
+ SELECT e.CodeUser,NameUser,BarCode,Login,PassWord,CodeProfile AS TypeUser FROM dbo.V1C_employee e ;
 [SqlEnd]
 */

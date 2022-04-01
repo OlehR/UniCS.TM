@@ -57,7 +57,6 @@ namespace Front.Models
         /// <summary>
         /// Процес оплати
         /// </summary>
-        ProcessPrintReceipt        
-
-    }   
+        ProcessPrintReceipt
+    }
 }

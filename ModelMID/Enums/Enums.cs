@@ -268,19 +268,19 @@ namespace ModelMID
         /// <summary>
         /// Клієнт КСО
         /// </summary>
-        Client = 1,
+        Client = -100,
         /// <summary>
         /// Касир
         /// </summary>
-        Сashier = 2,
+        Сashier = -14,
         /// <summary>
         /// Адміністратор self-service checkout 
         /// </summary>
-        AdminSSC = 3,       
+        AdminSSC = -13,
         /// <summary>
         /// Охоронець
         /// </summary>
-        Guardian = 4,
+        Guardian = -12,
         /// <summary>
         /// Адміністратор Дозвіл на всі операції
         /// </summary>

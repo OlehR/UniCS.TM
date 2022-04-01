@@ -699,10 +699,24 @@ namespace SharedLib
             return null;
         }
 
+        public User GetUserByLogin(string pLogin, string pPassWord)
+        {
+            var u = db.GetUser(new User() { Login = pLogin,PassWord = pPassWord });
+            if (u.Count() > 0)
+                return u.First();
+            return null;
+        }
+
         public bool InsertLogRRO(LogRRO pL)
         {
            return db.InsertLogRRO(pL);
         }
 
+        public void AddEventAge()
+        {
+            List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(curReciptId) { EventType = ReceiptEventType.AgeRestrictedProduct, EventName = "Вага підтверджена", CreatedAt = DateTime.Now } };
+            db.InsertReceiptEvent(rr);
+
+        }
     }
 }

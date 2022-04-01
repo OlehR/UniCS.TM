@@ -73,6 +73,14 @@ namespace SharedLib
             Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetDimPrice => {PD.Count()}");
             PD = null;
 
+            Debug.WriteLine("SqlGetUser");
+            SQL = GetSQL("SqlGetUser");
+            var PU = db.Execute<pMessage, User>(SQL, oMessage);
+            pDB.ReplaceUser(PU);
+            Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetDimPrice => {PU.Count()}");
+            PU = null;
+
+
             Debug.WriteLine("SqlSalesBan");
             SQL = GetSQL("SqlSalesBan");
             var SB = db.Execute<pWarehouse, SalesBan>(SQL, oWarehouse);

@@ -1006,7 +1006,7 @@ CREATE TABLE USER (
     CODE_USER   INTEGER NOT NULL,
     NAME_USER   TEXT NOT NULL,
     BAR_CODE    TEXT NOT NULL,
-    Code_Right  INTEGER NOT NULL,
+    Type_User  INTEGER NOT NULL,
     LOGIN       TEXT NOT NULL,
     PASSWORD    TEXT NOT NULL
 );
@@ -1126,7 +1126,7 @@ Select min(case when CODE_DEALER=-888888  then PRICE_DEALER else null end) as Mi
  replace into  MRC	(Code_Wares, Price) values  (@CodeWares, @Price);
 
 [SqlReplaceUser] 
-replace into User (CODE_USER, NAME_USER,  BAR_CODE,Code_Right, LOGIN, PASSWORD) as (@CodeUser,@NameUser,@BarCode,@CodeRight, @Login,@Password)
+replace into User (CODE_USER, NAME_USER,  BAR_CODE,Type_User, LOGIN, PASSWORD) values (@CodeUser,@NameUser,@BarCode,@TypeUser, @Login,@PassWord);
 
 [SqlReplaceSalesBan]
  replace into  Sales_Ban (CODE_GROUP_WARES, Amount) values  (@CodeGroupWares, @Amount);
@@ -1324,7 +1324,7 @@ where r.STATE_RECEIPT=-1
                      where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt 
                      and code_wares=@CodeWares;
 [SqlGetUser]
- select CODE_USER as CodeUser, NAME_USER  as NameUser,  BAR_CODE as BarCode, Code_Right as CodeRight, LOGIN, PASSWORD from USER
+ select CODE_USER as CodeUser, NAME_USER  as NameUser,  BAR_CODE as BarCode, Type_User as TypeUser, LOGIN, PASSWORD from USER
     where (Login=@Login and Password=@Password) or BAR_CODE=@BarCode;
 
 [SqlInsertLogRRO]
