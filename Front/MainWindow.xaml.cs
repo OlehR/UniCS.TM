@@ -163,19 +163,25 @@ namespace Front
                 case eTypeAccess.DelWares:
                     Bl.ChangeQuantity(CurWares, 0);
                     TypeAccessWait = eTypeAccess.NoDefinition;
+                    SetStateView(eStateMainWindows.WaitInput);
                     break;
                 case eTypeAccess.DelReciept:
                     Bl.SetStateReceipt(null, eStateReceipt.Canceled);
+                    Bl.GetNewIdReceipt();
                     TypeAccessWait = eTypeAccess.NoDefinition;
+                    SetStateView(eStateMainWindows.StartWindow);
                     break;
                 case eTypeAccess.ConfirmAge:
                     Bl.AddEventAge();
                     PrintAndCloseReceipt();
                     TypeAccessWait = eTypeAccess.NoDefinition;
                     break;
+                case eTypeAccess.ChoicePrice:
+                    
+                    SetStateView(eStateMainWindows.WaitInputPrice);
+                    break;
             }
-            
-            SetStateView(eStateMainWindows.WaitInput, true);
+          
         }
 
         public eTypeAccess TypeAccessWait { get; set; }
@@ -188,7 +194,7 @@ namespace Front
             SetStateView(eStateMainWindows.WaitAdmin);
         }
 
-        void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine, bool pIsBarCodeAdmin = false)
+        void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine)
         {
             Dispatcher.BeginInvoke(new ThreadStart(() =>
                 {
@@ -223,7 +229,7 @@ namespace Front
                             StartVideo.Play();
                             break;
                         case eStateMainWindows.WaitInputPrice:
-                            
+                            TypeAccessWait = eTypeAccess.ChoicePrice;
                             //TMP!!! Гребаний костиль бо First вертає копію обєкта замість посилання
                             //Price.isFirst = true;
                             var rr=CurWares.Prices.OrderByDescending(r=>r).Select( r => new Price(r));
@@ -237,6 +243,8 @@ namespace Front
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;
                             ChoicePrice.Visibility = Visibility.Visible;
+
+
                             break;
                         case eStateMainWindows.WaitExciseStamp:
                             ExciseStamp.Visibility = Visibility.Visible;
@@ -393,19 +401,21 @@ namespace Front
 
         private void _Back(object sender, RoutedEventArgs e)
         {
-            //!!!TMP
+            // Правильний блок.
+            if (Access.GetRight(eTypeAccess.DelReciept))
+            {
+                Bl.SetStateReceipt(null, eStateReceipt.Canceled);
+                Bl.GetNewIdReceipt();
+            }
+            else
+                SetWaitConfirm(eTypeAccess.DelReciept, null);
+            /*//!!!TMP
             var rand = new Random();
             string sql = @"select CODE_WARES from (select CODE_WARES,row_number() over (order by code_wares)  as nn from price p where p.code_DEALER=2)
                         where nn=  cast(abs(random()/9223372036854775808.0)*1000 as int)";
             var CodeWares = Bl.db.db.ExecuteScalar<int>(sql);
             if (CodeWares > 0)
                 Bl.AddWaresCode(CodeWares, 0, Math.Round(1M + 5M * rand.Next() / (decimal)int.MaxValue));
-            
-            /* // Правильний блок.
-            if (Access.GetRight(eTypeAccess.DelReciept))
-                Bl.SetStateReceipt(null, eStateReceipt.Canceled);
-            else
-                SetWaitConfirm(eTypeAccess.DelReciept, null);
             */
         }
 

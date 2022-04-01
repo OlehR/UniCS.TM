@@ -147,7 +147,8 @@ namespace Front.Equipments
         Exellio,
         pRRO_SG,
         Maria,
-        pRRo_WebCheck
+        pRRo_WebCheck,
+        VirtualRRO
 
     }
 
@@ -207,6 +208,7 @@ namespace Front.Equipments
                 case eModelEquipment.pRRO_SG:
                 case eModelEquipment.pRRo_WebCheck:
                 case eModelEquipment.Maria:
+                case eModelEquipment.VirtualRRO:
 
                     return eTypeEquipment.EKKA;
                 default:

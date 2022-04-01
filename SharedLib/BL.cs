@@ -128,11 +128,12 @@ namespace SharedLib
         public bool AddReceipt(IdReceipt parReceipt)
         {
             var receipt = new Receipt(parReceipt);
-            return db.AddReceipt(receipt);
+            return AddReceipt(receipt);
         }
-        public bool AddReceipt(Receipt parReceipt)
+
+        public bool AddReceipt(Receipt pReceipt)
         {
-            return db.AddReceipt(parReceipt);
+            return db.AddReceipt(pReceipt);
         }
 
         public int GetIdWorkplaceByTerminalId(Guid parTerminalId)
@@ -142,23 +143,19 @@ namespace SharedLib
 
         public IdReceipt GetNewIdReceipt(Guid parTerminalId, int parCodePeriod = 0)
         {
-            return GetNewIdReceipt(GetIdWorkplaceByTerminalId(parTerminalId));
-            //var idReceip = new IdReceipt() { IdWorkplace = GetIdWorkplaceByTerminalId(parTerminalId), CodePeriod = parCodePeriod };
-            //curReciptId = db.GetNewReceipt(idReceip);
-            //return curReciptId;
+            return GetNewIdReceipt(GetIdWorkplaceByTerminalId(parTerminalId));            
         }
 
         public IdReceipt GetNewIdReceipt(int pIdWorkplace = 0, int pCodePeriod = 0)
         {
             var idReceip = new IdReceipt() { IdWorkplace = (pIdWorkplace == 0 ? Global.IdWorkPlace : pIdWorkplace), CodePeriod = (pCodePeriod == 0 ? Global.GetCodePeriod() : pCodePeriod) };
             curReciptId = db.GetNewReceipt(idReceip);
+            db.RecalcPriceAsync(new IdReceiptWares(curReciptId));
             return curReciptId;
         }
         public Receipt GetLastReceipt(Guid parTerminalId, int pCodePeriod = 0)
         {
-            return GetLastReceipt(GetIdWorkplaceByTerminalId(parTerminalId), pCodePeriod);
-            //var idReceip = new IdReceipt() { IdWorkplace = , CodePeriod = (pCodePeriod == 0 ? Global.GetCodePeriod() : pCodePeriod) };
-            //return db.GetLastReceipt(idReceip);
+            return GetLastReceipt(GetIdWorkplaceByTerminalId(parTerminalId), pCodePeriod);            
         }
 
         public Receipt GetLastReceipt(int pIdWorkplace = 0, int parCodePeriod = 0)

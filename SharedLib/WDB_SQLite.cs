@@ -215,15 +215,15 @@ namespace SharedLib
 
                 }
                 */
-        public Task RecalcPriceAsync(IdReceiptWares parIdReceiptWares)
+        public Task RecalcPriceAsync(IdReceiptWares pIdReceiptWares)
         {
-            return Task.Run(() => RecalcPrice(parIdReceiptWares)).ContinueWith(async res =>
+            return Task.Run(() => RecalcPrice(pIdReceiptWares)).ContinueWith(async res =>
             {
                 if (await res)
                 {
                     //Console.WriteLine(OnReceiptCalculationComplete != null);
-                    var r = ViewReceiptWares(new IdReceiptWares(parIdReceiptWares, 0), true);//вертаємо весь чек.
-                    Global.OnReceiptCalculationComplete?.Invoke(r, Global.GetTerminalIdByIdWorkplace(parIdReceiptWares.IdWorkplace));
+                    var r = ViewReceiptWares(new IdReceiptWares(pIdReceiptWares, 0), true);//вертаємо весь чек.
+                    Global.OnReceiptCalculationComplete?.Invoke(r, Global.GetTerminalIdByIdWorkplace(pIdReceiptWares.IdWorkplace));
                     if (r == null || r.Count() == 0)
                         return;
                     var parW = r.Last();
