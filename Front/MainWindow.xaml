@@ -367,7 +367,7 @@
             <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
                 Grid.Column="1" Grid.ColumnSpan="4"
-                 Name="ChoicePrice" Visibility="Collapsed" Grid.ZIndex="2" 
+                 Name="ChoicePrice" Visibility="Visible" Grid.ZIndex="2" 
                 CornerRadius="10" HorizontalAlignment="Center"  Width="500" Height="500">
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
@@ -400,10 +400,17 @@
                         </ItemsControl>
                     </ScrollViewer>
 
-                    <Button Grid.Row="2" Style="{StaticResource Default}"  FontSize="22" Click="_Cancel" 
+                    
+                    <StackPanel Grid.Row="2">
+                        <TextBlock Visibility="Visible" HorizontalAlignment="Center"
+                                   Foreground="Red"
+                                   Text="Для розблукування інших цін - викличте адміністратора"/>
+                        <Button Grid.Row="3" Style="{StaticResource Default}"  FontSize="22" Click="_Cancel" 
                         Height="80" Width="300" Margin="10">
-                        <TextBlock FontSize="28" Text="{DynamicResource cancel}"/>
-                    </Button>
+                            <TextBlock FontSize="28" Text="{DynamicResource cancel}"/>
+                        </Button>
+                    </StackPanel>
+                    
                 </Grid>
             </Border>
 
@@ -665,7 +672,7 @@
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
                  Grid.Column="0" Grid.ColumnSpan="6"
-                 Name="WaitKashier" Visibility="Visible" Grid.ZIndex="2" 
+                 Name="WaitKashier" Visibility="Collapsed" Grid.ZIndex="2" 
                 CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
