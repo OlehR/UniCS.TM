@@ -28,7 +28,7 @@ namespace Front
     public class Price
     {
         //public static bool isFirst = true;
-        public Price(decimal pPrice) //, bool pIsEnable = false
+        public Price(decimal pPrice, bool pIsEnable) //, bool pIsEnable = false
         {
             price = pPrice;
           //  IsEnable = isFirst;
@@ -230,11 +230,9 @@ namespace Front
                             break;
                         case eStateMainWindows.WaitInputPrice:
                             TypeAccessWait = eTypeAccess.ChoicePrice;
-                            //TMP!!! Гребаний костиль бо First вертає копію обєкта замість посилання
-                            //Price.isFirst = true;
+
                             var rr=CurWares.Prices.OrderByDescending(r=>r).Select( r => new Price(r));
-                            //var el = rr.ElementAt(0);  //rr.First();
-                            //el.IsEnable = true;
+                      
                             var rrr=new ObservableCollection<Price>(rr);
                             rrr.First().IsEnable = true;
 
