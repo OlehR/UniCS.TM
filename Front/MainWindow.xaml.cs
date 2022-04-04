@@ -61,7 +61,6 @@ namespace Front
         public bool Volume { get; set; }
 
         
-       
         /// <summary>
         /// Вага з основної ваги
         /// </summary>
@@ -70,6 +69,10 @@ namespace Front
         public string WeightControl { get; set; }
 
         public GW CurW { get; set; } = null;
+
+        public ReceiptWares CurWares { get; set; } = null;
+
+        public eTypeAccess TypeAccessWait { get; set; }
 
         public BL Bl;
         EquipmentFront EF;
@@ -184,7 +187,7 @@ namespace Front
           
         }
 
-        public eTypeAccess TypeAccessWait { get; set; }
+        
        // public ReceiptWares ReceiptWaresWait { get; set; }
 
         void SetWaitConfirm(eTypeAccess pTypeAccess, ReceiptWares pRW=null)
@@ -231,7 +234,7 @@ namespace Front
                         case eStateMainWindows.WaitInputPrice:
                             TypeAccessWait = eTypeAccess.ChoicePrice;
 
-                            var rr=CurWares.Prices.OrderByDescending(r=>r).Select( r => new Price(r));
+                            var rr=CurWares.Prices.OrderByDescending(r=>r).Select( r => new Price(r,false));
                       
                             var rrr=new ObservableCollection<Price>(rr);
                             rrr.First().IsEnable = true;
@@ -421,8 +424,6 @@ namespace Front
         {
             SetStateView(eStateMainWindows.WaitFindWares);
         }
-
-        public ReceiptWares CurWares { get; set; } = null;
 
         public void AddWares(int pCodeWares, int pCodeUnit = 0, decimal pQuantity = 0m, decimal pPrice = 0m, GW pGV = null)
         {
