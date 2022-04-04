@@ -129,7 +129,7 @@ namespace Front
             {
                 Debug.WriteLine($"Client.Wallet=> {client.Wallet} SumBonus=>{client.SumBonus} ");
             };
-            Global.OnAdminBarCode += (pUser) => { SetConfirm(pUser); };
+            Global.OnAdminBarCode += (pUser) => { SetConfirm(pUser,false); };
 
             WaresQuantity = "0";
             MoneySum = "0";
@@ -151,7 +151,7 @@ namespace Front
             Recalc();
         }
 
-        void SetConfirm(User pUser)
+        void SetConfirm(User pUser,bool pIsFirst)
         {
             if (TypeAccessWait == eTypeAccess.NoDefinition)
                 return;
@@ -180,7 +180,9 @@ namespace Front
                     TypeAccessWait = eTypeAccess.NoDefinition;
                     break;
                 case eTypeAccess.ChoicePrice:
-                    
+
+                    var rrr = new ObservableCollection<Price>(CurWares.Prices.OrderByDescending(r => r).Select(r => new Price(r, true)));
+                    Prices.ItemsSource = rrr;
                     SetStateView(eStateMainWindows.WaitInputPrice);
                     break;
             }
@@ -234,9 +236,7 @@ namespace Front
                         case eStateMainWindows.WaitInputPrice:
                             TypeAccessWait = eTypeAccess.ChoicePrice;
 
-                            var rr=CurWares.Prices.OrderByDescending(r=>r).Select( r => new Price(r,false));
-                      
-                            var rrr=new ObservableCollection<Price>(rr);
+                            var rrr=new ObservableCollection<Price>(CurWares.Prices.OrderByDescending(r => r).Select(r => new Price(r, false)));
                             rrr.First().IsEnable = true;
 
                             Prices.ItemsSource = rrr;//new ObservableCollection<Price>(rr);
@@ -649,7 +649,7 @@ namespace Front
 
             if (TypeAccessWait != eTypeAccess.NoDefinition)
             {
-                SetConfirm(U);
+                SetConfirm(U,true);
                 return;
             }
 
