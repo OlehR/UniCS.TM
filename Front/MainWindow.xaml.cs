@@ -60,7 +60,19 @@ namespace Front
         public string EquipmentInfo { get; set; }
         public bool Volume { get; set; }
 
-        
+        public string WaitAdminText
+        {
+            get
+            {
+                switch (TypeAccessWait)
+                {
+                    case eTypeAccess.DelWares: return ("Видалення товару: "+ CurWares.NameWares);
+                    case eTypeAccess.DelReciept: return "Видалити чек";
+
+                }
+                return null;
+            }
+        }
         /// <summary>
         /// Вага з основної ваги
         /// </summary>
@@ -79,7 +91,7 @@ namespace Front
 
         public ObservableCollection<ReceiptWares> ListWares { get; set; }
         //public ObservableCollection<decimal> Prices { get; set; } = new ObservableCollection<decimal>;
-
+        
         public MainWindow()
         {
             
@@ -192,8 +204,8 @@ namespace Front
 
         void SetWaitConfirm(eTypeAccess pTypeAccess, ReceiptWares pRW=null)
         {
-            TypeAccessWait = pTypeAccess;
             CurWares = pRW;
+            TypeAccessWait = pTypeAccess;
             SetStateView(eStateMainWindows.WaitAdmin);
         }
 
@@ -297,8 +309,10 @@ namespace Front
         private void _Delete(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
+            
             if (btn.DataContext is ReceiptWares)
             {
+                
                 var el = btn.DataContext as ReceiptWares;
                 if(el==null)
                 {

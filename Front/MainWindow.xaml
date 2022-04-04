@@ -367,7 +367,7 @@
             <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
                 Grid.Column="1" Grid.ColumnSpan="4"
-                 Name="ChoicePrice" Visibility="Visible" Grid.ZIndex="2" 
+                 Name="ChoicePrice" Visibility="Collapsed" Grid.ZIndex="2" 
                 CornerRadius="10" HorizontalAlignment="Center"  Width="500" Height="500">
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
@@ -420,7 +420,7 @@
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
                 Grid.Column="1" Grid.ColumnSpan="4"
-                 Name="WaitAdmin" Visibility="Collapsed" Grid.ZIndex="2" 
+                 Name="WaitAdmin" Visibility="Visible" Grid.ZIndex="2" 
                 CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
@@ -429,7 +429,7 @@
                 <Grid  Width="700" Height="500">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="3*"></RowDefinition>
-                        <RowDefinition Height="1*"></RowDefinition>
+                        <RowDefinition Height="2*"></RowDefinition>
                     </Grid.RowDefinitions>
 
                     <StackPanel Grid.Row="0" VerticalAlignment="Center">
@@ -439,13 +439,18 @@
                     <Button BorderBrush="Transparent" Background="Transparent" Width="50" Height="50" 
                         HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,30,0"
                         Click="ButtonAdmin"/>
-                    <Button Grid.Row="1" Style="{StaticResource Default}"  FontSize="22" Click="_Cancel" 
-                        Height="80" Width="300" VerticalAlignment="Top">
-                        <StackPanel Orientation="Horizontal">
-                            <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
-                            <TextBlock FontSize="28" Text="{DynamicResource cancel}" Margin="5,0,0,5"/>
-                        </StackPanel>
-                    </Button>
+                    <StackPanel Grid.Row="1" Margin="5" VerticalAlignment="Center">
+                        <TextBlock HorizontalAlignment="Center"  Text="{Binding WaitAdminText, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" FontSize="20" TextWrapping="Wrap" ></TextBlock>
+                        <Button  Style="{StaticResource Default}"  FontSize="22" Click="_Cancel" 
+                        Height="80" Width="300" VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal">
+                                <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
+                                <TextBlock FontSize="28" Text="{DynamicResource cancel}" Margin="5,0,0,5"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                    
                 </Grid>
             </Border>
 
