@@ -420,7 +420,7 @@
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
                 Grid.Column="1" Grid.ColumnSpan="4"
-                 Name="WaitAdmin" Visibility="Visible" Grid.ZIndex="2" 
+                 Name="WaitAdmin" Visibility="Collapsed" Grid.ZIndex="2" 
                 CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
