@@ -91,7 +91,7 @@ namespace PrintServer
                 current = 0;
                 price = parPrice.Where(el => el.ActionType != 0).ToArray();
                 if (price.Count() > 0)
-                    PrintServer(parNamePrinterYelow, pNameDocument, isShort);
+                    PrintServer(parNamePrinterYelow, pNameDocument, true); //Жовті завжди короткі.
             }
 
         }

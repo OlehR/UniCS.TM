@@ -60,8 +60,19 @@ namespace Front
         public string EquipmentInfo { get; set; }
         public bool Volume { get; set; }
 
-        
-       
+        public string WaitAdminText
+        {
+            get
+            {
+                switch (TypeAccessWait)
+                {
+                    case eTypeAccess.DelWares: return ("Видалення товару: "+ CurWares.NameWares);
+                    case eTypeAccess.DelReciept: return "Видалити чек";
+
+                }
+                return null;
+            }
+        }
         /// <summary>
         /// Вага з основної ваги
         /// </summary>
@@ -71,12 +82,16 @@ namespace Front
 
         public GW CurW { get; set; } = null;
 
+        public ReceiptWares CurWares { get; set; } = null;
+
+        public eTypeAccess TypeAccessWait { get; set; }
+
         public BL Bl;
         EquipmentFront EF;
 
         public ObservableCollection<ReceiptWares> ListWares { get; set; }
         //public ObservableCollection<decimal> Prices { get; set; } = new ObservableCollection<decimal>;
-
+        
         public MainWindow()
         {
             
@@ -126,7 +141,7 @@ namespace Front
             {
                 Debug.WriteLine($"Client.Wallet=> {client.Wallet} SumBonus=>{client.SumBonus} ");
             };
-            Global.OnAdminBarCode += (pUser) => { SetConfirm(pUser); };
+            Global.OnAdminBarCode += (pUser) => { SetConfirm(pUser,false); };
 
             WaresQuantity = "0";
             MoneySum = "0";
@@ -148,7 +163,7 @@ namespace Front
             Recalc();
         }
 
-        void SetConfirm(User pUser)
+        void SetConfirm(User pUser,bool pIsFirst)
         {
             if (TypeAccessWait == eTypeAccess.NoDefinition)
                 return;
@@ -177,20 +192,22 @@ namespace Front
                     TypeAccessWait = eTypeAccess.NoDefinition;
                     break;
                 case eTypeAccess.ChoicePrice:
-                    
+
+                    var rrr = new ObservableCollection<Price>(CurWares.Prices.OrderByDescending(r => r).Select(r => new Price(r, true)));
+                    Prices.ItemsSource = rrr;
                     SetStateView(eStateMainWindows.WaitInputPrice);
                     break;
             }
           
         }
 
-        public eTypeAccess TypeAccessWait { get; set; }
+        
        // public ReceiptWares ReceiptWaresWait { get; set; }
 
         void SetWaitConfirm(eTypeAccess pTypeAccess, ReceiptWares pRW=null)
         {
-            TypeAccessWait = pTypeAccess;
             CurWares = pRW;
+            TypeAccessWait = pTypeAccess;
             SetStateView(eStateMainWindows.WaitAdmin);
         }
 
@@ -231,9 +248,7 @@ namespace Front
                         case eStateMainWindows.WaitInputPrice:
                             TypeAccessWait = eTypeAccess.ChoicePrice;
 
-                            var rr=CurWares.Prices.OrderByDescending(r=>r).Select( r => new Price(r));
-                      
-                            var rrr=new ObservableCollection<Price>(rr);
+                            var rrr=new ObservableCollection<Price>(CurWares.Prices.OrderByDescending(r => r).Select(r => new Price(r, false)));
                             rrr.First().IsEnable = true;
 
                             Prices.ItemsSource = rrr;//new ObservableCollection<Price>(rr);
@@ -294,8 +309,10 @@ namespace Front
         private void _Delete(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
+            
             if (btn.DataContext is ReceiptWares)
             {
+                
                 var el = btn.DataContext as ReceiptWares;
                 if(el==null)
                 {
@@ -421,8 +438,6 @@ namespace Front
         {
             SetStateView(eStateMainWindows.WaitFindWares);
         }
-
-        public ReceiptWares CurWares { get; set; } = null;
 
         public void AddWares(int pCodeWares, int pCodeUnit = 0, decimal pQuantity = 0m, decimal pPrice = 0m, GW pGV = null)
         {
@@ -648,7 +663,7 @@ namespace Front
 
             if (TypeAccessWait != eTypeAccess.NoDefinition)
             {
-                SetConfirm(U);
+                SetConfirm(U,true);
                 return;
             }
 
