@@ -50,7 +50,7 @@ namespace Test
             //await l.LoadRozetka();//GetInfoBarcode("4820009350588");
 
 
-            await CreateDataBaseAsync(true); return;
+            //await CreateDataBaseAsync(true); return;
             //var aa= Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
             //var bl = new BL();
             //var aaaaa=bl.Ver;
@@ -92,13 +92,14 @@ namespace Test
         static async Task TestReceiptAsync()
         {
             //var TerminalId = Guid.Parse("1bb89aa9-dbdf-4eb0-b7a2-094665c3fdd0");//14
-            var TerminalId = Guid.Parse("c2211a23-b856-4dd4-ba29-3ec2d043efbf");// --Guid.Parse("27aaa6d3-8824-475d-a7d4-3269472ba950");//19
+            var TerminalId = //Guid.Parse("c2211a23-b856-4dd4-ba29-3ec2d043efbf");
+                           Guid.Parse("27aaa6d3-8824-475d-a7d4-3269472ba950");//19
             var ProductId = Guid.Parse("00000000-abcd-0000-0019-000000162794");
             var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009007");
             var ReceiptId = Guid.Parse("00000072-ffff-2022-0112-000000000028");
 
 
-            var receipt= JsonConvert.DeserializeObject<ModelMID.Receipt>(File.ReadAllText(@"d:\mid\receipt.json "));
+            //var receipt= JsonConvert.DeserializeObject<ModelMID.Receipt>(File.ReadAllText(@"d:\mid\receipt.json "));
 
 
             
@@ -128,7 +129,7 @@ namespace Test
 
             var api = new ApiPSU();
 
-
+            api.GetNoFinishReceipt(TerminalId);
 
             var pp = api.AddProductByBarCode(TerminalId, "7622100815594", 1);
 
@@ -417,11 +418,11 @@ namespace Test
 
                 var ReceiptF = api.GetReciept(RId);
 
-                var sz = JsonConvert.SerializeObject(receipt);
-                var RefoundReceipt = JsonConvert.DeserializeObject<RefundReceiptViewModel>(sz);
-                RefoundReceipt.IdPrimary = RefoundReceipt.Id;
+                //var sz = JsonConvert.SerializeObject(receipt);
+               // var RefoundReceipt = JsonConvert.DeserializeObject<RefundReceiptViewModel>(sz);
+                //RefoundReceipt.IdPrimary = RefoundReceipt.Id;
 
-                var resRef = api.RefundReceipt(TerminalId, RefoundReceipt);
+                //var resRef = api.RefundReceipt(TerminalId, RefoundReceipt);
 
 
                 //           api.SendReceipt(RId);

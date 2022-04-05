@@ -75,7 +75,7 @@ namespace ModernIntegration
             if (!receiptWares.IsWeight && receiptWares.AdditionalWeights != null)
                 foreach (var el in receiptWares.AdditionalWeights)
                     LWI.Add(new WeightInfo { DeltaWeight = Convert.ToDouble(receiptWares.WeightDelta) + Convert.ToDouble(Global.GetCoefDeltaWeight(el)) * Convert.ToDouble(el), Weight = Convert.ToDouble(el) });
-            var varTags = (receiptWares.TypeWares > 0 || receiptWares.LimitAge > 0 || (!receiptWares.IsWeight && receiptWares.WeightBrutto == 0))
+            var varTags = (receiptWares.TypeWares > 0 || receiptWares.LimitAge > 0 || (!receiptWares.IsWeight && receiptWares.WeightBrutto == 0) ||(receiptWares.WeightFact == -1) || (receiptWares.IsMultiplePrices) )
                     ? new List<Tag>() : null; //!!!TMP // Різні мітки алкоголь, обмеження по часу.
 
             //Якщо алкоголь чи тютюн
