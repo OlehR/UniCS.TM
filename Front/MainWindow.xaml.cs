@@ -61,6 +61,9 @@ namespace Front
         public string EquipmentInfo { get; set; }
         public bool Volume { get; set; }
 
+        public bool IsIgnoreExciseStamp { get; set;}
+
+
         public string WaitAdminText
         {
             get
@@ -166,6 +169,8 @@ namespace Front
 
         void SetConfirm(User pUser,bool pIsFirst)
         {
+            IsIgnoreExciseStamp = Access.GetRight(pUser, eTypeAccess.ExciseStamp);
+
             if (TypeAccessWait == eTypeAccess.NoDefinition)
                 return;
             if(!Access.GetRight(pUser, TypeAccessWait))
