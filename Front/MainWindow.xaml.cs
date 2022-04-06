@@ -168,7 +168,7 @@ namespace Front
             if (TypeAccessWait == eTypeAccess.NoDefinition)
                 return;
             if(!Access.GetRight(pUser, TypeAccessWait))
-            {               
+            {
                 MessageBox.Show( $"Не достатньо прав для операції {TypeAccessWait} в {pUser.NameUser}");
                 return;
             }
@@ -192,13 +192,13 @@ namespace Front
                     TypeAccessWait = eTypeAccess.NoDefinition;
                     break;
                 case eTypeAccess.ChoicePrice:
-
-                    var rrr = new ObservableCollection<Price>(CurWares.Prices.OrderByDescending(r => r).Select(r => new Price(r, true)));
-                    Prices.ItemsSource = rrr;
+                    //var rrr = new ObservableCollection<Price>(CurWares.Prices.OrderByDescending(r => r).Select(r => new Price(r, true)));
+                    foreach (Price el in Prices.ItemsSource)
+                        el.IsEnable = true;
+                    //Prices.ItemsSource = rrr;
                     SetStateView(eStateMainWindows.WaitInputPrice);
                     break;
-            }
-          
+            }          
         }
 
         
@@ -247,8 +247,7 @@ namespace Front
                             break;
                         case eStateMainWindows.WaitInputPrice:
                             TypeAccessWait = eTypeAccess.ChoicePrice;
-
-                            var rrr=new ObservableCollection<Price>(CurWares.Prices.OrderByDescending(r => r).Select(r => new Price(r, false)));
+                            var rrr=new ObservableCollection<Price>(CurWares.Prices.OrderByDescending(r => r).Select(r => new Price(r, Access.GetRight(TypeAccessWait))));
                             rrr.First().IsEnable = true;
 
                             Prices.ItemsSource = rrr;//new ObservableCollection<Price>(rr);
@@ -618,8 +617,8 @@ namespace Front
             Bl.AddWaresBarCode(RId, "7622300813437", 1);
             Bl.AddWaresBarCode(RId, "2201652300229", 2);
             Bl.AddWaresBarCode(RId, "7775002160043", 1); //товар 2 кат
-                                                         //Bl.AddWaresBarCode(RId,"1110011760218", 11);
-                                                         //Bl.AddWaresBarCode(RId,"7773002160043", 1); //товар 2 кат
+            //Bl.AddWaresBarCode(RId,"1110011760218", 11);
+            //Bl.AddWaresBarCode(RId,"7773002160043", 1); //товар 2 кат
             return Bl.GetWaresReceipt();
         }
 
@@ -676,22 +675,26 @@ namespace Front
             {
                 MessageBox.Show($"Не достатньо прав на вхід в адмін панель для  {U.NameUser}") ;
             }
+            
         }
 
         private void TextLoginChanged(object sender, TextChangedEventArgs e)
         {
-
         }
 
         private void TextPasswordChanged(object sender, TextChangedEventArgs e)
         {
-
         }
 
         private void AddExciseStamp(object sender, RoutedEventArgs e)
         {
+            if(CurWares.AddExciseStamp("None"))
             //Додання акцизноії марки до алкоголю
             SetStateView(eStateMainWindows.WaitInput);
+            else
+                MessageBox.Show($"Дана акцизна марка вже використана");
+
+
         }
 
         public void SetState(eStatusRRO pStatus)

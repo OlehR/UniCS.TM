@@ -489,7 +489,7 @@ namespace SharedLib
                         Ldc = Ldc.AddDays(1);
                     }
                 }
-            }            
+            }
             return res;
         }
 
