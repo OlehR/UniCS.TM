@@ -8,6 +8,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -259,6 +260,7 @@ namespace Front
 
                             break;
                         case eStateMainWindows.WaitExciseStamp:
+                            TBExciseStamp.Text = "";
                             ExciseStamp.Visibility = Visibility.Visible;
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;
@@ -688,7 +690,7 @@ namespace Front
 
         private void AddExciseStamp(object sender, RoutedEventArgs e)
         {
-            if(CurWares.AddExciseStamp("None"))
+            if(CurWares.AddExciseStamp(TBExciseStamp.Text))
             //Додання акцизноії марки до алкоголю
             SetStateView(eStateMainWindows.WaitInput);
             else
@@ -702,6 +704,30 @@ namespace Front
 
         }
 
+        private void ChangedExciseStamp(object sender, TextChangedEventArgs e)
+        {
+            TextBox textBox = (TextBox)sender;
+            
+            Regex regex = new Regex(@"^\w{4}[0-9]{6}?$");
+            bool isExciseStamp = regex.IsMatch(textBox.Text);
+            //MessageBox.Show(isExciseStamp.ToString());
+            if (isExciseStamp)
+            {
+                ExciseStampNotValid.Visibility = Visibility.Collapsed;
+                ButtonOkExciseStamp.IsEnabled = true;
+            }
+            else
+            {
+                ExciseStampNotValid.Visibility = Visibility.Visible;
+                ButtonOkExciseStamp.IsEnabled = false;
+            }
+                
+        }
 
+        private void ExciseStampNone(object sender, RoutedEventArgs e)
+        {
+            CurWares.AddExciseStamp("None");
+            SetStateView(eStateMainWindows.WaitInput);
+        }
     }
 }
