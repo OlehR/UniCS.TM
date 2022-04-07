@@ -70,7 +70,7 @@ namespace Front
             {
                 switch (TypeAccessWait)
                 {
-                    case eTypeAccess.DelWares: return ("Видалення товару: "+ CurWares.NameWares);
+                    case eTypeAccess.DelWares: return ($"Видалення товару: {CurWares?.NameWares}");
                     case eTypeAccess.DelReciept: return "Видалити чек";
 
                 }
