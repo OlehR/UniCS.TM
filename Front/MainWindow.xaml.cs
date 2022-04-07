@@ -63,15 +63,15 @@ namespace Front
 
         public bool IsIgnoreExciseStamp { get; set;}
 
-
+        public bool isExciseStamp { get; set; }
         public string WaitAdminText
         {
             get
             {
                 switch (TypeAccessWait)
                 {
-                    case eTypeAccess.DelWares: return ("Видалення товару: "+ CurWares.NameWares);
-                    case eTypeAccess.DelReciept: return "Видалити чек";
+                    case eTypeAccess.DelReciept: return "Видалити чек"; break;
+                    case eTypeAccess.DelWares: return ("Видалення товару: " + CurWares.NameWares); break;
 
                 }
                 return null;
@@ -714,18 +714,8 @@ namespace Front
             TextBox textBox = (TextBox)sender;
             
             Regex regex = new Regex(@"^\w{4}[0-9]{6}?$");
-            bool isExciseStamp = regex.IsMatch(textBox.Text);
-            //MessageBox.Show(isExciseStamp.ToString());
-            if (isExciseStamp)
-            {
-                ExciseStampNotValid.Visibility = Visibility.Collapsed;
-                ButtonOkExciseStamp.IsEnabled = true;
-            }
-            else
-            {
-                ExciseStampNotValid.Visibility = Visibility.Visible;
-                ButtonOkExciseStamp.IsEnabled = false;
-            }
+            isExciseStamp = regex.IsMatch(textBox.Text);
+
                 
         }
 

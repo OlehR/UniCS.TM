@@ -16,6 +16,7 @@
   <ItemGroup>
     <None Remove="icons\18plus.png" />
     <None Remove="icons\back.png" />
+    <None Remove="icons\backArrow.png" />
     <None Remove="icons\clock.png" />
     <None Remove="icons\Close.png" />
     <None Remove="icons\delete.png" />
@@ -38,6 +39,7 @@
 
   <ItemGroup>
     <Resource Include="icons\18plus.png" />
+    <Resource Include="icons\backArrow.png" />
     <Resource Include="icons\clock.png" />
     <Resource Include="icons\Close.png" />
     <Resource Include="icons\no_volume.png" />
