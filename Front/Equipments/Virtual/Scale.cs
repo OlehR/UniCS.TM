@@ -5,12 +5,15 @@ using System.Text;
 
 namespace Front.Equipments
 {
-    public class Scale:Equipment
+    public class Scale : Equipment
     {
+        protected Action<double, bool> OnScalesData;
         public Scale() { }
-        public Scale(string pSerialPortName, int pBaudRate, Action<string, string> pLogger, Action<double, bool > pOnScalesData) : base(pSerialPortName, pBaudRate) { }
+        /*public Scale(string pSerialPortName, int pBaudRate, Action<string, string> pLogger, Action<double, bool> pOnScalesData) : base(pSerialPortName, pBaudRate)
+        { OnScalesData = pOnScalesData; }*/
 
-        public Scale(IConfiguration pConfiguration, Action<string, string> pLogger, Action<double, bool> pOnScalesData) : base(pConfiguration) { }
+        public Scale(IConfiguration pConfiguration, Action<string, string> pLogger, Action<double, bool> pOnScalesData) : base(pConfiguration)
+        { OnScalesData = pOnScalesData; }
         /// <summary>
         ///  Калібрування Ваги
         /// </summary>
@@ -27,8 +30,10 @@ namespace Front.Equipments
 
         public virtual void StartWeight() { throw new NotImplementedException(); }
 
-        public virtual void StopWeight() { throw new NotImplementedException();
-    }
+        public virtual void StopWeight()
+        {
+            throw new NotImplementedException();
+        }
 
-}
+    }
 }

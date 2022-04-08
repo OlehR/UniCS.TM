@@ -25,7 +25,7 @@ namespace Front.Equipments
         }
 
         ///відкрити порт 
-        private Boolean FpOpenPort()
+        private bool FpOpenPort()
         {
             FP.OpenPort(Port, BaudRate);
             CheckResult();
@@ -36,11 +36,7 @@ namespace Front.Equipments
                 FP.ClosePort();
                 return false;
             }
-            else
-            {
-                return true;
-            }
-            
+            return true;            
         }
 
         ///закрити порт 
@@ -60,7 +56,6 @@ namespace Front.Equipments
         {
             CodeError = FP.LastError;
             StrError = FP.LastErrorText;
-
         }
 
 
@@ -99,7 +94,7 @@ namespace Front.Equipments
         {
             if (FpOpenPort())
             {
-                if (FP.IsFiscalOpen)
+                if (FP.IsFiscalOpen)                    
                     FP.CancelReceipt();
 
                 FP.XReport(OperatorPass);

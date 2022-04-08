@@ -78,7 +78,7 @@ namespace Front
             if (ElEquipment.Model == eModelEquipment.MagellanScaner)
                 ElEquipment.Equipment = new MagellanScaner(config, null, pSetBarCode);
             else
-                ElEquipment.Equipment = new Scaner(ElEquipment.Port, ElEquipment.BaudRate, null, pSetBarCode);
+                ElEquipment.Equipment = new Scaner(config,null, pSetBarCode);
             Scaner = (Scaner)ElEquipment.Equipment;
 
             //Scale
@@ -86,7 +86,7 @@ namespace Front
             if (ElEquipment.Model == eModelEquipment.MagellanScale)
                 ElEquipment.Equipment = new MagellanScale(((MagellanScaner)Scaner).Magellan9300, pSetWeight); //MagellanScale(ElEquipment.Port, ElEquipment.BaudRate, null, GetScale);
             else
-                ElEquipment.Equipment = new Scale(ElEquipment.Port, ElEquipment.BaudRate, null, pSetWeight);
+                ElEquipment.Equipment = new Scale(config, null, pSetWeight);
             Scale = (Scale)ElEquipment.Equipment;
 
             //ControlScale
@@ -94,7 +94,7 @@ namespace Front
             if (ElEquipment.Model == eModelEquipment.ScaleModern)
                 ElEquipment.Equipment = new ScaleModern(config, null, pSetControlWeight);
             else
-                ElEquipment.Equipment = new Scale(ElEquipment.Port, ElEquipment.BaudRate, null, pSetControlWeight);
+                ElEquipment.Equipment = new Scale(config, null, pSetWeight); ;
             ControlScale = (Scale)ElEquipment.Equipment;
 
             //Flag
