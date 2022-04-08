@@ -49,11 +49,14 @@ namespace Front
     }
 
     public partial class MainWindow : Window, INotifyPropertyChanged
-    {
-        eStateMainWindows State = eStateMainWindows.StartWindow;
+    {        
         public event PropertyChangedEventHandler PropertyChanged;
 
         Access Access = Access.GetAccess();
+        public BL Bl;
+        EquipmentFront EF;
+
+        eStateMainWindows State = eStateMainWindows.StartWindow;
 
         public string WaresQuantity { get; set; }
         decimal _MoneySum;
@@ -62,7 +65,7 @@ namespace Front
         public bool Volume { get; set; }
 
         public bool IsIgnoreExciseStamp { get; set;}
-
+        public bool isExciseStamp { get; set; }
 
         public string WaitAdminText
         {
@@ -89,9 +92,6 @@ namespace Front
         public ReceiptWares CurWares { get; set; } = null;
 
         public eTypeAccess TypeAccessWait { get; set; }
-
-        public BL Bl;
-        EquipmentFront EF;
 
         public ObservableCollection<ReceiptWares> ListWares { get; set; }
         //public ObservableCollection<decimal> Prices { get; set; } = new ObservableCollection<decimal>;
@@ -202,9 +202,11 @@ namespace Front
                     foreach (Price el in Prices.ItemsSource)
                         el.IsEnable = true;
                     //Prices.ItemsSource = rrr;
-                    SetStateView(eStateMainWindows.WaitInputPrice);
+                    //SetStateView(eStateMainWindows.WaitInputPrice);
+                    TypeAccessWait = eTypeAccess.NoDefinition;
                     break;
-            }          
+            }
+           // TypeAccessWait = eTypeAccess.NoDefinition;
         }
 
         
@@ -331,16 +333,15 @@ namespace Front
             }
         }
 
-        private void _Minus(object sender, RoutedEventArgs e)
+        private void BtnClickMinusPlus(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
             if (btn.DataContext is ReceiptWares)
             {
-                ReceiptWares temp = btn.DataContext as ReceiptWares;
-                temp.Quantity--;
-                Bl.ChangeQuantity(temp, temp.Quantity);
+                ReceiptWares temp = btn.DataContext as ReceiptWares;                
+                Bl.ChangeQuantity(temp, temp.Quantity+ (btn.Name.Equals("Plus")?1:-1));
             }
-        }
+        }        
 
         private void _ChangeCountWares(object sender, RoutedEventArgs e)
         {
@@ -359,18 +360,7 @@ namespace Front
                 Background.Visibility = Visibility.Collapsed;
                 BackgroundWares.Visibility = Visibility.Collapsed;
             }
-        }
-
-        private void _Plus(object sender, RoutedEventArgs e)
-        {
-            Button btn = sender as Button;
-            if (btn.DataContext is ReceiptWares)
-            {
-                ReceiptWares temp = btn.DataContext as ReceiptWares;
-                temp.Quantity++;
-                Bl.ChangeQuantity(temp, temp.Quantity);
-            }
-        }
+        }       
 
         private void _VolumeButton(object sender, RoutedEventArgs e)
         {
@@ -714,18 +704,8 @@ namespace Front
             TextBox textBox = (TextBox)sender;
             
             Regex regex = new Regex(@"^\w{4}[0-9]{6}?$");
-            bool isExciseStamp = regex.IsMatch(textBox.Text);
-            //MessageBox.Show(isExciseStamp.ToString());
-            if (isExciseStamp)
-            {
-                ExciseStampNotValid.Visibility = Visibility.Collapsed;
-                ButtonOkExciseStamp.IsEnabled = true;
-            }
-            else
-            {
-                ExciseStampNotValid.Visibility = Visibility.Visible;
-                ButtonOkExciseStamp.IsEnabled = false;
-            }
+            isExciseStamp = regex.IsMatch(textBox.Text);
+
                 
         }
 
