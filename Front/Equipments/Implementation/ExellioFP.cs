@@ -27,7 +27,8 @@ namespace Front.Equipments
         ///відкрити порт 
         private bool FpOpenPort()
         {
-            FP.OpenPort(Port, BaudRate);
+            //FP.OpenPort(Port, BaudRate);
+            FP.ConnectLan("10.1.5.221", "9100");
             CheckResult();
             if (CodeError != 0)
             {
