@@ -78,6 +78,9 @@ namespace Front
             if (ElEquipment.Model == eModelEquipment.MagellanScaner)
                 ElEquipment.Equipment = new MagellanScaner(config, null, pSetBarCode);
             else
+            if (ElEquipment.Model == eModelEquipment.VirtualScaner)
+                ElEquipment.Equipment = new VirtualScaner(config, null, pSetBarCode);
+            else
                 ElEquipment.Equipment = new Scaner(config,null, pSetBarCode);
             Scaner = (Scaner)ElEquipment.Equipment;
 
@@ -85,6 +88,9 @@ namespace Front
             ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Scale).First();
             if (ElEquipment.Model == eModelEquipment.MagellanScale)
                 ElEquipment.Equipment = new MagellanScale(((MagellanScaner)Scaner).Magellan9300, pSetWeight); //MagellanScale(ElEquipment.Port, ElEquipment.BaudRate, null, GetScale);
+            else
+            if (ElEquipment.Model == eModelEquipment.VirtualScale)
+                ElEquipment.Equipment = new VirtualScale(config,null, pSetWeight); 
             else
                 ElEquipment.Equipment = new Scale(config, null, pSetWeight);
             Scale = (Scale)ElEquipment.Equipment;
@@ -126,7 +132,7 @@ namespace Front
             }
 
             //EKKA
-            ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.EKKA).First();
+            ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.RRO).First();
             if (ElEquipment.Model == eModelEquipment.Exellio)
                 ElEquipment.Equipment = new Equipments.ExellioFP(config, null);
             else

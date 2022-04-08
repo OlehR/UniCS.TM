@@ -57,7 +57,7 @@ namespace SocketClient
                     builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
                 }
                 while (socket.Available > 0);
-                MessageBox.Show("Відповідь сервера: " + builder.ToString());
+                //MessageBox.Show("Відповідь сервера: " + builder.ToString());
 
                 // закрываем сокет
                 socket.Shutdown(SocketShutdown.Both);
