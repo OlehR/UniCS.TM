@@ -8,7 +8,7 @@ namespace Front.Equipments
     
         public class Scaner : Equipment
         {
-            Action<string, string> OnBarCode;            
+            protected Action<string, string> OnBarCode;            
             public Scaner(IConfiguration pConfiguration, Action<string, string> pLogger, Action<string, string> pOnBarCode) : base(pConfiguration) { OnBarCode = pOnBarCode; }
         }
     
