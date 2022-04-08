@@ -33,6 +33,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utils", "Utils\Utils.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResizePhoto", "ResizePhoto\ResizePhoto.csproj", "{B6E528B4-8F8C-4C61-B073-97B9F0B399AF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketClient", "SocketClient\SocketClient.csproj", "{8484612C-D125-47CC-B554-61C3DCAAA1C5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,6 +101,10 @@ Global
 		{B6E528B4-8F8C-4C61-B073-97B9F0B399AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B6E528B4-8F8C-4C61-B073-97B9F0B399AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B6E528B4-8F8C-4C61-B073-97B9F0B399AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8484612C-D125-47CC-B554-61C3DCAAA1C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8484612C-D125-47CC-B554-61C3DCAAA1C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8484612C-D125-47CC-B554-61C3DCAAA1C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8484612C-D125-47CC-B554-61C3DCAAA1C5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
