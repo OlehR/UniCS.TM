@@ -30,11 +30,11 @@ namespace Front
         BL Bl;
         public Admin()
         {
-            EF  = EquipmentFront.GetEquipmentFront;
+            EF = EquipmentFront.GetEquipmentFront;
             Bl = BL.GetBL;
             InitializeComponent();
-            if(EF!=null)
-               LE = new ObservableCollection<EquipmentElement>(EF.GetListEquipment);  
+            if (EF != null)
+                LE = new ObservableCollection<EquipmentElement>(EF.GetListEquipment);
             ListEquipment.ItemsSource = LE;
             //поточний час
             DispatcherTimer timer = new DispatcherTimer();
@@ -72,11 +72,11 @@ namespace Front
         {
             var task = Task.Run(() =>
             {
-                var r=EF.RroPrintX();
+                var r = EF.RroPrintX();
                 r.IdWorkplace = Global.IdWorkPlace;
                 r.CodePeriod = Global.GetCodePeriod();
                 Bl.InsertLogRRO(r);
-             });
+            });
         }
 
         private void EKKA_Z_Click(object sender, RoutedEventArgs e)
@@ -92,7 +92,7 @@ namespace Front
         private void EKKA_Z_Period_Click(object sender, RoutedEventArgs e)
         {
 
-        }                
+        }
 
         private void EKKA_Copy_Click(object sender, RoutedEventArgs e)
         {
@@ -119,9 +119,15 @@ namespace Front
             if (TabHistory.IsSelected)
             {
                 DateTime dt = DateTime.Now.Date;
-                Receipts = new ObservableCollection<Receipt>(Bl.GetReceipts(dt,dt,Global.IdWorkPlace));
-                ListReceipts.ItemsSource=Receipts;
+                Receipts = new ObservableCollection<Receipt>(Bl.GetReceipts(dt, dt, Global.IdWorkPlace));
+                ListReceipts.ItemsSource = Receipts;
             }
+        }
+
+        private void historiReceiptList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Receipt p = (Receipt)ListReceipts.SelectedItem;
+            MessageBox.Show("Сума чеку: " + p.SumReceipt.ToString());
         }
     }
 }
