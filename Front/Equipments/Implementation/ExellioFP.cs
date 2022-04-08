@@ -134,9 +134,8 @@ namespace Front.Equipments
         override public async Task<LogRRO> PrintReceiptAsync(Receipt pR)
         {
 
-            FP.OpenPort(Port, BaudRate);
-            //if (FP.LastError != 0)
-            //{
+            if (FpOpenPort()) 
+            {
                 if (FP.IsFiscalOpen)
                     FP.CancelReceipt();
 
@@ -213,7 +212,16 @@ namespace Front.Equipments
                     TypeOperation = (pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund),
                     JSON = ""
                 };
-            //}   
+            }
+            return new LogRRO(pR)
+            {
+                CodeError = CodeError,
+                Error = StrError,
+                SUM = pR.SumFiscal,
+                TypeRRO = "ExellioFP",
+                TypeOperation = (pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund),
+                JSON = ""
+            };
         }
 
         override public bool PutToDisplay(string pText)
