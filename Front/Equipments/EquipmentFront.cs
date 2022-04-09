@@ -133,11 +133,12 @@ namespace Front
 
             //EKKA
             ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.RRO).First();
-            if (ElEquipment.Model == eModelEquipment.Exellio)
+            if (ElEquipment.Model == eModelEquipment.ExellioFP)
                 ElEquipment.Equipment = new Equipments.ExellioFP(config, null);
             else
             if (ElEquipment.Model == eModelEquipment.pRRO_SG)
                 ElEquipment.Equipment = new pRRO_SG(config, null, pActionStatus);
+            else
             if(ElEquipment.Model == eModelEquipment.pRRo_WebCheck)
                 ElEquipment.Equipment = new pRRO_WebCheck(config, null, pActionStatus);
             else

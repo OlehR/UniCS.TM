@@ -610,10 +610,10 @@ namespace Front
         {
 
             var RId = Bl.GetNewIdReceipt();
-            Bl.AddWaresBarCode(RId, "4823086109988", 3);
-            Bl.AddWaresBarCode(RId, "7622300813437", 1);
-            Bl.AddWaresBarCode(RId, "2201652300229", 2);
-            Bl.AddWaresBarCode(RId, "7775002160043", 1); //товар 2 кат
+            Bl.AddWaresBarCode(RId, "27833", 2m);
+            //Bl.AddWaresBarCode(RId, "7622300813437", 1);
+            //Bl.AddWaresBarCode(RId, "2201652300229", 2);
+            //Bl.AddWaresBarCode(RId, "7775002160043", 1); //товар 2 кат
             //Bl.AddWaresBarCode(RId,"1110011760218", 11);
             //Bl.AddWaresBarCode(RId,"7773002160043", 1); //товар 2 кат
             return Bl.GetWaresReceipt();
