@@ -11,13 +11,16 @@ namespace Front.Equipments.Implementation
 {
     public class VirtualScaner : Scaner
     {
-        static int port = 8005; // порт для приема входящих запросов
+        int Port; // порт для приема входящих запросов
+        string IP;
 
         public VirtualScaner(IConfiguration pConfiguration, Action<string, string> pLogger, Action<string, string> pOnBarCode) : base(pConfiguration, pLogger, pOnBarCode)
         {
-            Work();
-
+            Port = Convert.ToInt32( Configuration["Devices:VirtualScaner:Port"]);
+            IP = Configuration["Devices:VirtualScaner:IP"];
+            _ = Work();
         }
+
         public override void Enable() { }
 
         public async Task Work()
@@ -25,7 +28,7 @@ namespace Front.Equipments.Implementation
             await Task.Run(() =>
             {
                 // получаем адреса для запуска сокета
-                IPEndPoint ipPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), port);
+                IPEndPoint ipPoint = new IPEndPoint(IPAddress.Parse(IP), Port);
 
                 // создаем сокет
                 Socket listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
