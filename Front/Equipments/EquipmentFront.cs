@@ -78,7 +78,10 @@ namespace Front
             if (ElEquipment.Model == eModelEquipment.MagellanScaner)
                 ElEquipment.Equipment = new MagellanScaner(config, null, pSetBarCode);
             else
-                ElEquipment.Equipment = new Scaner(ElEquipment.Port, ElEquipment.BaudRate, null, pSetBarCode);
+            if (ElEquipment.Model == eModelEquipment.VirtualScaner)
+                ElEquipment.Equipment = new VirtualScaner(config, null, pSetBarCode);
+            else
+                ElEquipment.Equipment = new Scaner(config,null, pSetBarCode);
             Scaner = (Scaner)ElEquipment.Equipment;
 
             //Scale
@@ -86,7 +89,10 @@ namespace Front
             if (ElEquipment.Model == eModelEquipment.MagellanScale)
                 ElEquipment.Equipment = new MagellanScale(((MagellanScaner)Scaner).Magellan9300, pSetWeight); //MagellanScale(ElEquipment.Port, ElEquipment.BaudRate, null, GetScale);
             else
-                ElEquipment.Equipment = new Scale(ElEquipment.Port, ElEquipment.BaudRate, null, pSetWeight);
+            if (ElEquipment.Model == eModelEquipment.VirtualScale)
+                ElEquipment.Equipment = new VirtualScale(config,null, pSetWeight); 
+            else
+                ElEquipment.Equipment = new Scale(config, null, pSetWeight);
             Scale = (Scale)ElEquipment.Equipment;
 
             //ControlScale
@@ -94,7 +100,7 @@ namespace Front
             if (ElEquipment.Model == eModelEquipment.ScaleModern)
                 ElEquipment.Equipment = new ScaleModern(config, null, pSetControlWeight);
             else
-                ElEquipment.Equipment = new Scale(ElEquipment.Port, ElEquipment.BaudRate, null, pSetControlWeight);
+                ElEquipment.Equipment = new Scale(config, null, pSetWeight); ;
             ControlScale = (Scale)ElEquipment.Equipment;
 
             //Flag
@@ -126,12 +132,13 @@ namespace Front
             }
 
             //EKKA
-            ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.EKKA).First();
-            if (ElEquipment.Model == eModelEquipment.Exellio)
+            ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.RRO).First();
+            if (ElEquipment.Model == eModelEquipment.ExellioFP)
                 ElEquipment.Equipment = new Equipments.ExellioFP(config, null);
             else
             if (ElEquipment.Model == eModelEquipment.pRRO_SG)
                 ElEquipment.Equipment = new pRRO_SG(config, null, pActionStatus);
+            else
             if(ElEquipment.Model == eModelEquipment.pRRo_WebCheck)
                 ElEquipment.Equipment = new pRRO_WebCheck(config, null, pActionStatus);
             else

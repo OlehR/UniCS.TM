@@ -129,7 +129,7 @@ namespace Front.Equipments
         ControlScale,
         BankTerminal,
         Signal,
-        EKKA
+        RRO
     }
 
     /// <summary>
@@ -144,11 +144,14 @@ namespace Front.Equipments
         SignalFlagModern,
         Ingenico,
         VirtualBankPOS,
-        Exellio,
+        ExellioFP,
+        //Exellio,
         pRRO_SG,
         Maria,
         pRRo_WebCheck,
-        VirtualRRO
+        VirtualRRO,
+        VirtualScale,
+        VirtualScaner
 
     }
 
@@ -194,8 +197,10 @@ namespace Front.Equipments
             switch (pModel)
             {
                 case eModelEquipment.MagellanScaner:
+                case eModelEquipment.VirtualScaner:
                     return eTypeEquipment.Scaner;
                 case eModelEquipment.MagellanScale:
+                case eModelEquipment.VirtualScale:
                     return eTypeEquipment.Scale;
                 case eModelEquipment.ScaleModern:
                     return eTypeEquipment.ControlScale;
@@ -204,13 +209,14 @@ namespace Front.Equipments
                 case eModelEquipment.Ingenico:
                 case eModelEquipment.VirtualBankPOS:
                     return eTypeEquipment.BankTerminal;
-                case eModelEquipment.Exellio:
+                case eModelEquipment.ExellioFP:
+                //case eModelEquipment.Exellio:
                 case eModelEquipment.pRRO_SG:
                 case eModelEquipment.pRRo_WebCheck:
                 case eModelEquipment.Maria:
                 case eModelEquipment.VirtualRRO:
 
-                    return eTypeEquipment.EKKA;
+                    return eTypeEquipment.RRO;
                 default:
                     return eTypeEquipment.NotDefined;
             }

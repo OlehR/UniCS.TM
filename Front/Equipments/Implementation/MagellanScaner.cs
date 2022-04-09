@@ -9,7 +9,7 @@ namespace Front.Equipments
     public class MagellanScaner : Scaner
     {
         public Magellan9300S Magellan9300;
-        public MagellanScaner(string pSerialPortName, int pBaudRate, Action<string, string> pLogger, Action<string, string> pOnBarCode) : base(pSerialPortName, pBaudRate, pLogger, pOnBarCode)
+/*        public MagellanScaner(string pSerialPortName, int pBaudRate, Action<string, string> pLogger, Action<string, string> pOnBarCode) : base(pSerialPortName, pBaudRate, pLogger, pOnBarCode)
         {
             var AppConfiguration = new ConfigurationBuilder()
                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
@@ -24,7 +24,7 @@ namespace Front.Equipments
             {
                 pOnBarCode(BarCode, null);
             };
-        }
+        }*/
 
 
         public MagellanScaner(IConfiguration pConfiguration, Action<string, string> pLogger, Action<string, string> pOnBarCode) : base(pConfiguration, pLogger, pOnBarCode)

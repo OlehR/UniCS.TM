@@ -163,6 +163,22 @@ namespace ModelMID
         public int Sort { get; set; }
 
         public string ExciseStamp { get; set; }
+        public string[] GetExciseStamp { get { return ExciseStamp?.Split(','); } }
+        public bool AddExciseStamp(string pES)
+        {
+            if (string.IsNullOrEmpty(ExciseStamp))
+                ExciseStamp = pES;
+            else
+            {
+                if (!pES.Equals("None"))
+                {
+                    if (ExciseStamp.IndexOf(pES) >= 0)
+                        return false;
+                }
+                ExciseStamp = $"{ExciseStamp},{pES}";
+            }
+            return true;
+        }
 
         public int UserCreate { get; set; }
 

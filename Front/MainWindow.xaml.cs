@@ -8,6 +8,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -48,11 +49,14 @@ namespace Front
     }
 
     public partial class MainWindow : Window, INotifyPropertyChanged
-    {
-        eStateMainWindows State = eStateMainWindows.StartWindow;
+    {        
         public event PropertyChangedEventHandler PropertyChanged;
 
         Access Access = Access.GetAccess();
+        public BL Bl;
+        EquipmentFront EF;
+
+        eStateMainWindows State = eStateMainWindows.StartWindow;
 
         public string WaresQuantity { get; set; }
         decimal _MoneySum;
@@ -60,13 +64,16 @@ namespace Front
         public string EquipmentInfo { get; set; }
         public bool Volume { get; set; }
 
+        public bool IsIgnoreExciseStamp { get; set;}
+        public bool isExciseStamp { get; set; }
+
         public string WaitAdminText
         {
             get
             {
                 switch (TypeAccessWait)
                 {
-                    case eTypeAccess.DelWares: return ("Видалення товару: "+ CurWares.NameWares);
+                    case eTypeAccess.DelWares: return ($"Видалення товару: {CurWares?.NameWares}");
                     case eTypeAccess.DelReciept: return "Видалити чек";
 
                 }
@@ -85,9 +92,6 @@ namespace Front
         public ReceiptWares CurWares { get; set; } = null;
 
         public eTypeAccess TypeAccessWait { get; set; }
-
-        public BL Bl;
-        EquipmentFront EF;
 
         public ObservableCollection<ReceiptWares> ListWares { get; set; }
         //public ObservableCollection<decimal> Prices { get; set; } = new ObservableCollection<decimal>;
@@ -165,10 +169,12 @@ namespace Front
 
         void SetConfirm(User pUser,bool pIsFirst)
         {
+            IsIgnoreExciseStamp = Access.GetRight(pUser, eTypeAccess.ExciseStamp);
+
             if (TypeAccessWait == eTypeAccess.NoDefinition)
                 return;
             if(!Access.GetRight(pUser, TypeAccessWait))
-            {               
+            {
                 MessageBox.Show( $"Не достатньо прав для операції {TypeAccessWait} в {pUser.NameUser}");
                 return;
             }
@@ -192,13 +198,15 @@ namespace Front
                     TypeAccessWait = eTypeAccess.NoDefinition;
                     break;
                 case eTypeAccess.ChoicePrice:
-
-                    var rrr = new ObservableCollection<Price>(CurWares.Prices.OrderByDescending(r => r).Select(r => new Price(r, true)));
-                    Prices.ItemsSource = rrr;
-                    SetStateView(eStateMainWindows.WaitInputPrice);
+                    //var rrr = new ObservableCollection<Price>(CurWares.Prices.OrderByDescending(r => r).Select(r => new Price(r, true)));
+                    foreach (Price el in Prices.ItemsSource)
+                        el.IsEnable = true;
+                    //Prices.ItemsSource = rrr;
+                    //SetStateView(eStateMainWindows.WaitInputPrice);
+                    TypeAccessWait = eTypeAccess.NoDefinition;
                     break;
             }
-          
+           // TypeAccessWait = eTypeAccess.NoDefinition;
         }
 
         
@@ -247,8 +255,7 @@ namespace Front
                             break;
                         case eStateMainWindows.WaitInputPrice:
                             TypeAccessWait = eTypeAccess.ChoicePrice;
-
-                            var rrr=new ObservableCollection<Price>(CurWares.Prices.OrderByDescending(r => r).Select(r => new Price(r, false)));
+                            var rrr=new ObservableCollection<Price>(CurWares.Prices.OrderByDescending(r => r).Select(r => new Price(r, Access.GetRight(TypeAccessWait))));
                             rrr.First().IsEnable = true;
 
                             Prices.ItemsSource = rrr;//new ObservableCollection<Price>(rr);
@@ -260,6 +267,7 @@ namespace Front
 
                             break;
                         case eStateMainWindows.WaitExciseStamp:
+                            TBExciseStamp.Text = "";
                             ExciseStamp.Visibility = Visibility.Visible;
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;
@@ -325,16 +333,15 @@ namespace Front
             }
         }
 
-        private void _Minus(object sender, RoutedEventArgs e)
+        private void BtnClickMinusPlus(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
             if (btn.DataContext is ReceiptWares)
             {
-                ReceiptWares temp = btn.DataContext as ReceiptWares;
-                temp.Quantity--;
-                Bl.ChangeQuantity(temp, temp.Quantity);
+                ReceiptWares temp = btn.DataContext as ReceiptWares;                
+                Bl.ChangeQuantity(temp, temp.Quantity+ (btn.Name.Equals("Plus")?1:-1));
             }
-        }
+        }        
 
         private void _ChangeCountWares(object sender, RoutedEventArgs e)
         {
@@ -353,18 +360,7 @@ namespace Front
                 Background.Visibility = Visibility.Collapsed;
                 BackgroundWares.Visibility = Visibility.Collapsed;
             }
-        }
-
-        private void _Plus(object sender, RoutedEventArgs e)
-        {
-            Button btn = sender as Button;
-            if (btn.DataContext is ReceiptWares)
-            {
-                ReceiptWares temp = btn.DataContext as ReceiptWares;
-                temp.Quantity++;
-                Bl.ChangeQuantity(temp, temp.Quantity);
-            }
-        }
+        }       
 
         private void _VolumeButton(object sender, RoutedEventArgs e)
         {
@@ -614,12 +610,12 @@ namespace Front
         {
 
             var RId = Bl.GetNewIdReceipt();
-            Bl.AddWaresBarCode(RId, "4823086109988", 3);
-            Bl.AddWaresBarCode(RId, "7622300813437", 1);
-            Bl.AddWaresBarCode(RId, "2201652300229", 2);
-            Bl.AddWaresBarCode(RId, "7775002160043", 1); //товар 2 кат
-                                                         //Bl.AddWaresBarCode(RId,"1110011760218", 11);
-                                                         //Bl.AddWaresBarCode(RId,"7773002160043", 1); //товар 2 кат
+            Bl.AddWaresBarCode(RId, "27833", 2m);
+            //Bl.AddWaresBarCode(RId, "7622300813437", 1);
+            //Bl.AddWaresBarCode(RId, "2201652300229", 2);
+            //Bl.AddWaresBarCode(RId, "7775002160043", 1); //товар 2 кат
+            //Bl.AddWaresBarCode(RId,"1110011760218", 11);
+            //Bl.AddWaresBarCode(RId,"7773002160043", 1); //товар 2 кат
             return Bl.GetWaresReceipt();
         }
 
@@ -676,22 +672,26 @@ namespace Front
             {
                 MessageBox.Show($"Не достатньо прав на вхід в адмін панель для  {U.NameUser}") ;
             }
+            
         }
 
         private void TextLoginChanged(object sender, TextChangedEventArgs e)
         {
-
         }
 
         private void TextPasswordChanged(object sender, TextChangedEventArgs e)
         {
-
         }
 
         private void AddExciseStamp(object sender, RoutedEventArgs e)
         {
+            if(CurWares.AddExciseStamp(TBExciseStamp.Text))
             //Додання акцизноії марки до алкоголю
             SetStateView(eStateMainWindows.WaitInput);
+            else
+                MessageBox.Show($"Дана акцизна марка вже використана");
+
+
         }
 
         public void SetState(eStatusRRO pStatus)
@@ -699,6 +699,20 @@ namespace Front
 
         }
 
+        private void ChangedExciseStamp(object sender, TextChangedEventArgs e)
+        {
+            TextBox textBox = (TextBox)sender;
+            
+            Regex regex = new Regex(@"^\w{4}[0-9]{6}?$");
+            isExciseStamp = regex.IsMatch(textBox.Text);
 
+                
+        }
+
+        private void ExciseStampNone(object sender, RoutedEventArgs e)
+        {
+            CurWares.AddExciseStamp("None");
+            SetStateView(eStateMainWindows.WaitInput);
+        }
     }
 }

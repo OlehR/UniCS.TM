@@ -545,7 +545,7 @@ namespace ModernIntegration
         public override bool ProcessCustomWindowResult(Guid pTerminalId, string pCustomWindowResult)
         {
             FileLogger.WriteLogMessage($"ApiPSU.ProcessCustomWindowResult( pTerminalId=>{pTerminalId}, pCustomWindowResult=>{pCustomWindowResult})",eTypeLog.Expanded);
-            return true;            
+            return true;
         }
     }
 }

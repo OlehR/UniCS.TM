@@ -36,7 +36,7 @@ namespace Front
 
             MW = pMW;
             Bl = BL.GetBL;
-            KB.SetInput(WaresName);
+            //KB.SetInput(WaresName);
             NewB();
         }
 

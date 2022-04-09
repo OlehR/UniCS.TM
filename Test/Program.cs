@@ -55,7 +55,7 @@ namespace Test
             //var bl = new BL();
             //var aaaaa=bl.Ver;
 
-            TestReceiptAsync();
+            //TestReceiptAsync();
 
             //CreateBarCode();
             //TestKit();
@@ -92,16 +92,14 @@ namespace Test
         static async Task TestReceiptAsync()
         {
             //var TerminalId = Guid.Parse("1bb89aa9-dbdf-4eb0-b7a2-094665c3fdd0");//14
-            var TerminalId = Guid.Parse("c2211a23-b856-4dd4-ba29-3ec2d043efbf");// --Guid.Parse("27aaa6d3-8824-475d-a7d4-3269472ba950");//19
+            var TerminalId = //Guid.Parse("c2211a23-b856-4dd4-ba29-3ec2d043efbf");
+                           //Guid.Parse("27aaa6d3-8824-475d-a7d4-3269472ba950");//19
+            Guid.Parse("85db1663-6284-4b62-9481-7b7aad4fb3bc");//17
             var ProductId = Guid.Parse("00000000-abcd-0000-0019-000000162794");
             var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009007");
             var ReceiptId = Guid.Parse("00000072-ffff-2022-0112-000000000028");
 
-
-            var receipt= JsonConvert.DeserializeObject<ModelMID.Receipt>(File.ReadAllText(@"d:\mid\receipt.json "));
-
-
-            
+            //var receipt= JsonConvert.DeserializeObject<ModelMID.Receipt>(File.ReadAllText(@"d:\mid\receipt.json "));
 
             var Pay = new ReceiptPayment[] {
                 new ReceiptPayment
@@ -128,7 +126,13 @@ namespace Test
 
             var api = new ApiPSU();
 
+<<<<<<< .mine
             api.GetNoFinishReceipt(TerminalId); return;
+
+=======
+            var rrrr= api.GetReceipts(new DateTime(2022,04,04),new DateTime(2022, 04, 04,23,59,59) , TerminalId);return;
+            //api.GetNoFinishReceipt(TerminalId);return
+>>>>>>> .theirs
 
             var pp = api.AddProductByBarCode(TerminalId, "7622100815594", 1);
 
@@ -413,15 +417,15 @@ namespace Test
 
 
                 api.AddPayment(TerminalId, Pay);
-                var rrrr = api.AddFiscalNumber(TerminalId, "TRRF-1234");
+                var rrqqrr = api.AddFiscalNumber(TerminalId, "TRRF-1234");
 
                 var ReceiptF = api.GetReciept(RId);
 
-                var sz = JsonConvert.SerializeObject(receipt);
-                var RefoundReceipt = JsonConvert.DeserializeObject<RefundReceiptViewModel>(sz);
-                RefoundReceipt.IdPrimary = RefoundReceipt.Id;
+                //var sz = JsonConvert.SerializeObject(receipt);
+               // var RefoundReceipt = JsonConvert.DeserializeObject<RefundReceiptViewModel>(sz);
+                //RefoundReceipt.IdPrimary = RefoundReceipt.Id;
 
-                var resRef = api.RefundReceipt(TerminalId, RefoundReceipt);
+                //var resRef = api.RefundReceipt(TerminalId, RefoundReceipt);
 
 
                 //           api.SendReceipt(RId);

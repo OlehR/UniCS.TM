@@ -1,0 +1,52 @@
+﻿<Window x:Class="SocketClient.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SocketClient"
+        mc:Ignorable="d"
+        Title="MainWindow"
+        WindowState="Normal"
+        WindowStyle="SingleBorderWindow"
+        Height="500" Width="500">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TextBox Height="25" x:Name="WriteTextMesage"  Margin="10" FontSize="16" />
+        <Button Grid.Column="1" Height="50" Margin="10" Style="{StaticResource yelowButton}"
+                Click="SentMessage"
+                >Відправити</Button>
+        <Button Grid.Column="2" Height="50" Margin="10" Style="{StaticResource yelowButton}"
+                Click="SentCashier"
+                >Касир</Button>
+        <Button Grid.Column="3" Height="50" Margin="10" Style="{StaticResource yelowButton}"
+                Click="SentWeight"
+                >Вага</Button>
+        <ListBox x:Name="ListHistori" SelectionChanged="historiList_SelectionChanged"
+                     Grid.Row="1" Grid.RowSpan="5" Grid.Column="0" Grid.ColumnSpan="4">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Margin="5" Orientation="Horizontal">
+                        <TextBlock FontSize="16" Text="{Binding Path=Id}" HorizontalAlignment="Center" />
+                        <TextBlock FontSize="16" Text=":  "/>
+                        <TextBlock FontSize="16" Text="{Binding Path=TextMessage}" HorizontalAlignment="Center" />
+                        <TextBlock FontSize="16" Text="; Відповідь сервера:  "/>
+                        <TextBlock FontSize="16" Text="{Binding Path=ServerResponse}" HorizontalAlignment="Center" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
+</Window>

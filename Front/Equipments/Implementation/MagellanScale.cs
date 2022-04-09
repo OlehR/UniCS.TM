@@ -8,11 +8,11 @@ namespace Front.Equipments
     class MagellanScale:Scale
     {
         Magellan9300S Magellan;
-        public MagellanScale(string pSerialPortName, int pBaudRate, Action<string, string> pLogger, Action<double, bool> pOnScalesData) 
+        /*public MagellanScale(string pSerialPortName, int pBaudRate, Action<string, string> pLogger, Action<double, bool> pOnScalesData) 
             : base(pSerialPortName, pBaudRate, pLogger, pOnScalesData) 
         {
 
-        }
+        }*/
 
         public MagellanScale(IConfiguration pConfiguration, Action<string, string> pLogger, Action<double, bool> pOnScalesData):base(pConfiguration,pLogger, pOnScalesData)
         {
