@@ -15,12 +15,9 @@ namespace Front.Equipments
         private FiscalPrinterClass FP = new FiscalPrinterClass();
         //public Exelio(string pSerialPortName, int pBaudRate, Action<string, string> pLogger) : base(pSerialPortName, pBaudRate,pLogger) { }
         public ExellioFP(IConfiguration pConfiguration, Action<string, string> pLogger = null) : base(pConfiguration) 
-        {
-           
+        {           
             Port = Configuration["Devices:Exellio:Port"];
-            BaudRate = Convert.ToInt32( Configuration["Devices:BaudRate:Port"]);
-            //OperatorName = this.Configuration["Devices:Exellio:OperatorName"];
-            //OperatorPass = this.Configuration["Devices:Exellio:OperatorPass"];
+            BaudRate = Convert.ToInt32( Configuration["Devices:Exellio:Port"]);            
             FP.OpenPort(Port, BaudRate);
         }
 

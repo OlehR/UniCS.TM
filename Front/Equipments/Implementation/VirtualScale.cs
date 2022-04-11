@@ -14,7 +14,7 @@ namespace Front.Equipments.Implementation
         int Port; // порт для приема входящих запросов
         string IP;
 
-        public VirtualScale(IConfiguration pConfiguration, Action<string, string> pLogger, Action<double, bool> pOnScalesData) : base(pConfiguration, pLogger, pOnScalesData)
+        public VirtualScale(IConfiguration pConfiguration, Action<string, string> pLogger, Action<double, bool> pOnScalesData) : base(pConfiguration, eModelEquipment.VirtualScale, pLogger, pOnScalesData)
         {
             Port = Convert.ToInt32(Configuration["Devices:VirtualScaner:Port"]);
             IP = Configuration["Devices:VirtualScaner:IP"];

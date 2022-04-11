@@ -12,8 +12,8 @@ namespace Front.Equipments.Implementation
     public class VirtualRRO:Rro
     {
         public VirtualRRO(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<eStatusRRO> pActionStatus = null) :
-                       base(pConfiguration, pLogger, pActionStatus)
-        { }
+                       base(pConfiguration, eModelEquipment.VirtualRRO, pLogger, pActionStatus){ }
+       
         public override LogRRO PrintCopyReceipt(int parNCopy = 1)
         {
             throw new NotImplementedException();
@@ -55,6 +55,7 @@ namespace Front.Equipments.Implementation
         {
             return true;
         }
+
         override public bool PeriodZReport(DateTime pBegin, DateTime pEnd, bool IsFull = true)
         {
             return true;

@@ -11,17 +11,14 @@ namespace Front.Equipments
         protected int BaudRat;
         protected IConfiguration Configuration;
         //public Equipment(string serialPortName, int baudRate, Action<string, string> logger) { throw new NotImplementedException(); }
-
+        protected Action<string, string> Logger = null;
         public Equipment() { }
-        public Equipment(string pSerialPortName, int pBaudRate) 
-        {
-            SerialPortName = pSerialPortName;
-            BaudRat = pBaudRate;
-        }
-        public Equipment(IConfiguration pConfiguration, eModelEquipment pModelEquipment  = eModelEquipment.NotDefined)
+       
+        public Equipment(IConfiguration pConfiguration, eModelEquipment pModelEquipment  = eModelEquipment.NotDefined, Action<string, string> pLogger = null)
         {
             Configuration = pConfiguration;
             ModelEquipment = pModelEquipment;
+            Logger = pLogger;
         }
         public bool IsReady { get; set; } = false;
         public eModelEquipment ModelEquipment { get; set; } = eModelEquipment.NotDefined;

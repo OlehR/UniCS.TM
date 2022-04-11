@@ -14,7 +14,7 @@ namespace Front.Equipments.Implementation
         string FN;
         WebCheck.ClassFiscal WCh = new WebCheck.ClassFiscal();
         public pRRO_WebCheck(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<eStatusRRO> pActionStatus = null) :
-                       base(pConfiguration, pLogger, pActionStatus)
+                       base(pConfiguration,eModelEquipment.pRRo_WebCheck ,pLogger, pActionStatus)
         {
             try
             {

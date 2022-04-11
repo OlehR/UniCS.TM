@@ -16,7 +16,7 @@ namespace Front.Equipments.Implementation
         bool IsError = false;
 
         M304ManagerApplication M304;
-        public RRO_Maria(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<eStatusRRO> pActionStatus = null) : base(pConfiguration,pLogger, pActionStatus)
+        public RRO_Maria(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<eStatusRRO> pActionStatus = null) : base(pConfiguration,eModelEquipment.Maria,pLogger, pActionStatus)
         {
             M304 = new M304ManagerApplication();
             Port = Configuration["Devices:Maria:Port"];

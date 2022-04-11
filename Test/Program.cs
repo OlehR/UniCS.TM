@@ -50,7 +50,7 @@ namespace Test
             //await l.LoadRozetka();//GetInfoBarcode("4820009350588");
 
 
-            //await CreateDataBaseAsync(true); return;
+            await CreateDataBaseAsync(true); return;
             //var aa= Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
             //var bl = new BL();
             //var aaaaa=bl.Ver;
@@ -126,13 +126,13 @@ namespace Test
 
             var api = new ApiPSU();
 
-<<<<<<< .mine
-            api.GetNoFinishReceipt(TerminalId); return;
 
-=======
+         //   api.GetNoFinishReceipt(TerminalId); return;
+
+
             var rrrr= api.GetReceipts(new DateTime(2022,04,04),new DateTime(2022, 04, 04,23,59,59) , TerminalId);return;
             //api.GetNoFinishReceipt(TerminalId);return
->>>>>>> .theirs
+
 
             var pp = api.AddProductByBarCode(TerminalId, "7622100815594", 1);
 

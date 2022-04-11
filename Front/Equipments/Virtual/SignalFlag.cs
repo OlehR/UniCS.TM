@@ -8,9 +8,7 @@ namespace Front.Equipments
 {
     public class SignalFlag:Equipment
     {
-       public SignalFlag(string pSerialPortName, int pBaudRate, Action<string, string> pLogger) :base(pSerialPortName, pBaudRate) { }
-
-       public SignalFlag(IConfiguration pConfiguration, Action<string, string> pLogger) : base(pConfiguration) { }
+       public SignalFlag(IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefined, Action<string, string> pLogger=null) : base(pConfiguration, pModelEquipment, pLogger) { }
        public virtual void SwitchToColor(Color pColor) { throw new NotImplementedException(); }
        public virtual Color GetCurrentColor() { throw new NotImplementedException(); }
     }

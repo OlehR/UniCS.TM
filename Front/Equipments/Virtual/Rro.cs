@@ -33,7 +33,7 @@ namespace Front.Equipments
                 ActionStatus(pStatus);
         }
 
-        public Rro(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<eStatusRRO> pActionStatus = null) : base(pConfiguration) 
+        public Rro(IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefined, Action<string, string> pLogger = null, Action<eStatusRRO> pActionStatus = null) : base(pConfiguration, pModelEquipment, pLogger) 
         {
             ActionStatus = pActionStatus;
         }

@@ -2,19 +2,10 @@
 using ModelMID;
 using SharedLib;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 
 namespace Front
@@ -65,7 +56,7 @@ namespace Front
 
         private void POS_X_Copy_Click(object sender, RoutedEventArgs e)
         {
-
+            //EF.RroPrintCopyReceipt
         }
 
         private void EKKA_X_Click(object sender, RoutedEventArgs e)
@@ -89,6 +80,7 @@ namespace Front
                 Bl.InsertLogRRO(r);
             });
         }
+
         private void EKKA_Z_Period_Click(object sender, RoutedEventArgs e)
         {
 

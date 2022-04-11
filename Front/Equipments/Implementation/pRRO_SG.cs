@@ -21,7 +21,7 @@ namespace Front.Equipments.pRRO_SG
         HttpClient client = new HttpClient();
        
         public pRRO_SG(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<eStatusRRO> pActionStatus = null) : 
-                        base(pConfiguration, pLogger, pActionStatus) 
+                        base(pConfiguration,eModelEquipment.pRRO_SG, pLogger, pActionStatus) 
         {
             PathApi = pConfiguration["Devices:pRRO_SG:PathApi"];
             Wait = int.Parse(pConfiguration["Devices:pRRO_SG:Wait"] ?? "10000");
