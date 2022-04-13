@@ -82,7 +82,7 @@ namespace SharedLib
             TimeSpan ts = stopWatch.Elapsed;
             Console.WriteLine("\nVR=>" + ts.TotalMilliseconds + "\n");
 
-            if (pRecalcPriceOnLine && ModelMID.Global.RecalcPriceOnLine)
+            if (pRecalcPriceOnLine && Global.RecalcPriceOnLine)
                 db.RecalcPriceAsync(pW);
 
             /*if (pW.PLU > 0)             

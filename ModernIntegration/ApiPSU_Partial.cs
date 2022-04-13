@@ -1,19 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
 using ModernIntegration.Models;
 using ModernIntegration.ViewModels;
 using ModernIntegration.Enums;
-using SharedLib;
 using ModelMID;
 using System.Linq;
 using Receipt = ModernIntegration.Models.Receipt;
 using ModelMID.DB;
 using ModernIntegration.Model;
-using System.Threading.Tasks;
-using Utils;
-using Newtonsoft.Json;
 
 namespace ModernIntegration
 {

@@ -50,12 +50,12 @@ namespace Test
             //await l.LoadRozetka();//GetInfoBarcode("4820009350588");
 
 
-            await CreateDataBaseAsync(true); return;
+           // await CreateDataBaseAsync(true); return;
             //var aa= Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
             //var bl = new BL();
             //var aaaaa=bl.Ver;
 
-            //TestReceiptAsync();
+            TestReceiptAsync();
 
             //CreateBarCode();
             //TestKit();
@@ -130,12 +130,15 @@ namespace Test
          //   api.GetNoFinishReceipt(TerminalId); return;
 
 
-            var rrrr= api.GetReceipts(new DateTime(2022,04,04),new DateTime(2022, 04, 04,23,59,59) , TerminalId);return;
+           // var rrrr= api.GetReceipts(new DateTime(2022,04,04),new DateTime(2022, 04, 04,23,59,59) , TerminalId);return;
             //api.GetNoFinishReceipt(TerminalId);return
 
 
-            var pp = api.AddProductByBarCode(TerminalId, "7622100815594", 1);
+            var pp = api.AddProductByBarCode(TerminalId, "5055966801098", 1);
 
+            pp = api.AddProductByBarCode(TerminalId, "5055966801098", 1);
+
+            return;
             api.ChangeQuantity(TerminalId, pp.Id  , 2);
 
             api.ChangeQuantity(TerminalId, pp.Id, 3);

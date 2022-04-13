@@ -15,9 +15,12 @@ SELECT CODE_GROUP_WARES AS CodeGroupWares,CODE_PARENT_GROUP_WARES AS CodeParentG
 SELECT w.code_wares AS CodeWares, w.name_wares AS NameWares, w.code_group AS CodeGroup
 		, CASE WHEN W.ARTICL='' OR W.ARTICL IS NULL THEN '-'+W.code_wares ELSE W.ARTICL END  AS Articl
 		, w.code_unit AS CodeUnit, w.VAT AS PercentVat , w.VAT_OPERATION AS TypeVat, w.code_brand AS CodeBrand,Type_wares as TypeWares
-		,Weight_Brutto as WeightBrutto, Weight_Fact as WeightFact, w.Weight_Delta as WeightDelta, w.code_UKTZED AS CodeUKTZED,w.Limit_age as LimitAge,w.PLU,w.Code_Direction as CodeDirection
-  FROM dbo.Wares w
-   WHERE w.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull=1
+		,Weight_Brutto as WeightBrutto 
+  --,Weight_Fact as WeightFact_
+  ,CASE WHEN @CodeWarehouse<>9  AND Weight_Fact<0 AND Code_Direction=000160565 THEN -1 ELSE CASE WHEN Weight_Fact<0 and Weight_Fact<>-1 THEN -Weight_Fact ELSE Weight_Fact END end AS WeightFact
+  ,w.Weight_Delta as WeightDelta, w.code_UKTZED AS CodeUKTZED,w.Limit_age as LimitAge,w.PLU,w.Code_Direction as CodeDirection
+  FROM dbo.Wares w 
+  WHERE w.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull=1
   
 [SqlGetDimAdditionUnit]
 SELECT code_wares AS CodeWares,code_unit AS CodeUnit, coef AS Coefficient, weight AS weight, CASE WHEN DEFAULT_UNIT='Y' then 1 ELSE 0 END as DefaultUnit 
