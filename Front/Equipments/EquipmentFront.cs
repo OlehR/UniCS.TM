@@ -227,8 +227,7 @@ namespace Front
         /// <param name="pSum"></param>
         /// <param name="pRNN"></param>
         /// <returns></returns>
-        public Payment PosRefund(decimal pSum,string pRNN)
-        {
+        public Payment PosRefund(decimal pSum,string pRNN) {
             return Terminal.Refund(pSum, pRNN);
         }
 

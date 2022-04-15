@@ -167,6 +167,19 @@ namespace Front
             Recalc();
         }
 
+
+        public void GetBarCode(string pBarCode, string pTypeBarCode)
+        {
+            if(State==eStateMainWindows.WaitInput)
+                Bl.GetBarCode(pBarCode, pTypeBarCode);
+            else
+            {
+                var u = Bl.GetUserByBarCode(pBarCode);
+                if (u != null)
+                    Global.OnAdminBarCode?.Invoke(u);
+            }
+        }
+
         void SetConfirm(User pUser,bool pIsFirst)
         {
             IsIgnoreExciseStamp = Access.GetRight(pUser, eTypeAccess.ExciseStamp);
