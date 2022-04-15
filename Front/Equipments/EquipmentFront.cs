@@ -33,7 +33,7 @@ namespace Front
         public void SetBankTerminal(BankTerminal pBT) { Terminal = pBT; }
         public int CountTerminal { get { return GetBankTerminal.Count(); } }
 
-        eTypeAccess OperationWaitAccess { get; set; } = eTypeAccess.NoDefinition;
+       // eTypeAccess OperationWaitAccess { get; set; } = eTypeAccess.NoDefinition;
 
         public eStateEquipment State
         {
@@ -111,6 +111,7 @@ namespace Front
                         ElEquipment.Equipment = new Scale(config);
                         break;
                 }
+                Scale = (Scale) ElEquipment.Equipment;
 
                 //ControlScale
                 ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.ControlScale).First();
@@ -148,7 +149,7 @@ namespace Front
                     Terminal = (BankTerminal)ElEquipment.Equipment;
                 }
 
-                //EKKA
+                //RRO
                 ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.RRO).First();
                 switch (ElEquipment.Model)
                 {
@@ -171,9 +172,15 @@ namespace Front
                 RRO = (Rro)ElEquipment.Equipment;
 
                 State = eStateEquipment.Ok;
+
+               foreach(var el in  ListEquipment)
+                {
+                    el.Equipment.SetState += (pStateEquipment, pModelEquipment) => { SetStatus?.Invoke(new StatusEquipment() {ModelEquipment= pModelEquipment,State =(int)pStateEquipment, TextState=$"" }); };
+                }
+
             }
             catch (Exception e)
-            {
+            { 
                 FileLogger.WriteLogMessage($"EquipmentFront Exception => Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace}", eTypeLog.Error);
                 State = eStateEquipment.Error;
             }
@@ -246,8 +253,8 @@ namespace Front
         {
             if (ww is PosStatus status)
             {
-                SetStatus?.Invoke(new StatusEquipment(Terminal.ModelEquipment, (int)status.Status, $"{status.MsgDescription} {status.Status.ToString()}"));
-                Debug.WriteLine($"{DateTime.Now} {Terminal.ModelEquipment} {status.MsgDescription} {status.Status.ToString()}");
+                SetStatus?.Invoke(new StatusEquipment(Terminal.ModelEquipment, (int)status.Status, $"{status.MsgDescription} {status.Status}"));
+                Debug.WriteLine($"{DateTime.Now} {Terminal.ModelEquipment} {status.MsgDescription} {status.Status}");
             }
         }
 

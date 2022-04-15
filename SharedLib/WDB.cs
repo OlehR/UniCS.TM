@@ -288,7 +288,6 @@ namespace SharedLib
         ///</returns>
         public virtual IdReceipt GetNewReceipt(IdReceipt parIdReceipt)
         {
-
             lock (GetObjectForLockByIdWorkplace(parIdReceipt.IdWorkplace))
             {
               if (parIdReceipt.CodePeriod == 0)

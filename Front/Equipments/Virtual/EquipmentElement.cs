@@ -7,12 +7,11 @@ namespace Front.Equipments
     public class EquipmentElement
     {        
         public eTypeEquipment Type { get { return Model.GetTypeEquipment(); } }
-        public string StrType { get { return Type.ToString(); } }
+        //public string StrType { get { return Type.ToString(); } }
         public eModelEquipment Model { get; set; }
-        public Equipment Equipment  { get; set; }
-        public string Port { get; set; }
-        public int BaudRate { get; set; }
+        public Equipment Equipment  { get; set; }        
         public string Name { get; set; }
+        public bool IsСritical { get; set; } = true;
     }
 }
  
