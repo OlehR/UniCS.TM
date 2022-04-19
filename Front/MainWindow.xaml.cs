@@ -7,19 +7,15 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using Front.Equipments;
 using Front.Models;
-using Microsoft.Extensions.Configuration;
 using ModelMID;
 using ModelMID.DB;
 using SharedLib;
@@ -75,7 +71,6 @@ namespace Front
                 {
                     case eTypeAccess.DelWares: return ($"Видалення товару: {CurWares?.NameWares}");
                     case eTypeAccess.DelReciept: return "Видалити чек";
-
                 }
                 return null;
             }
@@ -161,7 +156,6 @@ namespace Front
             en.Tag = new CultureInfo("en");
             hu.Tag = new CultureInfo("hu");
             //pln.Tag = new CultureInfo("pln");
-
 
             CultureInfo currLang = App.Language;
             Recalc();

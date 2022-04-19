@@ -134,9 +134,9 @@ namespace Test
             //api.GetNoFinishReceipt(TerminalId);return
 
 
-            var pp = api.AddProductByBarCode(TerminalId, "5055966801098", 1);
+            var pp = api.AddProductByBarCode(TerminalId, "4820080726777", 1);
 
-            pp = api.AddProductByBarCode(TerminalId, "5055966801098", 1);
+            pp = api.AddProductByBarCode(TerminalId, "4820080726777", 1);
 
             return;
             api.ChangeQuantity(TerminalId, pp.Id  , 2);

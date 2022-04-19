@@ -4,14 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Newtonsoft.Json;
-using System.Net.Http;
-using System.IO;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using System.Globalization;
 using System.Diagnostics;
-using System.Reflection;
 
 namespace SharedLib
 {
@@ -44,7 +39,9 @@ namespace SharedLib
             WorkId = new SortedList<Guid, int>();
             sBL = this;
         }
+        
         public static BL GetBL { get { return sBL; } }
+
         public ReceiptWares AddReceiptWares(ReceiptWares pW, bool pRecalcPriceOnLine = true)
         {
             bool isZeroPrice=false;
@@ -120,6 +117,7 @@ namespace SharedLib
             }
             return res;
         }
+
         public IEnumerable<QR> GetQR(IdReceipt pIdR)
         {
             return db.GetQR(pIdR);
@@ -153,6 +151,7 @@ namespace SharedLib
             db.RecalcPriceAsync(new IdReceiptWares(curReciptId));
             return curReciptId;
         }
+
         public Receipt GetLastReceipt(Guid parTerminalId, int pCodePeriod = 0)
         {
             return GetLastReceipt(GetIdWorkplaceByTerminalId(parTerminalId), pCodePeriod);            
@@ -307,6 +306,7 @@ namespace SharedLib
             //var El = Res.First();
             return Res;
         }
+       
         public bool ChangeQuantity(IdReceiptWares pReceiptWaresId, decimal pQuantity)
         {
             bool isZeroPrice = false;
@@ -396,7 +396,6 @@ namespace SharedLib
             _ = ds.GetBonusAsync(parClient, Global.GetTerminalIdByIdWorkplace(idReceipt.IdWorkplace));
         }
 
-
         public IEnumerable<ReceiptWares> GetProductsByName(IdReceipt parReceipt, string parName, int parOffSet = -1, int parLimit = 10, int parCodeFastGroup = 0)
         {
             if (parReceipt == null)
@@ -467,12 +466,10 @@ namespace SharedLib
             return db.InsertWeight(new { BarCode = (parTypeSaveWeight == TypeSaveWeight.Add || parBarCode == null ? CodeWares.ToString() : parBarCode), Weight = (decimal)parWeight / 1000m, Status = parTypeSaveWeight });
         }
 
-
         public IEnumerable<ReceiptWares> GetWaresReceipt(IdReceipt pIdReceipt = null)
         {
             return db.ViewReceiptWares(pIdReceipt == null ? curReciptId : pIdReceipt);
         }
-
 
         public IEnumerable<Receipt> GetReceipts(DateTime parStartDate, DateTime parFinishDate, int IdWorkPlace)
         {
@@ -492,7 +489,6 @@ namespace SharedLib
             }
             return res;
         }
-
 
         public Receipt GetReceiptByFiscalNumber(int IdWorkplace, string pFiscalNumber, DateTime pStartDate = default(DateTime), DateTime pFinishDate = default(DateTime))
         {
@@ -515,11 +511,9 @@ namespace SharedLib
 
         public bool SaveReceipt(Receipt parReceipt, bool isRefund = true)
         {
-
             var ReceiptId = isRefund ? parReceipt.RefundId : (IdReceipt)parReceipt;
 
             var dbR = parReceipt.CodePeriod == Global.GetCodePeriod() ? db : new WDB_SQLite(ReceiptId.DTPeriod);
-
 
             dbR.ReplaceReceipt(parReceipt);
             dbR.ReplacePayment(parReceipt.Payment);
@@ -537,7 +531,6 @@ namespace SharedLib
             }
             return true;
         }
-
 
         public bool SaveReceiptEvents(IEnumerable<ReceiptEvent> parRE)
         {
@@ -714,6 +707,27 @@ namespace SharedLib
             List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(curReciptId) { EventType = ReceiptEventType.AgeRestrictedProduct, EventName = "Вага підтверджена", CreatedAt = DateTime.Now } };
             db.InsertReceiptEvent(rr);
 
+        }
+
+        public bool CreateRefund(IdReceipt IdR)
+        {
+            var NewR = GetNewIdReceipt(IdR.IdWorkplace);
+
+            var R = GetReceiptHead(IdR, true);
+            R.Payment = null;
+            R.ReceiptEvent = null;
+            R.TypeReceipt = eTypeReceipt.Refund;
+            R.RefundId = new IdReceipt(R);
+            R.SetIdReceipt(NewR);
+            db.ReplaceReceipt(R);
+
+            foreach (var el in R.Wares)
+            {
+                el.MaxRefundQuantity = el.Quantity - el.RefundedQuantity;
+                el.Quantity = 0;
+                db.AddWares(el);
+            }           
+            return true;
         }
     }
 }

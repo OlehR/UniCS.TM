@@ -214,8 +214,15 @@ namespace ModelMID
         /// Додаткові ваги
         /// </summary>
         public IEnumerable<decimal> AdditionalWeights { get; set; }
-
+        /// <summary>
+        /// Максимальна кількість, яку можна продавати
+        /// </summary>
         public int AmountSalesBan { get; set; }
+
+        /// <summary>
+        /// Кількість Яку ще можна повернути.
+        /// </summary>
+        public decimal MaxRefundQuantity { get; set; }
         /// <summary>
         /// 
         /// </summary>
@@ -248,6 +255,9 @@ namespace ModelMID
 
         public int TotalRows { get; set; }
 
+        /// <summary>
+        /// Кількість Повернутого.
+        /// </summary>
         public decimal RefundedQuantity { get; set; }
 
         /// <summary>
