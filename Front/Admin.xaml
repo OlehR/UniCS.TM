@@ -95,6 +95,7 @@
                     <Grid.RowDefinitions>
                     <RowDefinition Height="1*"></RowDefinition>
                     <RowDefinition Height="7*"></RowDefinition>
+                     <RowDefinition Height="*"></RowDefinition>
                     </Grid.RowDefinitions>
                     <DatePicker Name="dataHistori" FontSize="30" DisplayDate="2021-10-29" Width="200" Height="50" HorizontalAlignment="Left"></DatePicker>
                     <Calendar Grid.Row="0"  Visibility="Hidden" ></Calendar>
@@ -125,7 +126,7 @@
                         </ItemsControl>
                     </ScrollViewer>-->
                     <ListBox x:Name="ListReceipts" SelectionChanged="historiReceiptList_SelectionChanged"
-                     Grid.Row="1" Grid.RowSpan="5" Grid.Column="0" Grid.ColumnSpan="4">
+                     Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Margin="5" Orientation="Horizontal">
@@ -143,6 +144,23 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button Style="{StaticResource Default}" Grid.Column="2" FontSize="22" Click="FiscalizCheckButton">
+                            <TextBlock FontSize="22" Text="Фіскалізувати"/>
+                        </Button>
+                        <Button Style="{StaticResource Default}" Grid.Column="2" FontSize="22" Click="PayAdminPanelButton">
+                            <TextBlock FontSize="22" Text="Оплатити"/>
+                        </Button>
+                        <Button Style="{StaticResource Default}" Grid.Column="2" FontSize="22" Click="PaymentDetailsAdminPanelButton">
+                            <TextBlock FontSize="22" Text="Ввести реквізити"/>
+                        </Button>
+                        <Button Style="{StaticResource Default}" Grid.Column="2" FontSize="22" Click="Transfer1CButton">
+                            <TextBlock FontSize="22" Text="Передати в 1С"/>
+                        </Button>
+                        <Button Style="{StaticResource Default}" Grid.Column="2" FontSize="22" Click="ReturnCheckButton">
+                            <TextBlock FontSize="22" Text="Повернути"/>
+                        </Button>
+                    </StackPanel>
                 </Grid>
             </TabItem>
             <TabItem Header="Помилки">

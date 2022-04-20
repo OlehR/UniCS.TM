@@ -121,5 +121,30 @@ namespace Front
             Receipt p = (Receipt)ListReceipts.SelectedItem;
             MessageBox.Show("Сума чеку: " + p.SumReceipt.ToString());
         }
+
+        private void FiscalizCheckButton(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Фiскалізовано");
+        }
+
+        private void PayAdminPanelButton(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Оплачено");
+        }
+
+        private void PaymentDetailsAdminPanelButton(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Реквізити на оплату");
+        }
+
+        private void Transfer1CButton(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Передати в 1С");
+        }
+
+        private void ReturnCheckButton(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Повернкти чек");
+        }
     }
 }
