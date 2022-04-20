@@ -14,7 +14,9 @@ namespace SharedLib
     {
         static BL sBL;
         public WDB_SQLite db;
+
         public IdReceipt curReciptId;
+        public bool IsRefund { get; set; }
 
         public DataSync ds;
         public ControlScale CS = new ControlScale();
@@ -146,6 +148,7 @@ namespace SharedLib
 
         public IdReceipt GetNewIdReceipt(int pIdWorkplace = 0, int pCodePeriod = 0)
         {
+            IsRefund = false;
             var idReceip = new IdReceipt() { IdWorkplace = (pIdWorkplace == 0 ? Global.IdWorkPlace : pIdWorkplace), CodePeriod = (pCodePeriod == 0 ? Global.GetCodePeriod() : pCodePeriod) };
             curReciptId = db.GetNewReceipt(idReceip);
             db.RecalcPriceAsync(new IdReceiptWares(curReciptId));
@@ -614,7 +617,6 @@ namespace SharedLib
             return db.FixWeight(RW);
         }
 
-
         /// <summary>
         /// Отриманий штрихкод з Обладнання.
         /// </summary>
@@ -720,7 +722,7 @@ namespace SharedLib
             R.RefundId = new IdReceipt(R);
             R.SetIdReceipt(NewR);
             db.ReplaceReceipt(R);
-
+            IsRefund = true;
             foreach (var el in R.Wares)
             {
                 el.MaxRefundQuantity = el.Quantity - el.RefundedQuantity;

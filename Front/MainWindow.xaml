@@ -219,11 +219,14 @@
                                             </Button.Content>
                                             <Button.Style>
                                                 <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
-                                                    <Setter Property="IsEnabled" Value="true"/>
+                                                    <Setter Property="IsEnabled" Value="False"/>
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding ElementName=QuantityText, Path=Text}" Value="1">
-                                                            <Setter Property="IsEnabled" Value="False"/>
+                                                        <DataTrigger Binding="{Binding IsMinus}" Value="True">
+                                                            <Setter Property="IsEnabled" Value="True"/>
                                                         </DataTrigger>
+                                                      <!--  <DataTrigger Binding="{Binding ElementName=QuantityText, Path=Text}" Value="1">
+                                                            <Setter Property="IsEnabled" Value="False"/>
+                                                        </DataTrigger>-->
                                                     </Style.Triggers>
                                                 </Style>
                                             </Button.Style>
@@ -259,17 +262,16 @@
                                             </TextBlock>
                                         </Button>
 
-
                                         <Button x:Name="Plus" Click="BtnClickMinusPlus" Grid.Column="3">
                                             <Button.Content>
                                                 <Image Margin="15" Source="icons\plus.png"></Image>
                                             </Button.Content>
                                             <Button.Style>
                                                 <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
-                                                    <Setter Property="IsEnabled" Value="true"/>
+                                                    <Setter Property="IsEnabled" Value="False"/>
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding IsWeight}" Value="True">
-                                                            <Setter Property="IsEnabled" Value="False"/>
+                                                        <DataTrigger Binding="{Binding IsPlus}" Value="True">
+                                                            <Setter Property="IsEnabled" Value="True"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>

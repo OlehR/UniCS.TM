@@ -333,7 +333,7 @@ namespace Front
                 {
                     return;
                 }
-                if (Access.GetRight(eTypeAccess.DelWares))
+                if ( Access.GetRight(eTypeAccess.DelWares) || !el.IsConfirmDel)
                     Bl.ChangeQuantity(el, 0);
                 else
                     SetWaitConfirm(eTypeAccess.DelWares, el);
@@ -617,9 +617,9 @@ namespace Front
         {
 
             var RId = Bl.GetNewIdReceipt();
-            Bl.AddWaresBarCode(RId, "27833", 2m);
-            //Bl.AddWaresBarCode(RId, "7622300813437", 1);
-            //Bl.AddWaresBarCode(RId, "2201652300229", 2);
+            Bl.AddWaresBarCode(RId, "27833", 258m);
+            Bl.AddWaresBarCode(RId, "7622300813437", 1);
+            Bl.AddWaresBarCode(RId, "2201652300229", 2);
             //Bl.AddWaresBarCode(RId, "7775002160043", 1); //товар 2 кат
             //Bl.AddWaresBarCode(RId,"1110011760218", 11);
             //Bl.AddWaresBarCode(RId,"7773002160043", 1); //товар 2 кат

@@ -222,7 +222,7 @@ namespace ModelMID
         /// <summary>
         /// Кількість Яку ще можна повернути.
         /// </summary>
-        public decimal MaxRefundQuantity { get; set; }
+        public decimal? MaxRefundQuantity { get; set; } = null;
         /// <summary>
         /// 
         /// </summary>
@@ -344,24 +344,11 @@ namespace ModelMID
             }
         }
 
-        /*
-             public virtual void SetWares(DataRow parRw, int parTypeFound = 0)
-              {
-                  Clear();
-                  if (parRw != null)
-                  {
-                      CodeWares = Convert.ToInt32(parRw["code_wares"]);
-                      NameWares = Convert.ToString(parRw["name_wares"]);
-                      NameWaresReceipt = Convert.ToString(parRw["name_wares_receipt"]);
-                      PercentVat = Convert.ToInt32(parRw["percent_vat"]);
-                      CodeUnit = Convert.ToInt32(parRw["code_unit"]);
-                      Price = Convert.ToDecimal(parRw["price_dealer"]);
-                      Coefficient = Convert.ToInt32(parRw["coefficient"]);
-                      TypeFound = Convert.ToInt32(parTypeFound);
-                      TypePrice = Convert.ToInt32(parRw["Type_Price"]);
-                      TypeVat = Convert.ToInt32(parRw["Type_Vat"]);
-                  }
+        public bool IsPlus { get { return !IsWeight; } }// && ( MaxRefundQuantity==null || Quantity<MaxRefundQuantity ); } } // { get; set; } = false;//
 
-              }*/
+        public bool IsMinus { get { return !IsWeight && Quantity > 1; } } //{ get; set; } = false;//
+
+        public bool IsConfirmDel { get { return WeightFact != -1; } }
+
     }
 }

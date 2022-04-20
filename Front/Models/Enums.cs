@@ -18,6 +18,10 @@ namespace Front.Models
         /// </summary>
         WaitInput,
         /// <summary>
+        /// Введення кількості в чеку повернення
+        /// </summary>
+        WaitInputRefund,
+        /// <summary>
         /// Очікуємо вибір ціни Сигарет
         /// </summary>
         WaitInputPrice,
