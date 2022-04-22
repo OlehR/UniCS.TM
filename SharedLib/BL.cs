@@ -288,7 +288,6 @@ namespace SharedLib
                         else
                             Global.OnClientWindows?.Invoke(w.IdWorkplace, eTypeWindows.LimitSales, $"Даний товар {w.NameWares} {Environment.NewLine} має обмеження в кількості {w.AmountSalesBan} шт");
                     }
-
                     res = db.UpdateQuantityWares(w);
                     _ = VR.SendMessageAsync(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum, VR.eTypeVRMessage.UpdateWares);
                 }
@@ -510,21 +509,11 @@ namespace SharedLib
             return res;
         }
 
-        public Task GetBonusAsync(Client pClient, int pTerminalId)
-        {
-            return ds.GetBonusAsync(pClient, pTerminalId);
-        }
+        public Task GetBonusAsync(Client pClient, int pTerminalId) { return ds.GetBonusAsync(pClient, pTerminalId); }
 
-        public bool SendReceiptTo1C(IdReceipt parIdReceipt)
-        {
-            return ds.SendReceiptTo1C(parIdReceipt);
-        }
+        public bool SendReceiptTo1C(IdReceipt parIdReceipt) { return ds.SendReceiptTo1C(parIdReceipt); }
 
-        public void CloseDB()
-        {
-            if (db != null)
-                db.Close();
-        }
+        public void CloseDB() { db?.Close(); }
 
         public void StartWork(int pIdWorkplace, string pCodeCashier)
         {
@@ -548,10 +537,7 @@ namespace SharedLib
             return 0;
         }
 
-        public bool FixWeight(ReceiptWares pRW)
-        {
-            return db.FixWeight(pRW);
-        }
+        public bool FixWeight(ReceiptWares pRW) { return db.FixWeight(pRW); }
 
         /// <summary>
         /// Отриманий штрихкод з Обладнання.
@@ -574,32 +560,7 @@ namespace SharedLib
                 else
                 { _ = GetBonusAsync(c, Global.IdWorkPlace); }
             }
-        }
-        /*
-        /// <summary>
-        /// Отримана вага з Обладннааняю
-        /// </summary>
-        /// <param name="pWeight"></param>
-        /// <param name="pIsStable"></param>
-        public void GetScale(double pWeight, bool pIsStable)
-        {
-            if (pIsStable)
-                LastWeight = pWeight;
-        }
-
-        public void StartScale(int pCodeWares = 0)
-        {
-            LastCodeWares = pCodeWares;
-            LastWeight = 0d;
-        }
-
-        /// <summary>
-        /// Добавляє зважений товар в базу.
-        /// </summary>
-        public void AddWeightWares()
-        {
-            AddWaresCode(LastCodeWares, 0, Convert.ToDecimal(LastWeight));
-        }*/
+        }        
 
         public bool UpdateExciseStamp(IEnumerable<ReceiptWares> pRW)
         {
@@ -631,10 +592,7 @@ namespace SharedLib
             return null;
         }
 
-        public bool InsertLogRRO(LogRRO pL)
-        {
-            return db.InsertLogRRO(pL);
-        }
+        public bool InsertLogRRO(LogRRO pL) { return db.InsertLogRRO(pL); }
 
         public void AddEventAge()
         {
