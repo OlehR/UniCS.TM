@@ -392,7 +392,7 @@ namespace ModernIntegration
             //Якщо чек незакрито на терміналі куди переносити тоді помилка.
             if (Receipts.ContainsKey(secondTerminalId) && Receipts[secondTerminalId] != null)
                 return false;
-            var idReceipt = Bl.GetNewIdReceipt(secondTerminalId);
+            var idReceipt = Bl.GetNewIdReceipt(Global.GetIdWorkplaceByTerminalId(secondTerminalId) );
             if (Bl.MoveReceipt(GetCurrentReceiptByTerminalId(firstTerminalId), idReceipt))
             {
                 Receipts[secondTerminalId] = new ModelMID.Receipt(idReceipt);
@@ -447,7 +447,7 @@ namespace ModernIntegration
             ReceiptViewModel Res = null;
             try
             {
-                var receipt = Bl.GetLastReceipt(pTerminalId);
+                var receipt = Bl.GetLastReceipt(Global.GetIdWorkplaceByTerminalId(pTerminalId));
                 if (receipt != null && receipt.StateReceipt == eStateReceipt.Prepare)
                 {
                     Receipts[pTerminalId] = new ModelMID.Receipt(receipt);
@@ -515,10 +515,12 @@ namespace ModernIntegration
             Bl.StoptWork(IdWorkplace);
         }
 
-        public override bool SetWeight(Guid pTerminalId, Guid pProductId, decimal pWaight)
+        public override bool SetWeight(Guid pTerminalId, Guid pProductId, decimal pWeight)
         {
-            var CurReceipt = GetCurrentReceiptByTerminalId(pTerminalId);          
-            return Bl.FixWeight(CurReceipt, pProductId, pWaight/1000m);  
+            var CurReceipt = GetCurrentReceiptByTerminalId(pTerminalId);
+            var RW = new ReceiptWares(CurReceipt, pProductId);
+            RW.FixWeight = pWeight / 1000m;
+            return Bl.FixWeight(RW);
         }
 
         public override IEnumerable<QRDefinitions> GetQR(Guid pTerminalId)

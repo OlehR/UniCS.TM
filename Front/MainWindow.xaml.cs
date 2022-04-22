@@ -90,10 +90,11 @@ namespace Front
 
         public ObservableCollection<ReceiptWares> ListWares { get; set; }
         //public ObservableCollection<decimal> Prices { get; set; } = new ObservableCollection<decimal>;
-        
+
+        public ControlScale CS = new ControlScale();
+
         public MainWindow()
-        {
-            
+        {            
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
             
             //Для касового місця Запит логін пароль.
@@ -101,7 +102,7 @@ namespace Front
                 Access.СurUser = new User() { TypeUser = eTypeUser.Client, CodeUser = 99999999, Login = "Client", NameUser = "Client"};
 
             Bl = new BL(true);
-            EF = new EquipmentFront(Bl.GetBarCode, SetWeight, Bl.CS.OnScalesData);
+            EF = new EquipmentFront(Bl.GetBarCode, SetWeight, CS.OnScalesData);
 
             //SetBarCode += Bl.GetBarCode;// (pBarCode, pTypeBarCode) => { Bl.GetBarCode(pBarCode, pTypeBarCode); };
             //SetControlWeight += Bl.CS.OnScalesData; // (pWeight, isStable)=>{ });
@@ -475,7 +476,7 @@ namespace Front
 
             if (pCodeWares > 0)
             {
-                CurWares = Bl.AddWaresCode(pCodeWares, pCodeUnit, pQuantity, pPrice);
+                CurWares = Bl.AddWaresCode(null,pCodeWares, pCodeUnit, pQuantity, pPrice);
 
                 if (CurWares != null)
                 {
@@ -498,7 +499,7 @@ namespace Front
                         }
                         else
                             if (CurWares.Prices.Count() == 1)
-                            Bl.AddWaresCode(pCodeWares, pCodeUnit, pQuantity, CurWares.Prices.First());
+                            Bl.AddWaresCode(null,pCodeWares, pCodeUnit, pQuantity, CurWares.Prices.First());
                     }
 
                 }

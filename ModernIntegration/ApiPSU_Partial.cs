@@ -42,7 +42,7 @@ namespace ModernIntegration
         {
             if (!Receipts.ContainsKey(pTerminalId) || Receipts[pTerminalId] == null)
             {
-                var idReceipt = Bl.GetNewIdReceipt(pTerminalId);
+                var idReceipt = Bl.GetNewIdReceipt(Global.GetIdWorkplaceByTerminalId(pTerminalId));
                 Receipts[pTerminalId] = new ModelMID.Receipt(idReceipt);
                 //Bl.AddReceipt(Receipts[pTerminalId]);
             }
@@ -312,7 +312,7 @@ namespace ModernIntegration
                 RefundRVM = (RefundReceiptViewModel)pReceiptRVM;
 
 
-            var receipt = new ModelMID.Receipt(RefundRVM == null ? new IdReceipt(pReceiptRVM.Id) : Bl.GetNewIdReceipt(pTerminalId))
+            var receipt = new ModelMID.Receipt(RefundRVM == null ? new IdReceipt(pReceiptRVM.Id) : Bl.GetNewIdReceipt(Global.GetIdWorkplaceByTerminalId(pTerminalId)))
             {
                 //ReceiptId  = pReceiptRVM.Id,
                 StateReceipt = (string.IsNullOrEmpty(pReceiptRVM.FiscalNumber) ? (pReceiptRVM.PaymentInfo != null ? eStateReceipt.Pay : eStateReceipt.Prepare) : eStateReceipt.Print),
