@@ -119,7 +119,7 @@ namespace Front
         private void historiReceiptList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Receipt p = (Receipt)ListReceipts.SelectedItem;
-            MessageBox.Show("Сума чеку: " + p.SumReceipt.ToString());
+            //MessageBox.Show("Сума чеку: " + p.SumReceipt.ToString());
         }
 
         private void FiscalizCheckButton(object sender, RoutedEventArgs e)

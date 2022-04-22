@@ -1,5 +1,4 @@
-﻿//using Hangfire.Annotations;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -19,6 +18,7 @@ using Front.Models;
 using ModelMID;
 using ModelMID.DB;
 using SharedLib;
+using Utils;
 
 namespace Front
 {
@@ -110,35 +110,30 @@ namespace Front
             {
                 EquipmentInfo = info.TextState;
             };
-            Global.OnReceiptCalculationComplete += (wareses, guid) =>
+            Global.OnReceiptCalculationComplete += (pWares, pIdWorkplace) =>
             {
                 try
                 {
-                    ListWares = new ObservableCollection<ReceiptWares>(wareses);
+                    ListWares = new ObservableCollection<ReceiptWares>(pWares);
                     Dispatcher.BeginInvoke(new ThreadStart(() => { WaresList.ItemsSource = ListWares; Recalc(); }));
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
-                    Debug.WriteLine("Error OnReceiptCalculationComplete" + ex.Message);
+                    FileLogger.WriteLogMessage($"MainWindow.OnReceiptCalculationComplete Exception =>(pWares=>{pWares.ToJSON()},pIdWorkplace=>{pIdWorkplace}) => ({Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace})", eTypeLog.Error);
                 }
-                Debug.WriteLine("\n==========================Start===================================");
-                foreach (var receiptWarese in wareses)
-                {
-                    Debug.WriteLine($"Promotion=>{receiptWarese.GetStrWaresReceiptPromotion.Trim()} \n{receiptWarese.NameWares} - {receiptWarese.Price} Quantity=> {receiptWarese.Quantity} SumDiscount=>{receiptWarese.SumDiscount}");
-                }
-                Debug.WriteLine("===========================End==========================================\n");
+                FileLogger.WriteLogMessage($"MainWindow.OnReceiptCalculationComplete Exception =>(pWares=>{pWares.ToJSON()},pIdWorkplace=>{pIdWorkplace})", eTypeLog.Full);
             };
 
             Global.OnSyncInfoCollected += (SyncInfo) =>
             {
-                Console.WriteLine($"OnSyncInfoCollected Status=>{SyncInfo.Status} StatusDescription=>{SyncInfo.StatusDescription}");
+                FileLogger.WriteLogMessage($"MainWindow.OnSyncInfoCollected Status=>{SyncInfo.Status} StatusDescription=>{SyncInfo.StatusDescription}",eTypeLog.Full);
             };
 
             Global.OnStatusChanged += (Status) => { };
             Global.OnChangedStatusScale += (Status) => { };
             Global.OnClientChanged += (client, guid) =>
             {
-                Debug.WriteLine($"Client.Wallet=> {client.Wallet} SumBonus=>{client.SumBonus} ");
+                FileLogger.WriteLogMessage($"MainWindow.OnClientChanged(Client.Wallet=> {client.Wallet} SumBonus=>{client.SumBonus})", eTypeLog.Full);
             };
             Global.OnAdminBarCode += (pUser) => { SetConfirm(pUser,false); };
 
@@ -147,7 +142,6 @@ namespace Front
             Volume = true;
 
             InitializeComponent();
-
 
             ListWares = new ObservableCollection<ReceiptWares>(StartData());
             WaresList.ItemsSource = ListWares;// Wares;
@@ -232,6 +226,8 @@ namespace Front
                 {
                     if (pSMV != eStateMainWindows.NotDefine)
                         State = pSMV;
+                    if(State!= eStateMainWindows.WaitAdmin && State != eStateMainWindows.WaitAdminLogin)
+                        TypeAccessWait = eTypeAccess.NoDefinition;
 
                     ExciseStamp.Visibility = Visibility.Collapsed;
                     ChoicePrice.Visibility = Visibility.Collapsed;
@@ -547,7 +543,7 @@ namespace Front
         /// <returns></returns>
         bool PrintAndCloseReceipt()
         {
-            var R = Bl.GetReceiptHead(Bl.curReciptId, true);
+            var R = Bl.GetReceiptHead(Bl.curRecipt, true);
             if(R.Wares.Where(el=>el.TypeWares>0).Count()>0 && R.ReceiptEvent.Where(el => el.EventType == ReceiptEventType.AgeRestrictedProduct).Count()==0)
             {
                 SetWaitConfirm(eTypeAccess.ConfirmAge);
@@ -578,7 +574,7 @@ namespace Front
                 {
                     Bl.UpdateReceiptFiscalNumber(R, res.FiscalNumber, res.SUM);
                     var r = Bl.GetNewIdReceipt();
-                    Global.OnReceiptCalculationComplete?.Invoke(new List<ReceiptWares>(), Global.GetTerminalIdByIdWorkplace(Global.IdWorkPlace));
+                    //Global.OnReceiptCalculationComplete?.Invoke(new List<ReceiptWares>(), Global.IdWorkPlace);
                     SetStateView(eStateMainWindows.WaitInput);
                     return true;
                 }

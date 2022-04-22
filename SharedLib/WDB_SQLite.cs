@@ -223,7 +223,7 @@ namespace SharedLib
                 {
                     //Console.WriteLine(OnReceiptCalculationComplete != null);
                     var r = ViewReceiptWares(new IdReceiptWares(pIdReceiptWares, 0), true);//вертаємо весь чек.
-                    Global.OnReceiptCalculationComplete?.Invoke(r, Global.GetTerminalIdByIdWorkplace(pIdReceiptWares.IdWorkplace));
+                    Global.OnReceiptCalculationComplete?.Invoke(r, pIdReceiptWares);
                     if (r == null || r.Count() == 0)
                         return;
                     var parW = r.Last();

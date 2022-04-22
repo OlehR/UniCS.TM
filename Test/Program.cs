@@ -50,7 +50,7 @@ namespace Test
             //await l.LoadRozetka();//GetInfoBarcode("4820009350588");
 
 
-           // await CreateDataBaseAsync(true); return;
+          //  await CreateDataBaseAsync(true); return;
             //var aa= Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
             //var bl = new BL();
             //var aaaaa=bl.Ver;
@@ -95,15 +95,14 @@ namespace Test
             var TerminalId = //Guid.Parse("c2211a23-b856-4dd4-ba29-3ec2d043efbf");
                            //Guid.Parse("27aaa6d3-8824-475d-a7d4-3269472ba950");//19
             Guid.Parse("85db1663-6284-4b62-9481-7b7aad4fb3bc");//17
-            var ProductId = Guid.Parse("00000000-abcd-0000-0019-000000162794");
+            var ProductId = Guid.Parse("00000000-abcd-0000-0019-000000141231");
             var FastGroup = Guid.Parse("12345670-0987-0000-0000-000000009007");
             var ReceiptId = Guid.Parse("00000072-ffff-2022-0112-000000000028");
 
             //var receipt= JsonConvert.DeserializeObject<ModelMID.Receipt>(File.ReadAllText(@"d:\mid\receipt.json "));
 
             var Pay = new ReceiptPayment[] {
-                new ReceiptPayment
-            {
+                new ReceiptPayment {
                 Id = Guid.Parse("9e960928-1070-457d-aec3-14672adf3e9b"),
                 ReceiptId = ReceiptId,//Guid.Parse("00000072-ffff-2022-0112-000000000007"),
                 PaymentType = ModernIntegration.Enums.PaymentType.Card,
@@ -134,11 +133,11 @@ namespace Test
             //api.GetNoFinishReceipt(TerminalId);return
 
 
-            var pp = api.AddProductByBarCode(TerminalId, "4820080726777", 1);
+            //var pp = api.AddProductByBarCode(TerminalId, "4820080726777", 1);
 
-            pp = api.AddProductByBarCode(TerminalId, "4820080726777", 1);
+           var pp = api.AddProductByProductId(TerminalId, ProductId, 1); return;
 
-            return;
+       
             api.ChangeQuantity(TerminalId, pp.Id  , 2);
 
             api.ChangeQuantity(TerminalId, pp.Id, 3);
@@ -215,8 +214,10 @@ namespace Test
 
                 sd = api.AddProductByBarCode(TerminalId, "2201651902226", 8); //
 
-                var r = api.AddFiscalNumber(TerminalId, "TRRF-1234"); return;
+                var r = api.AddFiscalNumber(TerminalId, "TRRF-1234"); //return;
 
+                var lr=api.Bl.GetLastReceipt();
+                api.Bl.CreateRefund(lr); return;
 
                 //   sd = api.AddProductByBarCode(TerminalId, "7775006620509", 1); //товар 2 кат*/
                 //  Thread.Sleep(4000);

@@ -10,11 +10,11 @@ namespace ModelMID
     /// </summary>
     public class Global
     {
-        public static Action<IEnumerable<ReceiptWares>, Guid> OnReceiptCalculationComplete { get; set; }
+        public static Action<IEnumerable<ReceiptWares>, IdReceipt> OnReceiptCalculationComplete { get; set; }
         public static Action<SyncInformation> OnSyncInfoCollected { get; set; }
         public static Action<Status> OnStatusChanged { get; set; }
         public static Action<eStateScale> OnChangedStatusScale { get; set; }
-        public static Action<Client, Guid> OnClientChanged { get; set; }
+        public static Action<Client, int> OnClientChanged { get; set; }
         /// <summary>
         /// Виникає, коли зчитали штрихкод адміністратора в режимі КСО
         /// </summary>

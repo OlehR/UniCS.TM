@@ -20,19 +20,19 @@ namespace ModernIntegration
     public partial class ApiPSU:Api 
     {
         public BL Bl;
-        public Dictionary<Guid, ModelMID.IdReceipt> Receipts = new Dictionary<Guid, ModelMID.IdReceipt>();
+        public Dictionary<Guid, IdReceipt> Receipts = new Dictionary<Guid, IdReceipt>();
         public ApiPSU()
         {
             Bl = new BL();
-            Global.OnReceiptCalculationComplete += (wareses, guid) =>
+            Global.OnReceiptCalculationComplete += (wareses, pIdReceipt) =>
             {
                 FileLogger.WriteLogMessage($"OnReceiptCalculationComplete =>Start", eTypeLog.Expanded);
-                foreach (var receiptWarese in wareses)
+                foreach (var el in wareses)
                 {
-                    FileLogger.WriteLogMessage($"OnReceiptCalculationComplete Promotion=>{receiptWarese.GetStrWaresReceiptPromotion.Trim()} \n{receiptWarese.NameWares} - {receiptWarese.Price} Quantity=> {receiptWarese.Quantity} SumDiscount=>{receiptWarese.SumDiscount}", eTypeLog.Expanded);
+                    FileLogger.WriteLogMessage($"OnReceiptCalculationComplete Promotion=>{el.GetStrWaresReceiptPromotion.Trim()} \n{el.NameWares} - {el.Price} Quantity=> {el.Quantity} SumDiscount=>{el.SumDiscount}", eTypeLog.Expanded);
                 }
                 
-                OnProductsChanged?.Invoke(wareses.Select(s => GetProductViewModel(s)), guid);
+                OnProductsChanged?.Invoke(wareses.Select(s => GetProductViewModel(s)), Global.GetTerminalIdByIdWorkplace(pIdReceipt.IdWorkplace));
                 FileLogger.WriteLogMessage($"OnReceiptCalculationComplete =>End", eTypeLog.Expanded);
             };
 
@@ -48,7 +48,7 @@ namespace ModernIntegration
 
             Global.OnClientChanged += (client, guid) =>
             {               
-                OnCustomerChanged?.Invoke(GetCustomerViewModelByClient(client), guid);
+                OnCustomerChanged?.Invoke(GetCustomerViewModelByClient(client), Global.GetTerminalIdByIdWorkplace(guid));
                 FileLogger.WriteLogMessage($"Client.Wallet=> {client.Wallet} SumBonus=>{client.SumBonus} ", eTypeLog.Expanded);
             };
 
@@ -337,11 +337,12 @@ namespace ModernIntegration
         {
             CustomerViewModel Res = null;
             try
-            {               
-                var CM = Bl.GetClientByBarCode(GetCurrentReceiptByTerminalId(pTerminalId), pS);
+            {
+                var curReceipt = GetCurrentReceiptByTerminalId(pTerminalId);
+                var CM = Bl.GetClientByBarCode(curReceipt, pS);
                 if (CM != null)
                 {
-                    _ = Bl.GetBonusAsync(CM, pTerminalId);
+                    _ = Bl.GetBonusAsync(CM, curReceipt.IdWorkplace);
                     Res = GetCustomerViewModelByClient(CM);
                 }
                 FileLogger.WriteLogMessage($"ApiPSU.GetCustomerByBarCode =>( pTerminalId=>{pTerminalId},pS=>{pS}) => ({Res?.ToJSON()})", eTypeLog.Full);
@@ -359,10 +360,11 @@ namespace ModernIntegration
             CustomerViewModel Res = null;
             try
             {
+                var curReceipt = GetCurrentReceiptByTerminalId(pTerminalId);
                 var CM = Bl.GetClientByPhone(GetCurrentReceiptByTerminalId(pTerminalId), pPhone);
                 if (CM != null)
                 {
-                    _ = Bl.GetBonusAsync(CM, pTerminalId);
+                    _ = Bl.GetBonusAsync(CM, curReceipt.IdWorkplace);
                     Res = GetCustomerViewModelByClient(CM);
                 }
                 FileLogger.WriteLogMessage($"ApiPSU.GetCustomerByPhone =>( pTerminalId=>{pTerminalId},pPhone=>{pPhone}) => ({Res?.ToJSON()})", eTypeLog.Full);

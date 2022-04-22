@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using Utils;
 
 namespace SharedLib
 {
@@ -15,8 +16,8 @@ namespace SharedLib
         static BL sBL;
         public WDB_SQLite db;
 
-        public IdReceipt curReciptId;
-        public bool IsRefund { get; set; }
+        public Receipt curRecipt;
+        //public bool IsRefund { get; set; }
 
         public DataSync ds;
         public ControlScale CS = new ControlScale();
@@ -29,7 +30,7 @@ namespace SharedLib
         /// <summary>
         /// Для швидкого пошуку 
         /// </summary>
-        SortedList<Guid, int> WorkId;
+       // SortedList<Guid, int> WorkId;
 
         double LastWeight;
         int LastCodeWares;
@@ -38,7 +39,7 @@ namespace SharedLib
             db = new WDB_SQLite(default(DateTime), null, pIsUseOldDB);
             db.BildWorkplace();
             ds = new DataSync(this);
-            WorkId = new SortedList<Guid, int>();
+            //WorkId = new SortedList<Guid, int>();
             sBL = this;
         }
         
@@ -148,11 +149,10 @@ namespace SharedLib
 
         public IdReceipt GetNewIdReceipt(int pIdWorkplace = 0, int pCodePeriod = 0)
         {
-            IsRefund = false;
             var idReceip = new IdReceipt() { IdWorkplace = (pIdWorkplace == 0 ? Global.IdWorkPlace : pIdWorkplace), CodePeriod = (pCodePeriod == 0 ? Global.GetCodePeriod() : pCodePeriod) };
-            curReciptId = db.GetNewReceipt(idReceip);
-            db.RecalcPriceAsync(new IdReceiptWares(curReciptId));
-            return curReciptId;
+            curRecipt =  new Receipt( db.GetNewReceipt(idReceip));
+            db.RecalcPriceAsync(new IdReceiptWares(curRecipt));
+            return curRecipt;
         }
 
         public Receipt GetLastReceipt(Guid parTerminalId, int pCodePeriod = 0)
@@ -181,14 +181,15 @@ namespace SharedLib
 
             WDB_SQLite ldb = (Ldc == DateTime.Now.Date ? db : new WDB_SQLite(Ldc));
 
-            ldb.CloseReceipt(receipt);
-            return true;
+            var Res=ldb.CloseReceipt(receipt);
+            curRecipt = receipt;
+            return Res;
         }
 
         [Obsolete("This metod  is deprecated")]
         public ReceiptWares AddWaresBarCode(string pBarCode, decimal pQuantity = 0)
         {
-            return AddWaresBarCode(curReciptId, pBarCode, pQuantity);
+            return AddWaresBarCode(curRecipt, pBarCode, pQuantity);
         }
 
         public ReceiptWares AddWaresBarCode(IdReceipt pReceipt, string pBarCode, decimal pQuantity = 0)
@@ -266,7 +267,7 @@ namespace SharedLib
 
         public ReceiptWares AddWaresCode(int pCodeWares, int pCodeUnit, decimal pQuantity = 0, decimal pPrice = 0)
         {
-            return AddWaresCode(curReciptId, pCodeWares, pCodeUnit, pQuantity, pPrice);
+            return AddWaresCode(curRecipt, pCodeWares, pCodeUnit, pQuantity, pPrice);
         }
 
         public ReceiptWares AddWaresCode(IdReceipt pIdReceipt, int pCodeWares, int pCodeUnit, decimal pQuantity = 0, decimal pPrice = 0)
@@ -396,13 +397,13 @@ namespace SharedLib
             db.ReplaceReceipt(RH);
             if (Global.RecalcPriceOnLine)
                 db.RecalcPriceAsync(new IdReceiptWares(idReceipt));
-            _ = ds.GetBonusAsync(parClient, Global.GetTerminalIdByIdWorkplace(idReceipt.IdWorkplace));
+            _ = ds.GetBonusAsync(parClient, idReceipt.IdWorkplace);
         }
 
         public IEnumerable<ReceiptWares> GetProductsByName(IdReceipt parReceipt, string parName, int parOffSet = -1, int parLimit = 10, int parCodeFastGroup = 0)
         {
             if (parReceipt == null)
-                parReceipt = curReciptId;
+                parReceipt = curRecipt;
 
             parName = parName.Trim();
             // Якщо пошук по штрихкоду і назва похожа на штрихкод або артикул
@@ -452,9 +453,11 @@ namespace SharedLib
         public bool SetStateReceipt(IdReceipt pIdReceipt, eStateReceipt pStateReceipt)
         {
             if (pIdReceipt == null)
-                pIdReceipt = curReciptId;
+                pIdReceipt = curRecipt;
             var receipt = new Receipt(pIdReceipt) { StateReceipt = pStateReceipt, DateReceipt = DateTime.Now, UserCreate = GetUserIdbyWorkPlace(pIdReceipt.IdWorkplace) };
-            return db.CloseReceipt(receipt);
+            var Res = db.CloseReceipt(receipt);
+
+            return Res;
         }
 
         public bool InsertWeight(string parBarCode, int parWeight, Guid parWares, TypeSaveWeight parTypeSaveWeight)
@@ -471,7 +474,7 @@ namespace SharedLib
 
         public IEnumerable<ReceiptWares> GetWaresReceipt(IdReceipt pIdReceipt = null)
         {
-            return db.ViewReceiptWares(pIdReceipt == null ? curReciptId : pIdReceipt);
+            return db.ViewReceiptWares(pIdReceipt == null ? curRecipt : pIdReceipt);
         }
 
         public IEnumerable<Receipt> GetReceipts(DateTime parStartDate, DateTime parFinishDate, int IdWorkPlace)
@@ -571,9 +574,9 @@ namespace SharedLib
             return res;
         }
 
-        public Task GetBonusAsync(Client parClient, Guid parTerminalId)
+        public Task GetBonusAsync(Client pClient, int pTerminalId)
         {
-            return ds.GetBonusAsync(parClient, parTerminalId);
+            return ds.GetBonusAsync(pClient, pTerminalId);
         }
 
         public bool SendReceiptTo1C(IdReceipt parIdReceipt)
@@ -637,7 +640,7 @@ namespace SharedLib
                         Global.OnAdminBarCode?.Invoke(u);
                 }
                 else
-                { _ = GetBonusAsync(c, new Guid()); }
+                { _ = GetBonusAsync(c, Global.IdWorkPlace); }
             }
 
 
@@ -706,30 +709,38 @@ namespace SharedLib
 
         public void AddEventAge()
         {
-            List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(curReciptId) { EventType = ReceiptEventType.AgeRestrictedProduct, EventName = "Вага підтверджена", CreatedAt = DateTime.Now } };
+            List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(curRecipt) { EventType = ReceiptEventType.AgeRestrictedProduct, EventName = "Вага підтверджена", CreatedAt = DateTime.Now } };
             db.InsertReceiptEvent(rr);
 
         }
 
-        public bool CreateRefund(IdReceipt IdR)
+        public Receipt CreateRefund(IdReceipt IdR)
         {
-            var NewR = GetNewIdReceipt(IdR.IdWorkplace);
-
-            var R = GetReceiptHead(IdR, true);
-            R.Payment = null;
-            R.ReceiptEvent = null;
-            R.TypeReceipt = eTypeReceipt.Refund;
-            R.RefundId = new IdReceipt(R);
-            R.SetIdReceipt(NewR);
-            db.ReplaceReceipt(R);
-            IsRefund = true;
-            foreach (var el in R.Wares)
+            try
             {
-                el.MaxRefundQuantity = el.Quantity - el.RefundedQuantity;
-                el.Quantity = 0;
-                db.AddWares(el);
-            }           
-            return true;
+                var NewR = GetNewIdReceipt(IdR.IdWorkplace);
+                var R = GetReceiptHead(IdR, true);
+                R.Payment = null;
+                R.ReceiptEvent = null;
+                R.TypeReceipt = eTypeReceipt.Refund;
+                R.RefundId = new IdReceipt(R);
+                R.SetIdReceipt(NewR);
+                db.ReplaceReceipt(R);
+                
+                foreach (var el in R.Wares)
+                {
+                    el.MaxRefundQuantity = el.Quantity - el.RefundedQuantity;
+                    el.Quantity = 0;
+                    db.AddWares(el);
+                }
+                curRecipt = R;
+                return R;
+            }
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage($"BL.CreateRefund Exception =>( {IdR?.ToJSON() }) => (){Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace}", eTypeLog.Error);
+                return null;
+            }
         }
     }
 }

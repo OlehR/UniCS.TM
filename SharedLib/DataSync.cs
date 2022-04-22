@@ -234,55 +234,54 @@ namespace SharedLib
 
         }
         
-        public async Task GetBonusAsync(Client parClient, Guid parTerminalId)
+        public async Task GetBonusAsync(Client pClient, int pTerminalId)
         {
             try
             {
                 decimal Sum;
-                var body = soapTo1C.GenBody("GetBonusSum", new Parameters[] { new Parameters("CodeOfCard", parClient.BarCode) });
+                var body = soapTo1C.GenBody("GetBonusSum", new Parameters[] { new Parameters("CodeOfCard", pClient.BarCode) });
                 var res = await soapTo1C.RequestAsync(Global.Server1C, body);
                 res = res.Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
                 if (!string.IsNullOrEmpty(res) && decimal.TryParse(res, out Sum))
-                    parClient.SumMoneyBonus = Sum; //!!!TMP
-                body = soapTo1C.GenBody("GetMoneySum", new Parameters[] { new Parameters("CodeOfCard", parClient.BarCode) });
+                    pClient.SumMoneyBonus = Sum; //!!!TMP
+                body = soapTo1C.GenBody("GetMoneySum", new Parameters[] { new Parameters("CodeOfCard", pClient.BarCode) });
                 res = await soapTo1C.RequestAsync(Global.Server1C, body);
 
                 res = res.Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
                 if (!string.IsNullOrEmpty(res) && decimal.TryParse(res, out Sum))
-                    parClient.Wallet = Sum;
-                Global.OnClientChanged?.Invoke(parClient, parTerminalId);
+                    pClient.Wallet = Sum;
+                Global.OnClientChanged?.Invoke(pClient, pTerminalId);
             }
             catch (Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = parTerminalId, Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = ex.Message });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pTerminalId) , Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = ex.Message });
             }
 
-            //return parClient;
         }
 
-        public async Task<bool> CheckDiscountBarCodeAsync(IdReceipt parIdReceipt, string parBarCode, int parPercent)
+        public async Task<bool> CheckDiscountBarCodeAsync(IdReceipt pIdReceipt, string pBarCode, int pPercent)
         {
             bool isGood = true;
             decimal CountDiscount = 0; // На скільки товарів вже є знижка.
             try
             {
-                var Cat2 = db.CheckLastWares2Cat(parIdReceipt);
+                var Cat2 = db.CheckLastWares2Cat(pIdReceipt);
 
                 if (Cat2 == null || Cat2.Count() == 0)
                 {
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace), Status = eSyncStatus.IncorectProductForDiscount });
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceipt.IdWorkplace), Status = eSyncStatus.IncorectProductForDiscount });
                     return false;
                 }
                 var Cat2First = Cat2.First();
-                Cat2First.BarCode2Category = parBarCode == null ? "" : parBarCode;
-                Cat2First.Price = Cat2First.Price * (100m - (decimal)parPercent) / 100m;
+                Cat2First.BarCode2Category = pBarCode == null ? "" : pBarCode;
+                Cat2First.Price = Cat2First.Price * (100m - (decimal)pPercent) / 100m;
 
                 var LastQuantyity = db.GetLastQuantity(Cat2First);
                 //Якщо не ваговий - то знижка на 1 шт.
                 if (Cat2First.CodeUnit != Global.WeightCodeUnit && LastQuantyity > 0)
                     LastQuantyity = 1;
 
-                var pr = db.GetReceiptWaresPromotion(new IdReceiptWares(parIdReceipt, Cat2First.CodeWares));
+                var pr = db.GetReceiptWaresPromotion(new IdReceiptWares(pIdReceipt, Cat2First.CodeWares));
 
                 if (pr != null && pr.Count() > 0)
                     CountDiscount = pr.Where(r => r.BarCode2Category.Length == 13).Sum(r => r.Quantity);
@@ -296,7 +295,7 @@ namespace SharedLib
 
                     try
                     {
-                        var body = soapTo1C.GenBody("GetRestOfLabel", new Parameters[] { new Parameters("CodeOfLabel", parBarCode) });
+                        var body = soapTo1C.GenBody("GetRestOfLabel", new Parameters[] { new Parameters("CodeOfLabel", pBarCode) });
                         var res = await soapTo1C.RequestAsync(Global.Server1C, body, 2000);
                         isGood = res.Equals("1");
 
@@ -305,7 +304,7 @@ namespace SharedLib
                     catch (Exception ex)
                     {
                         Global.ErrorDiscountOnLine++;
-                        Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "CheckDiscountBarCodeAsync=>" + ex.Message });
+                        Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "CheckDiscountBarCodeAsync=>" + ex.Message });
                         Global.OnStatusChanged?.Invoke(db.GetStatus());
 
                     }
@@ -316,20 +315,20 @@ namespace SharedLib
                     //Cat2.First().Quantity = 0;
                     db.ReplaceWaresReceiptPromotion(Cat2);
                     db.InsertBarCode2Cat(Cat2First);
-                    db.RecalcHeadReceipt(parIdReceipt);
-                    var r = bl.ViewReceiptWares(new IdReceiptWares(parIdReceipt, 0), true);//вертаємо весь чек.
-                    Global.OnReceiptCalculationComplete?.Invoke(r, Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace));
+                    db.RecalcHeadReceipt(pIdReceipt);
+                    var r = bl.ViewReceiptWares(new IdReceiptWares(pIdReceipt, 0), true);//вертаємо весь чек.
+                    Global.OnReceiptCalculationComplete?.Invoke(r,pIdReceipt);
                 }
                 else
                 {
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace), Status = eSyncStatus.IncorectDiscountBarcode,StatusDescription= "CheckDiscountBarCodeAsync" });
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceipt.IdWorkplace), Status = eSyncStatus.IncorectDiscountBarcode,StatusDescription= "CheckDiscountBarCodeAsync" });
                     return false;
                 }
             }
 
             catch (Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parIdReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.Error, StatusDescription = "CheckDiscountBarCodeAsync=>"+ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.Error, StatusDescription = "CheckDiscountBarCodeAsync=>"+ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
             }
             return true;
         }
