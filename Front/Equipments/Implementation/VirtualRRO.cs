@@ -22,12 +22,12 @@ namespace Front.Equipments.Implementation
 
         override public async Task<LogRRO> PrintZAsync(IdReceipt pIdR)
         {
-            return null;
+            return new LogRRO(pIdR) { TypeOperation = eTypeOperation.ZReport, FiscalNumber = "V0001111" };
         }
 
         override public async Task<LogRRO> PrintXAsync(IdReceipt pIdR)
         {
-            return null;
+            return new LogRRO(pIdR) { TypeOperation = eTypeOperation.XReport, FiscalNumber = "V0001111" };
         }
 
 
@@ -38,7 +38,7 @@ namespace Front.Equipments.Implementation
         /// <returns></returns>
         override public async Task<LogRRO> MoveMoneyAsync(decimal pSum, IdReceipt pIdR = null)
         {
-            return null;
+            return new LogRRO(pIdR) { TypeOperation = eTypeOperation.MoneyIn, FiscalNumber = "V0001111", SUM = 1230m };
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Front.Equipments.Implementation
         /// <returns></returns>
         override public async Task<LogRRO> PrintReceiptAsync(Receipt pR)
         {
-            return null; 
+            return new LogRRO(pR) {TypeOperation= eTypeOperation.Sale,FiscalNumber="V0001111",SUM=pR.SumReceipt }; 
         }
               
 

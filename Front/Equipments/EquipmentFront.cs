@@ -165,6 +165,9 @@ namespace Front
                     case eModelEquipment.Maria:
                         ElEquipment.Equipment = new RRO_Maria(config, null, pActionStatus);
                         break;
+                    case eModelEquipment.VirtualRRO:
+                        ElEquipment.Equipment = new VirtualRRO(config, null, pActionStatus);
+                        break;
                     default:
                         ElEquipment.Equipment = new Rro(config);                        
                         break;

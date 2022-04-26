@@ -548,6 +548,7 @@ namespace Front
             if(R.Wares.Where(el=>el.TypeWares>0).Count()>0 && R.ReceiptEvent.Where(el => el.EventType == ReceiptEventType.AgeRestrictedProduct).Count()==0)
             {
                 SetWaitConfirm(eTypeAccess.ConfirmAge);
+                return true;
             }
 
             if (R.StateReceipt == eStateReceipt.Prepare)
@@ -560,26 +561,34 @@ namespace Front
                     pay.SetIdReceipt(R);
                     Bl.db.ReplacePayment(new List<Payment>() { pay });
                     Bl.SetStateReceipt(null, eStateReceipt.Pay);
+                    R.StateReceipt = eStateReceipt.Pay;
                 }
                 else
                     SetStateView(eStateMainWindows.WaitInput);
             }
 
+
             if (R.StateReceipt == eStateReceipt.Pay)
             {
-                SetStateView(eStateMainWindows.ProcessPrintReceipt);
-                Bl.SetStateReceipt(null, eStateReceipt.Canceled);
-                var res = EF.PrintReceipt(R);
-                Bl.InsertLogRRO(res);
-                if (res.CodeError == 0)
+                try
                 {
-                    Bl.UpdateReceiptFiscalNumber(R, res.FiscalNumber, res.SUM);
-                    var r = Bl.GetNewIdReceipt();
-                    //Global.OnReceiptCalculationComplete?.Invoke(new List<ReceiptWares>(), Global.IdWorkPlace);
+                    SetStateView(eStateMainWindows.ProcessPrintReceipt);
+                    Bl.SetStateReceipt(null, eStateReceipt.Canceled);
+                    var res = EF.PrintReceipt(R);
+                    Bl.InsertLogRRO(res);
+                    if (res.CodeError == 0)
+                    {
+                        Bl.UpdateReceiptFiscalNumber(R, res.FiscalNumber, res.SUM);
+                        var r = Bl.GetNewIdReceipt();
+                        //Global.OnReceiptCalculationComplete?.Invoke(new List<ReceiptWares>(), Global.IdWorkPlace);
+                        SetStateView(eStateMainWindows.WaitInput);
+                        return true;
+                    }
                     SetStateView(eStateMainWindows.WaitInput);
-                    return true;
+                }catch(Exception e)
+                {
+                    FileLogger.WriteLogMessage(e.Message, eTypeLog.Error);
                 }
-                SetStateView(eStateMainWindows.WaitInput);               
             }
             return false;
         }
@@ -697,20 +706,13 @@ namespace Front
 
 
         }
-
-        public void SetState(eStatusRRO pStatus)
-        {
-
-        }
+        
 
         private void ChangedExciseStamp(object sender, TextChangedEventArgs e)
         {
-            TextBox textBox = (TextBox)sender;
-            
+            TextBox textBox = (TextBox)sender;            
             Regex regex = new Regex(@"^\w{4}[0-9]{6}?$");
             isExciseStamp = regex.IsMatch(textBox.Text);
-
-                
         }
 
         private void ExciseStampNone(object sender, RoutedEventArgs e)
