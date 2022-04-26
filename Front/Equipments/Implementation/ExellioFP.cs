@@ -1,11 +1,10 @@
 ﻿using Exellio;
+using Front.Equipments.Implementation;
 using Microsoft.Extensions.Configuration;
 using ModelMID;
 using ModelMID.DB;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Front.Equipments
@@ -14,95 +13,101 @@ namespace Front.Equipments
     {
         private FiscalPrinterClass FP = new FiscalPrinterClass();
         //public Exelio(string pSerialPortName, int pBaudRate, Action<string, string> pLogger) : base(pSerialPortName, pBaudRate,pLogger) { }
-        public ExellioFP(IConfiguration pConfiguration, Action<string, string> pLogger = null) : base(pConfiguration) 
-        {           
-            Port = Configuration["Devices:Exellio:Port"];
-            BaudRate = Convert.ToInt32( Configuration["Devices:Exellio:Port"]);            
-            FP.OpenPort(Port, BaudRate);
+        public ExellioFP(IConfiguration pConfiguration, Action<string, string> pLogger = null) : base(pConfiguration)
+        {
+            SerialPort = Configuration["Devices:Exellio:SerialPort"];
+            BaudRate = Convert.ToInt32(Configuration["Devices:Exellio:BaudRate"]);
+            IP = Configuration["Devices:Exellio:IP"];
+            IpPort = Convert.ToInt32(Configuration["Devices:Exellio:IpPort"]);
+            //FP.OpenPort(Port, BaudRate);
         }
 
         ///відкрити порт 
-        private bool FpOpenPort()
+        private bool FpOpenPort(IdReceipt pReceipt = null)
         {
-            //FP.OpenPort(Port, BaudRate);
-            FP.ConnectLan("10.1.5.221", "9100");
-            CheckResult();
-            if (CodeError != 0)
+            SetStatus(eStatusRRO.TryOpenPort);
+            if (!string.IsNullOrEmpty(SerialPort) && BaudRate > 0)
+                FP.OpenPort(SerialPort, BaudRate);
+            else if (!string.IsNullOrEmpty(IP) && IpPort > 0)
+                FP.ConnectLan(IP, IpPort.ToString()); //"10.1.5.221", "9100"
+            else
             {
-                //потрібно зафіксувати FP.LastErrorText
-
+                CodeError = -999;
+                StrError = "Відсутні налаштування з'єднааня з Фіскальним апаратом";
+            }
+            if (!CheckResult())
+            {
+                SetStatus(eStatusRRO.Error, StrError, CodeError);
                 FP.ClosePort();
                 return false;
             }
-            return true;            
+            SetStatus(eStatusRRO.OpenPort);
+            return true;
         }
 
         ///закрити порт 
-        private LogRRO FpClosePort()
+        private bool FpClosePort()
         {
-            FP.ClosePort();
-            //if (FP.LastError != 0)
-            //{
-                //потрібно зафіксувати FP.LastErrorText
-                //CheckTheResult();
-            //}
-
-            return null;
+            SetStatus(eStatusRRO.ClosePort);
+            FP.ClosePort();           
+            return CheckResult();
         }
 
-        private void CheckResult()
+        private bool CheckResult()
         {
             CodeError = FP.LastError;
             StrError = FP.LastErrorText;
+            if(CodeError != 0)
+                SetStatus(eStatusRRO.Error, StrError, CodeError);
+            return CodeError == 0;
         }
 
 
         public override LogRRO PrintCopyReceipt(int pNCopy = 1)
         {
-            if (FpOpenPort()) 
-            { 
+            if (FpOpenPort())
+            {
                 FP.MakeReceiptCopy(pNCopy);
-
                 CheckResult();
                 FpClosePort();
             }
-
-            return null;
+            return new LogRRO(null) { CodeError = CodeError, Error = StrError, SUM = 0, TypeRRO = "ExellioFP", TypeOperation = eTypeOperation.CopyReceipt };
         }
 
 
         override public async Task<LogRRO> PrintZAsync(IdReceipt pIdR)
         {
-            if (FpOpenPort())
+            return await Task.Run(() =>
             {
-                if (FP.IsFiscalOpen)
-                    FP.CancelReceipt();
+                if (FpOpenPort())
+                {
+                    if (FP.IsFiscalOpen)
+                        FP.CancelReceipt();
 
-                FP.ZReportWC(OperatorPass);
+                    FP.ZReportWC(OperatorPass);
 
-                CheckResult();
-                FpClosePort();
-
-            }
-
-            return new LogRRO(pIdR) { CodeError = CodeError, Error = StrError, SUM = 0, TypeRRO = "ExellioFP", TypeOperation = eTypeOperation.ZReport };
+                    CheckResult();
+                    FpClosePort();
+                }
+                return new LogRRO(pIdR) { CodeError = CodeError, Error = StrError, SUM = 0, TypeRRO = "ExellioFP", TypeOperation = eTypeOperation.ZReport };
+            });
         }
 
         override public async Task<LogRRO> PrintXAsync(IdReceipt pIdR)
         {
-            if (FpOpenPort())
+            return await Task.Run(() =>
             {
-                if (FP.IsFiscalOpen)                    
-                    FP.CancelReceipt();
+                if (FpOpenPort())
+                {
+                    if (FP.IsFiscalOpen)
+                        FP.CancelReceipt();
 
-                FP.XReport(OperatorPass);
-
-                CheckResult();
-                FpClosePort();
-
-            }
-
-            return new LogRRO(pIdR) { CodeError = CodeError, Error = StrError, SUM = 0, TypeRRO = "ExellioFP", TypeOperation = eTypeOperation.XReport };
+                    FP.XReport(OperatorPass);
+                    CheckResult();
+                    FpClosePort();
+                }
+                return new LogRRO(pIdR) { CodeError = CodeError, Error = StrError, SUM = 0, TypeRRO = "ExellioFP", TypeOperation = eTypeOperation.XReport };
+            });
         }
 
         /// <summary>
@@ -112,16 +117,17 @@ namespace Front.Equipments
         /// <returns></returns>
         override public async Task<LogRRO> MoveMoneyAsync(decimal pSum, IdReceipt pIdR = null)
         {
-            if (FpOpenPort())
-            { 
-                FP.InOut(Convert.ToDouble( pSum));
-                CheckResult();
-                FP.OpenDrawer();
-                FpClosePort();
-            }
-
-
-            return new LogRRO(pIdR) { CodeError = CodeError, Error = StrError, SUM = pSum, TypeRRO = "Maria304", TypeOperation = pSum > 0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyOut };
+            return await Task.Run(() =>
+            {
+                if (FpOpenPort())
+                {
+                    FP.InOut(Convert.ToDouble(pSum));
+                    CheckResult();
+                    FP.OpenDrawer();
+                    FpClosePort();
+                }
+                return new LogRRO(pIdR) { CodeError = CodeError, Error = StrError, SUM = pSum, TypeRRO = "Maria304", TypeOperation = pSum > 0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyOut };
+            });
         }
 
         /// <summary>
@@ -131,110 +137,99 @@ namespace Front.Equipments
         /// <returns></returns>
         override public async Task<LogRRO> PrintReceiptAsync(Receipt pR)
         {
-
-            if (FpOpenPort()) 
+            return await Task.Run(() =>
             {
-                if (FP.IsFiscalOpen)
-                    FP.CancelReceipt();
-
-                //потрібна перевірка фіскальний чи нефіскальний чек відкривається
-
-                if (pR.TypeReceipt == eTypeReceipt.Sale)
-                    FP.OpenFiscalReceipt(1, OperatorPass, 1);
-                else
-                    FP.OpenReturnReceipt(1, OperatorPass, 1);
-
-                CheckResult();
-
-                //потрібно прочитати номер фіскального чека GetLastReceiptNum() властивість s1
-
-                foreach (var el in pR.Wares)
+                LogRRO Res = new LogRRO(pR)
                 {
-                    var TaxGroup = Global.GetTaxGroup(el.TypeVat, el.TypeWares);
-                    int TG1 = 0, TG2 = 0;
-                    int.TryParse(TaxGroup.Substring(0, 1), out TG1);
-                    if (TaxGroup.Length > 1)
-                        int.TryParse(TaxGroup.Substring(1, 1), out TG2);
-                    var Name = (el.IsUseCodeUKTZED && !string.IsNullOrEmpty(el.CodeUKTZED) ? el.CodeUKTZED.Substring(0, 10) + "#" : "") + el.NameWares;
-                    if (!String.IsNullOrEmpty(el.ExciseStamp))
-                        FP.ExciseStamp = el.ExciseStamp;
-
-                    FP.Sale(el.CodeWares, Name, Convert.ToInt32(Global.GetTaxGroup(el.TypeVat, el.TypeWares)), 1, Convert.ToDouble(el.Price), Convert.ToDouble(el.Quantity), 0, Convert.ToDouble(el.SumDiscount), true, OperatorPass);
-                    //Convert.ToInt32((el.CodeUnit == Global.WeightCodeUnit ? 1000 : 1) * el.Quantity), Convert.ToInt32(el.Price * 100), el.CodeUnit == Global.WeightCodeUnit ? 1 : 0, TG1, TG2, el.CodeWares, (el.DiscountEKKA > 0 ? 0 : -1), null, Convert.ToInt32(el.DiscountEKKA), null) != 1))
-
-                    CheckResult();
-                    if (CodeError != 0)
-                    {
-                        return new LogRRO(pR)
-                        {
-                            CodeError = CodeError,
-                            Error = StrError,
-                            SUM = pR.SumFiscal,
-                            TypeRRO = "ExellioFP",
-                            TypeOperation = (pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund),
-                            JSON = ""
-                        };
-                    }
-                }
-
-                FP.SubTotal(0, 0); //як прочитати готівка / безготівка
-
-                pR.SumFiscal = Convert.ToDecimal(FP.s2);
-
-                if (pR.Payment != null && pR.Payment.Count() > 0)
-                {
-                    foreach (var el in pR.Payment)
-                    {//!!!TMP Спитати валіка.
-                        FP.PayTerminalData = $"{el.NumberSlip},{0},{el.NumberTerminal},{el.TypePay},{el.NumberCard},{el.CodeAuthorization},{0}";
-                        FP.TotalPT("", el.TypePay == eTypePay.Cash ? 1 : 4, Convert.ToDouble(el.SumPay), el.TransactionId);
-                    }
-                }
-                CheckResult();
-                if (CodeError != 0)
-                    FP.CancelReceipt();
-
-                FP.CloseFiscalReceipt();
-
-                CheckResult();
-                if (CodeError != 0)
-                    FP.CancelReceipt();
-
-                pR.NumberReceipt = pR.TypeReceipt == eTypeReceipt.Sale ? FP.s2 : FP.s3;
-
-                return new LogRRO(pR)
-                {
-                    CodeError = CodeError,
-                    Error = StrError,
                     SUM = pR.SumFiscal,
                     TypeRRO = "ExellioFP",
-                    TypeOperation = (pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund),
-                    JSON = ""
+                    TypeOperation = (pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund)
                 };
-            }
-            return new LogRRO(pR)
-            {
-                CodeError = CodeError,
-                Error = StrError,
-                SUM = pR.SumFiscal,
-                TypeRRO = "ExellioFP",
-                TypeOperation = (pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund),
-                JSON = ""
-            };
+
+                if (FpOpenPort())
+                {
+                    SetStatus(eStatusRRO.StartPrintReceipt);
+                    if (FP.IsFiscalOpen)
+                        FP.CancelReceipt();
+
+                    //потрібна перевірка фіскальний чи нефіскальний чек відкривається
+                    if (pR.TypeReceipt == eTypeReceipt.Sale)
+                        FP.OpenFiscalReceipt(1, OperatorPass, 1);
+                    else
+                        FP.OpenReturnReceipt(1, OperatorPass, 1);                  
+
+                    if (CheckResult())
+                    {
+                        //потрібно прочитати номер фіскального чека GetLastReceiptNum() властивість s1
+                        foreach (var el in pR.Wares)
+                        {
+                            SetStatus(eStatusRRO.AddWares, el.NameWares);
+                            var TaxGroup = Global.GetTaxGroup(el.TypeVat, el.TypeWares);
+                            int TG1 = 0, TG2 = 0;
+                            int.TryParse(TaxGroup.Substring(0, 1), out TG1);
+                            if (TaxGroup.Length > 1)
+                                int.TryParse(TaxGroup.Substring(1, 1), out TG2);
+                            var Name = (el.IsUseCodeUKTZED && !string.IsNullOrEmpty(el.CodeUKTZED) ? el.CodeUKTZED.Substring(0, 10) + "#" : "") + el.NameWares;
+                            if (!String.IsNullOrEmpty(el.ExciseStamp))
+                                FP.ExciseStamp = el.ExciseStamp;
+
+                            FP.Sale(el.CodeWares, Name, Convert.ToInt32(Global.GetTaxGroup(el.TypeVat, el.TypeWares)), 1, Convert.ToDouble(el.Price), Convert.ToDouble(el.Quantity), 0, Convert.ToDouble(el.SumDiscount), true, OperatorPass);
+                            //Convert.ToInt32((el.CodeUnit == Global.WeightCodeUnit ? 1000 : 1) * el.Quantity), Convert.ToInt32(el.Price * 100), el.CodeUnit == Global.WeightCodeUnit ? 1 : 0, TG1, TG2, el.CodeWares, (el.DiscountEKKA > 0 ? 0 : -1), null, Convert.ToInt32(el.DiscountEKKA), null) != 1))
+
+                            if (!CheckResult())
+                                break;
+                        }
+
+                        if (CodeError != 0)
+                        {
+                            FP.SubTotal(0, 0); //як прочитати готівка / безготівка
+
+                            pR.SumFiscal = Convert.ToDecimal(FP.s2);
+
+                            if (pR.Payment != null && pR.Payment.Count() > 0)
+                            {
+                                foreach (var el in pR.Payment)
+                                {//!!!TMP Спитати валіка.                                   
+                                    FP.PayTerminalData = $"{el.NumberSlip},{0},{el.NumberTerminal},{el.TypePay},{el.NumberCard},{el.CodeAuthorization},{0}";
+                                    SetStatus(eStatusRRO.AddWares, FP.PayTerminalData);
+                                    FP.TotalPT("", el.TypePay == eTypePay.Cash ? 1 : 4, Convert.ToDouble(el.SumPay), el.TransactionId);
+                                    if (!CheckResult())
+                                        break;
+                                }
+                            }
+                            if (CodeError != 0)
+                            {
+                                FP.CloseFiscalReceipt();
+                                if (CheckResult())
+                                    pR.NumberReceipt = pR.TypeReceipt == eTypeReceipt.Sale ? FP.s2 : FP.s3;
+                            }
+                        }
+                    }
+                }
+
+                if (CodeError != 0)
+                {
+                    Res.CodeError = CodeError;
+                    Res.Error = StrError;
+                    FP.CancelReceipt();
+                }
+                FpClosePort();
+                return Res;
+            });
         }
 
         override public bool PutToDisplay(string pText)
-        {           
-                FP.DisplayFreeText(pText);
+        {
+            FP.DisplayFreeText(pText);
             return true;
         }
 
-        override public  eStateEquipment TestDevice() 
+        override public eStateEquipment TestDevice()
         {
-
             //!!!TMP Треба розібратись про реальну поведінку з помилками.
             eStateEquipment Res = eStateEquipment.Ok;
             if (FpOpenPort())
-                { 
+            {
 
                 FP.OpenNonfiscalReceipt();
                 FP.PrintNonfiscalText("Test of the Equipment: Ok");
@@ -242,7 +237,7 @@ namespace Front.Equipments
                 FP.CloseNonfiscalReceipt();
 
                 FP.GetErrorDetails("CLEAR");
-                FP.CheckConnect(Port, BaudRate);
+                FP.CheckConnect(SerialPort, BaudRate);
                 FP.GetErrorDetails("Cmd");
 
                 StrError = $"FPModel={FP.FPModel}{Environment.NewLine}Version{FP.Version}{Environment.NewLine}LibFileName={FP.LibFileName}{Environment.NewLine}" +
@@ -251,11 +246,8 @@ namespace Front.Equipments
                     $"ErrCode=>{FP.s2} LastErrorText=>{FP.LastErrorText}";
 
                 FpClosePort();
-
             }
-
             return Res;
         }
-
     }
 }

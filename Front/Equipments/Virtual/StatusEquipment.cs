@@ -17,4 +17,13 @@ namespace Front.Equipments.Virtual
             ModelEquipment = pME;
         }
     }
+    public class PosStatus : StatusEquipment
+    {
+        public eStatusPos Status { get; set; }
+    }
+
+    public class RroStatus : StatusEquipment
+    {
+        public eStatusRRO Status { get; set; }
+    }
 }

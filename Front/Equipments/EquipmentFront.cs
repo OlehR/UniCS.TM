@@ -67,7 +67,7 @@ namespace Front
 
         public static EquipmentFront GetEquipmentFront { get { return sEquipmentFront; } }
 
-        public EquipmentFront(Action<string, string> pSetBarCode, Action<double, bool> pSetWeight, Action<double, bool> pSetControlWeight, Action<eStatusRRO> pActionStatus = null)
+        public EquipmentFront(Action<string, string> pSetBarCode, Action<double, bool> pSetWeight, Action<double, bool> pSetControlWeight, Action<StatusEquipment> pActionStatus = null)
         {
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             sEquipmentFront = this;
@@ -75,7 +75,7 @@ namespace Front
             Task.Run( ()=>Init(pSetBarCode, pSetWeight, pSetControlWeight, pActionStatus));
         }
         
-        public void Init(Action<string, string> pSetBarCode, Action<double, bool> pSetWeight, Action<double, bool> pSetControlWeight, Action<eStatusRRO> pActionStatus = null)
+        public void Init(Action<string, string> pSetBarCode, Action<double, bool> pSetWeight, Action<double, bool> pSetControlWeight, Action<StatusEquipment> pActionStatus = null)
         {
             var config = Config("appsettings.json");
             State = eStateEquipment.Init;            
@@ -248,12 +248,12 @@ namespace Front
         /// Статус банківського термінала (Очікуєм карточки, Очікуєм підтвердження і ТД) 
         /// </summary>
         /// <param name="ww"></param>
-        void PosStatus(IPosStatus ww)
+        void PosStatus(StatusEquipment ww)
         {
             if (ww is PosStatus status)
             {
-                SetStatus?.Invoke(new StatusEquipment(Terminal.ModelEquipment, (int)status.Status, $"{status.MsgDescription} {status.Status}"));
-                Debug.WriteLine($"{DateTime.Now} {Terminal.ModelEquipment} {status.MsgDescription} {status.Status}");
+                SetStatus?.Invoke(new StatusEquipment(Terminal.ModelEquipment, (int)status.Status, $"{status.TextState} {status.Status}"));
+                Debug.WriteLine($"{DateTime.Now} {Terminal.ModelEquipment} {status.TextState} {status.Status}");
             }
         }
 

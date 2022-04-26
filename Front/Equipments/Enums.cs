@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Front.Equipments
 {
-    public enum ePosStatus
+    public enum eStatusPos
     {
         StatusCodeIsNotAvailable = 0,
         CardWasRead = 1,
@@ -93,6 +93,39 @@ namespace Front.Equipments
         UnableToSendEncryptedMessage = 84
     }
 
+    public enum eStatusRRO
+    {
+        NotDefine = 0,
+
+        /// <summary>
+        /// Очікування команди
+        /// </summary>
+        Wait,
+        /// <summary>
+        /// Очікуєм відповідь від РРО
+        /// </summary>
+        WaitAnswer,
+        /// <summary>
+        /// Обробка результату
+        /// </summary>
+        ParseResult,
+        /// <summary>
+        /// Успішне виконаання
+        /// </summary>
+        OK,
+        /// <summary>
+        /// Виникла помилка під час операції
+        /// </summary>
+
+        StartPrintReceipt,
+        AddWares,
+        AddPay,
+        ClosePort,
+        TryOpenPort,
+        OpenPort,
+        Error
+    }
+
     public enum ePosTypeError
     {
         NotDefine = 0,
@@ -114,7 +147,7 @@ namespace Front.Equipments
         /// Треба зменшити кількість таких статусів.
         /// </summary>
         Other
-    }
+    }    
 
     public enum eStateEquipment { Ok, Init, Off, Error }
 
@@ -155,31 +188,7 @@ namespace Front.Equipments
 
     }
 
-    public enum eStatusRRO
-    {
-        /// <summary>
-        /// Очікування команди
-        /// </summary>
-        Wait,
-        /// <summary>
-        /// Очікуєм відповідь від РРО
-        /// </summary>
-        WaitAnswer,
-        /// <summary>
-        /// Обробка результату
-        /// </summary>
-        ParseResult,
-        /// <summary>
-        /// Успішне виконаання
-        /// </summary>
-        OK,
-        /// <summary>
-        /// Виникла помилка під час операції
-        /// </summary>
-        Error
-
-    }
-
+   
     //public enum eDirectMoveCash { In=1,Out=0}
 
     public enum eTypeOperarionRRO 
@@ -227,45 +236,45 @@ namespace Front.Equipments
         /// </summary>
         /// <param name="pStatus"></param>
         /// <returns></returns>
-        public static ePosTypeError GetPosTypeError(this ePosStatus pStatus)
+        public static ePosTypeError GetPosTypeError(this eStatusPos pStatus)
         {
             switch (pStatus)
             {
-                case ePosStatus.StatusCodeIsNotAvailable:
+                case eStatusPos.StatusCodeIsNotAvailable:
                     return ePosTypeError.NotDefine;
-                case ePosStatus.CardWasRead:
-                case ePosStatus.UsedAChipCard:
-                case ePosStatus.AuthorizationInProgress:
-                case ePosStatus.WaitingForCashierAction:
-                case ePosStatus.PrintingReceipt:
-                case ePosStatus.PinEntryIsNeeded:
-                case ePosStatus.CardWasRemoved:
-                case ePosStatus.WaitingForCard:
-                case ePosStatus.InProgress:
-                case ePosStatus.CorrectTransaction:
-                case ePosStatus.PinInputWaitKey:
-                case ePosStatus.PinInputBackspacePressed:
-                case ePosStatus.PinInputKeyPressed:                
+                case eStatusPos.CardWasRead:
+                case eStatusPos.UsedAChipCard:
+                case eStatusPos.AuthorizationInProgress:
+                case eStatusPos.WaitingForCashierAction:
+                case eStatusPos.PrintingReceipt:
+                case eStatusPos.PinEntryIsNeeded:
+                case eStatusPos.CardWasRemoved:
+                case eStatusPos.WaitingForCard:
+                case eStatusPos.InProgress:
+                case eStatusPos.CorrectTransaction:
+                case eStatusPos.PinInputWaitKey:
+                case eStatusPos.PinInputBackspacePressed:
+                case eStatusPos.PinInputKeyPressed:                
                     return ePosTypeError.NoError;
 
-                case ePosStatus.WrongPIN:
-                case ePosStatus.NotEnoughMoney:
-                case ePosStatus.TransactionCanceledByUser:
-                case ePosStatus.NoClientsCreditAccount:
-                case ePosStatus.CardIslostRemoved:
-                case ePosStatus.CardIsStolenRemoved:
-                case ePosStatus.IncorrectAmountEntered:
-                case ePosStatus.InvalidCardNumber:
+                case eStatusPos.WrongPIN:
+                case eStatusPos.NotEnoughMoney:
+                case eStatusPos.TransactionCanceledByUser:
+                case eStatusPos.NoClientsCreditAccount:
+                case eStatusPos.CardIslostRemoved:
+                case eStatusPos.CardIsStolenRemoved:
+                case eStatusPos.IncorrectAmountEntered:
+                case eStatusPos.InvalidCardNumber:
                     return ePosTypeError.Card;
 
 
-                case ePosStatus.ErrorConnectingWithTerminal:
-                case ePosStatus.TerminalReturnedAnError:
-                case ePosStatus.ErrorOpeningCOMPort:
-                case ePosStatus.NeedToOpenCOMPort:
-                case ePosStatus.Error:
-                case ePosStatus.GeneralError:
-                case ePosStatus.NoPaperInPrinter:
+                case eStatusPos.ErrorConnectingWithTerminal:
+                case eStatusPos.TerminalReturnedAnError:
+                case eStatusPos.ErrorOpeningCOMPort:
+                case eStatusPos.NeedToOpenCOMPort:
+                case eStatusPos.Error:
+                case eStatusPos.GeneralError:
+                case eStatusPos.NoPaperInPrinter:
                     return ePosTypeError.PosTerminal;
                 default:
                     return ePosTypeError.Other;

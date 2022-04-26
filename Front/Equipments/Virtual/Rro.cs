@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Front.Equipments.Implementation;
+using Front.Equipments.Virtual;
+using Microsoft.Extensions.Configuration;
 using ModelMID;
 using ModelMID.DB;
 using System;
@@ -12,30 +14,20 @@ namespace Front.Equipments
     /// Клас для роботи з касовим апаратом
     /// </summary>
     public class Rro: Equipment
-    { 
-        protected string Port;
+    {         
         protected string OperatorName;
         protected string OperatorPass = "0000";
         protected int CodeError = -1;
         protected string StrError;
-        protected int  BaudRate;
-        /*protected bool varIsFiscal = true;
-        protected int  varCodeEKKA = 0;
-        protected int varOperatorNumber = 1;
-        protected int varCodeWorkPlace = 1;
-         protected bool varIsAutoPrintOperator = false;*/
 
-        protected Action<eStatusRRO> ActionStatus;
-
-        protected void SetStatus(eStatusRRO pStatus)
+        protected void SetStatus(eStatusRRO pStatus,string pMsg=null,int? pMsgCode = null)
         {
-            if (ActionStatus != null)
-                ActionStatus(pStatus);
+            ActionStatus?.Invoke(new RroStatus() { Status = pStatus, ModelEquipment = ModelEquipment, State = pMsgCode??(int)pStatus, TextState = pMsg??pStatus.ToString() });
         }
 
-        public Rro(IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefined, Action<string, string> pLogger = null, Action<eStatusRRO> pActionStatus = null) : base(pConfiguration, pModelEquipment, pLogger) 
+        public Rro(IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefined, Action<string, string> pLogger = null, Action<StatusEquipment> pActionStatus = null) : base(pConfiguration, pModelEquipment, pLogger) 
         {
-            ActionStatus = pActionStatus;
+            ActionStatus =  pActionStatus;
         }
         
         public virtual void SetOperatorName(string pOperatorName)
@@ -46,8 +38,7 @@ namespace Front.Equipments
         public virtual LogRRO PrintCopyReceipt(int parNCopy=1)
         {
             throw new NotImplementedException();
-        }
-         
+        }         
         
    /*     /// <summary>
         ///

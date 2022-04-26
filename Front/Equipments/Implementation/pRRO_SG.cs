@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Front.Equipments.Implementation;
+using Front.Equipments.Virtual;
+using Microsoft.Extensions.Configuration;
 using ModelMID;
 using ModelMID.DB;
 using Newtonsoft.Json;
@@ -20,7 +22,7 @@ namespace Front.Equipments.pRRO_SG
         int Wait;
         HttpClient client = new HttpClient();
        
-        public pRRO_SG(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<eStatusRRO> pActionStatus = null) : 
+        public pRRO_SG(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<StatusEquipment> pActionStatus = null) : 
                         base(pConfiguration,eModelEquipment.pRRO_SG, pLogger, pActionStatus) 
         {
             PathApi = pConfiguration["Devices:pRRO_SG:PathApi"];

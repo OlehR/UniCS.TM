@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Front.Equipments.Virtual;
+using Microsoft.Extensions.Configuration;
 using ModelMID;
 using ModelMID.DB;
 using System;
@@ -11,7 +12,7 @@ namespace Front.Equipments.Implementation
 {
     public class VirtualRRO:Rro
     {
-        public VirtualRRO(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<eStatusRRO> pActionStatus = null) :
+        public VirtualRRO(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<StatusEquipment> pActionStatus = null) :
                        base(pConfiguration, eModelEquipment.VirtualRRO, pLogger, pActionStatus){ }
        
         public override LogRRO PrintCopyReceipt(int parNCopy = 1)

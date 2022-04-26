@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using ModelMID;
+using Front.Equipments.Implementation;
+using Front.Equipments.Virtual;
 
 namespace Front.Equipments
 {
@@ -18,5 +20,10 @@ namespace Front.Equipments
         virtual public BatchTotals PrintX(){ throw new NotImplementedException();}
         public virtual Payment Purchase(decimal pAmount) { throw new NotImplementedException(); }
         public virtual Payment Refund(decimal pAmount, string pRRN) { throw new NotImplementedException(); }
+
+        protected void SetStatus(eStatusPos pStatus)
+        {
+            ActionStatus?.Invoke(new PosStatus() { Status = pStatus, ModelEquipment = ModelEquipment, State = (int)pStatus, TextState = pStatus.ToString() });
+        }
     }
 }

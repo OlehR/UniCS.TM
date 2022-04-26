@@ -1,4 +1,5 @@
 ﻿using Front.Equipments.Ingenico;
+using Front.Equipments.Virtual;
 using Microsoft.Extensions.Configuration;
 using ModelMID;
 using System;
@@ -16,10 +17,9 @@ namespace Front.Equipments.Implementation
         long NumberReceipt = 0;
         int TransactionCode = 7700000;
         decimal Sum =0m, SumRefund = 0m;
-        uint Count=0, CountRefund = 0;
-        Action<IPosStatus> ActionStatus;
+        uint Count=0, CountRefund = 0;       
       
-        public VirtualBankPOS(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<IPosStatus> pActionStatus = null) : base(pConfiguration, pLogger,eModelEquipment.VirtualBankPOS)
+        public VirtualBankPOS(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<StatusEquipment> pActionStatus = null) : base(pConfiguration, pLogger,eModelEquipment.VirtualBankPOS)
         {
             Random rnd = new Random();
             NumberReceipt = rnd.Next(1, 100000);
@@ -50,11 +50,11 @@ namespace Front.Equipments.Implementation
 
         public override Payment Purchase(decimal pAmount)
         {
-            ActionStatus?.Invoke(new PosStatus() {Status=ePosStatus.WaitingForCard,MsgCode=(byte)(ePosStatus.WaitingForCard), MsgDescription= ePosStatus.WaitingForCard.ToString() });
+            SetStatus(eStatusPos.WaitingForCard);
+            Thread.Sleep(1500);
+            SetStatus(eStatusPos.PinInputWaitKey);
             Thread.Sleep(2000);
-            ActionStatus?.Invoke(new PosStatus() { Status = ePosStatus.PinInputWaitKey, MsgCode = (byte)(ePosStatus.PinInputWaitKey), MsgDescription = ePosStatus.PinInputWaitKey.ToString() });
-            Thread.Sleep(3000);
-            ActionStatus?.Invoke(new PosStatus() { Status = ePosStatus.TransactionIsAlreadyComplete, MsgCode = (byte)(ePosStatus.TransactionIsAlreadyComplete), MsgDescription = ePosStatus.TransactionIsAlreadyComplete.ToString() });
+            SetStatus(eStatusPos.TransactionIsAlreadyComplete);
             Thread.Sleep(1000);
             return GetPaymentResultModel(pAmount);
         }

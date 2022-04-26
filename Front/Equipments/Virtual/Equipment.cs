@@ -1,15 +1,20 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Front.Equipments.Implementation;
+using Front.Equipments.Virtual;
+using Microsoft.Extensions.Configuration;
 using System;
 
 namespace Front.Equipments
 {
     public class Equipment
     {
-        protected string SerialPortName;
-        protected int BaudRat;
+        protected string SerialPort;
+        protected int BaudRate;
+        protected string IP;
+        protected int IpPort;
         protected IConfiguration Configuration;        
         
         protected Action<string, string> Logger = null;
+        protected Action<StatusEquipment> ActionStatus;
         public Equipment() { }
        
         public Equipment(IConfiguration pConfiguration, eModelEquipment pModelEquipment  = eModelEquipment.NotDefined, Action<string, string> pLogger = null)
@@ -27,6 +32,7 @@ namespace Front.Equipments
 
         public  virtual eStateEquipment TestDevice() { throw new NotImplementedException(); }
         public virtual void Enable() { State=eStateEquipment.Ok; }
-        public virtual void Disable() { State = eStateEquipment.Off; }  
+        public virtual void Disable() { State = eStateEquipment.Off; }
+        
     }    
 }

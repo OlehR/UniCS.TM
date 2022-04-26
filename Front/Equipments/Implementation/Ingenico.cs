@@ -12,6 +12,8 @@ using Newtonsoft.Json;
 using System.Linq;
 using Front.Equipments.Ingenico;
 using ModelMID;
+using Front.Equipments.Implementation;
+using Front.Equipments.Virtual;
 
 namespace Front.Equipments
 {
@@ -20,7 +22,7 @@ namespace Front.Equipments
 
         Ingenico.Ingenico EquipmentIngenico = null;
         //public IngenicoH(string pSerialPortName, int pBaudRate = 9600, Action<string, string> pLogger = null) : base(pSerialPortName, pBaudRate, pLogger) { }
-        public IngenicoH(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<IPosStatus> pActionStatus = null) : base(pConfiguration, pLogger, eModelEquipment.Ingenico)
+        public IngenicoH(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<StatusEquipment> pActionStatus = null) : base(pConfiguration, pLogger, eModelEquipment.Ingenico)
         {
             ILoggerFactory loggerFactory = new LoggerFactory().AddConsole((_, __) => true);
             ILogger<Ingenico.Ingenico> logger = loggerFactory.CreateLogger<Ingenico.Ingenico>();
@@ -199,18 +201,7 @@ namespace Front.Equipments.Ingenico
         DuplicationOfTransmissionNetworkError,
         GeneralSystemMalfunction,
         UnableToSendEncryptedMessage,
-    }*/
-
-    public interface IPosStatus {}
-
-    public class PosStatus : IPosStatus
-    {
-        public ePosStatus Status { get; set; }
-
-        public byte MsgCode { get; set; }
-
-        public string MsgDescription { get; set; }
-    }
+    }*/    
 
     public class BatchTotals
     {
@@ -259,332 +250,7 @@ namespace Front.Equipments.Ingenico
 
         public PaymentResultModel() => this.IsSuccess = false;
     }
-
-    /*public class BPOSClient
-    {
-        private const string BPOSLib = "libBPOSLib.so";
-        private const string CommLibX = "libCommLibX.so";
-        private const string ECRLibX = "libECRLibX.so";
-
-        [DllImport("testDll.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.LPStr)]
-        public static extern IntPtr fntestDll([MarshalAs(UnmanagedType.LPStr)] string i);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int CommOpen(string sPort, int iBaudRate);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int CommOpenTCP(string sIP, string sPort);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int CommOpenAuto(int iBaudRate);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int CommClose();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int CheckConnection(byte MerchIdx);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int Purchase(int iAmount, int iAddAmount, byte bMerchIdx);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int Refund(int iAmount, int iAddAmount, byte bMerchIdx, string RRN);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int Void(int InvoiceNum, byte MerchIdx);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int Balance(byte MerchIdx, string CurrCode, byte Accnumber);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int Deposit(byte MerchIdx, int Amount, string CurrCode, byte Accnumber);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int CashAdvance(
-          byte MerchIdx,
-          int Amount,
-          string CurrCode,
-          byte AccNumber);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int Completion(byte MerchIdx, int Amount, string RRN, int InvoiceNum);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int ReadCard();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int ReadBankCard();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int PurchaseService(byte MerchIdx, int Amount, string ServiceParams);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int IdentifyCard(byte MerchIdx, string CurrCode, byte AccNumber);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int POSGetInfo();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int POSExTransaction();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int Settlement(byte MerchIdx);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int PrintBatchTotals(byte MerchIdx);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int PrintLastSettleCopy(byte MerchIdx);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int PrintBatchJournal(byte MerchIdx);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int GetBatchTotals(byte MerchIdx);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int GetTxnDataByInv(int InvoiceNum, byte MerchIdx);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int GetTxnNum();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int GetTxnDataByOrder(int OrderNum);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int ReqCurrReceipt();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int ReqReceiptByInv(int InvoiceNum, byte MerchIdx);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int Confirm();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int SelectApp(string AppName, int AppIdx);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int CloseApp();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int StartScenario(int ScenarioID, string ScenarioData);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int SetExtraPrintData(string ExtraPrintData);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int SetExtraXmlData(string ExtraXmlData);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int SetErrorLang(byte ErrorLanguage);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int SendFile(string FullPath, byte ECRDataType, byte ECRCommand);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int CorrectTransaction(int Amount, int AddAmount);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int useLogging(byte Logginglevel, string FilePath);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int UseMac(byte macType, string bsKey);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern byte get_LastResult();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern byte get_LastErrorCode();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern string get_LastErrorDescription();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int Cancel();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int Ping();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int CheckTerminal();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern byte get_LastStatMsgCode();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern string get_LastStatMsgDescription();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int get_ResponseCode();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern string get_Receipt();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern string get_LibraryVersion();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int ReqDataFile();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int get_DataFile();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern string get_PAN();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int get_PanHash();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int get_SlipPrinted();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern string get_DateTime();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern string get_TerminalID();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern string get_MerchantID();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern string get_AuthCode();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int get_Amount();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int get_AddAmount();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern byte get_TxnType();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern byte get_EntryMode();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern string get_emvAID();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern string get_ExpDate();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern string get_CardHolder();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern string get_IssueName();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int get_InvoiceNum();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int get_CompletionInvoiceNum();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern string get_RRN();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern byte get_SignVerif();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern string get_Track3();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern string get_AddData();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern string get_CryptedData();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern string get_ExtraCardData();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int get_TerminalInfo();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern string get_DiscountName();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int get_DiscountAttribute();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern string get_ECRDataTM();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern byte get_TrnStatus();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern string get_Currency();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int get_TrnBatchNum();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern string get_RNK();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern string get_CurrencyCode();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int get_FlagAcquirer();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int get_TotalsDebitAmt();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int get_TotalsDebitNum();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int get_TotalsCreditAmt();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int get_TotalsCreditNum();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int get_TotalsCancelledAmt();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int get_TotalsCancelledNum();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int get_TxnNum();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern string get_ScenarioData();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern byte get_Key();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern byte get_TermStatus();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int EnterControlMode();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int ExitControlMode();
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int SetControlMode(bool isCtrlMode);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int ReadKey(byte TimeOut);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int DisplayText(byte Beep);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int SetLine(byte Row, byte Col, string Text, byte Invert);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int SetScreen(int ScreenNumber);
-
-        [DllImport("libBPOSLib.so", CharSet = CharSet.Unicode)]
-        public static extern int ExchangeStatuses(byte bECRStatus);
-    }
-    */
-    
+     
     public class PosDeviceLog : DeviceLog
     {
         public PosDeviceLog() => this.DeviceType = DeviceType.PosTerminal;
@@ -621,7 +287,7 @@ namespace Front.Equipments.Ingenico
 
         Action<IPosResponse> OnResponse { get; set; }
 
-        Action<IPosStatus> OnStatus { get; set; }
+        Action<StatusEquipment> OnStatus { get; set; }
 
         void Cancel();
 
@@ -658,7 +324,7 @@ namespace Front.Equipments.Ingenico
 
         public Action<IPosResponse> OnResponse { get; set; }
 
-        public Action<IPosStatus> OnStatus { get; set; }
+        public Action<StatusEquipment> OnStatus { get; set; }
 
         public Action<DeviceLog> OnDeviceWarning { get; set; }
 
@@ -869,11 +535,11 @@ namespace Front.Equipments.Ingenico
                     _isCancelRequested = false;
                     _bpos1LibClass.Cancel();
                     Thread.Sleep(1000);
-                    Action<IPosStatus> onStatus = this.OnStatus;
+                    Action<StatusEquipment> onStatus = this.OnStatus;
                     if (onStatus != null)
-                        onStatus((IPosStatus)new PosStatus()
+                        onStatus((StatusEquipment)new PosStatus()
                         {
-                            Status = ePosStatus.TransactionCanceledByUser
+                            Status = eStatusPos.TransactionCanceledByUser
                         });
                     return new PaymentResultModel()
                     {
@@ -887,11 +553,11 @@ namespace Front.Equipments.Ingenico
                     LoggerExtensions.LogDebug((ILogger)logger3, string.Format("[Ingenico] LastStatMsgCode = {0}\n", (object)_bpos1LibClass.LastStatMsgCode) + "[Ingenico] Description = " + this.GetString(_bpos1LibClass.LastStatMsgDescription) + "\n[Ingenico] LastErrorDescription = " + this.GetString(_bpos1LibClass.LastErrorDescription) + "\n" + string.Format("[Ingenico] LastResult = {0}\n", (object)_bpos1LibClass.LastResult) + string.Format("[Ingenico] LastErrorCode = {0}", (object)_bpos1LibClass.LastErrorCode), Array.Empty<object>());
                 if (_bpos1LibClass == null)
                 {
-                    Action<IPosStatus> onStatus = this.OnStatus;
+                    Action<StatusEquipment> onStatus = this.OnStatus;
                     if (onStatus != null)
-                        onStatus((IPosStatus)new PosStatus()
+                        onStatus((StatusEquipment)new PosStatus()
                         {
-                            Status = ePosStatus.TransactionCanceledByUser
+                            Status = eStatusPos.TransactionCanceledByUser
                         });
                     return new PaymentResultModel()
                     {
@@ -911,11 +577,11 @@ namespace Front.Equipments.Ingenico
                 ILogger<Ingenico> logger6 = this._logger;
                 if (logger6 != null)
                     LoggerExtensions.LogDebug((ILogger)logger6, "[Ingenico] WaitPosRespone 3", Array.Empty<object>());
-                Action<IPosStatus> onStatus = this.OnStatus;
+                Action<StatusEquipment> onStatus = this.OnStatus;
                 if (onStatus != null)
-                    onStatus((IPosStatus)new PosStatus()
+                    onStatus((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.SuccessfullyFulfilled
+                        Status = eStatusPos.SuccessfullyFulfilled
                     });
                 return new PaymentResultModel()
                 {
@@ -946,11 +612,11 @@ namespace Front.Equipments.Ingenico
                 switch (_bpos1LibClass.LastErrorCode)
                 {
                     case 1:
-                        Action<IPosStatus> onStatus1 = this.OnStatus;
+                        Action<StatusEquipment> onStatus1 = this.OnStatus;
                         if (onStatus1 != null)
-                            onStatus1((IPosStatus)new PosStatus()
+                            onStatus1((StatusEquipment)new PosStatus()
                             {
-                                Status = ePosStatus.ErrorOpeningCOMPort
+                                Status = eStatusPos.ErrorOpeningCOMPort
                             });
                         Action<DeviceLog> onDeviceWarning1 = this.OnDeviceWarning;
                         if (onDeviceWarning1 != null)
@@ -963,11 +629,11 @@ namespace Front.Equipments.Ingenico
                         }
                         break;
                     case 2:
-                        Action<IPosStatus> onStatus2 = this.OnStatus;
+                        Action<StatusEquipment> onStatus2 = this.OnStatus;
                         if (onStatus2 != null)
-                            onStatus2((IPosStatus)new PosStatus()
+                            onStatus2((StatusEquipment)new PosStatus()
                             {
-                                Status = ePosStatus.NeedToOpenCOMPort
+                                Status = eStatusPos.NeedToOpenCOMPort
                             });
                         Action<DeviceLog> onDeviceWarning2 = this.OnDeviceWarning;
                         if (onDeviceWarning2 != null)
@@ -980,11 +646,11 @@ namespace Front.Equipments.Ingenico
                         }
                         break;
                     case 3:
-                        Action<IPosStatus> onStatus3 = this.OnStatus;
+                        Action<StatusEquipment> onStatus3 = this.OnStatus;
                         if (onStatus3 != null)
-                            onStatus3((IPosStatus)new PosStatus()
+                            onStatus3((StatusEquipment)new PosStatus()
                             {
-                                Status = ePosStatus.ErrorConnectingWithTerminal
+                                Status = eStatusPos.ErrorConnectingWithTerminal
                             });
                         Action<DeviceLog> onDeviceWarning3 = this.OnDeviceWarning;
                         if (onDeviceWarning3 != null)
@@ -1012,65 +678,65 @@ namespace Front.Equipments.Ingenico
             switch (bpos1LibClass.ResponseCode)
             {
                 case 0:
-                    Action<IPosStatus> onStatus1 = this.OnStatus;
+                    Action<StatusEquipment> onStatus1 = this.OnStatus;
                     if (onStatus1 == null)
                         break;
-                    onStatus1((IPosStatus)new PosStatus()
+                    onStatus1((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.ApprovedAndCompleted
+                        Status = eStatusPos.ApprovedAndCompleted
                     });
                     break;
                 case 1:
-                    Action<IPosStatus> onStatus2 = this.OnStatus;
+                    Action<StatusEquipment> onStatus2 = this.OnStatus;
                     if (onStatus2 == null)
                         break;
-                    onStatus2((IPosStatus)new PosStatus()
+                    onStatus2((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.AuthorizationDenied
+                        Status = eStatusPos.AuthorizationDenied
                     });
                     break;
                 case 2:
-                    Action<IPosStatus> onStatus3 = this.OnStatus;
+                    Action<StatusEquipment> onStatus3 = this.OnStatus;
                     if (onStatus3 == null)
                         break;
-                    onStatus3((IPosStatus)new PosStatus()
+                    onStatus3((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.AuthorizationDenied
+                        Status = eStatusPos.AuthorizationDenied
                     });
                     break;
                 case 3:
-                    Action<IPosStatus> onStatus4 = this.OnStatus;
+                    Action<StatusEquipment> onStatus4 = this.OnStatus;
                     if (onStatus4 == null)
                         break;
-                    onStatus4((IPosStatus)new PosStatus()
+                    onStatus4((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.UnregisteredTradingPoint
+                        Status = eStatusPos.UnregisteredTradingPoint
                     });
                     break;
                 case 4:
-                    Action<IPosStatus> onStatus5 = this.OnStatus;
+                    Action<StatusEquipment> onStatus5 = this.OnStatus;
                     if (onStatus5 == null)
                         break;
-                    onStatus5((IPosStatus)new PosStatus()
+                    onStatus5((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.AuthorizationRejectedWithdrawTheCardAtTheBanksRequest
+                        Status = eStatusPos.AuthorizationRejectedWithdrawTheCardAtTheBanksRequest
                     });
                     break;
                 case 5:
-                    Action<IPosStatus> onStatus6 = this.OnStatus;
+                    Action<StatusEquipment> onStatus6 = this.OnStatus;
                     if (onStatus6 == null)
                         break;
-                    onStatus6((IPosStatus)new PosStatus()
+                    onStatus6((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.AuthorizationRejectedNoPayment
+                        Status = eStatusPos.AuthorizationRejectedNoPayment
                     });
                     break;
                 case 6:
-                    Action<IPosStatus> onStatus7 = this.OnStatus;
+                    Action<StatusEquipment> onStatus7 = this.OnStatus;
                     if (onStatus7 != null)
-                        onStatus7((IPosStatus)new PosStatus()
+                        onStatus7((StatusEquipment)new PosStatus()
                         {
-                            Status = ePosStatus.CommonErrorNeedToRepeat
+                            Status = eStatusPos.CommonErrorNeedToRepeat
                         });
                     Action<DeviceLog> onDeviceWarning1 = this.OnDeviceWarning;
                     if (onDeviceWarning1 == null)
@@ -1081,20 +747,20 @@ namespace Front.Equipments.Ingenico
                     onDeviceWarning1((DeviceLog)posDeviceLog1);
                     break;
                 case 7:
-                    Action<IPosStatus> onStatus8 = this.OnStatus;
+                    Action<StatusEquipment> onStatus8 = this.OnStatus;
                     if (onStatus8 == null)
                         break;
-                    onStatus8((IPosStatus)new PosStatus()
+                    onStatus8((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.AuthorizationRejectedWithdrawTheCardAtTheBanksRequest
+                        Status = eStatusPos.AuthorizationRejectedWithdrawTheCardAtTheBanksRequest
                     });
                     break;
                 case 12:
-                    Action<IPosStatus> onStatus9 = this.OnStatus;
+                    Action<StatusEquipment> onStatus9 = this.OnStatus;
                     if (onStatus9 != null)
-                        onStatus9((IPosStatus)new PosStatus()
+                        onStatus9((StatusEquipment)new PosStatus()
                         {
-                            Status = ePosStatus.InvalidTransactionNetworkErrorNeedToRepeat
+                            Status = eStatusPos.InvalidTransactionNetworkErrorNeedToRepeat
                         });
                     Action<DeviceLog> onDeviceWarning2 = this.OnDeviceWarning;
                     if (onDeviceWarning2 == null)
@@ -1105,56 +771,56 @@ namespace Front.Equipments.Ingenico
                     onDeviceWarning2((DeviceLog)posDeviceLog2);
                     break;
                 case 13:
-                    Action<IPosStatus> onStatus10 = this.OnStatus;
+                    Action<StatusEquipment> onStatus10 = this.OnStatus;
                     if (onStatus10 == null)
                         break;
-                    onStatus10((IPosStatus)new PosStatus()
+                    onStatus10((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.IncorrectAmountEntered
+                        Status = eStatusPos.IncorrectAmountEntered
                     });
                     break;
                 case 14:
-                    Action<IPosStatus> onStatus11 = this.OnStatus;
+                    Action<StatusEquipment> onStatus11 = this.OnStatus;
                     if (onStatus11 == null)
                         break;
-                    onStatus11((IPosStatus)new PosStatus()
+                    onStatus11((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.InvalidCardNumber
+                        Status = eStatusPos.InvalidCardNumber
                     });
                     break;
                 case 15:
-                    Action<IPosStatus> onStatus12 = this.OnStatus;
+                    Action<StatusEquipment> onStatus12 = this.OnStatus;
                     if (onStatus12 == null)
                         break;
-                    onStatus12((IPosStatus)new PosStatus()
+                    onStatus12((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.BankNodeIsNotFoundOnTheNetwork
+                        Status = eStatusPos.BankNodeIsNotFoundOnTheNetwork
                     });
                     break;
                 case 17:
-                    Action<IPosStatus> onStatus13 = this.OnStatus;
+                    Action<StatusEquipment> onStatus13 = this.OnStatus;
                     if (onStatus13 == null)
                         break;
-                    onStatus13((IPosStatus)new PosStatus()
+                    onStatus13((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.CanceledByTheClient
+                        Status = eStatusPos.CanceledByTheClient
                     });
                     break;
                 case 21:
-                    Action<IPosStatus> onStatus14 = this.OnStatus;
+                    Action<StatusEquipment> onStatus14 = this.OnStatus;
                     if (onStatus14 == null)
                         break;
-                    onStatus14((IPosStatus)new PosStatus()
+                    onStatus14((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.ActionsNotCompletedDidNotMatchData
+                        Status = eStatusPos.ActionsNotCompletedDidNotMatchData
                     });
                     break;
                 case 28:
-                    Action<IPosStatus> onStatus15 = this.OnStatus;
+                    Action<StatusEquipment> onStatus15 = this.OnStatus;
                     if (onStatus15 != null)
-                        onStatus15((IPosStatus)new PosStatus()
+                        onStatus15((StatusEquipment)new PosStatus()
                         {
-                            Status = ePosStatus.NoResponseFileIsTemporarilyUnavailable
+                            Status = eStatusPos.NoResponseFileIsTemporarilyUnavailable
                         });
                     Action<DeviceLog> onDeviceWarning3 = this.OnDeviceWarning;
                     if (onDeviceWarning3 == null)
@@ -1165,11 +831,11 @@ namespace Front.Equipments.Ingenico
                     onDeviceWarning3((DeviceLog)posDeviceLog3);
                     break;
                 case 30:
-                    Action<IPosStatus> onStatus16 = this.OnStatus;
+                    Action<StatusEquipment> onStatus16 = this.OnStatus;
                     if (onStatus16 != null)
-                        onStatus16((IPosStatus)new PosStatus()
+                        onStatus16((StatusEquipment)new PosStatus()
                         {
-                            Status = ePosStatus.WrongFormatNeedToRepeat
+                            Status = eStatusPos.WrongFormatNeedToRepeat
                         });
                     Action<DeviceLog> onDeviceWarning4 = this.OnDeviceWarning;
                     if (onDeviceWarning4 == null)
@@ -1180,263 +846,263 @@ namespace Front.Equipments.Ingenico
                     onDeviceWarning4((DeviceLog)posDeviceLog4);
                     break;
                 case 31:
-                    Action<IPosStatus> onStatus17 = this.OnStatus;
+                    Action<StatusEquipment> onStatus17 = this.OnStatus;
                     if (onStatus17 == null)
                         break;
-                    onStatus17((IPosStatus)new PosStatus()
+                    onStatus17((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.TheIssuerIsNotFoundInThePaymentSystem
+                        Status = eStatusPos.TheIssuerIsNotFoundInThePaymentSystem
                     });
                     break;
                 case 32:
-                    Action<IPosStatus> onStatus18 = this.OnStatus;
+                    Action<StatusEquipment> onStatus18 = this.OnStatus;
                     if (onStatus18 == null)
                         break;
-                    onStatus18((IPosStatus)new PosStatus()
+                    onStatus18((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.PartiallyCompleted
+                        Status = eStatusPos.PartiallyCompleted
                     });
                     break;
                 case 33:
-                    Action<IPosStatus> onStatus19 = this.OnStatus;
+                    Action<StatusEquipment> onStatus19 = this.OnStatus;
                     if (onStatus19 == null)
                         break;
-                    onStatus19((IPosStatus)new PosStatus()
+                    onStatus19((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.TheValidityPeriodOfTheCardHasExpiredTheCardHasBeenWithdrawnAtTheBanksRequest
+                        Status = eStatusPos.TheValidityPeriodOfTheCardHasExpiredTheCardHasBeenWithdrawnAtTheBanksRequest
                     });
                     break;
                 case 36:
-                    Action<IPosStatus> onStatus20 = this.OnStatus;
+                    Action<StatusEquipment> onStatus20 = this.OnStatus;
                     if (onStatus20 == null)
                         break;
-                    onStatus20((IPosStatus)new PosStatus()
+                    onStatus20((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.ForbiddenCardRemove
+                        Status = eStatusPos.ForbiddenCardRemove
                     });
                     break;
                 case 37:
-                    Action<IPosStatus> onStatus21 = this.OnStatus;
+                    Action<StatusEquipment> onStatus21 = this.OnStatus;
                     if (onStatus21 == null)
                         break;
-                    onStatus21((IPosStatus)new PosStatus()
+                    onStatus21((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.WithdrawnByTheIssuerRemovedFromTheCardAndContactedByTheAcquirer
+                        Status = eStatusPos.WithdrawnByTheIssuerRemovedFromTheCardAndContactedByTheAcquirer
                     });
                     break;
                 case 38:
-                    Action<IPosStatus> onStatus22 = this.OnStatus;
+                    Action<StatusEquipment> onStatus22 = this.OnStatus;
                     if (onStatus22 == null)
                         break;
-                    onStatus22((IPosStatus)new PosStatus()
+                    onStatus22((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.ThereAreNoAttemptsToEnterThePINRemoveTheCard
+                        Status = eStatusPos.ThereAreNoAttemptsToEnterThePINRemoveTheCard
                     });
                     break;
                 case 39:
-                    Action<IPosStatus> onStatus23 = this.OnStatus;
+                    Action<StatusEquipment> onStatus23 = this.OnStatus;
                     if (onStatus23 == null)
                         break;
-                    onStatus23((IPosStatus)new PosStatus()
+                    onStatus23((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.NoClientsCreditAccount
+                        Status = eStatusPos.NoClientsCreditAccount
                     });
                     break;
                 case 41:
-                    Action<IPosStatus> onStatus24 = this.OnStatus;
+                    Action<StatusEquipment> onStatus24 = this.OnStatus;
                     if (onStatus24 == null)
                         break;
-                    onStatus24((IPosStatus)new PosStatus()
+                    onStatus24((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.CardIslostRemoved
+                        Status = eStatusPos.CardIslostRemoved
                     });
                     break;
                 case 43:
-                    Action<IPosStatus> onStatus25 = this.OnStatus;
+                    Action<StatusEquipment> onStatus25 = this.OnStatus;
                     if (onStatus25 == null)
                         break;
-                    onStatus25((IPosStatus)new PosStatus()
+                    onStatus25((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.CardIsStolenRemoved
+                        Status = eStatusPos.CardIsStolenRemoved
                     });
                     break;
                 case 51:
-                    Action<IPosStatus> onStatus26 = this.OnStatus;
+                    Action<StatusEquipment> onStatus26 = this.OnStatus;
                     if (onStatus26 == null)
                         break;
-                    onStatus26((IPosStatus)new PosStatus()
+                    onStatus26((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.NotEnoughMoney
+                        Status = eStatusPos.NotEnoughMoney
                     });
                     break;
                 case 52:
-                    Action<IPosStatus> onStatus27 = this.OnStatus;
+                    Action<StatusEquipment> onStatus27 = this.OnStatus;
                     if (onStatus27 == null)
                         break;
-                    onStatus27((IPosStatus)new PosStatus()
+                    onStatus27((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.NoSettlementSpecifiedClienAccount
+                        Status = eStatusPos.NoSettlementSpecifiedClienAccount
                     });
                     break;
                 case 53:
-                    Action<IPosStatus> onStatus28 = this.OnStatus;
+                    Action<StatusEquipment> onStatus28 = this.OnStatus;
                     if (onStatus28 == null)
                         break;
-                    onStatus28((IPosStatus)new PosStatus()
+                    onStatus28((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.ThereIsNoCumulativeAccountOfTheClient
+                        Status = eStatusPos.ThereIsNoCumulativeAccountOfTheClient
                     });
                     break;
                 case 54:
-                    Action<IPosStatus> onStatus29 = this.OnStatus;
+                    Action<StatusEquipment> onStatus29 = this.OnStatus;
                     if (onStatus29 == null)
                         break;
-                    onStatus29((IPosStatus)new PosStatus()
+                    onStatus29((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.TheExpirationDateOfTheCardExpires
+                        Status = eStatusPos.TheExpirationDateOfTheCardExpires
                     });
                     break;
                 case 55:
-                    Action<IPosStatus> onStatus30 = this.OnStatus;
+                    Action<StatusEquipment> onStatus30 = this.OnStatus;
                     if (onStatus30 == null)
                         break;
-                    onStatus30((IPosStatus)new PosStatus()
+                    onStatus30((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.WrongPIN
+                        Status = eStatusPos.WrongPIN
                     });
                     break;
                 case 57:
-                    Action<IPosStatus> onStatus31 = this.OnStatus;
+                    Action<StatusEquipment> onStatus31 = this.OnStatus;
                     if (onStatus31 == null)
                         break;
-                    onStatus31((IPosStatus)new PosStatus()
+                    onStatus31((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.ThisTransactionTypeIsNotProvidedForTheGivenCard
+                        Status = eStatusPos.ThisTransactionTypeIsNotProvidedForTheGivenCard
                     });
                     break;
                 case 58:
-                    Action<IPosStatus> onStatus32 = this.OnStatus;
+                    Action<StatusEquipment> onStatus32 = this.OnStatus;
                     if (onStatus32 == null)
                         break;
-                    onStatus32((IPosStatus)new PosStatus()
+                    onStatus32((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.ThisTypeOfTransactionIsNotProvidedForPOSTerminal
+                        Status = eStatusPos.ThisTypeOfTransactionIsNotProvidedForPOSTerminal
                     });
                     break;
                 case 61:
-                    Action<IPosStatus> onStatus33 = this.OnStatus;
+                    Action<StatusEquipment> onStatus33 = this.OnStatus;
                     if (onStatus33 == null)
                         break;
-                    onStatus33((IPosStatus)new PosStatus()
+                    onStatus33((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.TheAamountOfAuthorizationExceededTheExpenseLimitOnTheCard
+                        Status = eStatusPos.TheAamountOfAuthorizationExceededTheExpenseLimitOnTheCard
                     });
                     break;
                 case 62:
-                    Action<IPosStatus> onStatus34 = this.OnStatus;
+                    Action<StatusEquipment> onStatus34 = this.OnStatus;
                     if (onStatus34 == null)
                         break;
-                    onStatus34((IPosStatus)new PosStatus()
+                    onStatus34((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.IncorrectServiceCodeForbiddenCardCanNotBeSeized
+                        Status = eStatusPos.IncorrectServiceCodeForbiddenCardCanNotBeSeized
                     });
                     break;
                 case 64:
-                    Action<IPosStatus> onStatus35 = this.OnStatus;
+                    Action<StatusEquipment> onStatus35 = this.OnStatus;
                     if (onStatus35 == null)
                         break;
-                    onStatus35((IPosStatus)new PosStatus()
+                    onStatus35((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.TheAmountOfTheCancellationAuthorizationIsDifferentFromTheAmountOfTheOriginalAuthorization
+                        Status = eStatusPos.TheAmountOfTheCancellationAuthorizationIsDifferentFromTheAmountOfTheOriginalAuthorization
                     });
                     break;
                 case 65:
-                    Action<IPosStatus> onStatus36 = this.OnStatus;
+                    Action<StatusEquipment> onStatus36 = this.OnStatus;
                     if (onStatus36 == null)
                         break;
-                    onStatus36((IPosStatus)new PosStatus()
+                    onStatus36((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.TheExpenseLimitExpiredOnTheAccount
+                        Status = eStatusPos.TheExpenseLimitExpiredOnTheAccount
                     });
                     break;
                 case 66:
-                    Action<IPosStatus> onStatus37 = this.OnStatus;
+                    Action<StatusEquipment> onStatus37 = this.OnStatus;
                     if (onStatus37 == null)
                         break;
-                    onStatus37((IPosStatus)new PosStatus()
+                    onStatus37((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.TheCardIsVoidCanNotBeSeized
+                        Status = eStatusPos.TheCardIsVoidCanNotBeSeized
                     });
                     break;
                 case 67:
-                    Action<IPosStatus> onStatus38 = this.OnStatus;
+                    Action<StatusEquipment> onStatus38 = this.OnStatus;
                     if (onStatus38 == null)
                         break;
-                    onStatus38((IPosStatus)new PosStatus()
+                    onStatus38((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.CardIsWithdrawnFromATM
+                        Status = eStatusPos.CardIsWithdrawnFromATM
                     });
                     break;
                 case 68:
-                    Action<IPosStatus> onStatus39 = this.OnStatus;
+                    Action<StatusEquipment> onStatus39 = this.OnStatus;
                     if (onStatus39 == null)
                         break;
-                    onStatus39((IPosStatus)new PosStatus()
+                    onStatus39((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.ItIsTooLateToReceiveAnAnswerFromTheNetworkItIsNecessaryToRepeat
+                        Status = eStatusPos.ItIsTooLateToReceiveAnAnswerFromTheNetworkItIsNecessaryToRepeat
                     });
                     break;
                 case 75:
-                    Action<IPosStatus> onStatus40 = this.OnStatus;
+                    Action<StatusEquipment> onStatus40 = this.OnStatus;
                     if (onStatus40 == null)
                         break;
-                    onStatus40((IPosStatus)new PosStatus()
+                    onStatus40((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.TheNumberOfIncorrectlyEnteredPINsExceededTheAmountDischarged
+                        Status = eStatusPos.TheNumberOfIncorrectlyEnteredPINsExceededTheAmountDischarged
                     });
                     break;
                 case 76:
-                    Action<IPosStatus> onStatus41 = this.OnStatus;
+                    Action<StatusEquipment> onStatus41 = this.OnStatus;
                     if (onStatus41 == null)
                         break;
-                    onStatus41((IPosStatus)new PosStatus()
+                    onStatus41((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.TheNumberOfIncorrectlyEnteredPINsExceededTheAmountDischarged
+                        Status = eStatusPos.TheNumberOfIncorrectlyEnteredPINsExceededTheAmountDischarged
                     });
                     break;
                 case 77:
-                    Action<IPosStatus> onStatus42 = this.OnStatus;
+                    Action<StatusEquipment> onStatus42 = this.OnStatus;
                     if (onStatus42 == null)
                         break;
-                    onStatus42((IPosStatus)new PosStatus()
+                    onStatus42((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.ActionsAreNotCompletedIncompleteDataItIsNecessaryToRollbackOrRepeat
+                        Status = eStatusPos.ActionsAreNotCompletedIncompleteDataItIsNecessaryToRollbackOrRepeat
                     });
                     break;
                 case 78:
-                    Action<IPosStatus> onStatus43 = this.OnStatus;
+                    Action<StatusEquipment> onStatus43 = this.OnStatus;
                     if (onStatus43 == null)
                         break;
-                    onStatus43((IPosStatus)new PosStatus()
+                    onStatus43((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.NoAccount
+                        Status = eStatusPos.NoAccount
                     });
                     break;
                 case 79:
-                    Action<IPosStatus> onStatus44 = this.OnStatus;
+                    Action<StatusEquipment> onStatus44 = this.OnStatus;
                     if (onStatus44 == null)
                         break;
-                    onStatus44((IPosStatus)new PosStatus()
+                    onStatus44((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.AlreadyCanceledWhenTurnedOn
+                        Status = eStatusPos.AlreadyCanceledWhenTurnedOn
                     });
                     break;
                 case 80:
-                    Action<IPosStatus> onStatus45 = this.OnStatus;
+                    Action<StatusEquipment> onStatus45 = this.OnStatus;
                     if (onStatus45 != null)
-                        onStatus45((IPosStatus)new PosStatus()
+                        onStatus45((StatusEquipment)new PosStatus()
                         {
-                            Status = ePosStatus.GeneralNetworkErrorIncorrectData
+                            Status = eStatusPos.GeneralNetworkErrorIncorrectData
                         });
                     Action<DeviceLog> onDeviceWarning5 = this.OnDeviceWarning;
                     if (onDeviceWarning5 == null)
@@ -1447,29 +1113,29 @@ namespace Front.Equipments.Ingenico
                     onDeviceWarning5((DeviceLog)posDeviceLog5);
                     break;
                 case 81:
-                    Action<IPosStatus> onStatus46 = this.OnStatus;
+                    Action<StatusEquipment> onStatus46 = this.OnStatus;
                     if (onStatus46 == null)
                         break;
-                    onStatus46((IPosStatus)new PosStatus()
+                    onStatus46((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.RemoteNetworkErrorOrPINEncryption
+                        Status = eStatusPos.RemoteNetworkErrorOrPINEncryption
                     });
                     break;
                 case 82:
-                    Action<IPosStatus> onStatus47 = this.OnStatus;
+                    Action<StatusEquipment> onStatus47 = this.OnStatus;
                     if (onStatus47 == null)
                         break;
-                    onStatus47((IPosStatus)new PosStatus()
+                    onStatus47((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.TimeoutWhenConnectedWithTheIssuersNodeOrWrongCVVOrCacheIsNotApprovedTheCashbackSumLimitIsExceeded
+                        Status = eStatusPos.TimeoutWhenConnectedWithTheIssuersNodeOrWrongCVVOrCacheIsNotApprovedTheCashbackSumLimitIsExceeded
                     });
                     break;
                 case 83:
-                    Action<IPosStatus> onStatus48 = this.OnStatus;
+                    Action<StatusEquipment> onStatus48 = this.OnStatus;
                     if (onStatus48 != null)
-                        onStatus48((IPosStatus)new PosStatus()
+                        onStatus48((StatusEquipment)new PosStatus()
                         {
-                            Status = ePosStatus.ThePINVerificationTransactionIsUnsuccessfulNetworkError
+                            Status = eStatusPos.ThePINVerificationTransactionIsUnsuccessfulNetworkError
                         });
                     Action<DeviceLog> onDeviceWarning6 = this.OnDeviceWarning;
                     if (onDeviceWarning6 == null)
@@ -1480,20 +1146,20 @@ namespace Front.Equipments.Ingenico
                     onDeviceWarning6((DeviceLog)posDeviceLog6);
                     break;
                 case 85:
-                    Action<IPosStatus> onStatus49 = this.OnStatus;
+                    Action<StatusEquipment> onStatus49 = this.OnStatus;
                     if (onStatus49 == null)
                         break;
-                    onStatus49((IPosStatus)new PosStatus()
+                    onStatus49((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.TheCardIsInOrderThereIsNoReasonToRefuse
+                        Status = eStatusPos.TheCardIsInOrderThereIsNoReasonToRefuse
                     });
                     break;
                 case 86:
-                    Action<IPosStatus> onStatus50 = this.OnStatus;
+                    Action<StatusEquipment> onStatus50 = this.OnStatus;
                     if (onStatus50 != null)
-                        onStatus50((IPosStatus)new PosStatus()
+                        onStatus50((StatusEquipment)new PosStatus()
                         {
-                            Status = ePosStatus.PINCanNotBeCheckedNetworkError
+                            Status = eStatusPos.PINCanNotBeCheckedNetworkError
                         });
                     Action<DeviceLog> onDeviceWarning7 = this.OnDeviceWarning;
                     if (onDeviceWarning7 == null)
@@ -1504,11 +1170,11 @@ namespace Front.Equipments.Ingenico
                     onDeviceWarning7((DeviceLog)posDeviceLog7);
                     break;
                 case 88:
-                    Action<IPosStatus> onStatus51 = this.OnStatus;
+                    Action<StatusEquipment> onStatus51 = this.OnStatus;
                     if (onStatus51 != null)
-                        onStatus51((IPosStatus)new PosStatus()
+                        onStatus51((StatusEquipment)new PosStatus()
                         {
-                            Status = ePosStatus.PINEncryptionErrorNetworkError
+                            Status = eStatusPos.PINEncryptionErrorNetworkError
                         });
                     Action<DeviceLog> onDeviceWarning8 = this.OnDeviceWarning;
                     if (onDeviceWarning8 == null)
@@ -1519,11 +1185,11 @@ namespace Front.Equipments.Ingenico
                     onDeviceWarning8((DeviceLog)posDeviceLog8);
                     break;
                 case 89:
-                    Action<IPosStatus> onStatus52 = this.OnStatus;
+                    Action<StatusEquipment> onStatus52 = this.OnStatus;
                     if (onStatus52 != null)
-                        onStatus52((IPosStatus)new PosStatus()
+                        onStatus52((StatusEquipment)new PosStatus()
                         {
-                            Status = ePosStatus.IdentificationErrorIsANetworkError
+                            Status = eStatusPos.IdentificationErrorIsANetworkError
                         });
                     Action<DeviceLog> onDeviceWarning9 = this.OnDeviceWarning;
                     if (onDeviceWarning9 == null)
@@ -1534,11 +1200,11 @@ namespace Front.Equipments.Ingenico
                     onDeviceWarning9((DeviceLog)posDeviceLog9);
                     break;
                 case 91:
-                    Action<IPosStatus> onStatus53 = this.OnStatus;
+                    Action<StatusEquipment> onStatus53 = this.OnStatus;
                     if (onStatus53 != null)
-                        onStatus53((IPosStatus)new PosStatus()
+                        onStatus53((StatusEquipment)new PosStatus()
                         {
-                            Status = ePosStatus.NoConnectionWithTheBankByTheIssuerNetworkError
+                            Status = eStatusPos.NoConnectionWithTheBankByTheIssuerNetworkError
                         });
                     Action<DeviceLog> onDeviceWarning10 = this.OnDeviceWarning;
                     if (onDeviceWarning10 == null)
@@ -1549,11 +1215,11 @@ namespace Front.Equipments.Ingenico
                     onDeviceWarning10((DeviceLog)posDeviceLog10);
                     break;
                 case 92:
-                    Action<IPosStatus> onStatus54 = this.OnStatus;
+                    Action<StatusEquipment> onStatus54 = this.OnStatus;
                     if (onStatus54 != null)
-                        onStatus54((IPosStatus)new PosStatus()
+                        onStatus54((StatusEquipment)new PosStatus()
                         {
-                            Status = ePosStatus.UnsuccessfulRequestRoutingIsNotPossibleNetworkError
+                            Status = eStatusPos.UnsuccessfulRequestRoutingIsNotPossibleNetworkError
                         });
                     Action<DeviceLog> onDeviceWarning11 = this.OnDeviceWarning;
                     if (onDeviceWarning11 == null)
@@ -1564,20 +1230,20 @@ namespace Front.Equipments.Ingenico
                     onDeviceWarning11((DeviceLog)posDeviceLog11);
                     break;
                 case 93:
-                    Action<IPosStatus> onStatus55 = this.OnStatus;
+                    Action<StatusEquipment> onStatus55 = this.OnStatus;
                     if (onStatus55 == null)
                         break;
-                    onStatus55((IPosStatus)new PosStatus()
+                    onStatus55((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.TheTransactionCanNotBeCompletedTheIssuerDeclineAuthorizationDueToAViolationOfTheRules
+                        Status = eStatusPos.TheTransactionCanNotBeCompletedTheIssuerDeclineAuthorizationDueToAViolationOfTheRules
                     });
                     break;
                 case 94:
-                    Action<IPosStatus> onStatus56 = this.OnStatus;
+                    Action<StatusEquipment> onStatus56 = this.OnStatus;
                     if (onStatus56 != null)
-                        onStatus56((IPosStatus)new PosStatus()
+                        onStatus56((StatusEquipment)new PosStatus()
                         {
-                            Status = ePosStatus.DuplicationOfTransmissionNetworkError
+                            Status = eStatusPos.DuplicationOfTransmissionNetworkError
                         });
                     Action<DeviceLog> onDeviceWarning12 = this.OnDeviceWarning;
                     if (onDeviceWarning12 == null)
@@ -1588,29 +1254,29 @@ namespace Front.Equipments.Ingenico
                     onDeviceWarning12((DeviceLog)posDeviceLog12);
                     break;
                 case 96:
-                    Action<IPosStatus> onStatus57 = this.OnStatus;
+                    Action<StatusEquipment> onStatus57 = this.OnStatus;
                     if (onStatus57 == null)
                         break;
-                    onStatus57((IPosStatus)new PosStatus()
+                    onStatus57((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.GeneralSystemMalfunction
+                        Status = eStatusPos.GeneralSystemMalfunction
                     });
                     break;
                 case 119:
-                    Action<IPosStatus> onStatus58 = this.OnStatus;
+                    Action<StatusEquipment> onStatus58 = this.OnStatus;
                     if (onStatus58 == null)
                         break;
-                    onStatus58((IPosStatus)new PosStatus()
+                    onStatus58((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.UnableToSendEncryptedMessage
+                        Status = eStatusPos.UnableToSendEncryptedMessage
                     });
                     break;
                 case 1000:
-                    Action<IPosStatus> onStatus59 = this.OnStatus;
+                    Action<StatusEquipment> onStatus59 = this.OnStatus;
                     if (onStatus59 != null)
-                        onStatus59((IPosStatus)new PosStatus()
+                        onStatus59((StatusEquipment)new PosStatus()
                         {
-                            Status = ePosStatus.GeneralError
+                            Status = eStatusPos.GeneralError
                         });
                     Action<DeviceLog> onDeviceWarning13 = this.OnDeviceWarning;
                     if (onDeviceWarning13 == null)
@@ -1621,38 +1287,38 @@ namespace Front.Equipments.Ingenico
                     onDeviceWarning13((DeviceLog)posDeviceLog13);
                     break;
                 case 1001:
-                    Action<IPosStatus> onStatus60 = this.OnStatus;
+                    Action<StatusEquipment> onStatus60 = this.OnStatus;
                     if (onStatus60 == null)
                         break;
-                    onStatus60((IPosStatus)new PosStatus()
+                    onStatus60((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.TransactionCanceledByUser
+                        Status = eStatusPos.TransactionCanceledByUser
                     });
                     break;
                 case 1002:
-                    Action<IPosStatus> onStatus61 = this.OnStatus;
+                    Action<StatusEquipment> onStatus61 = this.OnStatus;
                     if (onStatus61 == null)
                         break;
-                    onStatus61((IPosStatus)new PosStatus()
+                    onStatus61((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.EMVDecline
+                        Status = eStatusPos.EMVDecline
                     });
                     break;
                 case 1003:
-                    Action<IPosStatus> onStatus62 = this.OnStatus;
+                    Action<StatusEquipment> onStatus62 = this.OnStatus;
                     if (onStatus62 == null)
                         break;
-                    onStatus62((IPosStatus)new PosStatus()
+                    onStatus62((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.TransactionLogIsFullNeedCloseBatch
+                        Status = eStatusPos.TransactionLogIsFullNeedCloseBatch
                     });
                     break;
                 case 1004:
-                    Action<IPosStatus> onStatus63 = this.OnStatus;
+                    Action<StatusEquipment> onStatus63 = this.OnStatus;
                     if (onStatus63 != null)
-                        onStatus63((IPosStatus)new PosStatus()
+                        onStatus63((StatusEquipment)new PosStatus()
                         {
-                            Status = ePosStatus.NoConnectionWithHost
+                            Status = eStatusPos.NoConnectionWithHost
                         });
                     Action<DeviceLog> onDeviceWarning14 = this.OnDeviceWarning;
                     if (onDeviceWarning14 == null)
@@ -1663,11 +1329,11 @@ namespace Front.Equipments.Ingenico
                     onDeviceWarning14((DeviceLog)posDeviceLog14);
                     break;
                 case 1005:
-                    Action<IPosStatus> onStatus64 = this.OnStatus;
+                    Action<StatusEquipment> onStatus64 = this.OnStatus;
                     if (onStatus64 != null)
-                        onStatus64((IPosStatus)new PosStatus()
+                        onStatus64((StatusEquipment)new PosStatus()
                         {
-                            Status = ePosStatus.NoPaperInPrinter
+                            Status = eStatusPos.NoPaperInPrinter
                         });
                     Action<DeviceLog> onDeviceWarning15 = this.OnDeviceWarning;
                     if (onDeviceWarning15 == null)
@@ -1678,30 +1344,30 @@ namespace Front.Equipments.Ingenico
                     onDeviceWarning15((DeviceLog)posDeviceLog15);
                     break;
                 case 1006:
-                    Action<IPosStatus> onStatus65 = this.OnStatus;
+                    Action<StatusEquipment> onStatus65 = this.OnStatus;
                     if (onStatus65 == null)
                         break;
-                    onStatus65((IPosStatus)new PosStatus()
+                    onStatus65((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.ErrorCryptoKeys
+                        Status = eStatusPos.ErrorCryptoKeys
                     });
                     break;
                 case 1007:
-                    Action<IPosStatus> onStatus66 = this.OnStatus;
+                    Action<StatusEquipment> onStatus66 = this.OnStatus;
                     if (onStatus66 == null)
                         break;
-                    onStatus66((IPosStatus)new PosStatus()
+                    onStatus66((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.CardReaderIsNotConnected
+                        Status = eStatusPos.CardReaderIsNotConnected
                     });
                     break;
                 case 1008:
-                    Action<IPosStatus> onStatus67 = this.OnStatus;
+                    Action<StatusEquipment> onStatus67 = this.OnStatus;
                     if (onStatus67 == null)
                         break;
-                    onStatus67((IPosStatus)new PosStatus()
+                    onStatus67((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.TransactionIsAlreadyComplete
+                        Status = eStatusPos.TransactionIsAlreadyComplete
                     });
                     break;
             }
@@ -1712,129 +1378,129 @@ namespace Front.Equipments.Ingenico
             switch (LastStatMsgCode)
             {
                 case 1:
-                    Action<IPosStatus> onStatus1 = this.OnStatus;
+                    Action<StatusEquipment> onStatus1 = this.OnStatus;
                     if (onStatus1 == null)
                         break;
-                    onStatus1((IPosStatus)new PosStatus()
+                    onStatus1((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.CardWasRead
+                        Status = eStatusPos.CardWasRead
                     });
                     break;
                 case 2:
-                    Action<IPosStatus> onStatus2 = this.OnStatus;
+                    Action<StatusEquipment> onStatus2 = this.OnStatus;
                     if (onStatus2 == null)
                         break;
-                    onStatus2((IPosStatus)new PosStatus()
+                    onStatus2((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.UsedAChipCard
+                        Status = eStatusPos.UsedAChipCard
                     });
                     break;
                 case 3:
-                    Action<IPosStatus> onStatus3 = this.OnStatus;
+                    Action<StatusEquipment> onStatus3 = this.OnStatus;
                     if (onStatus3 == null)
                         break;
-                    onStatus3((IPosStatus)new PosStatus()
+                    onStatus3((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.AuthorizationInProgress
+                        Status = eStatusPos.AuthorizationInProgress
                     });
                     break;
                 case 4:
-                    Action<IPosStatus> onStatus4 = this.OnStatus;
+                    Action<StatusEquipment> onStatus4 = this.OnStatus;
                     if (onStatus4 == null)
                         break;
-                    onStatus4((IPosStatus)new PosStatus()
+                    onStatus4((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.WaitingForCashierAction
+                        Status = eStatusPos.WaitingForCashierAction
                     });
                     break;
                 case 5:
-                    Action<IPosStatus> onStatus5 = this.OnStatus;
+                    Action<StatusEquipment> onStatus5 = this.OnStatus;
                     if (onStatus5 == null)
                         break;
-                    onStatus5((IPosStatus)new PosStatus()
+                    onStatus5((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.PrintingReceipt
+                        Status = eStatusPos.PrintingReceipt
                     });
                     break;
                 case 6:
-                    Action<IPosStatus> onStatus6 = this.OnStatus;
+                    Action<StatusEquipment> onStatus6 = this.OnStatus;
                     if (onStatus6 == null)
                         break;
-                    onStatus6((IPosStatus)new PosStatus()
+                    onStatus6((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.PinEntryIsNeeded
+                        Status = eStatusPos.PinEntryIsNeeded
                     });
                     break;
                 case 7:
-                    Action<IPosStatus> onStatus7 = this.OnStatus;
+                    Action<StatusEquipment> onStatus7 = this.OnStatus;
                     if (onStatus7 == null)
                         break;
-                    onStatus7((IPosStatus)new PosStatus()
+                    onStatus7((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.CardWasRemoved
+                        Status = eStatusPos.CardWasRemoved
                     });
                     break;
                 case 8:
-                    Action<IPosStatus> onStatus8 = this.OnStatus;
+                    Action<StatusEquipment> onStatus8 = this.OnStatus;
                     if (onStatus8 == null)
                         break;
-                    onStatus8((IPosStatus)new PosStatus()
+                    onStatus8((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.EMVMultiAids
+                        Status = eStatusPos.EMVMultiAids
                     });
                     break;
                 case 9:
-                    Action<IPosStatus> onStatus9 = this.OnStatus;
+                    Action<StatusEquipment> onStatus9 = this.OnStatus;
                     if (onStatus9 == null)
                         break;
-                    onStatus9((IPosStatus)new PosStatus()
+                    onStatus9((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.WaitingForCard
+                        Status = eStatusPos.WaitingForCard
                     });
                     break;
                 case 10:
-                    Action<IPosStatus> onStatus10 = this.OnStatus;
+                    Action<StatusEquipment> onStatus10 = this.OnStatus;
                     if (onStatus10 == null)
                         break;
-                    onStatus10((IPosStatus)new PosStatus()
+                    onStatus10((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.InProgress
+                        Status = eStatusPos.InProgress
                     });
                     break;
                 case 11:
-                    Action<IPosStatus> onStatus11 = this.OnStatus;
+                    Action<StatusEquipment> onStatus11 = this.OnStatus;
                     if (onStatus11 == null)
                         break;
-                    onStatus11((IPosStatus)new PosStatus()
+                    onStatus11((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.CorrectTransaction
+                        Status = eStatusPos.CorrectTransaction
                     });
                     break;
                 case 12:
-                    Action<IPosStatus> onStatus12 = this.OnStatus;
+                    Action<StatusEquipment> onStatus12 = this.OnStatus;
                     if (onStatus12 == null)
                         break;
-                    onStatus12((IPosStatus)new PosStatus()
+                    onStatus12((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.PinInputWaitKey
+                        Status = eStatusPos.PinInputWaitKey
                     });
                     break;
                 case 13:
-                    Action<IPosStatus> onStatus13 = this.OnStatus;
+                    Action<StatusEquipment> onStatus13 = this.OnStatus;
                     if (onStatus13 == null)
                         break;
-                    onStatus13((IPosStatus)new PosStatus()
+                    onStatus13((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.PinInputBackspacePressed
+                        Status = eStatusPos.PinInputBackspacePressed
                     });
                     break;
                 case 14:
-                    Action<IPosStatus> onStatus14 = this.OnStatus;
+                    Action<StatusEquipment> onStatus14 = this.OnStatus;
                     if (onStatus14 == null)
                         break;
-                    onStatus14((IPosStatus)new PosStatus()
+                    onStatus14((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.PinInputKeyPressed
+                        Status = eStatusPos.PinInputKeyPressed
                     });
                     break;
             }
@@ -1910,11 +1576,11 @@ namespace Front.Equipments.Ingenico
                     });
                 _isCancelRequested = false;
                 _bpos1LibClass.Purchase(Convert.ToUInt32(amount * 100.0), 0U, this.merchantId);
-                Action<IPosStatus> onStatus = this.OnStatus;
+                Action<StatusEquipment> onStatus = this.OnStatus;
                 if (onStatus != null)
-                    onStatus((IPosStatus)new PosStatus()
+                    onStatus((StatusEquipment)new PosStatus()
                     {
-                        Status = ePosStatus.WaitingForCard
+                        Status = eStatusPos.WaitingForCard
                     });
                 PaymentResultModel result = this.WaitPosRespone();
                 ILogger<Ingenico> logger = this._logger;

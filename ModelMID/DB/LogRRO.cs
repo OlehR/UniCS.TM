@@ -16,8 +16,9 @@ namespace ModelMID.DB
         XReport = 1001,
         PeriodZReport = 1002,
         CopyReceipt =1010,
-        
+        ClosePort
     }
+
     public class LogRRO: IdReceipt
     {
         public LogRRO(IdReceipt pIdReceipt) : base(pIdReceipt) { }
@@ -30,7 +31,7 @@ namespace ModelMID.DB
         public string TextReceipt { get; set; }
         public string Error { get; set; } = null;
         public int CodeError { get; set; } = 0;
-        public int UserCreate { get; set;}
-       
+        public int UserCreate { get; set;}       
     }
+   
 }

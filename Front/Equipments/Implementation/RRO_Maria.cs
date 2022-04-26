@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Front.Equipments.Virtual;
+using Microsoft.Extensions.Configuration;
 using ModelMID;
 using ModelMID.DB;
 using Resonance;
@@ -16,10 +17,10 @@ namespace Front.Equipments.Implementation
         bool IsError = false;
 
         M304ManagerApplication M304;
-        public RRO_Maria(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<eStatusRRO> pActionStatus = null) : base(pConfiguration,eModelEquipment.Maria,pLogger, pActionStatus)
+        public RRO_Maria(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<StatusEquipment> pActionStatus = null) : base(pConfiguration,eModelEquipment.Maria,pLogger, pActionStatus)
         {
             M304 = new M304ManagerApplication();
-            Port = Configuration["Devices:Maria:Port"];
+            SerialPort = Configuration["Devices:Maria:Port"];
             OperatorName = this.Configuration["Devices:Maria:OperatorName"];
             OperatorPass =this.Configuration["Devices:Maria:OperatorPass"];            
             M304.Open();
@@ -33,7 +34,7 @@ namespace Front.Equipments.Implementation
                 IsInit = false;
             }
             
-            if (!SetError(M304.Init(Port, OperatorName, OperatorPass, false) != 1))
+            if (!SetError(M304.Init(SerialPort, OperatorName, OperatorPass, false) != 1))
             {
                 if( string.IsNullOrEmpty (M304.GetDocumentsInfoXML()))
                     Done();

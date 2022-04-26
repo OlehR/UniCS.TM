@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Front.Equipments.Virtual;
+using Microsoft.Extensions.Configuration;
 using ModelMID;
 using ModelMID.DB;
 using System;
@@ -13,7 +14,7 @@ namespace Front.Equipments.Implementation
     {
         string FN;
         WebCheck.ClassFiscal WCh = new WebCheck.ClassFiscal();
-        public pRRO_WebCheck(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<eStatusRRO> pActionStatus = null) :
+        public pRRO_WebCheck(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<StatusEquipment> pActionStatus = null) :
                        base(pConfiguration,eModelEquipment.pRRo_WebCheck ,pLogger, pActionStatus)
         {
             try
