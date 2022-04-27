@@ -2,7 +2,10 @@
 using ModelMID;
 using SharedLib;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,12 +16,14 @@ namespace Front
     /// <summary>
     /// Interaction logic for Admin.xaml
     /// </summary>
-    public partial class Admin : Window
+    public partial class Admin : Window, INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
         EquipmentFront EF;
         ObservableCollection<EquipmentElement> LE;
         ObservableCollection<Receipt> Receipts;
         BL Bl;
+        Receipt curReceipt = null;
         public Admin()
         {
             EF = EquipmentFront.GetEquipmentFront;
@@ -118,18 +123,45 @@ namespace Front
 
         private void historiReceiptList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Receipt p = (Receipt)ListReceipts.SelectedItem;
-            //MessageBox.Show("Сума чеку: " + p.SumReceipt.ToString());
+            curReceipt = ListReceipts.SelectedItem as Receipt;
+            //Якогось не працює через get як я хочу :) Тому пока реалізація через Ж.
+            IsPrintReceipt = curReceipt?.StateReceipt == eStateReceipt.Pay;
+            IsPayReceipt = curReceipt?.StateReceipt == eStateReceipt.Prepare;
+            IsInputPay = curReceipt?.StateReceipt == eStateReceipt.Prepare;
+            IsSendTo1C = curReceipt?.StateReceipt == eStateReceipt.Print;
+            IsCreateReturn = (curReceipt?.StateReceipt == eStateReceipt.Send || curReceipt?.StateReceipt == eStateReceipt.Print) && curReceipt?.TypeReceipt == eTypeReceipt.Sale;
         }
 
         private void FiscalizCheckButton(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Фiскалізовано");
+            var R = Bl.GetReceiptHead(curReceipt, true);
+            Bl.SetStateReceipt(null, eStateReceipt.Canceled);
+            var res = EF.PrintReceipt(R);
+            Bl.InsertLogRRO(res);
+            if (res.CodeError == 0)
+            {
+                Bl.UpdateReceiptFiscalNumber(R, res.FiscalNumber, res.SUM);                
+            }
+            //MessageBox.Show("Фiскалізовано");
         }
 
         private void PayAdminPanelButton(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Оплачено");
+            var R = Bl.GetReceiptHead(curReceipt, true);
+            if (R.StateReceipt == eStateReceipt.Prepare)
+            {
+                decimal sum = R.Wares.Sum(r => r.Sum); //TMP!!!Треба переробити
+
+                var pay = EF.PosPurchase(sum);
+                if (pay != null)
+                {
+                    pay.SetIdReceipt(R);
+                    Bl.db.ReplacePayment(new List<Payment>() { pay });
+                    Bl.SetStateReceipt(R, eStateReceipt.Pay);
+                    //curReceipt.StateReceipt = eStateReceipt.Pay;
+                }
+            }
+            //MessageBox.Show("Оплачено");
         }
 
         private void PaymentDetailsAdminPanelButton(object sender, RoutedEventArgs e)
@@ -144,7 +176,15 @@ namespace Front
 
         private void ReturnCheckButton(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Повернкти чек");
+            Bl.CreateRefund(curReceipt);
+            Close();
         }
+
+        //Якогось не працює через get як я хочу :) Тому пока реалізація через Ж.
+        public bool IsPrintReceipt { get; set; } = false;// { get { return curReceipt?.StateReceipt == eStateReceipt.Pay; } }  //
+        public bool IsPayReceipt { get; set; } = false;//{ get { return curReceipt?.StateReceipt == eStateReceipt.Prepare; } } // 
+        public bool IsInputPay { get; set; } = false;// { get { return curReceipt?.StateReceipt == eStateReceipt.Prepare; } }
+        public bool IsSendTo1C { get; set; } = false;// { get { return curReceipt?.StateReceipt == eStateReceipt.Print; } }
+        public bool IsCreateReturn { get; set; } = false;// { get { return curReceipt?.StateReceipt == eStateReceipt.Send && curReceipt?.TypeReceipt == eTypeReceipt.Sale; } }
     }
 }

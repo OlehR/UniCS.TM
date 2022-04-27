@@ -150,7 +150,7 @@ namespace Front
             ua.Tag = new CultureInfo("uk");
             en.Tag = new CultureInfo("en");
             hu.Tag = new CultureInfo("hu");
-            //pln.Tag = new CultureInfo("pln");
+            pln.Tag = new CultureInfo("pl");
 
             CultureInfo currLang = App.Language;
             Recalc();

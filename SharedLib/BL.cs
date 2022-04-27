@@ -624,6 +624,7 @@ namespace SharedLib
                     db.AddWares(el);
                 }
                 curRecipt = R;
+                Global.OnReceiptCalculationComplete?.Invoke(R.Wares, R);
                 return R;
             }
             catch (Exception e)
