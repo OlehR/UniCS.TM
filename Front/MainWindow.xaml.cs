@@ -28,12 +28,12 @@ namespace Front
         public Price(decimal pPrice, bool pIsEnable) //, bool pIsEnable = false
         {
             price = pPrice;
-          //  IsEnable = isFirst;
+            //  IsEnable = isFirst;
             //if(isFirst)
-              //  { isFirst = false; }             
+            //  { isFirst = false; }             
         }
         public decimal price { get; set; }
-        public string StrPrice{ get { return $"{price.ToString("n2",CultureInfo.InvariantCulture)} ₴"; }}
+        public string StrPrice { get { return $"{price.ToString("n2", CultureInfo.InvariantCulture)} ₴"; } }
         public bool IsEnable { get; set; }
         public Brush BackGroundColor
         {
@@ -45,7 +45,7 @@ namespace Front
     }
 
     public partial class MainWindow : Window, INotifyPropertyChanged
-    {        
+    {
         public event PropertyChangedEventHandler PropertyChanged;
 
         Access Access = Access.GetAccess();
@@ -59,8 +59,8 @@ namespace Front
         public string MoneySum { get; set; }
         public string EquipmentInfo { get; set; }
         public bool Volume { get; set; }
-
-        public bool IsIgnoreExciseStamp { get; set;}
+        public string ChangeSumPaymant { get; set; } = "0";
+        public bool IsIgnoreExciseStamp { get; set; }
         public bool isExciseStamp { get; set; }
 
         public string WaitAdminText
@@ -94,12 +94,12 @@ namespace Front
         public ControlScale CS = new ControlScale();
 
         public MainWindow()
-        {            
+        {
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-            
+
             //Для касового місця Запит логін пароль.
             if (Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout)
-                Access.СurUser = new User() { TypeUser = eTypeUser.Client, CodeUser = 99999999, Login = "Client", NameUser = "Client"};
+                Access.СurUser = new User() { TypeUser = eTypeUser.Client, CodeUser = 99999999, Login = "Client", NameUser = "Client" };
 
             Bl = new BL(true);
             EF = new EquipmentFront(Bl.GetBarCode, SetWeight, CS.OnScalesData);
@@ -127,7 +127,7 @@ namespace Front
 
             Global.OnSyncInfoCollected += (SyncInfo) =>
             {
-                FileLogger.WriteLogMessage($"MainWindow.OnSyncInfoCollected Status=>{SyncInfo.Status} StatusDescription=>{SyncInfo.StatusDescription}",eTypeLog.Full);
+                FileLogger.WriteLogMessage($"MainWindow.OnSyncInfoCollected Status=>{SyncInfo.Status} StatusDescription=>{SyncInfo.StatusDescription}", eTypeLog.Full);
             };
 
             Global.OnStatusChanged += (Status) => { };
@@ -136,7 +136,7 @@ namespace Front
             {
                 FileLogger.WriteLogMessage($"MainWindow.OnClientChanged(Client.Wallet=> {client.Wallet} SumBonus=>{client.SumBonus})", eTypeLog.Full);
             };
-            Global.OnAdminBarCode += (pUser) => { SetConfirm(pUser,false); };
+            Global.OnAdminBarCode += (pUser) => { SetConfirm(pUser, false); };
 
             WaresQuantity = "0";
             MoneySum = "0";
@@ -159,7 +159,7 @@ namespace Front
 
         public void GetBarCode(string pBarCode, string pTypeBarCode)
         {
-            if(State==eStateMainWindows.WaitInput)
+            if (State == eStateMainWindows.WaitInput)
                 Bl.GetBarCode(pBarCode, pTypeBarCode);
             else
             {
@@ -169,19 +169,19 @@ namespace Front
             }
         }
 
-        void SetConfirm(User pUser,bool pIsFirst)
+        void SetConfirm(User pUser, bool pIsFirst)
         {
             IsIgnoreExciseStamp = Access.GetRight(pUser, eTypeAccess.ExciseStamp);
 
             if (TypeAccessWait == eTypeAccess.NoDefinition)
                 return;
-            if(!Access.GetRight(pUser, TypeAccessWait))
+            if (!Access.GetRight(pUser, TypeAccessWait))
             {
-                MessageBox.Show( $"Не достатньо прав для операції {TypeAccessWait} в {pUser.NameUser}");
+                MessageBox.Show($"Не достатньо прав для операції {TypeAccessWait} в {pUser.NameUser}");
                 return;
             }
 
-            switch(TypeAccessWait)
+            switch (TypeAccessWait)
             {
                 case eTypeAccess.DelWares:
                     Bl.ChangeQuantity(CurWares, 0);
@@ -208,13 +208,13 @@ namespace Front
                     TypeAccessWait = eTypeAccess.NoDefinition;
                     break;
             }
-           // TypeAccessWait = eTypeAccess.NoDefinition;
+            // TypeAccessWait = eTypeAccess.NoDefinition;
         }
 
-        
-       // public ReceiptWares ReceiptWaresWait { get; set; }
 
-        void SetWaitConfirm(eTypeAccess pTypeAccess, ReceiptWares pRW=null)
+        // public ReceiptWares ReceiptWaresWait { get; set; }
+
+        void SetWaitConfirm(eTypeAccess pTypeAccess, ReceiptWares pRW = null)
         {
             CurWares = pRW;
             TypeAccessWait = pTypeAccess;
@@ -227,7 +227,7 @@ namespace Front
                 {
                     if (pSMV != eStateMainWindows.NotDefine)
                         State = pSMV;
-                    if(State!= eStateMainWindows.WaitAdmin && State != eStateMainWindows.WaitAdminLogin)
+                    if (State != eStateMainWindows.WaitAdmin && State != eStateMainWindows.WaitAdminLogin)
                         TypeAccessWait = eTypeAccess.NoDefinition;
 
                     ExciseStamp.Visibility = Visibility.Collapsed;
@@ -245,6 +245,7 @@ namespace Front
                     valueInAll.Visibility = Visibility.Visible;
                     ConfirmAgeMessage.Visibility = Visibility.Collapsed;
                     ConfirmAge.Visibility = Visibility.Collapsed;
+                    WaitKashier.Visibility = Visibility.Collapsed;
                     StartVideo.Stop();
 
                     switch (State)
@@ -259,7 +260,7 @@ namespace Front
                             break;
                         case eStateMainWindows.WaitInputPrice:
                             TypeAccessWait = eTypeAccess.ChoicePrice;
-                            var rrr=new ObservableCollection<Price>(CurWares.Prices.OrderByDescending(r => r).Select(r => new Price(r, Access.GetRight(TypeAccessWait))));
+                            var rrr = new ObservableCollection<Price>(CurWares.Prices.OrderByDescending(r => r).Select(r => new Price(r, Access.GetRight(TypeAccessWait))));
                             rrr.First().IsEnable = true;
 
                             Prices.ItemsSource = rrr;//new ObservableCollection<Price>(rr);
@@ -321,16 +322,16 @@ namespace Front
         private void _Delete(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
-            
+
             if (btn.DataContext is ReceiptWares)
             {
-                
+
                 var el = btn.DataContext as ReceiptWares;
-                if(el==null)
+                if (el == null)
                 {
                     return;
                 }
-                if ( Access.GetRight(eTypeAccess.DelWares) || !el.IsConfirmDel)
+                if (Access.GetRight(eTypeAccess.DelWares) || !el.IsConfirmDel)
                     Bl.ChangeQuantity(el, 0);
                 else
                     SetWaitConfirm(eTypeAccess.DelWares, el);
@@ -342,10 +343,10 @@ namespace Front
             Button btn = sender as Button;
             if (btn.DataContext is ReceiptWares)
             {
-                ReceiptWares temp = btn.DataContext as ReceiptWares;                
-                Bl.ChangeQuantity(temp, temp.Quantity+ (btn.Name.Equals("Plus")?1:-1));
+                ReceiptWares temp = btn.DataContext as ReceiptWares;
+                Bl.ChangeQuantity(temp, temp.Quantity + (btn.Name.Equals("Plus") ? 1 : -1));
             }
-        }        
+        }
 
         private void _ChangeCountWares(object sender, RoutedEventArgs e)
         {
@@ -357,14 +358,14 @@ namespace Front
             {
                 ReceiptWares temp = btn.DataContext as ReceiptWares;
                 keyPad.productNameChanges.Text = Convert.ToString(temp.NameWares);
-                keyPad.Result = Convert.ToString( temp.Quantity);
+                keyPad.Result = Convert.ToString(temp.Quantity);
                 if (keyPad.ShowDialog() == true)
                     temp.Quantity = Convert.ToDecimal(keyPad.Result);
                 Bl.ChangeQuantity(temp, temp.Quantity);
                 Background.Visibility = Visibility.Collapsed;
                 BackgroundWares.Visibility = Visibility.Collapsed;
             }
-        }       
+        }
 
         private void _VolumeButton(object sender, RoutedEventArgs e)
         {
@@ -476,7 +477,7 @@ namespace Front
 
             if (pCodeWares > 0)
             {
-                CurWares = Bl.AddWaresCode(null,pCodeWares, pCodeUnit, pQuantity, pPrice);
+                CurWares = Bl.AddWaresCode(null, pCodeWares, pCodeUnit, pQuantity, pPrice);
 
                 if (CurWares != null)
                 {
@@ -499,7 +500,7 @@ namespace Front
                         }
                         else
                             if (CurWares.Prices.Count() == 1)
-                            Bl.AddWaresCode(null,pCodeWares, pCodeUnit, pQuantity, CurWares.Prices.First());
+                            Bl.AddWaresCode(null, pCodeWares, pCodeUnit, pQuantity, CurWares.Prices.First());
                     }
 
                 }
@@ -529,11 +530,11 @@ namespace Front
         private void _ButtonPayment(object sender, RoutedEventArgs e)
         {
 
-          /*  var pay=EF.PosPurchase(_MoneySum);
-            pay.SetIdReceipt(Bl.curReciptId);
-            Bl.db.ReplacePayment(new List<Payment>() { pay });            
-            var r=Bl.GetReceiptHead(Bl.curReciptId,true);
-            */
+            /*  var pay=EF.PosPurchase(_MoneySum);
+              pay.SetIdReceipt(Bl.curReciptId);
+              Bl.db.ReplacePayment(new List<Payment>() { pay });            
+              var r=Bl.GetReceiptHead(Bl.curReciptId,true);
+              */
             var task = Task.Run(() => PrintAndCloseReceipt());
             //var result = task.Result;            
         }
@@ -545,7 +546,7 @@ namespace Front
         bool PrintAndCloseReceipt()
         {
             var R = Bl.GetReceiptHead(Bl.curRecipt, true);
-            if(R.Wares.Where(el=>el.TypeWares>0).Count()>0 && R.ReceiptEvent.Where(el => el.EventType == ReceiptEventType.AgeRestrictedProduct).Count()==0)
+            if (R.Wares.Where(el => el.TypeWares > 0).Count() > 0 && R.ReceiptEvent.Where(el => el.EventType == ReceiptEventType.AgeRestrictedProduct).Count() == 0)
             {
                 SetWaitConfirm(eTypeAccess.ConfirmAge);
                 return true;
@@ -585,7 +586,8 @@ namespace Front
                         return true;
                     }
                     SetStateView(eStateMainWindows.WaitInput);
-                }catch(Exception e)
+                }
+                catch (Exception e)
                 {
                     FileLogger.WriteLogMessage(e.Message, eTypeLog.Error);
                 }
@@ -606,7 +608,7 @@ namespace Front
                 if (btn != null)
                 {
                     var price = btn.DataContext as Price;
-                
+
                     TextBlock Tb = btn.Content as TextBlock;
                     if (Tb != null)
                     {
@@ -640,7 +642,7 @@ namespace Front
         public void SetWeight(double pWeight, bool pIsStable)
         {
             Weight = pWeight;
-            Debug.WriteLine(Weight);           
+            Debug.WriteLine(Weight);
         }
 
         private void ClickButtonOk(object sender, RoutedEventArgs e)
@@ -672,7 +674,7 @@ namespace Front
 
             if (TypeAccessWait != eTypeAccess.NoDefinition)
             {
-                SetConfirm(U,true);
+                SetConfirm(U, true);
                 return;
             }
 
@@ -681,11 +683,12 @@ namespace Front
                 SetStateView(eStateMainWindows.WaitInput);
                 Admin ad = new Admin();
                 ad.Show();
-            }else
-            {
-                MessageBox.Show($"Не достатньо прав на вхід в адмін панель для  {U.NameUser}") ;
             }
-            
+            else
+            {
+                MessageBox.Show($"Не достатньо прав на вхід в адмін панель для  {U.NameUser}");
+            }
+
         }
 
         private void TextLoginChanged(object sender, TextChangedEventArgs e)
@@ -698,19 +701,19 @@ namespace Front
 
         private void AddExciseStamp(object sender, RoutedEventArgs e)
         {
-            if(CurWares.AddExciseStamp(TBExciseStamp.Text))
-            //Додання акцизноії марки до алкоголю
-            SetStateView(eStateMainWindows.WaitInput);
+            if (CurWares.AddExciseStamp(TBExciseStamp.Text))
+                //Додання акцизноії марки до алкоголю
+                SetStateView(eStateMainWindows.WaitInput);
             else
                 MessageBox.Show($"Дана акцизна марка вже використана");
 
 
         }
-        
+
 
         private void ChangedExciseStamp(object sender, TextChangedEventArgs e)
         {
-            TextBox textBox = (TextBox)sender;            
+            TextBox textBox = (TextBox)sender;
             Regex regex = new Regex(@"^\w{4}[0-9]{6}?$");
             isExciseStamp = regex.IsMatch(textBox.Text);
         }
@@ -719,6 +722,66 @@ namespace Front
         {
             CurWares.AddExciseStamp("None");
             SetStateView(eStateMainWindows.WaitInput);
+        }
+
+        private void ChangeSumPaymentButton(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            switch (btn.Content)
+            {
+                case "C":
+                    if (ChangeSumPaymant.Length <= 1)
+                    {
+                        ChangeSumPaymant = "0";
+                        break;
+                    }
+                    else
+                        ChangeSumPaymant = ChangeSumPaymant.Remove(ChangeSumPaymant.Length - 1);
+                    break;
+
+                case ",":
+                    if (ChangeSumPaymant.IndexOf(",") != -1)
+                    {
+                        break;
+                    }
+                    ChangeSumPaymant += btn.Content;
+                    break;
+                default:
+                    ChangeSumPaymant += btn.Content;
+                    break;
+
+            }
+            MoneySumPayTextBox.Text = ChangeSumPaymant;
+        }
+
+        private void MoneySumPayChange(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                ResMoney.Text = Math.Round((Convert.ToDouble(MoneySumPayTextBox.Text) - Convert.ToDouble(MoneySum)), 2).ToString();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Eror", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+        }
+
+        private void CashDisbursement(object sender, RoutedEventArgs e)
+        {
+            Background.Visibility = Visibility.Visible;
+            BackgroundWares.Visibility = Visibility.Visible;
+            KeyPad keyPad = new KeyPad(this);
+
+            keyPad.productNameChanges.Text = "Введіть суму видачі";
+            keyPad.Result = "100";
+            if (keyPad.ShowDialog() == true)
+                CashDisbursementTextBox.Text = keyPad.Result;
+        }
+
+        private void CancelCashDisbursement(object sender, RoutedEventArgs e)
+        {
+            CashDisbursementTextBox.Text = "0";
         }
     }
 }
