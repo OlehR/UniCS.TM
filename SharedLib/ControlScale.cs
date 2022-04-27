@@ -308,9 +308,8 @@ namespace ModelMID
 
         public void OnScalesLog(string logLevel, string message = "")
         {
-            FileLogger.WriteLogMessage($"ScalesLog - {DateTime.Now:dd-MM-yyyy HH:mm:ss:ffff}: {logLevel} StateScale=>{StateScale} BeforeWeight=>{BeforeWeight} СurrentlyWeight=>{СurrentlyWeight} {message}");
-            // Console.WriteLine($"Scales Log - {DateTime.Now:dd-MM-yyyy HH:mm:ss}: {logLevel} - {message}");
-        }
+            FileLogger.WriteLogMessage($"ControlScale.OnScalesLog - {DateTime.Now:dd-MM-yyyy HH:mm:ss:ffff}: {logLevel} StateScale=>{StateScale} BeforeWeight=>{BeforeWeight} СurrentlyWeight=>{СurrentlyWeight} {message}");
+         }
 
         /*
         private void OnTimedEvent(Object source, ElapsedEventArgs e)

@@ -88,7 +88,7 @@ namespace Utils
                 {
                     var date = DateTime.Now;
                     File.AppendAllText(
-                        $"{Path.Combine(PathLog, $"{date.Year}{date.Month}{date.Day}.log")}",
+                        $"{Path.Combine(PathLog, $"Log_{date:yyyyMMdd}.log")}",
                         $@"[{date:dd-MM-yyyy HH:mm:ss}] {Enum.GetName(typeof(eTypeLog), pTypeLog)} {message}{Environment.NewLine}");
                 }
             });
