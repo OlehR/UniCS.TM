@@ -53,15 +53,17 @@ namespace Front
         EquipmentFront EF;
 
         eStateMainWindows State = eStateMainWindows.StartWindow;
-
         public string WaresQuantity { get; set; }
         decimal _MoneySum;
+        double tempMoneySum;
         public string MoneySum { get; set; }
+        public string MoneySumToRound { get; set; }
         public string EquipmentInfo { get; set; }
         public bool Volume { get; set; }
         public string ChangeSumPaymant { get; set; } = "0";
         public bool IsIgnoreExciseStamp { get; set; }
         public bool isExciseStamp { get; set; }
+
 
         public string WaitAdminText
         {
@@ -514,7 +516,8 @@ namespace Front
 
         private void _OwnBag(object sender, RoutedEventArgs e)
         {
-            SetStateView(eStateMainWindows.WaitExciseStamp);
+            MoneySumToRound = MoneySum;
+            WaitKashier.Visibility = Visibility.Visible;
         }
 
         private void _BuyBag(object sender, RoutedEventArgs e)
@@ -758,7 +761,7 @@ namespace Front
         {
             try
             {
-                ResMoney.Text = Math.Round((Convert.ToDouble(MoneySumPayTextBox.Text) - Convert.ToDouble(MoneySum)), 2).ToString();
+                ResMoney.Text = Math.Round((Convert.ToDouble(MoneySumPayTextBox.Text) - Convert.ToDouble(MoneySumToRound)), 2).ToString();
             }
             catch (Exception ex)
             {
@@ -782,6 +785,61 @@ namespace Front
         private void CancelCashDisbursement(object sender, RoutedEventArgs e)
         {
             CashDisbursementTextBox.Text = "0";
+        }
+
+
+        public double RoundingPrice(double price, double precision)
+        {
+            price = Convert.ToInt32(Math.Round(price * 100, 3));
+            precision = Math.Round(precision, 2);
+            return Math.Round(Math.Ceiling(Math.Ceiling(price / precision / 100)) * precision, 2);
+        }
+        public double RoundingDownPrice(double price, double precision)
+        {
+            price = Convert.ToInt32(Math.Round(price * 100, 3));
+            precision = Math.Round(precision, 2);
+            return Math.Round(Math.Floor(Math.Floor(price / precision / 100)) * precision, 2);
+        }
+
+        private void Round(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+
+            tempMoneySum = Convert.ToDouble(MoneySum);
+            RoundSum.Text = "0";
+            RoundSumDown.Text = "0";
+
+            switch (btn.Name)
+            {
+                case "plus01":
+                    MoneySumToRound = RoundingPrice(tempMoneySum, 0.1).ToString();
+                    RoundSum.Text = (Math.Round(Convert.ToDouble(MoneySumToRound) - tempMoneySum, 2)).ToString();
+                    break;
+                case "plus05":
+                    MoneySumToRound = RoundingPrice(tempMoneySum, 0.5).ToString();
+                    RoundSum.Text = (Math.Round(Convert.ToDouble(MoneySumToRound) - tempMoneySum, 2)).ToString();
+                    break;
+                case "plus1":
+                    MoneySumToRound = RoundingPrice(tempMoneySum, 1.0).ToString();
+                    RoundSum.Text = (Math.Round(Convert.ToDouble(MoneySumToRound) - tempMoneySum, 2)).ToString();
+                    break;
+                case "plus2":
+                    MoneySumToRound = RoundingPrice(tempMoneySum, 2.0).ToString();
+                    RoundSum.Text = (Math.Round(Convert.ToDouble(MoneySumToRound) - tempMoneySum, 2)).ToString();
+                    break;
+                case "plus5":
+                    MoneySumToRound = RoundingPrice(tempMoneySum, 5.0).ToString();
+                    RoundSum.Text = (Math.Round(Convert.ToDouble(MoneySumToRound) - tempMoneySum, 2)).ToString();
+                    break;
+                case "minus1":
+                    MoneySumToRound = RoundingDownPrice(tempMoneySum, 1.0).ToString();
+                    RoundSumDown.Text = (Math.Round(Convert.ToDouble(MoneySumToRound) - tempMoneySum, 2)).ToString();
+                    break;
+
+                default:
+                    MoneySumToRound = MoneySum;
+                    break;
+            }
         }
     }
 }
