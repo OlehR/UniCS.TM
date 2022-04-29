@@ -767,13 +767,13 @@
                     <TextBlock Grid.Column="2" Grid.Row="0" VerticalAlignment="Top" FontSize="24">Всього (грн.):</TextBlock>
                     <TextBlock Grid.Column="2" Grid.Row="0"  FontSize="24">Решта (грн.):</TextBlock>
                     <TextBlock Grid.Column="3" Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="24"
-                               Text="{Binding MoneySum, RelativeSource={RelativeSource 
+                               Text="{Binding MoneySumToRound, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" />
                     <TextBlock Grid.Column="3" Grid.Row="0" HorizontalAlignment="Center"  FontSize="24" x:Name="ResMoney">0,00</TextBlock>
                     <TextBlock Grid.Column="0" Grid.Row="1" FontWeight="Bold">Сума оплати:</TextBlock>
                     <TextBox Grid.Column="1" Grid.Row="1" Margin="5" FontSize="24"  x:Name="MoneySumPayTextBox"
                              TextChanged="MoneySumPayChange"
-                             Text="{Binding MoneySum, RelativeSource={RelativeSource 
+                             Text="{Binding MoneySumToRound, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}"></TextBox>
                     <Button Grid.Row="2" Grid.Column="0" Style="{StaticResource Default}"  FontSize="22" Margin="10" Click="_Cancel">
                         <StackPanel Orientation="Horizontal">
@@ -877,31 +877,32 @@
                             </Grid.ColumnDefinitions>
                             <StackPanel Orientation="Vertical" Grid.Row="0" >
                                 <TextBlock> Сума відкласти:</TextBlock>
-                                <TextBox Width="100" Height="30" 
+                                <TextBox Width="100" Height="30"  x:Name="RoundSum"
                                      FontSize="20"
-                                     HorizontalContentAlignment="Right" VerticalContentAlignment="Center">0</TextBox>
+                                     HorizontalContentAlignment="Right" VerticalContentAlignment="Center"
+                                         Text="0"></TextBox>
                             </StackPanel>
-                            <Button Grid.Row="0" Grid.Column="1"
+                            <Button Grid.Row="0" Grid.Column="1" Click="Round" x:Name="plus01"
                                     Style="{StaticResource Default}" Margin="10"
                                     >
                                 <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 10коп." Margin="5,0,0,5"/>
                             </Button>
-                            <Button Grid.Row="0" Grid.Column="2"
+                            <Button Grid.Row="0" Grid.Column="2" Click="Round" x:Name="plus05"
                                     Style="{StaticResource Default}" Margin="10"
                                     >
                                 <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 50коп." Margin="5,0,0,5"/>
                             </Button>
-                            <Button Grid.Row="0" Grid.Column="3"
+                            <Button Grid.Row="0" Grid.Column="3" Click="Round" x:Name="plus1"
                                     Style="{StaticResource Default}" Margin="10"
                                     >
                                 <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 1грн" Margin="5,0,0,5"/>
                             </Button>
-                            <Button Grid.Row="0" Grid.Column="4"
+                            <Button Grid.Row="0" Grid.Column="4" Click="Round" x:Name="plus2"
                                     Style="{StaticResource Default}" Margin="10"
                                     >
                                 <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 2грн" Margin="5,0,0,5"/>
                             </Button>
-                            <Button Grid.Row="0" Grid.Column="5"
+                            <Button Grid.Row="0" Grid.Column="5" Click="Round" x:Name="plus5"
                                     Style="{StaticResource Default}" Margin="10"
                                     >
                                 <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 5грн" Margin="5,0,0,5"/>
@@ -909,7 +910,7 @@
                             <StackPanel Orientation="Vertical" Grid.Row="1">
                                 <TextBlock> Сума списати:</TextBlock>
                                 <TextBox Width="100" Height="30" 
-                                     FontSize="20"
+                                     FontSize="20" x:Name="RoundSumDown"
                                      HorizontalContentAlignment="Right" VerticalContentAlignment="Center">0</TextBox>
                             </StackPanel>
                             <Button Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"
@@ -917,12 +918,12 @@
                                     >
                                 <TextBlock FontSize="14" TextWrapping="Wrap" Text=" " Margin="5,0,0,5"/>
                             </Button>
-                            <Button Grid.Row="1" Grid.Column="4"
+                            <Button Grid.Row="1" Grid.Column="4" Click="Round" x:Name="minus1"
                                     Style="{StaticResource Default}" Margin="10"
                                     >
                                 <TextBlock FontSize="14" TextWrapping="Wrap" Text="Списати до 1грн" Margin="5,0,0,5"/>
                             </Button>
-                            <Button Grid.Row="1" Grid.Column="5"
+                            <Button Grid.Row="1" Grid.Column="5" Click="Round"
                                     Style="{StaticResource Default}" Margin="10"
                                     >
                                 <TextBlock FontSize="14" TextWrapping="Wrap" Text="Відміна заокруглень та списань" Margin="5,0,0,5"/>
