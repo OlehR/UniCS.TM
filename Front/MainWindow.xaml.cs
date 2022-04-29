@@ -517,6 +517,10 @@ namespace Front
         private void _OwnBag(object sender, RoutedEventArgs e)
         {
             MoneySumToRound = MoneySum;
+            ChangeSumPaymant = "0";
+            CashDisbursementTextBox.Text = "0";
+            RoundSum.Text ="0";
+            RoundSumDown.Text ="0";
             WaitKashier.Visibility = Visibility.Visible;
         }
 

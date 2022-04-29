@@ -224,7 +224,7 @@
                                                         <DataTrigger Binding="{Binding IsMinus}" Value="True">
                                                             <Setter Property="IsEnabled" Value="True"/>
                                                         </DataTrigger>
-                                                      <!--  <DataTrigger Binding="{Binding ElementName=QuantityText, Path=Text}" Value="1">
+                                                        <!--  <DataTrigger Binding="{Binding ElementName=QuantityText, Path=Text}" Value="1">
                                                             <Setter Property="IsEnabled" Value="False"/>
                                                         </DataTrigger>-->
                                                     </Style.Triggers>
@@ -461,7 +461,7 @@
                         </ItemsControl>
                     </ScrollViewer>
 
-                    
+
                     <StackPanel Grid.Row="2">
                         <TextBlock Visibility="Visible" HorizontalAlignment="Center"
                                    Foreground="Red"
@@ -471,7 +471,7 @@
                             <TextBlock FontSize="28" Text="{DynamicResource cancel}"/>
                         </Button>
                     </StackPanel>
-                    
+
                 </Grid>
             </Border>
 
@@ -512,7 +512,7 @@
                             </StackPanel>
                         </Button>
                     </StackPanel>
-                    
+
                 </Grid>
             </Border>
 
@@ -806,9 +806,10 @@
                                 <TextBlock FontSize="14" TextWrapping="Wrap" Text="Вiдмінити  видачу готівки" Margin="5,0,0,5"/>
                             </Button>
                             <TextBlock> Сума видачі грошових коштів:</TextBlock>
-                            <TextBox Width="100" Height="30" x:Name="CashDisbursementTextBox"
-                                     FontSize="20"
-                                     HorizontalContentAlignment="Right" VerticalContentAlignment="Center">0</TextBox>
+                            <TextBlock  Height="30" x:Name="CashDisbursementTextBox"
+                                     FontSize="20" TextWrapping="Wrap"
+                                        HorizontalAlignment="Center"
+                                     >0</TextBlock>
                             <Button Style="{StaticResource yelowButton}" Margin="10"
                                     Width="120" Height="50" Click="CashDisbursement"
                                     >
@@ -834,7 +835,7 @@
                                 Content="8" Style="{StaticResource Default}" Margin="10" Click="ChangeSumPaymentButton"/>
                         <Button Grid.Column="2" Grid.Row="0"
                                 Content="9" Style="{StaticResource Default}" Margin="10" Click="ChangeSumPaymentButton"/>
-                        
+
                         <Button Grid.Column="0" Grid.Row="1"
                                 Content="4" Style="{StaticResource Default}" Margin="10" Click="ChangeSumPaymentButton"/>
                         <Button Grid.Column="1" Grid.Row="1"
@@ -877,10 +878,10 @@
                             </Grid.ColumnDefinitions>
                             <StackPanel Orientation="Vertical" Grid.Row="0" >
                                 <TextBlock> Сума відкласти:</TextBlock>
-                                <TextBox Width="100" Height="30"  x:Name="RoundSum"
-                                     FontSize="20"
-                                     HorizontalContentAlignment="Right" VerticalContentAlignment="Center"
-                                         Text="0"></TextBox>
+                                <TextBlock Height="30"  x:Name="RoundSum" TextWrapping="Wrap"
+                                            HorizontalAlignment="Center" VerticalAlignment="Center"
+                                            FontSize="20"
+                                            Text="0"></TextBlock>
                             </StackPanel>
                             <Button Grid.Row="0" Grid.Column="1" Click="Round" x:Name="plus01"
                                     Style="{StaticResource Default}" Margin="10"
@@ -909,9 +910,10 @@
                             </Button>
                             <StackPanel Orientation="Vertical" Grid.Row="1">
                                 <TextBlock> Сума списати:</TextBlock>
-                                <TextBox Width="100" Height="30" 
-                                     FontSize="20" x:Name="RoundSumDown"
-                                     HorizontalContentAlignment="Right" VerticalContentAlignment="Center">0</TextBox>
+                                <TextBlock  Height="30"  TextWrapping="Wrap"
+                                            HorizontalAlignment="Center" VerticalAlignment="Center"
+                                            FontSize="20" x:Name="RoundSumDown"
+                                     >0</TextBlock>
                             </StackPanel>
                             <Button Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"
                                     Style="{StaticResource Default}" Margin="10"
