@@ -777,7 +777,7 @@ namespace Front
             Background.Visibility = Visibility.Visible;
             BackgroundWares.Visibility = Visibility.Visible;
             KeyPad keyPad = new KeyPad(this);
-
+            
             keyPad.productNameChanges.Text = "Введіть суму видачі";
             keyPad.Result = "100";
             if (keyPad.ShowDialog() == true)
@@ -841,6 +841,16 @@ namespace Front
                 default:
                     MoneySumToRound = MoneySum;
                     break;
+            }
+        }
+
+        private void F5Button(object sender, RoutedEventArgs e)
+        {
+            TerminalPaymentInfo terminalPaymentInfo = new TerminalPaymentInfo(this);
+            if (terminalPaymentInfo.ShowDialog() == true)
+            {
+                //отримуємо введені дані
+                MessageBox.Show(terminalPaymentInfo.enteredDataFromTerminal.AuthorizationCode);//як приклад
             }
         }
     }

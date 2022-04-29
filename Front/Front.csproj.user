@@ -18,6 +18,9 @@
     <Compile Update="KeyPad.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="TerminalPaymentInfo.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Update="AddWeightWares.xaml">
@@ -54,6 +57,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Resources\yelowButton.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="TerminalPaymentInfo.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
