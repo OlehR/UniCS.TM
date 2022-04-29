@@ -706,8 +706,6 @@ namespace Front
                 SetStateView(eStateMainWindows.WaitInput);
             else
                 MessageBox.Show($"Дана акцизна марка вже використана");
-
-
         }
 
 

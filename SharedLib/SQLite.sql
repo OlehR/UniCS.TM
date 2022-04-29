@@ -20,7 +20,7 @@ alter TABLE payment    add Issuer_Name  TEXT;--Ver=>0
 alter TABLE payment    add Bank  TEXT;--Ver=>0
 alter TABLE WARES_RECEIPT  add Excise_Stamp   TEXT;--Ver=>0
 alter TABLE payment    add TransactionId TEXT;--Ver=>3
-
+alter TABLE WARES_RECEIPT  add Max_Refund_Quantity NUMBER;--Ver=>4
 
 [SqlUpdateMID]
 --Ver=>0;Reload;
@@ -173,6 +173,8 @@ Price as Price/*, wr.sum as Sum*/, Type_Price as TypePrice
  ,wr.QR
  ,wr.Excise_Stamp as ExciseStamp
  ,w.Code_Direction as CodeDirection
+-- ,wr.Max_Refund_Quantity as MaxRefundQuantity
+
                      from wares_receipt wr
                      join wares w on (wr.code_wares =w.code_wares)
                      join ADDITION_UNIT au on w.code_wares = au.code_wares and wr.code_unit=au.code_unit
@@ -255,13 +257,13 @@ replace into wares_receipt (id_workplace, code_period, code_receipt, code_wares,
   type_price,  quantity, price, Price_Dealer, sum, sum_vat,
   Priority,PAR_PRICE_1,PAR_PRICE_2,PAR_PRICE_3, sum_discount, type_vat, sort,Excise_Stamp, user_create,
  ADDITION_N1,ADDITION_N2,ADDITION_N3,
- ADDITION_C1,ADDITION_D1,BARCODE_2_CATEGORY,DESCRIPTION,Refunded_Quantity,Fix_Weight,QR) 
+ ADDITION_C1,ADDITION_D1,BARCODE_2_CATEGORY,DESCRIPTION,Refunded_Quantity,Fix_Weight,QR,Max_Refund_Quantity) 
  values (
   @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit,
   @TypePrice, @Quantity, @Price,@PriceDealer, @Sum, @SumVat,
   @Priority,@ParPrice1,@ParPrice2,@ParPrice3, @SumDiscount, @TypeVat, @Sort,@ExciseStamp, @UserCreate,
  @AdditionN1,@AdditionN2,@AdditionN3,
- @AdditionC1,@AdditionD1,@BARCODE2Category,@DESCRIPTION,@RefundedQuantity,@FixWeight,@QR)
+ @AdditionC1,@AdditionD1,@BARCODE2Category,@DESCRIPTION,@RefundedQuantity,@FixWeight,@QR,@MaxRefundQuantity)
 
 
 
@@ -633,6 +635,7 @@ CREATE TABLE WARES_RECEIPT (
     CODE_UNIT      INTEGER  NOT NULL,
 --    CODE_WAREHOUSE INTEGER  NOT NULL,
     QUANTITY       NUMBER   NOT NULL,
+    Max_Refund_Quantity NUMBER,
     PRICE          NUMBER   NOT NULL,
     SUM            NUMBER   NOT NULL,
     SUM_VAT        NUMBER   NOT NULL,

@@ -344,7 +344,7 @@ namespace ModelMID
             }
         }
 
-        public bool IsPlus { get { return !IsWeight; } }// && ( MaxRefundQuantity==null || Quantity<MaxRefundQuantity ); } } // { get; set; } = false;//
+        public bool IsPlus { get { return !IsWeight && ( MaxRefundQuantity==null || Quantity<MaxRefundQuantity ); } } // { get; set; } = false;//
 
         public bool IsMinus { get { return !IsWeight && Quantity > 1; } } //{ get; set; } = false;//
 
