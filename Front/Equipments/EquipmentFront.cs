@@ -29,11 +29,12 @@ namespace Front
         Rro RRO;
 
 
-        public IEnumerable<EquipmentElement> GetBankTerminal { get { return ListEquipment.Where(e => e.Type == eTypeEquipment.BankTerminal); } }
+        public IEnumerable<EquipmentElement> GetBankTerminal { get { return ListEquipment.Where(e => e.Type == eTypeEquipment.BankTerminal) as IEnumerable<BankTerminal>; } }
         public void SetBankTerminal(BankTerminal pBT) { Terminal = pBT; }
         public int CountTerminal { get { return GetBankTerminal.Count(); } }
-
-       // eTypeAccess OperationWaitAccess { get; set; } = eTypeAccess.NoDefinition;
+        public EquipmentElement BankTerminal1 { get { return GetBankTerminal?.First(); }  }
+        public EquipmentElement BankTerminal2 { get { return GetBankTerminal?.Skip(1).First(); } }
+        // eTypeAccess OperationWaitAccess { get; set; } = eTypeAccess.NoDefinition;
 
         public eStateEquipment State
         {
