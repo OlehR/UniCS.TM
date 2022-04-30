@@ -592,7 +592,7 @@ public bool IsPresentFirstTerminal
             var str = btn.Content as TextBlock;
             var r = EF.GetBankTerminal.Where(el => str.Text.Equals(el.Name));
             if (r.Count() == 1)
-                EF.SetBankTerminal(r.First().Equipment as BankTerminal);
+                EF.SetBankTerminal(r.First() as BankTerminal);
 
             var task = Task.Run(() => PrintAndCloseReceipt());
         }
