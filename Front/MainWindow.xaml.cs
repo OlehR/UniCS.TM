@@ -66,7 +66,9 @@ namespace Front
         public string ChangeSumPaymant { get; set; } = "0";
         public bool IsIgnoreExciseStamp { get; set; }
         public bool isExciseStamp { get; set; }
-        public bool IsPresentFirstTerminal
+        public string GetBackgroundColor { get { return "#FFE5E5"; } }
+
+public bool IsPresentFirstTerminal
         {
             get
             {

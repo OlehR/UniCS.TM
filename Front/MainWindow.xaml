@@ -161,7 +161,8 @@
             </Grid.RowDefinitions>
             <ScrollViewer Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="6"  Grid.RowSpan="6"
                 VerticalScrollBarVisibility="Auto" Name="SV_WaresList" Panel.ZIndex="2">
-                <ItemsControl  Name="WaresList">
+                <ItemsControl  Name="WaresList" Background="{Binding GetBackgroundColor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Border  BorderBrush="Silver" BorderThickness="0,0,0,1" >
@@ -739,7 +740,7 @@
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
                  Grid.Column="0" Grid.ColumnSpan="6"
-                 Name="WaitKashier" Visibility="Visible" Grid.ZIndex="2" 
+                 Name="WaitKashier" Visibility="Collapsed" Grid.ZIndex="2" 
                 CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
