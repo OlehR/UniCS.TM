@@ -29,7 +29,7 @@ namespace Front
         Rro RRO;
 
 
-        public IEnumerable<EquipmentElement> GetBankTerminal { get { return ListEquipment.Where(e => e.Type == eTypeEquipment.BankTerminal) as IEnumerable<BankTerminal>; } }
+        public IEnumerable<EquipmentElement> GetBankTerminal { get { return ListEquipment.Where(e => e.Type == eTypeEquipment.BankTerminal) ; } }
         public void SetBankTerminal(BankTerminal pBT) { Terminal = pBT; }
         public int CountTerminal { get { return GetBankTerminal.Count(); } }
         public EquipmentElement BankTerminal1 { get { return GetBankTerminal?.First(); }  }
