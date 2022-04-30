@@ -29,7 +29,7 @@ namespace Front.Equipments
     public class ScaleModern:Scale
     {
         Scales bst;
-        public ScaleModern(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<double, bool> pOnScalesData=null) : base(pConfiguration, eModelEquipment.ScaleModern, pLogger, pOnScalesData) 
+        public ScaleModern(Equipment pEquipment, IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<double, bool> pOnScalesData=null) : base(pEquipment, pConfiguration, eModelEquipment.ScaleModern, pLogger, pOnScalesData) 
         {
             bst = new Scales(pConfiguration, null);
             bst.OnControlWeightChanged = pOnScalesData;

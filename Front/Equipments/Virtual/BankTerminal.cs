@@ -14,7 +14,7 @@ namespace Front.Equipments
     {
        // public BankTerminal(string pSerialPortName, int pBaudRate = 9600, Action<string, string> pLogger = null) : base(pSerialPortName, pBaudRate) { }
 
-        public BankTerminal(IConfiguration pConfiguration, Action<string, string> pLogger = null, eModelEquipment pModelEquipment = eModelEquipment.NotDefined) : base(pConfiguration, pModelEquipment,pLogger) { }
+        public BankTerminal(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment  = eModelEquipment.NotDefined, Action<string, string> pLogger = null) : base(pEquipment, pConfiguration,pModelEquipment, pLogger) { }
         
         virtual public BatchTotals PrintZ() {throw new NotImplementedException();}
         virtual public BatchTotals PrintX(){ throw new NotImplementedException();}
@@ -23,7 +23,7 @@ namespace Front.Equipments
 
         protected void SetStatus(eStatusPos pStatus)
         {
-            ActionStatus?.Invoke(new PosStatus() { Status = pStatus, ModelEquipment = ModelEquipment, State = (int)pStatus, TextState = pStatus.ToString() });
+            ActionStatus?.Invoke(new PosStatus() { Status = pStatus, ModelEquipment = Model, State = (int)pStatus, TextState = pStatus.ToString() });
         }
     }
 }

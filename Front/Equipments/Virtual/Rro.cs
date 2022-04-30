@@ -22,10 +22,10 @@ namespace Front.Equipments
 
         protected void SetStatus(eStatusRRO pStatus,string pMsg=null,int? pMsgCode = null)
         {
-            ActionStatus?.Invoke(new RroStatus() { Status = pStatus, ModelEquipment = ModelEquipment, State = pMsgCode??(int)pStatus, TextState = pMsg??pStatus.ToString() });
+            ActionStatus?.Invoke(new RroStatus() { Status = pStatus, ModelEquipment = Model, State = pMsgCode??(int)pStatus, TextState = pMsg??pStatus.ToString() });
         }
 
-        public Rro(IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefined, Action<string, string> pLogger = null, Action<StatusEquipment> pActionStatus = null) : base(pConfiguration, pModelEquipment, pLogger) 
+        public Rro(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefined, Action<string, string> pLogger = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment, pConfiguration,pModelEquipment, pLogger) 
         {
             ActionStatus =  pActionStatus;
         }

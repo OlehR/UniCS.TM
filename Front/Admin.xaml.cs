@@ -20,7 +20,7 @@ namespace Front
     {
         public event PropertyChangedEventHandler PropertyChanged;
         EquipmentFront EF;
-        ObservableCollection<EquipmentElement> LE;
+        ObservableCollection<Equipment> LE;
         ObservableCollection<Receipt> Receipts;
         BL Bl;
         Receipt curReceipt = null;
@@ -30,7 +30,7 @@ namespace Front
             Bl = BL.GetBL;
             InitializeComponent();
             if (EF != null)
-                LE = new ObservableCollection<EquipmentElement>(EF.GetListEquipment);
+                LE = new ObservableCollection<Equipment>(EF.GetListEquipment);
             ListEquipment.ItemsSource = LE;
             //поточний час
             DispatcherTimer timer = new DispatcherTimer();

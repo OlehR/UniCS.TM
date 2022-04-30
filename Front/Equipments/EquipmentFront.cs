@@ -18,7 +18,7 @@ namespace Front
 {
     public class EquipmentFront
     {
-        private List<EquipmentElement> ListEquipment = new List<EquipmentElement>();
+        private List<Equipment> ListEquipment = new List<Equipment>();
         eStateEquipment _State = eStateEquipment.Off;
 
         Scaner Scaner;
@@ -28,12 +28,11 @@ namespace Front
         BankTerminal Terminal;
         Rro RRO;
 
-
-        public IEnumerable<EquipmentElement> GetBankTerminal { get { return ListEquipment.Where(e => e.Type == eTypeEquipment.BankTerminal); } }
+        public IEnumerable<Equipment> GetBankTerminal { get { return ListEquipment.Where(e => e.Type == eTypeEquipment.BankTerminal); } }
         public void SetBankTerminal(BankTerminal pBT) { Terminal = pBT; }
         public int CountTerminal { get { return GetBankTerminal.Count(); } }
-        public EquipmentElement BankTerminal1 { get { return GetBankTerminal?.First(); } }
-        public EquipmentElement BankTerminal2 { get { return GetBankTerminal?.Skip(1).FirstOrDefault(); } }
+        public Equipment BankTerminal1 { get { return GetBankTerminal?.First(); } }
+        public Equipment BankTerminal2 { get { return GetBankTerminal?.Skip(1).FirstOrDefault(); } }
         // eTypeAccess OperationWaitAccess { get; set; } = eTypeAccess.NoDefinition;
 
         public eStateEquipment State
@@ -50,7 +49,7 @@ namespace Front
                         eStateEquipment st = eStateEquipment.Ok;
                         foreach (var el in ListEquipment)
                         {
-                            if (el.Equipment.State == eStateEquipment.Off)
+                            if (el.State == eStateEquipment.Off)
                                 st = eStateEquipment.Off;
                         }
                         _State = st;
@@ -78,6 +77,7 @@ namespace Front
 
         public void Init(Action<string, string> pSetBarCode, Action<double, bool> pSetWeight, Action<double, bool> pSetControlWeight, Action<StatusEquipment> pActionStatus = null)
         {
+            var NewListEquipment = new List<Equipment>();
             var config = Config("appsettings.json");
             State = eStateEquipment.Init;
             try
@@ -87,48 +87,48 @@ namespace Front
                 switch (ElEquipment.Model)
                 {
                     case eModelEquipment.MagellanScaner:
-                        ElEquipment.Equipment = new MagellanScaner(config, null, pSetBarCode);
+                        Scaner = new MagellanScaner(ElEquipment,config, null, pSetBarCode);
                         break;
                     case eModelEquipment.VirtualScaner:
-                        ElEquipment.Equipment = new VirtualScaner(config, null, pSetBarCode);
+                        Scaner = new VirtualScaner(ElEquipment,config, null, pSetBarCode);
                         break;
                     default:
-                        ElEquipment.Equipment = new Scaner(config);
+                        Scaner = new Scaner(ElEquipment,config);
                         break;
                 }
-                Scaner = (Scaner)ElEquipment.Equipment;
+                NewListEquipment.Add(Scaner);
 
                 //Scale
                 ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Scale).First();
                 switch (ElEquipment.Model)
                 {
                     case eModelEquipment.MagellanScale:
-                        ElEquipment.Equipment = new MagellanScale(((MagellanScaner)Scaner).Magellan9300, pSetWeight);
+                        Scale = new MagellanScale(((MagellanScaner)Scaner).Magellan9300, pSetWeight);
                         break;
                     case eModelEquipment.VirtualScale:
-                        ElEquipment.Equipment = new VirtualScale(config, null, pSetWeight);
+                        Scale = new VirtualScale(ElEquipment,config, null, pSetWeight);
                         break;
                     default:
-                        ElEquipment.Equipment = new Scale(config);
+                        Scale = new Scale(ElEquipment,config);
                         break;
                 }
-                Scale = (Scale)ElEquipment.Equipment;
+                NewListEquipment.Add(Scale);
 
                 //ControlScale
                 ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.ControlScale).First();
                 if (ElEquipment.Model == eModelEquipment.ScaleModern)
-                    ElEquipment.Equipment = new ScaleModern(config, null, pSetControlWeight);
+                    ControlScale = new ScaleModern(ElEquipment,config, null, pSetControlWeight);
                 else
-                    ElEquipment.Equipment = new Scale(config); ;
-                ControlScale = (Scale)ElEquipment.Equipment;
+                    ControlScale = new Scale(ElEquipment,config);
+                NewListEquipment.Add(ControlScale);
 
                 //Flag
                 ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Signal).First();
                 if (ElEquipment.Model == eModelEquipment.SignalFlagModern)
-                    ElEquipment.Equipment = new SignalFlagModern(config);
+                    Signal = new SignalFlagModern(ElEquipment,config);
                 else
-                    ElEquipment.Equipment = new SignalFlag(config);
-                Signal = (SignalFlag)ElEquipment.Equipment;
+                    Signal = new SignalFlag(ElEquipment,config);
+                NewListEquipment.Add(Signal);
 
                 //Bank Pos Terminal           
                 foreach (var el in GetBankTerminal)
@@ -138,50 +138,53 @@ namespace Front
                     switch (ElEquipment.Model)
                     {
                         case eModelEquipment.Ingenico:
-                            ElEquipment.Equipment = new IngenicoH(config, null, PosStatus);
+                            Terminal = new IngenicoH(el, config, null, PosStatus);
                             break;
                         case eModelEquipment.VirtualBankPOS:
-                            ElEquipment.Equipment = new VirtualBankPOS(config, null, PosStatus);
+                            Terminal = new VirtualBankPOS(el,config, null, PosStatus);
                             break;
                         default:
-                            ElEquipment.Equipment = new BankTerminal(config);
+                            Terminal = new BankTerminal(el,config);
                             break;
                     }
-                    Terminal = (BankTerminal)ElEquipment.Equipment;
+                    NewListEquipment.Add(Terminal);
                 }
 
                 //RRO
                 ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.RRO).First();
+                
                 switch (ElEquipment.Model)
                 {
                     case eModelEquipment.ExellioFP:
-                        ElEquipment.Equipment = new Equipments.ExellioFP(config, null);
+                        RRO = new Equipments.ExellioFP(ElEquipment,config, null);
                         break;
                     case eModelEquipment.pRRO_SG:
-                        ElEquipment.Equipment = new pRRO_SG(config, null, pActionStatus);
+                        RRO = new pRRO_SG(ElEquipment,config, null, pActionStatus);
                         break;
                     case eModelEquipment.pRRo_WebCheck:
-                        ElEquipment.Equipment = new pRRO_WebCheck(config, null, pActionStatus);
+                        RRO = new pRRO_WebCheck(ElEquipment,config, null, pActionStatus);
                         break;
                     case eModelEquipment.Maria:
-                        ElEquipment.Equipment = new RRO_Maria(config, null, pActionStatus);
+                        RRO = new RRO_Maria(ElEquipment,config, null, pActionStatus);
                         break;
                     case eModelEquipment.VirtualRRO:
-                        ElEquipment.Equipment = new VirtualRRO(config, null, pActionStatus);
+                        RRO = new VirtualRRO(ElEquipment,config, null, pActionStatus);
                         break;
                     default:
-                        ElEquipment.Equipment = new Rro(config);
+                        RRO = new Rro(ElEquipment,config);
                         break;
                 }
-                RRO = (Rro)ElEquipment.Equipment;
+                NewListEquipment.Add(RRO);
+
+
+                ListEquipment = NewListEquipment;
 
                 State = eStateEquipment.Ok;
 
                 foreach (var el in ListEquipment)
                 {
-                    el.Equipment.SetState += (pStateEquipment, pModelEquipment) => { SetStatus?.Invoke(new StatusEquipment() { ModelEquipment = pModelEquipment, State = (int)pStateEquipment, TextState = $"" }); };
+                    el.SetState += (pStateEquipment, pModelEquipment) => { SetStatus?.Invoke(new StatusEquipment() { ModelEquipment = pModelEquipment, State = (int)pStateEquipment, TextState = $"" }); };
                 }
-
             }
             catch (Exception e)
             {
@@ -191,7 +194,7 @@ namespace Front
         }
 
 
-        public IEnumerable<EquipmentElement> GetListEquipment { get { return ListEquipment; } }
+        public IEnumerable<Equipment> GetListEquipment { get { return ListEquipment; } }
 
         /// <summary>
         /// Друк чека
@@ -258,8 +261,8 @@ namespace Front
         {
             if (ww is PosStatus status)
             {
-                SetStatus?.Invoke(new StatusEquipment(Terminal.ModelEquipment, (int)status.Status, $"{status.TextState} {status.Status}"));
-                Debug.WriteLine($"{DateTime.Now} {Terminal.ModelEquipment} {status.TextState} {status.Status}");
+                SetStatus?.Invoke(new StatusEquipment(Terminal.Model, (int)status.Status, $"{status.TextState} {status.Status}"));
+                Debug.WriteLine($"{DateTime.Now} {Terminal.Model} {status.TextState} {status.Status}");
             }
         }
 

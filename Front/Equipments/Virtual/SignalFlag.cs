@@ -8,7 +8,7 @@ namespace Front.Equipments
 {
     public class SignalFlag:Equipment
     {
-       public SignalFlag(IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefined, Action<string, string> pLogger=null) : base(pConfiguration, pModelEquipment, pLogger) { }
+       public SignalFlag(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefined, Action<string, string> pLogger=null) : base(pEquipment, pConfiguration,pModelEquipment, pLogger) { }
        public virtual void SwitchToColor(Color pColor) { throw new NotImplementedException(); }
        public virtual Color GetCurrentColor() { throw new NotImplementedException(); }
     }

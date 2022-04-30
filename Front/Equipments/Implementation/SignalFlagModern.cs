@@ -29,7 +29,7 @@ namespace Front.Equipments
     class SignalFlagModern : SignalFlag
     {
         CustomFlagLamp lamp;
-        public SignalFlagModern(IConfiguration pConfiguration, Action<string, string> pLogger = null) : base(pConfiguration,eModelEquipment.SignalFlagModern, pLogger)
+        public SignalFlagModern(Equipment pEquipment, IConfiguration pConfiguration, Action<string, string> pLogger = null) : base(pEquipment, pConfiguration,eModelEquipment.SignalFlagModern, pLogger)
         {
             try
             {

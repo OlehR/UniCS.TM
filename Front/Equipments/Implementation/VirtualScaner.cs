@@ -14,7 +14,7 @@ namespace Front.Equipments.Implementation
         int Port; // порт для приема входящих запросов
         string IP;
 
-        public VirtualScaner(IConfiguration pConfiguration, Action<string, string> pLogger, Action<string, string> pOnBarCode) : base(pConfiguration, eModelEquipment.VirtualScaner, pLogger, pOnBarCode)
+        public VirtualScaner(Equipment pEquipment, IConfiguration pConfiguration, Action<string, string> pLogger, Action<string, string> pOnBarCode) : base(pEquipment, pConfiguration, eModelEquipment.VirtualScaner, pLogger, pOnBarCode)
         {
             Port = Convert.ToInt32( Configuration["Devices:VirtualScaner:Port"]);
             IP = Configuration["Devices:VirtualScaner:IP"];

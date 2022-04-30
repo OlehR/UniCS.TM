@@ -19,7 +19,7 @@ namespace Front.Equipments.Implementation
         decimal Sum =0m, SumRefund = 0m;
         uint Count=0, CountRefund = 0;       
       
-        public VirtualBankPOS(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<StatusEquipment> pActionStatus = null) : base(pConfiguration, pLogger,eModelEquipment.VirtualBankPOS)
+        public VirtualBankPOS(Equipment pEquipment, IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment, pConfiguration, eModelEquipment.VirtualBankPOS, pLogger)
         {
             Random rnd = new Random();
             NumberReceipt = rnd.Next(1, 100000);

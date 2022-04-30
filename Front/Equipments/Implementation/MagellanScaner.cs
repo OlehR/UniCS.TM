@@ -27,7 +27,7 @@ namespace Front.Equipments
         }*/
 
 
-        public MagellanScaner(IConfiguration pConfiguration, Action<string, string> pLogger, Action<string, string> pOnBarCode) : base(pConfiguration,eModelEquipment.MagellanScaner ,pLogger, pOnBarCode)
+        public MagellanScaner(Equipment pEquipment, IConfiguration pConfiguration, Action<string, string> pLogger, Action<string, string> pOnBarCode) : base(pEquipment, pConfiguration,eModelEquipment.MagellanScaner, pLogger, pOnBarCode)
         {
             Magellan9300 = new Magellan9300S(pConfiguration, null);
             Magellan9300.Init();

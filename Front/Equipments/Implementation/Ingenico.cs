@@ -22,7 +22,7 @@ namespace Front.Equipments
 
         Ingenico.Ingenico EquipmentIngenico = null;
         //public IngenicoH(string pSerialPortName, int pBaudRate = 9600, Action<string, string> pLogger = null) : base(pSerialPortName, pBaudRate, pLogger) { }
-        public IngenicoH(IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<StatusEquipment> pActionStatus = null) : base(pConfiguration, pLogger, eModelEquipment.Ingenico)
+        public IngenicoH(Equipment pEquipment, IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment,pConfiguration, eModelEquipment.Ingenico, pLogger)
         {
             ILoggerFactory loggerFactory = new LoggerFactory().AddConsole((_, __) => true);
             ILogger<Ingenico.Ingenico> logger = loggerFactory.CreateLogger<Ingenico.Ingenico>();

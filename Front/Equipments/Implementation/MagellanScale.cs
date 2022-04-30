@@ -9,12 +9,12 @@ namespace Front.Equipments
     {
         Magellan9300S Magellan;
         
-        public MagellanScale(IConfiguration pConfiguration, Action<string, string> pLogger, Action<double, bool> pOnScalesData):base(pConfiguration,eModelEquipment.MagellanScale,pLogger, pOnScalesData)
+        public MagellanScale(Equipment pEquipment, IConfiguration pConfiguration, Action<string, string> pLogger, Action<double, bool> pOnScalesData):base(pEquipment, pConfiguration,eModelEquipment.MagellanScale,pLogger, pOnScalesData)
         {
 
         }
 
-        public MagellanScale(Magellan9300S pMagellan, Action<double, bool> pOnScalesData):base(null, eModelEquipment.MagellanScale)
+        public MagellanScale(Magellan9300S pMagellan, Action<double, bool> pOnScalesData):base()
         {
             Magellan = pMagellan;
             if (Magellan != null)
