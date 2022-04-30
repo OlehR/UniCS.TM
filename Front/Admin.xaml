@@ -76,7 +76,7 @@
                                                 <ColumnDefinition Width="1*"></ColumnDefinition>
                                             </Grid.ColumnDefinitions>
 
-                                            <TextBlock Grid.Column="0" Text="{Binding StrType}" FontWeight="Bold" FontSize="20"/>
+                                            <TextBlock Grid.Column="0" Text="{Binding Name}" FontWeight="Bold" FontSize="20"/>
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
