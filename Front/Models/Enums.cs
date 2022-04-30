@@ -49,9 +49,9 @@ namespace Front.Models
         /// Очікуємо логін адміністратора
         /// </summary>
         WaitAdminLogin,
-            /// <summary>
-            /// Очікуєм підтвердження 18 років
-            /// </summary>
+        /// <summary>
+        /// Очікуєм підтвердження 18 років
+        /// </summary>
         WaitConfirm18,
         /// <summary>
         /// Процес оплати
@@ -61,6 +61,11 @@ namespace Front.Models
         /// <summary>
         /// Процес оплати
         /// </summary>
-        ProcessPrintReceipt
+        ProcessPrintReceipt,
+
+        /// <summary>
+        /// Процес оплати
+        /// </summary>
+        ChoicePaymentMethod
     }
 }

@@ -30,9 +30,10 @@
                    FontSize="18"/>
         <StackPanel Grid.Row="2" VerticalAlignment="Center">
             <TextBox  Width="600" Height="40" x:Name="NameCardNumber" FontSize="24"
-                 HorizontalAlignment="Center" TextChanged="ChangetWriteTextOne"/>
+                 HorizontalAlignment="Center" TextChanged="ChangetWriteTextOne">
+            </TextBox>
             <TextBlock Grid.Row="4" Foreground="Red" HorizontalAlignment="Center" FontSize="16"  VerticalAlignment="Top"
-                               Text="Не коректно введені дані!" Margin="0,10,0,0" x:Name="ExciseStampNotValid">
+                               Text="Коректно заповніть поле!(4 цифри)" Margin="0,10,0,0" x:Name="ExciseStampNotValid">
                 <TextBlock.Style>
                     <Style TargetType="TextBlock">
                         <Style.Triggers>
@@ -58,7 +59,7 @@
             <TextBox  Width="600" Height="40"  TextChanged="ChangetWriteTextTwo" x:Name="NameAuthorizationCode"
                  HorizontalAlignment="Center" FontSize="24"/>
             <TextBlock Grid.Row="4" Foreground="Red" HorizontalAlignment="Center" FontSize="16"  VerticalAlignment="Top"
-                               Text="Не коректно введені дані!" Margin="0,10,0,0" >
+                               Text="Коректно заповніть поле!(6 цифр)" Margin="0,10,0,0" >
                 <TextBlock.Style>
                     <Style TargetType="TextBlock">
                         <Style.Triggers>
@@ -84,7 +85,7 @@
             <TextBox Grid.Row="6" Width="600" Height="40"  TextChanged="ChangetWriteTextTree" x:Name="NameRRN"
                  HorizontalAlignment="Center" FontSize="24"/>
             <TextBlock Grid.Row="4" Foreground="Red" HorizontalAlignment="Center" FontSize="16"  VerticalAlignment="Top"
-                               Text="Не коректно введені дані!" Margin="0,10,0,0" >
+                               Text="Коректно заповніть поле!(12 цифр)" Margin="0,10,0,0" >
                 <TextBlock.Style>
                     <Style TargetType="TextBlock">
                         <Style.Triggers>

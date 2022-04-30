@@ -314,6 +314,17 @@ namespace Front
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;
                             break;
+
+                        case eStateMainWindows.ChoicePaymentMethod:
+                            MoneySumToRound = MoneySum;
+                            ChangeSumPaymant = "0";
+                            CashDisbursementTextBox.Text = "0";
+                            RoundSum.Text = "0";
+                            RoundSumDown.Text = "0";
+                            WaitKashier.Visibility = Visibility.Visible;
+                            Background.Visibility = Visibility.Visible;
+                            BackgroundWares.Visibility = Visibility.Visible;
+                            break;
                         case eStateMainWindows.WaitInput:
                         default:
                             break;
@@ -516,12 +527,7 @@ namespace Front
 
         private void _OwnBag(object sender, RoutedEventArgs e)
         {
-            MoneySumToRound = MoneySum;
-            ChangeSumPaymant = "0";
-            CashDisbursementTextBox.Text = "0";
-            RoundSum.Text ="0";
-            RoundSumDown.Text ="0";
-            WaitKashier.Visibility = Visibility.Visible;
+            SetStateView(eStateMainWindows.ChoicePaymentMethod);
         }
 
         private void _BuyBag(object sender, RoutedEventArgs e)

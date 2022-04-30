@@ -32,6 +32,7 @@ namespace Front
         public TerminalPaymentInfo(Window owner)
         {
             InitializeComponent();
+            NameCardNumber.Focus();
             this.Owner = owner;
             this.DataContext = this;
         }
