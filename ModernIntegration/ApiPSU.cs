@@ -37,7 +37,7 @@ namespace ModernIntegration
             };
 
             Global.OnSyncInfoCollected += (SyncInfo) =>
-            {    
+            {
                 OnSyncInfoCollected?.Invoke(SyncInfo);
                 FileLogger.WriteLogMessage($"OnSyncInfoCollected Status=>{SyncInfo.Status} StatusDescription=>{SyncInfo.StatusDescription}",eTypeLog.Expanded);
             };

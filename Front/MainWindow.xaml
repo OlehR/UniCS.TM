@@ -786,7 +786,7 @@
 
 
                     <Button  Grid.Column="1"  Grid.Row="2"  FontSize="22"
-                            Margin="10" Click="_ButtonPayment">
+                            Margin="10" Click="_ButtonPaymentBank">
                         <Button.Content>
                             <TextBlock FontSize="20" Text="{Binding NameFirstTerminal, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}"/>
@@ -811,7 +811,7 @@
 
 
                     <Button Grid.Column="2"  Grid.Row="2"  FontSize="22"
-                            Margin="10" Click="_ButtonPayment">
+                            Margin="10" Click="_ButtonPaymentBank">
                         <Button.Content>
                             <TextBlock FontSize="20" Text="{Binding NameSecondTerminal, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}"/>

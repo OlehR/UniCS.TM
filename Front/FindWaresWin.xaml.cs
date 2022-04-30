@@ -54,7 +54,7 @@ namespace Front
             }
             else
             {
-                WG = Bl.GetProductsByName(null, (WaresName.Text.Length > 1 ? WaresName.Text : ""), OffSet, Limit, CodeFastGroup)?.Select(r => new GW(r));
+                WG = Bl.GetProductsByName(MW.curReceipt, (WaresName.Text.Length > 1 ? WaresName.Text : ""), OffSet, Limit, CodeFastGroup)?.Select(r => new GW(r));
                 if (WG != null)
                     MaxPage = WG.First().TotalRows / Limit;
                 else

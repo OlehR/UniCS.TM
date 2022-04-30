@@ -115,9 +115,10 @@ namespace SharedLib
         public IdReceipt GetNewIdReceipt(int pIdWorkplace = 0, int pCodePeriod = 0)
         {
             var idReceip = new IdReceipt() { IdWorkplace = (pIdWorkplace == 0 ? Global.IdWorkPlace : pIdWorkplace), CodePeriod = (pCodePeriod == 0 ? Global.GetCodePeriod() : pCodePeriod) };
-            curRecipt = new Receipt(db.GetNewReceipt(idReceip));
-            db.RecalcPriceAsync(new IdReceiptWares(curRecipt));
-            return curRecipt;
+            var Recipt = new Receipt(db.GetNewReceipt(idReceip));
+            db.RecalcPriceAsync(new IdReceiptWares(Recipt));
+            Global.OnReceiptChanged(Recipt);
+            return Recipt;
         }
 
         public Receipt GetLastReceipt(int pIdWorkplace = 0, int parCodePeriod = 0)
@@ -142,7 +143,7 @@ namespace SharedLib
             WDB_SQLite ldb = (Ldc == DateTime.Now.Date ? db : new WDB_SQLite(Ldc));
 
             var Res = ldb.CloseReceipt(receipt);
-            curRecipt = receipt;
+            Global.OnReceiptChanged(receipt);            
             return Res;
         }
 
@@ -221,8 +222,6 @@ namespace SharedLib
                 
         public ReceiptWares AddWaresCode(IdReceipt pIdReceipt, int pCodeWares, int pCodeUnit, decimal pQuantity = 0, decimal pPrice = 0)
         {
-            if(pIdReceipt==null)           
-                pIdReceipt = curRecipt;
             var w = db.FindWares(null, null, pCodeWares, pCodeUnit);
             if (w.Count() == 1)
             {
@@ -344,9 +343,6 @@ namespace SharedLib
 
         public IEnumerable<ReceiptWares> GetProductsByName(IdReceipt parReceipt, string parName, int parOffSet = -1, int parLimit = 10, int parCodeFastGroup = 0)
         {
-            if (parReceipt == null)
-                parReceipt = curRecipt;
-
             parName = parName.Trim();
             // Якщо пошук по штрихкоду і назва похожа на штрихкод або артикул
             if (!string.IsNullOrEmpty(parName))
@@ -594,9 +590,9 @@ namespace SharedLib
 
         public bool InsertLogRRO(LogRRO pL) { return db.InsertLogRRO(pL); }
 
-        public void AddEventAge()
+        public void AddEventAge(Receipt pRecipt)
         {
-            List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(curRecipt) { EventType = ReceiptEventType.AgeRestrictedProduct, EventName = "Вага підтверджена", CreatedAt = DateTime.Now } };
+            List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(pRecipt) { EventType = ReceiptEventType.AgeRestrictedProduct, EventName = "Вага підтверджена", CreatedAt = DateTime.Now } };
             db.InsertReceiptEvent(rr);
         }
         /// <summary>
@@ -623,7 +619,7 @@ namespace SharedLib
                     el.Quantity = 0;
                     db.AddWares(el);
                 }
-                curRecipt = R;
+                Global.OnReceiptChanged?.Invoke(R);
                 Global.OnReceiptCalculationComplete?.Invoke(R.Wares, R);
                 return R;
             }

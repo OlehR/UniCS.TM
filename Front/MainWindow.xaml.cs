@@ -232,13 +232,13 @@ namespace Front
                     SetStateView(eStateMainWindows.WaitInput);
                     break;
                 case eTypeAccess.DelReciept:
-                    Bl.SetStateReceipt(null, eStateReceipt.Canceled);
+                    Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
                     Bl.GetNewIdReceipt();
                     TypeAccessWait = eTypeAccess.NoDefinition;
                     SetStateView(eStateMainWindows.StartWindow);
                     break;
                 case eTypeAccess.ConfirmAge:
-                    Bl.AddEventAge();
+                    Bl.AddEventAge(curReceipt);
                     PrintAndCloseReceipt();
                     TypeAccessWait = eTypeAccess.NoDefinition;
                     break;
@@ -474,7 +474,7 @@ namespace Front
             // Правильний блок.
             if (Access.GetRight(eTypeAccess.DelReciept))
             {
-                Bl.SetStateReceipt(null, eStateReceipt.Canceled);
+                Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
                 Bl.GetNewIdReceipt();
             }
             else
@@ -531,7 +531,7 @@ namespace Front
 
             if (pCodeWares > 0)
             {
-                CurWares = Bl.AddWaresCode(null, pCodeWares, pCodeUnit, pQuantity, pPrice);
+                CurWares = Bl.AddWaresCode(curReceipt, pCodeWares, pCodeUnit, pQuantity, pPrice);
 
                 if (CurWares != null)
                 {
@@ -554,7 +554,7 @@ namespace Front
                         }
                         else
                             if (CurWares.Prices.Count() == 1)
-                            Bl.AddWaresCode(null, pCodeWares, pCodeUnit, pQuantity, CurWares.Prices.First());
+                            Bl.AddWaresCode(curReceipt, pCodeWares, pCodeUnit, pQuantity, CurWares.Prices.First());
                     }
 
                 }
@@ -581,6 +581,18 @@ namespace Front
             SetStateView(eStateMainWindows.WaitInput);
         }
 
+
+        private void _ButtonPaymentBank(object sender, RoutedEventArgs e)
+        {
+            var btn = sender as Button;
+            var str = btn.Content as TextBlock;
+            var r = EF.GetBankTerminal.Where(el => str.Text.Equals(el.Name));
+            if (r.Count() == 1)
+                EF.SetBankTerminal(r.First().Equipment as BankTerminal);
+
+            var task = Task.Run(() => PrintAndCloseReceipt());
+        }
+
         private void _ButtonPayment(object sender, RoutedEventArgs e)
         {
             if (Global.TypeWorkplace == eTypeWorkplace.СashRegister)
@@ -598,7 +610,7 @@ namespace Front
         /// <returns></returns>
         bool PrintAndCloseReceipt()
         {
-            var R = Bl.GetReceiptHead(Bl.curRecipt, true);
+            var R = Bl.GetReceiptHead(curReceipt, true);
             if (R.Wares.Where(el => el.TypeWares > 0).Count() > 0 && R.ReceiptEvent.Where(el => el.EventType == ReceiptEventType.AgeRestrictedProduct).Count() == 0)
             {
                 SetWaitConfirm(eTypeAccess.ConfirmAge);
@@ -614,7 +626,7 @@ namespace Front
                 {
                     pay.SetIdReceipt(R);
                     Bl.db.ReplacePayment(new List<Payment>() { pay });
-                    Bl.SetStateReceipt(null, eStateReceipt.Pay);
+                    Bl.SetStateReceipt(curReceipt, eStateReceipt.Pay);
                     R.StateReceipt = eStateReceipt.Pay;
                 }
                 else
@@ -627,7 +639,7 @@ namespace Front
                 try
                 {
                     SetStateView(eStateMainWindows.ProcessPrintReceipt);
-                    Bl.SetStateReceipt(null, eStateReceipt.Canceled);
+                    Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
                     var res = EF.PrintReceipt(R);
                     Bl.InsertLogRRO(res);
                     if (res.CodeError == 0)
@@ -684,7 +696,7 @@ namespace Front
             //Bl.AddWaresBarCode(RId, "7775002160043", 1); //товар 2 кат
             //Bl.AddWaresBarCode(RId,"1110011760218", 11);
             //Bl.AddWaresBarCode(RId,"7773002160043", 1); //товар 2 кат
-            return Bl.GetWaresReceipt();
+            return Bl.GetWaresReceipt(curReceipt);
         }
 
         /// <summary>
