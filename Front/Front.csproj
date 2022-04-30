@@ -17,18 +17,26 @@
     <None Remove="icons\18plus.png" />
     <None Remove="icons\back.png" />
     <None Remove="icons\backArrow.png" />
+    <None Remove="icons\BankTerminal.png" />
     <None Remove="icons\clock.png" />
     <None Remove="icons\Close.png" />
+    <None Remove="icons\ControlScale.png" />
     <None Remove="icons\delete.png" />
     <None Remove="icons\hu.png" />
+    <None Remove="icons\Inform.png" />
     <None Remove="icons\minus.png" />
     <None Remove="icons\no_volume.png" />
+    <None Remove="icons\Ok.png" />
     <None Remove="icons\paymentTerminal.png" />
     <None Remove="icons\pln.png" />
     <None Remove="icons\plus.png" />
     <None Remove="icons\receipt.png" />
     <None Remove="icons\right.png" />
+    <None Remove="icons\RRO.png" />
+    <None Remove="icons\Scale.png" />
+    <None Remove="icons\Scaner.png" />
     <None Remove="icons\shoppingBag.png" />
+    <None Remove="icons\Signal.png" />
     <None Remove="icons\sparVideo.mp4" />
     <None Remove="icons\ua.png" />
     <None Remove="icons\uk.png" />
@@ -40,16 +48,24 @@
   <ItemGroup>
     <Resource Include="icons\18plus.png" />
     <Resource Include="icons\backArrow.png" />
+    <Resource Include="icons\BankTerminal.png" />
     <Resource Include="icons\clock.png" />
     <Resource Include="icons\Close.png" />
+    <Resource Include="icons\ControlScale.png" />
+    <Resource Include="icons\Inform.png" />
     <Resource Include="icons\no_volume.png" />
+    <Resource Include="icons\Ok.png" />
     <Resource Include="icons\paymentTerminal.png" />
     <Resource Include="icons\receipt.png" />
     <Resource Include="icons\right.png" />
+    <Resource Include="icons\RRO.png" />
+    <Resource Include="icons\Scale.png" />
+    <Resource Include="icons\Scaner.png" />
     <Resource Include="icons\shoppingBag.png" />
     <Content Include="icons\sparVideo.mp4">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="icons\Signal.png" />
     <Resource Include="icons\ua.png" />
   </ItemGroup>
 
