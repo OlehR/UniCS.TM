@@ -29,11 +29,11 @@ namespace Front
         Rro RRO;
 
 
-        public IEnumerable<EquipmentElement> GetBankTerminal { get { return ListEquipment.Where(e => e.Type == eTypeEquipment.BankTerminal) ; } }
+        public IEnumerable<EquipmentElement> GetBankTerminal { get { return ListEquipment.Where(e => e.Type == eTypeEquipment.BankTerminal); } }
         public void SetBankTerminal(BankTerminal pBT) { Terminal = pBT; }
         public int CountTerminal { get { return GetBankTerminal.Count(); } }
-        public EquipmentElement BankTerminal1 { get { return GetBankTerminal?.First(); }  }
-        public EquipmentElement BankTerminal2 { get { return GetBankTerminal?.Skip(1).First(); } }
+        public EquipmentElement BankTerminal1 { get { return GetBankTerminal?.First(); } }
+        public EquipmentElement BankTerminal2 { get { return GetBankTerminal?.Skip(1).FirstOrDefault(); } }
         // eTypeAccess OperationWaitAccess { get; set; } = eTypeAccess.NoDefinition;
 
         public eStateEquipment State
@@ -60,9 +60,9 @@ namespace Front
             }
         }
 
-        public  Action<StatusEquipment> SetStatus { get; set; }        
+        public Action<StatusEquipment> SetStatus { get; set; }
 
-        public  Action<eStateEquipment> SetState { get; set; }
+        public Action<eStateEquipment> SetState { get; set; }
 
         static EquipmentFront sEquipmentFront;
 
@@ -72,16 +72,16 @@ namespace Front
         {
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             sEquipmentFront = this;
-           
-            Task.Run( ()=>Init(pSetBarCode, pSetWeight, pSetControlWeight, pActionStatus));
+
+            Task.Run(() => Init(pSetBarCode, pSetWeight, pSetControlWeight, pActionStatus));
         }
-        
+
         public void Init(Action<string, string> pSetBarCode, Action<double, bool> pSetWeight, Action<double, bool> pSetControlWeight, Action<StatusEquipment> pActionStatus = null)
         {
             var config = Config("appsettings.json");
-            State = eStateEquipment.Init;            
+            State = eStateEquipment.Init;
             try
-            { 
+            {
                 //Scaner
                 var ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Scaner).First();
                 switch (ElEquipment.Model)
@@ -112,7 +112,7 @@ namespace Front
                         ElEquipment.Equipment = new Scale(config);
                         break;
                 }
-                Scale = (Scale) ElEquipment.Equipment;
+                Scale = (Scale)ElEquipment.Equipment;
 
                 //ControlScale
                 ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.ControlScale).First();
@@ -170,34 +170,34 @@ namespace Front
                         ElEquipment.Equipment = new VirtualRRO(config, null, pActionStatus);
                         break;
                     default:
-                        ElEquipment.Equipment = new Rro(config);                        
+                        ElEquipment.Equipment = new Rro(config);
                         break;
                 }
                 RRO = (Rro)ElEquipment.Equipment;
 
                 State = eStateEquipment.Ok;
 
-               foreach(var el in  ListEquipment)
+                foreach (var el in ListEquipment)
                 {
-                    el.Equipment.SetState += (pStateEquipment, pModelEquipment) => { SetStatus?.Invoke(new StatusEquipment() {ModelEquipment= pModelEquipment,State =(int)pStateEquipment, TextState=$"" }); };
+                    el.Equipment.SetState += (pStateEquipment, pModelEquipment) => { SetStatus?.Invoke(new StatusEquipment() { ModelEquipment = pModelEquipment, State = (int)pStateEquipment, TextState = $"" }); };
                 }
 
             }
             catch (Exception e)
-            { 
+            {
                 FileLogger.WriteLogMessage($"EquipmentFront Exception => Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace}", eTypeLog.Error);
                 State = eStateEquipment.Error;
             }
         }
-              
+
 
         public IEnumerable<EquipmentElement> GetListEquipment { get { return ListEquipment; } }
-        
+
         /// <summary>
         /// Друк чека
         /// </summary>
-        public LogRRO PrintReceipt(Receipt pReceipt) 
-        {  
+        public LogRRO PrintReceipt(Receipt pReceipt)
+        {
             return RRO.PrintReceiptAsync(pReceipt).Result;
         }
 
@@ -221,7 +221,8 @@ namespace Front
         /// </summary>
         /// <param name="pSum">Власне сума</param>
         /// <returns></returns>
-        public Payment PosPurchase(decimal pSum) {
+        public Payment PosPurchase(decimal pSum)
+        {
             return Terminal.Purchase(pSum);
         }
 
@@ -231,7 +232,8 @@ namespace Front
         /// <param name="pSum"></param>
         /// <param name="pRNN"></param>
         /// <returns></returns>
-        public Payment PosRefund(decimal pSum,string pRNN) {
+        public Payment PosRefund(decimal pSum, string pRNN)
+        {
             return Terminal.Refund(pSum, pRNN);
         }
 
@@ -243,10 +245,10 @@ namespace Front
 
         public bool PosPrintZ()
         {
-             Terminal.PrintZ();
+            Terminal.PrintZ();
             return true;
         }
-                
+
 
         /// <summary>
         /// Статус банківського термінала (Очікуєм карточки, Очікуєм підтвердження і ТД) 
@@ -267,11 +269,11 @@ namespace Front
             var AppConfiguration = new ConfigurationBuilder()
                 .SetBasePath(CurDir)
                 .AddJsonFile(settingsFilePath).Build();
-           
+
             AppConfiguration.GetSection("MID:Equipment").Bind(ListEquipment);
             return AppConfiguration;
         }
-        
+
         /// <summary>
         /// Зміна кольору прапорця
         /// </summary>
@@ -280,7 +282,7 @@ namespace Front
         {
             Signal?.SwitchToColor(pColor);
         }
-          
+
         /// <summary>
         /// Початок зважування на основній вазі
         /// </summary>
@@ -311,7 +313,7 @@ namespace Front
         /// </summary>
         /// <param name="maxValue"></param>
         /// <returns></returns>
-        public  bool ControlScaleCalibrateMax(double maxValue)
+        public bool ControlScaleCalibrateMax(double maxValue)
         {
             return ControlScale.CalibrateMax(maxValue);
         }

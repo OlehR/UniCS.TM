@@ -66,7 +66,46 @@ namespace Front
         public string ChangeSumPaymant { get; set; } = "0";
         public bool IsIgnoreExciseStamp { get; set; }
         public bool isExciseStamp { get; set; }
-
+        public bool IsPresentFirstTerminal
+        {
+            get
+            {
+                if (EF.BankTerminal1 != null)
+                {
+                    return true;
+                }
+                else return false; } }
+        public bool IsPresentSecondTerminal
+        {
+            get
+            {
+                if (EF.BankTerminal2 != null)
+                {
+                    return true;
+                }
+                else return false;
+            }
+        }
+        public string NameFirstTerminal
+        {
+            get
+            {
+                if (IsPresentFirstTerminal)
+                {
+                    return EF.BankTerminal1.Name;
+                }
+                else return null; } }
+        public string NameSecondTerminal
+        {
+            get
+            {
+                if (IsPresentSecondTerminal)
+                {
+                    return EF.BankTerminal2.Name;
+                }
+                else return null;
+            }
+        }
         public string WaitAdminText
         {
             get
@@ -145,6 +184,8 @@ namespace Front
             Volume = true;
 
             InitializeComponent();
+
+            //MessageBox.Show(NameFirstTerminal);
 
             ListWares = new ObservableCollection<ReceiptWares>(StartData());
             WaresList.ItemsSource = ListWares;// Wares;
