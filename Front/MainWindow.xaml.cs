@@ -51,6 +51,9 @@ namespace Front
         Access Access = Access.GetAccess();
         public BL Bl;
         EquipmentFront EF;
+        public ControlScale CS = new ControlScale();
+
+        public Receipt curReceipt { get; set; } = null;
 
         eStateMainWindows State = eStateMainWindows.StartWindow;
         public string WaresQuantity { get; set; }
@@ -63,7 +66,6 @@ namespace Front
         public string ChangeSumPaymant { get; set; } = "0";
         public bool IsIgnoreExciseStamp { get; set; }
         public bool isExciseStamp { get; set; }
-
 
         public string WaitAdminText
         {
@@ -86,14 +88,12 @@ namespace Front
 
         public GW CurW { get; set; } = null;
 
-        public ReceiptWares CurWares { get; set; } = null;
-
         public eTypeAccess TypeAccessWait { get; set; }
 
-        public ObservableCollection<ReceiptWares> ListWares { get; set; }
-        //public ObservableCollection<decimal> Prices { get; set; } = new ObservableCollection<decimal>;
+        public ReceiptWares CurWares { get; set; } = null;
+        public ObservableCollection<ReceiptWares> ListWares { get; set; }        
 
-        public ControlScale CS = new ControlScale();
+        
 
         public MainWindow()
         {
@@ -536,13 +536,12 @@ namespace Front
 
         private void _ButtonPayment(object sender, RoutedEventArgs e)
         {
-
-            /*  var pay=EF.PosPurchase(_MoneySum);
-              pay.SetIdReceipt(Bl.curReciptId);
-              Bl.db.ReplacePayment(new List<Payment>() { pay });            
-              var r=Bl.GetReceiptHead(Bl.curReciptId,true);
-              */
-            var task = Task.Run(() => PrintAndCloseReceipt());
+            if (Global.TypeWorkplace == eTypeWorkplace.СashRegister)
+                SetStateView();
+            else
+            {
+                var task = Task.Run(() => PrintAndCloseReceipt());
+            }
             //var result = task.Result;            
         }
 

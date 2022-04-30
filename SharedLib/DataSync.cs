@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Utils;
 
 namespace SharedLib
 {
@@ -129,8 +130,8 @@ namespace SharedLib
 
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = parIsFull ? eSyncStatus.StartedFullSync : eSyncStatus.StartedPartialSync,StatusDescription= "SendAllReceipt" });
 
-                Log.Append($"\n{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} varMidFile=>{varMidFile}\n\tLoad_Full=>{TD:yyyy-MM-dd}");
-                
+                Log.Append($"\n{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} varMidFile=>{varMidFile}\n\tLoad_Full=>{TD:yyyy-MM-dd} parIsFull=>{parIsFull}");
+              
 
                 if (parIsFull)
                 {
@@ -164,11 +165,13 @@ namespace SharedLib
                 db.SetConfig<DateTime>("Load_" + (parIsFull ? "Full" : "Update"), DateTime.Now /*String.Format("{0:u}", DateTime.Now)*/);
 
                 Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} End");
+                FileLogger.WriteLogMessage(Log.ToString());
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.SyncFinishedSuccess, StatusDescription = Log.ToString() });
                
             }
             catch (Exception ex)
             {
+                FileLogger.WriteLogMessage(Log.ToString() + '\n' + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString(), eTypeLog.Error);
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = (parIsFull ? eSyncStatus.Error : eSyncStatus.NoFatalError),  StatusDescription = "SyncData=>" + Log.ToString() + '\n' + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
                 Global.OnStatusChanged?.Invoke(db.GetStatus());
                 return false;

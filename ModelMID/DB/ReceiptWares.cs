@@ -191,7 +191,7 @@ namespace ModelMID
         public DateTime AdditionD1 { get; set; }
 
         /// <summary>
-        /// 0-звичайний,1-алкоголь,2-тютюн
+        /// 0-звичайний,1-алкоголь,2-тютюн,3-алкоголь 
         /// </summary>
         public int TypeWares { get; set; }
 
