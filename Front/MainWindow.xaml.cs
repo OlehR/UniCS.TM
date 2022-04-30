@@ -181,6 +181,8 @@ public bool IsPresentFirstTerminal
             };
             Global.OnAdminBarCode += (pUser) => { SetConfirm(pUser, false); };
 
+            Global.OnReceiptChanged += (pReceipt) =>{ curReceipt = pReceipt;};
+
             WaresQuantity = "0";
             MoneySum = "0";
             Volume = true;

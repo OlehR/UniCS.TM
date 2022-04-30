@@ -17,7 +17,6 @@ namespace SharedLib
         public WDB_SQLite db;
         public DataSync ds;
 
-        public Receipt curRecipt;
         public static SortedList<int, long> UserIdbyWorkPlace = new SortedList<int, long>();
 
         public BL(bool pIsUseOldDB = false)
@@ -26,6 +25,11 @@ namespace SharedLib
             db.BildWorkplace();
             ds = new DataSync(this);
             sBL = this;
+
+            Global.OnReceiptCalculationComplete += (pWares, pIdReceipt) =>
+            {
+                Global.OnReceiptChanged?.Invoke(GetReceiptHead(pIdReceipt));
+            };
         }
 
         public static BL GetBL { get { return sBL??new BL(); } }
@@ -117,7 +121,7 @@ namespace SharedLib
             var idReceip = new IdReceipt() { IdWorkplace = (pIdWorkplace == 0 ? Global.IdWorkPlace : pIdWorkplace), CodePeriod = (pCodePeriod == 0 ? Global.GetCodePeriod() : pCodePeriod) };
             var Recipt = new Receipt(db.GetNewReceipt(idReceip));
             db.RecalcPriceAsync(new IdReceiptWares(Recipt));
-            Global.OnReceiptChanged(Recipt);
+            Global.OnReceiptChanged?.Invoke(Recipt);
             return Recipt;
         }
 
@@ -143,7 +147,7 @@ namespace SharedLib
             WDB_SQLite ldb = (Ldc == DateTime.Now.Date ? db : new WDB_SQLite(Ldc));
 
             var Res = ldb.CloseReceipt(receipt);
-            Global.OnReceiptChanged(receipt);            
+            Global.OnReceiptChanged?.Invoke(receipt);            
             return Res;
         }
 
@@ -386,9 +390,7 @@ namespace SharedLib
 
         public bool SetStateReceipt(IdReceipt pIdReceipt, eStateReceipt pStateReceipt)
         {
-            if (pIdReceipt == null)
-                pIdReceipt = curRecipt;
-            var receipt = new Receipt(pIdReceipt) { StateReceipt = pStateReceipt, DateReceipt = DateTime.Now, UserCreate = GetUserIdbyWorkPlace(pIdReceipt.IdWorkplace) };
+             var receipt = new Receipt(pIdReceipt) { StateReceipt = pStateReceipt, DateReceipt = DateTime.Now, UserCreate = GetUserIdbyWorkPlace(pIdReceipt.IdWorkplace) };
             return db.CloseReceipt(receipt);
         }
 
@@ -405,7 +407,7 @@ namespace SharedLib
 
         public IEnumerable<ReceiptWares> GetWaresReceipt(IdReceipt pIdReceipt = null)
         {
-            return db.ViewReceiptWares(pIdReceipt == null ? curRecipt : pIdReceipt);
+            return db.ViewReceiptWares(pIdReceipt);
         }
 
         public IEnumerable<Receipt> GetReceipts(DateTime parStartDate, DateTime parFinishDate, int IdWorkPlace)
@@ -618,8 +620,7 @@ namespace SharedLib
                     el.MaxRefundQuantity = el.Quantity - el.RefundedQuantity;
                     el.Quantity = 0;
                     db.AddWares(el);
-                }
-                Global.OnReceiptChanged?.Invoke(R);
+                }                
                 Global.OnReceiptCalculationComplete?.Invoke(R.Wares, R);
                 return R;
             }

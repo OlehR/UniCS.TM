@@ -135,7 +135,7 @@ namespace Front
         private void FiscalizCheckButton(object sender, RoutedEventArgs e)
         {
             var R = Bl.GetReceiptHead(curReceipt, true);
-            Bl.SetStateReceipt(null, eStateReceipt.Canceled);
+            Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
             var res = EF.PrintReceipt(R);
             Bl.InsertLogRRO(res);
             if (res.CodeError == 0)
