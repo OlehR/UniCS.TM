@@ -53,7 +53,7 @@ namespace Front
         EquipmentFront EF;
         public ControlScale CS = new ControlScale();
 
-        public Receipt curReceipt { get; set; } = null;
+        public Receipt curReceipt;//{ get; set; } = null;
 
         eStateMainWindows State = eStateMainWindows.StartWindow;
         public string WaresQuantity { get; set; }
@@ -66,7 +66,7 @@ namespace Front
         public string ChangeSumPaymant { get; set; } = "0";
         public bool IsIgnoreExciseStamp { get; set; }
         public bool isExciseStamp { get; set; }
-        public string GetBackgroundColor { get { return "#FFE5E5"; } }
+        public string GetBackgroundColor { get { return curReceipt?.TypeReceipt==eTypeReceipt.Refund? "#FFE5E5":"#FFFFFF"; } }
 
 public bool IsPresentFirstTerminal
         {
@@ -181,7 +181,11 @@ public bool IsPresentFirstTerminal
             };
             Global.OnAdminBarCode += (pUser) => { SetConfirm(pUser, false); };
 
-            Global.OnReceiptChanged += (pReceipt) =>{ curReceipt = pReceipt;};
+            Global.OnReceiptChanged += (pReceipt) => 
+            {
+                curReceipt = pReceipt;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("GetBackgroundColor"));
+            };
 
             WaresQuantity = "0";
             MoneySum = "0";
@@ -476,10 +480,11 @@ public bool IsPresentFirstTerminal
         private void _Back(object sender, RoutedEventArgs e)
         {
             // Правильний блок.
-            if (Access.GetRight(eTypeAccess.DelReciept))
+            if (Access.GetRight(eTypeAccess.DelReciept) || curReceipt?.SumReceipt==0)
             {
                 Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
                 Bl.GetNewIdReceipt();
+                SetStateView(eStateMainWindows.StartWindow);
             }
             else
                 SetWaitConfirm(eTypeAccess.DelReciept, null);
