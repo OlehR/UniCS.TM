@@ -452,7 +452,7 @@
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
                  Grid.Column="0" Grid.ColumnSpan="6"
-                 Name="CastomWindows" Visibility="Visible" Grid.ZIndex="2" 
+                 Name="CastomWindows" Visibility="Collapsed" Grid.ZIndex="2" 
                 CornerRadius="10"  Margin="10,0,10,0" >
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
@@ -460,38 +460,51 @@
                 <Grid >
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="8*"/>
+                        <ColumnDefinition Width="10*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Grid Grid.Column="1">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*"></RowDefinition>
-                            <RowDefinition Height="*"></RowDefinition>
-                            <RowDefinition Height="*"></RowDefinition>
-                            <RowDefinition Height="3*"></RowDefinition>
-                            <RowDefinition Height="7*"></RowDefinition>
-                        </Grid.RowDefinitions>
+                        
                         <Button BorderBrush="Transparent" Background="Transparent" Width="50" Height="50" 
                         HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,30,0"
                         Click="_Cancel"/>
-                        <TextBlock HorizontalAlignment="Center" FontSize="24" Text="Назва вікна"/>
-                        <Image Grid.Row="1" HorizontalAlignment="Center" 
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock HorizontalAlignment="Center" FontSize="24" Text="Назва вікна"/>
+                            <Image Grid.Row="1" HorizontalAlignment="Center"  Height="40"
                                    Source="{Binding SourceImage, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}"/>
-
-
-
-
-                        <TextBox Grid.Row="2" TabIndex="1" Name="Name1"
+                            <TextBox Grid.Row="2" TabIndex="1" Name="Name1"
                                  TextChanged="ChangedExciseStamp"
                                  FontSize="25"  VerticalAlignment="Center" />
-                       
-                        <keyboard:OnScreenKeyboard Grid.Row="5"
+
+
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" >
+                                <StackPanel.Resources>
+                                    <Style TargetType="{x:Type Button}">
+                                        <Setter Property="Margin" Value="10"/>
+                                    </Style>
+                                </StackPanel.Resources>
+                                <Button Height="40" >tesіоврпамовіпморіваt</Button>
+                                <Button Height="40" Width="100">test</Button>
+                                <Button Height="40" Width="100">test</Button>
+                                <Button Height="40" Width="100">test</Button>
+                                <Button Height="40" Width="100">test</Button>
+                            </StackPanel>
+                            
+
+                            <keyboard:OnScreenKeyboard Grid.Row="5"
 		                           Height="300"                                 
 		                           VerticalAlignment="Top" 
-		                           ActiveContainer="{Binding ElementName=ExciseStamp}"
+		                           ActiveContainer="{Binding ElementName=CastomWindows}"
                                    ToggleButtonStyle="{StaticResource DefaultTouchToggleButtonStyle}"
-		                           CancelCommand="{Binding CastomWindows}" Grid.RowSpan="2"/>
+		                           CancelCommand="{Binding CancelCommand2}" Grid.RowSpan="2"/>
+                        </StackPanel>
+                        
+
+
+
+
+                        
                     </Grid>
                 </Grid>
             </Border>
