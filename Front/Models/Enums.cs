@@ -64,8 +64,14 @@ namespace Front.Models
         ProcessPrintReceipt,
 
         /// <summary>
-        /// Процес оплати
+        /// Вибір типу оплати
         /// </summary>
-        ChoicePaymentMethod
+        ChoicePaymentMethod,
+        /// <summary>
+        /// Користувацьке вікно.
+        /// </summary>
+        WaitCustomWindows
+
+           
     }
 }
