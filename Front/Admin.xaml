@@ -293,21 +293,21 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Margin="5" Orientation="Horizontal">
-                                    <TextBlock FontSize="16" Text="{Binding Path=CodeReceipt}" HorizontalAlignment="Center" />
+                                    <TextBlock FontSize="16" Text="{Binding Path=CodeReceipt}" HorizontalAlignment="Center" Width="10" />
                                     <TextBlock FontSize="16" Text="  "/>
-                                    <TextBlock FontSize="16" Text="{Binding Path=TypeReceipt}" HorizontalAlignment="Center" />
-                                    <TextBlock FontSize="16" Text="   "/>                                   
-                                    <TextBlock FontSize="16" Text="{Binding Path=DateReceipt}" HorizontalAlignment="Center" />
+                                    <TextBlock FontSize="16" Text="{Binding Path=TypeReceipt}" HorizontalAlignment="Center" Width="50"/>
                                     <TextBlock FontSize="16" Text="   "/>
-                                    <TextBlock FontSize="16" Text="{Binding Path=StateReceipt}" HorizontalAlignment="Center" />
+                                    <TextBlock FontSize="16" Text="{Binding Path=DateReceipt}" HorizontalAlignment="Center" Width="160"/>
                                     <TextBlock FontSize="16" Text="   "/>
-                                    <TextBlock FontSize="16" Text="{Binding Path=SumReceipt}" HorizontalAlignment="Center" />
+                                    <TextBlock FontSize="16" Text="{Binding Path=StateReceipt}" HorizontalAlignment="Center" Width="80"/>
                                     <TextBlock FontSize="16" Text="   "/>
-                                    <TextBlock FontSize="16" Text="{Binding Path=NumberReceipt}" HorizontalAlignment="Center" />
+                                    <TextBlock FontSize="16" Text="{Binding Path=SumReceipt}" HorizontalAlignment="Center" Width="80"/>
                                     <TextBlock FontSize="16" Text="   "/>
-                                    <TextBlock FontSize="16" Text="{Binding Path=SumFiscal}" HorizontalAlignment="Center" />
+                                    <TextBlock FontSize="16" Text="{Binding Path=NumberReceipt}" HorizontalAlignment="Center" Width="80"/>
                                     <TextBlock FontSize="16" Text="   "/>
-                                    <TextBlock FontSize="16" Text="{Binding Path=SumCreditCard}" HorizontalAlignment="Center" />
+                                    <TextBlock FontSize="16" Text="{Binding Path=SumFiscal}" HorizontalAlignment="Center" Width="20"/>
+                                    <TextBlock FontSize="16" Text="   "/>
+                                    <TextBlock FontSize="16" Text="{Binding Path=SumCreditCard}" HorizontalAlignment="Center" Width="80" />
 
                                 </StackPanel>
                             </DataTemplate>
@@ -315,7 +315,7 @@
                     </ListBox>
                     <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
 
-                        <Button  Grid.Column="2" FontSize="22" Click="PayAdminPanelButton" Height="60">
+                        <Button  Grid.Column="2" FontSize="20" Click="PayAdminPanelButton" Height="60">
                             <TextBlock FontSize="22" Text="Оплатити"/>
                             <Button.Style>
                                 <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
@@ -329,7 +329,7 @@
                             </Button.Style>
                         </Button>
 
-                        <Button  Grid.Column="2" FontSize="22" Click="FiscalizCheckButton" Height="60">
+                        <Button  Grid.Column="2" FontSize="20" Click="FiscalizCheckButton" Height="60">
                             <TextBlock FontSize="22" Text="Фіскалізувати"/>
                             <Button.Style>
                                 <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
@@ -343,7 +343,7 @@
                             </Button.Style>
                         </Button>
 
-                        <Button  Grid.Column="2" FontSize="22" Click="PaymentDetailsAdminPanelButton" Height="60">
+                        <Button  Grid.Column="2" FontSize="20" Click="PaymentDetailsAdminPanelButton" Height="60">
                             <TextBlock FontSize="22" Text="Ввести реквізити"/>
                             <Button.Style>
                                 <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
@@ -358,7 +358,7 @@
                         </Button>
                         
                         <Button Grid.Column="2" FontSize="22" Click="Transfer1CButton" Height="60">
-                            <TextBlock FontSize="22" Text="Передати в 1С"/>
+                            <TextBlock FontSize="20" Text="Передати в 1С"/>
                             <Button.Style>
                                 <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
                                     <Setter Property="IsEnabled" Value="False"/>
@@ -372,7 +372,20 @@
                         </Button>
                         
                         <Button Grid.Column="2" FontSize="22" Click="ReturnCheckButton" Height="60">
-                            <TextBlock FontSize="22" Text="Повернути"/>
+                            <TextBlock FontSize="20" Text="Повернути"/>
+                            <Button.Style>
+                                <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsCreateReturn, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                            <Setter Property="IsEnabled" Value="True"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <Button Grid.Column="2" FontSize="22" Click="ReturnAllCheckButton" Height="60">
+                            <TextBlock FontSize="20" Text="Повернути весь чек"/>
                             <Button.Style>
                                 <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
                                     <Setter Property="IsEnabled" Value="False"/>

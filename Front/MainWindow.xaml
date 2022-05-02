@@ -235,7 +235,7 @@
 
                                         <Button Grid.Column="2" Background="Transparent" BorderBrush="Transparent"
                                             Click="_ChangeCountWares">
-                                            <Button.Style>
+                                            <!--<Button.Style>
                                                 <Style BasedOn="{StaticResource yelowButton}"  TargetType="Button">
                                                     <Setter Property="IsEnabled" Value="true"/>
                                                     <Style.Triggers>
@@ -244,7 +244,27 @@
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
+                                            </Button.Style>-->
+
+                                            <Button.Style>
+                                                <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                                                    <Setter Property="IsEnabled" Value="True"/>
+                                                    <Style.Triggers>
+                                                        
+                                                        <DataTrigger Binding="{Binding IsWeight}" Value="True">
+                                                            <Setter Property="IsEnabled" Value="False" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding IsWeight}" Value="False">
+                                                            <Setter Property="IsEnabled" Value="True" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding IsCheckReturn, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                                            <Setter Property="IsEnabled" Value="True" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
                                             </Button.Style>
+
                                             <TextBlock x:Name="QuantityText" Grid.Column="2">
                                                 <TextBlock.Style>
                                                     <Style TargetType="TextBlock">
@@ -833,11 +853,11 @@
                             </Style>
                         </Button.Style>
                     </Button>
-                    
-                    
-                    
-                    
-                    
+
+
+
+
+
                     <Button Style="{StaticResource yelowButton}" Grid.Column="3"  Grid.Row="2"  FontSize="22"
                             Margin="10" Click="_ButtonPayment">
                         <TextBlock FontSize="28" Text="Готівка"/>
@@ -1088,8 +1108,23 @@
             <Button  Style="{StaticResource yelowButton}" Grid.Column="2" Grid.Row="2" FontSize="22" Click="_BuyBag">
                 <TextBlock FontSize="14" Text="{DynamicResource buyBag}"/>
             </Button>
-            <Button Style="{StaticResource greenButton}" Grid.Column="3"  Grid.Row="0" Grid.RowSpan="2" FontSize="22" Click="_ButtonPayment">
+            <Button  Grid.Column="3"  Grid.Row="0" Grid.RowSpan="2" FontSize="22" Click="_ButtonPayment">
                 <TextBlock FontSize="28" Text="{DynamicResource payment}"/>
+                <Button.Style>
+                    <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
+                        <Setter Property="IsEnabled" Value="True"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding PriceIsNotZero, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                <Setter Property="IsEnabled" Value="True" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding PriceIsNotZero, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                <Setter Property="IsEnabled" Value="False" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
             </Button>
         </Grid>
 
