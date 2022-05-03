@@ -250,7 +250,7 @@
                                                 <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
                                                     <Setter Property="IsEnabled" Value="True"/>
                                                     <Style.Triggers>
-                                                        
+
                                                         <DataTrigger Binding="{Binding IsWeight}" Value="True">
                                                             <Setter Property="IsEnabled" Value="False" />
                                                         </DataTrigger>
@@ -457,6 +457,9 @@
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
                 </Border.Effect>
+
+
+
                 <Grid >
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -464,49 +467,51 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Grid Grid.Column="1">
-                        
+
                         <Button BorderBrush="Transparent" Background="Transparent" Width="50" Height="50" 
                         HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,30,0"
                         Click="_Cancel"/>
                         <StackPanel VerticalAlignment="Center">
-                            <TextBlock HorizontalAlignment="Center" FontSize="24" Text="Назва вікна"/>
-                            <Image Grid.Row="1" HorizontalAlignment="Center"  Height="40"
-                                   Source="{Binding SourceImage, RelativeSource={RelativeSource 
+                            <TextBlock HorizontalAlignment="Center" FontSize="20" x:Name="CaptionCastomWindows"
+                                       Text="{Binding customWindow.Caption, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"/>
+                            <TextBlock HorizontalAlignment="Center" FontSize="16" x:Name="TextCastomWindows"
+                                       Text="{Binding customWindow.Text, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"/>
+                            <Image Grid.Row="1" HorizontalAlignment="Center"  Height="40" x:Name="ImageCastomWindows"
+                                   Source="{Binding customWindow.PathPicture, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}"/>
-                            <TextBox Grid.Row="2" TabIndex="1" Name="Name1"
-                                 TextChanged="ChangedExciseStamp"
-                                 FontSize="25"  VerticalAlignment="Center" />
+                            <TextBox Grid.Row="2" TabIndex="1" x:Name="TextBoxCastomWindows"
+                                 FontSize="20"  VerticalAlignment="Center" />
 
-
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" >
-                                <StackPanel.Resources>
-                                    <Style TargetType="{x:Type Button}">
-                                        <Setter Property="Margin" Value="10"/>
-                                    </Style>
-                                </StackPanel.Resources>
-                                <Button Height="40" >tesіоврпамовіпморіваt</Button>
-                                <Button Height="40" Width="100">test</Button>
-                                <Button Height="40" Width="100">test</Button>
-                                <Button Height="40" Width="100">test</Button>
-                                <Button Height="40" Width="100">test</Button>
-                            </StackPanel>
-                            
-
-                            <keyboard:OnScreenKeyboard Grid.Row="5"
-		                           Height="300"                                 
-		                           VerticalAlignment="Top" 
-		                           ActiveContainer="{Binding ElementName=CastomWindows}"
-                                   ToggleButtonStyle="{StaticResource DefaultTouchToggleButtonStyle}"
-		                           CancelCommand="{Binding CancelCommand2}" Grid.RowSpan="2"/>
+                            <ScrollViewer  VerticalScrollBarVisibility="Auto" Height="100"  x:Name="ButtonsCastomWindows" >
+                                <ItemsControl Name="CastomWindowsItemControl" VerticalAlignment="Center">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Button Height="Auto" Width="Auto" Style="{StaticResource yelowButton}" Content="{Binding Text}" HorizontalAlignment="Center" ></Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                            <Button Height="Auto" Width="Auto" 
+                                    x:Name="CancelCastomWindows" Click="_Cancel"
+                                    Style="{StaticResource Default}" Content="Відмінити" 
+                                    HorizontalAlignment="Right"/>
+                            <keyboard:OnScreenKeyboard Grid.Row="5" 
+                                                       x:Name="KeyboardCustomWindows"
+                                                       Height="250"
+                                                       VerticalAlignment="Top"
+                                                       ActiveContainer="{Binding ElementName=CastomWindows}"
+                                                       ToggleButtonStyle="{StaticResource DefaultTouchToggleButtonStyle}"
+                                                       CancelCommand="{Binding CancelCommand2}" Grid.RowSpan="2"/>
                         </StackPanel>
-                        
 
 
 
 
-                        
+
+
                     </Grid>
                 </Grid>
+
             </Border>
 
 

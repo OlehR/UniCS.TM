@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -149,6 +150,8 @@ namespace Front
 
         public ReceiptWares CurWares { get; set; } = null;
         public ObservableCollection<ReceiptWares> ListWares { get; set; }
+        public ObservableCollection<CustomButton> customWindowButtons { get; set; } 
+        public CustomWindow customWindow { get; set; }
 
 
 
@@ -213,6 +216,8 @@ namespace Front
 
             //MessageBox.Show(NameFirstTerminal);
 
+            CreateCustomWindiws();
+
             ListWares = new ObservableCollection<ReceiptWares>(StartData());
             WaresList.ItemsSource = ListWares;// Wares;
 
@@ -225,7 +230,32 @@ namespace Front
             Recalc();
         }
 
+        public void CreateCustomWindiws()
+        {
+            customWindow = new CustomWindow();
+            customWindow.Text = "Текст вікна";
+            customWindow.PathPicture = @"icons\Signal.png";
+            customWindow.Caption = "Назва вікна";
+            customWindow.AnswerRequired = true;
+            customWindow.ValidationMask = "Щось)";
 
+            customWindow.Buttons = new List<CustomButton>()
+            {
+                new CustomButton(){Id =1, Text="First button" },
+                new CustomButton(){Id =2, Text="Two Button"},
+                new CustomButton(){Id =3, Text="asdvsadvsdfvsdf button" },
+                new CustomButton(){Id =4, Text="asdvssdvsdfadvsdfvsdf button" },
+            };
+            CastomWindowsItemControl.ItemsSource = new ObservableCollection<CustomButton>(customWindow.Buttons);
+            if (customWindow.Caption == null) CaptionCastomWindows.Visibility = Visibility.Collapsed;
+            if (customWindow.PathPicture == null) ImageCastomWindows.Visibility = Visibility.Collapsed;
+            if (customWindow.AnswerRequired == false) CancelCastomWindows.Visibility = Visibility.Collapsed;
+            if (customWindow.ValidationMask == null)
+            {
+                TextBoxCastomWindows.Visibility = Visibility.Collapsed;
+                KeyboardCustomWindows.Visibility = Visibility.Collapsed;
+            }
+        }
         public void GetBarCode(string pBarCode, string pTypeBarCode)
         {
             if (State == eStateMainWindows.WaitInput)
@@ -315,6 +345,7 @@ namespace Front
                     ConfirmAgeMessage.Visibility = Visibility.Collapsed;
                     ConfirmAge.Visibility = Visibility.Collapsed;
                     WaitKashier.Visibility = Visibility.Collapsed;
+                    CastomWindows.Visibility = Visibility.Collapsed;
                     StartVideo.Stop();
 
                     switch (State)
