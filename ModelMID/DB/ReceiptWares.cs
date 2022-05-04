@@ -223,6 +223,8 @@ namespace ModelMID
         /// Кількість Яку ще можна повернути.
         /// </summary>
         public decimal? MaxRefundQuantity { get; set; } = null;
+
+        public decimal SumBonus { get; set; }
         /// <summary>
         /// 
         /// </summary>

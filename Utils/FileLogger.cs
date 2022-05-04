@@ -79,9 +79,10 @@ namespace Utils
         {
 #if DEBUG
             message.WriteConsoleDebug();
+#endif
             if (TypeLog > pTypeLog)
                 return;
-#endif
+
             Task.Run(() =>
             {
                 lock (Locker)
