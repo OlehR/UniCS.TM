@@ -491,7 +491,7 @@ namespace SharedLib
         public async Task<bool> SyncDataAsync(bool parIsFull)
         {
             bool res = false;
-            FileLogger.WriteLogMessage("BL.SyncDataAsync({parIsFull}) Start");
+            FileLogger.WriteLogMessage($"BL.SyncDataAsync({parIsFull}) Start");
             try
             {
                 res = ds.SyncData(ref parIsFull);
@@ -507,7 +507,7 @@ namespace SharedLib
                 }
                 if (parIsFull)
                     _ = ds.SendRWDeleteAsync();
-                FileLogger.WriteLogMessage("BL.SyncDataAsync({parIsFull}) => {res} Finish");
+                FileLogger.WriteLogMessage($"BL.SyncDataAsync({parIsFull}) => {res} Finish");
             }
             catch(Exception e)
             {

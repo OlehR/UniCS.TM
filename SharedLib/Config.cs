@@ -101,7 +101,7 @@ namespace SharedLib
             {
                 var PathLog = AppConfiguration["MID:PathLog"];
                 if (!string.IsNullOrEmpty(PathLog))
-                    FileLogger.SetPath(PathLog);
+                    FileLogger.Init(PathLog, Global.IdWorkPlace);
             }
             catch
             { }

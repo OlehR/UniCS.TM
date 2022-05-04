@@ -7,14 +7,16 @@ namespace Utils
 {
     public enum eTypeLog
     {
-        Full=0,
-        Expanded=1,
-        Error=2
+        Full = 0,
+        Expanded = 1,
+        Error = 2
     }
     public static class FileLogger
     {
-        private static string PathLog= Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"Log");
+        private static string PathLog= Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"Logs");
+        private static int IdWorkplace;
         public static eTypeLog TypeLog = eTypeLog.Full;
+
 
         private static Dictionary<int, Type> _types = new Dictionary<int, Type>();
 
@@ -24,11 +26,13 @@ namespace Utils
         {
             CreateDirectoryLog();
         }
-        public static void SetPath(string pPathLog)
+
+        public static void Init(string pPathLog,int pIdWorkplace)
         {
             if (!string.IsNullOrEmpty(pPathLog))
                 PathLog = pPathLog;
             CreateDirectoryLog();
+            IdWorkplace = pIdWorkplace;
         }
 
         public static void CreateDirectoryLog()
@@ -89,7 +93,7 @@ namespace Utils
                 {
                     var date = DateTime.Now;
                     File.AppendAllText(
-                        $"{Path.Combine(PathLog, $"Log_{date:yyyyMMdd}.log")}",
+                        $"{Path.Combine(PathLog, $"Log_{IdWorkplace}_{date:yyyyMMdd}.log")}",
                         $@"[{date:dd-MM-yyyy HH:mm:ss}] {Enum.GetName(typeof(eTypeLog), pTypeLog)} {message}{Environment.NewLine}");
                 }
             });
