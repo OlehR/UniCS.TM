@@ -20,6 +20,10 @@
         <local:BoolToVisibilityConverter
          x:Key="BoolToHiddenConverter"
          TrueValue="Visible" FalseValue="Hidden" />
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
     </Window.Resources>
 
 
@@ -100,17 +104,18 @@
                     </Button>
                 </Grid>
 
-                <TextBlock  Grid.Column="3" FontSize="20" HorizontalAlignment="Center" Text ="{DynamicResource markWaresQuantity}"
-                            Visibility="Collapsed" Name="textWaresQuantity" />
-                <TextBlock Grid.Column="4" 
-                       FontSize="22" 
+                <TextBlock  Grid.Column="3" FontSize="20" Foreground="Black" HorizontalAlignment="Center" Text ="{DynamicResource markWaresQuantity}"
+                            Visibility="Collapsed" Name="textWaresQuantity" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="4"  Foreground="Black"
+                       FontSize="22"  VerticalAlignment="Center"
                        Visibility="Collapsed" Name="valueWaresQuantity"
                        Text="{Binding WaresQuantity, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" />
 
                 <TextBlock Grid.Column="5" FontSize="22" Text="{DynamicResource markInAll}" 
-                           Visibility="Collapsed" Name="textInAll"/>
+                           Visibility="Collapsed" Name="textInAll" VerticalAlignment="Center" Foreground="Black" />
                 <TextBlock Grid.Column="6"
+                           VerticalAlignment="Center"
                            Name="valueInAll" Visibility="Collapsed"
                            FontSize="28"
                            FontWeight="Bold"
@@ -133,12 +138,12 @@
                     <ColumnDefinition Width="1*"></ColumnDefinition>
                     <ColumnDefinition Width="1.5*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="{DynamicResource markWareName}"/>
-                <TextBlock Grid.Column="1" Text="{DynamicResource markWareQuantity}" HorizontalAlignment="Center" Margin="50,0,0,0" FontSize="14"/>
-                <TextBlock Grid.Column="2" Text="{DynamicResource markWareWeight}" FontSize="14"/>
-                <TextBlock Grid.Column="3" Text="{DynamicResource markWarePrice}" FontSize="14"/>
-                <TextBlock Grid.Column="4" Text="{DynamicResource markWareDiscount}" FontSize="14"/>
-                <TextBlock Grid.Column="5" Text="{DynamicResource markWareInAll}" FontSize="14"/>
+                <TextBlock Grid.Column="0" Foreground="Black" Text="{DynamicResource markWareName}"/>
+                <TextBlock Grid.Column="1" Foreground="Black" Text="{DynamicResource markWareQuantity}" HorizontalAlignment="Center" Margin="50,0,0,0" FontSize="14"/>
+                <TextBlock Grid.Column="2" Foreground="Black" Text="{DynamicResource markWareWeight}" FontSize="14"/>
+                <TextBlock Grid.Column="3" Foreground="Black" Text="{DynamicResource markWarePrice}" FontSize="14"/>
+                <TextBlock Grid.Column="4" Foreground="Black" Text="{DynamicResource markWareDiscount}" FontSize="14"/>
+                <TextBlock Grid.Column="5" Foreground="Black" Text="{DynamicResource markWareInAll}" FontSize="14"/>
             </Grid>
         </Border>
 
@@ -285,7 +290,7 @@
 
                                         <Button x:Name="Plus" Click="BtnClickMinusPlus" Grid.Column="3">
                                             <Button.Content>
-                                                <Image Margin="15" Source="icons\plus.png"></Image>
+                                                <Image Margin="15" Source="icons\plusWhite.png"></Image>
                                             </Button.Content>
                                             <Button.Style>
                                                 <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
@@ -597,7 +602,7 @@
 
                     <StackPanel Grid.Row="0" VerticalAlignment="Center">
                         <Image  Source="icons\clock.png" Width="50" Margin="15"/>
-                        <TextBlock  HorizontalAlignment="Center" FontSize="28" Text="{DynamicResource WaitAdmin }"/>
+                        <TextBlock  HorizontalAlignment="Center" Foreground="Black" FontSize="28" Text="{DynamicResource WaitAdmin }"/>
                     </StackPanel>
                     <Button BorderBrush="Transparent" Background="Transparent" Width="50" Height="50" 
                         HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,30,0"
@@ -610,7 +615,7 @@
                         Height="80" Width="300" VerticalAlignment="Center">
                             <StackPanel Orientation="Horizontal">
                                 <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
-                                <TextBlock FontSize="28" Text="{DynamicResource cancel}" Margin="5,0,0,5"/>
+                                <TextBlock FontSize="28"  Text="{DynamicResource cancel}" Margin="5,0,0,5"/>
                             </StackPanel>
                         </Button>
                     </StackPanel>
