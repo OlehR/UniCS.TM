@@ -642,5 +642,18 @@ namespace SharedLib
                 return null;
             }
         }
+
+        /// <summary>
+        /// Викликається при початку списання бонусів.
+        /// </summary>
+        /// <param name="IdR"></param>
+        /// <returns></returns>
+        public Receipt CalcBonus(IdReceipt IdR)
+        {
+            var R = GetReceiptHead(IdR, true);
+            return null;
+        }
+
+
     }
 }
