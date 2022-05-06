@@ -67,7 +67,7 @@ namespace ModelMID
         /// <summary>
         /// Знижка для Касового апарата та для Модерна
         /// </summary>
-        public decimal DiscountEKKA { get { return SumDiscount + (Priority == 1 ? 0 : (PriceDealer > Price ? (PriceDealer * Quantity - Sum) : 0)); } }
+        public decimal DiscountEKKA { get { return SumBonus+ SumDiscount + (Priority == 1 ? 0 : (PriceDealer > Price ? (PriceDealer * Quantity - Sum) : 0)); } }
 
         /// <summary>
         /// Приоритет спрацьованої акції
@@ -191,7 +191,7 @@ namespace ModelMID
         public DateTime AdditionD1 { get; set; }
 
         /// <summary>
-        /// 0-звичайний,1-алкоголь,2-тютюн,3-алкоголь 
+        /// 0-звичайний,1-алкоголь,2-тютюн,3-легкий алкоголь 
         /// </summary>
         public int TypeWares { get; set; }
 
@@ -223,6 +223,10 @@ namespace ModelMID
         /// Кількість Яку ще можна повернути.
         /// </summary>
         public decimal? MaxRefundQuantity { get; set; } = null;
+        /// <summary>
+        /// Сума списаних бонусів
+        /// </summary>
+        public decimal SumBonus { get; set; }
         /// <summary>
         /// 
         /// </summary>

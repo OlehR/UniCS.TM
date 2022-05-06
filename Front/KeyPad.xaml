@@ -94,7 +94,7 @@
         <Grid Grid.Column="2" Grid.Row="5">
 
             <Button Style="{StaticResource yelowButton}" x:Name="button19" Background="WhiteSmoke"
-				Command="{Binding PressAndRelease}" CommandParameter="DECIMAL"	Click="button_Click" Content="." />
+				Command="{Binding PressAndRelease}" CommandParameter="DECIMAL"	Click="button_Click" Content="," />
         </Grid>
         <Grid Grid.Row="1" Grid.ColumnSpan="3" Margin="5">
             <Border  Background="LightGray"  CornerRadius="10" BorderBrush="Gray" BorderThickness="2" />

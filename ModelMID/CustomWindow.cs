@@ -37,7 +37,10 @@ namespace ModelMID
         /// Якщо очікуємо Текстова поле то маска в вигляді регулярки
         /// </summary>
         public string ValidationMask { get; set; }
-
+        /// <summary>
+        /// В скільки рядків розміщати кнопки.
+        /// </summary>
+        public int ColumnButtons { get; set; } = 1;
         public IEnumerable<CustomButton> Buttons { get; set; }
     }
 

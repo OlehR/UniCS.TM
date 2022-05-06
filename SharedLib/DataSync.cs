@@ -262,6 +262,24 @@ namespace SharedLib
 
         }
 
+
+        public async Task SetSumBonus(Receipt pReceipt)
+        {
+            try
+            {
+               // pReceipt.NumberReceipt1C; pReceipt.SumBonus
+   
+               
+            }
+            catch (Exception ex)
+            {
+              //  Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pTerminalId), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = ex.Message });
+            }
+
+        }
+
+
+
         public async Task<bool> CheckDiscountBarCodeAsync(IdReceipt pIdReceipt, string pBarCode, int pPercent)
         {
             bool isGood = true;

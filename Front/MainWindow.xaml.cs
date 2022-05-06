@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -66,9 +67,21 @@ namespace Front
         public string ChangeSumPaymant { get; set; } = "0";
         public bool IsIgnoreExciseStamp { get; set; }
         public bool isExciseStamp { get; set; }
-        public string GetBackgroundColor { get { return curReceipt?.TypeReceipt==eTypeReceipt.Refund? "#FFE5E5":"#FFFFFF"; } }
+        public string GetBackgroundColor { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? "#FFE5E5" : "#FFFFFF"; } }
+        public bool IsCheckReturn { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? true : false; } }
+        public bool PriceIsNotZero
+        {
+            get
+            {
+                if (_MoneySum >= 0 && WaresQuantity != "0")
+                {
+                    return true;
+                }
+                else return false;
+            }
+        }
 
-public bool IsPresentFirstTerminal
+        public bool IsPresentFirstTerminal
         {
             get
             {
@@ -76,7 +89,9 @@ public bool IsPresentFirstTerminal
                 {
                     return true;
                 }
-                else return false; } }
+                else return false;
+            }
+        }
         public bool IsPresentSecondTerminal
         {
             get
@@ -96,7 +111,9 @@ public bool IsPresentFirstTerminal
                 {
                     return EF.BankTerminal1.Name;
                 }
-                else return null; } }
+                else return null;
+            }
+        }
         public string NameSecondTerminal
         {
             get
@@ -132,9 +149,11 @@ public bool IsPresentFirstTerminal
         public eTypeAccess TypeAccessWait { get; set; }
 
         public ReceiptWares CurWares { get; set; } = null;
-        public ObservableCollection<ReceiptWares> ListWares { get; set; }        
+        public ObservableCollection<ReceiptWares> ListWares { get; set; }
+        public ObservableCollection<CustomButton> customWindowButtons { get; set; } 
+        public CustomWindow customWindow { get; set; }
 
-        
+
 
         public MainWindow()
         {
@@ -181,10 +200,12 @@ public bool IsPresentFirstTerminal
             };
             Global.OnAdminBarCode += (pUser) => { SetConfirm(pUser, false); };
 
-            Global.OnReceiptChanged += (pReceipt) => 
+            Global.OnReceiptChanged += (pReceipt) =>
             {
                 curReceipt = pReceipt;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("GetBackgroundColor"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("PriceIsNotZero"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCheckReturn"));
             };
 
             WaresQuantity = "0";
@@ -194,6 +215,8 @@ public bool IsPresentFirstTerminal
             InitializeComponent();
 
             //MessageBox.Show(NameFirstTerminal);
+
+            CreateCustomWindiws();
 
             ListWares = new ObservableCollection<ReceiptWares>(StartData());
             WaresList.ItemsSource = ListWares;// Wares;
@@ -207,7 +230,32 @@ public bool IsPresentFirstTerminal
             Recalc();
         }
 
+        public void CreateCustomWindiws()
+        {
+            customWindow = new CustomWindow();
+            customWindow.Text = "Текст вікна";
+            customWindow.PathPicture = @"icons\Signal.png";
+            customWindow.Caption = "Назва вікна";
+            customWindow.AnswerRequired = true;
+            customWindow.ValidationMask = "Щось)";
 
+            customWindow.Buttons = new List<CustomButton>()
+            {
+                new CustomButton(){Id =1, Text="First button" },
+                new CustomButton(){Id =2, Text="Two Button"},
+                new CustomButton(){Id =3, Text="asdvsadvsdfvsdf button" },
+                new CustomButton(){Id =4, Text="asdvssdvsdfadvsdfvsdf button" },
+            };
+            CastomWindowsItemControl.ItemsSource = new ObservableCollection<CustomButton>(customWindow.Buttons);
+            if (customWindow.Caption == null) CaptionCastomWindows.Visibility = Visibility.Collapsed;
+            if (customWindow.PathPicture == null) ImageCastomWindows.Visibility = Visibility.Collapsed;
+            if (customWindow.AnswerRequired == false) CancelCastomWindows.Visibility = Visibility.Collapsed;
+            if (customWindow.ValidationMask == null)
+            {
+                TextBoxCastomWindows.Visibility = Visibility.Collapsed;
+                KeyboardCustomWindows.Visibility = Visibility.Collapsed;
+            }
+        }
         public void GetBarCode(string pBarCode, string pTypeBarCode)
         {
             if (State == eStateMainWindows.WaitInput)
@@ -297,6 +345,7 @@ public bool IsPresentFirstTerminal
                     ConfirmAgeMessage.Visibility = Visibility.Collapsed;
                     ConfirmAge.Visibility = Visibility.Collapsed;
                     WaitKashier.Visibility = Visibility.Collapsed;
+                    CastomWindows.Visibility = Visibility.Collapsed;
                     StartVideo.Stop();
 
                     switch (State)
@@ -418,11 +467,17 @@ public bool IsPresentFirstTerminal
             Button btn = sender as Button;
             if (btn.DataContext is ReceiptWares)
             {
+                decimal tempQuantity = 0;
                 ReceiptWares temp = btn.DataContext as ReceiptWares;
                 keyPad.productNameChanges.Text = Convert.ToString(temp.NameWares);
                 keyPad.Result = Convert.ToString(temp.Quantity);
                 if (keyPad.ShowDialog() == true)
-                    temp.Quantity = Convert.ToDecimal(keyPad.Result);
+                    tempQuantity = Convert.ToDecimal(keyPad.Result);
+                temp.Quantity = tempQuantity;
+                if (curReceipt?.TypeReceipt == eTypeReceipt.Refund && tempQuantity > temp.MaxRefundQuantity)
+                {
+                    temp.Quantity = (decimal)temp.MaxRefundQuantity;
+                }
                 Bl.ChangeQuantity(temp, temp.Quantity);
                 Background.Visibility = Visibility.Collapsed;
                 BackgroundWares.Visibility = Visibility.Collapsed;
@@ -480,7 +535,7 @@ public bool IsPresentFirstTerminal
         private void _Back(object sender, RoutedEventArgs e)
         {
             // Правильний блок.
-            if (Access.GetRight(eTypeAccess.DelReciept) || curReceipt?.SumReceipt==0)
+            if (Access.GetRight(eTypeAccess.DelReciept) || curReceipt?.SumReceipt == 0)
             {
                 Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
                 Bl.GetNewIdReceipt();
@@ -844,7 +899,7 @@ public bool IsPresentFirstTerminal
             Background.Visibility = Visibility.Visible;
             BackgroundWares.Visibility = Visibility.Visible;
             KeyPad keyPad = new KeyPad(this);
-            
+
             keyPad.productNameChanges.Text = "Введіть суму видачі";
             keyPad.Result = "100";
             if (keyPad.ShowDialog() == true)

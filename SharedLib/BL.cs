@@ -499,19 +499,30 @@ namespace SharedLib
 
         public async Task<bool> SyncDataAsync(bool parIsFull)
         {
-            var res = ds.SyncData(ref parIsFull);
-            var CurDate = DateTime.Now;
-            // не обміннюємось чеками починаючи з 23:45 до 1:00
-            if (!((CurDate.Hour == 23 && CurDate.Minute > 44) || CurDate.Hour == 0))
-                await ds.SendAllReceipt().ConfigureAwait(false);
-
-            if (CurDate.Hour < 7)
+            bool res = false;
+            FileLogger.WriteLogMessage($"BL.SyncDataAsync({parIsFull}) Start");
+            try
             {
-                //  ds.LoadWeightKasa();
-                ds.LoadWeightKasa2Period();
+                res = ds.SyncData(ref parIsFull);
+                var CurDate = DateTime.Now;
+                // не обміннюємось чеками починаючи з 23:45 до 1:00
+                if (!((CurDate.Hour == 23 && CurDate.Minute > 44) || CurDate.Hour == 0))
+                    await ds.SendAllReceipt().ConfigureAwait(false);
+
+                if (CurDate.Hour < 7)
+                {
+                    //  ds.LoadWeightKasa();
+                    ds.LoadWeightKasa2Period();
+                }
+                if (parIsFull)
+                    _ = ds.SendRWDeleteAsync();
+                FileLogger.WriteLogMessage($"BL.SyncDataAsync({parIsFull}) => {res} Finish");
             }
-            if (parIsFull)
-                _ = ds.SendRWDeleteAsync();
+            catch(Exception e)
+            {
+                FileLogger.WriteLogMessage($"BL.SyncDataAsync Exception =>( pTerminalId=>{parIsFull}) => (){Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace}", eTypeLog.Error);
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = e, Status = eSyncStatus.NoFatalError, StatusDescription = $"SyncDataAsync() Exception e.Message{Environment.NewLine}" + new StackTrace().ToString() });
+            }
 
             return res;
         }
@@ -620,6 +631,7 @@ namespace SharedLib
                 R.Payment = null;
                 R.ReceiptEvent = null;
                 R.TypeReceipt = eTypeReceipt.Refund;
+                R.StateReceipt = eStateReceipt.Prepare;
                 R.RefundId = new IdReceipt(R);
                 R.SetIdReceipt(NewR);
                 db.ReplaceReceipt(R);
@@ -639,5 +651,18 @@ namespace SharedLib
                 return null;
             }
         }
+
+        /// <summary>
+        /// Викликається при початку списання бонусів.
+        /// </summary>
+        /// <param name="IdR"></param>
+        /// <returns></returns>
+        public Receipt CalcBonus(IdReceipt IdR)
+        {
+            var R = GetReceiptHead(IdR, true);
+            return null;
+        }
+
+
     }
 }
