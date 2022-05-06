@@ -32,7 +32,7 @@ namespace SharedLib
             };
         }
 
-        public static BL GetBL { get { return sBL??new BL(); } }
+        public static BL GetBL { get { return sBL ?? new BL(); } }
 
         public ReceiptWares AddReceiptWares(ReceiptWares pW, bool pRecalcPriceOnLine = true)
         {
@@ -110,9 +110,9 @@ namespace SharedLib
             return res;
         }
 
-        public IEnumerable<QR> GetQR(IdReceipt pIdR) { return db.GetQR(pIdR);}
+        public IEnumerable<QR> GetQR(IdReceipt pIdR) { return db.GetQR(pIdR); }
 
-        public bool AddReceipt(IdReceipt parReceipt){ return AddReceipt(new Receipt(parReceipt)); }
+        public bool AddReceipt(IdReceipt pReceipt) { return AddReceipt(new Receipt(pReceipt)); }
 
         public bool AddReceipt(Receipt pReceipt) { return db.AddReceipt(pReceipt); }
 
@@ -147,7 +147,7 @@ namespace SharedLib
             WDB_SQLite ldb = (Ldc == DateTime.Now.Date ? db : new WDB_SQLite(Ldc));
 
             var Res = ldb.CloseReceipt(receipt);
-            Global.OnReceiptChanged?.Invoke(receipt);            
+            Global.OnReceiptChanged?.Invoke(receipt);
             return Res;
         }
 
@@ -223,7 +223,7 @@ namespace SharedLib
             W.Quantity = (W.CodeUnit == Global.WeightCodeUnit ? pQuantity / 1000m : pQuantity);// Вага приходить в грамах
             return AddReceiptWares(W);
         }
-                
+
         public ReceiptWares AddWaresCode(IdReceipt pIdReceipt, int pCodeWares, int pCodeUnit, decimal pQuantity = 0, decimal pPrice = 0)
         {
             var w = db.FindWares(null, null, pCodeWares, pCodeUnit);
@@ -259,7 +259,7 @@ namespace SharedLib
 
         public IEnumerable<ReceiptWares> ViewReceiptWares(IdReceipt parIdReceipt, bool pIsReceiptWaresPromotion = false)
         {
-            var Res = db.ViewReceiptWares(parIdReceipt, pIsReceiptWaresPromotion);           
+            var Res = db.ViewReceiptWares(parIdReceipt, pIsReceiptWaresPromotion);
             return Res;
         }
 
@@ -310,9 +310,9 @@ namespace SharedLib
             return ldb.ViewReceipt(idReceipt, parWithDetail);
         }
 
-        public Client GetClientByBarCode(IdReceipt idReceipt, string parBarCode)
+        public Client GetClientByBarCode(IdReceipt idReceipt, string pBarCode)
         {
-            var r = db.FindClient(parBarCode);
+            var r = db.FindClient(pBarCode);
             if (r.Count() == 1)
             {
                 var client = r.First();
@@ -322,9 +322,9 @@ namespace SharedLib
             return null;
         }
 
-        public Client GetClientByPhone(IdReceipt idReceipt, string parPhone)
+        public Client GetClientByPhone(IdReceipt idReceipt, string pPhone)
         {
-            var r = db.FindClient(null, parPhone);
+            var r = db.FindClient(null, pPhone);
             if (r.Count() == 1)
             {
                 var client = r.First();
@@ -345,33 +345,42 @@ namespace SharedLib
             _ = ds.GetBonusAsync(parClient, idReceipt.IdWorkplace);
         }
 
-        public IEnumerable<ReceiptWares> GetProductsByName(IdReceipt parReceipt, string parName, int parOffSet = -1, int parLimit = 10, int parCodeFastGroup = 0)
+        public IEnumerable<ReceiptWares> GetProductsByName(IdReceipt pReceipt, string pName, int pOffSet = -1, int pLimit = 10, int pCodeFastGroup = 0)
         {
-            parName = parName.Trim();
+            pName = pName.Trim();
+            string Article = null;
+            decimal Quantity = 0m;
             // Якщо пошук по штрихкоду і назва похожа на штрихкод або артикул
-            if (!string.IsNullOrEmpty(parName))
+            if (!string.IsNullOrEmpty(pName))
             {
                 var Reg = new Regex(@"^[0-9]{4,13}$");
-                if (Reg.IsMatch(parName))
+                if (Reg.IsMatch(pName))
                 {
-                    if (parName.Length >= 8)
+                    Article = pName;
+                }
+                else
+                {
+                    Reg = new Regex(@"^[0-9]{1,5}[*]{1}[0-9]{1,8}$");
+                    if (Reg.IsMatch(pName))
                     {
-                        var w = AddWaresBarCode(parReceipt, parName);
-                        if (w != null)
-                            return new List<ReceiptWares> { w };
-                    }
-                    else
-                    {
-                        var ww = db.FindWares(null, null, 0, 0, 0, Convert.ToInt32(parName));
-                        if (ww.Count() > 0)
-                            return ww;
+                        var s = pName.Split('*');
+                        Article = s[1];
+                        Quantity = Convert.ToDecimal(s[0]);
+                        pName = null;
                     }
                 }
             }
             else
-                parName = null;
+                pName = null;
 
-            var r = db.FindWares(null, parName, 0, 0, parCodeFastGroup, -1, parOffSet, parLimit);
+            if (!string.IsNullOrEmpty(Article))
+            {
+                var w = AddWaresBarCode(pReceipt, pName, Quantity);
+                if (w != null)
+                    return new List<ReceiptWares> { w };
+            }
+
+            var r = db.FindWares(null, pName, 0, 0, pCodeFastGroup, -1, pOffSet, pLimit);
             if (r.Count() > 0)
             {
                 return r;
@@ -390,19 +399,19 @@ namespace SharedLib
 
         public bool SetStateReceipt(IdReceipt pIdReceipt, eStateReceipt pStateReceipt)
         {
-             var receipt = new Receipt(pIdReceipt) { StateReceipt = pStateReceipt, DateReceipt = DateTime.Now, UserCreate = GetUserIdbyWorkPlace(pIdReceipt.IdWorkplace) };
+            var receipt = new Receipt(pIdReceipt) { StateReceipt = pStateReceipt, DateReceipt = DateTime.Now, UserCreate = GetUserIdbyWorkPlace(pIdReceipt.IdWorkplace) };
             return db.CloseReceipt(receipt);
         }
 
-        public bool InsertWeight(string parBarCode, int parWeight, Guid parWares, TypeSaveWeight parTypeSaveWeight)
+        public bool InsertWeight(string pBarCode, int parWeight, Guid parWares, TypeSaveWeight parTypeSaveWeight)
         {
             var CodeWares = 0;
-            if (string.IsNullOrEmpty(parBarCode) && parWares == Guid.Empty)
+            if (string.IsNullOrEmpty(pBarCode) && parWares == Guid.Empty)
                 return false;
             if (parWares != Guid.Empty)
                 CodeWares = new IdReceiptWares(new IdReceipt(), parWares).CodeWares;
 
-            return db.InsertWeight(new { BarCode = (parTypeSaveWeight == TypeSaveWeight.Add || parBarCode == null ? CodeWares.ToString() : parBarCode), Weight = (decimal)parWeight / 1000m, Status = parTypeSaveWeight });
+            return db.InsertWeight(new { BarCode = (parTypeSaveWeight == TypeSaveWeight.Add || pBarCode == null ? CodeWares.ToString() : pBarCode), Weight = (decimal)parWeight / 1000m, Status = parTypeSaveWeight });
         }
 
         public IEnumerable<ReceiptWares> GetWaresReceipt(IdReceipt pIdReceipt = null)
@@ -448,17 +457,17 @@ namespace SharedLib
             return null;
         }
 
-        public bool SaveReceipt(Receipt parReceipt, bool isRefund = true)
+        public bool SaveReceipt(Receipt pReceipt, bool isRefund = true)
         {
-            var ReceiptId = isRefund ? parReceipt.RefundId : (IdReceipt)parReceipt;
+            var ReceiptId = isRefund ? pReceipt.RefundId : (IdReceipt)pReceipt;
 
-            var dbR = parReceipt.CodePeriod == Global.GetCodePeriod() ? db : new WDB_SQLite(ReceiptId.DTPeriod);
+            var dbR = pReceipt.CodePeriod == Global.GetCodePeriod() ? db : new WDB_SQLite(ReceiptId.DTPeriod);
 
-            dbR.ReplaceReceipt(parReceipt);
-            dbR.ReplacePayment(parReceipt.Payment);
+            dbR.ReplaceReceipt(pReceipt);
+            dbR.ReplacePayment(pReceipt.Payment);
 
-            var dbr = parReceipt.CodePeriod == parReceipt.CodePeriodRefund ? db : new WDB_SQLite(ReceiptId.DTPeriod);
-            foreach (var el in parReceipt.Wares)
+            var dbr = pReceipt.CodePeriod == pReceipt.CodePeriodRefund ? db : new WDB_SQLite(ReceiptId.DTPeriod);
+            foreach (var el in pReceipt.Wares)
             {
                 dbR.AddWares(el);
                 if (isRefund)
@@ -558,7 +567,7 @@ namespace SharedLib
                 else
                 { _ = GetBonusAsync(c, Global.IdWorkPlace); }
             }
-        }        
+        }
 
         public bool UpdateExciseStamp(IEnumerable<ReceiptWares> pRW)
         {
@@ -620,7 +629,7 @@ namespace SharedLib
                     el.MaxRefundQuantity = el.Quantity - el.RefundedQuantity;
                     el.Quantity = 0;
                     db.AddWares(el);
-                }                
+                }
                 Global.OnReceiptCalculationComplete?.Invoke(R.Wares, R);
                 return R;
             }

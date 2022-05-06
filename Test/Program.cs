@@ -50,7 +50,7 @@ namespace Test
             //await l.LoadRozetka();//GetInfoBarcode("4820009350588");
 
 
-            await CreateDataBaseAsync(false); return;
+            //await CreateDataBaseAsync(false); return;
             //var aa= Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
             //var bl = new BL();
             //var aaaaa=bl.Ver;
@@ -126,23 +126,20 @@ namespace Test
             var api = new ApiPSU();
 
 
-         //   api.GetNoFinishReceipt(TerminalId); return;
+            //   api.GetNoFinishReceipt(TerminalId); return;
 
 
-           // var rrrr= api.GetReceipts(new DateTime(2022,04,04),new DateTime(2022, 04, 04,23,59,59) , TerminalId);return;
+            // var rrrr= api.GetReceipts(new DateTime(2022,04,04),new DateTime(2022, 04, 04,23,59,59) , TerminalId);return;
             //api.GetNoFinishReceipt(TerminalId);return
 
 
             //var pp = api.AddProductByBarCode(TerminalId, "4820080726777", 1);
 
-           var pp = api.AddProductByProductId(TerminalId, ProductId, 1); return;
+            //var pp = api.AddProductByProductId(TerminalId, ProductId, 1); return;
 
-       
-            api.ChangeQuantity(TerminalId, pp.Id  , 2);
+            var wwccwww = api.GetProductsByName(TerminalId, "13*1133", 0, false, FastGroup);
 
-            api.ChangeQuantity(TerminalId, pp.Id, 3);
-
-            api.ChangeQuantity(TerminalId, pp.Id, 1);
+           
 
             //var rrrrrrrr=api.Bl.db.CloseReceipt(receipt);
 
@@ -183,7 +180,7 @@ namespace Test
                  //Console.WriteLine($"QR=>{QR}");
                  //return;
                  //var w = api.GetProductsByCategoryId(TerminalId, FastGroup);
-                 var wwwww = api.GetProductsByName(TerminalId, "БАК", 0, false, FastGroup);
+                 var wwwww = api.GetProductsByName(TerminalId, "13*1133", 0, false, FastGroup);
 
                 var sss = api.GetBags();
                 var l = api.AddProductByProductId(TerminalId, ProductId, 3, 55.24M);

@@ -50,6 +50,7 @@ namespace Front.Equipments
         }
 
         public virtual eStateEquipment TestDevice() { throw new NotImplementedException(); }
+        public virtual string GetDeviceInfo() { throw new NotImplementedException(); }
         public virtual void Enable() { State = eStateEquipment.Ok; }
         public virtual void Disable() { State = eStateEquipment.Off; }
     }
