@@ -169,7 +169,7 @@ namespace SharedLib
             }
 
             //ReceiptWares W = null;
-            if (w == null || w.Count() == 0) // Якщо не знайшли спробуем по ваговим і штучним штрихкодам.          
+            if (w == null || w.Count() == 0 && pBarCode.Length >= 8) // Якщо не знайшли спробуем по ваговим і штучним штрихкодам.          
             {
                 foreach (var el in Global.CustomerBarCode.Where(el => el.KindBarCode == eKindBarCode.EAN13 /*&& (el.TypeBarCode == eTypeBarCode.WaresWeight || el.TypeBarCode == eTypeBarCode.WaresUnit )*/))
                 {
@@ -360,12 +360,13 @@ namespace SharedLib
                 }
                 else
                 {
-                    Reg = new Regex(@"^[0-9]{1,5}[*]{1}[0-9]{1,8}$");
+                    Reg = new Regex(@"^[0-9]{1,5}[*]{1}[0-9]{1,8}[*]{0,1}$");
                     if (Reg.IsMatch(pName))
                     {
                         var s = pName.Split('*');
                         Article = s[1];
-                        Quantity = Convert.ToDecimal(s[0]);
+                        if(pName.EndsWith("*"))
+                            Quantity = Convert.ToDecimal(s[0]);
                         pName = null;
                     }
                 }
@@ -375,7 +376,7 @@ namespace SharedLib
 
             if (!string.IsNullOrEmpty(Article))
             {
-                var w = AddWaresBarCode(pReceipt, pName, Quantity);
+                var w = AddWaresBarCode(pReceipt, Article, Quantity);
                 if (w != null)
                     return new List<ReceiptWares> { w };
             }

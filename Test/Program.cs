@@ -137,7 +137,7 @@ namespace Test
 
             //var pp = api.AddProductByProductId(TerminalId, ProductId, 1); return;
 
-            var wwccwww = api.GetProductsByName(TerminalId, "13*1133", 0, false, FastGroup);
+            var wwccwww = api.GetProductsByName(TerminalId, "13*8416", 0, false, FastGroup);
 
            
 
@@ -180,7 +180,7 @@ namespace Test
                  //Console.WriteLine($"QR=>{QR}");
                  //return;
                  //var w = api.GetProductsByCategoryId(TerminalId, FastGroup);
-                 var wwwww = api.GetProductsByName(TerminalId, "13*1133", 0, false, FastGroup);
+                 var wwwww = api.GetProductsByName(TerminalId, "13*8416*", 0, false, FastGroup);
 
                 var sss = api.GetBags();
                 var l = api.AddProductByProductId(TerminalId, ProductId, 3, 55.24M);

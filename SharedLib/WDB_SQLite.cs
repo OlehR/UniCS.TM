@@ -7,17 +7,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using ModelMID;
 using ModelMID.DB;
+using Utils;
 
 namespace SharedLib
 {
 
-    
+
     public partial class WDB_SQLite : WDB
     {
         //private SQLite db;
         //public SQLite db_receipt;
-        private static bool IsFirstStart=true;
-   
+        private static bool IsFirstStart = true;
+
 
         protected string SqlCreateMIDTable = @"";
         protected string SqlCreateMIDIndex = @"";
@@ -27,8 +28,8 @@ namespace SharedLib
 
         private string Connect = null;
         private string ConfigFile { get { return Path.Combine(ModelMID.Global.PathDB, "config.db"); } }
-        private string LastMidFile=null;
-        private string MidFile { get { return string.IsNullOrEmpty(Connect) ? (string.IsNullOrEmpty(LastMidFile)?  GetCurrentMIDFile: LastMidFile) : Connect; } }
+        private string LastMidFile = null;
+        private string MidFile { get { return string.IsNullOrEmpty(Connect) ? (string.IsNullOrEmpty(LastMidFile) ? GetCurrentMIDFile : LastMidFile) : Connect; } }
 
         private string GetReceiptFile(DateTime pDT) { return Path.Combine(ModelMID.Global.PathDB, $"{pDT:yyyyMM}", $"Rc_{ModelMID.Global.IdWorkPlace}_{pDT:yyyyMMdd}.db"); }
 
@@ -41,11 +42,16 @@ namespace SharedLib
                     MidFile = varLastMidFile;
             }*/
 
-        public string GetCurrentMIDFile 
-                {get { DateTime varD = DateTime.Today;
-                       return Path.Combine(Global.PathDB, $"{varD:yyyyMM}", $"MID_{varD:yyyyMMdd}.db"); } }
-  
-        public WDB_SQLite( DateTime parD = default(DateTime), string parConnect = "", bool pIsUseOldDB = false)  : base(Path.Combine(Global.PathIni, "SQLite.sql") )
+        public string GetCurrentMIDFile
+        {
+            get
+            {
+                DateTime varD = DateTime.Today;
+                return Path.Combine(Global.PathDB, $"{varD:yyyyMM}", $"MID_{varD:yyyyMMdd}.db");
+            }
+        }
+
+        public WDB_SQLite(DateTime parD = default(DateTime), string parConnect = "", bool pIsUseOldDB = false) : base(Path.Combine(Global.PathIni, "SQLite.sql"))
         {
             Connect = parConnect;
             varVersion = "SQLite.0.0.1";
@@ -53,10 +59,10 @@ namespace SharedLib
             InitSQL();
 
 
-            if(IsFirstStart)
+            if (IsFirstStart)
                 UpdateDB(ref pIsUseOldDB);
-            
-            
+
+
             if (!File.Exists(ConfigFile))
             {
                 db = new SQLite(ConfigFile);
@@ -65,7 +71,7 @@ namespace SharedLib
             }
             //db = new SQLite(ConfigFile);//,"",this.varCallWriteLogSQL);
 
-           
+
             if (!File.Exists(ReceiptFile))
             {
                 var receiptFilePath = Path.GetDirectoryName(ReceiptFile);
@@ -77,7 +83,7 @@ namespace SharedLib
                 db.Close();
                 db = null;
             }
-            
+
 
             if (!File.Exists(MidFile))
             {
@@ -89,7 +95,7 @@ namespace SharedLib
                     if (!string.IsNullOrEmpty(varLastMidFile) && File.Exists(varLastMidFile))
                         LastMidFile = varLastMidFile;
                 }
-                if(!pIsUseOldDB || string.IsNullOrEmpty(LastMidFile))
+                if (!pIsUseOldDB || string.IsNullOrEmpty(LastMidFile))
                 {
                     var db = new SQLite(MidFile);
                     db.ExecuteNonQuery(SqlCreateMIDTable);
@@ -130,7 +136,7 @@ namespace SharedLib
 
             db.ExecuteNonQuery("PRAGMA synchronous = EXTRA;");
             db.ExecuteNonQuery("PRAGMA journal_mode = DELETE;");
-            db.ExecuteNonQuery("PRAGMA wal_autocheckpoint = 5;"); 
+            db.ExecuteNonQuery("PRAGMA wal_autocheckpoint = 5;");
         }
         ~WDB_SQLite()
         {
@@ -141,7 +147,7 @@ namespace SharedLib
         {
             SqlCreateMIDTable = GetSQL("SqlCreateMIDTable");
             SqlCreateMIDIndex = GetSQL("SqlCreateMIDIndex");
-            SqlGetPricePromotionKit= GetSQL("SqlGetPricePromotionKit");
+            SqlGetPricePromotionKit = GetSQL("SqlGetPricePromotionKit");
             return true;
         }
         /*
@@ -248,10 +254,10 @@ namespace SharedLib
                     ParameterPromotion par;
                     var InfoClient = GetInfoClientByReceipt(pIdReceiptWares);
                     if (InfoClient.Count() == 1)
-                        par = InfoClient.First();                        
+                        par = InfoClient.First();
                     else
-                      par = new ParameterPromotion();                    
-                    
+                        par = new ParameterPromotion();
+
                     //par.BirthDay = DateTime.Now.Date; Test
                     par.CodeWarehouse = Global.CodeWarehouse;
                     par.Time = Convert.ToInt32(RH.DateReceipt.ToString("HHmm"));
@@ -265,7 +271,7 @@ namespace SharedLib
                         par.CodeWares = RW.CodeWares;
                         var Res = GetPrice(par);
 
-                        if (Res != null && RW.ParPrice1 != 999999 && (Res.Priority>0 || string.IsNullOrEmpty(RW.BarCode2Category) ))//Не перераховуємо для  Сигарет s для 2 категорії окрім пріоритет 1
+                        if (Res != null && RW.ParPrice1 != 999999 && (Res.Priority > 0 || string.IsNullOrEmpty(RW.BarCode2Category)))//Не перераховуємо для  Сигарет s для 2 категорії окрім пріоритет 1
                         {
                             RW.Price = MPI.GetPrice(Res.Price, Res.IsIgnoreMinPrice == 0, Res.CodePs > 0);
                             RW.TypePrice = MPI.typePrice;
@@ -291,7 +297,7 @@ namespace SharedLib
                 }
                 catch (Exception ex)
                 {
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceiptWares.IdWorkplace), Exception = ex, Status =eSyncStatus.Error,StatusDescription= "RecalcPrice=>" + ex.Message+'\n'+ new System.Diagnostics.StackTrace().ToString() });
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceiptWares.IdWorkplace), Exception = ex, Status = eSyncStatus.Error, StatusDescription = "RecalcPrice=>" + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
                     return false;
                 }
             }
@@ -302,21 +308,21 @@ namespace SharedLib
         /// </summary>
         /// <param name="parIdReceipt"></param>
         /// <returns></returns>
-        public bool GetPricePromotionKit(IdReceipt parIdReceipt,int parCodeWares)
+        public bool GetPricePromotionKit(IdReceipt parIdReceipt, int parCodeWares)
         {
-            if (parCodeWares > 0 && !IsWaresInPromotionKit(parCodeWares)) 
+            if (parCodeWares > 0 && !IsWaresInPromotionKit(parCodeWares))
                 return true;
 
-            var varRes = new List<WaresReceiptPromotion>(); 
+            var varRes = new List<WaresReceiptPromotion>();
             var par = new ParamPricePromotionKit(parIdReceipt, ModelMID.Global.CodeWarehouse);
-            var r=db.Execute<ParamPricePromotionKit, PromotionWaresKit>(SqlGetPricePromotionKit, par);
+            var r = db.Execute<ParamPricePromotionKit, PromotionWaresKit>(SqlGetPricePromotionKit, par);
             int NumberGroup = 0;
-            decimal Quantity = 0, AddQuantity=0;
+            decimal Quantity = 0, AddQuantity = 0;
             Int64 CodePS = 0;
             var RW = ViewReceiptWares(parIdReceipt);
-            foreach (var el in r )//цикл по Можливим позиціям з знижкою.
+            foreach (var el in r)//цикл по Можливим позиціям з знижкою.
             {
-                if(el.CodePS!= CodePS||el.NumberGroup!=NumberGroup)
+                if (el.CodePS != CodePS || el.NumberGroup != NumberGroup)
                 {
                     Quantity = el.Quantity;
                     CodePS = el.CodePS;
@@ -340,21 +346,21 @@ namespace SharedLib
                             Quantity -= varQuantityReceipt - varQuantityUsed;
                         }
                         decimal vPrice = el.Price;
-                        if (el.TypeDiscount==eTypeDiscount.PercentDiscount)
+                        if (el.TypeDiscount == eTypeDiscount.PercentDiscount)
                         {
-                            var Price= RW.Where(e => e.CodeWares == el.CodeWares).Sum(e => e.Price);
+                            var Price = RW.Where(e => e.CodeWares == el.CodeWares).Sum(e => e.Price);
                             vPrice = Price * el.DataDiscount / 100m;
-                        }                      
+                        }
 
-                        var RWP = new WaresReceiptPromotion(parIdReceipt) { CodeWares = el.CodeWares, Quantity = AddQuantity, Price=vPrice,CodePS=el.CodePS,NumberGroup=el.NumberGroup};
+                        var RWP = new WaresReceiptPromotion(parIdReceipt) { CodeWares = el.CodeWares, Quantity = AddQuantity, Price = vPrice, CodePS = el.CodePS, NumberGroup = el.NumberGroup };
                         varRes.Add(RWP);
                     }
                 }
 
             }
             DeleteWaresReceiptPromotion(parIdReceipt);
-            if(varRes.Count>0)
-              ReplaceWaresReceiptPromotion(varRes);
+            if (varRes.Count > 0)
+                ReplaceWaresReceiptPromotion(varRes);
 
             return true;
 
@@ -363,13 +369,13 @@ namespace SharedLib
 
 
         public override bool CopyWaresReturnReceipt(IdReceipt parIdReceipt, bool parIsCurrentDay = true)
-		{
-			string SqlCopyWaresReturnReceipt=(parIsCurrentDay? this.SqlCopyWaresReturnReceipt.Replace("RRC.","RC.") : this.SqlCopyWaresReturnReceipt ) ;
-			return (this.db.ExecuteNonQuery(SqlCopyWaresReturnReceipt, parIdReceipt) > 0);
-		}
+        {
+            string SqlCopyWaresReturnReceipt = (parIsCurrentDay ? this.SqlCopyWaresReturnReceipt.Replace("RRC.", "RC.") : this.SqlCopyWaresReturnReceipt);
+            return (this.db.ExecuteNonQuery(SqlCopyWaresReturnReceipt, parIdReceipt) > 0);
+        }
 
-        
-        
+
+
         public override IEnumerable<ReceiptWares> GetWaresFromFastGroup(int parCodeFastGroup)
         {
             return FindWares(null, null, 0, 0, parCodeFastGroup);
@@ -380,7 +386,7 @@ namespace SharedLib
             return FindWares(null, null, 0, 0, Global.CodeFastGroupBag);
         }
 
-         public override void Close(bool isWait = false)
+        public override void Close(bool isWait = false)
         {
             if (db != null)
                 db.Close(isWait);
@@ -393,12 +399,12 @@ namespace SharedLib
 
         ///////////////// Config
 
-        public override bool SetConfig<T>(string parName, T parValue,SQL pDB=null)
+        public override bool SetConfig<T>(string parName, T parValue, SQL pDB = null)
         {
             using (var DB = new SQLite(ConfigFile))
             {
-                
-                if(pDB == null)
+
+                if (pDB == null)
                     DB.ExecuteNonQuery<object>(this.SqlReplaceConfig, new { NameVar = parName, DataVar = parValue, @TypeVar = parValue.GetType().ToString() });
                 else
                     pDB.ExecuteNonQuery<object>(this.SqlReplaceConfig, new { NameVar = parName, DataVar = parValue, @TypeVar = parValue.GetType().ToString() });
@@ -419,7 +425,7 @@ namespace SharedLib
         {
             using (var DB = new SQLite(ConfigFile))
             {
-                return DB.ExecuteNonQuery<Object>(SqlInsertWeight, parWeight)>0;
+                return DB.ExecuteNonQuery<Object>(SqlInsertWeight, parWeight) > 0;
             }
         }
 
@@ -817,7 +823,7 @@ and @TypeDiscount=11; ";
         {
             using (var DB = new SQLite(ReceiptFile))
             {
-                 return DB.ExecuteNonQuery<ReceiptWares>(SqlUpdateQR, pRW) > 0;
+                return DB.ExecuteNonQuery<ReceiptWares>(SqlUpdateQR, pRW) > 0;
             }
             //return true;
         }
@@ -827,7 +833,7 @@ and @TypeDiscount=11; ";
             using (var DB = new SQLite(ReceiptFile))
             {
                 return DB.BulkExecuteNonQuery<ReceiptWares>(SqlUpdateExciseStamp, pRW) > 0;
-            }            
+            }
         }
 
         public override bool ReplaceUser(IEnumerable<User> pUser)
@@ -841,7 +847,7 @@ and @TypeDiscount=11; ";
         {
             using (var DB = new SQLite(MidFile))
             {
-                return DB.BulkExecuteNonQuery <SalesBan>(SqlReplaceSalesBan, pSB) > 0;
+                return DB.BulkExecuteNonQuery<SalesBan>(SqlReplaceSalesBan, pSB) > 0;
             }
         }
 
@@ -855,7 +861,7 @@ and @TypeDiscount=11; ";
         /// <summary>
         /// Оновлення структури бази даних
         /// </summary>       
-        protected override void UpdateDB(ref bool pIsUseOld) 
+        protected override void UpdateDB(ref bool pIsUseOld)
         {
             try
             {
@@ -910,16 +916,16 @@ and @TypeDiscount=11; ";
                 if (Ver != CurVerRC)
                     wDB.SetConfig<int>("VerRC", Ver);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
         }
 
-        protected (int,bool) Parse(string[] pLines,int pCurVersion, SQLite pDB)
+        protected (int, bool) Parse(string[] pLines, int pCurVersion, SQLite pDB)
         {
-            int NewVer = pCurVersion,Ver;
-            bool isReload=false;
+            int NewVer = pCurVersion, Ver;
+            bool isReload = false;
 
             foreach (var el in pLines)
             {
@@ -940,9 +946,11 @@ and @TypeDiscount=11; ";
                             catch (Exception e)
                             {
                                 if (e.Message.IndexOf("duplicate column name:") == -1)
+                                {
+                                    FileLogger.WriteLogMessage($"WDB_SQLite.Parse Exception =>( el=>{el},pCurVersion=>{pCurVersion}) => (){Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace}", eTypeLog.Error);
                                     throw new Exception(e.Message, e);
+                                }
                             }
-                            
                         if (NewVer <= Ver)
                             NewVer = Ver;
                     }

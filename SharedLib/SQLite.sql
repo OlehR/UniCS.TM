@@ -21,7 +21,7 @@ alter TABLE payment    add Bank  TEXT;--Ver=>0
 alter TABLE WARES_RECEIPT  add Excise_Stamp   TEXT;--Ver=>0
 alter TABLE payment    add TransactionId TEXT;--Ver=>3
 alter TABLE WARES_RECEIPT  add Max_Refund_Quantity NUMBER;--Ver=>4
-alter TABLE WARES_RECEIPT  add SUM_BONUS      NUMBER   NOT NULL;--Ver=>5
+alter TABLE WARES_RECEIPT  add SUM_BONUS      NUMBER   NOT NULL DEFAULT 0;--Ver=>5
 
 [SqlUpdateMID]
 --Ver=>0;Reload;
@@ -258,13 +258,13 @@ replace into wares_receipt (id_workplace, code_period, code_receipt, code_wares,
   type_price,  quantity, price, Price_Dealer, sum, sum_vat,
   Priority,PAR_PRICE_1,PAR_PRICE_2,PAR_PRICE_3, sum_discount, type_vat, sort,Excise_Stamp, user_create,
  ADDITION_N1,ADDITION_N2,ADDITION_N3,
- ADDITION_C1,ADDITION_D1,BARCODE_2_CATEGORY,DESCRIPTION,Refunded_Quantity,Fix_Weight,QR,Max_Refund_Quantity,) 
+ ADDITION_C1,ADDITION_D1,BARCODE_2_CATEGORY,DESCRIPTION,Refunded_Quantity,Fix_Weight,QR,Max_Refund_Quantity,SUM_BONUS) 
  values (
   @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit,
   @TypePrice, @Quantity, @Price,@PriceDealer, @Sum, @SumVat,
   @Priority,@ParPrice1,@ParPrice2,@ParPrice3, @SumDiscount, @TypeVat, @Sort,@ExciseStamp, @UserCreate,
  @AdditionN1,@AdditionN2,@AdditionN3,
- @AdditionC1,@AdditionD1,@BARCODE2Category,@DESCRIPTION,@RefundedQuantity,@FixWeight,@QR,@MaxRefundQuantity)
+ @AdditionC1,@AdditionD1,@BARCODE2Category,@DESCRIPTION,@RefundedQuantity,@FixWeight,@QR,@MaxRefundQuantity,@SumBonus)
 
 
 
@@ -641,7 +641,7 @@ CREATE TABLE WARES_RECEIPT (
     SUM            NUMBER   NOT NULL,
     SUM_VAT        NUMBER   NOT NULL,
     SUM_DISCOUNT   NUMBER   NOT NULL,
-    SUM_BONUS      NUMBER   NOT NULL,
+    SUM_BONUS      NUMBER   NOT NULL DEFAULT 0,
 	PRICE_DEALER   NUMBER   NOT NULL,
     Priority       INTEGER  NOT NULL DEFAULT 0,
     TYPE_PRICE     INTEGER  NOT NULL,
