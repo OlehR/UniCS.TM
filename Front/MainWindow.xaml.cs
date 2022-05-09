@@ -173,18 +173,20 @@ namespace Front
             {
                 EquipmentInfo = info.TextState;
             };
-            Global.OnReceiptCalculationComplete += (pWares, pIdWorkplace) =>
+            Global.OnReceiptCalculationComplete += (pReceipt) =>
             {
+                SetCurReceipt(pReceipt);
+
                 try
                 {
-                    ListWares = new ObservableCollection<ReceiptWares>(pWares);
+                    ListWares = new ObservableCollection<ReceiptWares>(pReceipt?.Wares);
                     Dispatcher.BeginInvoke(new ThreadStart(() => { WaresList.ItemsSource = ListWares; Recalc(); }));
                 }
                 catch (Exception e)
                 {
-                    FileLogger.WriteLogMessage($"MainWindow.OnReceiptCalculationComplete Exception =>(pWares=>{pWares.ToJSON()},pIdWorkplace=>{pIdWorkplace}) => ({Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace})", eTypeLog.Error);
+                    FileLogger.WriteLogMessage($"MainWindow.OnReceiptCalculationComplete Exception =>(pReceipt=>{pReceipt.ToJSON()}) => ({Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace})", eTypeLog.Error);
                 }
-                FileLogger.WriteLogMessage($"MainWindow.OnReceiptCalculationComplete Exception =>(pWares=>{pWares.ToJSON()},pIdWorkplace=>{pIdWorkplace})", eTypeLog.Full);
+                FileLogger.WriteLogMessage($"MainWindow.OnReceiptCalculationComplete Exception =>(pReceipt=>{pReceipt.ToJSON()})", eTypeLog.Full);
             };
 
             Global.OnSyncInfoCollected += (SyncInfo) =>
@@ -198,14 +200,12 @@ namespace Front
             {
                 FileLogger.WriteLogMessage($"MainWindow.OnClientChanged(Client.Wallet=> {client.Wallet} SumBonus=>{client.SumBonus})", eTypeLog.Full);
             };
+
             Global.OnAdminBarCode += (pUser) => { SetConfirm(pUser, false); };
 
             Global.OnReceiptChanged += (pReceipt) =>
             {
-                curReceipt = pReceipt;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("GetBackgroundColor"));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("PriceIsNotZero"));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCheckReturn"));
+                SetCurReceipt(pReceipt);
             };
 
             WaresQuantity = "0";
@@ -230,6 +230,13 @@ namespace Front
             Recalc();
         }
 
+        private void SetCurReceipt(Receipt pReceipt)
+        {
+            curReceipt = pReceipt;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("GetBackgroundColor"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("PriceIsNotZero"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCheckReturn"));
+        }
         public void CreateCustomWindiws()
         {
             customWindow = new CustomWindow();
@@ -259,8 +266,12 @@ namespace Front
         public void GetBarCode(string pBarCode, string pTypeBarCode)
         {
             if (State == eStateMainWindows.WaitInput)
-                Bl.GetBarCode(pBarCode, pTypeBarCode);
-            else
+            { 
+                if (curReceipt?.IsLockChange == false)
+                    Bl.GetBarCode(pBarCode, pTypeBarCode);
+                //else // В данbq чек добавити товар не можна
+
+            } else
             {
                 var u = Bl.GetUserByBarCode(pBarCode);
                 if (u != null)
@@ -283,9 +294,12 @@ namespace Front
             switch (TypeAccessWait)
             {
                 case eTypeAccess.DelWares:
-                    Bl.ChangeQuantity(CurWares, 0);
-                    TypeAccessWait = eTypeAccess.NoDefinition;
-                    SetStateView(eStateMainWindows.WaitInput);
+                    if (curReceipt?.IsLockChange == false)
+                    {
+                        Bl.ChangeQuantity(CurWares, 0);
+                        TypeAccessWait = eTypeAccess.NoDefinition;
+                        SetStateView(eStateMainWindows.WaitInput);
+                    }
                     break;
                 case eTypeAccess.DelReciept:
                     Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
@@ -443,7 +457,12 @@ namespace Front
                     return;
                 }
                 if (Access.GetRight(eTypeAccess.DelWares) || !el.IsConfirmDel)
-                    Bl.ChangeQuantity(el, 0);
+                {
+                    if (curReceipt?.IsLockChange == false)
+                    {
+                        Bl.ChangeQuantity(el, 0);
+                    }
+                }
                 else
                     SetWaitConfirm(eTypeAccess.DelWares, el);
             }
@@ -455,7 +474,10 @@ namespace Front
             if (btn.DataContext is ReceiptWares)
             {
                 ReceiptWares temp = btn.DataContext as ReceiptWares;
-                Bl.ChangeQuantity(temp, temp.Quantity + (btn.Name.Equals("Plus") ? 1 : -1));
+                if (curReceipt?.IsLockChange == false)
+                {
+                    Bl.ChangeQuantity(temp, temp.Quantity + (btn.Name.Equals("Plus") ? 1 : -1));
+                }
             }
         }
 
@@ -478,7 +500,10 @@ namespace Front
                 {
                     temp.Quantity = (decimal)temp.MaxRefundQuantity;
                 }
-                Bl.ChangeQuantity(temp, temp.Quantity);
+                if (curReceipt?.IsLockChange == false)
+                {
+                    Bl.ChangeQuantity(temp, temp.Quantity);
+                }
                 Background.Visibility = Visibility.Collapsed;
                 BackgroundWares.Visibility = Visibility.Collapsed;
             }
@@ -660,7 +685,7 @@ namespace Front
         private void _ButtonPayment(object sender, RoutedEventArgs e)
         {
             if (Global.TypeWorkplace == eTypeWorkplace.СashRegister)
-                SetStateView();
+                SetStateView(eStateMainWindows.ChoicePaymentMethod);
             else
             {
                 var task = Task.Run(() => PrintAndCloseReceipt());

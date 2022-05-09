@@ -337,8 +337,9 @@ namespace SharedLib
                     db.ReplaceWaresReceiptPromotion(Cat2);
                     db.InsertBarCode2Cat(Cat2First);
                     db.RecalcHeadReceipt(pIdReceipt);
-                    var r = bl.ViewReceiptWares(new IdReceiptWares(pIdReceipt, 0), true);//вертаємо весь чек.
-                    Global.OnReceiptCalculationComplete?.Invoke(r,pIdReceipt);
+                    var r = //bl.ViewReceiptWares(new IdReceiptWares(pIdReceipt, 0), true);//вертаємо весь чек.
+                    bl.GetReceiptHead(pIdReceipt, true);
+                    Global.OnReceiptCalculationComplete?.Invoke(r);
                 }
                 else
                 {

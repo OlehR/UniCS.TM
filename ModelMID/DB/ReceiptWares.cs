@@ -13,7 +13,7 @@ namespace ModelMID
         /// <summary>
         /// Код товару
         /// </summary>
-        public int CodeGroup;
+        public int CodeGroup { get; set; }
 
         /// <summary>
         /// Назва товару
@@ -67,7 +67,7 @@ namespace ModelMID
         /// <summary>
         /// Знижка для Касового апарата та для Модерна
         /// </summary>
-        public decimal DiscountEKKA { get { return SumBonus+ SumDiscount + (Priority == 1 ? 0 : (PriceDealer > Price ? (PriceDealer * Quantity - Sum) : 0)); } }
+        public decimal DiscountEKKA { get { return SumBonus + SumDiscount + (Priority == 1 ? 0 : (PriceDealer > Price ? (PriceDealer * Quantity - Sum) : 0)); } }
 
         /// <summary>
         /// Приоритет спрацьованої акції
@@ -233,7 +233,7 @@ namespace ModelMID
         public IEnumerable<WaresReceiptPromotion> ReceiptWaresPromotions;
 
         public bool IsReceiptPromotion { get { return !string.IsNullOrEmpty(GetStrWaresReceiptPromotion); } }
-    
+
         public string GetStrWaresReceiptPromotion
         {
             get
@@ -251,7 +251,7 @@ namespace ModelMID
                 catch (Exception e) { }
                 if (string.IsNullOrEmpty(Res))
                     return Res;
-                return Res?.Substring(0,Res.Length-1);
+                return Res?.Substring(0, Res.Length - 1);
             }
         }
 
@@ -348,9 +348,11 @@ namespace ModelMID
             }
         }
 
-        public bool IsPlus { get { return !IsWeight && ( MaxRefundQuantity==null || Quantity<MaxRefundQuantity ); } } // { get; set; } = false;//
+        public bool IsPlus { get { return Parent?.IsLockChange != true && !IsWeight && (MaxRefundQuantity == null || Quantity < MaxRefundQuantity); } } // { get; set; } = false;//
 
-        public bool IsMinus { get { return !IsWeight && Quantity > 1; } } //{ get; set; } = false;//
+        public bool IsMinus { get { return Parent?.IsLockChange != true && !IsWeight && Quantity > 1; } } //{ get; set; } = false;//
+
+        public bool IsDel { get { return  Parent?.IsLockChange != true; } }
 
         public bool IsConfirmDel { get { return WeightFact != -1; } }
 

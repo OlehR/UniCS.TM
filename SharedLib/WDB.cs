@@ -373,10 +373,9 @@ namespace SharedLib
                 var r = res.FirstOrDefault();
                 if (parWithDetail)
                 {
-                    r.Wares = ViewReceiptWares(parIdReceipt,true);
+                    r.Wares = ViewReceiptWares(r,true);                    
                     r.Payment = GetPayment(parIdReceipt);
                     r.ReceiptEvent = GetReceiptEvent(parIdReceipt);
-
                 }
                 return r;
             }
@@ -394,15 +393,22 @@ namespace SharedLib
         }
         public virtual IEnumerable<ReceiptWares> ViewReceiptWares(IdReceiptWares parIdReceiptWares, bool pIsReceiptWaresPromotion = false)
         {
+            var vReceipt = parIdReceiptWares.Parent as Receipt;
+            IEnumerable<WaresReceiptPromotion> wrp = null;
             var r = this.db.Execute<IdReceiptWares, ReceiptWares>(SqlViewReceiptWares, parIdReceiptWares);
-            if (r != null && pIsReceiptWaresPromotion)
+            if (pIsReceiptWaresPromotion)
             {
-                var wrp = GetReceiptWaresPromotion(parIdReceiptWares);
-                if (wrp != null)
-                    foreach (var el in r)
-                    {
-                        el.ReceiptWaresPromotions = wrp.Where(rr=> ((IdReceiptWares)rr).Equals( (IdReceiptWares)el));
-                    }
+                wrp = GetReceiptWaresPromotion(parIdReceiptWares);
+            }
+            if (r != null)
+            {
+                foreach (var el in r)
+                {
+                    if (vReceipt != null)
+                        el.Parent = vReceipt;
+                    if (wrp != null)
+                        el.ReceiptWaresPromotions = wrp.Where(rr => ((IdReceiptWares)rr).Equals((IdReceiptWares)el));
+                }
             }
             return r;
         }

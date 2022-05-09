@@ -16,19 +16,21 @@ namespace ModelMID
         /// <summary>
         /// Дата Чека
         /// </summary>
-        public DateTime DateReceipt { 
-             get { return (_DateReceipt != default(DateTime) ? _DateReceipt : (_DateReceipt.Date == DTPeriod ? _DateReceipt : DTPeriod)); }
-             set { _DateReceipt =  value.AddTicks(-(value.Ticks % TimeSpan.TicksPerSecond)); ; } }
+        public DateTime DateReceipt
+        {
+            get { return (_DateReceipt != default(DateTime) ? _DateReceipt : (_DateReceipt.Date == DTPeriod ? _DateReceipt : DTPeriod)); }
+            set { _DateReceipt = value.AddTicks(-(value.Ticks % TimeSpan.TicksPerSecond)); ; }
+        }
 
         public eTypeReceipt TypeReceipt { get; set; }
         public Guid TerminalId { get; set; }
         public int CodeClient { get; set; }
         public int CodePattern { get; set; }
         public int NumberCashier { get; set; }
-       /* public string NumberReceipt1C { get {              
-                var d = Convert.ToInt32(Math.Floor((DateReceipt - new DateTime(2019, 01, 01)).TotalDays)).ToString("D4");
-                return Global.PrefixWarehouse + Global.GetNumberCashDeskByIdWorkplace(IdWorkplace) + d + CodeReceipt.ToString("D4"); 
-            } }*/
+        /* public string NumberReceipt1C { get {              
+                 var d = Convert.ToInt32(Math.Floor((DateReceipt - new DateTime(2019, 01, 01)).TotalDays)).ToString("D4");
+                 return Global.PrefixWarehouse + Global.GetNumberCashDeskByIdWorkplace(IdWorkplace) + d + CodeReceipt.ToString("D4"); 
+             } }*/
 
 
         /// <summary>
@@ -54,7 +56,7 @@ namespace ModelMID
         public decimal PercentDiscount { get; set; }
         public decimal SumDiscount { get; set; }
         public decimal SumRest { get; set; }
-        
+
         /// <summary>
         /// Оплачено Готівкою
         /// </summary>
@@ -64,9 +66,11 @@ namespace ModelMID
         /// <summary>
         /// Сума оплачена Кредиткою
         /// </summary>
-        public decimal SumCreditCard { 
-            get { return (Payment != null && Payment.Count() > 0 ? Payment.Sum(el => el.SumPay) : _SumCreditCard);  } 
-            set { _SumCreditCard = value; } }
+        public decimal SumCreditCard
+        {
+            get { return (Payment != null && Payment.Count() > 0 ? Payment.Sum(el => el.SumPay) : _SumCreditCard); }
+            set { _SumCreditCard = value; }
+        }
         /// <summary>
         /// Сума використаних бонусних грн.
         /// </summary>
@@ -85,23 +89,26 @@ namespace ModelMID
 
         public IdReceipt RefundId { get; set; }
 
-        
+
         public string RefundNumberReceipt1C
-        {            
-        get
+        {
+            get
             {
                 if (RefundId == null)
                     return null;
-                var d = Convert.ToInt32(Math.Floor((RefundId.DTPeriod  - new DateTime(2019, 01, 01)).TotalDays)).ToString("D4");
+                var d = Convert.ToInt32(Math.Floor((RefundId.DTPeriod - new DateTime(2019, 01, 01)).TotalDays)).ToString("D4");
                 return PrefixWarehouse + Global.GetNumberCashDeskByIdWorkplace(IdWorkplaceRefund) + d + CodeReceiptRefund.ToString("D4");
             }
         }
-        public int IdWorkplaceRefund { get { return RefundId == null ? 0 : RefundId.IdWorkplace; } set { if (RefundId == null) RefundId = new IdReceipt(); RefundId.IdWorkplace = value;  } }
+        public int IdWorkplaceRefund { get { return RefundId == null ? 0 : RefundId.IdWorkplace; } set { if (RefundId == null) RefundId = new IdReceipt(); RefundId.IdWorkplace = value; } }
         public int CodePeriodRefund { get { return RefundId == null ? 0 : RefundId.CodePeriod; } set { if (RefundId == null) RefundId = new IdReceipt(); RefundId.CodePeriod = value; } }
         public int CodeReceiptRefund { get { return RefundId == null ? 0 : RefundId.CodeReceipt; } set { if (RefundId == null) RefundId = new IdReceipt(); RefundId.CodeReceipt = value; } }
         public IEnumerable<ReceiptWares> Wares { get; set; }
         public IEnumerable<Payment> Payment { get; set; }
         public IEnumerable<ReceiptEvent> ReceiptEvent { get; set; }
+
+        public bool _IsLockChange = false;
+        public bool IsLockChange { get { return _IsLockChange && StateReceipt == eStateReceipt.Pay || StateReceipt == eStateReceipt.Print || StateReceipt == eStateReceipt.Send || SumBonus > 0m; } }
         public Receipt()
         {
             Clear();
@@ -109,7 +116,7 @@ namespace ModelMID
         public Receipt(IdReceipt parId)
         {
             IdWorkplace = parId.IdWorkplace;
-            CodePeriod  = parId.CodePeriod;
+            CodePeriod = parId.CodePeriod;
             CodeReceipt = parId.CodeReceipt;
         }
 
@@ -127,7 +134,6 @@ namespace ModelMID
             CodeCreditCard = 0;
             SumBonus = 0;
             NumberSlip = 0;
-
         }
 
         public void SetIdReceipt(IdReceipt idReceipt)
@@ -136,14 +142,15 @@ namespace ModelMID
             if (Wares != null)
                 foreach (var el in Wares)
                     el.SetIdReceipt(idReceipt);
-            if(Payment!=null)
+            if (Payment != null)
                 foreach (var el in Payment)
                     el.SetIdReceipt(idReceipt);
             if (ReceiptEvent != null)
                 foreach (var el in ReceiptEvent)
                     el.SetIdReceipt(idReceipt);
         }
-            public void SetReceipt(int parCodeReceipt, DateTime parDateReceipt = new DateTime())
+
+        public void SetReceipt(int parCodeReceipt, DateTime parDateReceipt = new DateTime())
         {
             if (parDateReceipt == new DateTime())
                 parDateReceipt = DateTime.Today;
@@ -156,6 +163,7 @@ namespace ModelMID
             //Sort = 0;
             //CodePattern = Global.DefaultCodePatternReceipt;
         }
+
         public IdReceipt GetIdReceipt()
         {
             return (IdReceipt)this; //new IdReceipt() { CodePeriod=this.}

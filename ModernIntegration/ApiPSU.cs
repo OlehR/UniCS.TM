@@ -24,15 +24,15 @@ namespace ModernIntegration
         public ApiPSU()
         {
             Bl = new BL();
-            Global.OnReceiptCalculationComplete += (wareses, pIdReceipt) =>
+            Global.OnReceiptCalculationComplete += (pReceipt) =>
             {
                 FileLogger.WriteLogMessage($"OnReceiptCalculationComplete =>Start", eTypeLog.Expanded);
-                foreach (var el in wareses)
+                foreach (var el in pReceipt?.Wares)
                 {
                     FileLogger.WriteLogMessage($"OnReceiptCalculationComplete Promotion=>{el.GetStrWaresReceiptPromotion.Trim()} \n{el.NameWares} - {el.Price} Quantity=> {el.Quantity} SumDiscount=>{el.SumDiscount}", eTypeLog.Expanded);
                 }
                 
-                OnProductsChanged?.Invoke(wareses.Select(s => GetProductViewModel(s)), Global.GetTerminalIdByIdWorkplace(pIdReceipt.IdWorkplace));
+                OnProductsChanged?.Invoke(pReceipt?.Wares.Select(s => GetProductViewModel(s)), Global.GetTerminalIdByIdWorkplace(pReceipt.IdWorkplace));
                 FileLogger.WriteLogMessage($"OnReceiptCalculationComplete =>End", eTypeLog.Expanded);
             };
 

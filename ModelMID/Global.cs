@@ -10,7 +10,7 @@ namespace ModelMID
     /// </summary>
     public class Global
     {
-        public static Action<IEnumerable<ReceiptWares>, IdReceipt> OnReceiptCalculationComplete { get; set; }
+        public static Action<Receipt> OnReceiptCalculationComplete { get; set; }
         public static Action<SyncInformation> OnSyncInfoCollected { get; set; }
         public static Action<Status> OnStatusChanged { get; set; }
         public static Action<eStateScale> OnChangedStatusScale { get; set; }

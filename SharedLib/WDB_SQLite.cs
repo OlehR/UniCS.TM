@@ -228,14 +228,15 @@ namespace SharedLib
                 if (await res)
                 {
                     //Console.WriteLine(OnReceiptCalculationComplete != null);
-                    var r = ViewReceiptWares(new IdReceiptWares(pIdReceiptWares, 0), true);//вертаємо весь чек.
-                    Global.OnReceiptCalculationComplete?.Invoke(r, pIdReceiptWares);
-                    if (r == null || r.Count() == 0)
+                    var r = //ViewReceiptWares(new IdReceiptWares(pIdReceiptWares, 0), true);//вертаємо весь чек.
+                    ViewReceipt(pIdReceiptWares, true);
+                    Global.OnReceiptCalculationComplete?.Invoke(r);
+                    if (r?.Wares == null || r?.Wares?.Count() == 0)
                         return;
-                    var parW = r.Last();
+                    var parW = r.Wares.Last();
                     if (parW != null)
                     {
-                        var SumAll = r.Sum(d => d.Sum - d.SumDiscount);
+                        var SumAll = r.Wares.Sum(d => d.Sum - d.SumDiscount);
                         _ = VR.SendMessageAsync(parW.IdWorkplace, parW.NameWares, parW.Articl, parW.Quantity, parW.Sum, VR.eTypeVRMessage.AddWares, SumAll);
                     }
                 }

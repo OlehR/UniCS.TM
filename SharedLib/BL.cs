@@ -26,10 +26,10 @@ namespace SharedLib
             ds = new DataSync(this);
             sBL = this;
 
-            Global.OnReceiptCalculationComplete += (pWares, pIdReceipt) =>
+            /*Global.OnReceiptCalculationComplete += (pWares, pIdReceipt) =>
             {
                 Global.OnReceiptChanged?.Invoke(GetReceiptHead(pIdReceipt));
-            };
+            };*/
         }
 
         public static BL GetBL { get { return sBL ?? new BL(); } }
@@ -643,7 +643,7 @@ namespace SharedLib
                     el.Quantity = 0;
                     db.AddWares(el);
                 }
-                Global.OnReceiptCalculationComplete?.Invoke(R.Wares, R);
+                Global.OnReceiptCalculationComplete?.Invoke(R);
                 return R;
             }
             catch (Exception e)
