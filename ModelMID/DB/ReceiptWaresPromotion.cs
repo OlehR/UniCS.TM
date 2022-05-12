@@ -36,6 +36,9 @@ namespace ModelMID
         public int NumberGroup { get; set; }
         
         public string BarCode2Category { get; set; }
+
+        public eTypeWares TypeWares { get; set; }
+
         public WaresReceiptPromotion() : base()
         {
         }

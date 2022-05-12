@@ -143,17 +143,21 @@ namespace ModelMID
         /// </summary>
         Prepare = 0,
         /// <summary>
+        /// Початок оплати (Для блокування дій з чеком)
+        /// </summary>
+        StartPay = 1,
+        /// <summary>
         /// Оплачено
         /// </summary>
-        Pay = 1,
+        Pay = 2,
         /// <summary>
         /// Надруковано
         /// </summary>
-        Print = 2,
+        Print = 8,
         /// <summary>
         /// Відправлено в 1С
         /// </summary>
-        Send = 3
+        Send = 9
     }
 
     public enum eTypeReceipt
@@ -323,5 +327,29 @@ namespace ModelMID
         Yes = 0 // Є права на зазначену операцію.		
     }
 
+    public enum eTypeWares
+    {
+        /// <summary>
+        /// Звичайний товар
+        /// </summary>
+        Ordinary=0,
+        /// <summary>
+        /// Алкоголь
+        /// </summary>
+        Alcohol=1,
+        /// <summary>
+        /// Тютюн
+        /// </summary>
+        Tobacco=2,
+        /// <summary>
+        /// Тютюн з включеним в МРЦ акцизом
+        /// </summary>
+        TobaccoNoExcise = 3,
+        /// <summary>
+        /// Пиво (Ще не використавується)
+        /// </summary>
+        Beer = 4
+    }
+    
 
 }

@@ -76,10 +76,10 @@ namespace ModernIntegration
             if (receiptWares.TypeWares > 0 || receiptWares.LimitAge > 0)
                 varTags.Add(new Tag() { Key = "AgeRestricted", Id = 0 });
             //Якщо алкоголь обмеження по часу
-            if (receiptWares.TypeWares == 1)
+            if (receiptWares.TypeWares == eTypeWares.Alcohol)
                 varTags.Add(new Tag() { Key = "TimeRestricted", Id = 1, RuleValue = "{\"Start\":\"" + Global.AlcoholTimeStart + "\",\"Stop\":\"" + Global.AlcoholTimeStop + "\"}" });
             //Якщо алкоголь ввід Марки.
-            if (receiptWares.TypeWares == 1)
+            if (receiptWares.TypeWares == eTypeWares.Alcohol)
                 varTags.Add(new Tag() { Key = "NeedExcise", Id = 2 });
 
             // Якщо немає ваги відключаємо її контроль 
@@ -123,7 +123,7 @@ namespace ModernIntegration
                 TotalRows = receiptWares.TotalRows, //Сортування популярного.
                 IsProductOnProcessing = false, //
                 ///CategoryId=   !!!TMP Групи 1 рівня.
-                TaxGroup = Global.GetTaxGroup(receiptWares.TypeVat, receiptWares.TypeWares),
+                TaxGroup = Global.GetTaxGroup(receiptWares.TypeVat,(int) receiptWares.TypeWares),
                 Barcode = receiptWares.TypeWares > 0 ? receiptWares.BarCode : null,
                 //FullPrice = receiptWares.Sum
                 RefundedQuantity = receiptWares.RefundedQuantity,

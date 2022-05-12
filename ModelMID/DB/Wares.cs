@@ -46,7 +46,7 @@ namespace ModelMID
         /// <summary>
         /// 0-звичайний,1-алкоголь,2-тютюн
         /// </summary>
-        public int TypeWares { get; set; }
+        public eTypeWares TypeWares { get; set; }
         public decimal WeightBrutto { get; set; }
         public decimal WeightFact { get; set; }
         public decimal WeightDelta { get; set; }

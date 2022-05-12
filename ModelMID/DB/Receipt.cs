@@ -26,12 +26,7 @@ namespace ModelMID
         public Guid TerminalId { get; set; }
         public int CodeClient { get; set; }
         public int CodePattern { get; set; }
-        public int NumberCashier { get; set; }
-        /* public string NumberReceipt1C { get {              
-                 var d = Convert.ToInt32(Math.Floor((DateReceipt - new DateTime(2019, 01, 01)).TotalDays)).ToString("D4");
-                 return Global.PrefixWarehouse + Global.GetNumberCashDeskByIdWorkplace(IdWorkplace) + d + CodeReceipt.ToString("D4"); 
-             } }*/
-
+        public ulong NumberCashier { get; set; }
 
         /// <summary>
         /// 0- готується,1- оплачено,2- фіскалізовано,3 - Send
@@ -75,8 +70,9 @@ namespace ModelMID
         /// Сума використаних бонусних грн.
         /// </summary>
         public decimal SumBonus { get; set; }
-        public Int64 CodeCreditCard { get; set; }
-        public Int64 NumberSlip { get; set; }
+
+        public long CodeCreditCard { get; set; }
+        public long NumberSlip { get; set; }
 
         public DateTime DateCreate { get; set; }
         public long UserCreate { get; set; }

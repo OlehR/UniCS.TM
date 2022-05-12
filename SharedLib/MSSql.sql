@@ -486,7 +486,7 @@ GROUP BY pw.doc_promotion_RRef
   AND wh_ex.doc_promotion_RRef IS null
 
 [SqlGetMRC]
- SELECT code_wares as CodeWares,Price  FROM dbo.V1C_MRC where Code_Warehouse = @CodeWarehouse;
+ SELECT code_wares as CodeWares,Price,Type_Wares as TypeWares  FROM dbo.V1C_MRC where Code_Warehouse = @CodeWarehouse;
 
 [SqlSalesBan]
 SELECT CODE_GROUP_WARES AS CodeGroupWares, amount

@@ -26,13 +26,16 @@ namespace Front
     public class Price
     {
         //public static bool isFirst = true;
-        public Price(decimal pPrice, bool pIsEnable) //, bool pIsEnable = false
+        public Price(decimal pPrice, bool pIsEnable,eTypeWares pTypeWares) //, bool pIsEnable = false
         {
             price = pPrice;
+            IsEnable = pIsEnable;
+            TypeWares = pTypeWares;
             //  IsEnable = isFirst;
             //if(isFirst)
             //  { isFirst = false; }             
         }
+        public eTypeWares TypeWares { get; set; }
         public decimal price { get; set; }
         public string StrPrice { get { return $"{price.ToString("n2", CultureInfo.InvariantCulture)} ₴"; } }
         public bool IsEnable { get; set; }
@@ -374,7 +377,7 @@ namespace Front
                             break;
                         case eStateMainWindows.WaitInputPrice:
                             TypeAccessWait = eTypeAccess.ChoicePrice;
-                            var rrr = new ObservableCollection<Price>(CurWares.Prices.OrderByDescending(r => r).Select(r => new Price(r, Access.GetRight(TypeAccessWait))));
+                            var rrr = new ObservableCollection<Price>(CurWares.Prices.OrderByDescending(r => r).Select(r => new Price(r.Price, Access.GetRight(TypeAccessWait),r.TypeWares)));
                             rrr.First().IsEnable = true;
 
                             Prices.ItemsSource = rrr;//new ObservableCollection<Price>(rr);
@@ -624,7 +627,7 @@ namespace Front
 
                 if (CurWares != null)
                 {
-                    if (CurWares.TypeWares == 1)
+                    if (CurWares.TypeWares == eTypeWares.Alcohol)
                     {
                         SetStateView(eStateMainWindows.WaitExciseStamp);
                         return;
@@ -638,12 +641,11 @@ namespace Front
                     {
                         if (CurWares.Prices.Count() > 1)
                         {
-
                             SetStateView(eStateMainWindows.WaitInputPrice);
                         }
                         else
                             if (CurWares.Prices.Count() == 1)
-                            Bl.AddWaresCode(curReceipt, pCodeWares, pCodeUnit, pQuantity, CurWares.Prices.First());
+                            Bl.AddWaresCode(curReceipt, pCodeWares, pCodeUnit, pQuantity, CurWares.Prices.First().Price);
                     }
 
                 }

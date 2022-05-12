@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ModelMID.DB;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -193,7 +194,7 @@ namespace ModelMID
         /// <summary>
         /// 0-звичайний,1-алкоголь,2-тютюн,3-легкий алкоголь 
         /// </summary>
-        public int TypeWares { get; set; }
+        public eTypeWares TypeWares { get; set; }
 
         /// <summary>
         /// Штрихкод 2 категорії
@@ -244,7 +245,7 @@ namespace ModelMID
                     if (ReceiptWaresPromotions != null)
                         foreach (var el in ReceiptWaresPromotions)
                         {
-                            var name = el.TypeDiscount == eTypeDiscount.Price ? (TypeWares == 2 ? $"Ціна =>{Math.Round(el.Price / 1.05m, 2)}*5%={el.Price}" : $"Ціна => {el.Price}") : (string.IsNullOrEmpty(el.NamePS) ? (string.IsNullOrEmpty(el.BarCode2Category) ? "" : el.BarCode2Category.Substring(3, 2) + "%") : el.NamePS);
+                            var name = el.TypeDiscount == eTypeDiscount.Price ? (TypeWares == eTypeWares.Tobacco ? $"Ціна =>{Math.Round(el.Price / 1.05m, 2)}*5%={el.Price}" : $"Ціна => {el.Price}") : (string.IsNullOrEmpty(el.NamePS) ? (string.IsNullOrEmpty(el.BarCode2Category) ? "" : el.BarCode2Category.Substring(3, 2) + "%") : el.NamePS);
                             Res += $"{name} - {el.Quantity} - {el.Sum}\n";
                         }
                 }
@@ -272,16 +273,16 @@ namespace ModelMID
         /// Код УКТЗЕТ
         /// </summary>
         public string CodeUKTZED { get; set; }
-        public bool IsUseCodeUKTZED { get { return TypeWares == 1 || TypeWares == 2; } }
+        public bool IsUseCodeUKTZED { get { return TypeWares >0; } }
 
-        public bool IsMultiplePrices { get { return Prices != null && Prices.Count() > 1 && TypeWares == 2; } }
+        public bool IsMultiplePrices { get { return Prices != null && Prices.Count() > 1 && TypeWares == eTypeWares.Tobacco; } }
 
         /// <summary>
         /// Вікові обмеження (Піротехніка)
         /// </summary>
         public decimal LimitAge { get; set; }
 
-        public IEnumerable<decimal> Prices;
+        public IEnumerable<MRC> Prices;
 
         /// <summary>
         /// PLU - кавомашини
@@ -297,7 +298,7 @@ namespace ModelMID
         /// </summary>
         public int CodeDirection { get; set; }
 
-        public string GetPrices { get { return Prices == null ? null : string.Join(";", Prices.Select(n => n.ToString(CultureInfo.InvariantCulture)).ToArray()); } }
+        public string GetPrices { get { return Prices == null ? null : string.Join(";", Prices.Select(n => n.Price.ToString(CultureInfo.InvariantCulture)).ToArray()); } }
         public ReceiptWares()
         {
             Clear();
@@ -339,9 +340,9 @@ namespace ModelMID
         }
         public void RecalcTobacco()
         {
-            if (TypeWares == 2 && Prices != null && Prices.Count() == 1)
+            if (TypeWares == eTypeWares.Tobacco && Prices != null && Prices.Count() == 1)
             {
-                Price = 1.05M * Prices.First();
+                Price = 1.05M * Prices.First().Price;
                 PriceDealer = Price;
                 Priority = 1;
                 ParPrice1 = 999999;

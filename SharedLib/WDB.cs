@@ -261,7 +261,7 @@ namespace SharedLib
             foreach (var el in Wares)
             {
                 el.AdditionalWeights = db.Execute <object ,decimal> (SqlAdditionalWeightsWares,new { CodeWares=el.CodeWares});
-                el.Prices = db.Execute<object, decimal>(SqlGetPricesMRC, new { CodeWares = el.CodeWares });
+                el.Prices = db.Execute<object, MRC>(SqlGetPricesMRC, new { CodeWares = el.CodeWares });
             }
             return Wares;
         }

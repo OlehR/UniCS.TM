@@ -164,7 +164,7 @@ namespace Front.Equipments
                         foreach (var el in pR.Wares)
                         {
                             SetStatus(eStatusRRO.AddWares, el.NameWares);
-                            var TaxGroup = Global.GetTaxGroup(el.TypeVat, el.TypeWares);
+                            var TaxGroup = Global.GetTaxGroup(el.TypeVat, (int)el.TypeWares);
                             int TG1 = 0, TG2 = 0;
                             int.TryParse(TaxGroup.Substring(0, 1), out TG1);
                             if (TaxGroup.Length > 1)
@@ -173,7 +173,7 @@ namespace Front.Equipments
                             if (!String.IsNullOrEmpty(el.ExciseStamp))
                                 FP.ExciseStamp = el.ExciseStamp;
 
-                            FP.Sale(el.CodeWares, Name, Convert.ToInt32(Global.GetTaxGroup(el.TypeVat, el.TypeWares)), 1, Convert.ToDouble(el.Price), Convert.ToDouble(el.Quantity), 0, Convert.ToDouble(el.SumDiscount), true, OperatorPass);
+                            FP.Sale(el.CodeWares, Name, Convert.ToInt32(Global.GetTaxGroup(el.TypeVat, (int)el.TypeWares)), 1, Convert.ToDouble(el.Price), Convert.ToDouble(el.Quantity), 0, Convert.ToDouble(el.SumDiscount), true, OperatorPass);
                             //Convert.ToInt32((el.CodeUnit == Global.WeightCodeUnit ? 1000 : 1) * el.Quantity), Convert.ToInt32(el.Price * 100), el.CodeUnit == Global.WeightCodeUnit ? 1 : 0, TG1, TG2, el.CodeWares, (el.DiscountEKKA > 0 ? 0 : -1), null, Convert.ToInt32(el.DiscountEKKA), null) != 1))
 
                             if (!CheckResult())

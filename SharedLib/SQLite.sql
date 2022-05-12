@@ -22,6 +22,7 @@ alter TABLE WARES_RECEIPT  add Excise_Stamp   TEXT;--Ver=>0
 alter TABLE payment    add TransactionId TEXT;--Ver=>3
 alter TABLE WARES_RECEIPT  add Max_Refund_Quantity NUMBER;--Ver=>4
 alter TABLE WARES_RECEIPT  add SUM_BONUS      NUMBER   NOT NULL DEFAULT 0;--Ver=>5
+alter TABLE WARES_RECEIPT_PROMOTION  add Type_Wares  INTEGER  NOT NULL  DEFAULT (0);--Ver=>6
 
 [SqlUpdateMID]
 --Ver=>0;Reload;
@@ -30,6 +31,7 @@ alter TABLE PROMOTION_SALE_DEALER add PRIORITY INTEGER NOT NULL DEFAULT 1;--Ver=
 alter TABLE wares add Limit_Age NUMBER;--Ver=>0
 alter TABLE wares add PLU INTEGER;--Ver=>0
 alter TABLE wares add Code_Direction INTEGER;--Ver=>0;
+alter TABLE wares add Type_Wares INTEGER  NOT NULL DEFAULT 2; --Ver=>6;
 
 [SqlConfig]
 SELECT Data_Var  FROM CONFIG  WHERE UPPER(Name_Var) = UPPER(trim(@NameVar));
@@ -297,11 +299,12 @@ where   id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receip
 delete from WARES_RECEIPT_PROMOTION where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt
         and length(@BarCode2Category)=13 and BARCODE_2_CATEGORY=@BarCode2Category;
 replace into WARES_RECEIPT_PROMOTION (id_workplace, code_period, code_receipt, code_wares, code_unit,
-  quantity, sum, code_ps,NUMBER_GROUP,BARCODE_2_CATEGORY,TYPE_DISCOUNT) 
+  quantity, sum, code_ps,NUMBER_GROUP,BARCODE_2_CATEGORY,TYPE_DISCOUNT,Type_Wares) 
  values (
   @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit,
   @Quantity, @Sum, @CodePS,@NumberGroup, @BarCode2Category,@TypeDiscount --,(select COALESCE(max(sort),0)+1 from wares_receipt  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt)
-  );
+ ,@TypeWares 
+ );
  update WARES_RECEIPT 
 set price = ifnull( (select  max( (0.000+wrp.sum)/wrp.QUANTITY)
  from WARES_RECEIPT_PROMOTION wrp
@@ -370,7 +373,7 @@ SELECT u.CODE_USER code_user, p.NAME_FOR_PRINT name_user, u.login login, u.PassW
  select p.PRICE_DEALER as PriceDealer from  PRICE p where p. CODE_DEALER = @CodeDealer and p.CODE_WARES = @CodeWares
 
 [SqlGetPricesMRC]
-select PRICE as Price from MRC where CODE_WARES = @CodeWares order by PRICE desc ;
+select CODE_WARES as CodeWares,PRICE as Price,Type_Wares as TypeWares from MRC where CODE_WARES = @CodeWares order by PRICE desc ;
 
 [SqlGetPrice]
 With ExeptionPS as 
@@ -677,7 +680,8 @@ CREATE TABLE WARES_RECEIPT_PROMOTION (
     SUM            NUMBER   NOT NULL,
 	CODE_PS        INTEGER  NOT NULL,
     NUMBER_GROUP   INTEGER  NOT NULL,
-	BARCODE_2_CATEGORY        TEXT NULL
+	BARCODE_2_CATEGORY        TEXT NULL,
+    Type_Wares	   INTEGER NOT NULL DEFAULT (0)
 	);
 CREATE UNIQUE INDEX id_WARES_RECEIPT_PROMOTION ON WARES_RECEIPT_PROMOTION(CODE_RECEIPT,CODE_WARES,CODE_PS,NUMBER_GROUP,ID_WORKPLACE,CODE_PERIOD,BARCODE_2_CATEGORY);
 
@@ -1004,7 +1008,8 @@ CREATE TABLE ADD_WEIGHT (
 
 CREATE TABLE MRC ( 
     CODE_WARES     INTEGER  NOT NULL,
-    PRICE          NUMBER   NOT NULL
+    PRICE          NUMBER   NOT NULL,
+    Type_Wares	   INTEGER NOT NULL DEFAULT 2
 );
 
 CREATE TABLE USER (
@@ -1128,7 +1133,7 @@ Select min(case when CODE_DEALER=-888888  then PRICE_DEALER else null end) as Mi
                         (@IdWorkplace, @CodePeriod, @CodeReceipt, @TypePay, @SumPay, @SumExt, @NumberTerminal, @NumberReceipt, @CodeAuthorization, @NumberSlip, @NumberCard, @PosPaid, @PosAddAmount ,@CardHolder,@IssuerName, @Bank,@TransactionId, @DateCreate);
 
 [SqlReplaceMRC]
- replace into  MRC	(Code_Wares, Price) values  (@CodeWares, @Price);
+ replace into  MRC	(Code_Wares, Price,Type_Wares) values  (@CodeWares, @Price,@TypeWares);
 
 [SqlReplaceUser] 
 replace into User (CODE_USER, NAME_USER,  BAR_CODE,Type_User, LOGIN, PASSWORD) values (@CodeUser,@NameUser,@BarCode,@TypeUser, @Login,@PassWord);
@@ -1278,7 +1283,7 @@ delete from RECEIPT_Event where id_workplace=@IdWorkplace and  code_period =@Cod
 
 [SqlGetReceiptWaresPromotion]
 select id_workplace IdWorkplace, code_period CodePeriod, code_receipt CodeReceipt,code_wares as CodeWares,Code_unit as CodeUnit,quantity as Quantity,sum as Sum,wrp.Code_Ps as CodePs ,
-ps.NAME_PS as NamePS, Number_Group as NumberGroup, BarCode_2_Category as  BarCode2Category,TYPE_DISCOUNT as TypeDiscount
+ps.NAME_PS as NamePS, Number_Group as NumberGroup, BarCode_2_Category as  BarCode2Category,TYPE_DISCOUNT as TypeDiscount,Type_Wares as TypeWares
      from WARES_RECEIPT_PROMOTION wrp 
      left join PROMOTION_SALE ps on ps.CODE_PS=wrp.CODE_PS
      where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt

@@ -124,7 +124,7 @@ namespace Front.Equipments.Implementation
                     // M304.NextZNumber;
                     foreach (var el in pR.Wares)
                     {
-                        var TaxGroup = Global.GetTaxGroup(el.TypeVat, el.TypeWares);
+                        var TaxGroup = Global.GetTaxGroup(el.TypeVat, (int)el.TypeWares);
                         int TG1 = 0, TG2 = 0;
                         int.TryParse(TaxGroup.Substring(0, 1), out TG1);
                         if (TaxGroup.Length > 1)
