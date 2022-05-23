@@ -12,7 +12,11 @@ namespace ModelMID
     public class ReceiptWares : IdReceiptWares
     {
         /// <summary>
-        /// Код товару
+        /// Код компанії (важливо коли кілька підприємців)
+        /// </summary>
+        public int CodeCompany { get; set; }
+        /// <summary>
+        /// Код групи товару
         /// </summary>
         public int CodeGroup { get; set; }
 

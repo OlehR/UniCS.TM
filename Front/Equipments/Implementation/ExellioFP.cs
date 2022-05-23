@@ -227,7 +227,7 @@ namespace Front.Equipments
         override public eStateEquipment TestDevice()
         {
             //!!!TMP Треба розібратись про реальну поведінку з помилками.
-            eStateEquipment Res = eStateEquipment.Ok;
+            eStateEquipment Res = eStateEquipment.On;
             if (FpOpenPort())
             {
 

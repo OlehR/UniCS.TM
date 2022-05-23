@@ -22,7 +22,7 @@ namespace Front.Equipments.Implementation
                 FN = pConfiguration["Devices:pRRO_WebCheck:FN"];
               OperatorName = pConfiguration["Devices:pRRO_WebCheck:OperatorID"];
                 // !!!TMP Перенести асинхронно бо дуже довго
-                bool r = WCh.Initialization($"<InputParameters> <Parameters FN = \"{FN}\"/> </InputParameters>");
+                bool r = WCh.Initialization($"  ");
                 var rr = WCh.StatusBarXML();
             }catch(Exception e)
             {

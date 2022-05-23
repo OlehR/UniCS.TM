@@ -39,7 +39,7 @@ namespace Front.Equipments
         public override eStateEquipment TestDevice() 
         {
             var r=bst.TestDevice().Result;
-            State = r==ModernExpo.SelfCheckout.Entities.Enums.Device.DeviceConnectionStatus.Enabled ? eStateEquipment.Ok : eStateEquipment.Error;
+            State = r==ModernExpo.SelfCheckout.Entities.Enums.Device.DeviceConnectionStatus.Enabled ? eStateEquipment.On : eStateEquipment.Error;
             return State;
         }
 

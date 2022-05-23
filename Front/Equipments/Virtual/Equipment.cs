@@ -2,11 +2,16 @@
 using Front.Equipments.Virtual;
 using Microsoft.Extensions.Configuration;
 using System;
+using Utils;
 
 namespace Front.Equipments
 {
     public class Equipment
     {
+        // <summary>
+        // Компанія для обладнання Важливо для РРО  (Кілька підприємців)
+        // </summary>
+        //public int Company { get; set; }
         public string Name { get; set; }
         public bool IsСritical { get; set; } = true;
         public bool IsReady { get; set; } = false;
@@ -22,10 +27,18 @@ namespace Front.Equipments
         protected Action<string, string> Logger = null;
         protected Action<StatusEquipment> ActionStatus;
 
-        public Action<eStateEquipment, eModelEquipment> SetState { get; set; }
+        //public Action<eStateEquipment, eModelEquipment> SetState { get; set; }
 
         private eStateEquipment _State = eStateEquipment.Off;
-        public eStateEquipment State { get { return _State; } set { _State = value; SetState?.Invoke(value, Model); } }
+        public eStateEquipment State { get { return _State; } set
+            {
+                if (_State != value || value != eStateEquipment.On)
+                { _State = value;
+                    ActionStatus?.Invoke(new StatusEquipment(Model, _State));
+                    FileLogger.WriteLogMessage($"Equipment.SetState( {_State}) {Model}");
+                }
+            }
+        }
 
         public Equipment() { }
 
@@ -51,7 +64,7 @@ namespace Front.Equipments
 
         public virtual eStateEquipment TestDevice() { throw new NotImplementedException(); }
         public virtual string GetDeviceInfo() { throw new NotImplementedException(); }
-        public virtual void Enable() { State = eStateEquipment.Ok; }
+        public virtual void Enable() { State = eStateEquipment.On; }
         public virtual void Disable() { State = eStateEquipment.Off; }
     }
 }

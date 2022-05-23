@@ -147,9 +147,9 @@ namespace Front.Equipments
         /// Треба зменшити кількість таких статусів.
         /// </summary>
         Other
-    }    
+    }
 
-    public enum eStateEquipment { Ok, Init, Off, Error }
+    public enum eStateEquipment { On = 0, Init, Off, Error, Process }
 
     /// <summary>
     /// Типи обладнання (ваги, касові апарати)
@@ -188,11 +188,11 @@ namespace Front.Equipments
 
     }
 
-   
+
     //public enum eDirectMoveCash { In=1,Out=0}
 
-    public enum eTypeOperarionRRO 
-    { MoveCash,PrintReceipt }
+    public enum eTypeOperarionRRO
+    { MoveCash, PrintReceipt }
 
     static class ModelMethods
     {
@@ -254,7 +254,7 @@ namespace Front.Equipments
                 case eStatusPos.CorrectTransaction:
                 case eStatusPos.PinInputWaitKey:
                 case eStatusPos.PinInputBackspacePressed:
-                case eStatusPos.PinInputKeyPressed:                
+                case eStatusPos.PinInputKeyPressed:
                     return ePosTypeError.NoError;
 
                 case eStatusPos.WrongPIN:
@@ -278,81 +278,134 @@ namespace Front.Equipments
                     return ePosTypeError.PosTerminal;
                 default:
                     return ePosTypeError.Other;
-/*
-                    EMVMultiAids = 8,
-         
-        SuccessfullyFulfilled = 19,
-         
-        AuthorizationRejectedNoPayment = 21,
-        
-         = 25,
-        EMVDecline = 26,
-        TransactionLogIsFullNeedCloseBatch = 27,
-        NoConnectionWithHost = 28,
-         = 29,
-        ErrorCryptoKeys = 30,
-        CardReaderIsNotConnected = 31,
-        TransactionIsAlreadyComplete = 32,
-        ApprovedAndCompleted = 33,
-        TheCardIsInOrderThereIsNoReasonToRefuse = 34,
-        AuthorizationDenied = 35,
-        UnregisteredTradingPoint = 36,
-        AuthorizationRejectedWithdrawTheCardAtTheBanksRequest = 37,
-        CommonErrorNeedToRepeat = 38,
-        InvalidTransactionNetworkErrorNeedToRepeat = 39,
-         = 40,
-         = 41,
-        BankNodeIsNotFoundOnTheNetwork = 42,
-        CanceledByTheClient = 43,
-        ActionsNotCompletedDidNotMatchData = 44,
-        NoResponseFileIsTemporarilyUnavailable = 45,
-        WrongFormatNeedToRepeat = 46,
-        TheIssuerIsNotFoundInThePaymentSystem = 47,
-        PartiallyCompleted = 48,
-        TheValidityPeriodOfTheCardHasExpiredTheCardHasBeenWithdrawnAtTheBanksRequest = 49,
-        ForbiddenCardRemove = 50,
-        WithdrawnByTheIssuerRemovedFromTheCardAndContactedByTheAcquirer = 51,
-        ThereAreNoAttemptsToEnterThePINRemoveTheCard = 52,
-         = 53,
-         = 54,
-         = 55,
-        NoSettlementSpecifiedClienAccount = 56,
-        ThereIsNoCumulativeAccountOfTheClient = 57,
-        TheExpirationDateOfTheCardExpires = 58,
-        ThisTransactionTypeIsNotProvidedForTheGivenCard = 59,
-        ThisTypeOfTransactionIsNotProvidedForPOSTerminal = 60,
-        TheAamountOfAuthorizationExceededTheExpenseLimitOnTheCard = 61,
-        IncorrectServiceCodeForbiddenCardCanNotBeSeized = 62,
-        TheAmountOfTheCancellationAuthorizationIsDifferentFromTheAmountOfTheOriginalAuthorization = 63,
-        TheExpenseLimitExpiredOnTheAccount = 64,
-        TheCardIsVoidCanNotBeSeized = 65,
-        CardIsWithdrawnFromATM = 66,
-        ItIsTooLateToReceiveAnAnswerFromTheNetworkItIsNecessaryToRepeat = 67,
-        TheNumberOfIncorrectlyEnteredPINsExceededTheAmountDischarged = 68,
-        ActionsAreNotCompletedIncompleteDataItIsNecessaryToRollbackOrRepeat = 69,
-        NoAccount = 70,
-        AlreadyCanceledWhenTurnedOn = 71,
-        GeneralNetworkErrorIncorrectData = 72,
-        RemoteNetworkErrorOrPINEncryption = 73,
-        TimeoutWhenConnectedWithTheIssuersNodeOrWrongCVVOrCacheIsNotApprovedTheCashbackSumLimitIsExceeded = 74,
-        ThePINVerificationTransactionIsUnsuccessfulNetworkError = 75,
-        PINCanNotBeCheckedNetworkError = 76,
-        PINEncryptionErrorNetworkError = 77,
-        IdentificationErrorIsANetworkError = 78,
-        NoConnectionWithTheBankByTheIssuerNetworkError = 79,
-        UnsuccessfulRequestRoutingIsNotPossibleNetworkError = 80,
-        TheTransactionCanNotBeCompletedTheIssuerDeclineAuthorizationDueToAViolationOfTheRules = 81,
-        DuplicationOfTransmissionNetworkError = 82,
-        GeneralSystemMalfunction = 83,
-        UnableToSendEncryptedMessage = 84
+                    /*
+                                        EMVMultiAids = 8,
+
+                            SuccessfullyFulfilled = 19,
+
+                            AuthorizationRejectedNoPayment = 21,
+
+                             = 25,
+                            EMVDecline = 26,
+                            TransactionLogIsFullNeedCloseBatch = 27,
+                            NoConnectionWithHost = 28,
+                             = 29,
+                            ErrorCryptoKeys = 30,
+                            CardReaderIsNotConnected = 31,
+                            TransactionIsAlreadyComplete = 32,
+                            ApprovedAndCompleted = 33,
+                            TheCardIsInOrderThereIsNoReasonToRefuse = 34,
+                            AuthorizationDenied = 35,
+                            UnregisteredTradingPoint = 36,
+                            AuthorizationRejectedWithdrawTheCardAtTheBanksRequest = 37,
+                            CommonErrorNeedToRepeat = 38,
+                            InvalidTransactionNetworkErrorNeedToRepeat = 39,
+                             = 40,
+                             = 41,
+                            BankNodeIsNotFoundOnTheNetwork = 42,
+                            CanceledByTheClient = 43,
+                            ActionsNotCompletedDidNotMatchData = 44,
+                            NoResponseFileIsTemporarilyUnavailable = 45,
+                            WrongFormatNeedToRepeat = 46,
+                            TheIssuerIsNotFoundInThePaymentSystem = 47,
+                            PartiallyCompleted = 48,
+                            TheValidityPeriodOfTheCardHasExpiredTheCardHasBeenWithdrawnAtTheBanksRequest = 49,
+                            ForbiddenCardRemove = 50,
+                            WithdrawnByTheIssuerRemovedFromTheCardAndContactedByTheAcquirer = 51,
+                            ThereAreNoAttemptsToEnterThePINRemoveTheCard = 52,
+                             = 53,
+                             = 54,
+                             = 55,
+                            NoSettlementSpecifiedClienAccount = 56,
+                            ThereIsNoCumulativeAccountOfTheClient = 57,
+                            TheExpirationDateOfTheCardExpires = 58,
+                            ThisTransactionTypeIsNotProvidedForTheGivenCard = 59,
+                            ThisTypeOfTransactionIsNotProvidedForPOSTerminal = 60,
+                            TheAamountOfAuthorizationExceededTheExpenseLimitOnTheCard = 61,
+                            IncorrectServiceCodeForbiddenCardCanNotBeSeized = 62,
+                            TheAmountOfTheCancellationAuthorizationIsDifferentFromTheAmountOfTheOriginalAuthorization = 63,
+                            TheExpenseLimitExpiredOnTheAccount = 64,
+                            TheCardIsVoidCanNotBeSeized = 65,
+                            CardIsWithdrawnFromATM = 66,
+                            ItIsTooLateToReceiveAnAnswerFromTheNetworkItIsNecessaryToRepeat = 67,
+                            TheNumberOfIncorrectlyEnteredPINsExceededTheAmountDischarged = 68,
+                            ActionsAreNotCompletedIncompleteDataItIsNecessaryToRollbackOrRepeat = 69,
+                            NoAccount = 70,
+                            AlreadyCanceledWhenTurnedOn = 71,
+                            GeneralNetworkErrorIncorrectData = 72,
+                            RemoteNetworkErrorOrPINEncryption = 73,
+                            TimeoutWhenConnectedWithTheIssuersNodeOrWrongCVVOrCacheIsNotApprovedTheCashbackSumLimitIsExceeded = 74,
+                            ThePINVerificationTransactionIsUnsuccessfulNetworkError = 75,
+                            PINCanNotBeCheckedNetworkError = 76,
+                            PINEncryptionErrorNetworkError = 77,
+                            IdentificationErrorIsANetworkError = 78,
+                            NoConnectionWithTheBankByTheIssuerNetworkError = 79,
+                            UnsuccessfulRequestRoutingIsNotPossibleNetworkError = 80,
+                            TheTransactionCanNotBeCompletedTheIssuerDeclineAuthorizationDueToAViolationOfTheRules = 81,
+                            DuplicationOfTransmissionNetworkError = 82,
+                            GeneralSystemMalfunction = 83,
+                            UnableToSendEncryptedMessage = 84
 
 
-*/
+                    */
 
-               
+
             }
-            
+
+        }
+
+
+
+        /// <summary>
+        /// треба обробити всі статуси.
+        /// </summary>
+        /// <param name="pStatus"></param>
+        /// <returns></returns>
+        public static eStateEquipment GetStateEquipment(this eStatusPos pStatus)
+        {
+            switch (pStatus)
+            {
+                case eStatusPos.StatusCodeIsNotAvailable:
+                    return eStateEquipment.Process;
+                case eStatusPos.CardWasRead:
+                case eStatusPos.UsedAChipCard:
+                case eStatusPos.AuthorizationInProgress:
+                case eStatusPos.WaitingForCashierAction:
+                case eStatusPos.PrintingReceipt:
+                case eStatusPos.PinEntryIsNeeded:
+                case eStatusPos.CardWasRemoved:
+                case eStatusPos.WaitingForCard:
+                case eStatusPos.InProgress:
+                case eStatusPos.CorrectTransaction:
+                case eStatusPos.PinInputWaitKey:
+                case eStatusPos.PinInputBackspacePressed:
+                case eStatusPos.PinInputKeyPressed:
+                    return eStateEquipment.Process;
+
+                case eStatusPos.WrongPIN:
+                case eStatusPos.NotEnoughMoney:
+                case eStatusPos.TransactionCanceledByUser:
+                case eStatusPos.NoClientsCreditAccount:
+                case eStatusPos.CardIslostRemoved:
+                case eStatusPos.CardIsStolenRemoved:
+                case eStatusPos.IncorrectAmountEntered:
+                case eStatusPos.InvalidCardNumber:
+                    return eStateEquipment.Process;
+
+
+                case eStatusPos.ErrorConnectingWithTerminal:
+                case eStatusPos.TerminalReturnedAnError:
+                case eStatusPos.ErrorOpeningCOMPort:
+                case eStatusPos.NeedToOpenCOMPort:
+                case eStatusPos.Error:
+                case eStatusPos.GeneralError:
+                case eStatusPos.NoPaperInPrinter:
+                    return eStateEquipment.Error;
+                default:
+                    return eStateEquipment.On;
+            }
+
         }
     }
-
-   }
+}
+   

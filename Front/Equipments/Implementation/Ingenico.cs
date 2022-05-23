@@ -56,7 +56,7 @@ namespace Front.Equipments
         public override eStateEquipment TestDevice()
         {
             EquipmentIngenico.TestDeviceSync();
-            return eStateEquipment.Ok;
+            return eStateEquipment.On;
         }
 
         Payment PaymentResultModelToPayment(PaymentResultModel pRP, ModelMID.eTypePay pTypePay = ModelMID.eTypePay.Card)

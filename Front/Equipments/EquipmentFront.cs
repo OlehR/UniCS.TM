@@ -35,6 +35,12 @@ namespace Front
         public Equipment BankTerminal2 { get { return GetBankTerminal?.Skip(1).FirstOrDefault(); } }
         // eTypeAccess OperationWaitAccess { get; set; } = eTypeAccess.NoDefinition;
 
+        /// <summary>
+        /// Чи готове обладнання для оплати і фіскалізації
+        /// </summary>
+        public bool IsReadySale { get { return Terminal.State == eStateEquipment.On && RRO.State == eStateEquipment.On; } }
+
+
         public eStateEquipment State
         {
             get { return _State; }
@@ -44,9 +50,9 @@ namespace Front
                     if (value == eStateEquipment.Error)
                         _State = value;
                     else
-                      if (value == eStateEquipment.Ok)
+                      if (value == eStateEquipment.On)
                     {
-                        eStateEquipment st = eStateEquipment.Ok;
+                        eStateEquipment st = eStateEquipment.On;
                         foreach (var el in ListEquipment)
                         {
                             if (el.State == eStateEquipment.Off)
@@ -179,12 +185,8 @@ namespace Front
 
                 ListEquipment = NewListEquipment;
 
-                State = eStateEquipment.Ok;
+                State = eStateEquipment.On;
 
-                foreach (var el in ListEquipment)
-                {
-                    el.SetState += (pStateEquipment, pModelEquipment) => { SetStatus?.Invoke(new StatusEquipment() { ModelEquipment = pModelEquipment, State = (int)pStateEquipment, TextState = $"" }); };
-                }
             }
             catch (Exception e)
             {
@@ -192,7 +194,6 @@ namespace Front
                 State = eStateEquipment.Error;
             }
         }
-
 
         public IEnumerable<Equipment> GetListEquipment { get { return ListEquipment; } }
 
@@ -261,8 +262,8 @@ namespace Front
         {
             if (ww is PosStatus status)
             {
-                SetStatus?.Invoke(new StatusEquipment(Terminal.Model, (int)status.Status, $"{status.TextState} {status.Status}"));
-                Debug.WriteLine($"{DateTime.Now} {Terminal.Model} {status.TextState} {status.Status}");
+                SetStatus?.Invoke(new StatusEquipment(Terminal.Model, status.Status.GetStateEquipment(), $"{status.TextState} {status.Status}"));
+                FileLogger.WriteLogMessage($"EquipmentFront.PosStatus {Terminal.Model} {status.TextState} {status.Status}");
             }
         }
 
@@ -274,6 +275,7 @@ namespace Front
                 .AddJsonFile(settingsFilePath).Build();
 
             AppConfiguration.GetSection("MID:Equipment").Bind(ListEquipment);
+            var r = AppConfiguration.GetSection("MID:Equipment");
             return AppConfiguration;
         }
 

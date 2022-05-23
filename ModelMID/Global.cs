@@ -159,6 +159,12 @@ namespace ModelMID
             }
             return 0;
         }
+        /// <summary>
+        /// Вертаємо компанію по коду товара (Коли кілька підприємців)
+        /// </summary>
+        /// <param name="CodeWares"></param>
+        /// <returns></returns>
+        public static int GetCodeCompany(int CodeWares) { return 1; }
 
         public static int GetIdWorkplaceByTerminalId(Guid parTerminalId)
         {
@@ -239,7 +245,7 @@ namespace ModelMID
                 res -= 0.01m;
             return res;
         }
-
+        /*
         /// <summary>
         /// Текучий чек (1-3) з масиву Receipts
         /// </summary>
@@ -253,12 +259,11 @@ namespace ModelMID
         /// <summary>
         /// Кількість пос-терміналів на касі.
         /// </summary>
-        public static int QuantityPos = 2;        
-
-        //public static Language Language = Language.uk_UA;
+        public static int QuantityPos = 2;
 
         //public static int DefaultCodeClient = 0;
 
         //public static string BillCoins = "грн:1:500,200,100,50,20,10,5,2,1;коп:0.01:50,10";
+        */
     }
 }

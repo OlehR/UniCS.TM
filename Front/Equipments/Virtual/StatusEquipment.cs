@@ -9,10 +9,11 @@ namespace Front.Equipments.Virtual
 {
     public class StatusEquipment : Status
     {
+        public eStateEquipment StateEquipment { get; set; }
         public eModelEquipment ModelEquipment { get; set; }
         public eTypeEquipment TypeEquipment  { get{ return ModelEquipment.GetTypeEquipment(); } }
         public StatusEquipment():base() {  }
-        public StatusEquipment(eModelEquipment pME, int pState = 0, string pTextState = "Ok"):base(pState, pTextState)
+        public StatusEquipment(eModelEquipment pME, eStateEquipment pStateEquipment,string pTextState=null) :base((int)pStateEquipment, pTextState?? pStateEquipment.ToString())
         {
             ModelEquipment = pME;
         }

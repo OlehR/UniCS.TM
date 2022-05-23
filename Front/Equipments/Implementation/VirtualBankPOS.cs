@@ -81,7 +81,7 @@ namespace Front.Equipments.Implementation
 
         public override eStateEquipment TestDevice()
         {
-            return eStateEquipment.Ok;
+            return eStateEquipment.On;
         }
     }
 }
