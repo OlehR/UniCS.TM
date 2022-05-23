@@ -6,6 +6,7 @@ namespace ModelMID
 {
     public enum eTypeWorkplace
     {
+        NotDefine = 0,
         SelfServicCheckout,
         СashRegister
     }
