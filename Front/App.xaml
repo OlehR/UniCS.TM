@@ -57,7 +57,7 @@
 
 
 
-            <!--Зелена (спар) кнопка-->
+            <!--Зелена (спар) кнопка--><!--
             <Style TargetType="Button" x:Key="Default">
                 <Setter Property="SnapsToDevicePixels" Value="True" />
                 <Setter Property="OverridesDefaultStyle" Value="True" />
@@ -138,7 +138,7 @@
             </Style>
 
 
-            <!--Червона кнопка-->
+            --><!--Червона кнопка--><!--
             <Style TargetType="Button" x:Key="yelowButton">
 
                 <Setter Property="SnapsToDevicePixels" Value="True" />
@@ -218,11 +218,11 @@
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
-            </Style>
+            </Style>-->
 
 
 
-            <!--Звичайна кнопка--><!--
+            <!--Звичайна кнопка-->
             <Style TargetType="Button" x:Key="Default">
                 <Setter Property="SnapsToDevicePixels" Value="True" />
                 <Setter Property="OverridesDefaultStyle" Value="True" />
@@ -303,7 +303,7 @@
             </Style>
 
 
-            --><!--Жовта кнопка--><!--
+            <!--Жовта кнопка-->
             
             <Style TargetType="Button" x:Key="yelowButton">
 
@@ -384,7 +384,7 @@
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
-            </Style>-->
+            </Style>
 
 
 
