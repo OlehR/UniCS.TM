@@ -223,8 +223,6 @@ namespace Front
 
             //MessageBox.Show(NameFirstTerminal);
 
-            CreateCustomWindiws();
-
             ListWares = new ObservableCollection<ReceiptWares>(StartData());
             WaresList.ItemsSource = ListWares;// Wares;
 
@@ -271,6 +269,7 @@ namespace Front
                 TextBoxCastomWindows.Visibility = Visibility.Collapsed;
                 KeyboardCustomWindows.Visibility = Visibility.Collapsed;
             }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("customWindow"));
         }
         public void GetBarCode(string pBarCode, string pTypeBarCode)
         {
@@ -361,8 +360,6 @@ namespace Front
                     WeightWares.Visibility = Visibility.Collapsed;
                     WaitPayment.Visibility = Visibility.Collapsed;
                     StartShopping.Visibility = Visibility.Collapsed;
-                    //textWaresQuantity.Visibility = Visibility.Visible;
-                    //valueWaresQuantity.Visibility = Visibility.Visible;
                     textInAll.Visibility = Visibility.Visible;
                     valueInAll.Visibility = Visibility.Visible;
                     ConfirmAgeMessage.Visibility = Visibility.Collapsed;
@@ -375,8 +372,6 @@ namespace Front
                     {
                         case eStateMainWindows.StartWindow:
                             StartShopping.Visibility = Visibility.Visible;
-                            //textWaresQuantity.Visibility = Visibility.Collapsed;
-                            //valueWaresQuantity.Visibility = Visibility.Collapsed;
                             textInAll.Visibility = Visibility.Collapsed;
                             valueInAll.Visibility = Visibility.Collapsed;
                             StartVideo.Play();
@@ -445,6 +440,10 @@ namespace Front
                             WaitKashier.Visibility = Visibility.Visible;
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;
+                            break;
+                        case eStateMainWindows.WaitCustomWindows:
+                            CreateCustomWindiws();
+                            CastomWindows.Visibility = Visibility.Visible;
                             break;
                         case eStateMainWindows.WaitInput:
                         default:
@@ -670,7 +669,7 @@ namespace Front
 
         private void _BuyBag(object sender, RoutedEventArgs e)
         {
-            SetStateView(eStateMainWindows.StartWindow);
+            SetStateView(eStateMainWindows.WaitCustomWindows);
         }
 
         private void _Cancel(object sender, RoutedEventArgs e)
