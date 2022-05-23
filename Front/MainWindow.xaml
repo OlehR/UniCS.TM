@@ -20,10 +20,10 @@
         <local:BoolToVisibilityConverter
          x:Key="BoolToHiddenConverter"
          TrueValue="Visible" FalseValue="Hidden" />
-        <Style TargetType="TextBlock">
+        <!--<Style TargetType="TextBlock">
             <Setter Property="Foreground" Value="White" />
             <Setter Property="VerticalAlignment" Value="Center" />
-        </Style>
+        </Style>-->
     </Window.Resources>
 
 
@@ -31,6 +31,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="80"></RowDefinition>
+            <RowDefinition Height="4"></RowDefinition>
             <RowDefinition Height="40"></RowDefinition>
             <RowDefinition></RowDefinition>
             <RowDefinition Height="80"></RowDefinition>
@@ -104,28 +105,40 @@
                     </Button>
                 </Grid>
 
-                <TextBlock  Grid.Column="3" FontSize="20" Foreground="Black" HorizontalAlignment="Center" Text ="{DynamicResource markWaresQuantity}"
-                            Visibility="Collapsed" Name="textWaresQuantity" VerticalAlignment="Center" />
-                <TextBlock Grid.Column="4"  Foreground="Black"
-                       FontSize="22"  VerticalAlignment="Center"
-                       Visibility="Collapsed" Name="valueWaresQuantity"
-                       Text="{Binding WaresQuantity, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" />
 
-                <TextBlock Grid.Column="5" FontSize="22" Text="{DynamicResource markInAll}" 
-                           Visibility="Collapsed" Name="textInAll" VerticalAlignment="Center" Foreground="Black" />
+
+                <TextBlock  Grid.Column="3" Grid.ColumnSpan="2" FontSize="22" Text="Ім'я клієнта" 
+                           Visibility="Visible"  
+                            VerticalAlignment="Center" HorizontalAlignment="Center"
+                            Foreground="Black"></TextBlock>
+                
+                
+                    <TextBlock Grid.Column="5" FontSize="22" Text="{DynamicResource markInAll}" 
+                           Visibility="Visible" Name="textInAll" VerticalAlignment="Center" Foreground="Black" />
                 <TextBlock Grid.Column="6"
                            VerticalAlignment="Center"
-                           Name="valueInAll" Visibility="Collapsed"
+                           Name="valueInAll" Visibility="Visible"
                            FontSize="28"
                            FontWeight="Bold"
-                           Foreground="#ff5500"
-                           Text="{Binding MoneySum, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}"/>
+                           Foreground="#ff5500">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{}{0} ({1})">
+                            <Binding Path="MoneySum" RelativeSource="{RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}" />
+                            <Binding Path="WaresQuantity" RelativeSource="{RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}" />
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+                <!--<TextBlock Grid.Column="6"  Foreground="Black"
+                       FontSize="22"  VerticalAlignment="Center"
+                       Visibility="Visible" Name="valueWaresQuantity"
+                       Text="{Binding WaresQuantity, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" />-->
 
             </Grid>
         </Border>
-        <Border Grid.Row="1"  Background="White" BorderThickness="0,0,0,1" >
+        <Border Grid.Row="2"  Background="White" BorderThickness="0,0,0,1" >
             <Border.Effect>
                 <DropShadowEffect ShadowDepth="5" BlurRadius="4" Color="#f2f2f2"/>
             </Border.Effect>
@@ -147,7 +160,10 @@
             </Grid>
         </Border>
 
-        <Grid Grid.Row="2" Panel.ZIndex="2">
+
+        <Border Grid.Row="1" Background="LightGreen"></Border>
+        
+        <Grid Grid.Row="3" Panel.ZIndex="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
@@ -1170,7 +1186,7 @@
         <!--<StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right"/>-->
 
 
-        <Grid Grid.Row="3" >
+        <Grid Grid.Row="4" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0.5*"></ColumnDefinition>
                 <ColumnDefinition Width="3*"></ColumnDefinition>
