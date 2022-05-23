@@ -139,7 +139,7 @@ namespace ModernIntegration
         /// <summary>
         /// TMP!!! Мають бути модерновські статуси
         /// </summary>
-        public Action<eStateScale> OnChangedStatusScale { get; set; }
+        //public Action<eStateScale> OnChangedStatusScale { get; set; }
         public Action<CustomerViewModel, Guid> OnCustomerChanged { get; set; }
 
         public Action<TerminalCustomWindowModel> OnShowCustomWindow { get; set; }

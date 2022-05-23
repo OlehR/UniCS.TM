@@ -237,7 +237,7 @@ namespace SharedLib
 
         }
         
-        public async Task GetBonusAsync(Client pClient, int pTerminalId)
+        public async Task GetBonusAsync(Client pClient, int pIdWorkPlace)
         {
             try
             {
@@ -253,11 +253,11 @@ namespace SharedLib
                 res = res.Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
                 if (!string.IsNullOrEmpty(res) && decimal.TryParse(res, out Sum))
                     pClient.Wallet = Sum;
-                Global.OnClientChanged?.Invoke(pClient, pTerminalId);
+                Global.OnClientChanged?.Invoke(pClient, pIdWorkPlace);
             }
             catch (Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pTerminalId) , Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = ex.Message });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdWorkPlace) , Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = ex.Message });
             }
 
         }

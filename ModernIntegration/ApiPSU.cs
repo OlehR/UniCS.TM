@@ -44,12 +44,12 @@ namespace ModernIntegration
 
             Global.OnStatusChanged += (Status) => OnStatusChanged?.Invoke(Status);
 
-            Global.OnChangedStatusScale += (Status) => OnChangedStatusScale?.Invoke(Status);
+           // Global.OnChangedStatusScale += (Status) => OnChangedStatusScale?.Invoke(Status);
 
-            Global.OnClientChanged += (client, guid) =>
+            Global.OnClientChanged += (pClient, pIdWorkPlace) =>
             {               
-                OnCustomerChanged?.Invoke(GetCustomerViewModelByClient(client), Global.GetTerminalIdByIdWorkplace(guid));
-                FileLogger.WriteLogMessage($"Client.Wallet=> {client.Wallet} SumBonus=>{client.SumBonus} ", eTypeLog.Expanded);
+                OnCustomerChanged?.Invoke(GetCustomerViewModelByClient(pClient), Global.GetTerminalIdByIdWorkplace(pIdWorkPlace));
+                FileLogger.WriteLogMessage($"Client.Wallet=> {pClient.Wallet} SumBonus=>{pClient.SumBonus} ", eTypeLog.Expanded);
             };
 
             Global.OnClientWindows += (pTerminalId,pTypeWindows, pMessage) =>

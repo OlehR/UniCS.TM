@@ -198,9 +198,9 @@ namespace Front
             };
 
             Global.OnStatusChanged += (Status) => { };            
-            Global.OnClientChanged += (client, guid) =>
+            Global.OnClientChanged += (pClient, pIdWorkPlace) =>
             {
-                FileLogger.WriteLogMessage($"MainWindow.OnClientChanged(Client.Wallet=> {client.Wallet} SumBonus=>{client.SumBonus})", eTypeLog.Full);
+                FileLogger.WriteLogMessage($"MainWindow.OnClientChanged(Client.Wallet=> {pClient.Wallet} SumBonus=>{pClient.SumBonus})", eTypeLog.Full);
             };
 
             Global.OnAdminBarCode += (pUser) => { SetConfirm(pUser, false); };

@@ -319,6 +319,8 @@ namespace SharedLib
                 UpdateClientInReceipt(idReceipt, client);
                 return client;
             }
+            
+
             return null;
         }
 
@@ -330,6 +332,21 @@ namespace SharedLib
                 var client = r.First();
                 UpdateClientInReceipt(idReceipt, client);
                 return client;
+            }
+            if (Global.TypeWorkplace != eTypeWorkplace.NotDefine && r.Count() > 1)//Якщо не модерн
+            {
+                // Створюємо  користувацьке вікно
+                var CW = new CustomWindow()
+                {
+                    Text = "Зробіть вибір",
+                    Caption = "Вибір карточки клієнта",
+                    Buttons = r.Select(el => new CustomButton() { Id = el.CodeClient, Text = el.NameClient })
+                };
+                //PathPicture = @"icons\Signal.png",
+
+                //customWindow.AnswerRequired = true;
+                //customWindow.ValidationMask = "Щось)";               
+                
             }
             return null;
         }
@@ -528,7 +545,7 @@ namespace SharedLib
             return res;
         }
 
-        public Task GetBonusAsync(Client pClient, int pTerminalId) { return ds.GetBonusAsync(pClient, pTerminalId); }
+        public Task GetBonusAsync(Client pClient, int pIdWorkPlace) { return ds.GetBonusAsync(pClient, pIdWorkPlace); }
 
         public bool SendReceiptTo1C(IdReceipt parIdReceipt) { return ds.SendReceiptTo1C(parIdReceipt); }
 
