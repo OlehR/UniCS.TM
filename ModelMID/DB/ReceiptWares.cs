@@ -270,7 +270,7 @@ namespace ModelMID
         public decimal RefundedQuantity { get; set; }
 
         /// <summary>
-        /// Зафіксована похибка ваги відносно базової.
+        /// Зафіксована вага контрольною вагою.
         /// </summary>
         public decimal FixWeight { get; set; }
         /// <summary>

@@ -10,9 +10,9 @@ namespace ModelMID
     public class WaitWeight
     {
         public double Min, Max;
-        public bool IsGoodWeight(double pWeight)
+        public bool IsGoodWeight(double pWeight,double pQuantity=1d)
         {
-            return pWeight >= Min && pWeight <= Max;
+            return pWeight >= Min* pQuantity && pWeight <= Max* pQuantity;
         }
         public override string ToString() { return $"[{Min},{Max}]"; } 
 

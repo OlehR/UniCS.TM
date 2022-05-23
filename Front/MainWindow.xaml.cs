@@ -197,8 +197,7 @@ namespace Front
                 FileLogger.WriteLogMessage($"MainWindow.OnSyncInfoCollected Status=>{SyncInfo.Status} StatusDescription=>{SyncInfo.StatusDescription}", eTypeLog.Full);
             };
 
-            Global.OnStatusChanged += (Status) => { };
-            Global.OnChangedStatusScale += (Status) => { };
+            Global.OnStatusChanged += (Status) => { };            
             Global.OnClientChanged += (client, guid) =>
             {
                 FileLogger.WriteLogMessage($"MainWindow.OnClientChanged(Client.Wallet=> {client.Wallet} SumBonus=>{client.SumBonus})", eTypeLog.Full);
@@ -209,6 +208,11 @@ namespace Front
             Global.OnReceiptChanged += (pReceipt) =>
             {
                 SetCurReceipt(pReceipt);
+            };
+            //Обробка стану контрольної ваги.
+            CS.OnStateScale += (pStateScale)=>
+            { 
+            
             };
 
             WaresQuantity = "0";

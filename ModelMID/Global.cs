@@ -13,7 +13,7 @@ namespace ModelMID
         public static Action<Receipt> OnReceiptCalculationComplete { get; set; }
         public static Action<SyncInformation> OnSyncInfoCollected { get; set; }
         public static Action<Status> OnStatusChanged { get; set; }
-        public static Action<eStateScale> OnChangedStatusScale { get; set; }
+        //public static Action<eStateScale> OnChangedStatusScale { get; set; }
         public static Action<Client, int> OnClientChanged { get; set; }
         public static Action<Receipt> OnReceiptChanged { get; set; }
 
