@@ -107,11 +107,14 @@
 
 
 
-                <TextBlock  Grid.Column="3" Grid.ColumnSpan="2" FontSize="22" Text="{Binding ClientName, RelativeSource={RelativeSource 
+                <Button  Grid.Column="3" Grid.ColumnSpan="2" FontSize="22" 
+                         Style="{StaticResource Default}"
+                         Click="FindClientByPhoneClick"
+                         Content="{Binding ClientName, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" 
                            Visibility="Visible"  
-                            VerticalAlignment="Center" HorizontalAlignment="Center"
-                            Foreground="Black"></TextBlock>
+                           VerticalAlignment="Center" HorizontalAlignment="Center"
+                           Foreground="Black"></Button>
 
 
                 <TextBlock Grid.Column="5" FontSize="22" Text="{DynamicResource markInAll}" 
@@ -490,7 +493,7 @@
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
                  Grid.Column="0" Grid.ColumnSpan="6"
-                 Name="CastomWindows" Visibility="Collapsed" Grid.ZIndex="2" 
+                 Name="CustomWindows" Visibility="Collapsed" Grid.ZIndex="2" 
                 CornerRadius="10"  Margin="10,0,10,0" >
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
@@ -510,18 +513,18 @@
                         HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,30,0"
                         Click="_Cancel"/>
                         <StackPanel VerticalAlignment="Center">
-                            <TextBlock HorizontalAlignment="Center" FontSize="20" x:Name="CaptionCastomWindows"
+                            <TextBlock HorizontalAlignment="Center" FontSize="20" x:Name="CaptionCustomWindows"
                                        Text="{Binding customWindow.Caption, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"/>
-                            <TextBlock HorizontalAlignment="Center" FontSize="16" x:Name="TextCastomWindows"
+                            <TextBlock HorizontalAlignment="Center" FontSize="16" x:Name="TextCustomWindows"
                                        Text="{Binding customWindow.Text, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"/>
-                            <Image Grid.Row="1" HorizontalAlignment="Center"  Height="40" x:Name="ImageCastomWindows"
+                            <Image Grid.Row="1" HorizontalAlignment="Center"  Height="40" x:Name="ImageCustomWindows"
                                    Source="{Binding customWindow.PathPicture, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}"/>
-                            <TextBox Grid.Row="2" TabIndex="1" x:Name="TextBoxCastomWindows"
+                            <TextBox Grid.Row="2" TabIndex="1" x:Name="TextBoxCustomWindows"
                                  FontSize="20"  VerticalAlignment="Center" />
 
-                            <ScrollViewer  VerticalScrollBarVisibility="Auto" Height="200"  x:Name="ButtonsCastomWindows" >
-                                <ItemsControl Name="CastomWindowsItemControl" VerticalAlignment="Center">
+                            <ScrollViewer  VerticalScrollBarVisibility="Auto" Height="150"  x:Name="ButtonsCustomWindows" >
+                                <ItemsControl Name="CustomWindowsItemControl" VerticalAlignment="Center">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <Button Height="Auto" Width="Auto" Style="{StaticResource yelowButton}" Content="{Binding Text}" HorizontalAlignment="Center" 
@@ -530,15 +533,21 @@
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                             </ScrollViewer>
-                            <Button Height="Auto" Width="Auto" 
-                                    x:Name="CancelCastomWindows" Click="_Cancel"
+                            <Grid >
+                                <Button Height="Auto" Width="100"  
+                                    x:Name="OKCustomWindows" Click="CustomWindowClickButton"
+                                    Style="{StaticResource greenButton}" Content="Ок" 
+                                    HorizontalAlignment="Left"/>
+                                <Button Height="Auto" Width="Auto" 
+                                    x:Name="CancelCustomWindows" Click="CustomWindowClickButton"
                                     Style="{StaticResource Default}" Content="Відмінити" 
                                     HorizontalAlignment="Right"/>
+                            </Grid>
                             <keyboard:OnScreenKeyboard Grid.Row="5" 
                                                        x:Name="KeyboardCustomWindows"
                                                        Height="250"
                                                        VerticalAlignment="Top"
-                                                       ActiveContainer="{Binding ElementName=CastomWindows}"
+                                                       ActiveContainer="{Binding ElementName=CustomWindows}"
                                                        ToggleButtonStyle="{StaticResource DefaultTouchToggleButtonStyle}"
                                                        CancelCommand="{Binding CancelCommand2}" Grid.RowSpan="2"/>
                         </StackPanel>

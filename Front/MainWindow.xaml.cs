@@ -26,7 +26,7 @@ namespace Front
     public class Price
     {
         //public static bool isFirst = true;
-        public Price(decimal pPrice, bool pIsEnable,eTypeWares pTypeWares) //, bool pIsEnable = false
+        public Price(decimal pPrice, bool pIsEnable, eTypeWares pTypeWares) //, bool pIsEnable = false
         {
             price = pPrice;
             IsEnable = pIsEnable;
@@ -84,7 +84,7 @@ namespace Front
             }
         }
 
-        public string ClientName { get { return Client?.NameClient??"Відсутній клієнт" ; } }
+        public string ClientName { get { return Client?.NameClient ?? "Відсутній клієнт"; } }
         public bool IsPresentFirstTerminal
         {
             get
@@ -154,7 +154,9 @@ namespace Front
 
         public ReceiptWares CurWares { get; set; } = null;
         public ObservableCollection<ReceiptWares> ListWares { get; set; }
-        //public ObservableCollection<CustomButton> customWindowButtons { get; set; } 
+
+        public ObservableCollection<CustomButton> customWindowButtons { get; set; }
+
         public CustomWindow customWindow { get; set; }
         /// <summary>
         /// полоса стану обміну
@@ -201,11 +203,11 @@ namespace Front
                 FileLogger.WriteLogMessage($"MainWindow.OnSyncInfoCollected Status=>{SyncInfo.Status} StatusDescription=>{SyncInfo.StatusDescription}", eTypeLog.Full);
             };
 
-            Global.OnStatusChanged += (Status) => { };            
+            Global.OnStatusChanged += (Status) => { };
             Global.OnClientChanged += (pClient, pIdWorkPlace) =>
             {
                 Client = pClient;
-                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClientName"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClientName"));
                 FileLogger.WriteLogMessage($"MainWindow.OnClientChanged(Client.Wallet=> {pClient.Wallet} SumBonus=>{pClient.SumBonus})", eTypeLog.Full);
             };
 
@@ -218,9 +220,9 @@ namespace Front
                 SetCurReceipt(pReceipt);
             };
             //Обробка стану контрольної ваги.
-            CS.OnStateScale += (pStateScale)=>
-            { 
-            
+            CS.OnStateScale += (pStateScale) =>
+            {
+
             };
 
             WaresQuantity = "0";
@@ -270,12 +272,13 @@ namespace Front
         public void GetBarCode(string pBarCode, string pTypeBarCode)
         {
             if (State == eStateMainWindows.WaitInput)
-            { 
+            {
                 if (curReceipt?.IsLockChange == false)
                     Bl.GetBarCode(pBarCode, pTypeBarCode);
                 //else // В данbq чек добавити товар не можна
 
-            } else
+            }
+            else
             {
                 var u = Bl.GetUserByBarCode(pBarCode);
                 if (u != null)
@@ -361,7 +364,13 @@ namespace Front
                     ConfirmAgeMessage.Visibility = Visibility.Collapsed;
                     ConfirmAge.Visibility = Visibility.Collapsed;
                     WaitKashier.Visibility = Visibility.Collapsed;
-                    CastomWindows.Visibility = Visibility.Collapsed;
+                    CustomWindows.Visibility = Visibility.Collapsed;
+
+                    CaptionCustomWindows.Visibility = Visibility.Visible;
+                    ImageCustomWindows.Visibility = Visibility.Visible;
+                    CancelCustomWindows.Visibility = Visibility.Visible;
+                    TextBoxCustomWindows.Visibility = Visibility.Visible;
+                    KeyboardCustomWindows.Visibility = Visibility.Visible;
                     StartVideo.Stop();
 
                     switch (State)
@@ -374,7 +383,7 @@ namespace Front
                             break;
                         case eStateMainWindows.WaitInputPrice:
                             TypeAccessWait = eTypeAccess.ChoicePrice;
-                            var rrr = new ObservableCollection<Price>(CurWares.Prices.OrderByDescending(r => r.Price).Select(r => new Price(r.Price, Access.GetRight(TypeAccessWait),r.TypeWares)));
+                            var rrr = new ObservableCollection<Price>(CurWares.Prices.OrderByDescending(r => r.Price).Select(r => new Price(r.Price, Access.GetRight(TypeAccessWait), r.TypeWares)));
                             rrr.First().IsEnable = true;
 
                             Prices.ItemsSource = rrr;//new ObservableCollection<Price>(rr);
@@ -437,19 +446,33 @@ namespace Front
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;
                             break;
-                        case eStateMainWindows.WaitCustomWindows:                           
-                            CastomWindowsItemControl.ItemsSource = new ObservableCollection<CustomButton>(customWindow.Buttons);
-                            if (customWindow.Caption == null) CaptionCastomWindows.Visibility = Visibility.Collapsed;
-                            if (customWindow.PathPicture == null) ImageCastomWindows.Visibility = Visibility.Collapsed;
-                            if (customWindow.AnswerRequired == false) CancelCastomWindows.Visibility = Visibility.Collapsed;
+                        case eStateMainWindows.WaitCustomWindows:
+                            CustomWindowsItemControl.ItemsSource = new ObservableCollection<CustomButton>(customWindow.Buttons);
+                            if (customWindow.Caption == null) CaptionCustomWindows.Visibility = Visibility.Collapsed;
+                            if (customWindow.PathPicture == null) ImageCustomWindows.Visibility = Visibility.Collapsed;
+                            if (customWindow.AnswerRequired == false) CancelCustomWindows.Visibility = Visibility.Collapsed;
                             if (customWindow.ValidationMask == null)
                             {
-                                TextBoxCastomWindows.Visibility = Visibility.Collapsed;
+                                TextBoxCustomWindows.Visibility = Visibility.Collapsed;
                                 KeyboardCustomWindows.Visibility = Visibility.Collapsed;
                             }
                             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("customWindow"));
-                            CastomWindows.Visibility = Visibility.Visible;
+                            CustomWindows.Visibility = Visibility.Visible;
                             break;
+                       /* case eStateMainWindows.FindClientByPhone:
+                            CustomWindowsItemControl.ItemsSource = new ObservableCollection<CustomButton>(customWindow.Buttons);
+                            //ButtonsCustomWindows.Visibility = Visibility.Collapsed;
+                            if (customWindow.Caption == null) CaptionCustomWindows.Visibility = Visibility.Collapsed;
+                            if (customWindow.PathPicture == null) ImageCustomWindows.Visibility = Visibility.Collapsed;
+                            if (customWindow.AnswerRequired == false) CancelCustomWindows.Visibility = Visibility.Collapsed;
+                            if (customWindow.ValidationMask == null)
+                            {
+                                TextBoxCustomWindows.Visibility = Visibility.Collapsed;
+                                KeyboardCustomWindows.Visibility = Visibility.Collapsed;
+                            }
+                            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("customWindow"));
+                            CustomWindows.Visibility = Visibility.Visible;
+                            break;*/
                         case eStateMainWindows.WaitInput:
                         default:
                             break;
@@ -674,7 +697,7 @@ namespace Front
 
         private void _BuyBag(object sender, RoutedEventArgs e)
         {
-            Bl.GetClientByPhone(curReceipt, "0952223104");
+            Bl.GetClientByPhone(curReceipt, "0664417744"); //0503720278
             //CreateCustomWindiws();
             //SetStateView(eStateMainWindows.WaitCustomWindows);
         }
@@ -1021,19 +1044,33 @@ namespace Front
 
             Button btn = sender as Button;
             CustomButton res = btn.DataContext as CustomButton;
+
             if(res==null)
             {
-                if (btn.Name.Equals("Ok"))
+                if (btn.Name.Equals("OKCustomWindows"))
                     res = new CustomButton() { Id = 1 };
-
             }
             if (res!=null)
             {
-                var r = new CustomWindowAnswer() {idReceipt= curReceipt, Id = customWindow.Id, IdButton = res.Id };//,Text =
+                var r = new CustomWindowAnswer() {idReceipt= curReceipt, Id = customWindow.Id, IdButton = res.Id, Text= TextBoxCustomWindows.Text };
                 Bl.SetCustomWindows(r);
-                //MessageBox.Show($"Вітаю! Ви тицьнули '{btn.Content}'", "Тиць", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             
+        }
+
+        private void FindClientByPhoneClick(object sender, RoutedEventArgs e)
+        {
+            customWindow = new CustomWindow()
+            {
+                Id= eWindows.PhoneClient,
+                Text = "Введіть ваш номер!",
+                Caption = "Пошук за номером телефону",
+                AnswerRequired = true,
+                ValidationMask = @"^[0-9]+$",
+                Buttons = new List<CustomButton>() {new CustomButton() { Id = 666, Text = "Пошук картки" } }
+            };
+           
+            SetStateView(eStateMainWindows.WaitCustomWindows);
         }
     }
 }
