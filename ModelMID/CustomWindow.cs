@@ -7,6 +7,7 @@ namespace ModelMID
     public enum eWindows
     {
         ChoiceClient,
+        PhoneClient
     }
 
     public class CustomWindow
