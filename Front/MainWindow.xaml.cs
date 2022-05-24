@@ -449,7 +449,7 @@ namespace Front
                         case eStateMainWindows.WaitCustomWindows:
                             if(customWindow?.Buttons!=null)
                              CustomWindowsItemControl.ItemsSource = new ObservableCollection<CustomButton>(customWindow.Buttons);
-                             ButtonsCustomWindows.Visibility = customWindow?.Buttons != null? Visibility.Collapsed: Visibility.Visible;
+                             ButtonsCustomWindows.Visibility = customWindow?.Buttons == null? Visibility.Collapsed: Visibility.Visible;
 
                             if (customWindow.Caption == null) CaptionCustomWindows.Visibility = Visibility.Collapsed;
                             if (customWindow.PathPicture == null) ImageCustomWindows.Visibility = Visibility.Collapsed;
@@ -462,20 +462,6 @@ namespace Front
                             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("customWindow"));
                             CustomWindows.Visibility = Visibility.Visible;
                             break;
-                       /* case eStateMainWindows.FindClientByPhone:
-                            CustomWindowsItemControl.ItemsSource = new ObservableCollection<CustomButton>(customWindow.Buttons);
-                            //ButtonsCustomWindows.Visibility = Visibility.Collapsed;
-                            if (customWindow.Caption == null) CaptionCustomWindows.Visibility = Visibility.Collapsed;
-                            if (customWindow.PathPicture == null) ImageCustomWindows.Visibility = Visibility.Collapsed;
-                            if (customWindow.AnswerRequired == false) CancelCustomWindows.Visibility = Visibility.Collapsed;
-                            if (customWindow.ValidationMask == null)
-                            {
-                                TextBoxCustomWindows.Visibility = Visibility.Collapsed;
-                                KeyboardCustomWindows.Visibility = Visibility.Collapsed;
-                            }
-                            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("customWindow"));
-                            CustomWindows.Visibility = Visibility.Visible;
-                            break;*/
                         case eStateMainWindows.WaitInput:
                         default:
                             break;
