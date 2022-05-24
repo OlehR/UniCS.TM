@@ -107,7 +107,8 @@
 
 
 
-                <TextBlock  Grid.Column="3" Grid.ColumnSpan="2" FontSize="22" Text="Ім'я клієнта" 
+                <TextBlock  Grid.Column="3" Grid.ColumnSpan="2" FontSize="22" Text="{Binding ClientName, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" 
                            Visibility="Visible"  
                             VerticalAlignment="Center" HorizontalAlignment="Center"
                             Foreground="Black"></TextBlock>

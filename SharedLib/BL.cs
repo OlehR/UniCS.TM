@@ -319,6 +319,11 @@ namespace SharedLib
             return ldb.ViewReceipt(idReceipt, parWithDetail);
         }
 
+        public Client GetClientByCode(IdReceipt pIdReceipt, int pCode)
+        {
+            return SetClient(pIdReceipt, db.FindClient(null, null, null, pCode));
+        }
+
         public Client GetClientByBarCode(IdReceipt pIdReceipt, string pBarCode)
         {
             return SetClient(pIdReceipt, db.FindClient(pBarCode));
@@ -684,6 +689,18 @@ namespace SharedLib
             return null;
         }
 
+        public void SetCustomWindows(CustomWindowAnswer pCWA)
+        {
+            if (pCWA != null)
+            {
+                switch (pCWA.Id)
+                {
+                    case eWindows.ChoiceClient:
+                        GetClientByCode(pCWA.idReceipt,pCWA.IdButton);
+                        break;
+                }
+            }
+        }
 
     }
 }

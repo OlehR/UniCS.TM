@@ -58,7 +58,7 @@ namespace Front
         public ControlScale CS = new ControlScale();
 
         public Receipt curReceipt;//{ get; set; } = null;
-
+        Client Client;
         eStateMainWindows State = eStateMainWindows.StartWindow;
         public string WaresQuantity { get; set; }
         decimal _MoneySum;
@@ -84,6 +84,7 @@ namespace Front
             }
         }
 
+        public string ClientName { get { return Client.NameClient??"Відсутній клієнт" ; } }
         public bool IsPresentFirstTerminal
         {
             get
@@ -203,6 +204,8 @@ namespace Front
             Global.OnStatusChanged += (Status) => { };            
             Global.OnClientChanged += (pClient, pIdWorkPlace) =>
             {
+                Client = pClient;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClientName"));
                 FileLogger.WriteLogMessage($"MainWindow.OnClientChanged(Client.Wallet=> {pClient.Wallet} SumBonus=>{pClient.SumBonus})", eTypeLog.Full);
             };
 
@@ -1015,9 +1018,14 @@ namespace Front
         private void CustomWindowClickButton(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
-            if (btn.DataContext != null)
+            CustomButton res = btn.DataContext as CustomButton;
+            if (res!=null)
             {
-                MessageBox.Show($"Вітаю! Ви тицьнули '{btn.Content}'", "Тиць", MessageBoxButton.OK, MessageBoxImage.Information);
+                var r = new CustomWindowAnswer() {idReceipt= curReceipt, Id = customWindow.Id, IdButton = res.Id };
+                Bl.SetCustomWindows(r);
+                SetStateView(eStateMainWindows.WaitInput);
+
+                //MessageBox.Show($"Вітаю! Ви тицьнули '{btn.Content}'", "Тиць", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
     }

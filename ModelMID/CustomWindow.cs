@@ -64,6 +64,7 @@ namespace ModelMID
 
     public class CustomWindowAnswer
     {
+        public IdReceipt idReceipt { get; set; }
         /// <summary>
         /// Id вікна. Буде в відповіді
         /// </summary>
