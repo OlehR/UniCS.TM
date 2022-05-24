@@ -447,7 +447,10 @@ namespace Front
                             BackgroundWares.Visibility = Visibility.Visible;
                             break;
                         case eStateMainWindows.WaitCustomWindows:
-                            CustomWindowsItemControl.ItemsSource = new ObservableCollection<CustomButton>(customWindow.Buttons);
+                            if(customWindow?.Buttons!=null)
+                             CustomWindowsItemControl.ItemsSource = new ObservableCollection<CustomButton>(customWindow.Buttons);
+                             ButtonsCustomWindows.Visibility = customWindow?.Buttons != null? Visibility.Collapsed: Visibility.Visible;
+
                             if (customWindow.Caption == null) CaptionCustomWindows.Visibility = Visibility.Collapsed;
                             if (customWindow.PathPicture == null) ImageCustomWindows.Visibility = Visibility.Collapsed;
                             if (customWindow.AnswerRequired == false) CancelCustomWindows.Visibility = Visibility.Collapsed;
@@ -1067,7 +1070,7 @@ namespace Front
                 Caption = "Пошук за номером телефону",
                 AnswerRequired = true,
                 ValidationMask = @"^[0-9]+$",
-                Buttons = new List<CustomButton>() {new CustomButton() { Id = 666, Text = "Пошук картки" } }
+               // Buttons = new List<CustomButton>() {new CustomButton() { Id = 666, Text = "Пошук картки" } }
             };
            
             SetStateView(eStateMainWindows.WaitCustomWindows);
