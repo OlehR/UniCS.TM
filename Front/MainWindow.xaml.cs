@@ -154,7 +154,7 @@ namespace Front
 
         public ReceiptWares CurWares { get; set; } = null;
         public ObservableCollection<ReceiptWares> ListWares { get; set; }
-        public ObservableCollection<CustomButton> customWindowButtons { get; set; } 
+        //public ObservableCollection<CustomButton> customWindowButtons { get; set; } 
         public CustomWindow customWindow { get; set; }
         /// <summary>
         /// полоса стану обміну
@@ -1017,16 +1017,23 @@ namespace Front
 
         private void CustomWindowClickButton(object sender, RoutedEventArgs e)
         {
+            SetStateView(eStateMainWindows.WaitInput);
+
             Button btn = sender as Button;
             CustomButton res = btn.DataContext as CustomButton;
+            if(res==null)
+            {
+                if (btn.Name.Equals("Ok"))
+                    res = new CustomButton() { Id = 1 };
+
+            }
             if (res!=null)
             {
-                var r = new CustomWindowAnswer() {idReceipt= curReceipt, Id = customWindow.Id, IdButton = res.Id };
+                var r = new CustomWindowAnswer() {idReceipt= curReceipt, Id = customWindow.Id, IdButton = res.Id };//,Text =
                 Bl.SetCustomWindows(r);
-                SetStateView(eStateMainWindows.WaitInput);
-
                 //MessageBox.Show($"Вітаю! Ви тицьнули '{btn.Content}'", "Тиць", MessageBoxButton.OK, MessageBoxImage.Information);
             }
+            
         }
     }
 }

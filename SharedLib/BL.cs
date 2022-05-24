@@ -696,7 +696,10 @@ namespace SharedLib
                 switch (pCWA.Id)
                 {
                     case eWindows.ChoiceClient:
-                        GetClientByCode(pCWA.idReceipt,pCWA.IdButton);
+                        GetClientByCode(pCWA.idReceipt, pCWA.IdButton);
+                        break;
+                    case eWindows.PhoneClient:
+                        GetClientByPhone(pCWA.idReceipt, pCWA.Text);
                         break;
                 }
             }
