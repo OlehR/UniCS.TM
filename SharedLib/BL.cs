@@ -17,6 +17,15 @@ namespace SharedLib
         public WDB_SQLite db;
         public DataSync ds;
 
+        /// <summary>
+        /// Подія виклику кастомного вікна
+        /// </summary>
+        public  Action<CustomWindow> OnCustomWindow { get; set; }
+        /// <summary>
+        /// Виникає, коли зчитали штрихкод адміністратора в режимі КСО
+        /// </summary>
+        public  Action<User> OnAdminBarCode { get; set; }
+
         public static SortedList<int, long> UserIdbyWorkPlace = new SortedList<int, long>();
 
         public BL(bool pIsUseOldDB = false)
@@ -333,20 +342,21 @@ namespace SharedLib
                 UpdateClientInReceipt(idReceipt, client);
                 return client;
             }
-            if (Global.TypeWorkplace != eTypeWorkplace.NotDefine && r.Count() > 1)//Якщо не модерн
+            if (Global.TypeWorkplace != eTypeWorkplace.NotDefine && r.Count() > 1)//Якщо не модерн і є кілька клієнтів.
             {
                 // Створюємо  користувацьке вікно
                 var CW = new CustomWindow()
                 {
                     Text = "Зробіть вибір",
                     Caption = "Вибір карточки клієнта",
+                    AnswerRequired = true,
                     Buttons = r.Select(el => new CustomButton() { Id = el.CodeClient, Text = el.NameClient })
                 };
-                //PathPicture = @"icons\Signal.png",
 
+                //PathPicture = @"icons\Signal.png",
                 //customWindow.AnswerRequired = true;
                 //customWindow.ValidationMask = "Щось)";               
-                
+                OnCustomWindow?.Invoke(CW);
             }
             return null;
         }
@@ -591,7 +601,7 @@ namespace SharedLib
                 {
                     var u = GetUserByBarCode(pBarCode);
                     if (u != null)
-                        Global.OnAdminBarCode?.Invoke(u);
+                        OnAdminBarCode?.Invoke(u);
                 }
                 else
                 { _ = GetBonusAsync(c, Global.IdWorkPlace); }

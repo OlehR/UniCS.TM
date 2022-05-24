@@ -15,12 +15,7 @@ namespace ModelMID
         public static Action<Status> OnStatusChanged { get; set; }
         //public static Action<eStateScale> OnChangedStatusScale { get; set; }
         public static Action<Client, int> OnClientChanged { get; set; }
-        public static Action<Receipt> OnReceiptChanged { get; set; }
-
-        /// <summary>
-        /// Виникає, коли зчитали штрихкод адміністратора в режимі КСО
-        /// </summary>
-        public static Action<User> OnAdminBarCode { get; set; }
+        public static Action<Receipt> OnReceiptChanged { get; set; }        
 
         public static Action<int, eTypeWindows,string> OnClientWindows { get; set; }
 

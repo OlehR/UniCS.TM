@@ -203,7 +203,9 @@ namespace Front
                 FileLogger.WriteLogMessage($"MainWindow.OnClientChanged(Client.Wallet=> {pClient.Wallet} SumBonus=>{pClient.SumBonus})", eTypeLog.Full);
             };
 
-            Global.OnAdminBarCode += (pUser) => { SetConfirm(pUser, false); };
+            Bl.OnAdminBarCode += (pUser) => { SetConfirm(pUser, false); };
+
+            Bl.OnCustomWindow += (pCW) => { customWindow = pCW; SetStateView(eStateMainWindows.WaitCustomWindows); };
 
             Global.OnReceiptChanged += (pReceipt) =>
             {
@@ -258,18 +260,6 @@ namespace Front
                 new CustomButton(){Id =3, Text="asdvsadvsdfvsdf button" },
                 new CustomButton(){Id =4, Text="asdvssdvsdfadvsdfvsdf button" },
             };
-
-
-            CastomWindowsItemControl.ItemsSource = new ObservableCollection<CustomButton>(customWindow.Buttons);
-            if (customWindow.Caption == null) CaptionCastomWindows.Visibility = Visibility.Collapsed;
-            if (customWindow.PathPicture == null) ImageCastomWindows.Visibility = Visibility.Collapsed;
-            if (customWindow.AnswerRequired == false) CancelCastomWindows.Visibility = Visibility.Collapsed;
-            if (customWindow.ValidationMask == null)
-            {
-                TextBoxCastomWindows.Visibility = Visibility.Collapsed;
-                KeyboardCustomWindows.Visibility = Visibility.Collapsed;
-            }
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("customWindow"));
         }
         public void GetBarCode(string pBarCode, string pTypeBarCode)
         {
@@ -283,7 +273,7 @@ namespace Front
             {
                 var u = Bl.GetUserByBarCode(pBarCode);
                 if (u != null)
-                    Global.OnAdminBarCode?.Invoke(u);
+                    Bl.OnAdminBarCode?.Invoke(u);
             }
         }
 
@@ -441,8 +431,17 @@ namespace Front
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;
                             break;
-                        case eStateMainWindows.WaitCustomWindows:
-                            CreateCustomWindiws();
+                        case eStateMainWindows.WaitCustomWindows:                           
+                            CastomWindowsItemControl.ItemsSource = new ObservableCollection<CustomButton>(customWindow.Buttons);
+                            if (customWindow.Caption == null) CaptionCastomWindows.Visibility = Visibility.Collapsed;
+                            if (customWindow.PathPicture == null) ImageCastomWindows.Visibility = Visibility.Collapsed;
+                            if (customWindow.AnswerRequired == false) CancelCastomWindows.Visibility = Visibility.Collapsed;
+                            if (customWindow.ValidationMask == null)
+                            {
+                                TextBoxCastomWindows.Visibility = Visibility.Collapsed;
+                                KeyboardCustomWindows.Visibility = Visibility.Collapsed;
+                            }
+                            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("customWindow"));
                             CastomWindows.Visibility = Visibility.Visible;
                             break;
                         case eStateMainWindows.WaitInput:
@@ -669,7 +668,9 @@ namespace Front
 
         private void _BuyBag(object sender, RoutedEventArgs e)
         {
-            SetStateView(eStateMainWindows.WaitCustomWindows);
+            Bl.GetClientByPhone(curReceipt, "0952223104");
+            //CreateCustomWindiws();
+            //SetStateView(eStateMainWindows.WaitCustomWindows);
         }
 
         private void _Cancel(object sender, RoutedEventArgs e)
