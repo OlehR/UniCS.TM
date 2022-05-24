@@ -107,11 +107,14 @@
 
 
 
-                <TextBlock  Grid.Column="3" Grid.ColumnSpan="2" FontSize="22" Text="{Binding ClientName, RelativeSource={RelativeSource 
+                <Button  Grid.Column="3" Grid.ColumnSpan="2" FontSize="22" 
+                         Style="{StaticResource Default}"
+                         Click="FindClientByPhoneClick"
+                         Content="{Binding ClientName, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" 
                            Visibility="Visible"  
-                            VerticalAlignment="Center" HorizontalAlignment="Center"
-                            Foreground="Black"></TextBlock>
+                           VerticalAlignment="Center" HorizontalAlignment="Center"
+                           Foreground="Black"></Button>
 
 
                 <TextBlock Grid.Column="5" FontSize="22" Text="{DynamicResource markInAll}" 
@@ -520,7 +523,7 @@
                             <TextBox Grid.Row="2" TabIndex="1" x:Name="TextBoxCastomWindows"
                                  FontSize="20"  VerticalAlignment="Center" />
 
-                            <ScrollViewer  VerticalScrollBarVisibility="Auto" Height="200"  x:Name="ButtonsCastomWindows" >
+                            <ScrollViewer  VerticalScrollBarVisibility="Auto" Height="150"  x:Name="ButtonsCastomWindows" >
                                 <ItemsControl Name="CastomWindowsItemControl" VerticalAlignment="Center">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
@@ -530,10 +533,16 @@
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                             </ScrollViewer>
-                            <Button Height="Auto" Width="Auto" 
-                                    x:Name="CancelCastomWindows" Click="_Cancel"
+                            <Grid >
+                                <Button Height="Auto" Width="100"  
+                                    x:Name="OKCastomWindows" Click="CustomWindowClickButton"
+                                    Style="{StaticResource greenButton}" Content="Ок" 
+                                    HorizontalAlignment="Left"/>
+                                <Button Height="Auto" Width="Auto" 
+                                    x:Name="CancelCastomWindows" Click="CustomWindowClickButton"
                                     Style="{StaticResource Default}" Content="Відмінити" 
                                     HorizontalAlignment="Right"/>
+                            </Grid>
                             <keyboard:OnScreenKeyboard Grid.Row="5" 
                                                        x:Name="KeyboardCustomWindows"
                                                        Height="250"

@@ -70,8 +70,12 @@ namespace Front.Models
         /// <summary>
         /// Користувацьке вікно.
         /// </summary>
-        WaitCustomWindows
+        WaitCustomWindows,
+        /// <summary>
+        /// Знайти клієнта за номером телефону
+        /// </summary>
+        FindClientByPhone,
 
-           
+
     }
 }
