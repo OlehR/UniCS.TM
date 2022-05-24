@@ -84,7 +84,7 @@ namespace Front
             }
         }
 
-        public string ClientName { get { return Client.NameClient??"Відсутній клієнт" ; } }
+        public string ClientName { get { return Client?.NameClient??"Відсутній клієнт" ; } }
         public bool IsPresentFirstTerminal
         {
             get
@@ -205,7 +205,7 @@ namespace Front
             Global.OnClientChanged += (pClient, pIdWorkPlace) =>
             {
                 Client = pClient;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClientName"));
+                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClientName"));
                 FileLogger.WriteLogMessage($"MainWindow.OnClientChanged(Client.Wallet=> {pClient.Wallet} SumBonus=>{pClient.SumBonus})", eTypeLog.Full);
             };
 
