@@ -155,7 +155,10 @@ namespace Front
         public ObservableCollection<ReceiptWares> ListWares { get; set; }
         public ObservableCollection<CustomButton> customWindowButtons { get; set; } 
         public CustomWindow customWindow { get; set; }
-
+        /// <summary>
+        /// полоса стану обміну
+        /// </summary>
+        public string ExchangeRateBar { get; set; } = "LightGreen";
 
 
         public MainWindow()
@@ -1006,6 +1009,15 @@ namespace Front
             {
                 //отримуємо введені дані
                 MessageBox.Show(terminalPaymentInfo.enteredDataFromTerminal.AuthorizationCode);//як приклад
+            }
+        }
+
+        private void CustomWindowClickButton(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            if (btn.DataContext != null)
+            {
+                MessageBox.Show($"Вітаю! Ви тицьнули '{btn.Content}'", "Тиць", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
     }
