@@ -4,12 +4,17 @@ using System.Text;
 
 namespace ModelMID
 {
+    public enum eWindows
+    {
+        ChoiceClient,
+    }
+
     public class CustomWindow
     {        
         /// <summary>
         /// Id вікна. Буде в відповіді
         /// </summary>
-        public int Id { get; set; }
+        public eWindows Id { get; set; }
         /// <summary>
         /// Назва вікна
         /// </summary>
@@ -62,7 +67,7 @@ namespace ModelMID
         /// <summary>
         /// Id вікна. Буде в відповіді
         /// </summary>
-        public int Id { get; set; }
+        public eWindows Id { get; set; }
 
         /// <summary>
         /// Введений Текст
@@ -70,9 +75,8 @@ namespace ModelMID
         public string Text { get; set; }
 
         /// <summary>
-        /// Id натиснененої кнопки. (-1 -скасувати)
+        /// Id натиснененої кнопки. (-1 - Cancel )
         /// </summary>
         public int IdButton { get; set; }
     }
-
 }

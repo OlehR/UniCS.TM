@@ -20,11 +20,11 @@ namespace SharedLib
         /// <summary>
         /// Подія виклику кастомного вікна
         /// </summary>
-        public  Action<CustomWindow> OnCustomWindow { get; set; }
+        public Action<CustomWindow> OnCustomWindow { get; set; }
         /// <summary>
         /// Виникає, коли зчитали штрихкод адміністратора в режимі КСО
         /// </summary>
-        public  Action<User> OnAdminBarCode { get; set; }
+        public Action<User> OnAdminBarCode { get; set; }
 
         public static SortedList<int, long> UserIdbyWorkPlace = new SortedList<int, long>();
 
@@ -319,27 +319,22 @@ namespace SharedLib
             return ldb.ViewReceipt(idReceipt, parWithDetail);
         }
 
-        public Client GetClientByBarCode(IdReceipt idReceipt, string pBarCode)
+        public Client GetClientByBarCode(IdReceipt pIdReceipt, string pBarCode)
         {
-            var r = db.FindClient(pBarCode);
-            if (r.Count() == 1)
-            {
-                var client = r.First();
-                UpdateClientInReceipt(idReceipt, client);
-                return client;
-            }
-            
-
-            return null;
+            return SetClient(pIdReceipt, db.FindClient(pBarCode));
         }
 
-        public Client GetClientByPhone(IdReceipt idReceipt, string pPhone)
+        public Client GetClientByPhone(IdReceipt pIdReceipt, string pPhone)
         {
-            var r = db.FindClient(null, pPhone);
+            return SetClient(pIdReceipt, db.FindClient(null, pPhone));
+        }
+
+        Client SetClient(IdReceipt pIdReceipt, IEnumerable<Client> r)
+        {
             if (r.Count() == 1)
             {
                 var client = r.First();
-                UpdateClientInReceipt(idReceipt, client);
+                UpdateClientInReceipt(pIdReceipt, client);
                 return client;
             }
             if (Global.TypeWorkplace != eTypeWorkplace.NotDefine && r.Count() > 1)//Якщо не модерн і є кілька клієнтів.
@@ -352,24 +347,22 @@ namespace SharedLib
                     AnswerRequired = true,
                     Buttons = r.Select(el => new CustomButton() { Id = el.CodeClient, Text = el.NameClient })
                 };
-
                 //PathPicture = @"icons\Signal.png",
-                //customWindow.AnswerRequired = true;
                 //customWindow.ValidationMask = "Щось)";               
                 OnCustomWindow?.Invoke(CW);
             }
             return null;
         }
 
-        private void UpdateClientInReceipt(IdReceipt idReceipt, Client parClient)
+        private void UpdateClientInReceipt(IdReceipt pIdReceipt, Client parClient)
         {
-            var RH = GetReceiptHead(idReceipt);
+            var RH = GetReceiptHead(pIdReceipt);
             RH.CodeClient = parClient.CodeClient;
             RH.PercentDiscount = parClient.PersentDiscount;
             db.ReplaceReceipt(RH);
             if (Global.RecalcPriceOnLine)
-                db.RecalcPriceAsync(new IdReceiptWares(idReceipt));
-            _ = ds.GetBonusAsync(parClient, idReceipt.IdWorkplace);
+                db.RecalcPriceAsync(new IdReceiptWares(pIdReceipt));
+            _ = ds.GetBonusAsync(parClient, pIdReceipt.IdWorkplace);
         }
 
         public IEnumerable<ReceiptWares> GetProductsByName(IdReceipt pReceipt, string pName, int pOffSet = -1, int pLimit = 10, int pCodeFastGroup = 0)
@@ -392,7 +385,7 @@ namespace SharedLib
                     {
                         var s = pName.Split('*');
                         Article = s[1];
-                        if(pName.EndsWith("*"))
+                        if (pName.EndsWith("*"))
                             Quantity = Convert.ToDecimal(s[0]);
                         pName = null;
                     }
@@ -546,7 +539,7 @@ namespace SharedLib
                     _ = ds.SendRWDeleteAsync();
                 FileLogger.WriteLogMessage($"BL.SyncDataAsync({parIsFull}) => {res} Finish");
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 FileLogger.WriteLogMessage($"BL.SyncDataAsync Exception =>( pTerminalId=>{parIsFull}) => (){Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace}", eTypeLog.Error);
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = e, Status = eSyncStatus.NoFatalError, StatusDescription = $"SyncDataAsync() Exception e.Message{Environment.NewLine}" + new StackTrace().ToString() });
