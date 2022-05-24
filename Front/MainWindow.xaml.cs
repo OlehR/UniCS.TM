@@ -374,7 +374,7 @@ namespace Front
                             break;
                         case eStateMainWindows.WaitInputPrice:
                             TypeAccessWait = eTypeAccess.ChoicePrice;
-                            var rrr = new ObservableCollection<Price>(CurWares.Prices.OrderByDescending(r => r).Select(r => new Price(r.Price, Access.GetRight(TypeAccessWait),r.TypeWares)));
+                            var rrr = new ObservableCollection<Price>(CurWares.Prices.OrderByDescending(r => r.Price).Select(r => new Price(r.Price, Access.GetRight(TypeAccessWait),r.TypeWares)));
                             rrr.First().IsEnable = true;
 
                             Prices.ItemsSource = rrr;//new ObservableCollection<Price>(rr);
