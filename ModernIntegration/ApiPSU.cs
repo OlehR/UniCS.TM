@@ -412,7 +412,7 @@ namespace ModernIntegration
             // TODO: check status
             try
             {
-                var res = await Bl.SyncDataAsync(pIsFull);                
+                bool res = await Bl.ds.SyncDataAsync(pIsFull);
             }
             catch (Exception ex)
             {

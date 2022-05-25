@@ -53,7 +53,7 @@ namespace ModernIntegration
 
         public virtual bool UpdateProductWeight(string parData, int parWeight, Guid parWares, TypeSaveWeight parTypeSaveWeight) { throw new NotImplementedException(); }
 
-        public virtual Status GetCurentStatus() { throw new NotImplementedException(); }
+        //public virtual Status GetCurentStatus() { throw new NotImplementedException(); }
 
         public virtual ReceiptViewModel GetNoFinishReceipt(Guid parTerminalId) { throw new NotImplementedException(); }
         public virtual IEnumerable<ReceiptViewModel> GetReceipts(DateTime parStartDate, DateTime parFinishDate, Guid? parTerminalId = null)

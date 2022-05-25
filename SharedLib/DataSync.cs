@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using Utils;
 
 namespace SharedLib
@@ -22,20 +23,64 @@ namespace SharedLib
         public SoapTo1C soapTo1C;
         public DataSync(BL parBL)
         {
-
             soapTo1C = new SoapTo1C();
-            bl = parBL; ///!!!TMP Трохи костиль             
+            bl = parBL; ///!!!TMP Трохи костиль 
+            StartSyncData();
         }
 
+        public async Task<bool> SyncDataAsync(bool parIsFull = false)
+        {
+            bool res = false;
+            FileLogger.WriteLogMessage($"BL.SyncDataAsync({parIsFull}) Start");
+            try
+            {
+                res = SyncData(ref parIsFull);
+                var CurDate = DateTime.Now;
+                // не обміннюємось чеками починаючи з 23:45 до 1:00
+                if (!((CurDate.Hour == 23 && CurDate.Minute > 44) || CurDate.Hour == 0))
+                    await SendAllReceipt().ConfigureAwait(false);
+
+                if (CurDate.Hour < 7)
+                {
+                    //  ds.LoadWeightKasa();
+                    LoadWeightKasa2Period();
+                }
+                if (parIsFull)
+                    _ = SendRWDeleteAsync();
+                FileLogger.WriteLogMessage($"BL.SyncDataAsync({parIsFull}) => {res} Finish");
+            }
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage($"BL.SyncDataAsync Exception =>( pTerminalId=>{parIsFull}) => (){Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace}", eTypeLog.Error);
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = e, Status = eSyncStatus.NoFatalError, StatusDescription = $"SyncDataAsync() Exception e.Message{Environment.NewLine}" + new StackTrace().ToString() });
+            }
+
+            return res;
+        }
+
+        public void StartSyncData()
+        {
+            if (Global.DataSyncTime > 0)
+            {
+                var t = new System.Timers.Timer(Global.DataSyncTime);
+                t.AutoReset = true;
+                t.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+                t.Start();
+            }
+        }
+
+        private async void OnTimedEvent(Object source, ElapsedEventArgs e)
+        {
+            await SyncDataAsync();
+        }
 
         public bool SendReceiptTo1C(IdReceipt parIdReceipt)
         {
             var ldb = new WDB_SQLite(parIdReceipt.DTPeriod);
             var r = ldb.ViewReceipt(parIdReceipt, true);
 
-
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            SendReceiptTo1CAsync(r, ldb);
+            _ = SendReceiptTo1CAsync(r, ldb);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             return true;
         }
@@ -43,44 +88,16 @@ namespace SharedLib
         {
             try
             {
-
                 var r = new Receipt1C(parReceipt);
-
                 var body = soapTo1C.GenBody("JSONCheck", new Parameters[] { new Parameters("JSONSting", r.GetBase64()) });
-
                 var res = await soapTo1C.RequestAsync(Global.Server1C, body, 240000, "application/json");
 
-                /*
-                                 HttpClient client = new HttpClient();
-
-                                 // Add a new Request Message
-                                 HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, Global.Server1C);
-                                 //requestMessage.Headers.Add("Accept", "application/vnd.github.v3+json");
-                                 // Add our custom headers
-                                 requestMessage.Content = new StringContent(//r.GetSOAP() 
-                                     body, Encoding.UTF8, "application/json");
-                                 var response = await client.SendAsync(requestMessage);
-
-                                 if (response.IsSuccessStatusCode)
-                                 {
-                                     var res = await response.Content.ReadAsStringAsync();
-                                     parReceipt.StateReceipt = eStateReceipt.Send;
-                                     db.SetStateReceipt(parReceipt);//Змінюєм стан чека на відправлено.
-                                     return true;
-                                 }
-                                 else
-                                 {
-                                     return false;
-                                 }
-                                */
-
-                if (!string.IsNullOrEmpty(res) && res.Equals("0"))
+               if (!string.IsNullOrEmpty(res) && res.Equals("0"))
                 {
                     parReceipt.StateReceipt = eStateReceipt.Send;
                     parDB.SetStateReceipt(parReceipt);//Змінюєм стан чека на відправлено.
                     return true;
                 }
-
                 return false;
             }
             catch (Exception ex)
@@ -89,7 +106,7 @@ namespace SharedLib
                 return false;
             }
         }
-       
+
         public async Task<bool> SendAllReceipt(WDB_SQLite parDB = null)
         {
             var varDB = (parDB == null ? db : parDB);
@@ -101,8 +118,7 @@ namespace SharedLib
             Global.OnStatusChanged?.Invoke(db.GetStatus());
             return true;
         }
-
-        //async Task<bool>
+        
         public bool SyncData(ref bool parIsFull)
         {
             StringBuilder Log = new StringBuilder();
@@ -113,10 +129,10 @@ namespace SharedLib
                 if (!parIsFull && !File.Exists(varMidFile)) //Якщо відсутній файл
                     parIsFull = true;
 
-                if (!parIsFull && File.Exists(varMidFile) ) // Якщо база порожня.
+                if (!parIsFull && File.Exists(varMidFile)) // Якщо база порожня.
                 {
                     int i = db.db.ExecuteScalar<int>("select count(*) from wares");
-                    if(i==0)
+                    if (i == 0)
                         parIsFull = true;
                 }
 
@@ -128,10 +144,10 @@ namespace SharedLib
                         parIsFull = true;
                 }
 
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = parIsFull ? eSyncStatus.StartedFullSync : eSyncStatus.StartedPartialSync,StatusDescription= "SendAllReceipt" });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = parIsFull ? eSyncStatus.StartedFullSync : eSyncStatus.StartedPartialSync, StatusDescription = "SendAllReceipt" });
 
                 Log.Append($"\n{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} varMidFile=>{varMidFile}\n\tLoad_Full=>{TD:yyyy-MM-dd} parIsFull=>{parIsFull}");
-              
+
 
                 if (parIsFull)
                 {
@@ -167,19 +183,18 @@ namespace SharedLib
                 Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} End");
                 FileLogger.WriteLogMessage(Log.ToString());
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.SyncFinishedSuccess, StatusDescription = Log.ToString() });
-               
+
             }
             catch (Exception ex)
             {
                 FileLogger.WriteLogMessage(Log.ToString() + '\n' + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString(), eTypeLog.Error);
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = (parIsFull ? eSyncStatus.Error : eSyncStatus.NoFatalError),  StatusDescription = "SyncData=>" + Log.ToString() + '\n' + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = (parIsFull ? eSyncStatus.Error : eSyncStatus.NoFatalError), StatusDescription = "SyncData=>" + Log.ToString() + '\n' + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
                 Global.OnStatusChanged?.Invoke(db.GetStatus());
                 return false;
             }
-
             return true;
         }
-  
+
         public class TableStruc
         {
             public int Cid { get; set; }
@@ -188,7 +203,7 @@ namespace SharedLib
             public string Dflt_value { get; set; }
             public int PK { get; set; }
         }
-   
+
         public string BildSqlUpdate(string parTableName)
         {
             var r = db.db.Execute<TableStruc>($"PRAGMA table_info('{parTableName}');");
@@ -204,7 +219,6 @@ namespace SharedLib
                 else
                     Where += (Where.Length > 0 ? " or " : "") + $"main.{el.Name}!=upd.{el.Name}";
             }
-
             var Res = $"replace parTableName ({ListField}) \n select {ListField} from main.{parTableName}\n join upd.{parTableName} on ( {On})\n where {Where}";
             return Res;
         }
@@ -234,9 +248,8 @@ namespace SharedLib
             }
             //Перекидаємо лічильник на сьогодня.
             db.SetConfig<DateTime>("LastDaySend", Ldc);
-
         }
-        
+
         public async Task GetBonusAsync(Client pClient, int pIdWorkPlace)
         {
             try
@@ -252,33 +265,14 @@ namespace SharedLib
 
                 res = res.Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
                 if (!string.IsNullOrEmpty(res) && decimal.TryParse(res, out Sum))
-                    pClient.Wallet = Sum;               
+                    pClient.Wallet = Sum;
             }
             catch (Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdWorkPlace) , Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = ex.Message });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdWorkPlace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = ex.Message });
             }
             Global.OnClientChanged?.Invoke(pClient, pIdWorkPlace);
-
         }
-
-
-        public async Task SetSumBonus(Receipt pReceipt)
-        {
-            try
-            {
-               // pReceipt.NumberReceipt1C; pReceipt.SumBonus
-   
-               
-            }
-            catch (Exception ex)
-            {
-              //  Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pTerminalId), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = ex.Message });
-            }
-
-        }
-
-
 
         public async Task<bool> CheckDiscountBarCodeAsync(IdReceipt pIdReceipt, string pBarCode, int pPercent)
         {
@@ -343,18 +337,18 @@ namespace SharedLib
                 }
                 else
                 {
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceipt.IdWorkplace), Status = eSyncStatus.IncorectDiscountBarcode,StatusDescription= "CheckDiscountBarCodeAsync" });
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceipt.IdWorkplace), Status = eSyncStatus.IncorectDiscountBarcode, StatusDescription = "CheckDiscountBarCodeAsync" });
                     return false;
                 }
             }
 
             catch (Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.Error, StatusDescription = "CheckDiscountBarCodeAsync=>"+ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.Error, StatusDescription = "CheckDiscountBarCodeAsync=>" + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
             }
             return true;
         }
-    
+
         public void LoadWeightKasa(DateTime parDT = default(DateTime))
         {
             try
@@ -395,7 +389,7 @@ where nn=1 ";
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "LoadWeightKasa=> " + ex.Message });
             }
         }
-     
+
         public void LoadWeightKasa2Period(DateTime pDT = default(DateTime))
         {
             try
@@ -424,7 +418,7 @@ where nn=1 ";
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "LoadWeightKasa2Period=> " + ex.Message });
             }
         }
-   
+
         public void LoadWeightKasa2(DateTime parDT, int TypeSource = 0)
         {
             try
@@ -450,7 +444,7 @@ where RE.EVENT_TYPE=1"
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "LoadWeightKasa2=> " + ex.Message });
             }
         }
-   
+
         public async Task<string> GetQrCoffe(ReceiptWares pReceiptWares, int pOrder, int pWait = 5)
         {
             var Url = "https://dashboard.prostopay.net/api/v1/qreceipt/generate";
@@ -491,7 +485,7 @@ where RE.EVENT_TYPE=1"
 
             catch (Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pReceiptWares.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "GetQrCoffe=>"+ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pReceiptWares.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "GetQrCoffe=>" + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
                 rr.Add(new ReceiptEvent(pReceiptWares) { EventType = ReceiptEventType.ErrorQR, EventName = ex.Message, CreatedAt = DateTime.Now });
             }
             res = res.Replace("\"", "");
@@ -510,39 +504,36 @@ where RE.EVENT_TYPE=1"
                 if (Ldc == default(DateTime))
                     Ldc = today.AddDays(-10);
                 Ldc = Ldc.AddDays(1);
-                while (Ldc < today) 
-                {                    
+                while (Ldc < today)
+                {
                     var ldb = new WDB_SQLite(Ldc);
                     var t = ldb.GetReceiptWaresDeleted();
                     var res = await Send1CReceiptWaresDeletedAsync(t);
-                   
+
                     if (res)
                         db.SetConfig<DateTime>("LastDaySendDeleted", Ldc);
                     else
                         break;
-
                     Ldc = Ldc.AddDays(1);
-
                 }
             }
             catch (Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation {  Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "SendRWDeleteAsync=>" + Ldc.ToString() + " " + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });             
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "SendRWDeleteAsync=>" + Ldc.ToString() + " " + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
             }
 
         }
 
         public async Task<bool> Send1CReceiptWaresDeletedAsync(IEnumerable<ReceiptWaresDeleted1C> pRWD)
         {
-            if (pRWD == null || pRWD.Count()==0)
+            if (pRWD == null || pRWD.Count() == 0)
                 return true;
             try
             {
-                var d = new {data= pRWD };
+                var d = new { data = pRWD };
                 var r = JsonConvert.SerializeObject(d);
                 var plainTextBytes = Encoding.UTF8.GetBytes(r);
-                var resBase64 = Convert.ToBase64String(plainTextBytes);
-                //var r = new Receipt1C(parReceipt);
+                var resBase64 = Convert.ToBase64String(plainTextBytes);                
                 var body = soapTo1C.GenBody("DeletedItemsInTheCheck", new Parameters[] { new Parameters("JSONSting", resBase64) });
 
                 var res = await soapTo1C.RequestAsync(Global.Server1C, body, 60000, "application/json");
@@ -559,21 +550,16 @@ where RE.EVENT_TYPE=1"
                 return false;
             }
         }
-
-        //db.GetReceiptWaresDeleted();
     }
 
     public class WeightReceipt
     {
         public int TypeSource { get; set; }
         public int CodeWares { get; set; }
-       
         public decimal Weight { get; set; }
         public DateTime Date { get; set; }
         public int IdWorkplace { get; set; }
         public int CodeReceipt { get; set; }
         public decimal Quantity { get; set; }
     }
-
-
 }

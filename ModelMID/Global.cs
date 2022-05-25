@@ -40,6 +40,11 @@ namespace ModelMID
         /// Чи можна розраховуватись готівкою.
         /// </summary>
         public static bool IsCash = false;
+
+        /// <summary>
+        /// Час між синхронізаціями в секундах. 0- відклчено.
+        /// </summary>
+        public static int DataSyncTime = 0;
         /// <summary>
         /// Шлях до SqlLite бази
         /// </summary>

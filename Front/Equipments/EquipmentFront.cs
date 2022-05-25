@@ -40,7 +40,6 @@ namespace Front
         /// </summary>
         public bool IsReadySale { get { return Terminal.State == eStateEquipment.On && RRO.State == eStateEquipment.On; } }
 
-
         public eStateEquipment State
         {
             get { return _State; }
@@ -184,6 +183,12 @@ namespace Front
 
 
                 ListEquipment = NewListEquipment;
+
+                //Передаємо зміни станусів наверх.
+                foreach(var el in ListEquipment)
+                {
+                    el.ActionStatus += (Status) => { SetStatus?.Invoke(Status); };
+                }
 
                 State = eStateEquipment.On;
 

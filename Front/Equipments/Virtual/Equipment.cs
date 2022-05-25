@@ -25,7 +25,7 @@ namespace Front.Equipments
         protected IConfiguration Configuration;
 
         protected Action<string, string> Logger = null;
-        protected Action<StatusEquipment> ActionStatus;
+        public Action<StatusEquipment> ActionStatus;
 
         //public Action<eStateEquipment, eModelEquipment> SetState { get; set; }
 

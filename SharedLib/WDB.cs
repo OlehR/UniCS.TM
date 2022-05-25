@@ -919,7 +919,7 @@ namespace SharedLib
             if (Ldc != DateTime.Now.Date)
                 return Ldc;
 
-            return this.db.ExecuteScalar<DateTime>(SqlGetDateFirstNotSendReceipt);
+            return db.ExecuteScalar<DateTime>(SqlGetDateFirstNotSendReceipt);
 
         }
         public virtual DateTime GetLastUpdateDirectory()

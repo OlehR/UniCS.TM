@@ -25,7 +25,6 @@ namespace Front
 {
     public class Price
     {
-        //public static bool isFirst = true;
         public Price(decimal pPrice, bool pIsEnable, eTypeWares pTypeWares) //, bool pIsEnable = false
         {
             price = pPrice;
