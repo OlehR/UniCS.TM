@@ -326,7 +326,7 @@
 
                                         <Button x:Name="Plus" Click="BtnClickMinusPlus" Grid.Column="3">
                                             <Button.Content>
-                                                <Image Margin="15" Source="icons\plusWhite.png"></Image>
+                                                <Image Margin="15" Source="icons\plus.png"></Image>
                                             </Button.Content>
                                             <Button.Style>
                                                 <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
@@ -493,7 +493,7 @@
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
                  Grid.Column="0" Grid.ColumnSpan="6"
-                 Name="CustomWindows" Visibility="Collapsed" Grid.ZIndex="2" 
+                 Name="CustomWindows" Visibility="Visible" Grid.ZIndex="2" 
                 CornerRadius="10"  Margin="10,0,10,0" >
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
@@ -521,7 +521,8 @@
                                    Source="{Binding customWindow.PathPicture, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}"/>
                             <TextBox Grid.Row="2" TabIndex="1" x:Name="TextBoxCustomWindows"
-                                 FontSize="20"  VerticalAlignment="Center" />
+                                     TextChanged="CustomWindowVerificationText"
+                                     FontSize="20"  VerticalAlignment="Center" />
 
                             <ScrollViewer  VerticalScrollBarVisibility="Auto" Height="150"  x:Name="ButtonsCustomWindows" >
                                 <ItemsControl Name="CustomWindowsItemControl" VerticalAlignment="Center">
@@ -535,9 +536,24 @@
                             </ScrollViewer>
                             <Grid >
                                 <Button Height="Auto" Width="100"  
-                                    x:Name="OKCustomWindows" Click="CustomWindowClickButton"
-                                    Style="{StaticResource greenButton}" Content="Ок" 
-                                    HorizontalAlignment="Left"/>
+                                    x:Name="OKCustomWindows" Click="CustomWindowClickButton" Content="Ок" 
+                                    HorizontalAlignment="Left">
+                                    <Button.Style>
+                                        <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
+                                            <Setter Property="IsEnabled" Value="True"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding CustomWindowValidText, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                                    <Setter Property="IsEnabled" Value="True" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding CustomWindowValidText, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                                    <Setter Property="IsEnabled" Value="False" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
                                 <Button Height="Auto" Width="Auto" 
                                     x:Name="CancelCustomWindows" Click="CustomWindowClickButton"
                                     Style="{StaticResource Default}" Content="Відмінити" 

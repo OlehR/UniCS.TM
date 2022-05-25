@@ -161,6 +161,10 @@ namespace Front
         /// полоса стану обміну
         /// </summary>
         public string ExchangeRateBar { get; set; } = "LightGreen";
+        /// <summary>
+        /// Показати кнопку "Ок" якщо текст введений правильно
+        /// </summary>
+        public bool CustomWindowValidText { get; set; }
 
 
         public MainWindow()
@@ -204,7 +208,11 @@ namespace Front
                 FileLogger.WriteLogMessage($"MainWindow.OnSyncInfoCollected Status=>{SyncInfo.Status} StatusDescription=>{SyncInfo.StatusDescription}", eTypeLog.Full);
             };
 
-            Global.OnStatusChanged += (Status) => { };
+            Global.OnStatusChanged += (Status) =>
+            {
+                ExchangeRateBar = Status.StringColor;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ExchangeRateBar"));
+            };
             Global.OnClientChanged += (pClient, pIdWorkPlace) =>
             {
                 Client = pClient;
@@ -448,9 +456,9 @@ namespace Front
                             BackgroundWares.Visibility = Visibility.Visible;
                             break;
                         case eStateMainWindows.WaitCustomWindows:
-                            if(customWindow?.Buttons!=null)
-                             CustomWindowsItemControl.ItemsSource = new ObservableCollection<CustomButton>(customWindow.Buttons);
-                             ButtonsCustomWindows.Visibility = customWindow?.Buttons == null? Visibility.Collapsed: Visibility.Visible;
+                            if (customWindow?.Buttons != null)
+                                CustomWindowsItemControl.ItemsSource = new ObservableCollection<CustomButton>(customWindow.Buttons);
+                            ButtonsCustomWindows.Visibility = customWindow?.Buttons == null ? Visibility.Collapsed : Visibility.Visible;
 
                             if (customWindow.Caption == null) CaptionCustomWindows.Visibility = Visibility.Collapsed;
                             if (customWindow.PathPicture == null) ImageCustomWindows.Visibility = Visibility.Collapsed;
@@ -1035,32 +1043,44 @@ namespace Front
             Button btn = sender as Button;
             CustomButton res = btn.DataContext as CustomButton;
 
-            if(res==null)
+            if (res == null)
             {
                 if (btn.Name.Equals("OKCustomWindows"))
                     res = new CustomButton() { Id = 1 };
             }
-            if (res!=null)
+            if (res != null)
             {
-                var r = new CustomWindowAnswer() {idReceipt= curReceipt, Id = customWindow.Id, IdButton = res.Id, Text= TextBoxCustomWindows.Text };
+                var r = new CustomWindowAnswer() { idReceipt = curReceipt, Id = customWindow.Id, IdButton = res.Id, Text = TextBoxCustomWindows.Text };
                 Bl.SetCustomWindows(r);
             }
-            
+
         }
 
         private void FindClientByPhoneClick(object sender, RoutedEventArgs e)
         {
+            TextBoxCustomWindows.Text = null;
             customWindow = new CustomWindow()
             {
-                Id= eWindows.PhoneClient,
+                Id = eWindows.PhoneClient,
                 Text = "Введіть ваш номер!",
                 Caption = "Пошук за номером телефону",
                 AnswerRequired = true,
-                ValidationMask = @"^[0-9]+$",
-               // Buttons = new List<CustomButton>() {new CustomButton() { Id = 666, Text = "Пошук картки" } }
+                ValidationMask = @"^[+]{0,1}[0-9]{10,13}$",
+                // Buttons = new List<CustomButton>() {new CustomButton() { Id = 666, Text = "Пошук картки" } }
             };
-           
+
             SetStateView(eStateMainWindows.WaitCustomWindows);
+        }
+
+        private void CustomWindowVerificationText(object sender, TextChangedEventArgs e)
+        { 
+            CustomWindowValidText = true;
+            if (customWindow?.ValidationMask != null)
+            {
+                TextBox textBox = (TextBox)sender;
+                Regex regex = new Regex(customWindow.ValidationMask);
+                CustomWindowValidText = regex.IsMatch(textBox.Text);
+            }
         }
     }
 }
