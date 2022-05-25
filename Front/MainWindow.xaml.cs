@@ -199,6 +199,8 @@ namespace Front
 
             Global.OnSyncInfoCollected += (SyncInfo) =>
             {
+                //if (SyncInfo.Status == eSyncStatus.StartedFullSync) ; 
+
                 FileLogger.WriteLogMessage($"MainWindow.OnSyncInfoCollected Status=>{SyncInfo.Status} StatusDescription=>{SyncInfo.StatusDescription}", eTypeLog.Full);
             };
 
