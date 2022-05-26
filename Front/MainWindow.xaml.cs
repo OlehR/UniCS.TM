@@ -187,7 +187,12 @@ namespace Front
             };
             Global.OnReceiptCalculationComplete += (pReceipt) =>
             {
+               
+                //CurWares.ExciseStamp = 
                 SetCurReceipt(pReceipt);
+                string ExciseStamp = curReceipt?.Wares?.Where(r => r.CodeWares == CurWares.CodeWares)?.First()?.ExciseStamp;
+                if (!string.IsNullOrEmpty(ExciseStamp))
+                    CurWares.ExciseStamp = ExciseStamp;
 
                 try
                 {
@@ -278,11 +283,7 @@ namespace Front
                 new CustomButton(){Id =4, Text="asdvssdvsdfadvsdfvsdf button" },
             };
         }
-        string  GetExciseStamp(string pBarCode)
-        {
-            return pBarCode;
-        }
-
+        
         public void GetBarCode(string pBarCode, string pTypeBarCode)
         {
             if(State == eStateMainWindows.WaitExciseStamp)
@@ -290,7 +291,8 @@ namespace Front
                 string ExciseStamp = GetExciseStamp(pBarCode);
                 if (!string.IsNullOrEmpty(ExciseStamp))
                 {
-                   // Bl.UpdateExciseStamp(new List<ReceiptWares>() { new ReceiptWares(curReceipt,});
+                    AddExciseStamp(ExciseStamp);
+                    return;
                 }
                 
             }
@@ -903,11 +905,26 @@ namespace Front
         {
         }
 
+        private string GetExciseStamp(string pBarCode)
+        {
+            Regex regex = new Regex(@"^\w{4}[0-9]{6}?$");
+            if(regex.IsMatch(pBarCode))
+                return pBarCode;
+            return null;
+        }
+
         private void AddExciseStamp(object sender, RoutedEventArgs e)
         {
-            if (CurWares.AddExciseStamp(TBExciseStamp.Text))
-                //Додання акцизноії марки до алкоголю
+            AddExciseStamp(TBExciseStamp.Text);
+        }
+
+        void AddExciseStamp(string pES)
+        {
+            if (CurWares.AddExciseStamp(pES))
+            {                 //Додання акцизноії марки до алкоголю
                 SetStateView(eStateMainWindows.WaitInput);
+                Bl.UpdateExciseStamp(new List<ReceiptWares>() { CurWares });
+            }
             else
                 MessageBox.Show($"Дана акцизна марка вже використана");
         }
@@ -915,9 +932,8 @@ namespace Front
 
         private void ChangedExciseStamp(object sender, TextChangedEventArgs e)
         {
-            TextBox textBox = (TextBox)sender;
-            Regex regex = new Regex(@"^\w{4}[0-9]{6}?$");
-            isExciseStamp = regex.IsMatch(textBox.Text);
+            TextBox textBox = (TextBox)sender;           
+            isExciseStamp = !string.IsNullOrEmpty(GetExciseStamp(textBox.Text));
         }
 
         private void ExciseStampNone(object sender, RoutedEventArgs e)
