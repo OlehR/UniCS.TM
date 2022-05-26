@@ -50,7 +50,9 @@ namespace Test
             //await l.LoadRozetka();//GetInfoBarcode("4820009350588");
 
 
-            await CreateDataBaseAsync(false); return;
+            ParserQRCode("https://t.gov.ua/ABST773366/0035184264"); return;
+
+            //await CreateDataBaseAsync(false); return;
             //var aa= Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
             //var bl = new BL();
             //var aaaaa=bl.Ver;
@@ -68,6 +70,19 @@ namespace Test
             Console.WriteLine("Sleep");
 
             Thread.Sleep(10000000);
+        }
+
+        static string ParserQRCode(string QRCode)
+        {
+            //string QRCode = "https://t.gov.ua/ABST773366/0035184264";
+            string Res = null;
+            if (QRCode.Contains("t.gov.ua"))
+            {
+                Res = QRCode.Substring(QRCode.IndexOf("t.gov.ua") + 9);
+                Res = Res.Substring(0, Res.Length - 11);
+            }
+            Console.WriteLine(Res);
+            return Res;
         }
 
         static async Task CreateDataBaseAsync(bool isFull = true)

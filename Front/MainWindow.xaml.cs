@@ -910,6 +910,11 @@ namespace Front
             Regex regex = new Regex(@"^\w{4}[0-9]{6}?$");
             if(regex.IsMatch(pBarCode))
                 return pBarCode;
+            if (pBarCode.Contains("t.gov.ua"))
+            {
+                string Res = pBarCode.Substring(pBarCode.IndexOf("t.gov.ua") + 9);
+                return Res.Substring(0, Res.Length - 11);
+            }
             return null;
         }
 
