@@ -11,15 +11,9 @@ using Utils;
 
 namespace SharedLib
 {
-
-
     public partial class WDB_SQLite : WDB
     {
-        //private SQLite db;
-        //public SQLite db_receipt;
         private static bool IsFirstStart = true;
-
-
         protected string SqlCreateMIDTable = @"";
         protected string SqlCreateMIDIndex = @"";
         protected string SqlGetPricePromotionKit = @"";
@@ -34,13 +28,6 @@ namespace SharedLib
         private string GetReceiptFile(DateTime pDT) { return Path.Combine(ModelMID.Global.PathDB, $"{pDT:yyyyMM}", $"Rc_{ModelMID.Global.IdWorkPlace}_{pDT:yyyyMMdd}.db"); }
 
         private string ReceiptFile { get { return GetReceiptFile(DT); } }
-
-        /*if (pIsUseOldDB &&!File.Exists(MidFile) && string.IsNullOrEmpty(parConnect))
-            {
-                var varLastMidFile = GetConfig<string>("Last_MID");
-                if (!string.IsNullOrEmpty(varLastMidFile))                
-                    MidFile = varLastMidFile;
-            }*/
 
         public string GetCurrentMIDFile
         {
@@ -150,77 +137,7 @@ namespace SharedLib
             SqlGetPricePromotionKit = GetSQL("SqlGetPricePromotionKit");
             return true;
         }
-        /*
-                public override eRezultFind FindData(string parStr, eTypeFind parTypeFind = eTypeFind.All)
-                {
-                    eRezultFind varRezult;
-                    varRezult.Count = 0;
-                    varRezult.TypeFind = eTypeFind.All;
-                    string varStr = parStr.Trim();
-                    Int64 varNumber = 0;
-                    Int64.TryParse(varStr, out varNumber);
-                    this.db.ExecuteNonQuery("delete from T$1");
-                    // Шукаемо Товар
-
-                    if (parTypeFind != eTypeFind.Client)
-                    {
-                        varRezult.TypeFind = eTypeFind.Wares;
-                        if (varNumber > 0)
-                        {
-                            if (varStr.Length >= GlobalVar.MinLenghtBarCodeWares)
-                            {//Шукаємо по штрихкоду
-                                this.db.ExecuteNonQuery(this.SqlFindWaresBar, new { BarCode = varStr });
-                            }
-                            else//Шукаемо по коду
-                            {
-                                if (GlobalVar.TypeFindWares < 2)
-                                    this.db.ExecuteNonQuery(this.SqlFindWaresCode + varStr);
-                            }
-                        }
-                        else // Шукаємо по назві
-                        {
-                            if (GlobalVar.TypeFindWares == 0)//Можна шукати по назві
-                                this.db.ExecuteNonQuery(SqlFindWaresName + "'%" + varStr.ToUpper().Replace(" ", "%") + "%'");
-                        }
-                        varRezult.Count = this.GetCountT1();
-
-                        if (varRezult.Count > 0) return varRezult;//Знайшли товар
-                    }
-                    // ШукаемоКлієнта
-
-                    if (parTypeFind != eTypeFind.Wares)
-                    {
-                        varRezult.TypeFind = eTypeFind.Client;
-                        if (varNumber > 0)
-                        {
-                            if (varStr.Length >= GlobalVar.MinLenghtBarCodeClient)
-                            {//Шукаємо по штрихкоду
-
-                                this.db.ExecuteNonQuery(SqlFindClientBar, new { BarCode = varStr });
-
-                            }
-                            else
-                                if (GlobalVar.TypeFindClient < 2)
-                            {
-                                this.db.ExecuteNonQuery<object>(SqlFindClientCode, new { CodePrivat = varStr });
-                            }
-                        }
-                        else // Пошук по назві
-                        {
-                            if (GlobalVar.TypeFindClient == 0)//Можна шукати по назві
-                                this.db.ExecuteNonQuery(SqlFindClientName + "'%" + varStr.Replace(" ", "%") + "%'");
-
-                        }
-                    }
-                    varRezult.Count=this.GetCountT1();
-
-                    if( varRezult.Count==0) 
-                        varRezult.TypeFind=eTypeFind.All;
-
-                    return varRezult;
-
-                }
-                */
+  
         public Task RecalcPriceAsync(IdReceiptWares pIdReceiptWares)
         {
             return Task.Run(() => RecalcPrice(pIdReceiptWares)).ContinueWith(async res =>
@@ -298,7 +215,7 @@ namespace SharedLib
                 }
                 catch (Exception ex)
                 {
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceiptWares.IdWorkplace), Exception = ex, Status = eSyncStatus.Error, StatusDescription = "RecalcPrice=>" + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceiptWares.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "RecalcPrice=>" + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
                     return false;
                 }
             }

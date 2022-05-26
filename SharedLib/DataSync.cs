@@ -21,10 +21,10 @@ namespace SharedLib
         public BL bl;
 
         public SoapTo1C soapTo1C;
-        public DataSync(BL parBL)
+        public DataSync(BL pBL)
         {
             soapTo1C = new SoapTo1C();
-            bl = parBL; ///!!!TMP Трохи костиль 
+            bl = pBL; ///!!!TMP Трохи костиль 
             StartSyncData();
         }
 
@@ -306,14 +306,11 @@ namespace SharedLib
                 else
                 {
                     Cat2First.Quantity = LastQuantyity;
-
-
                     try
                     {
                         var body = soapTo1C.GenBody("GetRestOfLabel", new Parameters[] { new Parameters("CodeOfLabel", pBarCode) });
                         var res = await soapTo1C.RequestAsync(Global.Server1C, body, 2000);
                         isGood = res.Equals("1");
-
                         Global.ErrorDiscountOnLine = 0;
                     }
                     catch (Exception ex)
@@ -331,8 +328,7 @@ namespace SharedLib
                     db.ReplaceWaresReceiptPromotion(Cat2);
                     db.InsertBarCode2Cat(Cat2First);
                     db.RecalcHeadReceipt(pIdReceipt);
-                    var r = //bl.ViewReceiptWares(new IdReceiptWares(pIdReceipt, 0), true);//вертаємо весь чек.
-                    bl.GetReceiptHead(pIdReceipt, true);
+                    var r = bl.GetReceiptHead(pIdReceipt, true);
                     Global.OnReceiptCalculationComplete?.Invoke(r);
                 }
                 else
@@ -344,7 +340,7 @@ namespace SharedLib
 
             catch (Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.Error, StatusDescription = "CheckDiscountBarCodeAsync=>" + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "CheckDiscountBarCodeAsync=>" + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
             }
             return true;
         }
