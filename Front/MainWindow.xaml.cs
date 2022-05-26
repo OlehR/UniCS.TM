@@ -278,8 +278,23 @@ namespace Front
                 new CustomButton(){Id =4, Text="asdvssdvsdfadvsdfvsdf button" },
             };
         }
+        string  GetExciseStamp(string pBarCode)
+        {
+            return pBarCode;
+        }
+
         public void GetBarCode(string pBarCode, string pTypeBarCode)
         {
+            if(State == eStateMainWindows.WaitExciseStamp)
+            {
+                string ExciseStamp = GetExciseStamp(pBarCode);
+                if (!string.IsNullOrEmpty(ExciseStamp))
+                {
+                   // Bl.UpdateExciseStamp(new List<ReceiptWares>() { new ReceiptWares(curReceipt,});
+                }
+                
+            }
+
             if (State == eStateMainWindows.WaitInput)
             {
                 if (curReceipt?.IsLockChange == false)
