@@ -1,5 +1,6 @@
 ﻿using Front.Equipments;
 using ModelMID;
+using ModelMID.DB;
 using SharedLib;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,7 @@ namespace Front
         ObservableCollection<Receipt> Receipts;
         BL Bl;
         Receipt curReceipt = null;
-        public Admin()
+        public Admin(User AdminUser)
         {
             EF = EquipmentFront.GetEquipmentFront;
             Bl = BL.GetBL;
@@ -37,6 +38,7 @@ namespace Front
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += timer_Tick;
             timer.Start();
+            adminastratorName.Text = AdminUser.NameUser;
         }
 
         void timer_Tick(object sender, EventArgs e)
@@ -190,6 +192,17 @@ namespace Front
         private void ReturnAllCheckButton(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Повернути весь чек");
+        }
+
+        private void FindChecksByDate(object sender, RoutedEventArgs e)
+        {
+            if (TabHistory.IsSelected)
+            {
+                DateTime dt = dataHistori.SelectedDate.Value.Date;
+                Receipts = new ObservableCollection<Receipt>(Bl.GetReceipts(dt, dt, Global.IdWorkPlace));
+                ListReceipts.ItemsSource = Receipts;
+            }
+            // Поки не знаю як реалізувати пошук
         }
     }
 }
