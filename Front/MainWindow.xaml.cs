@@ -885,7 +885,7 @@ namespace Front
             if (Access.GetRight(U, eTypeAccess.AdminPanel))
             {
                 SetStateView(eStateMainWindows.WaitInput);
-                Admin ad = new Admin();
+                Admin ad = new Admin(U);
                 ad.Show();
             }
             else
