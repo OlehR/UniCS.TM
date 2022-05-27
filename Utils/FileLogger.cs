@@ -17,7 +17,7 @@ namespace Utils
         private static int IdWorkplace;
         public static eTypeLog TypeLog = eTypeLog.Full;
 
-
+        public static string GetFileName { get { return $"{Path.Combine(PathLog, $"Log_{IdWorkplace}_{DateTime.Now:yyyyMMdd}.log")}"; } }
         private static Dictionary<int, Type> _types = new Dictionary<int, Type>();
 
         private static readonly object Locker = new object();
@@ -91,10 +91,8 @@ namespace Utils
             {
                 lock (Locker)
                 {
-                    var date = DateTime.Now;
-                    File.AppendAllText(
-                        $"{Path.Combine(PathLog, $"Log_{IdWorkplace}_{date:yyyyMMdd}.log")}",
-                        $@"[{date:dd-MM-yyyy HH:mm:ss:ffff}] {Enum.GetName(typeof(eTypeLog), pTypeLog)} {message}{Environment.NewLine}");
+                    File.AppendAllText(GetFileName,
+                        $@"[{DateTime.Now:dd-MM-yyyy HH:mm:ss:ffff}] {Enum.GetName(typeof(eTypeLog), pTypeLog)} {message}{Environment.NewLine}");
                 }
             });
         }

@@ -68,7 +68,9 @@ namespace Front
         public bool Volume { get; set; }
         public string ChangeSumPaymant { get; set; } = "0";
         public bool IsIgnoreExciseStamp { get; set; }
-        public bool isExciseStamp { get; set; }
+        public bool IsExciseStamp { get; set; }
+        bool _IsLockSale = true;
+        public bool IsLockSale { get { return _IsLockSale; } set { if (_IsLockSale != value) { SetStateView(!value && State== eStateMainWindows.WaitAdmin? eStateMainWindows.WaitInput : eStateMainWindows.NotDefine); _IsLockSale = value; } } }
         public string GetBackgroundColor { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? "#FFE5E5" : "#FFFFFF"; } }
         public bool IsCheckReturn { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? true : false; } }
         public bool PriceIsNotZero
@@ -81,8 +83,7 @@ namespace Front
                 }
                 else return false;
             }
-        }
-
+        }        
         public string ClientName { get { return Client?.NameClient ?? "Відсутній клієнт"; } }
         public bool IsPresentFirstTerminal
         {
@@ -136,6 +137,10 @@ namespace Front
                 {
                     case eTypeAccess.DelWares: return ($"Видалення товару: {CurWares?.NameWares}");
                     case eTypeAccess.DelReciept: return "Видалити чек";
+                    case eTypeAccess.StartFullUpdate: return "Повне оновлення БД";
+                    case eTypeAccess.ErrorFullUpdate: return "Помилка повного оновлення БД";
+                    case eTypeAccess.ErrorEquipment: return "Проблема з критично важливим обладнанням";
+                    case eTypeAccess.LockSale: return "Зміна заблокована";
                 }
                 return null;
             }
@@ -178,13 +183,11 @@ namespace Front
             Bl = new BL(true);
             EF = new EquipmentFront(Bl.GetBarCode, SetWeight, CS.OnScalesData);
 
-            //SetBarCode += Bl.GetBarCode;// (pBarCode, pTypeBarCode) => { Bl.GetBarCode(pBarCode, pTypeBarCode); };
-            //SetControlWeight += Bl.CS.OnScalesData; // (pWeight, isStable)=>{ });
-            //ad =  new Admin();
             EF.SetStatus += (info) =>
             {
                 EquipmentInfo = info.TextState;
             };
+
             Global.OnReceiptCalculationComplete += (pReceipt) =>
             {
                
@@ -208,7 +211,18 @@ namespace Front
 
             Global.OnSyncInfoCollected += (SyncInfo) =>
             {
-                //if (SyncInfo.Status == eSyncStatus.StartedFullSync) ; 
+                //Почалось повне оновлення.
+                if (SyncInfo.Status == eSyncStatus.StartedFullSync)
+                    SetWaitConfirm(eTypeAccess.StartFullUpdate);
+                //Помилка оновлення.
+                if (SyncInfo.Status == eSyncStatus.Error)
+                    SetWaitConfirm(eTypeAccess.ErrorFullUpdate);
+                
+                if (TypeAccessWait==eTypeAccess.StartFullUpdate && SyncInfo.Status == eSyncStatus.SyncFinishedSuccess)
+                {
+                    TypeAccessWait = eTypeAccess.NoDefinition;                    
+                    SetStateView(eStateMainWindows.WaitInput);
+                }
 
                 FileLogger.WriteLogMessage($"MainWindow.OnSyncInfoCollected Status=>{SyncInfo.Status} StatusDescription=>{SyncInfo.StatusDescription}", eTypeLog.Full);
             };
@@ -257,6 +271,7 @@ namespace Front
 
             CultureInfo currLang = App.Language;
             Recalc();
+            SetStateView(eStateMainWindows.StartWindow);
         }
 
         private void SetCurReceipt(Receipt pReceipt)
@@ -316,7 +331,7 @@ namespace Front
         {
             IsIgnoreExciseStamp = Access.GetRight(pUser, eTypeAccess.ExciseStamp);
 
-            if (TypeAccessWait == eTypeAccess.NoDefinition)
+            if (TypeAccessWait == eTypeAccess.NoDefinition || TypeAccessWait<0)
                 return;
             if (!Access.GetRight(pUser, TypeAccessWait))
             {
@@ -371,10 +386,15 @@ namespace Front
         {
             Dispatcher.BeginInvoke(new ThreadStart(() =>
                 {
+   
                     if (pSMV != eStateMainWindows.NotDefine)
                         State = pSMV;
+                    if (IsLockSale && State != eStateMainWindows.WaitAdmin && State != eStateMainWindows.WaitAdminLogin)
+                    {
+                        SetWaitConfirm(eTypeAccess.LockSale);
+                    }
                     if (State != eStateMainWindows.WaitAdmin && State != eStateMainWindows.WaitAdminLogin)
-                        TypeAccessWait = eTypeAccess.NoDefinition;
+                        TypeAccessWait = eTypeAccess.NoDefinition;                    
 
                     ExciseStamp.Visibility = Visibility.Collapsed;
                     ChoicePrice.Visibility = Visibility.Collapsed;
@@ -417,7 +437,6 @@ namespace Front
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;
                             ChoicePrice.Visibility = Visibility.Visible;
-
 
                             break;
                         case eStateMainWindows.WaitExciseStamp:
@@ -473,6 +492,7 @@ namespace Front
                             BackgroundWares.Visibility = Visibility.Visible;
                             break;
                         case eStateMainWindows.WaitCustomWindows:
+                            TextBoxCustomWindows.Text = null;
                             if (customWindow?.Buttons != null)
                                 CustomWindowsItemControl.ItemsSource = new ObservableCollection<CustomButton>(customWindow.Buttons);
                             ButtonsCustomWindows.Visibility = customWindow?.Buttons == null ? Visibility.Collapsed : Visibility.Visible;
@@ -878,7 +898,7 @@ namespace Front
                 return;
             }
 
-            if (TypeAccessWait != eTypeAccess.NoDefinition)
+            if ( TypeAccessWait>0)//TypeAccessWait != eTypeAccess.NoDefinition 
             {
                 SetConfirm(U, true);
                 return;
@@ -887,7 +907,7 @@ namespace Front
             if (Access.GetRight(U, eTypeAccess.AdminPanel))
             {
                 SetStateView(eStateMainWindows.WaitInput);
-                Admin ad = new Admin(U);
+                Admin ad = new Admin(U,this);
                 ad.Show();
             }
             else
@@ -940,7 +960,7 @@ namespace Front
         private void ChangedExciseStamp(object sender, TextChangedEventArgs e)
         {
             TextBox textBox = (TextBox)sender;           
-            isExciseStamp = !string.IsNullOrEmpty(GetExciseStamp(textBox.Text));
+            IsExciseStamp = !string.IsNullOrEmpty(GetExciseStamp(textBox.Text));
         }
 
         private void ExciseStampNone(object sender, RoutedEventArgs e)
@@ -1095,8 +1115,7 @@ namespace Front
         }
 
         private void FindClientByPhoneClick(object sender, RoutedEventArgs e)
-        {
-            TextBoxCustomWindows.Text = null;
+        {               
             customWindow = new CustomWindow()
             {
                 Id = eWindows.PhoneClient,

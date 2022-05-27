@@ -39,7 +39,7 @@ namespace ModelMID
         /// <summary>
         /// Чи можна розраховуватись готівкою.
         /// </summary>
-        public static bool IsCash = false;
+        public static bool IsCash = false;      
 
         /// <summary>
         /// Час між синхронізаціями в секундах. 0- відклчено.

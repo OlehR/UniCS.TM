@@ -313,11 +313,15 @@ namespace ModelMID
         DelReciept = 2,
         ChoicePrice = 3,
         ConfirmAge = 4,
-        ExciseStamp = 5,
+        ExciseStamp =5,
         FixWeight = 6,
         AddNewWeight = 7,
         ReturnReceipt = 8,
-        AdminPanel =9
+        AdminPanel =9,
+        LockSale = -1,
+        StartFullUpdate = -2,
+        ErrorFullUpdate = -3,
+        ErrorEquipment = -4
     }
 
     public enum eTypeAccessAnsver

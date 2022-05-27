@@ -24,9 +24,11 @@ namespace Front
         ObservableCollection<Equipment> LE;
         ObservableCollection<Receipt> Receipts;
         BL Bl;
+        MainWindow MW;
         Receipt curReceipt = null;
-        public Admin(User AdminUser)
+        public Admin(User AdminUser, MainWindow pMW)
         {
+            MW = pMW;
             EF = EquipmentFront.GetEquipmentFront;
             Bl = BL.GetBL;
             InitializeComponent();
@@ -100,12 +102,12 @@ namespace Front
 
         private void WorkStart_Click(object sender, RoutedEventArgs e)
         {
-
+            MW.IsLockSale = false;
         }
 
         private void WorkFinish_Click(object sender, RoutedEventArgs e)
         {
-
+            MW.IsLockSale = true;
         }
 
         private void CloseDay_Click(object sender, RoutedEventArgs e)

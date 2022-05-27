@@ -37,15 +37,17 @@ namespace SharedLib
 
         public bool GetRight(eTypeUser pTypeUser, eTypeAccess pTypeRight)
         {
+            if (pTypeRight < 0)
+                return true;
             return (int)Right[pTypeRight]<= (int)pTypeUser;
         }
         public bool GetRight(eTypeAccess pTypeRight)
         {
-            return (int)Right[pTypeRight] <= (int)СurUser.TypeUser;
+            return GetRight(СurUser.TypeUser, pTypeRight);  //(int)Right[pTypeRight] <= (int)СurUser.TypeUser;
         }
         public bool GetRight(User pUser, eTypeAccess pTypeRight)
         {
-            return (int)Right[pTypeRight] <= (int)pUser.TypeUser;
+            return GetRight(pUser.TypeUser, pTypeRight); //(int)Right[pTypeRight] <= (int)pUser.TypeUser;
         }
     }
 }
