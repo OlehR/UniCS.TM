@@ -115,7 +115,9 @@
             <RowDefinition Height="10*"/>
         </Grid.RowDefinitions>
 
-        <Label Grid.Row="0"  Content="Kasa number" Name="kasaNumber" FontSize="80" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBlock Grid.Row="0"  Text="{Binding KasaNumber, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" 
+                   Name="kasaNumberTextBlock" FontSize="24" HorizontalAlignment="Left" VerticalAlignment="Center"/>
         <Label Grid.Row="0"  Content="Error" Name="lblTime" FontSize="48" HorizontalAlignment="Right" VerticalAlignment="Top" />
         <TextBlock Grid.Row="0"  Text="Adminastrator Name" Name="adminastratorName" FontSize="20" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
         <TabControl Grid.Row="1" Name="TabAdmin" Margin="20" SelectionChanged="TabControl_SelectionChanged" >
@@ -147,8 +149,40 @@
                     </GroupBox>
                     <GroupBox Grid.Column="2" Header="Зміна" Margin="10, 20 , 20 ,20">
                         <StackPanel>
-                            <Button x:Name="WorkStart" Style="{StaticResource Default}" Content="Почати зміну"  Height="60"  Width="280" Click="WorkStart_Click"/>
-                            <Button x:Name="WorkFinish" Style="{StaticResource Default}" Content="Завершити зміну"  Height="60" Width="280" Click="WorkFinish_Click" />
+                            <Button x:Name="WorkStart"  Content="Почати зміну"  Height="60"  Width="280" Click="WorkStart_Click">
+                                <Button.Style>
+                                    <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                        <Setter Property="IsEnabled" Value="True"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ClosedShift, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                                <Setter Property="IsEnabled" Value="True" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding ClosedShift, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                                <Setter Property="IsEnabled" Value="False" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button x:Name="WorkFinish" Content="Завершити зміну"  Height="60" Width="280" Click="WorkFinish_Click" >
+                                <Button.Style>
+                                    <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                        <Setter Property="IsEnabled" Value="True"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ClosedShift, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                                <Setter Property="IsEnabled" Value="True" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding ClosedShift, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                                <Setter Property="IsEnabled" Value="False" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
                             <Button x:Name="CloseDay" Style="{StaticResource Default}" Content="Закриття дня" Height="60" Width="280" Click="CloseDay_Click" />
                         </StackPanel>
                     </GroupBox>
@@ -317,6 +351,9 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
+                    
+                    
+                    
                     <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
 
                         <Button  Grid.Column="2" FontSize="20" Click="PayAdminPanelButton" Height="60">

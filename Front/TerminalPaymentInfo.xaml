@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Front" xmlns:keyboard="clr-namespace:OnScreenKeyboardControl.Keyboard"
         mc:Ignorable="d"
         Title="TerminalPaymentInfo" WindowStyle="None"
-        WindowState="Normal"
+        WindowState="Normal" ShowInTaskbar="False"
         Height="768" Width="1024">
     <Grid x:Name="BasicGrid" >
         <Grid.RowDefinitions>

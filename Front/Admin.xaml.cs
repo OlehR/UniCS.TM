@@ -26,6 +26,8 @@ namespace Front
         BL Bl;
         MainWindow MW;
         Receipt curReceipt = null;
+        public bool ClosedShift { get { return MW.IsLockSale; } }
+        public string KasaNumber { get { return $"Каса № " + Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace).IdWorkplace.ToString(); }  }
         public Admin(User AdminUser, MainWindow pMW)
         {
             MW = pMW;
@@ -103,11 +105,13 @@ namespace Front
         private void WorkStart_Click(object sender, RoutedEventArgs e)
         {
             MW.IsLockSale = false;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClosedShift"));
         }
 
         private void WorkFinish_Click(object sender, RoutedEventArgs e)
         {
             MW.IsLockSale = true;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClosedShift"));
         }
 
         private void CloseDay_Click(object sender, RoutedEventArgs e)
@@ -170,7 +174,12 @@ namespace Front
 
         private void PaymentDetailsAdminPanelButton(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Реквізити на оплату");
+            //MessageBox.Show("Реквізити на оплату");
+            TerminalPaymentInfo terminalPaymentInfo = new TerminalPaymentInfo(this);
+            if (terminalPaymentInfo.ShowDialog() == true)
+            {
+                var Res = terminalPaymentInfo.enteredDataFromTerminal;
+            }
         }
 
         private void Transfer1CButton(object sender, RoutedEventArgs e)
