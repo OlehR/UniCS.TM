@@ -218,12 +218,12 @@ namespace Front
 
         private void PowerOff(object sender, RoutedEventArgs e)
         {
-
+            System.Diagnostics.Process.Start("shutdown.exe", "-s -t 0");
         }
 
         private void RebootPC(object sender, RoutedEventArgs e)
         {
-
+            System.Diagnostics.Process.Start("shutdown.exe", "-r -t 0");
         }
     }
 }
