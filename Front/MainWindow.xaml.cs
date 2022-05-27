@@ -190,12 +190,26 @@ namespace Front
 
             Global.OnReceiptCalculationComplete += (pReceipt) =>
             {
-               
-                //CurWares.ExciseStamp = 
-                SetCurReceipt(pReceipt);
-                string ExciseStamp = curReceipt?.Wares?.Where(r => r.CodeWares == CurWares.CodeWares)?.First()?.ExciseStamp;
-                if (!string.IsNullOrEmpty(ExciseStamp))
-                    CurWares.ExciseStamp = ExciseStamp;
+                try
+                {
+                    SetCurReceipt(pReceipt);
+                    string ExciseStamp = null;
+                    if (CurWares != null)
+                    {
+                        var lw = curReceipt?.Wares?.Where(r => r.CodeWares == CurWares.CodeWares);
+                        if (lw != null && lw.Count() == 1)
+                        {
+                            ExciseStamp = lw.First()?.ExciseStamp;
+
+                            if (!string.IsNullOrEmpty(ExciseStamp))
+                                CurWares.ExciseStamp = ExciseStamp;
+                        }
+                    }
+                }
+                catch (Exception e) 
+                {
+                    FileLogger.WriteLogMessage($"MainWindow.OnReceiptCalculationComplete Exception =>(pReceipt=>{pReceipt.ToJSON()}) => ({Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace})", eTypeLog.Error);
+                }
 
                 try
                 {
