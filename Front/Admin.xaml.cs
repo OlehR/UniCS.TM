@@ -215,5 +215,15 @@ namespace Front
             }
             // Поки не знаю як реалізувати пошук
         }
+
+        private void PowerOff(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void RebootPC(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

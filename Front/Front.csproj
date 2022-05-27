@@ -27,10 +27,12 @@
     <None Remove="icons\minus.png" />
     <None Remove="icons\no_volume.png" />
     <None Remove="icons\Ok.png" />
+    <None Remove="icons\on-off.png" />
     <None Remove="icons\paymentTerminal.png" />
     <None Remove="icons\pln.png" />
     <None Remove="icons\plus.png" />
     <None Remove="icons\plusWhite.png" />
+    <None Remove="icons\reboot.png" />
     <None Remove="icons\receipt.png" />
     <None Remove="icons\right.png" />
     <None Remove="icons\RRO.png" />
@@ -56,8 +58,10 @@
     <Resource Include="icons\Inform.png" />
     <Resource Include="icons\no_volume.png" />
     <Resource Include="icons\Ok.png" />
+    <Resource Include="icons\on-off.png" />
     <Resource Include="icons\paymentTerminal.png" />
     <Resource Include="icons\plusWhite.png" />
+    <Resource Include="icons\reboot.png" />
     <Resource Include="icons\receipt.png" />
     <Resource Include="icons\right.png" />
     <Resource Include="icons\RRO.png" />
