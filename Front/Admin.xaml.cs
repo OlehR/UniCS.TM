@@ -27,7 +27,9 @@ namespace Front
         MainWindow MW;
         Receipt curReceipt = null;
         public bool ClosedShift { get { return MW.IsLockSale; } }
-        public string KasaNumber { get { return $"Каса № " + Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace).IdWorkplace.ToString(); }  }
+
+        public DateTime DateSoSearch { get; set; } = DateTime.Now.Date;
+        public string KasaNumber { get { return   Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace).Name; }  }
         public Admin(User AdminUser, MainWindow pMW)
         {
             MW = pMW;
@@ -209,8 +211,8 @@ namespace Front
         {
             if (TabHistory.IsSelected)
             {
-                DateTime dt = dataHistori.SelectedDate.Value.Date;
-                Receipts = new ObservableCollection<Receipt>(Bl.GetReceipts(dt, dt, Global.IdWorkPlace));
+               //DateTime dt = dataHistori.SelectedDate.Value.Date;
+                Receipts = new ObservableCollection<Receipt>(Bl.GetReceipts(DateSoSearch, DateSoSearch, Global.IdWorkPlace));
                 ListReceipts.ItemsSource = Receipts;
             }
             // Поки не знаю як реалізувати пошук
@@ -218,12 +220,23 @@ namespace Front
 
         private void PowerOff(object sender, RoutedEventArgs e)
         {
-            System.Diagnostics.Process.Start("shutdown.exe", "-s -t 0");
+            if (MessageBox.Show("Вимкнути касу?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            {
+                System.Diagnostics.Process.Start("shutdown.exe", "-s -t 0");
+            }
         }
 
         private void RebootPC(object sender, RoutedEventArgs e)
         {
-            System.Diagnostics.Process.Start("shutdown.exe", "-r -t 0");
+            if (MessageBox.Show("Перезавантажити касу?", "Увага!",MessageBoxButton.YesNo,MessageBoxImage.Question) == MessageBoxResult.Yes)
+            {
+                System.Diagnostics.Process.Start("shutdown.exe", "-r -t 0");
+            }
+        }
+
+        private void RefreshDataButton(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

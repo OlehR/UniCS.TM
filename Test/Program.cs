@@ -50,9 +50,9 @@ namespace Test
             //await l.LoadRozetka();//GetInfoBarcode("4820009350588");
 
 
-            ParserQRCode("https://t.gov.ua/ABST773366/0035184264"); return;
+            //ParserQRCode("https://t.gov.ua/ABST773366/0035184264"); return;
 
-            //await CreateDataBaseAsync(false); return;
+            await CreateDataBaseAsync(false); return;
             //var aa= Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
             //var bl = new BL();
             //var aaaaa=bl.Ver;
