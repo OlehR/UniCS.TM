@@ -91,8 +91,16 @@ namespace Utils
             {
                 lock (Locker)
                 {
-                    File.AppendAllText(GetFileName,
+                    try
+                    {
+                        File.AppendAllText(GetFileName,
                         $@"[{DateTime.Now:dd-MM-yyyy HH:mm:ss:ffff}] {Enum.GetName(typeof(eTypeLog), pTypeLog)} {message}{Environment.NewLine}");
+                    }
+                    catch (Exception e)
+                    {
+                       var s = e.Message;
+                    }
+                    
                 }
             });
         }

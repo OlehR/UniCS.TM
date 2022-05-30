@@ -6,11 +6,14 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Threading;
+using Utils;
 
 namespace Front
 {
@@ -23,13 +26,15 @@ namespace Front
         EquipmentFront EF;
         ObservableCollection<Equipment> LE;
         ObservableCollection<Receipt> Receipts;
+        ObservableCollection<ParsLog> LogsCollection;
+        public string TypeLog { get; set; } = "Full";
         BL Bl;
         MainWindow MW;
         Receipt curReceipt = null;
         public bool ClosedShift { get { return MW.IsLockSale; } }
 
         public DateTime DateSoSearch { get; set; } = DateTime.Now.Date;
-        public string KasaNumber { get { return   Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace).Name; }  }
+        public string KasaNumber { get { return Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace).Name; } }
         public Admin(User AdminUser, MainWindow pMW)
         {
             MW = pMW;
@@ -45,6 +50,33 @@ namespace Front
             timer.Tick += timer_Tick;
             timer.Start();
             adminastratorName.Text = AdminUser.NameUser;
+
+            string AllLog = File.ReadAllText(Utils.FileLogger.GetFileName);
+            string[] temp = AllLog.Split($"{Environment.NewLine}[");
+            LogsCollection = new ObservableCollection<ParsLog>();
+            foreach (string item in temp)
+            {
+                if (item.Contains("Error"))
+                    LogsCollection.Add(new ParsLog() { LineLog = "[" + item, TypeLog = eTypeLog.Error });
+                if (item.Contains("Expanded"))
+                    LogsCollection.Add(new ParsLog() { LineLog = "[" + item, TypeLog = eTypeLog.Expanded });
+                else
+                    LogsCollection.Add(new ParsLog() { LineLog = "[" + item, TypeLog = eTypeLog.Full });
+            }
+            //LogsCollection = new ObservableCollection<string>(AllLog.Split($"{Environment.NewLine}[").Select(a => "[" + a));
+
+            ListLog.ItemsSource = LogsCollection;
+
+
+            CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(ListLog.ItemsSource);
+            view.Filter = LogFilter;
+        }
+        private bool LogFilter(object item)
+        {
+            if (String.IsNullOrEmpty(TypeLog))
+                return true;
+            else
+                return ((item as ParsLog).LineLog.IndexOf(TypeLog, StringComparison.OrdinalIgnoreCase) >= 0);
         }
 
         void timer_Tick(object sender, EventArgs e)
@@ -150,7 +182,7 @@ namespace Front
             Bl.InsertLogRRO(res);
             if (res.CodeError == 0)
             {
-                Bl.UpdateReceiptFiscalNumber(R, res.FiscalNumber, res.SUM);                
+                Bl.UpdateReceiptFiscalNumber(R, res.FiscalNumber, res.SUM);
             }
             //MessageBox.Show("Фiскалізовано");
         }
@@ -211,7 +243,7 @@ namespace Front
         {
             if (TabHistory.IsSelected)
             {
-               //DateTime dt = dataHistori.SelectedDate.Value.Date;
+                //DateTime dt = dataHistori.SelectedDate.Value.Date;
                 Receipts = new ObservableCollection<Receipt>(Bl.GetReceipts(DateSoSearch, DateSoSearch, Global.IdWorkPlace));
                 ListReceipts.ItemsSource = Receipts;
             }
@@ -228,15 +260,48 @@ namespace Front
 
         private void RebootPC(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show("Перезавантажити касу?", "Увага!",MessageBoxButton.YesNo,MessageBoxImage.Question) == MessageBoxResult.Yes)
+            if (MessageBox.Show("Перезавантажити касу?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
                 System.Diagnostics.Process.Start("shutdown.exe", "-r -t 0");
             }
         }
 
-        private void RefreshDataButton(object sender, RoutedEventArgs e)
+        async private void RefreshDataButton(object sender, RoutedEventArgs e)
         {
+            await Bl.ds.SyncDataAsync(true);
+        }
 
+        private void CheckTypeLog(object sender, RoutedEventArgs e)
+        {
+            RadioButton btn = sender as RadioButton;
+            switch (btn.Content)
+            {
+                case "Error":
+                    TypeLog = "Error";
+                    break;
+                case "Expanded":
+                    TypeLog = "Expanded";
+                    break;
+                case "Full":
+                    TypeLog = "Full";
+                    break;
+            }
+            CollectionViewSource.GetDefaultView(ListLog.ItemsSource).Refresh();
+        }
+
+        private void FindFogTextChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBox textBox = (TextBox)sender;
+            TypeLog = textBox.Text;
+            CollectionViewSource.GetDefaultView(ListLog.ItemsSource).Refresh();
         }
     }
+
+    public class ParsLog
+    {
+        public string LineLog { get; set; }
+        public eTypeLog TypeLog { get; set; }
+    }
+
+
 }
