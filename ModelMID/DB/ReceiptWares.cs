@@ -220,6 +220,12 @@ namespace ModelMID
         /// Додаткові ваги
         /// </summary>
         public IEnumerable<decimal> AdditionalWeights { get; set; }
+
+        public WaitWeight[] AllWeights
+        {
+            //Global.GetCoefDeltaWeight
+            get { return null; }
+        }
         /// <summary>
         /// Максимальна кількість, яку можна продавати
         /// </summary>
@@ -274,6 +280,10 @@ namespace ModelMID
         /// Зафіксована вага контрольною вагою.
         /// </summary>
         public decimal FixWeight { get; set; }
+        /// <summary>
+        /// Для якої кількості зафіксована вага.
+        /// </summary>
+        public decimal FixWeightQuantity { get; set; }
         /// <summary>
         /// Код УКТЗЕТ
         /// </summary>

@@ -91,7 +91,7 @@ namespace Front
                 var ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Scaner).First();
                 switch (ElEquipment.Model)
                 {
-                    case eModelEquipment.MagellanScaner:
+                    case eModelEquipment.MagellanScaner:                         
                         Scaner = new MagellanScaner(ElEquipment,config, null, pSetBarCode);
                         break;
                     case eModelEquipment.VirtualScaner:
@@ -107,8 +107,10 @@ namespace Front
                 ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Scale).First();
                 switch (ElEquipment.Model)
                 {
-                    case eModelEquipment.MagellanScale:
-                        Scale = new MagellanScale(((MagellanScaner)Scaner).Magellan9300, pSetWeight);
+                    case eModelEquipment.MagellanScale:                        
+                        Scale = new MagellanScale(((MagellanScaner)Scaner).Magellan9300, pSetWeight, pSetControlWeight);//TMP!!! pSetControlWeight - Нафіг
+                        Scale.StartWeight();
+                        
                         break;
                     case eModelEquipment.VirtualScale:
                         Scale = new VirtualScale(ElEquipment,config, null, pSetWeight);

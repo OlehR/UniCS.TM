@@ -210,6 +210,7 @@ namespace ModelMID
 
     public enum eStateScale
     {
+        NotDefine = 0,
         /// <summary>
         /// Товар необхідно поставити на платформу.
         /// </summary>
@@ -321,7 +322,8 @@ namespace ModelMID
         LockSale = -1,
         StartFullUpdate = -2,
         ErrorFullUpdate = -3,
-        ErrorEquipment = -4
+        ErrorEquipment = -4,
+
     }
 
     public enum eTypeAccessAnsver

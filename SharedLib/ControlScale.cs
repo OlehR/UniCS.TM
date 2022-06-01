@@ -203,7 +203,7 @@ namespace ModelMID
 
         public void StartWeightNewGoogs(double pBeforeWeight, WaitWeight[] pWeight, double pQuantity = 1d, bool pIsIncrease = true)
         {
-            OnScalesLog($"StartWeightNewGoogs=>(pBeforeWeight=>{pBeforeWeight},WaitWeight=>{string.Join(", ", pWeight.ToList())},pQuantity={pQuantity},pIsIncrease={pIsIncrease} ");
+            OnScalesLog($"StartWeightNewGoogs=>(pBeforeWeight=>{pBeforeWeight},WaitWeight=>{(pWeight !=null? string.Join(", ", pWeight?.ToList()):"")},pQuantity={pQuantity},pIsIncrease={pIsIncrease} ");
             BeforeWeight = pBeforeWeight;
             IsIncrease = pIsIncrease;
             WaitWeight = pWeight;
@@ -228,7 +228,7 @@ namespace ModelMID
             СurrentlyWeight = BeforeWeight - weight;
             if (BeforeWeight == 0d && WaitWeight == null) // Якщо товару на вазі не повинно бути (Завершений/анулюваний/Новий чек )
             {
-                if (StateScale != eStateScale.WaitGoods)
+                //if (StateScale != eStateScale.WaitGoods)
                     StateScale = Math.Abs(СurrentlyWeight) <= Delta ? eStateScale.Stabilized : eStateScale.WaitClear;
             }
             else //
@@ -245,44 +245,44 @@ namespace ModelMID
                         StateScale = eStateScale.Stabilized;
                 }
                 else //Якщо очікуємо на товар
+                /* {
+                     if (IsRightWeight(СurrentlyWeight))
+                     {
+                         //if (!(StateScale == eStateScale.StartStabilized || StateScale == eStateScale.Stabilized))
+                         //{
+                         StateScale = eStateScale.StartStabilized;
+                         //StartTimer();
+                         //}
+                         //else
+                         //  MidlWeight.AddValue(СurrentlyWeight);
+                     }
+                 }*/
                 {
-                    if (IsRightWeight(СurrentlyWeight))
+                    //Якщо вийшли за межі похибки
+                    if (StateScale == eStateScale.WaitGoods && Math.Abs(СurrentlyWeight) > Delta)
                     {
-                        //if (!(StateScale == eStateScale.StartStabilized || StateScale == eStateScale.Stabilized))
-                        //{
-                        StateScale = eStateScale.StartStabilized;
-                        //StartTimer();
-                        //}
-                        //else
-                        //  MidlWeight.AddValue(СurrentlyWeight);
-                    }
-
-                }
-
-                //Якщо вийшли за межі похибки
-                if (StateScale == eStateScale.WaitGoods && Math.Abs(СurrentlyWeight) > Delta)
-                {
-                    StateScale = eStateScale.NotStabilized;
-                    //StartTimer();
-                }
-
-                if (IsRightWeight(СurrentlyWeight))
-                {
-                    if (!(StateScale == eStateScale.StartStabilized || StateScale == eStateScale.Stabilized))
-                    {
-                        StateScale = eStateScale.Stabilized;
-                        //StartTimer();
-                    }
-                    // else
-                    //  MidlWeight.AddValue(СurrentlyWeight);
-                }
-                else
-                {
-                    if (StateScale == eStateScale.StartStabilized || StateScale == eStateScale.Stabilized)
-                    {
-                        //StopTimer();
                         StateScale = eStateScale.NotStabilized;
                         //StartTimer();
+                    }
+
+                    if (IsRightWeight(СurrentlyWeight))
+                    {
+                        //if (!(StateScale == eStateScale.StartStabilized || StateScale == eStateScale.Stabilized ))
+                        //{
+                            StateScale = eStateScale.Stabilized;
+                            //StartTimer();
+                        //}
+                        // else
+                        //  MidlWeight.AddValue(СurrentlyWeight);
+                    }
+                    else
+                    {
+                        //if (StateScale == eStateScale.StartStabilized || StateScale == eStateScale.Stabilized)
+                        //{
+                            //StopTimer();
+                            StateScale = eStateScale.BadWeight;
+                            //StartTimer();
+                        //}
                     }
                 }
             }            

@@ -59,6 +59,7 @@ namespace Front
         public Receipt curReceipt;//{ get; set; } = null;
         Client Client;
         eStateMainWindows State = eStateMainWindows.StartWindow;
+        eStateScale StateScale = eStateScale.NotDefine; 
         public string WaresQuantity { get; set; }
         decimal _MoneySum;
         double tempMoneySum;
@@ -70,7 +71,7 @@ namespace Front
         public bool IsIgnoreExciseStamp { get; set; }
         public bool IsExciseStamp { get; set; }
         bool _IsLockSale = true;
-        public bool IsLockSale { get { return _IsLockSale; } set { if (_IsLockSale != value) { SetStateView(!value && State== eStateMainWindows.WaitAdmin? eStateMainWindows.WaitInput : eStateMainWindows.NotDefine); _IsLockSale = value; } } }
+        public bool IsLockSale { get { return _IsLockSale; } set { if (_IsLockSale != value) { SetStateView(!value && State == eStateMainWindows.WaitAdmin ? eStateMainWindows.WaitInput : eStateMainWindows.NotDefine); _IsLockSale = value; } } }
         public string GetBackgroundColor { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? "#FFE5E5" : "#FFFFFF"; } }
         public bool IsCheckReturn { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? true : false; } }
         public bool PriceIsNotZero
@@ -83,7 +84,7 @@ namespace Front
                 }
                 else return false;
             }
-        }        
+        }
         public string ClientName { get { return Client?.NameClient ?? "Відсутній клієнт"; } }
         public bool IsPresentFirstTerminal
         {
@@ -141,6 +142,7 @@ namespace Front
                     case eTypeAccess.ErrorFullUpdate: return "Помилка повного оновлення БД";
                     case eTypeAccess.ErrorEquipment: return "Проблема з критично важливим обладнанням";
                     case eTypeAccess.LockSale: return "Зміна заблокована";
+                    case eTypeAccess.FixWeight: return StateScale.ToString();
                 }
                 return null;
             }
@@ -183,6 +185,7 @@ namespace Front
             Bl = new BL(true);
             EF = new EquipmentFront(Bl.GetBarCode, SetWeight, CS.OnScalesData);
 
+
             EF.SetStatus += (info) =>
             {
                 EquipmentInfo = info.TextState;
@@ -205,8 +208,18 @@ namespace Front
                                 CurWares.ExciseStamp = ExciseStamp;
                         }
                     }
+                    if (curReceipt?.Wares?.Count() == 0)
+                        CS.WaitClear();
+
+
+                    double BeforeWeight = Convert.ToDouble(curReceipt?.Wares?.Sum(w => w.FixWeight));
+                    var w = curReceipt?.Wares?.Last();
+                    if (w != null && w.Quantity != w.FixWeightQuantity)
+                    {
+//                        CS.StartWeightNewGoogs(BeforeWeight, w.AllWeights, Convert.ToDouble(w.Quantity - w.FixWeightQuantity));
+                    }
                 }
-                catch (Exception e) 
+                catch (Exception e)
                 {
                     FileLogger.WriteLogMessage($"MainWindow.OnReceiptCalculationComplete Exception =>(pReceipt=>{pReceipt.ToJSON()}) => ({Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace})", eTypeLog.Error);
                 }
@@ -231,10 +244,10 @@ namespace Front
                 //Помилка оновлення.
                 if (SyncInfo.Status == eSyncStatus.Error)
                     SetWaitConfirm(eTypeAccess.ErrorFullUpdate);
-                
-                if (TypeAccessWait==eTypeAccess.StartFullUpdate && SyncInfo.Status == eSyncStatus.SyncFinishedSuccess)
+
+                if (TypeAccessWait == eTypeAccess.StartFullUpdate && SyncInfo.Status == eSyncStatus.SyncFinishedSuccess)
                 {
-                    TypeAccessWait = eTypeAccess.NoDefinition;                    
+                    TypeAccessWait = eTypeAccess.NoDefinition;
                     SetStateView(eStateMainWindows.WaitInput);
                 }
 
@@ -264,7 +277,7 @@ namespace Front
             //Обробка стану контрольної ваги.
             CS.OnStateScale += (pStateScale) =>
             {
-
+                StateScale = pStateScale;
             };
 
             WaresQuantity = "0";
@@ -312,10 +325,10 @@ namespace Front
                 new CustomButton(){Id =4, Text="asdvssdvsdfadvsdfvsdf button" },
             };
         }
-        
+
         public void GetBarCode(string pBarCode, string pTypeBarCode)
         {
-            if(State == eStateMainWindows.WaitExciseStamp)
+            if (State == eStateMainWindows.WaitExciseStamp)
             {
                 string ExciseStamp = GetExciseStamp(pBarCode);
                 if (!string.IsNullOrEmpty(ExciseStamp))
@@ -323,7 +336,7 @@ namespace Front
                     AddExciseStamp(ExciseStamp);
                     return;
                 }
-                
+
             }
 
             if (State == eStateMainWindows.WaitInput)
@@ -345,7 +358,7 @@ namespace Front
         {
             IsIgnoreExciseStamp = Access.GetRight(pUser, eTypeAccess.ExciseStamp);
 
-            if (TypeAccessWait == eTypeAccess.NoDefinition || TypeAccessWait<0)
+            if (TypeAccessWait == eTypeAccess.NoDefinition || TypeAccessWait < 0)
                 return;
             if (!Access.GetRight(pUser, TypeAccessWait))
             {
@@ -400,7 +413,7 @@ namespace Front
         {
             Dispatcher.BeginInvoke(new ThreadStart(() =>
                 {
-   
+
                     if (pSMV != eStateMainWindows.NotDefine)
                         State = pSMV;
                     if (IsLockSale && State != eStateMainWindows.WaitAdmin && State != eStateMainWindows.WaitAdminLogin)
@@ -409,7 +422,7 @@ namespace Front
                         return;
                     }
                     if (State != eStateMainWindows.WaitAdmin && State != eStateMainWindows.WaitAdminLogin)
-                        TypeAccessWait = eTypeAccess.NoDefinition;                    
+                        TypeAccessWait = eTypeAccess.NoDefinition;
 
                     ExciseStamp.Visibility = Visibility.Collapsed;
                     ChoicePrice.Visibility = Visibility.Collapsed;
@@ -913,7 +926,7 @@ namespace Front
                 return;
             }
 
-            if ( TypeAccessWait>0)//TypeAccessWait != eTypeAccess.NoDefinition 
+            if (TypeAccessWait > 0)//TypeAccessWait != eTypeAccess.NoDefinition 
             {
                 SetConfirm(U, true);
                 return;
@@ -922,7 +935,7 @@ namespace Front
             if (Access.GetRight(U, eTypeAccess.AdminPanel))
             {
                 SetStateView(eStateMainWindows.WaitInput);
-                Admin ad = new Admin(U,this);
+                Admin ad = new Admin(U, this);
                 ad.Show();
             }
             else
@@ -945,13 +958,13 @@ namespace Front
             if (pBarCode.Contains("t.gov.ua"))
             {
                 string Res = pBarCode.Substring(pBarCode.IndexOf("t.gov.ua") + 9);
-                pBarCode= Res.Substring(0, Res.Length - 11);
+                pBarCode = Res.Substring(0, Res.Length - 11);
             }
 
             Regex regex = new Regex(@"^\w{4}[0-9]{6}?$");
-            if(regex.IsMatch(pBarCode))
+            if (regex.IsMatch(pBarCode))
                 return pBarCode;
-            
+
             return null;
         }
 
@@ -974,7 +987,7 @@ namespace Front
 
         private void ChangedExciseStamp(object sender, TextChangedEventArgs e)
         {
-            TextBox textBox = (TextBox)sender;           
+            TextBox textBox = (TextBox)sender;
             IsExciseStamp = !string.IsNullOrEmpty(GetExciseStamp(textBox.Text));
         }
 
@@ -1130,7 +1143,7 @@ namespace Front
         }
 
         private void FindClientByPhoneClick(object sender, RoutedEventArgs e)
-        {               
+        {
             customWindow = new CustomWindow()
             {
                 Id = eWindows.PhoneClient,
@@ -1145,7 +1158,7 @@ namespace Front
         }
 
         private void CustomWindowVerificationText(object sender, TextChangedEventArgs e)
-        { 
+        {
             CustomWindowValidText = true;
             if (customWindow?.ValidationMask != null)
             {

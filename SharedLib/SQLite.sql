@@ -24,6 +24,7 @@ alter TABLE WARES_RECEIPT  add Max_Refund_Quantity NUMBER;--Ver=>4
 alter TABLE WARES_RECEIPT  add SUM_BONUS      NUMBER   NOT NULL DEFAULT 0;--Ver=>5
 alter TABLE WARES_RECEIPT_PROMOTION  add Type_Wares  INTEGER  NOT NULL  DEFAULT (0);--Ver=>6
 alter TABLE WARES_RECEIPT add Code_Company INTEGER  NOT NULL DEFAULT 0;--Ver=>7
+alter TABLE WARES_RECEIPT add Fix_Weight_Quantity NOT NULL DEFAULT 0;--Ver=>8
 
 [SqlUpdateMID]
 --Ver=>0;Reload;
@@ -167,7 +168,7 @@ Price as Price/*, wr.sum as Sum*/, Type_Price as TypePrice
 					 ADDITION_N1 as AdditionN1,ADDITION_N2 as AdditionN2, ADDITION_N3 as AdditionN3,
  ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1,Price_Dealer as PriceDealer,BARCODE_2_CATEGORY as BarCode2Category,wr.DESCRIPTION as DESCRIPTION,w.TYPE_VAT as TypeVat
  ,(select max(bc.BAR_CODE) from BAR_CODE bc where bc.code_wares=wr.code_wares) as BarCode 
- ,w.Weight_Brutto as WeightBrutto,Refunded_Quantity as RefundedQuantity,Fix_Weight as FixWeight,Weight_Fact as WeightFact,w.Weight_Delta as WeightDelta
+ ,w.Weight_Brutto as WeightBrutto,Refunded_Quantity as RefundedQuantity,Fix_Weight as FixWeight, Fix_Weight_Quantity as FixWeightQuantity, Weight_Fact as WeightFact,w.Weight_Delta as WeightDelta
  ,ps.NAME_PS as NameDiscount,Sum_Discount as SumDiscount
  ,w.Type_Wares as TypeWares
  ,wr.Priority
@@ -262,13 +263,13 @@ replace into wares_receipt (id_workplace, code_period, code_receipt,Code_Company
   type_price,  quantity, price, Price_Dealer, sum, sum_vat,
   Priority,PAR_PRICE_1,PAR_PRICE_2,PAR_PRICE_3, sum_discount, type_vat, sort,Excise_Stamp, user_create,
  ADDITION_N1,ADDITION_N2,ADDITION_N3,
- ADDITION_C1,ADDITION_D1,BARCODE_2_CATEGORY,DESCRIPTION,Refunded_Quantity,Fix_Weight,QR,Max_Refund_Quantity,SUM_BONUS) 
+ ADDITION_C1,ADDITION_D1,BARCODE_2_CATEGORY,DESCRIPTION,Refunded_Quantity,Fix_Weight,Fix_Weight_Quantity,QR,Max_Refund_Quantity,SUM_BONUS) 
  values (
   @IdWorkplace, @CodePeriod, @CodeReceipt,@CodeCompany, @CodeWares, @CodeUnit,
   @TypePrice, @Quantity, @Price,@PriceDealer, @Sum, @SumVat,
   @Priority,@ParPrice1,@ParPrice2,@ParPrice3, @SumDiscount, @TypeVat, @Sort,@ExciseStamp, @UserCreate,
  @AdditionN1,@AdditionN2,@AdditionN3,
- @AdditionC1,@AdditionD1,@BARCODE2Category,@DESCRIPTION,@RefundedQuantity,@FixWeight,@QR,@MaxRefundQuantity,@SumBonus)
+ @AdditionC1,@AdditionD1,@BARCODE2Category,@DESCRIPTION,@RefundedQuantity,@FixWeight,@FixWeightQuantity,@QR,@MaxRefundQuantity,@SumBonus)
 
 
 
@@ -666,6 +667,7 @@ CREATE TABLE WARES_RECEIPT (
 	BARCODE_2_CATEGORY TEXT,
     Refunded_Quantity NUMBER   NOT NULL DEFAULT 0,
     Fix_Weight NUMBER NOT NULL DEFAULT 0,
+    Fix_Weight_Quantity NUMBER NOT NULL DEFAULT 0,
     QR TEXT,
     DATE_CREATE    DATETIME NOT NULL DEFAULT (datetime('now','localtime')),
     USER_CREATE    INTEGER  NOT NULL
@@ -1221,6 +1223,7 @@ update wares_receipt
 [SqlSetFixWeight]
 update wares_receipt
    set Fix_Weight=@FixWeight
+       Fix_Weight_Quantity=@FixWeightQuantity
   where ID_WORKPLACE = @IdWorkplace
    and CODE_PERIOD = @CodePeriod
    and CODE_RECEIPT = @CodeReceipt
