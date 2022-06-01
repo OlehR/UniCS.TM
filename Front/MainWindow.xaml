@@ -418,11 +418,11 @@
                                 <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
                                     <Setter Property="IsEnabled" Value="True"/>
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding isExciseStamp, RelativeSource={RelativeSource 
+                                        <DataTrigger Binding="{Binding IsExciseStamp, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="True">
                                             <Setter Property="IsEnabled" Value="True" />
                                         </DataTrigger>
-                                        <DataTrigger Binding="{Binding isExciseStamp, RelativeSource={RelativeSource 
+                                        <DataTrigger Binding="{Binding IsExciseStamp, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="False">
                                             <Setter Property="IsEnabled" Value="False" />
                                         </DataTrigger>
