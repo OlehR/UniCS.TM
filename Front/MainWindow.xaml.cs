@@ -216,7 +216,7 @@ namespace Front
                     var w = curReceipt?.Wares?.Last();
                     if (w != null && w.Quantity != w.FixWeightQuantity)
                     {
-//                        CS.StartWeightNewGoogs(BeforeWeight, w.AllWeights, Convert.ToDouble(w.Quantity - w.FixWeightQuantity));
+                        CS.StartWeightNewGoogs(BeforeWeight, w.AllWeights, Convert.ToDouble(w.Quantity - w.FixWeightQuantity));
                     }
                 }
                 catch (Exception e)

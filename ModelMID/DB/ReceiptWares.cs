@@ -222,9 +222,21 @@ namespace ModelMID
         public IEnumerable<decimal> AdditionalWeights { get; set; }
 
         public WaitWeight[] AllWeights
-        {
+        {   
             //Global.GetCoefDeltaWeight
-            get { return null; }
+            get {
+
+                List<WaitWeight> res = AdditionalWeights != null && AdditionalWeights.Count() > 0 ?
+                        AdditionalWeights.Select(r => new WaitWeight(r, WeightDelta > 0 ? WeightDelta : Global.GetCoefDeltaWeight(r))).ToList()
+                        : new List<WaitWeight>();
+                //res.Ins
+                if (WeightBrutto > 0)
+                    res.Add(new WaitWeight(WeightBrutto, WeightDelta > 0 ? WeightDelta : Global.GetCoefDeltaWeight(WeightBrutto)));
+                if (WeightFact > 0)
+                    res.Add(new WaitWeight(WeightFact, WeightDelta > 0 ? WeightDelta : Global.GetCoefDeltaWeight(WeightFact)));
+
+                return res.ToArray(); 
+            }
         }
         /// <summary>
         /// Максимальна кількість, яку можна продавати
