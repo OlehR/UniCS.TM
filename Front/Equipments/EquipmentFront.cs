@@ -234,7 +234,7 @@ namespace Front
         /// <returns></returns>
         public Payment PosPurchase(decimal pSum)
         {
-            return Terminal.Purchase(pSum);
+            return Terminal?.Purchase(pSum);
         }
 
         /// <summary>
