@@ -225,7 +225,7 @@ namespace ModelMID
 
             (weight, isStable) = MidlWeight.AddValue(weight, isStable);
 
-            СurrentlyWeight = BeforeWeight - weight;
+            СurrentlyWeight = weight-BeforeWeight;
             if (BeforeWeight == 0d && WaitWeight == null) // Якщо товару на вазі не повинно бути (Завершений/анулюваний/Новий чек )
             {
                 //if (StateScale != eStateScale.WaitGoods)
@@ -259,12 +259,12 @@ namespace ModelMID
                  }*/
                 {
                     //Якщо вийшли за межі похибки
-                    if (StateScale == eStateScale.WaitGoods && Math.Abs(СurrentlyWeight) > Delta)
+                    if (!isStable && StateScale == eStateScale.WaitGoods && Math.Abs(СurrentlyWeight) > Delta)
                     {
                         StateScale = eStateScale.NotStabilized;
                         //StartTimer();
                     }
-
+                    if(isStable)
                     if (IsRightWeight(СurrentlyWeight))
                     {
                         //if (!(StateScale == eStateScale.StartStabilized || StateScale == eStateScale.Stabilized ))

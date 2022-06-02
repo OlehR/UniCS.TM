@@ -17,7 +17,7 @@ namespace ModelMID
             Max = pWeight + pDelta;
         }
 
-        public WaitWeight(decimal pWeight, decimal pDelta):this(Convert.ToDouble(pWeight), Convert.ToDouble(pDelta)){}
+        public WaitWeight(decimal pWeight, decimal pDelta):this(Convert.ToDouble(1000m*pWeight), Convert.ToDouble(1000m * pDelta)){}
 
         public bool IsGoodWeight(double pWeight,double pQuantity=1d)
         {
