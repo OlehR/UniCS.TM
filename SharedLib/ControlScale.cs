@@ -91,6 +91,7 @@ namespace ModelMID
                 return (Sum / n, true);
             }
         }
+        public double GetMidl {get{ double Weight;  bool IsStable; (Weight, IsStable) = Midl; return Weight; } }
 
         /* public double Min { get; set; }
          public double Max { get; set; }
@@ -126,9 +127,16 @@ namespace ModelMID
          } */
     }
 
+    public class cStateScale
+    {
+       public eStateScale StateScale { get; set; }
+        public decimal FixWeight { get; set; }
+        public decimal FixWeightQuantity { get; set; }
+    }
+
     public class ControlScale
     {
-        public Action<eStateScale> OnStateScale { get; set; }
+        public Action<cStateScale> OnStateScale { get; set; }
         eStateScale _StateScale;
         /// <summary>
         /// Стан ваги (Не поставили товар, вірна вага, вага не вірна)
@@ -139,7 +147,7 @@ namespace ModelMID
             {  if (_StateScale != value)
                 {
                     _StateScale = value;
-                    OnStateScale?.Invoke(_StateScale);
+                    OnStateScale?.Invoke(new cStateScale() { StateScale = _StateScale,FixWeight = Convert.ToDecimal(MidlWeight.GetMidl), FixWeightQuantity= Convert.ToDecimal( Quantity) });
                     OnScalesLog("NewState", _StateScale.ToString());
                 }
             } }
@@ -174,7 +182,7 @@ namespace ModelMID
 
         MidlWeight MidlWeight;
 
-        public ControlScale(double pDelta = 0.010d)
+        public ControlScale(double pDelta = 10d)
         {
             Delta = pDelta;
             MidlWeight = new MidlWeight(pDelta);
@@ -265,7 +273,14 @@ namespace ModelMID
                         NewStateScale = eStateScale.NotStabilized;
                         //StartTimer();
                     }
-                    if(isStable)
+
+                    if ( Math.Abs(СurrentlyWeight) <= Delta)
+                    {
+                        NewStateScale = eStateScale.WaitGoods;
+                        //StartTimer();
+                    }
+                    else
+                    if (isStable)
                     if (IsRightWeight(СurrentlyWeight))
                     {
                         //if (!(StateScale == eStateScale.StartStabilized || StateScale == eStateScale.Stabilized ))

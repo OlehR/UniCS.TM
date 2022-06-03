@@ -70,7 +70,7 @@ namespace Front
         public string ChangeSumPaymant { get; set; } = "0";
         public bool IsIgnoreExciseStamp { get; set; }
         public bool IsExciseStamp { get; set; }
-        bool _IsLockSale = true;
+        bool _IsLockSale = false;
         public bool IsLockSale { get { return _IsLockSale; } set { if (_IsLockSale != value) { SetStateView(!value && State == eStateMainWindows.WaitAdmin ? eStateMainWindows.WaitInput : eStateMainWindows.NotDefine); _IsLockSale = value; } } }
         public string GetBackgroundColor { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? "#FFE5E5" : "#FFFFFF"; } }
         public bool IsCheckReturn { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? true : false; } }
@@ -214,10 +214,15 @@ namespace Front
 
                     double BeforeWeight = Convert.ToDouble(curReceipt?.Wares?.Sum(w => w.FixWeight));
                     var w = curReceipt?.Wares?.Last();
-                    if (w != null && w.Quantity != w.FixWeightQuantity)
+                    if (w != null)
                     {
-                        if(w.WeightFact!=-1 && w.AllWeights!=null&& w.AllWeights.Count()>0)
-                            CS.StartWeightNewGoogs(BeforeWeight, w.AllWeights, Convert.ToDouble(w.Quantity - w.FixWeightQuantity));
+                        CurWares = w;
+                        if (CurWares.Quantity != CurWares.FixWeightQuantity)
+                        {
+
+                            if (CurWares.WeightFact != -1 && CurWares.AllWeights != null && CurWares.AllWeights.Count() > 0)
+                                CS.StartWeightNewGoogs(BeforeWeight, CurWares.AllWeights, Convert.ToDouble(CurWares.Quantity - CurWares.FixWeightQuantity));
+                        }
                     }
                 }
                 catch (Exception e)
@@ -278,17 +283,25 @@ namespace Front
             //Обробка стану контрольної ваги.
             CS.OnStateScale += (pStateScale) =>
             {
-                StateScale = pStateScale;
-                switch(pStateScale)
+                StateScale = pStateScale.StateScale;
+                switch(StateScale)
                 {
                     case eStateScale.BadWeight:
                     case eStateScale.NotStabilized:
                     case eStateScale.WaitClear:
+                    case eStateScale.WaitGoods:
                         SetWaitConfirm(eTypeAccess.FixWeight); // SetStateView(eStateMainWindows.WaitWeight);
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WaitAdminText"));
                         break;
                     case eStateScale.Stabilized:
-                        if(State==eStateMainWindows.WaitWeight)
+                        if(State==eStateMainWindows.WaitWeight || State == eStateMainWindows.WaitAdmin)
                             SetStateView(eStateMainWindows.WaitInput);
+                        if (CurWares != null)
+                        {
+                            CurWares.FixWeight = pStateScale.FixWeight;
+                            CurWares.FixWeightQuantity = pStateScale.FixWeightQuantity;
+                            Bl.FixWeight(CurWares);
+                        }
                         break;
                 }
 
@@ -893,9 +906,9 @@ namespace Front
         {
 
             var RId = Bl.GetNewIdReceipt();
-            Bl.AddWaresBarCode(RId, "27833", 258m);
-            Bl.AddWaresBarCode(RId, "7622300813437", 1);
-            Bl.AddWaresBarCode(RId, "2201652300229", 2);
+            //Bl.AddWaresBarCode(RId, "27833", 258m);
+            //Bl.AddWaresBarCode(RId, "7622300813437", 1);
+            //Bl.AddWaresBarCode(RId, "2201652300229", 2);
             //Bl.AddWaresBarCode(RId, "7775002160043", 1); //товар 2 кат
             //Bl.AddWaresBarCode(RId,"1110011760218", 11);
             //Bl.AddWaresBarCode(RId,"7773002160043", 1); //товар 2 кат

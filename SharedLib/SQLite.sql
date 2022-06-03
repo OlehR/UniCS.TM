@@ -1222,12 +1222,12 @@ update wares_receipt
 
 [SqlSetFixWeight]
 update wares_receipt
-   set Fix_Weight=@FixWeight
-       Fix_Weight_Quantity=@FixWeightQuantity
+   set Fix_Weight = @FixWeight, 
+       Fix_Weight_Quantity = @FixWeightQuantity
   where ID_WORKPLACE = @IdWorkplace
    and CODE_PERIOD = @CodePeriod
    and CODE_RECEIPT = @CodeReceipt
-   and Code_wares=@CodeWares;
+   and Code_wares = @CodeWares;
 
 [SqlInsertReceiptEvent]
 insert into RECEIPT_Event 
