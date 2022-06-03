@@ -279,6 +279,19 @@ namespace Front
             CS.OnStateScale += (pStateScale) =>
             {
                 StateScale = pStateScale;
+                switch(pStateScale)
+                {
+                    case eStateScale.BadWeight:
+                    case eStateScale.NotStabilized:
+                    case eStateScale.WaitClear:
+                        SetWaitConfirm(eTypeAccess.FixWeight); // SetStateView(eStateMainWindows.WaitWeight);
+                        break;
+                    case eStateScale.Stabilized:
+                        if(State==eStateMainWindows.WaitWeight)
+                            SetStateView(eStateMainWindows.WaitInput);
+                        break;
+                }
+
             };
 
             WaresQuantity = "0";
@@ -1169,4 +1182,5 @@ namespace Front
             }
         }
     }
+
 }

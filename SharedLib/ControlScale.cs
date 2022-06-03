@@ -133,13 +133,14 @@ namespace ModelMID
         /// <summary>
         /// Стан ваги (Не поставили товар, вірна вага, вага не вірна)
         /// </summary>
-        public eStateScale StateScale { get { return _StateScale; } 
+        public eStateScale StateScale //{ get; set; } 
+        { get { return _StateScale; } 
             set 
             {  if (_StateScale != value)
                 {
                     _StateScale = value;
                     OnStateScale?.Invoke(_StateScale);
-                    OnScalesLog("NewEvent", _StateScale.ToString());
+                    OnScalesLog("NewState", _StateScale.ToString());
                 }
             } }
 
@@ -221,7 +222,7 @@ namespace ModelMID
         public void OnScalesData(double weight, bool isStable)
         {
             OnScalesLog($"OnScalesData weight{weight} isStable {isStable}");
-            eStateScale OldeStateScale = StateScale;
+            eStateScale NewStateScale = StateScale;
 
             (weight, isStable) = MidlWeight.AddValue(weight, isStable);
 
@@ -229,7 +230,7 @@ namespace ModelMID
             if (BeforeWeight == 0d && WaitWeight == null) // Якщо товару на вазі не повинно бути (Завершений/анулюваний/Новий чек )
             {
                 //if (StateScale != eStateScale.WaitGoods)
-                    StateScale = Math.Abs(СurrentlyWeight) <= Delta ? eStateScale.Stabilized : eStateScale.WaitClear;
+                    NewStateScale = Math.Abs(СurrentlyWeight) <= Delta ? eStateScale.Stabilized : eStateScale.WaitClear;
             }
             else //
             {
@@ -238,11 +239,11 @@ namespace ModelMID
                     //Якщо вийшли за межі похибки
                     if (Math.Abs(СurrentlyWeight) > Delta)
                     {
-                        StateScale = eStateScale.NotStabilized;
+                        NewStateScale = eStateScale.NotStabilized;
                         //StartTimer();
                     }
                     else
-                        StateScale = eStateScale.Stabilized;
+                        NewStateScale = eStateScale.Stabilized;
                 }
                 else //Якщо очікуємо на товар
                 /* {
@@ -259,9 +260,9 @@ namespace ModelMID
                  }*/
                 {
                     //Якщо вийшли за межі похибки
-                    if (!isStable && StateScale == eStateScale.WaitGoods && Math.Abs(СurrentlyWeight) > Delta)
+                    if (!isStable && NewStateScale == eStateScale.WaitGoods && Math.Abs(СurrentlyWeight) > Delta)
                     {
-                        StateScale = eStateScale.NotStabilized;
+                        NewStateScale = eStateScale.NotStabilized;
                         //StartTimer();
                     }
                     if(isStable)
@@ -269,7 +270,7 @@ namespace ModelMID
                     {
                         //if (!(StateScale == eStateScale.StartStabilized || StateScale == eStateScale.Stabilized ))
                         //{
-                            StateScale = eStateScale.Stabilized;
+                            NewStateScale = eStateScale.Stabilized;
                             //StartTimer();
                         //}
                         // else
@@ -280,12 +281,13 @@ namespace ModelMID
                         //if (StateScale == eStateScale.StartStabilized || StateScale == eStateScale.Stabilized)
                         //{
                             //StopTimer();
-                            StateScale = eStateScale.BadWeight;
+                            NewStateScale = eStateScale.BadWeight;
                             //StartTimer();
                         //}
                     }
                 }
-            }            
+            }
+            StateScale = NewStateScale;
         }
 
         public bool WaitClear()
