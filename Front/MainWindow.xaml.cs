@@ -130,6 +130,7 @@ namespace Front
                 else return null;
             }
         }
+        string _WaitAdminText;
         public string WaitAdminText
         {
             get
@@ -142,7 +143,7 @@ namespace Front
                     case eTypeAccess.ErrorFullUpdate: return "Помилка повного оновлення БД";
                     case eTypeAccess.ErrorEquipment: return "Проблема з критично важливим обладнанням";
                     case eTypeAccess.LockSale: return "Зміна заблокована";
-                    case eTypeAccess.FixWeight: return StateScale.ToString();
+                    case eTypeAccess.FixWeight: return $"{StateScale}{Environment.NewLine}{_WaitAdminText}";
                 }
                 return null;
             }
@@ -211,19 +212,7 @@ namespace Front
                     if (curReceipt?.Wares?.Count() == 0)
                         CS.WaitClear();
 
-
-                    double BeforeWeight = Convert.ToDouble(curReceipt?.Wares?.Sum(w => w.FixWeight));
-                    var w = curReceipt?.Wares?.Last();
-                    if (w != null)
-                    {
-                        CurWares = w;
-                        if (CurWares.Quantity != CurWares.FixWeightQuantity)
-                        {
-
-                            if (CurWares.WeightFact != -1 && CurWares.AllWeights != null && CurWares.AllWeights.Count() > 0)
-                                CS.StartWeightNewGoogs(BeforeWeight, CurWares.AllWeights, Convert.ToDouble(CurWares.Quantity - CurWares.FixWeightQuantity));
-                        }
-                    }
+                    CS.StartWeightNewGoogs(curReceipt?.Wares);                   
                 }
                 catch (Exception e)
                 {
@@ -281,27 +270,24 @@ namespace Front
                 SetCurReceipt(pReceipt);
             };
             //Обробка стану контрольної ваги.
-            CS.OnStateScale += (pStateScale) =>
+            CS.OnStateScale += (pStateScale,pRW, pСurrentlyWeight) =>
             {
-                StateScale = pStateScale.StateScale;
+                StateScale = pStateScale;
                 switch(StateScale)
                 {
                     case eStateScale.BadWeight:
                     case eStateScale.NotStabilized:
                     case eStateScale.WaitClear:
                     case eStateScale.WaitGoods:
-                        SetWaitConfirm(eTypeAccess.FixWeight); // SetStateView(eStateMainWindows.WaitWeight);
+                        _WaitAdminText= $"{pRW?.NameWares} Текуча Вага={pRW?.FixWeight} Фактична={pСurrentlyWeight}";
+                        SetWaitConfirm(eTypeAccess.FixWeight, pRW); // SetStateView(eStateMainWindows.WaitWeight);
                         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WaitAdminText"));
                         break;
                     case eStateScale.Stabilized:
                         if(State==eStateMainWindows.WaitWeight || State == eStateMainWindows.WaitAdmin)
                             SetStateView(eStateMainWindows.WaitInput);
-                        if (CurWares != null)
-                        {
-                            CurWares.FixWeight = pStateScale.FixWeight;
-                            CurWares.FixWeightQuantity = pStateScale.FixWeightQuantity;
-                            Bl.FixWeight(CurWares);
-                        }
+                        if (pRW != null)                        
+                            Bl.FixWeight(pRW);                        
                         break;
                 }
 

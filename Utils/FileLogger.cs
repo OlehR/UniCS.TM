@@ -13,7 +13,7 @@ namespace Utils
     }
     public static class FileLogger
     {
-        private static string PathLog= Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"Logs");
+        private static string PathLog = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
         private static int IdWorkplace;
         public static eTypeLog TypeLog = eTypeLog.Full;
 
@@ -27,7 +27,7 @@ namespace Utils
             CreateDirectoryLog();
         }
 
-        public static void Init(string pPathLog,int pIdWorkplace)
+        public static void Init(string pPathLog, int pIdWorkplace)
         {
             if (!string.IsNullOrEmpty(pPathLog))
                 PathLog = pPathLog;
@@ -79,7 +79,11 @@ namespace Utils
             WriteLogMessage($"[{type} - {hashCode}] destructed {message}");
         }
 
-        public static void WriteLogMessage(this string message, eTypeLog pTypeLog = eTypeLog.Full)
+        public static void WriteLogMessage(object pO, string pMetodName, string pMessage, eTypeLog pTypeLog = eTypeLog.Full)
+        {
+            WriteLogMessage($"{pO?.GetType().FullName}.{pMetodName} {pMessage}", pTypeLog);
+        }
+        public static void WriteLogMessage( string message, eTypeLog pTypeLog = eTypeLog.Full)
         {
 #if DEBUG
             message.WriteConsoleDebug();

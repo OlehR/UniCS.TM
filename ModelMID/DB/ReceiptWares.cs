@@ -288,14 +288,18 @@ namespace ModelMID
         /// </summary>
         public decimal RefundedQuantity { get; set; }
 
+        decimal? _FixWeight = null;
         /// <summary>
         /// Зафіксована вага контрольною вагою.
         /// </summary>
-        public decimal FixWeight { get; set; }
+        public decimal FixWeight { get { return _FixWeight == null && WeightFact == -1 ? 0 : _FixWeight??0; } set { _FixWeight = value; } }
+
+        decimal _FixWeightQuantity=0;
         /// <summary>
         /// Для якої кількості зафіксована вага.
         /// </summary>
-        public decimal FixWeightQuantity { get; set; }
+        public decimal FixWeightQuantity { get { return WeightFact == -1 ? Quantity : _FixWeightQuantity; } set { _FixWeightQuantity = value; } }
+
         /// <summary>
         /// Код УКТЗЕТ
         /// </summary>
@@ -323,6 +327,9 @@ namespace ModelMID
         /// <summary>
         /// Напрямок
         /// </summary>
+        /// 
+
+        public bool IsLast { get; set; }
         public int CodeDirection { get; set; }
 
         public string GetPrices { get { return Prices == null ? null : string.Join(";", Prices.Select(n => n.Price.ToString(CultureInfo.InvariantCulture)).ToArray()); } }

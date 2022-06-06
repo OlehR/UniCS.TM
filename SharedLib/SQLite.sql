@@ -181,6 +181,7 @@ Price as Price/*, wr.sum as Sum*/, Type_Price as TypePrice
  ,wr.Max_Refund_Quantity as MaxRefundQuantity
  ,wr.Sum_Bonus as Sum_Bonus
  ,wr.Code_Company as CodeCompany
+ ,case when max(SORT) over( PARTITION BY CODE_RECEIPT) = sort then  1 else 0 end as IsLast
                      from wares_receipt wr
                      join wares w on (wr.code_wares =w.code_wares)
                      join ADDITION_UNIT au on w.code_wares = au.code_wares and wr.code_unit=au.code_unit

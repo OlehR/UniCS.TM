@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-
 using Utils;
 
 namespace ModelMID
@@ -92,62 +92,25 @@ namespace ModelMID
             }
         }
         public double GetMidl {get{ double Weight;  bool IsStable; (Weight, IsStable) = Midl; return Weight; } }
-
-        /* public double Min { get; set; }
-         public double Max { get; set; }
-         public double First { get; set; }
-         public double Last { get; set; }
-         public double Sum { get; set; }
-         public int Count { get; set; }
-
-         public double Midl { get { return (Count > 0 ? Sum / Count : 0); } }
-         public MidlWeight() { Init(); }
-
-         public bool IsStabile(double Delta)
-         {
-             return (Max - Min) < Delta;
-         }
-         public void Init()
-         {
-             Min = double.MaxValue;
-             Last = First = Sum = Max = 0d;
-             Count = 0;
-         }
-         public void AddValue(double pWeight)
-         {
-             Last = pWeight;
-             if (Count == 0)
-                 First = pWeight;
-             Sum += pWeight;
-             Count++;
-             if (pWeight < Min)
-                 Min = pWeight;
-             if (pWeight > Max)
-                 Max = pWeight;
-         } */
-    }
-
-    public class cStateScale
-    {
-       public eStateScale StateScale { get; set; }
-        public decimal FixWeight { get; set; }
-        public decimal FixWeightQuantity { get; set; }
-    }
-
+      
+    }    
+    
     public class ControlScale
     {
-        public Action<cStateScale> OnStateScale { get; set; }
+        ReceiptWares RW;
+        public Action<eStateScale, ReceiptWares,double> OnStateScale { get; set; }
         eStateScale _StateScale;
         /// <summary>
         /// Стан ваги (Не поставили товар, вірна вага, вага не вірна)
         /// </summary>
         public eStateScale StateScale //{ get; set; } 
-        { get { return _StateScale; } 
-            set 
-            {  if (_StateScale != value)
+        { get { return _StateScale; }
+            set
+            { if (_StateScale != value)
                 {
                     _StateScale = value;
-                    OnStateScale?.Invoke(new cStateScale() { StateScale = _StateScale,FixWeight = Convert.ToDecimal(MidlWeight.GetMidl), FixWeightQuantity= Convert.ToDecimal( Quantity) });
+                    OnStateScale?.Invoke(_StateScale, RW, СurrentlyWeight);
+                        //new cStateScale() { StateScale = _StateScale, FixWeight = Convert.ToDecimal(MidlWeight.GetMidl), FixWeightQuantity = Convert.ToDecimal(Quantity) });
                     OnScalesLog("NewState", _StateScale.ToString());
                 }
             } }
@@ -155,8 +118,8 @@ namespace ModelMID
         /// <summary>
         /// True - якщо чікуєм збільшення ваги, False - Якщо зменшення.
         /// </summary>
-        bool IsIncrease = true;       
-       
+        bool IsIncrease = true;
+
         /// <summary>
         ///Допустима похибка ваги на вітер 
         /// </summary>
@@ -190,8 +153,15 @@ namespace ModelMID
 
         bool IsRightWeight(double pWeight)
         {
+            // Якщо не чекаємо на вагу 
+            if(BeforeWeight == 0d)
+                return Math.Abs(pWeight)<Delta; //Повертаємо чи вага в межах похибки;
+            //Якщо вага не задана повертаємо невірну вагу.
+            if (WaitWeight == null && WaitWeight.Count() == 0)
+                return false;
+            //Шукаємо "Правильну" вагу
             for (int i = 0; i < WaitWeight.Length; i++)
-                if (WaitWeight[i].IsGoodWeight(pWeight,Quantity))
+                if (WaitWeight[i].IsGoodWeight(pWeight, Quantity))
                     return true;
             return false;
         }
@@ -203,11 +173,41 @@ namespace ModelMID
                 Array.Resize(ref WaitWeight, WaitWeight.Length + 1);
                 WaitWeight[WaitWeight.Length - 1] =
                     new WaitWeight { Min = СurrentlyWeight - Delta, Max = СurrentlyWeight + Delta };
-                StateScale = eStateScale.Stabilized;               
+                StateScale = eStateScale.Stabilized;
                 return true;
             }
             else
                 return false;
+        }
+
+        public void StartWeightNewGoogs(IEnumerable<ReceiptWares> pRW)
+        {
+            
+            if(pRW==null|| pRW.Count()==0)
+            {
+                WaitClear();
+                return;
+            }
+
+            double BeforeWeight = Convert.ToDouble(pRW?.Sum(el => el.FixWeight));
+            var ww = pRW?.Where(el=>el.IsLast);
+            //Нештатна ситуація
+            if (ww == null || ww.Count() != 1)
+            {
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name,"Не знайшли останній товар", eTypeLog.Expanded);
+                return;
+            }
+
+            var w=ww.First();
+            RW = w;
+            if (w != null)
+            {
+                if (w.Quantity != w.FixWeightQuantity)
+                {
+                    if (w.WeightFact != -1 && w.AllWeights != null && w.AllWeights.Count() > 0)
+                        StartWeightNewGoogs(BeforeWeight, w.AllWeights, Convert.ToDouble(w.Quantity - w.FixWeightQuantity));
+                }
+            }
         }
 
         public void StartWeightNewGoogs(double pBeforeWeight, WaitWeight[] pWeight, double pQuantity = 1d, bool pIsIncrease = true)
@@ -286,10 +286,12 @@ namespace ModelMID
                         //if (!(StateScale == eStateScale.StartStabilized || StateScale == eStateScale.Stabilized ))
                         //{
                             NewStateScale = eStateScale.Stabilized;
+                            RW.FixWeight += Convert.ToDecimal(Quantity);
+                            RW.FixWeightQuantity += Convert.ToDecimal (СurrentlyWeight);
                             //StartTimer();
-                        //}
-                        // else
-                        //  MidlWeight.AddValue(СurrentlyWeight);
+                            //}
+                            // else
+                            //  MidlWeight.AddValue(СurrentlyWeight);
                     }
                     else
                     {
