@@ -145,6 +145,7 @@ namespace Front
                     case eTypeAccess.ErrorEquipment: return "Проблема з критично важливим обладнанням";
                     case eTypeAccess.LockSale: return "Зміна заблокована";
                     case eTypeAccess.FixWeight: return $"{StateScale}{Environment.NewLine}{_WaitAdminText}";
+
                 }
                 return null;
             }
@@ -299,11 +300,16 @@ namespace Front
             Volume = true;
 
             InitializeComponent();
+            string HTMLContent = "<font style=\"vertical - align: inherit; \">Крок 1 - Встановіть Visual Studio</font>";
 
-            //MessageBox.Show(NameFirstTerminal);
-
-            //string HTMLContent = "<font style=\"vertical - align: inherit; \">Крок 1 - Встановіть Visual Studio</font>";
-            //WebView2.NavigateToString(HTMLContent);
+            try
+            {
+                Init(HTMLContent);
+            }
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage(e.Message, eTypeLog.Error);
+            }
 
             ListWares = new ObservableCollection<ReceiptWares>(StartData());
             WaresList.ItemsSource = ListWares;// Wares;
@@ -317,7 +323,21 @@ namespace Front
             Recalc();
             SetStateView(eStateMainWindows.StartWindow);
         }
+        private async void Init(string HTMLContent)
+        {
+            try
+            {
 
+                await WebView2.EnsureCoreWebView2Async();
+                WebView2.CoreWebView2.NavigateToString(HTMLContent);
+                //MyWebView.CoreWebView2.Navigate("ms-appx-web:///www/index.html");
+                //WebView2.CoreWebView2.OpenDevToolsWindow();
+            }
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage(e.Message, eTypeLog.Error);
+            }
+        }
         private void SetCurReceipt(Receipt pReceipt)
         {
             curReceipt = pReceipt;
