@@ -5,8 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -75,7 +77,7 @@ namespace Test
 
     public class SortImg
     {
-        
+
         public void SortPhoto()
         {
             int[] count = new int[32] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -97,16 +99,16 @@ namespace Test
             foreach (var item in dirs)
             {
                 string photoName = Path.GetFileNameWithoutExtension(item); // ім'я фото
-                int del = Convert.ToInt32(photoName) % 32; 
+                int del = Convert.ToInt32(photoName) % 32;
                 Console.WriteLine(del);
-                string pathWhere = newCatalog + Convert.ToString(del)+@"\" + photoName + ".jpg";
+                string pathWhere = newCatalog + Convert.ToString(del) + @"\" + photoName + ".jpg";
                 if (File.Exists(pathWhere))// видалити фото з таким самим ім'ям якщо присутнє
 
                 {
                     File.Delete(pathWhere);
                 }
                 File.Move(item, pathWhere); //перемістити фото
-                count[del] = count[del]+1; //підрахунок кількості фото
+                count[del] = count[del] + 1; //підрахунок кількості фото
             }
             Console.WriteLine("---------------------------------------");
             Console.WriteLine("-----------------ЗВІТ!-----------------");
@@ -114,7 +116,7 @@ namespace Test
 
             foreach (int i in count)
             {
-                Console.Write("Записано в "+ a+ " папку: ");
+                Console.Write("Записано в " + a + " папку: ");
                 Console.Write(i);
                 Console.WriteLine();
                 a = a++;
@@ -434,18 +436,19 @@ namespace Test
 
         public void Parse()
         {
-            string varSQLSelect = @"SELECT TOP 100 bo.bar_code as BarCode, bo.CodeWares, bo.NameWares, bo.Weight, bo.Date, bo.URL, bo.Data, bo.WeightUrl, bo.DateUrl, bo.Error, bo.UrlPicture, bo.IsActual, bo.IsVerification, bo.Site, bo.Unit, bo.Name, bo.NameShort, bo.Other, bo.UKTZED, bo.VAT, bo.ExpirationDay, bo.UnitSale, bo.PaletteLayer, bo.Palette 
+            string varSQLSelect = @"SELECT bo.bar_code as BarCode, bo.CodeWares, bo.NameWares, bo.Weight, bo.Date, bo.URL, bo.Data, bo.WeightUrl, bo.DateUrl, bo.Error, bo.UrlPicture, bo.IsActual, bo.IsVerification, bo.Site, bo.Unit, bo.Name, bo.NameShort, bo.Other, bo.UKTZED, bo.VAT, bo.ExpirationDay, bo.UnitSale, bo.PaletteLayer, bo.Palette 
       FROM  dbo.barcode_out bo 
-    WHERE bo.error ='Ok' AND DATA IS NOT NULL AND DateUrl>CONVERT(DATE,'20211112',112) AND bo.Unit IS NULL";
+    WHERE  url LIKE '%https://listex.info%'";
 
             var dbMs = new MSSQL();
             var rand = new Random();
             Console.WriteLine("Get BarCode");
             var s = dbMs.Execute<BarCodeOut>(varSQLSelect);
             var Units = new List<Unit>();
+            List<string> WriteToFile = new List<string>();
             foreach (var el in s)
             {
-
+                if (string.IsNullOrEmpty(el.Data)) continue;
                 if (el.Data.IndexOf("Вагогабаритні характеристики") == -1)
                 {
                     continue;
@@ -481,12 +484,16 @@ namespace Test
                         continue;
                     }
                 }
+                var r12 = "";
+                var r13 = "";
+                var r14 = "";
                 //Перехід до всіх типів штрихкодів
                 for (int i = aa.IndexOf("fa fa-barcode"); ;)
                 {
 
                     Unit unit = new Unit();
                     aa = GetElement(aa, "fa fa-barcode");
+
                     if (string.IsNullOrEmpty(aa)) //якщо штрихкодів більше немає - відразу вийти
                     {
                         break;
@@ -499,10 +506,10 @@ namespace Test
                     {
                         aa = GetElement(aa, "<th>");
 
-                        unit.Height = ToDecimal(GetElement(aa, "Висота, см", "<td>", "</td>"));
-                        unit.Depth = ToDecimal(GetElement(aa, "Глибина, см", "<td>", "</td>"));
+                        unit.Height = ToDecimal(GetElement(aa, "Висота, см", "<td>", "</td>") != null ? GetElement(aa, "Висота, см", "<td>", "</td>") : GetElement(aa, "Высота, см", "<td>", "</td>"));
+                        unit.Depth = ToDecimal(GetElement(aa, "Глибина, см", "<td>", "</td>") != null ? GetElement(aa, "Глибина, см", "<td>", "</td>") : GetElement(aa, "Глубина, см", "<td>", "</td>"));
                         unit.Width = ToDecimal(GetElement(aa, "Ширина, см", "<td>", "</td>"));
-                        unit.GrossWeight = ToDecimal(GetElement(aa, "Вага брутто, кг", "<td>", "</td>"));
+                        unit.GrossWeight = ToDecimal(GetElement(aa, "Вага брутто, кг", "<td>", "</td>") != null ? GetElement(aa, "Вага брутто", "<td>", "</td>") : GetElement(aa, "Вес брутто", "<td>", "</td>"));
 
                         Str = GetElement(aa, "strong", ">", "</strong>");
                         if (Str.Length < 3) Str = Str.Substring(2);
@@ -517,10 +524,10 @@ namespace Test
                         {
                             aa = GetElement(aa, "<th>");
                             if (string.IsNullOrEmpty(aa)) Console.WriteLine("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"); ;
-                            unit.Height = ToDecimal(GetElement(aa, "Висота, см", "<td>", "</td>"));
-                            unit.Depth = ToDecimal(GetElement(aa, "Глибина, см", "<td>", "</td>"));
+                            unit.Height = ToDecimal(GetElement(aa, "Висота, см", "<td>", "</td>") != null ? GetElement(aa, "Висота, см", "<td>", "</td>") : GetElement(aa, "Высота, см", "<td>", "</td>"));
+                            unit.Depth = ToDecimal(GetElement(aa, "Глибина, см", "<td>", "</td>") != null ? GetElement(aa, "Глибина, см", "<td>", "</td>") : GetElement(aa, "Глубина, см", "<td>", "</td>"));
                             unit.Width = ToDecimal(GetElement(aa, "Ширина, см", "<td>", "</td>"));
-                            unit.GrossWeight = ToDecimal(GetElement(aa, "Вага брутто, кг", "<td>", "</td>"));
+                            unit.GrossWeight = ToDecimal(GetElement(aa, "Вага брутто, кг", "<td>", "</td>") != null ? GetElement(aa, "Вага брутто", "<td>", "</td>") : GetElement(aa, "Вес брутто", "<td>", "</td>"));
 
                             Str = GetElement(aa, "strong", ">", "</strong>");
                             if (Str.Length < 3) Str = Str.Substring(2);
@@ -534,9 +541,9 @@ namespace Test
                         {
                             //for (; countPalet > 0; countPalet--) //якщо потрібні всі палети
                             //{
-                            var r12 = GetElement(aa, "Шар:", "</b>", "<br>");
-                            var r13 = GetElement(aa, "Груз:", "</b>", "<br>");
-                            var r14 = GetElement(aa, "</span>:</b", ">", "</div>");
+                            r12 = GetElement(aa, "Шар:", "</b>", "<br>");
+                            r13 = GetElement(aa, "Груз:", "</b>", "<br>");
+                            r14 = GetElement(aa, "</span>:</b", ">", "</div>");
                             r12 = r12.Substring(1, r12.Length - 3);
                             r13 = r13.Substring(1, r13.Length - 3);
                             r14 = r14.Substring(1, r14.Length - 3);
@@ -557,19 +564,18 @@ namespace Test
                     Str = Str.Substring(0, Str.Length - 2);
                     el.Name = Str.Replace("Характеристики ", "");
                     el.NameShort = "";
-
                 }
-                else if (str.IndexOf("Коротка назва (укр.)") == -1) //якщо є звичайна назва але немає короткої
-                {
-                    el.NameShort = "";
-                }
-                else// всі назви є
+                else //якщо є
                 {
                     Str = GetElement(str, "Назва (укр.)", "<td>", "</td>");
                     el.Name = Str.Substring(2, Str.Length - 5);
+                }
+                if (str.IndexOf("Коротка назва (укр.)") != -1) //якщо є звичайна назва але немає короткої
+                {
                     Str = GetElement(str, "Коротка назва (укр.)", "<td>", "</td>");
                     el.NameShort = Str.Substring(2, Str.Length - 5);
                 }
+
                 Console.WriteLine(el.Name);
 
 
@@ -585,8 +591,8 @@ namespace Test
                 Console.WriteLine("Код УКТ ЗЕД: " + el.UKTZED);
 
                 Str = GetElement(str, "ПДВ, %", "<td>", "</td>");
-                el.VAT = int.Parse(Str.Substring(2, Str.Length - 3));
-                Console.WriteLine("Податок: " + el.VAT);
+                //el.VAT = int.Parse(Str.Substring(2, Str.Length - 3));
+                //Console.WriteLine("Податок: " + el.VAT);
                 el.Unit = JsonConvert.SerializeObject(Units);
 
                 //{
@@ -594,12 +600,59 @@ namespace Test
                 Console.WriteLine("///////////////////////   IНШИЙ ТОВАР   ////////////////////////////");
                 Console.WriteLine();
 
-                dbMs.ExecuteNonQuery<BarCodeOut>(SQLUpdate, el);
+                string tempWrite = "";
+                int counter = 0;
+                foreach (var item in Units)
+                {
+                    if (counter >= 2)
+                    {
+                        counter = 0;
+                        break;
+                    }
+                    if (item.Name.IndexOf("Коробка") != -1 && counter == 0)
+                    {
+                        tempWrite += $"0;0;0;0;0;0;";
+                        counter++;
+                    }
+                    tempWrite += $"{item.Name};{item.BarCode};{item.Height};{item.Depth};{item.Width};{item.GrossWeight};";
+                    counter++;
+                }
+
+
+
+                int tempIndex = 0;//забираємо ; з назви
+                for (; ; )
+                {
+                    if (el.Name.IndexOf(";") == -1) break;
+                    else
+                    {
+                        tempIndex = el.Name.IndexOf(";");
+                        el.Name = ReplaceCharInString(el.Name, tempIndex, ',');
+                        continue;
+                    }
+                }
+
+
+
+                WriteToFile.Add($"{el.Name};{el.BarCode};{tempWrite}{r14}");//фінальна строка
+
                 Units.Clear();
             }
-
+            WriteCSV(WriteToFile);
         }
 
+        void WriteCSV(List<string> Text)
+        {
+            var filePath = @"D:\Test.csv";
+
+            File.AppendAllLines(filePath, Text, System.Text.Encoding.GetEncoding("Windows-1251"));
+
+
+        }
+        public String ReplaceCharInString(String str, int index, Char newSymb)
+        {
+            return str.Remove(index, 1).Insert(index, newSymb.ToString());
+        }
         decimal ToDecimal(string pD)
         {
             return decimal.Parse(pD, CultureInfo.InvariantCulture);
