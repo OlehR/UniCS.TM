@@ -11,12 +11,13 @@ namespace ModelMID
     {
         public double Min, Max;
         public WaitWeight() { }
-        public WaitWeight(double pWeight,double pDelta )
+        public WaitWeight(double pWeight, double pDelta)
         {
             Min = pWeight - pDelta;
             Max = pWeight + pDelta;
         }
 
+        public double Weight { get { return (Max + Min) / 2d; } }
         public WaitWeight(decimal pWeight, decimal pDelta):this(Convert.ToDouble(1000m*pWeight), Convert.ToDouble(1000m * pDelta)){}
 
         public bool IsGoodWeight(double pWeight,double pQuantity=1d)

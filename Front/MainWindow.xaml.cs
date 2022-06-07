@@ -20,6 +20,7 @@ using ModelMID;
 using ModelMID.DB;
 using SharedLib;
 using Utils;
+using Microsoft.Web.WebView2.Core;
 
 namespace Front
 {
@@ -278,8 +279,8 @@ namespace Front
                     case eStateScale.BadWeight:
                     case eStateScale.NotStabilized:
                     case eStateScale.WaitClear:
-                    case eStateScale.WaitGoods:
-                        _WaitAdminText= $"{pRW?.NameWares} Текуча Вага={pRW?.FixWeight} Фактична={pСurrentlyWeight}";
+                    case eStateScale.WaitGoods:                        
+                        _WaitAdminText = $"{pRW?.NameWares} Очікувана вага Вага=({string.Join(",", pRW?.AllWeights.Select(el => Convert.ToDecimal( el.Weight) * (pRW.Quantity - pRW.FixWeightQuantity))) }) Фактична={pСurrentlyWeight}";
                         SetWaitConfirm(eTypeAccess.FixWeight, pRW); // SetStateView(eStateMainWindows.WaitWeight);
                         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WaitAdminText"));
                         break;
@@ -300,6 +301,9 @@ namespace Front
             InitializeComponent();
 
             //MessageBox.Show(NameFirstTerminal);
+
+            //string HTMLContent = "<font style=\"vertical - align: inherit; \">Крок 1 - Встановіть Visual Studio</font>";
+            //WebView2.NavigateToString(HTMLContent);
 
             ListWares = new ObservableCollection<ReceiptWares>(StartData());
             WaresList.ItemsSource = ListWares;// Wares;

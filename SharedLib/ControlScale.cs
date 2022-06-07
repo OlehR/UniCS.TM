@@ -154,14 +154,14 @@ namespace ModelMID
         bool IsRightWeight(double pWeight)
         {
             // Якщо не чекаємо на вагу 
-            if(BeforeWeight == 0d)
+            if(BeforeWeight == 0d && WaitWeight == null)
                 return Math.Abs(pWeight)<Delta; //Повертаємо чи вага в межах похибки;
             //Якщо вага не задана повертаємо невірну вагу.
             if (WaitWeight == null && WaitWeight.Count() == 0)
                 return false;
             //Шукаємо "Правильну" вагу
             for (int i = 0; i < WaitWeight.Length; i++)
-                if (WaitWeight[i].IsGoodWeight(pWeight, Quantity))
+                if (WaitWeight[i].IsGoodWeight(Math.Abs(pWeight), Math.Abs(Quantity)))
                     return true;
             return false;
         }
@@ -217,7 +217,8 @@ namespace ModelMID
             IsIncrease = pIsIncrease;
             WaitWeight = pWeight;
             Quantity = pQuantity;
-            
+            СurrentlyWeight = 0;
+
             TooLightWeight = WaitWeight.Max(r => r.Max) <= Delta;
             StateScale = eStateScale.WaitGoods;           
         }
@@ -286,8 +287,8 @@ namespace ModelMID
                         //if (!(StateScale == eStateScale.StartStabilized || StateScale == eStateScale.Stabilized ))
                         //{
                             NewStateScale = eStateScale.Stabilized;
-                            RW.FixWeight += Convert.ToDecimal(Quantity);
-                            RW.FixWeightQuantity += Convert.ToDecimal (СurrentlyWeight);
+                            RW.FixWeight += Convert.ToDecimal(СurrentlyWeight);
+                            RW.FixWeightQuantity += Convert.ToDecimal (Quantity);
                             //StartTimer();
                             //}
                             // else

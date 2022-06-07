@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"   
         xmlns:keyboard="clr-namespace:OnScreenKeyboardControl.Keyboard"
         xmlns:local="clr-namespace:Front" xmlns:onScreenKeyboardControl="clr-namespace:OnScreenKeyboardControl"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         mc:Ignorable="d"
         Title="MainWindow" 
         WindowState="Maximized"
@@ -37,6 +38,11 @@
             <RowDefinition Height="80"></RowDefinition>
         </Grid.RowDefinitions>
 
+        <!--<DockPanel Grid.ColumnSpan="10" Grid.RowSpan="10">
+            <wv2:WebView2  x:Name="WebView2"
+                   Source="https://www.microsoft.com" 
+   />
+        </DockPanel>-->
         <Border Grid.Row="0" Margin="5" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
             <Border.Effect>
                 <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
@@ -486,7 +492,10 @@
 
 
 
-
+            <!--<Grid Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="0" Grid.RowSpan="5">
+                <WebBrowser Height="200" Name="myWebBrowser" ></WebBrowser>
+                
+            </Grid>-->
 
 
             <!-- Кастомне вікно    -->
