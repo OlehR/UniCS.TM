@@ -226,16 +226,16 @@ namespace ModelMID
         /// <summary>
         /// Подія від контрольної ваги.
         /// </summary>
-        /// <param name="weight">Власне вага</param>
-        /// <param name="isStable">Чи платформа стабільна</param>
-        public void OnScalesData(double weight, bool isStable)
+        /// <param name="pWeight">Власне вага</param>
+        /// <param name="pIsStable">Чи платформа стабільна</param>
+        public void OnScalesData(double pWeight, bool pIsStable)
         {
-            OnScalesLog($"OnScalesData weight{weight} isStable {isStable}");
+            OnScalesLog($"OnScalesData weight{pWeight} isStable {pIsStable}");
             eStateScale NewStateScale = StateScale;
 
-            (weight, isStable) = MidlWeight.AddValue(weight, isStable);
+            (pWeight, pIsStable) = MidlWeight.AddValue(pWeight, pIsStable);
 
-            СurrentlyWeight = weight-BeforeWeight;
+            СurrentlyWeight = pWeight-BeforeWeight;
             if (BeforeWeight == 0d && WaitWeight == null) // Якщо товару на вазі не повинно бути (Завершений/анулюваний/Новий чек )
             {
                 //if (StateScale != eStateScale.WaitGoods)
@@ -269,7 +269,7 @@ namespace ModelMID
                  }*/
                 {
                     //Якщо вийшли за межі похибки
-                    if (!isStable && NewStateScale == eStateScale.WaitGoods && Math.Abs(СurrentlyWeight) > Delta)
+                    if (!pIsStable && NewStateScale == eStateScale.WaitGoods && Math.Abs(СurrentlyWeight) > Delta)
                     {
                         NewStateScale = eStateScale.NotStabilized;
                         //StartTimer();
@@ -281,14 +281,26 @@ namespace ModelMID
                         //StartTimer();
                     }
                     else
-                    if (isStable)
+                    if (pIsStable)
                     if (IsRightWeight(СurrentlyWeight))
                     {
                         //if (!(StateScale == eStateScale.StartStabilized || StateScale == eStateScale.Stabilized ))
                         //{
                             NewStateScale = eStateScale.Stabilized;
-                            RW.FixWeight += Convert.ToDecimal(СurrentlyWeight);
-                            RW.FixWeightQuantity += Convert.ToDecimal (Quantity);
+                            if (RW.FixWeightQuantity != RW.Quantity)
+                            {
+                                RW.FixWeight += Convert.ToDecimal(СurrentlyWeight);
+                                RW.FixWeightQuantity += Convert.ToDecimal(Quantity);
+
+                                BeforeWeight = pWeight;
+                                Quantity = 0;
+                                СurrentlyWeight = 0;
+                            }
+                            else
+                            {
+                                //Треба Перевірити чи все Ок.
+                                RW.FixWeight = Convert.ToDecimal(pWeight- BeforeWeight) - RW.FixWeight;
+                            }
                             //StartTimer();
                             //}
                             // else
