@@ -194,7 +194,7 @@ namespace ModelMID
             //Нештатна ситуація
             if (ww == null || ww.Count() != 1)
             {
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name,"Не знайшли останній товар", eTypeLog.Expanded);
+                OnScalesLog(System.Reflection.MethodBase.GetCurrentMethod().Name,"Не знайшли останній товар");
                 return;
             }
 
@@ -212,7 +212,7 @@ namespace ModelMID
 
         public void StartWeightNewGoogs(double pBeforeWeight, WaitWeight[] pWeight, double pQuantity = 1d, bool pIsIncrease = true)
         {
-            OnScalesLog($"StartWeightNewGoogs=>(pBeforeWeight=>{pBeforeWeight},WaitWeight=>{(pWeight !=null? string.Join(", ", pWeight?.ToList()):"")},pQuantity={pQuantity},pIsIncrease={pIsIncrease} ");
+            OnScalesLog($"StartWeightNewGoogs", $"(pBeforeWeight=>{pBeforeWeight},WaitWeight=>{(pWeight !=null? string.Join(", ", pWeight?.ToList()):"")},pQuantity={pQuantity},pIsIncrease={pIsIncrease} ");
             BeforeWeight = pBeforeWeight;
             IsIncrease = pIsIncrease;
             WaitWeight = pWeight;
@@ -220,7 +220,8 @@ namespace ModelMID
             СurrentlyWeight = 0;
 
             TooLightWeight = WaitWeight.Max(r => r.Max) <= Delta;
-            StateScale = eStateScale.WaitGoods;           
+            StateScale = eStateScale.WaitGoods;
+            //FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"(pBeforeWeight={pBeforeWeight},pWeight={pWeight.ToJSON()},pQuantity={pQuantity},{RW.NameWares})", eTypeLog.Full);
         }
 
         /// <summary>
@@ -230,7 +231,7 @@ namespace ModelMID
         /// <param name="pIsStable">Чи платформа стабільна</param>
         public void OnScalesData(double pWeight, bool pIsStable)
         {
-            OnScalesLog($"OnScalesData weight{pWeight} isStable {pIsStable}");
+            OnScalesLog("OnScalesData", $"weight{pWeight} isStable {pIsStable}");
             eStateScale NewStateScale = StateScale;
 
             (pWeight, pIsStable) = MidlWeight.AddValue(pWeight, pIsStable);
@@ -330,9 +331,9 @@ namespace ModelMID
             return true;
         }
 
-        public void OnScalesLog(string logLevel, string message = "")
+        public void OnScalesLog(string pMetod, string pMessage =null)
         {
-            FileLogger.WriteLogMessage($"ControlScale {logLevel} StateScale=>{StateScale} BeforeWeight=>{BeforeWeight} СurrentlyWeight=>{СurrentlyWeight} {message}");
+            FileLogger.WriteLogMessage(this, pMetod, $" StateScale=>{StateScale} BeforeWeight=>{BeforeWeight} СurrentlyWeight=>{СurrentlyWeight} {pMessage}");
         }
 
         /*

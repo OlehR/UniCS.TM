@@ -14,9 +14,13 @@ namespace Front.Equipments
 
         }
 
-        public MagellanScale(Magellan9300S pMagellan, Action<double, bool> pOnScalesData, Action<double, bool> pOnScalesData2=null) :base()
+        public MagellanScale(MagellanScaner pMagellan, Action<double, bool> pOnScalesData, Action<double, bool> pOnScalesData2=null) :base()
         {
-            Magellan = pMagellan;
+            State = pMagellan.State;
+            if (State != eStateEquipment.On)
+                return;
+            Magellan = pMagellan.Magellan9300;
+           
             if (Magellan != null)
                 Magellan.OnWeightChanged += (Weight) => { pOnScalesData?.Invoke(Weight, true); pOnScalesData2?.Invoke(Weight, true); };
         }
