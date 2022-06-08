@@ -280,8 +280,10 @@ namespace Front
                     case eStateScale.BadWeight:
                     case eStateScale.NotStabilized:
                     case eStateScale.WaitClear:
-                    case eStateScale.WaitGoods:                        
-                        _WaitAdminText = $"{pRW?.NameWares} Очікувана вага Вага=({string.Join(",", pRW?.AllWeights.Select(el => Convert.ToDecimal( el.Weight) * (pRW.Quantity - pRW.FixWeightQuantity))) }) Фактична={pСurrentlyWeight}";
+                    case eStateScale.WaitGoods:
+                        string AllWeights = pRW == null || pRW.AllWeights == null || pRW.AllWeights.Count() == 0 ? "0" : string.Join(",", pRW?.AllWeights.Select(el => Convert.ToDecimal(el.Weight) * (pRW?.Quantity ?? 0 - pRW?.FixWeightQuantity ?? 0)));
+
+                        _WaitAdminText = $"{pRW?.NameWares} Очікувана вага Вага=({AllWeights}) Фактична={pСurrentlyWeight}";
                         SetWaitConfirm(eTypeAccess.FixWeight, pRW); // SetStateView(eStateMainWindows.WaitWeight);
                         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WaitAdminText"));
                         break;
