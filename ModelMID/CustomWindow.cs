@@ -53,6 +53,11 @@ namespace ModelMID
     public class CustomButton
     {
         /// <summary>
+        /// Доступна лише в режимі адміністратора.
+        /// </summary>
+        public bool IsAdmin { get; set; } = false;
+
+        /// <summary>
         /// Id >0 кнопки. Буде в відповіді 
         /// </summary>
         public int Id { get; set; }

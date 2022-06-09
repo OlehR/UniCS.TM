@@ -60,7 +60,7 @@ namespace Front
         public Receipt curReceipt;//{ get; set; } = null;
         Client Client;
         eStateMainWindows State = eStateMainWindows.StartWindow;
-        eStateScale StateScale = eStateScale.NotDefine; 
+        eStateScale StateScale = eStateScale.NotDefine;
         public string WaresQuantity { get; set; }
         decimal _MoneySum;
         double tempMoneySum;
@@ -70,6 +70,7 @@ namespace Front
         public bool Volume { get; set; }
         public string ChangeSumPaymant { get; set; } = "0";
         public bool IsIgnoreExciseStamp { get; set; }
+        public bool IsAddNewWeight { get; set; }
         public bool IsExciseStamp { get; set; }
         bool _IsLockSale = false;
         public bool IsLockSale { get { return _IsLockSale; } set { if (_IsLockSale != value) { SetStateView(!value && State == eStateMainWindows.WaitAdmin ? eStateMainWindows.WaitInput : eStateMainWindows.NotDefine); _IsLockSale = value; } } }
@@ -214,7 +215,7 @@ namespace Front
                     if (curReceipt?.Wares?.Count() == 0)
                         CS.WaitClear();
 
-                    CS.StartWeightNewGoogs(curReceipt?.Wares);                   
+                    CS.StartWeightNewGoogs(curReceipt?.Wares);
                 }
                 catch (Exception e)
                 {
@@ -272,10 +273,12 @@ namespace Front
                 SetCurReceipt(pReceipt);
             };
             //Обробка стану контрольної ваги.
-            CS.OnStateScale += (pStateScale,pRW, pСurrentlyWeight) =>
+            CS.OnStateScale += (pStateScale, pRW, pСurrentlyWeight) =>
             {
                 StateScale = pStateScale;
-                switch(StateScale)
+                customWindowButtons = StateScale == eStateScale.BadWeight ? customWindowButtons = new ObservableCollection<CustomButton>() { new CustomButton() { Id = 1, Text = "Підтвердити вагу", IsAdmin = true }, 
+                    new CustomButton() { Id = 2, Text = "Добавити вагу", IsAdmin = true } } : null;
+                switch (StateScale)
                 {
                     case eStateScale.BadWeight:
                     case eStateScale.NotStabilized:
@@ -288,10 +291,10 @@ namespace Front
                         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WaitAdminText"));
                         break;
                     case eStateScale.Stabilized:
-                        if(State==eStateMainWindows.WaitWeight || State == eStateMainWindows.WaitAdmin)
+                        if (State == eStateMainWindows.WaitWeight || State == eStateMainWindows.WaitAdmin)
                             SetStateView(eStateMainWindows.WaitInput);
-                        if (pRW != null)                        
-                            Bl.FixWeight(pRW);                        
+                        if (pRW != null)
+                            Bl.FixWeight(pRW);
                         break;
                 }
 
@@ -302,16 +305,17 @@ namespace Front
             Volume = true;
 
             InitializeComponent();
-            string HTMLContent = "<font style=\"vertical - align: inherit; \">Крок 1 - Встановіть Visual Studio</font>";
 
-            try
-            {
-                Init(HTMLContent);
-            }
-            catch (Exception e)
-            {
-                FileLogger.WriteLogMessage(e.Message, eTypeLog.Error);
-            }
+
+            //string HTMLContent = "<font style=\"vertical - align: inherit; \">Крок 1 - Встановіть Visual Studio</font>";
+            //try
+            //{
+            //    Init(HTMLContent);
+            //}
+            //catch (Exception e)
+            //{
+            //    FileLogger.WriteLogMessage(e.Message, eTypeLog.Error);
+            //}
 
             ListWares = new ObservableCollection<ReceiptWares>(StartData());
             WaresList.ItemsSource = ListWares;// Wares;
@@ -330,8 +334,8 @@ namespace Front
             try
             {
 
-                await WebView2.EnsureCoreWebView2Async();
-                WebView2.CoreWebView2.NavigateToString(HTMLContent);
+                //await WebView2.EnsureCoreWebView2Async();
+                //WebView2.CoreWebView2.NavigateToString(HTMLContent);
                 //MyWebView.CoreWebView2.Navigate("ms-appx-web:///www/index.html");
                 //WebView2.CoreWebView2.OpenDevToolsWindow();
             }
@@ -396,7 +400,7 @@ namespace Front
         void SetConfirm(User pUser, bool pIsFirst)
         {
             IsIgnoreExciseStamp = Access.GetRight(pUser, eTypeAccess.ExciseStamp);
-
+            IsAddNewWeight = Access.GetRight(pUser, eTypeAccess.AddNewWeight);
             if (TypeAccessWait == eTypeAccess.NoDefinition || TypeAccessWait < 0)
                 return;
             if (!Access.GetRight(pUser, TypeAccessWait))
@@ -521,6 +525,7 @@ namespace Front
                             WaitAdmin.Visibility = Visibility.Visible;
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;
+                            CustomButtonsWaitAdmin.ItemsSource = customWindowButtons;
                             break;
                         case eStateMainWindows.WaitAdminLogin:
                             LoginTextBlock.Text = "";
@@ -1204,6 +1209,20 @@ namespace Front
                 TextBox textBox = (TextBox)sender;
                 Regex regex = new Regex(customWindow.ValidationMask);
                 CustomWindowValidText = regex.IsMatch(textBox.Text);
+            }
+        }
+
+        private void WaitAdminCustomButtons(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            CustomButton res = btn.DataContext as CustomButton;
+            if (res.Text == "Підтвердити вагу") // res.Id == 1
+            {
+                //підтвердження ваги
+            }
+            if (res.Text == "Добавити вагу") //  res.Id == 2
+            {
+                // додавання нової ваги
             }
         }
     }

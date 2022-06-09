@@ -276,7 +276,7 @@ namespace ModelMID
                         //StartTimer();
                     }
 
-                    if ( Math.Abs(СurrentlyWeight) <= Delta)
+                    if (RW.FixWeightQuantity != RW.Quantity && Math.Abs(СurrentlyWeight) <= Delta)
                     {
                         NewStateScale = eStateScale.WaitGoods;
                         //StartTimer();
@@ -300,7 +300,7 @@ namespace ModelMID
                             else
                             {
                                 //Треба Перевірити чи все Ок.
-                                RW.FixWeight = Convert.ToDecimal(pWeight- BeforeWeight) - RW.FixWeight;
+                                RW.FixWeight = Convert.ToDecimal(pWeight) - Convert.ToDecimal(BeforeWeight) + RW.FixWeight;
                             }
                             //StartTimer();
                             //}
