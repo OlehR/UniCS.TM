@@ -315,7 +315,13 @@ namespace ModelMID
         ChoicePrice = 3,
         ConfirmAge = 4,
         ExciseStamp =5,
+        /// <summary>
+        /// Дозвіл на фіксування ваги
+        /// </summary>
         FixWeight = 6,
+        /// <summary>
+        /// Дозвіл на Добавлення ваги в Базу
+        /// </summary>
         AddNewWeight = 7,
         ReturnReceipt = 8,
         AdminPanel =9,

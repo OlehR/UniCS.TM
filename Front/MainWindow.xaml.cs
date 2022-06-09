@@ -71,6 +71,7 @@ namespace Front
         public string ChangeSumPaymant { get; set; } = "0";
         public bool IsIgnoreExciseStamp { get; set; }
         public bool IsAddNewWeight { get; set; }
+        public bool IsFixWeight { get; set; }
         public bool IsExciseStamp { get; set; }
         bool _IsLockSale = false;
         public bool IsLockSale { get { return _IsLockSale; } set { if (_IsLockSale != value) { SetStateView(!value && State == eStateMainWindows.WaitAdmin ? eStateMainWindows.WaitInput : eStateMainWindows.NotDefine); _IsLockSale = value; } } }
@@ -401,6 +402,8 @@ namespace Front
         {
             IsIgnoreExciseStamp = Access.GetRight(pUser, eTypeAccess.ExciseStamp);
             IsAddNewWeight = Access.GetRight(pUser, eTypeAccess.AddNewWeight);
+            IsFixWeight = Access.GetRight(pUser, eTypeAccess.FixWeight);
+
             if (TypeAccessWait == eTypeAccess.NoDefinition || TypeAccessWait < 0)
                 return;
             if (!Access.GetRight(pUser, TypeAccessWait))
@@ -437,6 +440,10 @@ namespace Front
                     //Prices.ItemsSource = rrr;
                     //SetStateView(eStateMainWindows.WaitInputPrice);
                     TypeAccessWait = eTypeAccess.NoDefinition;
+                    break;
+                case eTypeAccess.AddNewWeight:
+                case eTypeAccess.FixWeight:
+                    SetStateView(eStateMainWindows.WaitAdmin);
                     break;
             }
             // TypeAccessWait = eTypeAccess.NoDefinition;
