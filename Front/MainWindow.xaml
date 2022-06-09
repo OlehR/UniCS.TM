@@ -282,27 +282,15 @@
 
                                         <Button Grid.Column="2" Background="Transparent" BorderBrush="Transparent"
                                             Click="_ChangeCountWares">
-                                            <!--<Button.Style>
-                                                <Style BasedOn="{StaticResource yelowButton}"  TargetType="Button">
-                                                    <Setter Property="IsEnabled" Value="true"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding IsWeight}" Value="True">
-                                                            <Setter Property="IsEnabled" Value="False"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Button.Style>-->
-
                                             <Button.Style>
                                                 <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
                                                     <Setter Property="IsEnabled" Value="True"/>
                                                     <Style.Triggers>
-
-                                                        <DataTrigger Binding="{Binding IsWeight}" Value="True">
-                                                            <Setter Property="IsEnabled" Value="False" />
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding IsWeight}" Value="False">
+                                                        <DataTrigger Binding="{Binding IsPlus}" Value="True">
                                                             <Setter Property="IsEnabled" Value="True" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding IsPlus}" Value="False">
+                                                            <Setter Property="IsEnabled" Value="False" />
                                                         </DataTrigger>
                                                         <DataTrigger Binding="{Binding IsCheckReturn, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="True">
