@@ -14,5 +14,18 @@ namespace Utils
             var res = JsonConvert.SerializeObject(s, JsonSettings);
             return res;
         }
+        public static string ToXMLString(this string s)
+        {
+            return s.Replace("&", "&amp;").Replace("\"", "&quot;").Replace("'", "&apos;").Replace("<", "&lt;").Replace(">", "&gt;");//.Replace(".", "&period;");
+        }
+
+        public static int ToInt(this string s,int pDefault=0)
+        {
+            int res;
+            if (!Int32.TryParse(s, out res))
+                res = pDefault;
+            return res;
+        }
+
     }
 }

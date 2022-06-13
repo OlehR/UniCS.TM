@@ -108,9 +108,7 @@ namespace Front
         {
             var task = Task.Run(() =>
             {
-                var r = EF.RroPrintX();
-                r.IdWorkplace = Global.IdWorkPlace;
-                r.CodePeriod = Global.GetCodePeriod();
+                var r = EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod()});
                 Bl.InsertLogRRO(r);
             });
         }
@@ -119,9 +117,7 @@ namespace Front
         {
             var task = Task.Run(() =>
             {
-                var r = EF.RroPrintZ();
-                r.IdWorkplace = Global.IdWorkPlace;
-                r.CodePeriod = Global.GetCodePeriod();
+                var r = EF.RroPrintZ(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() });               
                 Bl.InsertLogRRO(r);
             });
         }

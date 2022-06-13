@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Utils;
 
 namespace Front.Equipments.Implementation
 {
@@ -19,34 +20,60 @@ namespace Front.Equipments.Implementation
         {
             try
             {
+                State = eStateEquipment.Init;
                 FN = pConfiguration["Devices:pRRO_WebCheck:FN"];
               OperatorName = pConfiguration["Devices:pRRO_WebCheck:OperatorID"];
+                IsOpenWorkDay = false;
                 // !!!TMP Перенести асинхронно бо дуже довго
-                bool r = WCh.Initialization($"  ");
-                var rr = WCh.StatusBarXML();
+                if (WCh.Initialization($"<InputParameters> <Parameters FN = \"{FN}\" />  </InputParameters>"))
+                {
+
+                    string ResXML = WCh.StatusBarXML();
+                    if (!string.IsNullOrEmpty(ResXML))
+                    {
+                       OpenWorkDay();                        
+                    }
+                }
+                else
+                    State = eStateEquipment.Error;
+               
             }catch(Exception e)
             {
                 Console.WriteLine(e.Message);
             }
-
         }
 
-        bool OpenShift()
+        public override bool OpenWorkDay()
         {
-            string xml = $"<InputParameters> <Parameters FN=\"{FN}\"  OperatorID=\"{OperatorName}\"/> </InputParameters>";
-            return WCh.OpenShift(xml);
-        }
+            string xml = $"<InputParameters> <Parameters FN=\"{FN}\" OperatorID=\"{OperatorName}\" /> </InputParameters>";
 
-        string ToXMLString(string pStr)
-        {
-            return pStr.Replace("&", "&amp;").Replace("\"", "&quot;").Replace("'", "&apos;").Replace("<", "&lt;").Replace(">", "&gt;");//.Replace(".", "&period;");
+            if (WCh.GetCurrentStatus(xml))
+            {
+                string ResXML = WCh.StatusBarXML();
+                if (!string.IsNullOrEmpty(ResXML))
+                {
+                    int iShiftNumber = -1;
+                    var ShiftNumber = GetElement(ResXML, "ShiftNumber", "\"", "\"");
+                    if (ShiftNumber != null)
+                        iShiftNumber = ShiftNumber.ToInt(-1);
+
+                    if (ShiftNumber.ToInt(-1) <= 0)
+                    {
+                        IsOpenWorkDay = WCh.OpenShift(xml);
+                        ResXML = WCh.StatusBarXML();
+                    }
+                    else
+                        IsOpenWorkDay = true;
+                }
+            }
+            return IsOpenWorkDay;
         }
         string XmlWares(ReceiptWares pRW)
         {
             string Add = (pRW.IsUseCodeUKTZED ? $"UKTZED={pRW.CodeUKTZED}" : "") +
                          (!string.IsNullOrEmpty(pRW.ExciseStamp) ? " ExciseStamp=\"{pRW.ExciseStamp}\"" : "") +
                          (!string.IsNullOrEmpty(pRW.BarCode) ? $" Barcode=\"{pRW.BarCode}\"" : "");
-            return $"<Good Code=\"{pRW.CodeWares}\" Name=\"{ToXMLString(pRW.NameWares) }\" Quantity=\"{pRW.Quantity}\" Price=\"{pRW.Price}\" Sum=\"{pRW.Sum}\" TaxRate=\"1\"  {Add} />";
+            return $"<Good Code=\"{pRW.CodeWares}\" Name=\"{pRW.NameWares.ToXMLString() }\" Quantity=\"{pRW.Quantity}\" Price=\"{pRW.PriceDealer}\" Sum=\"{pRW.Sum}\" TaxRate=\"1\"  {Add} />";
         }
 
         string GetElement(string pStr, string pSeek, string pStart = null, string pStop = null)
@@ -90,25 +117,30 @@ namespace Front.Equipments.Implementation
             return $"<L {pay}/>";
         }
 
-
         override public async Task<LogRRO> PrintReceiptAsync(Receipt pR)
         {
             string xml = $"<Check Number=\"{pR.CodeReceipt}\" FN = \"{FN}\" OperationType=\"{(pR.TypeReceipt == eTypeReceipt.Sale ? 0 : 1)}\" uuid=\"{pR.ReceiptId}\">\n" +
                 GenL(pR) + "\n" + GenGoods(pR.Wares) +
-                $"\n<Payments> <Payment ID=\"{1}\" Sum = \"{pR.SumCreditCard}\"/></Payments>\n</Check>";
+                $"\n<Payments> <Payment ID=\"{1}\" Sum = \"{pR.SumReceipt}\"/></Payments>\n</Check>";
 
-            bool r = WCh.FiscalReceipt(xml);
+            bool r = WCh.FiscalReceipt(xml);           
+           
+            return GetResLogRRO(pR, pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, pR.SumReceipt);
+        }
+
+        LogRRO GetResLogRRO(IdReceipt pIdR, eTypeOperation pTypeOperation,decimal pSum=0)
+        {
             string ResXML = WCh.StatusBarXML();
-            
-
+            string TextReceipt = null;
             var FiscalNumber = GetElement(ResXML, "CheckID", "\"", "\"");
+            if (!string.IsNullOrEmpty(FiscalNumber))
+                TextReceipt = GetCheckByFiscalNumber(FiscalNumber);
             string Error = GetElement(ResXML, "ErrHelp", "\"", "\"");
-            string CodeError = GetElement(ResXML, "Err", "\"", "\"");
 
-            var Res = new LogRRO(pR) {  FiscalNumber= FiscalNumber,SUM= pR.SumCreditCard, TypeRRO= "WebCheck", JSON = GetCheckByFiscalNumber(FiscalNumber), Error = Error,CodeError=int.Parse(CodeError) };
-
+            CodeError = GetElement(ResXML, "Err", "\"", "\"").ToInt(); ;
             
-            return Res;
+            return new LogRRO(pIdR) { TypeOperation = pTypeOperation, TypeRRO = "WebCheck", FiscalNumber = FiscalNumber, SUM = pSum, JSON =ResXML, TextReceipt = TextReceipt, Error = Error, CodeError = CodeError };
+
         }
 
         string GetCheckByFiscalNumber(string pTaxNum)
@@ -117,18 +149,25 @@ namespace Front.Equipments.Implementation
             return WCh.StatusBarXML();
         }
 
+        LogRRO PrintXY(IdReceipt pIdR, eTypeOperation pTypeOperation)
+        {
+            string xml = $"<InputParameters> <Parameters FN = \"{FN}\"  OperatorID = \"{OperatorName}\" /> </InputParameters>";
+            if (pTypeOperation == eTypeOperation.ZReport)
+                WCh.ReportZ(xml);
+            else
+                WCh.ReportX(xml);
+
+            var res = WCh.StatusBarXML();
+            return GetResLogRRO(pIdR, pTypeOperation);
+        }
         override public async Task<LogRRO> PrintZAsync(IdReceipt pIdR)
         {
-            //innovate/zreport
-            //throw new NotImplementedException();
-            return null;
+            return PrintXY(pIdR, eTypeOperation.ZReport);
         }
 
         override public async Task<LogRRO> PrintXAsync(IdReceipt pIdR)
         {
-            ///innovate/xreport 
-            //throw new NotImplementedException();
-            return null;//await PrintXYAsync(true, pIdR);
+            return PrintXY(pIdR, eTypeOperation.XReport);
         }
 
 
@@ -139,10 +178,22 @@ namespace Front.Equipments.Implementation
         /// <returns></returns>
         override public async Task<LogRRO> MoveMoneyAsync(decimal pSum, IdReceipt pIdR)
         {
-            ///innovate/servicein внесення /innovate/serviceout  --винесення
-            var Res = new LogRRO(pIdR);
-
-            return Res;
+            string xml = $"<InputParameters> <Parameters FN = \"{FN}\" /> Sum{(pSum>0?"In":"Out")} = \"{Math.Abs(pSum)}\"";
+            if(WCh.CashInOut(xml))   
+             return GetResLogRRO(pIdR, pSum>0? eTypeOperation.MoneyIn: eTypeOperation.MoneyOut, pSum);
+            return null;
+        }
+        public override string GetDeviceInfo() 
+        {
+            string res="";
+            string xml = $"<InputParameters> <Parameters FN = \"{FN}\" />  </InputParameters>";
+            if (WCh.GetCurrentStatus(xml))
+            {
+                res = WCh.StatusBarXML();              
+            }
+            else
+                res = "GetCurrentStatus Не виконався";
+            return res;
         }
     }
 }

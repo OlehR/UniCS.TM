@@ -879,7 +879,7 @@ namespace Front
                 try
                 {
                     SetStateView(eStateMainWindows.ProcessPrintReceipt);
-                    Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
+                    //Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
                     var res = EF.PrintReceipt(R);
                     Bl.InsertLogRRO(res);
                     if (res.CodeError == 0)

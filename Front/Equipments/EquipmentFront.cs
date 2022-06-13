@@ -91,14 +91,14 @@ namespace Front
                 var ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Scaner).First();
                 switch (ElEquipment.Model)
                 {
-                    case eModelEquipment.MagellanScaner:                         
-                        Scaner = new MagellanScaner(ElEquipment,config, null, pSetBarCode);
+                    case eModelEquipment.MagellanScaner:
+                        Scaner = new MagellanScaner(ElEquipment, config, null, pSetBarCode);
                         break;
                     case eModelEquipment.VirtualScaner:
-                        Scaner = new VirtualScaner(ElEquipment,config, null, pSetBarCode);
+                        Scaner = new VirtualScaner(ElEquipment, config, null, pSetBarCode);
                         break;
                     default:
-                        Scaner = new Scaner(ElEquipment,config);
+                        Scaner = new Scaner(ElEquipment, config);
                         break;
                 }
                 NewListEquipment.Add(Scaner);
@@ -107,37 +107,44 @@ namespace Front
                 ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Scale).First();
                 switch (ElEquipment.Model)
                 {
-                    case eModelEquipment.MagellanScale:                        
+                    case eModelEquipment.MagellanScale:
                         Scale = new MagellanScale(((MagellanScaner)Scaner), pSetWeight, pSetControlWeight);//TMP!!! pSetControlWeight - Нафіг
                         Scale.StartWeight();
-                        
+
                         break;
                     case eModelEquipment.VirtualScale:
-                        Scale = new VirtualScale(ElEquipment,config, null, pSetWeight);
+                        Scale = new VirtualScale(ElEquipment, config, null, pSetWeight);
                         break;
                     default:
-                        Scale = new Scale(ElEquipment,config);
+                        Scale = new Scale(ElEquipment, config);
                         break;
                 }
                 NewListEquipment.Add(Scale);
 
                 //ControlScale
-                ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.ControlScale).First();
-                if (ElEquipment.Model == eModelEquipment.ScaleModern)
-                    ControlScale = new ScaleModern(ElEquipment,config, null, pSetControlWeight);
-                else
-                    ControlScale = new Scale(ElEquipment,config);
-                NewListEquipment.Add(ControlScale);
-
+                var Equipments = ListEquipment.Where(e => e.Type == eTypeEquipment.ControlScale);
+                if (Equipments.Any())
+                {
+                    ElEquipment = Equipments.First();
+                    if (ElEquipment.Model == eModelEquipment.ScaleModern)
+                        ControlScale = new ScaleModern(ElEquipment, config, null, pSetControlWeight);
+                    else
+                        ControlScale = new Scale(ElEquipment, config);
+                    NewListEquipment.Add(ControlScale);
+                }
                 //Flag
-                ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Signal).First();
-                if (ElEquipment.Model == eModelEquipment.SignalFlagModern)
-                    Signal = new SignalFlagModern(ElEquipment,config);
-                else
-                    Signal = new SignalFlag(ElEquipment,config);
-                NewListEquipment.Add(Signal);
+                Equipments = ListEquipment.Where(e => e.Type == eTypeEquipment.Signal);
+                if (Equipments.Any())
+                {
+                    ElEquipment = Equipments.First();
+                    if (ElEquipment.Model == eModelEquipment.SignalFlagModern)
+                        Signal = new SignalFlagModern(ElEquipment, config);
+                    else
+                        Signal = new SignalFlag(ElEquipment, config);
+                    NewListEquipment.Add(Signal);
+                }
+                //Bank Pos Terminal
 
-                //Bank Pos Terminal           
                 foreach (var el in GetBankTerminal)
                 {
                     ElEquipment = el;
@@ -148,46 +155,49 @@ namespace Front
                             Terminal = new IngenicoH(el, config, null, PosStatus);
                             break;
                         case eModelEquipment.VirtualBankPOS:
-                            Terminal = new VirtualBankPOS(el,config, null, PosStatus);
+                            Terminal = new VirtualBankPOS(el, config, null, PosStatus);
                             break;
                         default:
-                            Terminal = new BankTerminal(el,config);
+                            Terminal = new BankTerminal(el, config);
                             break;
                     }
                     NewListEquipment.Add(Terminal);
                 }
 
-                //RRO
-                ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.RRO).First();
-                
-                switch (ElEquipment.Model)
+                //RRO                
+                Equipments = ListEquipment.Where(e => e.Type == eTypeEquipment.RRO);
+                if (Equipments.Any())
                 {
-                    case eModelEquipment.ExellioFP:
-                        RRO = new Equipments.ExellioFP(ElEquipment,config, null);
-                        break;
-                    case eModelEquipment.pRRO_SG:
-                        RRO = new pRRO_SG(ElEquipment,config, null, pActionStatus);
-                        break;
-                    case eModelEquipment.pRRo_WebCheck:
-                        RRO = new pRRO_WebCheck(ElEquipment,config, null, pActionStatus);
-                        break;
-                    case eModelEquipment.Maria:
-                        RRO = new RRO_Maria(ElEquipment,config, null, pActionStatus);
-                        break;
-                    case eModelEquipment.VirtualRRO:
-                        RRO = new VirtualRRO(ElEquipment,config, null, pActionStatus);
-                        break;
-                    default:
-                        RRO = new Rro(ElEquipment,config);
-                        break;
+                    ElEquipment = Equipments.First();
+
+                    switch (ElEquipment.Model)
+                    {
+                        case eModelEquipment.ExellioFP:
+                            RRO = new Equipments.ExellioFP(ElEquipment, config, null);
+                            break;
+                        case eModelEquipment.pRRO_SG:
+                            RRO = new pRRO_SG(ElEquipment, config, null, pActionStatus);
+                            break;
+                        case eModelEquipment.pRRo_WebCheck:
+                            RRO = new pRRO_WebCheck(ElEquipment, config, null, pActionStatus);
+                            break;
+                        case eModelEquipment.Maria:
+                            RRO = new RRO_Maria(ElEquipment, config, null, pActionStatus);
+                            break;
+                        case eModelEquipment.VirtualRRO:
+                            RRO = new VirtualRRO(ElEquipment, config, null, pActionStatus);
+                            break;
+                        default:
+                            RRO = new Rro(ElEquipment, config);
+                            break;
+                    }
+                    NewListEquipment.Add(RRO);
+
+                    ListEquipment = NewListEquipment;
+
                 }
-                NewListEquipment.Add(RRO);
-
-
-                ListEquipment = NewListEquipment;
-
                 //Передаємо зміни станусів наверх.
-                foreach(var el in ListEquipment)
+                foreach (var el in ListEquipment)
                 {
                     el.ActionStatus += (Status) => { SetStatus?.Invoke(Status); };
                 }
@@ -212,14 +222,14 @@ namespace Front
             return RRO.PrintReceiptAsync(pReceipt).Result;
         }
 
-        public LogRRO RroPrintX()
+        public LogRRO RroPrintX(IdReceipt pIdR)
         {
-            return RRO.PrintXAsync(null).Result;
+            return RRO.PrintXAsync(pIdR).Result;
         }
 
-        public LogRRO RroPrintZ()
+        public LogRRO RroPrintZ(IdReceipt pIdR)
         {
-            return RRO.PrintZAsync(null).Result;
+            return RRO.PrintZAsync(pIdR).Result;
         }
 
         public LogRRO RroPrintCopyReceipt()
