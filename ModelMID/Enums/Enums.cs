@@ -152,6 +152,10 @@ namespace ModelMID
         /// </summary>
         Pay = 2,
         /// <summary>
+        /// Початок Фіскалізації (Для блокування дій з чеком)
+        /// </summary>
+        StartPrint = 3,
+        /// <summary>
         /// Надруковано
         /// </summary>
         Print = 8,

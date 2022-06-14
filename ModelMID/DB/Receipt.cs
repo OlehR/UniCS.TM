@@ -104,7 +104,7 @@ namespace ModelMID
         public IEnumerable<ReceiptEvent> ReceiptEvent { get; set; }
 
         public bool _IsLockChange = false;
-        public bool IsLockChange { get { return _IsLockChange && StateReceipt == eStateReceipt.Pay || StateReceipt == eStateReceipt.Print || StateReceipt == eStateReceipt.Send || SumBonus > 0m; } }
+        public bool IsLockChange { get { return _IsLockChange && StateReceipt != eStateReceipt.Prepare  || SumBonus > 0m; } }
         public Receipt()
         {
             Clear();
@@ -164,7 +164,5 @@ namespace ModelMID
         {
             return (IdReceipt)this; //new IdReceipt() { CodePeriod=this.}
         }
-
-
     }
 }

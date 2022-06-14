@@ -851,6 +851,7 @@ namespace Front
         bool PrintAndCloseReceipt()
         {
             var R = Bl.GetReceiptHead(curReceipt, true);
+            curReceipt = R;
             if (R.Wares.Where(el => el.TypeWares > 0).Count() > 0 && R.ReceiptEvent.Where(el => el.EventType == ReceiptEventType.AgeRestrictedProduct).Count() == 0)
             {
                 SetWaitConfirm(eTypeAccess.ConfirmAge);
@@ -859,6 +860,8 @@ namespace Front
 
             if (R.StateReceipt == eStateReceipt.Prepare)
             {
+                R.StateReceipt = eStateReceipt.StartPay;
+                Bl.SetStateReceipt(curReceipt, eStateReceipt.StartPay);
                 decimal sum = R.Wares.Sum(r => r.Sum); //TMP!!!Треба переробити
                 SetStateView(eStateMainWindows.ProcessPay);
                 var pay = EF.PosPurchase(sum);
@@ -870,12 +873,18 @@ namespace Front
                     R.StateReceipt = eStateReceipt.Pay;
                 }
                 else
+                {
                     SetStateView(eStateMainWindows.WaitInput);
+                    R.StateReceipt = eStateReceipt.Prepare;
+                    Bl.SetStateReceipt(curReceipt, eStateReceipt.Prepare);
+                }
             }
 
 
             if (R.StateReceipt == eStateReceipt.Pay)
             {
+                R.StateReceipt = eStateReceipt.StartPrint;
+                Bl.SetStateReceipt(curReceipt, eStateReceipt.StartPrint);
                 try
                 {
                     SetStateView(eStateMainWindows.ProcessPrintReceipt);
@@ -884,11 +893,17 @@ namespace Front
                     Bl.InsertLogRRO(res);
                     if (res.CodeError == 0)
                     {
+                        R.StateReceipt = eStateReceipt.Print;
                         Bl.UpdateReceiptFiscalNumber(R, res.FiscalNumber, res.SUM);
                         var r = Bl.GetNewIdReceipt();
                         //Global.OnReceiptCalculationComplete?.Invoke(new List<ReceiptWares>(), Global.IdWorkPlace);
                         SetStateView(eStateMainWindows.WaitInput);
                         return true;
+                    }
+                    else 
+                    {
+                        R.StateReceipt = eStateReceipt.Pay;
+                        Bl.SetStateReceipt(curReceipt, eStateReceipt.Pay);
                     }
                     SetStateView(eStateMainWindows.WaitInput);
                 }

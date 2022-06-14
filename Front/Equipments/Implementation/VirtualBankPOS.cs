@@ -51,11 +51,11 @@ namespace Front.Equipments.Implementation
         public override Payment Purchase(decimal pAmount)
         {
             SetStatus(eStatusPos.WaitingForCard);
-            Thread.Sleep(1500);
+            Thread.Sleep(500);
             SetStatus(eStatusPos.PinInputWaitKey);
-            Thread.Sleep(2000);
+            Thread.Sleep(500);
             SetStatus(eStatusPos.TransactionIsAlreadyComplete);
-            Thread.Sleep(1000);
+            Thread.Sleep(500);
             return GetPaymentResultModel(pAmount);
         }
 
