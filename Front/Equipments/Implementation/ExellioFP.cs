@@ -211,7 +211,8 @@ namespace Front.Equipments
                 {
                     Res.CodeError = CodeError;
                     Res.Error = StrError;
-                    FP.CancelReceipt();
+                    FP.CloseFiscalReceipt();
+                    //FP.CancelReceipt();
                 }
                 FpClosePort();
                 return Res;
