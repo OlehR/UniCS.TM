@@ -15,10 +15,10 @@ namespace Front.Equipments
         
         public ExellioFP(Equipment pEquipment, IConfiguration pConfiguration, Action<string, string> pLogger = null) : base(pEquipment, pConfiguration,eModelEquipment.ExellioFP, pLogger)
         {
-            SerialPort = Configuration["Devices:Exellio:SerialPort"];
-            BaudRate = Convert.ToInt32(Configuration["Devices:Exellio:BaudRate"]);
-            IP = Configuration["Devices:Exellio:IP"];
-            IpPort = Convert.ToInt32(Configuration["Devices:Exellio:IpPort"]);
+            SerialPort = Configuration["Devices:ExellioFP:SerialPort"];
+            BaudRate = Convert.ToInt32(Configuration["Devices:ExellioFP:BaudRate"]);
+            IP = Configuration["Devices:ExellioFP:IP"];
+            IpPort = Convert.ToInt32(Configuration["Devices:ExellioFP:IpPort"]);
             //FP.OpenPort(Port, BaudRate);
         }
 
