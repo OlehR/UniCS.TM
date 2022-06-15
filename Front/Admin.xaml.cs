@@ -149,6 +149,35 @@ namespace Front
 
         }
 
+        private void Test_Click(object sender, RoutedEventArgs e)
+        {
+            //EF.PosPrintX();
+            Button btn = sender as Button;
+            if (btn != null)
+            {
+                Equipment Eq = btn.DataContext as Equipment;
+                if (Eq != null)
+                {
+                    Eq.TestDevice();
+
+                }
+            }
+        }
+        private void Info_Click(object sender, RoutedEventArgs e)
+        {
+            //EF.PosPrintX();
+            Button btn = sender as Button;
+            if (btn != null)
+            {
+                Equipment Eq = btn.DataContext as Equipment;
+                if (Eq != null)
+                {
+                    Eq.GetDeviceInfo();
+
+                }
+            }
+        }
+
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (TabHistory.IsSelected)

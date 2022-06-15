@@ -11,12 +11,9 @@ namespace Front.Equipments.Implementation
 {
     public class VirtualScaner : Scaner
     {
-        int Port; // порт для приема входящих запросов
-        string IP;
-
         public VirtualScaner(Equipment pEquipment, IConfiguration pConfiguration, Action<string, string> pLogger, Action<string, string> pOnBarCode) : base(pEquipment, pConfiguration, eModelEquipment.VirtualScaner, pLogger, pOnBarCode)
         {
-            Port = Convert.ToInt32( Configuration["Devices:VirtualScaner:Port"]);
+            IpPort = Convert.ToInt32( Configuration["Devices:VirtualScaner:Port"]);
             IP = Configuration["Devices:VirtualScaner:IP"];
             _ = Work();
         }
@@ -28,7 +25,7 @@ namespace Front.Equipments.Implementation
             await Task.Run(() =>
             {
                 // получаем адреса для запуска сокета
-                IPEndPoint ipPoint = new IPEndPoint(IPAddress.Parse(IP), Port);
+                IPEndPoint ipPoint = new IPEndPoint(IPAddress.Parse(IP), IpPort);
 
                 // создаем сокет
                 Socket listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);

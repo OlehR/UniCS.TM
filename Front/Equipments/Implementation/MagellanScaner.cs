@@ -30,20 +30,29 @@ namespace Front.Equipments
 
         public MagellanScaner(Equipment pEquipment, IConfiguration pConfiguration, Action<string, string> pLogger, Action<string, string> pOnBarCode) : base(pEquipment, pConfiguration,eModelEquipment.MagellanScaner, pLogger, pOnBarCode)
         {
-            State = eStateEquipment.Init;
-            Magellan9300 = new Magellan9300S(pConfiguration, null);
-            var Res=Magellan9300.Init();
-            if (Res == DeviceConnectionStatus.Enabled)
+            try
             {
-                State = eStateEquipment.On;
-                if (pOnBarCode != null)
-                    Magellan9300.OnBarcodeScannerChange += (BarCode) =>
-                    {
-                        pOnBarCode(BarCode, null);
-                    };
+                State = eStateEquipment.Init;
+                Magellan9300 = new Magellan9300S(pConfiguration, null);
+                var Res = Magellan9300.Init();
+                if (Res == DeviceConnectionStatus.Enabled)
+                {                    
+                    if (pOnBarCode != null)
+                        Magellan9300.OnBarcodeScannerChange += (BarCode) =>
+                        {
+                            pOnBarCode(BarCode, null);
+                        };
+                    State = eStateEquipment.On;
+                }
+                else
+                    State = eStateEquipment.Error;
             }
-            else
+            catch(Exception e)
+            {
                 State = eStateEquipment.Error;
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+                return;
+            }
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Ініціалізація Ваги", State == eStateEquipment.On ? eTypeLog.Expanded:eTypeLog.Error);
             
         }

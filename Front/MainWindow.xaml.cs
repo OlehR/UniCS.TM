@@ -194,6 +194,12 @@ namespace Front
             EF.SetStatus += (info) =>
             {
                 EquipmentInfo = info.TextState;
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"SetStatus ({info.ToJSON()})", eTypeLog.Expanded);
+                if (EF.StatCriticalEquipment != eStateEquipment.On)
+                    SetWaitConfirm(eTypeAccess.ErrorEquipment, null);
+                else
+                    ;
+
             };
 
             Global.OnReceiptCalculationComplete += (pReceipt) =>
@@ -258,6 +264,7 @@ namespace Front
                 ExchangeRateBar = Status.StringColor;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ExchangeRateBar"));
             };
+            
             Global.OnClientChanged += (pClient, pIdWorkPlace) =>
             {
                 Client = pClient;
@@ -328,7 +335,8 @@ namespace Front
 
             CultureInfo currLang = App.Language;
             Recalc();
-            SetStateView(eStateMainWindows.StartWindow);
+            if(State == eStateMainWindows.StartWindow)
+                SetStateView(eStateMainWindows.StartWindow);
         }
         private async void Init(string HTMLContent)
         {
@@ -463,8 +471,9 @@ namespace Front
         {
             Dispatcher.BeginInvoke(new ThreadStart(() =>
                 {
+                    if (EF.StatCriticalEquipment == eStateEquipment.On || pSMV == eStateMainWindows.WaitAdmin || pSMV == eStateMainWindows.WaitAdminLogin)
 
-                    if (pSMV != eStateMainWindows.NotDefine)
+                    if (pSMV != eStateMainWindows.NotDefine   )
                         State = pSMV;
                     if (IsLockSale && State != eStateMainWindows.WaitAdmin && State != eStateMainWindows.WaitAdminLogin)
                     {

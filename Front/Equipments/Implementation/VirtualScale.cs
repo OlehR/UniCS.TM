@@ -11,12 +11,9 @@ namespace Front.Equipments.Implementation
 {
     public class VirtualScale:Scale
     {
-        int Port; // порт для приема входящих запросов
-        string IP;
-
         public VirtualScale(Equipment pEquipment, IConfiguration pConfiguration, Action<string, string> pLogger, Action<double, bool> pOnScalesData) : base(pEquipment, pConfiguration, eModelEquipment.VirtualScale, pLogger, pOnScalesData)
         {
-            Port = Convert.ToInt32(Configuration["Devices:VirtualScaner:Port"]);
+            IpPort = Convert.ToInt32(Configuration["Devices:VirtualScaner:Port"]);
             IP = Configuration["Devices:VirtualScaner:IP"];
             _ = Work();
         }
@@ -26,7 +23,7 @@ namespace Front.Equipments.Implementation
             await Task.Run(() =>
             {
                 // получаем адреса для запуска сокета
-                IPEndPoint ipPoint = new IPEndPoint(IPAddress.Parse(IP), Port);
+                IPEndPoint ipPoint = new IPEndPoint(IPAddress.Parse(IP), IpPort);
 
                 // создаем сокет
                 Socket listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);

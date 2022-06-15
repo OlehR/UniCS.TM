@@ -14,13 +14,14 @@ namespace Front.Equipments.Implementation
     public class pRRO_WebCheck : Rro
     {
         string FN;
-        WebCheck.ClassFiscal WCh = new WebCheck.ClassFiscal();
+        WebCheck.ClassFiscal WCh;
         public pRRO_WebCheck(Equipment pEquipment, IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<StatusEquipment> pActionStatus = null) :
                        base(pEquipment, pConfiguration,eModelEquipment.pRRo_WebCheck, pLogger, pActionStatus)
         {
             try
             {
                 State = eStateEquipment.Init;
+                WCh = new WebCheck.ClassFiscal();
                 FN = pConfiguration["Devices:pRRO_WebCheck:FN"];
               OperatorName = pConfiguration["Devices:pRRO_WebCheck:OperatorID"];
                 IsOpenWorkDay = false;

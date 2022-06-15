@@ -6,20 +6,31 @@ using ModelMID.DB;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Utils;
 
 namespace Front.Equipments
 {
     public class ExellioFP : Rro
     {
-        private FiscalPrinterClass FP = new FiscalPrinterClass();
+        private FiscalPrinterClass FP;
         
         public ExellioFP(Equipment pEquipment, IConfiguration pConfiguration, Action<string, string> pLogger = null) : base(pEquipment, pConfiguration,eModelEquipment.ExellioFP, pLogger)
         {
-            SerialPort = Configuration["Devices:ExellioFP:SerialPort"];
-            BaudRate = Convert.ToInt32(Configuration["Devices:ExellioFP:BaudRate"]);
-            IP = Configuration["Devices:ExellioFP:IP"];
-            IpPort = Convert.ToInt32(Configuration["Devices:ExellioFP:IpPort"]);
-            //FP.OpenPort(Port, BaudRate);
+            State = eStateEquipment.Init;
+            try
+            {
+                FP = new FiscalPrinterClass();
+                SerialPort = Configuration["Devices:ExellioFP:SerialPort"];
+                BaudRate = Convert.ToInt32(Configuration["Devices:ExellioFP:BaudRate"]);
+                IP = Configuration["Devices:ExellioFP:IP"];
+                IpPort = Convert.ToInt32(Configuration["Devices:ExellioFP:IpPort"]);
+                State = eStateEquipment.On;
+            }
+            catch(Exception e)
+            {
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+                State = eStateEquipment.Error;
+            }
         }
 
         ///відкрити порт 

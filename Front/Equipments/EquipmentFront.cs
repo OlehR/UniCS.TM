@@ -18,7 +18,7 @@ namespace Front
 {
     public class EquipmentFront
     {
-        private List<Equipment> ListEquipment = new List<Equipment>();
+        private IEnumerable<Equipment> ListEquipment = new List<Equipment>();
         eStateEquipment _State = eStateEquipment.Off;
 
         Scaner Scaner;
@@ -40,6 +40,23 @@ namespace Front
         /// </summary>
         public bool IsReadySale { get { return Terminal.State == eStateEquipment.On && RRO.State == eStateEquipment.On; } }
 
+        public eStateEquipment StatCriticalEquipment
+        {
+            get
+            {
+                var Res = ListEquipment.Select(el => (el.State == eStateEquipment.On || el.State == eStateEquipment.Init) && el.IsСritical);
+                return Res != null && Res.Any() ? eStateEquipment.Error : eStateEquipment.On;
+            }
+        }
+
+        public eStateEquipment SaleIsReady
+        {
+            get
+            {
+                var Res = ListEquipment.Select(el => (el.Type == eTypeEquipment.RRO || el.Type == eTypeEquipment.BankTerminal) && el.State != eStateEquipment.On && el.IsСritical);
+                return Res != null && Res.Any() ? eStateEquipment.Error : eStateEquipment.On;
+            }
+        }
         public eStateEquipment State
         {
             get { return _State; }
@@ -203,7 +220,7 @@ namespace Front
                 }
 
                 State = eStateEquipment.On;
-
+                SetStatus?.Invoke(new StatusEquipment(eModelEquipment.NotDefined, eStateEquipment.On));
             }
             catch (Exception e)
             {
@@ -292,7 +309,7 @@ namespace Front
                 .AddJsonFile(settingsFilePath).Build();
 
             AppConfiguration.GetSection("MID:Equipment").Bind(ListEquipment);
-            var r = AppConfiguration.GetSection("MID:Equipment");
+            //var r = AppConfiguration.GetSection("MID:Equipment");
             return AppConfiguration;
         }
 

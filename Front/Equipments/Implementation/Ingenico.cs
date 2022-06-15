@@ -14,6 +14,7 @@ using Front.Equipments.Ingenico;
 using ModelMID;
 using Front.Equipments.Implementation;
 using Front.Equipments.Virtual;
+using Utils;
 
 namespace Front.Equipments
 {
@@ -24,11 +25,21 @@ namespace Front.Equipments
         //public IngenicoH(string pSerialPortName, int pBaudRate = 9600, Action<string, string> pLogger = null) : base(pSerialPortName, pBaudRate, pLogger) { }
         public IngenicoH(Equipment pEquipment, IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment,pConfiguration, eModelEquipment.Ingenico, pLogger)
         {
-            ILoggerFactory loggerFactory = new LoggerFactory().AddConsole((_, __) => true);
-            ILogger<Ingenico.Ingenico> logger = loggerFactory.CreateLogger<Ingenico.Ingenico>();
-            EquipmentIngenico = new Ingenico.Ingenico(pConfiguration, logger);
+            try
+            {
+                State = eStateEquipment.Init;
+                ILoggerFactory loggerFactory = new LoggerFactory().AddConsole((_, __) => true);
+                ILogger<Ingenico.Ingenico> logger = loggerFactory.CreateLogger<Ingenico.Ingenico>();
+                EquipmentIngenico = new Ingenico.Ingenico(pConfiguration, logger);
 
-            EquipmentIngenico.OnStatus += pActionStatus;
+                EquipmentIngenico.OnStatus += pActionStatus;
+                State = eStateEquipment.On;
+            }
+            catch(Exception e)
+            {
+                State = eStateEquipment.Error;
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);                
+            }
         }
 
         public override Payment Purchase(decimal pAmount)

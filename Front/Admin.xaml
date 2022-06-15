@@ -288,7 +288,7 @@
                                 <ColumnDefinition Width="1*"></ColumnDefinition>
                                 <ColumnDefinition Width="1*"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="Тип обладнання"/>
+                            <TextBlock Text="Тип обладнання" Margin="10,9,0,8" VerticalAlignment="Stretch"/>
                             <TextBlock Grid.Column="1" Text="Назва"/>
                             <TextBlock Grid.Column="2" Text="Стан" HorizontalAlignment="Center"/>
                             <TextBlock Grid.Column="3" Text="Тест" HorizontalAlignment="Center"/>
@@ -314,7 +314,7 @@
                                             <TextBlock Grid.Column="0" Text="{Binding Type}" FontWeight="Bold" FontSize="20"/>
                                             <TextBlock Grid.Column="1" Text="{Binding Name}" FontWeight="Bold" FontSize="20"/>
 
-                                            <Button Grid.Column="2"  Width="40" Style="{StaticResource greenButton}">
+                                            <Button Grid.Column="2"  Width="40" Style="{StaticResource greenButton}"  >
 
                                                 <Image  >
                                                     <Image.Style>
@@ -350,10 +350,10 @@
                                                 </Image>
                                             </Button>
 
-                                            <Button Grid.Column="3" Width="40" Style="{StaticResource Default}">
+                                            <Button Grid.Column="3" Width="40" Style="{StaticResource Default}" Click="Test_Click">
                                                 <Image Source="icons\Ok.png"/>
                                             </Button>
-                                            <Button Grid.Column="4" Width="40" Style="{StaticResource Default}">
+                                            <Button Grid.Column="4" Width="40" Style="{StaticResource Default}" Click="Info_Click">
                                                 <Image Source="icons\Inform.png"/>
                                             </Button>
 
