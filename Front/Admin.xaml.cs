@@ -159,7 +159,7 @@ namespace Front
                 if (Eq != null)
                 {
                     Eq.TestDevice();
-
+                    //MessageBox.Show(Eq.TestDevice().StateEquipment.ToString());
                 }
             }
         }

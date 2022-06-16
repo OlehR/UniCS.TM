@@ -10,6 +10,14 @@
       WindowState="Maximized"
       Title="Admin">
     <Window.Resources>
+        <Style TargetType="Button" x:Key="RoundButton">
+            <Style.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="10" />
+                </Style>
+            </Style.Resources>
+        </Style>
+
         <LinearGradientBrush x:Key="CheckedBlue" StartPoint="0,0" EndPoint="0,1">
             <GradientStop Color="#FF285AB3" Offset="0" />
             <GradientStop Color="#FF4184EC" Offset="0.5" />
@@ -281,7 +289,8 @@
 
                         <Grid Margin="10,0,0,0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="2*"></ColumnDefinition>
+                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                                <ColumnDefinition Width="1*"></ColumnDefinition>
                                 <ColumnDefinition Width="1*"></ColumnDefinition>
                                 <ColumnDefinition Width="1*"></ColumnDefinition>
                                 <ColumnDefinition Width="1*"></ColumnDefinition>
@@ -289,11 +298,12 @@
                                 <ColumnDefinition Width="1*"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="Тип обладнання" Margin="10,9,0,8" VerticalAlignment="Stretch"/>
-                            <TextBlock Grid.Column="1" Text="Назва"/>
-                            <TextBlock Grid.Column="2" Text="Стан" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Column="3" Text="Тест" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Column="4" Text="Інформація" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Column="5" Text="Вкл/Викл" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="Модель"/>
+                            <TextBlock Grid.Column="2" Text="Назва"/>
+                            <TextBlock Grid.Column="3" Text="Стан" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="4" Text="Тест" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="5" Text="Інформація" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="6" Text="Вкл/Викл" HorizontalAlignment="Center"/>
                         </Grid>
                     </Border>
                     <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" Margin="0,45,0,0">
@@ -303,7 +313,8 @@
                                     <Border  BorderBrush="Silver" BorderThickness="0,0,0,1" >
                                         <Grid Margin="10,0,0,0">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="2*"></ColumnDefinition>
+                                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                                                <ColumnDefinition Width="1*"></ColumnDefinition>
                                                 <ColumnDefinition Width="1*"></ColumnDefinition>
                                                 <ColumnDefinition Width="1*"></ColumnDefinition>
                                                 <ColumnDefinition Width="1*"></ColumnDefinition>
@@ -312,10 +323,35 @@
                                             </Grid.ColumnDefinitions>
 
                                             <TextBlock Grid.Column="0" Text="{Binding Type}" FontWeight="Bold" FontSize="20"/>
-                                            <TextBlock Grid.Column="1" Text="{Binding Name}" FontWeight="Bold" FontSize="20"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding Model}" FontWeight="Bold" FontSize="20"/>
+                                            <TextBlock Grid.Column="2" Text="{Binding Name}" FontWeight="Bold" FontSize="20"/>
 
-                                            <Button Grid.Column="2"  Width="40" Style="{StaticResource greenButton}"  >
 
+                                            <Button Grid.Column="3"  Width="40"  BorderBrush="Transparent" IsHitTestVisible="False" >
+
+                                                <Button.Style>
+                                                    <Style BasedOn="{StaticResource RoundButton}" TargetType="Button">
+                                                        <Setter Property="Background" Value="Purple"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding State}" Value="On">
+                                                                <Setter Property="Background" Value="Green" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding State}" Value="Off">
+                                                                <Setter Property="Background" Value="Orange" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding State}" Value="Init">
+                                                                <Setter Property="Background" Value="Yellow" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding State}" Value="Error">
+                                                                <Setter Property="Background" Value="Red" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding State}" Value="Process">
+                                                                <Setter Property="Background" Value="Purple" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                                
                                                 <Image  >
                                                     <Image.Style>
                                                         <Style TargetType="{x:Type Image}">
@@ -350,14 +386,14 @@
                                                 </Image>
                                             </Button>
 
-                                            <Button Grid.Column="3" Width="40" Style="{StaticResource Default}" Click="Test_Click">
+                                            <Button Grid.Column="4" Width="40" Style="{StaticResource Default}" Click="Test_Click">
                                                 <Image Source="icons\Ok.png"/>
                                             </Button>
-                                            <Button Grid.Column="4" Width="40" Style="{StaticResource Default}" Click="Info_Click">
+                                            <Button Grid.Column="5" Width="40" Style="{StaticResource Default}" Click="Info_Click">
                                                 <Image Source="icons\Inform.png"/>
                                             </Button>
 
-                                            <CheckBox Height="40" Grid.Column="5" HorizontalAlignment="Center" Style="{DynamicResource OrangeSwitchStyleCheckBox}" VerticalAlignment="Center" />
+                                            <CheckBox Height="40" Grid.Column="6" HorizontalAlignment="Center" Style="{DynamicResource OrangeSwitchStyleCheckBox}" VerticalAlignment="Center" />
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
