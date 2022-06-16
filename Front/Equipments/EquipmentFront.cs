@@ -44,8 +44,9 @@ namespace Front
         {
             get
             {
-                var Res = ListEquipment.Select(el => (el.State == eStateEquipment.On || el.State == eStateEquipment.Init) && el.IsСritical);
-                return Res != null && Res.Any() ? eStateEquipment.Error : eStateEquipment.On;
+                var Res = ListEquipment.Where(el => !(el.State == eStateEquipment.On || el.State == eStateEquipment.Init) && el.IsСritical);
+                var aa= Res != null && Res.Any() ? eStateEquipment.Error : eStateEquipment.On;
+                return aa;
             }
         }
 
@@ -53,7 +54,7 @@ namespace Front
         {
             get
             {
-                var Res = ListEquipment.Select(el => (el.Type == eTypeEquipment.RRO || el.Type == eTypeEquipment.BankTerminal) && el.State != eStateEquipment.On && el.IsСritical);
+                var Res = ListEquipment.Where(el => (el.Type == eTypeEquipment.RRO || el.Type == eTypeEquipment.BankTerminal) && el.State != eStateEquipment.On && el.IsСritical);
                 return Res != null && Res.Any() ? eStateEquipment.Error : eStateEquipment.On;
             }
         }

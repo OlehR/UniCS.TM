@@ -28,19 +28,20 @@ namespace Front.Equipments.Implementation
                 // !!!TMP Перенести асинхронно бо дуже довго
                 if (WCh.Initialization($"<InputParameters> <Parameters FN = \"{FN}\" />  </InputParameters>"))
                 {
-
                     string ResXML = WCh.StatusBarXML();
                     if (!string.IsNullOrEmpty(ResXML))
                     {
                        OpenWorkDay();                        
                     }
+                    State = eStateEquipment.On;
                 }
                 else
-                    State = eStateEquipment.Error;
-               
-            }catch(Exception e)
+                    State = eStateEquipment.Error;   
+            }
+            catch(Exception e)
             {
-                Console.WriteLine(e.Message);
+                State = eStateEquipment.Error;
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
             }
         }
 
