@@ -6,6 +6,7 @@ using ModelMID;
 using ModelMID.DB;
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Utils;
 
@@ -142,6 +143,20 @@ namespace Front.Equipments
             });
         }
 
+        private void PrintFiscalComents()
+        {
+            FP.PrintLine(1);
+            FP.PrintFiscalText($"Номер документа: {0}");
+            if (true) // якщо клієнт відсканував карточку
+            {
+                FP.PrintFiscalText($"Клієнт: ");
+                FP.PrintFiscalText("я і є клієнт"); //з нової строчки, щоб все ім'я влізло
+                FP.PrintFiscalText($"Бонуси: {0}");
+                FP.PrintFiscalText($"Скарбничка: {0}");
+            }
+            FP.PrintLine(1);
+        }
+
         /// <summary>
         /// Друк чека
         /// </summary>
@@ -168,8 +183,11 @@ namespace Front.Equipments
                     if (pR.TypeReceipt == eTypeReceipt.Sale)
                         FP.OpenFiscalReceipt(1, OperatorPass, 1);
                     else
-                        FP.OpenReturnReceipt(1, OperatorPass, 1);                  
-
+                        FP.OpenReturnReceipt(1, OperatorPass, 1);
+                    if (true) //якась перевірка чи друкувати коментарі чи ні)
+                        PrintFiscalComents();
+                    
+                    
                     if (CheckResult())
                     {
                         //потрібно прочитати номер фіскального чека GetLastReceiptNum() властивість s1
@@ -184,15 +202,16 @@ namespace Front.Equipments
                             var Name = (el.IsUseCodeUKTZED && !string.IsNullOrEmpty(el.CodeUKTZED) ? el.CodeUKTZED.Substring(0, 10) + "#" : "") + el.NameWares;
                             if (!String.IsNullOrEmpty(el.ExciseStamp))
                                 FP.ExciseStamp = el.ExciseStamp;
-
-                            FP.Sale(el.CodeWares, Name, Convert.ToInt32(Global.GetTaxGroup(el.TypeVat, (int)el.TypeWares)), 1, Convert.ToDouble(el.Price), Convert.ToDouble(el.Quantity), 0, Convert.ToDouble(el.SumDiscount), true, OperatorPass);
+                            var temp = Convert.ToInt32(Global.GetTaxGroup(el.TypeVat, (int)el.TypeWares));
+                            //el.SumDiscount - завжди 0 тому не нараховує знижку
+                            FP.Sale(el.CodeWares, Name,temp, 1, Convert.ToDouble(el.Price), Convert.ToDouble(el.Quantity), 0, Convert.ToDouble(el.SumDiscount), true, OperatorPass);
                             //Convert.ToInt32((el.CodeUnit == Global.WeightCodeUnit ? 1000 : 1) * el.Quantity), Convert.ToInt32(el.Price * 100), el.CodeUnit == Global.WeightCodeUnit ? 1 : 0, TG1, TG2, el.CodeWares, (el.DiscountEKKA > 0 ? 0 : -1), null, Convert.ToInt32(el.DiscountEKKA), null) != 1))
 
                             if (!CheckResult())
                                 break;
                         }
 
-                        if (CodeError != 0)
+                        if (CodeError == 0)
                         {
                             FP.SubTotal(0, 0); //як прочитати готівка / безготівка
 
@@ -202,31 +221,37 @@ namespace Front.Equipments
                             {
                                 foreach (var el in pR.Payment)
                                 {//!!!TMP Спитати валіка.                                   
-                                    FP.PayTerminalData = $"{el.NumberSlip},{0},{el.NumberTerminal},{el.TypePay},{el.NumberCard},{el.CodeAuthorization},{0}";
+                                    FP.PayTerminalData = $"{el.NumberSlip},{0},{el.NumberTerminal},{0},{el.TypePay},{el.NumberCard},{el.CodeAuthorization},{0}";
                                     SetStatus(eStatusRRO.AddWares, FP.PayTerminalData);
-                                    FP.TotalPT("", el.TypePay == eTypePay.Cash ? 1 : 4, Convert.ToDouble(el.SumPay), el.TransactionId);
+                                    
+                                    FP.Total("", el.TypePay == eTypePay.Cash ? 1 : 4, Convert.ToDouble(el.SumPay));
+                                    
+                                    //працює тільки якщо оплата по картці
+                                    //FP.TotalPT("", el.TypePay == eTypePay.Cash ? 1 : 4, Convert.ToDouble(el.SumPay), $"{el.NumberSlip},{0},{el.NumberTerminal},{0},{el.TypePay},{el.NumberCard},{el.CodeAuthorization},{0}");
+
                                     if (!CheckResult())
                                         break;
                                 }
                             }
-                            if (CodeError != 0)
+                            if (CodeError == 0)
                             {
                                 FP.CloseFiscalReceipt();
                                 if (CheckResult())
                                     pR.NumberReceipt = pR.TypeReceipt == eTypeReceipt.Sale ? FP.s2 : FP.s3;
                             }
                         }
+                        Res.CodeError = CodeError;
+                        Res.Error = StrError;
+                        if (CodeError != 0)
+                        {
+                            FP.CancelReceipt();
+                        }
+                        FpClosePort();
+
                     }
                 }
 
-                if (CodeError != 0)
-                {
-                    Res.CodeError = CodeError;
-                    Res.Error = StrError;
-                    FP.CloseFiscalReceipt();
-                    //FP.CancelReceipt();
-                }
-                FpClosePort();
+
                 return Res;
             });
         }
