@@ -184,6 +184,29 @@ namespace Front.Equipments.Implementation
              return GetResLogRRO(pIdR, pSum>0? eTypeOperation.MoneyIn: eTypeOperation.MoneyOut, pSum);
             return null;
         }
+
+        public override StatusEquipment TestDevice()
+        {
+            string Error = null;
+            string Res = null;
+            try
+            {
+                string xml = $"<InputParameters> <Parameters FN = \"{FN}\" />  </InputParameters>";
+                if (WCh.GetCurrentStatus(xml))
+                {
+                    Res = WCh.StatusBarXML();
+                }
+                else
+                    Res = "GetCurrentStatus Не виконався";
+            }
+            catch (Exception e)
+            {
+                Error = e.Message;
+                State = eStateEquipment.Error;
+            }
+            return new StatusEquipment(Model, State, $"{Error} {Environment.NewLine} {Res}");
+        }
+
         public override string GetDeviceInfo() 
         {
             string res="";
@@ -194,7 +217,7 @@ namespace Front.Equipments.Implementation
             }
             else
                 res = "GetCurrentStatus Не виконався";
-            return res;
+            return $"State={State} {res}";
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
+using Front.Equipments.Virtual;
 
 namespace Front.Equipments.Implementation
 {
@@ -74,6 +75,14 @@ namespace Front.Equipments.Implementation
             });
         }
 
+        public override StatusEquipment TestDevice()
+        {
+            return new StatusEquipment(Model, State, "Ok");
+        }
+        public override string GetDeviceInfo()
+        {
+            return $"pModelEquipment={Model} State={State} Port={SerialPort} BaudRate={BaudRate}{Environment.NewLine}";
+        }
 
     };
 

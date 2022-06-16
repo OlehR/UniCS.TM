@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Front.Equipments.Virtual;
+using Microsoft.Extensions.Configuration;
 using ModernExpo.SelfCheckout.Devices.CustomFlagLamp;
 using System;
 using System.Collections.Generic;
@@ -46,6 +47,35 @@ namespace Front.Equipments
         public override void Enable() { lamp.Enable(); base.Enable(); }
         public override void Disable() { lamp.Disable(); base.Disable(); }
 
+        public override string GetDeviceInfo()
+        {
+            return $"pModelEquipment={Model} State={State} Port={SerialPort} BaudRate={BaudRate}{Environment.NewLine}";
+        }
+
+        public override StatusEquipment TestDevice()
+        {
+            string Error = null;
+            string Res = null;
+            try
+            {
+                
+                State = eStateEquipment.Init;
+                lamp.Enable();
+                Res =lamp.GetInfo().Result;
+                lamp.SwitchToColor(Color.Yellow);
+
+                lamp.SwitchToColor(Color.Blue);
+                lamp.SwitchToColor(Color.Black);
+
+                State = eStateEquipment.On;
+            }
+            catch (Exception e)
+            {
+                Error = e.Message;
+                State = eStateEquipment.Error;
+            }
+            return new StatusEquipment(Model, State, $"{Error} {Environment.NewLine} {Res}");
+        }
 
 
 
