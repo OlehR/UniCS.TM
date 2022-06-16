@@ -17,6 +17,7 @@ namespace Front.Equipments.Implementation
             IpPort = Convert.ToInt32( Configuration["Devices:VirtualScaner:Port"]);
             IP = Configuration["Devices:VirtualScaner:IP"];
             _ = Work();
+            State = eStateEquipment.On;
         }
 
         public override void Enable() { }

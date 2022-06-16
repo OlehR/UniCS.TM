@@ -21,6 +21,7 @@ namespace Front.Equipments.Implementation
       
         public VirtualBankPOS(Equipment pEquipment, IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment, pConfiguration, eModelEquipment.VirtualBankPOS, pLogger)
         {
+            State = eStateEquipment.On;
             Random rnd = new Random();
             NumberReceipt = rnd.Next(1, 100000);
             AuthCode+= rnd.Next(1, 1000000);

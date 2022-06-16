@@ -13,7 +13,10 @@ namespace Front.Equipments.Implementation
     public class VirtualRRO:Rro
     {
         public VirtualRRO(Equipment pEquipment, IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<StatusEquipment> pActionStatus = null) :
-                       base(pEquipment, pConfiguration, eModelEquipment.VirtualRRO, pLogger, pActionStatus){ }
+                       base(pEquipment, pConfiguration, eModelEquipment.VirtualRRO, pLogger, pActionStatus)
+        {
+            State = eStateEquipment.On;
+        }
        
         public override LogRRO PrintCopyReceipt(int parNCopy = 1)
         {
