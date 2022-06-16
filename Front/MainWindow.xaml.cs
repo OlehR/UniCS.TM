@@ -880,6 +880,7 @@ namespace Front
                     Bl.db.ReplacePayment(new List<Payment>() { pay });
                     Bl.SetStateReceipt(curReceipt, eStateReceipt.Pay);
                     R.StateReceipt = eStateReceipt.Pay;
+                    R.Payment= new List<Payment>() { pay }; 
                 }
                 else
                 {
