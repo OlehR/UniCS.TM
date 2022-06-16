@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Front.Equipments.Virtual;
+using Microsoft.Extensions.Configuration;
 using ModernExpo.SelfCheckout.Devices.BST106M60S;
 using System;
 
@@ -36,13 +37,17 @@ namespace Front.Equipments
             bst.Init();
         }
 
-        public override eStateEquipment TestDevice() 
+        public override StatusEquipment TestDevice() 
         {
             var r=bst.TestDevice().Result;
             State = r==ModernExpo.SelfCheckout.Entities.Enums.Device.DeviceConnectionStatus.Enabled ? eStateEquipment.On : eStateEquipment.Error;
-            return State;
+            return new StatusEquipment(Model, State,"");
         }
 
+        public override string GetDeviceInfo()
+        {
+            return $"pModelEquipment={Model} State={State} Port={SerialPort} BaudRate={BaudRate}{Environment.NewLine}";
+        }
         /// <summary>
         ///  Калібрування Ваги
         /// </summary>

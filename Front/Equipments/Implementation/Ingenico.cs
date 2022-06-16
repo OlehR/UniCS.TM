@@ -64,12 +64,18 @@ namespace Front.Equipments
             return r.Result;
         }
 
-        public override eStateEquipment TestDevice()
-        {
-            EquipmentIngenico.TestDeviceSync();
-            return eStateEquipment.On;
+        public override StatusEquipment TestDevice()
+        {           
+            var r = EquipmentIngenico.TestDeviceSync();
+            State = r == Ingenico.DeviceConnectionStatus.Enabled ? eStateEquipment.On:eStateEquipment.Error;
+            return new StatusEquipment(eModelEquipment.Ingenico, State,r.ToString());
         }
 
+        public override string GetDeviceInfo()
+        {
+            string res = (!string.IsNullOrEmpty(SerialPort) && BaudRate > 0) ? $" Port={SerialPort} BaudRate={BaudRate}" : $"IP ={IP} IpPort = {IpPort}";
+            return $"pModelEquipment={Model} State={State} {res}";
+        }
         Payment PaymentResultModelToPayment(PaymentResultModel pRP, ModelMID.eTypePay pTypePay = ModelMID.eTypePay.Card)
         {
             return new Payment()

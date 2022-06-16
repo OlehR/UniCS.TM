@@ -1,5 +1,6 @@
 ﻿using Exellio;
 using Front.Equipments.Implementation;
+using Front.Equipments.Virtual;
 using Microsoft.Extensions.Configuration;
 using ModelMID;
 using ModelMID.DB;
@@ -236,30 +237,45 @@ namespace Front.Equipments
             return true;
         }
 
-        override public eStateEquipment TestDevice()
+        override public StatusEquipment TestDevice()
         {
+            string Error = null;
             //!!!TMP Треба розібратись про реальну поведінку з помилками.
-            eStateEquipment Res = eStateEquipment.On;
-            if (FpOpenPort())
+            try
             {
+                State = eStateEquipment.Init;
+                if (FpOpenPort())
+                {
 
-                FP.OpenNonfiscalReceipt();
-                FP.PrintNonfiscalText("Test of the Equipment: Ok");
-                FP.PrintNonfiscalText("Тест пристрою: Ok");
-                FP.CloseNonfiscalReceipt();
+                    FP.OpenNonfiscalReceipt();
+                    FP.PrintNonfiscalText("Test of the Equipment: Ok");
+                    FP.PrintNonfiscalText("Тест пристрою: Ok");
+                    FP.CloseNonfiscalReceipt();
 
-                FP.GetErrorDetails("CLEAR");
-                FP.CheckConnect(SerialPort, BaudRate);
-                FP.GetErrorDetails("Cmd");
+                    FP.GetErrorDetails("CLEAR");
+                    FP.CheckConnect(SerialPort, BaudRate);
+                    FP.GetErrorDetails("Cmd");
 
-                StrError = $"FPModel={FP.FPModel}{Environment.NewLine}Version{FP.Version}{Environment.NewLine}LibFileName={FP.LibFileName}{Environment.NewLine}" +
-                    $"IsPaperOut={FP.IsPaperOut}{Environment.NewLine} IsFiscalised={FP.IsFiscalised}{Environment.NewLine} LogFileDir=>{FP.LogFileDir}{Environment.NewLine}" +
-                    $"IsFiscalised={FP.IsFiscalised}{Environment.NewLine}IsFiscalOpen={FP.IsFiscalOpen}" +
-                    $"ErrCode=>{FP.s2} LastErrorText=>{FP.LastErrorText}";
+                    StrError = $"FPModel={FP.FPModel}{Environment.NewLine}Version{FP.Version}{Environment.NewLine}LibFileName={FP.LibFileName}{Environment.NewLine}" +
+                        $"IsPaperOut={FP.IsPaperOut}{Environment.NewLine} IsFiscalised={FP.IsFiscalised}{Environment.NewLine} LogFileDir=>{FP.LogFileDir}{Environment.NewLine}" +
+                        $"IsFiscalised={FP.IsFiscalised}{Environment.NewLine}IsFiscalOpen={FP.IsFiscalOpen}" +
+                        $"ErrCode=>{FP.s2} LastErrorText=>{FP.LastErrorText}";
 
-                FpClosePort();
+                    FpClosePort();
+                    State = eStateEquipment.On;
+                }
+            }catch(Exception e)
+            {
+                State = eStateEquipment.Error;
+                Error = e.Message;
+
             }
-            return Res;
+            return new StatusEquipment(Model,State,Error);
+        }
+        public override string GetDeviceInfo()
+        {
+            string res = (!string.IsNullOrEmpty(SerialPort) && BaudRate > 0) ? $" Port={SerialPort} BaudRate={BaudRate}" : $"IP ={IP} IpPort = {IpPort}";
+            return $"pModelEquipment={Model} State={State} {res}";
         }
     }
 }

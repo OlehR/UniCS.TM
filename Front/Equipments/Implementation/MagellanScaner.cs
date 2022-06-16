@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Front.Equipments.Virtual;
+using Microsoft.Extensions.Configuration;
 //using ModernExpo.SelfCheckout.Devices.Magellan9300SingleCable;
 using System;
 using System.Collections.Generic;
@@ -55,6 +56,28 @@ namespace Front.Equipments
             }
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Ініціалізація Ваги", State == eStateEquipment.On ? eTypeLog.Expanded:eTypeLog.Error);
             
+        }
+
+        public override StatusEquipment TestDevice()
+        {
+            string Error = null;
+            string Res = null;
+            try
+            {
+                Magellan9300.Init();
+
+                Res = Magellan9300.GetInfo().Result;
+            }
+            catch (Exception e)
+            {
+                Error = e.Message;
+                State = eStateEquipment.Error;
+            }
+            return new StatusEquipment(Model, State,$"{Error} { Environment.NewLine } {Res}" );
+        }
+        public override string GetDeviceInfo()
+        {
+            return $"pModelEquipment={Model} State={State} Port={SerialPort} BaudRate={BaudRate}{Environment.NewLine}";
         }
     }
 }

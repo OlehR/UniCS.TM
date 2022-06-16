@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Front.Equipments.Virtual;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -58,5 +59,26 @@ namespace Front.Equipments
             }
         }
 
+        public override StatusEquipment TestDevice() 
+        {
+            string Error = null;
+            try
+            {
+                Magellan?.StopGetWeight();
+                Magellan?.StartGetWeight();
+                Magellan?.StopGetWeight();
+
+            }
+            catch (Exception e)
+            {
+                Error = e.Message;
+                State = eStateEquipment.Error;
+            }
+            return new StatusEquipment(Model,State,Error);
+        }
+        public override string GetDeviceInfo() 
+        { 
+            return $"State={State} Port={SerialPort} BaudRate={BaudRate}"; 
+        }
     }
 }

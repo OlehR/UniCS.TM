@@ -79,9 +79,13 @@ namespace Front.Equipments.Implementation
             return GetBatchTotals();
         }
 
-        public override eStateEquipment TestDevice()
+        public override StatusEquipment TestDevice()
         {
-            return eStateEquipment.On;
+            return new StatusEquipment(Model,State,"Ok");
+        }
+        public override string GetDeviceInfo()
+        {
+            return $"pModelEquipment={Model} State={State} Port={SerialPort} BaudRate={BaudRate}{Environment.NewLine}";
         }
     }
 }
