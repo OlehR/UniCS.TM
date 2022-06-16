@@ -158,8 +158,8 @@ namespace Front
                 Equipment Eq = btn.DataContext as Equipment;
                 if (Eq != null)
                 {
-                    Eq.TestDevice();
-                    //MessageBox.Show(Eq.TestDevice().StateEquipment.ToString());
+                    var res=Eq.TestDevice();
+                    MessageBox.Show($"{res.StateEquipment} {res.TextState}", res.ModelEquipment.ToString());
                 }
             }
         }
@@ -172,8 +172,8 @@ namespace Front
                 Equipment Eq = btn.DataContext as Equipment;
                 if (Eq != null)
                 {
-                    Eq.GetDeviceInfo();
-
+                    var res=Eq.GetDeviceInfo();
+                    MessageBox.Show(res, Eq.Model.ToString());
                 }
             }
         }
