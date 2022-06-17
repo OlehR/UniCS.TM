@@ -676,7 +676,7 @@ namespace Front
 
         private void Recalc()
         {
-            _MoneySum = ListWares.Sum(r => r.Sum);
+            _MoneySum = ListWares.Sum(r => r.SumTotal);
             MoneySum = _MoneySum.ToString();
             WaresQuantity = ListWares.Count().ToString();
             SV_WaresList.ScrollToEnd();
@@ -872,7 +872,7 @@ namespace Front
             {
                 R.StateReceipt = eStateReceipt.StartPay;
                 Bl.SetStateReceipt(curReceipt, eStateReceipt.StartPay);
-                decimal sum = R.Wares.Sum(r => r.Sum); //TMP!!!Треба переробити
+                decimal sum = R.Wares.Sum(r => (r.SumTotal)); //TMP!!!Треба переробити
                 SetStateView(eStateMainWindows.ProcessPay);
                 var pay = EF.PosPurchase(sum);
                 if (pay != null)

@@ -101,6 +101,8 @@ namespace ModelMID
         /// </summary>
         public decimal SumDiscount { get; set; }
 
+        public decimal SumTotal { get { return Sum - SumDiscount; } }
+
         /// <summary>
         /// Назва акції для фіксованих цін. Тощо.
         /// </summary>

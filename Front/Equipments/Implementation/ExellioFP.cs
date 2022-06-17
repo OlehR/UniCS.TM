@@ -216,7 +216,7 @@ namespace Front.Equipments
                                 FP.ExciseStamp = el.ExciseStamp;
                             var temp = Convert.ToInt32(Global.GetTaxGroup(el.TypeVat, (int)el.TypeWares));
                             //el.SumDiscount - завжди 0 тому не нараховує знижку
-                            FP.Sale(el.CodeWares, Name,temp, 1, Convert.ToDouble(el.PriceEKKA), Convert.ToDouble(el.Quantity), 0, Convert.ToDouble(el.DiscountEKKA), true, OperatorPass);
+                            FP.Sale(el.CodeWares, Name,temp, 1, Convert.ToDouble(el.PriceEKKA), Convert.ToDouble(el.Quantity), 0, Convert.ToDouble(-el.DiscountEKKA), true, OperatorPass);
                             //Convert.ToInt32((el.CodeUnit == Global.WeightCodeUnit ? 1000 : 1) * el.Quantity), Convert.ToInt32(el.Price * 100), el.CodeUnit == Global.WeightCodeUnit ? 1 : 0, TG1, TG2, el.CodeWares, (el.DiscountEKKA > 0 ? 0 : -1), null, Convert.ToInt32(el.DiscountEKKA), null) != 1))
 
                             if (!CheckResult())

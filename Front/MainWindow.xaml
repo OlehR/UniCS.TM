@@ -354,7 +354,7 @@
                                     </TextBlock>
                                     <TextBlock Grid.Column="3" Text="{Binding Price}" />
                                     <TextBlock Grid.Column="4" Text="{Binding SumDiscount}" />
-                                    <TextBlock Grid.Column="5" Text="{Binding Sum}" FontWeight="Bold" FontSize="20"/>
+                                    <TextBlock Grid.Column="5" Text="{Binding SumTotal}" FontWeight="Bold" FontSize="20"/>
 
                                 </Grid>
                             </Border>
