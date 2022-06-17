@@ -26,7 +26,7 @@ namespace Front.Equipments
             }
             Magellan = pMagellan.Magellan9300;
 
-            if (State != eStateEquipment.On)
+            if (pMagellan.State != eStateEquipment.On)
                 return;
 
             if (Magellan != null)

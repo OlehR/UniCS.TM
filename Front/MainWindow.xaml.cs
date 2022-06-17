@@ -77,6 +77,10 @@ namespace Front
         public bool IsLockSale { get { return _IsLockSale; } set { if (_IsLockSale != value) { SetStateView(!value && State == eStateMainWindows.WaitAdmin ? eStateMainWindows.WaitInput : eStateMainWindows.NotDefine); _IsLockSale = value; } } }
         public string GetBackgroundColor { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? "#FFE5E5" : "#FFFFFF"; } }
         public bool IsCheckReturn { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? true : false; } }
+        /// <summary>
+        /// Статус підтвердження віку
+        /// </summary>
+        public bool IsConfirmAge { get; set; } = true; // може бути будь-якого типу наприклад - Enum: потрібно підтвердити, вже підтвердженно, в чеку немає чого підтверджувати
         public bool PriceIsNotZero
         {
             get
@@ -147,6 +151,7 @@ namespace Front
                     case eTypeAccess.ErrorEquipment: return "Проблема з критично важливим обладнанням";
                     case eTypeAccess.LockSale: return "Зміна заблокована";
                     case eTypeAccess.FixWeight: return $"{StateScale}{Environment.NewLine}{_WaitAdminText}";
+                    case eTypeAccess.ConfirmAge: return "Підтвердження віку";
 
                 }
                 return null;
@@ -283,7 +288,6 @@ namespace Front
             //Обробка стану контрольної ваги.
             CS.OnStateScale += (pStateScale, pRW, pСurrentlyWeight) =>
             {
-                return;
                 StateScale = pStateScale;
                 customWindowButtons = StateScale == eStateScale.BadWeight ? customWindowButtons = new ObservableCollection<CustomButton>() { new CustomButton() { Id = 1, Text = "Підтвердити вагу", IsAdmin = true }, 
                     new CustomButton() { Id = 2, Text = "Добавити вагу", IsAdmin = true } } : null;
@@ -568,6 +572,8 @@ namespace Front
                             WaitPayment.Visibility = Visibility.Visible;
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;
+                            Client.NameClient = null;
+                            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClientName"));
                             break;
 
                         case eStateMainWindows.ChoicePaymentMethod:
