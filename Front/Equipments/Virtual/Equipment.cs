@@ -28,6 +28,7 @@ namespace Front.Equipments
         public Action<StatusEquipment> ActionStatus;
 
         //public Action<eStateEquipment, eModelEquipment> SetState { get; set; }
+        public string InfoConnect { get { return (!string.IsNullOrEmpty(SerialPort) && BaudRate > 0) ? $" Port={SerialPort} BaudRate={BaudRate}" : $"IP ={IP} IpPort = {IpPort}"; } }
 
         private eStateEquipment _State = eStateEquipment.Off;
         public eStateEquipment State { get { return _State; } set

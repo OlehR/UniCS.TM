@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
+using Utils;
 
 /*
   Mint.Hardware.Lamps.Lamp
@@ -34,11 +35,16 @@ namespace Front.Equipments
         {
             try
             {
+                State = eStateEquipment.Init;
                 lamp = new CustomFlagLamp(pConfiguration, null);
                 lamp.Init();
+                State = eStateEquipment.On;
             }
-            catch (Exception Ex)
-            { };
+            catch (Exception e)
+            {
+                State = eStateEquipment.Error;
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+            };
         }
 
         public override void SwitchToColor(Color pColor) { lamp.SwitchToColor(pColor); }
@@ -57,9 +63,9 @@ namespace Front.Equipments
             string Error = null;
             string Res = null;
             try
-            {
-                
+            {                
                 State = eStateEquipment.Init;
+                lamp.Init();
                 lamp.Enable();
                 Res =lamp.GetInfo().Result;
                 lamp.SwitchToColor(Color.Yellow);

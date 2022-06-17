@@ -283,6 +283,7 @@ namespace Front
             //Обробка стану контрольної ваги.
             CS.OnStateScale += (pStateScale, pRW, pСurrentlyWeight) =>
             {
+                return;
                 StateScale = pStateScale;
                 customWindowButtons = StateScale == eStateScale.BadWeight ? customWindowButtons = new ObservableCollection<CustomButton>() { new CustomButton() { Id = 1, Text = "Підтвердити вагу", IsAdmin = true }, 
                     new CustomButton() { Id = 2, Text = "Добавити вагу", IsAdmin = true } } : null;
@@ -294,7 +295,7 @@ namespace Front
                     case eStateScale.WaitGoods:
                         string AllWeights = pRW == null || pRW.AllWeights == null || pRW.AllWeights.Count() == 0 ? "0" : string.Join(",", pRW?.AllWeights.Select(el => Convert.ToDecimal(el.Weight) * (pRW?.Quantity ?? 0 - pRW?.FixWeightQuantity ?? 0)));
 
-                        _WaitAdminText = $"{pRW?.NameWares} Очікувана вага Вага=({AllWeights}) Фактична={pСurrentlyWeight}";
+                        _WaitAdminText = $"{pRW?.NameWares}{Environment.NewLine}Очікувана вага=({AllWeights}) Фактична={pСurrentlyWeight}";
                         SetWaitConfirm(eTypeAccess.FixWeight, pRW); // SetStateView(eStateMainWindows.WaitWeight);
                         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WaitAdminText"));
                         break;
@@ -893,6 +894,7 @@ namespace Front
 
             if (R.StateReceipt == eStateReceipt.Pay)
             {
+                R.Client = Client;
                 R.StateReceipt = eStateReceipt.StartPrint;
                 Bl.SetStateReceipt(curReceipt, eStateReceipt.StartPrint);
                 try
@@ -956,7 +958,8 @@ namespace Front
 
             var RId = Bl.GetNewIdReceipt();
             //Bl.AddWaresBarCode(RId, "27833", 258m);
-            //Bl.AddWaresBarCode(RId, "7622300813437", 1);
+            //Bl.AddWaresBarCode(RId, "7622201819590", 1);
+            Bl.GetClientByPhone(RId,"0503399110");
             //Bl.AddWaresBarCode(RId, "2201652300229", 2);
             //Bl.AddWaresBarCode(RId, "7775002160043", 1); //товар 2 кат
             //Bl.AddWaresBarCode(RId,"1110011760218", 11);

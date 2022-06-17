@@ -15,6 +15,7 @@ namespace Front.Equipments.Virtual
         public StatusEquipment():base() {  }
         public StatusEquipment(eModelEquipment pME, eStateEquipment pStateEquipment,string pTextState=null) :base((int)pStateEquipment, pTextState?? pStateEquipment.ToString())
         {
+            StateEquipment = pStateEquipment;
             ModelEquipment = pME;
         }
     }

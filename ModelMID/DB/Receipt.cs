@@ -24,7 +24,9 @@ namespace ModelMID
 
         public eTypeReceipt TypeReceipt { get; set; }
         public Guid TerminalId { get; set; }
-        public int CodeClient { get; set; }
+        int _CodeClient;
+        public int CodeClient { get { return Client?.CodeClient ?? _CodeClient; } set { _CodeClient = value; } }
+        public Client Client { get; set; }        
         public int CodePattern { get; set; }
         public ulong NumberCashier { get; set; }
 
@@ -84,7 +86,6 @@ namespace ModelMID
         public DateTime AdditionD1 { get; set; }
 
         public IdReceipt RefundId { get; set; }
-
 
         public string RefundNumberReceipt1C
         {

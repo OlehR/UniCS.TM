@@ -21,11 +21,11 @@ namespace Front.Equipments
             State = eStateEquipment.Init;
             try
             {
-                FP = new FiscalPrinterClass();
                 SerialPort = Configuration["Devices:ExellioFP:SerialPort"];
                 BaudRate = Convert.ToInt32(Configuration["Devices:ExellioFP:BaudRate"]);
                 IP = Configuration["Devices:ExellioFP:IP"];
                 IpPort = Convert.ToInt32(Configuration["Devices:ExellioFP:IpPort"]);
+                FP = new FiscalPrinterClass();                
                 State = eStateEquipment.On;
             }
             catch(Exception e)
@@ -38,6 +38,9 @@ namespace Front.Equipments
         ///відкрити порт 
         private bool FpOpenPort(IdReceipt pReceipt = null)
         {
+            if (FP == null)            
+                return CheckResult();
+            
             SetStatus(eStatusRRO.TryOpenPort);
             if (!string.IsNullOrEmpty(SerialPort) && BaudRate > 0)
                 FP.OpenPort(SerialPort, BaudRate);
@@ -45,7 +48,7 @@ namespace Front.Equipments
                 FP.ConnectLan(IP, IpPort.ToString()); //"10.1.5.221", "9100"
             else
             {
-                CodeError = -999;
+                CodeError = -99999;
                 StrError = "Відсутні налаштування з'єднааня з Фіскальним апаратом";
             }
             if (!CheckResult())
@@ -62,16 +65,27 @@ namespace Front.Equipments
         private bool FpClosePort()
         {
             SetStatus(eStatusRRO.ClosePort);
-            FP.ClosePort();           
+            FP?.ClosePort();           
             return CheckResult();
         }
 
         private bool CheckResult()
         {
+            if (FP == null)
+            {
+                State = eStateEquipment.Error;
+                StrError = "Відсутній екземпляр об'єкта Exellio.FiscalPrinterClass()";
+                CodeError = -999999;
+                return false;
+            }
+
             CodeError = FP.LastError;
             StrError = FP.LastErrorText;
-            if(CodeError != 0)
+            if (CodeError != 0)
+            {
                 SetStatus(eStatusRRO.Error, StrError, CodeError);
+                State = eStateEquipment.Error;
+            }
             return CodeError == 0;
         }
 
@@ -86,7 +100,6 @@ namespace Front.Equipments
             }
             return new LogRRO(null) { CodeError = CodeError, Error = StrError, SUM = 0, TypeRRO = "ExellioFP", TypeOperation = eTypeOperation.CopyReceipt };
         }
-
 
         override public async Task<LogRRO> PrintZAsync(IdReceipt pIdR)
         {
@@ -135,24 +148,23 @@ namespace Front.Equipments
                 if (FpOpenPort())
                 {
                     FP.InOut(Convert.ToDouble(pSum));
-                    CheckResult();
-                    FP.OpenDrawer();
+                    if (!CheckResult())
+                        FP.OpenDrawer();
                     FpClosePort();
                 }
-                return new LogRRO(pIdR) { CodeError = CodeError, Error = StrError, SUM = pSum, TypeRRO = "Maria304", TypeOperation = pSum > 0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyOut };
+                return new LogRRO(pIdR) { CodeError = CodeError, Error = StrError, SUM = pSum, TypeRRO = "ExellioFP", TypeOperation = pSum > 0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyOut };
             });
         }
-
-        private void PrintFiscalComents()
+        private void PrintFiscalComents(Receipt  pR)
         {
             FP.PrintLine(1);
-            FP.PrintFiscalText($"Номер документа: {0}");
-            if (true) // якщо клієнт відсканував карточку
+            FP.PrintFiscalText($"Номер документа: {pR.NumberReceipt1C}");
+            if (pR.Client!=null) // якщо клієнт відсканував карточку
             {
                 FP.PrintFiscalText($"Клієнт: ");
-                FP.PrintFiscalText("я і є клієнт"); //з нової строчки, щоб все ім'я влізло
-                FP.PrintFiscalText($"Бонуси: {0}");
-                FP.PrintFiscalText($"Скарбничка: {0}");
+                FP.PrintFiscalText(pR.Client.NameClient); //з нової строчки, щоб все ім'я влізло
+                FP.PrintFiscalText($"Бонуси:{pR.Client.SumBonus}");
+                FP.PrintFiscalText($"Скарбничка:{pR.Client.SumMoneyBonus}");
             }
             FP.PrintLine(1);
         }
@@ -184,9 +196,9 @@ namespace Front.Equipments
                         FP.OpenFiscalReceipt(1, OperatorPass, 1);
                     else
                         FP.OpenReturnReceipt(1, OperatorPass, 1);
-                    if (true) //якась перевірка чи друкувати коментарі чи ні)
-                        PrintFiscalComents();
                     
+                    //if (true) //якась перевірка чи друкувати коментарі чи ні)
+                        PrintFiscalComents(pR);                    
                     
                     if (CheckResult())
                     {
@@ -204,7 +216,7 @@ namespace Front.Equipments
                                 FP.ExciseStamp = el.ExciseStamp;
                             var temp = Convert.ToInt32(Global.GetTaxGroup(el.TypeVat, (int)el.TypeWares));
                             //el.SumDiscount - завжди 0 тому не нараховує знижку
-                            FP.Sale(el.CodeWares, Name,temp, 1, Convert.ToDouble(el.Price), Convert.ToDouble(el.Quantity), 0, Convert.ToDouble(el.SumDiscount), true, OperatorPass);
+                            FP.Sale(el.CodeWares, Name,temp, 1, Convert.ToDouble(el.PriceEKKA), Convert.ToDouble(el.Quantity), 0, Convert.ToDouble(el.DiscountEKKA), true, OperatorPass);
                             //Convert.ToInt32((el.CodeUnit == Global.WeightCodeUnit ? 1000 : 1) * el.Quantity), Convert.ToInt32(el.Price * 100), el.CodeUnit == Global.WeightCodeUnit ? 1 : 0, TG1, TG2, el.CodeWares, (el.DiscountEKKA > 0 ? 0 : -1), null, Convert.ToInt32(el.DiscountEKKA), null) != 1))
 
                             if (!CheckResult())
@@ -245,13 +257,10 @@ namespace Front.Equipments
                         if (CodeError != 0)
                         {
                             FP.CancelReceipt();
-                        }
-                        FpClosePort();
-
+                        }                       
                     }
+                    FpClosePort();
                 }
-
-
                 return Res;
             });
         }
@@ -263,15 +272,14 @@ namespace Front.Equipments
         }
 
         override public StatusEquipment TestDevice()
-        {
-            string Error = null;
+        {           
+            if(FP!=null)
             //!!!TMP Треба розібратись про реальну поведінку з помилками.
             try
             {
                 State = eStateEquipment.Init;
                 if (FpOpenPort())
                 {
-
                     FP.OpenNonfiscalReceipt();
                     FP.PrintNonfiscalText("Test of the Equipment: Ok");
                     FP.PrintNonfiscalText("Тест пристрою: Ok");
@@ -292,15 +300,18 @@ namespace Front.Equipments
             }catch(Exception e)
             {
                 State = eStateEquipment.Error;
-                Error = e.Message;
-
+                StrError = e.Message;
             }
-            return new StatusEquipment(Model,State,Error);
+            else
+            {
+                State = eStateEquipment.Error;
+                StrError = "Відсутній екземпляр об'єкта Exellio";
+            }
+            return new StatusEquipment(Model,State, StrError + Environment.NewLine + InfoConnect);
         }
         public override string GetDeviceInfo()
-        {
-            string res = (!string.IsNullOrEmpty(SerialPort) && BaudRate > 0) ? $" Port={SerialPort} BaudRate={BaudRate}" : $"IP ={IP} IpPort = {IpPort}";
-            return $"pModelEquipment={Model} State={State} {res}";
+        {            
+            return $"pModelEquipment={Model} State={State} {InfoConnect}";
         }
     }
 }

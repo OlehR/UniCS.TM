@@ -75,7 +75,7 @@ namespace Front.Equipments.Implementation
             string Add = (pRW.IsUseCodeUKTZED ? $"UKTZED={pRW.CodeUKTZED}" : "") +
                          (!string.IsNullOrEmpty(pRW.ExciseStamp) ? " ExciseStamp=\"{pRW.ExciseStamp}\"" : "") +
                          (!string.IsNullOrEmpty(pRW.BarCode) ? $" Barcode=\"{pRW.BarCode}\"" : "");
-            return $"<Good Code=\"{pRW.CodeWares}\" Name=\"{pRW.NameWares.ToXMLString() }\" Quantity=\"{pRW.Quantity}\" Price=\"{pRW.PriceDealer}\" Sum=\"{pRW.Sum}\" TaxRate=\"1\"  {Add} />";
+            return $"<Good Code=\"{pRW.CodeWares}\" Name=\"{pRW.NameWares.ToXMLString() }\" Quantity=\"{pRW.Quantity}\" Price=\"{pRW.PriceEKKA}\" Sum=\"{pRW.Sum}\" TaxRate=\"1\"  {Add} />";
         }
 
         string GetElement(string pStr, string pSeek, string pStart = null, string pStop = null)
