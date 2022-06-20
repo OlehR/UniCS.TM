@@ -189,7 +189,7 @@ namespace ModelMID
         Red = 4
     }
 
-    public enum ReceiptEventType
+    public enum eReceiptEventType
     {
         ErrorQR = -9,
         AnswerQR = -2,

@@ -106,6 +106,38 @@ namespace ModelMID
 
         public bool _IsLockChange = false;
         public bool IsLockChange { get { return _IsLockChange && StateReceipt != eStateReceipt.Prepare  || SumBonus > 0m; } }
+
+        /// <summary>
+        /// Чи є підтвердження обмеження віку.
+        /// </summary>
+        public bool IsConfirmAgeRestrict
+        {
+            get
+            {
+                bool Res = false;
+                if (ReceiptEvent != null)
+                {
+                    var res = ReceiptEvent.Where(e => e.EventType == eReceiptEventType.AgeRestrictedProduct);
+                    Res = res.Any();
+                }
+                return Res;
+            }
+        }
+        /// <summary>
+        ///  Чи є товар, який потребує підтвердження віку. (0 не потребує підтверження віку)
+        /// </summary>
+        public decimal AgeRestrict
+        {
+            get
+            {
+                decimal Res = 0;
+                if (Wares != null)
+                {
+                    Res = Wares.Max(e => e.LimitAge);                   
+                }
+                return Res;
+            }
+        }
         public Receipt()
         {
             Clear();

@@ -7,7 +7,8 @@ namespace ModelMID
     public enum eWindows
     {
         ChoiceClient,
-        PhoneClient
+        PhoneClient,
+        ConfirmWeight
     }
 
     public class CustomWindow
@@ -85,5 +86,10 @@ namespace ModelMID
         /// Id натиснененої кнопки. (-1 - Cancel )
         /// </summary>
         public int IdButton { get; set; }
+
+        /// <summary>
+        /// Додаткові дані для обробки.
+        /// </summary>
+        public object ExtData { get; set; } = null;
     }
 }

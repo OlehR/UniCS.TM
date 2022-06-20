@@ -458,7 +458,7 @@ where RE.EVENT_TYPE=1"
 ""plu-to"": 0
 }".Replace("{Order}", (++pOrder).ToString()).Replace("{PLU}", pReceiptWares.PLU.ToString()).Replace("{Kassa}", (pReceiptWares.IdWorkplace - 60).ToString());
 
-            List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(pReceiptWares) { EventType = ReceiptEventType.AskQR, EventName = Body, CreatedAt = DateTime.Now } };
+            List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(pReceiptWares) { EventType = eReceiptEventType.AskQR, EventName = Body, CreatedAt = DateTime.Now } };
             try
             {
                 HttpClient client = new HttpClient();
@@ -482,10 +482,10 @@ where RE.EVENT_TYPE=1"
             catch (Exception ex)
             {
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pReceiptWares.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "GetQrCoffe=>" + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
-                rr.Add(new ReceiptEvent(pReceiptWares) { EventType = ReceiptEventType.ErrorQR, EventName = ex.Message, CreatedAt = DateTime.Now });
+                rr.Add(new ReceiptEvent(pReceiptWares) { EventType = eReceiptEventType.ErrorQR, EventName = ex.Message, CreatedAt = DateTime.Now });
             }
             res = res.Replace("\"", "");
-            rr.Add(new ReceiptEvent(pReceiptWares) { EventType = ReceiptEventType.AnswerQR, EventName = res, CreatedAt = DateTime.Now });
+            rr.Add(new ReceiptEvent(pReceiptWares) { EventType = eReceiptEventType.AnswerQR, EventName = res, CreatedAt = DateTime.Now });
             bl.db.InsertReceiptEvent(rr);
             return res;
         }

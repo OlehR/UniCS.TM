@@ -8,7 +8,13 @@ namespace Utils
 {
     public static class proto
     {
-        public static JsonSerializerSettings JsonSettings = new JsonSerializerSettings() { DateFormatString = "dd.MM.yyyy", FloatParseHandling = FloatParseHandling.Decimal, NullValueHandling = NullValueHandling.Ignore }; //, Culture = MyCulture 
+        public static JsonSerializerSettings JsonSettings = new JsonSerializerSettings()
+        {
+            DateFormatString = "dd.MM.yyyy",
+            FloatParseHandling = FloatParseHandling.Decimal,
+            NullValueHandling = NullValueHandling.Ignore,
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        }; //, Culture = MyCulture 
         public static string ToJSON(this object s)
         {
             var res = JsonConvert.SerializeObject(s, JsonSettings);

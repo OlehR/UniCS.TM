@@ -406,7 +406,7 @@ namespace ModernIntegration
                 ReceiptId = RE.ReceiptId,
                 ReceiptItemId = RE.ReceiptItemId,
                 ProductName = RE.ProductName,
-                EventType = (ModelMID.ReceiptEventType)(int)RE.EventType,
+                EventType = (ModelMID.eReceiptEventType)(int)RE.EventType,
                 EventName = RE.EventName,
                 ProductWeight = RE.ProductWeight,
                 ProductConfirmedWeight = RE.ProductConfirmedWeight,

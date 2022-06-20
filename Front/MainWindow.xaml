@@ -661,7 +661,7 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Button Height="Auto" Width="Auto" Content="{Binding Text}" HorizontalAlignment="Center" 
-                                                    Click="WaitAdminCustomButtons">
+                                                    Click="CustomWindowClickButton">
                                         <Button.Style>
                                             <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
                                                 <Setter Property="IsEnabled" Value="True"/>

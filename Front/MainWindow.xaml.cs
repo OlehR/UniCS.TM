@@ -283,10 +283,25 @@ namespace Front
             //Обробка стану контрольної ваги.
             CS.OnStateScale += (pStateScale, pRW, pСurrentlyWeight) =>
             {
-                return;
+                //return;
                 StateScale = pStateScale;
-                customWindowButtons = StateScale == eStateScale.BadWeight ? customWindowButtons = new ObservableCollection<CustomButton>() { new CustomButton() { Id = 1, Text = "Підтвердити вагу", IsAdmin = true }, 
-                    new CustomButton() { Id = 2, Text = "Добавити вагу", IsAdmin = true } } : null;
+
+                switch (StateScale)
+                {
+                    case eStateScale.BadWeight:
+                        customWindowButtons = new ObservableCollection<CustomButton>() { new CustomButton() { Id = 1, Text = "Підтвердити вагу", IsAdmin = true },
+                                                                                      new CustomButton() { Id = 2, Text = "Добавити вагу", IsAdmin = true } };
+                        customWindow = new CustomWindow() { Id = eWindows.ConfirmWeight };
+                        break;
+                    case eStateScale.WaitGoods:
+                        customWindowButtons = new ObservableCollection<CustomButton>() { new CustomButton() { Id = 1, Text = "Підтвердити вагу", IsAdmin = true } };
+                        customWindow = new CustomWindow() { Id = eWindows.ConfirmWeight };
+                        break;
+                    default:
+                        customWindowButtons = null;
+                        break;
+                }
+                        
                 switch (StateScale)
                 {
                     case eStateScale.BadWeight:
@@ -862,7 +877,7 @@ namespace Front
         {
             var R = Bl.GetReceiptHead(curReceipt, true);
             curReceipt = R;
-            if (R.Wares.Where(el => el.TypeWares > 0).Count() > 0 && R.ReceiptEvent.Where(el => el.EventType == ReceiptEventType.AgeRestrictedProduct).Count() == 0)
+            if (R.Wares.Where(el => el.TypeWares > 0).Count() > 0 && R.ReceiptEvent.Where(el => el.EventType == eReceiptEventType.AgeRestrictedProduct).Count() == 0)
             {
                 SetWaitConfirm(eTypeAccess.ConfirmAge);
                 return true;
@@ -1215,7 +1230,10 @@ namespace Front
             }
             if (res != null)
             {
-                var r = new CustomWindowAnswer() { idReceipt = curReceipt, Id = customWindow.Id, IdButton = res.Id, Text = TextBoxCustomWindows.Text };
+                var r = new CustomWindowAnswer() { idReceipt = curReceipt, Id = customWindow.Id, IdButton = res.Id, Text = TextBoxCustomWindows.Text,
+                    ExtData = customWindow.Id == eWindows.ConfirmWeight ? CurWares : null 
+                };
+
                 Bl.SetCustomWindows(r);
             }
 
@@ -1247,7 +1265,7 @@ namespace Front
             }
         }
 
-        private void WaitAdminCustomButtons(object sender, RoutedEventArgs e)
+      /*  private void WaitAdminCustomButtons(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
             CustomButton res = btn.DataContext as CustomButton;
@@ -1259,7 +1277,7 @@ namespace Front
             {
                 // додавання нової ваги
             }
-        }
+        }*/
     }
 
 }
