@@ -1264,7 +1264,28 @@
                 <TextBlock FontSize="14" Text="{DynamicResource buyBag}"/>
             </Button>
             <Button  Grid.Column="3"  Grid.Row="0" Grid.RowSpan="2" FontSize="22" Click="_ButtonPayment">
-                <TextBlock FontSize="28" Text="{DynamicResource payment}"/>
+                
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Width="25">
+                            <Image.Style>
+                                <Style TargetType="{x:Type Image}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsConfirmAge, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                            <Setter Property="Source" Value="icons\right.png" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsConfirmAge, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                            <Setter Property="Source" Value="icons\18plus.png" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+                    <TextBlock FontSize="28" Text="{DynamicResource payment}"/>
+                    </StackPanel>
+                </Button.Content>
                 <Button.Style>
                     <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
                         <Setter Property="IsEnabled" Value="True"/>
@@ -1280,6 +1301,8 @@
                         </Style.Triggers>
                     </Style>
                 </Button.Style>
+               
+
             </Button>
         </Grid>
 

@@ -617,7 +617,8 @@ namespace SharedLib
 
         public void AddEventAge(IdReceipt pRecipt)
         {
-            List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(pRecipt) { EventType = eReceiptEventType.AgeRestrictedProduct, EventName = "Вік підтверджено", CreatedAt = DateTime.Now } };
+            List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(pRecipt) { EventType = eReceiptEventType.AgeRestrictedProduct, EventName = "Вік підтверджено", CreatedAt = DateTime.Now } }; 
+
             db.InsertReceiptEvent(rr);
         }
         /// <summary>
