@@ -1271,11 +1271,11 @@
                             <Image.Style>
                                 <Style TargetType="{x:Type Image}">
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsConfirmAge, RelativeSource={RelativeSource 
+                                        <DataTrigger Binding="{Binding IsAgeRestrict, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="True">
                                             <Setter Property="Source" Value="icons\right.png" />
                                         </DataTrigger>
-                                        <DataTrigger Binding="{Binding IsConfirmAge, RelativeSource={RelativeSource 
+                                        <DataTrigger Binding="{Binding IsAgeRestrict, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="False">
                                             <Setter Property="Source" Value="icons\18plus.png" />
                                         </DataTrigger>

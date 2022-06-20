@@ -131,7 +131,7 @@ namespace ModelMID
             get
             {
                 decimal Res = 0;
-                if (Wares != null)
+                if (Wares != null && Wares.Count() >0)
                 {
                     Res = Wares.Max(e => e.LimitAge);                   
                 }

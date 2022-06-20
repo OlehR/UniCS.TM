@@ -78,9 +78,23 @@ namespace Front
         public string GetBackgroundColor { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? "#FFE5E5" : "#FFFFFF"; } }
         public bool IsCheckReturn { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? true : false; } }
         /// <summary>
-        /// Статус підтвердження віку
+        /// чи є товар з обмеженням по віку
         /// </summary>
-        public bool IsConfirmAge { get; set; } = true; // може бути будь-якого типу наприклад - Enum: потрібно підтвердити, вже підтвердженно, в чеку немає чого підтверджувати
+        public bool IsAgeRestrict
+        {
+            get
+            {
+                if (curReceipt.AgeRestrict == 0)
+                {
+                    return true;
+                }
+                else if (curReceipt.AgeRestrict != 0 && curReceipt.IsConfirmAgeRestrict)
+                {
+                    return true;
+                }
+                else return false;
+            }
+        }
         public bool PriceIsNotZero
         {
             get
@@ -269,7 +283,7 @@ namespace Front
                 ExchangeRateBar = Status.StringColor;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ExchangeRateBar"));
             };
-            
+
             Global.OnClientChanged += (pClient, pIdWorkPlace) =>
             {
                 Client = pClient;
@@ -283,6 +297,7 @@ namespace Front
 
             Global.OnReceiptChanged += (pReceipt) =>
             {
+
                 SetCurReceipt(pReceipt);
             };
             //Обробка стану контрольної ваги.
@@ -306,7 +321,7 @@ namespace Front
                         customWindowButtons = null;
                         break;
                 }
-                        
+
                 switch (StateScale)
                 {
                     case eStateScale.BadWeight:
@@ -356,7 +371,7 @@ namespace Front
 
             CultureInfo currLang = App.Language;
             Recalc();
-            if(State == eStateMainWindows.StartWindow)
+            if (State == eStateMainWindows.StartWindow)
                 SetStateView(eStateMainWindows.StartWindow);
         }
         private async void Init(string HTMLContent)
@@ -494,8 +509,8 @@ namespace Front
                 {
                     if (EF.StatCriticalEquipment == eStateEquipment.On || pSMV == eStateMainWindows.WaitAdmin || pSMV == eStateMainWindows.WaitAdminLogin)
 
-                    if (pSMV != eStateMainWindows.NotDefine   )
-                        State = pSMV;
+                        if (pSMV != eStateMainWindows.NotDefine)
+                            State = pSMV;
                     if (IsLockSale && State != eStateMainWindows.WaitAdmin && State != eStateMainWindows.WaitAdminLogin)
                     {
                         SetWaitConfirm(eTypeAccess.LockSale);
@@ -503,6 +518,10 @@ namespace Front
                     }
                     if (State != eStateMainWindows.WaitAdmin && State != eStateMainWindows.WaitAdminLogin)
                         TypeAccessWait = eTypeAccess.NoDefinition;
+
+
+
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsAgeRestrict"));
 
                     ExciseStamp.Visibility = Visibility.Collapsed;
                     ChoicePrice.Visibility = Visibility.Collapsed;
@@ -557,6 +576,7 @@ namespace Front
                         case eStateMainWindows.WaitWeight:
                             EF.StartWeight();
                             WeightWares.Visibility = Visibility.Visible;
+
                             break;
                         case eStateMainWindows.WaitAdmin:
                             WaitAdmin.Visibility = Visibility.Visible;
@@ -903,7 +923,7 @@ namespace Front
                     Bl.db.ReplacePayment(new List<Payment>() { pay });
                     Bl.SetStateReceipt(curReceipt, eStateReceipt.Pay);
                     R.StateReceipt = eStateReceipt.Pay;
-                    R.Payment= new List<Payment>() { pay }; 
+                    R.Payment = new List<Payment>() { pay };
                 }
                 else
                 {
@@ -934,7 +954,7 @@ namespace Front
                         SetStateView(eStateMainWindows.WaitInput);
                         return true;
                     }
-                    else 
+                    else
                     {
                         R.StateReceipt = eStateReceipt.Pay;
                         Bl.SetStateReceipt(curReceipt, eStateReceipt.Pay);
@@ -981,7 +1001,7 @@ namespace Front
             var RId = Bl.GetNewIdReceipt();
             //Bl.AddWaresBarCode(RId, "27833", 258m);
             //Bl.AddWaresBarCode(RId, "7622201819590", 1);
-            Bl.GetClientByPhone(RId,"0503399110");
+            Bl.GetClientByPhone(RId, "0503399110");
             //Bl.AddWaresBarCode(RId, "2201652300229", 2);
             //Bl.AddWaresBarCode(RId, "7775002160043", 1); //товар 2 кат
             //Bl.AddWaresBarCode(RId,"1110011760218", 11);
@@ -1237,8 +1257,13 @@ namespace Front
             }
             if (res != null)
             {
-                var r = new CustomWindowAnswer() { idReceipt = curReceipt, Id = customWindow.Id, IdButton = res.Id, Text = TextBoxCustomWindows.Text,
-                    ExtData = customWindow.Id == eWindows.ConfirmWeight ? CurWares : null 
+                var r = new CustomWindowAnswer()
+                {
+                    idReceipt = curReceipt,
+                    Id = customWindow.Id,
+                    IdButton = res.Id,
+                    Text = TextBoxCustomWindows.Text,
+                    ExtData = customWindow.Id == eWindows.ConfirmWeight ? CurWares : null
                 };
 
                 Bl.SetCustomWindows(r);
@@ -1272,19 +1297,19 @@ namespace Front
             }
         }
 
-      /*  private void WaitAdminCustomButtons(object sender, RoutedEventArgs e)
-        {
-            Button btn = sender as Button;
-            CustomButton res = btn.DataContext as CustomButton;
-            if (res.Text == "Підтвердити вагу") // res.Id == 1
-            {
-                //підтвердження ваги
-            }
-            if (res.Text == "Добавити вагу") //  res.Id == 2
-            {
-                // додавання нової ваги
-            }
-        }*/
+        /*  private void WaitAdminCustomButtons(object sender, RoutedEventArgs e)
+          {
+              Button btn = sender as Button;
+              CustomButton res = btn.DataContext as CustomButton;
+              if (res.Text == "Підтвердити вагу") // res.Id == 1
+              {
+                  //підтвердження ваги
+              }
+              if (res.Text == "Добавити вагу") //  res.Id == 2
+              {
+                  // додавання нової ваги
+              }
+          }*/
     }
 
 }
