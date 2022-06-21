@@ -1,4 +1,5 @@
-﻿using Exellio;
+﻿//using Exellio;
+using ExellioFP;
 using Front.Equipments.Implementation;
 using Front.Equipments.Virtual;
 using Microsoft.Extensions.Configuration;

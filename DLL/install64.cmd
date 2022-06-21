@@ -1,0 +1,1 @@
+c:\Windows\System32\regsvr32.exe %~dp0ExellioFP.dll

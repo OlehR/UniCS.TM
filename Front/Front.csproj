@@ -49,6 +49,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <COMReference Include="ExellioFP">
+      <WrapperTool>tlbimp</WrapperTool>
+      <VersionMinor>0</VersionMinor>
+      <VersionMajor>1</VersionMajor>
+      <Guid>4dd3339c-96ca-4901-935b-3b0dc9998cd2</Guid>
+      <Lcid>0</Lcid>
+      <Isolated>false</Isolated>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="icons\18plus.png" />
     <Resource Include="icons\backArrow.png" />
     <Resource Include="icons\BankTerminal.png" />
