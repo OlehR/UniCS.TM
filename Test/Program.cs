@@ -48,9 +48,9 @@ namespace Test
             // var img = new ImageListex(); 
             //await img.LoadImgListex(); // завантаження фото
             //await l.LoadRozetka();//GetInfoBarcode("4820009350588");
-            var loadCSV = new GetGoodUrl();
-            loadCSV.Parse();
-            return;
+            //var loadCSV = new GetGoodUrl();
+            //loadCSV.Parse();
+            //return;
 
             //ParserQRCode("https://t.gov.ua/ABST773366/0035184264"); return;
 
