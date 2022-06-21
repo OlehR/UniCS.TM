@@ -479,7 +479,7 @@
                                     <TextBlock FontSize="16" Text="   "/>
                                     <TextBlock FontSize="16" Text="{Binding Path=SumReceipt}" HorizontalAlignment="Center" Width="80"/>
                                     <TextBlock FontSize="16" Text="   "/>
-                                    <TextBlock FontSize="16" Text="{Binding Path=NumberReceipt}" HorizontalAlignment="Center" Width="80"/>
+                                    <TextBlock FontSize="16" Text="{Binding Path=NumberReceipt}" HorizontalAlignment="Center" Width="120"/>
                                     <TextBlock FontSize="16" Text="   "/>
                                     <TextBlock FontSize="16" Text="{Binding Path=SumFiscal}" HorizontalAlignment="Center" Width="20"/>
                                     <TextBlock FontSize="16" Text="   "/>

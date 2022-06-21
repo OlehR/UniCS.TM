@@ -203,6 +203,7 @@ namespace ModelMID
         /// </summary>
         public eTypeWares TypeWares { get; set; }
 
+
         /// <summary>
         /// Штрихкод 2 категорії
         /// </summary>
@@ -310,10 +311,12 @@ namespace ModelMID
 
         public bool IsMultiplePrices { get { return Prices != null && Prices.Count() > 1 && TypeWares == eTypeWares.Tobacco; } }
 
+        decimal _LimitAge =0;
         /// <summary>
         /// Вікові обмеження (Піротехніка)
         /// </summary>
-        public decimal LimitAge { get; set; }
+        public decimal LimitAge { get { return TypeWares > 0 && _LimitAge < 18 ? 18 : _LimitAge; } set { _LimitAge = value; } }
+
 
         public IEnumerable<MRC> Prices;
 
@@ -328,8 +331,7 @@ namespace ModelMID
         public string QR { get; set; }
         /// <summary>
         /// Напрямок
-        /// </summary>
-        /// 
+        /// </summary>        
 
         public bool IsLast { get; set; }
         public int CodeDirection { get; set; }

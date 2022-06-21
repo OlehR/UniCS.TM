@@ -77,6 +77,24 @@ namespace Front
         public bool IsLockSale { get { return _IsLockSale; } set { if (_IsLockSale != value) { SetStateView(!value && State == eStateMainWindows.WaitAdmin ? eStateMainWindows.WaitInput : eStateMainWindows.NotDefine); _IsLockSale = value; } } }
         public string GetBackgroundColor { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? "#FFE5E5" : "#FFFFFF"; } }
         public bool IsCheckReturn { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? true : false; } }
+        /// <summary>
+        /// чи є товар з обмеженням по віку
+        /// </summary>
+        public bool IsAgeRestrict
+        {
+            get
+            {
+                if (curReceipt.AgeRestrict == 0)
+                {
+                    return true;
+                }
+                else if (curReceipt.AgeRestrict != 0 && curReceipt.IsConfirmAgeRestrict)
+                {
+                    return true;
+                }
+                else return false;
+            }
+        }
         public bool PriceIsNotZero
         {
             get
@@ -147,6 +165,7 @@ namespace Front
                     case eTypeAccess.ErrorEquipment: return "Проблема з критично важливим обладнанням";
                     case eTypeAccess.LockSale: return "Зміна заблокована";
                     case eTypeAccess.FixWeight: return $"{StateScale}{Environment.NewLine}{_WaitAdminText}";
+                    case eTypeAccess.ConfirmAge: return "Підтвердження віку";
 
                 }
                 return null;
@@ -264,7 +283,7 @@ namespace Front
                 ExchangeRateBar = Status.StringColor;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ExchangeRateBar"));
             };
-            
+
             Global.OnClientChanged += (pClient, pIdWorkPlace) =>
             {
                 Client = pClient;
@@ -278,15 +297,31 @@ namespace Front
 
             Global.OnReceiptChanged += (pReceipt) =>
             {
+
                 SetCurReceipt(pReceipt);
             };
             //Обробка стану контрольної ваги.
             CS.OnStateScale += (pStateScale, pRW, pСurrentlyWeight) =>
             {
-                return;
+
                 StateScale = pStateScale;
-                customWindowButtons = StateScale == eStateScale.BadWeight ? customWindowButtons = new ObservableCollection<CustomButton>() { new CustomButton() { Id = 1, Text = "Підтвердити вагу", IsAdmin = true }, 
-                    new CustomButton() { Id = 2, Text = "Добавити вагу", IsAdmin = true } } : null;
+
+                switch (StateScale)
+                {
+                    case eStateScale.BadWeight:
+                        customWindowButtons = new ObservableCollection<CustomButton>() { new CustomButton() { Id = 1, Text = "Підтвердити вагу", IsAdmin = true },
+                                                                                      new CustomButton() { Id = 2, Text = "Добавити вагу", IsAdmin = true } };
+                        customWindow = new CustomWindow() { Id = eWindows.ConfirmWeight };
+                        break;
+                    case eStateScale.WaitGoods:
+                        customWindowButtons = new ObservableCollection<CustomButton>() { new CustomButton() { Id = 1, Text = "Підтвердити вагу", IsAdmin = true } };
+                        customWindow = new CustomWindow() { Id = eWindows.ConfirmWeight };
+                        break;
+                    default:
+                        customWindowButtons = null;
+                        break;
+                }
+
                 switch (StateScale)
                 {
                     case eStateScale.BadWeight:
@@ -336,7 +371,7 @@ namespace Front
 
             CultureInfo currLang = App.Language;
             Recalc();
-            if(State == eStateMainWindows.StartWindow)
+            if (State == eStateMainWindows.StartWindow)
                 SetStateView(eStateMainWindows.StartWindow);
         }
         private async void Init(string HTMLContent)
@@ -474,8 +509,8 @@ namespace Front
                 {
                     if (EF.StatCriticalEquipment == eStateEquipment.On || pSMV == eStateMainWindows.WaitAdmin || pSMV == eStateMainWindows.WaitAdminLogin)
 
-                    if (pSMV != eStateMainWindows.NotDefine   )
-                        State = pSMV;
+                        if (pSMV != eStateMainWindows.NotDefine)
+                            State = pSMV;
                     if (IsLockSale && State != eStateMainWindows.WaitAdmin && State != eStateMainWindows.WaitAdminLogin)
                     {
                         SetWaitConfirm(eTypeAccess.LockSale);
@@ -483,6 +518,10 @@ namespace Front
                     }
                     if (State != eStateMainWindows.WaitAdmin && State != eStateMainWindows.WaitAdminLogin)
                         TypeAccessWait = eTypeAccess.NoDefinition;
+
+
+
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsAgeRestrict"));
 
                     ExciseStamp.Visibility = Visibility.Collapsed;
                     ChoicePrice.Visibility = Visibility.Collapsed;
@@ -537,6 +576,7 @@ namespace Front
                         case eStateMainWindows.WaitWeight:
                             EF.StartWeight();
                             WeightWares.Visibility = Visibility.Visible;
+
                             break;
                         case eStateMainWindows.WaitAdmin:
                             WaitAdmin.Visibility = Visibility.Visible;
@@ -568,6 +608,8 @@ namespace Front
                             WaitPayment.Visibility = Visibility.Visible;
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;
+                            Client.NameClient = null;
+                            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClientName"));
                             break;
 
                         case eStateMainWindows.ChoicePaymentMethod:
@@ -862,7 +904,7 @@ namespace Front
         {
             var R = Bl.GetReceiptHead(curReceipt, true);
             curReceipt = R;
-            if (R.Wares.Where(el => el.TypeWares > 0).Count() > 0 && R.ReceiptEvent.Where(el => el.EventType == ReceiptEventType.AgeRestrictedProduct).Count() == 0)
+            if (R.Wares.Where(el => el.TypeWares > 0).Count() > 0 && R.ReceiptEvent.Where(el => el.EventType == eReceiptEventType.AgeRestrictedProduct).Count() == 0)
             {
                 SetWaitConfirm(eTypeAccess.ConfirmAge);
                 return true;
@@ -881,7 +923,7 @@ namespace Front
                     Bl.db.ReplacePayment(new List<Payment>() { pay });
                     Bl.SetStateReceipt(curReceipt, eStateReceipt.Pay);
                     R.StateReceipt = eStateReceipt.Pay;
-                    R.Payment= new List<Payment>() { pay }; 
+                    R.Payment = new List<Payment>() { pay };
                 }
                 else
                 {
@@ -912,7 +954,7 @@ namespace Front
                         SetStateView(eStateMainWindows.WaitInput);
                         return true;
                     }
-                    else 
+                    else
                     {
                         R.StateReceipt = eStateReceipt.Pay;
                         Bl.SetStateReceipt(curReceipt, eStateReceipt.Pay);
@@ -959,7 +1001,7 @@ namespace Front
             var RId = Bl.GetNewIdReceipt();
             //Bl.AddWaresBarCode(RId, "27833", 258m);
             //Bl.AddWaresBarCode(RId, "7622201819590", 1);
-            Bl.GetClientByPhone(RId,"0503399110");
+            Bl.GetClientByPhone(RId, "0503399110");
             //Bl.AddWaresBarCode(RId, "2201652300229", 2);
             //Bl.AddWaresBarCode(RId, "7775002160043", 1); //товар 2 кат
             //Bl.AddWaresBarCode(RId,"1110011760218", 11);
@@ -1215,7 +1257,15 @@ namespace Front
             }
             if (res != null)
             {
-                var r = new CustomWindowAnswer() { idReceipt = curReceipt, Id = customWindow.Id, IdButton = res.Id, Text = TextBoxCustomWindows.Text };
+                var r = new CustomWindowAnswer()
+                {
+                    idReceipt = curReceipt,
+                    Id = customWindow.Id,
+                    IdButton = res.Id,
+                    Text = TextBoxCustomWindows.Text,
+                    ExtData = customWindow.Id == eWindows.ConfirmWeight ? CurWares : null
+                };
+
                 Bl.SetCustomWindows(r);
             }
 
@@ -1247,19 +1297,19 @@ namespace Front
             }
         }
 
-        private void WaitAdminCustomButtons(object sender, RoutedEventArgs e)
-        {
-            Button btn = sender as Button;
-            CustomButton res = btn.DataContext as CustomButton;
-            if (res.Text == "Підтвердити вагу") // res.Id == 1
-            {
-                //підтвердження ваги
-            }
-            if (res.Text == "Добавити вагу") //  res.Id == 2
-            {
-                // додавання нової ваги
-            }
-        }
+        /*  private void WaitAdminCustomButtons(object sender, RoutedEventArgs e)
+          {
+              Button btn = sender as Button;
+              CustomButton res = btn.DataContext as CustomButton;
+              if (res.Text == "Підтвердити вагу") // res.Id == 1
+              {
+                  //підтвердження ваги
+              }
+              if (res.Text == "Добавити вагу") //  res.Id == 2
+              {
+                  // додавання нової ваги
+              }
+          }*/
     }
 
 }

@@ -507,18 +507,19 @@ namespace SharedLib
             return true;
         }
 
-        public bool SaveReceiptEvents(IEnumerable<ReceiptEvent> parRE)
+        public bool SaveReceiptEvents(IEnumerable<ReceiptEvent> pRE,bool pIsReplace=true)
         {
-            if (parRE != null && parRE.Count() > 0)
+            if (pRE != null && pRE.Count() > 0)
             {
                 try
                 {
-                    db.DeleteReceiptEvent(parRE.First());
-                    db.InsertReceiptEvent(parRE);
+                    if(pIsReplace)
+                        db.DeleteReceiptEvent(pRE.First());
+                    db.InsertReceiptEvent(pRE);
                 }
                 catch (Exception e)
                 {
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = e, Status = eSyncStatus.NoFatalError, StatusDescription = "SaveReceiptEvents N=>" + parRE?.Count().ToString() + '\n' + e.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = e, Status = eSyncStatus.NoFatalError, StatusDescription = "SaveReceiptEvents N=>" + pRE?.Count().ToString() + '\n' + e.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
                 }
             }
             return true;
@@ -552,7 +553,12 @@ namespace SharedLib
             return 0;
         }
 
-        public bool FixWeight(ReceiptWares pRW) { return db.FixWeight(pRW); }
+        public bool FixWeight(ReceiptWares pRW) { 
+            bool Res= db.FixWeight(pRW);
+            var r = db.ViewReceipt(pRW, true);
+            Global.OnReceiptCalculationComplete?.Invoke(r);
+            return Res;
+        }
 
         /// <summary>
         /// Отриманий штрихкод з Обладнання.
@@ -609,9 +615,10 @@ namespace SharedLib
 
         public bool InsertLogRRO(LogRRO pL) { return db.InsertLogRRO(pL); }
 
-        public void AddEventAge(Receipt pRecipt)
+        public void AddEventAge(IdReceipt pRecipt)
         {
-            List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(pRecipt) { EventType = ReceiptEventType.AgeRestrictedProduct, EventName = "Вага підтверджена", CreatedAt = DateTime.Now } };
+            List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(pRecipt) { EventType = eReceiptEventType.AgeRestrictedProduct, EventName = "Вік підтверджено", CreatedAt = DateTime.Now } }; 
+
             db.InsertReceiptEvent(rr);
         }
         /// <summary>
@@ -671,6 +678,18 @@ namespace SharedLib
                         break;
                     case eWindows.PhoneClient:
                         GetClientByPhone(pCWA.idReceipt, pCWA.Text);
+                        break;
+                    case eWindows.ConfirmWeight:
+                        if (pCWA.ExtData != null)
+                        {
+                            ReceiptWares r = pCWA.ExtData as ReceiptWares;
+                            if (r != null)
+                            {
+                                AddEventAge(r);
+                                //SaveReceiptEvents(new List<ReceiptEvent>() { new ReceiptEvent(r) { EventType = eReceiptEventType.IncorrectWeight, ProductConfirmedWeight = (int)r.WeightFact, ProductWeight = (int)r.WeightFact } });
+                                FixWeight(r);
+                            }
+                        }
                         break;
                 }
             }

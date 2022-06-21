@@ -6,10 +6,12 @@ namespace ModelMID.DB
 {
     public class ReceiptEvent:IdReceiptWares
     {
-        public ReceiptEvent() { }
+        public ReceiptEvent() { CreatedAt = DateTime.Now; }
 
-        public ReceiptEvent(IdReceiptWares pRW) : base(pRW) { }
-        public ReceiptEvent(IdReceipt idReceipt, int parCodeWares = 0, int parCodeUnit = 0, int parOrder = 0) : base(idReceipt, parCodeWares, parCodeUnit, parOrder) { }
+        public ReceiptEvent(IdReceiptWares pRW) : base(pRW)  { CreatedAt = DateTime.Now; }
+        public ReceiptEvent(IdReceipt idReceipt, int parCodeWares = 0, int parCodeUnit = 0, int parOrder = 0) : 
+            base(idReceipt, parCodeWares, parCodeUnit, parOrder) 
+        { CreatedAt = DateTime.Now; }
 
         /// <summary>
         /// Gets or sets the identifier.
@@ -50,7 +52,7 @@ namespace ModelMID.DB
         /// Gets or sets the type of the event.
         /// </summary>
         /// <value>The type of the event.</value>
-        public ReceiptEventType EventType { get; set; }
+        public eReceiptEventType EventType { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the event.
