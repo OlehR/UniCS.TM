@@ -43,7 +43,7 @@ namespace ModelMID
 
         public void Init()
         {
-            i = 0;
+            i = Weights.Length-1;
             for (int ind = 0; ind < Weights.Length; ind++)
             {
                 Weights[ind].Time = new DateTime(0);
@@ -57,9 +57,10 @@ namespace ModelMID
                 Init();
             }
 
+            i++;
             if (i >= Weights.Length) i = 0;
             Weights[i].Set(pWeight);
-            i++;
+            
             double Weight;
             bool IsStable;
             (Weight, IsStable) = Midl;

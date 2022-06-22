@@ -230,13 +230,13 @@ namespace ModelMID
             get {
 
                 List<WaitWeight> res = AdditionalWeights != null && AdditionalWeights.Count() > 0 ?
-                        AdditionalWeights.Select(r => new WaitWeight(r, WeightDelta > 0 ? WeightDelta : Global.GetCoefDeltaWeight(r))).ToList()
+                        AdditionalWeights.Select(r => new WaitWeight(r, WeightDelta > 0 ? WeightDelta : WeightFact* Global.GetCoefDeltaWeight(r))).ToList()
                         : new List<WaitWeight>();
                 //res.Ins
                 if (WeightBrutto > 0)
-                    res.Add(new WaitWeight(WeightBrutto, WeightDelta > 0 ? WeightDelta : Global.GetCoefDeltaWeight(WeightBrutto)));
+                    res.Add(new WaitWeight(WeightBrutto, WeightDelta > 0 ? WeightDelta : WeightBrutto*Global.GetCoefDeltaWeight(WeightBrutto)));
                 if (WeightFact > 0)
-                    res.Add(new WaitWeight(WeightFact, WeightDelta > 0 ? WeightDelta : Global.GetCoefDeltaWeight(WeightFact)));
+                    res.Add(new WaitWeight(WeightFact, WeightDelta > 0 ? WeightDelta : WeightFact*Global.GetCoefDeltaWeight(WeightFact)));
 
                 return res.ToArray(); 
             }

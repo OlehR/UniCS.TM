@@ -1,5 +1,6 @@
 ﻿using Front.Equipments.Virtual;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using ModernExpo.SelfCheckout.Devices.BST106M60S;
 using System;
 
@@ -36,7 +37,9 @@ namespace Front.Equipments
             try
             {
                 State = eStateEquipment.Init;
-                bst = new Scales(pConfiguration, null);
+                //ILoggerFactory loggerFactory = new LoggerFactory().AddConsole((_, __) => true);
+                ILogger<Scales> logger = LoggerFactory?.CreateLogger<Scales>();
+                bst = new Scales(pConfiguration, logger);
                 bst.OnControlWeightChanged = pOnScalesData;
                 bst.Init();
                 State = eStateEquipment.On;
