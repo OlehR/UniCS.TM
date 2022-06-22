@@ -15,7 +15,7 @@ namespace Front.Equipments
 {
     public class ExellioFP : Rro
     {
-        private FiscalPrinterClass FP;
+        private  FiscalPrinterClass FP;
         
         public ExellioFP(Equipment pEquipment, IConfiguration pConfiguration, Action<string, string> pLogger = null) : base(pEquipment, pConfiguration,eModelEquipment.ExellioFP, pLogger)
         {

@@ -69,10 +69,7 @@ namespace Front.Equipments.Utils
             }
         }
     }
-}
-
-
-    
+}    
 
 namespace Front.Equipments
 {
