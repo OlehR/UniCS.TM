@@ -7,6 +7,7 @@ using System.Text;
 using ModelMID;
 using Front.Equipments.Implementation;
 using Front.Equipments.Virtual;
+using Microsoft.Extensions.Logging;
 
 namespace Front.Equipments
 {
@@ -14,7 +15,7 @@ namespace Front.Equipments
     {
        // public BankTerminal(string pSerialPortName, int pBaudRate = 9600, Action<string, string> pLogger = null) : base(pSerialPortName, pBaudRate) { }
 
-        public BankTerminal(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment  = eModelEquipment.NotDefined, Action<string, string> pLogger = null) : base(pEquipment, pConfiguration,pModelEquipment, pLogger) { }
+        public BankTerminal(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment  = eModelEquipment.NotDefined, ILoggerFactory pLoggerFactory = null) : base(pEquipment, pConfiguration,pModelEquipment, pLoggerFactory) { }
         
         virtual public BatchTotals PrintZ() {throw new NotImplementedException();}
         virtual public BatchTotals PrintX(){ throw new NotImplementedException();}

@@ -12,7 +12,7 @@ namespace Front.Equipments.Implementation
 {
     public class VirtualScaner : Scaner
     {
-        public VirtualScaner(Equipment pEquipment, IConfiguration pConfiguration, Action<string, string> pLogger, Action<string, string> pOnBarCode) : base(pEquipment, pConfiguration, eModelEquipment.VirtualScaner, pLogger, pOnBarCode)
+        public VirtualScaner(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory, Action<string, string> pOnBarCode) : base(pEquipment, pConfiguration, eModelEquipment.VirtualScaner, pLoggerFactory, pOnBarCode)
         {
             IpPort = Convert.ToInt32( Configuration["Devices:VirtualScaner:Port"]);
             IP = Configuration["Devices:VirtualScaner:IP"];

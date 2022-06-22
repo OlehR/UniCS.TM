@@ -31,7 +31,7 @@ namespace Front.Equipments
     public class ScaleModern:Scale
     {
         Scales bst;
-        public ScaleModern(Equipment pEquipment, IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<double, bool> pOnScalesData=null) : base(pEquipment, pConfiguration, eModelEquipment.ScaleModern, pLogger, pOnScalesData) 
+        public ScaleModern(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<double, bool> pOnScalesData=null) : base(pEquipment, pConfiguration, eModelEquipment.ScaleModern, pLoggerFactory, pOnScalesData) 
         {
             try
             {

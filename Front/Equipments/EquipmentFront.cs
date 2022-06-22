@@ -13,11 +13,15 @@ using Front.Equipments.Implementation;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Utils;
+using Microsoft.Extensions.Logging;
 
 namespace Front
 {
     public class EquipmentFront
     {
+
+
+
         private IEnumerable<Equipment> ListEquipment = new List<Equipment>();
         eStateEquipment _State = eStateEquipment.Off;
 
@@ -100,6 +104,15 @@ namespace Front
 
         public void Init(Action<string, string> pSetBarCode, Action<double, bool> pSetWeight, Action<double, bool> pSetControlWeight, Action<StatusEquipment> pActionStatus = null)
         {
+            using ILoggerFactory loggerFactory =
+           LoggerFactory.Create(builder =>
+               builder.AddSimpleConsole(options =>
+               {
+                   options.IncludeScopes = true;
+                   options.SingleLine = true;
+                   options.TimestampFormat = "hh:mm:ss ";
+               }));
+
             var NewListEquipment = new List<Equipment>();
             var config = Config("appsettings.json");
             State = eStateEquipment.Init;

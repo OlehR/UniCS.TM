@@ -1,6 +1,7 @@
 ﻿using Front.Equipments.Implementation;
 using Front.Equipments.Virtual;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using Utils;
 
@@ -24,7 +25,8 @@ namespace Front.Equipments
         protected int IpPort;
         protected IConfiguration Configuration;
 
-        protected Action<string, string> Logger = null;
+        //protected Action<string, string> Logger = null;
+        protected ILoggerFactory LoggerFactory;
         public Action<StatusEquipment> ActionStatus;
 
         //public Action<eStateEquipment, eModelEquipment> SetState { get; set; }
@@ -50,10 +52,10 @@ namespace Front.Equipments
             Logger = pLogger;
         }*/
 
-        public Equipment(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefined, Action<string, string> pLogger = null)
+        public Equipment(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefined, ILoggerFactory pLoggerFactory= null)
         {
             Configuration = pConfiguration;
-            Logger = pLogger;
+            LoggerFactory = pLoggerFactory;
             Model = pModelEquipment;
             if (pEquipment != null)
             {

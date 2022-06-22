@@ -23,13 +23,13 @@ namespace Front.Equipments
 
         Ingenico.Ingenico EquipmentIngenico = null;
         //public IngenicoH(string pSerialPortName, int pBaudRate = 9600, Action<string, string> pLogger = null) : base(pSerialPortName, pBaudRate, pLogger) { }
-        public IngenicoH(Equipment pEquipment, IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment,pConfiguration, eModelEquipment.Ingenico, pLogger)
+        public IngenicoH(Equipment pEquipment, IConfiguration pConfiguration, ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment,pConfiguration, eModelEquipment.Ingenico, pLoggerFactory)
         {
             try
             {
                 State = eStateEquipment.Init;
-                ILoggerFactory loggerFactory = new LoggerFactory().AddConsole((_, __) => true);
-                ILogger<Ingenico.Ingenico> logger = loggerFactory.CreateLogger<Ingenico.Ingenico>();
+                //ILoggerFactory loggerFactory = new LoggerFactory().AddConsole((_, __) => true);
+                ILogger<Ingenico.Ingenico> logger = LoggerFactory?.CreateLogger<Ingenico.Ingenico>();
                 EquipmentIngenico = new Ingenico.Ingenico(pConfiguration, logger);
 
                 EquipmentIngenico.OnStatus += pActionStatus;

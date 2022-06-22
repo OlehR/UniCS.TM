@@ -1,5 +1,6 @@
 ﻿using Front.Equipments.Virtual;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using ModernExpo.SelfCheckout.Devices.CustomFlagLamp;
 using System;
 using System.Collections.Generic;
@@ -31,12 +32,13 @@ namespace Front.Equipments
     class SignalFlagModern : SignalFlag
     {
         CustomFlagLamp lamp;
-        public SignalFlagModern(Equipment pEquipment, IConfiguration pConfiguration, Action<string, string> pLogger = null) : base(pEquipment, pConfiguration,eModelEquipment.SignalFlagModern, pLogger)
+        public SignalFlagModern(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null) : base(pEquipment, pConfiguration,eModelEquipment.SignalFlagModern, pLoggerFactory)
         {
             try
             {
                 State = eStateEquipment.Init;
-                lamp = new CustomFlagLamp(pConfiguration, null);
+                ILogger<CustomFlagLamp> logger = LoggerFactory?.CreateLogger<CustomFlagLamp>();
+                lamp = new CustomFlagLamp(pConfiguration, logger);
                 lamp.Init();
                 State = eStateEquipment.On;
             }

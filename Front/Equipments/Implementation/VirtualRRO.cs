@@ -12,8 +12,8 @@ namespace Front.Equipments.Implementation
 {
     public class VirtualRRO:Rro
     {
-        public VirtualRRO(Equipment pEquipment, IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<StatusEquipment> pActionStatus = null) :
-                       base(pEquipment, pConfiguration, eModelEquipment.VirtualRRO, pLogger, pActionStatus)
+        public VirtualRRO(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) :
+                       base(pEquipment, pConfiguration, eModelEquipment.VirtualRRO, pLoggerFactory, pActionStatus)
         {
             State = eStateEquipment.On;
         }

@@ -1,5 +1,6 @@
 ﻿using Front.Equipments.Virtual;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,7 +11,7 @@ namespace Front.Equipments
     {
         Magellan9300S Magellan;
         
-        public MagellanScale(Equipment pEquipment, IConfiguration pConfiguration, Action<string, string> pLogger, Action<double, bool> pOnScalesData):base(pEquipment, pConfiguration,eModelEquipment.MagellanScale,pLogger, pOnScalesData)
+        public MagellanScale(Equipment pEquipment, IConfiguration pConfiguration, ILoggerFactory pLoggerFactory = null, Action<double, bool> pOnScalesData=null):base(pEquipment, pConfiguration,eModelEquipment.MagellanScale,pLoggerFactory, pOnScalesData)
         {
 
         }

@@ -1,6 +1,7 @@
 ﻿using Front.Equipments.Implementation;
 using Front.Equipments.Virtual;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using ModelMID;
 using ModelMID.DB;
 using System;
@@ -29,7 +30,7 @@ namespace Front.Equipments
             ActionStatus?.Invoke(new RroStatus() { Status = pStatus, ModelEquipment = Model, State = pMsgCode??(int)pStatus, TextState = pMsg??pStatus.ToString() });
         }
 
-        public Rro(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefined, Action<string, string> pLogger = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment, pConfiguration,pModelEquipment, pLogger) 
+        public Rro(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefined, ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment, pConfiguration,pModelEquipment, pLoggerFactory) 
         {
             ActionStatus =  pActionStatus;
         }

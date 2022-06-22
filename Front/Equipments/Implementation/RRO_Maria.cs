@@ -17,7 +17,7 @@ namespace Front.Equipments.Implementation
         bool IsError = false;
 
         M304ManagerApplication M304;
-        public RRO_Maria(Equipment pEquipment, IConfiguration pConfiguration, Action<string, string> pLogger = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment, pConfiguration,eModelEquipment.Maria, pLogger, pActionStatus)
+        public RRO_Maria(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment, pConfiguration,eModelEquipment.Maria, pLoggerFactory, pActionStatus)
         {
             M304 = new M304ManagerApplication();
             SerialPort = Configuration["Devices:Maria:Port"];

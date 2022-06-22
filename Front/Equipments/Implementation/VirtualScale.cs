@@ -12,7 +12,7 @@ namespace Front.Equipments.Implementation
 {
     public class VirtualScale:Scale
     {
-        public VirtualScale(Equipment pEquipment, IConfiguration pConfiguration, Action<string, string> pLogger, Action<double, bool> pOnScalesData) : base(pEquipment, pConfiguration, eModelEquipment.VirtualScale, pLogger, pOnScalesData)
+        public VirtualScale(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<double, bool> pOnScalesData=null) : base(pEquipment, pConfiguration, eModelEquipment.VirtualScale, pLoggerFactory, pOnScalesData)
         {
             IpPort = Convert.ToInt32(Configuration["Devices:VirtualScaner:Port"]);
             IP = Configuration["Devices:VirtualScaner:IP"];

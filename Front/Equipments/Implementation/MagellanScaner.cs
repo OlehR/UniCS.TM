@@ -1,5 +1,6 @@
 ﻿using Front.Equipments.Virtual;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 //using ModernExpo.SelfCheckout.Devices.Magellan9300SingleCable;
 using System;
 using System.Collections.Generic;
@@ -29,12 +30,13 @@ namespace Front.Equipments
         }*/
 
 
-        public MagellanScaner(Equipment pEquipment, IConfiguration pConfiguration, Action<string, string> pLogger, Action<string, string> pOnBarCode) : base(pEquipment, pConfiguration,eModelEquipment.MagellanScaner, pLogger, pOnBarCode)
+        public MagellanScaner(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<string, string> pOnBarCode=null) : base(pEquipment, pConfiguration,eModelEquipment.MagellanScaner, pLoggerFactory, pOnBarCode)
         {
             try
             {
                 State = eStateEquipment.Init;
-                Magellan9300 = new Magellan9300S(pConfiguration, null);
+                ILogger<Magellan9300S> logger = LoggerFactory?.CreateLogger<Magellan9300S>();
+                Magellan9300 = new Magellan9300S(pConfiguration, logger);
                 var Res = Magellan9300.Init();
                 if (Res == DeviceConnectionStatus.Enabled)
                 {                    

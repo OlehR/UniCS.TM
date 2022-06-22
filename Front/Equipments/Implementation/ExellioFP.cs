@@ -3,6 +3,7 @@ using ExellioFP;
 using Front.Equipments.Implementation;
 using Front.Equipments.Virtual;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using ModelMID;
 using ModelMID.DB;
 using System;
@@ -17,7 +18,7 @@ namespace Front.Equipments
     {
         private  FiscalPrinterClass FP;
         
-        public ExellioFP(Equipment pEquipment, IConfiguration pConfiguration, Action<string, string> pLogger = null) : base(pEquipment, pConfiguration,eModelEquipment.ExellioFP, pLogger)
+        public ExellioFP(Equipment pEquipment, IConfiguration pConfiguration, ILoggerFactory pLoggerFactory = null) : base(pEquipment, pConfiguration,eModelEquipment.ExellioFP, pLoggerFactory)
         {
             State = eStateEquipment.Init;
             try
