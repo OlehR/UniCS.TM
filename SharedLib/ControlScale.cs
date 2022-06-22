@@ -235,7 +235,7 @@ namespace ModelMID
             OnScalesLog("OnScalesData", $"weight{pWeight} isStable {pIsStable}");
             eStateScale NewStateScale = StateScale;
 
-            (pWeight, pIsStable) = MidlWeight.AddValue(pWeight, pIsStable);
+           // (pWeight, pIsStable) = MidlWeight.AddValue(pWeight, pIsStable);
 
             СurrentlyWeight = pWeight-BeforeWeight;
             if (BeforeWeight == 0d && WaitWeight == null) // Якщо товару на вазі не повинно бути (Завершений/анулюваний/Новий чек )
