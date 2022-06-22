@@ -245,7 +245,7 @@ namespace ModelMID
             }
             else //
             {
-                if (WaitWeight == null) //Якщо не чекаємо товар але вага змінилась.
+                if (WaitWeight == null || Quantity==0) //Якщо не чекаємо товар але вага змінилась.
                 {
                     //Якщо вийшли за межі похибки
                     if (Math.Abs(СurrentlyWeight) > Delta)
