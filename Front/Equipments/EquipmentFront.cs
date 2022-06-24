@@ -333,7 +333,15 @@ namespace Front
         /// <param name="pColor">Власне на який колір</param>
         public void SetColor(Color pColor)
         {
-            Signal?.SwitchToColor(pColor);
+            try
+            {
+                Task.Run(() =>
+                { Signal?.SwitchToColor(pColor); });
+            }
+            catch(Exception e)
+            {
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+            }
         }
 
         /// <summary>

@@ -21,6 +21,7 @@ using ModelMID.DB;
 using SharedLib;
 using Utils;
 using Microsoft.Web.WebView2.Core;
+using Microsoft.Extensions.Configuration;
 
 namespace Front
 {
@@ -197,10 +198,22 @@ namespace Front
         /// </summary>
         public bool CustomWindowValidText { get; set; }
 
-
+        SortedList<eStateMainWindows, System.Drawing.Color> FC = new();
+        public System.Drawing.Color GetFlagColor(eStateMainWindows pStateMainWindows)
+        {
+            return FC.ContainsKey(pStateMainWindows) ? FC[pStateMainWindows] : System.Drawing.Color.Black;
+        }
         public MainWindow()
         {
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
+
+            var fc = new List<FlagColor>();
+            Config.GetConfiguration().GetSection("MID:FlagColor").Bind(fc);
+        
+            foreach (var el in fc)
+                if (!FC.ContainsKey(el.State))
+                    FC.Add(el.State, el.Color);
+
 
             //Для касового місця Запит логін пароль.
             if (Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout)
@@ -549,7 +562,10 @@ namespace Front
                     if (EF.StatCriticalEquipment == eStateEquipment.On || pSMV == eStateMainWindows.WaitAdmin || pSMV == eStateMainWindows.WaitAdminLogin)
 
                         if (pSMV != eStateMainWindows.NotDefine)
+                        {
                             State = pSMV;
+                            EF.SetColor(GetFlagColor(State));                            
+                        }
                     if (IsLockSale && State != eStateMainWindows.WaitAdmin && State != eStateMainWindows.WaitAdminLogin)
                     {
                         SetWaitConfirm(eTypeAccess.LockSale);
