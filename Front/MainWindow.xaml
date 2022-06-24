@@ -741,7 +741,7 @@
                                 <TextBlock FontSize="28" Text="{DynamicResource ok}" Margin="5,0,0,5"/>
                             </StackPanel>
                         </Button>
-                        <Button Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="3" Style="{StaticResource Default}" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="22" Click="_Cancel" 
+                        <Button Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="3" Style="{StaticResource Default}" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="22" Click="LoginCancel" 
                         Height="60" Width="200">
                             <StackPanel Orientation="Horizontal">
                                 <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
