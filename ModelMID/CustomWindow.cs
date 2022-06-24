@@ -49,6 +49,8 @@ namespace ModelMID
         /// </summary>
         public int ColumnButtons { get; set; } = 1;
         public IEnumerable<CustomButton> Buttons { get; set; }
+
+        public bool IsCancelButton { get; set; } = true;
     }
 
     public class CustomButton
