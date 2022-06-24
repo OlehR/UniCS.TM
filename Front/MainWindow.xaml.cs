@@ -106,7 +106,7 @@ namespace Front
                 else return false;
             }
         }
-        public string ClientName { get { return curReceipt != null && curReceipt.CodeClient==Client?.CodeClient ? Client?.NameClient : "Відсутній клієнт"; } }
+        public string ClientName { get { return curReceipt != null && curReceipt.CodeClient == Client?.CodeClient ? Client?.NameClient : "Відсутній клієнт"; } }
         public bool IsPresentFirstTerminal
         {
             get
@@ -215,7 +215,7 @@ namespace Front
                 EquipmentInfo = info.TextState;
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"SetStatus ({info.ToJSON()})", eTypeLog.Expanded);
                 if (EF.StatCriticalEquipment != eStateEquipment.On)
-                    SetWaitConfirm(eTypeAccess.ErrorEquipment, null);                
+                    SetWaitConfirm(eTypeAccess.ErrorEquipment, null);
 
             };
 
@@ -236,10 +236,10 @@ namespace Front
                                 CurWares.ExciseStamp = ExciseStamp;
                         }
                         //Видалили товар але список не пустий.
-                        if( (lw==null || lw.Count()==0) && CurWares!=null && curReceipt!=null && curReceipt.Wares != null && curReceipt.Wares.Any() && curReceipt.Equals(CurWares))
+                        if ((lw == null || lw.Count() == 0) && CurWares != null && curReceipt != null && curReceipt.Wares != null && curReceipt.Wares.Any() && curReceipt.Equals(CurWares))
                         {
                             CurWares.Quantity = 0;
-                            
+
                             foreach (var e in curReceipt.Wares.Where(el => el.IsLast = true))
                             {
                                 e.IsLast = false;
@@ -249,7 +249,7 @@ namespace Front
                             r.Add(CurWares);
                             CS.StartWeightNewGoogs(r);
                             return;
-                        }    
+                        }
                     }
                     if (curReceipt?.Wares?.Count() == 0)
                         CS.WaitClear();
@@ -475,7 +475,7 @@ namespace Front
                         TypeAccessWait = eTypeAccess.NoDefinition;
                         SetStateView(eStateMainWindows.WaitInput);
                         break;
-                    default:                      
+                    default:
                         SetStateView(eStateMainWindows.WaitAdmin);
                         break;
                 }
@@ -514,7 +514,7 @@ namespace Front
                     Bl.AddEventAge(curReceipt);
                     TypeAccessWait = eTypeAccess.NoDefinition;
                     PrintAndCloseReceipt();
-                   
+
                     break;
                 case eTypeAccess.ChoicePrice:
                     //var rrr = new ObservableCollection<Price>(CurWares.Prices.OrderByDescending(r => r).Select(r => new Price(r, true)));
@@ -621,18 +621,19 @@ namespace Front
                             WaitAdmin.Visibility = Visibility.Visible;
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;
-                            switch(TypeAccessWait)
+
+                            switch (TypeAccessWait)
                             {
                                 case eTypeAccess.FixWeight:
                                 case eTypeAccess.AddNewWeight:
                                     //case eTypeAccess.
                                     CustomButtonsWaitAdmin.ItemsSource = customWindowButtons;
                                     break;
-                                default: 
+                                default:
                                     CustomButtonsWaitAdmin.ItemsSource = null;
                                     break;
-                            
-                    }
+
+                            }
                             //CustomButtonsWaitAdmin.ItemsSource = customWindowButtons;
                             break;
                         case eStateMainWindows.WaitAdminLogin:
@@ -691,6 +692,10 @@ namespace Front
                             CustomWindows.Visibility = Visibility.Visible;
                             break;
                         case eStateMainWindows.WaitInput:
+                            IsIgnoreExciseStamp = false;
+                            IsAddNewWeight = false;
+                            IsFixWeight = false;
+                            break;
                         default:
                             break;
                     }
@@ -955,7 +960,7 @@ namespace Front
         {
             var R = Bl.GetReceiptHead(curReceipt, true);
             curReceipt = R;
-            if (R.AgeRestrict>0 && R.IsConfirmAgeRestrict==false )
+            if (R.AgeRestrict > 0 && R.IsConfirmAgeRestrict == false)
             {
                 SetWaitConfirm(eTypeAccess.ConfirmAge);
                 return true;
@@ -1003,7 +1008,7 @@ namespace Front
                         Bl.UpdateReceiptFiscalNumber(R, res.FiscalNumber, res.SUM);
                         var r = Bl.GetNewIdReceipt();
                         //Global.OnReceiptCalculationComplete?.Invoke(new List<ReceiptWares>(), Global.IdWorkPlace);
-                       
+
                         return true;
                     }
                     else
@@ -1093,9 +1098,9 @@ namespace Front
 
         private void LoginCancel(object sender, RoutedEventArgs e)
         {
-            SetConfirm(null, true);           
+            SetConfirm(null, true);
         }
-            private void LoginButton(object sender, RoutedEventArgs e)
+        private void LoginButton(object sender, RoutedEventArgs e)
         {
             var U = Bl.GetUserByLogin(LoginTextBlock.Text, PasswordTextBlock.Text);
             if (U == null)
@@ -1314,10 +1319,10 @@ namespace Front
             }
             if (res != null)
             {
-                if(customWindow.Id == eWindows.ConfirmWeight)
+                if (customWindow.Id == eWindows.ConfirmWeight)
                 {
                     CurWares.FixWeightQuantity = CurWares.Quantity;
-                    CurWares.FixWeight += Convert.ToDecimal( CS.СurrentlyWeight); 
+                    CurWares.FixWeight += Convert.ToDecimal(CS.СurrentlyWeight);
                 }
                 var r = new CustomWindowAnswer()
                 {
