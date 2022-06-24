@@ -66,6 +66,7 @@ namespace SharedLib
                 t.AutoReset = true;
                 t.Elapsed += new ElapsedEventHandler(OnTimedEvent);
                 t.Start();
+                //OnTimedEvent(null,null);
             }
         }
 

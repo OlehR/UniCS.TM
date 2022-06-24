@@ -236,7 +236,7 @@ namespace Front
                                 CurWares.ExciseStamp = ExciseStamp;
                         }
                         //Видалили товар але список не пустий.
-                        if(lw==null&& CurWares!=null && curReceipt!=null && curReceipt.Wares != null && curReceipt.Wares.Any() && curReceipt.Equals(CurWares))
+                        if( (lw==null || lw.Count()==0) && CurWares!=null && curReceipt!=null && curReceipt.Wares != null && curReceipt.Wares.Any() && curReceipt.Equals(CurWares))
                         {
                             CurWares.Quantity = 0;
                             
@@ -245,6 +245,7 @@ namespace Front
                                 e.IsLast = false;
                             }
                             var r = curReceipt.Wares.ToList();
+                            CurWares.IsLast = true;
                             r.Add(CurWares);
                             CS.StartWeightNewGoogs(r);
                             return;
