@@ -26,7 +26,7 @@ namespace ModelMID
         public Guid TerminalId { get; set; }
         int _CodeClient;
         public int CodeClient { get { return Client?.CodeClient ?? _CodeClient; } set { _CodeClient = value; } }
-        public Client Client { get; set; }        
+        public Client Client { get; set; }
         public int CodePattern { get; set; }
         public ulong NumberCashier { get; set; }
 
@@ -104,8 +104,8 @@ namespace ModelMID
         public IEnumerable<Payment> Payment { get; set; }
         public IEnumerable<ReceiptEvent> ReceiptEvent { get; set; }
 
-        public bool _IsLockChange = false;
-        public bool IsLockChange { get { return _IsLockChange && StateReceipt != eStateReceipt.Prepare  || SumBonus > 0m; } }
+        //public bool _IsLockChange = false;
+        public bool IsLockChange { get { return /*_IsLockChange ||*/ StateReceipt != eStateReceipt.Prepare || SumBonus > 0m; } }
 
         /// <summary>
         /// Чи є підтвердження обмеження віку.
@@ -131,9 +131,9 @@ namespace ModelMID
             get
             {
                 decimal Res = 0;
-                if (Wares != null && Wares.Count() >0)
+                if (Wares != null && Wares.Count() > 0)
                 {
-                    Res = Wares.Max(e => e.LimitAge);                   
+                    Res = Wares.Max(e => e.LimitAge);
                 }
                 return Res;
             }
@@ -197,5 +197,18 @@ namespace ModelMID
         {
             return (IdReceipt)this; //new IdReceipt() { CodePeriod=this.}
         }
+        public ReceiptWares GetLastWares
+        {
+            get
+            {
+                var e = Wares.Where(el => el.IsLast);
+                if (e != null && e.Count() == 1)
+                    return e.First();
+                return null;
+            }
+        }
+
+        public bool IsNeedExciseStamp { get { return GetLastWares?.IsNeedExciseStamp == true; } }
+
     }
 }

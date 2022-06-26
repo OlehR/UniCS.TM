@@ -94,13 +94,16 @@ namespace ModelMID
         }
         public double GetMidl {get{ double Weight;  bool IsStable; (Weight, IsStable) = Midl; return Weight; } }
       
-    }    
-    
+    }
+
     public class ControlScale
     {
         ReceiptWares RW;
-        public Action<eStateScale, ReceiptWares,double> OnStateScale { get; set; }
+        public Action<eStateScale, ReceiptWares, double> OnStateScale { get; set; }
         eStateScale _StateScale;
+
+        public bool IsOk { get { return StateScale == eStateScale.Stabilized; } }
+
         /// <summary>
         /// Стан ваги (Не поставили товар, вірна вага, вага не вірна)
         /// </summary>
@@ -111,12 +114,14 @@ namespace ModelMID
                 {
                     _StateScale = value;
                     OnStateScale?.Invoke(_StateScale, RW, СurrentlyWeight);
-                        //new cStateScale() { StateScale = _StateScale, FixWeight = Convert.ToDecimal(MidlWeight.GetMidl), FixWeightQuantity = Convert.ToDecimal(Quantity) });
+                    //new cStateScale() { StateScale = _StateScale, FixWeight = Convert.ToDecimal(MidlWeight.GetMidl), FixWeightQuantity = Convert.ToDecimal(Quantity) });
                     OnScalesLog("NewState", _StateScale.ToString());
                 }
             } }
 
-
+        string AllWeights { get{ return RW == null || RW.AllWeights == null || RW.AllWeights.Count() == 0 ? "0" : string.Join(",", RW?.AllWeights.Select(el => Convert.ToDecimal(el.Weight) * (RW?.Quantity ?? 0 - RW?.FixWeightQuantity ?? 0))); } }
+        public string Info { get { return $"{_StateScale}{Environment.NewLine}{RW?.NameWares}{ Environment.NewLine} Очікувана вага = ({ AllWeights}) Фактична ={СurrentlyWeight}";  } }
+      
         /// <summary>
         ///Допустима похибка ваги на вітер 
         /// </summary>
@@ -213,9 +218,7 @@ namespace ModelMID
                     StateScale = eStateScale.NotDefine;
                     if (w.WeightFact != -1 && w.AllWeights != null && w.AllWeights.Count() > 0)
                         StartWeightNewGoogs(BeforeWeight, w.AllWeights, Convert.ToDouble(w.Quantity - w.FixWeightQuantity));
-                }
-                
-                    
+                }   
             }
         }
 

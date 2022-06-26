@@ -6,6 +6,7 @@ namespace ModelMID
 {
     public enum eSyncStatus
     {
+        NotDefine=-2,
         Error = -1,
         NoFatalError = 0,
         StartedPartialSync = 1,

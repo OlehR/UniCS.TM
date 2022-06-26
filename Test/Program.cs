@@ -28,15 +28,7 @@ namespace Test
 
     class Program
     {
-        static DateTime FirstDayWeek(DateTime pDT)
-        {
-            int dd_d = (int)pDT.DayOfWeek;
-            if (dd_d == 0)
-                dd_d = 7;
-            dd_d--;
-            return pDT.AddDays(-dd_d);
-        }
-
+        
         static async Task Main(string[] args)
         {
             Console.WriteLine("Start");

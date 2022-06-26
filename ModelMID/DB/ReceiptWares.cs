@@ -395,5 +395,7 @@ namespace ModelMID
 
         public bool IsConfirmDel { get { return WeightFact != -1; } }
 
+        public bool IsNeedExciseStamp { get { return TypeWares == eTypeWares.Alcohol && GetExciseStamp.Length<Quantity; } }
+
     }
 }

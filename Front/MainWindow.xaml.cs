@@ -12,7 +12,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Front.Equipments;
 using Front.Models;
@@ -25,43 +24,25 @@ using Microsoft.Extensions.Configuration;
 
 namespace Front
 {
-    public class Price
-    {
-        public Price(decimal pPrice, bool pIsEnable, eTypeWares pTypeWares) //, bool pIsEnable = false
-        {
-            price = pPrice;
-            IsEnable = pIsEnable;
-            TypeWares = pTypeWares;
-            //  IsEnable = isFirst;
-            //if(isFirst)
-            //  { isFirst = false; }             
-        }
-        public eTypeWares TypeWares { get; set; }
-        public decimal price { get; set; }
-        public string StrPrice { get { return $"{price.ToString("n2", CultureInfo.InvariantCulture)} ₴"; } }
-        public bool IsEnable { get; set; }
-        public Brush BackGroundColor
-        {
-            get
-            {
-                return new SolidColorBrush(IsEnable ? Color.FromArgb(20, 100, 100, 100) : Color.FromArgb(50, 100, 0, 0));
-            }
-        }
-    }
-
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-
         Access Access = Access.GetAccess();
         public BL Bl;
         EquipmentFront EF;
         public ControlScale CS = new ControlScale();
 
         public Receipt curReceipt;//{ get; set; } = null;
+        ReceiptWares CurWares;//{ get; set; } = null;
         Client Client;
+        public GW CurW { get; set; } = null;
+
         eStateMainWindows State = eStateMainWindows.StartWindow;
         eStateScale StateScale = eStateScale.NotDefine;
+        public eTypeAccess TypeAccessWait { get; set; }
+        public ObservableCollection<ReceiptWares> ListWares { get; set; }
+        public CustomWindow customWindow { get; set; }
+        public ObservableCollection<CustomButton> customWindowButtons { get; set; }        
         public string WaresQuantity { get; set; }
         decimal _MoneySum;
         double tempMoneySum;
@@ -75,61 +56,20 @@ namespace Front
         public bool IsFixWeight { get; set; }
         public bool IsExciseStamp { get; set; }
         bool _IsLockSale = false;
+        /// <summary>
+        /// Чи заброкована зміна
+        /// </summary>
         public bool IsLockSale { get { return _IsLockSale; } set { if (_IsLockSale != value) { SetStateView(!value && State == eStateMainWindows.WaitAdmin ? eStateMainWindows.WaitInput : eStateMainWindows.NotDefine); _IsLockSale = value; } } }
         public string GetBackgroundColor { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? "#FFE5E5" : "#FFFFFF"; } }
         public bool IsCheckReturn { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? true : false; } }
         /// <summary>
         /// чи є товар з обмеженням по віку
         /// </summary>
-        public bool IsAgeRestrict
-        {
-            get
-            {
-                if (curReceipt.AgeRestrict == 0)
-                {
-                    return true;
-                }
-                else if (curReceipt.AgeRestrict != 0 && curReceipt.IsConfirmAgeRestrict)
-                {
-                    return true;
-                }
-                else return false;
-            }
-        }
-        public bool PriceIsNotZero
-        {
-            get
-            {
-                if (_MoneySum >= 0 && WaresQuantity != "0")
-                {
-                    return true;
-                }
-                else return false;
-            }
-        }
+        public bool IsAgeRestrict { get  { return curReceipt.AgeRestrict == 0 || curReceipt.AgeRestrict != 0 && curReceipt.IsConfirmAgeRestrict;}}
+        public bool PriceIsNotZero { get { return _MoneySum >= 0 && WaresQuantity != "0"; } }
         public string ClientName { get { return curReceipt != null && curReceipt.CodeClient == Client?.CodeClient ? Client?.NameClient : "Відсутній клієнт"; } }
-        public bool IsPresentFirstTerminal
-        {
-            get
-            {
-                if (EF.BankTerminal1 != null)
-                {
-                    return true;
-                }
-                else return false;
-            }
-        }
-        public bool IsPresentSecondTerminal
-        {
-            get
-            {
-                if (EF.BankTerminal2 != null)
-                {
-                    return true;
-                }
-                else return false;
-            }
-        }
+        public bool IsPresentFirstTerminal { get { return EF.BankTerminal1 != null; } }                
+        public bool IsPresentSecondTerminal { get { return EF.BankTerminal2 != null; } }        
         public string NameFirstTerminal
         {
             get
@@ -152,7 +92,6 @@ namespace Front
                 else return null;
             }
         }
-        string _WaitAdminText;
         public string WaitAdminText
         {
             get
@@ -165,9 +104,8 @@ namespace Front
                     case eTypeAccess.ErrorFullUpdate: return "Помилка повного оновлення БД";
                     case eTypeAccess.ErrorEquipment: return "Проблема з критично важливим обладнанням";
                     case eTypeAccess.LockSale: return "Зміна заблокована";
-                    case eTypeAccess.FixWeight: return $"{StateScale}{Environment.NewLine}{_WaitAdminText}";
+                    case eTypeAccess.FixWeight: return CS.Info;
                     case eTypeAccess.ConfirmAge: return "Підтвердження віку";
-
                 }
                 return null;
             }
@@ -176,19 +114,8 @@ namespace Front
         /// Вага з основної ваги
         /// </summary>
         public double Weight { get; set; } = 0d;
-
-        public string WeightControl { get; set; }
-
-        public GW CurW { get; set; } = null;
-
-        public eTypeAccess TypeAccessWait { get; set; }
-
-        ReceiptWares CurWares;//{ get; set; } = null;
-        public ObservableCollection<ReceiptWares> ListWares { get; set; }
-
-        public ObservableCollection<CustomButton> customWindowButtons { get; set; }
-
-        public CustomWindow customWindow { get; set; }
+        //public string WeightControl { get; set; }
+        
         /// <summary>
         /// полоса стану обміну
         /// </summary>
@@ -208,12 +135,10 @@ namespace Front
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
 
             var fc = new List<FlagColor>();
-            Config.GetConfiguration().GetSection("MID:FlagColor").Bind(fc);
-        
+            Config.GetConfiguration().GetSection("MID:FlagColor").Bind(fc);        
             foreach (var el in fc)
                 if (!FC.ContainsKey(el.State))
                     FC.Add(el.State, el.Color);
-
 
             //Для касового місця Запит логін пароль.
             if (Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout)
@@ -222,14 +147,12 @@ namespace Front
             Bl = new BL(true);
             EF = new EquipmentFront(GetBarCode, SetWeight, CS.OnScalesData);
 
-
             EF.SetStatus += (info) =>
             {
                 EquipmentInfo = info.TextState;
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"SetStatus ({info.ToJSON()})", eTypeLog.Expanded);
                 if (EF.StatCriticalEquipment != eStateEquipment.On)
                     SetWaitConfirm(eTypeAccess.ErrorEquipment, null);
-
             };
 
             Global.OnReceiptCalculationComplete += (pReceipt) =>
@@ -320,16 +243,10 @@ namespace Front
             Bl.OnAdminBarCode += (pUser) => { SetConfirm(pUser, false); };
 
             Bl.OnCustomWindow += (pCW) => { customWindow = pCW; SetStateView(eStateMainWindows.WaitCustomWindows); };
-
-            Global.OnReceiptChanged += (pReceipt) =>
-            {
-
-                SetCurReceipt(pReceipt);
-            };
+            
             //Обробка стану контрольної ваги.
             CS.OnStateScale += (pStateScale, pRW, pСurrentlyWeight) =>
             {
-
                 StateScale = pStateScale;
 
                 switch (StateScale)
@@ -337,11 +254,11 @@ namespace Front
                     case eStateScale.BadWeight:
                         customWindowButtons = new ObservableCollection<CustomButton>() { new CustomButton() { Id = 1, Text = "Підтвердити вагу", IsAdmin = true },
                                                                                       new CustomButton() { Id = 2, Text = "Добавити вагу", IsAdmin = true } };
-                        customWindow = new CustomWindow() { Id = eWindows.ConfirmWeight };
+                        customWindow = new CustomWindow() { Id = eWindows.ConfirmWeight, Buttons = customWindowButtons };
                         break;
                     case eStateScale.WaitGoods:
                         customWindowButtons = new ObservableCollection<CustomButton>() { new CustomButton() { Id = 1, Text = "Підтвердити вагу", IsAdmin = true } };
-                        customWindow = new CustomWindow() { Id = eWindows.ConfirmWeight };
+                        customWindow = new CustomWindow() { Id = eWindows.ConfirmWeight, Buttons = customWindowButtons };
                         break;
                     default:
                         customWindowButtons = null;
@@ -354,9 +271,7 @@ namespace Front
                     case eStateScale.NotStabilized:
                     case eStateScale.WaitClear:
                     case eStateScale.WaitGoods:
-                        string AllWeights = pRW == null || pRW.AllWeights == null || pRW.AllWeights.Count() == 0 ? "0" : string.Join(",", pRW?.AllWeights.Select(el => Convert.ToDecimal(el.Weight) * (pRW?.Quantity ?? 0 - pRW?.FixWeightQuantity ?? 0)));
-
-                        _WaitAdminText = $"{pRW?.NameWares}{Environment.NewLine}Очікувана вага=({AllWeights}) Фактична={pСurrentlyWeight}";
+                        
                         SetWaitConfirm(eTypeAccess.FixWeight, pRW); // SetStateView(eStateMainWindows.WaitWeight);
                         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WaitAdminText"));
                         break;
@@ -367,7 +282,6 @@ namespace Front
                             Bl.FixWeight(pRW);
                         break;
                 }
-
             };
 
             WaresQuantity = "0";
@@ -375,7 +289,6 @@ namespace Front
             Volume = true;
 
             InitializeComponent();
-
 
             //string HTMLContent = "<font style=\"vertical - align: inherit; \">Крок 1 - Встановіть Visual Studio</font>";
             //try
@@ -404,7 +317,6 @@ namespace Front
         {
             try
             {
-
                 //await WebView2.EnsureCoreWebView2Async();
                 //WebView2.CoreWebView2.NavigateToString(HTMLContent);
                 //MyWebView.CoreWebView2.Navigate("ms-appx-web:///www/index.html");
@@ -423,44 +335,21 @@ namespace Front
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCheckReturn"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClientName"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsAgeRestrict"));
-        }
-        public void CreateCustomWindiws()
-        {
-            customWindow = new CustomWindow();
-            customWindow.Text = "Текст вікна";
-            customWindow.PathPicture = @"icons\Signal.png";
-            customWindow.Caption = "Назва вікна";
-            customWindow.AnswerRequired = true;
-            customWindow.ValidationMask = "Щось)";
-
-            customWindow.Buttons = new List<CustomButton>()
-            {
-                new CustomButton(){Id =1, Text="First button" },
-                new CustomButton(){Id =2, Text="Two Button"},
-                new CustomButton(){Id =3, Text="asdvsadvsdfvsdf button" },
-                new CustomButton(){Id =4, Text="asdvssdvsdfadvsdfvsdf button" },
-            };
-        }
-
+        }        
         public void GetBarCode(string pBarCode, string pTypeBarCode)
         {
             if (State == eStateMainWindows.WaitExciseStamp)
             {
                 string ExciseStamp = GetExciseStamp(pBarCode);
                 if (!string.IsNullOrEmpty(ExciseStamp))
-                {
                     AddExciseStamp(ExciseStamp);
-                    return;
-                }
-
+                return;
             }
-
             if (State == eStateMainWindows.WaitInput)
             {
                 if (curReceipt?.IsLockChange == false)
                     Bl.GetBarCode(pBarCode, pTypeBarCode);
                 //else // В данbq чек добавити товар не можна
-
             }
             else
             {
@@ -469,7 +358,6 @@ namespace Front
                     Bl.OnAdminBarCode?.Invoke(u);
             }
         }
-
         void SetConfirm(User pUser, bool pIsFirst)
         {
             if (pUser == null)
@@ -493,8 +381,8 @@ namespace Front
                         break;
                 }
                 return;
-
             }
+
             IsIgnoreExciseStamp = Access.GetRight(pUser, eTypeAccess.ExciseStamp);
             IsAddNewWeight = Access.GetRight(pUser, eTypeAccess.AddNewWeight);
             IsFixWeight = Access.GetRight(pUser, eTypeAccess.FixWeight);
@@ -530,11 +418,8 @@ namespace Front
 
                     break;
                 case eTypeAccess.ChoicePrice:
-                    //var rrr = new ObservableCollection<Price>(CurWares.Prices.OrderByDescending(r => r).Select(r => new Price(r, true)));
-                    foreach (Price el in Prices.ItemsSource)
-                        el.IsEnable = true;
-                    //Prices.ItemsSource = rrr;
-                    //SetStateView(eStateMainWindows.WaitInputPrice);
+                      foreach (Models.Price el in Prices.ItemsSource)
+                        el.IsEnable = true;                    
                     TypeAccessWait = eTypeAccess.NoDefinition;
                     break;
                 case eTypeAccess.AddNewWeight:
@@ -542,25 +427,35 @@ namespace Front
                     SetStateView(eStateMainWindows.WaitAdmin);
                     break;
             }
-            // TypeAccessWait = eTypeAccess.NoDefinition;
-        }
-
-
-        // public ReceiptWares ReceiptWaresWait { get; set; }
-
+           
+        }  
         void SetWaitConfirm(eTypeAccess pTypeAccess, ReceiptWares pRW = null)
         {
             CurWares = pRW;
             TypeAccessWait = pTypeAccess;
             SetStateView(eStateMainWindows.WaitAdmin);
         }
-
         void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine)
         {
             Dispatcher.BeginInvoke(new ThreadStart(() =>
                 {
-                    if (EF.StatCriticalEquipment == eStateEquipment.On || pSMV == eStateMainWindows.WaitAdmin || pSMV == eStateMainWindows.WaitAdminLogin)
-
+                    if ( !( !IsLockSale && EF.StatCriticalEquipment == eStateEquipment.On && Bl.ds.IsReady && CS.IsOk && curReceipt?.IsNeedExciseStamp==false) &&
+                     !(pSMV == eStateMainWindows.WaitAdmin || pSMV == eStateMainWindows.WaitAdminLogin) )
+                    {
+                        eTypeAccess Res = eTypeAccess.NoDefinition;
+                        if (EF.StatCriticalEquipment != eStateEquipment.On) Res = eTypeAccess.ErrorEquipment;
+                        else
+                           if (!Bl.ds.IsReady) Res = (Bl.ds.Status == eSyncStatus.Error ? eTypeAccess.ErrorFullUpdate : eTypeAccess.StartFullUpdate);
+                        else
+                            if (IsLockSale) Res = eTypeAccess.LockSale;
+                        else
+                            if (!CS.IsOk) Res = eTypeAccess.FixWeight;
+                        else
+                            if(curReceipt?.IsNeedExciseStamp==true) Res = eTypeAccess.ExciseStamp;
+                        SetWaitConfirm(Res);
+                        return;
+                    }
+                   
                         if (pSMV != eStateMainWindows.NotDefine)
                         {
                             State = pSMV;
@@ -611,7 +506,7 @@ namespace Front
                             break;
                         case eStateMainWindows.WaitInputPrice:
                             TypeAccessWait = eTypeAccess.ChoicePrice;
-                            var rrr = new ObservableCollection<Price>(CurWares.Prices.OrderByDescending(r => r.Price).Select(r => new Price(r.Price, Access.GetRight(TypeAccessWait), r.TypeWares)));
+                            var rrr = new ObservableCollection<Models.Price>(CurWares.Prices.OrderByDescending(r => r.Price).Select(r => new Models.Price(r.Price, Access.GetRight(TypeAccessWait), r.TypeWares)));
                             rrr.First().IsEnable = true;
 
                             Prices.ItemsSource = rrr;//new ObservableCollection<Price>(rr);
@@ -648,7 +543,6 @@ namespace Front
                                 default:
                                     CustomButtonsWaitAdmin.ItemsSource = null;
                                     break;
-
                             }
                             //CustomButtonsWaitAdmin.ItemsSource = customWindowButtons;
                             break;
@@ -721,10 +615,8 @@ namespace Front
         private void _Delete(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
-
             if (btn.DataContext is ReceiptWares)
             {
-
                 var el = btn.DataContext as ReceiptWares;
                 if (el == null)
                 {
@@ -1005,7 +897,6 @@ namespace Front
                 }
             }
 
-
             if (R.StateReceipt == eStateReceipt.Pay)
             {
                 R.Client = Client;
@@ -1055,12 +946,11 @@ namespace Front
                 Button btn = sender as Button;
                 if (btn != null)
                 {
-                    var price = btn.DataContext as Price;
+                    var price = btn.DataContext as Models.Price;
 
                     TextBlock Tb = btn.Content as TextBlock;
                     if (Tb != null)
                     {
-                        //decimal Pr = Convert.ToDecimal(Tb.Tag);
                         AddWares(CurWares.CodeWares, CurWares.CodeUnit, 1, price.price);
                     }
                 }
@@ -1071,7 +961,6 @@ namespace Front
 
         private IEnumerable<ReceiptWares> StartData()
         {
-
             var RId = Bl.GetNewIdReceipt();
             //Bl.AddWaresBarCode(RId, "27833", 258m);
             //Bl.AddWaresBarCode(RId, "7622201819590", 1);
@@ -1088,30 +977,22 @@ namespace Front
         /// </summary>
         /// <param name="pWeight">Власне вага</param>
         /// <param name="pIsStable">Чи платформа стабілізувалась</param>
-        public void SetWeight(double pWeight, bool pIsStable)
-        {
-            Weight = pWeight;
-            Debug.WriteLine(Weight);
-        }
-
+        public void SetWeight(double pWeight, bool pIsStable) { Weight = pWeight;}
         private void ClickButtonOk(object sender, RoutedEventArgs e)
         {
             AddWares(CurW.Code, CurW.CodeUnit, Convert.ToDecimal(Weight));
             ClickButtonCancel(sender, e);
         }
-
         private void ClickButtonCancel(object sender, RoutedEventArgs e)
         {
             EF.StoptWeight();
             SetStateView(eStateMainWindows.WaitInput);
             Weight = 0d;
         }
-
         private void ButtonAdmin(object sender, RoutedEventArgs e)
         {
             SetStateView(eStateMainWindows.WaitAdminLogin);
         }
-
         private void LoginCancel(object sender, RoutedEventArgs e)
         {
             SetConfirm(null, true);
@@ -1163,7 +1044,6 @@ namespace Front
             Regex regex = new Regex(@"^\w{4}[0-9]{6}?$");
             if (regex.IsMatch(pBarCode))
                 return pBarCode;
-
             return null;
         }
 
@@ -1378,21 +1258,7 @@ namespace Front
                 Regex regex = new Regex(customWindow.ValidationMask);
                 CustomWindowValidText = regex.IsMatch(textBox.Text);
             }
-        }
-
-        /*  private void WaitAdminCustomButtons(object sender, RoutedEventArgs e)
-          {
-              Button btn = sender as Button;
-              CustomButton res = btn.DataContext as CustomButton;
-              if (res.Text == "Підтвердити вагу") // res.Id == 1
-              {
-                  //підтвердження ваги
-              }
-              if (res.Text == "Добавити вагу") //  res.Id == 2
-              {
-                  // додавання нової ваги
-              }
-          }*/
+        }                
     }
 
 }

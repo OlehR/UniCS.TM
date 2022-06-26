@@ -131,7 +131,7 @@ namespace SharedLib
             var idReceip = new IdReceipt() { IdWorkplace = (pIdWorkplace == 0 ? Global.IdWorkPlace : pIdWorkplace), CodePeriod = (pCodePeriod == 0 ? Global.GetCodePeriod() : pCodePeriod) };
             var Recipt = new Receipt(db.GetNewReceipt(idReceip));
             db.RecalcPriceAsync(new IdReceiptWares(Recipt));
-            Global.OnReceiptChanged?.Invoke(Recipt);
+            //Global.OnReceiptChanged?.Invoke(Recipt);
             return Recipt;
         }
 
@@ -141,23 +141,24 @@ namespace SharedLib
             return db.GetLastReceipt(idReceip);
         }
 
-        public bool UpdateReceiptFiscalNumber(IdReceipt receiptId, string pFiscalNumber, decimal pSumFiscal = 0, DateTime pDateFiscal = default(DateTime))
+        public bool UpdateReceiptFiscalNumber(IdReceipt pReceiptId, string pFiscalNumber, decimal pSumFiscal = 0, DateTime pDateFiscal = default(DateTime))
         {
             if (pDateFiscal == default(DateTime))
                 pDateFiscal = DateTime.Now;
-            var receipt = new Receipt(receiptId);
+            var receipt = new Receipt(pReceiptId);
             receipt.NumberReceipt = pFiscalNumber;
             receipt.StateReceipt = eStateReceipt.Print;
-            receipt.UserCreate = GetUserIdbyWorkPlace(receiptId.IdWorkplace);
+            receipt.UserCreate = GetUserIdbyWorkPlace(pReceiptId.IdWorkplace);
             receipt.SumFiscal = pSumFiscal;
             receipt.DateReceipt = pDateFiscal;
 
-            DateTime Ldc = receiptId.DTPeriod;
+            DateTime Ldc = pReceiptId.DTPeriod;
 
             WDB_SQLite ldb = (Ldc == DateTime.Now.Date ? db : new WDB_SQLite(Ldc));
 
             var Res = ldb.CloseReceipt(receipt);
-            Global.OnReceiptChanged?.Invoke(receipt);
+            var r = db.ViewReceipt(pReceiptId, true);
+            Global.OnReceiptCalculationComplete?.Invoke(r);
             return Res;
         }
 

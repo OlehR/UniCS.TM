@@ -3,6 +3,7 @@ using Front.Equipments.Ingenico;
 using Front.Equipments.pRRO_SG;
 using Front.Equipments.Virtual;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using ModelMID;
 using ModelMID.DB;
 using System;
@@ -11,7 +12,6 @@ using System.Drawing;
 using System.Linq;
 using Front.Equipments.Implementation;
 using System.Threading.Tasks;
-using System.Diagnostics;
 using Utils;
 using Microsoft.Extensions.Logging;
 
@@ -19,9 +19,6 @@ namespace Front
 {
     public class EquipmentFront
     {
-
-
-
         private IEnumerable<Equipment> ListEquipment = new List<Equipment>();
         eStateEquipment _State = eStateEquipment.Off;
 
@@ -48,7 +45,7 @@ namespace Front
         {
             get
             {
-                var Res = ListEquipment.Where(el => !(el.State == eStateEquipment.On || el.State == eStateEquipment.Init) && el.IsСritical);
+                var Res = ListEquipment.Where(el => !(el.State == eStateEquipment.On || el.State == eStateEquipment.Init || el.State == eStateEquipment.Off) && el.IsСritical);
                 var aa= Res != null && Res.Any() ? eStateEquipment.Error : eStateEquipment.On;
                 return aa;
             }

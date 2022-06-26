@@ -11,7 +11,10 @@
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.0.123" />
-    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.5" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />    
     <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.61" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />

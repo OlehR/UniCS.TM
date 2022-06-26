@@ -15,25 +15,13 @@ namespace Front
     /// </summary>
     public partial class App : Application
     {
-		private static List<CultureInfo> m_Languages = new List<CultureInfo>();
+		private static List<CultureInfo> m_Languages = new List<CultureInfo>() { new CultureInfo("uk"), new CultureInfo("en"), new CultureInfo("hu"), new CultureInfo("pl") }
 
-		public static List<CultureInfo> Languages
-		{
-			get
-			{
-				return m_Languages;
-			}
-		}
+		public static List<CultureInfo> Languages { get {return m_Languages; }}
 
 		public App()
 		{
-			InitializeComponent();
-
-			m_Languages.Clear();
-			m_Languages.Add(new CultureInfo("uk")); //Нейтральная культура для этого проекта
-			m_Languages.Add(new CultureInfo("en"));
-			m_Languages.Add(new CultureInfo("hu"));
-			m_Languages.Add(new CultureInfo("pl"));
+			InitializeComponent();			
 		}
 
 		//Евент для оповещения всех окон приложения
