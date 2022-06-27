@@ -145,7 +145,12 @@ namespace Front
                 Access.СurUser = new User() { TypeUser = eTypeUser.Client, CodeUser = 99999999, Login = "Client", NameUser = "Client" };
 
             Bl = new BL(true);
-            EF = new EquipmentFront(GetBarCode, SetWeight, CS.OnScalesData);
+            EF = new EquipmentFront(GetBarCode, SetWeight, null /*CS.OnScalesData*/);
+
+            EF.OnControlWeight += (pWeight, pIsStable) => 
+            { 
+                CS.OnScalesData(pWeight, pIsStable); 
+            };
 
             EF.SetStatus += (info) =>
             {
