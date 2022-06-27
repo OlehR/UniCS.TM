@@ -19,6 +19,7 @@ namespace Front
 {
     public class EquipmentFront
     {
+        public Action<double, bool> OnControlWeight { get; set; }
         private IEnumerable<Equipment> ListEquipment = new List<Equipment>();
         eStateEquipment _State = eStateEquipment.Off;
 
@@ -95,6 +96,7 @@ namespace Front
         {
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             sEquipmentFront = this;
+            OnControlWeight += (pWeighr, pIsStable) => { pSetControlWeight?.Invoke(pWeighr, pIsStable); };                
 
             Task.Run(() => Init(pSetBarCode, pSetWeight, pSetControlWeight, pActionStatus));
         }
@@ -155,7 +157,7 @@ namespace Front
                 {
                     ElEquipment = Equipments.First();
                     if (ElEquipment.Model == eModelEquipment.ScaleModern)
-                        ControlScale = new ScaleModern(ElEquipment, config, null, pSetControlWeight);
+                        ControlScale = new ScaleModern(ElEquipment, config, null, OnControlWeight);
                     else
                         ControlScale = new Scale(ElEquipment, config);
                     NewListEquipment.Add(ControlScale);
