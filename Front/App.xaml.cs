@@ -15,7 +15,7 @@ namespace Front
     /// </summary>
     public partial class App : Application
     {
-		private static List<CultureInfo> m_Languages = new List<CultureInfo>() { new CultureInfo("uk"), new CultureInfo("en"), new CultureInfo("hu"), new CultureInfo("pl") }
+		private static List<CultureInfo> m_Languages = new List<CultureInfo>() { new CultureInfo("uk"), new CultureInfo("en"), new CultureInfo("hu"), new CultureInfo("pl") };
 
 		public static List<CultureInfo> Languages { get {return m_Languages; }}
 
