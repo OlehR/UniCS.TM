@@ -473,6 +473,7 @@ namespace Front
 
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsAgeRestrict"));
 
+                    ErrorWindows.Visibility = Visibility.Collapsed;
                     ExciseStamp.Visibility = Visibility.Collapsed;
                     ChoicePrice.Visibility = Visibility.Collapsed;
                     Background.Visibility = Visibility.Collapsed;
@@ -922,6 +923,9 @@ namespace Front
                     {
                         R.StateReceipt = eStateReceipt.Pay;
                         Bl.SetStateReceipt(curReceipt, eStateReceipt.Pay);
+                        Background.Visibility = Visibility.Visible;
+                        ErrorWindows.Visibility = Visibility.Visible;
+                        ErrorText.Text = res.Error + "Помилка друку чеків";
                         MessageBox.Show(res.Error, "Помилка друку чеків");
                     }
                     SetStateView(eStateMainWindows.WaitInput);
