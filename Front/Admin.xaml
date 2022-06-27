@@ -405,7 +405,8 @@
                                 Style="{StaticResource Default}" Content="Калібрування" HorizontalAlignment="Left" Margin="5" Grid.Row="1"  Width="160" Height="60"/>
                         <Button Name="TarControlScale" Click="TarControlScaleButton"
                                 Style="{StaticResource Default}" Content="Тарування" HorizontalAlignment="Left" Margin="5" Grid.Row="1"  Width="160" Height="60"/>
-                        <Label Name="ControlScaleWeight"  Content="0 гр" Margin="5" Grid.Row="1" Height="60"  />
+                        <TextBlock Name="ControlScaleWeightHaml"  Text="{Binding ControlScaleWeightDouble, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}"  Margin="5" Grid.Row="1" Height="60"  />
                     </StackPanel>
                     <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" >
                         <Button Name="RefreshData" Style="{StaticResource Default}"  

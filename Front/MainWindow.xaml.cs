@@ -349,14 +349,14 @@ namespace Front
             {
                 if (curReceipt?.IsLockChange == false)
                     Bl.GetBarCode(pBarCode, pTypeBarCode);
+                return;
                 //else // В данbq чек добавити товар не можна
-            }
-            else
-            {
+            }            
+            
                 var u = Bl.GetUserByBarCode(pBarCode);
                 if (u != null)
                     Bl.OnAdminBarCode?.Invoke(u);
-            }
+            
         }
         void SetConfirm(User pUser, bool pIsFirst)
         {

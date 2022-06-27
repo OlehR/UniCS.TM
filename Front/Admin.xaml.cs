@@ -29,6 +29,7 @@ namespace Front
         ObservableCollection<ParsLog> LogsCollection;
         public string TypeLog { get; set; } = "Full";
         BL Bl;
+        public string ControlScaleWeightDouble { get; set; } = "0";
         MainWindow MW;
         Receipt curReceipt = null;
         public bool ClosedShift { get { return MW.IsLockSale; } }
@@ -43,7 +44,10 @@ namespace Front
             Bl = BL.GetBL;
             InitializeComponent();
 
-            EF.OnControlWeight += (pWeight, pIsStable) => { ControlScaleWeight.Content = pWeight; };
+            EF.OnControlWeight += (pWeight, pIsStable) => { 
+                ControlScaleWeightDouble = Convert.ToString(pWeight);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ControlScaleWeightDouble"));
+            };
             if (EF != null)
                 LE = new ObservableCollection<Equipment>(EF.GetListEquipment);
             ListEquipment.ItemsSource = LE;
