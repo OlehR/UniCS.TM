@@ -170,7 +170,7 @@ namespace ModelMID
         public int Sort { get; set; }
 
         public string ExciseStamp { get; set; }
-        public string[] GetExciseStamp { get { return ExciseStamp?.Split(','); } }
+        public string[] GetExciseStamp { get { return ExciseStamp?.Split(',')??new string[0]; } }
         
         public bool AddExciseStamp(string pES)
         {

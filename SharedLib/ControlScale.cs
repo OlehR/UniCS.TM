@@ -98,7 +98,7 @@ namespace ModelMID
 
     public class ControlScale
     {
-        ReceiptWares RW;
+        public ReceiptWares RW;
         public Action<eStateScale, ReceiptWares, double> OnStateScale { get; set; }
         eStateScale _StateScale;
 

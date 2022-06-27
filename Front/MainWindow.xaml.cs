@@ -33,7 +33,7 @@ namespace Front
         public ControlScale CS = new ControlScale();
 
         public Receipt curReceipt;//{ get; set; } = null;
-        ReceiptWares CurWares;//{ get; set; } = null;
+        public ReceiptWares CurWares;//{ get; set; } = null;
         Client Client;
         public GW CurW { get; set; } = null;
 
@@ -1006,7 +1006,7 @@ namespace Front
                 return;
             }
 
-            if (TypeAccessWait > 0)//TypeAccessWait != eTypeAccess.NoDefinition 
+            if (TypeAccessWait > 0 &&   !(TypeAccessWait == eTypeAccess.FixWeight && CS.StateScale ==  eStateScale.WaitClear))//TypeAccessWait != eTypeAccess.NoDefinition 
             {
                 SetConfirm(U, true);
                 return;
@@ -1217,7 +1217,7 @@ namespace Front
             {
                 if (customWindow.Id == eWindows.ConfirmWeight)
                 {
-                    CurWares.FixWeightQuantity = CurWares.Quantity;
+                    CurWares.FixWeightQuantity = CS.RW?.Quantity??0;
                     CurWares.FixWeight += Convert.ToDecimal(CS.СurrentlyWeight);
                 }
                 var r = new CustomWindowAnswer()
