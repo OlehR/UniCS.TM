@@ -1215,10 +1215,13 @@ namespace Front
             }
             if (res != null)
             {
-                if (customWindow.Id == eWindows.ConfirmWeight)
+                if (customWindow.Id == eWindows.ConfirmWeight && CS.RW!=null)
                 {
-                    CurWares.FixWeightQuantity = CS.RW?.Quantity??0;
-                    CurWares.FixWeight += Convert.ToDecimal(CS.СurrentlyWeight);
+                    CS.RW.FixWeightQuantity = CS.RW.Quantity;
+                    CS.RW.FixWeight += Convert.ToDecimal(CS.СurrentlyWeight);
+                    // Bl.FixWeight(CS.RW);
+                    CS.StateScale = eStateScale.Stabilized;// OnScalesData(CS.curFullWeight,true);
+
                 }
                 var r = new CustomWindowAnswer()
                 {
@@ -1226,7 +1229,7 @@ namespace Front
                     Id = customWindow.Id,
                     IdButton = res.Id,
                     Text = TextBoxCustomWindows.Text,
-                    ExtData = customWindow.Id == eWindows.ConfirmWeight ? CurWares : null
+                    ExtData = customWindow.Id == eWindows.ConfirmWeight ? CS?.RW : null
                 };
 
                 Bl.SetCustomWindows(r);

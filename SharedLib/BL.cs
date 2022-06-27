@@ -686,7 +686,9 @@ namespace SharedLib
                             ReceiptWares r = pCWA.ExtData as ReceiptWares;
                             if (r != null)
                             {
-                                AddEventAge(r);
+                                List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(r) { EventType = eReceiptEventType.IncorrectWeight, EventName = "Ручне підтвердження ваги", CreatedAt = DateTime.Now } };
+
+                                db.InsertReceiptEvent(rr);
                                 //SaveReceiptEvents(new List<ReceiptEvent>() { new ReceiptEvent(r) { EventType = eReceiptEventType.IncorrectWeight, ProductConfirmedWeight = (int)r.WeightFact, ProductWeight = (int)r.WeightFact } });
                                 FixWeight(r);
                             }
