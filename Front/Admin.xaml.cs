@@ -37,10 +37,13 @@ namespace Front
         public string KasaNumber { get { return Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace).Name; } }
         public Admin(User AdminUser, MainWindow pMW)
         {
+            
             MW = pMW;
             EF = EquipmentFront.GetEquipmentFront;
             Bl = BL.GetBL;
             InitializeComponent();
+
+            EF.OnControlWeight += (pWeight, pIsStable) => { ControlScaleWeight.Content = pWeight; };
             if (EF != null)
                 LE = new ObservableCollection<Equipment>(EF.GetListEquipment);
             ListEquipment.ItemsSource = LE;
@@ -319,6 +322,19 @@ namespace Front
             TextBox textBox = (TextBox)sender;
             TypeLog = textBox.Text;
             CollectionViewSource.GetDefaultView(ListLog.ItemsSource).Refresh();
+        }
+
+        private void CalibrationControlScaleButton(object sender, RoutedEventArgs e)
+        {
+            KeyPad keyPad = new KeyPad(this);
+            keyPad.productNameChanges.Text = "Введіть вагу в грамах";
+            if (keyPad.ShowDialog() == true)
+                EF.ControlScaleCalibrateMax(Convert.ToDouble(keyPad.Result));
+        }
+
+        private void TarControlScaleButton(object sender, RoutedEventArgs e)
+        {
+            EF.ControlScaleCalibrateZero();
         }
     }
 
