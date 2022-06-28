@@ -120,8 +120,8 @@ namespace ModelMID
             } }
 
         string AllWeights { get{ return RW == null || RW.AllWeights == null || RW.AllWeights.Count() == 0 ? "0" : string.Join(",", RW?.AllWeights.Select(el => Convert.ToDecimal(el.Weight) * (RW?.Quantity ?? 0 - RW?.FixWeightQuantity ?? 0))); } }
-        public string Info { get { return $"{_StateScale}{Environment.NewLine}{RW?.NameWares}{ Environment.NewLine} Очікувана вага = ({ AllWeights}) Фактична ={СurrentlyWeight}";  } }
-      
+        public string Info { get { return $"{_StateScale}{Environment.NewLine}{RW?.NameWares}{ Environment.NewLine} Очікувана вага = ({ AllWeights}) Фактична ={СurrentlyWeight}{Environment.NewLine}Загальна вага={curFullWeight} Fix=> {RW?.FixWeightQuantity}/{RW?.FixWeight}";  } }
+
         /// <summary>
         ///Допустима похибка ваги на вітер 
         /// </summary>
