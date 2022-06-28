@@ -143,6 +143,11 @@ namespace ModelMID
         /// Остання Вага Яка прийшла з ваги.
         /// </summary>
         public double curFullWeight;
+
+        /// <summary>
+        /// Попередня повна Вага Яка прийшла з ваги.
+        /// </summary>
+        public double BeforeFullWeight=0;
         /// <summary>
         /// Допустимі межі ваг для останнього просканованого товару.
         /// </summary>
@@ -263,12 +268,7 @@ namespace ModelMID
                 {
                     //Якщо вийшли за межі похибки
                     if (Math.Abs(СurrentlyWeight) > Delta)
-                    {
-                        if (Math.Abs(BeforeСurrentlyWeight - СurrentlyWeight) > Delta / 2d)
-                        {
-                            NewStateScale = eStateScale.NotDefine;
-                            BeforeСurrentlyWeight = СurrentlyWeight;
-                        }
+                    {            
                         NewStateScale = eStateScale.NotStabilized;
                         //StartTimer();
                     }
@@ -328,22 +328,17 @@ namespace ModelMID
                             //  MidlWeight.AddValue(СurrentlyWeight);
                     }
                     else
-                    {
-                            //Якщо вага змінилась 
-                            if (StateScale == eStateScale.BadWeight && Math.Abs(BeforeСurrentlyWeight - СurrentlyWeight) > Delta / 2d)
-                            {
-                                BeforeСurrentlyWeight = СurrentlyWeight;
-                                StateScale=eStateScale.NotDefine;
-                            }
-                            //if (StateScale == eStateScale.StartStabilized || StateScale == eStateScale.Stabilized)
-                            //{
-                            //StopTimer();
-
-                            NewStateScale = eStateScale.BadWeight;
-                            //StartTimer();
-                        //}
+                    {    
+                            NewStateScale = eStateScale.BadWeight;                            
                     }
                 }
+            }
+
+            if(Math.Abs (BeforeFullWeight-curFullWeight) < Delta/2)
+            {
+                BeforeFullWeight = curFullWeight;
+                if (StateScale == NewStateScale && NewStateScale!= eStateScale.Stabilized )
+                    StateScale = eStateScale.NotDefine;
             }
             StateScale = NewStateScale;
         }
