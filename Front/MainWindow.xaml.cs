@@ -403,7 +403,8 @@ namespace Front
                 return;
             if (!Access.GetRight(pUser, TypeAccessWait))
             {
-                MessageBox.Show($"Не достатньо прав для операції {TypeAccessWait} в {pUser.NameUser}");
+                ShowErrorMessage($"Не достатньо прав для операції {TypeAccessWait} в {pUser.NameUser}");
+//                MessageBox.Show($"Не достатньо прав для операції {TypeAccessWait} в {pUser.NameUser}");
                 return;
             }
 
@@ -935,10 +936,8 @@ namespace Front
                     {
                         R.StateReceipt = eStateReceipt.Pay;
                         Bl.SetStateReceipt(curReceipt, eStateReceipt.Pay);
-                        Background.Visibility = Visibility.Visible;
-                        ErrorWindows.Visibility = Visibility.Visible;
-                        ErrorText.Text = res.Error + "Помилка друку чеків";
-                        MessageBox.Show(res.Error, "Помилка друку чеків");
+                        ShowErrorMessage(res.Error + "Помилка друку чеків");
+                        //MessageBox.Show(res.Error, "Помилка друку чеків");
                     }
                     SetStateView(eStateMainWindows.WaitInput);
                 }
@@ -949,7 +948,12 @@ namespace Front
             }
             return false;
         }
-
+        private void ShowErrorMessage(string ErrorMessage)
+        {
+            Background.Visibility = Visibility.Visible;
+            ErrorWindows.Visibility = Visibility.Visible;
+            ErrorText.Text = ErrorMessage;
+        }
         /// <summary>
         /// Добавляєм товар(сигарери) з списку цін
         /// </summary>
@@ -1018,7 +1022,8 @@ namespace Front
             var U = Bl.GetUserByLogin(LoginTextBlock.Text, PasswordTextBlock.Text);
             if (U == null)
             {
-                MessageBox.Show("Не вірний логін чи пароль");
+                ShowErrorMessage("Не вірний логін чи пароль");
+//                MessageBox.Show("Не вірний логін чи пароль");
                 return;
             }
 
@@ -1037,7 +1042,8 @@ namespace Front
             }
             else
             {
-                MessageBox.Show($"Не достатньо прав на вхід в адмін панель для  {U.NameUser}");
+                ShowErrorMessage($"Не достатньо прав на вхід в адмін панель для  {U.NameUser}");
+//                MessageBox.Show($"Не достатньо прав на вхід в адмін панель для  {U.NameUser}");
             }
 
         }
@@ -1077,7 +1083,8 @@ namespace Front
                 Bl.UpdateExciseStamp(new List<ReceiptWares>() { CurWares });
             }
             else
-                MessageBox.Show($"Дана акцизна марка вже використана");
+                ShowErrorMessage($"Дана акцизна марка вже використана");
+//                MessageBox.Show($"Дана акцизна марка вже використана");
         }
 
 
@@ -1131,7 +1138,8 @@ namespace Front
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Eror", MessageBoxButton.OK, MessageBoxImage.Error);
+                ShowErrorMessage(ex.Message);
+//                MessageBox.Show(ex.Message, "Eror", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
         }
@@ -1214,7 +1222,8 @@ namespace Front
             if (terminalPaymentInfo.ShowDialog() == true)
             {
                 //отримуємо введені дані
-                MessageBox.Show(terminalPaymentInfo.enteredDataFromTerminal.AuthorizationCode);//як приклад
+                ShowErrorMessage(terminalPaymentInfo.enteredDataFromTerminal.AuthorizationCode);
+//                MessageBox.Show(terminalPaymentInfo.enteredDataFromTerminal.AuthorizationCode);//як приклад
             }
         }
 
