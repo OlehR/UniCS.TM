@@ -247,7 +247,28 @@ namespace Front
                 FileLogger.WriteLogMessage($"MainWindow.OnClientChanged(Client.Wallet=> {pClient.Wallet} SumBonus=>{pClient.SumBonus})", eTypeLog.Full);
             };
 
-            Bl.OnAdminBarCode += (pUser) => { SetConfirm(pUser, false); };
+            Bl.OnAdminBarCode += (pUser) =>
+            {
+                if (TypeAccessWait > 0 && !(TypeAccessWait == eTypeAccess.FixWeight && CS.StateScale == eStateScale.WaitClear))//TypeAccessWait != eTypeAccess.NoDefinition 
+                {
+                    SetConfirm(pUser, true);
+                    return;
+                }
+
+                if (Access.GetRight(pUser, eTypeAccess.AdminPanel))
+                {
+                    SetStateView(eStateMainWindows.WaitInput);
+                    //Admin ad = new Admin(U, this,EF);
+
+                    ad.WindowState = WindowState.Maximized;
+                }
+                else
+                {
+                    ShowErrorMessage($"Не достатньо прав на вхід в адмін панель для  {pUser.NameUser}");
+                    //                MessageBox.Show($"Не достатньо прав на вхід в адмін панель для  {U.NameUser}");
+                }
+
+            };
 
             Bl.OnCustomWindow += (pCW) => { customWindow = pCW; SetStateView(eStateMainWindows.WaitCustomWindows); };
             
@@ -1023,29 +1044,9 @@ namespace Front
             if (U == null)
             {
                 ShowErrorMessage("Не вірний логін чи пароль");
-//                MessageBox.Show("Не вірний логін чи пароль");
                 return;
             }
-
-            if (TypeAccessWait > 0 &&   !(TypeAccessWait == eTypeAccess.FixWeight && CS.StateScale ==  eStateScale.WaitClear))//TypeAccessWait != eTypeAccess.NoDefinition 
-            {
-                SetConfirm(U, true);
-                return;
-            }
-
-            if (Access.GetRight(U, eTypeAccess.AdminPanel))
-            {
-                SetStateView(eStateMainWindows.WaitInput);
-                //Admin ad = new Admin(U, this,EF);
-                
-                ad.WindowState = WindowState.Maximized;
-            }
-            else
-            {
-                ShowErrorMessage($"Не достатньо прав на вхід в адмін панель для  {U.NameUser}");
-//                MessageBox.Show($"Не достатньо прав на вхід в адмін панель для  {U.NameUser}");
-            }
-
+            Bl.OnAdminBarCode?.Invoke(U);
         }
 
         private void TextLoginChanged(object sender, TextChangedEventArgs e)
