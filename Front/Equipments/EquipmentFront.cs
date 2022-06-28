@@ -96,7 +96,7 @@ namespace Front
         {
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             sEquipmentFront = this;
-            OnControlWeight += (pWeight, pIsStable) => { pSetControlWeight?.Invoke(pWeight, pIsStable); };                
+            //OnControlWeight += (pWeight, pIsStable) => { pSetControlWeight?.Invoke(pWeight, pIsStable); };                
 
             Task.Run(() => Init(pSetBarCode, pSetWeight, pSetControlWeight, pActionStatus));
         }

@@ -32,6 +32,8 @@ namespace Front
         EquipmentFront EF;
         public ControlScale CS = new ControlScale();
 
+        Admin ad;
+
         public Receipt curReceipt;//{ get; set; } = null;
         public ReceiptWares CurWares;//{ get; set; } = null;
         Client Client;
@@ -150,7 +152,7 @@ namespace Front
             EF.OnControlWeight += (pWeight, pIsStable) => 
             { 
                 CS.OnScalesData(pWeight, pIsStable); 
-            };
+            };            
 
             EF.SetStatus += (info) =>
             {
@@ -292,6 +294,11 @@ namespace Front
             WaresQuantity = "0";
             MoneySum = "0";
             Volume = true;
+
+            ad = new Admin(new User() { NameUser="xxxxx"}, this, EF);
+            ad.WindowState = WindowState.Minimized;
+            ad.Show();
+            
 
             InitializeComponent();
 
@@ -1024,8 +1031,9 @@ namespace Front
             if (Access.GetRight(U, eTypeAccess.AdminPanel))
             {
                 SetStateView(eStateMainWindows.WaitInput);
-                Admin ad = new Admin(U, this);
-                ad.Show();
+                //Admin ad = new Admin(U, this,EF);
+                
+                ad.WindowState = WindowState.Maximized;
             }
             else
             {

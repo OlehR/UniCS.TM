@@ -36,18 +36,32 @@ namespace Front
 
         public DateTime DateSoSearch { get; set; } = DateTime.Now.Date;
         public string KasaNumber { get { return Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace).Name; } }
-        public Admin(User AdminUser, MainWindow pMW)
+
+        public void ControlScale( double pWeight,bool pIsStable )
+        {
+            ControlScaleWeightDouble = Convert.ToString(pWeight+100000);
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ControlScaleWeightDouble"));
+        }
+
+        public Admin(User AdminUser, MainWindow pMW, EquipmentFront pEF)
         {
             
             MW = pMW;
-            EF = EquipmentFront.GetEquipmentFront;
+            //EF = EquipmentFront.GetEquipmentFront;
             Bl = BL.GetBL;
-            InitializeComponent();
+            EF = pEF;
 
-            EF.OnControlWeight += (pWeight, pIsStable) => { 
-                ControlScaleWeightDouble = Convert.ToString(pWeight);
+            EF.OnControlWeight += (pWeight, pIsStable) =>
+            {
+                double r = pWeight;
+                ControlScaleWeightDouble = Convert.ToString(pWeight + 100000);
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ControlScaleWeightDouble"));
             };
+            
+            
+            InitializeComponent();
+
+            
             if (EF != null)
                 LE = new ObservableCollection<Equipment>(EF.GetListEquipment);
             ListEquipment.ItemsSource = LE;
@@ -93,7 +107,7 @@ namespace Front
 
         private void Exit_Click(object sender, RoutedEventArgs e)
         {
-            Close();
+            this.WindowState = WindowState.Minimized;
             // this.NavigationService.GoBack();
         }
         private void POS_X_Click(object sender, RoutedEventArgs e)
