@@ -98,7 +98,7 @@ namespace ModelMID
 
     public class ControlScale
     {
-        public ReceiptWares RW;
+        public ReceiptWares RW,DelRW;
         public Action<eStateScale, ReceiptWares, double> OnStateScale { get; set; }
         eStateScale _StateScale;
 
@@ -110,7 +110,7 @@ namespace ModelMID
         public eStateScale StateScale //{ get; set; } 
         { get { return _StateScale; }
             set
-            { if (_StateScale != value)
+            { if (_StateScale != value && value != eStateScale.NotDefine)
                 {
                     _StateScale = value;
                     OnStateScale?.Invoke(_StateScale, RW, СurrentlyWeight);
@@ -120,7 +120,7 @@ namespace ModelMID
             } }
 
         string AllWeights { get{ return RW == null || RW.AllWeights == null || RW.AllWeights.Count() == 0 ? "0" : string.Join(",", RW?.AllWeights.Select(el => Convert.ToDecimal(el.Weight) * (RW?.Quantity ?? 0 - RW?.FixWeightQuantity ?? 0))); } }
-        public string Info { get { return $"{_StateScale}{Environment.NewLine}{RW?.NameWares}{ Environment.NewLine} Очікувана вага = ({ AllWeights}) Фактична ={СurrentlyWeight}{Environment.NewLine}Загальна вага={curFullWeight} Fix=> {RW?.FixWeightQuantity}/{RW?.FixWeight}";  } }
+        public string Info { get { return $"{_StateScale}{Environment.NewLine}{DelRW?.NameWares?? RW?.NameWares}{ Environment.NewLine} Очікувана вага = ({ AllWeights}) Фактична ={СurrentlyWeight}{Environment.NewLine}Загальна вага={curFullWeight} Fix=> {RW?.FixWeightQuantity}/{RW?.FixWeight}";  } }
 
         /// <summary>
         ///Допустима похибка ваги на вітер 
@@ -196,14 +196,16 @@ namespace ModelMID
                 return false;
         }
 
-        public void StartWeightNewGoogs(IEnumerable<ReceiptWares> pRW)
+        public void StartWeightNewGoogs(IEnumerable<ReceiptWares> pRW, ReceiptWares pDelRW=null)
         {
+            DelRW = pDelRW;
             
             if(pRW==null|| pRW.Count()==0)
             {
                 WaitClear();                
                 return;
             }
+
 
             double BeforeWeight = Convert.ToDouble(pRW?.Sum(el => el.FixWeight));
             var ww = pRW?.Where(el=>el.IsLast);
@@ -218,12 +220,13 @@ namespace ModelMID
             RW = w;
             if (w != null)
             {
-                if (w.Quantity != w.FixWeightQuantity)
+                //if (w.Quantity != w.FixWeightQuantity)
                 {
                     StateScale = eStateScale.NotDefine;
                     if (w.WeightFact != -1 && w.AllWeights != null && w.AllWeights.Count() > 0)
                         StartWeightNewGoogs(BeforeWeight, w.AllWeights, Convert.ToDouble(w.Quantity - w.FixWeightQuantity));
-                }   
+                }  
+                
             }
         }
 
@@ -239,7 +242,7 @@ namespace ModelMID
             BeforeСurrentlyWeight = 0;
 
             TooLightWeight = WaitWeight.Max(r => r.Max) <= Delta;
-            StateScale = eStateScale.WaitGoods;
+            StateScale = eStateScale.NotDefine;
             //FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"(pBeforeWeight={pBeforeWeight},pWeight={pWeight.ToJSON()},pQuantity={pQuantity},{RW.NameWares})", eTypeLog.Full);
         }
 
@@ -334,7 +337,7 @@ namespace ModelMID
                 }
             }
 
-            if(Math.Abs (BeforeFullWeight-curFullWeight) < Delta/2)
+            if(Math.Abs (BeforeFullWeight-curFullWeight) > Delta/2)
             {
                 BeforeFullWeight = curFullWeight;
                 if (StateScale == NewStateScale && NewStateScale!= eStateScale.Stabilized )

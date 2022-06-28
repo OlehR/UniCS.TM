@@ -168,6 +168,7 @@ namespace Front
                 {
                     SetCurReceipt(pReceipt);
                     string ExciseStamp = null;
+                    bool IsDel = false;
                     if (CurWares != null)
                     {
                         var lw = curReceipt?.Wares?.Where(r => r.CodeWares == CurWares.CodeWares);
@@ -178,9 +179,12 @@ namespace Front
                             if (!string.IsNullOrEmpty(ExciseStamp))
                                 CurWares.ExciseStamp = ExciseStamp;
                         }
+                       
                         //Видалили товар але список не пустий.
                         if ((lw == null || lw.Count() == 0) && CurWares != null && curReceipt != null && curReceipt.Wares != null && curReceipt.Wares.Any() && curReceipt.Equals(CurWares))
                         {
+                            IsDel = true;
+                            /*
                             CurWares.Quantity = 0;
 
                             foreach (var e in curReceipt.Wares.Where(el => el.IsLast = true))
@@ -190,14 +194,14 @@ namespace Front
                             var r = curReceipt.Wares.ToList();
                             CurWares.IsLast = true;
                             r.Add(CurWares);
-                            CS.StartWeightNewGoogs(r);
-                            return;
+                            curReceipt.Wares = r;
+                            */
                         }
                     }
                     if (curReceipt?.Wares?.Count() == 0)
                         CS.WaitClear();
 
-                    CS.StartWeightNewGoogs(curReceipt?.Wares);
+                    CS.StartWeightNewGoogs(curReceipt?.Wares, IsDel ? CurWares : null) ;
                 }
                 catch (Exception e)
                 {
@@ -251,7 +255,7 @@ namespace Front
             {
                 if (TypeAccessWait > 0 && !(TypeAccessWait == eTypeAccess.FixWeight && CS.StateScale == eStateScale.WaitClear))//TypeAccessWait != eTypeAccess.NoDefinition 
                 {
-                    SetConfirm(pUser, true);
+                    SetConfirm(pUser);
                     return;
                 }
 
@@ -394,7 +398,7 @@ namespace Front
                     Bl.OnAdminBarCode?.Invoke(u);
             
         }
-        void SetConfirm(User pUser, bool pIsFirst)
+        bool SetConfirm(User pUser, bool pIsFirst = false,bool pIsAccess=false )
         {
             if (pUser == null)
             {
@@ -416,7 +420,7 @@ namespace Front
                         SetStateView(eStateMainWindows.WaitAdmin);
                         break;
                 }
-                return;
+                return true;
             }
 
             IsIgnoreExciseStamp = Access.GetRight(pUser, eTypeAccess.ExciseStamp);
@@ -424,12 +428,13 @@ namespace Front
             IsFixWeight = Access.GetRight(pUser, eTypeAccess.FixWeight);
 
             if (TypeAccessWait == eTypeAccess.NoDefinition || TypeAccessWait < 0)
-                return;
-            if (!Access.GetRight(pUser, TypeAccessWait))
+                return false;
+            if (!Access.GetRight(pUser, TypeAccessWait) && !pIsAccess)
             {
-                ShowErrorMessage($"Не достатньо прав для операції {TypeAccessWait} в {pUser.NameUser}");
+                if(!pIsFirst)
+                    ShowErrorMessage($"Не достатньо прав для операції {TypeAccessWait} в {pUser.NameUser}");
 //                MessageBox.Show($"Не достатньо прав для операції {TypeAccessWait} в {pUser.NameUser}");
-                return;
+                return false;
             }
 
             switch (TypeAccessWait)
@@ -438,6 +443,7 @@ namespace Front
                     if (curReceipt?.IsLockChange == false)
                     {
                         Bl.ChangeQuantity(CurWares, 0);
+                        CurWares.Quantity = 0;
                         TypeAccessWait = eTypeAccess.NoDefinition;
                         SetStateView(eStateMainWindows.WaitInput);
                     }
@@ -464,6 +470,7 @@ namespace Front
                     SetStateView(eStateMainWindows.WaitAdmin);
                     break;
             }
+            return true;
            
         }  
         void SetWaitConfirm(eTypeAccess pTypeAccess, ReceiptWares pRW = null)
@@ -657,17 +664,9 @@ namespace Front
             {
                 var el = btn.DataContext as ReceiptWares;
                 if (el == null)
-                {
                     return;
-                }
-                if (Access.GetRight(eTypeAccess.DelWares) || !el.IsConfirmDel)
-                {
-                    if (curReceipt?.IsLockChange == false)
-                    {
-                        Bl.ChangeQuantity(el, 0);
-                    }
-                }
-                else
+                TypeAccessWait = eTypeAccess.NoDefinition;
+                if (! SetConfirm(Access.СurUser,true, !el.IsConfirmDel))
                     SetWaitConfirm(eTypeAccess.DelWares, el);
             }
         }
@@ -1039,7 +1038,7 @@ namespace Front
         }
         private void LoginCancel(object sender, RoutedEventArgs e)
         {
-            SetConfirm(null, true);
+            SetConfirm(null);
         }
         private void LoginButton(object sender, RoutedEventArgs e)
         {
