@@ -259,8 +259,10 @@ namespace Front
                 {
                     SetStateView(eStateMainWindows.WaitInput);
                     //Admin ad = new Admin(U, this,EF);
-
-                    ad.WindowState = WindowState.Maximized;
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        ad.WindowState = WindowState.Maximized;
+                    }));
                 }
                 else
                 {
