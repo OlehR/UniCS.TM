@@ -264,6 +264,11 @@ namespace ModelMID
                     //Якщо вийшли за межі похибки
                     if (Math.Abs(СurrentlyWeight) > Delta)
                     {
+                        if (Math.Abs(BeforeСurrentlyWeight - СurrentlyWeight) > Delta / 2d)
+                        {
+                            NewStateScale = eStateScale.NotDefine;
+                            BeforeСurrentlyWeight = СurrentlyWeight;
+                        }
                         NewStateScale = eStateScale.NotStabilized;
                         //StartTimer();
                     }
