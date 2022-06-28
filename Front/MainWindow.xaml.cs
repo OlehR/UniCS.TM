@@ -971,7 +971,7 @@ namespace Front
         }
         private void ShowErrorMessage(string ErrorMessage)
         {
-            Background.Visibility = Visibility.Visible;
+            ErrorBackground.Visibility = Visibility.Visible;
             ErrorWindows.Visibility = Visibility.Visible;
             ErrorText.Text = ErrorMessage;
         }
@@ -1288,7 +1288,13 @@ namespace Front
                 Regex regex = new Regex(customWindow.ValidationMask);
                 CustomWindowValidText = regex.IsMatch(textBox.Text);
             }
-        }                
+        }
+
+        private void ButtonOkErrorWin(object sender, RoutedEventArgs e)
+        {
+            ErrorBackground.Visibility = Visibility.Collapsed;
+            ErrorWindows.Visibility = Visibility.Collapsed;
+        }
     }
 
 }
