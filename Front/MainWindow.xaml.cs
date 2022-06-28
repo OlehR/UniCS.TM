@@ -261,6 +261,7 @@ namespace Front
                     //Admin ad = new Admin(U, this,EF);
                     Dispatcher.Invoke(new Action(() =>
                     {
+                        ad.Init(pUser);
                         ad.WindowState = WindowState.Maximized;
                     }));
                 }
@@ -318,7 +319,7 @@ namespace Front
             MoneySum = "0";
             Volume = true;
 
-            ad = new Admin(new User() { NameUser="xxxxx"}, this, EF);
+            ad = new Admin( this, EF);
             ad.WindowState = WindowState.Minimized;
             ad.Show();
             

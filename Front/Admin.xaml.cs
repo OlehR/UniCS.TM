@@ -24,7 +24,6 @@ namespace Front
     {
         public event PropertyChangedEventHandler PropertyChanged;
         EquipmentFront EF;
-        ObservableCollection<Equipment> LE;
         ObservableCollection<Receipt> Receipts;
         ObservableCollection<ParsLog> LogsCollection;
         public string TypeLog { get; set; } = "Full";
@@ -37,15 +36,15 @@ namespace Front
         public DateTime DateSoSearch { get; set; } = DateTime.Now.Date;
         public string KasaNumber { get { return Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace).Name; } }
 
-        public void ControlScale( double pWeight,bool pIsStable )
+        public void ControlScale(double pWeight, bool pIsStable)
         {
-            ControlScaleWeightDouble = Convert.ToString(pWeight+100000);
+            ControlScaleWeightDouble = Convert.ToString(pWeight + 100000);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ControlScaleWeightDouble"));
         }
 
-        public Admin(User AdminUser, MainWindow pMW, EquipmentFront pEF)
+        public Admin(MainWindow pMW, EquipmentFront pEF)
         {
-            
+
             MW = pMW;
             //EF = EquipmentFront.GetEquipmentFront;
             Bl = BL.GetBL;
@@ -57,20 +56,18 @@ namespace Front
                 ControlScaleWeightDouble = Convert.ToString(pWeight + 100000);
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ControlScaleWeightDouble"));
             };
-            
-            
+
+
             InitializeComponent();
 
-            
-            if (EF != null)
-                LE = new ObservableCollection<Equipment>(EF.GetListEquipment);
-            ListEquipment.ItemsSource = LE;
+
+
             //поточний час
             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += timer_Tick;
             timer.Start();
-            adminastratorName.Text = AdminUser.NameUser;
+
 
             string AllLog = File.ReadAllText(Utils.FileLogger.GetFileName);
             string[] temp = AllLog.Split($"{Environment.NewLine}[");
@@ -91,6 +88,12 @@ namespace Front
 
             CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(ListLog.ItemsSource);
             view.Filter = LogFilter;
+        }
+        public void Init(User AdminUser)
+        {
+            adminastratorName.Text = AdminUser.NameUser;
+            if (EF != null)
+            ListEquipment.ItemsSource = new ObservableCollection<Equipment>(EF.GetListEquipment);
         }
         private bool LogFilter(object item)
         {
@@ -129,7 +132,7 @@ namespace Front
         {
             var task = Task.Run(() =>
             {
-                var r = EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod()});
+                var r = EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() });
                 Bl.InsertLogRRO(r);
             });
         }
@@ -138,7 +141,7 @@ namespace Front
         {
             var task = Task.Run(() =>
             {
-                var r = EF.RroPrintZ(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() });               
+                var r = EF.RroPrintZ(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() });
                 Bl.InsertLogRRO(r);
             });
         }
@@ -179,7 +182,7 @@ namespace Front
                 Equipment Eq = btn.DataContext as Equipment;
                 if (Eq != null)
                 {
-                    var res=Eq.TestDevice();
+                    var res = Eq.TestDevice();
                     MessageBox.Show($"{res.StateEquipment} {res.TextState}", res.ModelEquipment.ToString());
                 }
             }
@@ -193,7 +196,7 @@ namespace Front
                 Equipment Eq = btn.DataContext as Equipment;
                 if (Eq != null)
                 {
-                    var res=Eq.GetDeviceInfo();
+                    var res = Eq.GetDeviceInfo();
                     MessageBox.Show(res, Eq.Model.ToString());
                 }
             }
