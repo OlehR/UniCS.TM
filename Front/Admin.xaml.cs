@@ -89,11 +89,12 @@ namespace Front
             CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(ListLog.ItemsSource);
             view.Filter = LogFilter;
         }
-        public void Init(User AdminUser)
+        public void Init(User AdminUser = null)
         {
-            adminastratorName.Text = AdminUser.NameUser;
+            if (AdminUser != null)
+                adminastratorName.Text = AdminUser.NameUser;
             if (EF != null)
-            ListEquipment.ItemsSource = new ObservableCollection<Equipment>(EF.GetListEquipment);
+                ListEquipment.ItemsSource = new ObservableCollection<Equipment>(EF.GetListEquipment);
         }
         private bool LogFilter(object item)
         {
@@ -209,6 +210,25 @@ namespace Front
                 DateTime dt = DateTime.Now.Date;
                 Receipts = new ObservableCollection<Receipt>(Bl.GetReceipts(dt, dt, Global.IdWorkPlace));
                 ListReceipts.ItemsSource = Receipts;
+            }
+            string tabItem = ((sender as TabControl).SelectedItem as TabItem).Header as string;
+
+            switch (tabItem)
+            {
+                case "Зміна":
+                    break;
+
+                case "Пристрої":
+                    Init();
+                    break;
+
+                case "Історія":
+                    break;
+                case "Помилки":
+                    break;
+
+                default:
+                    return;
             }
         }
 
