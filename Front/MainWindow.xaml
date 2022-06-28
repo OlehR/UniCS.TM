@@ -1330,13 +1330,19 @@
                  Name="Background" Visibility="Collapsed" Grid.ZIndex="1" 
                 Opacity="0.9"/>
 
+        <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="0" Grid.RowSpan="5"
+                Grid.Column="0" Grid.ColumnSpan="4"
+                 Name="ErrorBackground" Visibility="Collapsed" Grid.ZIndex="1" 
+                Opacity="0.5"/>
+
 
 
         <!-- Вікно помилки   -->
         <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
                 Grid.Column="1" Grid.ColumnSpan="4"
-                 Name="ErrorWindows" Visibility="Visible" Grid.ZIndex="2" 
+                 Name="ErrorWindows" Visibility="Collapsed" Grid.ZIndex="2" 
                 CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
             <Border.Effect>
                 <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
@@ -1349,12 +1355,12 @@
                 </Grid.RowDefinitions>
 
                 <StackPanel Grid.Row="0" VerticalAlignment="Center">
-                    <Image  Source="icons\clock.png" Width="50" Margin="15"/>
+                    <Image  Source="icons\warning.png" Width="50" Margin="15"/>
                     <TextBlock  HorizontalAlignment="Center" Foreground="Black" FontSize="28" Text="Виникла помилка!"/>
                     <TextBlock HorizontalAlignment="Center"  Margin="0,10,0,10" Name="ErrorText"
                                   FontSize="24" TextWrapping="Wrap" ></TextBlock>
                 </StackPanel>
-                <Button   FontSize="22" Click="_Cancel"  Grid.Row="1" Style="{StaticResource Default}"
+                <Button   FontSize="22" Click="ButtonOkErrorWin"  Grid.Row="1" Style="{StaticResource Default}"
                         Height="80" Width="300" VerticalAlignment="Center">
                     <StackPanel Orientation="Horizontal">
                         <Image  Height="30" Width="30"  Source="icons\right.png"></Image>
