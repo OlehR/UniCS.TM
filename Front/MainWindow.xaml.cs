@@ -493,11 +493,20 @@ namespace Front
                         else
                             if (IsLockSale) Res = eTypeAccess.LockSale;
                         else
-                            if (!CS.IsOk) Res = eTypeAccess.FixWeight;
+                            if (curReceipt?.IsNeedExciseStamp == true)
+                        {
+                            Res = eTypeAccess.NoDefinition;
+                            pSMV = eStateMainWindows.WaitExciseStamp;
+                            //Res = eTypeAccess.ExciseStamp;
+                        }
                         else
-                            if(curReceipt?.IsNeedExciseStamp==true) Res = eTypeAccess.ExciseStamp;
-                        SetWaitConfirm(Res);
-                        return;
+                            if (!CS.IsOk) Res = eTypeAccess.FixWeight;
+
+                        if (pSMV != eStateMainWindows.WaitExciseStamp)
+                        {
+                            SetWaitConfirm(Res);
+                            return;
+                        }
                     }
                    
                         if (pSMV != eStateMainWindows.NotDefine)
@@ -1082,8 +1091,9 @@ namespace Front
         {
             if (CurWares.AddExciseStamp(pES))
             {                 //Додання акцизноії марки до алкоголю
-                SetStateView(eStateMainWindows.WaitInput);
                 Bl.UpdateExciseStamp(new List<ReceiptWares>() { CurWares });
+                TypeAccessWait = eTypeAccess.NoDefinition;
+                SetStateView(eStateMainWindows.WaitInput);               
             }
             else
                 ShowErrorMessage($"Дана акцизна марка вже використана");
