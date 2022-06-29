@@ -352,7 +352,7 @@ namespace SharedLib
                     Text = "Зробіть вибір",
                     Caption = "Вибір карточки клієнта",
                     AnswerRequired = true,
-                    Buttons = r.Select(el => new CustomButton() { Id = el.CodeClient, Text = el.NameClient })
+                    Buttons = (System.Collections.ObjectModel.ObservableCollection<CustomButton>)r.Select(el => new CustomButton() { Id = el.CodeClient, Text = el.NameClient })
                 };
                 //PathPicture = @"icons\Signal.png",
                 //customWindow.ValidationMask = "Щось)";               

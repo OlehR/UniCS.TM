@@ -374,7 +374,7 @@
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
                  Grid.Column="0" Grid.ColumnSpan="6"
-                 Name="ExciseStamp" Visibility="Collapsed" Grid.ZIndex="2" 
+                 Name="ExciseStamp" Visibility="Visible" Grid.ZIndex="2" 
                 CornerRadius="10"  Margin="10,0,10,0" >
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
@@ -447,7 +447,7 @@
                             </Button.Style>
                         </Button>
 
-                        <TextBox Grid.Row="3" TabIndex="1" Name="TBExciseStamp"
+                        <TextBox Grid.Row="3" TabIndex="1" Name="TBExciseStampOLD"
                                  TextChanged="ChangedExciseStamp"
                                  FontSize="25"  VerticalAlignment="Center" />
                         <TextBlock Grid.Row="4" Foreground="Red" HorizontalAlignment="Center" FontSize="16"  VerticalAlignment="Top"
@@ -633,22 +633,26 @@
             <!-- Очікування Адміністратора   -->
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
-                Grid.Column="1" Grid.ColumnSpan="4"
-                 Name="WaitAdmin" Visibility="Collapsed" Grid.ZIndex="2" 
-                CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+                Grid.Column="0" Grid.ColumnSpan="10"
+                 Name="WaitAdmin" Visibility="Visible" Grid.ZIndex="2" 
+                CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    MinHeight="500" MinWidth="700">
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
                 </Border.Effect>
 
-                <Grid  Width="700" Height="500">
+                <Grid  >
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="3*"></RowDefinition>
-                        <RowDefinition Height="2*"></RowDefinition>
+                        <RowDefinition Height="200"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
                     </Grid.RowDefinitions>
 
                     <StackPanel Grid.Row="0" VerticalAlignment="Center">
-                        <Image  Source="icons\clock.png" Width="50" Margin="15"/>
-                        <TextBlock  HorizontalAlignment="Center" Foreground="Black" FontSize="28" Text="{DynamicResource WaitAdmin }"/>
+                        <Image  Source="icons\clock.png" Width="50" Margin="15"
+                                x:Name="WaitAdminImage"/>
+                        <TextBlock  HorizontalAlignment="Center" Foreground="Black" FontSize="28"
+                                    Name="WaitAdminTitle"
+                                    Text="{DynamicResource WaitAdmin }"/>
                         <TextBlock HorizontalAlignment="Center"  Margin="0,10,0,10"
                                    Text="{Binding WaitAdminText, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" FontSize="24" TextWrapping="Wrap" ></TextBlock>
@@ -657,6 +661,11 @@
                         HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,30,0"
                         Click="ButtonAdmin"/>
                     <StackPanel Grid.Row="1" Margin="5" VerticalAlignment="Center">
+
+                        <TextBox TabIndex="1" Name="TBExciseStamp" Margin="5" Visibility="Visible"
+                                 TextChanged="ChangedExciseStamp"
+                                 FontSize="25"  VerticalAlignment="Center" />
+                        
                         <ItemsControl Name="CustomButtonsWaitAdmin" VerticalAlignment="Center">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
@@ -681,8 +690,8 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                        <Button   FontSize="22" Click="_Cancel" 
-                        Height="80" Width="300" VerticalAlignment="Center">
+                        <Button   FontSize="22" Click="_Cancel" x:Name="WaitAdminCancel"
+                        Height="80" Width="300" VerticalAlignment="Center" Visibility="Collapsed">
                             <StackPanel Orientation="Horizontal">
                                 <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
                                 <TextBlock FontSize="28"  Text="{DynamicResource cancel}" Margin="5,0,0,5"/>
@@ -703,6 +712,15 @@
                                 </Style>
                             </Button.Style>
                         </Button>
+                        <keyboard:OnScreenKeyboard Grid.Row="5"
+                                                   Visibility="Visible"
+                                                   Height="250"
+                                                   Width="900"
+                                                   x:Name="KBAdmin"                                  
+                                                   VerticalAlignment="Top" 
+                                                   ActiveContainer="{Binding ElementName=WaitAdmin}"
+                                                   ToggleButtonStyle="{StaticResource DefaultTouchToggleButtonStyle}"
+                                                   CancelCommand="{Binding CancelCommand2}" Grid.RowSpan="2"/>
                     </StackPanel>
 
                 </Grid>
@@ -1176,7 +1194,7 @@
             </Border>
 
             <!-- Підтвердження віку ПОПЕРЕДЖЕННЯ  -->
-            <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
+            <!--<Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="5"
                  Grid.Column="1" Grid.ColumnSpan="4"
                  Name="ConfirmAgeMessage" Visibility="Collapsed" Grid.ZIndex="2" 
@@ -1207,7 +1225,7 @@
                         </StackPanel>
                     </Button>
                 </Grid>
-            </Border>
+            </Border>-->
 
             <!-- Підтвердити вік ТАК/НІ   -->
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
@@ -1279,7 +1297,7 @@
                 <TextBlock FontSize="14" Text="{DynamicResource buyBag}"/>
             </Button>
             <Button  Grid.Column="3"  Grid.Row="0" Grid.RowSpan="2" FontSize="22" Click="_ButtonPayment">
-                
+
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">
                         <Image Width="25">
@@ -1298,7 +1316,7 @@
                                 </Style>
                             </Image.Style>
                         </Image>
-                    <TextBlock FontSize="28" Text="{DynamicResource payment}"/>
+                        <TextBlock FontSize="28" Text="{DynamicResource payment}"/>
                     </StackPanel>
                 </Button.Content>
                 <Button.Style>
@@ -1316,7 +1334,7 @@
                         </Style.Triggers>
                     </Style>
                 </Button.Style>
-               
+
 
             </Button>
         </Grid>

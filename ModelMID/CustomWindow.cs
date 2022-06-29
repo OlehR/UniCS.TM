@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 
 namespace ModelMID
@@ -8,7 +9,8 @@ namespace ModelMID
     {
         ChoiceClient,
         PhoneClient,
-        ConfirmWeight
+        ConfirmWeight,
+        ExciseStamp
     }
 
     public class CustomWindow
@@ -48,7 +50,7 @@ namespace ModelMID
         /// В скільки рядків розміщати кнопки.
         /// </summary>
         public int ColumnButtons { get; set; } = 1;
-        public IEnumerable<CustomButton> Buttons { get; set; }
+        public ObservableCollection<CustomButton> Buttons { get; set; }
 
         public bool IsCancelButton { get; set; } = true;
     }
