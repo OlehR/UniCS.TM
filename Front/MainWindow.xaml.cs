@@ -546,6 +546,7 @@ namespace Front
                     ConfirmAge.Visibility = Visibility.Collapsed;
                     WaitKashier.Visibility = Visibility.Collapsed;
                     CustomWindows.Visibility = Visibility.Collapsed;
+                    ErrorBackground.Visibility =Visibility.Collapsed;
 
                     CaptionCustomWindows.Visibility = Visibility.Visible;
                     ImageCustomWindows.Visibility = Visibility.Visible;

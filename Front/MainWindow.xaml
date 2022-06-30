@@ -634,7 +634,7 @@
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
                 Grid.Column="0" Grid.ColumnSpan="10"
-                 Name="WaitAdmin" Visibility="Visible" Grid.ZIndex="2" 
+                 Name="WaitAdmin" Visibility="Collapsed" Grid.ZIndex="2" 
                 CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center"
                     MinHeight="500" MinWidth="700">
                 <Border.Effect>
