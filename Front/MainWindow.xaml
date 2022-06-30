@@ -374,7 +374,7 @@
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
                  Grid.Column="0" Grid.ColumnSpan="6"
-                 Name="ExciseStamp" Visibility="Visible" Grid.ZIndex="2" 
+                 Name="ExciseStamp" Visibility="Collapsed" Grid.ZIndex="2" 
                 CornerRadius="10"  Margin="10,0,10,0" >
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
@@ -643,7 +643,7 @@
 
                 <Grid  >
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="200"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
                         <RowDefinition Height="*"></RowDefinition>
                     </Grid.RowDefinitions>
 
@@ -651,8 +651,12 @@
                         <Image  Source="icons\clock.png" Width="50" Margin="15"
                                 x:Name="WaitAdminImage"/>
                         <TextBlock  HorizontalAlignment="Center" Foreground="Black" FontSize="28"
-                                    Name="WaitAdminTitle"
+                                    Name="WaitAdminTitle" 
                                     Text="{DynamicResource WaitAdmin }"/>
+                        <TextBlock  HorizontalAlignment="Center" Foreground="Black" FontSize="28"
+                                    Name="ExciseStampNameWares"
+                                    Text="{Binding CurWaresName, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}"/>
                         <TextBlock HorizontalAlignment="Center"  Margin="0,10,0,10"
                                    Text="{Binding WaitAdminText, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" FontSize="24" TextWrapping="Wrap" ></TextBlock>
@@ -665,8 +669,56 @@
                         <TextBox TabIndex="1" Name="TBExciseStamp" Margin="5" Visibility="Visible"
                                  TextChanged="ChangedExciseStamp"
                                  FontSize="25"  VerticalAlignment="Center" />
+
+
+                        <Grid x:Name="ExciseStampButtons" Visibility="Collapsed">
+                            <Button Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                                Click="AddExciseStamp"  Height="40" Width="150" Margin="5,0,0,5">
+                                <Button.Content>
+                                    <TextBlock FontSize="24" Text="{DynamicResource ok}" Margin="5,0,0,5"/>
+                                </Button.Content>
+                                <Button.Style>
+                                    <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                                        <Setter Property="IsEnabled" Value="True"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsExciseStamp, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                                <Setter Property="IsEnabled" Value="True" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsExciseStamp, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                                <Setter Property="IsEnabled" Value="False" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+
+                            <Button Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                                Click="ExciseStampNone" Height="40" Width="300" Margin="0,0,5,5">
+                                <Button.Content>
+                                    <TextBlock FontSize="24" Text="{DynamicResource ExciseStampEmpty}" Margin="5,0,0,5"/>
+                                </Button.Content>
+                                <Button.Style>
+                                    <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                        <Setter Property="IsEnabled" Value="True"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsIgnoreExciseStamp, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                                <Setter Property="IsEnabled" Value="True" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsIgnoreExciseStamp, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                                <Setter Property="IsEnabled" Value="False" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </Grid>
                         
-                        <ItemsControl Name="CustomButtonsWaitAdmin" VerticalAlignment="Center">
+                        
+                        <ItemsControl Name="WaitAdminWeightButtons" VerticalAlignment="Center">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Button Height="Auto" Width="Auto" Content="{Binding Text}" HorizontalAlignment="Center" 
@@ -690,6 +742,31 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
+
+                        <ItemsControl Name="CustomButtonsWaitAdmin" >
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate >
+                                    <Button Height="Auto" Width="Auto" Content="{Binding Text}"  
+                                            Click="CustomWindowClickButton" HorizontalAlignment="Center">
+                                        <Button.Style>
+                                            <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Buttons.IsAdmin}" Value="true">
+                                                        <Setter Property="IsEnabled" Value="False" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Buttons.IsAdmin}" Value="false">
+                                                        <Setter Property="IsEnabled" Value="False" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+
+
                         <Button   FontSize="22" Click="_Cancel" x:Name="WaitAdminCancel"
                         Height="80" Width="300" VerticalAlignment="Center" Visibility="Collapsed">
                             <StackPanel Orientation="Horizontal">
@@ -1343,7 +1420,7 @@
 
 
         <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
-                 Grid.Row="1" Grid.RowSpan="3"
+                 Grid.Row="1" Grid.RowSpan="4"
                 Grid.Column="0" Grid.ColumnSpan="4"
                  Name="Background" Visibility="Collapsed" Grid.ZIndex="1" 
                 Opacity="0.9"/>

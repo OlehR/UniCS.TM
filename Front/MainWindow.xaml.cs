@@ -72,6 +72,7 @@ namespace Front
         public string ClientName { get { return curReceipt != null && curReceipt.CodeClient == Client?.CodeClient ? Client?.NameClient : "Відсутній клієнт"; } }
         public bool IsPresentFirstTerminal { get { return EF.BankTerminal1 != null; } }
         public bool IsPresentSecondTerminal { get { return EF.BankTerminal2 != null; } }
+        public string CurWaresName { get { return CurWares != null? CurWares.NameWares : " "; } }
         public string NameFirstTerminal
         {
             get
@@ -470,6 +471,10 @@ namespace Front
                 case eTypeAccess.FixWeight:
                     SetStateView(eStateMainWindows.WaitAdmin);
                     break;
+                case eTypeAccess.ExciseStamp:
+                    TypeAccessWait = eTypeAccess.NoDefinition;
+                    SetStateView(eStateMainWindows.WaitAdmin);
+                    break;
             }
             return true;
 
@@ -553,6 +558,10 @@ namespace Front
                     WaitAdminCancel.Visibility = Visibility.Visible;
                     TBExciseStamp.Visibility = Visibility.Collapsed;
                     KBAdmin.Visibility = Visibility.Collapsed;
+                    ExciseStampButtons.Visibility = Visibility.Collapsed;
+                    ExciseStampNameWares.Visibility = Visibility.Collapsed;
+                    WaitAdminTitle.Visibility = Visibility.Visible;
+
                     StartVideo.Stop();
 
                     switch (State)
@@ -597,15 +606,22 @@ namespace Front
                                 case eTypeAccess.FixWeight:
                                 case eTypeAccess.AddNewWeight:
                                     //case eTypeAccess.
-                                    CustomButtonsWaitAdmin.ItemsSource = customWindowButtons;
+                                    WaitAdminWeightButtons.ItemsSource = customWindowButtons;
                                     break;
                                 case eTypeAccess.ExciseStamp:
                                     ExciseStampCustomWindow();
+                                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CurWaresName"));
+                                    TBExciseStamp.Text = "";
                                     WaitAdminImage.Visibility = Visibility.Collapsed;
                                     WaitAdminCancel.Visibility = Visibility.Collapsed;
                                     TBExciseStamp.Visibility = Visibility.Visible;
                                     KBAdmin.Visibility = Visibility.Visible;
-                                    
+                                    ExciseStampButtons.Visibility=Visibility.Visible;
+                                    ExciseStampNameWares.Visibility=Visibility.Visible;
+                                    WaitAdminTitle.Visibility = Visibility.Collapsed;
+                                   // CustomButtonsWaitAdmin.ItemsSource = customWindow.Buttons;
+
+
                                     break;
                                 default:
                                     CustomButtonsWaitAdmin.ItemsSource = null;
@@ -851,7 +867,7 @@ namespace Front
                 {
                     if (CurWares.TypeWares == eTypeWares.Alcohol)
                     {
-                        SetWaitConfirm(eTypeAccess.ExciseStamp,null);
+                        SetWaitConfirm(eTypeAccess.ExciseStamp,CurWares);
                         return;
                     }
 
@@ -1312,11 +1328,10 @@ namespace Front
                 Caption = "Назва товару",
                 AnswerRequired = true,
                 ValidationMask = @"^\w{4}[0-9]{6}?$",
-                Buttons = new ObservableCollection<CustomButton>() {new CustomButton() { Id = 666, Text = "Ok", IsAdmin = false},
-                                                                    new CustomButton() { Id = 2, Text = "Добавити вагу", IsAdmin = true } }
+                Buttons = new ObservableCollection<CustomButton>() {new CustomButton() { Id = 31, Text = "Ok", IsAdmin = false},
+                                                                    new CustomButton() { Id = 32, Text = "Акцизний код відсутній", IsAdmin = true } }
             };
-
-            SetStateView(eStateMainWindows.WaitCustomWindows);
+            
         }
 
         private void CustomWindowVerificationText(object sender, TextChangedEventArgs e)
