@@ -32,7 +32,7 @@ namespace Front.Models
         /// <summary>
         /// Очікуєм введення акцизної мрки
         /// </summary>
-        WaitExciseStamp,
+        //WaitExciseStamp,
         /// <summary>
         /// В режимі пошуку товару
         /// </summary>

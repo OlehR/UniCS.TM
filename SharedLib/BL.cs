@@ -589,7 +589,10 @@ namespace SharedLib
             var r = pRW.Where(e => e.ExciseStamp != null && e.ExciseStamp.Length > 0);
             try
             {
-                return db.UpdateExciseStamp(r);
+                bool Res= db.UpdateExciseStamp(r);
+                var res = GetReceiptHead(pRW.First(), true);
+                Global.OnReceiptCalculationComplete?.Invoke(res);
+                return Res;
             }
             catch (Exception e)
             {

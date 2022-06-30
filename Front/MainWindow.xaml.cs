@@ -380,7 +380,7 @@ namespace Front
         }
         public void GetBarCode(string pBarCode, string pTypeBarCode)
         {
-            if (State == eStateMainWindows.WaitExciseStamp)
+            if (TypeAccessWait == eTypeAccess.ExciseStamp)
             {
                 string ExciseStamp = GetExciseStamp(pBarCode);
                 if (!string.IsNullOrEmpty(ExciseStamp))
@@ -489,8 +489,9 @@ namespace Front
         {
             Dispatcher.BeginInvoke(new ThreadStart(() =>
                 {
-                    if (!(!IsLockSale && EF.StatCriticalEquipment == eStateEquipment.On && Bl.ds.IsReady && CS.IsOk && curReceipt?.IsNeedExciseStamp == false) &&
-                     !(pSMV == eStateMainWindows.WaitAdmin || pSMV == eStateMainWindows.WaitAdminLogin))
+                    if (!(!IsLockSale && EF.StatCriticalEquipment == eStateEquipment.On && Bl.ds.IsReady && CS.IsOk && curReceipt?.IsNeedExciseStamp == false)
+                     // && !(pSMV == eStateMainWindows.WaitAdmin || pSMV == eStateMainWindows.WaitAdminLogin)
+                     )
                     {
                         eTypeAccess Res = eTypeAccess.NoDefinition;
                         if (EF.StatCriticalEquipment != eStateEquipment.On) Res = eTypeAccess.ErrorEquipment;
@@ -501,16 +502,14 @@ namespace Front
                         else
                             if (curReceipt?.IsNeedExciseStamp == true)
                         {
-                            Res = eTypeAccess.NoDefinition;
-                            pSMV = eStateMainWindows.WaitExciseStamp;
-                            //Res = eTypeAccess.ExciseStamp;
+                            Res = eTypeAccess.ExciseStamp;                            
                         }
                         else
                             if (!CS.IsOk) Res = eTypeAccess.FixWeight;
 
-                        if (pSMV != eStateMainWindows.WaitExciseStamp)
+                        if (Res!=TypeAccessWait &&  Res != eTypeAccess.NoDefinition)
                         {
-                            SetWaitConfirm(Res);
+                            SetWaitConfirm(Res,CurWares);
                             return;
                         }
                     }
@@ -584,13 +583,13 @@ namespace Front
                             ChoicePrice.Visibility = Visibility.Visible;
 
                             break;
-                        case eStateMainWindows.WaitExciseStamp:
+                        //case eStateMainWindows.WaitExciseStamp:
                             //TBExciseStamp.Text = "";
                             //ExciseStamp.Visibility = Visibility.Visible;
                             //Background.Visibility = Visibility.Visible;
                             //BackgroundWares.Visibility = Visibility.Visible;
                             //TBExciseStamp.Focus();
-                            break;
+                           // break;
                         case eStateMainWindows.WaitWeight:
                             EF.StartWeight();
                             WeightWares.Visibility = Visibility.Visible;
