@@ -164,8 +164,8 @@
                     <ColumnDefinition Width="70*"></ColumnDefinition>
                     <ColumnDefinition Width="105*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Foreground="Black" Text="{DynamicResource markWareName}" Margin="10,0,0,0"/>
-                <TextBlock Grid.Column="4" Foreground="Black" Text="{DynamicResource markWareQuantity}" Margin="102,0,0,0" FontSize="14"/>
+                <TextBlock Grid.Column="0" Foreground="Black" Text="{DynamicResource markWareName}" HorizontalAlignment="Left"/>
+                <TextBlock Grid.Column="4" Foreground="Black" Text="{DynamicResource markWareQuantity}" HorizontalAlignment="Center" FontSize="14"/>
                 <TextBlock Grid.Column="5" Foreground="Black" Text="{DynamicResource markWareWeight}" FontSize="14" Margin="10,0,0,0"/>
                 <TextBlock Grid.Column="6" Foreground="Black" Text="{DynamicResource markWarePrice}" FontSize="14" Margin="10,0,0,0"/>
                 <TextBlock Grid.Column="7" Foreground="Black" Text="{DynamicResource markWareDiscount}" FontSize="14" Margin="10,0,0,0"/>
@@ -194,174 +194,155 @@
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <ScrollViewer Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="6"  Grid.RowSpan="6"
-                VerticalScrollBarVisibility="Auto" Name="SV_WaresList" Panel.ZIndex="2">
-                <ItemsControl  Name="WaresList" Background="{Binding GetBackgroundColor, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border  BorderBrush="Silver" BorderThickness="0,0,0,1" >
-                                <Grid Margin="10,0,0,0">
+
+            <ListBox  Name="WaresList" Background="{Binding GetBackgroundColor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" HorizontalContentAlignment="Stretch"
+                          Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="6"  Grid.RowSpan="6">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border  BorderBrush="Silver" BorderThickness="0,0,0,1" >
+                            <Grid Margin="10,0,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="7*"></ColumnDefinition>
+                                    <ColumnDefinition Width="3*"></ColumnDefinition>
+                                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                                    <ColumnDefinition Width="1.5*"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="100"/>
+                                </Grid.RowDefinitions>
+                                <!-- Устанавливаем две строки -->
+
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock Margin="0" Grid.Row="0" FontSize="12"  Text="{Binding GetStrWaresReceiptPromotion}" Visibility="{Binding IsReceiptPromotion,Converter={StaticResource BoolToHiddenConverter}}"/>
+                                    <TextBlock Margin="0" Grid.Row="1" FontSize="24"  Text="{Binding NameWares}" />
+                                </StackPanel>
+
+                                <Grid Grid.Column="1">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="7*"></ColumnDefinition>
-                                        <ColumnDefinition Width="3*"></ColumnDefinition>
                                         <ColumnDefinition Width="1*"></ColumnDefinition>
                                         <ColumnDefinition Width="1*"></ColumnDefinition>
                                         <ColumnDefinition Width="1*"></ColumnDefinition>
-                                        <ColumnDefinition Width="1.5*"></ColumnDefinition>
+                                        <ColumnDefinition Width="1*"></ColumnDefinition>
                                     </Grid.ColumnDefinitions>
-                                    <!-- Устанавливаем две строки -->
 
-                                    <Grid ShowGridLines="True" Visibility="Collapsed">
-
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="1*"></RowDefinition>
-                                            <RowDefinition Height="3*"></RowDefinition>
-                                        </Grid.RowDefinitions>
-                                        <TextBlock Margin="0" Grid.Row="0" FontSize="12"  Text="{Binding GetStrWaresReceiptPromotion}" Visibility="{Binding IsReceiptPromotion,Converter={StaticResource BoolToHiddenConverter}}">
-                                       <!-- <TextBlock.Resources>
-                                            <Style TargetType="TextBlock">
-                                            <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding GetStrWaresReceiptPromotion}" Value="">
-                                                        <Setter Property="Visibility" Value="Hidden"/>
-                                                    </DataTrigger>
-                                            </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Resources>
-            -->
-
-                                        </TextBlock>
-                                        <TextBlock Margin="0" Grid.Row="1" FontSize="24"  Text="{Binding NameWares}" />
-                                    </Grid>
-                                    <StackPanel Orientation="Vertical">
-                                        <TextBlock Margin="0" Grid.Row="0" FontSize="12"  Text="{Binding GetStrWaresReceiptPromotion}" Visibility="{Binding IsReceiptPromotion,Converter={StaticResource BoolToHiddenConverter}}"/>
-                                        <TextBlock Margin="0" Grid.Row="1" FontSize="24"  Text="{Binding NameWares}" />
-                                    </StackPanel>
-
-                                    <Grid Grid.Column="1">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="1*"></ColumnDefinition>
-                                            <ColumnDefinition Width="1*"></ColumnDefinition>
-                                            <ColumnDefinition Width="1*"></ColumnDefinition>
-                                            <ColumnDefinition Width="1*"></ColumnDefinition>
-                                        </Grid.ColumnDefinitions>
-
-                                        <Button x:Name="Delete" Click="_Delete">
-                                            <Button.Content>
-                                                <Image Margin="5" Source="icons\delete.png"></Image>
-                                            </Button.Content>
-                                            <Button.Style>
-                                                <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
-                                                    <Setter Property="IsEnabled" Value="False"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding IsDel}" Value="True">
-                                                            <Setter Property="IsEnabled" Value="True"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Button.Style>
-                                        </Button>
-                                        <Button x:Name="Minus" Click="BtnClickMinusPlus" Grid.Column="1">
-                                            <Button.Content>
-                                                <Image Margin="15" Source="icons\minus.png"></Image>
-                                            </Button.Content>
-                                            <Button.Style>
-                                                <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
-                                                    <Setter Property="IsEnabled" Value="False"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding IsMinus}" Value="True">
-                                                            <Setter Property="IsEnabled" Value="True"/>
-                                                        </DataTrigger>
-                                                        <!--  <DataTrigger Binding="{Binding ElementName=QuantityText, Path=Text}" Value="1">
-                                                            <Setter Property="IsEnabled" Value="False"/>
-                                                        </DataTrigger>-->
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Button.Style>
-                                        </Button>
-
-                                        <Button Grid.Column="2" Background="Transparent" BorderBrush="Transparent"
-                                            Click="_ChangeCountWares">
-                                            <Button.Style>
-                                                <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
-                                                    <Setter Property="IsEnabled" Value="True"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding IsPlus}" Value="True">
-                                                            <Setter Property="IsEnabled" Value="True" />
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding IsPlus}" Value="False">
-                                                            <Setter Property="IsEnabled" Value="False" />
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding IsCheckReturn, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                                            <Setter Property="IsEnabled" Value="True" />
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Button.Style>
-
-                                            <TextBlock x:Name="QuantityText" Grid.Column="2">
-                                                <TextBlock.Style>
-                                                    <Style TargetType="TextBlock">
-                                                        <Setter Property="Margin" Value="10"></Setter>
-                                                        <Setter Property="FontSize" Value="18"></Setter>
-                                                        <Setter Property="HorizontalAlignment" Value="Center"></Setter>
-                                                        <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                                                        <Setter Property="Text" Value="{Binding Quantity}"/>
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding IsWeight}" Value="True">
-                                                                <Setter Property="Text" Value="1"/>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </TextBlock.Style>
-                                            </TextBlock>
-                                        </Button>
-
-                                        <Button x:Name="Plus" Click="BtnClickMinusPlus" Grid.Column="3">
-                                            <Button.Content>
-                                                <Image Margin="15" Source="icons\plus.png"></Image>
-                                            </Button.Content>
-                                            <Button.Style>
-                                                <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
-                                                    <Setter Property="IsEnabled" Value="False"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding IsPlus}" Value="True">
-                                                            <Setter Property="IsEnabled" Value="True"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Button.Style>
-                                        </Button>
-
-                                    </Grid>
-
-                                    <TextBlock Grid.Column="2">
-                                        <TextBlock.Style>
-                                            <Style TargetType="TextBlock">
-                                                <Setter Property="Margin" Value="10"></Setter>
-                                                <Setter Property="FontSize" Value="18"></Setter>
-                                                <Setter Property="HorizontalAlignment" Value="Left"></Setter>
-                                                <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                                                <Setter Property="Text" Value="{Binding WeightBrutto}"/>
+                                    <Button x:Name="Delete" Click="_Delete">
+                                        <Button.Content>
+                                            <Image Margin="5" Source="icons\delete.png"></Image>
+                                        </Button.Content>
+                                        <Button.Style>
+                                            <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                                                <Setter Property="IsEnabled" Value="False"/>
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsWeight}" Value="True">
-                                                        <Setter Property="Text" Value="{Binding Quantity}"/>
+                                                    <DataTrigger Binding="{Binding IsDel}" Value="True">
+                                                        <Setter Property="IsEnabled" Value="True"/>
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
-                                    <TextBlock Grid.Column="3" Text="{Binding Price}" />
-                                    <TextBlock Grid.Column="4" Text="{Binding SumDiscount}" />
-                                    <TextBlock Grid.Column="5" Text="{Binding SumTotal}" FontWeight="Bold" FontSize="20"/>
+                                        </Button.Style>
+                                    </Button>
+                                    <Button x:Name="Minus" Click="BtnClickMinusPlus" Grid.Column="1">
+                                        <Button.Content>
+                                            <Image Margin="15" Source="icons\minus.png"></Image>
+                                        </Button.Content>
+                                        <Button.Style>
+                                            <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                                                <Setter Property="IsEnabled" Value="False"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsMinus}" Value="True">
+                                                        <Setter Property="IsEnabled" Value="True"/>
+                                                    </DataTrigger>
+                                                    <!--  <DataTrigger Binding="{Binding ElementName=QuantityText, Path=Text}" Value="1">
+                                                            <Setter Property="IsEnabled" Value="False"/>
+                                                        </DataTrigger>-->
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+
+                                    <Button Grid.Column="2" Background="Transparent" BorderBrush="Transparent"
+                                            Click="_ChangeCountWares" Width="100">
+                                        <Button.Style>
+                                            <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                                                <Setter Property="IsEnabled" Value="True"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsPlus}" Value="True">
+                                                        <Setter Property="IsEnabled" Value="True" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsPlus}" Value="False">
+                                                        <Setter Property="IsEnabled" Value="False" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsCheckReturn, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                                        <Setter Property="IsEnabled" Value="True" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+
+                                        <TextBlock x:Name="QuantityText" Grid.Column="2">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Margin" Value="10"></Setter>
+                                                    <Setter Property="FontSize" Value="18"></Setter>
+                                                    <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+                                                    <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                                    <Setter Property="Text" Value="{Binding Quantity}"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsWeight}" Value="True">
+                                                            <Setter Property="Text" Value="1"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </Button>
+
+                                    <Button x:Name="Plus" Click="BtnClickMinusPlus" Grid.Column="3">
+                                        <Button.Content>
+                                            <Image Margin="15" Source="icons\plus.png"></Image>
+                                        </Button.Content>
+                                        <Button.Style>
+                                            <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                                                <Setter Property="IsEnabled" Value="False"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsPlus}" Value="True">
+                                                        <Setter Property="IsEnabled" Value="True"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
 
                                 </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
+
+                                <TextBlock Grid.Column="2">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Margin" Value="10"></Setter>
+                                            <Setter Property="FontSize" Value="18"></Setter>
+                                            <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+                                            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                            <Setter Property="Text" Value="{Binding WeightBrutto}"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsWeight}" Value="True">
+                                                    <Setter Property="Text" Value="{Binding Quantity}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <TextBlock Grid.Column="3" Text="{Binding Price}" />
+                                <TextBlock Grid.Column="4" Text="{Binding SumDiscount}" />
+                                <TextBlock Grid.Column="5" Text="{Binding SumTotal}" FontWeight="Bold" FontSize="20"/>
+
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
             <!--ФОН-->
             <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
@@ -716,8 +697,8 @@
                                 </Button.Style>
                             </Button>
                         </Grid>
-                        
-                        
+
+
                         <ItemsControl Name="WaitAdminWeightButtons" VerticalAlignment="Center">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>

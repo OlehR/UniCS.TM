@@ -761,7 +761,7 @@ namespace Front
             _MoneySum = ListWares.Sum(r => r.SumTotal);
             MoneySum = _MoneySum.ToString();
             WaresQuantity = ListWares.Count().ToString();
-            SV_WaresList.ScrollToEnd();
+            //SV_WaresList.ScrollToEnd();
         }
 
         private void _ChangeLanguage(object sender, RoutedEventArgs e)
