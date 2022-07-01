@@ -310,7 +310,7 @@ namespace Front
                     case eStateScale.WaitGoods:
 
                         SetWaitConfirm(eTypeAccess.FixWeight, pRW); // SetStateView(eStateMainWindows.WaitWeight);
-                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WaitAdminText"));
+                        
                         break;
                     case eStateScale.Stabilized:
                         if (State == eStateMainWindows.WaitWeight || State == eStateMainWindows.WaitAdmin)
@@ -319,6 +319,7 @@ namespace Front
                             Bl.FixWeight(pRW);
                         break;
                 }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WaitAdminText"));
             };
 
             WaresQuantity = "0";

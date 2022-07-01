@@ -110,9 +110,10 @@ namespace ModelMID
         public eStateScale StateScale //{ get; set; } 
         { get { return _StateScale; }
             set
-            { if (_StateScale != value && value != eStateScale.NotDefine)
+            { if (_StateScale != value )
                 {
                     _StateScale = value;
+                    if( value != eStateScale.NotDefine)
                     OnStateScale?.Invoke(_StateScale, RW, СurrentlyWeight);
                     //new cStateScale() { StateScale = _StateScale, FixWeight = Convert.ToDecimal(MidlWeight.GetMidl), FixWeightQuantity = Convert.ToDecimal(Quantity) });
                     OnScalesLog("NewState", _StateScale.ToString());
