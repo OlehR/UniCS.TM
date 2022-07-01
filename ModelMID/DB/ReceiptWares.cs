@@ -225,20 +225,23 @@ namespace ModelMID
         public IEnumerable<decimal> AdditionalWeights { get; set; }
 
         public WaitWeight[] AllWeights
-        {   
+        {
             //Global.GetCoefDeltaWeight
-            get {
+            get
+            {
 
                 List<WaitWeight> res = AdditionalWeights != null && AdditionalWeights.Count() > 0 ?
-                        AdditionalWeights.Select(r => new WaitWeight(r, WeightDelta > 0 ? WeightDelta : WeightFact* Global.GetCoefDeltaWeight(r))).ToList()
+                        AdditionalWeights.Select(r => new WaitWeight(r, WeightDelta > 0 ? WeightDelta : WeightFact * Global.GetCoefDeltaWeight(r))).ToList()
                         : new List<WaitWeight>();
                 //res.Ins
                 if (WeightBrutto > 0)
-                    res.Add(new WaitWeight(WeightBrutto, WeightDelta > 0 ? WeightDelta : WeightBrutto*Global.GetCoefDeltaWeight(WeightBrutto)));
+                    res.Add(new WaitWeight(WeightBrutto, WeightDelta > 0 ? WeightDelta : WeightBrutto * Global.GetCoefDeltaWeight(WeightBrutto)));
                 if (WeightFact > 0)
-                    res.Add(new WaitWeight(WeightFact, WeightDelta > 0 ? WeightDelta : WeightFact*Global.GetCoefDeltaWeight(WeightFact)));
+                    res.Add(new WaitWeight(WeightFact, WeightDelta > 0 ? WeightDelta : WeightFact * Global.GetCoefDeltaWeight(WeightFact)));
 
-                return res.ToArray(); 
+                if (CodeUnit == Global.WeightCodeUnit)
+                    res.Add(new WaitWeight(Quantity, WeightDelta > 0 ? WeightDelta : Quantity * Global.GetCoefDeltaWeight(Quantity)));
+                return res.ToArray();
             }
         }
         /// <summary>

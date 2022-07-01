@@ -162,12 +162,13 @@ namespace SharedLib
             return Res;
         }
 
-        public ReceiptWares AddWaresBarCode(IdReceipt pReceipt, string pBarCode, decimal pQuantity = 0)
+        public ReceiptWares AddWaresBarCode(IdReceipt pReceipt, string pBarCode, decimal pQuantity = 0,bool IsOnlyDiscount=false)
         {
             if (pBarCode == null)
                 return null;
             IEnumerable<ReceiptWares> w = null;
             pBarCode = pBarCode.Trim();
+            if(!IsOnlyDiscount)
             if (pBarCode.Length >= 8)
                 w = db.FindWares(pBarCode);//Пошук по штрихкоду
             else// Можливо артикул товару
@@ -192,26 +193,29 @@ namespace SharedLib
 
                         int varCode = Convert.ToInt32(pBarCode.Substring(el.Prefix.Length, el.LenghtCode));
                         int varValue = Convert.ToInt32(pBarCode.Substring(el.Prefix.Length + el.LenghtCode, el.LenghtQuantity));
-                        switch (el.TypeCode)
+                        if (!IsOnlyDiscount || el.TypeCode == eTypeCode.PercentDiscount)
                         {
-                            case eTypeCode.Article:
-                                w = db.FindWares(null, null, 0, 0, 0, varCode);
+                            switch (el.TypeCode)
+                            {
+                                case eTypeCode.Article:
+                                    w = db.FindWares(null, null, 0, 0, 0, varCode);
+                                    break;
+                                case eTypeCode.Code:
+                                    w = db.FindWares(null, null, varCode);
+                                    break;
+                                case eTypeCode.PercentDiscount:
+                                    _ = ds.CheckDiscountBarCodeAsync(pReceipt, pBarCode, varCode);
+                                    return new ReceiptWares(pReceipt);
+                                default:
+                                    break;
+                            }
+                            if (w != null && w.Count() == 1) //Знайшли що треба
+                            {
+                                //parQuantity = (w.First().CodeUnit == Global.WeightCodeUnit ? varValue / 1000m : varValue);
+                                if (pQuantity > 0)
+                                    pQuantity = varValue;
                                 break;
-                            case eTypeCode.Code:
-                                w = db.FindWares(null, null, varCode);
-                                break;
-                            case eTypeCode.PercentDiscount:
-                                _ = ds.CheckDiscountBarCodeAsync(pReceipt, pBarCode, varCode);
-                                return new ReceiptWares(pReceipt);
-                            default:
-                                break;
-                        }
-                        if (w != null && w.Count() == 1) //Знайшли що треба
-                        {
-                            //parQuantity = (w.First().CodeUnit == Global.WeightCodeUnit ? varValue / 1000m : varValue);
-                            if (pQuantity > 0)
-                                pQuantity = varValue;
-                            break;
+                            }
                         }
                     }
                 }
