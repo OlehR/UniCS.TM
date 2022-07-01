@@ -38,7 +38,7 @@ namespace Front
 
         public void ControlScale(double pWeight, bool pIsStable)
         {
-            ControlScaleWeightDouble = Convert.ToString(pWeight + 100000);
+            ControlScaleWeightDouble = Convert.ToString(pWeight);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ControlScaleWeightDouble"));
         }
 

@@ -138,7 +138,7 @@ namespace Front
                 switch (ElEquipment.Model)
                 {
                     case eModelEquipment.MagellanScale:
-                        Scale = new MagellanScale(((MagellanScaner)Scaner), pSetWeight,OnControlWeight);//TMP!!! pSetControlWeight - Нафіг
+                        Scale = new MagellanScale(((MagellanScaner)Scaner), pSetWeight);//TMP!!! pSetControlWeight - Нафіг
                         Scale.StartWeight();
 
                         break;
