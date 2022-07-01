@@ -381,6 +381,9 @@ namespace Front
         }
         public void GetBarCode(string pBarCode, string pTypeBarCode)
         {
+            if (State == eStateMainWindows.StartWindow)
+                SetStateView(eStateMainWindows.WaitInput);
+
             if (TypeAccessWait == eTypeAccess.ExciseStamp)
             {
                 string ExciseStamp = GetExciseStamp(pBarCode);
@@ -388,10 +391,11 @@ namespace Front
                     AddExciseStamp(ExciseStamp);
                 return;
             }
-            if (State == eStateMainWindows.WaitInput)
+            if (State == eStateMainWindows.WaitInput || State == eStateMainWindows.StartWindow)
             {
                 if (curReceipt?.IsLockChange == false)
                     Bl.GetBarCode(pBarCode, pTypeBarCode);
+               
                 return;
                 //else // В данbq чек добавити товар не можна
             }

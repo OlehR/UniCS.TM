@@ -120,8 +120,28 @@ namespace ModelMID
                 }
             } }
 
-        string AllWeights { get{ return RW == null || RW.AllWeights == null || RW.AllWeights.Count() == 0 ? "0" : string.Join(",", RW?.AllWeights.Select(el => Convert.ToDecimal(el.Weight) * (RW?.Quantity ?? 0 - RW?.FixWeightQuantity ?? 0))); } }
-        public string Info { get { return $"{_StateScale}{Environment.NewLine}{DelRW?.NameWares?? RW?.NameWares}{ Environment.NewLine} Очікувана вага = ({ AllWeights}) Фактична ={СurrentlyWeight}{Environment.NewLine}Загальна вага={curFullWeight} Fix=> {RW?.FixWeightQuantity}/{RW?.FixWeight}";  } }
+        string AllWeights { get{ return RW == null || RW.AllWeights == null || RW.AllWeights.Count() == 0 ? "0" : string.Join(",", RW?.AllWeights.Select(el => Convert.ToDecimal(el.Weight) * (RW?.Quantity  - RW?.FixWeightQuantity ))); } }
+        public string Info { get {
+                string res=null;
+                
+                switch (StateScale)
+                {
+                    case eStateScale.WaitClear:
+                        res = $"Очистіть вагу";
+                        break;
+                    case eStateScale.WaitGoods:                  
+                        res = $"Очікувана вага = {( RW.AllWeights.Count() == 1 ? RW.AllWeights[0].Weight* Convert.ToDouble( RW?.Quantity-RW.FixWeightQuantity) : "("+AllWeights+")")}";
+                        break;
+                    case eStateScale.NotStabilized:
+                        res = $"{(СurrentlyWeight>0? "Надлишкова":"Недостатня")} вага = {Math.Abs(СurrentlyWeight)}";
+                        break;                   
+
+                    case eStateScale.BadWeight:
+                        res = $"Очікувана вага = ({ AllWeights}) Фактична ={СurrentlyWeight} Fix=> {RW?.FixWeightQuantity}/{RW?.FixWeight}";
+                        break;
+                }
+                 return $"{_StateScale}{Environment.NewLine}{DelRW?.NameWares?? RW?.NameWares}{ Environment.NewLine}{res}{Environment.NewLine}Загальна вага={curFullWeight}{Environment.NewLine}Fix=> {RW?.FixWeightQuantity}/{RW?.FixWeight}";  
+            } }
 
         /// <summary>
         ///Допустима похибка ваги на вітер 
