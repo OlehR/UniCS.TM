@@ -21,7 +21,6 @@ using SharedLib;
 using Utils;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Extensions.Configuration;
-using System.Windows.Media;
 
 namespace Front
 {
@@ -36,7 +35,7 @@ namespace Front
         Admin ad;
 
         public Receipt curReceipt;//{ get; set; } = null;
-        public ReceiptWares CurWares;//{ get; set; } = null;
+        public ReceiptWares CurWares { get; set; } = null;
         Client Client;
         public GW CurW { get; set; } = null;
 
@@ -376,20 +375,49 @@ namespace Front
                     AddExciseStamp(ExciseStamp);
                 return;
             }
+            ReceiptWares w;
             if (State == eStateMainWindows.WaitInput || State == eStateMainWindows.StartWindow)
             {
                 if (curReceipt?.IsLockChange == false)
-                    Bl.GetBarCode(pBarCode, pTypeBarCode);
+                {
+                    w = Bl.AddWaresBarCode(curReceipt, pBarCode, 1);
+                    if (w != null)
+                    {
+                        CurWares = w;
+                        IsPrises(1, 0);
+                        return;
+                    }
+                }
+            }
+            var c = Bl.GetClientByBarCode(curReceipt, pBarCode);
+            if (c == null)
+            {
+                var u = Bl.GetUserByBarCode(pBarCode);
+                if (u != null)
+                    Bl.OnAdminBarCode?.Invoke(u);
+            }
+        }
 
-                return;
-                //else // В данbq чек добавити товар не можна
+        /*
+        public void GetBarCode(string pBarCode, string pTypeBarCode)
+        {
+            var r = GetLastReceipt();
+            var w = AddWaresBarCode(r, pBarCode, 1);
+            if (w == null) //Можливо штрихкод не товар
+            {
+                var c = GetClientByBarCode(r, pBarCode);
+                if (c == null)
+                {
+                    var u = GetUserByBarCode(pBarCode);
+                    if (u != null)
+                        OnAdminBarCode?.Invoke(u);
+                }
+                else
+                { _ = GetBonusAsync(c, Global.IdWorkPlace); }
             }
 
-            var u = Bl.GetUserByBarCode(pBarCode);
-            if (u != null)
-                Bl.OnAdminBarCode?.Invoke(u);
+        }*/
 
-        }
         bool SetConfirm(User pUser, bool pIsFirst = false, bool pIsAccess = false)
         {
             if (pUser == null)
@@ -752,12 +780,6 @@ namespace Front
             _MoneySum = ListWares.Sum(r => r.SumTotal);
             MoneySum = _MoneySum.ToString();
             WaresQuantity = ListWares.Count().ToString();
-            if (VisualTreeHelper.GetChildrenCount(WaresList) > 0)
-            {
-                Border border = (Border)VisualTreeHelper.GetChild(WaresList, 0);
-                ScrollViewer scrollViewer = (ScrollViewer)VisualTreeHelper.GetChild(border, 0);
-                scrollViewer.ScrollToBottom();
-            }
             //SV_WaresList.ScrollToEnd();
         }
 
@@ -863,34 +885,38 @@ namespace Front
 
                 if (CurWares != null)
                 {
-                    if (CurWares.TypeWares == eTypeWares.Alcohol)
-                    {
-                        SetWaitConfirm(eTypeAccess.ExciseStamp, CurWares);
-                        return;
-                    }
-
-                    if (CurWares.Price == 0) //Повідомлення Про відсутність ціни
-                    {
-
-                    }
-                    if (CurWares.Prices != null && pPrice == 0m) //Меню з вибором ціни. Сигарети.
-                    {
-                        if (CurWares.Prices.Count() > 1)
-                        {
-                            SetStateView(eStateMainWindows.WaitInputPrice);
-                        }
-                        else
-                            if (CurWares.Prices.Count() == 1)
-                            Bl.AddWaresCode(curReceipt, pCodeWares, pCodeUnit, pQuantity, CurWares.Prices.First().Price);
-                    }
-
+                    IsPrises(pQuantity, pPrice);
                 }
+            }
+        }
+
+        void IsPrises(decimal pQuantity = 0m, decimal pPrice = 0m)
+        {
+            if (CurWares.TypeWares == eTypeWares.Alcohol)
+            {
+                SetWaitConfirm(eTypeAccess.ExciseStamp, CurWares);
+                return;
+            }
+
+            if (CurWares.Price == 0) //Повідомлення Про відсутність ціни
+            {
+
+            }
+            if (CurWares.Prices != null && pPrice == 0m) //Меню з вибором ціни. Сигарети.
+            {
+                if (CurWares.Prices.Count() > 1)
+                {
+                    SetStateView(eStateMainWindows.WaitInputPrice);
+                }
+                else
+                    if (CurWares.Prices.Count() == 1)
+                    Bl.AddWaresCode(curReceipt, CurWares.CodeWares, CurWares.CodeUnit, pQuantity, CurWares.Prices.First().Price);
             }
         }
 
         private void _ButtonHelp(object sender, RoutedEventArgs e)
         {
-            SetWaitConfirm(eTypeAccess.AdminPanel);
+            SetStateView(eStateMainWindows.WaitAdmin);
         }
 
         private void _OwnBag(object sender, RoutedEventArgs e)

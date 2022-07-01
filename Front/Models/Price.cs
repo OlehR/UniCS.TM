@@ -1,11 +1,14 @@
 ﻿using ModelMID;
 using System.Windows.Media;
 using System.Globalization;
+using System.ComponentModel;
 
 namespace Front.Models
 {
-    public class Price
+    public class Price: INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+    
         public Price(decimal pPrice, bool pIsEnable, eTypeWares pTypeWares) //, bool pIsEnable = false
         {
             price = pPrice;

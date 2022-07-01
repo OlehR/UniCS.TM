@@ -570,23 +570,7 @@ namespace SharedLib
         /// </summary>
         /// <param name="pBarCode"></param>
         /// <param name="pTypeBarCode"></param>
-        public void GetBarCode(string pBarCode, string pTypeBarCode)
-        {
-            var r = GetLastReceipt();
-            var w = AddWaresBarCode(r, pBarCode, 1);
-            if (w == null) //Можливо штрихкод не товар
-            {
-                var c = GetClientByBarCode(r, pBarCode);
-                if (c == null)
-                {
-                    var u = GetUserByBarCode(pBarCode);
-                    if (u != null)
-                        OnAdminBarCode?.Invoke(u);
-                }
-                else
-                { _ = GetBonusAsync(c, Global.IdWorkPlace); }
-            }
-        }
+        
 
         public bool UpdateExciseStamp(IEnumerable<ReceiptWares> pRW)
         {
