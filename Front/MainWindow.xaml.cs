@@ -494,6 +494,16 @@ namespace Front
                     TypeAccessWait = eTypeAccess.NoDefinition;
                     SetStateView(eStateMainWindows.WaitAdmin);
                     break;
+                case eTypeAccess.AdminPanel:
+                    TypeAccessWait = eTypeAccess.NoDefinition;
+                    SetStateView(eStateMainWindows.WaitInput);
+                    //Admin ad = new Admin(U, this,EF);
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        ad.Init(pUser);
+                        ad.WindowState = WindowState.Maximized;
+                    }));
+                    break;
             }
             return true;
 
