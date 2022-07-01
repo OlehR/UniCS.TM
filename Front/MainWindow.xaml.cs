@@ -21,6 +21,7 @@ using SharedLib;
 using Utils;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Extensions.Configuration;
+using System.Windows.Media;
 
 namespace Front
 {
@@ -751,6 +752,12 @@ namespace Front
             _MoneySum = ListWares.Sum(r => r.SumTotal);
             MoneySum = _MoneySum.ToString();
             WaresQuantity = ListWares.Count().ToString();
+            if (VisualTreeHelper.GetChildrenCount(WaresList) > 0)
+            {
+                Border border = (Border)VisualTreeHelper.GetChild(WaresList, 0);
+                ScrollViewer scrollViewer = (ScrollViewer)VisualTreeHelper.GetChild(border, 0);
+                scrollViewer.ScrollToBottom();
+            }
             //SV_WaresList.ScrollToEnd();
         }
 
@@ -883,7 +890,7 @@ namespace Front
 
         private void _ButtonHelp(object sender, RoutedEventArgs e)
         {
-            SetStateView(eStateMainWindows.WaitAdmin);
+            SetWaitConfirm(eTypeAccess.AdminPanel);
         }
 
         private void _OwnBag(object sender, RoutedEventArgs e)

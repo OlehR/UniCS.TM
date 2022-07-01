@@ -209,7 +209,7 @@ namespace Front
             {
                 DateTime dt = DateTime.Now.Date;
                 Receipts = new ObservableCollection<Receipt>(Bl.GetReceipts(dt, dt, Global.IdWorkPlace));
-                ListReceipts.ItemsSource = Receipts;
+                ListReceipts.ItemsSource = Receipts.Reverse();
             }
             string tabItem = ((sender as TabControl).SelectedItem as TabItem).Header as string;
 
@@ -314,7 +314,7 @@ namespace Front
             {
                 //DateTime dt = dataHistori.SelectedDate.Value.Date;
                 Receipts = new ObservableCollection<Receipt>(Bl.GetReceipts(DateSoSearch, DateSoSearch, Global.IdWorkPlace));
-                ListReceipts.ItemsSource = Receipts;
+                ListReceipts.ItemsSource = Receipts.Reverse();
             }
             // Поки не знаю як реалізувати пошук
         }
