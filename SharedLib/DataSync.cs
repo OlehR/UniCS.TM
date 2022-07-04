@@ -70,7 +70,7 @@ namespace SharedLib
                 t.Elapsed += new ElapsedEventHandler(OnTimedEvent);
                 t.Start();
                 //OnTimedEvent(null,null);
-            }
+            }            
         }
 
         private async void OnTimedEvent(Object source, ElapsedEventArgs e)

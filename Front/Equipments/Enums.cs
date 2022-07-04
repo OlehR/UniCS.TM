@@ -184,7 +184,11 @@ namespace Front.Equipments
         pRRo_WebCheck,
         VirtualRRO,
         VirtualScale,
-        VirtualScaner
+        VirtualScaner,
+        /// <summary>
+        /// Контрольна вага на основі основної.
+        /// </summary>
+        VirtualControlScale
 
     }
 
@@ -212,6 +216,7 @@ namespace Front.Equipments
                 case eModelEquipment.VirtualScale:
                     return eTypeEquipment.Scale;
                 case eModelEquipment.ScaleModern:
+                case eModelEquipment.VirtualControlScale:
                     return eTypeEquipment.ControlScale;
                 case eModelEquipment.SignalFlagModern:
                     return eTypeEquipment.Signal;

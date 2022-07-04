@@ -20,16 +20,20 @@ namespace Front
     public class EquipmentFront
     {
         public Action<double, bool> OnControlWeight { get; set; }
+        public Action<double, bool> OnWeight { get; set; }
         private IEnumerable<Equipment> ListEquipment = new List<Equipment>();
         eStateEquipment _State = eStateEquipment.Off;
 
         Scaner Scaner;
         Scale Scale;
-        Scale ControlScale;
+        public Scale ControlScale;
         SignalFlag Signal;
         BankTerminal Terminal;
         Rro RRO;
-
+        /// <summary>
+        /// Для віртуальної ваги куди йде подія.
+        /// </summary>
+        public bool IsControlScale = true;
         public IEnumerable<Equipment> GetBankTerminal { get { return ListEquipment.Where(e => e.Type == eTypeEquipment.BankTerminal); } }
         public void SetBankTerminal(BankTerminal pBT) { Terminal = pBT; }
         public int CountTerminal { get { return GetBankTerminal.Count(); } }
@@ -92,16 +96,19 @@ namespace Front
 
         public static EquipmentFront GetEquipmentFront { get { return sEquipmentFront; } }
 
-        public EquipmentFront(Action<string, string> pSetBarCode, Action<double, bool> pSetWeight, Action<double, bool> pSetControlWeight, Action<StatusEquipment> pActionStatus = null)
+        public EquipmentFront(Action<string, string> pSetBarCode,  Action<StatusEquipment> pActionStatus = null)
         {
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             sEquipmentFront = this;
             //OnControlWeight += (pWeight, pIsStable) => { pSetControlWeight?.Invoke(pWeight, pIsStable); };                
 
-            Task.Run(() => Init(pSetBarCode, pSetWeight, pSetControlWeight, pActionStatus));
+            Task.Run(() => Init(pSetBarCode, pActionStatus));
+            OnWeight +=  (pWeight, pIsStable) => 
+                         {  if (IsControlScale && ControlScale.Model == eModelEquipment.VirtualControlScale) OnControlWeight?.Invoke(pWeight, pIsStable);  };
+            
         }
 
-        public void Init(Action<string, string> pSetBarCode, Action<double, bool> pSetWeight, Action<double, bool> pSetControlWeight, Action<StatusEquipment> pActionStatus = null)
+        public void Init(Action<string, string> pSetBarCode,  Action<StatusEquipment> pActionStatus = null)
         {
             using ILoggerFactory loggerFactory =
            LoggerFactory.Create(builder =>
@@ -134,16 +141,14 @@ namespace Front
                 NewListEquipment.Add(Scaner);
 
                 //Scale
-                ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Scale).First();
+                ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Scale)?.First();
                 switch (ElEquipment.Model)
                 {
                     case eModelEquipment.MagellanScale:
-                        Scale = new MagellanScale(((MagellanScaner)Scaner), pSetWeight, OnControlWeight);//TMP!!! OnControlWeight - Нафіг
-                        Scale.StartWeight();
-
+                        Scale = new MagellanScale(((MagellanScaner)Scaner), OnWeight);//TMP!!! OnControlWeight - Нафіг                        
                         break;
                     case eModelEquipment.VirtualScale:
-                        Scale = new VirtualScale(ElEquipment, config, null, pSetWeight);
+                        Scale = new VirtualScale(ElEquipment, config, null, OnWeight);
                         break;
                     default:
                         Scale = new Scale(ElEquipment, config);
@@ -151,16 +156,25 @@ namespace Front
                 }
                 NewListEquipment.Add(Scale);
 
-                //ControlScale
+                //ControlScale               
                 var Equipments = ListEquipment.Where(e => e.Type == eTypeEquipment.ControlScale);
                 if (Equipments.Any())
                 {
                     ElEquipment = Equipments.First();
-                    if (ElEquipment.Model == eModelEquipment.ScaleModern)
-                        ControlScale = new ScaleModern(ElEquipment, config, null, OnControlWeight);
-                    else
-                        ControlScale = new Scale(ElEquipment, config);
-                    NewListEquipment.Add(ControlScale);
+                    switch (ElEquipment.Model)
+                    {
+                        case eModelEquipment.ScaleModern:
+                            ControlScale = new ScaleModern(ElEquipment, config, null, OnControlWeight);
+                            break;
+                        case eModelEquipment.VirtualControlScale: 
+                            ControlScale = new VirtualControlScale(ElEquipment, config,null,null);
+                            Scale?.StartWeight();
+                            break;
+                        default:
+                            ControlScale = new Scale(ElEquipment, config);
+                            NewListEquipment.Add(ControlScale);
+                            break;
+                    }
                 }
                 //Flag
                 Equipments = ListEquipment.Where(e => e.Type == eTypeEquipment.Signal);
@@ -242,7 +256,9 @@ namespace Front
             }
         }
 
-        public IEnumerable<Equipment> GetListEquipment { get { return ListEquipment; } }
+
+
+    public IEnumerable<Equipment> GetListEquipment { get { return ListEquipment; } }
 
         /// <summary>
         /// Друк чека
@@ -350,7 +366,9 @@ namespace Front
         {
             try
             {
-                Scale?.StartWeight();
+                IsControlScale = false;
+                if(ControlScale.Model!=eModelEquipment.VirtualControlScale)
+                    Scale?.StartWeight();
             }
             catch (Exception) { }//Необхідна обробка коли немає обладнання !!!TMP
         }
@@ -362,7 +380,9 @@ namespace Front
         {
             try
             {
-                Scale?.StopWeight();
+                IsControlScale = true;
+                if (ControlScale.Model != eModelEquipment.VirtualControlScale)
+                    Scale?.StopWeight();
             }
             catch (Exception) { }//Необхідна обробка коли немає обладнання!!!TMP
 

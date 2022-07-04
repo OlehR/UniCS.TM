@@ -102,8 +102,9 @@ namespace ModelMID
         public Action<eStateScale, ReceiptWares, double> OnStateScale { get; set; }
         eStateScale _StateScale;
 
-        public bool IsOk { get { return StateScale == eStateScale.Stabilized; } }
+        public bool IsNoProblemWindows { get { return StateScale == eStateScale.Stabilized || StateScale == eStateScale.NotDefine || StateScale == eStateScale.WaitGoods || StateScale == eStateScale.WaitClear; } }
 
+        public bool IsOk { get { return StateScale == eStateScale.Stabilized; } }
         /// <summary>
         /// Стан ваги (Не поставили товар, вірна вага, вага не вірна)
         /// </summary>
@@ -137,7 +138,7 @@ namespace ModelMID
                         break;                   
 
                     case eStateScale.BadWeight:
-                        res = $"Очікувана вага = ({ AllWeights}) Фактична ={СurrentlyWeight} Fix=> {RW?.FixWeightQuantity}/{RW?.FixWeight}";
+                        res = $"Очікувана вага = ({ AllWeights}) Фактична ={СurrentlyWeight}";
                         break;
                 }
                  return $"{_StateScale}{Environment.NewLine}{DelRW?.NameWares?? RW?.NameWares}{ Environment.NewLine}{res}{Environment.NewLine}Загальна вага={curFullWeight}{Environment.NewLine}Fix=> {RW?.FixWeightQuantity}/{RW?.FixWeight}";  
@@ -240,13 +241,10 @@ namespace ModelMID
             var w = ww.First();
             RW = w;
             if (w != null)
-            {
-                
+            {                
                 if (w.WeightFact != -1 && w.AllWeights != null && w.AllWeights.Count() > 0)
                     StartWeightNewGoogs(BeforeWeight, w.AllWeights, Convert.ToDouble(w.Quantity - w.FixWeightQuantity));
             }
-
-
         }
 
         public void StartWeightNewGoogs(double pBeforeWeight, WaitWeight[] pWeight, double pQuantity = 1d) //, bool pIsIncrease = true

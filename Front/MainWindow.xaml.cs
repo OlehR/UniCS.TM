@@ -150,13 +150,14 @@ namespace Front
                 Access.СurUser = new User() { TypeUser = eTypeUser.Client, CodeUser = 99999999, Login = "Client", NameUser = "Client" };
 
             Bl = new BL(true);
-            EF = new EquipmentFront(GetBarCode, SetWeight, null /*CS.OnScalesData*/);
+            EF = new EquipmentFront(GetBarCode);
 
             EF.OnControlWeight += (pWeight, pIsStable) =>
-            {
-                CS.OnScalesData(pWeight, pIsStable);
-            };
+            { 
+                CS.OnScalesData(pWeight, pIsStable); };
 
+            EF.OnWeight += (pWeight, pIsStable) => { Weight = pWeight; };
+            
             EF.SetStatus += (info) =>
             {
                 EquipmentInfo = info.TextState;
@@ -340,7 +341,10 @@ namespace Front
             Recalc();
             if (State == eStateMainWindows.StartWindow)
                 SetStateView(eStateMainWindows.StartWindow);
+            Task.Run(() => Bl.ds.SyncDataAsync());
+            
         }
+        
         private async void Init(string HTMLContent)
         {
             try
@@ -376,7 +380,7 @@ namespace Front
                     AddExciseStamp(ExciseStamp);
                 return;
             }
-            ReceiptWares w;
+            ReceiptWares w=null;
             if (State == eStateMainWindows.WaitInput || State == eStateMainWindows.StartWindow)
             {
                 if (curReceipt?.IsLockChange == false)
@@ -385,11 +389,16 @@ namespace Front
                     if (w != null)
                     {
                         CurWares = w;
-                        IsPrises(1, 0);
-                        return;
+                        IsPrises(1, 0);                        
                     }
                 }
             }
+            else
+            {                
+                w = Bl.AddWaresBarCode(curReceipt, pBarCode, 1,true);
+            }
+            if (w != null)
+                return;
             var c = Bl.GetClientByBarCode(curReceipt, pBarCode);
             if (c == null)
             {
@@ -508,8 +517,14 @@ namespace Front
             return true;
 
         }
+
+        bool IsViewProblemeWeight { get { return State == eStateMainWindows.WaitInput || State == eStateMainWindows.StartWindow;  } }
+
         void SetWaitConfirm(eTypeAccess pTypeAccess, ReceiptWares pRW = null)
         {
+            if ( pTypeAccess == eTypeAccess.FixWeight && State == eStateMainWindows.WaitInputPrice)            
+                return;            
+            
             CurWares = pRW;
             TypeAccessWait = pTypeAccess;
             customWindow= GetCustomButton(CS.StateScale);
@@ -520,7 +535,7 @@ namespace Front
         {
             Dispatcher.BeginInvoke(new ThreadStart(() =>
                 {
-                    if (!(!IsLockSale && EF.StatCriticalEquipment == eStateEquipment.On && Bl.ds.IsReady && CS.IsOk && curReceipt?.IsNeedExciseStamp == false)
+                    if (!(!IsLockSale && EF.StatCriticalEquipment == eStateEquipment.On && Bl.ds.IsReady && CS.IsNoProblemWindows && curReceipt?.IsNeedExciseStamp == false)
                      // && !(pSMV == eStateMainWindows.WaitAdmin || pSMV == eStateMainWindows.WaitAdminLogin)
                      )
                     {
@@ -531,12 +546,10 @@ namespace Front
                         else
                             if (IsLockSale) Res = eTypeAccess.LockSale;
                         else
-                            if (curReceipt?.IsNeedExciseStamp == true)
-                        {
-                            Res = eTypeAccess.ExciseStamp;
-                        }
+                            if (curReceipt?.IsNeedExciseStamp == true) Res = eTypeAccess.ExciseStamp;                        
                         else
-                            if (!CS.IsOk) Res = eTypeAccess.FixWeight;
+                            if (!CS.IsNoProblemWindows && IsViewProblemeWeight) 
+                            Res = eTypeAccess.FixWeight;
 
                         if (Res != TypeAccessWait && Res != eTypeAccess.NoDefinition)
                         {
@@ -544,12 +557,15 @@ namespace Front
                             return;
                         }
                     }
-
+                    //Якщо Очікуємо ввід ціни І є проблема з вагою - Перевага введеній ціні.
+                   
                     if (pSMV != eStateMainWindows.NotDefine)
                     {
                         State = pSMV;
                         EF.SetColor(GetFlagColor(State));
                     }
+
+
                     if (IsLockSale && State != eStateMainWindows.WaitAdmin && State != eStateMainWindows.WaitAdminLogin)
                     {
                         SetWaitConfirm(eTypeAccess.LockSale);
@@ -734,7 +750,7 @@ namespace Front
                 var el = btn.DataContext as ReceiptWares;
                 if (el == null)
                     return;
-                TypeAccessWait = eTypeAccess.NoDefinition;
+                TypeAccessWait = eTypeAccess.DelWares;
                 if (!SetConfirm(Access.СurUser, true, !el.IsConfirmDel))
                     SetWaitConfirm(eTypeAccess.DelWares, el);
             }
@@ -1094,12 +1110,6 @@ namespace Front
             return Bl.GetWaresReceipt(curReceipt);
         }
 
-        /// <summary>
-        /// Обробка ваги з основної ваги(Магелан)
-        /// </summary>
-        /// <param name="pWeight">Власне вага</param>
-        /// <param name="pIsStable">Чи платформа стабілізувалась</param>
-        public void SetWeight(double pWeight, bool pIsStable) { Weight = pWeight; }
         private void ClickButtonOk(object sender, RoutedEventArgs e)
         {
             AddWares(CurW.Code, CurW.CodeUnit, Convert.ToDecimal(Weight));

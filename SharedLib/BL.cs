@@ -162,23 +162,23 @@ namespace SharedLib
             return Res;
         }
 
-        public ReceiptWares AddWaresBarCode(IdReceipt pReceipt, string pBarCode, decimal pQuantity = 0,bool IsOnlyDiscount=false)
+        public ReceiptWares AddWaresBarCode(IdReceipt pReceipt, string pBarCode, decimal pQuantity = 0, bool IsOnlyDiscount = false)
         {
             if (pBarCode == null)
                 return null;
             IEnumerable<ReceiptWares> w = null;
             pBarCode = pBarCode.Trim();
-            if(!IsOnlyDiscount)
-            if (pBarCode.Length >= 8)
-                w = db.FindWares(pBarCode);//Пошук по штрихкоду
-            else// Можливо артикул товару
-            {
-                int Article;
-                if (int.TryParse(pBarCode, out Article))
-                    w = db.FindWares(null, null, 0, 0, 0, Article);
-                else
-                    return null;
-            }
+            if (!IsOnlyDiscount)
+                if (pBarCode.Length >= 8)
+                    w = db.FindWares(pBarCode);//Пошук по штрихкоду
+                else// Можливо артикул товару
+                {
+                    int Article;
+                    if (int.TryParse(pBarCode, out Article))
+                        w = db.FindWares(null, null, 0, 0, 0, Article);
+                    else
+                        return null;
+                }
 
             //ReceiptWares W = null;
             if (w == null || w.Count() == 0 && pBarCode.Length >= 8) // Якщо не знайшли спробуем по ваговим і штучним штрихкодам.          
@@ -512,13 +512,13 @@ namespace SharedLib
             return true;
         }
 
-        public bool SaveReceiptEvents(IEnumerable<ReceiptEvent> pRE,bool pIsReplace=true)
+        public bool SaveReceiptEvents(IEnumerable<ReceiptEvent> pRE, bool pIsReplace = true)
         {
             if (pRE != null && pRE.Count() > 0)
             {
                 try
                 {
-                    if(pIsReplace)
+                    if (pIsReplace)
                         db.DeleteReceiptEvent(pRE.First());
                     db.InsertReceiptEvent(pRE);
                 }
@@ -558,8 +558,9 @@ namespace SharedLib
             return 0;
         }
 
-        public bool FixWeight(ReceiptWares pRW) { 
-            bool Res= db.FixWeight(pRW);
+        public bool FixWeight(ReceiptWares pRW)
+        {
+            bool Res = db.FixWeight(pRW);
             var r = db.ViewReceipt(pRW, true);
             Global.OnReceiptCalculationComplete?.Invoke(r);
             return Res;
@@ -570,14 +571,14 @@ namespace SharedLib
         /// </summary>
         /// <param name="pBarCode"></param>
         /// <param name="pTypeBarCode"></param>
-        
+
 
         public bool UpdateExciseStamp(IEnumerable<ReceiptWares> pRW)
         {
             var r = pRW.Where(e => e.ExciseStamp != null && e.ExciseStamp.Length > 0);
             try
             {
-                bool Res= db.UpdateExciseStamp(r);
+                bool Res = db.UpdateExciseStamp(r);
                 var res = GetReceiptHead(pRW.First(), true);
                 Global.OnReceiptCalculationComplete?.Invoke(res);
                 return Res;
@@ -609,7 +610,7 @@ namespace SharedLib
 
         public void AddEventAge(IdReceipt pRecipt)
         {
-            List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(pRecipt) { EventType = eReceiptEventType.AgeRestrictedProduct, EventName = "Вік підтверджено", CreatedAt = DateTime.Now } }; 
+            List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(pRecipt) { EventType = eReceiptEventType.AgeRestrictedProduct, EventName = "Вік підтверджено", CreatedAt = DateTime.Now } };
 
             db.InsertReceiptEvent(rr);
         }
@@ -643,7 +644,7 @@ namespace SharedLib
             }
             catch (Exception e)
             {
-                FileLogger.WriteLogMessage($"BL.CreateRefund Exception =>( {IdR?.ToJSON() }) => (){Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace}", eTypeLog.Error);
+                FileLogger.WriteLogMessage($"BL.CreateRefund Exception =>( {IdR?.ToJSON()}) => (){Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace}", eTypeLog.Error);
                 return null;
             }
         }
@@ -675,13 +676,19 @@ namespace SharedLib
                         if (pCWA.ExtData != null)
                         {
                             ReceiptWares r = pCWA.ExtData as ReceiptWares;
-                            if (r != null)
+                            switch (pCWA.IdButton)
                             {
-                                List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(r) { EventType = eReceiptEventType.IncorrectWeight, EventName = "Ручне підтвердження ваги", CreatedAt = DateTime.Now } };
-
-                                db.InsertReceiptEvent(rr);
-                                //SaveReceiptEvents(new List<ReceiptEvent>() { new ReceiptEvent(r) { EventType = eReceiptEventType.IncorrectWeight, ProductConfirmedWeight = (int)r.WeightFact, ProductWeight = (int)r.WeightFact } });
-                                FixWeight(r);
+                                case 1: //Фіксування ваги
+                                    if (r != null)
+                                    { 
+                                        List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(r) { EventType = eReceiptEventType.IncorrectWeight, EventName = "Ручне підтвердження ваги", CreatedAt = DateTime.Now } };
+                                        db.InsertReceiptEvent(rr);
+                                        FixWeight(r);
+                                    }
+                                    break;
+                                case 3: //видалення поточної позиції
+                                    if (r != null) ChangeQuantity(r, 0);                                   
+                                    break;
                             }
                         }
                         break;

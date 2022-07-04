@@ -58,6 +58,7 @@ namespace ModelMID
         /// Шлях до папки, в яку пиcати LOG
         /// </summary>
         public static string PathLog = @"c:\temp\";
+        public static string PathPictures = @"D:\Pictures\";
 
         /// <summary>
         /// Шлях до MID.ini та Key.map

@@ -75,7 +75,5 @@ namespace Front.Models
         /// Знайти клієнта за номером телефону
         /// </summary>
         //FindClientByPhone,
-
-
     }
 }

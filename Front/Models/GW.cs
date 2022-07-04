@@ -2,6 +2,7 @@
 using ModelMID.DB;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,6 +34,6 @@ namespace Front.Models
 		public int CodeUnit { get; set; }
 
 		public string GetName { get { return (Type == 1 ? "G" : "W") + Code.ToString(); } }
-		public string Pictures { get { return $"D:\\Pictures\\{(Type == 1 ? "Categories" : "Products")}\\{Code.ToString("D9")}.jpg"; } }
+		public string Pictures { get { return Path.Combine(Global.PathPictures, (Type == 1 ? "Categories" : "Products"), $"{Code.ToString("D9")}.jpg"); } }
 	}
 }

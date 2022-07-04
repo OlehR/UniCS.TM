@@ -229,18 +229,19 @@ namespace ModelMID
             //Global.GetCoefDeltaWeight
             get
             {
-
                 List<WaitWeight> res = AdditionalWeights != null && AdditionalWeights.Count() > 0 ?
                         AdditionalWeights.Select(r => new WaitWeight(r, WeightDelta > 0 ? WeightDelta : WeightFact * Global.GetCoefDeltaWeight(r))).ToList()
                         : new List<WaitWeight>();
-                //res.Ins
-                if (WeightBrutto > 0)
-                    res.Add(new WaitWeight(WeightBrutto, WeightDelta > 0 ? WeightDelta : WeightBrutto * Global.GetCoefDeltaWeight(WeightBrutto)));
-                if (WeightFact > 0)
-                    res.Add(new WaitWeight(WeightFact, WeightDelta > 0 ? WeightDelta : WeightFact * Global.GetCoefDeltaWeight(WeightFact)));
-
                 if (CodeUnit == Global.WeightCodeUnit)
-                    res.Add(new WaitWeight(Quantity, WeightDelta > 0 ? WeightDelta : Quantity * Global.GetCoefDeltaWeight(Quantity)));
+                    res.Add(new WaitWeight(1, WeightDelta > 0 ? WeightDelta : Quantity * Global.GetCoefDeltaWeight(Quantity)));
+                else
+                {
+                    if (WeightBrutto > 0)
+                        res.Add(new WaitWeight(WeightBrutto, WeightDelta > 0 ? WeightDelta : WeightBrutto * Global.GetCoefDeltaWeight(WeightBrutto)));
+                    if (WeightFact > 0)
+                        res.Add(new WaitWeight(WeightFact, WeightDelta > 0 ? WeightDelta : WeightFact * Global.GetCoefDeltaWeight(WeightFact)));
+
+                }
                 return res.ToArray();
             }
         }
@@ -268,15 +269,17 @@ namespace ModelMID
         {
             get
             {
-                string Res = (string.IsNullOrEmpty(NameDiscount) ? "" : NameDiscount + "\n");
+                string Res = (string.IsNullOrEmpty(NameDiscount) ? "" : NameDiscount + Environment.NewLine);
                 try
                 {
                     if (ReceiptWaresPromotions != null)
                         foreach (var el in ReceiptWaresPromotions)
                         {
                             var name = el.TypeDiscount == eTypeDiscount.Price ? (TypeWares == eTypeWares.Tobacco ? $"Ціна =>{Math.Round(el.Price / 1.05m, 2)}*5%={el.Price}" : $"Ціна => {el.Price}") : (string.IsNullOrEmpty(el.NamePS) ? (string.IsNullOrEmpty(el.BarCode2Category) ? "" : el.BarCode2Category.Substring(3, 2) + "%") : el.NamePS);
-                            Res += $"{name} - {el.Quantity} - {el.Sum}\n";
+                            Res += $"{name} - {el.Quantity} - {el.Sum}{Environment.NewLine}";
                         }
+                    if (!string.IsNullOrEmpty(ExciseStamp))
+                        Res += $"Акцизні марки:{ExciseStamp}";
                 }
                 catch (Exception e) { }
                 if (string.IsNullOrEmpty(Res))
