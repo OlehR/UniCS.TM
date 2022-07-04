@@ -218,19 +218,21 @@ namespace ModelMID
                 return false;
         }
 
-        public void StartWeightNewGoogs(IEnumerable<ReceiptWares> pRW, ReceiptWares pDelRW = null)
+        public void StartWeightNewGoogs(Receipt pR, ReceiptWares pDelRW = null)
         {
+
+            
             DelRW = pDelRW;
 
-            if (pRW == null || pRW.Count() == 0)
+            if (pR==null || pR.Wares == null || pR.Wares.Count() == 0)
             {
                 WaitClear();
                 return;
             }
 
 
-            double BeforeWeight = Convert.ToDouble(pRW?.Sum(el => el.FixWeight));
-            var ww = pRW?.Where(el => el.IsLast);
+            double BeforeWeight = Convert.ToDouble(pR.Wares?.Sum(el => el.FixWeight)) + pR.OwnBag;
+            var ww = pR.Wares?.Where(el => el.IsLast);
             //Нештатна ситуація
             if (ww == null || ww.Count() != 1)
             {

@@ -210,5 +210,7 @@ namespace ModelMID
 
         public bool IsNeedExciseStamp { get { return GetLastWares?.IsNeedExciseStamp == true; } }
 
+        public double OwnBag { get { return ReceiptEvent?.Sum(r=> Convert.ToDouble(r.ProductConfirmedWeight))??0d; } }
+
     }
 }

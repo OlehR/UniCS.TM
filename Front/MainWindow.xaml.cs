@@ -205,7 +205,7 @@ namespace Front
                     if (curReceipt?.Wares?.Count() == 0)
                         CS.WaitClear();
 
-                    CS.StartWeightNewGoogs(curReceipt?.Wares, IsDel ? CurWares : null);
+                    CS.StartWeightNewGoogs(curReceipt, IsDel ? CurWares : null);
                 }
                 catch (Exception e)
                 {
@@ -937,13 +937,13 @@ namespace Front
             }
             if (CurWares.Prices != null && pPrice == 0m) //Меню з вибором ціни. Сигарети.
             {
-                if (CurWares.Prices.Count() > 1)
+                if (CurWares.IsMultiplePrices)
                 {
                     SetStateView(eStateMainWindows.WaitInputPrice);
                 }
-                else
+               /* else
                     if (CurWares.Prices.Count() == 1)
-                    Bl.AddWaresCode(curReceipt, CurWares.CodeWares, CurWares.CodeUnit, pQuantity, CurWares.Prices.First().Price);
+                    Bl.AddWaresCode(curReceipt, CurWares.CodeWares, CurWares.CodeUnit, pQuantity, CurWares.Prices.First().Price);*/
             }
         }
 

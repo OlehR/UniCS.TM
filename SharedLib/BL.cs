@@ -695,6 +695,11 @@ namespace SharedLib
                 }
             }
         }
+        public void AddOwnBag(IdReceipt pR,decimal pWeight)
+        {
+            List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(pR) { EventType = eReceiptEventType.OwnBag, EventName = "Власна думка",ProductConfirmedWeight=Convert.ToInt32(pWeight), CreatedAt = DateTime.Now } };
+            db.InsertReceiptEvent(rr);
+        }
 
     }
 }
