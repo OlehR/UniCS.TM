@@ -1348,7 +1348,7 @@
             <Button  Style="{StaticResource Default}" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" FontSize="22" Click="_Search">
                 <TextBlock FontSize="28" Text="{DynamicResource search}"/>
             </Button>
-            <Button Style="{StaticResource Default}" Grid.Column="2" FontSize="22" Click="_OwnBag">
+            <Button Style="{StaticResource Default}" Grid.Column="2" FontSize="22" Click="_Cancel">
                 <TextBlock FontSize="14" Text="{DynamicResource ownBag}"/>
             </Button>
             <Button  Style="{StaticResource yelowButton}" Grid.Column="2" Grid.Row="2" FontSize="22" Click="_BuyBag">
@@ -1479,11 +1479,11 @@
                         <TextBlock FontSize="34" Text="{DynamicResource startShopping}" Margin="5,0,0,5"/>
                     </StackPanel>
                 </Button>
-                <Button Grid.Row="3" Grid.Column="0"  Style="{StaticResource greenButton}"  FontSize="48" Click="_Cancel" 
+                <Button Grid.Row="3" Grid.Column="0"  Style="{StaticResource greenButton}"  FontSize="48" Click="_OwnBag" 
                           Margin="5,20,5,20">
                     <StackPanel Orientation="Horizontal">
                         <Image  Height="40" Width="40"  Source="icons\shoppingBag.png"></Image>
-                        <TextBlock FontSize="34" Text="{DynamicResource buyBag}" Margin="5,0,0,5"/>
+                        <TextBlock FontSize="34" Text="{DynamicResource ownBag}" Margin="5,0,0,5"/>
                     </StackPanel>
                 </Button>
                 <Grid Grid.Row="1" Grid.RowSpan="3" Grid.Column="1" Grid.ColumnSpan="2" >
