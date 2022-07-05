@@ -750,6 +750,7 @@ namespace Front
                 var el = btn.DataContext as ReceiptWares;
                 if (el == null)
                     return;
+                CurWares = el;
                 TypeAccessWait = eTypeAccess.DelWares;
                 if (!SetConfirm(Access.СurUser, true, !el.IsConfirmDel))
                     SetWaitConfirm(eTypeAccess.DelWares, el);
