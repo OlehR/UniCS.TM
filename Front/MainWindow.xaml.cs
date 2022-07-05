@@ -153,11 +153,12 @@ namespace Front
             EF = new EquipmentFront(GetBarCode);
 
             EF.OnControlWeight += (pWeight, pIsStable) =>
-            { 
-                CS.OnScalesData(pWeight, pIsStable); };
+            {
+                CS.OnScalesData(pWeight, pIsStable);
+            };
 
             EF.OnWeight += (pWeight, pIsStable) => { Weight = pWeight; };
-            
+
             EF.SetStatus += (info) =>
             {
                 EquipmentInfo = info.TextState;
@@ -286,7 +287,7 @@ namespace Front
             //Обробка стану контрольної ваги.
             CS.OnStateScale += (pStateScale, pRW, pСurrentlyWeight) =>
             {
-                StateScale = pStateScale;                
+                StateScale = pStateScale;
 
                 switch (StateScale)
                 {
@@ -342,9 +343,9 @@ namespace Front
             if (State == eStateMainWindows.StartWindow)
                 SetStateView(eStateMainWindows.StartWindow);
             Task.Run(() => Bl.ds.SyncDataAsync());
-            
+
         }
-        
+
         private async void Init(string HTMLContent)
         {
             try
@@ -380,7 +381,7 @@ namespace Front
                     AddExciseStamp(ExciseStamp);
                 return;
             }
-            ReceiptWares w=null;
+            ReceiptWares w = null;
             if (State == eStateMainWindows.WaitInput || State == eStateMainWindows.StartWindow)
             {
                 if (curReceipt?.IsLockChange == false)
@@ -389,13 +390,13 @@ namespace Front
                     if (w != null)
                     {
                         CurWares = w;
-                        IsPrises(1, 0);                        
+                        IsPrises(1, 0);
                     }
                 }
             }
             else
-            {                
-                w = Bl.AddWaresBarCode(curReceipt, pBarCode, 1,true);
+            {
+                w = Bl.AddWaresBarCode(curReceipt, pBarCode, 1, true);
             }
             if (w != null)
                 return;
@@ -518,16 +519,16 @@ namespace Front
 
         }
 
-        bool IsViewProblemeWeight { get { return State == eStateMainWindows.WaitInput || State == eStateMainWindows.StartWindow;  } }
+        bool IsViewProblemeWeight { get { return State == eStateMainWindows.WaitInput || State == eStateMainWindows.StartWindow; } }
 
         void SetWaitConfirm(eTypeAccess pTypeAccess, ReceiptWares pRW = null)
         {
-            if ( pTypeAccess == eTypeAccess.FixWeight && State == eStateMainWindows.WaitInputPrice)            
-                return;            
-            
+            if (pTypeAccess == eTypeAccess.FixWeight && State == eStateMainWindows.WaitInputPrice)
+                return;
+
             CurWares = pRW;
             TypeAccessWait = pTypeAccess;
-            customWindow= GetCustomButton(CS.StateScale);
+            customWindow = GetCustomButton(CS.StateScale);
             customWindowButtons = customWindow.Buttons;
             SetStateView(eStateMainWindows.WaitAdmin);
         }
@@ -546,9 +547,9 @@ namespace Front
                         else
                             if (IsLockSale) Res = eTypeAccess.LockSale;
                         else
-                            if (curReceipt?.IsNeedExciseStamp == true) Res = eTypeAccess.ExciseStamp;                        
+                            if (curReceipt?.IsNeedExciseStamp == true) Res = eTypeAccess.ExciseStamp;
                         else
-                            if (!CS.IsNoProblemWindows && IsViewProblemeWeight) 
+                            if (!CS.IsNoProblemWindows && IsViewProblemeWeight)
                             Res = eTypeAccess.FixWeight;
 
                         if (Res != TypeAccessWait && Res != eTypeAccess.NoDefinition)
@@ -558,7 +559,7 @@ namespace Front
                         }
                     }
                     //Якщо Очікуємо ввід ціни І є проблема з вагою - Перевага введеній ціні.
-                   
+
                     if (pSMV != eStateMainWindows.NotDefine)
                     {
                         State = pSMV;
@@ -941,9 +942,9 @@ namespace Front
                 {
                     SetStateView(eStateMainWindows.WaitInputPrice);
                 }
-               /* else
-                    if (CurWares.Prices.Count() == 1)
-                    Bl.AddWaresCode(curReceipt, CurWares.CodeWares, CurWares.CodeUnit, pQuantity, CurWares.Prices.First().Price);*/
+                /* else
+                     if (CurWares.Prices.Count() == 1)
+                     Bl.AddWaresCode(curReceipt, CurWares.CodeWares, CurWares.CodeUnit, pQuantity, CurWares.Prices.First().Price);*/
             }
         }
 
@@ -954,7 +955,10 @@ namespace Front
 
         private void _OwnBag(object sender, RoutedEventArgs e)
         {
-            SetStateView(eStateMainWindows.ChoicePaymentMethod);
+            var temp = Convert.ToDecimal(CS.curFullWeight);
+            if (temp > 0 && temp < 300)
+                Bl.AddOwnBag(Bl.GetNewIdReceipt(), temp);
+            //SetStateView(eStateMainWindows.ChoicePaymentMethod);
         }
 
         private void _BuyBag(object sender, RoutedEventArgs e)
@@ -1404,34 +1408,34 @@ namespace Front
 
         CustomWindow GetCustomButton(eStateScale pST)
         {
-            CustomWindow res= new CustomWindow() { Id = eWindows.ConfirmWeight, Buttons = customWindowButtons };
-            if(TypeAccessWait == eTypeAccess.FixWeight)
-            switch (StateScale)
-            {
-                case eStateScale.WaitClear:
-                    res.Buttons = new ObservableCollection<CustomButton>()
+            CustomWindow res = new CustomWindow() { Id = eWindows.ConfirmWeight, Buttons = customWindowButtons };
+            if (TypeAccessWait == eTypeAccess.FixWeight)
+                switch (StateScale)
+                {
+                    case eStateScale.WaitClear:
+                        res.Buttons = new ObservableCollection<CustomButton>()
                     { new CustomButton() { Id = 4, Text = "Тарувати", IsAdmin = true } ,
                       new CustomButton() { Id = 5, Text = "Вхід в адмінку", IsAdmin = true } ,
                     };
-                    break;
-                case eStateScale.BadWeight:
-                    res.Buttons = new ObservableCollection<CustomButton>() 
+                        break;
+                    case eStateScale.BadWeight:
+                        res.Buttons = new ObservableCollection<CustomButton>()
                     { new CustomButton() { Id = 1, Text = "Підтвердити вагу", IsAdmin = true },
-                      new CustomButton() { Id = 2, Text = "Добавити вагу", IsAdmin = true }    };                    
-                    break;
+                      new CustomButton() { Id = 2, Text = "Добавити вагу", IsAdmin = true }    };
+                        break;
 
-                case eStateScale.WaitGoods:
-                    res.Buttons = new ObservableCollection<CustomButton>() 
+                    case eStateScale.WaitGoods:
+                        res.Buttons = new ObservableCollection<CustomButton>()
                     { new CustomButton() { Id = 1, Text = "Підтвердити вагу", IsAdmin = true },
                       new CustomButton() { Id = 3, Text = "Видалити товар", IsAdmin = true }
-                    };                    
-                    break;
-                case eStateScale.NotStabilized:
-                    res.Buttons = new ObservableCollection<CustomButton>()
+                    };
+                        break;
+                    case eStateScale.NotStabilized:
+                        res.Buttons = new ObservableCollection<CustomButton>()
                     { new CustomButton() { Id = 1, Text = "Підтвердити вагу", IsAdmin = true }
                     };
-                    break;
-            }
+                        break;
+                }
 
             return res;
 
