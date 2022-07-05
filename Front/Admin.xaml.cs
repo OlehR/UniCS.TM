@@ -53,7 +53,7 @@ namespace Front
             EF.OnControlWeight += (pWeight, pIsStable) =>
             {
                 double r = pWeight;
-                ControlScaleWeightDouble = Convert.ToString(pWeight + 100000);
+                ControlScaleWeightDouble = Convert.ToString(pWeight);
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ControlScaleWeightDouble"));
             };
 
