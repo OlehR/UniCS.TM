@@ -43,6 +43,8 @@ SELECT code_wares AS CodeWares,code_unit AS CodeUnit, coef AS Coefficient, weigh
             (@CodeWarehouse=9   and  DEALER_RRef in ( 0xB7A3001517DE370411DF7DD82E29EFF6 /*Роздрібні Новий*/,  0xA481001E67079A7C11E18A1966EECFE6 /*Акція Новий*/,0x88888888888888888888888888888888 /*Мін. ціна*/ ))
                 or 
             (@CodeWarehouse=15  and  DEALER_RRef in ( 0xA90F001517DE370411E03FABEDFCE454 /*Акція Білочка*/, 0xB7A3001517DE370411DF835234FF0C73 /*Роздрібні Білочка*/))
+                or 
+            (@CodeWarehouse=148  and  DEALER_RRef in (0x81660050569E814D11EB28B4A16E459A /*Акція буклет Spar*/,0x8686005056883C0611ECDC1781734E92 /*Акція Собранецька Ера*/, 0x8686005056883C0611ECDC17038670BF /*Роздрібні Собранецька Ера*/))
         )
 
 [SqlGetDimPriceOld]
@@ -112,6 +114,7 @@ SELECT CONVERT(INT,wh.Code) AS CodeUp,CONVERT(INT,wh.Code)*1000+g.Order_Button A
    AND cp.CashPlaceRRef= CASE 
         WHEN @CodeWarehouse=9 THEN 0x81380050569E814D11E9E4D62A0CF9ED -- 14 касановий
         WHEN @CodeWarehouse=15 THEN 0x817E0050569E814D11EC0030B1FA9530 -- 6(Каса ККМ СО Білочка №10)
+        when @CodeWarehouse=148 then 0x8689005056883C0611ECEBD71B1AE559 -- Каса ККМ СО Ера №3
         end
   GROUP BY wh.Code,g.Order_Button;
 
@@ -136,6 +139,7 @@ SELECT CONVERT(INT,wh.Code)*1000+CASE WHEN g.Order_Button=2 and @CodeWarehouse=9
  AND cp.CashPlaceRRef= CASE 
         WHEN @CodeWarehouse=9 THEN 0x81380050569E814D11E9E4D62A0CF9ED -- 14 касановий
         WHEN @CodeWarehouse=15 THEN 0x817E0050569E814D11EC0030B1FA9530 -- 6(Каса ККМ СО Білочка №10)
+        when @CodeWarehouse=148 then 0x8689005056883C0611ECEBD71B1AE559 -- Каса ККМ СО Ера №3
         end
         group by wh.Code,g.Order_Button,  w1.code_wares;
 [SqlGetPromotionSaleData]
@@ -493,6 +497,7 @@ SELECT CODE_GROUP_WARES AS CodeGroupWares, amount
   FROM  dbo.GetSalesBan (CASE 
         WHEN @CodeWarehouse=9 THEN 0x81380050569E814D11E9E4D62A0CF9ED -- 14 касановий
         WHEN @CodeWarehouse=15 THEN 0x817E0050569E814D11EC0030B1FA9530 -- 6(Каса ККМ СО Білочка №10)
+        when @CodeWarehouse=148 then 0x8689005056883C0611ECEBD71B1AE559 -- Каса ККМ СО Ера №3
         end) ;
 [SqlGetUser]
  SELECT e.CodeUser,NameUser,BarCode,Login,PassWord,CodeProfile AS TypeUser FROM dbo.V1C_employee e ;
