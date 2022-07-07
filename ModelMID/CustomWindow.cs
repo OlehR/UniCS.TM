@@ -10,7 +10,8 @@ namespace ModelMID
         ChoiceClient,
         PhoneClient,
         ConfirmWeight,
-        ExciseStamp
+        ExciseStamp,
+        NoPrice
     }
 
     public class CustomWindow

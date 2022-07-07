@@ -49,7 +49,7 @@ namespace Front
         public string WaresQuantity { get; set; }
         decimal _MoneySum;
         double tempMoneySum;
-        public string MoneySum { get; set; }
+        public decimal MoneySum { get; set; }
         public string MoneySumToRound { get; set; }
         public string EquipmentInfo { get; set; }
         public bool Volume { get; set; }
@@ -74,6 +74,7 @@ namespace Front
         public bool IsPresentFirstTerminal { get { return EF.BankTerminal1 != null; } }
         public bool IsPresentSecondTerminal { get { return EF.BankTerminal2 != null; } }
         public string CurWaresName { get { return CurWares != null ? CurWares.NameWares : " "; } }
+        public int QuantityCigarettes { get; set; } = 1;
         public string NameFirstTerminal
         {
             get
@@ -310,7 +311,7 @@ namespace Front
             };
 
             WaresQuantity = "0";
-            MoneySum = "0";
+            MoneySum = 0;
             Volume = true;
 
             ad = new Admin(this, EF);
@@ -706,7 +707,7 @@ namespace Front
                             break;
 
                         case eStateMainWindows.ChoicePaymentMethod:
-                            MoneySumToRound = MoneySum;
+                            MoneySumToRound = Convert.ToString(MoneySum);
                             ChangeSumPaymant = "0";
                             CashDisbursementTextBox.Text = "0";
                             RoundSum.Text = "0";
@@ -807,7 +808,7 @@ namespace Front
         private void Recalc()
         {
             _MoneySum = ListWares.Sum(r => r.SumTotal);
-            MoneySum = _MoneySum.ToString();
+            MoneySum = _MoneySum;
             WaresQuantity = ListWares.Count().ToString();
             if (VisualTreeHelper.GetChildrenCount(WaresList) > 0)
             {
@@ -935,7 +936,14 @@ namespace Front
 
             if (CurWares.Price == 0) //Повідомлення Про відсутність ціни
             {
-
+                customWindow = new CustomWindow()
+                {
+                    Id = eWindows.NoPrice,
+                    Text = CurWares.NameWares,
+                    Caption = "Відсутня ціна на товар!",
+                    AnswerRequired = true,
+                };
+                SetStateView(eStateMainWindows.WaitCustomWindows);
             }
             if (CurWares.Prices != null && pPrice == 0m) //Меню з вибором ціни. Сигарети.
             {
@@ -1094,7 +1102,8 @@ namespace Front
                     TextBlock Tb = btn.Content as TextBlock;
                     if (Tb != null)
                     {
-                        AddWares(CurWares.CodeWares, CurWares.CodeUnit, 1, price.price);
+                        AddWares(CurWares.CodeWares, CurWares.CodeUnit, QuantityCigarettes, price.price);
+                        QuantityCigarettes = 1;
                     }
                 }
             }
@@ -1309,7 +1318,7 @@ namespace Front
                     break;
 
                 default:
-                    MoneySumToRound = MoneySum;
+                    MoneySumToRound = Convert.ToString(MoneySum);
                     break;
             }
         }
@@ -1440,6 +1449,13 @@ namespace Front
 
             return res;
 
+        }
+
+        private void PlusOrMinusCigarettes(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            QuantityCigarettes = btn.Name.Equals("PlusCigarettesButton") ? QuantityCigarettes + 1 : QuantityCigarettes - 1;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("QuantityCigarettes"));
         }
     }
 

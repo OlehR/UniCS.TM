@@ -125,21 +125,37 @@
 
                 <TextBlock Grid.Column="5" FontSize="22" Text="{DynamicResource markInAll}" 
                            Visibility="Visible" Name="textInAll" VerticalAlignment="Center" Foreground="Black" />
-                <TextBlock Grid.Column="6"
+                <StackPanel Grid.Column="6" Orientation="Horizontal"
+                           VerticalAlignment="Center"
+                           Name="valueInAll" Visibility="Visible">
+                    <TextBlock 
+                           FontSize="28"
+                           FontWeight="Bold"
+                           Foreground="#ff5500" Text="{Binding MoneySum, StringFormat=0.00₴, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window} }">
+                    </TextBlock>
+                    <TextBlock Margin="0"
+                           FontSize="28"
+                           FontWeight="Bold"
+                           Foreground="#ff5500" Text="{Binding WaresQuantity, StringFormat={}({0}), RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window} }">
+                    </TextBlock>
+                </StackPanel>
+                <!--<TextBlock Grid.Column="6"
                            VerticalAlignment="Center"
                            Name="valueInAll" Visibility="Visible"
                            FontSize="28"
                            FontWeight="Bold"
                            Foreground="#ff5500">
                     <TextBlock.Text>
-                        <MultiBinding StringFormat="{}{0} ({1})">
-                            <Binding Path="MoneySum" RelativeSource="{RelativeSource 
+                        <MultiBinding StringFormat="{}{0}₴ ({1})">
+                            <Binding Path="MoneySum" StringFormat="0.00" RelativeSource="{RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}" />
                             <Binding Path="WaresQuantity" RelativeSource="{RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}" />
                         </MultiBinding>
                     </TextBlock.Text>
-                </TextBlock>
+                </TextBlock>-->
                 <!--<TextBlock Grid.Column="6"  Foreground="Black"
                        FontSize="22"  VerticalAlignment="Center"
                        Visibility="Visible" Name="valueWaresQuantity"
@@ -336,7 +352,7 @@
                                 </TextBlock>
                                 <TextBlock Grid.Column="3" Text="{Binding Price}" />
                                 <TextBlock Grid.Column="4" Text="{Binding SumDiscount}" />
-                                <TextBlock Grid.Column="5" Text="{Binding SumTotal}" FontWeight="Bold" FontSize="20"/>
+                                <TextBlock Grid.Column="5" Text="{Binding SumTotal, StringFormat=0.00}" FontWeight="Bold" FontSize="20"/>
 
                             </Grid>
                         </Border>
@@ -563,16 +579,16 @@
                  Grid.Row="0" Grid.RowSpan="6"
                 Grid.Column="1" Grid.ColumnSpan="4"
                  Name="ChoicePrice" Visibility="Collapsed" Grid.ZIndex="2" 
-                CornerRadius="10" HorizontalAlignment="Center"  Width="500" Height="500">
+                CornerRadius="10" HorizontalAlignment="Center"  Width="500" Height="550">
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
                 </Border.Effect>
 
                 <Grid >
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="1*"></RowDefinition>
+                        <RowDefinition Height="0.5*"></RowDefinition>
                         <RowDefinition Height="3*"></RowDefinition>
-                        <RowDefinition Height="1.5*"></RowDefinition>
+                        <RowDefinition Height="2*"></RowDefinition>
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" HorizontalAlignment="Center" FontSize="28" Text="{DynamicResource ChoicePriceTobacco }"/>
 
@@ -596,12 +612,44 @@
                     </ScrollViewer>
 
 
-                    <StackPanel Grid.Row="2">
+                    <StackPanel Grid.Row="2" Margin="5">
                         <TextBlock Visibility="Visible" HorizontalAlignment="Center"
                                    Foreground="Red"
                                    Text="Для розблукування інших цін - викличте адміністратора"/>
+                        
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Button x:Name="MinusCigarettesButton" Height="60" Width="60" Margin="5" Click="PlusOrMinusCigarettes">
+                                <Button.Content>
+                                    <Image Margin="15" Source="icons\minus.png"></Image>
+                                </Button.Content>
+                                <Button.Style>
+                                    <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                                        <Setter Property="IsEnabled" Value="True"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding QuantityCigarettes, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="1">
+                                                <Setter Property="IsEnabled" Value="False"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+
+                            <Button Height="60" Width="60" Margin="5" Style="{StaticResource yelowButton}"
+                                    x:Name="QuantityCigarettesText" Content="{Binding QuantityCigarettes, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" IsEnabled="False">
+                               
+                            </Button>
+                            <Button x:Name="PlusCigarettesButton" Click="PlusOrMinusCigarettes"
+                                Height="60" Width="60" Margin="5" Style="{StaticResource yelowButton}">
+                                <Button.Content>
+                                    <Image Margin="15" Source="icons\plus.png"></Image>
+                                </Button.Content>
+                            </Button>
+                        </StackPanel>
+                        
                         <Button Grid.Row="3" Style="{StaticResource Default}"  FontSize="22" Click="_Cancel" 
-                        Height="80" Width="300" Margin="10">
+                        Height="60" Width="300" Margin="10">
                             <TextBlock FontSize="28" Text="{DynamicResource cancel}"/>
                         </Button>
                     </StackPanel>
