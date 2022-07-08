@@ -25,6 +25,8 @@ namespace Front
             //return;
             EF.OnControlWeight += (pWeight, pIsStable) =>
             {
+                ControlScaleCurrentWeight = pWeight;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ControlScaleCurrentWeight"));
                 CS.OnScalesData(pWeight, pIsStable);
             };
 

@@ -45,7 +45,7 @@ namespace Front
         public eTypeAccess TypeAccessWait { get; set; }
         public ObservableCollection<ReceiptWares> ListWares { get; set; }
         public CustomWindow customWindow { get; set; }
-        public ObservableCollection<CustomButton> customWindowButtons { get; set; }        
+        public ObservableCollection<CustomButton> customWindowButtons { get; set; }
         public string WaresQuantity { get; set; }
         decimal _MoneySum;
         double tempMoneySum;
@@ -69,16 +69,33 @@ namespace Front
         /// <summary>
         /// чи є товар з обмеженням по віку
         /// </summary>
-        public bool IsAgeRestrict { get { return curReceipt==null? false: curReceipt?.AgeRestrict == 0 || curReceipt?.AgeRestrict != 0 && curReceipt.IsConfirmAgeRestrict; } }
-        public bool PriceIsNotZero { get { return _MoneySum >= 0 && WaresQuantity != "0"; } }
+        public bool IsAgeRestrict { get { return curReceipt == null ? false : curReceipt?.AgeRestrict == 0 || curReceipt?.AgeRestrict != 0 && curReceipt.IsConfirmAgeRestrict; } }
+
+        bool _IsEnabledPaymentButton = false;
+        /// <summary>
+        /// Чи активна кнопка оплати
+        /// </summary>
+        public bool IsEnabledPaymentButton { get { return _MoneySum >= 0 && WaresQuantity != "0"; } set { _IsEnabledPaymentButton = value; } }
+        /// <summary>
+        /// чи активна кнопка пошуку
+        /// </summary>
+        public bool IsEnabledFindButton { get; set; }
+        /// <summary>
+        /// Чи можна підтвердити власну сумку
+        /// </summary>
+        public bool IsOwnBag { get { return ControlScaleCurrentWeight > 0 && ControlScaleCurrentWeight<=300; } }
+        /// <summary>
+        /// теперішня вага
+        /// </summary>
+        public double ControlScaleCurrentWeight { get; set; } = 0;
         public string ClientName { get { return curReceipt != null && curReceipt.CodeClient == Client?.CodeClient ? Client?.NameClient : "Відсутній клієнт"; } }
         public bool IsPresentFirstTerminal { get { return EF.BankTerminal1 != null; } }
         public bool IsPresentSecondTerminal { get { return EF.BankTerminal2 != null; } }
         public string CurWaresName { get { return CurWares != null ? CurWares.NameWares : " "; } }
         public int QuantityCigarettes { get; set; } = 1;
-        public string NameFirstTerminal { get { return IsPresentFirstTerminal ? EF?.BankTerminal1.Name : null; } }       
+        public string NameFirstTerminal { get { return IsPresentFirstTerminal ? EF?.BankTerminal1.Name : null; } }
         public string NameSecondTerminal { get { return IsPresentSecondTerminal ? EF?.BankTerminal2.Name : null; } }
-        
+
         public string WaitAdminText
         {
             get
@@ -138,7 +155,7 @@ namespace Front
             Bl = new BL(true);
             EF = new EquipmentFront(GetBarCode);
             InitAction();
-           
+
             WaresQuantity = "0";
             MoneySum = 0;
             Volume = true;
@@ -195,12 +212,12 @@ namespace Front
         {
             curReceipt = pReceipt;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("GetBackgroundColor"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("PriceIsNotZero"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnabledPaymentButton"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCheckReturn"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClientName"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsAgeRestrict"));
         }
-        
+
         void SetWaitConfirm(eTypeAccess pTypeAccess, ReceiptWares pRW = null)
         {
             if (pTypeAccess == eTypeAccess.FixWeight && State == eStateMainWindows.WaitInputPrice)
@@ -212,7 +229,7 @@ namespace Front
             customWindowButtons = customWindow.Buttons;
             SetStateView(eStateMainWindows.WaitAdmin);
         }
-  
+
         void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine)
         {
             Dispatcher.BeginInvoke(new ThreadStart(() =>
@@ -230,7 +247,7 @@ namespace Front
                         else
                             if (curReceipt?.IsNeedExciseStamp == true) Res = eTypeAccess.ExciseStamp;
                         else
-                            if (pSMV != eStateMainWindows.BlockWeight && !CS.IsNoProblemWindows && IsViewProblemeWeight)  Res = eTypeAccess.FixWeight;
+                            if (pSMV != eStateMainWindows.BlockWeight && !CS.IsNoProblemWindows && IsViewProblemeWeight) Res = eTypeAccess.FixWeight;
 
                         if (Res != TypeAccessWait && Res != eTypeAccess.NoDefinition)
                         {
@@ -255,8 +272,10 @@ namespace Front
                     if (State != eStateMainWindows.WaitAdmin && State != eStateMainWindows.WaitAdminLogin)
                         TypeAccessWait = eTypeAccess.NoDefinition;
 
-
-
+                    IsEnabledPaymentButton = true;
+                    IsEnabledFindButton = true;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnabledPaymentButton"));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnabledFindButton"));
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsAgeRestrict"));
 
                     ErrorWindows.Visibility = Visibility.Collapsed;
@@ -275,6 +294,7 @@ namespace Front
                     WaitKashier.Visibility = Visibility.Collapsed;
                     CustomWindows.Visibility = Visibility.Collapsed;
                     ErrorBackground.Visibility = Visibility.Collapsed;
+                    OwnBagWindows.Visibility = Visibility.Collapsed;
 
                     CaptionCustomWindows.Visibility = Visibility.Visible;
                     ImageCustomWindows.Visibility = Visibility.Visible;
@@ -413,6 +433,11 @@ namespace Front
                             CustomWindows.Visibility = Visibility.Visible;
                             break;
                         case eStateMainWindows.BlockWeight:
+                            IsEnabledPaymentButton = false;
+                            IsEnabledFindButton = false;
+                            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnabledPaymentButton"));
+                            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnabledFindButton"));
+                            break;
                         case eStateMainWindows.WaitInput:
                             IsIgnoreExciseStamp = false;
                             IsAddNewWeight = false;
@@ -598,9 +623,11 @@ namespace Front
 
         private void _OwnBag(object sender, RoutedEventArgs e)
         {
-            var temp = Convert.ToDecimal(CS.curFullWeight);
-            if (temp > 0 && temp < 300)
-                Bl.AddOwnBag(Bl.GetNewIdReceipt(), temp);
+            if (ControlScaleCurrentWeight > 0 && ControlScaleCurrentWeight < 300)
+            {
+                Bl.AddOwnBag(Bl.GetNewIdReceipt(), Convert.ToDecimal(ControlScaleCurrentWeight));
+                SetStateView(eStateMainWindows.WaitInput);
+            }
             //SetStateView(eStateMainWindows.ChoicePaymentMethod);
         }
 
@@ -637,7 +664,7 @@ namespace Front
             }
             //var result = task.Result;            
         }
-       
+
         private void ShowErrorMessage(string ErrorMessage)
         {
             ErrorBackground.Visibility = Visibility.Visible;
@@ -726,7 +753,7 @@ namespace Front
         {
             AddExciseStamp(TBExciseStamp.Text);
         }
-        
+
         private void ChangedExciseStamp(object sender, TextChangedEventArgs e)
         {
             TextBox textBox = (TextBox)sender;
@@ -882,7 +909,7 @@ namespace Front
                 if (customWindow.Id == eWindows.ConfirmWeight)
                 {
                     //Ховаєм адмінпанель щоб управляти товаром.
-                    if(res.Id==-1)
+                    if (res.Id == -1)
                     {
                         //IsHideAdminPanel = true;
                         SetStateView(eStateMainWindows.BlockWeight);
@@ -923,7 +950,7 @@ namespace Front
 
             SetStateView(eStateMainWindows.WaitCustomWindows);
         }
-       
+
         private void ExciseStampCustomWindow()
         {
             customWindow = new CustomWindow()
@@ -961,6 +988,14 @@ namespace Front
             Button btn = sender as Button;
             QuantityCigarettes = btn.Name.Equals("PlusCigarettesButton") ? QuantityCigarettes + 1 : QuantityCigarettes - 1;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("QuantityCigarettes"));
+        }
+
+        private void StartOwnBag(object sender, RoutedEventArgs e) // TMP переробити через стани
+        {
+            StartShopping.Visibility = Visibility.Collapsed;
+            Background.Visibility = Visibility.Visible;
+            BackgroundWares.Visibility = Visibility.Visible;
+            OwnBagWindows.Visibility = Visibility.Visible;
         }
     }
 

@@ -572,6 +572,78 @@
 
             </Border>
 
+            <!-- Власна Сумка   -->
+            <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="0" Grid.RowSpan="6"
+                Grid.Column="0" Grid.ColumnSpan="6"
+                 Name="OwnBagWindows" Visibility="Visible" Grid.ZIndex="2" 
+                HorizontalAlignment="Center" VerticalAlignment="Center"
+                CornerRadius="10" Margin="10" >
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+                </Border.Effect>
+
+                <Grid Width="500" Height="500">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0.8*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0" Grid.Column="1" Visibility="Visible" >
+
+                        <StackPanel HorizontalAlignment="Center">
+                            <Image Height="40" Width="40"  Source="icons\shoppingBag.png" Margin="15"/>
+                            <TextBlock Text="{StaticResource ownBag}" FontSize="28" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Покладіть сумку на вагову платформу!" FontSize="24"/>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel>
+                            <TextBlock Text="Вага сумки:" FontSize="24" HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding ControlScaleCurrentWeight, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" FontSize="24" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Вага не має перевищувати 300 гр!" Foreground="Red" FontSize="18" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                        
+                        <Button Grid.Row="1" 
+                            HorizontalAlignment="Left" VerticalAlignment="Bottom"  FontSize="22" Click="_OwnBag" 
+                        Height="60" Width="200" Margin="15">
+                            <StackPanel Orientation="Horizontal">
+                                <Image  Height="20" Width="20"  Source="icons\right.png"></Image>
+                                <TextBlock FontSize="28" Text="{DynamicResource ok}" Margin="5,0,0,5"/>
+                            </StackPanel>
+                            <Button.Style>
+                                <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsOwnBag, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                            <Setter Property="IsEnabled" Value="False"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        
+                        <Button Grid.Row="1" 
+                            Style="{StaticResource Default}" HorizontalAlignment="Right" VerticalAlignment="Bottom"  FontSize="22" Click="_Cancel" 
+                        Height="60" Width="200" Margin="15">
+                            <StackPanel Orientation="Horizontal">
+                                <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
+                                <TextBlock FontSize="28" Text="{DynamicResource cancel}" Margin="5,0,0,5"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                </Grid>
+            </Border>
 
             <!-- Ввід цін на сегарети    -->
 
@@ -1393,8 +1465,23 @@
             <Button Style="{StaticResource yelowButton}" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" FontSize="22"   Click="_Back">
                 <Image Margin="5" Source="icons\back.png"/>
             </Button>
-            <Button  Style="{StaticResource Default}" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" FontSize="22" Click="_Search">
+            <Button  Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" FontSize="22" Click="_Search">
                 <TextBlock FontSize="28" Text="{DynamicResource search}"/>
+                <Button.Style>
+                    <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                        <Setter Property="IsEnabled" Value="True"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsEnabledFindButton, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                <Setter Property="IsEnabled" Value="True" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsEnabledFindButton, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                <Setter Property="IsEnabled" Value="False" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
             </Button>
             <Button Style="{StaticResource Default}" Grid.Column="2" FontSize="22" Click="_Cancel">
                 <TextBlock FontSize="14" Text="{DynamicResource ownBag}"/>
@@ -1429,11 +1516,11 @@
                     <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
                         <Setter Property="IsEnabled" Value="True"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding PriceIsNotZero, RelativeSource={RelativeSource 
+                            <DataTrigger Binding="{Binding IsEnabledPaymentButton, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="True">
                                 <Setter Property="IsEnabled" Value="True" />
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding PriceIsNotZero, RelativeSource={RelativeSource 
+                            <DataTrigger Binding="{Binding IsEnabledPaymentButton, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="False">
                                 <Setter Property="IsEnabled" Value="False" />
                             </DataTrigger>
@@ -1527,7 +1614,7 @@
                         <TextBlock FontSize="34" Text="{DynamicResource startShopping}" Margin="5,0,0,5"/>
                     </StackPanel>
                 </Button>
-                <Button Grid.Row="3" Grid.Column="0"  Style="{StaticResource greenButton}"  FontSize="48" Click="_OwnBag" 
+                <Button Grid.Row="3" Grid.Column="0"  Style="{StaticResource greenButton}"  FontSize="48" Click="StartOwnBag" 
                           Margin="5,20,5,20">
                     <StackPanel Orientation="Horizontal">
                         <Image  Height="40" Width="40"  Source="icons\shoppingBag.png"></Image>
