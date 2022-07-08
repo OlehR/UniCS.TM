@@ -560,7 +560,7 @@ namespace Front
             SetStateView(eStateMainWindows.WaitFindWares);
         }
 
-       void IsPrises(decimal pQuantity = 0m, decimal pPrice = 0m)
+        void IsPrises(decimal pQuantity = 0m, decimal pPrice = 0m)
         {
             if (CurWares.TypeWares == eTypeWares.Alcohol)
             {
@@ -615,7 +615,6 @@ namespace Front
         {
             SetStateView(eStateMainWindows.WaitInput);
         }
-
 
         private void _ButtonPaymentBank(object sender, RoutedEventArgs e)
         {

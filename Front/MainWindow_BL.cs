@@ -446,7 +446,7 @@ namespace Front
                         res.Buttons = new ObservableCollection<CustomButton>()
                     { new CustomButton() { Id = 1, Text = "Підтвердити вагу", IsAdmin = true },
                       new CustomButton() { Id = 2, Text = "Добавити вагу", IsAdmin = true } ,
-                      new CustomButton() { Id = -1, Text = "Закрити", IsAdmin = true }};
+                      new CustomButton() { Id = -1, Text = "Закрити", IsAdmin = false }};
                         break;
 
                     case eStateScale.WaitGoods:
@@ -457,11 +457,10 @@ namespace Front
                     case eStateScale.NotStabilized:
                         res.Buttons = new ObservableCollection<CustomButton>()
                     { new CustomButton() { Id = 1, Text = "Підтвердити вагу", IsAdmin = true },
-                      new CustomButton() { Id = -1, Text = "Закрити", IsAdmin = true }};
+                      new CustomButton() { Id = -1, Text = "Закрити", IsAdmin = false }};
                         break;
                 }
             return res;
-
         }
 
         private IEnumerable<ReceiptWares> StartData()
