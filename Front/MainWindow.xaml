@@ -522,8 +522,22 @@
                                 <ItemsControl Name="CustomWindowsItemControl" VerticalAlignment="Center">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <Button Height="Auto" Width="Auto" Style="{StaticResource yelowButton}" Content="{Binding Text}" HorizontalAlignment="Center" 
-                                                    Click="CustomWindowClickButton"></Button>
+                                            <Button Height="Auto" Width="Auto" Content="{Binding Text}" HorizontalAlignment="Center" 
+                                                    Click="CustomWindowClickButton">
+                                                <Button.Style>
+                                                    <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
+                                                        <Setter Property="IsEnabled" Value="True"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsAdmin}" Value="True">
+                                                                <Setter Property="IsEnabled" Value="True" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding IsAdmin}" Value="False">
+                                                                <Setter Property="IsEnabled" Value="False" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                            </Button>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
@@ -576,7 +590,7 @@
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
                 Grid.Column="0" Grid.ColumnSpan="6"
-                 Name="OwnBagWindows" Visibility="Visible" Grid.ZIndex="2" 
+                 Name="OwnBagWindows" Visibility="Collapsed" Grid.ZIndex="2" 
                 HorizontalAlignment="Center" VerticalAlignment="Center"
                 CornerRadius="10" Margin="10" >
                 <Border.Effect>
@@ -852,10 +866,10 @@
                                         <Button.Style>
                                             <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding Buttons.IsAdmin}" Value="true">
+                                                    <DataTrigger Binding="{Binding IsAdmin}" Value="true">
                                                         <Setter Property="IsEnabled" Value="False" />
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding Buttons.IsAdmin}" Value="false">
+                                                    <DataTrigger Binding="{Binding IsAdmin}" Value="false">
                                                         <Setter Property="IsEnabled" Value="False" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
@@ -1486,7 +1500,7 @@
             <Button Style="{StaticResource Default}" Grid.Column="2" FontSize="22" Click="_Cancel">
                 <TextBlock FontSize="14" Text="{DynamicResource ownBag}"/>
             </Button>
-            <Button  Style="{StaticResource yelowButton}" Grid.Column="2" Grid.Row="2" FontSize="22" Click="_BuyBag">
+            <Button  Style="{StaticResource yelowButton}" Grid.Column="2" Grid.Row="2" FontSize="22" Click="StartOwnBag">
                 <TextBlock FontSize="14" Text="{DynamicResource buyBag}"/>
             </Button>
             <Button  Grid.Column="3"  Grid.Row="0" Grid.RowSpan="2" FontSize="22" Click="_ButtonPayment">
