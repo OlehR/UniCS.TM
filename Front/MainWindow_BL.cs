@@ -383,11 +383,14 @@ namespace Front
                 {
                     pay.SetIdReceipt(R);
                     Bl.db.ReplacePayment(new List<Payment>() { pay });
-                    Bl.SetStateReceipt(curReceipt, eStateReceipt.Pay);
-                    R.StateReceipt = eStateReceipt.Pay;
-                    R.Payment = new List<Payment>() { pay };
+                    if (pay.IsSuccess)
+                    {
+                        Bl.SetStateReceipt(curReceipt, eStateReceipt.Pay);
+                        R.StateReceipt = eStateReceipt.Pay;
+                        R.Payment = new List<Payment>() { pay };
+                    }
                 }
-                else
+                if(pay == null || !pay.IsSuccess)
                 {
                     SetStateView(eStateMainWindows.WaitInput);
                     R.StateReceipt = eStateReceipt.Prepare;
