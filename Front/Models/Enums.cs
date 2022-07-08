@@ -18,6 +18,11 @@ namespace Front.Models
         /// </summary>
         WaitInput,
         /// <summary>
+        /// Звичайне вікно проте можливо здійснювати не всі операції. Я
+        /// Якщо очікуєм вагу - добавляти позиції.
+        /// </summary>
+        BlockWeight,
+        /// <summary>
         /// Введення кількості в чеку повернення
         /// </summary>
         WaitInputRefund,

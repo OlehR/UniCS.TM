@@ -45,7 +45,7 @@ namespace Front
         public eTypeAccess TypeAccessWait { get; set; }
         public ObservableCollection<ReceiptWares> ListWares { get; set; }
         public CustomWindow customWindow { get; set; }
-        public ObservableCollection<CustomButton> customWindowButtons { get; set; }
+        public ObservableCollection<CustomButton> customWindowButtons { get; set; }        
         public string WaresQuantity { get; set; }
         decimal _MoneySum;
         double tempMoneySum;
@@ -63,40 +63,22 @@ namespace Front
         /// Чи заброкована зміна
         /// </summary>
         public bool IsLockSale { get { return _IsLockSale; } set { if (_IsLockSale != value) { SetStateView(!value && State == eStateMainWindows.WaitAdmin ? eStateMainWindows.WaitInput : eStateMainWindows.NotDefine); _IsLockSale = value; } } }
+        //public bool IsHideAdminPanel { get; set; } = false;
         public string GetBackgroundColor { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? "#FFE5E5" : "#FFFFFF"; } }
         public bool IsCheckReturn { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? true : false; } }
         /// <summary>
         /// чи є товар з обмеженням по віку
         /// </summary>
-        public bool IsAgeRestrict { get { return curReceipt.AgeRestrict == 0 || curReceipt.AgeRestrict != 0 && curReceipt.IsConfirmAgeRestrict; } }
+        public bool IsAgeRestrict { get { return curReceipt==null? false: curReceipt?.AgeRestrict == 0 || curReceipt?.AgeRestrict != 0 && curReceipt.IsConfirmAgeRestrict; } }
         public bool PriceIsNotZero { get { return _MoneySum >= 0 && WaresQuantity != "0"; } }
         public string ClientName { get { return curReceipt != null && curReceipt.CodeClient == Client?.CodeClient ? Client?.NameClient : "Відсутній клієнт"; } }
         public bool IsPresentFirstTerminal { get { return EF.BankTerminal1 != null; } }
         public bool IsPresentSecondTerminal { get { return EF.BankTerminal2 != null; } }
         public string CurWaresName { get { return CurWares != null ? CurWares.NameWares : " "; } }
         public int QuantityCigarettes { get; set; } = 1;
-        public string NameFirstTerminal
-        {
-            get
-            {
-                if (IsPresentFirstTerminal)
-                {
-                    return EF.BankTerminal1.Name;
-                }
-                else return null;
-            }
-        }
-        public string NameSecondTerminal
-        {
-            get
-            {
-                if (IsPresentSecondTerminal)
-                {
-                    return EF.BankTerminal2.Name;
-                }
-                else return null;
-            }
-        }
+        public string NameFirstTerminal { get { return IsPresentFirstTerminal ? EF?.BankTerminal1.Name : null; } }       
+        public string NameSecondTerminal { get { return IsPresentSecondTerminal ? EF?.BankTerminal2.Name : null; } }
+        
         public string WaitAdminText
         {
             get
@@ -131,6 +113,9 @@ namespace Front
         /// </summary>
         public bool CustomWindowValidText { get; set; }
 
+        bool IsViewProblemeWeight { get { return State == eStateMainWindows.WaitInput || State == eStateMainWindows.StartWindow; } }
+
+
         SortedList<eStateMainWindows, System.Drawing.Color> FC = new();
         public System.Drawing.Color GetFlagColor(eStateMainWindows pStateMainWindows)
         {
@@ -152,164 +137,8 @@ namespace Front
 
             Bl = new BL(true);
             EF = new EquipmentFront(GetBarCode);
-
-            EF.OnControlWeight += (pWeight, pIsStable) =>
-            {
-                CS.OnScalesData(pWeight, pIsStable);
-            };
-
-            EF.OnWeight += (pWeight, pIsStable) => { Weight = pWeight; };
-
-            EF.SetStatus += (info) =>
-            {
-                EquipmentInfo = info.TextState;
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"SetStatus ({info.ToJSON()})", eTypeLog.Expanded);
-                if (EF.StatCriticalEquipment != eStateEquipment.On)
-                    SetWaitConfirm(eTypeAccess.ErrorEquipment, null);
-            };
-
-            Global.OnReceiptCalculationComplete += (pReceipt) =>
-            {
-                try
-                {
-                    SetCurReceipt(pReceipt);
-                    string ExciseStamp = null;
-                    bool IsDel = false;
-                    if (CurWares != null)
-                    {
-                        var lw = curReceipt?.Wares?.Where(r => r.CodeWares == CurWares.CodeWares);
-                        if (lw != null && lw.Count() == 1)
-                        {
-                            ExciseStamp = lw.First()?.ExciseStamp;
-
-                            if (!string.IsNullOrEmpty(ExciseStamp))
-                                CurWares.ExciseStamp = ExciseStamp;
-                        }
-
-                        //Видалили товар але список не пустий.
-                        if ((lw == null || lw.Count() == 0) && CurWares != null && curReceipt != null && curReceipt.Wares != null && curReceipt.Wares.Any() && curReceipt.Equals(CurWares))
-                        {
-                            IsDel = true;
-                            /*
-                            CurWares.Quantity = 0;
-
-                            foreach (var e in curReceipt.Wares.Where(el => el.IsLast = true))
-                            {
-                                e.IsLast = false;
-                            }
-                            var r = curReceipt.Wares.ToList();
-                            CurWares.IsLast = true;
-                            r.Add(CurWares);
-                            curReceipt.Wares = r;
-                            */
-                        }
-                    }
-                    if (curReceipt?.Wares?.Count() == 0)
-                        CS.WaitClear();
-
-                    CS.StartWeightNewGoogs(curReceipt, IsDel ? CurWares : null);
-                }
-                catch (Exception e)
-                {
-                    FileLogger.WriteLogMessage($"MainWindow.OnReceiptCalculationComplete Exception =>(pReceipt=>{pReceipt.ToJSON()}) => ({Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace})", eTypeLog.Error);
-                }
-
-                try
-                {
-                    ListWares = new ObservableCollection<ReceiptWares>(pReceipt?.Wares);
-                    Dispatcher.BeginInvoke(new ThreadStart(() => { WaresList.ItemsSource = ListWares; Recalc(); }));
-                }
-                catch (Exception e)
-                {
-                    FileLogger.WriteLogMessage($"MainWindow.OnReceiptCalculationComplete Exception =>(pReceipt=>{pReceipt.ToJSON()}) => ({Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace})", eTypeLog.Error);
-                }
-                FileLogger.WriteLogMessage($"MainWindow.OnReceiptCalculationComplete Exception =>(pReceipt=>{pReceipt.ToJSON()})", eTypeLog.Full);
-            };
-
-            Global.OnSyncInfoCollected += (SyncInfo) =>
-            {
-                //Почалось повне оновлення.
-                if (SyncInfo.Status == eSyncStatus.StartedFullSync)
-                    SetWaitConfirm(eTypeAccess.StartFullUpdate);
-                //Помилка оновлення.
-                if (SyncInfo.Status == eSyncStatus.Error)
-                    SetWaitConfirm(eTypeAccess.ErrorFullUpdate);
-
-                if (TypeAccessWait == eTypeAccess.StartFullUpdate && SyncInfo.Status == eSyncStatus.SyncFinishedSuccess)
-                {
-                    TypeAccessWait = eTypeAccess.NoDefinition;
-                    SetStateView(eStateMainWindows.WaitInput);
-                }
-
-                FileLogger.WriteLogMessage($"MainWindow.OnSyncInfoCollected Status=>{SyncInfo.Status} StatusDescription=>{SyncInfo.StatusDescription}", eTypeLog.Full);
-            };
-
-            Global.OnStatusChanged += (Status) =>
-            {
-                ExchangeRateBar = Status.StringColor;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ExchangeRateBar"));
-            };
-
-            Global.OnClientChanged += (pClient, pIdWorkPlace) =>
-            {
-                Client = pClient;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClientName"));
-                FileLogger.WriteLogMessage($"MainWindow.OnClientChanged(Client.Wallet=> {pClient.Wallet} SumBonus=>{pClient.SumBonus})", eTypeLog.Full);
-            };
-
-            Bl.OnAdminBarCode += (pUser) =>
-            {
-                if (TypeAccessWait > 0 && !(TypeAccessWait == eTypeAccess.FixWeight && CS.StateScale == eStateScale.WaitClear))//TypeAccessWait != eTypeAccess.NoDefinition 
-                {
-                    SetConfirm(pUser);
-                    return;
-                }
-
-                if (Access.GetRight(pUser, eTypeAccess.AdminPanel))
-                {
-                    SetStateView(eStateMainWindows.WaitInput);
-                    //Admin ad = new Admin(U, this,EF);
-                    Dispatcher.Invoke(new Action(() =>
-                    {
-                        ad.Init(pUser);
-                        ad.WindowState = WindowState.Maximized;
-                    }));
-                }
-                else
-                {
-                    ShowErrorMessage($"Не достатньо прав на вхід в адмін панель для  {pUser.NameUser}");
-                    //                MessageBox.Show($"Не достатньо прав на вхід в адмін панель для  {U.NameUser}");
-                }
-
-            };
-
-            Bl.OnCustomWindow += (pCW) => { customWindow = pCW; SetStateView(eStateMainWindows.WaitCustomWindows); };
-
-            //Обробка стану контрольної ваги.
-            CS.OnStateScale += (pStateScale, pRW, pСurrentlyWeight) =>
-            {
-                StateScale = pStateScale;
-
-                switch (StateScale)
-                {
-                    case eStateScale.BadWeight:
-                    case eStateScale.NotStabilized:
-                    case eStateScale.WaitClear:
-                    case eStateScale.WaitGoods:
-
-                        SetWaitConfirm(eTypeAccess.FixWeight, pRW); // SetStateView(eStateMainWindows.WaitWeight);
-
-                        break;
-                    case eStateScale.Stabilized:
-                        if (State == eStateMainWindows.WaitWeight || State == eStateMainWindows.WaitAdmin)
-                            SetStateView(eStateMainWindows.WaitInput);
-                        if (pRW != null)
-                            Bl.FixWeight(pRW);
-                        break;
-                }
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WaitAdminText"));
-            };
-
+            InitAction();
+           
             WaresQuantity = "0";
             MoneySum = 0;
             Volume = true;
@@ -361,6 +190,7 @@ namespace Front
                 FileLogger.WriteLogMessage(e.Message, eTypeLog.Error);
             }
         }
+
         private void SetCurReceipt(Receipt pReceipt)
         {
             curReceipt = pReceipt;
@@ -370,158 +200,7 @@ namespace Front
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClientName"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsAgeRestrict"));
         }
-        public void GetBarCode(string pBarCode, string pTypeBarCode)
-        {
-            if (State == eStateMainWindows.StartWindow)
-                SetStateView(eStateMainWindows.WaitInput);
-
-            if (TypeAccessWait == eTypeAccess.ExciseStamp)
-            {
-                string ExciseStamp = GetExciseStamp(pBarCode);
-                if (!string.IsNullOrEmpty(ExciseStamp))
-                    AddExciseStamp(ExciseStamp);
-                return;
-            }
-            ReceiptWares w = null;
-            if (State == eStateMainWindows.WaitInput || State == eStateMainWindows.StartWindow)
-            {
-                if (curReceipt?.IsLockChange == false)
-                {
-                    w = Bl.AddWaresBarCode(curReceipt, pBarCode, 1);
-                    if (w != null)
-                    {
-                        CurWares = w;
-                        IsPrises(1, 0);
-                    }
-                }
-            }
-            else
-            {
-                w = Bl.AddWaresBarCode(curReceipt, pBarCode, 1, true);
-            }
-            if (w != null)
-                return;
-            var c = Bl.GetClientByBarCode(curReceipt, pBarCode);
-            if (c == null)
-            {
-                var u = Bl.GetUserByBarCode(pBarCode);
-                if (u != null)
-                    Bl.OnAdminBarCode?.Invoke(u);
-            }
-        }
-
-        /*
-        public void GetBarCode(string pBarCode, string pTypeBarCode)
-        {
-            var r = GetLastReceipt();
-            var w = AddWaresBarCode(r, pBarCode, 1);
-            if (w == null) //Можливо штрихкод не товар
-            {
-                var c = GetClientByBarCode(r, pBarCode);
-                if (c == null)
-                {
-                    var u = GetUserByBarCode(pBarCode);
-                    if (u != null)
-                        OnAdminBarCode?.Invoke(u);
-                }
-                else
-                { _ = GetBonusAsync(c, Global.IdWorkPlace); }
-            }
-
-        }*/
-
-        bool SetConfirm(User pUser, bool pIsFirst = false, bool pIsAccess = false)
-        {
-            if (pUser == null)
-            {
-                switch (TypeAccessWait)
-                {
-                    /*case eTypeAccess.ConfirmAge:
-                    case eTypeAccess.ChoicePrice:
-                    case eTypeAccess.AddNewWeight:                    
-                    case eTypeAccess.ErrorEquipment:        
-                        TypeAccessWait = eTypeAccess.NoDefinition;
-                        SetStateView(eStateMainWindows.WaitAdmin);
-                        break;*/
-                    case eTypeAccess.DelReciept:
-                    case eTypeAccess.DelWares:
-                        TypeAccessWait = eTypeAccess.NoDefinition;
-                        SetStateView(eStateMainWindows.WaitInput);
-                        break;
-                    default:
-                        SetStateView(eStateMainWindows.WaitAdmin);
-                        break;
-                }
-                return true;
-            }
-
-            IsIgnoreExciseStamp = Access.GetRight(pUser, eTypeAccess.ExciseStamp);
-            IsAddNewWeight = Access.GetRight(pUser, eTypeAccess.AddNewWeight);
-            IsFixWeight = Access.GetRight(pUser, eTypeAccess.FixWeight);
-
-            if (TypeAccessWait == eTypeAccess.NoDefinition || TypeAccessWait < 0)
-                return false;
-            if (!Access.GetRight(pUser, TypeAccessWait) && !pIsAccess)
-            {
-                if (!pIsFirst)
-                    ShowErrorMessage($"Не достатньо прав для операції {TypeAccessWait} в {pUser.NameUser}");
-                //                MessageBox.Show($"Не достатньо прав для операції {TypeAccessWait} в {pUser.NameUser}");
-                return false;
-            }
-
-            switch (TypeAccessWait)
-            {
-                case eTypeAccess.DelWares:
-                    if (curReceipt?.IsLockChange == false)
-                    {
-                        Bl.ChangeQuantity(CurWares, 0);
-                        CurWares.Quantity = 0;
-                        TypeAccessWait = eTypeAccess.NoDefinition;
-                        SetStateView(eStateMainWindows.WaitInput);
-                    }
-                    break;
-                case eTypeAccess.DelReciept:
-                    Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
-                    Bl.GetNewIdReceipt();
-                    TypeAccessWait = eTypeAccess.NoDefinition;
-                    SetStateView(eStateMainWindows.StartWindow);
-                    break;
-                case eTypeAccess.ConfirmAge:
-                    Bl.AddEventAge(curReceipt);
-                    TypeAccessWait = eTypeAccess.NoDefinition;
-                    PrintAndCloseReceipt();
-
-                    break;
-                case eTypeAccess.ChoicePrice:
-                    foreach (Models.Price el in Prices.ItemsSource)
-                        el.IsEnable = true;
-                    TypeAccessWait = eTypeAccess.NoDefinition;
-                    break;
-                case eTypeAccess.AddNewWeight:
-                case eTypeAccess.FixWeight:
-                    SetStateView(eStateMainWindows.WaitAdmin);
-                    break;
-                case eTypeAccess.ExciseStamp:
-                    TypeAccessWait = eTypeAccess.NoDefinition;
-                    SetStateView(eStateMainWindows.WaitAdmin);
-                    break;
-                case eTypeAccess.AdminPanel:
-                    TypeAccessWait = eTypeAccess.NoDefinition;
-                    SetStateView(eStateMainWindows.WaitInput);
-                    //Admin ad = new Admin(U, this,EF);
-                    Dispatcher.Invoke(new Action(() =>
-                    {
-                        ad.Init(pUser);
-                        ad.WindowState = WindowState.Maximized;
-                    }));
-                    break;
-            }
-            return true;
-
-        }
-
-        bool IsViewProblemeWeight { get { return State == eStateMainWindows.WaitInput || State == eStateMainWindows.StartWindow; } }
-
+        
         void SetWaitConfirm(eTypeAccess pTypeAccess, ReceiptWares pRW = null)
         {
             if (pTypeAccess == eTypeAccess.FixWeight && State == eStateMainWindows.WaitInputPrice)
@@ -533,6 +212,7 @@ namespace Front
             customWindowButtons = customWindow.Buttons;
             SetStateView(eStateMainWindows.WaitAdmin);
         }
+  
         void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine)
         {
             Dispatcher.BeginInvoke(new ThreadStart(() =>
@@ -550,8 +230,7 @@ namespace Front
                         else
                             if (curReceipt?.IsNeedExciseStamp == true) Res = eTypeAccess.ExciseStamp;
                         else
-                            if (!CS.IsNoProblemWindows && IsViewProblemeWeight)
-                            Res = eTypeAccess.FixWeight;
+                            if (pSMV != eStateMainWindows.BlockWeight && !CS.IsNoProblemWindows && IsViewProblemeWeight)  Res = eTypeAccess.FixWeight;
 
                         if (Res != TypeAccessWait && Res != eTypeAccess.NoDefinition)
                         {
@@ -733,6 +412,7 @@ namespace Front
                             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("customWindow"));
                             CustomWindows.Visibility = Visibility.Visible;
                             break;
+                        case eStateMainWindows.BlockWeight:
                         case eStateMainWindows.WaitInput:
                             IsIgnoreExciseStamp = false;
                             IsAddNewWeight = false;
@@ -880,53 +560,7 @@ namespace Front
             SetStateView(eStateMainWindows.WaitFindWares);
         }
 
-        public void AddWares(int pCodeWares, int pCodeUnit = 0, decimal pQuantity = 0m, decimal pPrice = 0m, GW pGV = null)
-        {
-            if (pGV != null)
-            {
-                CurW = pGV;
-                NameWares.Content = CurW.Name;
-
-                Image im = null;
-                foreach (var el in GridWeightWares.Children)
-                {
-                    im = el as Image;
-                    if (im != null)
-                        break;
-                }
-                if (im != null)
-                    GridWeightWares.Children.Remove(im);
-                if (File.Exists(CurW.Pictures))
-                {
-                    im = new Image
-                    {
-                        Source = new BitmapImage(new Uri(CurW.Pictures)),
-                        VerticalAlignment = VerticalAlignment.Center
-                    };
-                    //Grid.SetColumn(Bt, i);
-                    Grid.SetRow(im, 1);
-                    GridWeightWares.Children.Add(im);
-                }
-
-                //GridWeightWares.Children.Clear();
-
-                SetStateView(eStateMainWindows.WaitWeight);
-                return;
-            }
-
-
-            if (pCodeWares > 0)
-            {
-                CurWares = Bl.AddWaresCode(curReceipt, pCodeWares, pCodeUnit, pQuantity, pPrice);
-
-                if (CurWares != null)
-                {
-                    IsPrises(pQuantity, pPrice);
-                }
-            }
-        }
-
-        void IsPrises(decimal pQuantity = 0m, decimal pPrice = 0m)
+       void IsPrises(decimal pQuantity = 0m, decimal pPrice = 0m)
         {
             if (CurWares.TypeWares == eTypeWares.Alcohol)
             {
@@ -1004,81 +638,7 @@ namespace Front
             }
             //var result = task.Result;            
         }
-
-        /// <summary>
-        /// Безготівкова оплата і Друк чека.
-        /// </summary>
-        /// <returns></returns>
-        bool PrintAndCloseReceipt()
-        {
-            var R = Bl.GetReceiptHead(curReceipt, true);
-            curReceipt = R;
-            if (R.AgeRestrict > 0 && R.IsConfirmAgeRestrict == false)
-            {
-                SetWaitConfirm(eTypeAccess.ConfirmAge);
-                return true;
-            }
-
-            if (R.StateReceipt == eStateReceipt.Prepare)
-            {
-                R.StateReceipt = eStateReceipt.StartPay;
-                Bl.SetStateReceipt(curReceipt, eStateReceipt.StartPay);
-                decimal sum = R.Wares.Sum(r => (r.SumTotal)); //TMP!!!Треба переробити
-                SetStateView(eStateMainWindows.ProcessPay);
-                var pay = EF.PosPurchase(sum);
-                if (pay != null)
-                {
-                    pay.SetIdReceipt(R);
-                    Bl.db.ReplacePayment(new List<Payment>() { pay });
-                    Bl.SetStateReceipt(curReceipt, eStateReceipt.Pay);
-                    R.StateReceipt = eStateReceipt.Pay;
-                    R.Payment = new List<Payment>() { pay };
-                }
-                else
-                {
-                    SetStateView(eStateMainWindows.WaitInput);
-                    R.StateReceipt = eStateReceipt.Prepare;
-                    Bl.SetStateReceipt(curReceipt, eStateReceipt.Prepare);
-                }
-            }
-
-            if (R.StateReceipt == eStateReceipt.Pay)
-            {
-                R.Client = Client;
-                R.StateReceipt = eStateReceipt.StartPrint;
-                Bl.SetStateReceipt(curReceipt, eStateReceipt.StartPrint);
-                try
-                {
-                    SetStateView(eStateMainWindows.ProcessPrintReceipt);
-                    //Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
-                    var res = EF.PrintReceipt(R);
-                    Bl.InsertLogRRO(res);
-                    SetStateView(eStateMainWindows.WaitInput);
-                    if (res.CodeError == 0)
-                    {
-                        R.StateReceipt = eStateReceipt.Print;
-                        Bl.UpdateReceiptFiscalNumber(R, res.FiscalNumber, res.SUM);
-                        var r = Bl.GetNewIdReceipt();
-                        //Global.OnReceiptCalculationComplete?.Invoke(new List<ReceiptWares>(), Global.IdWorkPlace);
-
-                        return true;
-                    }
-                    else
-                    {
-                        R.StateReceipt = eStateReceipt.Pay;
-                        Bl.SetStateReceipt(curReceipt, eStateReceipt.Pay);
-                        ShowErrorMessage(res.Error + "Помилка друку чеків");
-                        //MessageBox.Show(res.Error, "Помилка друку чеків");
-                    }
-                    SetStateView(eStateMainWindows.WaitInput);
-                }
-                catch (Exception e)
-                {
-                    FileLogger.WriteLogMessage(e.Message, eTypeLog.Error);
-                }
-            }
-            return false;
-        }
+       
         private void ShowErrorMessage(string ErrorMessage)
         {
             ErrorBackground.Visibility = Visibility.Visible;
@@ -1109,19 +669,6 @@ namespace Front
             }
             catch { }
             SetStateView(eStateMainWindows.WaitInput);
-        }
-
-        private IEnumerable<ReceiptWares> StartData()
-        {
-            var RId = Bl.GetNewIdReceipt();
-            //Bl.AddWaresBarCode(RId, "27833", 258m);
-            //Bl.AddWaresBarCode(RId, "7622201819590", 1);
-            Bl.GetClientByPhone(RId, "0503399110");
-            //Bl.AddWaresBarCode(RId, "2201652300229", 2);
-            //Bl.AddWaresBarCode(RId, "7775002160043", 1); //товар 2 кат
-            //Bl.AddWaresBarCode(RId,"1110011760218", 11);
-            //Bl.AddWaresBarCode(RId,"7773002160043", 1); //товар 2 кат
-            return Bl.GetWaresReceipt(curReceipt);
         }
 
         private void ClickButtonOk(object sender, RoutedEventArgs e)
@@ -1180,21 +727,7 @@ namespace Front
         {
             AddExciseStamp(TBExciseStamp.Text);
         }
-
-        void AddExciseStamp(string pES)
-        {
-            if (CurWares.AddExciseStamp(pES))
-            {                 //Додання акцизноії марки до алкоголю
-                Bl.UpdateExciseStamp(new List<ReceiptWares>() { CurWares });
-                TypeAccessWait = eTypeAccess.NoDefinition;
-                SetStateView(eStateMainWindows.WaitInput);
-            }
-            else
-                ShowErrorMessage($"Дана акцизна марка вже використана");
-            //                MessageBox.Show($"Дана акцизна марка вже використана");
-        }
-
-
+        
         private void ChangedExciseStamp(object sender, TextChangedEventArgs e)
         {
             TextBox textBox = (TextBox)sender;
@@ -1246,7 +779,6 @@ namespace Front
             catch (Exception ex)
             {
                 ShowErrorMessage(ex.Message);
-                //                MessageBox.Show(ex.Message, "Eror", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
         }
@@ -1348,12 +880,22 @@ namespace Front
             }
             if (res != null)
             {
-                if (customWindow.Id == eWindows.ConfirmWeight && CS.RW != null)
+                if (customWindow.Id == eWindows.ConfirmWeight)
                 {
-                    CS.RW.FixWeightQuantity = CS.RW.Quantity;
-                    CS.RW.FixWeight += Convert.ToDecimal(CS.СurrentlyWeight);
-                    // Bl.FixWeight(CS.RW);
-                    CS.StateScale = eStateScale.Stabilized;// OnScalesData(CS.curFullWeight,true);
+                    //Ховаєм адмінпанель щоб управляти товаром.
+                    if(res.Id==-1)
+                    {
+                        //IsHideAdminPanel = true;
+                        SetStateView(eStateMainWindows.BlockWeight);
+                        return;
+                    }
+                    if (CS.RW != null)
+                    {
+                        CS.RW.FixWeightQuantity = CS.RW.Quantity;
+                        CS.RW.FixWeight += Convert.ToDecimal(CS.СurrentlyWeight);
+                        // Bl.FixWeight(CS.RW);
+                        CS.StateScale = eStateScale.Stabilized;// OnScalesData(CS.curFullWeight,true);
+                    }
 
                 }
                 var r = new CustomWindowAnswer()
@@ -1364,10 +906,8 @@ namespace Front
                     Text = TextBoxCustomWindows.Text,
                     ExtData = customWindow.Id == eWindows.ConfirmWeight ? CS?.RW : null
                 };
-
                 Bl.SetCustomWindows(r);
             }
-
         }
 
         private void FindClientByPhoneClick(object sender, RoutedEventArgs e)
@@ -1384,6 +924,7 @@ namespace Front
 
             SetStateView(eStateMainWindows.WaitCustomWindows);
         }
+       
         private void ExciseStampCustomWindow()
         {
             customWindow = new CustomWindow()
@@ -1414,41 +955,6 @@ namespace Front
         {
             ErrorBackground.Visibility = Visibility.Collapsed;
             ErrorWindows.Visibility = Visibility.Collapsed;
-        }
-
-        CustomWindow GetCustomButton(eStateScale pST)
-        {
-            CustomWindow res = new CustomWindow() { Id = eWindows.ConfirmWeight, Buttons = customWindowButtons };
-            if (TypeAccessWait == eTypeAccess.FixWeight)
-                switch (StateScale)
-                {
-                    case eStateScale.WaitClear:
-                        res.Buttons = new ObservableCollection<CustomButton>()
-                    { new CustomButton() { Id = 4, Text = "Тарувати", IsAdmin = true } ,
-                      new CustomButton() { Id = 5, Text = "Вхід в адмінку", IsAdmin = true } ,
-                    };
-                        break;
-                    case eStateScale.BadWeight:
-                        res.Buttons = new ObservableCollection<CustomButton>()
-                    { new CustomButton() { Id = 1, Text = "Підтвердити вагу", IsAdmin = true },
-                      new CustomButton() { Id = 2, Text = "Добавити вагу", IsAdmin = true }    };
-                        break;
-
-                    case eStateScale.WaitGoods:
-                        res.Buttons = new ObservableCollection<CustomButton>()
-                    { new CustomButton() { Id = 1, Text = "Підтвердити вагу", IsAdmin = true },
-                      new CustomButton() { Id = 3, Text = "Видалити товар", IsAdmin = true }
-                    };
-                        break;
-                    case eStateScale.NotStabilized:
-                        res.Buttons = new ObservableCollection<CustomButton>()
-                    { new CustomButton() { Id = 1, Text = "Підтвердити вагу", IsAdmin = true }
-                    };
-                        break;
-                }
-
-            return res;
-
         }
 
         private void PlusOrMinusCigarettes(object sender, RoutedEventArgs e)
