@@ -11,7 +11,8 @@ namespace ModelMID
         PhoneClient,
         ConfirmWeight,
         ExciseStamp,
-        NoPrice
+        NoPrice,
+        RestoreLastRecipt
     }
 
     public class CustomWindow

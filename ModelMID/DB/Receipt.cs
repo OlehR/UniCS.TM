@@ -201,7 +201,7 @@ namespace ModelMID
         {
             get
             {
-                var e = Wares.Where(el => el.IsLast);
+                var e = Wares?.Where(el => el.IsLast);
                 if (e != null && e.Count() == 1)
                     return e.First();
                 return null;

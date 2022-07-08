@@ -163,8 +163,6 @@ namespace Front
             ad = new Admin(this, EF);
             ad.WindowState = WindowState.Minimized;
             ad.Show();
-
-
             InitializeComponent();
 
             //string HTMLContent = "<font style=\"vertical - align: inherit; \">Крок 1 - Встановіть Visual Studio</font>";
@@ -177,7 +175,7 @@ namespace Front
             //    FileLogger.WriteLogMessage(e.Message, eTypeLog.Error);
             //}
 
-            ListWares = new ObservableCollection<ReceiptWares>(StartData());
+           // ListWares = new ObservableCollection<ReceiptWares>(StartData());
             WaresList.ItemsSource = ListWares;// Wares;
 
             ua.Tag = new CultureInfo("uk");
@@ -187,10 +185,27 @@ namespace Front
 
             CultureInfo currLang = App.Language;
             Recalc();
-            if (State == eStateMainWindows.StartWindow)
-                SetStateView(eStateMainWindows.StartWindow);
             Task.Run(() => Bl.ds.SyncDataAsync());
 
+            var LastR = Bl.GetLastReceipt();
+            if (LastR != null && LastR.SumReceipt>0 && LastR.StateReceipt != eStateReceipt.Canceled && LastR.StateReceipt != eStateReceipt.Print && LastR.StateReceipt != eStateReceipt.Send)
+            {
+                curReceipt = LastR;
+                customWindow = new CustomWindow()
+                {
+                    Id = eWindows.RestoreLastRecipt,
+                    Caption = $"Відновлення останнього чека на суму {LastR.SumReceipt}",
+                    Buttons = new ObservableCollection<CustomButton>() {
+                        new CustomButton() { Id=1,  Text="Відновити"},
+                        new CustomButton() { Id=2,  Text="Скасувати"}
+                    }
+                };  
+                SetStateView(eStateMainWindows.WaitCustomWindows);
+                return;
+            }
+            
+          SetStateView(eStateMainWindows.StartWindow);
+          
         }
 
         private async void Init(string HTMLContent)
@@ -220,7 +235,7 @@ namespace Front
 
         void SetWaitConfirm(eTypeAccess pTypeAccess, ReceiptWares pRW = null)
         {
-            if (pTypeAccess == eTypeAccess.FixWeight && State == eStateMainWindows.WaitInputPrice)
+            if (pTypeAccess == eTypeAccess.FixWeight && ( State == eStateMainWindows.WaitInputPrice || State == eStateMainWindows.WaitOwnBag || State == eStateMainWindows.WaitCustomWindows) )
                 return;
 
             CurWares = pRW;
@@ -323,7 +338,7 @@ namespace Front
                         case eStateMainWindows.WaitInputPrice:
                             TypeAccessWait = eTypeAccess.ChoicePrice;
                             var rrr = new ObservableCollection<Models.Price>(CurWares.Prices.OrderByDescending(r => r.Price).Select(r => new Models.Price(r.Price, Access.GetRight(TypeAccessWait), r.TypeWares)));
-                            rrr.First().IsEnable = true;
+                            //rrr.First().IsEnable = true;
 
                             Prices.ItemsSource = rrr;//new ObservableCollection<Price>(rr);
 
@@ -518,9 +533,9 @@ namespace Front
 
         private void Recalc()
         {
-            _MoneySum = ListWares.Sum(r => r.SumTotal);
+            _MoneySum = ListWares?.Sum(r => r.SumTotal)??0;
             MoneySum = _MoneySum;
-            WaresQuantity = ListWares.Count().ToString();
+            WaresQuantity = ListWares?.Count().ToString()??"0";
             if (VisualTreeHelper.GetChildrenCount(WaresList) > 0)
             {
                 Border border = (Border)VisualTreeHelper.GetChild(WaresList, 0);
@@ -912,6 +927,16 @@ namespace Front
             }
             if (res != null)
             {
+                if(customWindow.Id == eWindows.RestoreLastRecipt)
+                {
+                    if(res.Id == 1)
+                    {
+                        Bl.db.RecalcPriceAsync(new IdReceiptWares(curReceipt));
+                    }
+                    if (res.Id == 2)
+                        Bl.GetNewIdReceipt();
+                    return;
+                }
                 if (customWindow.Id == eWindows.ConfirmWeight)
                 {
                     //Ховаєм адмінпанель щоб управляти товаром.
