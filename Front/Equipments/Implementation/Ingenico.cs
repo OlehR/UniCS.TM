@@ -80,6 +80,7 @@ namespace Front.Equipments
         {
             return new Payment()
             {
+                IsSuccess= pRP.IsSuccess,
                 TypePay = pTypePay,
                 SumPay = pRP.PosPaid,
                 NumberReceipt = pRP.InvoiceNumber, //parRP.TransactionId,
