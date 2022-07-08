@@ -23,6 +23,10 @@ namespace Front.Models
         /// </summary>
         BlockWeight,
         /// <summary>
+        /// Основний стан - очікування події сканування та інших
+        /// </summary>
+        WaitOwnBag,
+        /// <summary>
         /// Введення кількості в чеку повернення
         /// </summary>
         WaitInputRefund,

@@ -247,7 +247,7 @@ namespace Front
                         else
                             if (curReceipt?.IsNeedExciseStamp == true) Res = eTypeAccess.ExciseStamp;
                         else
-                            if (pSMV != eStateMainWindows.BlockWeight && !CS.IsNoProblemWindows && IsViewProblemeWeight) Res = eTypeAccess.FixWeight;
+                            if ((pSMV != eStateMainWindows.BlockWeight || pSMV != eStateMainWindows.WaitOwnBag) && !CS.IsNoProblemWindows && IsViewProblemeWeight) Res = eTypeAccess.FixWeight;
 
                         if (Res != TypeAccessWait && Res != eTypeAccess.NoDefinition)
                         {
@@ -442,6 +442,12 @@ namespace Front
                             IsIgnoreExciseStamp = false;
                             IsAddNewWeight = false;
                             IsFixWeight = false;
+                            break;
+                        case eStateMainWindows.WaitOwnBag:
+                            StartShopping.Visibility = Visibility.Collapsed;
+                            Background.Visibility = Visibility.Visible;
+                            BackgroundWares.Visibility = Visibility.Visible;
+                            OwnBagWindows.Visibility = Visibility.Visible;
                             break;
                         default:
                             break;
@@ -990,12 +996,9 @@ namespace Front
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("QuantityCigarettes"));
         }
 
-        private void StartOwnBag(object sender, RoutedEventArgs e) // TMP переробити через стани
+        private void StartOwnBag(object sender, RoutedEventArgs e) 
         {
-            StartShopping.Visibility = Visibility.Collapsed;
-            Background.Visibility = Visibility.Visible;
-            BackgroundWares.Visibility = Visibility.Visible;
-            OwnBagWindows.Visibility = Visibility.Visible;
+            SetStateView(eStateMainWindows.WaitOwnBag);
         }
     }
 

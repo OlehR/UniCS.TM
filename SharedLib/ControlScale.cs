@@ -155,7 +155,7 @@ namespace ModelMID
         /// <summary>
         /// Текуче значення ваги
         /// </summary>
-        public double СurrentlyWeight;
+        public double СurrentlyWeight;        
 
         /// <summary>
         /// Попередня вага Погана але стабільна
@@ -250,8 +250,7 @@ namespace ModelMID
         }
 
         public void StartWeightNewGoogs(double pBeforeWeight, WaitWeight[] pWeight, double pQuantity = 1d) //, bool pIsIncrease = true
-        {
-            
+        {            
             OnScalesLog($"StartWeightNewGoogs", $"(pBeforeWeight=>{pBeforeWeight},WaitWeight=>{(pWeight !=null? string.Join(", ", pWeight?.ToList()):"")},pQuantity={pQuantity}");
             BeforeWeight = pBeforeWeight;
             //IsIncrease = pIsIncrease;
@@ -259,11 +258,11 @@ namespace ModelMID
             Quantity = pQuantity;
             СurrentlyWeight = 0;
             BeforeСurrentlyWeight = 0;
+            BeforeFullWeight = 0;
 
             TooLightWeight = WaitWeight.Max(r => r.Max) <= Delta;
             if (RW!=null && RW.Quantity != RW.FixWeightQuantity)
-                StateScale = eStateScale.NotDefine;
-            
+                StateScale = eStateScale.NotDefine;            
             //FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"(pBeforeWeight={pBeforeWeight},pWeight={pWeight.ToJSON()},pQuantity={pQuantity},{RW.NameWares})", eTypeLog.Full);
         }
 
@@ -275,7 +274,10 @@ namespace ModelMID
         public void OnScalesData(double pWeight, bool pIsStable)
         {
             curFullWeight = pWeight;
-            OnScalesLog("OnScalesData", $"weight{pWeight} isStable {pIsStable}");
+
+            if(BeforeFullWeight!= curFullWeight)
+                OnScalesLog("OnScalesData", $"weight{pWeight} isStable {pIsStable}");
+
             eStateScale NewStateScale = StateScale;
 
            // (pWeight, pIsStable) = MidlWeight.AddValue(pWeight, pIsStable);
