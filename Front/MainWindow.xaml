@@ -529,10 +529,10 @@
                                                         <Setter Property="IsEnabled" Value="True"/>
                                                         <Style.Triggers>
                                                             <DataTrigger Binding="{Binding IsAdmin}" Value="True">
-                                                                <Setter Property="IsEnabled" Value="True" />
+                                                                <Setter Property="IsEnabled" Value="False" />
                                                             </DataTrigger>
                                                             <DataTrigger Binding="{Binding IsAdmin}" Value="False">
-                                                                <Setter Property="IsEnabled" Value="False" />
+                                                                <Setter Property="IsEnabled" Value="True" />
                                                             </DataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
