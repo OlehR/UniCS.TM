@@ -176,7 +176,7 @@ namespace Front
             //}
 
            // ListWares = new ObservableCollection<ReceiptWares>(StartData());
-            WaresList.ItemsSource = ListWares;// Wares;
+            //WaresList.ItemsSource = ListWares;// Wares;
 
             ua.Tag = new CultureInfo("uk");
             en.Tag = new CultureInfo("en");
@@ -202,10 +202,8 @@ namespace Front
                 };  
                 SetStateView(eStateMainWindows.WaitCustomWindows);
                 return;
-            }
-            
-          SetStateView(eStateMainWindows.StartWindow);
-          
+            }            
+          SetStateView(eStateMainWindows.StartWindow);          
         }
 
         private async void Init(string HTMLContent)
@@ -245,7 +243,7 @@ namespace Front
             SetStateView(eStateMainWindows.WaitAdmin);
         }
 
-        void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine)
+        public void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine)
         {
             Dispatcher.BeginInvoke(new ThreadStart(() =>
                 {

@@ -123,6 +123,7 @@ namespace Front
         private void Close(int pCodeWares, int pCodeUnit = 0, decimal pQuantity = 0m, GW pGW = null)
         {
             MW?.AddWares(pCodeWares, pCodeUnit, pQuantity, 0m, pGW);
+            MW?.SetStateView(eStateMainWindows.WaitInput);
             Close();
         }
         private void WaresName_Changed(object sender, TextChangedEventArgs e)
@@ -158,6 +159,7 @@ namespace Front
 
         private void ClickButtonCancel(object sender, RoutedEventArgs e)
         {
+            MW?.SetStateView(eStateMainWindows.WaitInput);
             Close();
         }
 

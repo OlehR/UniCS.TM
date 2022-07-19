@@ -109,7 +109,7 @@ namespace SharedLib
             if (string.IsNullOrWhiteSpace(Global.PathPictures))
                 Global.PathPictures = @"D:\Pictures\";            
 
-            //GlobalVar.DefaultCodeDealer = Convert.ToInt32(AppConfiguration["MID:DefaultCodeDealer"]);
+            //Global.DefaultCodeDealer = Convert.ToInt32(AppConfiguration["MID:DefaultCodeDealer"]);
             if (!Directory.Exists(Global.PathDB))
                 Directory.CreateDirectory(Global.PathDB);
 

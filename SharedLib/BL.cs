@@ -431,6 +431,8 @@ namespace SharedLib
 
         public bool SetStateReceipt(IdReceipt pIdReceipt, eStateReceipt pStateReceipt)
         {
+            if (pIdReceipt == null)
+                return false;
             var receipt = new Receipt(pIdReceipt) { StateReceipt = pStateReceipt, DateReceipt = DateTime.Now, UserCreate = GetUserIdbyWorkPlace(pIdReceipt.IdWorkplace) };
             return db.CloseReceipt(receipt);
         }

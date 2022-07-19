@@ -80,10 +80,8 @@ namespace Test
         }
 
         static async Task CreateDataBaseAsync(bool isFull = true)
-        {
-            //var bl = new BL();            bl.SyncDataAsync(isFull);
+        {            
             var api = new ApiPSU();
-
             await api.RequestSyncInfo(isFull);
         }
 
@@ -135,6 +133,9 @@ namespace Test
             var api = new ApiPSU();
 
 
+            var dd11 = api.AddProductByProductId(new Guid("63b8815f-7d0e-4476-80ad-bc33c5c779d3"), new Guid("00000000-abcd-0000-0019-000000163274"), 1);
+
+
             //   api.GetNoFinishReceipt(TerminalId); return;
 
 
@@ -146,9 +147,9 @@ namespace Test
 
             //var pp = api.AddProductByProductId(TerminalId, ProductId, 1); return;
 
-            var wwccwww = api.GetProductsByName(TerminalId, "13*8416", 0, false, FastGroup);
+            // var wwccwww = api.GetProductsByName(TerminalId, "13*8416", 0, false, FastGroup);
 
-           
+
 
             //var rrrrrrrr=api.Bl.db.CloseReceipt(receipt);
 
@@ -191,6 +192,7 @@ namespace Test
                  //var w = api.GetProductsByCategoryId(TerminalId, FastGroup);
                  var wwwww = api.GetProductsByName(TerminalId, "13*8416*", 0, false, FastGroup);
 
+          
                 var sss = api.GetBags();
                 var l = api.AddProductByProductId(TerminalId, ProductId, 3, 55.24M);
 

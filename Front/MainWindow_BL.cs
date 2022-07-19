@@ -287,7 +287,7 @@ namespace Front
             ReceiptWares w = null;
             if (State == eStateMainWindows.WaitInput || State == eStateMainWindows.StartWindow)
             {
-                if (curReceipt?.IsLockChange == false)
+                if (curReceipt==null || !curReceipt.IsLockChange )
                 {
                     w = Bl.AddWaresBarCode(curReceipt, pBarCode, 1);
                     if (w != null)
