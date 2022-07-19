@@ -131,10 +131,27 @@ namespace Front
 
             Bl.OnAdminBarCode += (pUser) =>
             {
+                //!!!TMP НЕ зовсім правильно треба провірити права перед розблокуванням кнопок
+                if ( pUser.TypeUser >= eTypeUser.AdminSSC && customWindow.Buttons != null)
+                {
+                    foreach (var item in customWindow.Buttons)
+                    {
+                        item.IsAdmin = false;
+                    }
+                }
+
                 if (TypeAccessWait > 0 && !(TypeAccessWait == eTypeAccess.FixWeight && CS.StateScale == eStateScale.WaitClear))//TypeAccessWait != eTypeAccess.NoDefinition 
                 {
                     SetConfirm(pUser);
                     return;
+                }
+                                
+                if (customWindow.Buttons != null)
+                {
+                    foreach (var item in customWindow.Buttons)
+                    {
+                        item.IsAdmin = false;
+                    }
                 }
 
                 if (Access.GetRight(pUser, eTypeAccess.AdminPanel))
@@ -289,6 +306,8 @@ namespace Front
             {
                 if (curReceipt==null || !curReceipt.IsLockChange )
                 {
+                    if (curReceipt == null)
+                        Bl.GetNewIdReceipt();
                     w = Bl.AddWaresBarCode(curReceipt, pBarCode, 1);
                     if (w != null)
                     {
@@ -349,6 +368,8 @@ namespace Front
 
             if (pCodeWares > 0)
             {
+                if (curReceipt == null)
+                 Bl.GetNewIdReceipt();
                 CurWares = Bl.AddWaresCode(curReceipt, pCodeWares, pCodeUnit, pQuantity, pPrice);
 
                 if (CurWares != null)
