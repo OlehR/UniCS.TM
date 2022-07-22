@@ -25,9 +25,11 @@ using System.Windows.Media;
 
 namespace Front
 {
+
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
+        private readonly object _locker = new object();
         Access Access = Access.GetAccess();
         public BL Bl;
         EquipmentFront EF;
@@ -40,12 +42,12 @@ namespace Front
         Client Client;
         public GW CurW { get; set; } = null;
 
-        eStateMainWindows State = eStateMainWindows.StartWindow;
+        public eStateMainWindows State = eStateMainWindows.StartWindow;
         eStateScale StateScale = eStateScale.NotDefine;
         public eTypeAccess TypeAccessWait { get; set; }
         public ObservableCollection<ReceiptWares> ListWares { get; set; }
         public CustomWindow customWindow { get; set; }
-        public ObservableCollection<CustomButton> customWindowButtons { get; set; }
+        //public ObservableCollection<CustomButton> customWindowButtons { get; set; }
         public string WaresQuantity { get; set; }
         decimal _MoneySum;
         double tempMoneySum;
@@ -190,17 +192,8 @@ namespace Front
             var LastR = Bl.GetLastReceipt();
             if (LastR != null && LastR.SumReceipt>0 && LastR.StateReceipt != eStateReceipt.Canceled && LastR.StateReceipt != eStateReceipt.Print && LastR.StateReceipt != eStateReceipt.Send)
             {
-                curReceipt = LastR;
-                customWindow = new CustomWindow()
-                {
-                    Id = eWindows.RestoreLastRecipt,
-                    Caption = $"Відновлення останнього чека на суму {LastR.SumReceipt}",
-                    Buttons = new ObservableCollection<CustomButton>() {
-                        new CustomButton() { Id=1,  Text="Відновити"},
-                        new CustomButton() { Id=2,  Text="Скасувати"}
-                    }
-                };  
-                SetStateView(eStateMainWindows.WaitCustomWindows);
+                //curReceipt = LastR;               
+                SetStateView(eStateMainWindows.WaitCustomWindows, eWindows.RestoreLastRecipt, LastR.SumReceipt.ToString());
                 return;
             }            
           SetStateView(eStateMainWindows.StartWindow);          
@@ -237,15 +230,17 @@ namespace Front
                 return;
 
             CurWares = pRW;
-            TypeAccessWait = pTypeAccess;
-            customWindow = GetCustomButton(CS.StateScale);
-            customWindowButtons = customWindow.Buttons;
+            TypeAccessWait = pTypeAccess;           
+            //customWindowButtons = customWindow.Buttons;
             SetStateView(eStateMainWindows.WaitAdmin);
         }
 
-        public void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine)
+        public void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine,eWindows pCW=eWindows.NoDefinition,string pStr=null)
         {
-            Dispatcher.BeginInvoke(new ThreadStart(() =>
+            lock (this._locker)
+            {
+                
+                var r=Dispatcher.BeginInvoke(new ThreadStart(() =>
                 {
                     if (!(!IsLockSale && EF.StatCriticalEquipment == eStateEquipment.On && Bl.ds.IsReady && CS.IsNoProblemWindows && curReceipt?.IsNeedExciseStamp == false)
                      // && !(pSMV == eStateMainWindows.WaitAdmin || pSMV == eStateMainWindows.WaitAdminLogin)
@@ -275,7 +270,16 @@ namespace Front
                         State = pSMV;
                         EF.SetColor(GetFlagColor(State));
                     }
+                    
+                    //Генеруємо з кастомні вікна
+                    if (TypeAccessWait == eTypeAccess.FixWeight)
+                        customWindow = new CustomWindow(CS.StateScale);
+                    else
+                        if (State != eStateMainWindows.NotDefine)
+                        customWindow = new CustomWindow(pCW, pStr);
 
+                    if ((State == eStateMainWindows.WaitAdmin || State == eStateMainWindows.WaitAdminLogin) && eTypeAccess.ExciseStamp == TypeAccessWait)
+                        customWindow = new CustomWindow(pCW, pStr);
 
                     if (IsLockSale && State != eStateMainWindows.WaitAdmin && State != eStateMainWindows.WaitAdminLogin)
                     {
@@ -367,10 +371,10 @@ namespace Front
                                 case eTypeAccess.FixWeight:
                                 case eTypeAccess.AddNewWeight:
                                     //case eTypeAccess.
-                                    WaitAdminWeightButtons.ItemsSource = customWindowButtons;
+                                    WaitAdminWeightButtons.ItemsSource = customWindow.Buttons;
                                     break;
                                 case eTypeAccess.ExciseStamp:
-                                    ExciseStampCustomWindow();
+                                    //customWindow = GetCustomButton(eWindows.ExciseStamp);
                                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CurWaresName"));
                                     TBExciseStamp.Text = "";
                                     WaitAdminImage.Visibility = Visibility.Collapsed;
@@ -466,8 +470,9 @@ namespace Front
                             break;
                     }
                 }));
+                r.Wait(new TimeSpan(0,0,0,100));
+            }
         }
-
         private void _Delete(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
@@ -584,7 +589,7 @@ namespace Front
             if (Access.GetRight(eTypeAccess.DelReciept) || curReceipt?.SumReceipt == 0)
             {
                 Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
-                Bl.GetNewIdReceipt();
+                curReceipt = Bl.GetNewIdReceipt();
                 SetStateView(eStateMainWindows.StartWindow);
             }
             else
@@ -613,15 +618,8 @@ namespace Front
             }
 
             if (CurWares.Price == 0) //Повідомлення Про відсутність ціни
-            {
-                customWindow = new CustomWindow()
-                {
-                    Id = eWindows.NoPrice,
-                    Text = CurWares.NameWares,
-                    Caption = "Відсутня ціна на товар!",
-                    AnswerRequired = true,
-                };
-                SetStateView(eStateMainWindows.WaitCustomWindows);
+            {              
+                SetStateView(eStateMainWindows.WaitCustomWindows, eWindows.NoPrice, CurWares.NameWares);
             }
             if (CurWares.Prices != null && pPrice == 0m) //Меню з вибором ціни. Сигарети.
             {
@@ -644,7 +642,8 @@ namespace Front
         {
             if (ControlScaleCurrentWeight > 0 && ControlScaleCurrentWeight < 300)
             {
-                Bl.AddOwnBag(Bl.GetNewIdReceipt(), Convert.ToDecimal(ControlScaleCurrentWeight));
+                curReceipt = Bl.GetNewIdReceipt();
+                Bl.AddOwnBag(curReceipt, Convert.ToDecimal(ControlScaleCurrentWeight));
                 SetStateView(eStateMainWindows.WaitInput);
             }
             //SetStateView(eStateMainWindows.ChoicePaymentMethod);
@@ -928,11 +927,11 @@ namespace Front
                 if(customWindow.Id == eWindows.RestoreLastRecipt)
                 {
                     if(res.Id == 1)
-                    {
-                        Bl.db.RecalcPriceAsync(new IdReceiptWares(curReceipt));
+                    {                        
+                        Bl.db.RecalcPriceAsync(new IdReceiptWares(Bl.GetLastReceipt()));
                     }
                     if (res.Id == 2)
-                        Bl.GetNewIdReceipt();
+                        curReceipt= Bl.GetNewIdReceipt();
                     return;
                 }
                 if (customWindow.Id == eWindows.ConfirmWeight)
@@ -967,33 +966,8 @@ namespace Front
 
         private void FindClientByPhoneClick(object sender, RoutedEventArgs e)
         {
-            customWindow = new CustomWindow()
-            {
-                Id = eWindows.PhoneClient,
-                Text = "Введіть ваш номер!",
-                Caption = "Пошук за номером телефону",
-                AnswerRequired = true,
-                ValidationMask = @"^[+]{0,1}[0-9]{10,13}$",
-                // Buttons = new List<CustomButton>() {new CustomButton() { Id = 666, Text = "Пошук картки" } }
-            };
-
-            SetStateView(eStateMainWindows.WaitCustomWindows);
-        }
-
-        private void ExciseStampCustomWindow()
-        {
-            customWindow = new CustomWindow()
-            {
-                Id = eWindows.ExciseStamp,
-                Text = "Ввід акцизної марки",
-                Caption = "Назва товару",
-                AnswerRequired = true,
-                ValidationMask = @"^\w{4}[0-9]{6}?$",
-                Buttons = new ObservableCollection<CustomButton>() {new CustomButton() { Id = 31, Text = "Ok", IsAdmin = false},
-                                                                    new CustomButton() { Id = 32, Text = "Акцизний код відсутній", IsAdmin = true } }
-            };
-
-        }
+            SetStateView(eStateMainWindows.WaitCustomWindows, eWindows.PhoneClient);
+        }       
 
         private void CustomWindowVerificationText(object sender, TextChangedEventArgs e)
         {

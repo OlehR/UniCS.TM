@@ -122,8 +122,12 @@ namespace Front
 
         private void Close(int pCodeWares, int pCodeUnit = 0, decimal pQuantity = 0m, GW pGW = null)
         {
-            MW?.AddWares(pCodeWares, pCodeUnit, pQuantity, 0m, pGW);
-            MW?.SetStateView(eStateMainWindows.WaitInput);
+            if (MW != null)
+            {
+                MW.AddWares(pCodeWares, pCodeUnit, pQuantity, 0m, pGW);
+                if(MW.State==eStateMainWindows.WaitFindWares)
+                    MW.SetStateView(eStateMainWindows.WaitInput);
+            }
             Close();
         }
         private void WaresName_Changed(object sender, TextChangedEventArgs e)

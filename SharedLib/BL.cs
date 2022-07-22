@@ -126,7 +126,7 @@ namespace SharedLib
 
         public bool AddReceipt(Receipt pReceipt) { return db.AddReceipt(pReceipt); }
 
-        public IdReceipt GetNewIdReceipt(int pIdWorkplace = 0, int pCodePeriod = 0)
+        public Receipt GetNewIdReceipt(int pIdWorkplace = 0, int pCodePeriod = 0)
         {
             var idReceip = new IdReceipt() { IdWorkplace = (pIdWorkplace == 0 ? Global.IdWorkPlace : pIdWorkplace), CodePeriod = (pCodePeriod == 0 ? Global.GetCodePeriod() : pCodePeriod) };
             var Recipt = new Receipt(db.GetNewReceipt(idReceip));

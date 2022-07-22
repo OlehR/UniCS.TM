@@ -7,6 +7,7 @@ namespace ModelMID
 {
     public enum eWindows
     {
+        NoDefinition,
         ChoiceClient,
         PhoneClient,
         ConfirmWeight,
@@ -16,11 +17,11 @@ namespace ModelMID
     }
 
     public class CustomWindow
-    {        
+    {
         /// <summary>
         /// Id вікна. Буде в відповіді
         /// </summary>
-        public eWindows Id { get; set; }
+        public eWindows Id { get; set; } = eWindows.NoDefinition;
         /// <summary>
         /// Назва вікна
         /// </summary>
@@ -55,6 +56,81 @@ namespace ModelMID
         public ObservableCollection<CustomButton> Buttons { get; set; }
 
         public bool IsCancelButton { get; set; } = true;
+
+        public CustomWindow() { }
+
+        public CustomWindow(eWindows pW, string pStr = null)
+        {
+            switch (pW)
+            {
+                case eWindows.RestoreLastRecipt:
+                    Id = eWindows.RestoreLastRecipt;
+                    Caption = $"Відновлення останнього чека на суму {pStr}";
+                    Buttons = new ObservableCollection<CustomButton>() {
+                        new CustomButton() { Id=1,  Text="Відновити"},
+                        new CustomButton() { Id=2,  Text="Скасувати"} };
+                    break;
+                case eWindows.NoPrice:
+                    Id = eWindows.NoPrice;
+                    Text = pStr;
+                    Caption = "Відсутня ціна на товар!";
+                    AnswerRequired = true;
+                    break;
+                case eWindows.ExciseStamp:
+                    Id = eWindows.ExciseStamp;
+                    Text = "Ввід акцизної марки";
+                    Caption = "Назва товару";
+                    AnswerRequired = true;
+                    ValidationMask = @"^\w{4}[0-9]{6}?$";
+                    Buttons = new ObservableCollection<CustomButton>() {new CustomButton() { Id = 31, Text = "Ok", IsAdmin = false},
+                                                                    new CustomButton() { Id = 32, Text = "Акцизний код відсутній", IsAdmin = true } };
+                    break;
+                case eWindows.PhoneClient:
+                    Id = eWindows.PhoneClient;
+                    Text = "Введіть ваш номер!";
+                    Caption = "Пошук за номером телефону";
+                    AnswerRequired = true;
+                    ValidationMask = @"^[+]{0,1}[0-9]{10,13}$";
+                    // Buttons = new List<CustomButton>() {new CustomButton() { Id = 666, Text = "Пошук картки" } }                    
+                    break;
+                    default:
+                    Buttons = new ObservableCollection<CustomButton>();
+                    break;
+            }
+
+        }
+
+        public CustomWindow(eStateScale pST)
+        {
+            Id = eWindows.ConfirmWeight;
+            
+                switch (pST)
+                {
+                    case eStateScale.WaitClear:
+                        Buttons = new ObservableCollection<CustomButton>()
+                    { new CustomButton() { Id = 4, Text = "Тарувати", IsAdmin = true } ,
+                      new CustomButton() { Id = 5, Text = "Вхід в адмінку", IsAdmin = true } };
+                        break;
+                    case eStateScale.BadWeight:
+                        Buttons = new ObservableCollection<CustomButton>()
+                    { new CustomButton() { Id = 1, Text = "Підтвердити вагу", IsAdmin = true },
+                      new CustomButton() { Id = 2, Text = "Добавити вагу", IsAdmin = true } ,
+                      new CustomButton() { Id = -1, Text = "Закрити", IsAdmin = false }};
+                        break;
+
+                    case eStateScale.WaitGoods:
+                        Buttons = new ObservableCollection<CustomButton>()
+                    { new CustomButton() { Id = 1, Text = "Підтвердити вагу", IsAdmin = true },
+                      new CustomButton() { Id = 3, Text = "Видалити товар", IsAdmin = true } };
+                        break;
+                    case eStateScale.NotStabilized:
+                        Buttons = new ObservableCollection<CustomButton>()
+                    { new CustomButton() { Id = 1, Text = "Підтвердити вагу", IsAdmin = true },
+                      new CustomButton() { Id = -1, Text = "Закрити", IsAdmin = false }};
+                        break;
+                }            
+        }
+    
     }
 
     public class CustomButton

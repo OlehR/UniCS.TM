@@ -132,7 +132,7 @@ namespace Front
             Bl.OnAdminBarCode += (pUser) =>
             {
                 //!!!TMP НЕ зовсім правильно треба провірити права перед розблокуванням кнопок
-                if ( pUser.TypeUser >= eTypeUser.AdminSSC && customWindow.Buttons != null)
+                if ( pUser.TypeUser >= eTypeUser.AdminSSC && customWindow?.Buttons != null)
                 {
                     foreach (var item in customWindow.Buttons)
                     {
@@ -252,7 +252,7 @@ namespace Front
                     break;
                 case eTypeAccess.DelReciept:
                     Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
-                    Bl.GetNewIdReceipt();
+                    curReceipt= Bl.GetNewIdReceipt();
                     TypeAccessWait = eTypeAccess.NoDefinition;
                     SetStateView(eStateMainWindows.StartWindow);
                     break;
@@ -307,7 +307,7 @@ namespace Front
                 if (curReceipt==null || !curReceipt.IsLockChange )
                 {
                     if (curReceipt == null)
-                        Bl.GetNewIdReceipt();
+                        curReceipt=Bl.GetNewIdReceipt();
                     w = Bl.AddWaresBarCode(curReceipt, pBarCode, 1);
                     if (w != null)
                     {
@@ -369,7 +369,7 @@ namespace Front
             if (pCodeWares > 0)
             {
                 if (curReceipt == null)
-                 Bl.GetNewIdReceipt();
+                    curReceipt= Bl.GetNewIdReceipt();
                 CurWares = Bl.AddWaresCode(curReceipt, pCodeWares, pCodeUnit, pQuantity, pPrice);
 
                 if (CurWares != null)
@@ -435,7 +435,7 @@ namespace Front
                     {
                         R.StateReceipt = eStateReceipt.Print;
                         Bl.UpdateReceiptFiscalNumber(R, res.FiscalNumber, res.SUM);
-                        var r = Bl.GetNewIdReceipt();
+                        curReceipt = Bl.GetNewIdReceipt();
                         //Global.OnReceiptCalculationComplete?.Invoke(new List<ReceiptWares>(), Global.IdWorkPlace);
 
                         return true;
@@ -457,44 +457,12 @@ namespace Front
             return false;
         }
  
-        CustomWindow GetCustomButton(eStateScale pST)
-        {
-            CustomWindow res = new CustomWindow() { Id = eWindows.ConfirmWeight, Buttons = customWindowButtons };
-            if (TypeAccessWait == eTypeAccess.FixWeight)
-                switch (StateScale)
-                {
-                    case eStateScale.WaitClear:
-                        res.Buttons = new ObservableCollection<CustomButton>()
-                    { new CustomButton() { Id = 4, Text = "Тарувати", IsAdmin = true } ,
-                      new CustomButton() { Id = 5, Text = "Вхід в адмінку", IsAdmin = true } };
-                        break;
-                    case eStateScale.BadWeight:
-                        res.Buttons = new ObservableCollection<CustomButton>()
-                    { new CustomButton() { Id = 1, Text = "Підтвердити вагу", IsAdmin = true },
-                      new CustomButton() { Id = 2, Text = "Добавити вагу", IsAdmin = true } ,
-                      new CustomButton() { Id = -1, Text = "Закрити", IsAdmin = false }};
-                        break;
-
-                    case eStateScale.WaitGoods:
-                        res.Buttons = new ObservableCollection<CustomButton>()
-                    { new CustomButton() { Id = 1, Text = "Підтвердити вагу", IsAdmin = true },
-                      new CustomButton() { Id = 3, Text = "Видалити товар", IsAdmin = true } };
-                        break;
-                    case eStateScale.NotStabilized:
-                        res.Buttons = new ObservableCollection<CustomButton>()
-                    { new CustomButton() { Id = 1, Text = "Підтвердити вагу", IsAdmin = true },
-                      new CustomButton() { Id = -1, Text = "Закрити", IsAdmin = false }};
-                        break;
-                }
-            return res;
-        }
-
         private IEnumerable<ReceiptWares> StartData()
         {
-            var RId = Bl.GetNewIdReceipt();
+            curReceipt = Bl.GetNewIdReceipt();
             //Bl.AddWaresBarCode(RId, "27833", 258m);
             //Bl.AddWaresBarCode(RId, "7622201819590", 1);
-            Bl.GetClientByPhone(RId, "0503399110");
+            Bl.GetClientByPhone(curReceipt, "0503399110");
             //Bl.AddWaresBarCode(RId, "2201652300229", 2);
             //Bl.AddWaresBarCode(RId, "7775002160043", 1); //товар 2 кат
             //Bl.AddWaresBarCode(RId,"1110011760218", 11);
