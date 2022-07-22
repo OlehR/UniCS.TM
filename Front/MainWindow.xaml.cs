@@ -281,6 +281,8 @@ namespace Front
                     if ((State == eStateMainWindows.WaitAdmin || State == eStateMainWindows.WaitAdminLogin) && eTypeAccess.ExciseStamp == TypeAccessWait)
                         customWindow = new CustomWindow(pCW, pStr);
 
+                    WaitAdminWeightButtons.ItemsSource = customWindow.Buttons;
+
                     if (IsLockSale && State != eStateMainWindows.WaitAdmin && State != eStateMainWindows.WaitAdminLogin)
                     {
                         SetWaitConfirm(eTypeAccess.LockSale);
@@ -365,13 +367,13 @@ namespace Front
                             WaitAdmin.Visibility = Visibility.Visible;
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;
-
+                           // CustomButtonsWaitAdmin.ItemsSource = null;
                             switch (TypeAccessWait)
                             {
                                 case eTypeAccess.FixWeight:
                                 case eTypeAccess.AddNewWeight:
                                     //case eTypeAccess.
-                                    WaitAdminWeightButtons.ItemsSource = customWindow.Buttons;
+                                   // WaitAdminWeightButtons.ItemsSource = customWindow.Buttons;
                                     break;
                                 case eTypeAccess.ExciseStamp:
                                     //customWindow = GetCustomButton(eWindows.ExciseStamp);
@@ -389,7 +391,7 @@ namespace Front
 
                                     break;
                                 default:
-                                    CustomButtonsWaitAdmin.ItemsSource = null;
+                                    
                                     break;
                             }
                             //CustomButtonsWaitAdmin.ItemsSource = customWindowButtons;
