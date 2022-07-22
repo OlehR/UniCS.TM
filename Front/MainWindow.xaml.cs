@@ -914,7 +914,7 @@ namespace Front
 
         private void CustomWindowClickButton(object sender, RoutedEventArgs e)
         {
-            SetStateView(eStateMainWindows.WaitInput);
+            //SetStateView(eStateMainWindows.WaitInput);
 
             Button btn = sender as Button;
             CustomButton res = btn.DataContext as CustomButton;
@@ -934,6 +934,7 @@ namespace Front
                     }
                     if (res.Id == 2)
                         curReceipt= Bl.GetNewIdReceipt();
+                    SetStateView(eStateMainWindows.WaitInput);
                     return;
                 }
                 if (customWindow.Id == eWindows.ConfirmWeight)
@@ -963,6 +964,7 @@ namespace Front
                     ExtData = customWindow.Id == eWindows.ConfirmWeight ? CS?.RW : null
                 };
                 Bl.SetCustomWindows(r);
+                SetStateView(eStateMainWindows.WaitInput);
             }
         }
 
