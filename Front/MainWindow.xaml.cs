@@ -237,7 +237,7 @@ namespace Front
 
         public void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine,eWindows pCW=eWindows.NoDefinition,string pStr=null)
         {
-            lock (this._locker)
+            //lock (this._locker)
             {
                 
                 var r=Dispatcher.BeginInvoke(new ThreadStart(() =>
