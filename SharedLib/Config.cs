@@ -133,6 +133,13 @@ namespace SharedLib
             }
             catch
             { Global.DataSyncTime = 0; }
+
+            try
+            {
+                Global.MaxWeightBag = Convert.ToDouble(AppConfiguration["MID:MaxWeightBag"]);
+            }
+            catch
+            { Global.MaxWeightBag = 100; }
         }
 
         public static IConfigurationRoot GetConfiguration()

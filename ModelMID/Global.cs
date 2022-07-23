@@ -107,6 +107,7 @@ namespace ModelMID
         public static DeltaWeight[] DeltaWeight;
 
         public static string Server1C = "";
+        public static double MaxWeightBag = 100;
 
         public static List<CustomerBarCode> CustomerBarCode { get; set; }
 

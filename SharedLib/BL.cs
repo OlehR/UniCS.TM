@@ -351,15 +351,7 @@ namespace SharedLib
             if (Global.TypeWorkplace != eTypeWorkplace.NotDefine && r.Count() > 1)//Якщо не модерн і є кілька клієнтів.
             {
                 // Створюємо  користувацьке вікно
-                var CW = new CustomWindow()
-                {
-                    Text = "Зробіть вибір",
-                    Caption = "Вибір карточки клієнта",
-                    AnswerRequired = true,
-                    Buttons = (System.Collections.ObjectModel.ObservableCollection<CustomButton>)r.Select(el => new CustomButton() { Id = el.CodeClient, Text = el.NameClient })
-                };
-                //PathPicture = @"icons\Signal.png",
-                //customWindow.ValidationMask = "Щось)";               
+                var CW = new CustomWindow(eWindows.ChoiceClient,r);                            
                 OnCustomWindow?.Invoke(CW);
             }
             return null;
@@ -702,6 +694,5 @@ namespace SharedLib
             List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(pR) { EventType = eReceiptEventType.OwnBag, EventName = "Власна думка",ProductConfirmedWeight=Convert.ToInt32(pWeight), CreatedAt = DateTime.Now } };
             db.InsertReceiptEvent(rr);
         }
-
     }
 }

@@ -189,6 +189,7 @@ namespace ModelMID
             MidlWeight = new MidlWeight(pDelta);
         }
 
+        bool IsTooLight { get { return WaitWeight.Length>0 && WaitWeight.Count(e => e.Weight*Quantity < Delta) == 0; } }
         bool IsRightWeight(double pWeight)
         {
             // Якщо не чекаємо на вагу 
@@ -324,7 +325,21 @@ namespace ModelMID
 
                     if (RW.FixWeightQuantity != RW.Quantity && Math.Abs(СurrentlyWeight) <= Delta)
                     {
-                        NewStateScale = eStateScale.WaitGoods;
+                        if (IsTooLight )
+                        {
+                            if(СurrentlyWeight>Delta/3)
+                            {
+                                RW.FixWeight += Convert.ToDecimal(WaitWeight[0].Weight*Quantity); //TMP!!! провірити чи треба *Quantity
+                                RW.FixWeightQuantity += Convert.ToDecimal(Quantity);
+
+                                BeforeWeight = pWeight;
+                                Quantity = 0;
+                                СurrentlyWeight = 0;
+                            }
+                        }
+                        //else
+
+                            NewStateScale = eStateScale.WaitGoods;
                         //StartTimer();
                     }
                     else
@@ -360,7 +375,7 @@ namespace ModelMID
                 }
             }
 
-            if(Math.Abs (BeforeFullWeight-curFullWeight) > Delta/2)
+            if(Math.Abs (BeforeFullWeight-curFullWeight) >= Delta/3)
             {
                 BeforeFullWeight = curFullWeight;
                 if (StateScale == NewStateScale && NewStateScale!= eStateScale.Stabilized )

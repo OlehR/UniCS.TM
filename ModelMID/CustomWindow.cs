@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 
 namespace ModelMID
@@ -59,20 +60,20 @@ namespace ModelMID
 
         public CustomWindow() { }
 
-        public CustomWindow(eWindows pW, string pStr = null)
+        public CustomWindow(eWindows pW, object pObject = null)
         {
             switch (pW)
             {
                 case eWindows.RestoreLastRecipt:
                     Id = eWindows.RestoreLastRecipt;
-                    Caption = $"Відновлення останнього чека на суму {pStr}";
+                    Caption = $"Відновлення останнього чека на суму {pObject}";
                     Buttons = new ObservableCollection<CustomButton>() {
                         new CustomButton() { Id=1,  Text="Відновити"},
                         new CustomButton() { Id=2,  Text="Скасувати"} };
                     break;
                 case eWindows.NoPrice:
                     Id = eWindows.NoPrice;
-                    Text = pStr;
+                    Text = pObject as string;
                     Caption = "Відсутня ціна на товар!";
                     AnswerRequired = true;
                     break;
@@ -95,6 +96,14 @@ namespace ModelMID
                     break;
                     default:
                     Buttons = new ObservableCollection<CustomButton>();
+                    break;
+                case eWindows.ChoiceClient:
+                    Id = eWindows.ChoiceClient;
+                    Text = "Зробіть вибір";
+                    Caption = "Вибір карточки клієнта";
+                    AnswerRequired = true;
+                    IEnumerable<Client> d = pObject as IEnumerable<Client>;
+                    Buttons = (System.Collections.ObjectModel.ObservableCollection<CustomButton>) d.Select(el => new CustomButton() { Id = el.CodeClient, Text = el.NameClient });
                     break;
             }
 

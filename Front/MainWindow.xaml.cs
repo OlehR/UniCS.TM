@@ -85,7 +85,7 @@ namespace Front
         /// <summary>
         /// Чи можна підтвердити власну сумку
         /// </summary>
-        public bool IsOwnBag { get { return ControlScaleCurrentWeight > 0 && ControlScaleCurrentWeight<=300; } }
+        public bool IsOwnBag { get { return ControlScaleCurrentWeight > 0 && ControlScaleCurrentWeight<= Global.MaxWeightBag; } }
         /// <summary>
         /// теперішня вага
         /// </summary>
@@ -642,7 +642,7 @@ namespace Front
 
         private void _OwnBag(object sender, RoutedEventArgs e)
         {
-            if (ControlScaleCurrentWeight > 0 && ControlScaleCurrentWeight < 300)
+            if (ControlScaleCurrentWeight > 0 && ControlScaleCurrentWeight < Global.MaxWeightBag)
             {
                 curReceipt = Bl.GetNewIdReceipt();
                 Bl.AddOwnBag(curReceipt, Convert.ToDecimal(ControlScaleCurrentWeight));
