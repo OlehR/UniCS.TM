@@ -132,7 +132,7 @@ namespace Front
             Bl.OnAdminBarCode += (pUser) =>
             {
                 //!!!TMP НЕ зовсім правильно треба провірити права перед розблокуванням кнопок
-                if ( pUser.TypeUser >= eTypeUser.AdminSSC && customWindow?.Buttons != null)
+                if (pUser.TypeUser >= eTypeUser.AdminSSC && customWindow?.Buttons != null)
                 {
                     foreach (var item in customWindow.Buttons)
                     {
@@ -145,7 +145,7 @@ namespace Front
                     SetConfirm(pUser);
                     return;
                 }
-                                
+
                 if (customWindow.Buttons != null)
                 {
                     foreach (var item in customWindow.Buttons)
@@ -181,12 +181,16 @@ namespace Front
 
                 switch (StateScale)
                 {
+                    case eStateScale.WaitGoods:
+                        // if (State != eStateMainWindows.BlockWeight)
+                            SetStateView(eStateMainWindows.BlockWeight);
+                        break;
+
                     case eStateScale.BadWeight:
                     case eStateScale.NotStabilized:
                     case eStateScale.WaitClear:
-                    case eStateScale.WaitGoods:
-                        if (State != eStateMainWindows.BlockWeight)
-                            SetWaitConfirm(eTypeAccess.FixWeight, pRW); // SetStateView(eStateMainWindows.WaitWeight)
+
+                        SetWaitConfirm(eTypeAccess.FixWeight, pRW); // SetStateView(eStateMainWindows.WaitWeight)
 
                         break;
                     case eStateScale.Stabilized:
@@ -198,21 +202,14 @@ namespace Front
                 }
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WaitAdminText"));
             };
-}
+        }
 
         bool SetConfirm(User pUser, bool pIsFirst = false, bool pIsAccess = false)
         {
             if (pUser == null)
             {
                 switch (TypeAccessWait)
-                {
-                    /*case eTypeAccess.ConfirmAge:
-                    case eTypeAccess.ChoicePrice:
-                    case eTypeAccess.AddNewWeight:                    
-                    case eTypeAccess.ErrorEquipment:        
-                        TypeAccessWait = eTypeAccess.NoDefinition;
-                        SetStateView(eStateMainWindows.WaitAdmin);
-                        break;*/
+                {  
                     case eTypeAccess.DelReciept:
                     case eTypeAccess.DelWares:
                         TypeAccessWait = eTypeAccess.NoDefinition;
@@ -291,6 +288,7 @@ namespace Front
 
         public void GetBarCode(string pBarCode, string pTypeBarCode)
         {
+            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"(pBarCode=>{pBarCode},  pTypeBarCode=>{pTypeBarCode}");
             if (State == eStateMainWindows.StartWindow)
                 SetStateView(eStateMainWindows.WaitInput);
 

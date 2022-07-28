@@ -193,10 +193,10 @@ namespace ModelMID
             //CodePattern = Global.DefaultCodePatternReceipt;
         }
 
-        public IdReceipt GetIdReceipt()
+        /*public IdReceipt GetIdReceipt()
         {
             return (IdReceipt)this; //new IdReceipt() { CodePeriod=this.}
-        }
+        }*/
         public ReceiptWares GetLastWares
         {
             get
@@ -209,7 +209,9 @@ namespace ModelMID
         }
 
         public bool IsNeedExciseStamp { get { return GetLastWares?.IsNeedExciseStamp == true; } }
-
+        /// <summary>
+        /// Вага власної сумки.
+        /// </summary>
         public double OwnBag { get { return ReceiptEvent?.Sum(r=> Convert.ToDouble(r.ProductConfirmedWeight))??0d; } }
 
     }

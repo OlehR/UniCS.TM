@@ -56,28 +56,32 @@ namespace Front
         public string EquipmentInfo { get; set; }
         public bool Volume { get; set; }
         public string ChangeSumPaymant { get; set; } = "0";
+       
         public bool IsIgnoreExciseStamp { get; set; }
         public bool IsAddNewWeight { get; set; }
         public bool IsFixWeight { get; set; }
         public bool IsExciseStamp { get; set; }
-        bool _IsLockSale = false;
+        public bool IsCheckReturn { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? true : false; } }
         /// <summary>
         /// Чи заброкована зміна
         /// </summary>
+        bool _IsLockSale = false;       
         public bool IsLockSale { get { return _IsLockSale; } set { if (_IsLockSale != value) { SetStateView(!value && State == eStateMainWindows.WaitAdmin ? eStateMainWindows.WaitInput : eStateMainWindows.NotDefine); _IsLockSale = value; } } }
         //public bool IsHideAdminPanel { get; set; } = false;
-        public string GetBackgroundColor { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? "#FFE5E5" : "#FFFFFF"; } }
-        public bool IsCheckReturn { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? true : false; } }
         /// <summary>
         /// чи є товар з обмеженням по віку
         /// </summary>
         public bool IsAgeRestrict { get { return curReceipt == null ? false : curReceipt?.AgeRestrict == 0 || curReceipt?.AgeRestrict != 0 && curReceipt.IsConfirmAgeRestrict; } }
 
-        bool _IsEnabledPaymentButton = false;
+        /// <summary>
+        /// Чи можна добавляти товар 
+        /// </summary>
+        public bool IsAddNewWares { get { return curReceipt == null? true: !curReceipt.IsLockChange  && State == eStateMainWindows.WaitInput; } }
         /// <summary>
         /// Чи активна кнопка оплати
         /// </summary>
-        public bool IsEnabledPaymentButton { get { return _MoneySum >= 0 && WaresQuantity != "0"; } set { _IsEnabledPaymentButton = value; } }
+        //bool _IsEnabledPaymentButton;
+        public bool IsEnabledPaymentButton { get { return _MoneySum >= 0 && WaresQuantity != "0" && IsAddNewWares;  } }// set { _IsEnabledPaymentButton = value; } }
         /// <summary>
         /// чи активна кнопка пошуку
         /// </summary>
@@ -86,18 +90,28 @@ namespace Front
         /// Чи можна підтвердити власну сумку
         /// </summary>
         public bool IsOwnBag { get { return ControlScaleCurrentWeight > 0 && ControlScaleCurrentWeight<= Global.MaxWeightBag; } }
+        public bool IsPresentFirstTerminal { get { return EF.BankTerminal1 != null; } }
+        public bool IsPresentSecondTerminal { get { return EF.BankTerminal2 != null; } }
+
+        bool IsViewProblemeWeight { get { return State == eStateMainWindows.WaitInput || State == eStateMainWindows.StartWindow; } }
+
         /// <summary>
         /// теперішня вага
         /// </summary>
         public double ControlScaleCurrentWeight { get; set; } = 0;
         public string ClientName { get { return curReceipt != null && curReceipt.CodeClient == Client?.CodeClient ? Client?.NameClient : "Відсутній клієнт"; } }
-        public bool IsPresentFirstTerminal { get { return EF.BankTerminal1 != null; } }
-        public bool IsPresentSecondTerminal { get { return EF.BankTerminal2 != null; } }
-        public string CurWaresName { get { return CurWares != null ? CurWares.NameWares : " "; } }
+        //public string CurWaresName { get { return CurWares != null ? CurWares.NameWares : " "; } }
         public int QuantityCigarettes { get; set; } = 1;
         public string NameFirstTerminal { get { return IsPresentFirstTerminal ? EF?.BankTerminal1.Name : null; } }
         public string NameSecondTerminal { get { return IsPresentSecondTerminal ? EF?.BankTerminal2.Name : null; } }
 
+        public string GetBackgroundColor { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? "#FFE5E5" : "#FFFFFF"; } }
+
+        public System.Drawing.Color GetFlagColor(eStateMainWindows pStateMainWindows)
+        {
+            return FC.ContainsKey(pStateMainWindows) ? FC[pStateMainWindows] : System.Drawing.Color.Black;
+        }
+        
         public string WaitAdminText
         {
             get
@@ -132,14 +146,8 @@ namespace Front
         /// </summary>
         public bool CustomWindowValidText { get; set; }
 
-        bool IsViewProblemeWeight { get { return State == eStateMainWindows.WaitInput || State == eStateMainWindows.StartWindow; } }
-
-
-        SortedList<eStateMainWindows, System.Drawing.Color> FC = new();
-        public System.Drawing.Color GetFlagColor(eStateMainWindows pStateMainWindows)
-        {
-            return FC.ContainsKey(pStateMainWindows) ? FC[pStateMainWindows] : System.Drawing.Color.Black;
-        }
+         SortedList<eStateMainWindows, System.Drawing.Color> FC = new();
+        
         public MainWindow()
         {
             var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
@@ -291,7 +299,7 @@ namespace Front
                     if (State != eStateMainWindows.WaitAdmin && State != eStateMainWindows.WaitAdminLogin)
                         TypeAccessWait = eTypeAccess.NoDefinition;
 
-                    IsEnabledPaymentButton = true;
+                    //IsEnabledPaymentButton = true;
                     IsEnabledFindButton = true;
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnabledPaymentButton"));
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnabledFindButton"));
@@ -452,7 +460,7 @@ namespace Front
                             CustomWindows.Visibility = Visibility.Visible;
                             break;
                         case eStateMainWindows.BlockWeight:
-                            IsEnabledPaymentButton = false;
+                            //IsEnabledPaymentButton = false;
                             IsEnabledFindButton = false;
                             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnabledPaymentButton"));
                             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnabledFindButton"));
