@@ -189,18 +189,17 @@ namespace Front
                     case eStateScale.BadWeight:
                     case eStateScale.NotStabilized:
                     case eStateScale.WaitClear:
-
                         SetWaitConfirm(eTypeAccess.FixWeight, pRW); // SetStateView(eStateMainWindows.WaitWeight)
 
                         break;
                     case eStateScale.Stabilized:
-                        if (State == eStateMainWindows.WaitWeight || State == eStateMainWindows.WaitAdmin)
+                        if (State == eStateMainWindows.WaitWeight || State == eStateMainWindows.BlockWeight || State == eStateMainWindows.WaitAdmin)
                             SetStateView(eStateMainWindows.WaitInput);
                         if (pRW != null)
                             Bl.FixWeight(pRW);
                         break;
                 }
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WaitAdminText"));
+                SetPropertyChanged();                
             };
         }
 

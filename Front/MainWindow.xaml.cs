@@ -85,7 +85,7 @@ namespace Front
         /// <summary>
         /// чи активна кнопка пошуку
         /// </summary>
-        public bool IsEnabledFindButton { get; set; }
+        public bool IsEnabledFindButton { get { return IsAddNewWares; } }
         /// <summary>
         /// Чи можна підтвердити власну сумку
         /// </summary>
@@ -222,21 +222,31 @@ namespace Front
             }
         }
 
-        private void SetCurReceipt(Receipt pReceipt)
+        void SetCurReceipt(Receipt pReceipt)
         {
             curReceipt = pReceipt;
+            SetPropertyChanged();
+        }
+        void SetPropertyChanged()
+        {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("GetBackgroundColor"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnabledPaymentButton"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCheckReturn"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClientName"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsAgeRestrict"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnabledFindButton"));            
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsLockSale"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsAddNewWares"));            
         }
 
         void SetWaitConfirm(eTypeAccess pTypeAccess, ReceiptWares pRW = null)
         {
             if (pTypeAccess == eTypeAccess.FixWeight && ( State == eStateMainWindows.WaitInputPrice || State == eStateMainWindows.WaitOwnBag || State == eStateMainWindows.WaitCustomWindows) )
                 return;
-
+            if(pTypeAccess == eTypeAccess.AdminPanel && State == eStateMainWindows.BlockWeight)
+            {
+                pTypeAccess = eTypeAccess.FixWeight;
+            }
             CurWares = pRW;
             TypeAccessWait = pTypeAccess;           
             //customWindowButtons = customWindow.Buttons;
@@ -270,12 +280,16 @@ namespace Front
                             SetWaitConfirm(Res, CurWares);
                             return;
                         }
+                        else
+                        if (!CS.IsNoProblemWindows && pSMV != eStateMainWindows.BlockWeight && pSMV != eStateMainWindows.WaitAdmin)
+                            pSMV = eStateMainWindows.BlockWeight;
                     }
                     //Якщо Очікуємо ввід ціни І є проблема з вагою - Перевага введеній ціні.
 
                     if (pSMV != eStateMainWindows.NotDefine)
                     {
                         State = pSMV;
+                        SetPropertyChanged();
                         EF.SetColor(GetFlagColor(State));
                     }
                     
@@ -300,10 +314,10 @@ namespace Front
                         TypeAccessWait = eTypeAccess.NoDefinition;
 
                     //IsEnabledPaymentButton = true;
-                    IsEnabledFindButton = true;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnabledPaymentButton"));
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnabledFindButton"));
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsAgeRestrict"));
+                    //IsEnabledFindButton = true;
+                    //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnabledPaymentButton"));
+                    //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnabledFindButton"));
+                    //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsAgeRestrict"));
 
                     ErrorWindows.Visibility = Visibility.Collapsed;
                     ExciseStamp.Visibility = Visibility.Collapsed;
@@ -396,7 +410,6 @@ namespace Front
                                     WaitAdminTitle.Visibility = Visibility.Collapsed;
                                     // CustomButtonsWaitAdmin.ItemsSource = customWindow.Buttons;
 
-
                                     break;
                                 default:
                                     
@@ -461,9 +474,9 @@ namespace Front
                             break;
                         case eStateMainWindows.BlockWeight:
                             //IsEnabledPaymentButton = false;
-                            IsEnabledFindButton = false;
-                            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnabledPaymentButton"));
-                            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnabledFindButton"));
+                            //IsEnabledFindButton = false;
+                            ///PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnabledPaymentButton"));
+                            //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnabledFindButton"));
                             break;
                         case eStateMainWindows.WaitInput:
                             IsIgnoreExciseStamp = false;
@@ -481,6 +494,7 @@ namespace Front
                     }
                 }));
                 r.Wait(new TimeSpan(0,0,0,100));
+                SetPropertyChanged();
             }
         }
         private void _Delete(object sender, RoutedEventArgs e)
