@@ -392,7 +392,7 @@ namespace Front
                             BackgroundWares.Visibility = Visibility.Visible;
                             if (customWindow.Buttons != null)
                             {
-                                WaitAdminCancel.Visibility = Visibility.Visible;
+                                WaitAdminCancel.Visibility = Visibility.Collapsed;
                             }
                            // CustomButtonsWaitAdmin.ItemsSource = null;
                             switch (TypeAccessWait)
@@ -468,8 +468,12 @@ namespace Front
                                 OKCustomWindows.Visibility = Visibility.Collapsed;
                                 CancelCustomWindows.Visibility = Visibility.Collapsed;
                             }
-                            OKCustomWindows.Visibility = Visibility.Visible;
-                            CancelCustomWindows.Visibility = Visibility.Visible;
+                            else
+                            {
+                                OKCustomWindows.Visibility = Visibility.Visible;
+                                CancelCustomWindows.Visibility = Visibility.Visible;
+                            }
+                           
                             ButtonsCustomWindows.Visibility = customWindow?.Buttons == null ? Visibility.Collapsed : Visibility.Visible;
 
                             if (customWindow.Caption == null) CaptionCustomWindows.Visibility = Visibility.Collapsed;
