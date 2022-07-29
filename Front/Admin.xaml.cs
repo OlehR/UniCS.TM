@@ -69,25 +69,10 @@ namespace Front
             timer.Start();
 
 
-            string AllLog = File.ReadAllText(Utils.FileLogger.GetFileName);
-            string[] temp = AllLog.Split($"{Environment.NewLine}[");
-            LogsCollection = new ObservableCollection<ParsLog>();
-            foreach (string item in temp)
-            {
-                if (item.Contains("Error"))
-                    LogsCollection.Add(new ParsLog() { LineLog = "[" + item, TypeLog = eTypeLog.Error });
-                if (item.Contains("Expanded"))
-                    LogsCollection.Add(new ParsLog() { LineLog = "[" + item, TypeLog = eTypeLog.Expanded });
-                else
-                    LogsCollection.Add(new ParsLog() { LineLog = "[" + item, TypeLog = eTypeLog.Full });
-            }
-            //LogsCollection = new ObservableCollection<string>(AllLog.Split($"{Environment.NewLine}[").Select(a => "[" + a));
-
-            ListLog.ItemsSource = LogsCollection;
 
 
-            CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(ListLog.ItemsSource);
-            view.Filter = LogFilter;
+
+            
         }
         public void Init(User AdminUser = null)
         {
@@ -225,13 +210,33 @@ namespace Front
                 case "Історія":
                     break;
                 case "Помилки":
+                    RefreshLog();
                     break;
 
                 default:
                     return;
             }
         }
+        private void RefreshLog()
+        {
+            string AllLog = File.ReadAllText(Utils.FileLogger.GetFileName);
+            string[] temp = AllLog.Split($"{Environment.NewLine}[");
+            LogsCollection = new ObservableCollection<ParsLog>();
+            foreach (string item in temp)
+            {
+                if (item.Contains("Error"))
+                    LogsCollection.Add(new ParsLog() { LineLog = "[" + item, TypeLog = eTypeLog.Error });
+                if (item.Contains("Expanded"))
+                    LogsCollection.Add(new ParsLog() { LineLog = "[" + item, TypeLog = eTypeLog.Expanded });
+                else
+                    LogsCollection.Add(new ParsLog() { LineLog = "[" + item, TypeLog = eTypeLog.Full });
+            }
+            //LogsCollection = new ObservableCollection<string>(AllLog.Split($"{Environment.NewLine}[").Select(a => "[" + a));
 
+            ListLog.ItemsSource = LogsCollection;
+            CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(ListLog.ItemsSource);
+            view.Filter = LogFilter;
+        }
         private void historiReceiptList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             curReceipt = ListReceipts.SelectedItem as Receipt;
