@@ -43,7 +43,7 @@ namespace Front
         public GW CurW { get; set; } = null;
 
         public eStateMainWindows State = eStateMainWindows.StartWindow;
-        eStateScale StateScale = eStateScale.NotDefine;
+       // eStateScale StateScale = eStateScale.NotDefine;
         public eTypeAccess TypeAccessWait { get; set; }
         public ObservableCollection<ReceiptWares> ListWares { get; set; }
         public CustomWindow customWindow { get; set; }
@@ -236,7 +236,8 @@ namespace Front
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsAgeRestrict"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnabledFindButton"));            
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsLockSale"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsAddNewWares"));            
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsAddNewWares"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WaitAdminText"));
         }
 
         void SetWaitConfirm(eTypeAccess pTypeAccess, ReceiptWares pRW = null)

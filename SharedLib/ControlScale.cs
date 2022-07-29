@@ -102,7 +102,7 @@ namespace ModelMID
         public Action<eStateScale, ReceiptWares, double> OnStateScale { get; set; }
         eStateScale _StateScale;
 
-        public bool IsNoProblemWindows { get { return StateScale == eStateScale.Stabilized || StateScale == eStateScale.NotDefine || StateScale == eStateScale.WaitGoods || StateScale == eStateScale.WaitClear; } }
+        public bool IsNoProblemWindows { get { return StateScale == eStateScale.Stabilized || StateScale == eStateScale.NotDefine; } } //|| StateScale == eStateScale.WaitGoods || StateScale == eStateScale.WaitClear; } }
 
         public bool IsOk { get { return StateScale == eStateScale.Stabilized; } }
         /// <summary>

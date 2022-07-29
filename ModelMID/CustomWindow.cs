@@ -56,6 +56,9 @@ namespace ModelMID
         public int ColumnButtons { get; set; } = 1;
         public ObservableCollection<CustomButton> Buttons { get; set; }
 
+        /// <summary>
+        /// Чи відображати кнопку Cancel
+        /// </summary>
         public bool IsCancelButton { get; set; } = true;
 
         public CustomWindow() { }
@@ -67,6 +70,7 @@ namespace ModelMID
                 case eWindows.RestoreLastRecipt:
                     Id = eWindows.RestoreLastRecipt;
                     Caption = $"Відновлення останнього чека на суму {pObject}";
+                    IsCancelButton = false;
                     Buttons = new ObservableCollection<CustomButton>() {
                         new CustomButton() { Id=1,  Text="Відновити"},
                         new CustomButton() { Id=2,  Text="Скасувати"} };

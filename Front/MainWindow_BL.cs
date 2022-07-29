@@ -177,20 +177,18 @@ namespace Front
             //Обробка стану контрольної ваги.
             CS.OnStateScale += (pStateScale, pRW, pСurrentlyWeight) =>
             {
-                StateScale = pStateScale;
+                //StateScale = pStateScale;
 
-                switch (StateScale)
+                switch (pStateScale)
                 {
                     case eStateScale.WaitGoods:
                         // if (State != eStateMainWindows.BlockWeight)
                             SetStateView(eStateMainWindows.BlockWeight);
                         break;
-
                     case eStateScale.BadWeight:
                     case eStateScale.NotStabilized:
                     case eStateScale.WaitClear:
-                        SetWaitConfirm(eTypeAccess.FixWeight, pRW); // SetStateView(eStateMainWindows.WaitWeight)
-
+                        SetWaitConfirm(eTypeAccess.FixWeight, pRW);
                         break;
                     case eStateScale.Stabilized:
                         if (State == eStateMainWindows.WaitWeight || State == eStateMainWindows.BlockWeight || State == eStateMainWindows.WaitAdmin)
