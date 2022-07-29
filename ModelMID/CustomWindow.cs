@@ -116,7 +116,7 @@ namespace ModelMID
         public CustomWindow(eStateScale pST)
         {
             Id = eWindows.ConfirmWeight;
-            
+            IsCancelButton = false;
                 switch (pST)
                 {
                     case eStateScale.WaitClear:
