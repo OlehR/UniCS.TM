@@ -390,6 +390,10 @@ namespace Front
                             WaitAdmin.Visibility = Visibility.Visible;
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;
+                            if (customWindow.Buttons != null)
+                            {
+                                WaitAdminCancel.Visibility = Visibility.Visible;
+                            }
                            // CustomButtonsWaitAdmin.ItemsSource = null;
                             switch (TypeAccessWait)
                             {
@@ -459,7 +463,13 @@ namespace Front
                         case eStateMainWindows.WaitCustomWindows:
                             TextBoxCustomWindows.Text = null;
                             if (customWindow?.Buttons != null)
+                            {
                                 CustomWindowsItemControl.ItemsSource = new ObservableCollection<CustomButton>(customWindow.Buttons);
+                                OKCustomWindows.Visibility = Visibility.Collapsed;
+                                CancelCustomWindows.Visibility = Visibility.Collapsed;
+                            }
+                            OKCustomWindows.Visibility = Visibility.Visible;
+                            CancelCustomWindows.Visibility = Visibility.Visible;
                             ButtonsCustomWindows.Visibility = customWindow?.Buttons == null ? Visibility.Collapsed : Visibility.Visible;
 
                             if (customWindow.Caption == null) CaptionCustomWindows.Visibility = Visibility.Collapsed;
