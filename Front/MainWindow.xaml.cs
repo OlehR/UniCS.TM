@@ -191,9 +191,9 @@ namespace Front
             ua.Tag = new CultureInfo("uk");
             en.Tag = new CultureInfo("en");
             hu.Tag = new CultureInfo("hu");
-            pln.Tag = new CultureInfo("pl");
+            pl.Tag = new CultureInfo("pl");
 
-            CultureInfo currLang = App.Language;
+            //CultureInfo currLang = App.Language;
             Recalc();
             Task.Run(() => Bl.ds.SyncDataAsync());
 
@@ -604,10 +604,10 @@ namespace Front
             ua.Style = (Style)ua.FindResource("Default");
             en.Style = (Style)en.FindResource("Default");
             hu.Style = (Style)hu.FindResource("Default");
-            pln.Style = (Style)pln.FindResource("Default");
+            pl.Style = (Style)pl.FindResource("Default");
             switch (btn.Name)
             {
-                case "uk":
+                case "ua":
                     ua.Style = (Style)ua.FindResource("yelowButton");
                     break;
                 case "en":
@@ -616,8 +616,8 @@ namespace Front
                 case "hu":
                     hu.Style = (Style)hu.FindResource("yelowButton");
                     break;
-                case "pln":
-                    pln.Style = (Style)pln.FindResource("yelowButton");
+                case "pl":
+                    pl.Style = (Style)pl.FindResource("yelowButton");
                     break;
             }
         }
@@ -1039,6 +1039,4 @@ namespace Front
             SetStateView(eStateMainWindows.WaitOwnBag);
         }
     }
-
-
 }

@@ -84,7 +84,7 @@
                         <Image Margin="5" Source="icons\hu.png"/>
                     </Button>
 
-                    <Button x:Name="pln" Click="_ChangeLanguage" Grid.Column="1" Grid.Row="1" Style="{StaticResource Default}">
+                    <Button x:Name="pl" Click="_ChangeLanguage" Grid.Column="1" Grid.Row="1" Style="{StaticResource Default}">
                         <Image Margin="5" Source="icons\pln.png"/>
                     </Button>
 

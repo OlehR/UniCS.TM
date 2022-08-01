@@ -151,7 +151,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="Resources\lang.pln.xaml">
+    <Page Update="Resources\lang.pl.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Resources\lang.hu.xaml">
