@@ -68,7 +68,7 @@ namespace Front
         /// </summary>
         bool _IsLockSale = false;       
         public bool IsLockSale { get { return _IsLockSale; } set { if (_IsLockSale != value) { SetStateView(!value && State == eStateMainWindows.WaitAdmin ? eStateMainWindows.WaitInput : eStateMainWindows.NotDefine); _IsLockSale = value; } } }
-        //public bool IsHideAdminPanel { get; set; } = false;
+       
         /// <summary>
         /// чи є товар з обмеженням по віку
         /// </summary>
@@ -247,14 +247,8 @@ namespace Front
  
         public void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine, eTypeAccess pTypeAccess = eTypeAccess.NoDefine, ReceiptWares pRW = null, eWindows pCW=eWindows.NoDefinition,string pStr=null)
         {
-            /*
-            if(pTypeAccess == eTypeAccess.FixWeight && (State == eStateMainWindows.WaitInputPrice || State == eStateMainWindows.WaitOwnBag || State == eStateMainWindows.WaitCustomWindows))
+            if (State == eStateMainWindows.WaitOwnBag && pTypeAccess == eTypeAccess.FixWeight)
                 return;
-            if (pTypeAccess == eTypeAccess.AdminPanel && State == eStateMainWindows.BlockWeight)
-            {
-                pTypeAccess = eTypeAccess.FixWeight;
-            }*/
-
             lock (this._locker)
             {
                 var r = Dispatcher.BeginInvoke(new ThreadStart(() =>
@@ -263,25 +257,26 @@ namespace Front
                    pSMV != eStateMainWindows.WaitAdminLogin)
                 {
                     eTypeAccess Res = eTypeAccess.NoDefine;
-                    if (EF.StatCriticalEquipment != eStateEquipment.On) Res = eTypeAccess.ErrorEquipment;
-                    else
-                       if (!Bl.ds.IsReady) Res = (Bl.ds.Status == eSyncStatus.Error ? eTypeAccess.ErrorFullUpdate : eTypeAccess.StartFullUpdate);
-                    else
-                        if (IsLockSale) Res = eTypeAccess.LockSale;
-                    else
-                        if (curReceipt?.IsNeedExciseStamp == true) Res = eTypeAccess.ExciseStamp;
-                    else
-                        if (IsChoicePrice) pSMV = eStateMainWindows.WaitInputPrice;
-                    else                    
-                        if (CS.IsProblem)
-                        {                          
-                                
+                        if (EF.StatCriticalEquipment != eStateEquipment.On) Res = eTypeAccess.ErrorEquipment;
+                        else
+                           if (!Bl.ds.IsReady) Res = (Bl.ds.Status == eSyncStatus.Error ? eTypeAccess.ErrorFullUpdate : eTypeAccess.StartFullUpdate);
+                        else
+                            if (IsLockSale) Res = eTypeAccess.LockSale;
+                        else
+                        if (!(pTypeAccess == eTypeAccess.DelReciept || pTypeAccess == eTypeAccess.DelWares || TypeAccessWait == eTypeAccess.DelReciept || TypeAccessWait == eTypeAccess.DelWares))
+                        {
+                            if (curReceipt?.IsNeedExciseStamp == true) Res = eTypeAccess.ExciseStamp;
+                            else
+                            if (IsChoicePrice) pSMV = eStateMainWindows.WaitInputPrice;
+                            else
+                            if (CS.IsProblem)
+                            {
                                 if (!IsShowWeightWindows && pSMV != eStateMainWindows.WaitAdmin) //--&&  && pSMV != eStateMainWindows.BlockWeight && pSMV != eStateMainWindows.WaitOwnBag && pSMV != eStateMainWindows.WaitAdmin)
-                                     pSMV = eStateMainWindows.BlockWeight;
+                                    pSMV = eStateMainWindows.BlockWeight;
                                 else
-                                Res = eTypeAccess.FixWeight;
-                        }                       
-
+                                    Res = eTypeAccess.FixWeight;
+                            }
+                        }
                     
                         if ( Res != eTypeAccess.NoDefine && Res != eTypeAccess.ChoicePrice)// && pSMV != eStateMainWindows.BlockWeight)
                         {
@@ -289,19 +284,13 @@ namespace Front
                             pTypeAccess = Res;
                         }
 
-                        //else
-                        //if (CS.IsProblem && pSMV != eStateMainWindows.BlockWeight && pSMV != eStateMainWindows.WaitAdmin)
-                        //    pSMV = eStateMainWindows.BlockWeight;
-                        /*if (IsLockSale && State != eStateMainWindows.WaitAdmin && State != eStateMainWindows.WaitAdminLogin)
-                            {
-                                SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.LockSale);
-                                return;
-                            } */
+                        
                     }
 
                     if (pRW != null)
                         CurWares = pRW;
-                    TypeAccessWait = pTypeAccess;
+                    if(pSMV!= eStateMainWindows.WaitAdminLogin)
+                        TypeAccessWait = pTypeAccess;
 
                     if (pSMV != eStateMainWindows.NotDefine)
                     {
@@ -830,8 +819,7 @@ namespace Front
 
         private void ExciseStampNone(object sender, RoutedEventArgs e)
         {
-            CurWares.AddExciseStamp("None");
-            SetStateView(eStateMainWindows.WaitInput);
+            AddExciseStamp("None");            
         }
 
         private void ChangeSumPaymentButton(object sender, RoutedEventArgs e)
@@ -990,7 +978,7 @@ namespace Front
                     //Ховаєм адмінпанель щоб управляти товаром.
                     if (res.Id == -1)
                     {
-                        //IsHideAdminPanel = true;
+                        IsShowWeightWindows = false;
                         SetStateView(eStateMainWindows.BlockWeight);
                         return;
                     }

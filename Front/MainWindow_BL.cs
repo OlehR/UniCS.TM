@@ -283,37 +283,42 @@ namespace Front
             {
                 string ExciseStamp = GetExciseStamp(pBarCode);
                 if (!string.IsNullOrEmpty(ExciseStamp))
-                    AddExciseStamp(ExciseStamp);
-                return;
-            }
-            ReceiptWares w = null;
-            if (State == eStateMainWindows.WaitInput || State == eStateMainWindows.StartWindow)
-            {
-                if (curReceipt==null || !curReceipt.IsLockChange )
                 {
-                    if (curReceipt == null)
-                        curReceipt=Bl.GetNewIdReceipt();
-                    w = Bl.AddWaresBarCode(curReceipt, pBarCode, 1);
-                    if (w != null)
-                    {
-                        CurWares = w;
-                        IsPrises(1, 0);
-                    }
+                    AddExciseStamp(ExciseStamp);
+                    return;
                 }
             }
             else
             {
-                w = Bl.AddWaresBarCode(curReceipt, pBarCode, 1, true);
+                ReceiptWares w = null;
+                if (State == eStateMainWindows.WaitInput || State == eStateMainWindows.StartWindow)
+                {
+                    if (curReceipt == null || !curReceipt.IsLockChange)
+                    {
+                        if (curReceipt == null)
+                            curReceipt = Bl.GetNewIdReceipt();
+                        w = Bl.AddWaresBarCode(curReceipt, pBarCode, 1);
+                        if (w != null)
+                        {
+                            CurWares = w;
+                            IsPrises(1, 0);
+                        }
+                    }
+                }
+                else
+                {
+                    w = Bl.AddWaresBarCode(curReceipt, pBarCode, 1, true);
+                }
+                if (w != null)
+                    return;
+                var c = Bl.GetClientByBarCode(curReceipt, pBarCode);
+                if (c != null) return;
             }
-            if (w != null)
-                return;
-            var c = Bl.GetClientByBarCode(curReceipt, pBarCode);
-            if (c == null)
-            {
+           
                 var u = Bl.GetUserByBarCode(pBarCode);
                 if (u != null)
                     Bl.OnAdminBarCode?.Invoke(u);
-            }
+            
         }
       
         public void AddWares(int pCodeWares, int pCodeUnit = 0, decimal pQuantity = 0m, decimal pPrice = 0m, GW pGV = null)
