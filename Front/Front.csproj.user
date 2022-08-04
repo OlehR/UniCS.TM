@@ -41,9 +41,6 @@
     <Page Update="Resources\keyboardButton.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Resources\lang.pl.xaml">
-      <SubType>Designer</SubType>
-    </Page>
     <Page Update="Resources\lang.hu.xaml">
       <SubType>Designer</SubType>
     </Page>

@@ -626,7 +626,7 @@
                                    Mode=FindAncestor, AncestorType=Window}}" FontSize="24" HorizontalAlignment="Center"/>
                             <TextBlock Text="Вага не має перевищувати 100 гр!" Foreground="Red" FontSize="18" HorizontalAlignment="Center"/>
                         </StackPanel>
-                        
+
                         <Button Grid.Row="1" 
                             HorizontalAlignment="Left" VerticalAlignment="Bottom"  FontSize="22" Click="_OwnBag" 
                         Height="60" Width="200" Margin="15">
@@ -646,7 +646,7 @@
                                 </Style>
                             </Button.Style>
                         </Button>
-                        
+
                         <Button Grid.Row="1" 
                             Style="{StaticResource Default}" HorizontalAlignment="Right" VerticalAlignment="Bottom"  FontSize="22" Click="_Cancel" 
                         Height="60" Width="200" Margin="15">
@@ -702,7 +702,7 @@
                         <TextBlock Visibility="Visible" HorizontalAlignment="Center"
                                    Foreground="Red"
                                    Text="Для розблукування інших цін - викличте адміністратора"/>
-                        
+
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <Button x:Name="MinusCigarettesButton" Height="60" Width="60" Margin="5" Click="PlusOrMinusCigarettes">
                                 <Button.Content>
@@ -724,7 +724,7 @@
                             <Button Height="60" Width="60" Margin="5" Style="{StaticResource yelowButton}"
                                     x:Name="QuantityCigarettesText" Content="{Binding QuantityCigarettes, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" IsEnabled="False">
-                               
+
                             </Button>
                             <Button x:Name="PlusCigarettesButton" Click="PlusOrMinusCigarettes"
                                 Height="60" Width="60" Margin="5" Style="{StaticResource yelowButton}">
@@ -733,7 +733,7 @@
                                 </Button.Content>
                             </Button>
                         </StackPanel>
-                        
+
                         <Button Grid.Row="3" Style="{StaticResource Default}"  FontSize="22" Click="_Cancel" 
                         Height="60" Width="300" Margin="10">
                             <TextBlock FontSize="28" Text="{DynamicResource cancel}"/>
@@ -843,12 +843,18 @@
                                                 <Setter Property="IsEnabled" Value="True"/>
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsAddNewWeight, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                                        <Setter Property="IsEnabled" Value="False" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsAdmin}" Value="True">
+                                                        <Setter Property="IsEnabled" Value="False" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsAddNewWeight, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="True">
                                                         <Setter Property="IsEnabled" Value="True" />
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding IsAddNewWeight, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
-                                                        <Setter Property="IsEnabled" Value="False" />
+                                                    <DataTrigger Binding="{Binding IsAdmin}" Value="False">
+                                                        <Setter Property="IsEnabled" Value="True" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -883,7 +889,7 @@
 
 
                         <Button   FontSize="22" Click="_Cancel" x:Name="WaitAdminCancel"
-                        Height="80" Width="300" VerticalAlignment="Center" Visibility="Collapsed">
+                        Height="80" Width="300" VerticalAlignment="Center" Visibility="Visible">
                             <StackPanel Orientation="Horizontal">
                                 <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
                                 <TextBlock FontSize="28"  Text="{DynamicResource cancel}" Margin="5,0,0,5"/>
