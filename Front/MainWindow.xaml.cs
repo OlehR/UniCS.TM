@@ -999,7 +999,7 @@ namespace Front
                         CS.RW.FixWeightQuantity = CS.RW.Quantity;
                         CS.RW.FixWeight += Convert.ToDecimal(CS.СurrentlyWeight);
                         // Bl.FixWeight(CS.RW);
-                        //CS.StateScale = eStateScale.Stabilized;// OnScalesData(CS.curFullWeight,true);
+                        CS.StateScale = eStateScale.Stabilized;// OnScalesData(CS.curFullWeight,true);
                     }
 
                 }
