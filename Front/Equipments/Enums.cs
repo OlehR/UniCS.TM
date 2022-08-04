@@ -156,7 +156,7 @@ namespace Front.Equipments
     /// </summary>
     public enum eTypeEquipment
     {
-        NotDefined,
+        NotDefine,
         Scaner,
         Scale,
         ControlScale,
@@ -170,7 +170,7 @@ namespace Front.Equipments
     /// </summary>
     public enum eModelEquipment
     {
-        NotDefined,
+        NotDefine,
         MagellanScaner,
         MagellanScale,
         ScaleModern,
@@ -232,7 +232,7 @@ namespace Front.Equipments
 
                     return eTypeEquipment.RRO;
                 default:
-                    return eTypeEquipment.NotDefined;
+                    return eTypeEquipment.NotDefine;
             }
         }
 

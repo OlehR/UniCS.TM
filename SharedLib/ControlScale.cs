@@ -102,9 +102,9 @@ namespace ModelMID
         public Action<eStateScale, ReceiptWares, double> OnStateScale { get; set; }
         eStateScale _StateScale;
 
-        public bool IsNoProblemWindows { get { return StateScale == eStateScale.Stabilized || StateScale == eStateScale.NotDefine; } } //|| StateScale == eStateScale.WaitGoods || StateScale == eStateScale.WaitClear; } }
+        public bool IsProblem { get { return StateScale != eStateScale.Stabilized && StateScale != eStateScale.NotDefine; } } //|| StateScale == eStateScale.WaitGoods || StateScale == eStateScale.WaitClear; } }
 
-        public bool IsOk { get { return StateScale == eStateScale.Stabilized; } }
+        //public bool IsOk { get { return StateScale == eStateScale.Stabilized; } }
         /// <summary>
         /// Стан ваги (Не поставили товар, вірна вага, вага не вірна)
         /// </summary>
@@ -265,8 +265,8 @@ namespace ModelMID
             BeforeFullWeight = 0;
 
             TooLightWeight = WaitWeight.Max(r => r.Max) <= Delta;
-            if (RW!=null && RW.Quantity != RW.FixWeightQuantity)
-                StateScale = eStateScale.NotDefine;            
+            if (RW != null && RW.Quantity != RW.FixWeightQuantity)
+                StateScale = eStateScale.WaitGoods; //eStateScale.NotDefine;            
             //FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"(pBeforeWeight={pBeforeWeight},pWeight={pWeight.ToJSON()},pQuantity={pQuantity},{RW.NameWares})", eTypeLog.Full);
         }
 
@@ -276,9 +276,7 @@ namespace ModelMID
         /// <param name="pWeight">Власне вага</param>
         /// <param name="pIsStable">Чи платформа стабільна</param>
         public void OnScalesData(double pWeight, bool pIsStable)
-        {
-            
-
+        { 
             if(BeforeFullWeight!= curFullWeight || curFullWeight != pWeight)
                 OnScalesLog("OnScalesData", $"weight{pWeight} isStable {pIsStable}");
             curFullWeight = pWeight;

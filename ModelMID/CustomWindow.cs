@@ -134,7 +134,9 @@ namespace ModelMID
                     case eStateScale.WaitGoods:
                         Buttons = new ObservableCollection<CustomButton>()
                     { new CustomButton() { Id = 1, Text = "Підтвердити вагу", IsAdmin = true },
-                      new CustomButton() { Id = 3, Text = "Видалити товар", IsAdmin = true } };
+                      new CustomButton() { Id = 3, Text = "Видалити товар", IsAdmin = true },
+                      new CustomButton() { Id = -1, Text = "Закрити", IsAdmin = false }};
+            
                         break;
                     case eStateScale.NotStabilized:
                         Buttons = new ObservableCollection<CustomButton>()

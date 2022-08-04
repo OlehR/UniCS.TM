@@ -13,7 +13,7 @@ namespace Front.Equipments
         /*public Scale(string pSerialPortName, int pBaudRate, Action<string, string> pLogger, Action<double, bool> pOnScalesData) : base(pSerialPortName, pBaudRate)
         { OnScalesData = pOnScalesData; }*/
 
-        public Scale(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefined, ILoggerFactory pLoggerFactory = null, Action<double, bool> pOnScalesData=null) : base(pEquipment, pConfiguration,pModelEquipment, pLoggerFactory)
+        public Scale(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefine, ILoggerFactory pLoggerFactory = null, Action<double, bool> pOnScalesData=null) : base(pEquipment, pConfiguration,pModelEquipment, pLoggerFactory)
         { OnScalesData = pOnScalesData; }
         /// <summary>
         ///  Калібрування Ваги

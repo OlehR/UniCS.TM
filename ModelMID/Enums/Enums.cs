@@ -314,7 +314,7 @@ namespace ModelMID
 
     public enum eTypeAccess
     {
-        NoDefinition = 0,
+        NoDefine = 0,
         DelWares = 1,
         DelReciept = 2,
         ChoicePrice = 3,

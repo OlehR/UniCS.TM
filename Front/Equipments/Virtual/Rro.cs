@@ -30,7 +30,7 @@ namespace Front.Equipments
             ActionStatus?.Invoke(new RroStatus() { Status = pStatus, ModelEquipment = Model, State = pMsgCode??(int)pStatus, TextState = pMsg??pStatus.ToString() });
         }
 
-        public Rro(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefined, ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment, pConfiguration,pModelEquipment, pLoggerFactory) 
+        public Rro(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefine, ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment, pConfiguration,pModelEquipment, pLoggerFactory) 
         {
             ActionStatus =  pActionStatus;
         }

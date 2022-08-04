@@ -16,7 +16,7 @@ namespace Front.Equipments
         public string Name { get; set; }
         public bool IsСritical { get; set; } = true;
         public bool IsReady { get; set; } = false;
-        public eModelEquipment Model { get; set; } = eModelEquipment.NotDefined;
+        public eModelEquipment Model { get; set; } = eModelEquipment.NotDefine;
         public eTypeEquipment Type { get { return Model.GetTypeEquipment(); } }
 
         protected string SerialPort;
@@ -52,7 +52,7 @@ namespace Front.Equipments
             Logger = pLogger;
         }*/
 
-        public Equipment(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefined, ILoggerFactory pLoggerFactory= null)
+        public Equipment(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefine, ILoggerFactory pLoggerFactory= null)
         {
             Configuration = pConfiguration;
             LoggerFactory = pLoggerFactory;

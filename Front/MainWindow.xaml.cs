@@ -57,6 +57,7 @@ namespace Front
         public bool Volume { get; set; }
         public string ChangeSumPaymant { get; set; } = "0";
        
+        public bool IsShowWeightWindows { get; set; } = false;
         public bool IsIgnoreExciseStamp { get; set; }
         public bool IsAddNewWeight { get; set; }
         public bool IsFixWeight { get; set; }
@@ -94,7 +95,10 @@ namespace Front
         public bool IsPresentSecondTerminal { get { return EF.BankTerminal2 != null; } }
 
         bool IsViewProblemeWeight { get { return State == eStateMainWindows.WaitInput || State == eStateMainWindows.StartWindow; } }
-
+        /// <summary>
+        /// Чи треба вибирати ціну.
+        /// </summary>
+        bool IsChoicePrice { get { return CurWares != null && CurWares.IsMultiplePrices && curReceipt != null && curReceipt.GetLastWares?.CodeWares != CurWares.CodeWares; } }
         /// <summary>
         /// теперішня вага
         /// </summary>
@@ -201,7 +205,7 @@ namespace Front
             if (LastR != null && LastR.SumReceipt>0 && LastR.StateReceipt != eStateReceipt.Canceled && LastR.StateReceipt != eStateReceipt.Print && LastR.StateReceipt != eStateReceipt.Send)
             {
                 //curReceipt = LastR;               
-                SetStateView(eStateMainWindows.WaitCustomWindows, eWindows.RestoreLastRecipt, LastR.SumReceipt.ToString());
+                SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine,null, eWindows.RestoreLastRecipt, LastR.SumReceipt.ToString());
                 return;
             }            
           SetStateView(eStateMainWindows.StartWindow);          
@@ -238,54 +242,66 @@ namespace Front
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsLockSale"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsAddNewWares"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WaitAdminText"));
+            
         }
-
-        void SetWaitConfirm(eTypeAccess pTypeAccess, ReceiptWares pRW = null)
+ 
+        public void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine, eTypeAccess pTypeAccess = eTypeAccess.NoDefine, ReceiptWares pRW = null, eWindows pCW=eWindows.NoDefinition,string pStr=null)
         {
-            if (pTypeAccess == eTypeAccess.FixWeight && ( State == eStateMainWindows.WaitInputPrice || State == eStateMainWindows.WaitOwnBag || State == eStateMainWindows.WaitCustomWindows) )
+            /*
+            if(pTypeAccess == eTypeAccess.FixWeight && (State == eStateMainWindows.WaitInputPrice || State == eStateMainWindows.WaitOwnBag || State == eStateMainWindows.WaitCustomWindows))
                 return;
-            if(pTypeAccess == eTypeAccess.AdminPanel && State == eStateMainWindows.BlockWeight)
+            if (pTypeAccess == eTypeAccess.AdminPanel && State == eStateMainWindows.BlockWeight)
             {
                 pTypeAccess = eTypeAccess.FixWeight;
-            }
-            CurWares = pRW;
-            TypeAccessWait = pTypeAccess;           
-            //customWindowButtons = customWindow.Buttons;
-            SetStateView(eStateMainWindows.WaitAdmin);
-        }
+            }*/
 
-        public void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine,eWindows pCW=eWindows.NoDefinition,string pStr=null)
-        {
-            //lock (this._locker)
+            lock (this._locker)
             {
-                
-                var r=Dispatcher.BeginInvoke(new ThreadStart(() =>
+                var r = Dispatcher.BeginInvoke(new ThreadStart(() =>
                 {
-                    if (!(!IsLockSale && EF.StatCriticalEquipment == eStateEquipment.On && Bl.ds.IsReady && CS.IsNoProblemWindows && curReceipt?.IsNeedExciseStamp == false)
-                     // && !(pSMV == eStateMainWindows.WaitAdmin || pSMV == eStateMainWindows.WaitAdminLogin)
-                     )
-                    {
-                        eTypeAccess Res = eTypeAccess.NoDefinition;
-                        if (EF.StatCriticalEquipment != eStateEquipment.On) Res = eTypeAccess.ErrorEquipment;
-                        else
-                           if (!Bl.ds.IsReady) Res = (Bl.ds.Status == eSyncStatus.Error ? eTypeAccess.ErrorFullUpdate : eTypeAccess.StartFullUpdate);
-                        else
-                            if (IsLockSale) Res = eTypeAccess.LockSale;
-                        else
-                            if (curReceipt?.IsNeedExciseStamp == true) Res = eTypeAccess.ExciseStamp;
-                        else
-                            if ((pSMV != eStateMainWindows.BlockWeight || pSMV != eStateMainWindows.WaitOwnBag) && !CS.IsNoProblemWindows && IsViewProblemeWeight) Res = eTypeAccess.FixWeight;
+                if ((EF.StatCriticalEquipment != eStateEquipment.On || !Bl.ds.IsReady || IsLockSale || CS.IsProblem || curReceipt?.IsNeedExciseStamp == true || IsChoicePrice ) &&
+                   pSMV != eStateMainWindows.WaitAdminLogin)
+                {
+                    eTypeAccess Res = eTypeAccess.NoDefine;
+                    if (EF.StatCriticalEquipment != eStateEquipment.On) Res = eTypeAccess.ErrorEquipment;
+                    else
+                       if (!Bl.ds.IsReady) Res = (Bl.ds.Status == eSyncStatus.Error ? eTypeAccess.ErrorFullUpdate : eTypeAccess.StartFullUpdate);
+                    else
+                        if (IsLockSale) Res = eTypeAccess.LockSale;
+                    else
+                        if (curReceipt?.IsNeedExciseStamp == true) Res = eTypeAccess.ExciseStamp;
+                    else
+                        if (IsChoicePrice) pSMV = eStateMainWindows.WaitInputPrice;
+                    else                    
+                        if (CS.IsProblem)
+                        {                          
+                                
+                                if (!IsShowWeightWindows && pSMV != eStateMainWindows.WaitAdmin) //--&&  && pSMV != eStateMainWindows.BlockWeight && pSMV != eStateMainWindows.WaitOwnBag && pSMV != eStateMainWindows.WaitAdmin)
+                                     pSMV = eStateMainWindows.BlockWeight;
+                                else
+                                Res = eTypeAccess.FixWeight;
+                        }                       
 
-                        if (Res != TypeAccessWait && Res != eTypeAccess.NoDefinition)
+                    
+                        if ( Res != eTypeAccess.NoDefine && Res != eTypeAccess.ChoicePrice)// && pSMV != eStateMainWindows.BlockWeight)
                         {
-                            SetWaitConfirm(Res, CurWares);
-                            return;
+                            pSMV = eStateMainWindows.WaitAdmin;
+                            pTypeAccess = Res;
                         }
-                        else
-                        if (!CS.IsNoProblemWindows && pSMV != eStateMainWindows.BlockWeight && pSMV != eStateMainWindows.WaitAdmin)
-                            pSMV = eStateMainWindows.BlockWeight;
+
+                        //else
+                        //if (CS.IsProblem && pSMV != eStateMainWindows.BlockWeight && pSMV != eStateMainWindows.WaitAdmin)
+                        //    pSMV = eStateMainWindows.BlockWeight;
+                        /*if (IsLockSale && State != eStateMainWindows.WaitAdmin && State != eStateMainWindows.WaitAdminLogin)
+                            {
+                                SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.LockSale);
+                                return;
+                            } */
                     }
-                    //Якщо Очікуємо ввід ціни І є проблема з вагою - Перевага введеній ціні.
+
+                    if (pRW != null)
+                        CurWares = pRW;
+                    TypeAccessWait = pTypeAccess;
 
                     if (pSMV != eStateMainWindows.NotDefine)
                     {
@@ -294,6 +310,7 @@ namespace Front
                         EF.SetColor(GetFlagColor(State));
                     }
                     
+
                     //Генеруємо з кастомні вікна
                     if (TypeAccessWait == eTypeAccess.FixWeight)
                         customWindow = new CustomWindow(CS.StateScale);
@@ -301,24 +318,14 @@ namespace Front
                         if (State != eStateMainWindows.NotDefine)
                         customWindow = new CustomWindow(pCW, pStr);
 
-                    if ((State == eStateMainWindows.WaitAdmin || State == eStateMainWindows.WaitAdminLogin) && eTypeAccess.ExciseStamp == TypeAccessWait)
+                    if ((State == eStateMainWindows.WaitAdmin || State == eStateMainWindows.WaitAdminLogin) && TypeAccessWait == eTypeAccess.ExciseStamp)
                         customWindow = new CustomWindow(pCW, pStr);
 
                     WaitAdminWeightButtons.ItemsSource = customWindow.Buttons;
 
-                    if (IsLockSale && State != eStateMainWindows.WaitAdmin && State != eStateMainWindows.WaitAdminLogin)
-                    {
-                        SetWaitConfirm(eTypeAccess.LockSale);
-                        return;
-                    }
+                    
                     if (State != eStateMainWindows.WaitAdmin && State != eStateMainWindows.WaitAdminLogin)
-                        TypeAccessWait = eTypeAccess.NoDefinition;
-
-                    //IsEnabledPaymentButton = true;
-                    //IsEnabledFindButton = true;
-                    //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnabledPaymentButton"));
-                    //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnabledFindButton"));
-                    //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsAgeRestrict"));
+                        TypeAccessWait = eTypeAccess.NoDefine;
 
                     ErrorWindows.Visibility = Visibility.Collapsed;
                     ExciseStamp.Visibility = Visibility.Collapsed;
@@ -488,6 +495,7 @@ namespace Front
                             CustomWindows.Visibility = Visibility.Visible;
                             break;
                         case eStateMainWindows.BlockWeight:
+                            TypeAccessWait= eTypeAccess.FixWeight;
                             //IsEnabledPaymentButton = false;
                             //IsEnabledFindButton = false;
                             ///PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnabledPaymentButton"));
@@ -523,7 +531,7 @@ namespace Front
                 CurWares = el;
                 TypeAccessWait = eTypeAccess.DelWares;
                 if (!SetConfirm(Access.СurUser, true, !el.IsConfirmDel))
-                    SetWaitConfirm(eTypeAccess.DelWares, el);
+                    SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.DelWares, el);
             }
         }
 
@@ -632,7 +640,7 @@ namespace Front
                 SetStateView(eStateMainWindows.StartWindow);
             }
             else
-                SetWaitConfirm(eTypeAccess.DelReciept, null);
+                SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.DelReciept, null);
             /*//!!!TMP
             var rand = new Random();
             string sql = @"select CODE_WARES from (select CODE_WARES,row_number() over (order by code_wares)  as nn from price p where p.code_DEALER=2)
@@ -652,19 +660,19 @@ namespace Front
         {
             if (CurWares.TypeWares == eTypeWares.Alcohol)
             {
-                SetWaitConfirm(eTypeAccess.ExciseStamp, CurWares);
+                SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ExciseStamp, CurWares);
                 return;
             }
 
             if (CurWares.Price == 0) //Повідомлення Про відсутність ціни
             {              
-                SetStateView(eStateMainWindows.WaitCustomWindows, eWindows.NoPrice, CurWares.NameWares);
+                SetStateView(eStateMainWindows.WaitCustomWindows,eTypeAccess.NoDefine,null ,eWindows.NoPrice, CurWares.NameWares);
             }
             if (CurWares.Prices != null && pPrice == 0m) //Меню з вибором ціни. Сигарети.
             {
                 if (CurWares.IsMultiplePrices)
                 {
-                    SetStateView(eStateMainWindows.WaitInputPrice);
+                    SetStateView(eStateMainWindows.WaitInputPrice,eTypeAccess.NoDefine, CurWares);
                 }
                 /* else
                      if (CurWares.Prices.Count() == 1)
@@ -674,7 +682,7 @@ namespace Front
 
         private void _ButtonHelp(object sender, RoutedEventArgs e)
         {
-            SetWaitConfirm(eTypeAccess.AdminPanel);
+            SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.AdminPanel);
         }
 
         private void _OwnBag(object sender, RoutedEventArgs e)
@@ -724,9 +732,12 @@ namespace Front
 
         private void ShowErrorMessage(string ErrorMessage)
         {
-            ErrorBackground.Visibility = Visibility.Visible;
-            ErrorWindows.Visibility = Visibility.Visible;
-            ErrorText.Text = ErrorMessage;
+            Dispatcher.BeginInvoke(new ThreadStart(() =>
+            {
+                ErrorBackground.Visibility = Visibility.Visible;
+                ErrorWindows.Visibility = Visibility.Visible;
+                ErrorText.Text = ErrorMessage;
+            }));
         }
         /// <summary>
         /// Добавляєм товар(сигарери) з списку цін
@@ -988,7 +999,7 @@ namespace Front
                         CS.RW.FixWeightQuantity = CS.RW.Quantity;
                         CS.RW.FixWeight += Convert.ToDecimal(CS.СurrentlyWeight);
                         // Bl.FixWeight(CS.RW);
-                        CS.StateScale = eStateScale.Stabilized;// OnScalesData(CS.curFullWeight,true);
+                        //CS.StateScale = eStateScale.Stabilized;// OnScalesData(CS.curFullWeight,true);
                     }
 
                 }
@@ -1007,7 +1018,7 @@ namespace Front
 
         private void FindClientByPhoneClick(object sender, RoutedEventArgs e)
         {
-            SetStateView(eStateMainWindows.WaitCustomWindows, eWindows.PhoneClient);
+            SetStateView(eStateMainWindows.WaitCustomWindows,eTypeAccess.NoDefine,null ,eWindows.PhoneClient);
         }       
 
         private void CustomWindowVerificationText(object sender, TextChangedEventArgs e)

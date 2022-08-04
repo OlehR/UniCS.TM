@@ -9,7 +9,7 @@ namespace Front.Equipments
 {
     public class SignalFlag:Equipment
     {
-       public SignalFlag(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefined, ILoggerFactory pLoggerFactory = null) : base(pEquipment, pConfiguration,pModelEquipment, pLoggerFactory) { }
+       public SignalFlag(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefine, ILoggerFactory pLoggerFactory = null) : base(pEquipment, pConfiguration,pModelEquipment, pLoggerFactory) { }
        public virtual void SwitchToColor(Color pColor) { throw new NotImplementedException(); }
        public virtual Color GetCurrentColor() { throw new NotImplementedException(); }
     }

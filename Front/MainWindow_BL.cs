@@ -37,7 +37,7 @@ namespace Front
                 EquipmentInfo = info.TextState;
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"SetStatus ({info.ToJSON()})", eTypeLog.Expanded);
                 if (EF.StatCriticalEquipment != eStateEquipment.On)
-                    SetWaitConfirm(eTypeAccess.ErrorEquipment, null);
+                    SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ErrorEquipment, null);
             };
 
             Global.OnReceiptCalculationComplete += (pReceipt) =>
@@ -102,14 +102,14 @@ namespace Front
             {
                 //Почалось повне оновлення.
                 if (SyncInfo.Status == eSyncStatus.StartedFullSync)
-                    SetWaitConfirm(eTypeAccess.StartFullUpdate);
+                    SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.StartFullUpdate);
                 //Помилка оновлення.
                 if (SyncInfo.Status == eSyncStatus.Error)
-                    SetWaitConfirm(eTypeAccess.ErrorFullUpdate);
+                    SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ErrorFullUpdate);
 
                 if (TypeAccessWait == eTypeAccess.StartFullUpdate && SyncInfo.Status == eSyncStatus.SyncFinishedSuccess)
                 {
-                    TypeAccessWait = eTypeAccess.NoDefinition;
+                    TypeAccessWait = eTypeAccess.NoDefine;
                     SetStateView(eStateMainWindows.WaitInput);
                 }
 
@@ -131,28 +131,11 @@ namespace Front
 
             Bl.OnAdminBarCode += (pUser) =>
             {
-                //!!!TMP НЕ зовсім правильно треба провірити права перед розблокуванням кнопок
-                if (pUser.TypeUser >= eTypeUser.AdminSSC && customWindow?.Buttons != null)
-                {
-                    foreach (var item in customWindow.Buttons)
-                    {
-                        item.IsAdmin = false;
-                    }
-                }
-
-                if (TypeAccessWait > 0 && !(TypeAccessWait == eTypeAccess.FixWeight && CS.StateScale == eStateScale.WaitClear))//TypeAccessWait != eTypeAccess.NoDefinition 
+                if (TypeAccessWait > 0 )//TypeAccessWait != eTypeAccess.NoDefinition 
                 {
                     SetConfirm(pUser);
                     return;
-                }
-
-                if (customWindow.Buttons != null)
-                {
-                    foreach (var item in customWindow.Buttons)
-                    {
-                        item.IsAdmin = false;
-                    }
-                }
+                }           
 
                 if (Access.GetRight(pUser, eTypeAccess.AdminPanel))
                 {
@@ -183,12 +166,14 @@ namespace Front
                 {
                     case eStateScale.WaitGoods:
                         // if (State != eStateMainWindows.BlockWeight)
-                            SetStateView(eStateMainWindows.BlockWeight);
+                        IsShowWeightWindows=false;
+                        SetStateView(eStateMainWindows.BlockWeight);
                         break;
                     case eStateScale.BadWeight:
                     case eStateScale.NotStabilized:
                     case eStateScale.WaitClear:
-                        SetWaitConfirm(eTypeAccess.FixWeight, pRW);
+                        IsShowWeightWindows = true;
+                        SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.FixWeight, pRW);
                         break;
                     case eStateScale.Stabilized:
                         if (State == eStateMainWindows.WaitWeight || State == eStateMainWindows.BlockWeight || State == eStateMainWindows.WaitAdmin)
@@ -209,7 +194,7 @@ namespace Front
                 {  
                     case eTypeAccess.DelReciept:
                     case eTypeAccess.DelWares:
-                        TypeAccessWait = eTypeAccess.NoDefinition;
+                        TypeAccessWait = eTypeAccess.NoDefine;
                         SetStateView(eStateMainWindows.WaitInput);
                         break;
                     default:
@@ -219,11 +204,16 @@ namespace Front
                 return true;
             }
 
+            //!!!TMP НЕ зовсім правильно треба провірити права перед розблокуванням кнопок
+            if (pUser.TypeUser >= eTypeUser.AdminSSC && customWindow?.Buttons != null)
+                foreach (var item in customWindow.Buttons)
+                    item.IsAdmin = false;
+
             IsIgnoreExciseStamp = Access.GetRight(pUser, eTypeAccess.ExciseStamp);
             IsAddNewWeight = Access.GetRight(pUser, eTypeAccess.AddNewWeight);
             IsFixWeight = Access.GetRight(pUser, eTypeAccess.FixWeight);
 
-            if (TypeAccessWait == eTypeAccess.NoDefinition || TypeAccessWait < 0)
+            if (TypeAccessWait == eTypeAccess.NoDefine || TypeAccessWait < 0)
                 return false;
             if (!Access.GetRight(pUser, TypeAccessWait) && !pIsAccess)
             {
@@ -240,37 +230,37 @@ namespace Front
                     {
                         Bl.ChangeQuantity(CurWares, 0);
                         CurWares.Quantity = 0;
-                        TypeAccessWait = eTypeAccess.NoDefinition;
+                        TypeAccessWait = eTypeAccess.NoDefine;
                         SetStateView(eStateMainWindows.WaitInput);
                     }
                     break;
                 case eTypeAccess.DelReciept:
                     Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
                     curReceipt= Bl.GetNewIdReceipt();
-                    TypeAccessWait = eTypeAccess.NoDefinition;
+                    TypeAccessWait = eTypeAccess.NoDefine;
                     SetStateView(eStateMainWindows.StartWindow);
                     break;
                 case eTypeAccess.ConfirmAge:
                     Bl.AddEventAge(curReceipt);
-                    TypeAccessWait = eTypeAccess.NoDefinition;
+                    TypeAccessWait = eTypeAccess.NoDefine;
                     PrintAndCloseReceipt();
 
                     break;
                 case eTypeAccess.ChoicePrice:
                     foreach (Models.Price el in Prices.ItemsSource)
                         el.IsEnable = true;
-                    TypeAccessWait = eTypeAccess.NoDefinition;
+                    TypeAccessWait = eTypeAccess.NoDefine;
                     break;
                 case eTypeAccess.AddNewWeight:
                 case eTypeAccess.FixWeight:
-                    SetStateView(eStateMainWindows.WaitAdmin);
+                    //SetStateView(eStateMainWindows.WaitAdmin);
                     break;
                 case eTypeAccess.ExciseStamp:
-                    TypeAccessWait = eTypeAccess.NoDefinition;
+                    TypeAccessWait = eTypeAccess.NoDefine;
                     SetStateView(eStateMainWindows.WaitAdmin);
                     break;
                 case eTypeAccess.AdminPanel:
-                    TypeAccessWait = eTypeAccess.NoDefinition;
+                    TypeAccessWait = eTypeAccess.NoDefine;
                     SetStateView(eStateMainWindows.WaitInput);
                     //Admin ad = new Admin(U, this,EF);
                     Dispatcher.Invoke(new Action(() =>
@@ -384,7 +374,7 @@ namespace Front
             curReceipt = R;
             if (R.AgeRestrict > 0 && R.IsConfirmAgeRestrict == false)
             {
-                SetWaitConfirm(eTypeAccess.ConfirmAge);
+                SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ConfirmAge);
                 return true;
             }
 
@@ -470,12 +460,12 @@ namespace Front
             if (CurWares.AddExciseStamp(pES))
             {                 //Додання акцизноії марки до алкоголю
                 Bl.UpdateExciseStamp(new List<ReceiptWares>() { CurWares });
-                TypeAccessWait = eTypeAccess.NoDefinition;
+                TypeAccessWait = eTypeAccess.NoDefine;
                 SetStateView(eStateMainWindows.WaitInput);
             }
             else
                 ShowErrorMessage($"Дана акцизна марка вже використана");
         }
-
+   
     }
 }

@@ -55,15 +55,16 @@ namespace Front
                 return aa;
             }
         }
-
-        public eStateEquipment SaleIsReady
+                
+        /*public eStateEquipment SaleIsReady
         {
             get
             {
                 var Res = ListEquipment.Where(el => (el.Type == eTypeEquipment.RRO || el.Type == eTypeEquipment.BankTerminal) && el.State != eStateEquipment.On && el.IsСritical);
                 return Res != null && Res.Any() ? eStateEquipment.Error : eStateEquipment.On;
             }
-        }
+        }*/
+        
         public eStateEquipment State
         {
             get { return _State; }
@@ -247,7 +248,7 @@ namespace Front
                 }
 
                 State = eStateEquipment.On;
-                SetStatus?.Invoke(new StatusEquipment(eModelEquipment.NotDefined, eStateEquipment.On));
+                SetStatus?.Invoke(new StatusEquipment(eModelEquipment.NotDefine, eStateEquipment.On));
             }
             catch (Exception e)
             {
