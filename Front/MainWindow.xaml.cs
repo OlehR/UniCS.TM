@@ -267,7 +267,7 @@ namespace Front
                         {
                             if (curReceipt?.IsNeedExciseStamp == true) Res = eTypeAccess.ExciseStamp;
                             else
-                            if (IsChoicePrice) pSMV = eStateMainWindows.WaitInputPrice;
+                            if (IsChoicePrice) { pSMV = eStateMainWindows.WaitInputPrice; pRW = CurWares; }
                             else
                             if (CS.IsProblem)
                             {
@@ -360,11 +360,12 @@ namespace Front
                             break;
                         case eStateMainWindows.WaitInputPrice:
                             TypeAccessWait = eTypeAccess.ChoicePrice;
-                            var rrr = new ObservableCollection<Models.Price>(CurWares.Prices.OrderByDescending(r => r.Price).Select(r => new Models.Price(r.Price, Access.GetRight(TypeAccessWait), r.TypeWares)));
-                            //rrr.First().IsEnable = true;
-
-                            Prices.ItemsSource = rrr;//new ObservableCollection<Price>(rr);
-
+                            if (CurWares!=null && CurWares.Prices != null && CurWares.Prices.Count()>0)
+                            {
+                                var rrr = new ObservableCollection<Models.Price>(CurWares.Prices.OrderByDescending(r => r.Price).Select(r => new Models.Price(r.Price, Access.GetRight(TypeAccessWait), r.TypeWares)));
+                                //rrr.First().IsEnable = true;
+                                Prices.ItemsSource = rrr;//new ObservableCollection<Price>(rr);
+                            }
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;
                             ChoicePrice.Visibility = Visibility.Visible;
