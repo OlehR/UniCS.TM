@@ -22,6 +22,7 @@
     <None Remove="icons\Close.png" />
     <None Remove="icons\ControlScale.png" />
     <None Remove="icons\delete.png" />
+    <None Remove="icons\help.png" />
     <None Remove="icons\hu.png" />
     <None Remove="icons\Inform.png" />
     <None Remove="icons\minus.png" />
@@ -68,6 +69,7 @@
     <Resource Include="icons\clock.png" />
     <Resource Include="icons\Close.png" />
     <Resource Include="icons\ControlScale.png" />
+    <Resource Include="icons\help.png" />
     <Resource Include="icons\Inform.png" />
     <Resource Include="icons\no_volume.png" />
     <Resource Include="icons\Ok.png" />

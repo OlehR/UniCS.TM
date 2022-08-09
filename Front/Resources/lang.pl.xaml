@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:v1="http://schemas.microsoft.com/winfx/2009/xaml"
                     xmlns:v="clr-namespace:System;assembly=System.Runtime">
-    <v:String x:Key="buttonHelp">? Wsparcie</v:String>
+    <v:String x:Key="buttonHelp">Wsparcie</v:String>
     <v:String x:Key="markWaresQuantity">Ilość towaru :</v:String>
     <v:String x:Key="markInAll">We wszystkim :</v:String>
 

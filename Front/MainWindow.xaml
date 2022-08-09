@@ -59,39 +59,47 @@
                 </Grid.ColumnDefinitions>
 
                 <Button Style="{StaticResource yelowButton}" Grid.Column="0" FontSize="30" Click="_ButtonHelp">
-                    <TextBlock FontSize="28" Text="{DynamicResource buttonHelp}"/>
+                    
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontSize="28" Text="{DynamicResource buttonHelp}"/>
+                        <Image Width="25">
+                            <Image.Style>
+                                <Style TargetType="{x:Type Image}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding CS.IsProblem, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                            <Setter Property="Source" Value="icons\Scale.png" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding CS.IsProblem, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                            <Setter Property="Source" Value="icons\help.png" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+                        
+                    </StackPanel>
                 </Button>
 
-                <Grid Grid.Column="1">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*"></ColumnDefinition>
-                        <ColumnDefinition Width="1*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition  Height="1*"></RowDefinition>
-                        <RowDefinition  Height="1*"></RowDefinition>
-                    </Grid.RowDefinitions>
 
-                    <Button x:Name="ua" Click="_ChangeLanguage" Style="{StaticResource yelowButton}">
-                        <Image Margin="5" Source="icons\ua.png"/>
+                    <StackPanel Grid.Column="1" Grid.ColumnSpan="4" Orientation="Horizontal">
+                    <Button x:Name="ua" Click="_ChangeLanguage" Grid.Column="1" Style="{StaticResource yelowButton}" Margin="10,5,10,5" Width="70">
+                        <Image Margin="10" Source="icons\ua.png"/>
                     </Button>
 
-                    <Button x:Name="en" Click="_ChangeLanguage" Grid.Column="1" Style="{StaticResource Default}">
-                        <Image Margin="5" Source="icons\uk.png"/>
+                    <Button x:Name="en" Click="_ChangeLanguage" Grid.Column="2" Style="{StaticResource Default}" Margin="10,5,10,5" Width="70">
+                        <Image Margin="10" Source="icons\uk.png"/>
                     </Button>
 
-                    <Button x:Name="hu" Click="_ChangeLanguage" Grid.Row="1" Style="{StaticResource Default}">
-                        <Image Margin="5" Source="icons\hu.png"/>
+                    <Button x:Name="hu" Click="_ChangeLanguage" Grid.Row="3" Style="{StaticResource Default}" Margin="10,5,10,5" Width="70">
+                        <Image Margin="10" Source="icons\hu.png"/>
                     </Button>
 
-                    <Button x:Name="pl" Click="_ChangeLanguage" Grid.Column="1" Grid.Row="1" Style="{StaticResource Default}">
-                        <Image Margin="5" Source="icons\pln.png"/>
+                    <Button x:Name="pl" Click="_ChangeLanguage" Grid.Column="4" Grid.Row="1" Style="{StaticResource Default}" Margin="10,5,10,5" Width="70">
+                        <Image Margin="10" Source="icons\pln.png"/>
                     </Button>
-
-                </Grid>
-
-                <Grid Grid.Column="2">
-                    <Button Margin="20" Style="{StaticResource Default}" Click="_VolumeButton">
+                    <Button Style="{StaticResource Default}" Click="_VolumeButton" Margin="10,5,10,5" Width="70">
                         <Image x:Name="ButtonImage">
                             <Image.Style>
                                 <Style TargetType="{x:Type Image}">
@@ -109,21 +117,26 @@
                             </Image.Style>
                         </Image>
                     </Button>
+                </StackPanel>
+
+
+                <Grid Grid.Column="4">
+                    
                 </Grid>
 
 
 
-                <Button  Grid.Column="3" Grid.ColumnSpan="2" FontSize="22" 
+                <Button  Grid.Column="4" Grid.ColumnSpan="3" FontSize="22" Width="250" Height="60"
                          Style="{StaticResource Default}"
                          Click="FindClientByPhoneClick"
                          Content="{Binding ClientName, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" 
                            Visibility="Visible"  
-                           VerticalAlignment="Center" HorizontalAlignment="Center"
+                           VerticalAlignment="Center" HorizontalAlignment="Right"
                            Foreground="Black"></Button>
 
-
-                <TextBlock Grid.Column="5" FontSize="22" Text="{DynamicResource markInAll}" 
+                    <!--ВСЬОГО ДО ОПЛАТИ-->
+                <!--<TextBlock Grid.Column="5" FontSize="22" Text="{DynamicResource markInAll}" 
                            Visibility="Visible" Name="textInAll" VerticalAlignment="Center" Foreground="Black" />
                 <StackPanel Grid.Column="6" Orientation="Horizontal"
                            VerticalAlignment="Center"
@@ -140,7 +153,9 @@
                            Foreground="#ff5500" Text="{Binding WaresQuantity, StringFormat={}({0}), RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window} }">
                     </TextBlock>
-                </StackPanel>
+                </StackPanel>-->
+                
+                
                 <!--<TextBlock Grid.Column="6"
                            VerticalAlignment="Center"
                            Name="valueInAll" Visibility="Visible"
@@ -1530,6 +1545,18 @@
                             </Image.Style>
                         </Image>
                         <TextBlock FontSize="28" Text="{DynamicResource payment}"/>
+                        <TextBlock 
+                           FontSize="28"
+                           FontWeight="Bold"
+                           Foreground="Black" Text="{Binding MoneySum, StringFormat=0.00₴, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window} }">
+                        </TextBlock>
+                        <TextBlock Margin="0"
+                           FontSize="28"
+                           FontWeight="Bold"
+                           Foreground="Black" Text="{Binding WaresQuantity, StringFormat={}({0}), RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window} }">
+                        </TextBlock>
                     </StackPanel>
                 </Button.Content>
                 <Button.Style>

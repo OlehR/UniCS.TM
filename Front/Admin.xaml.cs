@@ -72,7 +72,7 @@ namespace Front
 
 
 
-            
+
         }
         public void Init(User AdminUser = null)
         {
@@ -381,6 +381,14 @@ namespace Front
         private void TarControlScaleButton(object sender, RoutedEventArgs e)
         {
             EF.ControlScaleCalibrateZero();
+        }
+
+        private void CloseApplicationButton(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("Завершити роботу програми?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            {
+                Application.Current.Shutdown();
+            }
         }
     }
 

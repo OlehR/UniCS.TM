@@ -413,6 +413,10 @@
                                 HorizontalAlignment="Left" Margin="5" Grid.Row="1" 
                                 Width="160" Height="60" Click="RefreshDataButton" 
                                 Content="Оновити дані"/>
+                        <Button Style="{StaticResource Default}"  
+                                HorizontalAlignment="Left" Margin="5" Grid.Row="1" 
+                                Width="200" Height="60" Click="CloseApplicationButton" 
+                                Content="Вийти з програми"/>
                         <Button Name="PowerOffOn" Style="{StaticResource Default}"  
                                 HorizontalAlignment="Left" Margin="5" Grid.Row="1" 
                                 Width="60" Height="60" Click="PowerOff">
