@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.Configuration;
 using System.Collections.Specialized;
 using NLog.Internal;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 
 namespace ResizePhoto
 {
@@ -14,7 +16,6 @@ namespace ResizePhoto
     {
         static async Task Main(string[] args)
         {
-            ///////////////////////////// ДЛЯ РОБОТИ ПРОГРАМИ ПОТРІБНО ДОДАТИ СИСТЕМНИЙ ШЛЯХ ВІНДОВС ДО IrfanView x64!!!!!!!!!!!!!!!!!!
 
             ObservableCollection<PhotoInfo> InformPhotoHigh = new ObservableCollection<PhotoInfo>();
             ObservableCollection<PhotoInfo> InformPhotoMedium = new ObservableCollection<PhotoInfo>();
@@ -219,10 +220,32 @@ namespace ResizePhoto
             //зміна якості файлу через програмку
             async Task ResizePhotoAsync(string StartPath, string EndPath, string name, double size)
             {
-                ProcessStartInfo psi = new ProcessStartInfo();
-                psi.FileName = "cmd";
-                psi.Arguments = @" /c i_view64.exe " + StartPath + name + @" /resize_short=" + size + " /resample /aspectratio /convert=" + EndPath + name + " /silent";
-                Process.Start(psi);
+                //ProcessStartInfo psi = new ProcessStartInfo();
+                //psi.FileName = "cmd";
+                //psi.Arguments = @" /c i_view64.exe " + StartPath + name + @" /resize_short=" + size + " /resample /aspectratio /convert=" + EndPath + name + " /silent";
+                //Process.Start(psi);
+
+
+                using (Image image = Image.Load(StartPath + name))
+                {
+                    double waresImageWidth = image.Width;
+                    double waresImageHeight = image.Height;
+                    double coef = 0;
+                    if (waresImageHeight > waresImageWidth)
+                        coef = size / waresImageHeight;
+                    else
+                        coef = size / waresImageWidth;
+                    waresImageHeight = waresImageHeight * coef;
+                    waresImageWidth = waresImageWidth * coef;
+                    // Resize the image in place and return it for chaining.
+                    // 'x' signifies the current image processing context.
+                    image.Mutate(x => x.Resize(Convert.ToInt32( waresImageWidth), Convert.ToInt32(waresImageHeight)));
+
+                    // The library automatically picks an encoder based on the file extension then
+                    // encodes and write the data to disk.
+                    // You can optionally set the encoder to choose.
+                    image.Save(EndPath + name);
+                }
                 using (StreamWriter writer = new StreamWriter(pathLog, true))
                 {
                     await writer.WriteLineAsync("Катринку " + name + " відредаговано та скопійовано: " + EndPath + " Розмір найкоротшої сторони: " + size);
