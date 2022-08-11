@@ -22,6 +22,7 @@ using Utils;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Extensions.Configuration;
 using System.Windows.Media;
+using System.Windows.Documents;
 
 namespace Front
 {
@@ -121,18 +122,59 @@ namespace Front
         {
             get
             {
+                TextBlock tb = new TextBlock();
+                tb.TextWrapping = TextWrapping.Wrap;
+                tb.TextAlignment = TextAlignment.Center;
+                tb.FontSize = 24;
+                tb.Margin = new Thickness(10);
                 switch (TypeAccessWait)
                 {
-                    case eTypeAccess.DelWares: return ($"Видалення товару: {CurWares?.NameWares}");
-                    case eTypeAccess.DelReciept: return "Видалити чек";
-                    case eTypeAccess.StartFullUpdate: return "Повне оновлення БД";
-                    case eTypeAccess.ErrorFullUpdate: return "Помилка повного оновлення БД";
-                    case eTypeAccess.ErrorEquipment: return "Проблема з критично важливим обладнанням";
-                    case eTypeAccess.LockSale: return "Зміна заблокована";
-                    case eTypeAccess.FixWeight: return CS.Info;
-                    case eTypeAccess.ConfirmAge: return "Підтвердження віку";
-                    case eTypeAccess.ExciseStamp: return "Ввід акцизної марки";
+                    case eTypeAccess.DelWares:
+                        tb.Inlines.Add("Видалення товару: "); // додає просто текс - налаштування тексту бере ті, що задамо вище
+                        tb.Inlines.Add(new Run(CurWares?.NameWares) { FontWeight = FontWeights.Bold, Foreground = Brushes.Red }); // додає текст але можна змінити будь-які його параметри
+                        break;
+                    case eTypeAccess.DelReciept:
+                        tb.Inlines.Add("Видалити чек ");
+                        break;
+                    case eTypeAccess.StartFullUpdate:
+                        tb.Inlines.Add(new Run("Повне оновлення БД") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red });
+                        break;
+                    case eTypeAccess.ErrorFullUpdate:
+                        tb.Inlines.Add(new Run("Помилка повного оновлення БД") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red });
+                        break;
+                    case eTypeAccess.ErrorEquipment:
+                        tb.Inlines.Add(new Run("Проблема з критично важливим обладнанням") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red });
+                        break;
+                    case eTypeAccess.LockSale:
+                        tb.Inlines.Add("Зміна заблокована");
+                        break;
+                    case eTypeAccess.FixWeight:
+                        tb.Inlines.Add(new Run(CS.Info) { FontWeight = FontWeights.Bold, Foreground = Brushes.Red });
+                        break;
+                    case eTypeAccess.ConfirmAge:
+                        tb.Inlines.Add("Підтвердження віку");
+                        break;
+                    case eTypeAccess.ExciseStamp:
+                        tb.Inlines.Add("Ввід акцизної марки");
+                        break;
                 }
+                StackPanelWaitAdmin.Children.Clear();
+                StackPanelWaitAdmin.Children.Add(tb);
+
+                //WaitAdminTextProblem.Text = new Run(("Повне оновлення БД"),  (FontWeight = FontWeights.Bold, Foreground = Brushes.Red) );
+
+                //switch (TypeAccessWait)
+                //{
+                //    case eTypeAccess.DelWares: return ($"Видалення товару: {CurWares?.NameWares}");
+                //    case eTypeAccess.DelReciept: return "Видалити чек";
+                //    case eTypeAccess.StartFullUpdate: return "Повне оновлення БД";
+                //    case eTypeAccess.ErrorFullUpdate: return "Помилка повного оновлення БД";
+                //    case eTypeAccess.ErrorEquipment: return "Проблема з критично важливим обладнанням";
+                //    case eTypeAccess.LockSale: return "Зміна заблокована";
+                //    case eTypeAccess.FixWeight: return CS.Info;
+                //    case eTypeAccess.ConfirmAge: return "Підтвердження віку";
+                //    case eTypeAccess.ExciseStamp: return "Ввід акцизної марки";
+                //}
                 return null;
             }
         }
@@ -245,7 +287,7 @@ namespace Front
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsAddNewWares"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WaitAdminText"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CS"));
-
+            //ChangeWaitAdminText();
         }
 
         public void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine, eTypeAccess pTypeAccess = eTypeAccess.NoDefine, ReceiptWares pRW = null, eWindows pCW = eWindows.NoDefinition, string pStr = null)
@@ -1045,5 +1087,12 @@ namespace Front
         {
             SetStateView(eStateMainWindows.WaitOwnBag);
         }
+        //private void ChangeWaitAdminText()
+        //{
+
+
+        //    //StackPanelWaitAdmin.Children[4] = tb;
+
+        //}
     }
 }
