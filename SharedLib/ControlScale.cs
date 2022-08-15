@@ -124,7 +124,14 @@ namespace ModelMID
             }
         }
 
-        string AllWeights { get{ return RW == null || RW.AllWeights == null || RW.AllWeights.Count() == 0 ? "0" : string.Join(",", RW?.AllWeights.Select(el => Convert.ToDecimal(el.Weight) * (RW?.Quantity  - RW?.FixWeightQuantity ))); } }
+        bool IsMultyWeight { get { return RW != null && RW.AllWeights != null && RW.AllWeights.Count() >1; } }
+        string AllWeights 
+        { 
+            get{ return (IsMultyWeight ? "(":"") +
+                    RW == null || RW.AllWeights == null || RW.AllWeights.Count() == 0 ? "0" : string.Join(";", RW?.AllWeights.Select(el => (Convert.ToDecimal(el.Weight) * (RW?.Quantity - RW?.FixWeightQuantity)) / 1000m))
+                + (IsMultyWeight ? ")" : "");
+            } 
+        }
         public string Info { get {
                 string res=null;
                 
@@ -134,18 +141,43 @@ namespace ModelMID
                         res = $"Очистіть вагу";
                         break;
                     case eStateScale.WaitGoods:                  
-                        res = $"Очікувана вага = {( RW.AllWeights.Count() == 1 ? RW.AllWeights[0].Weight* Convert.ToDouble( RW?.Quantity-RW.FixWeightQuantity) : "("+AllWeights+")")}";
+                        res = $"Покладіть товар на вагу";
                         break;
                     case eStateScale.NotStabilized:
-                        res = $"{(СurrentlyWeight>0? "Надлишкова":"Недостатня")} вага = {Math.Abs(СurrentlyWeight)}";
+                        res = "Змінилась вага";
                         break;                   
 
                     case eStateScale.BadWeight:
-                        res = $"Очікувана вага = ({ AllWeights}) Фактична ={СurrentlyWeight}";
+                        res = $"Невірна вага";
                         break;
                 }
-                 return $"{_StateScale}{Environment.NewLine}{DelRW?.NameWares?? RW?.NameWares}{ Environment.NewLine}{res}{Environment.NewLine}Загальна вага={curFullWeight}{Environment.NewLine}Fix=> {RW?.FixWeightQuantity}/{RW?.FixWeight}";  
+                return res+ Environment.NewLine;// $"{_StateScale}{Environment.NewLine}{DelRW?.NameWares?? RW?.NameWares}{ Environment.NewLine}{res}{Environment.NewLine}Загальна вага={curFullWeight}{Environment.NewLine}Fix=> {RW?.FixWeightQuantity}/{RW?.FixWeight}";  
             } }
+        public string InfoEx
+        {
+            get
+            {
+                string res = null;
+                switch (StateScale)
+                {
+                    case eStateScale.WaitClear:
+                        res = $"Текуча вага = {curFullWeight/ 1000:N3} кг";
+                        break;
+                    case eStateScale.WaitGoods:
+                        res = $"Очікувана вага = {AllWeights} кг за {Environment.NewLine}{RW?.Quantity - RW?.FixWeightQuantity} шт";
+                        break;
+                    case eStateScale.NotStabilized:
+                        res = $"{(СurrentlyWeight > 0 ? "Надлишкова" : "Недостатня")} вага = {Math.Abs(СurrentlyWeight)/1000:N3} кг";
+                        break;
+
+                    case eStateScale.BadWeight:
+                        res = $"Фактична ={СurrentlyWeight / 1000:N3} кг Очікувана вага = {AllWeights} кг ";
+                        break;
+                }
+                return res;
+                //$"{_StateScale}{Environment.NewLine}{DelRW?.NameWares ?? RW?.NameWares}{Environment.NewLine}{res}{Environment.NewLine}Загальна вага={curFullWeight}{Environment.NewLine}Fix=> {RW?.FixWeightQuantity}/{RW?.FixWeight}";
+            }
+        }
 
         /// <summary>
         ///Допустима похибка ваги на вітер 

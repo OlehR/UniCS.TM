@@ -140,7 +140,7 @@ namespace Front
                         tb.Inlines.Add(new Run("Повне оновлення БД") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red });
                         break;
                     case eTypeAccess.ErrorFullUpdate:
-                        tb.Inlines.Add(new Run("Помилка повного оновлення БД") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red });
+                        tb.Inlines.Add(new Run("Помилка повного оновлення БД") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red, FontSize=20 });
                         break;
                     case eTypeAccess.ErrorEquipment:
                         tb.Inlines.Add(new Run("Проблема з критично важливим обладнанням") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red });
@@ -149,7 +149,8 @@ namespace Front
                         tb.Inlines.Add("Зміна заблокована");
                         break;
                     case eTypeAccess.FixWeight:
-                        tb.Inlines.Add(new Run(CS.Info) { FontWeight = FontWeights.Bold, Foreground = Brushes.Red });
+                        tb.Inlines.Add(new Run(CS.Info) { FontWeight = FontWeights.Bold, Foreground = Brushes.Red, FontSize = 32});
+                        tb.Inlines.Add(new Run(CS.InfoEx) { Foreground = Brushes.Black,FontSize=20 });
                         break;
                     case eTypeAccess.ConfirmAge:
                         tb.Inlines.Add("Підтвердження віку");
