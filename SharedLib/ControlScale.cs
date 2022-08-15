@@ -164,7 +164,7 @@ namespace ModelMID
                         res = $"Текуча вага = {curFullWeight/ 1000:N3} кг";
                         break;
                     case eStateScale.WaitGoods:
-                        res = $"Очікувана вага = {AllWeights} кг за {Environment.NewLine}{RW?.Quantity - RW?.FixWeightQuantity} шт";
+                        res = $"Очікувана вага = {AllWeights} кг за {RW?.Quantity - RW?.FixWeightQuantity} шт";
                         break;
                     case eStateScale.NotStabilized:
                         res = $"{(СurrentlyWeight > 0 ? "Надлишкова" : "Недостатня")} вага = {Math.Abs(СurrentlyWeight)/1000:N3} кг";
