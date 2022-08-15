@@ -749,7 +749,7 @@
                             </Button>
                         </StackPanel>
 
-                        <Button Grid.Row="3" Style="{StaticResource Default}"  FontSize="22" Click="_Cancel" 
+                        <Button Grid.Row="3" Style="{StaticResource Default}"  FontSize="22" Click="Cigarettes_Cancel" 
                         Height="60" Width="300" Margin="10">
                             <TextBlock FontSize="28" Text="{DynamicResource cancel}"/>
                         </Button>

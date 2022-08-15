@@ -1284,9 +1284,9 @@ select     ID_WORKPLACE as IdWorkplace,    CODE_PERIOD as CodePeriod,    CODE_RE
     Fiscal_Number as FiscalNumber,
     Payment_Type as PaymentType,
     Total_Amount  as TotalAmount
-  from RECEIPT_Event  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt and EVENT_TYPE>0;
+  from RECEIPT_Event  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt ;--and EVENT_TYPE>0;
 [SqlDeleteReceiptEvent]
-delete from RECEIPT_Event where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt and EVENT_TYPE>0;
+delete from RECEIPT_Event where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt;-- and EVENT_TYPE>0;
 
 [SqlGetReceiptWaresPromotion]
 select id_workplace IdWorkplace, code_period CodePeriod, code_receipt CodeReceipt,code_wares as CodeWares,Code_unit as CodeUnit,quantity as Quantity,sum as Sum,wrp.Code_Ps as CodePs ,

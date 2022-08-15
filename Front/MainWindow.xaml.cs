@@ -105,7 +105,7 @@ namespace Front
         /// теперішня вага
         /// </summary>
         public double ControlScaleCurrentWeight { get; set; } = 0;
-        public string ClientName { get { return curReceipt != null && curReceipt.CodeClient == Client?.CodeClient ? Client?.NameClient : "Відсутній клієнт"; } }
+        public string ClientName { get { return curReceipt != null && curReceipt.CodeClient == Client?.CodeClient ? Client?.NameClient : "Проскануйте бонусну картку"; } }
         //public string CurWaresName { get { return CurWares != null ? CurWares.NameWares : " "; } }
         public int QuantityCigarettes { get; set; } = 1;
         public string NameFirstTerminal { get { return IsPresentFirstTerminal ? EF?.BankTerminal1.Name : null; } }
@@ -754,6 +754,12 @@ namespace Front
             SetStateView(eStateMainWindows.WaitInput);
         }
 
+        private void Cigarettes_Cancel(object sender, RoutedEventArgs e)
+        {
+            CurWares = null;
+            SetStateView(eStateMainWindows.WaitInput);
+        }
+
         private void _ButtonPaymentBank(object sender, RoutedEventArgs e)
         {
             var btn = sender as Button;
@@ -1016,7 +1022,14 @@ namespace Front
             {
                 if (btn.Name.Equals("OKCustomWindows"))
                     res = new CustomButton() { Id = 1 };
+                if (btn.Name.Equals("CancelCustomWindows"))
+                {
+                    res = new CustomButton() { Id = 1 };
+                    SetStateView(eStateMainWindows.WaitInput);
+                    return;
+                }
             }
+           
             if (res != null)
             {
                 if (customWindow.Id == eWindows.RestoreLastRecipt)

@@ -257,12 +257,11 @@ namespace ModelMID
         public void StartWeightNewGoogs(Receipt pR, ReceiptWares pDelRW = null)
         {
 
-            
             DelRW = pDelRW;
 
-            if (pR==null || pR.Wares == null || pR.Wares.Count() == 0)
+            if (pR==null || pR.Wares == null || pR.Wares.Count() == 0 )
             {
-                WaitClear();
+                WaitClear(pR.OwnBag );
                 return;
             }
 
@@ -419,13 +418,13 @@ namespace ModelMID
             StateScale = NewStateScale;
         }
 
-        public bool WaitClear()
+        public bool WaitClear(double pOwnBag=0d)
         {
             OnScalesLog("WaitClear");
             RW = null;
             WaitWeight = null;
             var LastWeight = СurrentlyWeight + BeforeWeight;
-            BeforeWeight = 0d;
+            BeforeWeight = pOwnBag;
             OnScalesData(LastWeight, false);
             return true;
         }

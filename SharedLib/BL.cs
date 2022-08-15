@@ -693,6 +693,10 @@ namespace SharedLib
         {
             List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(pR) { EventType = eReceiptEventType.OwnBag, EventName = "Власна думка",ProductConfirmedWeight=Convert.ToInt32(pWeight), CreatedAt = DateTime.Now } };
             db.InsertReceiptEvent(rr);
+
+            var r = GetReceiptHead(pR, true);
+            Global.OnReceiptCalculationComplete?.Invoke(r);
+
         }
     }
 }

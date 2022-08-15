@@ -76,8 +76,7 @@ namespace Front
                             */
                         }
                     }
-                    if (curReceipt?.Wares?.Count() == 0)
-                        CS.WaitClear();
+                   // if (curReceipt?.Wares?.Count() == 0 && curReceipt.OwnBag==0d) CS.WaitClear();
 
                     CS.StartWeightNewGoogs(curReceipt, IsDel ? CurWares : null);
                 }
@@ -229,7 +228,7 @@ namespace Front
                     if (curReceipt?.IsLockChange == false)
                     {
                         Bl.ChangeQuantity(CurWares, 0);
-                        CurWares.Quantity = 0;
+                        CurWares = null;//.Quantity = 0;
                         TypeAccessWait = eTypeAccess.NoDefine;
                         SetStateView(eStateMainWindows.WaitInput);
                     }
