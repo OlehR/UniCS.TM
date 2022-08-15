@@ -195,12 +195,12 @@
                     <ColumnDefinition Width="70*"></ColumnDefinition>
                     <ColumnDefinition Width="105*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Foreground="Black" Text="{DynamicResource markWareName}" HorizontalAlignment="Left"/>
-                <TextBlock Grid.Column="4" Foreground="Black" Text="{DynamicResource markWareQuantity}" HorizontalAlignment="Center" FontSize="14"/>
-                <TextBlock Grid.Column="5" Foreground="Black" Text="{DynamicResource markWareWeight}" FontSize="14" Margin="10,0,0,0"/>
-                <TextBlock Grid.Column="6" Foreground="Black" Text="{DynamicResource markWarePrice}" FontSize="14" Margin="10,0,0,0"/>
-                <TextBlock Grid.Column="7" Foreground="Black" Text="{DynamicResource markWareDiscount}" FontSize="14" Margin="10,0,0,0"/>
-                <TextBlock Grid.Column="8" Foreground="Black" Text="{DynamicResource markWareInAll}" FontSize="14" Margin="10,0,0,0"/>
+                <TextBlock Grid.Column="0" Foreground="Black" Text="{DynamicResource markWareName}" HorizontalAlignment="Left" FontWeight="Bold"/>
+                <TextBlock Grid.Column="4" Foreground="Black" Text="{DynamicResource markWareQuantity}" Margin="100,0,0,0" HorizontalAlignment="Center" FontWeight="Bold" />
+                <TextBlock Grid.Column="5" Foreground="Black" Text="{DynamicResource markWareWeight}"  Margin="10,0,0,0" FontWeight="Bold"/>
+                <TextBlock Grid.Column="6" Foreground="Black" Text="{DynamicResource markWarePrice}"  Margin="10,0,0,0" FontWeight="Bold"/>
+                <TextBlock Grid.Column="7" Foreground="Black" Text="{DynamicResource markWareDiscount}"  Margin="10,0,0,0" FontWeight="Bold"/>
+                <TextBlock Grid.Column="8" Foreground="Black" Text="{DynamicResource markWareInAll}"  Margin="10,0,0,0" FontWeight="Bold"/>
             </Grid>
         </Border>
 
