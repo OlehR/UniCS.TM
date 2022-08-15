@@ -362,6 +362,12 @@ namespace Front
                     if (State != eStateMainWindows.WaitAdmin && State != eStateMainWindows.WaitAdminLogin)
                         TypeAccessWait = eTypeAccess.NoDefine;
 
+                    if(TypeAccessWait==eTypeAccess.DelReciept&& (curReceipt?.Wares?.Count()??0)==0)
+                    {
+                        TypeAccessWait = eTypeAccess.NoDefine;
+                        State = eStateMainWindows.StartWindow;
+                    }
+
                     ErrorWindows.Visibility = Visibility.Collapsed;
                     ExciseStamp.Visibility = Visibility.Collapsed;
                     ChoicePrice.Visibility = Visibility.Collapsed;
