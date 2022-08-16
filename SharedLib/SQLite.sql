@@ -8,6 +8,12 @@ alter table WORKPLACE add  Type_POS NUMBER   NOT NULL DEFAULT 0;--Ver=>0
 alter table WORKPLACE add  Code_Warehouse INTEGER  NOT NULL DEFAULT 0;--Ver=>0
 alter table WORKPLACE add  CODE_DEALER INTEGER  NOT NULL DEFAULT 0;--Ver=>0
 
+CREATE TABLE GEN_WORKPLACE (
+    ID_WORKPLACE INTEGER NOT NULL,
+    CODE_PERIOD  INTEGER NOT NULL,
+    CODE_RECEIPT INTEGER NOT NULL);--Ver=>9
+ CREATE UNIQUE INDEX id_GEN_WORKPLACE ON GEN_WORKPLACE(ID_WORKPLACE,CODE_PERIOD); --Ver=>9
+
 [SqlUpdateRC]
 alter TABLE WARES_RECEIPT            add Fix_Weight NUMBER NOT NULL DEFAULT 0;--Ver=>0
 alter TABLE WARES_RECEIPT_PROMOTION  add TYPE_DISCOUNT  INTEGER  NOT NULL  DEFAULT (12);--Ver=>0
@@ -366,8 +372,10 @@ delete from  WARES_RECEIPT_PROMOTION
 [SqlGetNewReceipt]
 INSERT OR ignore into GEN_WORKPLACE (ID_WORKPLACE,CODE_PERIOD,CODE_RECEIPT) values (@IdWorkplace,@CodePeriod,0);
 update GEN_WORKPLACE set CODE_RECEIPT=CODE_RECEIPT+1 where ID_WORKPLACE=@IdWorkplace and CODE_PERIOD=@CodePeriod;
-insert into receipt (id_workplace, code_period, code_receipt) values (@IdWorkplace,@CodePeriod,(select CODE_RECEIPT from GEN_WORKPLACE where ID_WORKPLACE=@IdWorkplace and CODE_PERIOD=@CodePeriod));
 select CODE_RECEIPT from GEN_WORKPLACE where ID_WORKPLACE=@IdWorkplace and CODE_PERIOD=@CodePeriod;
+
+[SqlGetNewReceipt2]
+insert into receipt (id_workplace, code_period, code_receipt) values (@IdWorkplace,@CodePeriod,@CodeReceipt);
 
 [SqlLogin]
 SELECT u.CODE_USER code_user, p.NAME_FOR_PRINT name_user, u.login login, u.PassWord password
@@ -581,13 +589,12 @@ CREATE TABLE WORKPLACE (
 );
 CREATE UNIQUE INDEX id_CONFIG ON CONFIG(NAME_VAR);
 
-CREATE TABLE Weight (
-    BarCode TEXT NOT NULL,
-    CODE_WARES  INTEGER  NOT NULL DEFAULT 0,
-	Weight NUMBER NOT NULL,
-	status integer NOT NULL DEFAULT 0,
-	DATE_CREATE       DATETIME  DEFAULT (datetime('now','localtime'))
-	);
+CREATE TABLE GEN_WORKPLACE (
+    ID_WORKPLACE INTEGER NOT NULL,
+    CODE_PERIOD  INTEGER NOT NULL,
+    CODE_RECEIPT INTEGER NOT NULL
+);
+ CREATE UNIQUE INDEX id_GEN_WORKPLACE ON GEN_WORKPLACE(ID_WORKPLACE,CODE_PERIOD);
 
 
 [SqlCreateReceiptTable]
@@ -736,13 +743,6 @@ CREATE TABLE payment
 );
 CREATE INDEX id_payment ON payment(CODE_RECEIPT);
 
-CREATE TABLE GEN_WORKPLACE (
-    ID_WORKPLACE INTEGER NOT NULL,
-    CODE_PERIOD  INTEGER NOT NULL,
-    CODE_RECEIPT INTEGER NOT NULL
-);
- CREATE UNIQUE INDEX id_GEN_WORKPLACE ON GEN_WORKPLACE(ID_WORKPLACE,CODE_PERIOD);
- 
 CREATE TABLE RECEIPT_Event (
     ID_WORKPLACE   INTEGER  NOT NULL,
     CODE_PERIOD    INTEGER  NOT NULL,
@@ -1210,7 +1210,8 @@ sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_
 
 
 [SqlAdditionalWeightsWares]
-select DISTINCT WEIGHT from WEIGHT where BARCODE=@CodeWares and  STATUS=-1
+select DISTINCT WEIGHT from ADD_WEIGHT where CODE_WARES=@CodeWares;
+--select DISTINCT WEIGHT from WEIGHT where BARCODE=@CodeWares and  STATUS=-1
 
 [SqlInsertAddWeight]
 insert into ADD_WEIGHT ( CODE_WARES, CODE_UNIT, WEIGHT) values (@CodeWares, @CodeUnit,@Weight);

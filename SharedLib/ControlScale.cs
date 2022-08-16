@@ -128,7 +128,7 @@ namespace ModelMID
         string AllWeights 
         { 
             get{ return (IsMultyWeight ? "(":"") +
-                    RW == null || RW.AllWeights == null || RW.AllWeights.Count() == 0 ? "0" : string.Join(";", RW?.AllWeights.Select(el => (Convert.ToDecimal(el.Weight) * (RW?.Quantity - RW?.FixWeightQuantity)) / 1000m))
+                    (RW == null || RW.AllWeights == null || RW.AllWeights.Count() == 0 ? "0" : string.Join(";", RW?.AllWeights.Select(el => (Convert.ToDecimal(el.Weight) * (RW?.Quantity - RW?.FixWeightQuantity)) / 1000m)))
                 + (IsMultyWeight ? ")" : "");
             } 
         }

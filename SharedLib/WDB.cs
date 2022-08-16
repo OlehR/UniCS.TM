@@ -105,7 +105,7 @@ namespace SharedLib
         /// </summary>
         //protected string SqlGenWorkPlace = "";
         protected string SqlGetNewReceipt = "";
-
+        protected string SqlGetNewReceipt2 = "";
         protected string SqlLogin = "";
         protected string SqlGetPrice = "";
 
@@ -373,7 +373,10 @@ namespace SharedLib
                 var r = res.FirstOrDefault();
                 if (parWithDetail)
                 {
-                    r.Wares = ViewReceiptWares(r,true);                    
+                    r.Wares = ViewReceiptWares(r,true);
+                    foreach (var el in r.Wares)
+                        el.AdditionalWeights = db.Execute<object, decimal>(SqlAdditionalWeightsWares, new { CodeWares = el.CodeWares });
+ 
                     r.Payment = GetPayment(parIdReceipt);
                     r.ReceiptEvent = GetReceiptEvent(parIdReceipt);
                 }
@@ -537,6 +540,7 @@ namespace SharedLib
             //SqlAddLog = GetSQL("SqlAddLog");
             //SqlGenWorkPlace=GetSQL("SqlGenWorkPlace");
             SqlGetNewReceipt = GetSQL("SqlGetNewReceipt");
+            SqlGetNewReceipt2 = GetSQL("SqlGetNewReceipt2");
 
             /*SqlInsertGenWorkPlace = GetSQL("SqlInsertGenWorkPlace");
 			SqlSelectGenWorkPlace = GetSQL("SqlSelectGenWorkPlace");

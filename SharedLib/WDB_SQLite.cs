@@ -359,20 +359,25 @@ namespace SharedLib
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="parIdReceipt"></param>
+        /// <param name="pIdReceipt"></param>
         /// <returns></returns>
-        public override IdReceipt GetNewReceipt(IdReceipt parIdReceipt)
+        public override IdReceipt GetNewReceipt(IdReceipt pIdReceipt)
         {
-            using (var DB = new SQLite(ReceiptFile))
+            using (var DB = new SQLite(ConfigFile))
             {
-                lock (GetObjectForLockByIdWorkplace(parIdReceipt.IdWorkplace))
+                lock (GetObjectForLockByIdWorkplace(pIdReceipt.IdWorkplace))
                 {
-                    if (parIdReceipt.CodePeriod == 0)
-                        parIdReceipt.CodePeriod = Global.GetCodePeriod();
-                    parIdReceipt.CodeReceipt = DB.ExecuteScalar<IdReceipt, int>(SqlGetNewReceipt, parIdReceipt);
+                    if (pIdReceipt.CodePeriod == 0)
+                        pIdReceipt.CodePeriod = Global.GetCodePeriod();
+                    pIdReceipt.CodeReceipt = DB.ExecuteScalar<IdReceipt, int>(SqlGetNewReceipt, pIdReceipt);
+
+                    using (var DB_R = new SQLite(ReceiptFile))
+                    {
+                        DB_R.ExecuteNonQuery<IdReceipt>(SqlGetNewReceipt2, pIdReceipt);
+                    }
                 }
+                return pIdReceipt;
             }
-            return parIdReceipt;
         }
 
 
