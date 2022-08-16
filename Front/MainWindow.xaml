@@ -126,14 +126,7 @@
 
 
 
-                <Button  Grid.Column="4" Grid.ColumnSpan="3" FontSize="22" Width="250" Height="60"
-                         Style="{StaticResource Default}"
-                         Click="FindClientByPhoneClick"
-                         Content="{Binding ClientName, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" 
-                           Visibility="Visible"  
-                           VerticalAlignment="Center" HorizontalAlignment="Right"
-                           Foreground="Black"></Button>
+
 
                 <!--ВСЬОГО ДО ОПЛАТИ-->
                 <!--<TextBlock Grid.Column="5" FontSize="22" Text="{DynamicResource markInAll}" 
@@ -854,8 +847,9 @@
                         <ItemsControl Name="WaitAdminWeightButtons" VerticalAlignment="Center">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Button Height="Auto" Width="Auto" Content="{Binding Text}" HorizontalAlignment="Center" 
+                                    <Button Height="75" Width="Auto" Margin="2"  HorizontalAlignment="Center" 
                                                     Click="CustomWindowClickButton">
+                                        <TextBlock Text="{Binding Text}" FontSize=" 24" FontWeight="Bold"/>
                                         <Button.Style>
                                             <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
                                                 <Setter Property="IsEnabled" Value="True"/>
@@ -1493,7 +1487,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0.5*"></ColumnDefinition>
                 <ColumnDefinition Width="3*"></ColumnDefinition>
-                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="3*"></ColumnDefinition>
                 <ColumnDefinition Width="3*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
@@ -1520,6 +1514,14 @@
                         </Style.Triggers>
                     </Style>
                 </Button.Style>
+            </Button>
+            <Button  Grid.Column="2" Grid.Row="0" Grid.RowSpan="2"  
+                         Style="{StaticResource Default}"
+                         Click="FindClientByPhoneClick"
+                           Visibility="Visible"  
+                           Foreground="Black">
+                <TextBlock  FontSize="22" Text="{Binding ClientName, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}"/>
             </Button>
             <!--<Button Style="{StaticResource Default}" Grid.Column="2" FontSize="22" Click="_Cancel" Height="38" Margin="1,1,1,0" VerticalAlignment="Top">
                 <TextBlock FontSize="14" Text="{DynamicResource ownBag}"/>

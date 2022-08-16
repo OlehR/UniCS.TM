@@ -17,6 +17,7 @@ namespace Front
 {
     public partial class KeyPad : Window, INotifyPropertyChanged
     {
+        public int TextBlockFontSize { get; set; } = 40;
         #region Public Properties
 
         private string _result;
@@ -62,7 +63,7 @@ namespace Front
                     if (firs == 0)
                         Result = "";
                     firs++;
-                    Result += button.Content.ToString();
+                    Result += button.CommandParameter.ToString();
                     break;
             }
         }

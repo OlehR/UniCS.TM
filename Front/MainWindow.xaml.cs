@@ -758,6 +758,7 @@ namespace Front
         private void Cigarettes_Cancel(object sender, RoutedEventArgs e)
         {
             CurWares = null;
+            QuantityCigarettes = 1;
             SetStateView(eStateMainWindows.WaitInput);
         }
 
