@@ -1543,7 +1543,7 @@
 
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">
-                        <Image Width="25">
+                        <Image Width="25" Margin="5">
                             <Image.Style>
                                 <Style TargetType="{x:Type Image}">
                                     <Style.Triggers>
@@ -1673,14 +1673,14 @@
                         Margin="5,20,5,20">
                     <StackPanel Orientation="Horizontal">
                         <Image  Height="40" Width="40"  Source="icons\shoppingBag.png"></Image>
-                        <TextBlock FontSize="34" Text="{DynamicResource startShopping}" Margin="5,0,0,5"/>
+                        <TextBlock FontSize="34" Text="{DynamicResource startShopping}" Margin="5,15,5,0"/>
                     </StackPanel>
                 </Button>
                 <Button Grid.Row="3" Grid.Column="0"  Style="{StaticResource greenButton}"  FontSize="48" Click="StartOwnBag" 
                           Margin="5,20,5,20">
                     <StackPanel Orientation="Horizontal">
                         <Image  Height="40" Width="40"  Source="icons\shoppingBag.png"></Image>
-                        <TextBlock FontSize="34" Text="{DynamicResource ownBag}" Margin="5,0,0,5"/>
+                        <TextBlock FontSize="34" Text="{DynamicResource ownBag}" Margin="5,15,5,0"/>
                     </StackPanel>
                 </Button>
                 <Grid Grid.Row="1" Grid.RowSpan="3" Grid.Column="1" Grid.ColumnSpan="2" >

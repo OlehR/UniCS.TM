@@ -440,7 +440,7 @@ namespace Front
                             WaitAdmin.Visibility = Visibility.Visible;
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;
-                            if (customWindow.Buttons != null && customWindow.Buttons.Count > 0)
+                            if (customWindow?.Buttons != null && customWindow.Buttons.Count > 0)
                             {
                                 WaitAdminCancel.Visibility = Visibility.Collapsed;
                             }
