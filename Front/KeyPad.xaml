@@ -27,8 +27,7 @@
         </Grid.ColumnDefinitions>
 
         <Grid Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="0">
-            <TextBlock x:Name="productNameChanges" HorizontalAlignment="Center" TextWrapping="Wrap"  FontWeight="Bold" FontSize="{Binding TextBlockFontSize, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}"></TextBlock>
+            <TextBlock x:Name="productNameChanges" HorizontalAlignment="Center" TextWrapping="Wrap"  FontWeight="Bold" FontSize="30"></TextBlock>
         </Grid>
         <Grid  Grid.Row="2">
 

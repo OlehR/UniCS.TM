@@ -25,6 +25,13 @@
             <Setter Property="Foreground" Value="White" />
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>-->
+        <Style TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Source Sans Pro" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontWeight" Value="DemiBold" />
+            
+        </Style>
     </Window.Resources>
 
 
@@ -239,9 +246,9 @@
                                 </Grid.RowDefinitions>
                                 <!-- Устанавливаем две строки -->
 
-                                <StackPanel Orientation="Vertical">
+                                <StackPanel Orientation="Vertical" Grid.Column="0">
                                     <TextBlock Margin="0" Grid.Row="0" FontSize="12"  Text="{Binding GetStrWaresReceiptPromotion}" Visibility="{Binding IsReceiptPromotion,Converter={StaticResource BoolToHiddenConverter}}"/>
-                                    <TextBlock Margin="0" Grid.Row="1" FontSize="24"  Text="{Binding NameWares}" />
+                                    <TextBlock Margin="0" Grid.Row="1" FontSize="35"  Text="{Binding NameWares}"  FontFamily="Roboto Condensed" FontWeight="DemiBold"/>
                                 </StackPanel>
 
                                 <Grid Grid.Column="1">
@@ -310,7 +317,8 @@
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
                                                     <Setter Property="Margin" Value="10"></Setter>
-                                                    <Setter Property="FontSize" Value="18"></Setter>
+                                                    <Setter Property="FontSize" Value="30"></Setter>
+                                                    <Setter Property="FontWeight" Value="Medium"></Setter>
                                                     <Setter Property="HorizontalAlignment" Value="Center"></Setter>
                                                     <Setter Property="VerticalAlignment" Value="Center"></Setter>
                                                     <Setter Property="Text" Value="{Binding Quantity}"/>
@@ -349,6 +357,8 @@
                                             <Setter Property="FontSize" Value="18"></Setter>
                                             <Setter Property="HorizontalAlignment" Value="Left"></Setter>
                                             <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                            <Setter Property="FontWeight" Value="DemiBold"></Setter>
+                                            <Setter Property="FontSize" Value="25"></Setter>
                                             <Setter Property="Text" Value="{Binding WeightBrutto}"/>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding IsWeight}" Value="True">
@@ -358,9 +368,9 @@
                                         </Style>
                                     </TextBlock.Style>
                                 </TextBlock>
-                                <TextBlock Grid.Column="3" Text="{Binding Price}" />
-                                <TextBlock Grid.Column="4" Text="{Binding SumDiscount}" />
-                                <TextBlock Grid.Column="5" Text="{Binding SumTotal, StringFormat=0.00}" FontWeight="Bold" FontSize="20"/>
+                                <TextBlock Grid.Column="3" Text="{Binding Price, StringFormat=0.00 }" FontSize="25" FontWeight="DemiBold"/>
+                                <TextBlock Grid.Column="4" Text="{Binding SumDiscount, StringFormat=0.00}" FontSize="25" FontWeight="DemiBold"/>
+                                <TextBlock Grid.Column="5" Text="{Binding SumTotal, StringFormat=0.00}" FontWeight="Bold" FontSize="25"/>
 
                             </Grid>
                         </Border>
@@ -903,8 +913,8 @@
                         <Button   FontSize="22" Click="_Cancel" x:Name="WaitAdminCancel"
                         Height="80" Width="300" VerticalAlignment="Center" Visibility="Visible">
                             <StackPanel Orientation="Horizontal">
-                                <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
-                                <TextBlock FontSize="28"  Text="{DynamicResource cancel}" Margin="5,0,0,5"/>
+                                <Image  Height="25" Width="25"  Source="icons\X.png"></Image>
+                                <TextBlock FontSize="30"  Text="{DynamicResource cancel}" Margin="5,0,5,0"/>
                             </StackPanel>
                             <Button.Style>
                                 <Style BasedOn="{StaticResource Default}" TargetType="Button">

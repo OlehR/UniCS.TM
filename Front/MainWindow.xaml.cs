@@ -141,7 +141,7 @@ namespace Front
                         tb.Inlines.Add(new Run("Повне оновлення БД") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red });
                         break;
                     case eTypeAccess.ErrorFullUpdate:
-                        tb.Inlines.Add(new Run("Помилка повного оновлення БД") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red, FontSize=20 });
+                        tb.Inlines.Add(new Run("Помилка повного оновлення БД") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red, FontSize = 20 });
                         break;
                     case eTypeAccess.ErrorEquipment:
                         tb.Inlines.Add(new Run("Проблема з критично важливим обладнанням") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red });
@@ -150,8 +150,8 @@ namespace Front
                         tb.Inlines.Add("Зміна заблокована");
                         break;
                     case eTypeAccess.FixWeight:
-                        tb.Inlines.Add(new Run(CS.Info) { FontWeight = FontWeights.Bold, Foreground = Brushes.Red, FontSize = 32});
-                        tb.Inlines.Add(new Run(CS.InfoEx) { Foreground = Brushes.Black,FontSize=20 });
+                        tb.Inlines.Add(new Run(CS.Info) { FontWeight = FontWeights.Bold, Foreground = Brushes.Red, FontSize = 32 });
+                        tb.Inlines.Add(new Run(CS.InfoEx) { Foreground = Brushes.Black, FontSize = 20 });
                         break;
                     case eTypeAccess.ConfirmAge:
                         tb.Inlines.Add("Підтвердження віку");
@@ -351,8 +351,8 @@ namespace Front
                     if (TypeAccessWait == eTypeAccess.FixWeight)
                         customWindow = new CustomWindow(CS.StateScale);
                     else
-                        if (State != eStateMainWindows.NotDefine && State!= eStateMainWindows.WaitCustomWindows)
-                            customWindow = new CustomWindow(pCW, pStr);
+                        if (State != eStateMainWindows.NotDefine && State != eStateMainWindows.WaitCustomWindows)
+                        customWindow = new CustomWindow(pCW, pStr);
 
                     if ((State == eStateMainWindows.WaitAdmin || State == eStateMainWindows.WaitAdminLogin) && TypeAccessWait == eTypeAccess.ExciseStamp)
                         customWindow = new CustomWindow(pCW, pStr);
@@ -363,7 +363,7 @@ namespace Front
                     if (State != eStateMainWindows.WaitAdmin && State != eStateMainWindows.WaitAdminLogin)
                         TypeAccessWait = eTypeAccess.NoDefine;
 
-                    if(TypeAccessWait==eTypeAccess.DelReciept&& (curReceipt?.Wares?.Count()??0)==0)
+                    if (TypeAccessWait == eTypeAccess.DelReciept && (curReceipt?.Wares?.Count() ?? 0) == 0)
                     {
                         TypeAccessWait = eTypeAccess.NoDefine;
                         State = eStateMainWindows.StartWindow;
@@ -525,7 +525,7 @@ namespace Front
                             }
 
                             ButtonsCustomWindows.Visibility = customWindow?.Buttons == null ? Visibility.Collapsed : Visibility.Visible;
-
+                            if (customWindow == null) return;
                             if (customWindow.Caption == null) CaptionCustomWindows.Visibility = Visibility.Collapsed;
                             if (customWindow.PathPicture == null) ImageCustomWindows.Visibility = Visibility.Collapsed;
                             if (customWindow.AnswerRequired == false) CancelCustomWindows.Visibility = Visibility.Collapsed;
@@ -1033,7 +1033,7 @@ namespace Front
                     return;
                 }
             }
-           
+
             if (res != null)
             {
                 if (customWindow.Id == eWindows.RestoreLastRecipt)
