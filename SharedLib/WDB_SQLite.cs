@@ -349,7 +349,7 @@ namespace SharedLib
 
         public override bool InsertAddWeight(AddWeight parAddWeight)
         {
-            using (var DB = new SQLite(ConfigFile))
+            using (var DB = new SQLite(MidFile))
             {
                 return DB.ExecuteNonQuery<AddWeight>(SqlInsertAddWeight, parAddWeight) > 0;
             }

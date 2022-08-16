@@ -690,10 +690,11 @@ namespace SharedLib
                                     }
                                     break;
                                 case 2: //Добавити вагу
-                                    if (r != null)
+                                    if (r != null && r.FixWeight>0 && r.FixWeightQuantity>0)
                                     {
                                           FixWeight(r);
-                                       // db.InsertAddWeight(new AddWeight() {CodeWares=r.CodeWares, });
+                                       // db.InsertWeight(new  { BarCode = r.CodeWares, Weight = (decimal) r.FixWeight /(r.FixWeightQuantity*1000m), Status = -1 });
+                                        db.InsertAddWeight(new AddWeight { CodeWares = r.CodeWares, CodeUnit = r.CodeUnit, Weight = (decimal)r.FixWeight / (r.FixWeightQuantity * 1000m), IsManual = true });
                                     }
                                     break;
                                 case 3: //видалення поточної позиції

@@ -351,7 +351,7 @@ namespace Front
                     if (TypeAccessWait == eTypeAccess.FixWeight)
                         customWindow = new CustomWindow(CS.StateScale);
                     else
-                        if (State != eStateMainWindows.NotDefine && State!= eStateMainWindows.WaitCustomWindows)
+                        if ( State == eStateMainWindows.WaitCustomWindows)
                             customWindow = new CustomWindow(pCW, pStr);
 
                     if ((State == eStateMainWindows.WaitAdmin || State == eStateMainWindows.WaitAdminLogin) && TypeAccessWait == eTypeAccess.ExciseStamp)

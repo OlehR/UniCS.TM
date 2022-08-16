@@ -9,6 +9,7 @@ namespace ModelMID.DB
         public int CodeWares { get; set; }
         public int CodeUnit { get; set; }
         public decimal Weight { get; set; }
+        public bool IsManual { get; set; }
 
     }
 }
