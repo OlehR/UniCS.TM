@@ -6,6 +6,8 @@ using System;
 
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
+using System.Timers;
 using Utils;
 /*
 Mint.Hardware.ControlScales.BST106M60S
@@ -31,18 +33,31 @@ namespace Front.Equipments
 {
     public class ScaleModern:Scale
     {
+        int CheckTime = 2000;
+        Timer mTimer;
+        DateTime TimeLastWeight;
         Scales bst;
+        Action<double, bool> ParOnScalesData;
+        IConfiguration ParConfiguration;
+        double LastWeight = 0d;
         public ScaleModern(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<double, bool> pOnScalesData=null) : base(pEquipment, pConfiguration, eModelEquipment.ScaleModern, pLoggerFactory, pOnScalesData) 
+        {
+           Init();
+        }
+
+        void Init()
         {
             try
             {
                 State = eStateEquipment.Init;
                 //ILoggerFactory loggerFactory = new LoggerFactory().AddConsole((_, __) => true);
                 ILogger<Scales> logger = LoggerFactory?.CreateLogger<Scales>();
-                bst = new Scales(pConfiguration, logger);
-                bst.OnControlWeightChanged = pOnScalesData;
+                bst = new Scales(Configuration, logger);
+                bst.OnControlWeightChanged = OnScalesData;
+                bst.OnControlWeightChanged = OnCurScalesData;
                 bst.Init();
                 State = eStateEquipment.On;
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"ScaleModern.Init LastWeight={LastWeight}", eTypeLog.Full);
             }
             catch (Exception e)
             {
@@ -80,6 +95,36 @@ namespace Front.Equipments
         {
             bst.CalibrateZero().Wait();
             return true;
+        }
+
+        public void StartSyncData()
+        {
+            if (CheckTime > 0)
+            {
+                mTimer = new Timer(CheckTime);
+                mTimer.AutoReset = true;
+                mTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+                mTimer.Start();
+                //OnTimedEvent(null,null);
+            }
+        }
+
+        void OnCurScalesData(double pWeight,bool pStable)
+        {
+            TimeLastWeight = DateTime.Now;
+            LastWeight = pWeight;
+        }
+
+        private async void OnTimedEvent(Object source, ElapsedEventArgs e)
+        {
+            var CurTime = DateTime.Now;
+            TimeSpan Duration = CurTime - TimeLastWeight;
+            if (Duration.Milliseconds> CheckTime)
+            {
+                bst.Dispose();
+                await Task.Delay(200);
+                Init();
+            }
         }
     }
 }

@@ -81,5 +81,9 @@ namespace Front.Equipments
         {
             return $"pModelEquipment={Model} State={State} Port={SerialPort} BaudRate={BaudRate}{Environment.NewLine}";
         }
+        public override void ForceGoodReadTone()
+        {
+            Magellan9300?.ForceGoodReadTone();
+        }
     }
 }

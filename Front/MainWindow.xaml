@@ -637,9 +637,9 @@
 
                         <StackPanel>
                             <TextBlock Text="Вага сумки:" FontSize="24" HorizontalAlignment="Center"/>
-                            <TextBlock Text="{Binding ControlScaleCurrentWeight, RelativeSource={RelativeSource 
+                            <TextBlock Text="{Binding StrControlScaleCurrentWeightKg, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" FontSize="24" HorizontalAlignment="Center"/>
-                            <TextBlock Text="Вага не має перевищувати 100 гр!" Foreground="Red" FontSize="18" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Вага не має перевищувати 0,100 кг!" Foreground="Red" FontSize="18" HorizontalAlignment="Center"/>
                         </StackPanel>
 
                         <Button Grid.Row="1" 

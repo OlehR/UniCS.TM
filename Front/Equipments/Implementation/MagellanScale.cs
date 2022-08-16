@@ -81,5 +81,7 @@ namespace Front.Equipments
         { 
             return $"State={State} Port={SerialPort} BaudRate={BaudRate}"; 
         }
+
+        
     }
 }

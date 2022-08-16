@@ -93,6 +93,7 @@ namespace Front
         /// Чи можна підтвердити власну сумку
         /// </summary>
         public bool IsOwnBag { get { return ControlScaleCurrentWeight > 0 && ControlScaleCurrentWeight <= Global.MaxWeightBag; } }
+        public string StrControlScaleCurrentWeightKg { get { return (ControlScaleCurrentWeight / 1000).ToString("N3"); } }
         public bool IsPresentFirstTerminal { get { return EF.BankTerminal1 != null; } }
         public bool IsPresentSecondTerminal { get { return EF.BankTerminal2 != null; } }
 
@@ -104,7 +105,7 @@ namespace Front
         /// <summary>
         /// теперішня вага
         /// </summary>
-        public double ControlScaleCurrentWeight { get; set; } = 0;
+        public double ControlScaleCurrentWeight { get; set; } = 0d;
         public string ClientName { get { return curReceipt != null && curReceipt.CodeClient == Client?.CodeClient ? Client?.NameClient : "Проскануйте бонусну картку"; } }
         //public string CurWaresName { get { return CurWares != null ? CurWares.NameWares : " "; } }
         public int QuantityCigarettes { get; set; } = 1;

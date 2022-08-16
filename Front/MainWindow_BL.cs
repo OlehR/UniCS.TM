@@ -27,6 +27,7 @@ namespace Front
             {
                 ControlScaleCurrentWeight = pWeight;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ControlScaleCurrentWeight"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("StrControlScaleCurrentWeightKg"));
                 CS.OnScalesData(pWeight, pIsStable);
             };
 

@@ -275,8 +275,8 @@ namespace ModelMID
                     if (ReceiptWaresPromotions != null)
                         foreach (var el in ReceiptWaresPromotions)
                         {
-                            var name = el.TypeDiscount == eTypeDiscount.Price ? (TypeWares == eTypeWares.Tobacco ? $"Ціна =>{Math.Round(el.Price / 1.05m, 2)}*5%={el.Price}" : $"Ціна => {el.Price}") : (string.IsNullOrEmpty(el.NamePS) ? (string.IsNullOrEmpty(el.BarCode2Category) ? "" : el.BarCode2Category.Substring(3, 2) + "%") : el.NamePS);
-                            Res += $"{name} - {el.Quantity} - {el.Sum}{Environment.NewLine}";
+                            var name = el.TypeDiscount == eTypeDiscount.Price ? (TypeWares == eTypeWares.Tobacco ? $"Ціна =>{Math.Round(el.Price / 1.05m, 2):N2}*5%={el.Price:N2}" : $"Ціна => {el.Price}") : (string.IsNullOrEmpty(el.NamePS) ? (string.IsNullOrEmpty(el.BarCode2Category) ? "" : el.BarCode2Category.Substring(3, 2) + "%") : el.NamePS);
+                            Res += $"{name} - {el.Quantity} - {el.Sum:N2}{Environment.NewLine}";
                         }
                     if (!string.IsNullOrEmpty(Res))
                         Res = Res?.Substring(0, Res.Length - 1);

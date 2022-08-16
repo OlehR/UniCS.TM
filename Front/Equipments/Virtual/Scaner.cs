@@ -11,6 +11,7 @@ namespace Front.Equipments
     {
         protected Action<string, string> OnBarCode;
         public Scaner(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefine, ILoggerFactory pLoggerFactory = null, Action<string, string> pOnBarCode = null) : base(pEquipment, pConfiguration,pModelEquipment, pLoggerFactory) { OnBarCode = pOnBarCode; }
+        public virtual void ForceGoodReadTone() { throw new NotImplementedException(); }
     }
 
 }
