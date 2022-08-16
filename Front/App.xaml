@@ -257,7 +257,7 @@
                                             <Storyboard>
                                                 <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[0].(GradientStop.Color)" 
                                                                           Storyboard.TargetName="Border">
-                                                    <EasingColorKeyFrame KeyTime="0" Value="Black" />
+                                                    <EasingColorKeyFrame KeyTime="0" Value="Red" />
                                                 </ColorAnimationUsingKeyFrames>
                                                 <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)" 
                                                                           Storyboard.TargetName="Border">
@@ -269,7 +269,7 @@
                                                 </ColorAnimationUsingKeyFrames>
                                                 <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[3].(GradientStop.Color)" 
                                                                           Storyboard.TargetName="Border">
-                                                    <EasingColorKeyFrame KeyTime="0" Value="Black" />
+                                                    <EasingColorKeyFrame KeyTime="0" Value="Red" />
                                                 </ColorAnimationUsingKeyFrames>
                                             </Storyboard>
                                         </VisualState>

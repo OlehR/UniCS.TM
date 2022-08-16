@@ -25,7 +25,7 @@
     <v:String x:Key="ChoicePriceTobacco">Виберіть вірну ціну</v:String>
     <v:String x:Key="ChoiceExciseStamp">Проскануйте або введіть акцизну марку</v:String>
     <v:String x:Key="ExciseStampEmpty">Акцизний код відсутній</v:String>
-    <v:String x:Key="WaitAdmin">Будь ласка очікуйте адмінстратора!</v:String>
+    <v:String x:Key="WaitAdmin">Будь ласка очікуйте адміністратора!</v:String>
     <v:String x:Key="WaitPayment">Оплата товару</v:String>
     <v:String x:Key="AmountPayment">До оплати: </v:String>
     <v:String x:Key="PaymentStatus">Статус оплати:</v:String>

@@ -157,7 +157,7 @@ namespace Front
                         tb.Inlines.Add("Підтвердження віку");
                         break;
                     case eTypeAccess.ExciseStamp:
-                        tb.Inlines.Add("Ввід акцизної марки");
+                        tb.Inlines.Add(new Run("Відскануйте акцизну марку!") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red, FontSize = 32 });
                         break;
                 }
                 StackPanelWaitAdmin.Children.Clear();
@@ -351,8 +351,8 @@ namespace Front
                     if (TypeAccessWait == eTypeAccess.FixWeight)
                         customWindow = new CustomWindow(CS.StateScale);
                     else
-                        if ( State == eStateMainWindows.WaitCustomWindows)
-                            customWindow = new CustomWindow(pCW, pStr);
+                        if (State == eStateMainWindows.WaitCustomWindows)
+                        customWindow = new CustomWindow(pCW, pStr);
 
                     if ((State == eStateMainWindows.WaitAdmin || State == eStateMainWindows.WaitAdminLogin) && TypeAccessWait == eTypeAccess.ExciseStamp)
                         customWindow = new CustomWindow(pCW, pStr);
@@ -459,7 +459,7 @@ namespace Front
                                     WaitAdminImage.Visibility = Visibility.Collapsed;
                                     WaitAdminCancel.Visibility = Visibility.Collapsed;
                                     TBExciseStamp.Visibility = Visibility.Visible;
-                                    KBAdmin.Visibility = Visibility.Visible;
+                                    KBAdmin.Visibility = Visibility.Collapsed;
                                     ExciseStampButtons.Visibility = Visibility.Visible;
                                     ExciseStampNameWares.Visibility = Visibility.Visible;
                                     WaitAdminTitle.Visibility = Visibility.Collapsed;
@@ -511,6 +511,7 @@ namespace Front
                             BackgroundWares.Visibility = Visibility.Visible;
                             break;
                         case eStateMainWindows.WaitCustomWindows:
+
                             TextBoxCustomWindows.Text = null;
                             if (customWindow?.Buttons != null)
                             {
@@ -536,6 +537,7 @@ namespace Front
                             }
                             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("customWindow"));
                             CustomWindows.Visibility = Visibility.Visible;
+                            TextBoxCustomWindows.Focus();
                             break;
                         case eStateMainWindows.BlockWeight:
                             TypeAccessWait = eTypeAccess.FixWeight;
@@ -1080,7 +1082,32 @@ namespace Front
 
         private void FindClientByPhoneClick(object sender, RoutedEventArgs e)
         {
-            SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, eWindows.PhoneClient);
+            //SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, eWindows.PhoneClient);
+            Background.Visibility = Visibility.Visible;
+            BackgroundWares.Visibility = Visibility.Visible;
+            KeyPad keyPad = new KeyPad(this);
+            keyPad.ValidationMask = @"^[0-9]{9,12}$";
+            keyPad.productNameChanges.Text = Convert.ToString("Введіть номер телефону");
+            //keyPad.Result = Convert.ToString(0); 0503720278
+            if (keyPad.ShowDialog() == true)
+            {
+                if (keyPad.Result.Length >= 10 )
+                {
+
+                    var r = new CustomWindowAnswer()
+                    {
+                        idReceipt = curReceipt,
+                        Id = eWindows.PhoneClient,
+                        IdButton = 1,
+                        Text = keyPad.Result,
+                        ExtData = CS?.RW
+                    };
+                    Bl.SetCustomWindows(r);
+                    SetStateView(eStateMainWindows.WaitInput);
+                }
+            }
+            Background.Visibility = Visibility.Collapsed;
+            BackgroundWares.Visibility = Visibility.Collapsed;
         }
 
         private void CustomWindowVerificationText(object sender, TextChangedEventArgs e)

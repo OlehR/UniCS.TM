@@ -1,8 +1,10 @@
-﻿using System;
+﻿using ModelMID;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,6 +20,8 @@ namespace Front
     public partial class KeyPad : Window, INotifyPropertyChanged
     {
         public int TextBlockFontSize { get; set; } = 40;
+        public string ValidationMask { get; set; }
+        public bool IsEnableEnter { get; set; } = true;
         #region Public Properties
 
         private string _result;
@@ -43,7 +47,12 @@ namespace Front
         private void button_Click(object sender, RoutedEventArgs e)
         {
             Button button = sender as Button;
-            
+            if (ValidationMask != null)
+            {
+                Regex regex = new Regex(ValidationMask);
+                IsEnableEnter = regex.IsMatch(WrittenNumber.Text);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnableEnter"));
+            }
             switch (button.CommandParameter.ToString())
             {
                 case "ESC":
