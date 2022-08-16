@@ -351,13 +351,13 @@ namespace Front
                     if (TypeAccessWait == eTypeAccess.FixWeight)
                         customWindow = new CustomWindow(CS.StateScale);
                     else
-                        if (State != eStateMainWindows.NotDefine)
-                        customWindow = new CustomWindow(pCW, pStr);
+                        if (State != eStateMainWindows.NotDefine && State!= eStateMainWindows.WaitCustomWindows)
+                            customWindow = new CustomWindow(pCW, pStr);
 
                     if ((State == eStateMainWindows.WaitAdmin || State == eStateMainWindows.WaitAdminLogin) && TypeAccessWait == eTypeAccess.ExciseStamp)
                         customWindow = new CustomWindow(pCW, pStr);
 
-                    WaitAdminWeightButtons.ItemsSource = customWindow.Buttons;
+                    WaitAdminWeightButtons.ItemsSource = customWindow?.Buttons;
 
 
                     if (State != eStateMainWindows.WaitAdmin && State != eStateMainWindows.WaitAdminLogin)
@@ -811,6 +811,7 @@ namespace Front
                     {
                         AddWares(CurWares.CodeWares, CurWares.CodeUnit, QuantityCigarettes, price.price);
                         QuantityCigarettes = 1;
+                        Bl.AddEventAge(curReceipt);
                     }
                 }
             }
@@ -884,6 +885,7 @@ namespace Front
         private void ExciseStampNone(object sender, RoutedEventArgs e)
         {
             AddExciseStamp("None");
+            Bl.AddEventAge(curReceipt);
         }
 
         private void ChangeSumPaymentButton(object sender, RoutedEventArgs e)

@@ -58,13 +58,22 @@ namespace SharedLib
                     pW.Quantity = pW.AmountSalesBan;
                     if (Global.IsOldInterface)
                     {
-                        isZeroPrice = true;
-                        return null;
+                        isZeroPrice = true;                       
                     }
                     else
+                    {                       
                         Global.OnClientWindows?.Invoke(pW.IdWorkplace, eTypeWindows.LimitSales, $"Даний товар {pW.NameWares} {Environment.NewLine} має обмеження в кількості {pW.AmountSalesBan} шт");
 
+                        OnCustomWindow?.Invoke(new CustomWindow(eWindows.LimitSales, $"Даний товар {pW.NameWares} {Environment.NewLine} має обмеження в кількості {pW.AmountSalesBan} шт"));
+                    }
+                    return null;
                 }
+                if(pW.PriceDealer==0)
+                {
+                    OnCustomWindow?.Invoke(new CustomWindow(eWindows.NoPrice,pW.NameWares));
+                    return null;
+                }
+
                 if (Quantity > 0)
                     db.UpdateQuantityWares(pW);
                 else
@@ -680,12 +689,20 @@ namespace SharedLib
                                         FixWeight(r);
                                     }
                                     break;
+                                case 2: //Добавити вагу
+                                    if (r != null)
+                                    {
+                                          FixWeight(r);
+                                       // db.InsertAddWeight(new AddWeight() {CodeWares=r.CodeWares, });
+                                    }
+                                    break;
                                 case 3: //видалення поточної позиції
                                     if (r != null) ChangeQuantity(r, 0);                                   
                                     break;
                             }
                         }
                         break;
+
                 }
             }
         }

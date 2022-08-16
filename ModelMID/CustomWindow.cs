@@ -14,7 +14,8 @@ namespace ModelMID
         ConfirmWeight,
         ExciseStamp,
         NoPrice,
-        RestoreLastRecipt
+        RestoreLastRecipt,
+        LimitSales
     }
 
     public class CustomWindow
@@ -65,24 +66,27 @@ namespace ModelMID
 
         public CustomWindow(eWindows pW, object pObject = null)
         {
+            Id = pW;
             switch (pW)
             {
-                case eWindows.RestoreLastRecipt:
-                    Id = eWindows.RestoreLastRecipt;
+                case eWindows.RestoreLastRecipt:                   
                     Caption = $"Відновлення останнього чека на суму {pObject}";
                     IsCancelButton = false;
                     Buttons = new ObservableCollection<CustomButton>() {
                         new CustomButton() { Id=1,  Text="Відновити"},
                         new CustomButton() { Id=2,  Text="Скасувати"} };
                     break;
-                case eWindows.NoPrice:
-                    Id = eWindows.NoPrice;
+                case eWindows.NoPrice:                    
                     Text = pObject as string;
                     Caption = "Відсутня ціна на товар!";
                     AnswerRequired = true;
                     break;
-                case eWindows.ExciseStamp:
-                    Id = eWindows.ExciseStamp;
+                case eWindows.LimitSales:                    
+                    Text = pObject as string;
+                    Caption = "Обмеження кількості!";
+                    AnswerRequired = true;
+                    break;
+                case eWindows.ExciseStamp:                    
                     Text = "Ввід акцизної марки";
                     Caption = "Назва товару";
                     AnswerRequired = true;
@@ -90,8 +94,7 @@ namespace ModelMID
                     Buttons = new ObservableCollection<CustomButton>() {new CustomButton() { Id = 31, Text = "Ok", IsAdmin = false},
                                                                     new CustomButton() { Id = 32, Text = "Акцизний код відсутній", IsAdmin = true } };
                     break;
-                case eWindows.PhoneClient:
-                    Id = eWindows.PhoneClient;
+                case eWindows.PhoneClient:                   
                     Text = "Введіть ваш номер!";
                     Caption = "Пошук за номером телефону";
                     AnswerRequired = true;
@@ -101,8 +104,7 @@ namespace ModelMID
                     default:
                     Buttons = new ObservableCollection<CustomButton>();
                     break;
-                case eWindows.ChoiceClient:
-                    Id = eWindows.ChoiceClient;
+                case eWindows.ChoiceClient:                    
                     Text = "Зробіть вибір";
                     Caption = "Вибір карточки клієнта";
                     AnswerRequired = true;
