@@ -1534,7 +1534,7 @@
                 <TextBlock  FontSize="22" Text="{Binding ClientName, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}"/>
                     <StackPanel Margin="10,0,0,0">
-                        <TextBlock  FontSize="22" Text="{Binding Client.SumMoneyBonus, RelativeSource={RelativeSource 
+                        <TextBlock  FontSize="22" Text="{Binding Client.Wallet, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}"/>
                         <TextBlock  FontSize="22" Text="{Binding Client.SumBonus, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}"/>
@@ -1568,7 +1568,7 @@
                             </Image.Style>
                         </Image>
                         <TextBlock FontSize="28" Text="{DynamicResource payment}"/>
-                        <TextBlock 
+                        <TextBlock Margin="10,0,0,0" 
                            FontSize="28"
                            FontWeight="Bold"
                            Foreground="Black" Text="{Binding MoneySum, StringFormat=0.00₴, RelativeSource={RelativeSource 

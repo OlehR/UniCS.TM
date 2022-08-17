@@ -289,6 +289,7 @@ namespace Front
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsAddNewWares"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WaitAdminText"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CS"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Client"));
             //ChangeWaitAdminText();
         }
 
@@ -1087,6 +1088,8 @@ namespace Front
         private void FindClientByPhoneClick(object sender, RoutedEventArgs e)
         {
             //SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, eWindows.PhoneClient);
+            if (curReceipt == null)
+                curReceipt = Bl.GetNewIdReceipt();
             Background.Visibility = Visibility.Visible;
             BackgroundWares.Visibility = Visibility.Visible;
             KeyPad keyPad = new KeyPad(this);
