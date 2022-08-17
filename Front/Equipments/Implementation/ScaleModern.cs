@@ -54,7 +54,7 @@ namespace Front.Equipments
                 ILogger<Scales> logger = LoggerFactory?.CreateLogger<Scales>();
                 bst = new Scales(Configuration, logger);
                 bst.OnControlWeightChanged = OnScalesData;
-                bst.OnControlWeightChanged = OnCurScalesData;
+                bst.OnControlWeightChanged += OnCurScalesData;
                 bst.Init();
                 State = eStateEquipment.On;
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"ScaleModern.Init LastWeight={LastWeight}", eTypeLog.Full);
