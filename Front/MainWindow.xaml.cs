@@ -1075,10 +1075,10 @@ namespace Front
                 var r = new CustomWindowAnswer()
                 {
                     idReceipt = curReceipt,
-                    Id = customWindow.Id,
+                    Id = res.CustomWindow?.Id??eWindows.NoDefinition,
                     IdButton = res.Id,
                     Text = TextBoxCustomWindows.Text,
-                    ExtData = customWindow.Id == eWindows.ConfirmWeight ? CS?.RW : null
+                    ExtData = res.CustomWindow?.Id == eWindows.ConfirmWeight ? CS?.RW : null
                 };
                 Bl.SetCustomWindows(r);
                 SetStateView(eStateMainWindows.WaitInput);
