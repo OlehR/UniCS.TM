@@ -41,7 +41,7 @@ namespace Front
 
         public Receipt curReceipt;//{ get; set; } = null;
         public ReceiptWares CurWares { get; set; } = null;
-        Client Client;
+        public Client Client { get; set; }
         public GW CurW { get; set; } = null;
 
         public eStateMainWindows State = eStateMainWindows.StartWindow;
