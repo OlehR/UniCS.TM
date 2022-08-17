@@ -337,9 +337,9 @@ namespace Front
                     if (pRW != null)
                         CurWares = pRW;
                     if (pSMV != eStateMainWindows.WaitAdminLogin)
-                        TypeAccessWait = pTypeAccess;
+                    { TypeAccessWait = pTypeAccess; IsAddNewWeight = false; }
 
-                    if (pSMV != eStateMainWindows.NotDefine)
+                        if (pSMV != eStateMainWindows.NotDefine)
                     {
                         State = pSMV;
                         SetPropertyChanged();
@@ -552,7 +552,7 @@ namespace Front
                             break;
                         case eStateMainWindows.WaitInput:
                             IsIgnoreExciseStamp = false;
-                            IsAddNewWeight = false;
+                            //IsAddNewWeight = false;
                             IsFixWeight = false;
                             break;
                         case eStateMainWindows.WaitOwnBag:
