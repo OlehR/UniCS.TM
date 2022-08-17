@@ -683,7 +683,7 @@
                  Grid.Row="0" Grid.RowSpan="6"
                 Grid.Column="1" Grid.ColumnSpan="4"
                  Name="ChoicePrice" Visibility="Collapsed" Grid.ZIndex="2" 
-                CornerRadius="10" HorizontalAlignment="Center"  Width="500" Height="550">
+                CornerRadius="10" HorizontalAlignment="Center"  MinWidth="500" Height="550">
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
                 </Border.Effect>
@@ -1680,15 +1680,15 @@
                 <Button Grid.Row="2" Grid.Column="0"  Style="{StaticResource greenButton}"  FontSize="48" Click="_Cancel" 
                         Margin="5,20,5,20">
                     <StackPanel Orientation="Horizontal">
-                        <Image  Height="40" Width="40"  Source="icons\shoppingBag.png"></Image>
-                        <TextBlock FontSize="34" Text="{DynamicResource startShopping}" Margin="5,15,5,0"/>
+                        <Image  Height="50" Width="50"  Source="icons\shoppingBag.png"></Image>
+                        <TextBlock FontSize="50" Text="{DynamicResource startShopping}" Margin="5,10,5,0"/>
                     </StackPanel>
                 </Button>
                 <Button Grid.Row="3" Grid.Column="0"  Style="{StaticResource greenButton}"  FontSize="48" Click="StartOwnBag" 
                           Margin="5,20,5,20">
                     <StackPanel Orientation="Horizontal">
-                        <Image  Height="40" Width="40"  Source="icons\shoppingBag.png"></Image>
-                        <TextBlock FontSize="34" Text="{DynamicResource ownBag}" Margin="5,15,5,0"/>
+                        <Image  Height="50" Width="50"  Source="icons\shoppingBag.png"></Image>
+                        <TextBlock FontSize="50" Text="{DynamicResource ownBag}" Margin="5,10,5,0"/>
                     </StackPanel>
                 </Button>
                 <Grid Grid.Row="1" Grid.RowSpan="3" Grid.Column="1" Grid.ColumnSpan="2" >
