@@ -273,7 +273,6 @@ namespace SharedLib
                     if (Global.RecalcPriceOnLine)
                         db.RecalcPriceAsync(W);
                     return res;
-
                 }
                 else
                     return W;
@@ -315,6 +314,7 @@ namespace SharedLib
                         else
                             Global.OnClientWindows?.Invoke(w.IdWorkplace, eTypeWindows.LimitSales, $"Даний товар {w.NameWares} {Environment.NewLine} має обмеження в кількості {w.AmountSalesBan} шт");
                     }
+                    
                     res = db.UpdateQuantityWares(w);
                     _ = VR.SendMessageAsync(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum, VR.eTypeVRMessage.UpdateWares);
                 }

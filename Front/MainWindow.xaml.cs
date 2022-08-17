@@ -251,7 +251,7 @@ namespace Front
             if (LastR != null && LastR.SumReceipt > 0 && LastR.StateReceipt != eStateReceipt.Canceled && LastR.StateReceipt != eStateReceipt.Print && LastR.StateReceipt != eStateReceipt.Send)
             {
                 //curReceipt = LastR;               
-                SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, eWindows.RestoreLastRecipt, LastR.SumReceipt.ToString());
+                SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, new CustomWindow(eWindows.RestoreLastRecipt, LastR.SumReceipt.ToString()));
                 return;
             }
             SetStateView(eStateMainWindows.StartWindow);
@@ -292,7 +292,7 @@ namespace Front
             //ChangeWaitAdminText();
         }
 
-        public void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine, eTypeAccess pTypeAccess = eTypeAccess.NoDefine, ReceiptWares pRW = null, eWindows pCW = eWindows.NoDefinition, string pStr = null)
+        public void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine, eTypeAccess pTypeAccess = eTypeAccess.NoDefine, ReceiptWares pRW = null, CustomWindow pCW=null)
         {
             if (State == eStateMainWindows.WaitOwnBag && pTypeAccess == eTypeAccess.FixWeight)
                 return;
@@ -351,13 +351,17 @@ namespace Front
                     if (TypeAccessWait == eTypeAccess.FixWeight)
                         customWindow = new CustomWindow(CS.StateScale);
                     else
-                        if (State == eStateMainWindows.WaitCustomWindows)
-                        customWindow = new CustomWindow(pCW, pStr);
+                        customWindow = (State == eStateMainWindows.WaitCustomWindows ? pCW : null);
 
-                    if ((State == eStateMainWindows.WaitAdmin || State == eStateMainWindows.WaitAdminLogin) && TypeAccessWait == eTypeAccess.ExciseStamp)
-                        customWindow = new CustomWindow(pCW, pStr);
 
-                    WaitAdminWeightButtons.ItemsSource = customWindow?.Buttons;
+                    //if ((State == eStateMainWindows.WaitAdmin || State == eStateMainWindows.WaitAdminLogin) && TypeAccessWait == eTypeAccess.ExciseStamp)
+                    //    customWindow = new CustomWindow(pCW, pStr);
+  
+                    WaitAdminWeightButtons.ItemsSource = null;
+                    if (customWindow?.Buttons != null)
+                     WaitAdminWeightButtons.ItemsSource = new ObservableCollection<CustomButton> (customWindow?.Buttons);
+                    else
+                        WaitAdminWeightButtons.ItemsSource = null;
 
 
                     if (State != eStateMainWindows.WaitAdmin && State != eStateMainWindows.WaitAdminLogin)
@@ -715,7 +719,7 @@ namespace Front
 
             if (CurWares.Price == 0) //Повідомлення Про відсутність ціни
             {
-                SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, eWindows.NoPrice, CurWares.NameWares);
+                SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, new CustomWindow( eWindows.NoPrice, CurWares.NameWares));
             }
             if (CurWares.Prices != null && pPrice == 0m) //Меню з вибором ціни. Сигарети.
             {
