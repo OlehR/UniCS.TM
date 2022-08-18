@@ -36,6 +36,15 @@ namespace Test
                                                    //var sort = new SortImg();
                                                    // sort.SortPhoto(); // cортування фото
 
+            System.Media.SoundPlayer player = new System.Media.SoundPlayer();
+             player.SoundLocation = @"D:\MID\Sound\uk\WaitForAdministrator.wav";
+                player.Load();
+                player.Play();
+            Thread.Sleep(2000);
+                player.Stop();
+
+            Thread.Sleep(1000000);
+            return;
             //var l = new GetGoodUrl();
             // var img = new ImageListex(); 
             //await img.LoadImgListex(); // завантаження фото

@@ -37,11 +37,16 @@ namespace Front
         public KeyPad(Window owner)
         {
             InitializeComponent();
-            var primaryMonitorArea = SystemParameters.WorkArea;
-            Left = primaryMonitorArea.Right - Width - 10;
-            Top = primaryMonitorArea.Bottom - Height - 100;
-            this.Owner = owner;
-            this.DataContext = this;
+            //вікно по центру
+            Window wnd = new Window(); //- название твоего окна в WPF
+            wnd.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
+
+            //вікно справа знизу
+            //var primaryMonitorArea = SystemParameters.WorkArea;
+            //Left = primaryMonitorArea.Right - Width - 10;
+            //Top = primaryMonitorArea.Bottom - Height - 100;
+            //this.Owner = owner;
+            //this.DataContext = this;
         }
 
         private void button_Click(object sender, RoutedEventArgs e)

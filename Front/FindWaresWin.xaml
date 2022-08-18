@@ -134,7 +134,7 @@
                         Height="60"  VerticalAlignment="Center">
                     <StackPanel Orientation="Horizontal">
                         <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
-                        <TextBlock FontSize="28" Text="{DynamicResource cancel}" Margin="5,0,0,5"/>
+                        <TextBlock FontSize="28" FontWeight="DemiBold" Text="{DynamicResource cancel}"  Margin="5,0,0,5"/>
                     </StackPanel>
                 </Button>
                 
@@ -201,16 +201,16 @@
             </Button>
 
         </Grid>
-        <TextBlock Grid.Row="2" Grid.Column="0" FontSize="25" Text="Назва" />
+        <TextBlock Grid.Row="2" Grid.Column="0" FontSize="34" Text="Назва" />
 
-        <TextBox Grid.Row="2"  Grid.ColumnSpan="2" TabIndex="1" Name="WaresName" FontSize="25" 
-                 TextChanged="WaresName_Changed"  VerticalAlignment="Center" Margin="100,0,50,0" />
+        <TextBox Grid.Row="2"  Grid.ColumnSpan="2" TabIndex="1" Name="WaresName" FontSize="34"  Height="50"
+                 TextChanged="WaresName_Changed"  VerticalAlignment="Center" Margin="120,0,50,0" />
 
         <keyboard:OnScreenKeyboard Grid.Row="3"
 		                           Grid.Column="0"
 		                           Grid.ColumnSpan="4"
-		                           Height="300"
-                                   x:Name="KB"                                  
+                                   x:Name="KB"       
+                                   Height="400"
 		                           VerticalAlignment="Bottom" 
 								   ToggleButtonStyle="{StaticResource DefaultTouchToggleButtonStyle}"
 		                           ActiveContainer="{Binding ElementName=MainGrid}"

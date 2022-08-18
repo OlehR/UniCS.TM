@@ -236,7 +236,7 @@ namespace Front
                     break;
                 case eTypeAccess.DelReciept:
                     Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
-                    curReceipt= Bl.GetNewIdReceipt();
+                    NewReceipt();
                     TypeAccessWait = eTypeAccess.NoDefine;
                     SetStateView(eStateMainWindows.StartWindow);
                     break;
@@ -296,7 +296,7 @@ namespace Front
                     if (curReceipt == null || !curReceipt.IsLockChange)
                     {
                         if (curReceipt == null)
-                            curReceipt = Bl.GetNewIdReceipt();
+                            NewReceipt();
                         w = Bl.AddWaresBarCode(curReceipt, pBarCode, 1);
                         if (w != null)
                         {
@@ -359,7 +359,7 @@ namespace Front
             if (pCodeWares > 0)
             {
                 if (curReceipt == null)
-                    curReceipt= Bl.GetNewIdReceipt();
+                    NewReceipt();
                 CurWares = Bl.AddWaresCode(curReceipt, pCodeWares, pCodeUnit, pQuantity, pPrice);
 
                 if (CurWares != null)
@@ -425,7 +425,8 @@ namespace Front
                     {
                         R.StateReceipt = eStateReceipt.Print;
                         Bl.UpdateReceiptFiscalNumber(R, res.FiscalNumber, res.SUM);
-                        curReceipt = Bl.GetNewIdReceipt();
+                        s.Play(eTypeSound.DoNotForgetProducts);
+                        NewReceipt();
                         //Global.OnReceiptCalculationComplete?.Invoke(new List<ReceiptWares>(), Global.IdWorkPlace);
 
                         return true;
@@ -446,19 +447,7 @@ namespace Front
             }
             return false;
         }
- 
-        private IEnumerable<ReceiptWares> StartData()
-        {
-            curReceipt = Bl.GetNewIdReceipt();
-            //Bl.AddWaresBarCode(RId, "27833", 258m);
-            //Bl.AddWaresBarCode(RId, "7622201819590", 1);
-            Bl.GetClientByPhone(curReceipt, "0503399110");
-            //Bl.AddWaresBarCode(RId, "2201652300229", 2);
-            //Bl.AddWaresBarCode(RId, "7775002160043", 1); //товар 2 кат
-            //Bl.AddWaresBarCode(RId,"1110011760218", 11);
-            //Bl.AddWaresBarCode(RId,"7773002160043", 1); //товар 2 кат
-            return Bl.GetWaresReceipt(curReceipt);
-        }
+         
 
         void AddExciseStamp(string pES)
         {
@@ -470,6 +459,12 @@ namespace Front
             }
             else
                 ShowErrorMessage($"Дана акцизна марка вже використана");
+        }
+
+        void NewReceipt()
+        {
+            curReceipt = Bl.GetNewIdReceipt();
+            s.NewReceipt(curReceipt.CodeReceipt);
         }
    
     }

@@ -52,13 +52,14 @@ namespace ModelMID
 
         public (double, bool) AddValue(double pWeight, bool pIsStable)
         {
-            if (pIsStable)
+           /* if (pIsStable)
             {
                 Init();
-            }
+            }*/
 
             i++;
-            if (i >= Weights.Length) i = 0;
+            if (i >= Weights.Length) 
+                i = 0;
             Weights[i].Set(pWeight);
             
             double Weight;
@@ -72,7 +73,7 @@ namespace ModelMID
             get
             {
                 //bool isStable = true;
-                DateTime UseTime = DateTime.Now.AddMilliseconds(-600);
+                DateTime UseTime = DateTime.Now.AddMilliseconds(-700);
                 double n = 0;
                 double Sum = 0d, Max = Weights[i].Weight, Min = Weights[i].Weight;
                 for (int ind = 0; ind < Weights.Length; ind++)
@@ -88,8 +89,12 @@ namespace ModelMID
                     }
                 }
                 if (n == 0d && (Max - Min > Delta)) //Якщо похибка велика То берем останню вагу.
-                    return (Weights[i].Weight, (Max - Min > Delta));
-                return (Sum / n, true);
+                    return (Weights[i].Weight, (Max - Min < Delta));
+                /*if (n > 2)
+                {
+                    double dddd = n;
+                }*/
+                return (Sum / n, (Max - Min > Delta));
             }
         }
         public double GetMidl {get{ double Weight;  bool IsStable; (Weight, IsStable) = Midl; return Weight; } }
@@ -153,6 +158,7 @@ namespace ModelMID
                 }
                 return res+ Environment.NewLine;// $"{_StateScale}{Environment.NewLine}{DelRW?.NameWares?? RW?.NameWares}{ Environment.NewLine}{res}{Environment.NewLine}Загальна вага={curFullWeight}{Environment.NewLine}Fix=> {RW?.FixWeightQuantity}/{RW?.FixWeight}";  
             } }
+       
         public string InfoEx
         {
             get
@@ -314,7 +320,7 @@ namespace ModelMID
 
             eStateScale NewStateScale = StateScale;
 
-           // (pWeight, pIsStable) = MidlWeight.AddValue(pWeight, pIsStable);
+            (pWeight, pIsStable) = MidlWeight.AddValue(pWeight, pIsStable);
 
             СurrentlyWeight = pWeight-BeforeWeight;
             if ((BeforeWeight == 0d && WaitWeight == null) || RW == null ) // Якщо товару на вазі не повинно бути (Завершений/анулюваний/Новий чек )
