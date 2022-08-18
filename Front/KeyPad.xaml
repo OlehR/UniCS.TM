@@ -148,7 +148,9 @@
         </Grid>
         <Grid Grid.Row="1" Grid.ColumnSpan="3" Margin="5">
             <Border  Background="LightGray"  CornerRadius="10" BorderBrush="Gray" BorderThickness="2" />
-            <TextBlock HorizontalAlignment="Center" Name="WrittenNumber" Text="{Binding Result}" FontSize="{Binding TextBlockFontSize, RelativeSource={RelativeSource 
+            <TextBlock HorizontalAlignment="Center" Name="WrittenNumber" Text="{Binding Result , RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" 
+                       FontSize="{Binding TextBlockFontSize, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" />
         </Grid>
         <Grid Grid.Column="3" Grid.Row="1" >

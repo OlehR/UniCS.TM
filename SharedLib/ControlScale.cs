@@ -320,7 +320,7 @@ namespace ModelMID
 
             eStateScale NewStateScale = StateScale;
 
-            (pWeight, pIsStable) = MidlWeight.AddValue(pWeight, pIsStable);
+            //(pWeight, pIsStable) = MidlWeight.AddValue(pWeight, pIsStable);
 
             СurrentlyWeight = pWeight-BeforeWeight;
             if ((BeforeWeight == 0d && WaitWeight == null) || RW == null ) // Якщо товару на вазі не повинно бути (Завершений/анулюваний/Новий чек )
