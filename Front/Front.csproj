@@ -46,6 +46,7 @@
     <None Remove="icons\uk.png" />
     <None Remove="icons\Up.png" />
     <None Remove="icons\volume.png" />
+    <None Remove="icons\VopakLogo.png" />
     <None Remove="icons\warning.png" />
     <None Remove="icons\X.png" />
   </ItemGroup>
@@ -142,6 +143,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="icons\volume.png" />
+    <Resource Include="icons\VopakLogo.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="icons\warning.png" />
     <Resource Include="icons\X.png" />
   </ItemGroup>
