@@ -1083,8 +1083,7 @@ namespace Front
                         Text = keyPad.Result,
                         ExtData = CS?.RW
                     };
-                    Bl.SetCustomWindows(r);
-                    SetStateView(eStateMainWindows.WaitInput);
+                    Bl.SetCustomWindows(r);                   
                 }
             }
             Background.Visibility = Visibility.Collapsed;

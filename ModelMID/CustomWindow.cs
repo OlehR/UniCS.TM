@@ -109,7 +109,7 @@ namespace ModelMID
                     Caption = "Вибір карточки клієнта";
                     AnswerRequired = true;
                     IEnumerable<Client> d = pObject as IEnumerable<Client>;
-                    Buttons = (System.Collections.ObjectModel.ObservableCollection<CustomButton>) d.Select(el => new CustomButton() { Id = el.CodeClient, Text = el.NameClient });
+                    Buttons = new ObservableCollection<CustomButton>( d.Select(el => new CustomButton() { CustomWindow = this, Id = el.CodeClient, Text = el.NameClient }));
                     break;
             }
 

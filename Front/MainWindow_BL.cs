@@ -155,7 +155,10 @@ namespace Front
 
             };
 
-            Bl.OnCustomWindow += (pCW) => { customWindow = pCW; SetStateView(eStateMainWindows.WaitCustomWindows); };
+            Bl.OnCustomWindow += (pCW) => 
+            { 
+                SetStateView(eStateMainWindows.WaitCustomWindows,eTypeAccess.NoDefine,null, pCW); 
+            };
 
             //Обробка стану контрольної ваги.
             CS.OnStateScale += (pStateScale, pRW, pСurrentlyWeight) =>
