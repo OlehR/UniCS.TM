@@ -425,6 +425,7 @@ namespace Front
                     {
                         R.StateReceipt = eStateReceipt.Print;
                         Bl.UpdateReceiptFiscalNumber(R, res.FiscalNumber, res.SUM);
+                        s.Play(eTypeSound.DoNotForgetProducts);
                         NewReceipt();
                         //Global.OnReceiptCalculationComplete?.Invoke(new List<ReceiptWares>(), Global.IdWorkPlace);
 

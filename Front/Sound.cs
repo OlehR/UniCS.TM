@@ -87,7 +87,7 @@ namespace Front
         {            
             var FileName = Path.Combine(Global.PathCur,"Sound",App.Language.Name,pS.ToString()+ ".wav");
             if(!File.Exists(FileName))
-                FileName = Path.Combine(Global.PathCur, "Sound", "ua", pS.ToString()+ ".wav");// $@"D:\MID\Sound\en\{pS}.wav";
+                FileName = Path.Combine(Global.PathCur, "Sound", "uk", pS.ToString()+ ".wav");// $@"D:\MID\Sound\en\{pS}.wav";
             if(File.Exists(FileName) && Player != null && LastTypeSound != pS)
             {
                 LastTypeSound = pS;
@@ -111,6 +111,21 @@ namespace Front
                 State = pState;
                 StateScale = pStateScale;
                 ExPar = pExPar;
+            }
+            if(pState==eStateMainWindows.WaitInput)
+                Play(eTypeSound.ScanAndPutProductOnPlatform);
+            if (pState == eStateMainWindows.ProcessPay)
+                Play(eTypeSound.InsertCardIntoBankTerminal_new);
+
+            if (pState==eStateMainWindows.WaitAdmin)
+            {
+                if(pTypeAccess==eTypeAccess.FixWeight)
+                    Play(eTypeSound.IncorectWeight);
+                else
+                    if(pTypeAccess == eTypeAccess.ConfirmAge)
+                    Play(eTypeSound.WarningRestriction);
+                else
+                Play(eTypeSound.WaitForAdministrator);
             }
 
                    
