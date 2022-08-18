@@ -43,6 +43,7 @@ namespace Front.Equipments
         public ScaleModern(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<double, bool> pOnScalesData=null) : base(pEquipment, pConfiguration, eModelEquipment.ScaleModern, pLoggerFactory, pOnScalesData) 
         {
            Init();
+            StartSyncData();
         }
 
         void Init()
@@ -68,6 +69,10 @@ namespace Front.Equipments
 
         public override StatusEquipment TestDevice() 
         {
+
+            bst.Dispose();
+            Task.Delay(200);
+            Init();
             var r=bst.TestDevice().Result;
             State = r==ModernExpo.SelfCheckout.Entities.Enums.Device.DeviceConnectionStatus.Enabled ? eStateEquipment.On : eStateEquipment.Error;
             return new StatusEquipment(Model, State,"");
