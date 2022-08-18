@@ -33,7 +33,7 @@ namespace Front.Equipments
 {
     public class ScaleModern:Scale
     {
-        double CheckTime = 2000d;
+        double CheckTime = 3000d;
         Timer mTimer;
         DateTime TimeLastWeight;
         Scales bst;
@@ -58,6 +58,7 @@ namespace Front.Equipments
                 bst.OnControlWeightChanged += OnCurScalesData;
                 bst.Init();
                 State = eStateEquipment.On;
+                TimeLastWeight=DateTime.Now;
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"ScaleModern.Init LastWeight={LastWeight}", eTypeLog.Full);
             }
             catch (Exception e)
@@ -69,8 +70,8 @@ namespace Front.Equipments
 
         public override StatusEquipment TestDevice() 
         {
-
-            bst.Dispose();
+           
+            //bst.Dispose();
             Task.Delay(200);
             Init();
             var r=bst.TestDevice().Result;
@@ -124,9 +125,14 @@ namespace Front.Equipments
         {
             var CurTime = DateTime.Now;
             TimeSpan Duration = CurTime - TimeLastWeight;
-            if (Duration.TotalMilliseconds> CheckTime)
+            if (Duration.TotalMilliseconds> 2*CheckTime)
             {
-                bst.Dispose();
+                bst = null;
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                //System.Threading.Thread.Sleep(200);
+
+                //bst.Dispose();
                 await Task.Delay(200);
                 Init();
             }
