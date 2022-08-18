@@ -5,12 +5,15 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 using Utils;
 
 namespace Front.Equipments
 {
     public class MagellanScaner : Scaner
     {
+
+        Regex Reg = new Regex(@"^[0-9]{8,13}[S]{1}[0-9]{7}$");
         public Magellan9300S Magellan9300;
 /*        public MagellanScaner(string pSerialPortName, int pBaudRate, Action<string, string> pLogger, Action<string, string> pOnBarCode) : base(pSerialPortName, pBaudRate, pLogger, pOnBarCode)
         {
@@ -43,7 +46,12 @@ namespace Front.Equipments
                     if (pOnBarCode != null)
                         Magellan9300.OnBarcodeScannerChange += (BarCode) =>
                         {
+                            // Інколи з штрихкодом приходитьвага. Відрізаємо вагу
+                            if  (Reg.IsMatch(BarCode))                           
+                                 BarCode = BarCode.Substring(0, BarCode.IndexOf('S'));// BarCode.IndexOf('S'));                                
+                            
                             pOnBarCode(BarCode, null);
+                            ForceGoodReadTone();
                         };
                     State = eStateEquipment.On;
                 }

@@ -36,6 +36,7 @@ namespace Front
         EquipmentFront EF;
         public ControlScale CS { get; set; }
 
+        Sound s = Sound.GetSound();
 
         Admin ad;
 
@@ -225,19 +226,7 @@ namespace Front
             ad.Show();
             InitializeComponent();
 
-            //string HTMLContent = "<font style=\"vertical - align: inherit; \">Крок 1 - Встановіть Visual Studio</font>";
-            //try
-            //{
-            //    Init(HTMLContent);
-            //}
-            //catch (Exception e)
-            //{
-            //    FileLogger.WriteLogMessage(e.Message, eTypeLog.Error);
-            //}
-
-            // ListWares = new ObservableCollection<ReceiptWares>(StartData());
-            //WaresList.ItemsSource = ListWares;// Wares;
-
+   
             ua.Tag = new CultureInfo("uk");
             en.Tag = new CultureInfo("en");
             hu.Tag = new CultureInfo("hu");
@@ -257,26 +246,12 @@ namespace Front
             SetStateView(eStateMainWindows.StartWindow);
         }
 
-        private async void Init(string HTMLContent)
-        {
-            try
-            {
-                //await WebView2.EnsureCoreWebView2Async();
-                //WebView2.CoreWebView2.NavigateToString(HTMLContent);
-                //MyWebView.CoreWebView2.Navigate("ms-appx-web:///www/index.html");
-                //WebView2.CoreWebView2.OpenDevToolsWindow();
-            }
-            catch (Exception e)
-            {
-                FileLogger.WriteLogMessage(e.Message, eTypeLog.Error);
-            }
-        }
-
         void SetCurReceipt(Receipt pReceipt)
         {
             curReceipt = pReceipt;
             SetPropertyChanged();
         }
+
         void SetPropertyChanged()
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("GetBackgroundColor"));
@@ -347,14 +322,13 @@ namespace Front
                         EF.SetColor(GetFlagColor(State));
                     }
 
-
                     //Генеруємо з кастомні вікна
                     if (TypeAccessWait == eTypeAccess.FixWeight)
                         customWindow = new CustomWindow(CS.StateScale);
                     else
                         customWindow = (State == eStateMainWindows.WaitCustomWindows ? pCW : null);
 
-
+                    s.Play(State, TypeAccessWait, CS.StateScale, 0);
                     //if ((State == eStateMainWindows.WaitAdmin || State == eStateMainWindows.WaitAdminLogin) && TypeAccessWait == eTypeAccess.ExciseStamp)
                     //    customWindow = new CustomWindow(pCW, pStr);
   
@@ -690,7 +664,7 @@ namespace Front
             if (Access.GetRight(eTypeAccess.DelReciept) || curReceipt?.SumReceipt == 0)
             {
                 Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
-                curReceipt = Bl.GetNewIdReceipt();
+                NewReceipt();
                 SetStateView(eStateMainWindows.StartWindow);
             }
             else
@@ -743,7 +717,7 @@ namespace Front
         {
             if (ControlScaleCurrentWeight > 0 && ControlScaleCurrentWeight < Global.MaxWeightBag)
             {
-                curReceipt = Bl.GetNewIdReceipt();
+                NewReceipt();
                 Bl.AddOwnBag(curReceipt, Convert.ToDecimal(ControlScaleCurrentWeight));
                 SetStateView(eStateMainWindows.WaitInput);
             }
@@ -1050,7 +1024,7 @@ namespace Front
                         Bl.db.RecalcPriceAsync(new IdReceiptWares(Bl.GetLastReceipt()));
                     }
                     if (res.Id == 2)
-                        curReceipt = Bl.GetNewIdReceipt();
+                        NewReceipt();
                     SetStateView(eStateMainWindows.WaitInput);
                     return;
                 }
@@ -1089,7 +1063,7 @@ namespace Front
         {
             //SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, eWindows.PhoneClient);
             if (curReceipt == null)
-                curReceipt = Bl.GetNewIdReceipt();
+                NewReceipt();
             Background.Visibility = Visibility.Visible;
             BackgroundWares.Visibility = Visibility.Visible;
             KeyPad keyPad = new KeyPad(this);
