@@ -16,7 +16,6 @@
                     <Setter Property="CornerRadius" Value="10" />
                 </Style>
             </Style.Resources>
-            
         </Style>
         <Style TargetType="TextBlock">
             <Setter Property="FontFamily" Value="Source Sans Pro" />
@@ -24,6 +23,7 @@
             <Setter Property="FontSize" Value="20" />
             <Setter Property="FontWeight" Value="DemiBold" />
         </Style>
+
         <LinearGradientBrush x:Key="CheckedBlue" StartPoint="0,0" EndPoint="0,1">
             <GradientStop Color="#FF285AB3" Offset="0" />
             <GradientStop Color="#FF4184EC" Offset="0.5" />
