@@ -33,7 +33,7 @@ namespace Front.Equipments
 {
     public class ScaleModern:Scale
     {
-        int CheckTime = 2000;
+        double CheckTime = 2000d;
         Timer mTimer;
         DateTime TimeLastWeight;
         Scales bst;
@@ -124,7 +124,7 @@ namespace Front.Equipments
         {
             var CurTime = DateTime.Now;
             TimeSpan Duration = CurTime - TimeLastWeight;
-            if (Duration.Milliseconds> CheckTime)
+            if (Duration.TotalMilliseconds> CheckTime)
             {
                 bst.Dispose();
                 await Task.Delay(200);
