@@ -45,7 +45,8 @@ namespace Front.Equipments.Implementation
                 NumberCard ="******0123",                
                 CodeAuthorization = $"{AuthCode++}",
                 NumberTerminal = "SML_Local",                
-                NumberSlip= $"{TransactionCode++}"
+                NumberSlip= $"{TransactionCode++}",
+                IsSuccess=true
             };
         }
 
