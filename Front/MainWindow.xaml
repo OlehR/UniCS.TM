@@ -30,7 +30,7 @@
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="FontSize" Value="20" />
             <Setter Property="FontWeight" Value="DemiBold" />
-            
+
         </Style>
     </Window.Resources>
 
@@ -126,10 +126,18 @@
                     </Button>
                 </StackPanel>
 
-
-                <Grid Grid.Column="4">
-
-                </Grid>
+                <StackPanel Grid.Column="5" Grid.ColumnSpan="2" Orientation="Horizontal" VerticalAlignment="Center">
+                    <StackPanel Margin="10,0,0,0" >
+                        <TextBlock  FontSize="22" Text="Скарбничка: "/>
+                        <TextBlock  FontSize="22" Text="Сума бонусів: "/>
+                    </StackPanel>
+                    <StackPanel Margin="10,0,0,0" >
+                        <TextBlock  FontSize="22" Text="{Binding Client.Wallet, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}"/>
+                        <TextBlock  FontSize="22" Text="{Binding Client.SumBonus, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}"/>
+                    </StackPanel>
+                </StackPanel>
 
 
 
@@ -716,10 +724,10 @@
                     </ScrollViewer>
 
 
-                    <StackPanel Grid.Row="2" Margin="5">
+                    <StackPanel Grid.Row="2" Margin="10">
                         <TextBlock Visibility="Visible" HorizontalAlignment="Center"
                                    Foreground="Red"
-                                   Text="Для розблукування інших цін - викличте адміністратора"/>
+                                   Text="Для продажу сигарет, зачекайте будь ласка адміністратора"/>
 
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <Button x:Name="MinusCigarettesButton" Height="60" Width="60" Margin="5" Click="PlusOrMinusCigarettes">
@@ -1531,14 +1539,9 @@
                            Visibility="Visible"  
                            Foreground="Black">
                 <StackPanel Orientation="Horizontal">
-                <TextBlock  FontSize="22" Text="{Binding ClientName, RelativeSource={RelativeSource 
+                    <TextBlock  FontSize="22" Text="{Binding ClientName, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}"/>
-                    <StackPanel Margin="10,0,0,0">
-                        <TextBlock  FontSize="22" Text="{Binding Client.Wallet, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}"/>
-                        <TextBlock  FontSize="22" Text="{Binding Client.SumBonus, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}"/>
-                    </StackPanel>
+
                 </StackPanel>
             </Button>
             <!--<Button Style="{StaticResource Default}" Grid.Column="2" FontSize="22" Click="_Cancel" Height="38" Margin="1,1,1,0" VerticalAlignment="Top">
@@ -1692,8 +1695,10 @@
                     </StackPanel>
                 </Button>
                 <Grid Grid.Row="1" Grid.RowSpan="3" Grid.Column="1" Grid.ColumnSpan="2" >
+                    <Image Source="icons\VopakLogo.png"/>
                     <!--<MediaElement   Name="StartVideo" Source="icons\sparVideo.mp4" LoadedBehavior="Manual" Volume="0"   />-->
-                    <MediaElement Name="StartVideo" Volume="0" LoadedBehavior="Manual">
+                    
+                    <!--<MediaElement Name="StartVideo" Volume="0" LoadedBehavior="Manual">
                         <MediaElement.Triggers>
                             <EventTrigger RoutedEvent="MediaElement.Loaded">
                                 <EventTrigger.Actions>
@@ -1706,7 +1711,7 @@
                                 </EventTrigger.Actions>
                             </EventTrigger>
                         </MediaElement.Triggers>
-                    </MediaElement>
+                    </MediaElement>-->
                 </Grid>
 
             </Grid>

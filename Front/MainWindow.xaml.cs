@@ -380,7 +380,7 @@ namespace Front
                     ExciseStampNameWares.Visibility = Visibility.Collapsed;
                     WaitAdminTitle.Visibility = Visibility.Visible;
 
-                    StartVideo.Stop();
+                    //StartVideo.Stop();
 
                     switch (State)
                     {
@@ -388,7 +388,7 @@ namespace Front
                             StartShopping.Visibility = Visibility.Visible;
                             //textInAll.Visibility = Visibility.Collapsed;
                             //valueInAll.Visibility = Visibility.Collapsed;
-                            StartVideo.Play();
+                            //StartVideo.Play();
                             break;
                         case eStateMainWindows.WaitInputPrice:
                             TypeAccessWait = eTypeAccess.ChoicePrice;

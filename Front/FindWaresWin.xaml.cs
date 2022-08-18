@@ -12,6 +12,7 @@ using System.Windows.Controls.Primitives;
 using System.ComponentModel;
 using System.Windows.Media;
 using Front.Models;
+using System.Threading.Tasks;
 
 namespace Front
 {
@@ -130,8 +131,9 @@ namespace Front
             }
             Close();
         }
-        private void WaresName_Changed(object sender, TextChangedEventArgs e)
+        private async void WaresName_Changed(object sender, TextChangedEventArgs e)
         {
+            await Task.Delay(3000);
             NewB();
         }
 
