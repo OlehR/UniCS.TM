@@ -809,7 +809,7 @@ namespace Front
 
         private void ClickButtonOk(object sender, RoutedEventArgs e)
         {
-            AddWares(CurW.Code, CurW.CodeUnit, Convert.ToDecimal(Weight));
+            AddWares(CurW.Code, CurW.CodeUnit, Convert.ToDecimal(Weight*1000));
             ClickButtonCancel(sender, e);
         }
         private void ClickButtonCancel(object sender, RoutedEventArgs e)

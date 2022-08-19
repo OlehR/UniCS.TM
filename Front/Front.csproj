@@ -25,6 +25,7 @@
     <None Remove="icons\help.png" />
     <None Remove="icons\hu.png" />
     <None Remove="icons\Inform.png" />
+    <None Remove="icons\MasterCard.png" />
     <None Remove="icons\minus.png" />
     <None Remove="icons\no_volume.png" />
     <None Remove="icons\Ok.png" />
@@ -45,6 +46,7 @@
     <None Remove="icons\ua.png" />
     <None Remove="icons\uk.png" />
     <None Remove="icons\Up.png" />
+    <None Remove="icons\visa.png" />
     <None Remove="icons\volume.png" />
     <None Remove="icons\VopakLogo.png" />
     <None Remove="icons\warning.png" />
@@ -72,6 +74,9 @@
     <Resource Include="icons\ControlScale.png" />
     <Resource Include="icons\help.png" />
     <Resource Include="icons\Inform.png" />
+    <Resource Include="icons\MasterCard.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="icons\no_volume.png" />
     <Resource Include="icons\Ok.png" />
     <Resource Include="icons\on-off.png" />
@@ -141,6 +146,9 @@
     <Resource Include="icons\uk.png" />
     <Resource Include="icons\Up.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="icons\visa.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="icons\volume.png" />
     <Resource Include="icons\VopakLogo.png">
