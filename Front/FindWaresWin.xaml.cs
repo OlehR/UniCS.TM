@@ -98,6 +98,11 @@ namespace Front
                 Bt.Tag = el;
                 Bt.Background = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
                 Bt.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+                if (el.IsWeight)
+                {
+                    var WeightImg = new Image();
+                    //WeightImg.Source = new 
+                 }
                 //Кнопка з картинкою
                 Grid.SetColumn(Bt, i);
                 Grid.SetRow(Bt, j);
@@ -118,12 +123,12 @@ namespace Front
                 Grid.SetColumn(Bor, i);
                 Grid.SetRow(Bor, j);
                 Grid.SetRowSpan(Bor, 2);
-                if (el.Name.Length > 19)
-                    NameWaresGrid.Text = el.Name.Substring(0, 19);
-                else
+                //if (el.Name.Length > 19)
+                //    NameWaresGrid.Text = el.Name.Substring(0, 19);
+                //else
                     NameWaresGrid.Text = el.Name; //max 19 
                 NameWaresGrid.FontFamily = new FontFamily("Source Sans Pro");
-                NameWaresGrid.FontSize = 30;
+                NameWaresGrid.FontSize = 15;
                 NameWaresGrid.FontWeight = FontWeights.DemiBold;
                 NameWaresGrid.HorizontalAlignment = HorizontalAlignment.Center;
                 NameWaresGrid.VerticalAlignment = VerticalAlignment.Bottom;
