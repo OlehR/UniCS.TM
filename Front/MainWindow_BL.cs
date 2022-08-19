@@ -31,7 +31,7 @@ namespace Front
                 CS.OnScalesData(pWeight, pIsStable);
             };
 
-            EF.OnWeight += (pWeight, pIsStable) => { Weight = pWeight; };
+            EF.OnWeight += (pWeight, pIsStable) => { Weight = pWeight/1000; };
 
             EF.SetStatus += (info) =>
             {
@@ -335,7 +335,7 @@ namespace Front
             if (pGV != null)
             {
                 CurW = pGV;
-                NameWares.Content = CurW.Name;
+                NameWares.Text = CurW.Name;
 
                 Image im = null;
                 foreach (var el in GridWeightWares.Children)
