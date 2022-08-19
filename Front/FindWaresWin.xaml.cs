@@ -165,6 +165,7 @@ namespace Front
                 if (MW.State == eStateMainWindows.WaitFindWares)
                     MW.SetStateView(eStateMainWindows.WaitInput);
             }
+            KB.SetInput(null);
             Close();
         }
         private async void WaresName_Changed(object sender, TextChangedEventArgs e)
@@ -202,6 +203,7 @@ namespace Front
         private void ClickButtonCancel(object sender, RoutedEventArgs e)
         {
             MW?.SetStateView(eStateMainWindows.WaitInput);
+            KB.SetInput(null);
             Close();
         }
 

@@ -153,7 +153,7 @@ namespace OnScreenKeyboardControl.Keyboard
 				new OnScreenKeyNormal(0, 12, new[] {"=", "+", "=", "+" }, CaptionUpdateDelegateDelegateFunction.CapsLookAndSpecial),
 				new OnScreenKeySpecial(0, 13, "Bksp", ExecuteDelegateFunctions.BackspaceExecuteDelegate) {GridWidth = new GridLength(2, GridUnitType.Star)},
 
-				new OnScreenKeySpecial(1, 00, "Tab", ExecuteDelegateFunctions.MoveNextExecuteDelegate) {GridWidth = new GridLength(1.5, GridUnitType.Star)},
+				new OnScreenKeySpecial(1, 00, "Tab", ExecuteDelegateFunctions.MoveNextExecuteDelegate,false) {GridWidth = new GridLength(1.5, GridUnitType.Star)},
 				new OnScreenKeyNormal(1, 01, new[] {"q", "Q", "й", "Й"}, CaptionUpdateDelegateDelegateFunction.ShiftAndSpecial),
 				new OnScreenKeyNormal(1, 02, new[] {"w", "W","ц","Ц"}, CaptionUpdateDelegateDelegateFunction.ShiftAndSpecial),
 				new OnScreenKeyNormal(1, 03, new[] {"e", "E", "у","У"}, CaptionUpdateDelegateDelegateFunction.ShiftAndSpecial),
