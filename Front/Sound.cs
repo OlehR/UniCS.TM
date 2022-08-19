@@ -13,7 +13,6 @@ using System.Windows.Media;
 
 namespace Front
 { 
-
     public enum eTypeSound
     {
         NotDefine = 0,
@@ -90,7 +89,11 @@ namespace Front
                 FileName = Path.Combine(Global.PathCur, "Sound", "en", pS.ToString()+ ".wav");// $@"D:\MID\Sound\en\{pS}.wav";
             if(File.Exists(FileName) && Player != null && LastTypeSound != pS)
             {
-                LastTypeSound = pS;
+                if(LastTypeSound == eTypeSound.IncorectWeight)
+                    LastTypeSound=eTypeSound.NotDefine;
+                else
+                  LastTypeSound = pS;
+
                 if (IsUse1Time(pS))
                     if (IsUse.ContainsKey(pS)) return;
                     else

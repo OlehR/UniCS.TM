@@ -322,12 +322,15 @@ namespace Front
                     return;
                 var c = Bl.GetClientByBarCode(curReceipt, pBarCode);
                 if (c != null) return;
+                SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.AdminPanel);
             }
-           
-                var u = Bl.GetUserByBarCode(pBarCode);
-                if (u != null)
-                    Bl.OnAdminBarCode?.Invoke(u);
+
+            var u = Bl.GetUserByBarCode(pBarCode);
+            if (u != null)
+            { Bl.OnAdminBarCode?.Invoke(u); return; }
             
+            SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.AdminPanel);
+
         }
       
         public void AddWares(int pCodeWares, int pCodeUnit = 0, decimal pQuantity = 0m, decimal pPrice = 0m, GW pGV = null)
