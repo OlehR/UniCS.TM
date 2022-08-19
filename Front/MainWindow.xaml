@@ -68,8 +68,8 @@
                 <Button Style="{StaticResource yelowButton}" Grid.Column="0" FontSize="30" Click="_ButtonHelp">
 
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock FontSize="28" Text="{DynamicResource buttonHelp}"/>
-                        <Image Width="25">
+                        <TextBlock FontSize="35" Text="{DynamicResource buttonHelp}"/>
+                        <Image Width="35">
                             <Image.Style>
                                 <Style TargetType="{x:Type Image}">
                                     <Style.Triggers>
@@ -126,15 +126,15 @@
                     </Button>
                 </StackPanel>
 
-                <StackPanel Grid.Column="5" Grid.ColumnSpan="2" Orientation="Horizontal" VerticalAlignment="Center">
+                <StackPanel Grid.Column="5" Grid.ColumnSpan="2" Orientation="Horizontal" VerticalAlignment="Center" x:Name="ShowClientBonus">
                     <StackPanel Margin="10,0,0,0" >
                         <TextBlock  FontSize="22" Text="Скарбничка: "/>
                         <TextBlock  FontSize="22" Text="Сума бонусів: "/>
                     </StackPanel>
                     <StackPanel Margin="10,0,0,0" >
-                        <TextBlock  FontSize="22" Text="{Binding Client.Wallet, RelativeSource={RelativeSource 
+                        <TextBlock  FontSize="22" Foreground="DarkGreen" FontWeight="Bold" Text="{Binding Client.Wallet, StringFormat=0.00₴, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}"/>
-                        <TextBlock  FontSize="22" Text="{Binding Client.SumBonus, RelativeSource={RelativeSource 
+                        <TextBlock  FontSize="22" Foreground="DarkGreen" FontWeight="Bold" Text="{Binding Client.SumMoneyBonus, StringFormat=0.00₴, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}"/>
                     </StackPanel>
                 </StackPanel>
@@ -1516,7 +1516,7 @@
                 <Image Margin="5" Source="icons\back.png"/>
             </Button>
             <Button  Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" FontSize="22" Click="_Search">
-                <TextBlock FontSize="28" Text="{DynamicResource search}"/>
+                <TextBlock FontSize="35" Text="{DynamicResource search}"/>
                 <Button.Style>
                     <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
                         <Setter Property="IsEnabled" Value="True"/>
@@ -1570,7 +1570,7 @@
                                 </Style>
                             </Image.Style>
                         </Image>
-                        <TextBlock FontSize="28" Text="{DynamicResource payment}"/>
+                        <TextBlock FontSize="35" Text="{DynamicResource payment}"/>
                         <TextBlock Margin="10,0,0,0" 
                            FontSize="28"
                            FontWeight="Bold"

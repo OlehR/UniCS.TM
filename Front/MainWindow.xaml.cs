@@ -382,6 +382,7 @@ namespace Front
                     ExciseStampButtons.Visibility = Visibility.Collapsed;
                     ExciseStampNameWares.Visibility = Visibility.Collapsed;
                     WaitAdminTitle.Visibility = Visibility.Visible;
+                    
 
                     //StartVideo.Stop();
 
@@ -389,6 +390,7 @@ namespace Front
                     {
                         case eStateMainWindows.StartWindow:
                             StartShopping.Visibility = Visibility.Visible;
+                            ShowClientBonus.Visibility = Visibility.Collapsed;
                             //textInAll.Visibility = Visibility.Collapsed;
                             //valueInAll.Visibility = Visibility.Collapsed;
                             //StartVideo.Play();
@@ -1088,6 +1090,11 @@ namespace Front
                     };
                     Bl.SetCustomWindows(r);                   
                 }
+            }
+            if (Client.Wallet !=0 || Client.SumMoneyBonus != 0 || Client.SumBonus !=0)
+            {
+                ShowClientBonus.Visibility = Visibility.Visible;
+
             }
             Background.Visibility = Visibility.Collapsed;
             BackgroundWares.Visibility = Visibility.Collapsed;
