@@ -103,6 +103,7 @@ namespace ModelMID
 
     public class ControlScale
     {
+        public DateTime LastStabilized=DateTime.MinValue;
         public ReceiptWares RW,DelRW;
         public Action<eStateScale, ReceiptWares, double> OnStateScale { get; set; }
         eStateScale _StateScale;
@@ -125,6 +126,8 @@ namespace ModelMID
                         OnStateScale?.Invoke(_StateScale, RW, СurrentlyWeight);
                     //new cStateScale() { StateScale = _StateScale, FixWeight = Convert.ToDecimal(MidlWeight.GetMidl), FixWeightQuantity = Convert.ToDecimal(Quantity) });
                     OnScalesLog("NewState", _StateScale.ToString());
+                    if (_StateScale == eStateScale.StartStabilized)
+                        LastStabilized = DateTime.Now;
                 }
             }
         }
@@ -285,7 +288,7 @@ namespace ModelMID
             RW = w;
             if (w != null)
             {                
-                if (w.WeightFact != -1 && w.AllWeights != null && w.AllWeights.Count() > 0)
+                if (/*w.WeightFact != -1 &&*/ w.AllWeights != null && w.AllWeights.Count() > 0)
                     StartWeightNewGoogs(BeforeWeight, w.AllWeights, Convert.ToDouble(w.Quantity - w.FixWeightQuantity));
             }
         }
@@ -302,7 +305,7 @@ namespace ModelMID
             BeforeFullWeight = 0;
 
             TooLightWeight = WaitWeight.Max(r => r.Max) <= Delta;
-            if (RW != null && RW.Quantity != RW.FixWeightQuantity)
+            if (RW != null && RW.Quantity != RW.FixWeightQuantity && RW.WeightFact != -1)
                 StateScale = eStateScale.WaitGoods; //eStateScale.NotDefine;            
             //FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"(pBeforeWeight={pBeforeWeight},pWeight={pWeight.ToJSON()},pQuantity={pQuantity},{RW.NameWares})", eTypeLog.Full);
         }
@@ -313,9 +316,17 @@ namespace ModelMID
         /// <param name="pWeight">Власне вага</param>
         /// <param name="pIsStable">Чи платформа стабільна</param>
         public void OnScalesData(double pWeight, bool pIsStable)
-        { 
+        {
+          
             if(BeforeFullWeight!= curFullWeight || curFullWeight != pWeight)
                 OnScalesLog("OnScalesData", $"weight{pWeight} isStable {pIsStable}");
+            // Після стабілізації ваги пропускаємо кілька подій Оскільки контрольна вага бреше щодо pIsStable
+            if ((DateTime.Now - LastStabilized).TotalSeconds < 600)
+            {
+                OnScalesLog("OnScalesData", "Skip after stabilizate");
+                return;
+            }
+
             curFullWeight = pWeight;
 
             eStateScale NewStateScale = StateScale;

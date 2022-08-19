@@ -172,8 +172,14 @@ namespace Front
                         IsShowWeightWindows=false;
                         SetStateView(eStateMainWindows.BlockWeight);
                         break;
-                    case eStateScale.BadWeight:
+                    
                     case eStateScale.NotStabilized:
+                        IsShowWeightWindows=true;
+                        if ((State == eStateMainWindows.WaitAdmin && (TypeAccessWait == eTypeAccess.DelReciept || TypeAccessWait == eTypeAccess.DelWares)))
+                            break;
+                        SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.FixWeight, pRW);
+                        break;
+                    case eStateScale.BadWeight:
                     case eStateScale.WaitClear:
                         IsShowWeightWindows = true;
                         SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.FixWeight, pRW);
