@@ -327,7 +327,7 @@ namespace Front
 
                     //Генеруємо з кастомні вікна
                     if (TypeAccessWait == eTypeAccess.FixWeight)
-                        customWindow = new CustomWindow(CS.StateScale);
+                        customWindow = new CustomWindow(CS.StateScale, CS.RW?.Quantity == 1 && CS.RW?.FixWeightQuantity == 0);
                     else
                         customWindow = (State == eStateMainWindows.WaitCustomWindows ? pCW : null);
 
