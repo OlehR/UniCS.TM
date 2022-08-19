@@ -21,7 +21,7 @@ namespace Front
         CallAdministratorToCancelReceipt, // + Відміна чека проводиться адміністратором. Викликати адміністратора?
         ChooseBag, //Оберіть торбинку
         //ChoosePaymentType, //Оберіть спосіб оплати
-        ClearPlatform, //Очистіть платформу
+        ClearPlatform, // + Очистіть платформу
         DoNotForgetProducts, // + Не забутьте забрати товар
         IncorectWeight, // + Вага не вірна Зверніться до адміністратора
         //InsertCardIntoBankTerminal,
@@ -79,7 +79,7 @@ namespace Front
         {
             CodeReceipt= pCodeReceipt;
             IsUse.Clear();
-            LastTypeSound = eTypeSound.NotDefine;
+            //LastTypeSound = eTypeSound.NotDefine;
             Play(eTypeSound.ScanAndPutProductOnPlatform);
         }
 
@@ -118,7 +118,8 @@ namespace Front
 
             if (pState == eStateMainWindows.WaitAdmin)
             {
-                if (pTypeAccess == eTypeAccess.FixWeight) Play(eTypeSound.IncorectWeight);
+                if (pTypeAccess == eTypeAccess.FixWeight)
+                  Play(pStateScale == eStateScale.WaitClear?eTypeSound.ClearPlatform: eTypeSound.IncorectWeight); 
                 else
                     if (pTypeAccess == eTypeAccess.ConfirmAge) Play(eTypeSound.WarningRestriction);
                 else
