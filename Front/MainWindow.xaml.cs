@@ -102,7 +102,7 @@ namespace Front
         /// <summary>
         /// Чи треба вибирати ціну.
         /// </summary>
-        bool IsChoicePrice { get { return CurWares != null && CurWares.IsMultiplePrices && curReceipt != null && curReceipt.GetLastWares?.CodeWares != CurWares.CodeWares; } }
+        bool IsChoicePrice { get { return CurWares != null && CurWares.IsMultiplePrices && curReceipt != null && curReceipt.GetLastWares?.CodeWares != CurWares.CodeWares && curReceipt.Equals(CurWares); } }
         /// <summary>
         /// теперішня вага
         /// </summary>
