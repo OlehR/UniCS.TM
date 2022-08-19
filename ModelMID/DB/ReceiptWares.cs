@@ -242,6 +242,11 @@ namespace ModelMID
                         res.Add(new WaitWeight(WeightFact, WeightDelta > 0 ? WeightDelta : WeightFact * Global.GetCoefDeltaWeight(WeightFact)));
 
                 }
+                if (WeightFact==-1)
+                    res.Add(new WaitWeight(0d, 10d));
+                if(res.Count==0)
+                    res.Add(new WaitWeight(100000d, 0d));
+
                 return res.ToArray();
             }
         }

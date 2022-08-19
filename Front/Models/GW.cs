@@ -34,6 +34,13 @@ namespace Front.Models
 		public int CodeUnit { get; set; }
 
 		public string GetName { get { return (Type == 1 ? "G" : "W") + Code.ToString(); } }
-		public string Pictures { get { return Path.Combine(Global.PathPictures, (Type == 1 ? "Categories" : "Products"), $"{Code.ToString("D9")}.jpg"); } }
+		public string Pictures { get {
+				string Pictures= Path.Combine(Global.PathPictures, (Type == 1 ? "Categories" : "Products"), $"{Code.ToString("D9")}");
+				if (File.Exists(Pictures + ".png"))
+					return Pictures + ".png";
+				else
+                    return Pictures + ".jpg";
+                //return Path.Combine(Global.PathPictures, (Type == 1 ? "Categories" : "Products"), $"{Code.ToString("D9")}.jpg"); 
+			} }
 	}
 }

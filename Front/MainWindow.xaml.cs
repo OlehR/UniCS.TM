@@ -312,8 +312,11 @@ namespace Front
 
                     if (pRW != null)
                         CurWares = pRW;
-                    if (pSMV != eStateMainWindows.WaitAdminLogin)
-                    { TypeAccessWait = pTypeAccess; IsAddNewWeight = false; }
+                    if (pSMV != eStateMainWindows.WaitAdminLogin )
+                    { 
+                        TypeAccessWait = pTypeAccess; 
+                        IsAddNewWeight = false; 
+                    }
 
                         if (pSMV != eStateMainWindows.NotDefine)
                     {
