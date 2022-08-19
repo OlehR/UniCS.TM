@@ -18,27 +18,27 @@ namespace Front
     {
         NotDefine = 0,
         AreYouStillWithUs, // Продовжити покупки?
-        CallAdministratorToCancelReceipt, // Відміна чека проводиться адміністратором. Викликати адміністратора?
+        CallAdministratorToCancelReceipt, // + Відміна чека проводиться адміністратором. Викликати адміністратора?
         ChooseBag, //Оберіть торбинку
-        ChoosePaymentType, //Оберіть спосіб оплати
+        //ChoosePaymentType, //Оберіть спосіб оплати
         ClearPlatform, //Очистіть платформу
-        DoNotForgetProducts, //Не забутьте забрати товар
-        IncorectWeight, //Вага не вірна Зверніться до адміністратора
+        DoNotForgetProducts, // + Не забутьте забрати товар
+        IncorectWeight, // + Вага не вірна Зверніться до адміністратора
         //InsertCardIntoBankTerminal,
-        InsertCardIntoBankTerminal_new, //Вставте картку в банківський термінал та виконайте вказівку.
+        InsertCardIntoBankTerminal_new, // + Вставте картку в банківський термінал та виконайте вказівку.
         //InsertMoney, // Внесіть кошти
         ProductNotFound, //Товар відсутній в базі
-        PutPackageOnPlatform, //Покладіть ваш пакет на платформу
+        PutPackageOnPlatform, // + Покладіть ваш пакет на платформу
         //PutProduct, //
         //ReturnProduct,
-        ScanAndPutProductOnPlatform, //відскануйте товар та покладіть на платформу
+        ScanAndPutProductOnPlatform, // + відскануйте товар та покладіть на платформу
         //ScanCustomerCard, //Відскануйте вашу картку
-        ScanCustomerCardOrEnterPhone, //Відскануйте вашу картку або введіть номер телефону
+        ScanCustomerCardOrEnterPhone, // + Відскануйте вашу картку або введіть номер телефону
         //ScanProduct,  //Відскануйте товар
         //TakeAwayProduct, 
         ThanksForShopping, // Дякуємо за покупку
-        WaitForAdministrator, //Очікуйте адміністратора
-        WarningRestriction, //чек містить товар продаж якого можливий після підтвердженя
+        WaitForAdministrator, // + Очікуйте адміністратора
+        WarningRestriction, // + чек містить товар продаж якого можливий після підтвердженя
     }
     
     public class Sound
@@ -112,20 +112,19 @@ namespace Front
                 StateScale = pStateScale;
                 ExPar = pExPar;
             }
-            if(pState==eStateMainWindows.WaitInput)
-                Play(eTypeSound.ScanAndPutProductOnPlatform);
-            if (pState == eStateMainWindows.ProcessPay)
-                Play(eTypeSound.InsertCardIntoBankTerminal_new);
+            if(pState==eStateMainWindows.WaitInput) Play(eTypeSound.ScanAndPutProductOnPlatform);
+            if (pState == eStateMainWindows.ProcessPay) Play(eTypeSound.InsertCardIntoBankTerminal_new);
+            if (pState == eStateMainWindows.WaitOwnBag) Play(eTypeSound.PutPackageOnPlatform);
 
-            if (pState==eStateMainWindows.WaitAdmin)
+            if (pState == eStateMainWindows.WaitAdmin)
             {
-                if(pTypeAccess==eTypeAccess.FixWeight)
-                    Play(eTypeSound.IncorectWeight);
+                if (pTypeAccess == eTypeAccess.FixWeight) Play(eTypeSound.IncorectWeight);
                 else
-                    if(pTypeAccess == eTypeAccess.ConfirmAge)
-                    Play(eTypeSound.WarningRestriction);
+                    if (pTypeAccess == eTypeAccess.ConfirmAge) Play(eTypeSound.WarningRestriction);
                 else
-                Play(eTypeSound.WaitForAdministrator);
+                    if (pTypeAccess == eTypeAccess.DelReciept) Play(eTypeSound.CallAdministratorToCancelReceipt);
+                else
+                    Play(eTypeSound.WaitForAdministrator);
             }
 
                    
