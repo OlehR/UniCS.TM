@@ -322,14 +322,14 @@ namespace Front
                     return;
                 var c = Bl.GetClientByBarCode(curReceipt, pBarCode);
                 if (c != null) return;
-                SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.AdminPanel);
+                //SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.AdminPanel);
             }
 
             var u = Bl.GetUserByBarCode(pBarCode);
             if (u != null)
             { Bl.OnAdminBarCode?.Invoke(u); return; }
-            
-            SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.AdminPanel);
+            if( (State != eStateMainWindows.WaitInput && State != eStateMainWindows.StartWindow) ||  curReceipt?.IsLockChange==true)  
+                    SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.AdminPanel);
 
         }
       
