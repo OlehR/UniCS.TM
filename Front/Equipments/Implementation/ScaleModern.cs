@@ -99,7 +99,7 @@ namespace Front.Equipments
         /// <returns></returns>
         public override bool CalibrateZero() 
         {
-            bst.CalibrateZero().Wait();
+            bst.CalibrateZero();//.Wait();
             return true;
         }
 
@@ -123,6 +123,7 @@ namespace Front.Equipments
 
         private async void OnTimedEvent(Object source, ElapsedEventArgs e)
         {
+            return;
             var CurTime = DateTime.Now;
             TimeSpan Duration = CurTime - TimeLastWeight;
             if (Duration.TotalMilliseconds> 2*CheckTime)
