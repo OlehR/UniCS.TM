@@ -15,9 +15,9 @@ namespace Front
     /// </summary>
     public partial class App : Application
     {
-		private static List<CultureInfo> m_Languages = new List<CultureInfo>() { new CultureInfo("uk"), new CultureInfo("en"), new CultureInfo("hu"), new CultureInfo("pl") };
+		//private static List<CultureInfo> m_Languages = new List<CultureInfo>() { new CultureInfo("uk"), new CultureInfo("en"), new CultureInfo("hu"), new CultureInfo("pl") };
 
-		public static List<CultureInfo> Languages { get {return m_Languages; }}
+		//public static List<CultureInfo> Languages { get {return m_Languages; }}
 
 		public App()
 		{
@@ -27,14 +27,17 @@ namespace Front
 		//Евент для оповещения всех окон приложения
 		public static event EventHandler LanguageChanged;
 
-		public static CultureInfo Language
+		static CultureInfo _Language= new CultureInfo("uk");
+
+        public static CultureInfo Language
 		{
 			get
 			{
-				return System.Threading.Thread.CurrentThread.CurrentUICulture;
+				return _Language;// System.Threading.Thread.CurrentThread.CurrentUICulture;
 			}
 			set
 			{
+				_Language = value;
 				if (value == null) throw new ArgumentNullException("value");
 				if (value == System.Threading.Thread.CurrentThread.CurrentUICulture) return;
 

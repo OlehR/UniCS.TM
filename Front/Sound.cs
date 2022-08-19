@@ -87,7 +87,7 @@ namespace Front
         {            
             var FileName = Path.Combine(Global.PathCur,"Sound",App.Language.Name,pS.ToString()+ ".wav");
             if(!File.Exists(FileName))
-                FileName = Path.Combine(Global.PathCur, "Sound", "uk", pS.ToString()+ ".wav");// $@"D:\MID\Sound\en\{pS}.wav";
+                FileName = Path.Combine(Global.PathCur, "Sound", "en", pS.ToString()+ ".wav");// $@"D:\MID\Sound\en\{pS}.wav";
             if(File.Exists(FileName) && Player != null && LastTypeSound != pS)
             {
                 LastTypeSound = pS;
@@ -100,35 +100,29 @@ namespace Front
                     player.SoundLocation = FileName;
                     player.Load();
                     player.Play();               
-            }
-            
+            }            
         }
 
         public void Play(eStateMainWindows pState, eTypeAccess pTypeAccess, eStateScale pStateScale, int pExPar = 0)
-        { 
-            if(State!=pState || StateScale!= pStateScale || ExPar!=pExPar)
-            {
-                State = pState;
-                StateScale = pStateScale;
-                ExPar = pExPar;
-            }
+        {             
             if(pState==eStateMainWindows.WaitInput) Play(eTypeSound.ScanAndPutProductOnPlatform);
             if (pState == eStateMainWindows.ProcessPay) Play(eTypeSound.InsertCardIntoBankTerminal_new);
             if (pState == eStateMainWindows.WaitOwnBag) Play(eTypeSound.PutPackageOnPlatform);
 
             if (pState == eStateMainWindows.WaitAdmin)
             {
-                if (pTypeAccess == eTypeAccess.FixWeight)
-                  Play(pStateScale == eStateScale.WaitClear?eTypeSound.ClearPlatform: eTypeSound.IncorectWeight); 
-                else
-                    if (pTypeAccess == eTypeAccess.ConfirmAge) Play(eTypeSound.WarningRestriction);
-                else
-                    if (pTypeAccess == eTypeAccess.DelReciept) Play(eTypeSound.CallAdministratorToCancelReceipt);
-                else
-                    Play(eTypeSound.WaitForAdministrator);
+                if (pTypeAccess == eTypeAccess.FixWeight) Play(pStateScale == eStateScale.WaitClear?eTypeSound.ClearPlatform: eTypeSound.IncorectWeight); 
+                else if (pTypeAccess == eTypeAccess.ConfirmAge) Play(eTypeSound.WarningRestriction);
+                else if (pTypeAccess == eTypeAccess.DelReciept) Play(eTypeSound.CallAdministratorToCancelReceipt);
+                else Play(eTypeSound.WaitForAdministrator);
             }
-
-                   
+            if (State != pState || StateScale != pStateScale || ExPar != pExPar)
+            {
+                State = pState;
+                TypeAccess = pTypeAccess;
+                StateScale = pStateScale;
+                ExPar = pExPar;
+            }
         }
     }
 }
