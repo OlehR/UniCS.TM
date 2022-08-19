@@ -12,3 +12,4 @@ obj
 /SharedLib/FileLogger.cs
 
 .DS_Store
+Front/appsettings.json
