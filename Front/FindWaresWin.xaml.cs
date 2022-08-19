@@ -37,7 +37,7 @@ namespace Front
 
             MW = pMW;
             Bl = BL.GetBL;
-            //KB.SetInput(WaresName);
+            KB.SetInput(WaresName);
             NewB();
         }
 
@@ -80,6 +80,10 @@ namespace Front
             foreach (var el in pGW)
             {
                 var Bt = new ToggleButton();
+                var NameWaresGrid = new TextBlock();
+                var Bor = new Border();
+                Bor.BorderBrush = new SolidColorBrush(Color.FromRgb( 128, 128, 128));
+                Bor.BorderThickness = new Thickness(5.0);
                 Bt.Name = el.GetName;// $"BtGr{el.Code}";				
                 if (File.Exists(el.Pictures))
                     Bt.Content = new Image
@@ -88,15 +92,35 @@ namespace Front
                         VerticalAlignment = VerticalAlignment.Center
                     };
                 else
-                    Bt.Content = el.Name;
+                    Bt.Content = "Скоро буде ;)";
+
                 Bt.Click += BtClick;
                 Bt.Tag = el;
+                Bt.Background = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+                Bt.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
                 Grid.SetColumn(Bt, i);
                 Grid.SetRow(Bt, j);
+                Grid.SetColumn(NameWaresGrid, i);
+                Grid.SetRow(NameWaresGrid, j + 1);
+                Grid.SetColumn(Bor, i);
+                Grid.SetRow(Bor, j);
+                Grid.SetRowSpan(Bor, 2);
+                if (el.Name.Length > 19)
+                    NameWaresGrid.Text = el.Name.Substring(0, 19);
+                else
+                    NameWaresGrid.Text = el.Name; //max 19 
+                NameWaresGrid.FontFamily = new FontFamily("Source Sans Pro");
+                NameWaresGrid.FontSize = 30;
+                NameWaresGrid.FontWeight = FontWeights.DemiBold;
+                NameWaresGrid.HorizontalAlignment = HorizontalAlignment.Center;
+                NameWaresGrid.VerticalAlignment = VerticalAlignment.Bottom;
+
                 PictureGrid.Children.Add(Bt);
+                PictureGrid.Children.Add(NameWaresGrid);
+                PictureGrid.Children.Add(Bor);
                 if (++i >= 5)
-                { j++; i = 0; }
-                if (j >= 2) break;
+                { j += 2; i = 0; }
+                if (j >= 4) break;
             }
         }
 
@@ -126,7 +150,7 @@ namespace Front
             if (MW != null)
             {
                 MW.AddWares(pCodeWares, pCodeUnit, pQuantity, 0m, pGW);
-                if(MW.State==eStateMainWindows.WaitFindWares)
+                if (MW.State == eStateMainWindows.WaitFindWares)
                     MW.SetStateView(eStateMainWindows.WaitInput);
             }
             Close();

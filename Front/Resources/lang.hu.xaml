@@ -34,4 +34,5 @@
     <v:String x:Key="Yes">Így</v:String>
     <v:String x:Key="No">Nem</v:String>
 
+    <v:String x:Key="ReturnCheck">Vissza a csekkbe</v:String>
 </ResourceDictionary>

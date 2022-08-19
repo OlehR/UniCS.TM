@@ -34,4 +34,6 @@
     <v:String x:Key="Yes">Więc</v:String>
     <v:String x:Key="No">Nie</v:String>
 
+    <v:String x:Key="ReturnCheck">Wróć do czeku</v:String>
+
 </ResourceDictionary>

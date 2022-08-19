@@ -1539,7 +1539,7 @@
                            Visibility="Visible"  
                            Foreground="Black">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock  FontSize="22" Text="{Binding ClientName, RelativeSource={RelativeSource 
+                    <TextBlock  FontSize="35" Text="{Binding ClientName, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}"/>
 
                 </StackPanel>
@@ -1554,7 +1554,7 @@
 
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">
-                        <Image Width="25" Margin="5">
+                        <Image Width="35" Margin="5">
                             <Image.Style>
                                 <Style TargetType="{x:Type Image}">
                                     <Style.Triggers>

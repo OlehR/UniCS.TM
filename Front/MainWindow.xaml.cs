@@ -669,6 +669,7 @@ namespace Front
             if (Access.GetRight(eTypeAccess.DelReciept) || curReceipt?.SumReceipt == 0)
             {
                 Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
+                Client=null;
                 NewReceipt();
                 SetStateView(eStateMainWindows.StartWindow);
             }
@@ -1066,6 +1067,7 @@ namespace Front
 
         private void FindClientByPhoneClick(object sender, RoutedEventArgs e)
         {
+            s.Play(eTypeSound.ScanCustomerCardOrEnterPhone);
             //SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, eWindows.PhoneClient);
             if (curReceipt == null)
                 NewReceipt();
@@ -1091,7 +1093,7 @@ namespace Front
                     Bl.SetCustomWindows(r);                   
                 }
             }
-            if (Client.Wallet !=0 || Client.SumMoneyBonus != 0 || Client.SumBonus !=0)
+            if (Client?.Wallet !=0 || Client?.SumMoneyBonus != 0 || Client?.SumBonus !=0)
             {
                 ShowClientBonus.Visibility = Visibility.Visible;
 

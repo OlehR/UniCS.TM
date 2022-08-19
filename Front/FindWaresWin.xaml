@@ -134,7 +134,7 @@
                         Height="60"  VerticalAlignment="Center">
                     <StackPanel Orientation="Horizontal">
                         <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
-                        <TextBlock FontSize="28" FontWeight="DemiBold" Text="{DynamicResource cancel}"  Margin="5,0,0,5"/>
+                        <TextBlock FontSize="28" FontWeight="DemiBold" Text="{DynamicResource ReturnCheck}"  Margin="5,0,0,5"/>
                     </StackPanel>
                 </Button>
                 
@@ -167,7 +167,9 @@
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*" />
+                    <RowDefinition Height="0.3*" />
                     <RowDefinition Height="1*" />
+                    <RowDefinition Height="0.3*" />
                 </Grid.RowDefinitions>
 
             </Grid>
