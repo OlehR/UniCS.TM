@@ -69,24 +69,24 @@ namespace ModelMID
             Id = pW;
             switch (pW)
             {
-                case eWindows.RestoreLastRecipt:                   
+                case eWindows.RestoreLastRecipt:
                     Caption = $"Відновлення останнього чека на суму {pObject}";
                     IsCancelButton = false;
                     Buttons = new ObservableCollection<CustomButton>() {
                         new CustomButton() {CustomWindow = this, Id=1,  Text="Відновити"},
                         new CustomButton() {CustomWindow = this, Id=2,  Text="Скасувати"} };
                     break;
-                case eWindows.NoPrice:                    
+                case eWindows.NoPrice:
                     Text = pObject as string;
                     Caption = "Відсутня ціна на товар!";
                     AnswerRequired = true;
                     break;
-                case eWindows.LimitSales:                    
+                case eWindows.LimitSales:
                     Text = pObject as string;
                     Caption = "Обмеження кількості!";
                     AnswerRequired = true;
                     break;
-                case eWindows.ExciseStamp:                    
+                case eWindows.ExciseStamp:
                     Text = "Ввід акцизної марки";
                     Caption = "Назва товару";
                     AnswerRequired = true;
@@ -94,60 +94,61 @@ namespace ModelMID
                     Buttons = new ObservableCollection<CustomButton>() {new CustomButton() {CustomWindow = this,  Id = 31, Text = "Ok", IsAdmin = false},
                                                                     new CustomButton() {CustomWindow = this,  Id = 32, Text = "Акцизний код відсутній", IsAdmin = true } };
                     break;
-                case eWindows.PhoneClient:                   
+                case eWindows.PhoneClient:
                     Text = "Введіть ваш номер!";
                     Caption = "Пошук за номером телефону";
                     AnswerRequired = true;
                     ValidationMask = @"^[+]{0,1}[0-9]{10,13}$";
                     // Buttons = new List<CustomButton>() {new CustomButton() { Id = 666, Text = "Пошук картки" } }                    
                     break;
-                    default:
+                default:
                     Buttons = new ObservableCollection<CustomButton>();
                     break;
-                case eWindows.ChoiceClient:                    
+                case eWindows.ChoiceClient:
                     Text = "Зробіть вибір";
                     Caption = "Вибір карточки клієнта";
                     AnswerRequired = true;
                     IEnumerable<Client> d = pObject as IEnumerable<Client>;
-                    Buttons = new ObservableCollection<CustomButton>( d.Select(el => new CustomButton() { CustomWindow = this, Id = el.CodeClient, Text = el.NameClient }));
+                    Buttons = new ObservableCollection<CustomButton>(d.Select(el => new CustomButton() { CustomWindow = this, Id = el.CodeClient, Text = el.NameClient }));
                     break;
             }
 
         }
 
-        public CustomWindow(eStateScale pST)
+        public CustomWindow(eStateScale pST, bool IsViewAddWeight = false)
         {
             Id = eWindows.ConfirmWeight;
             IsCancelButton = false;
-                switch (pST)
-                {
-                    case eStateScale.WaitClear:
-                        Buttons = new ObservableCollection<CustomButton>()
+            switch (pST)
+            {
+                case eStateScale.WaitClear:
+                    Buttons = new ObservableCollection<CustomButton>()
                     { new CustomButton() { CustomWindow=this, Id = 4, Text = "Тарувати", IsAdmin = true } ,
                       new CustomButton() {CustomWindow=this, Id = 5, Text = "Вхід в адмінку", IsAdmin = true } };
-                        break;
-                    case eStateScale.BadWeight:
-                        Buttons = new ObservableCollection<CustomButton>()
-                    { new CustomButton() {CustomWindow = this,  Id = 1, Text = "Підтвердити вагу", IsAdmin = true },
-                      new CustomButton() {CustomWindow = this,  Id = 2, Text = "Добавити вагу", IsAdmin = true } ,
-                      new CustomButton() {CustomWindow=this, Id = -1, Text = "Закрити", IsAdmin = false }};
-                        break;
+                    break;
+                case eStateScale.BadWeight:
+                    Buttons = new ObservableCollection<CustomButton>();
+                    Buttons.Add(new CustomButton() { CustomWindow = this, Id = 1, Text = "Підтвердити вагу", IsAdmin = true });
+                    if (IsViewAddWeight)
+                        Buttons.Add(new CustomButton() { CustomWindow = this, Id = 2, Text = "Добавити вагу", IsAdmin = true });
+                    Buttons.Add(new CustomButton() { CustomWindow = this, Id = -1, Text = "Закрити", IsAdmin = false });
+                    break;
 
-                    case eStateScale.WaitGoods:
-                        Buttons = new ObservableCollection<CustomButton>()
+                case eStateScale.WaitGoods:
+                    Buttons = new ObservableCollection<CustomButton>()
                     { new CustomButton() {CustomWindow = this,  Id = 1, Text = "Підтвердити вагу", IsAdmin = true },
                       new CustomButton() {CustomWindow = this,  Id = 3, Text = "Видалити товар", IsAdmin = true },
                       new CustomButton() {CustomWindow = this,  Id = -1, Text = "Закрити", IsAdmin = false }};
-            
-                        break;
-                    case eStateScale.NotStabilized:
-                        Buttons = new ObservableCollection<CustomButton>()
+
+                    break;
+                case eStateScale.NotStabilized:
+                    Buttons = new ObservableCollection<CustomButton>()
                     { new CustomButton() {CustomWindow = this,  Id = 1, Text = "Підтвердити вагу", IsAdmin = true },
                       new CustomButton() {CustomWindow = this,  Id = -1, Text = "Закрити", IsAdmin = false }};
-                        break;
-                }            
+                    break;
+            }
         }
-    
+
     }
 
     public class CustomButton
