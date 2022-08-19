@@ -318,14 +318,14 @@ namespace ModelMID
         public void OnScalesData(double pWeight, bool pIsStable)
         {
           
-            if(BeforeFullWeight!= curFullWeight || curFullWeight != pWeight)
-                OnScalesLog("OnScalesData", $"weight{pWeight} isStable {pIsStable}");
-            // Після стабілізації ваги пропускаємо кілька подій Оскільки контрольна вага бреше щодо pIsStable
-            if ((DateTime.Now - LastStabilized).TotalSeconds < 600)
+            //if(BeforeFullWeight!= curFullWeight || curFullWeight != pWeight)
+                OnScalesLog("OnScalesData", $"weight=>{pWeight} isStable=>{pIsStable}");
+            // !!! Ідея не вдала. Після стабілізації ваги пропускаємо кілька подій Оскільки контрольна вага бреше щодо pIsStable
+         /*   if ((DateTime.Now - LastStabilized).TotalSeconds < 600)
             {
                 OnScalesLog("OnScalesData", "Skip after stabilizate");
                 return;
-            }
+            }*/
 
             curFullWeight = pWeight;
 
@@ -367,11 +367,11 @@ namespace ModelMID
                  }*/
                 {
                     //Якщо вийшли за межі похибки
-                    if (!pIsStable && NewStateScale == eStateScale.WaitGoods && Math.Abs(СurrentlyWeight) > Delta)
+                    /*if (!pIsStable && NewStateScale == eStateScale.WaitGoods && Math.Abs(СurrentlyWeight) > Delta)
                     {
                         NewStateScale = eStateScale.NotStabilized;
                         //StartTimer();
-                    }
+                    }*/
 
                     if (RW.FixWeightQuantity != RW.Quantity && Math.Abs(СurrentlyWeight) <= Delta)
                     {
