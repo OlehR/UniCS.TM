@@ -34,6 +34,8 @@ namespace ModelMID
         /// </summary>
         public int TypeDiscount { get; set; }
 
+        public string NameDiscount { get; set; }
+
         /// <summary>
         /// Штрихкод карточки
         /// </summary>
