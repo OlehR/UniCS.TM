@@ -82,8 +82,8 @@ namespace Front
                 var Bt = new ToggleButton();
                 var NameWaresGrid = new TextBlock();
                 var Bor = new Border();
-                Bor.BorderBrush = new SolidColorBrush(Color.FromRgb( 128, 128, 128));
-                Bor.BorderThickness = new Thickness(5.0);
+                Bor.BorderBrush = new SolidColorBrush(Color.FromRgb(128, 128, 128));
+                Bor.BorderThickness = new Thickness(2.0);
                 Bt.Name = el.GetName;// $"BtGr{el.Code}";				
                 if (File.Exists(el.Pictures))
                     Bt.Content = new Image
@@ -98,10 +98,23 @@ namespace Front
                 Bt.Tag = el;
                 Bt.Background = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
                 Bt.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+                //Кнопка з картинкою
                 Grid.SetColumn(Bt, i);
                 Grid.SetRow(Bt, j);
-                Grid.SetColumn(NameWaresGrid, i);
-                Grid.SetRow(NameWaresGrid, j + 1);
+                if (el.Type == 1) //якщо група товарів тоді показати лише фото
+                {
+                    Grid.SetRowSpan(Bt, 2);
+                }
+                else // якщо самі товари то додати опис
+                {
+                    //ім'я товару під фоткою
+                    Grid.SetColumn(NameWaresGrid, i);
+                    Grid.SetRow(NameWaresGrid, j + 1);
+                    PictureGrid.Children.Add(NameWaresGrid);
+
+                }
+
+                //рамка між товарами
                 Grid.SetColumn(Bor, i);
                 Grid.SetRow(Bor, j);
                 Grid.SetRowSpan(Bor, 2);
@@ -116,7 +129,6 @@ namespace Front
                 NameWaresGrid.VerticalAlignment = VerticalAlignment.Bottom;
 
                 PictureGrid.Children.Add(Bt);
-                PictureGrid.Children.Add(NameWaresGrid);
                 PictureGrid.Children.Add(Bor);
                 if (++i >= 5)
                 { j += 2; i = 0; }
