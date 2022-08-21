@@ -1043,6 +1043,13 @@ namespace Front
                         SetStateView(eStateMainWindows.BlockWeight);
                         return;
                     }
+                    if (res.Id == 4)
+                    {
+                        IsShowWeightWindows = false;
+                        EF.ControlScaleCalibrateZero();
+                        return;
+                    }
+
                     if (CS.RW != null)
                     {
                         CS.RW.FixWeightQuantity = CS.RW.Quantity;
