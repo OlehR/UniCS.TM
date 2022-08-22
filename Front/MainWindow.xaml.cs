@@ -39,6 +39,7 @@ namespace Front
         Sound s = Sound.GetSound();
 
         Admin ad;
+        //public int TextBlockFontSize { get; set; } = 40;
 
         public Receipt curReceipt;//{ get; set; } = null;
         public ReceiptWares CurWares { get; set; } = null;
@@ -115,10 +116,17 @@ namespace Front
 
         public string GetBackgroundColor { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? "#FFE5E5" : "#FFFFFF"; } }
 
+        /// <summary>
+        /// треба переробити(інтегрувати в основну форму)
+        /// </summary>
+        //[Obsolete]
+       // KeyPad keyPad;
+
         public System.Drawing.Color GetFlagColor(eStateMainWindows pStateMainWindows)
         {
             return FC.ContainsKey(pStateMainWindows) ? FC[pStateMainWindows] : System.Drawing.Color.Black;
         }
+       
 
         public string WaitAdminText
         {
@@ -1072,6 +1080,7 @@ namespace Front
             }
         }
 
+        /*
         private void FindClientByPhoneClick(object sender, RoutedEventArgs e)
         {
             s.Play(eTypeSound.ScanCustomerCardOrEnterPhone);
@@ -1080,7 +1089,7 @@ namespace Front
                 NewReceipt();
             Background.Visibility = Visibility.Visible;
             BackgroundWares.Visibility = Visibility.Visible;
-            KeyPad keyPad = new KeyPad(this);
+            keyPad = new KeyPad(this);
             keyPad.ValidationMask = @"^[0-9]{9,12}$";
             keyPad.productNameChanges.Text = Convert.ToString("Введіть номер телефону");
             //keyPad.Result = Convert.ToString(0); 0503720278
@@ -1100,6 +1109,7 @@ namespace Front
                     Bl.SetCustomWindows(r);                   
                 }
             }
+            keyPad = null;
             if (Client?.Wallet !=0 || Client?.SumMoneyBonus != 0 || Client?.SumBonus !=0)
             {
                 ShowClientBonus.Visibility = Visibility.Visible;
@@ -1108,6 +1118,43 @@ namespace Front
             Background.Visibility = Visibility.Collapsed;
             BackgroundWares.Visibility = Visibility.Collapsed;
         }
+        */
+        private void FindClientByPhoneClick(object sender, RoutedEventArgs e)
+        {
+            s.Play(eTypeSound.ScanCustomerCardOrEnterPhone);
+            InputNumberPhone.Result = "";           
+            InputNumberPhone.CallBackResult=FindClientByPhone;
+            NumericPad.Visibility = Visibility.Visible;
+        }
+
+            private void FindClientByPhone(string pResult)
+        {
+           
+            //SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, eWindows.PhoneClient);
+            if (curReceipt == null)
+                NewReceipt();
+            
+                if (pResult.Length >= 10)
+                {
+                    var r = new CustomWindowAnswer()
+                    {
+                        idReceipt = curReceipt,
+                        Id = eWindows.PhoneClient,
+                        IdButton = 1,
+                        Text = pResult,
+                        ExtData = CS?.RW
+                    };
+                    Bl.SetCustomWindows(r);
+                }            
+            
+            if (Client?.Wallet != 0 || Client?.SumMoneyBonus != 0 || Client?.SumBonus != 0)
+            {
+                ShowClientBonus.Visibility = Visibility.Visible;
+            }
+            
+        }
+
+        
 
         private void CustomWindowVerificationText(object sender, TextChangedEventArgs e)
         {

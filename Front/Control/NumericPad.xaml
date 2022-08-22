@@ -1,0 +1,149 @@
+﻿<UserControl x:Class="Front.Control.NumericPad"           
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Height="650" Width="550"
+        Background="LightGray"
+        >
+    <Grid >
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="9*"/>
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="0" Grid.RowSpan="2">
+            <TextBlock x:Name="productNameChanges" Text="{Binding Desciption}" HorizontalAlignment="Center" TextWrapping="Wrap"  FontWeight="Bold" FontSize="30"></TextBlock>
+        </Grid>
+        <Grid Grid.Row="2" Grid.ColumnSpan="3" Margin="5,5,5,5">
+            <Border  Background="LightGray"  CornerRadius="10" BorderBrush="Gray" BorderThickness="2" />
+            <TextBlock HorizontalAlignment="Center" Name="WrittenNumber"
+                       Text="{Binding Result}" 
+                       FontSize="{Binding TextBlockFontSize}" />
+        </Grid>
+        <Grid  Grid.Row="3">
+
+            <Button Style="{StaticResource yelowButton}" Name="button5" Background="WhiteSmoke" BorderThickness="1" 
+				Command="{Binding Path=PressAndRelease}" CommandParameter="7" Click="button_Click">
+                <TextBlock Text="7"  FontSize="{Binding TextBlockFontSize}"/>
+            </Button>
+        </Grid>
+        <Grid Grid.Column="1" Grid.Row="3">
+            <Button Style="{StaticResource yelowButton}" x:Name="button6" Background="WhiteSmoke"
+				Command="{Binding PressAndRelease}" CommandParameter="8" Click="button_Click" BorderThickness="1" >
+                <TextBlock Text="8"  FontSize="{Binding TextBlockFontSize}"/>
+            </Button>
+        </Grid>
+        <Grid Grid.Column="2" Grid.Row="3">
+
+            <Button Style="{StaticResource yelowButton}" x:Name="button7" Background="WhiteSmoke"
+				Command="{Binding PressAndRelease}" CommandParameter="9" Click="button_Click" >
+                <TextBlock Text="9"  FontSize="{Binding TextBlockFontSize}"/>
+            </Button>
+        </Grid>
+        <Grid Grid.Column="3" Grid.Row="3">
+
+            <Button Style="{StaticResource yelowButton}" x:Name="button8" Command="{Binding PressAndRelease}" CommandParameter="BACK" Click="button_Click">
+                <Path Stretch="Fill" Width="60" Height="45" Data="F1M555.0371,274.4893L552.7871,276.7383L549.9861,273.9373L547.1991,276.7243L545.1131,274.6393L547.9001,271.8523L545.0101,268.9603L547.2601,266.7113L550.1501,269.6023L552.8921,266.8613L554.9761,268.9463L552.2361,271.6883z M555.3751,264.0003L544.8751,264.0003C543.1251,264.1253,535.0001,270.7503,535.0001,272.2503C535.0001,273.7503,543.1251,279.3753,544.8751,279.5003L555.3751,279.5003C558.8751,279.5003,559.3751,277.7093,559.3751,275.5003L559.3751,268.0003C559.3751,265.7913,558.7501,264.0003,555.3751,264.0003" Fill="#FF333333"/>
+            </Button>
+        </Grid>
+        <Grid Grid.Row="4" >
+
+            <Button Style="{StaticResource yelowButton}" x:Name="button9" Background="WhiteSmoke"
+				Command="{Binding PressAndRelease}" CommandParameter="4" Click="button_Click" >
+                <TextBlock Text="4"  FontSize="{Binding TextBlockFontSize}"/>
+            </Button>
+        </Grid>
+        <Grid Grid.Column="1" Grid.Row="4" >
+
+            <Button Style="{StaticResource yelowButton}" x:Name="button10" Background="WhiteSmoke"
+				Command="{Binding PressAndRelease}" CommandParameter="5" Click="button_Click" >
+                <TextBlock Text="5"  FontSize="{Binding TextBlockFontSize}"/>
+            </Button>
+        </Grid>
+        <Grid Grid.Column="2" Grid.Row="4" >
+
+            <Button Style="{StaticResource yelowButton}" x:Name="button11" Background="WhiteSmoke"
+				Command="{Binding PressAndRelease}" CommandParameter="6" Click="button_Click" >
+                <TextBlock Text="6"  FontSize="{Binding TextBlockFontSize}"/>
+            </Button>
+        </Grid>
+        <Grid Grid.Row="5" >
+
+            <Button Style="{StaticResource yelowButton}" x:Name="button13" Background="WhiteSmoke"
+				Command="{Binding PressAndRelease}" CommandParameter="1" Click="button_Click" >
+                <TextBlock Text="1"  FontSize="{Binding TextBlockFontSize}"/>
+            </Button>
+        </Grid>
+        <Grid Grid.Column="1" Grid.Row="5">
+
+            <Button Style="{StaticResource yelowButton}" x:Name="button14" Background="WhiteSmoke"
+				Command="{Binding PressAndRelease}" CommandParameter="2" Click="button_Click" >
+                <TextBlock Text="2"  FontSize="{Binding TextBlockFontSize
+                                   }"/>
+            </Button>
+        </Grid>
+        <Grid Grid.Column="2" Grid.Row="5" >
+
+            <Button Style="{StaticResource yelowButton}" x:Name="button15" Background="WhiteSmoke"
+				Command="{Binding PressAndRelease}" CommandParameter="3" Click="button_Click" >
+                <TextBlock Text="3"  FontSize="{Binding TextBlockFontSize}"/>
+            </Button>
+        </Grid>
+        <Grid Grid.Column="3" Grid.Row="4" Grid.RowSpan="4" >
+
+            <Button  x:Name="button16"
+				Command="{Binding PressAndRelease}" CommandParameter="RETURN" Click="button_Click" >
+                <TextBlock Text="Enter"  FontSize="{Binding TextBlockFontSize}"/>
+                <Button.Style>
+                    <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                        <Setter Property="IsEnabled" Value="false"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsEnableEnter}" Value="True">
+                                <Setter Property="IsEnabled" Value="True" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsEnableEnter}" Value="False">
+                                <Setter Property="IsEnabled" Value="False" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </Grid>
+        <Grid Grid.ColumnSpan="2" Grid.Row="6">
+
+            <Button Style="{StaticResource yelowButton}" x:Name="button17" Background="WhiteSmoke"
+				Command="{Binding PressAndRelease}" CommandParameter="0" Click="button_Click" >
+                <TextBlock Text="0"  FontSize="{Binding TextBlockFontSize}"/>
+            </Button>
+        </Grid>
+        <Grid Grid.Column="2" Grid.Row="6">
+
+            <Button Style="{StaticResource yelowButton}" x:Name="button19" Background="WhiteSmoke"
+				Command="{Binding PressAndRelease}" CommandParameter=","	Click="button_Click" >
+                <TextBlock Text=","  FontSize="{Binding TextBlockFontSize}"/>
+            </Button>
+        </Grid>
+        
+        <Grid Grid.Column="3" Grid.Row="2" >
+
+            <Button Style="{StaticResource yelowButton}" x:Name="buttonEsc" Grid.Row="0" 
+				Command="{Binding PressAndRelease}" CommandParameter="ESC" Click="button_Click" >
+                <TextBlock Text="Esc"  FontSize="{Binding TextBlockFontSize}"/>
+            </Button>
+        </Grid>
+
+    </Grid>
+</UserControl>

@@ -125,6 +125,7 @@ namespace Front
             Global.OnClientChanged += (pClient, pIdWorkPlace) =>
             {
                 Client = pClient;
+                var r = Dispatcher.BeginInvoke(new ThreadStart(() => { NumericPad.Visibility = Visibility.Collapsed; }));             
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClientName"));
                 FileLogger.WriteLogMessage($"MainWindow.OnClientChanged(Client.Wallet=> {pClient.Wallet} SumBonus=>{pClient.SumBonus})", eTypeLog.Full);
             };
