@@ -31,7 +31,8 @@ namespace Front.Equipments.Implementation
                     string ResXML = WCh.StatusBarXML();
                     if (!string.IsNullOrEmpty(ResXML))
                     {
-                       OpenWorkDay();                        
+                       if(!OpenWorkDay())
+                            ResXML = WCh.StatusBarXML();
                     }
                     State = eStateEquipment.On;
                 }
@@ -47,7 +48,7 @@ namespace Front.Equipments.Implementation
 
         public override bool OpenWorkDay()
         {
-            string xml = $"<InputParameters> <Parameters FN=\"{FN}\" OperatorID=\"{OperatorName}\" /> </InputParameters>";
+            string xml = $"<InputParameters> <Parameters FN=\"{FN}\"  /> </InputParameters>";
 
             if (WCh.GetCurrentStatus(xml))
             {
@@ -61,6 +62,7 @@ namespace Front.Equipments.Implementation
 
                     if (ShiftNumber.ToInt(-1) <= 0)
                     {
+                        xml = $"<InputParameters> <Parameters FN=\"{FN}\" OperatorID=\"{OperatorName}\" /> </InputParameters>";
                         IsOpenWorkDay = WCh.OpenShift(xml);
                         ResXML = WCh.StatusBarXML();
                     }
