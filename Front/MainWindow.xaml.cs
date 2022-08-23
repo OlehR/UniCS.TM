@@ -280,7 +280,7 @@ namespace Front
         {
             if (State == eStateMainWindows.WaitOwnBag && pTypeAccess == eTypeAccess.FixWeight)
                 return;
-            lock (this._locker)
+           //lock (this._locker)
             {
                 var r = Dispatcher.BeginInvoke(new ThreadStart(() =>
                 {

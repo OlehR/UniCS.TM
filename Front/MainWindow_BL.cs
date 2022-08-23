@@ -386,9 +386,9 @@ namespace Front
         /// Безготівкова оплата і Друк чека.
         /// </summary>
         /// <returns></returns>
-        bool PrintAndCloseReceipt()
-        {
-            var R = Bl.GetReceiptHead(curReceipt, true);
+        public bool PrintAndCloseReceipt(Receipt pR=null)
+        {   
+            var R = Bl.GetReceiptHead(pR??curReceipt, true);
             curReceipt = R;
             if (R.AgeRestrict > 0 && R.IsConfirmAgeRestrict == false)
             {
