@@ -250,14 +250,8 @@ namespace Front
 
         private void FiscalizCheckButton(object sender, RoutedEventArgs e)
         {
-            var R = Bl.GetReceiptHead(curReceipt, true);
-            Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
-            var res = EF.PrintReceipt(R);
-            Bl.InsertLogRRO(res);
-            if (res.CodeError == 0)
-            {
-                Bl.UpdateReceiptFiscalNumber(R, res.FiscalNumber, res.SUM);
-            }
+            MW.PrintAndCloseReceipt(curReceipt);
+            
             //MessageBox.Show("Фiскалізовано");
         }
 
