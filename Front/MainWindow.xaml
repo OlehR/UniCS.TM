@@ -4,14 +4,17 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"   
         xmlns:keyboard="clr-namespace:OnScreenKeyboardControl.Keyboard"
-        xmlns:local="clr-namespace:Front" xmlns:onScreenKeyboardControl="clr-namespace:OnScreenKeyboardControl"
-        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        xmlns:local="clr-namespace:Front" 
+        xmlns:onScreenKeyboardControl="clr-namespace:OnScreenKeyboardControl"
+        xmlns:uc="clr-namespace:Front.Control"        
         mc:Ignorable="d"
         Title="MainWindow" 
         WindowState="Maximized"
         WindowStyle="None"
-        Height="768" Width="1024"
+        Height="768" Width="1024"        
         >
+
+    <!--xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"-->
     <!--Height="1080" Width="1920"-->
     <Window.DataContext>
         <onScreenKeyboardControl:ViewModel/>
@@ -376,8 +379,8 @@
                                         </Style>
                                     </TextBlock.Style>
                                 </TextBlock>
-                                <TextBlock Grid.Column="3" Text="{Binding Price, StringFormat=0.00 }" FontSize="25" FontWeight="DemiBold"/>
-                                <TextBlock Grid.Column="4" Text="{Binding SumDiscount, StringFormat=0.00}" FontSize="25" FontWeight="DemiBold"/>
+                                <TextBlock Grid.Column="3" Text="{Binding PriceDealer, StringFormat=0.00 }" FontSize="25" FontWeight="DemiBold"/>
+                                <TextBlock Grid.Column="4" Text="{Binding DiscountEKKA, StringFormat=0.00}" FontSize="25" FontWeight="DemiBold"/>
                                 <TextBlock Grid.Column="5" Text="{Binding SumTotal, StringFormat=0.00}" FontWeight="Bold" FontSize="25"/>
 
                             </Grid>
@@ -508,6 +511,18 @@
                 
             </Grid>-->
 
+
+            <!-- цифрова клавіатура -->
+            <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="0" Grid.RowSpan="6"
+                 Grid.Column="0" Grid.ColumnSpan="6"
+                 Name="NumericPad" Visibility="Collapsed" Grid.ZIndex="2" 
+                CornerRadius="10"  Margin="490,0,490,0" >
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+                </Border.Effect>
+                <uc:NumericPad x:Name="InputNumberPhone"  Desciption="Введіть номер телефону" ValidationMask="^[0-9]{10,13}$" />
+            </Border>
 
             <!-- Кастомне вікно    -->
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
@@ -686,7 +701,6 @@
             </Border>
 
             <!-- Ввід цін на сегарети    -->
-
             <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
                 Grid.Column="1" Grid.ColumnSpan="4"
@@ -768,8 +782,6 @@
 
                 </Grid>
             </Border>
-
-
 
             <!-- Очікування Адміністратора   -->
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
@@ -1534,8 +1546,8 @@
                     </Style>
                 </Button.Style>
             </Button>
-            <Button  Grid.Column="2" Grid.Row="0" Grid.RowSpan="2"  
-                         Style="{StaticResource Default}"
+            <Button  Grid.Column="2" Grid.Row="0" Grid.RowSpan="2"                          
+                     Style="{StaticResource yelowButton}"
                          Click="FindClientByPhoneClick"
                            Visibility="Visible"  
                            Foreground="Black">
@@ -1606,9 +1618,6 @@
             </Button>
         </Grid>
 
-
-
-
         <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="1" Grid.RowSpan="4"
                 Grid.Column="0" Grid.ColumnSpan="4"
@@ -1620,8 +1629,6 @@
                 Grid.Column="0" Grid.ColumnSpan="4"
                  Name="ErrorBackground" Visibility="Collapsed" Grid.ZIndex="1" 
                 Opacity="0.5"/>
-
-
 
         <!-- Вікно помилки   -->
         <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
