@@ -244,7 +244,7 @@ namespace ModelMID
                 return false;
             //Шукаємо "Правильну" вагу
             for (int i = 0; i < WaitWeight.Length; i++)
-                if (WaitWeight[i].IsGoodWeight(Math.Abs(pWeight), Math.Abs(Quantity)))
+                if (WaitWeight[i].IsGoodWeight(pWeight, Math.Abs(Quantity)))
                     return true;
             return false;
         }

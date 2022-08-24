@@ -103,7 +103,10 @@ namespace Front
             sEquipmentFront = this;
             //OnControlWeight += (pWeight, pIsStable) => { pSetControlWeight?.Invoke(pWeight, pIsStable); };                
 
-            Task.Run(() => Init(pSetBarCode, pActionStatus));
+            //Task.Run(() => 
+            Init(pSetBarCode, pActionStatus);
+            //);
+           
             OnWeight +=  (pWeight, pIsStable) => 
                          {  if (IsControlScale && ControlScale.Model == eModelEquipment.VirtualControlScale) OnControlWeight?.Invoke(pWeight, pIsStable);  };
             
@@ -225,6 +228,7 @@ namespace Front
                             break;
                         case eModelEquipment.pRRo_WebCheck:
                             RRO = new pRRO_WebCheck(ElEquipment, config, null, pActionStatus);
+                            RRO.Init();
                             break;
                         case eModelEquipment.Maria:
                             RRO = new RRO_Maria(ElEquipment, config, null, pActionStatus);

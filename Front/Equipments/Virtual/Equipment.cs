@@ -64,7 +64,7 @@ namespace Front.Equipments
                 Model = pEquipment.Model;
             }
         }
-
+        public virtual void Init() { }
         public virtual StatusEquipment TestDevice() { throw new NotImplementedException(); }
         public virtual string GetDeviceInfo() { throw new NotImplementedException(); }
         public virtual void Enable() { State = eStateEquipment.On; }
