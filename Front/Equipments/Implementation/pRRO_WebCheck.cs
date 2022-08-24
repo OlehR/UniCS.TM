@@ -16,59 +16,71 @@ namespace Front.Equipments.Implementation
         string FN;
         WebCheck.ClassFiscal WCh;
         public pRRO_WebCheck(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) :
-                       base(pEquipment, pConfiguration,eModelEquipment.pRRo_WebCheck, pLoggerFactory, pActionStatus)
+                       base(pEquipment, pConfiguration, eModelEquipment.pRRo_WebCheck, pLoggerFactory, pActionStatus)
+        {
+            State = eStateEquipment.Init;
+            WCh = new WebCheck.ClassFiscal();
+            FN = pConfiguration["Devices:pRRO_WebCheck:FN"];
+            OperatorName = pConfiguration["Devices:pRRO_WebCheck:OperatorID"];
+            IsOpenWorkDay = false;
+        }
+
+        public override void Init()
         {
             try
             {
-                State = eStateEquipment.Init;
-                WCh = new WebCheck.ClassFiscal();
-                FN = pConfiguration["Devices:pRRO_WebCheck:FN"];
-              OperatorName = pConfiguration["Devices:pRRO_WebCheck:OperatorID"];
-                IsOpenWorkDay = false;
                 // !!!TMP Перенести асинхронно бо дуже довго
                 if (WCh.Initialization($"<InputParameters> <Parameters FN = \"{FN}\" />  </InputParameters>"))
                 {
                     string ResXML = WCh.StatusBarXML();
                     if (!string.IsNullOrEmpty(ResXML))
                     {
-                       if(!OpenWorkDay())
-                            ResXML = WCh.StatusBarXML();
+                        OpenWorkDay();
                     }
                     State = eStateEquipment.On;
                 }
                 else
-                    State = eStateEquipment.Error;   
+                    State = eStateEquipment.Error;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 State = eStateEquipment.Error;
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
             }
         }
 
+
         public override bool OpenWorkDay()
         {
-            string xml = $"<InputParameters> <Parameters FN=\"{FN}\"  /> </InputParameters>";
-
-            if (WCh.GetCurrentStatus(xml))
+            string xml = $"<InputParameters> <Parameters FN=\"{FN}\" /> </InputParameters>";
+            try
             {
-                string ResXML = WCh.StatusBarXML();
-                if (!string.IsNullOrEmpty(ResXML))
+                if (WCh.GetCurrentStatus(xml))
                 {
-                    int iShiftNumber = -1;
-                    var ShiftNumber = GetElement(ResXML, "ShiftNumber", "\"", "\"");
-                    if (ShiftNumber != null)
-                        iShiftNumber = ShiftNumber.ToInt(-1);
-
-                    if (ShiftNumber.ToInt(-1) <= 0)
+                    string ResXML = WCh.StatusBarXML();
+                    if (!string.IsNullOrEmpty(ResXML))
                     {
-                        xml = $"<InputParameters> <Parameters FN=\"{FN}\" OperatorID=\"{OperatorName}\" /> </InputParameters>";
-                        IsOpenWorkDay = WCh.OpenShift(xml);
-                        ResXML = WCh.StatusBarXML();
+                        int iShiftNumber = -1;
+                        var ShiftNumber = GetElement(ResXML, "ShiftNumber", "\"", "\"");
+                        if (ShiftNumber != null)
+                            iShiftNumber = ShiftNumber.ToInt(-1);
+
+                        if (iShiftNumber <= 0)
+                        {
+                            xml = $"<InputParameters> <Parameters FN=\"{FN}\" OperatorID=\"{OperatorName}\" /> </InputParameters>";
+
+                            IsOpenWorkDay = WCh.OpenShift(xml);
+                            ResXML = WCh.StatusBarXML();
+                        }
+                        else
+                            IsOpenWorkDay = true;
                     }
-                    else
-                        IsOpenWorkDay = true;
                 }
+            }
+            catch (Exception e)
+            {
+                State = eStateEquipment.Error;
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
             }
             return IsOpenWorkDay;
         }
@@ -77,7 +89,7 @@ namespace Front.Equipments.Implementation
             string Add = (pRW.IsUseCodeUKTZED ? $"UKTZED={pRW.CodeUKTZED}" : "") +
                          (!string.IsNullOrEmpty(pRW.ExciseStamp) ? " ExciseStamp=\"{pRW.ExciseStamp}\"" : "") +
                          (!string.IsNullOrEmpty(pRW.BarCode) ? $" Barcode=\"{pRW.BarCode}\"" : "");
-            return $"<Good Code=\"{pRW.CodeWares}\" Name=\"{pRW.NameWares.ToXMLString() }\" Quantity=\"{pRW.Quantity}\" Price=\"{pRW.PriceEKKA}\" Sum=\"{pRW.Sum}\" TaxRate=\"1\"  {Add} />";
+            return $"<Good Code=\"{pRW.CodeWares}\" Name=\"{pRW.NameWares.ToXMLString()}\" Quantity=\"{pRW.Quantity}\" Price=\"{pRW.PriceEKKA}\" Sum=\"{pRW.Sum}\" TaxRate=\"1\"  {Add} />";
         }
 
         string GetElement(string pStr, string pSeek, string pStart = null, string pStop = null)
@@ -127,12 +139,12 @@ namespace Front.Equipments.Implementation
                 GenL(pR) + "\n" + GenGoods(pR.Wares) +
                 $"\n<Payments> <Payment ID=\"{1}\" Sum = \"{pR.SumReceipt}\"/></Payments>\n</Check>";
 
-            bool r = WCh.FiscalReceipt(xml);           
-           
+            bool r = WCh.FiscalReceipt(xml);
+
             return GetResLogRRO(pR, pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, pR.SumReceipt);
         }
 
-        LogRRO GetResLogRRO(IdReceipt pIdR, eTypeOperation pTypeOperation,decimal pSum=0)
+        LogRRO GetResLogRRO(IdReceipt pIdR, eTypeOperation pTypeOperation, decimal pSum = 0)
         {
             string ResXML = WCh.StatusBarXML();
             string TextReceipt = null;
@@ -142,8 +154,8 @@ namespace Front.Equipments.Implementation
             string Error = GetElement(ResXML, "ErrHelp", "\"", "\"");
 
             CodeError = GetElement(ResXML, "Err", "\"", "\"").ToInt(); ;
-            
-            return new LogRRO(pIdR) { TypeOperation = pTypeOperation, TypeRRO = "WebCheck", FiscalNumber = FiscalNumber, SUM = pSum, JSON =ResXML, TextReceipt = TextReceipt, Error = Error, CodeError = CodeError };
+
+            return new LogRRO(pIdR) { TypeOperation = pTypeOperation, TypeRRO = "WebCheck", FiscalNumber = FiscalNumber, SUM = pSum, JSON = ResXML, TextReceipt = TextReceipt, Error = Error, CodeError = CodeError };
 
         }
 
@@ -182,9 +194,9 @@ namespace Front.Equipments.Implementation
         /// <returns></returns>
         override public async Task<LogRRO> MoveMoneyAsync(decimal pSum, IdReceipt pIdR)
         {
-            string xml = $"<InputParameters> <Parameters FN = \"{FN}\" /> Sum{(pSum>0?"In":"Out")} = \"{Math.Abs(pSum)}\"";
-            if(WCh.CashInOut(xml))   
-             return GetResLogRRO(pIdR, pSum>0? eTypeOperation.MoneyIn: eTypeOperation.MoneyOut, pSum);
+            string xml = $"<InputParameters> <Parameters FN = \"{FN}\" /> Sum{(pSum > 0 ? "In" : "Out")} = \"{Math.Abs(pSum)}\"";
+            if (WCh.CashInOut(xml))
+                return GetResLogRRO(pIdR, pSum > 0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyOut, pSum);
             return null;
         }
 
@@ -210,13 +222,13 @@ namespace Front.Equipments.Implementation
             return new StatusEquipment(Model, State, $"{Error} {Environment.NewLine} {Res}");
         }
 
-        public override string GetDeviceInfo() 
+        public override string GetDeviceInfo()
         {
-            string res="";
+            string res = "";
             string xml = $"<InputParameters> <Parameters FN = \"{FN}\" />  </InputParameters>";
             if (WCh.GetCurrentStatus(xml))
             {
-                res = WCh.StatusBarXML();              
+                res = WCh.StatusBarXML();
             }
             else
                 res = "GetCurrentStatus Не виконався";

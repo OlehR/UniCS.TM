@@ -251,6 +251,7 @@ namespace Front
                 SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, new CustomWindow(eWindows.RestoreLastRecipt, LastR.SumReceipt.ToString()));
                 return;
             }
+            else
             SetStateView(eStateMainWindows.StartWindow);
         }
 
@@ -302,10 +303,13 @@ namespace Front
                             else
                             if (CS.IsProblem)
                             {
-                                if (!IsShowWeightWindows && pSMV != eStateMainWindows.WaitAdmin) //--&&  && pSMV != eStateMainWindows.BlockWeight && pSMV != eStateMainWindows.WaitOwnBag && pSMV != eStateMainWindows.WaitAdmin)
-                                    pSMV = eStateMainWindows.BlockWeight;
-                                else
-                                    Res = eTypeAccess.FixWeight;
+                                if (State != eStateMainWindows.ProcessPay && customWindow?.Id!= eWindows.RestoreLastRecipt)
+                                {
+                                    if (!IsShowWeightWindows && pSMV != eStateMainWindows.WaitAdmin) //--&&  && pSMV != eStateMainWindows.BlockWeight && pSMV != eStateMainWindows.WaitOwnBag && pSMV != eStateMainWindows.WaitAdmin)
+                                        pSMV = eStateMainWindows.BlockWeight;
+                                    else
+                                        Res = eTypeAccess.FixWeight;
+                                }
                             }
                         }
 

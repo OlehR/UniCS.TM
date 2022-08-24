@@ -55,7 +55,7 @@ namespace Front
             }
             else
             {
-                WG = Bl.GetProductsByName(MW.curReceipt, (WaresName.Text.Length > 1 ? WaresName.Text : ""), OffSet, Limit, CodeFastGroup)?.Select(r => new GW(r));
+                WG = Bl.GetProductsByName(MW.curReceipt, (WaresName.Text.Length > 1 ? WaresName.Text : ""), OffSet * Limit, Limit, CodeFastGroup)?.Select(r => new GW(r));
                 if (WG != null)
                     MaxPage = WG.First().TotalRows / Limit;
                 else
@@ -98,14 +98,11 @@ namespace Front
                 Bt.Tag = el;
                 Bt.Background = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
                 Bt.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
-                if (el.IsWeight)
-                {
-                    var WeightImg = new Image();
-                    //WeightImg.Source = new 
-                 }
+
                 //Кнопка з картинкою
                 Grid.SetColumn(Bt, i);
                 Grid.SetRow(Bt, j);
+
                 if (el.Type == 1) //якщо група товарів тоді показати лише фото
                 {
                     Grid.SetRowSpan(Bt, 2);
@@ -123,18 +120,40 @@ namespace Front
                 Grid.SetColumn(Bor, i);
                 Grid.SetRow(Bor, j);
                 Grid.SetRowSpan(Bor, 2);
-                //if (el.Name.Length > 19)
-                //    NameWaresGrid.Text = el.Name.Substring(0, 19);
-                //else
+                //Розділення на 2 радки якщо текст завеликий
+                var leng = el.Name.Length;
+                var lengthText = 20;
+                if (leng > lengthText)
+                {
+                    NameWaresGrid.FontSize = 16;
+                    NameWaresGrid.Text = el.Name.Insert(lengthText, Environment.NewLine);
+                }
+                else
+                {
+                    NameWaresGrid.FontSize = 30;
                     NameWaresGrid.Text = el.Name; //max 19 
+
+                }
                 NameWaresGrid.FontFamily = new FontFamily("Source Sans Pro");
-                NameWaresGrid.FontSize = 15;
                 NameWaresGrid.FontWeight = FontWeights.DemiBold;
                 NameWaresGrid.HorizontalAlignment = HorizontalAlignment.Center;
                 NameWaresGrid.VerticalAlignment = VerticalAlignment.Bottom;
 
                 PictureGrid.Children.Add(Bt);
                 PictureGrid.Children.Add(Bor);
+                // Якщо товар ваговий тоді малюємо значок
+                if (el.IsWeight)
+                {
+                    var WeightImg = new Image();
+                    Uri resourceUri = new Uri("/icons/weight.png", UriKind.Relative);
+                    WeightImg.Source = new BitmapImage(resourceUri);
+                    WeightImg.Width = WeightImg.Height = 50;
+                    WeightImg.HorizontalAlignment = HorizontalAlignment.Right;
+                    WeightImg.VerticalAlignment = VerticalAlignment.Top;
+                    Grid.SetColumn(WeightImg, i);
+                    Grid.SetRow(WeightImg, j);
+                    PictureGrid.Children.Add(WeightImg);
+                }
                 if (++i >= 5)
                 { j += 2; i = 0; }
                 if (j >= 4) break;
