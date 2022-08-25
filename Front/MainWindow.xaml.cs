@@ -363,7 +363,7 @@ namespace Front
                     {
                         State = pSMV;
                         SetPropertyChanged();
-                        EF.SetColor(GetFlagColor(State));
+                        EF.SetColor(GetFlagColor(State, TypeAccessWait,CS.StateScale));
                     }
 
                     //Генеруємо з кастомні вікна

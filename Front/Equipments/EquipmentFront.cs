@@ -113,10 +113,10 @@ namespace Front
             
         }
 
-        public void ControlWeight(double pWeight,bool IsStable)
+       /* public void ControlWeight(double pWeight,bool IsStable)
         {
             OnControlWeight?.Invoke(pWeight, IsStable);
-        }
+        }*/
         public void Init(Action<string, string> pSetBarCode,  Action<StatusEquipment> pActionStatus = null)
         {
             using ILoggerFactory loggerFactory =
