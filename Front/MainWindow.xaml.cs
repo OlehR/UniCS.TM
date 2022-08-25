@@ -26,7 +26,6 @@ using System.Windows.Documents;
 
 namespace Front
 {
-
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
@@ -58,7 +57,8 @@ namespace Front
         public decimal MoneySum { get; set; }
         public string MoneySumToRound { get; set; }
         public string EquipmentInfo { get; set; }
-        public bool Volume { get; set; }
+        bool _Volume = true;
+        public bool Volume { get { return _Volume; } set { _Volume = value; if(s!=null) s.IsSound = value; } }
         public string ChangeSumPaymant { get; set; } = "0";
 
         public bool IsShowWeightWindows { get; set; } = false;
@@ -122,9 +122,14 @@ namespace Front
         //[Obsolete]
        // KeyPad keyPad;
 
-        public System.Drawing.Color GetFlagColor(eStateMainWindows pStateMainWindows)
+        public System.Drawing.Color GetFlagColor(eStateMainWindows pStateMainWindows, eTypeAccess pTypeAccess,eStateScale pSS)
         {
-            return FC.ContainsKey(pStateMainWindows) ? FC[pStateMainWindows] : System.Drawing.Color.Black;
+            System.Drawing.Color c = FC.ContainsKey(pStateMainWindows) ? FC[pStateMainWindows] : System.Drawing.Color.Black;
+            if(pSS == eStateScale.WaitGoods)
+                return System.Drawing.Color.Yellow;
+            if(pSS == eStateScale.BadWeight || pSS == eStateScale.NotStabilized )
+                return System.Drawing.Color.Red;
+            return c;
         }
        
 
@@ -277,11 +282,35 @@ namespace Front
             //ChangeWaitAdminText();
         }
 
-        public void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine, eTypeAccess pTypeAccess = eTypeAccess.NoDefine, ReceiptWares pRW = null, CustomWindow pCW=null)
+        public void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine, eTypeAccess pTypeAccess = eTypeAccess.NoDefine, ReceiptWares pRW = null, CustomWindow pCW=null, eSender pS = eSender.NotDefine)
         {
+           
+            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"pSMV={pSMV}/{State}, pTypeAccess={pTypeAccess}/{TypeAccessWait}, pRW ={pRW} , pCW={pCW},  pS={pS}", eTypeLog.Full);
+
+
             if (State == eStateMainWindows.WaitOwnBag && pTypeAccess == eTypeAccess.FixWeight)
                 return;
-           //lock (this._locker)
+            //Подія по вазі 
+            if (pS==eSender.ControlScale)
+            {
+                // під час оплати - ігноруємо її
+                if ((State == eStateMainWindows.ProcessPay || State == eStateMainWindows.ProcessPrintReceipt))
+                {
+                    if (pTypeAccess == eTypeAccess.FixWeight)
+                        EF.StartMultipleTone();
+                    else
+                        EF.StopMultipleTone();
+                    return;
+                }
+                //Під час відновлення чека
+                if (customWindow?.Id == eWindows.RestoreLastRecipt)
+                    return;
+            }
+
+            if ( (pSMV != eStateMainWindows.ProcessPay && pSMV != eStateMainWindows.ProcessPrintReceipt) && (State == eStateMainWindows.ProcessPay || State == eStateMainWindows.ProcessPrintReceipt) )
+                EF.StopMultipleTone();
+
+            //lock (this._locker)
             {
                 var r = Dispatcher.BeginInvoke(new ThreadStart(() =>
                 {
@@ -339,7 +368,7 @@ namespace Front
 
                     //Генеруємо з кастомні вікна
                     if (TypeAccessWait == eTypeAccess.FixWeight)
-                        customWindow = new CustomWindow(CS.StateScale, CS.RW?.Quantity == 1 && CS.RW?.FixWeightQuantity == 0);
+                        customWindow = new CustomWindow(CS.StateScale, CS.RW?.Quantity == 1 && CS.RW?.FixWeightQuantity == 0, CS.StateScale==eStateScale.WaitClear&&(curReceipt?.OwnBag??0)>0);
                     else
                         customWindow = (State == eStateMainWindows.WaitCustomWindows ? pCW : null);
 
@@ -401,8 +430,7 @@ namespace Front
                     switch (State)
                     {
                         case eStateMainWindows.StartWindow:
-                            StartShopping.Visibility = Visibility.Visible;
-                            ShowClientBonus.Visibility = Visibility.Collapsed;
+                            StartShopping.Visibility = Visibility.Visible;                           
                             //textInAll.Visibility = Visibility.Collapsed;
                             //valueInAll.Visibility = Visibility.Collapsed;
                             //StartVideo.Play();
@@ -1062,6 +1090,12 @@ namespace Front
                         return;
                     }
 
+                    if (res.Id == 6)
+                    {
+                        NewReceipt();
+                        SetStateView(eStateMainWindows.StartWindow);
+                        return;
+                    }
                     if (CS.RW != null)
                     {
                         CS.RW.FixWeightQuantity = CS.RW.Quantity;
@@ -1149,12 +1183,7 @@ namespace Front
                         ExtData = CS?.RW
                     };
                     Bl.SetCustomWindows(r);
-                }            
-            
-            if (Client?.Wallet != 0 || Client?.SumMoneyBonus != 0 || Client?.SumBonus != 0)
-            {
-                ShowClientBonus.Visibility = Visibility.Visible;
-            }
+                }     
             
         }
 

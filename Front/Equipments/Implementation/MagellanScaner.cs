@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Timers;
 using Utils;
 
 namespace Front.Equipments
@@ -13,6 +15,8 @@ namespace Front.Equipments
     public class MagellanScaner : Scaner
     {
 
+        Timer mTimer;
+        public bool IsMultipleTone { get; set; } = true;
         Regex Reg = new Regex(@"^[0-9]{8,13}[S]{1}[0-9]{7}$");
         public Magellan9300S Magellan9300;
 /*        public MagellanScaner(string pSerialPortName, int pBaudRate, Action<string, string> pLogger, Action<string, string> pOnBarCode) : base(pSerialPortName, pBaudRate, pLogger, pOnBarCode)
@@ -57,6 +61,11 @@ namespace Front.Equipments
                 }
                 else
                     State = eStateEquipment.Error;
+
+                mTimer = new Timer(120);
+                mTimer.AutoReset = true;
+                mTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+                //mTimer.Start();
             }
             catch(Exception e)
             {
@@ -66,6 +75,12 @@ namespace Front.Equipments
             }
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Ініціалізація Ваги", State == eStateEquipment.On ? eTypeLog.Expanded:eTypeLog.Error);
             
+        }
+
+        private async void OnTimedEvent(Object source, ElapsedEventArgs e)
+        {
+            if (IsMultipleTone)
+                ForceGoodReadTone();
         }
 
         public override StatusEquipment TestDevice()
@@ -93,5 +108,8 @@ namespace Front.Equipments
         {
             Magellan9300?.ForceGoodReadTone();
         }
+
+        public override void StartMultipleTone() { mTimer.Start(); }
+        public override void StopMultipleTone() { mTimer.Stop(); }
     }
 }

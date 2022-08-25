@@ -52,12 +52,13 @@ namespace Front.Equipments.Implementation
 
         public override Payment Purchase(decimal pAmount)
         {
+            int Interval = 10000;
             SetStatus(eStatusPos.WaitingForCard);
-            Thread.Sleep(500);
+            Thread.Sleep(Interval);
             SetStatus(eStatusPos.PinInputWaitKey);
-            Thread.Sleep(500);
+            Thread.Sleep(Interval);
             SetStatus(eStatusPos.TransactionIsAlreadyComplete);
-            Thread.Sleep(500);
+            Thread.Sleep(Interval);
             return GetPaymentResultModel(pAmount);
         }
 

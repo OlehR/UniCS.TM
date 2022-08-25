@@ -37,8 +37,7 @@ namespace Front.Equipments
         Timer mTimer;
         DateTime TimeLastWeight;
         Scales bst;
-        Action<double, bool> ParOnScalesData;
-        IConfiguration ParConfiguration;
+        
         double LastWeight = 0d;
         public ScaleModern(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<double, bool> pOnScalesData=null) : base(pEquipment, pConfiguration, eModelEquipment.ScaleModern, pLoggerFactory, pOnScalesData) 
         {

@@ -42,6 +42,9 @@ namespace Front
     
     public class Sound
     {
+        public bool IsPlaying = false;
+        public string  NextSound;
+        public bool IsSound = true;
         static Sound _Sound;
         eStateMainWindows State;
         eTypeAccess TypeAccess;
@@ -84,6 +87,8 @@ namespace Front
 
         public void Play(eTypeSound pS)
         {            
+            if(!IsSound)
+                return;
             var FileName = Path.Combine(Global.PathCur,"Sound",App.Language.Name,pS.ToString()+ ".wav");
             if(!File.Exists(FileName))
                 FileName = Path.Combine(Global.PathCur, "Sound", "en", pS.ToString()+ ".wav");// $@"D:\MID\Sound\en\{pS}.wav";
@@ -98,13 +103,40 @@ namespace Front
                     if (IsUse.ContainsKey(pS)) return;
                     else
                         IsUse.Add(pS, CodeReceipt);
-                    
-                    Player.Stop();
-                    player.SoundLocation = FileName;
-                    player.Load();
-                    player.Play();               
+
+                if (IsPlaying)
+                    NextSound = FileName;
+                else
+                    Playing(FileName);
+                                
             }            
         }
+
+        void  Playing(string pFileName)
+        {
+            Task.Factory.StartNew(() =>
+        {
+            IsPlaying = true;
+            try
+            {
+                player.SoundLocation = pFileName;
+                player.Load();
+                player.PlaySync();
+            }
+            finally
+            {
+                IsPlaying = false;
+            }
+            if (NextSound != null)
+            {
+                var S = NextSound;
+                NextSound = null;
+                Playing(S);
+            }
+        });
+
+        }
+
 
         public void Play(eStateMainWindows pState, eTypeAccess pTypeAccess, eStateScale pStateScale, int pExPar = 0)
         {             

@@ -125,7 +125,16 @@ namespace Front
             Global.OnClientChanged += (pClient, pIdWorkPlace) =>
             {
                 Client = pClient;
-                var r = Dispatcher.BeginInvoke(new ThreadStart(() => { NumericPad.Visibility = Visibility.Collapsed; }));             
+                
+                var r = Dispatcher.BeginInvoke(new ThreadStart(() =>
+                {
+                    NumericPad.Visibility = Visibility.Collapsed;
+                    if (Client?.Wallet != 0 || Client?.SumMoneyBonus != 0 || Client?.SumBonus != 0)
+                    {
+                        ShowClientBonus.Visibility = Visibility.Visible;
+                    }
+                }
+                ));             
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClientName"));
                 FileLogger.WriteLogMessage($"MainWindow.OnClientChanged(Client.Wallet=> {pClient.Wallet} SumBonus=>{pClient.SumBonus})", eTypeLog.Full);
             };
@@ -178,16 +187,17 @@ namespace Front
                         IsShowWeightWindows=true;
                         if ((State == eStateMainWindows.WaitAdmin && (TypeAccessWait == eTypeAccess.DelReciept || TypeAccessWait == eTypeAccess.DelWares)))
                             break;
-                        SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.FixWeight, pRW);
+                        SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.FixWeight, pRW,null,eSender.ControlScale);
                         break;
                     case eStateScale.BadWeight:
                     case eStateScale.WaitClear:
                         IsShowWeightWindows = true;
-                        SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.FixWeight, pRW);
+                        SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.FixWeight, pRW, null, eSender.ControlScale);
                         break;
                     case eStateScale.Stabilized:
-                        if (State == eStateMainWindows.WaitWeight || State == eStateMainWindows.BlockWeight || State == eStateMainWindows.WaitAdmin)
-                            SetStateView(eStateMainWindows.WaitInput);
+                        if (State == eStateMainWindows.WaitWeight || State == eStateMainWindows.BlockWeight || State == eStateMainWindows.WaitAdmin || 
+                            State == eStateMainWindows.ProcessPrintReceipt || State == eStateMainWindows.ProcessPay )
+                            SetStateView(eStateMainWindows.WaitInput, eTypeAccess.NoDefine, null,null, eSender.ControlScale);
                         if (pRW != null)
                             Bl.FixWeight(pRW);
                         break;
@@ -330,6 +340,7 @@ namespace Front
             if (u != null)
             { Bl.OnAdminBarCode?.Invoke(u); return; }
             if( (State != eStateMainWindows.WaitInput && State != eStateMainWindows.StartWindow) ||  curReceipt?.IsLockChange==true)  
+                if(State != eStateMainWindows.ProcessPay && State!= eStateMainWindows.ProcessPrintReceipt )
                     SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.AdminPanel);
 
         }
@@ -478,6 +489,7 @@ namespace Front
         {
             curReceipt = Bl.GetNewIdReceipt();
             s.NewReceipt(curReceipt.CodeReceipt);
+            Dispatcher.BeginInvoke(new ThreadStart(() => { ShowClientBonus.Visibility = Visibility.Collapsed; }));
         }
    
     }

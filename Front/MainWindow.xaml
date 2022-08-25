@@ -129,7 +129,7 @@
                     </Button>
                 </StackPanel>
 
-                <StackPanel Grid.Column="5" Grid.ColumnSpan="2" Orientation="Horizontal" VerticalAlignment="Center" x:Name="ShowClientBonus">
+                <StackPanel Grid.Column="5" Grid.ColumnSpan="2" Orientation="Horizontal" VerticalAlignment="Center" x:Name="ShowClientBonus" Visibility="Collapsed">
                     <StackPanel Margin="10,0,0,0" >
                         <TextBlock  FontSize="22" Text="Скарбничка: "/>
                         <TextBlock  FontSize="22" Text="Сума бонусів: "/>

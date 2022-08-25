@@ -171,6 +171,8 @@ namespace ModelMID
                 {
                     case eStateScale.WaitClear:
                         res = $"Текуча вага = {curFullWeight/ 1000:N3} кг";
+                        if (OwnBag > 0)
+                            res += $"{Environment.NewLine}Власна сумка = {OwnBag / 1000:N3} кг";
                         break;
                     case eStateScale.WaitGoods:
                         res = $"{Environment.NewLine}{RW.NameWares}{Environment.NewLine}Очікувана вага = {AllWeights} кг за {RW?.Quantity - RW?.FixWeightQuantity} шт";
@@ -219,6 +221,10 @@ namespace ModelMID
         /// </summary>
         WaitWeight[] WaitWeight;
         double Quantity;
+        /// <summary>
+        /// Вага власної сумки. 
+        /// </summary>
+        double OwnBag;
 
         //Timer t;
         // private Scales bst;
@@ -289,11 +295,11 @@ namespace ModelMID
             if (w != null)
             {                
                 if (/*w.WeightFact != -1 &&*/ w.AllWeights != null && w.AllWeights.Count() > 0)
-                    StartWeightNewGoogs(BeforeWeight, w.AllWeights, Convert.ToDouble(w.Quantity - w.FixWeightQuantity));
+                    StartWeightNewGoogs(BeforeWeight, w.AllWeights, Convert.ToDouble(w.Quantity - w.FixWeightQuantity), pR?.OwnBag??0d);
             }
         }
 
-        public void StartWeightNewGoogs(double pBeforeWeight, WaitWeight[] pWeight, double pQuantity = 1d) //, bool pIsIncrease = true
+        public void StartWeightNewGoogs(double pBeforeWeight, WaitWeight[] pWeight, double pQuantity = 1d,double pOwnBag=0d) //, bool pIsIncrease = true
         {            
             OnScalesLog($"StartWeightNewGoogs", $"(pBeforeWeight=>{pBeforeWeight},WaitWeight=>{(pWeight !=null? string.Join(", ", pWeight?.ToList()):"")},pQuantity={pQuantity}");
             BeforeWeight = pBeforeWeight;
@@ -303,6 +309,7 @@ namespace ModelMID
             СurrentlyWeight = 0;
             BeforeСurrentlyWeight = 0;
             BeforeFullWeight = 0;
+            OwnBag= pOwnBag;
 
             TooLightWeight = WaitWeight.Max(r => r.Max) <= Delta;
             if (RW != null && RW.Quantity != RW.FixWeightQuantity && RW.WeightFact != -1)
@@ -318,7 +325,7 @@ namespace ModelMID
         public void OnScalesData(double pWeight, bool pIsStable)
         {
           
-            //if(BeforeFullWeight!= curFullWeight || curFullWeight != pWeight)
+            if(BeforeFullWeight!= curFullWeight || curFullWeight != pWeight)
                 OnScalesLog("OnScalesData", $"weight=>{pWeight} isStable=>{pIsStable}");
             // !!! Ідея не вдала. Після стабілізації ваги пропускаємо кілька подій Оскільки контрольна вага бреше щодо pIsStable
          /*   if ((DateTime.Now - LastStabilized).TotalSeconds < 600)

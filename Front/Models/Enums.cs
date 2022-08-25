@@ -85,4 +85,18 @@ namespace Front.Models
         /// </summary>
         //FindClientByPhone,
     }
+
+    public enum eSender
+    {
+        NotDefine,
+        /// <summary>
+        /// Вага
+        /// </summary>
+        ControlScale,
+        /// <summary>
+        /// Обладнання
+        /// </summary>
+        Equipment,
+        //Scaner
+    }
 }

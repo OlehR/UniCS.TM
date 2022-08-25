@@ -103,15 +103,16 @@ namespace Front
             sEquipmentFront = this;
             //OnControlWeight += (pWeight, pIsStable) => { pSetControlWeight?.Invoke(pWeight, pIsStable); };                
 
-            //Task.Run(() => 
-            Init(pSetBarCode, pActionStatus);
-            //);
-           
-            OnWeight +=  (pWeight, pIsStable) => 
-                         {  if (IsControlScale && ControlScale.Model == eModelEquipment.VirtualControlScale) OnControlWeight?.Invoke(pWeight, pIsStable);  };
+            OnWeight += (pWeight, pIsStable) =>
+            { if (IsControlScale && ControlScale.Model == eModelEquipment.VirtualControlScale) OnControlWeight?.Invoke(pWeight, pIsStable); };
+            Task.Run(() =>  Init(pSetBarCode, pActionStatus) );
             
         }
 
+        public void ControlWeight(double pWeight,bool IsStable)
+        {
+            OnControlWeight?.Invoke(pWeight, IsStable);
+        }
         public void Init(Action<string, string> pSetBarCode,  Action<StatusEquipment> pActionStatus = null)
         {
             using ILoggerFactory loggerFactory =
@@ -168,7 +169,7 @@ namespace Front
                     switch (ElEquipment.Model)
                     {
                         case eModelEquipment.ScaleModern:
-                            ControlScale = new ScaleModern(ElEquipment, config, null, OnControlWeight);
+                            ControlScale = new ScaleModern(ElEquipment, config, null, ControlWeight);
                             break;
                         case eModelEquipment.VirtualControlScale: 
                             ControlScale = new VirtualControlScale(ElEquipment, config,null,null);
@@ -411,5 +412,8 @@ namespace Front
         {
             return ControlScale.CalibrateZero();
         }
+
+        public  void StartMultipleTone() { Scaner.StartMultipleTone(); }
+        public  void StopMultipleTone() { Scaner.StopMultipleTone(); }
     }
 }

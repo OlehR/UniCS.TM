@@ -115,7 +115,7 @@ namespace ModelMID
 
         }
 
-        public CustomWindow(eStateScale pST, bool IsViewAddWeight = false)
+        public CustomWindow(eStateScale pST, bool IsViewAddWeight = false,bool IsDelReceipt=false)
         {
             Id = eWindows.ConfirmWeight;
             IsCancelButton = false;
@@ -125,6 +125,8 @@ namespace ModelMID
                     Buttons = new ObservableCollection<CustomButton>()
                     { new CustomButton() { CustomWindow=this, Id = 4, Text = "Тарувати", IsAdmin = true } ,
                       new CustomButton() {CustomWindow=this, Id = 5, Text = "Вхід в адмінку", IsAdmin = true } };
+                    if(IsDelReceipt)
+                    Buttons.Add(new CustomButton() { CustomWindow = this, Id = 6, Text = "Видалити чек", IsAdmin = true });
                     break;
                 case eStateScale.BadWeight:
                     Buttons = new ObservableCollection<CustomButton>();
