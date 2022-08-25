@@ -53,7 +53,7 @@ namespace Front.Equipments
                 //ILoggerFactory loggerFactory = new LoggerFactory().AddConsole((_, __) => true);
                 ILogger<Scales> logger = LoggerFactory?.CreateLogger<Scales>();
                 bst = new Scales(Configuration, logger);
-                bst.OnControlWeightChanged = OnScalesData;
+                bst.OnControlWeightChanged += OnScalesData;
                 bst.OnControlWeightChanged += OnCurScalesData;
                 bst.Init();
                 State = eStateEquipment.On;

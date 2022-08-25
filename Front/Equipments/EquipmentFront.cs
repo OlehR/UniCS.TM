@@ -46,6 +46,10 @@ namespace Front
         /// </summary>
         public bool IsReadySale { get { return Terminal.State == eStateEquipment.On && RRO.State == eStateEquipment.On; } }
 
+        public void ControlWeight(double pWeight, bool pIsStable)
+        {
+            OnControlWeight?.Invoke(pWeight, pIsStable);
+        }
         public eStateEquipment StatCriticalEquipment
         {
             get
@@ -177,9 +181,10 @@ namespace Front
                             break;
                         default:
                             ControlScale = new Scale(ElEquipment, config);
-                            NewListEquipment.Add(ControlScale);
+                            //NewListEquipment.Add(ControlScale);
                             break;
                     }
+                    NewListEquipment.Add(ControlScale);
                 }
                 //Flag
                 Equipments = ListEquipment.Where(e => e.Type == eTypeEquipment.Signal);
