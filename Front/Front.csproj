@@ -123,8 +123,14 @@
     <Reference Include="ModernExpo.SelfCheckout.Devices.CustomFlagLamp">
       <HintPath>..\SharedLib\dll\ModernExpo.SelfCheckout.Devices.CustomFlagLamp.dll</HintPath>
     </Reference>
+    <Reference Include="ModernExpo.SelfCheckout.Devices.FP700">
+      <HintPath>..\SharedLib\dll\ModernExpo.SelfCheckout.Devices.FP700.dll</HintPath>
+    </Reference>
     <Reference Include="ModernExpo.SelfCheckout.Entities">
       <HintPath>..\SharedLib\dll\ModernExpo.SelfCheckout.Entities.dll</HintPath>
+    </Reference>
+    <Reference Include="ModernExpo.SelfCheckout.TerminalAdmin.DAL">
+      <HintPath>..\SharedLib\dll\ModernExpo.SelfCheckout.TerminalAdmin.DAL.dll</HintPath>
     </Reference>
     <Reference Include="ModernExpo.SelfCheckout.Utils">
       <HintPath>..\SharedLib\dll\ModernExpo.SelfCheckout.Utils.dll</HintPath>

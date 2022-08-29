@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using ModelMID;
 using ModelMID.DB;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 // using System.Data.SQLite;
@@ -77,6 +78,16 @@ namespace Front.Equipments
         /// <param name="pR"></param>
         /// <returns></returns>
         virtual public async Task<LogRRO> PrintReceiptAsync(Receipt pR)
+        {
+            return null; //throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Друк чека
+        /// </summary>
+        /// <param name="pR"></param>
+        /// <returns></returns>
+        virtual public async Task<LogRRO> PrintNoFiscalReceiptAsync(IEnumerable<string> pR)
         {
             return null; //throw new NotImplementedException();
         }

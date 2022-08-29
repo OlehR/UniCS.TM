@@ -181,6 +181,7 @@ namespace Front.Equipments
         //Exellio,
         pRRO_SG,
         Maria,
+        FP700,
         pRRo_WebCheck,
         VirtualRRO,
         VirtualScale,
