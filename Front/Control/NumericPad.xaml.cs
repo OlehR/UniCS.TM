@@ -50,7 +50,7 @@ namespace Front.Control
 
         #endregion
 
-        public Action<string> CallBackResult {get; set; }
+        public Action<string> CallBackResult { get; set; }
 
         public NumericPad()
         {
@@ -60,13 +60,13 @@ namespace Front.Control
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
-            Button button = sender as Button;            
-            
+            Button button = sender as Button;
+
             switch (button.CommandParameter.ToString())
             {
                 case "ESC":
-                  ((FrameworkElement)  this.Parent).Visibility = Visibility.Collapsed;
-                    CallBackResult?.Invoke(Result);
+                    ((FrameworkElement)this.Parent).Visibility = Visibility.Collapsed;
+                    CallBackResult?.Invoke("");
                     break;
 
                 case "RETURN":
@@ -87,7 +87,7 @@ namespace Front.Control
                     Result += button.CommandParameter.ToString();
                     break;
             }
-           
+
             button16.IsEnabled = IsEnableEnter;
             //OnPropertyChanged("IsEnableEnter"); //!!!TMP Розібратись чому не працює нормально біндінг в UserControl
         }
@@ -98,7 +98,7 @@ namespace Front.Control
 
         private void OnPropertyChanged(String info)
         {
-          PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(info));            
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(info));
         }
 
         #endregion

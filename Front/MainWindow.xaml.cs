@@ -647,6 +647,27 @@ namespace Front
                 Background.Visibility = Visibility.Collapsed;
                 BackgroundWares.Visibility = Visibility.Collapsed;
             }
+            //Button btn = sender as Button;
+            //if (btn.DataContext is ReceiptWares)
+            //{
+            //    ReceiptWares temp = btn.DataContext as ReceiptWares;
+            //    InputNumberPhone.productNameChanges.Text = Convert.ToString(temp.NameWares);
+            //    InputNumberPhone.Result = Convert.ToString(temp.Quantity);
+            //    InputNumberPhone.ValidationMask = "";
+            //    InputNumberPhone.CallBackResult = ChangeCount;
+            //    NumericPad.Visibility = Visibility.Visible;
+            //    Background.Visibility = Visibility.Visible;
+            //    BackgroundWares.Visibility = Visibility.Visible;
+            //}
+
+
+        }
+
+        private void ChangeCount(string pResult)
+        {
+            MessageBox.Show(pResult);
+            Background.Visibility = Visibility.Collapsed;
+            BackgroundWares.Visibility = Visibility.Collapsed;
         }
 
         private void _VolumeButton(object sender, RoutedEventArgs e)
@@ -1160,6 +1181,8 @@ namespace Front
         private void FindClientByPhoneClick(object sender, RoutedEventArgs e)
         {
             s.Play(eTypeSound.ScanCustomerCardOrEnterPhone);
+            InputNumberPhone.Desciption = "Введіть номер телефону";
+            InputNumberPhone.ValidationMask = "^[0-9]{10,13}$";
             InputNumberPhone.Result = "";
             InputNumberPhone.CallBackResult = FindClientByPhone;
             NumericPad.Visibility = Visibility.Visible;

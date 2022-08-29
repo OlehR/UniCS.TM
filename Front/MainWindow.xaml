@@ -521,7 +521,7 @@
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
                 </Border.Effect>
-                <uc:NumericPad x:Name="InputNumberPhone"  Desciption="Введіть номер телефону" ValidationMask="^[0-9]{10,13}$" />
+                <uc:NumericPad x:Name="InputNumberPhone"   />
             </Border>
 
             <!-- Кастомне вікно    -->
