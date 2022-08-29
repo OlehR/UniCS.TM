@@ -231,6 +231,12 @@ namespace Front
             Close();
         }
 
+        private void _ButtonHelp(object sender, RoutedEventArgs e)
+        {
+            MW?.SetStateView(eStateMainWindows.WaitAdmin);
+            KB.SetInput(null);
+            Close();
+        }
     }
 
 
