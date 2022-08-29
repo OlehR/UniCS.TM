@@ -66,6 +66,7 @@ namespace Front.Control
             {
                 case "ESC":
                   ((FrameworkElement)  this.Parent).Visibility = Visibility.Collapsed;
+                    CallBackResult?.Invoke(Result);
                     break;
 
                 case "RETURN":

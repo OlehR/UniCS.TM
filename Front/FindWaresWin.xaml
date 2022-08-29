@@ -13,6 +13,14 @@
     <Window.DataContext>
         <onScreenKeyboardControl:ViewModel/>
     </Window.DataContext>
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Source Sans Pro" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontWeight" Value="DemiBold" />
+        </Style>
+    </Window.Resources>
 
     <Grid Name="MainGrid" FocusManager.FocusedElement="{Binding ElementName=WaresName}"
         VerticalAlignment="Stretch">
@@ -38,9 +46,9 @@
                     <ColumnDefinition Width="1.5*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
-                <Button Style="{StaticResource yelowButton}" Grid.Column="0" FontSize="30"  >
-                    <!-- Click="_ButtonHelp" -->
-                    <TextBlock FontSize="28" Text="{DynamicResource buttonHelp}"/>
+                <Button Style="{StaticResource yelowButton}" Grid.Column="0" Click="_ButtonHelp"  >
+                     
+                    <TextBlock FontSize="35" Text="{DynamicResource buttonHelp}"/>
                 </Button>
 
                 <Grid Grid.Column="1"  Grid.ColumnSpan="1"
@@ -95,11 +103,11 @@
                     </Button>
                 </Grid>
 
-                <Button Grid.Column="3" Grid.ColumnSpan="2"  Click="ClickButtonUp" Name="ButtonUp" Height="60" >
+                <Button Grid.Column="3" Grid.ColumnSpan="2"  Click="ClickButtonUp" Name="ButtonUp" >
                     <Button.Content>
                         <StackPanel Orientation="Horizontal">
                             <Image  Height="40" Width="40"  Source="icons\backArrow.png"></Image>
-                            <TextBlock FontSize="28" Text="Назад" Margin="5,0,0,5"/>
+                            <TextBlock FontSize="28" Text="Назад" Margin="5,0,5,0"/>
                         </StackPanel>
                     </Button.Content>
                     <Button.Style>
@@ -130,11 +138,10 @@
                     </Image>-->
                 </Button>
 
-                <Button Grid.Column="5" Grid.ColumnSpan="2" Style="{StaticResource Default}"  FontSize="22" Click="ClickButtonCancel" 
-                        Height="60"  VerticalAlignment="Center">
+                <Button Grid.Column="5" Grid.ColumnSpan="2" Style="{StaticResource Default}"  FontSize="22" Click="ClickButtonCancel">
                     <StackPanel Orientation="Horizontal">
                         <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
-                        <TextBlock FontSize="28" FontWeight="DemiBold" Text="{DynamicResource ReturnCheck}"  Margin="5,0,0,5"/>
+                        <TextBlock FontSize="28" FontWeight="DemiBold" Text="{DynamicResource ReturnCheck}"  Margin="5,0,5,0"/>
                     </StackPanel>
                 </Button>
                 
