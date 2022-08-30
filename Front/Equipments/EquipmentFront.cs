@@ -14,6 +14,7 @@ using Front.Equipments.Implementation;
 using System.Threading.Tasks;
 using Utils;
 using Microsoft.Extensions.Logging;
+using ModernExpo.SelfCheckout.Entities.CommandServer;
 
 namespace Front
 {
@@ -242,6 +243,9 @@ namespace Front
                         case eModelEquipment.VirtualRRO:
                             RRO = new VirtualRRO(ElEquipment, config, null, pActionStatus);
                             break;
+                        case eModelEquipment.FP700:
+                            RRO = new RRO_FP700(ElEquipment, config, null, pActionStatus);
+                            break;
                         default:
                             RRO = new Rro(ElEquipment, config);
                             break;
@@ -294,6 +298,11 @@ namespace Front
             return RRO.PrintCopyReceipt();
         }
 
+        public LogRRO PrintNoFiscalReceipt(IEnumerable<string> pR)
+        {
+            return RRO.PrintNoFiscalReceiptAsync(pR).Result;
+        }
+
         /// <summary>
         /// Оплата по банківському терміналу
         /// </summary>
@@ -315,16 +324,14 @@ namespace Front
             return Terminal.Refund(pSum, pRNN);
         }
 
-        public bool PosPrintX()
+        public BatchTotals PosPrintX()
         {
-            Terminal.PrintX();
-            return true;
+            return Terminal.PrintX();             
         }
 
-        public bool PosPrintZ()
+        public BatchTotals PosPrintZ()
         {
-            Terminal.PrintZ();
-            return true;
+            return Terminal.PrintZ();       
         }
 
 

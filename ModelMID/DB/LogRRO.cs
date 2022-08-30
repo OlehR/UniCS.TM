@@ -16,7 +16,9 @@ namespace ModelMID.DB
         XReport = 1001,
         PeriodZReport = 1002,
         CopyReceipt =1010,
-        ClosePort
+        ClosePort,
+        ZReportPOS = 2000,
+        XReportPOS = 2001,
     }
 
     public class LogRRO: IdReceipt

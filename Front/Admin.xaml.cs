@@ -101,7 +101,13 @@ namespace Front
         }
         private void POS_X_Click(object sender, RoutedEventArgs e)
         {
-            EF.PosPrintX();
+           var r= EF.PosPrintX();
+
+            List<string> list = new() { "X-звіт постермінал", $"Всього: {r.DebitSum}({r.DebitCount})", $"Всього2: {r.CreditSum} ({r.CreditCount}) ", $"Всього2: {r.CencelledSum} ({r.CencelledCount}) " };
+            LogRRO d = new(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() })
+            { TypeOperation = eTypeOperation.XReportPOS, JSON = r.ToJSON(), TextReceipt = list.ToJSON() };
+            Bl.InsertLogRRO(d);
+
         }
 
         private void POS_Z_Click(object sender, RoutedEventArgs e)
