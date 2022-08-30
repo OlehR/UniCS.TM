@@ -23,6 +23,7 @@ using Microsoft.Web.WebView2.Core;
 using Microsoft.Extensions.Configuration;
 using System.Windows.Media;
 using System.Windows.Documents;
+using Newtonsoft.Json.Linq;
 
 namespace Front
 {
@@ -619,55 +620,69 @@ namespace Front
 
         private void _ChangeCountWares(object sender, RoutedEventArgs e)
         {
-            Background.Visibility = Visibility.Visible;
-            BackgroundWares.Visibility = Visibility.Visible;
-            KeyPad keyPad = new KeyPad(this);
-            Button btn = sender as Button;
-            if (btn.DataContext is ReceiptWares)
-            {
-                decimal tempQuantity = 0;
-                ReceiptWares temp = btn.DataContext as ReceiptWares;
-                keyPad.productNameChanges.Text = Convert.ToString(temp.NameWares);
-                keyPad.Result = Convert.ToString(temp.Quantity);
-                if (keyPad.ShowDialog() == true)
-                    tempQuantity = Convert.ToDecimal(keyPad.Result);
-                if (tempQuantity != 0)
-                {
-
-                    temp.Quantity = tempQuantity;
-                    if (curReceipt?.TypeReceipt == eTypeReceipt.Refund && tempQuantity > temp.MaxRefundQuantity)
-                    {
-                        temp.Quantity = (decimal)temp.MaxRefundQuantity;
-                    }
-                    if (curReceipt?.IsLockChange == false)
-                    {
-                        Bl.ChangeQuantity(temp, temp.Quantity);
-                    }
-                }
-                Background.Visibility = Visibility.Collapsed;
-                BackgroundWares.Visibility = Visibility.Collapsed;
-            }
+            //Background.Visibility = Visibility.Visible;
+            //BackgroundWares.Visibility = Visibility.Visible;
+            //KeyPad keyPad = new KeyPad(this);
             //Button btn = sender as Button;
             //if (btn.DataContext is ReceiptWares)
             //{
+            //    decimal tempQuantity = 0;
             //    ReceiptWares temp = btn.DataContext as ReceiptWares;
-            //    InputNumberPhone.productNameChanges.Text = Convert.ToString(temp.NameWares);
-            //    InputNumberPhone.Result = Convert.ToString(temp.Quantity);
-            //    InputNumberPhone.ValidationMask = "";
-            //    InputNumberPhone.CallBackResult = ChangeCount;
-            //    NumericPad.Visibility = Visibility.Visible;
-            //    Background.Visibility = Visibility.Visible;
-            //    BackgroundWares.Visibility = Visibility.Visible;
+            //    keyPad.productNameChanges.Text = Convert.ToString(temp.NameWares);
+            //    keyPad.Result = Convert.ToString(temp.Quantity);
+            //    if (keyPad.ShowDialog() == true)
+            //        tempQuantity = Convert.ToDecimal(keyPad.Result);
+            //    if (tempQuantity != 0)
+            //    {
+
+            //        temp.Quantity = tempQuantity;
+            //        if (curReceipt?.TypeReceipt == eTypeReceipt.Refund && tempQuantity > temp.MaxRefundQuantity)
+            //        {
+            //            temp.Quantity = (decimal)temp.MaxRefundQuantity;
+            //        }
+            //        if (curReceipt?.IsLockChange == false)
+            //        {
+            //            Bl.ChangeQuantity(temp, temp.Quantity);
+            //        }
+            //    }
+            //    Background.Visibility = Visibility.Collapsed;
+            //    BackgroundWares.Visibility = Visibility.Collapsed;
             //}
+            Button btn = sender as Button;
+            if (btn.DataContext is ReceiptWares)
+            {
+                ReceiptWares temp = btn.DataContext as ReceiptWares;
+                InputNumberPhone.productNameChanges.Text = Convert.ToString(temp.NameWares);
+                InputNumberPhone.Result = "";//Convert.ToString(temp.Quantity);
+                InputNumberPhone.ValidationMask = "";
+                NumericPad.Visibility = Visibility.Visible;
+                Background.Visibility = Visibility.Visible;
+                BackgroundWares.Visibility = Visibility.Visible;
+
+                InputNumberPhone.CallBackResult = (string result) =>
+                {
+                    decimal tempQuantity ;
+                    if (result != "" && result !="0")
+                    {
+                        tempQuantity = Convert.ToDecimal(result);
+
+                        temp.Quantity = tempQuantity;
+                        if (curReceipt?.TypeReceipt == eTypeReceipt.Refund && tempQuantity > temp.MaxRefundQuantity)
+                        {
+                            temp.Quantity = (decimal)temp.MaxRefundQuantity;
+                        }
+                        if (curReceipt?.IsLockChange == false)
+                        {
+                            Bl.ChangeQuantity(temp, temp.Quantity);
+                        }
+                    }
+                    Background.Visibility = Visibility.Collapsed;
+                    BackgroundWares.Visibility = Visibility.Collapsed;
+                };
+               
+            }
 
 
-        }
-
-        private void ChangeCount(string pResult)
-        {
-            MessageBox.Show(pResult);
-            Background.Visibility = Visibility.Collapsed;
-            BackgroundWares.Visibility = Visibility.Collapsed;
         }
 
         private void _VolumeButton(object sender, RoutedEventArgs e)
