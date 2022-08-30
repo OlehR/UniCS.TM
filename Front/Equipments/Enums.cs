@@ -230,6 +230,7 @@ namespace Front.Equipments
                 case eModelEquipment.pRRo_WebCheck:
                 case eModelEquipment.Maria:
                 case eModelEquipment.VirtualRRO:
+                case eModelEquipment.FP700:
 
                     return eTypeEquipment.RRO;
                 default:
