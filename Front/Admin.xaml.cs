@@ -247,9 +247,9 @@ namespace Front
         {
             curReceipt = ListReceipts.SelectedItem as Receipt;
             //Якогось не працює через get як я хочу :) Тому пока реалізація через Ж.
-            IsPrintReceipt = curReceipt?.StateReceipt == eStateReceipt.Pay;
-            IsPayReceipt = curReceipt?.StateReceipt == eStateReceipt.Prepare;
-            IsInputPay = curReceipt?.StateReceipt == eStateReceipt.Prepare;
+            IsPrintReceipt = curReceipt?.StateReceipt == eStateReceipt.Pay || curReceipt?.StateReceipt == eStateReceipt.StartPrint;
+            IsPayReceipt = curReceipt?.StateReceipt == eStateReceipt.Prepare || curReceipt?.StateReceipt == eStateReceipt.StartPay;
+            IsInputPay = curReceipt?.StateReceipt == eStateReceipt.Prepare || curReceipt?.StateReceipt == eStateReceipt.StartPay;
             IsSendTo1C = curReceipt?.StateReceipt == eStateReceipt.Print;
             IsCreateReturn = (curReceipt?.StateReceipt == eStateReceipt.Send || curReceipt?.StateReceipt == eStateReceipt.Print) && curReceipt?.TypeReceipt == eTypeReceipt.Sale;
         }
