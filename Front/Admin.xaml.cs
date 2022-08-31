@@ -196,9 +196,9 @@ namespace Front
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (TabHistory.IsSelected)
+            DateTime dt = DateTime.Now.Date;
+            if (TabHistory.IsSelected && DateSoSearch == dt)
             {
-                DateTime dt = DateTime.Now.Date;
                 Receipts = new ObservableCollection<Receipt>(Bl.GetReceipts(dt, dt, Global.IdWorkPlace));
                 ListReceipts.ItemsSource = Receipts.Reverse();
             }
