@@ -88,7 +88,8 @@ namespace Front.Control
                     break;
             }
 
-            button16.IsEnabled = IsEnableEnter;
+            //button16.IsEnabled = IsEnableEnter;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnableEnter"));
             //OnPropertyChanged("IsEnableEnter"); //!!!TMP Розібратись чому не працює нормально біндінг в UserControl
         }
 

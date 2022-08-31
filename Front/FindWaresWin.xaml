@@ -174,9 +174,9 @@
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*" />
-                    <RowDefinition Height="0.3*" />
+                    
                     <RowDefinition Height="1*" />
-                    <RowDefinition Height="0.3*" />
+                    
                 </Grid.RowDefinitions>
 
             </Grid>

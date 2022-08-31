@@ -79,18 +79,32 @@ namespace Front
 
             foreach (var el in pGW)
             {
+                //кнопка в якій знаходиться фото та назва
                 var Bt = new ToggleButton();
-                var NameWaresGrid = new TextBlock();
+                //назва товару
+                var NameWares = new TextBlock();
+                //рамка для розділення 
                 var Bor = new Border();
+                //для групування фото на назви
+                var StackP = new StackPanel();
+                //фото
+                var ImageStackPanel = new Image();
+                
                 Bor.BorderBrush = new SolidColorBrush(Color.FromRgb(128, 128, 128));
                 Bor.BorderThickness = new Thickness(2.0);
+
                 Bt.Name = el.GetName;// $"BtGr{el.Code}";				
                 if (File.Exists(el.Pictures))
-                    Bt.Content = new Image
-                    {
-                        Source = new BitmapImage(new Uri(el.Pictures)),
-                        VerticalAlignment = VerticalAlignment.Center
-                    };
+                {
+                    ImageStackPanel.Source = new BitmapImage(new Uri(el.Pictures));
+                    ImageStackPanel.Height = 180;
+                    //Bt.Content = new Image
+                    //{
+                    //    Source = new BitmapImage(new Uri(el.Pictures)),
+                    //    VerticalAlignment = VerticalAlignment.Center
+                    //};
+                }
+                   
                 else
                     Bt.Content = "Скоро буде ;)";
 
@@ -98,46 +112,51 @@ namespace Front
                 Bt.Tag = el;
                 Bt.Background = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
                 Bt.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
-
-                //Кнопка з картинкою
+                //Розміщення кнопки
                 Grid.SetColumn(Bt, i);
                 Grid.SetRow(Bt, j);
 
-                if (el.Type == 1) //якщо група товарів тоді показати лише фото
-                {
-                    Grid.SetRowSpan(Bt, 2);
-                }
-                else // якщо самі товари то додати опис
-                {
-                    //ім'я товару під фоткою
-                    Grid.SetColumn(NameWaresGrid, i);
-                    Grid.SetRow(NameWaresGrid, j + 1);
-                    PictureGrid.Children.Add(NameWaresGrid);
 
-                }
 
-                //рамка між товарами
+                //розташування рамки між товарами
                 Grid.SetColumn(Bor, i);
                 Grid.SetRow(Bor, j);
-                Grid.SetRowSpan(Bor, 2);
+                //Grid.SetRowSpan(Bor, 2);
                 //Розділення на 2 радки якщо текст завеликий
                 var leng = el.Name.Length;
                 var lengthText = 20;
                 if (leng > lengthText)
                 {
-                    NameWaresGrid.FontSize = 16;
-                    NameWaresGrid.Text = el.Name.Insert(lengthText, Environment.NewLine);
+                    NameWares.FontSize = 16;
+                    NameWares.Text = el.Name.Insert(lengthText, Environment.NewLine);
                 }
                 else
                 {
-                    NameWaresGrid.FontSize = 30;
-                    NameWaresGrid.Text = el.Name; //max 19 
+                    NameWares.FontSize = 30;
+                    NameWares.Text = el.Name; //max 19 
 
                 }
-                NameWaresGrid.FontFamily = new FontFamily("Source Sans Pro");
-                NameWaresGrid.FontWeight = FontWeights.DemiBold;
-                NameWaresGrid.HorizontalAlignment = HorizontalAlignment.Center;
-                NameWaresGrid.VerticalAlignment = VerticalAlignment.Bottom;
+                NameWares.FontFamily = new FontFamily("Source Sans Pro");
+                NameWares.FontWeight = FontWeights.DemiBold;
+                NameWares.HorizontalAlignment = HorizontalAlignment.Center;
+                NameWares.VerticalAlignment = VerticalAlignment.Bottom;
+                if (el.Type == 1) //якщо група товарів тоді показати лише фото
+                {
+                    StackP.Children.Add(ImageStackPanel);
+                    //Grid.SetRowSpan(Bt, 2);
+                }
+                else // якщо самі товари то додати опис
+                {
+                    StackP.Children.Add(ImageStackPanel);
+                    StackP.Children.Add(NameWares);
+                    //розташування назви
+                    //Grid.SetColumn(NameWares, i);
+                    //Grid.SetRow(NameWares, j+1 );
+                    //PictureGrid.Children.Add(NameWaresGrid);
+
+                }
+
+                Bt.Content = StackP;
 
                 PictureGrid.Children.Add(Bt);
                 PictureGrid.Children.Add(Bor);
@@ -155,8 +174,8 @@ namespace Front
                     PictureGrid.Children.Add(WeightImg);
                 }
                 if (++i >= 5)
-                { j += 2; i = 0; }
-                if (j >= 4) break;
+                { j ++; i = 0; }
+                if (j >= 2) break;
             }
         }
 
