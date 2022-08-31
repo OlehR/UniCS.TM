@@ -182,7 +182,28 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="applicationService.db">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Scripts\script_FP700FiscalPrinterArticles_CreateArticle.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Scripts\script_FP700FiscalPrinterArticles_DeleteAllArticles.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Scripts\script_FP700FiscalPrinterArticles_DeleteArticle.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Scripts\script_FP700FiscalPrinterArticles_GetAllArticles.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Scripts\script_FP700FiscalPrinterArticles_GetArticleByBarcode.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Scripts\script_FP700FiscalPrinterArticles_UpdateArticle.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -433,7 +433,7 @@ namespace Front
                 }
             }
 
-            if (R.StateReceipt == eStateReceipt.Pay)
+            if (R.StateReceipt == eStateReceipt.Pay || R.StateReceipt == eStateReceipt.StartPrint )
             {
                 R.Client = Client;
                 R.StateReceipt = eStateReceipt.StartPrint;

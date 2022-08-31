@@ -77,11 +77,19 @@ namespace Front.Equipments
         /// <returns></returns>
         public override async Task<LogRRO> PrintReceiptAsync(ModelMID.Receipt pR)
         {
-            var d = GetReceiptViewModel(pR);
-            if(pR.TypeReceipt==eTypeReceipt.Sale) Fp700.PrintReceipt(d);
-            else
-                Fp700.ReturnReceipt(d);
+            try
+            {
+                var d = GetReceiptViewModel(pR);
+                if (pR.TypeReceipt == eTypeReceipt.Sale) Fp700.PrintReceipt(d);
+                else
+                    Fp700.ReturnReceipt(d);
+
+            }catch(Exception e)
+            {
+               var d= e.Message;
+            }
             return null; //throw new NotImplementedException();
+
         }
 
 
@@ -189,12 +197,16 @@ namespace Front.Equipments
                         el.PriceDealer = p.Price;
                         el.Order = i++;
                         var PVM = this.GetProductViewModel(el);
+                        if (PVM.Excises == null)
+                            PVM.Excises = new();
                         Res.Add(PVM.ToReceiptItem());
                     }
                 }
                 else
                 {
                     var PVM = this.GetProductViewModel(el);
+                    if (PVM.Excises == null)
+                        PVM.Excises = new();
                     Res.Add(PVM.ToReceiptItem());
                 }
             }
