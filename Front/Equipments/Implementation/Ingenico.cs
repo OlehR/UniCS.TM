@@ -15,6 +15,7 @@ using ModelMID;
 using Front.Equipments.Implementation;
 using Front.Equipments.Virtual;
 using Utils;
+using Front.Equipments.Utils;
 
 namespace Front.Equipments
 {
