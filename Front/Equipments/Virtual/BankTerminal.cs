@@ -22,6 +22,10 @@ namespace Front.Equipments
         public virtual Payment Purchase(decimal pAmount) { throw new NotImplementedException(); }
         public virtual Payment Refund(decimal pAmount, string pRRN) { throw new NotImplementedException(); }
 
+        public virtual IEnumerable<string> GetLastReceipt() { throw new NotImplementedException(); }
+
+        
+
         protected void SetStatus(eStatusPos pStatus)
         {
             ActionStatus?.Invoke(new PosStatus() { Status = pStatus, ModelEquipment = Model, State = (int)pStatus, TextState = pStatus.ToString() });

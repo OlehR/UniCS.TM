@@ -102,10 +102,10 @@ namespace Front
         private void POS_X_Click(object sender, RoutedEventArgs e)
         {
            var r= EF.PosPrintX();
-
+            var L = EF.GetLastReceiptPos();
             List<string> list = new() { "X-звіт постермінал", $"Всього: {r.DebitSum}({r.DebitCount})", $"Всього2: {r.CreditSum} ({r.CreditCount}) ", $"Crfcjdf: {r.CencelledSum} ({r.CencelledCount}) " };
             LogRRO d = new(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() })
-            { TypeOperation = eTypeOperation.XReportPOS, JSON = r.ToJSON(), TextReceipt = list.ToJSON() };
+            { TypeOperation = eTypeOperation.XReportPOS, JSON = r.ToJSON(), TextReceipt = L.ToJSON() };
             Bl.InsertLogRRO(d);
             EF.PrintNoFiscalReceipt(list);
         }

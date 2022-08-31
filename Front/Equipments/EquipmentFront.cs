@@ -334,6 +334,10 @@ namespace Front
             return Terminal.PrintZ();       
         }
 
+        public IEnumerable<string> GetLastReceiptPos()
+        {
+            return Terminal.GetLastReceipt();
+        }
 
         /// <summary>
         /// Статус банківського термінала (Очікуєм карточки, Очікуєм підтвердження і ТД) 

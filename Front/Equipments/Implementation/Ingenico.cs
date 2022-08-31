@@ -76,6 +76,7 @@ namespace Front.Equipments
             string res = (!string.IsNullOrEmpty(SerialPort) && BaudRate > 0) ? $" Port={SerialPort} BaudRate={BaudRate}" : $"IP ={IP} IpPort = {IpPort}";
             return $"pModelEquipment={Model} State={State} {res}";
         }
+
         Payment PaymentResultModelToPayment(PaymentResultModel pRP, ModelMID.eTypePay pTypePay = ModelMID.eTypePay.Card)
         {
             return new Payment()
@@ -96,6 +97,8 @@ namespace Front.Equipments
                 Bank = pRP.Bank
             };
         }
+
+        public override IEnumerable<string> GetLastReceipt() { return EquipmentIngenico.GetLastReceipt(); }
     }
 }
 
