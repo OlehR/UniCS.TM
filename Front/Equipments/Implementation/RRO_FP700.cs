@@ -27,6 +27,7 @@ namespace Front.Equipments
         {
             Fp700DataController fp = new Fp700DataController(pConfiguration);
             Fp700 = new Fp700(pConfiguration, fp);
+            Fp700.Init();
         }
 
 
