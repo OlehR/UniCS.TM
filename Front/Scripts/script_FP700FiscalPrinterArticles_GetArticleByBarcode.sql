@@ -1,0 +1,1 @@
+﻿SELECT * FROM FP700FiscalPrinterArticles WHERE Barcode = @Barcode

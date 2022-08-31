@@ -1,0 +1,1 @@
+﻿INSERT INTO FP700FiscalPrinterArticles (Barcode, PLU, ProductName, Price) VALUES (@Barcode, @ProductPLU, @ProductName, @Price)
