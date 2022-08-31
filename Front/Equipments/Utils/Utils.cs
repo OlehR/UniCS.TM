@@ -66,11 +66,6 @@ namespace Front.Equipments.Utils
             }
         }
     }
-}
-
-
-namespace Front.Equipments
-{
 
     public static class StaticTimer
     {

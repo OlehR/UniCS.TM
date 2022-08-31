@@ -1,7 +1,7 @@
 ﻿
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using ModernExpo.SelfCheckout.Utils;
+//using ModernExpo.SelfCheckout.Utils;
 using RJCP.IO.Ports;
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
-
+using Front.Equipments.Utils;
+//using SerialPortStreamWrapper = Front.Equipments.Utils.SerialPortStreamWrapper;
+//using StaticTimer = Front.Equipments.Utils.StaticTimer;
 
 namespace Front.Equipments
 {
