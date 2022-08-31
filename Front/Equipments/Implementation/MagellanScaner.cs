@@ -1,4 +1,5 @@
-﻿using Front.Equipments.Virtual;
+﻿using Front.Equipments.Utils;
+using Front.Equipments.Virtual;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 //using ModernExpo.SelfCheckout.Devices.Magellan9300SingleCable;
