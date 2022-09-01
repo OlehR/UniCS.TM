@@ -87,7 +87,7 @@ namespace Front
         /// Чи активна кнопка оплати
         /// </summary>
         //bool _IsEnabledPaymentButton;
-        public bool IsEnabledPaymentButton { get { return _MoneySum >= 0 && WaresQuantity != "0" && IsAddNewWares; } }// set { _IsEnabledPaymentButton = value; } }
+        public bool IsEnabledPaymentButton { get { return (_MoneySum >= 0 && WaresQuantity != "0" && IsAddNewWares) || curReceipt?.TypeReceipt==eTypeReceipt.Refund; } }// set { _IsEnabledPaymentButton = value; } }
         /// <summary>
         /// чи активна кнопка пошуку
         /// </summary>
