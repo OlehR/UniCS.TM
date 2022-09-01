@@ -408,20 +408,20 @@
                     </ScrollViewer>
                     <StackPanel Orientation="Horizontal" Grid.Row="1"  VerticalAlignment="Center" >
                         <Button Name="CalibrationControlScale" Click="CalibrationControlScaleButton"
-                                Style="{StaticResource Default}" Content="Калібрування" HorizontalAlignment="Left" Margin="5" Grid.Row="1"  Width="160" Height="60"/>
+                                Style="{StaticResource Default}" Content="Калібрування" HorizontalAlignment="Left" Margin="5" Grid.Row="1"   Height="60"/>
                         <Button Name="TarControlScale" Click="TarControlScaleButton"
-                                Style="{StaticResource Default}" Content="Тарування" HorizontalAlignment="Left" Margin="5" Grid.Row="1"  Width="160" Height="60"/>
+                                Style="{StaticResource Default}" Content="Тарування" HorizontalAlignment="Left" Margin="5" Grid.Row="1"   Height="60"/>
                         <TextBlock Name="ControlScaleWeightHaml"  Text="{Binding ControlScaleWeightDouble, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}"  Margin="5" Grid.Row="1"    />
                     </StackPanel>
                     <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" >
                         <Button Name="RefreshData" Style="{StaticResource Default}"  
                                 HorizontalAlignment="Left" Margin="5" Grid.Row="1" 
-                                Width="160" Height="60" Click="RefreshDataButton" 
+                                 Height="60" Click="RefreshDataButton" 
                                 Content="Оновити дані"/>
                         <Button Style="{StaticResource Default}"  
                                 HorizontalAlignment="Left" Margin="5" Grid.Row="1" 
-                                Width="200" Height="60" Click="CloseApplicationButton" 
+                                Height="60" Click="CloseApplicationButton" 
                                 Content="Вийти з програми"/>
                         <Button Name="PowerOffOn" Style="{StaticResource Default}"  
                                 HorizontalAlignment="Left" Margin="5" Grid.Row="1" 

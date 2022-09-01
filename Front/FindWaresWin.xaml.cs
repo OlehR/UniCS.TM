@@ -127,8 +127,9 @@ namespace Front
                 var lengthText = 20;
                 if (leng > lengthText)
                 {
-                    NameWares.FontSize = 16;
-                    NameWares.Text = el.Name.Insert(lengthText, Environment.NewLine);
+                    NameWares.FontSize = 20;
+                    NameWares.TextWrapping = TextWrapping.Wrap;
+                    NameWares.Text = el.Name;//.Insert(lengthText, Environment.NewLine);
                 }
                 else
                 {
@@ -139,7 +140,7 @@ namespace Front
                 NameWares.FontFamily = new FontFamily("Source Sans Pro");
                 NameWares.FontWeight = FontWeights.DemiBold;
                 NameWares.HorizontalAlignment = HorizontalAlignment.Center;
-                NameWares.VerticalAlignment = VerticalAlignment.Bottom;
+                NameWares.VerticalAlignment = VerticalAlignment.Center;
                 if (el.Type == 1) //якщо група товарів тоді показати лише фото
                 {
                     StackP.Children.Add(ImageStackPanel);
@@ -181,6 +182,7 @@ namespace Front
 
         private void BtClick(object sender, RoutedEventArgs e)
         {
+            OffSet = 0;
             ToggleButton aa = (ToggleButton)sender;
             GW Gw = aa.Tag as GW;
             if (Gw != null)

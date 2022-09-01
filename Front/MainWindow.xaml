@@ -45,7 +45,7 @@
             <RowDefinition Height="4"></RowDefinition>
             <RowDefinition Height="40"></RowDefinition>
             <RowDefinition></RowDefinition>
-            <RowDefinition Height="80"></RowDefinition>
+            <RowDefinition Height="95"></RowDefinition>
         </Grid.RowDefinitions>
 
         <!--<DockPanel Grid.ColumnSpan="10" Grid.RowSpan="10">
@@ -979,7 +979,7 @@
                     <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
                 </Border.Effect>
 
-                <Grid Width="1000" Height="500">
+                <Grid Width="1000" Height="600">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="0.5*" />
                         <ColumnDefinition Width="*" />
@@ -1011,21 +1011,21 @@
                         Height="60" Width="200">
                             <StackPanel Orientation="Horizontal">
                                 <Image  Height="20" Width="20"  Source="icons\right.png"></Image>
-                                <TextBlock FontSize="28" Text="{DynamicResource ok}" Margin="5,0,0,5"/>
+                                <TextBlock FontSize="28" Text="{DynamicResource ok}" Margin="5,0,5,0"/>
                             </StackPanel>
                         </Button>
                         <Button Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="3" Style="{StaticResource Default}" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="22" Click="LoginCancel" 
                         Height="60" Width="200">
                             <StackPanel Orientation="Horizontal">
                                 <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
-                                <TextBlock FontSize="28" Text="{DynamicResource cancel}" Margin="5,0,0,5"/>
+                                <TextBlock FontSize="28" Text="{DynamicResource cancel}" Margin="5,0,5,0"/>
                             </StackPanel>
                         </Button>
                     </Grid>
                     <keyboard:OnScreenKeyboard Grid.Row="1"
 		                           Grid.Column="0"
 		                           Grid.ColumnSpan="3"
-		                           Height="250"
+		                           
                                    x:Name="KB"                                  
 		                           VerticalAlignment="Bottom" 
 		                           ActiveContainer="{Binding ElementName=WaitAdminLoginGrid}"

@@ -896,7 +896,7 @@
             </Style>
             <Style TargetType="TextBlock">
                 <Setter Property="Margin" Value="10"></Setter>
-                <Setter Property="FontSize" Value="18"></Setter>
+                <Setter Property="FontSize" Value="25"></Setter>
                 <Setter Property="HorizontalAlignment" Value="Left"></Setter>
                 <Setter Property="VerticalAlignment" Value="Center"></Setter>
             </Style>
