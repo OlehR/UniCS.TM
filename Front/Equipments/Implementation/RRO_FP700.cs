@@ -53,28 +53,25 @@ namespace Front.Equipments
 
         public override bool OpenWorkDay()
         {
-            throw new NotImplementedException();
+            return true; //throw new NotImplementedException();
         }
 
         public override LogRRO PrintCopyReceipt(int parNCopy = 1)
         {
            var res= Fp700.CopyReceipt();
-
-            return null;
-            
-        }
+            return new LogRRO(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), CodeReceipt = Global.IdWorkPlace }) { TypeOperation = eTypeOperation.CopyReceipt, TypeRRO = "RRO_FP700", FiscalNumber = Fp700.GetLastZReportNumber() };
+       }
 
         public override async Task<LogRRO> PrintZAsync(IdReceipt pIdR)
-        {
-
-            bool res = Fp700.ZReport();
-            return null;//throw new NotImplementedException();
+        {           
+            string res = Fp700.ZReport();
+            return new  LogRRO(pIdR) { TypeOperation = eTypeOperation.PeriodZReport, TypeRRO = "RRO_FP700", FiscalNumber = Fp700.GetLastZReportNumber() ,TextReceipt= res };
         }
 
-        public override Task<LogRRO> PrintXAsync(IdReceipt pIdR)
+        public override async Task<LogRRO> PrintXAsync(IdReceipt pIdR)
         {
-            bool res = Fp700.XReport();
-            return null;//throw new NotImplementedException();
+            string res = Fp700.XReport();
+            return new LogRRO(pIdR) { TypeOperation = eTypeOperation.XReport, TypeRRO = "RRO_FP700", FiscalNumber = Fp700.GetLastZReportNumber(),TextReceipt= res };
         }
 
 
@@ -87,7 +84,7 @@ namespace Front.Equipments
         {
             var d = new MoneyMovingModel() { Sum = pSum };
             Fp700.MoneyMoving(d);
-            return null;//throw new NotImplementedException();
+            return new LogRRO(pIdR) { TypeOperation = pSum>0?eTypeOperation.MoneyIn:eTypeOperation.MoneyIn, TypeRRO = "RRO_FP700", FiscalNumber = Fp700.GetLastZReportNumber() };
         }
 
         /// <summary>
@@ -97,18 +94,20 @@ namespace Front.Equipments
         /// <returns></returns>
         public override async Task<LogRRO> PrintReceiptAsync(ModelMID.Receipt pR)
         {
+            string FiscalNumber=null;
             try
             {
                 var d = GetReceiptViewModel(pR);
-                if (pR.TypeReceipt == eTypeReceipt.Sale) Fp700.PrintReceipt(d);
+                if (pR.TypeReceipt == eTypeReceipt.Sale) FiscalNumber=Fp700.PrintReceipt(d);
                 else
-                    Fp700.ReturnReceipt(d);
+                    FiscalNumber=Fp700.ReturnReceipt(d);
 
+                pR.NumberReceipt = FiscalNumber;
             }catch(Exception e)
             {
                var d= e.Message;
             }
-            return null; //throw new NotImplementedException();
+            return new LogRRO(pR) { TypeOperation = pR.TypeReceipt==eTypeReceipt.Sale? eTypeOperation.Sale:eTypeOperation.Refund, TypeRRO = "RRO_FP700", FiscalNumber = FiscalNumber,SUM=pR.SumReceipt };
 
         }
 
@@ -120,15 +119,14 @@ namespace Front.Equipments
 
         public override bool PeriodZReport(DateTime pBegin, DateTime pEnd, bool IsFull = true)
         {
-            Fp700.FullReportByDate(pBegin, pEnd);
-            return false;
+            return Fp700.FullReportByDate(pBegin, pEnd); 
         }
 
         public override async Task<LogRRO> PrintNoFiscalReceiptAsync(IEnumerable<string> pR)
         {
             List<ReceiptText> d = pR.Select(el => new ReceiptText() { Text = el,RenderType = RenderAs.Text }).ToList();
             Fp700.PrintSeviceReceipt(d);
-            return null; //throw new NotImplementedException();
+            return new LogRRO(new IdReceipt() { CodePeriod=Global.GetCodePeriod(),CodeReceipt=Global.IdWorkPlace} ){ TypeOperation =  eTypeOperation.NoFiscalReceipt, TypeRRO = "RRO_FP700" };
         }
 
 
@@ -1022,19 +1020,22 @@ namespace Front.Equipments.FP700
 
         public bool SetupTime(DateTime time) => this.OnSynchronizeWaitCommandResult(Command.SetDateTime, time.ToString(this.DateFormat));
 
-        public bool XReport()
+        public string XReport()
         {
+            string Res = null;
             this.ObliterateFiscalReceipt();
-            return this.OnSynchronizeWaitCommandResult(Command.EveryDayReport, this._operatorPassword + ",2");
+             this.OnSynchronizeWaitCommandResult(Command.EveryDayReport, this._operatorPassword + ",2", ((Action<string>)(response => Res = response)));
+            return Res;
         }
 
-        public bool ZReport()
+        public string ZReport()
         {
+            string Res = null ;
             this.ObliterateFiscalReceipt();
-            this.OnSynchronizeWaitCommandResult(Command.EveryDayReport, this._operatorPassword + ",0");
+            this.OnSynchronizeWaitCommandResult(Command.EveryDayReport, this._operatorPassword + ",0", ((Action<string>)(response => Res = response)));
             this.IsZReportAlreadyDone = true;
             this.DeleteAllArticles();
-            return true;
+            return Res;
         }
 
         public bool ArticleReport() => this.OnSynchronizeWaitCommandResult(Command.ArticleReport, string.Format("{0},{1}", (object)this._operatorPassword, (object)ArticleReportType.S));
