@@ -622,7 +622,7 @@ namespace SharedLib
         /// </summary>
         /// <param name="IdR">Чек на який робиться повернення</param>
         /// <returns></returns>
-        public Receipt CreateRefund(IdReceipt IdR)
+        public Receipt CreateRefund(IdReceipt IdR,bool pIsFull=false)
         {
             try
             {
@@ -640,7 +640,8 @@ namespace SharedLib
                 foreach (var el in R.Wares)
                 {
                     el.MaxRefundQuantity = el.Quantity - el.RefundedQuantity;
-                    el.Quantity = 0;
+                    if(!pIsFull)
+                        el.Quantity = 0;
                     db.AddWares(el);
                 }
                 Global.OnReceiptCalculationComplete?.Invoke(R);
