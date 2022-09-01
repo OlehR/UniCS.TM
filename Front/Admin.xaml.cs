@@ -297,8 +297,10 @@ namespace Front
 
         private void ReturnCheckButton(object sender, RoutedEventArgs e)
         {
+           
             Bl.CreateRefund(curReceipt);
-            Close();
+            this.WindowState = WindowState.Minimized;
+            //Close();
         }
 
         //Якогось не працює через get як я хочу :) Тому пока реалізація через Ж.
@@ -310,7 +312,9 @@ namespace Front
 
         private void ReturnAllCheckButton(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Повернути весь чек");
+            Bl.CreateRefund(curReceipt,true);
+            this.WindowState = WindowState.Minimized;
+            //MessageBox.Show("Повернути весь чек");
         }
 
         private void FindChecksByDate(object sender, RoutedEventArgs e)
