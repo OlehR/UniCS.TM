@@ -628,6 +628,7 @@ namespace SharedLib
             {
                 var NewR = GetNewIdReceipt(IdR.IdWorkplace);
                 var R = GetReceiptHead(IdR, true);
+                R.AdditionC1 = R.Payment?.First()?.CodeAuthorization;
                 R.Payment = null;
                 R.ReceiptEvent = null;
                 R.TypeReceipt = eTypeReceipt.Refund;

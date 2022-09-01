@@ -413,7 +413,8 @@ namespace Front
                 Bl.SetStateReceipt(curReceipt, eStateReceipt.StartPay);
                 decimal sum = R.Wares.Sum(r => (r.SumTotal)); //TMP!!!Треба переробити
                 SetStateView(eStateMainWindows.ProcessPay);
-                var pay = EF.PosPurchase(sum);
+                var pay =R.TypeReceipt==eTypeReceipt.Sale? EF.PosPurchase(sum): EF.PosRefund(sum, R.AdditionC1);
+
                 if (pay != null)
                 {
                     pay.SetIdReceipt(R);
