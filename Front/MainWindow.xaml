@@ -1688,7 +1688,7 @@
                                 Grid.Column="0"  Grid.Row="0" Grid.RowSpan="2">
                     Доброго дня, ласкаво просимо до нашого магазину
                 </TextBlock>
-                <Button Grid.Row="2" Grid.Column="0"  Style="{StaticResource greenButton}"  FontSize="48" Click="_Cancel" 
+                <Button Grid.Row="2" Grid.Column="0"  Style="{StaticResource greenButton}"  FontSize="48" Click="StartBuy" 
                         Margin="5,20,5,20">
                     <StackPanel Orientation="Horizontal">
                         <Image  Height="50" Width="50"  Source="icons\shoppingBag.png"></Image>

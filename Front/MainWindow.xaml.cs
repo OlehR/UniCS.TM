@@ -849,6 +849,11 @@ namespace Front
             //NewReceipt();
             SetStateView(eStateMainWindows.WaitInput);
         }
+        private void StartBuy(object sender, RoutedEventArgs e)
+        {
+            NewReceipt();
+            SetStateView(eStateMainWindows.WaitInput);
+        }
 
         private void Cigarettes_Cancel(object sender, RoutedEventArgs e)
         {
