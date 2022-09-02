@@ -45,9 +45,18 @@ namespace Front.Equipments
 
         public RRO_FP700(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment, pConfiguration, eModelEquipment.FP700, pLoggerFactory, pActionStatus)
         {
-            Fp700DataController fp = new Fp700DataController(pConfiguration);
-            Fp700 = new Fp700(pConfiguration, fp);
-            Fp700.Init();
+            try
+            {
+                Fp700DataController fp = new Fp700DataController(pConfiguration);
+                Fp700 = new Fp700(pConfiguration, fp);
+                Fp700.Init();
+                
+                State = Fp700.IsReady? eStateEquipment.On: eStateEquipment.Error;
+            }
+            catch (Exception ex)
+            {
+                State = eStateEquipment.Error;
+            }
         }
 
 
@@ -124,7 +133,7 @@ namespace Front.Equipments
 
         public override async Task<LogRRO> PrintNoFiscalReceiptAsync(IEnumerable<string> pR)
         {
-            List<ReceiptText> d = pR.Select(el => new ReceiptText() { Text = el,RenderType = RenderAs.Text }).ToList();
+            List<ReceiptText> d = pR.Select(el => new ReceiptText() { Text = el.StartsWith("QR=>")?el.SubString(4) : el,RenderType = el.StartsWith("QR=>")? RenderAs.QR: RenderAs.Text }).ToList();
             Fp700.PrintSeviceReceipt(d);
             return new LogRRO(new IdReceipt() { CodePeriod=Global.GetCodePeriod(),CodeReceipt=Global.IdWorkPlace} ){ TypeOperation =  eTypeOperation.NoFiscalReceipt, TypeRRO = "RRO_FP700" };
         }

@@ -400,6 +400,7 @@ namespace Front
 
             if (R.StateReceipt == eStateReceipt.Prepare)
             {
+                Bl.GenQRAsync(R.Wares);
                 R.StateReceipt = eStateReceipt.StartPay;
                 Bl.SetStateReceipt(curReceipt, eStateReceipt.StartPay);
                 decimal sum = R.Wares.Sum(r => (r.SumTotal)); //TMP!!!Треба переробити
@@ -442,6 +443,18 @@ namespace Front
                         R.StateReceipt = eStateReceipt.Print;
                         Bl.UpdateReceiptFiscalNumber(R, res.FiscalNumber, res.SUM);
                         s.Play(eTypeSound.DoNotForgetProducts);
+
+                        var QR=Bl.GetQR(R);
+                        if(QR!=null && QR.Count()>0)
+                        {
+                            List<string> list = new List<string>();
+                            foreach(var el in QR)
+                            {
+                                list.Add(el.Name);
+                                list.Add($"QR=>{el.Qr}");
+                            }
+                            EF.PrintNoFiscalReceipt(list);
+                        }
                         SetCurReceipt(null);
                         //NewReceipt();
                         //Global.OnReceiptCalculationComplete?.Invoke(new List<ReceiptWares>(), Global.IdWorkPlace);
