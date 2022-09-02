@@ -32,6 +32,8 @@ namespace Front
         MainWindow MW;
         Receipt curReceipt = null;
         public bool ClosedShift { get { return MW.IsLockSale; } }
+        User AdminUser = null;
+
 
         public DateTime DateSoSearch { get; set; } = DateTime.Now.Date;
         public string KasaNumber { get { return Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace).Name; } }
@@ -69,15 +71,11 @@ namespace Front
             timer.Start();
 
 
-
-
-
-
         }
         public void Init(User AdminUser = null)
         {
-            if (AdminUser != null)
-                adminastratorName.Text = AdminUser.NameUser;
+            this.AdminUser = AdminUser; 
+            
             if (EF != null)
                 ListEquipment.ItemsSource = new ObservableCollection<Equipment>(EF.GetListEquipment);
         }
@@ -96,6 +94,7 @@ namespace Front
 
         private void Exit_Click(object sender, RoutedEventArgs e)
         {
+            MW.SetStateView(Models.eStateMainWindows.StartWindow);
             this.WindowState = WindowState.Minimized;
             // this.NavigationService.GoBack();
         }
@@ -150,13 +149,16 @@ namespace Front
 
         private void WorkStart_Click(object sender, RoutedEventArgs e)
         {
-            MW.IsLockSale = false;
+            MW.AdminSSC = AdminUser;
+            MW.Bl.db.SetConfig<DateTime>("DateAdminSSC", DateTime.Now);
+            MW.Bl.db.SetConfig<string>("CodeAdminSSC", AdminUser.BarCode);            
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClosedShift"));
         }
 
         private void WorkFinish_Click(object sender, RoutedEventArgs e)
         {
-            MW.IsLockSale = true;
+            MW.AdminSSC = null;
+            MW.Bl.db.SetConfig<string>("CodeAdminSSC", string.Empty);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClosedShift"));
         }
 
@@ -179,6 +181,7 @@ namespace Front
                 }
             }
         }
+
         private void Info_Click(object sender, RoutedEventArgs e)
         {
             //EF.PosPrintX();

@@ -37,6 +37,7 @@ namespace Front
         public ControlScale CS { get; set; }
 
         Sound s = Sound.GetSound();
+        public User AdminSSC { get; set; } = null;
 
         Admin ad;
         //public int TextBlockFontSize { get; set; } = 40;
@@ -71,8 +72,8 @@ namespace Front
         /// <summary>
         /// Чи заброкована зміна
         /// </summary>
-        bool _IsLockSale = false;
-        public bool IsLockSale { get { return _IsLockSale; } set { if (_IsLockSale != value) { SetStateView(!value && State == eStateMainWindows.WaitAdmin ? eStateMainWindows.WaitInput : eStateMainWindows.NotDefine); _IsLockSale = value; } } }
+        //bool _IsLockSale = true;
+        public bool IsLockSale { get { return AdminSSC == null; } }// set { if (_IsLockSale != value) { SetStateView(!value && State == eStateMainWindows.WaitAdmin ? eStateMainWindows.WaitInput : eStateMainWindows.NotDefine); _IsLockSale = value; } } }
 
         /// <summary>
         /// чи є товар з обмеженням по віку
@@ -240,6 +241,21 @@ namespace Front
             ad.Show();
             InitializeComponent();
 
+            //Провіряємо чи зміна відкрита.
+            string BarCodeAdminSSC = Bl.db.GetConfig<string>("CodeAdminSSC");
+            if (!string.IsNullOrEmpty(BarCodeAdminSSC))
+            {
+                DateTime TimeAdminSSC = Bl.db.GetConfig<DateTime>("DateAdminSSC");
+                if (TimeAdminSSC.Date == DateTime.Now.Date)
+                {
+                    AdminSSC = Bl.GetUserByBarCode(BarCodeAdminSSC);
+                    Bl.StartWork(Global.IdWorkPlace, BarCodeAdminSSC);//!!!TMP треба штрихкод
+                }
+                else BarCodeAdminSSC = null;
+            
+            }
+
+           
 
             ua.Tag = new CultureInfo("uk");
             en.Tag = new CultureInfo("en");
@@ -264,6 +280,13 @@ namespace Front
         void SetCurReceipt(Receipt pReceipt)
         {
             curReceipt = pReceipt;
+            if (curReceipt == null)
+            { 
+                Dispatcher.BeginInvoke(new ThreadStart(() => ListWares?.Clear()));
+                // = new ObservableCollection<ReceiptWares>();
+                Client = null;
+                CS.WaitClear();
+            }
             SetPropertyChanged();
         }
 
@@ -311,6 +334,10 @@ namespace Front
             if ((pSMV != eStateMainWindows.ProcessPay && pSMV != eStateMainWindows.ProcessPrintReceipt) && (State == eStateMainWindows.ProcessPay || State == eStateMainWindows.ProcessPrintReceipt))
                 EF.StopMultipleTone();
 
+            if (pSMV == eStateMainWindows.StartWindow && curReceipt != null)
+                pSMV = eStateMainWindows.WaitInput;
+            if (pSMV == eStateMainWindows.WaitInput  && curReceipt == null)
+                pSMV = eStateMainWindows.StartWindow;
             //lock (this._locker)
             {
                 var r = Dispatcher.BeginInvoke(new ThreadStart(() =>
@@ -360,12 +387,15 @@ namespace Front
                         IsAddNewWeight = false;
                     }
 
-                    if (pSMV != eStateMainWindows.NotDefine)
+                    //Якщо 
+                    if (pSMV == eStateMainWindows.NotDefine) return;
+                    else
                     {
                         State = pSMV;
                         SetPropertyChanged();
                         EF.SetColor(GetFlagColor(State, TypeAccessWait, CS.StateScale));
                     }
+                    
 
                     //Генеруємо з кастомні вікна
                     if (TypeAccessWait == eTypeAccess.FixWeight)
@@ -745,8 +775,9 @@ namespace Front
             if (Access.GetRight(eTypeAccess.DelReciept) || curReceipt?.SumReceipt == 0)
             {
                 Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
-                Client = null;
-                NewReceipt();
+               
+                SetCurReceipt(null);
+                //NewReceipt();
                 SetStateView(eStateMainWindows.StartWindow);
             }
             else
@@ -815,6 +846,7 @@ namespace Front
 
         private void _Cancel(object sender, RoutedEventArgs e)
         {
+            NewReceipt();
             SetStateView(eStateMainWindows.WaitInput);
         }
 

@@ -62,19 +62,7 @@ namespace Front
                         //Видалили товар але список не пустий.
                         if ((lw == null || lw.Count() == 0) && CurWares != null && curReceipt != null && curReceipt.Wares != null && curReceipt.Wares.Any() && curReceipt.Equals(CurWares))
                         {
-                            IsDel = true;
-                            /*
-                            CurWares.Quantity = 0;
-
-                            foreach (var e in curReceipt.Wares.Where(el => el.IsLast = true))
-                            {
-                                e.IsLast = false;
-                            }
-                            var r = curReceipt.Wares.ToList();
-                            CurWares.IsLast = true;
-                            r.Add(CurWares);
-                            curReceipt.Wares = r;
-                            */
+                            IsDel = true;             
                         }
                     }
                    // if (curReceipt?.Wares?.Count() == 0 && curReceipt.OwnBag==0d) CS.WaitClear();
@@ -256,7 +244,10 @@ namespace Front
                     break;
                 case eTypeAccess.DelReciept:
                     Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
-                    NewReceipt();
+
+                    //NewReceipt(); //!!!TMP Трохи через Ж Пізніше зроблю краще.
+                    SetCurReceipt(null); 
+                    
                     TypeAccessWait = eTypeAccess.NoDefine;
                     SetStateView(eStateMainWindows.StartWindow);
                     break;
@@ -451,7 +442,8 @@ namespace Front
                         R.StateReceipt = eStateReceipt.Print;
                         Bl.UpdateReceiptFiscalNumber(R, res.FiscalNumber, res.SUM);
                         s.Play(eTypeSound.DoNotForgetProducts);
-                        NewReceipt();
+                        SetCurReceipt(null);
+                        //NewReceipt();
                         //Global.OnReceiptCalculationComplete?.Invoke(new List<ReceiptWares>(), Global.IdWorkPlace);
 
                         return true;
