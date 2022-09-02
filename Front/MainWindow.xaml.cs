@@ -846,7 +846,7 @@ namespace Front
 
         private void _Cancel(object sender, RoutedEventArgs e)
         {
-            NewReceipt();
+            //NewReceipt();
             SetStateView(eStateMainWindows.WaitInput);
         }
 
