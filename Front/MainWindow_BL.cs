@@ -447,13 +447,15 @@ namespace Front
                         var QR=Bl.GetQR(R);
                         if(QR!=null && QR.Count()>0)
                         {
-                            List<string> list = new List<string>();
+                           
                             foreach(var el in QR)
                             {
-                                list.Add(el.Name);
-                                list.Add($"QR=>{el.Qr}");
+                                List<string> list = new List<string>() { el.Name, $"QR=>{el.Qr}" };
+                                EF.PrintNoFiscalReceipt(list);
+                                //list.Add(el.Name);
+                               //list.Add($"QR=>{el.Qr}");
                             }
-                            EF.PrintNoFiscalReceipt(list);
+                            
                         }
                         SetCurReceipt(null);
                         //NewReceipt();
