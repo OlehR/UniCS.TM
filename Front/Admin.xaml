@@ -481,7 +481,7 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Margin="5" Orientation="Horizontal">
-                                    <TextBlock FontSize="16" Text="{Binding Path=CodeReceipt}" HorizontalAlignment="Center" Width="20" />
+                                    <TextBlock FontSize="16" Text="{Binding Path=CodeReceipt}" HorizontalAlignment="Center" Width="40" />
                                     <TextBlock FontSize="16" Text="  "/>
                                     <TextBlock FontSize="16" Text="{Binding Path=TypeReceipt}" HorizontalAlignment="Center" Width="50"/>
                                     <TextBlock FontSize="16" Text="   "/>

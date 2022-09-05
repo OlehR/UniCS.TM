@@ -203,15 +203,15 @@
                     <ColumnDefinition Width="210*"></ColumnDefinition>
                     <ColumnDefinition Width="70*"></ColumnDefinition>
                     <ColumnDefinition Width="70*"></ColumnDefinition>
-                    <ColumnDefinition Width="70*"></ColumnDefinition>
+                    <!--<ColumnDefinition Width="70*"></ColumnDefinition>-->
                     <ColumnDefinition Width="105*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Foreground="Black" Text="{DynamicResource markWareName}" HorizontalAlignment="Left" FontWeight="Bold"/>
                 <TextBlock Grid.Column="4" Foreground="Black" Text="{DynamicResource markWareQuantity}" Margin="100,0,0,0" HorizontalAlignment="Center" FontWeight="Bold" />
                 <TextBlock Grid.Column="5" Foreground="Black" Text="{DynamicResource markWareWeight}"  Margin="10,0,0,0" FontWeight="Bold"/>
                 <TextBlock Grid.Column="6" Foreground="Black" Text="{DynamicResource markWarePrice}"  Margin="10,0,0,0" FontWeight="Bold"/>
-                <TextBlock Grid.Column="7" Foreground="Black" Text="{DynamicResource markWareDiscount}"  Margin="10,0,0,0" FontWeight="Bold"/>
-                <TextBlock Grid.Column="8" Foreground="Black" Text="{DynamicResource markWareInAll}"  Margin="10,0,0,0" FontWeight="Bold"/>
+                <!--<TextBlock Grid.Column="7" Foreground="Black" Text="{DynamicResource markWareDiscount}"  Margin="10,0,0,0" FontWeight="Bold"/>-->
+                <TextBlock Grid.Column="8" Foreground="Black" Text="{DynamicResource markWareInAll}"  FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Grid>
         </Border>
 
@@ -249,7 +249,7 @@
                                     <ColumnDefinition Width="3*"></ColumnDefinition>
                                     <ColumnDefinition Width="1*"></ColumnDefinition>
                                     <ColumnDefinition Width="1*"></ColumnDefinition>
-                                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                                    <!--<ColumnDefinition Width="1*"></ColumnDefinition>-->
                                     <ColumnDefinition Width="1.5*"></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
@@ -259,7 +259,7 @@
 
                                 <StackPanel Orientation="Vertical" Grid.Column="0">
                                     <TextBlock Margin="0"  FontSize="12"  Text="{Binding GetStrWaresReceiptPromotion}" Visibility="{Binding IsReceiptPromotion,Converter={StaticResource BoolToHiddenConverter}}"/>
-                                    <TextBlock Margin="0" FontSize="35"  Text="{Binding NameWares}" MaxWidth="900"  FontFamily="Roboto Condensed" FontWeight="DemiBold"/>
+                                    <TextBlock Margin="0" FontSize="35"  Text="{Binding NameWares}" MaxWidth="1000"  FontFamily="Roboto Condensed" FontWeight="DemiBold"/>
                                 </StackPanel>
 
                                 <Grid Grid.Column="1">
@@ -358,30 +358,63 @@
                                             </Style>
                                         </Button.Style>
                                     </Button>
-
                                 </Grid>
-
-                                <TextBlock Grid.Column="2">
-                                    <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="Margin" Value="10"></Setter>
-                                            <Setter Property="FontSize" Value="18"></Setter>
-                                            <Setter Property="HorizontalAlignment" Value="Left"></Setter>
-                                            <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                                            <Setter Property="FontWeight" Value="DemiBold"></Setter>
-                                            <Setter Property="FontSize" Value="25"></Setter>
-                                            <Setter Property="Text" Value="{Binding WeightBrutto}"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsWeight}" Value="True">
-                                                    <Setter Property="Text" Value="{Binding Quantity}"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBlock.Style>
-                                </TextBlock>
+                                
+                                <StackPanel Grid.Column="2" HorizontalAlignment="Left">
+                                    <TextBlock >
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Margin" Value="10"></Setter>
+                                                <Setter Property="FontSize" Value="18"></Setter>
+                                                <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+                                                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                                <Setter Property="FontWeight" Value="DemiBold"></Setter>
+                                                <Setter Property="FontSize" Value="25"></Setter>
+                                                <Setter Property="Text" Value="{Binding WeightBrutto}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsWeight}" Value="True">
+                                                        <Setter Property="Text" Value="{Binding Quantity}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                    <TextBlock >
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Margin" Value="10"></Setter>
+                                                <Setter Property="FontSize" Value="18"></Setter>
+                                                <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+                                                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                                <Setter Property="FontWeight" Value="DemiBold"></Setter>
+                                                <Setter Property="FontSize" Value="25"></Setter>
+                                                <Setter Property="Text" Value="{Binding FixWeightQuantity}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsWeight}" Value="True">
+                                                        <Setter Property="Text" Value="{Binding Quantity}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </StackPanel>
                                 <TextBlock Grid.Column="3" Text="{Binding PriceDealer, StringFormat=0.00 }" FontSize="25" FontWeight="DemiBold"/>
-                                <TextBlock Grid.Column="4" Text="{Binding DiscountEKKA, StringFormat=0.00}" FontSize="25" FontWeight="DemiBold"/>
-                                <TextBlock Grid.Column="5" Text="{Binding SumTotal, StringFormat=0.00}" FontWeight="Bold" FontSize="25"/>
+                                <StackPanel Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <TextBlock Grid.Column="5" Text="{Binding SumTotal, StringFormat=0.00}" FontWeight="Bold" FontSize="30"/>
+                                    <TextBlock   FontSize="20" FontWeight="DemiBold" Foreground="Red">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Text" Value="{Binding DiscountEKKA, StringFormat=-0.00}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding DiscountEKKA}" Value="0">
+                                                        <Setter Property="Text" Value=""/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </StackPanel>
+                                
 
                             </Grid>
                         </Border>
@@ -1709,7 +1742,7 @@
                 <Grid Grid.Row="1" Grid.RowSpan="3" Grid.Column="1" Grid.ColumnSpan="2" >
                     <Image Source="icons\VopakLogo.png"/>
                     <!--<MediaElement   Name="StartVideo" Source="icons\sparVideo.mp4" LoadedBehavior="Manual" Volume="0"   />-->
-                    
+
                     <!--<MediaElement Name="StartVideo" Volume="0" LoadedBehavior="Manual">
                         <MediaElement.Triggers>
                             <EventTrigger RoutedEvent="MediaElement.Loaded">
