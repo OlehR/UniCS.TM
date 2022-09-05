@@ -101,16 +101,22 @@ namespace Front
         private void POS_X_Click(object sender, RoutedEventArgs e)
         {
            var r= EF.PosPrintX();
-            var L = EF.GetLastReceiptPos();
-            List<string> list = new() { "X-звіт постермінал", $"Всього: {r.DebitSum}({r.DebitCount})", $"Всього2: {r.CreditSum} ({r.CreditCount}) ", $"Crfcjdf: {r.CencelledSum} ({r.CencelledCount}) " };
+           // var L = EF.GetLastReceiptPos();
+            //List<string> list = new() { "X-звіт постермінал", $"Всього: {r.DebitSum}({r.DebitCount})", $"Всього2: {r.CreditSum} ({r.CreditCount}) ", $"Crfcjdf: {r.CencelledSum} ({r.CencelledCount}) " };
             LogRRO d = new(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() })
-            { TypeOperation = eTypeOperation.XReportPOS, JSON = r.ToJSON(), TextReceipt = L.ToJSON() };
+            { TypeOperation = eTypeOperation.XReportPOS, JSON = r.ToJSON(), TextReceipt = string.Join(Environment.NewLine, r.Receipt) };
             Bl.InsertLogRRO(d);
-            EF.PrintNoFiscalReceipt(list);
+            EF.PrintNoFiscalReceipt(r.Receipt);
         }
 
         private void POS_Z_Click(object sender, RoutedEventArgs e)
         {
+            var r = EF.PosPrintZ();
+            LogRRO d = new(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() })
+            { TypeOperation = eTypeOperation.XReportPOS, JSON = r.ToJSON(), TextReceipt = string.Join(Environment.NewLine, r.Receipt) };
+            Bl.InsertLogRRO(d);
+            EF.PrintNoFiscalReceipt(r.Receipt);
+
             EF.PosPrintZ();
         }
 

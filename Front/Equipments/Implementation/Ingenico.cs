@@ -55,7 +55,7 @@ namespace Front.Equipments
 
         public override BatchTotals PrintZ()
         {
-            var r = EquipmentIngenico.GetBatchTotals();
+            var r = EquipmentIngenico.GetSettlement();
             return r.Result;
         }
 
@@ -238,6 +238,10 @@ namespace Front.Equipments.Ingenico
         public uint CencelledCount { get; set; }
 
         public uint CencelledSum { get; set; }
+        /// <summary>
+        /// Чек построчно.
+        /// </summary>
+        public IEnumerable<string> Receipt { get; set; }
     }
 
     public class PaymentResultModel
@@ -1537,6 +1541,29 @@ namespace Front.Equipments.Ingenico
             StopBPOS();
         }
 
+
+        public async Task<BatchTotals> GetSettlement()
+        {
+            if (!this.StartBPOS())
+                return (BatchTotals)null;
+            _bpos1LibClass.Settlement(this.merchantId);
+            this.WaitResponse();
+            _bpos1LibClass.ReqCurrReceipt();
+            this.WaitResponse();
+            BatchTotals batchTotals = new BatchTotals()
+            {
+                DebitCount = _bpos1LibClass.TotalsDebitNum,
+                DebitSum = _bpos1LibClass.TotalsDebitAmt,
+                CreditCount = _bpos1LibClass.TotalsCreditNum,
+                CreditSum = _bpos1LibClass.TotalsCreditAmt,
+                CencelledCount = _bpos1LibClass.TotalsCancelledNum,
+                CencelledSum = _bpos1LibClass.TotalsCancelledAmt,
+                Receipt = GetLastReceipt()
+            };
+            StopBPOS();
+            return batchTotals;
+        }
+
         public void PrintBatchTotals()
         {
             if (!this.StartBPOS())
@@ -1560,17 +1587,20 @@ namespace Front.Equipments.Ingenico
                 return (BatchTotals)null;
             _bpos1LibClass.GetBatchTotals(this.merchantId);
             this.WaitResponse();
-            BatchTotals batchTotals = new BatchTotals();
-            batchTotals.DebitCount = _bpos1LibClass.TotalsDebitNum;
-            batchTotals.DebitSum = _bpos1LibClass.TotalsDebitAmt;
-            batchTotals.CreditCount = _bpos1LibClass.TotalsCreditNum;
-            batchTotals.CreditSum = _bpos1LibClass.TotalsCreditAmt;
-            batchTotals.CencelledCount = _bpos1LibClass.TotalsCancelledNum;
-            batchTotals.CencelledSum = _bpos1LibClass.TotalsCancelledAmt;
+            BatchTotals batchTotals = new BatchTotals() {
+                DebitCount = _bpos1LibClass.TotalsDebitNum,
+                DebitSum = _bpos1LibClass.TotalsDebitAmt,
+                CreditCount = _bpos1LibClass.TotalsCreditNum,
+                CreditSum = _bpos1LibClass.TotalsCreditAmt,
+                CencelledCount = _bpos1LibClass.TotalsCancelledNum,
+                CencelledSum = _bpos1LibClass.TotalsCancelledAmt,
+                Receipt = GetLastReceipt()
+            };
             StopBPOS();
             return batchTotals;
         }
 
+        
         public void PrintBatchJournal()
         {
             if (!this.StartBPOS())
