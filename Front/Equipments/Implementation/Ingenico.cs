@@ -335,7 +335,7 @@ namespace Front.Equipments.Ingenico
         Task<string> GetInfo();
     }
     
-    public class Ingenico : IPosTerminal, IBaseDevice, IDisposable
+    public class Ingenico :  IBaseDevice, IDisposable //IPosTerminal,
     {
         private const string KeyPrefix = "Devices:Ingenico:";
         private static BPOS1LibClass _bpos1LibClass;
@@ -1558,7 +1558,7 @@ namespace Front.Equipments.Ingenico
                 CreditSum = _bpos1LibClass.TotalsCreditAmt,
                 CencelledCount = _bpos1LibClass.TotalsCancelledNum,
                 CencelledSum = _bpos1LibClass.TotalsCancelledAmt,
-                Receipt = GetLastReceipt()
+                Receipt = GetLastReceipt(false)
             };
             StopBPOS();
             return batchTotals;
@@ -1594,7 +1594,7 @@ namespace Front.Equipments.Ingenico
                 CreditSum = _bpos1LibClass.TotalsCreditAmt,
                 CencelledCount = _bpos1LibClass.TotalsCancelledNum,
                 CencelledSum = _bpos1LibClass.TotalsCancelledAmt,
-                Receipt = GetLastReceipt()
+                Receipt = GetLastReceipt(false)
             };
             StopBPOS();
             return batchTotals;
@@ -1668,8 +1668,9 @@ namespace Front.Equipments.Ingenico
 
         public void Cancel() => _isCancelRequested = true;
 
-        public List<string> GetLastReceipt()
+        public List<string> GetLastReceipt(bool IsStart=true)
         {
+            if(IsStart)
             if (!this.StartBPOS())
                 return (List<string>)null;
             _bpos1LibClass.ReqCurrReceipt();
