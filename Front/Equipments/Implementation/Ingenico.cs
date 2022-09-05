@@ -55,13 +55,13 @@ namespace Front.Equipments
 
         public override BatchTotals PrintZ()
         {
-            var r = EquipmentIngenico.GetSettlement();
+            var r = EquipmentIngenico.GetXZ(false);
             return r.Result;
         }
 
         public override BatchTotals PrintX()
         {
-            var r = EquipmentIngenico.GetBatchTotals();
+            var r = EquipmentIngenico.GetXZ(true);
             return r.Result;
         }
 
@@ -1542,10 +1542,13 @@ namespace Front.Equipments.Ingenico
         }
 
 
-        public async Task<BatchTotals> GetSettlement()
+        public async Task<BatchTotals> GetXZ(bool IsX=true)
         {
             if (!this.StartBPOS())
                 return (BatchTotals)null;
+            if(IsX)
+                _bpos1LibClass.PrintBatchTotals(this.merchantId);
+            else
             _bpos1LibClass.Settlement(this.merchantId);
             this.WaitResponse();
             _bpos1LibClass.ReqCurrReceipt();
