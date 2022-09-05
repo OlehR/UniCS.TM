@@ -213,7 +213,7 @@ namespace Front
                     break;
 
                 case "Пристрої":
-                    Init();
+                    Init(AdminUser);
                     break;
 
                 case "Історія":

@@ -51,7 +51,7 @@
                     <TextBlock FontSize="35" Text="{DynamicResource buttonHelp}"/>
                 </Button>
 
-                <Grid Grid.Column="1"  Grid.ColumnSpan="1"
+                <!--<Grid Grid.Column="1"  Grid.ColumnSpan="1"
                   >
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*"></ColumnDefinition>
@@ -63,7 +63,7 @@
                     </Grid.RowDefinitions>
 
                     <Button x:Name="ua"  Style="{StaticResource yelowButton}">
-                        <!-- Click="_ChangeLanguage" -->
+                        --><!-- Click="_ChangeLanguage" --><!--
                         <Image Margin="3" Source="icons\ua.png"></Image>
                     </Button>
 
@@ -79,11 +79,11 @@
                         <Image Margin="3" Source="icons\pln.png"></Image>
                     </Button>
 
-                </Grid>
+                </Grid>-->
 
-                <Grid Grid.Column="2">
+                <!--<Grid Grid.Column="2">
                     <Button Margin="10" Style="{StaticResource Default}" >
-                        <!-- Click="_VolumeButton"-->
+                        --><!-- Click="_VolumeButton"--><!--
                         <Image x:Name="ButtonImage">
                             <Image.Style>
                                 <Style TargetType="{x:Type Image}">
@@ -101,7 +101,7 @@
                             </Image.Style>
                         </Image>
                     </Button>
-                </Grid>
+                </Grid>-->
 
                 <Button Grid.Column="3" Grid.ColumnSpan="2"  Click="ClickButtonUp" Name="ButtonUp" >
                     <Button.Content>
