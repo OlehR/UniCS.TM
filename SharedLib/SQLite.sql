@@ -368,7 +368,7 @@ delete from  WARES_RECEIPT_PROMOTION
 [SqlAddLog]
 
 [SqlGetNewReceipt]
-INSERT OR ignore into GEN_WORKPLACE (ID_WORKPLACE,CODE_PERIOD,CODE_RECEIPT) values (@IdWorkplace,@CodePeriod,0);
+INSERT OR ignore into GEN_WORKPLACE (ID_WORKPLACE,CODE_PERIOD,CODE_RECEIPT) values (@IdWorkplace,@CodePeriod,@CodeReceipt);
 update GEN_WORKPLACE set CODE_RECEIPT=CODE_RECEIPT+1 where ID_WORKPLACE=@IdWorkplace and CODE_PERIOD=@CodePeriod;
 select CODE_RECEIPT from GEN_WORKPLACE where ID_WORKPLACE=@IdWorkplace and CODE_PERIOD=@CodePeriod;
 
