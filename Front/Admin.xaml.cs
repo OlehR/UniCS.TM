@@ -406,7 +406,9 @@ namespace Front
 
         private void CloneReceipt(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Клонування чеку");
+            Bl.CreateRefund(curReceipt,true,false);
+            this.WindowState = WindowState.Minimized;
+            //MessageBox.Show("Клонування чеку");
         }
     }
 

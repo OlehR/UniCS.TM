@@ -622,7 +622,7 @@ namespace SharedLib
         /// </summary>
         /// <param name="IdR">Чек на який робиться повернення</param>
         /// <returns></returns>
-        public Receipt CreateRefund(IdReceipt IdR,bool pIsFull=false)
+        public Receipt CreateRefund(IdReceipt IdR,bool pIsFull=false,bool IsRefund=true)
         {
             try
             {
@@ -631,7 +631,8 @@ namespace SharedLib
                 R.AdditionC1 = R.Payment?.First()?.CodeAuthorization;
                 R.Payment = null;
                 R.ReceiptEvent = null;
-                R.TypeReceipt = eTypeReceipt.Refund;
+                if(IsRefund)
+                    R.TypeReceipt = eTypeReceipt.Refund;
                 R.StateReceipt = eStateReceipt.Prepare;
                 R.RefundId = new IdReceipt(R);
                 R.SetIdReceipt(NewR);
