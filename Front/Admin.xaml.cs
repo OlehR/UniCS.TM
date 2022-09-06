@@ -403,6 +403,11 @@ namespace Front
                 Application.Current.Shutdown();
             }
         }
+
+        private void CloneReceipt(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Клонування чеку");
+        }
     }
 
     public class ParsLog
