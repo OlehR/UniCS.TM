@@ -717,7 +717,7 @@ namespace Front.Equipments.FP700
             int result2;
             if (!int.TryParse(this.GetLastReceiptNumber(), out result2))
                 return (string)null;
-            this._logger.LogDebug(string.Format("[ FP700 ] newLastReceipt = {0} / lastReceipt = {1}", (object)result2, (object)result1));
+            _logger?.LogDebug(string.Format("[ FP700 ] newLastReceipt = {0} / lastReceipt = {1}", (object)result2, (object)result1));
             string str = result2 > result1 ? result2.ToString() : (string)null;
             if (str != null)
                 return str;
@@ -952,7 +952,7 @@ namespace Front.Equipments.FP700
             int result2;
             if (!int.TryParse(this.GetLastRefundReceiptNumber(), out result2))
                 return (string)null;
-            this._logger.LogDebug(string.Format("[ FP700 ] newLastReceipt = {0} / lastReceipt = {1}", (object)result2, (object)result1));
+            _logger?.LogDebug(string.Format("[ FP700 ] newLastReceipt = {0} / lastReceipt = {1}", (object)result2, (object)result1));
             return result2 <= result1 ? (string)null : result2.ToString();
         }
 
