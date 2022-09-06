@@ -388,7 +388,7 @@
                                                 <Setter Property="VerticalAlignment" Value="Center"></Setter>
                                                 <Setter Property="FontWeight" Value="DemiBold"></Setter>
                                                 <Setter Property="FontSize" Value="25"></Setter>
-                                                <Setter Property="Text" Value="{Binding FixWeightQuantity}"/>
+                                                <Setter Property="Text" Value="{Binding FixWeight}"/>
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsWeight}" Value="True">
                                                         <Setter Property="Text" Value="{Binding Quantity}"/>
