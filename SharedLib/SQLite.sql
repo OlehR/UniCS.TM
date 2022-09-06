@@ -769,6 +769,7 @@ CREATE TABLE Log_RRO (
     ID_WORKPLACE      INTEGER  NOT NULL,
     CODE_PERIOD       INTEGER  NOT NULL,
     CODE_RECEIPT      INTEGER  NOT NULL,
+    FiscalNumber      TEXT,
     Number_Operation  INTEGER  NOT NULL DEFAULT 0,
     Type_Operation    INTEGER  NOT NULL DEFAULT 0,
     SUM               NUMBER   NOT NULL DEFAULT 0, 
@@ -1348,8 +1349,8 @@ where r.STATE_RECEIPT=-1
 
 [SqlInsertLogRRO]
 insert into Log_RRO  (
-      ID_WORKPLACE,CODE_PERIOD,CODE_RECEIPT,Number_Operation,Type_Operation, SUM ,Type_RRO,JSON, Text_Receipt,Error, USER_CREATE) VALUES
-    (@IdWorkplace, @CodePeriod,@CodeReceipt,@NumberOperation,@TypeOperation,@SUM,@TypeRRO,@JSON,@TextReceipt,@Error,@UserCreate)
+      ID_WORKPLACE,CODE_PERIOD,CODE_RECEIPT,FiscalNumber, Number_Operation,Type_Operation, SUM ,Type_RRO,JSON, Text_Receipt,Error, USER_CREATE) VALUES
+    (@IdWorkplace, @CodePeriod,@CodeReceipt,@FiscalNumber,@NumberOperation,@TypeOperation,@SUM,@TypeRRO,@JSON,@TextReceipt,@Error,@UserCreate)
 
 
 [SqlEnd]
