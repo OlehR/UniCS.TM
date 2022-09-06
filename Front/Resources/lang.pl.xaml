@@ -18,6 +18,7 @@
     <v:String x:Key="ownBag">Własna torba</v:String>
     <v:String x:Key="buyBag">Kup torbę</v:String>
     <v:String x:Key="payment">Płatność</v:String>
+    <v:String x:Key="refund">Zwrot</v:String>
     <v:String x:Key="cancel">Anuluj</v:String>
     <v:String x:Key="ok">Оk</v:String>
     <v:String x:Key="startShopping">Rozpocznij zakupy</v:String>

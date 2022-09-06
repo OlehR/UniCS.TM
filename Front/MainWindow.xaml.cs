@@ -116,7 +116,7 @@ namespace Front
         public string NameFirstTerminal { get { return IsPresentFirstTerminal ? EF?.BankTerminal1.Name : null; } }
         public string NameSecondTerminal { get { return IsPresentSecondTerminal ? EF?.BankTerminal2.Name : null; } }
 
-        public string GetBackgroundColor { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? "#FFE5E5" : "#FFFFFF"; } }
+        public string GetBackgroundColor { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? "#ff9999" : "#FFFFFF"; } }
 
         /// <summary>
         /// треба переробити(інтегрувати в основну форму)
@@ -682,7 +682,7 @@ namespace Front
             if (btn.DataContext is ReceiptWares)
             {
                 ReceiptWares temp = btn.DataContext as ReceiptWares;
-                InputNumberPhone.productNameChanges.Text = Convert.ToString(temp.NameWares);
+                InputNumberPhone.Desciption = Convert.ToString(temp.NameWares);
                 InputNumberPhone.Result = "";//Convert.ToString(temp.Quantity);
                 InputNumberPhone.ValidationMask = "";
                 NumericPad.Visibility = Visibility.Visible;

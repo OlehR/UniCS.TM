@@ -18,6 +18,7 @@
     <v:String x:Key="ownBag">Own bag</v:String>
     <v:String x:Key="buyBag">Buy a bag</v:String>
     <v:String x:Key="payment">Payment</v:String>
+    <v:String x:Key="refund">Refund</v:String>
     <v:String x:Key="cancel">Cancel</v:String>
     <v:String x:Key="ok">Ok</v:String>
     <v:String x:Key="startShopping">Start shopping</v:String>

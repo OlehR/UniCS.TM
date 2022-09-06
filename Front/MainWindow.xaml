@@ -1616,14 +1616,29 @@
                                 </Style>
                             </Image.Style>
                         </Image>
-                        <TextBlock FontSize="35" Text="{DynamicResource payment}"/>
+                        <TextBlock FontSize="35" Margin="0,0,0,10" FontWeight="Bold">
+                            <TextBlock.Style>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsCheckReturn, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                            <Setter Property="Text" Value="{DynamicResource refund}" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsCheckReturn, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                            <Setter Property="Text" Value="{DynamicResource payment}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
                         <TextBlock Margin="10,0,0,0" 
                            FontSize="28"
                            FontWeight="Bold"
                            Foreground="Black" Text="{Binding MoneySum, StringFormat=0.00₴, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window} }">
                         </TextBlock>
-                        <TextBlock Margin="0"
+                        <TextBlock
                            FontSize="28"
                            FontWeight="Bold"
                            Foreground="Black" Text="{Binding WaresQuantity, StringFormat={}({0}), RelativeSource={RelativeSource 

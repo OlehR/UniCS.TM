@@ -18,6 +18,7 @@
     <v:String x:Key="ownBag">Saját táska</v:String>
     <v:String x:Key="buyBag">Vegyen egy csomagot</v:String>
     <v:String x:Key="payment">Fizetés</v:String>
+    <v:String x:Key="refund">Vrátenie peňazí</v:String>
     <v:String x:Key="cancel">Megszünteti</v:String>
     <v:String x:Key="ok">Ok</v:String>
     <v:String x:Key="startShopping">Kezdje el a vásárlást</v:String>
