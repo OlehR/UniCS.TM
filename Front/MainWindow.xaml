@@ -259,7 +259,7 @@
 
                                 <StackPanel Orientation="Vertical" Grid.Column="0">
                                     <TextBlock Margin="0"  FontSize="12"  Text="{Binding GetStrWaresReceiptPromotion}" Visibility="{Binding IsReceiptPromotion,Converter={StaticResource BoolToHiddenConverter}}"/>
-                                    <TextBlock Margin="0" FontSize="35"  Text="{Binding NameWares}" MaxWidth="1000"  FontFamily="Roboto Condensed" FontWeight="DemiBold"/>
+                                    <TextBlock Margin="0" FontSize="35"  Text="{Binding NameWares}" MaxWidth="900"  FontFamily="Roboto Condensed" FontWeight="DemiBold"/>
                                 </StackPanel>
 
                                 <Grid Grid.Column="1">
@@ -388,12 +388,7 @@
                                                 <Setter Property="VerticalAlignment" Value="Center"></Setter>
                                                 <Setter Property="FontWeight" Value="DemiBold"></Setter>
                                                 <Setter Property="FontSize" Value="25"></Setter>
-                                                <Setter Property="Text" Value="{Binding FixWeight}"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsWeight}" Value="True">
-                                                        <Setter Property="Text" Value="{Binding Quantity}"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
+                                                <Setter Property="Text" Value="{Binding FixedWeightInKg}"/>
                                             </Style>
                                         </TextBlock.Style>
                                     </TextBlock>

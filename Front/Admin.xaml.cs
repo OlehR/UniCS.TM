@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -33,14 +34,14 @@ namespace Front
         Receipt curReceipt = null;
         public bool ClosedShift { get { return MW.IsLockSale; } }
         public User AdminUser { get; set; }
-
+        public bool IsShowAllReceipts { get; set; }
 
         public DateTime DateSoSearch { get; set; } = DateTime.Now.Date;
         public string KasaNumber { get { return Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace).Name; } }
 
         public void ControlScale(double pWeight, bool pIsStable)
         {
-            ControlScaleWeightDouble = Convert.ToString(pWeight/1000);
+            ControlScaleWeightDouble = Convert.ToString(pWeight / 1000);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ControlScaleWeightDouble"));
         }
 
@@ -55,7 +56,7 @@ namespace Front
             EF.OnControlWeight += (pWeight, pIsStable) =>
             {
                 double r = pWeight;
-                ControlScaleWeightDouble = Convert.ToString(pWeight/1000);
+                ControlScaleWeightDouble = Convert.ToString(pWeight / 1000);
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ControlScaleWeightDouble"));
             };
 
@@ -88,6 +89,16 @@ namespace Front
             else
                 return ((item as ParsLog).LineLog.IndexOf(TypeLog, StringComparison.OrdinalIgnoreCase) >= 0);
         }
+        private bool ReceiptFilter(object item)
+        {
+
+            if (IsShowAllReceipts)
+            {
+                return true;
+            }
+            else return ((item as Receipt).SumReceipt > 0);
+
+        }
 
         void timer_Tick(object sender, EventArgs e)
         {
@@ -102,8 +113,8 @@ namespace Front
         }
         private void POS_X_Click(object sender, RoutedEventArgs e)
         {
-           var r= EF.PosPrintX();
-           // var L = EF.GetLastReceiptPos();
+            var r = EF.PosPrintX();
+            // var L = EF.GetLastReceiptPos();
             //List<string> list = new() { "X-звіт постермінал", $"Всього: {r.DebitSum}({r.DebitCount})", $"Всього2: {r.CreditSum} ({r.CreditCount}) ", $"Crfcjdf: {r.CencelledSum} ({r.CencelledCount}) " };
             LogRRO d = new(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() })
             { TypeOperation = eTypeOperation.XReportPOS, JSON = r.ToJSON(), TextReceipt = string.Join(Environment.NewLine, r.Receipt) };
@@ -159,7 +170,7 @@ namespace Front
         {
             MW.AdminSSC = AdminUser;
             MW.Bl.db.SetConfig<DateTime>("DateAdminSSC", DateTime.Now);
-            MW.Bl.db.SetConfig<string>("CodeAdminSSC", AdminUser.BarCode);            
+            MW.Bl.db.SetConfig<string>("CodeAdminSSC", AdminUser.BarCode);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClosedShift"));
         }
 
@@ -211,7 +222,10 @@ namespace Front
             if (TabHistory.IsSelected && DateSoSearch == dt)
             {
                 Receipts = new ObservableCollection<Receipt>(Bl.GetReceipts(dt, dt, Global.IdWorkPlace));
+                IsShowAllReceipts = (bool)AllReceiptsCheckBox.IsChecked;
                 ListReceipts.ItemsSource = Receipts.Reverse();
+                CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(ListReceipts.ItemsSource);
+                view.Filter = ReceiptFilter;
             }
             string tabItem = ((sender as TabControl).SelectedItem as TabItem).Header as string;
 
@@ -268,7 +282,7 @@ namespace Front
         private void FiscalizCheckButton(object sender, RoutedEventArgs e)
         {
             MW.PrintAndCloseReceipt(curReceipt);
-            
+
             //MessageBox.Show("Фiскалізовано");
         }
 
@@ -308,7 +322,7 @@ namespace Front
 
         private void ReturnCheckButton(object sender, RoutedEventArgs e)
         {
-           
+
             Bl.CreateRefund(curReceipt);
             this.WindowState = WindowState.Minimized;
             //Close();
@@ -323,7 +337,7 @@ namespace Front
 
         private void ReturnAllCheckButton(object sender, RoutedEventArgs e)
         {
-            Bl.CreateRefund(curReceipt,true);
+            Bl.CreateRefund(curReceipt, true);
             this.WindowState = WindowState.Minimized;
             //MessageBox.Show("Повернути весь чек");
         }
@@ -335,6 +349,8 @@ namespace Front
                 //DateTime dt = dataHistori.SelectedDate.Value.Date;
                 Receipts = new ObservableCollection<Receipt>(Bl.GetReceipts(DateSoSearch, DateSoSearch, Global.IdWorkPlace));
                 ListReceipts.ItemsSource = Receipts.Reverse();
+                CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(ListReceipts.ItemsSource);
+                view.Filter = ReceiptFilter;
             }
             // Поки не знаю як реалізувати пошук
         }
@@ -408,9 +424,40 @@ namespace Front
 
         private void CloneReceipt(object sender, RoutedEventArgs e)
         {
-            Bl.CreateRefund(curReceipt,true,false);
+            Bl.CreateRefund(curReceipt, true, false);
             this.WindowState = WindowState.Minimized;
             //MessageBox.Show("Клонування чеку");
+        }
+
+        private void ShowDetailsReceiptClick(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            var tmpReceipt = btn.DataContext as Receipt;
+            if (tmpReceipt != null)
+            {
+                DetailsReceiptBorder.Visibility = Visibility.Visible;
+                BackgroundReceipts.Visibility = Visibility.Visible;
+                var curReceiptWares = Bl.GetWaresReceipt(tmpReceipt);
+                ListWaresReceipt.ItemsSource = curReceiptWares;
+            }
+
+        }
+
+        private void Cancel(object sender, RoutedEventArgs e)
+        {
+            DetailsReceiptBorder.Visibility = Visibility.Collapsed;
+            BackgroundReceipts.Visibility = Visibility.Collapsed;
+        }
+
+        private void IsShowAllreceiptsChecked(object sender, RoutedEventArgs e)
+        {
+            if (Receipts != null)
+            {
+
+                IsShowAllReceipts = (bool)AllReceiptsCheckBox.IsChecked;
+                CollectionViewSource.GetDefaultView(ListReceipts.ItemsSource).Refresh();
+            }
+
         }
     }
 

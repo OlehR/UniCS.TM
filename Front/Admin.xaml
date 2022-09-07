@@ -297,7 +297,7 @@
                         <Grid Margin="10,0,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="1*"></ColumnDefinition>
-                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                                <ColumnDefinition Width="2*"></ColumnDefinition>
                                 <ColumnDefinition Width="1*"></ColumnDefinition>
                                 <ColumnDefinition Width="1*"></ColumnDefinition>
                                 <ColumnDefinition Width="1*"></ColumnDefinition>
@@ -321,7 +321,7 @@
                                         <Grid Margin="10,0,0,0">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="1*"></ColumnDefinition>
-                                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                                                <ColumnDefinition Width="2*"></ColumnDefinition>
                                                 <ColumnDefinition Width="1*"></ColumnDefinition>
                                                 <ColumnDefinition Width="1*"></ColumnDefinition>
                                                 <ColumnDefinition Width="1*"></ColumnDefinition>
@@ -330,7 +330,7 @@
                                             </Grid.ColumnDefinitions>
 
                                             <TextBlock Grid.Column="0" Text="{Binding Type}" FontWeight="Bold" FontSize="20"/>
-                                            <TextBlock Grid.Column="1" Text="{Binding Model}" FontWeight="Bold" FontSize="20"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding TranslationModel}" FontWeight="Bold" FontSize="20"/>
                                             <TextBlock Grid.Column="2" Text="{Binding Name}" FontWeight="Bold" FontSize="20"/>
 
 
@@ -450,7 +450,74 @@
                         <Button Width="300" Height="50" Margin="10,0,0,0" Style="{StaticResource Default}" Click="FindChecksByDate">
                             Знайти
                         </Button>
+                        <StackPanel Orientation="Horizontal" Margin="20,0,0,0">
+                            <TextBlock Text="Всі чеки: "/>
+                            <CheckBox Height="40" Grid.Column="6"  Style="{DynamicResource OrangeSwitchStyleCheckBox}"
+                                      x:Name="AllReceiptsCheckBox" IsChecked="False" Checked="IsShowAllreceiptsChecked" Unchecked="IsShowAllreceiptsChecked"
+                                      VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </StackPanel>
                     </StackPanel>
+
+                    <!--деталі чеку-->
+                    <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="0" Grid.RowSpan="6"
+                Grid.Column="1" Grid.ColumnSpan="4"
+                 Name="DetailsReceiptBorder" Visibility="Collapsed" Grid.ZIndex="3" 
+                CornerRadius="10" HorizontalAlignment="Center"  MinWidth="1000" Height="850">
+                        <Border.Effect>
+                            <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+                        </Border.Effect>
+
+                        <Grid >
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="0.5*"></RowDefinition>
+                                <RowDefinition Height="3*"></RowDefinition>
+                                <RowDefinition Height="100"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" HorizontalAlignment="Center" FontSize="28" Text="Деталі чеку"/>
+
+                            <ListBox x:Name="ListWaresReceipt"
+                     Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="6">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Margin="5" Orientation="Horizontal">
+                                            <TextBlock FontSize="25"  Text="{Binding Path=NameWares}" TextWrapping="Wrap" HorizontalAlignment="Center" Width="650" />
+                                            <TextBlock Text="  "/>
+                                            <TextBlock  Text="{Binding Path=Quantity}" HorizontalAlignment="Center" Width="100"/>
+
+                                            <TextBlock Grid.Column="5" Text="{Binding SumTotal, StringFormat=0.00}" FontWeight="Bold" FontSize="30"/>
+
+                                            <TextBlock   FontSize="20" FontWeight="DemiBold" Foreground="Red">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Text" Value="{Binding DiscountEKKA, StringFormat=-0.00}"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding DiscountEKKA}" Value="0">
+                                                                <Setter Property="Text" Value=""/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </StackPanel>
+
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                            <Button Grid.Row="3" Style="{StaticResource Default}"  FontSize="22" Click="Cancel" 
+                        Height="80" Width="300" Margin="10">
+                                <TextBlock FontSize="28" Text="{DynamicResource cancel}"/>
+                            </Button>
+
+                        </Grid>
+                    </Border>
+
+                    <!--ФОН-->
+                    <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="0" Grid.RowSpan="6"
+                Grid.Column="0" Grid.ColumnSpan="6"
+                 Name="BackgroundReceipts" Visibility="Collapsed" Grid.ZIndex="2" 
+                Opacity="0.9"/>
                     <!--<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                         <ItemsControl Grid.Row="0" Name="ListReceipts" PreviewMouseLeftButtonDown="down">
                             <ItemsControl.ItemTemplate >
@@ -497,7 +564,7 @@
                                     <TextBlock FontSize="16" Text="{Binding Path=SumFiscal}" HorizontalAlignment="Center" Width="20"/>
                                     <TextBlock FontSize="16" Text="   "/>
                                     <TextBlock FontSize="16" Text="{Binding Path=SumCreditCard}" HorizontalAlignment="Center" Width="80" />
-
+                                    <Button Style="{StaticResource Default}" Content="Деталі" Click="ShowDetailsReceiptClick"/>
                                 </StackPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>

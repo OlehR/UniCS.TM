@@ -2,6 +2,7 @@
 using Front.Equipments.Virtual;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using ModelMID;
 using System;
 using Utils;
 
@@ -17,6 +18,7 @@ namespace Front.Equipments
         public bool IsСritical { get; set; } = true;
         public bool IsReady { get; set; } = false;
         public eModelEquipment Model { get; set; } = eModelEquipment.NotDefine;
+        public string TranslationModel { get { return Model.GetDescription(); } }
         public eTypeEquipment Type { get { return Model.GetTypeEquipment(); } }
 
         protected string SerialPort;

@@ -309,6 +309,7 @@ namespace ModelMID
         /// Зафіксована вага контрольною вагою.
         /// </summary>
         public decimal FixWeight { get { return _FixWeight == null && WeightFact == -1 ? 0 : _FixWeight??0; } set { _FixWeight = value; } }
+        public decimal FixedWeightInKg { get { return FixWeight / 1000; } }
 
         decimal _FixWeightQuantity=0;
         /// <summary>

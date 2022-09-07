@@ -5,7 +5,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -19,11 +18,10 @@ using ModelMID;
 using ModelMID.DB;
 using SharedLib;
 using Utils;
-using Microsoft.Web.WebView2.Core;
 using Microsoft.Extensions.Configuration;
 using System.Windows.Media;
 using System.Windows.Documents;
-using Newtonsoft.Json.Linq;
+
 
 namespace Front
 {
@@ -1319,12 +1317,7 @@ namespace Front
         {
             SetStateView(eStateMainWindows.WaitOwnBag);
         }
-        //private void ChangeWaitAdminText()
-        //{
 
-
-        //    //StackPanelWaitAdmin.Children[4] = tb;
-
-        //}
     }
+
 }
