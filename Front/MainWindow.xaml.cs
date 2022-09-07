@@ -339,7 +339,7 @@ namespace Front
                 pSMV = eStateMainWindows.WaitInput;
             if (pSMV == eStateMainWindows.WaitInput  && curReceipt == null)
                 pSMV = eStateMainWindows.StartWindow;
-            //lock (this._locker)
+            lock (this._locker)
             {
                 var r = Dispatcher.BeginInvoke(new ThreadStart(() =>
                 {
@@ -396,14 +396,18 @@ namespace Front
                         SetPropertyChanged();
                         EF.SetColor(GetFlagColor(State, TypeAccessWait, CS.StateScale));
                     }
-                    
+
 
                     //Генеруємо з кастомні вікна
                     if (TypeAccessWait == eTypeAccess.FixWeight)
                         customWindow = new CustomWindow(CS.StateScale, CS.RW?.Quantity == 1 && CS.RW?.FixWeightQuantity == 0, CS.StateScale == eStateScale.WaitClear && (curReceipt?.OwnBag ?? 0) > 0);
+                   else
+                    if (TypeAccessWait == eTypeAccess.ConfirmAge)
+                        customWindow = new CustomWindow(eWindows.ConfirmAge);
                     else
-                        customWindow = (State == eStateMainWindows.WaitCustomWindows ? pCW : null);
-
+                    customWindow = (State == eStateMainWindows.WaitCustomWindows ? pCW : null);
+                    
+                    
                     s.Play(State, TypeAccessWait, CS.StateScale, 0);
                     //if ((State == eStateMainWindows.WaitAdmin || State == eStateMainWindows.WaitAdminLogin) && TypeAccessWait == eTypeAccess.ExciseStamp)
                     //    customWindow = new CustomWindow(pCW, pStr);
@@ -1137,20 +1141,21 @@ namespace Front
 
             if (res != null)
             {
-                if (customWindow.Id == eWindows.RestoreLastRecipt)
+                if (res.CustomWindow?.Id == eWindows.RestoreLastRecipt)
                 {
                     if (res.Id == 1)
                     {
-                        Bl.db.RecalcPriceAsync(new IdReceiptWares(Bl.GetLastReceipt()));
+                        curReceipt = Bl.GetLastReceipt();
+                        Bl.db.RecalcPriceAsync(new IdReceiptWares(curReceipt));
                     }
                     if (res.Id == 2)
                         NewReceipt();
                     SetStateView(eStateMainWindows.WaitInput);
                     return;
                 }
-                if (customWindow.Id == eWindows.ConfirmWeight)
+                if (res.CustomWindow?.Id == eWindows.ConfirmWeight)
                 {
-                    //Ховаєм адмінпанель щоб управляти товаром.
+                    
                     if (res.Id == -1)
                     {
                         IsShowWeightWindows = false;
@@ -1179,6 +1184,24 @@ namespace Front
                     }
 
                 }
+
+                if (res.CustomWindow?.Id == eWindows.ConfirmAge)
+                {
+                    TypeAccessWait = eTypeAccess.NoDefine;
+                    SetStateView(eStateMainWindows.WaitInput);
+                   
+                    if (res.Id == 1)
+                    {
+                        Task.Run(new Action(() => {                           
+                            Bl.AddEventAge(curReceipt);
+                            //Thread.Sleep(1000);
+                            PrintAndCloseReceipt(); }
+                        ));
+                    }                    
+                    return;
+                }
+            
+
                 var r = new CustomWindowAnswer()
                 {
                     idReceipt = curReceipt,

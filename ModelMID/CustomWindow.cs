@@ -15,7 +15,9 @@ namespace ModelMID
         ExciseStamp,
         NoPrice,
         RestoreLastRecipt,
-        LimitSales
+        LimitSales,
+        ConfirmAge
+
     }
 
     public class CustomWindow
@@ -101,9 +103,7 @@ namespace ModelMID
                     ValidationMask = @"^[+]{0,1}[0-9]{10,13}$";
                     // Buttons = new List<CustomButton>() {new CustomButton() { Id = 666, Text = "Пошук картки" } }                    
                     break;
-                default:
-                    Buttons = new ObservableCollection<CustomButton>();
-                    break;
+                
                 case eWindows.ChoiceClient:
                     Text = "Зробіть вибір";
                     Caption = "Вибір карточки клієнта";
@@ -111,6 +111,21 @@ namespace ModelMID
                     IEnumerable<Client> d = pObject as IEnumerable<Client>;
                     Buttons = new ObservableCollection<CustomButton>(d.Select(el => new CustomButton() { CustomWindow = this, Id = el.CodeClient, Text =el.NameDiscount+' '+ el.NameClient }));
                     break;
+
+                case eWindows.ConfirmAge:
+                    Text = "Зробіть вибір";
+                    Caption = "Мені є 18";
+                    AnswerRequired = true;
+                    Buttons = new ObservableCollection<CustomButton>() {
+                        new CustomButton() { CustomWindow = this, Id = 1, Text = "Так, мені є 18 років", IsAdmin = false },
+                        new CustomButton() { CustomWindow = this, Id = 0, Text = "Ні, мені менше 18 років", IsAdmin = false }
+                         };                                                                    
+                    break;
+
+                default:
+                    Buttons = new ObservableCollection<CustomButton>();
+                    break;
+
             }
 
         }
