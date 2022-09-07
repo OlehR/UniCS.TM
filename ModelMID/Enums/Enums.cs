@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 
 namespace ModelMID
@@ -134,31 +135,37 @@ namespace ModelMID
 
     public enum eStateReceipt
     {
+        [Description("Скасовано")]
         /// <summary>
         /// Скасовано
         /// </summary>
         Canceled = -1,
-
+        [Description("Готується")]
         /// <summary>
         /// Готується
         /// </summary>
         Prepare = 0,
+        [Description("Підготовка до оплати")]
         /// <summary>
         /// Початок оплати (Для блокування дій з чеком)
         /// </summary>
         StartPay = 1,
+        [Description("Оплачено")]
         /// <summary>
         /// Оплачено
         /// </summary>
         Pay = 2,
+        [Description("Початок Фіскалізації")]
         /// <summary>
         /// Початок Фіскалізації (Для блокування дій з чеком)
         /// </summary>
         StartPrint = 3,
+        [Description("Фіскалізацізовано")]
         /// <summary>
         /// Надруковано
         /// </summary>
         Print = 8,
+        [Description("Відправлено в 1С")]
         /// <summary>
         /// Відправлено в 1С
         /// </summary>
@@ -167,7 +174,9 @@ namespace ModelMID
 
     public enum eTypeReceipt
     {
+        [Description("Повернення")]
         Refund = -1,
+        [Description("Продаж")]
         Sale = 1
     }
 
