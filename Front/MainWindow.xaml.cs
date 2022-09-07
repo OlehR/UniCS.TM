@@ -144,6 +144,7 @@ namespace Front
                 tb.TextAlignment = TextAlignment.Center;
                 tb.FontSize = 24;
                 tb.Margin = new Thickness(10);
+                WaitAdminTitle.Visibility = Visibility.Visible;
                 switch (TypeAccessWait)
                 {
                     case eTypeAccess.DelWares:
@@ -170,7 +171,7 @@ namespace Front
                         tb.Inlines.Add(new Run(CS.InfoEx) { Foreground = Brushes.Black, FontSize = 20 });
                         break;
                     case eTypeAccess.ConfirmAge:
-                        tb.Inlines.Add("Підтвердження віку");
+                        tb.Inlines.Add("Вам виповнилось 18 років?");
                         break;
                     case eTypeAccess.ExciseStamp:
                         tb.Inlines.Add(new Run("Відскануйте акцизну марку!") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red, FontSize = 32 });
