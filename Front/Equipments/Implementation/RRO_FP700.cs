@@ -178,6 +178,7 @@ namespace Front.Equipments
 
             if (receiptMID.ReceiptEvent != null && receiptMID.ReceiptEvent.Count() > 0)
                 Res.ReceiptEvents = receiptMID.ReceiptEvent.Select(r => GetReceiptEvent(r)).ToList();
+            Res.Customer = GetCustomerViewModelByClient(receiptMID.Client);
            // if (pIsDetail) !!!!TMP
               //  Bl.GenQRAsync(receiptMID.Wares);
             return Res;
@@ -376,6 +377,23 @@ namespace Front.Equipments
             return Res;
         }
 
+        private CustomerViewModel GetCustomerViewModelByClient(Client parClient)
+        {
+            if (parClient == null)
+                return null;
+            return new CustomerViewModel()
+            {
+                Id = parClient.ClientId,
+                CustomerId = parClient.CodeClient.ToString(),
+                Name = parClient.NameClient,
+                DiscountPercent = Convert.ToDouble(parClient.PersentDiscount),
+                //LoyaltyPoints 
+                Bonuses = parClient.SumMoneyBonus,
+                //LoyaltyPointsTotal 
+                Wallet = parClient.Wallet,
+                PhoneNumber = parClient.MainPhone
+            };
+        }
     }
 
 }
@@ -677,6 +695,8 @@ namespace Front.Equipments.FP700
         }
 
         public Task<DeviceConnectionStatus> TestDevice() => Task.Run<DeviceConnectionStatus>(new Func<DeviceConnectionStatus>(this.TestDeviceSync));
+
+
 
         public string PrintReceipt(ReceiptViewModel receipt)
         {

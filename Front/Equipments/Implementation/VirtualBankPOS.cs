@@ -52,7 +52,7 @@ namespace Front.Equipments.Implementation
 
         public override Payment Purchase(decimal pAmount)
         {
-            int Interval = 10000;
+            int Interval = 1500;
             SetStatus(eStatusPos.WaitingForCard);
             Thread.Sleep(Interval);
             SetStatus(eStatusPos.PinInputWaitKey);

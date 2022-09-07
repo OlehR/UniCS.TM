@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using Front.Equipments;
+using Front.Equipments.Virtual;
 using Front.Models;
 using ModelMID;
 using ModelMID.DB;
@@ -35,7 +36,16 @@ namespace Front
 
             EF.SetStatus += (info) =>
             {
-                EquipmentInfo = info.TextState;
+                var r = Dispatcher.BeginInvoke(new ThreadStart(() =>
+                {
+                    PosStatus PS = info as PosStatus;
+                    if (PS != null)
+                        EquipmentInfo = PS.Status.GetDescription();
+                    RroStatus rroStatus = info as RroStatus;
+                    if (rroStatus != null)
+                        EquipmentInfo = rroStatus.Status.GetDescription();
+                    //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EquipmentInfo"));
+                }));
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"SetStatus ({info.ToJSON()})", eTypeLog.Expanded);
                 if (EF.StatCriticalEquipment != eStateEquipment.On)
                     SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ErrorEquipment, null);
