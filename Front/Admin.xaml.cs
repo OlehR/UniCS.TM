@@ -32,7 +32,7 @@ namespace Front
         MainWindow MW;
         Receipt curReceipt = null;
         public bool ClosedShift { get { return MW.IsLockSale; } }
-        User AdminUser = null;
+        public User AdminUser { get; set; }
 
 
         public DateTime DateSoSearch { get; set; } = DateTime.Now.Date;
@@ -74,8 +74,10 @@ namespace Front
         }
         public void Init(User AdminUser = null)
         {
-            this.AdminUser = AdminUser; 
-            
+            this.AdminUser = AdminUser;
+            //adminastratorName.Text = AdminUser.NameUser;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClosedShift"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AdminUser"));
             if (EF != null)
                 ListEquipment.ItemsSource = new ObservableCollection<Equipment>(EF.GetListEquipment);
         }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Utils;
 
 
 namespace ModelMID
@@ -34,6 +35,10 @@ namespace ModelMID
         /// 0- готується,1- оплачено,2- фіскалізовано,3 - Send
         /// </summary>
         public eStateReceipt StateReceipt { get; set; }
+        /// <summary>
+        /// переклади станів для відображення
+        /// </summary>
+        public string TranslationStateReceipt { get { return StateReceipt.GetDescription(); } }
 
         /// <summary>
         /// Номер чека в фіскальному реєстраторі
