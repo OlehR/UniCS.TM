@@ -551,7 +551,7 @@
                                 <StackPanel Margin="5" Orientation="Horizontal">
                                     <TextBlock FontSize="16" Text="{Binding Path=CodeReceipt}" HorizontalAlignment="Center" Width="40" />
                                     <TextBlock FontSize="16" Text="  "/>
-                                    <TextBlock FontSize="16" Text="{Binding Path=TypeReceipt}" HorizontalAlignment="Center" Width="50"/>
+                                    <TextBlock FontSize="16" Text="{Binding Path=TranslationTypeReceipt}" HorizontalAlignment="Center" Width="80"/>
                                     <TextBlock FontSize="16" Text="   "/>
                                     <TextBlock FontSize="16" Text="{Binding Path=DateReceipt}" HorizontalAlignment="Center" Width="170"/>
                                     <TextBlock FontSize="16" Text="   "/>
