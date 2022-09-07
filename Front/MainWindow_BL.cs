@@ -117,6 +117,8 @@ namespace Front
                 var r = Dispatcher.BeginInvoke(new ThreadStart(() =>
                 {
                     NumericPad.Visibility = Visibility.Collapsed;
+                    Background.Visibility = Visibility.Collapsed;
+                    BackgroundWares.Visibility = Visibility.Collapsed;
                     if (Client?.Wallet != 0 || Client?.SumMoneyBonus != 0 || Client?.SumBonus != 0)
                     {
                         ShowClientBonus.Visibility = Visibility.Visible;

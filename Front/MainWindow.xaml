@@ -738,7 +738,7 @@
                  Grid.Row="0" Grid.RowSpan="6"
                 Grid.Column="1" Grid.ColumnSpan="4"
                  Name="ChoicePrice" Visibility="Collapsed" Grid.ZIndex="2" 
-                CornerRadius="10" HorizontalAlignment="Center"  MinWidth="500" Height="550">
+                CornerRadius="10" HorizontalAlignment="Center"  MinWidth="500" Height="650">
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
                 </Border.Effect>
@@ -755,7 +755,7 @@
                         <ItemsControl  Name="Prices">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Button Click="_AddWaresPrice"  Height="50"  Width="450" Margin="1" Style="{StaticResource yelowButton}" Background="{Binding BackGroundColor}"
+                                    <Button Click="_AddWaresPrice"  Height="80"  Width="450" Margin="2" Style="{StaticResource yelowButton}" Background="{Binding BackGroundColor}"
                                         IsEnabled="{Binding IsEnable}"
                                         >
                                         <TextBlock FontSize="28" Text="{Binding StrPrice}" Tag="{Binding}" />
@@ -777,7 +777,7 @@
                                    Text="Для продажу сигарет, зачекайте будь ласка адміністратора"/>
 
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <Button x:Name="MinusCigarettesButton" Height="60" Width="60" Margin="5" Click="PlusOrMinusCigarettes">
+                            <Button x:Name="MinusCigarettesButton" Height="80" Width="80" Margin="5" Click="PlusOrMinusCigarettes">
                                 <Button.Content>
                                     <Image Margin="15" Source="icons\minus.png"></Image>
                                 </Button.Content>
@@ -794,13 +794,13 @@
                                 </Button.Style>
                             </Button>
 
-                            <Button Height="60" Width="60" Margin="5" Style="{StaticResource yelowButton}"
+                            <Button Height="80" Width="80" Margin="5" Style="{StaticResource yelowButton}"
                                     x:Name="QuantityCigarettesText" Content="{Binding QuantityCigarettes, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" IsEnabled="False">
 
                             </Button>
                             <Button x:Name="PlusCigarettesButton" Click="PlusOrMinusCigarettes"
-                                Height="60" Width="60" Margin="5" Style="{StaticResource yelowButton}">
+                                Height="80" Width="80" Margin="5" Style="{StaticResource yelowButton}">
                                 <Button.Content>
                                     <Image Margin="15" Source="icons\plus.png"></Image>
                                 </Button.Content>
@@ -808,7 +808,7 @@
                         </StackPanel>
 
                         <Button Grid.Row="3" Style="{StaticResource Default}"  FontSize="22" Click="Cigarettes_Cancel" 
-                        Height="60" Width="300" Margin="10">
+                        Height="80" Width="300" Margin="10">
                             <TextBlock FontSize="28" Text="{DynamicResource cancel}"/>
                         </Button>
                     </StackPanel>
@@ -1162,7 +1162,7 @@
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
                  Grid.Column="0" Grid.ColumnSpan="6"
-                 Name="WaitPayment" Visibility="Visible" Grid.ZIndex="2" 
+                 Name="WaitPayment" Visibility="Collapsed" Grid.ZIndex="2" 
                 CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
