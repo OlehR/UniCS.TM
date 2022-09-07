@@ -126,6 +126,10 @@ namespace Front
                 }
                 ));             
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClientName"));
+                if (Client.BirthDay > new DateTime(1990, 1, 1))
+                    if (Client.BirthDay.AddYears(18).Date <= DateTime.Now.Date)
+                        Bl.AddEventAge(curReceipt);
+
                 FileLogger.WriteLogMessage($"MainWindow.OnClientChanged(Client.Wallet=> {pClient.Wallet} SumBonus=>{pClient.SumBonus})", eTypeLog.Full);
             };
 
