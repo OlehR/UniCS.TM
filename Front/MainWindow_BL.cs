@@ -229,13 +229,18 @@ namespace Front
             }
 
             //!!!TMP НЕ зовсім правильно треба провірити права перед розблокуванням кнопок
-            if (pUser.TypeUser >= eTypeUser.AdminSSC && customWindow?.Buttons != null)
-                foreach (var item in customWindow.Buttons)
-                    item.IsAdmin = false;
+           //if (pUser.TypeUser >= eTypeUser.AdminSSC && customWindow?.Buttons != null)
+               // foreach (var item in customWindow.Buttons)
+                 //   item.IsNeedAdmin = false;
 
-            IsIgnoreExciseStamp = Access.GetRight(pUser, eTypeAccess.ExciseStamp);
-            IsAddNewWeight = Access.GetRight(pUser, eTypeAccess.AddNewWeight);
-            IsFixWeight = Access.GetRight(pUser, eTypeAccess.FixWeight);
+            //IsIgnoreExciseStamp = Access.GetRight(pUser, eTypeAccess.ExciseStamp);
+            if(TypeAccessWait == eTypeAccess.FixWeight)
+               IsConfirmAdmin = Access.GetRight(pUser, eTypeAccess.FixWeight);
+            else
+              if (TypeAccessWait == eTypeAccess.ExciseStamp )
+                IsConfirmAdmin = Access.GetRight(pUser, eTypeAccess.ExciseStamp);
+
+            
 
             if (TypeAccessWait == eTypeAccess.NoDefine || TypeAccessWait < 0)
                 return false;

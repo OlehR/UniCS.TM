@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
@@ -21,11 +22,11 @@ namespace ModelMID
     }
 
     public class CustomWindow
-    {
-        /// <summary>
-        /// Id вікна. Буде в відповіді
-        /// </summary>
-        public eWindows Id { get; set; } = eWindows.NoDefinition;
+    { 
+    /// <summary>
+    /// Id вікна. Буде в відповіді
+    /// </summary>
+    public eWindows Id { get; set; } = eWindows.NoDefinition;
         /// <summary>
         /// Назва вікна
         /// </summary>
@@ -93,8 +94,12 @@ namespace ModelMID
                     Caption = "Назва товару";
                     AnswerRequired = true;
                     ValidationMask = @"^\w{4}[0-9]{6}?$";
-                    Buttons = new ObservableCollection<CustomButton>() {new CustomButton() {CustomWindow = this,  Id = 31, Text = "Ok", IsAdmin = false},
-                                                                    new CustomButton() {CustomWindow = this,  Id = 32, Text = "Акцизний код відсутній", IsAdmin = true } };
+                    Buttons = new ObservableCollection<CustomButton>() 
+                    {
+                       // new CustomButton() {CustomWindow = this,  Id = 31, Text = "Ok", IsNeedAdmin = false},
+                        new CustomButton() {CustomWindow = this,  Id = 32, Text = "Акцизний код відсутній", IsNeedAdmin = false },
+                        new CustomButton() {CustomWindow = this,  Id = 32, Text = "Підтвердження акцизу", IsNeedAdmin = true }
+                    };
                     break;
                 case eWindows.PhoneClient:
                     Text = "Введіть ваш номер!";
@@ -117,8 +122,8 @@ namespace ModelMID
                     Caption = "Мені є 18";
                     AnswerRequired = true;
                     Buttons = new ObservableCollection<CustomButton>() {
-                        new CustomButton() { CustomWindow = this, Id = 1, Text = "Так, мені є 18 років", IsAdmin = false },
-                        new CustomButton() { CustomWindow = this, Id = 0, Text = "Ні, мені менше 18 років", IsAdmin = false }
+                        new CustomButton() { CustomWindow = this, Id = 1, Text = "Так, мені є 18 років", IsNeedAdmin = false },
+                        new CustomButton() { CustomWindow = this, Id = 0, Text = "Ні, мені менше 18 років", IsNeedAdmin = false }
                          };                                                                    
                     break;
 
@@ -138,42 +143,44 @@ namespace ModelMID
             {
                 case eStateScale.WaitClear:
                     Buttons = new ObservableCollection<CustomButton>()
-                    { new CustomButton() { CustomWindow=this, Id = 4, Text = "Тарувати", IsAdmin = true } ,
-                      new CustomButton() {CustomWindow=this, Id = 5, Text = "Вхід в адмінку", IsAdmin = true } };
+                    { new CustomButton() { CustomWindow=this, Id = 4, Text = "Тарувати", IsNeedAdmin = true } ,
+                      new CustomButton() {CustomWindow=this, Id = 5, Text = "Вхід в адмінку", IsNeedAdmin = true } };
                     if(IsDelReceipt)
-                    Buttons.Add(new CustomButton() { CustomWindow = this, Id = 6, Text = "Видалити чек", IsAdmin = true });
+                    Buttons.Add(new CustomButton() { CustomWindow = this, Id = 6, Text = "Видалити чек", IsNeedAdmin = true });
                     break;
                 case eStateScale.BadWeight:
                     Buttons = new ObservableCollection<CustomButton>();
-                    Buttons.Add(new CustomButton() { CustomWindow = this, Id = 1, Text = "Підтвердити вагу", IsAdmin = true });
+                    Buttons.Add(new CustomButton() { CustomWindow = this, Id = 1, Text = "Підтвердити вагу", IsNeedAdmin = true });
                     if (IsViewAddWeight)
-                        Buttons.Add(new CustomButton() { CustomWindow = this, Id = 2, Text = "Добавити вагу", IsAdmin = true });
-                    Buttons.Add(new CustomButton() { CustomWindow = this, Id = -1, Text = "Закрити", IsAdmin = false });
+                        Buttons.Add(new CustomButton() { CustomWindow = this, Id = 2, Text = "Добавити вагу", IsNeedAdmin = true });
+                    Buttons.Add(new CustomButton() { CustomWindow = this, Id = -1, Text = "Закрити", IsNeedAdmin = false });
                     break;
 
                 case eStateScale.WaitGoods:
                     Buttons = new ObservableCollection<CustomButton>()
-                    { new CustomButton() {CustomWindow = this,  Id = 1, Text = "Підтвердити вагу", IsAdmin = true },
-                      new CustomButton() {CustomWindow = this,  Id = 3, Text = "Видалити товар", IsAdmin = true },
-                      new CustomButton() {CustomWindow = this,  Id = -1, Text = "Закрити", IsAdmin = false }};
+                    { new CustomButton() {CustomWindow = this,  Id = 1, Text = "Підтвердити вагу", IsNeedAdmin = true },
+                      new CustomButton() {CustomWindow = this,  Id = 3, Text = "Видалити товар", IsNeedAdmin = true },
+                      new CustomButton() {CustomWindow = this,  Id = -1, Text = "Закрити", IsNeedAdmin = false }};
 
                     break;
                 case eStateScale.NotStabilized:
                     Buttons = new ObservableCollection<CustomButton>()
-                    { new CustomButton() {CustomWindow = this,  Id = 1, Text = "Підтвердити вагу", IsAdmin = true },
-                      new CustomButton() {CustomWindow = this,  Id = -1, Text = "Закрити", IsAdmin = false }};
+                    { new CustomButton() {CustomWindow = this,  Id = 1, Text = "Підтвердити вагу", IsNeedAdmin = true },
+                      new CustomButton() {CustomWindow = this,  Id = -1, Text = "Закрити", IsNeedAdmin = false }};
                     break;
             }
         }
 
     }
 
-    public class CustomButton
+    public class CustomButton : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+        bool _IsAdmin = false;
         /// <summary>
         /// Доступна лише в режимі адміністратора.
         /// </summary>
-        public bool IsAdmin { get; set; } = false;
+        public bool IsNeedAdmin { get { return _IsAdmin; } set { _IsAdmin = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("GetBackgroundColor")); } } 
 
         /// <summary>
         /// Id >0 кнопки. Буде в відповіді 

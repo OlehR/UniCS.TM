@@ -62,9 +62,9 @@ namespace Front
         public string ChangeSumPaymant { get; set; } = "0";
 
         public bool IsShowWeightWindows { get; set; } = false;
-        public bool IsIgnoreExciseStamp { get; set; }
-        public bool IsAddNewWeight { get; set; }
-        public bool IsFixWeight { get; set; }
+        //public bool IsIgnoreExciseStamp { get; set; }
+        public bool IsConfirmAdmin { get; set; }
+       // public bool IsFixWeight { get; set; }
         public bool IsExciseStamp { get; set; }
         public bool IsCheckReturn { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? true : false; } }
         /// <summary>
@@ -124,6 +124,9 @@ namespace Front
 
         public System.Drawing.Color GetFlagColor(eStateMainWindows pStateMainWindows, eTypeAccess pTypeAccess, eStateScale pSS)
         {
+            if (pTypeAccess == eTypeAccess.ExciseStamp)                
+                return System.Drawing.Color.Green;
+
             System.Drawing.Color c = FC.ContainsKey(pStateMainWindows) ? FC[pStateMainWindows] : System.Drawing.Color.Black;
             if (pSS == eStateScale.WaitGoods)
                 return System.Drawing.Color.Yellow;
@@ -383,8 +386,7 @@ namespace Front
                         CurWares = pRW;
                     if (pSMV != eStateMainWindows.WaitAdminLogin)
                     {
-                        TypeAccessWait = pTypeAccess;
-                        IsAddNewWeight = false;
+                        TypeAccessWait = pTypeAccess;               
                     }
 
                     //Якщо 
@@ -403,6 +405,9 @@ namespace Front
                    else
                     if (TypeAccessWait == eTypeAccess.ConfirmAge)
                         customWindow = new CustomWindow(eWindows.ConfirmAge);
+                    else
+                        if(TypeAccessWait == eTypeAccess.ExciseStamp)
+                        customWindow = new CustomWindow(eWindows.ExciseStamp);
                     else
                     customWindow = (State == eStateMainWindows.WaitCustomWindows ? pCW : null);
                     
@@ -606,9 +611,9 @@ namespace Front
                             //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnabledFindButton"));
                             break;
                         case eStateMainWindows.WaitInput:
-                            IsIgnoreExciseStamp = false;
+                            //IsIgnoreExciseStamp = false;
                             //IsAddNewWeight = false;
-                            IsFixWeight = false;
+                            //IsFixWeight = false;
                             break;
                         case eStateMainWindows.WaitOwnBag:
                             StartShopping.Visibility = Visibility.Collapsed;
@@ -1122,7 +1127,7 @@ namespace Front
         private void CustomWindowClickButton(object sender, RoutedEventArgs e)
         {
             //SetStateView(eStateMainWindows.WaitInput);
-
+            IsConfirmAdmin = false;
             Button btn = sender as Button;
             CustomButton res = btn.DataContext as CustomButton;
 
@@ -1184,7 +1189,22 @@ namespace Front
 
                 }
 
-                if (res.CustomWindow?.Id == eWindows.ConfirmAge)
+                if (res.CustomWindow?.Id == eWindows.ExciseStamp)
+                {
+
+                    //if(res.Id==31)
+
+                    if (res.Id == 32)
+                        EF.SetColor(System.Drawing.Color.Red);
+                    else
+                    if (res.Id == 33)
+                    {
+                        AddExciseStamp("None");
+                        Bl.AddEventAge(curReceipt);
+                    }
+                    return;
+                }
+                 if (res.CustomWindow?.Id == eWindows.ConfirmAge)
                 {
                     TypeAccessWait = eTypeAccess.NoDefine;
                     SetStateView(eStateMainWindows.WaitInput);
