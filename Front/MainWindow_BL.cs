@@ -429,8 +429,14 @@ namespace Front
                     Bl.db.ReplacePayment(new List<Payment>() { pay });
                     if (pay.IsSuccess)
                     {
-                        Bl.SetStateReceipt(curReceipt, eStateReceipt.Pay);
                         R.StateReceipt = eStateReceipt.Pay;
+                        R.CodeCreditCard = pay.NumberCard;
+                        R.NumberReceiptPOS = pay.NumberReceipt;
+                        R.Client = null;
+                        Bl.db.ReplaceReceipt(R);
+                        
+                       // Bl.SetStateReceipt(curReceipt, eStateReceipt.Pay);
+                       // R.StateReceipt = eStateReceipt.Pay;
                         R.Payment = new List<Payment>() { pay };
                     }
                 }

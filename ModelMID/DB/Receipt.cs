@@ -82,8 +82,9 @@ namespace ModelMID
         /// </summary>
         public decimal SumBonus { get; set; }
 
-        public long CodeCreditCard { get; set; }
-        public long NumberSlip { get; set; }
+        public string CodeCreditCard { get; set; }
+        public string NumberSlip { get; set; }
+        public long    NumberReceiptPOS { get; set; }
 
         public DateTime DateCreate { get; set; }
         public long UserCreate { get; set; }
@@ -169,9 +170,9 @@ namespace ModelMID
             VatReceipt = 0;
             SumCash = 0;
             SumCreditCard = 0;
-            CodeCreditCard = 0;
+            CodeCreditCard = null;
             SumBonus = 0;
-            NumberSlip = 0;
+            NumberSlip = null;
         }
 
         public void SetIdReceipt(IdReceipt idReceipt)

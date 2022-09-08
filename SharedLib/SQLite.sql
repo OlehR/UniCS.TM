@@ -28,6 +28,8 @@ alter TABLE WARES_RECEIPT  add SUM_BONUS      NUMBER   NOT NULL DEFAULT 0;--Ver=
 alter TABLE WARES_RECEIPT_PROMOTION  add Type_Wares  INTEGER  NOT NULL  DEFAULT (0);--Ver=>6
 alter TABLE WARES_RECEIPT add Code_Company INTEGER  NOT NULL DEFAULT 0;--Ver=>7
 alter TABLE WARES_RECEIPT add Fix_Weight_Quantity NOT NULL DEFAULT 0;--Ver=>8
+alter TABLE RECEIPT    add  NUMBER_RECEIPT_POS TEXT;--Ver=>9
+
 
 [SqlUpdateMID]
 --Ver=>0;Reload;
@@ -136,7 +138,7 @@ select  id_workplace IdWorkplace, code_period CodePeriod, code_receipt CodeRecei
 sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_receipt as StateReceipt, code_client as CodeClient,
  number_cashier as NumberCashier, number_receipt NumberReceipt, code_discount as CodeDiscount, sum_discount as SumDiscount, percent_discount as PercentDiscount, 
  code_bonus as CodeBonus, sum_bonus as SumBonus, sum_cash as SumCash, sum_credit_card as SumCreditCard, code_outcome as CodeOutcome, 
- code_credit_card as CodeCreditCard, number_slip as NumberSlip, number_tax_income as NumberTaxIncome,USER_CREATE as UseCreate, Date_Create as DateCreate,
+ code_credit_card as CodeCreditCard, number_slip as NumberSlip,NUMBER_RECEIPT_POS as NumberReceiptPOS, number_tax_income as NumberTaxIncome,USER_CREATE as UseCreate, Date_Create as DateCreate,
  ADDITION_N1 as AdditionN1,ADDITION_N2 as AdditionN2, ADDITION_N3 as AdditionN3,
  ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1, 
  Id_Workplace_Refund as IdWorkplaceRefund,
@@ -200,7 +202,7 @@ insert into receipt (id_workplace, code_period, code_receipt, date_receipt,
 sum_receipt, vat_receipt, code_pattern, state_receipt, code_client,
  number_cashier, number_receipt, code_discount, sum_discount, percent_discount, 
  code_bonus, sum_bonus, sum_cash, sum_credit_card, code_outcome, 
- code_credit_card, number_slip, number_tax_income,USER_CREATE,
+ code_credit_card, number_slip,Number_Receipt_POS, number_tax_income,USER_CREATE,
  ADDITION_N1,ADDITION_N2,ADDITION_N3,
  ADDITION_C1,ADDITION_D1,Type_Receipt, 
  Id_Workplace_Refund,Code_Period_Refund,Code_Receipt_Refund
@@ -208,8 +210,8 @@ sum_receipt, vat_receipt, code_pattern, state_receipt, code_client,
  (@IdWorkplace, @CodePeriod, @CodeReceipt, @DateReceipt, 
  @SumReceipt, @VatReceipt, @CodePattern, @StateReceipt, @CodeClient,
  @NumberCashier, @NumberReceipt, 0, @SumDiscount, @PercentDiscount,
- 0, 0, 0, 0, 0,
- 0, 0, 0,@UserCreate,
+ 0, @SumBonus, @SumCash, @SumCreditCard, 0, 
+ @CodeCreditCard, @NumberSlip,@NumberReceiptPOS, 0,@UserCreate,
  @AdditionN1,@AdditionN2,@AdditionN3,
  @AdditionC1,@AdditionD1,@TypeReceipt,
  @IdWorkplaceRefund,@CodePeriodRefund, @CodeReceiptRefund
@@ -619,8 +621,9 @@ CREATE TABLE RECEIPT (
     SUM_CASH          NUMBER,
     SUM_CREDIT_CARD   NUMBER,
     CODE_OUTCOME      INTEGER  NOT NULL DEFAULT 0,
-    CODE_CREDIT_CARD  INTEGER,
+    CODE_CREDIT_CARD  TEXT,
     NUMBER_SLIP       TEXT,
+    NUMBER_RECEIPT_POS TEXT,
     NUMBER_TAX_INCOME INTEGER,
     DESCRIPTION       TEXT,
     ADDITION_N1       NUMBER,
@@ -1171,12 +1174,13 @@ where
 	 limit 1
 [SqlGetDateFirstNotSendReceipt]
 select ifnull(min(date_receipt),datetime('now','localtime'))   from receipt wr where state_receipt =2
+
 [SqlGetLastReceipt]
 select  id_workplace IdWorkplace, code_period CodePeriod, code_receipt CodeReceipt, date_receipt DateReceipt,
 sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_receipt as StateReceipt, code_client as CodeClient,
  number_cashier as NumberCashier, number_receipt NumberReceipt, code_discount as CodeDiscount, sum_discount as SumDiscount, percent_discount as PercentDiscount, 
  code_bonus as CodeBonus, sum_bonus as SumBonus, sum_cash as SumCash, sum_credit_card as SumCreditCard, code_outcome as CodeOutcome, 
- code_credit_card as CodeCreditCard, number_slip as NumberSlip, number_tax_income as NumberTaxIncome,USER_CREATE as UseCreate,
+ code_credit_card as CodeCreditCard, number_slip as NumberSlip,Number_Receipt_POS as NumberReceiptPOS, number_tax_income as NumberTaxIncome,USER_CREATE as UseCreate,
  ADDITION_N1 as AdditionN1,ADDITION_N2 as AdditionN2, ADDITION_N3 as AdditionN3,
  ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1
   from RECEIPT r where 
@@ -1188,7 +1192,7 @@ select  id_workplace IdWorkplace, code_period CodePeriod, code_receipt CodeRecei
 sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_receipt as StateReceipt, code_client as CodeClient,
  number_cashier as NumberCashier, number_receipt NumberReceipt, code_discount as CodeDiscount, sum_discount as SumDiscount, percent_discount as PercentDiscount, 
  code_bonus as CodeBonus, sum_bonus as SumBonus, sum_cash as SumCash, sum_credit_card as SumCreditCard, code_outcome as CodeOutcome, 
- code_credit_card as CodeCreditCard, number_slip as NumberSlip, number_tax_income as NumberTaxIncome,USER_CREATE as UseCreate, Date_Create as DateCreate,
+ code_credit_card as CodeCreditCard, number_slip as NumberSlip,Number_Receipt_POS as NumberReceiptPOS number_tax_income as NumberTaxIncome,USER_CREATE as UseCreate, Date_Create as DateCreate,
  ADDITION_N1 as AdditionN1,ADDITION_N2 as AdditionN2, ADDITION_N3 as AdditionN3,
  ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1
  from receipt
