@@ -332,6 +332,8 @@ namespace Front
                 //Під час відновлення чека
                 if (customWindow?.Id == eWindows.RestoreLastRecipt)
                     return;
+                //Якщо очікуємо ввід ціни.
+                if (State == eStateMainWindows.WaitInputPrice) return;
             }
 
             if ((pSMV != eStateMainWindows.ProcessPay && pSMV != eStateMainWindows.ProcessPrintReceipt) && (State == eStateMainWindows.ProcessPay || State == eStateMainWindows.ProcessPrintReceipt))
@@ -1197,7 +1199,8 @@ namespace Front
                     if (res.Id == 32)
                     {
                         WaitAdminTitle.Visibility = Visibility.Visible;
-                        EF.SetColor(System.Drawing.Color.Red);
+                        EF.SetColor(System.Drawing.Color.Violet);
+                        s.Play(eTypeSound.WaitForAdministrator);
                     }
                     else
                     if (res.Id == 33)

@@ -438,6 +438,7 @@ namespace Front
                         R.CodeCreditCard = pay.NumberCard;
                         R.NumberReceiptPOS = pay.NumberReceipt;
                         R.Client = null;
+                        R.SumCreditCard = pay.SumPay;
                         Bl.db.ReplaceReceipt(R);
                         
                        // Bl.SetStateReceipt(curReceipt, eStateReceipt.Pay);
