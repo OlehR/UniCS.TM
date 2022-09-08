@@ -172,6 +172,7 @@ namespace Front
                         tb.Inlines.Add("Вам виповнилось 18 років?");
                         break;
                     case eTypeAccess.ExciseStamp:
+                        WaitAdminTitle.Visibility = Visibility.Collapsed;
                         tb.Inlines.Add(new Run("Відскануйте акцизну марку!") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red, FontSize = 32 });
                         break;
                 }
@@ -337,7 +338,7 @@ namespace Front
                 pSMV = eStateMainWindows.WaitInput;
             if (pSMV == eStateMainWindows.WaitInput  && curReceipt == null)
                 pSMV = eStateMainWindows.StartWindow;
-            lock (this._locker)
+            //lock (this._locker)
             {
                 var r = Dispatcher.BeginInvoke(new ThreadStart(() =>
                 {
@@ -518,8 +519,8 @@ namespace Front
                                     WaitAdminCancel.Visibility = Visibility.Collapsed;
                                     TBExciseStamp.Visibility = Visibility.Visible;
                                     KBAdmin.Visibility = Visibility.Collapsed;
-                                    ExciseStampButtons.Visibility = Visibility.Visible;
-                                    ExciseStampNameWares.Visibility = Visibility.Visible;
+                                   // ExciseStampButtons.Visibility = Visibility.Visible;
+                                   // ExciseStampNameWares.Visibility = Visibility.Visible;
                                     WaitAdminTitle.Visibility = Visibility.Collapsed;
                                     // CustomButtonsWaitAdmin.ItemsSource = customWindow.Buttons;
 

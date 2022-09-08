@@ -215,7 +215,7 @@ namespace Front
         }
         private async void WaresName_Changed(object sender, TextChangedEventArgs e)
         {
-            await Task.Delay(3000);
+            await Task.Delay(1500);
             NewB();
         }
 
