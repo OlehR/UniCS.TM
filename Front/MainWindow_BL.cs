@@ -44,7 +44,7 @@ namespace Front
                     RroStatus rroStatus = info as RroStatus;
                     if (rroStatus != null)
                         EquipmentInfo = rroStatus.Status.GetDescription();
-                    //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EquipmentInfo"));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EquipmentInfo"));
                 }));
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"SetStatus ({info.ToJSON()})", eTypeLog.Expanded);
                 if (EF.StatCriticalEquipment != eStateEquipment.On)
@@ -437,7 +437,7 @@ namespace Front
                         R.StateReceipt = eStateReceipt.Pay;
                         R.CodeCreditCard = pay.NumberCard;
                         R.NumberReceiptPOS = pay.NumberReceipt;
-                        R.Client = null;
+                        //R.Client = null;
                         R.SumCreditCard = pay.SumPay;
                         Bl.db.ReplaceReceipt(R);
                         
