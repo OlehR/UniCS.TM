@@ -958,6 +958,7 @@ namespace Front
                 ShowErrorMessage("Не вірний логін чи пароль");
                 return;
             }
+            SetStateView(eStateMainWindows.WaitAdmin);
             Bl.OnAdminBarCode?.Invoke(U);
         }
 
