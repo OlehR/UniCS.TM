@@ -64,7 +64,7 @@ namespace Front
         public bool IsShowWeightWindows { get; set; } = false;
         //public bool IsIgnoreExciseStamp { get; set; }
         public bool IsConfirmAdmin { get; set; }
-       // public bool IsFixWeight { get; set; }
+        // public bool IsFixWeight { get; set; }
         public bool IsExciseStamp { get; set; }
         public bool IsCheckReturn { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? true : false; } }
         /// <summary>
@@ -86,7 +86,7 @@ namespace Front
         /// Чи активна кнопка оплати
         /// </summary>
         //bool _IsEnabledPaymentButton;
-        public bool IsEnabledPaymentButton { get { return (_MoneySum >= 0 && WaresQuantity != "0" && IsAddNewWares) || curReceipt?.TypeReceipt==eTypeReceipt.Refund; } }// set { _IsEnabledPaymentButton = value; } }
+        public bool IsEnabledPaymentButton { get { return (_MoneySum >= 0 && WaresQuantity != "0" && IsAddNewWares) || curReceipt?.TypeReceipt == eTypeReceipt.Refund; } }// set { _IsEnabledPaymentButton = value; } }
         /// <summary>
         /// чи активна кнопка пошуку
         /// </summary>
@@ -124,7 +124,7 @@ namespace Front
 
         public System.Drawing.Color GetFlagColor(eStateMainWindows pStateMainWindows, eTypeAccess pTypeAccess, eStateScale pSS)
         {
-            if (pTypeAccess == eTypeAccess.ExciseStamp)                
+            if (pTypeAccess == eTypeAccess.ExciseStamp)
                 return System.Drawing.Color.Green;
 
             System.Drawing.Color c = FC.ContainsKey(pStateMainWindows) ? FC[pStateMainWindows] : System.Drawing.Color.Black;
@@ -255,10 +255,10 @@ namespace Front
                     Bl.StartWork(Global.IdWorkPlace, BarCodeAdminSSC);//!!!TMP треба штрихкод
                 }
                 else BarCodeAdminSSC = null;
-            
+
             }
 
-           
+
 
             ua.Tag = new CultureInfo("uk");
             en.Tag = new CultureInfo("en");
@@ -284,7 +284,7 @@ namespace Front
         {
             curReceipt = pReceipt;
             if (curReceipt == null)
-            { 
+            {
                 Dispatcher.BeginInvoke(new ThreadStart(() => ListWares?.Clear()));
                 // = new ObservableCollection<ReceiptWares>();
                 Client = null;
@@ -341,7 +341,7 @@ namespace Front
 
             if (pSMV == eStateMainWindows.StartWindow && curReceipt != null)
                 pSMV = eStateMainWindows.WaitInput;
-            if (pSMV == eStateMainWindows.WaitInput  && curReceipt == null)
+            if (pSMV == eStateMainWindows.WaitInput && curReceipt == null)
                 pSMV = eStateMainWindows.StartWindow;
             //lock (this._locker)
             {
@@ -388,7 +388,7 @@ namespace Front
                         CurWares = pRW;
                     if (pSMV != eStateMainWindows.WaitAdminLogin)
                     {
-                        TypeAccessWait = pTypeAccess;               
+                        TypeAccessWait = pTypeAccess;
                     }
 
                     //Якщо 
@@ -404,16 +404,16 @@ namespace Front
                     //Генеруємо з кастомні вікна
                     if (TypeAccessWait == eTypeAccess.FixWeight)
                         customWindow = new CustomWindow(CS.StateScale, CS.RW?.Quantity == 1 && CS.RW?.FixWeightQuantity == 0, CS.StateScale == eStateScale.WaitClear && (curReceipt?.OwnBag ?? 0) > 0);
-                   else
+                    else
                     if (TypeAccessWait == eTypeAccess.ConfirmAge)
                         customWindow = new CustomWindow(eWindows.ConfirmAge);
                     else
-                        if(TypeAccessWait == eTypeAccess.ExciseStamp)
+                        if (TypeAccessWait == eTypeAccess.ExciseStamp)
                         customWindow = new CustomWindow(eWindows.ExciseStamp);
                     else
-                    customWindow = (State == eStateMainWindows.WaitCustomWindows ? pCW : null);
-                    
-                    
+                        customWindow = (State == eStateMainWindows.WaitCustomWindows ? pCW : null);
+
+
                     s.Play(State, TypeAccessWait, CS.StateScale, 0);
                     //if ((State == eStateMainWindows.WaitAdmin || State == eStateMainWindows.WaitAdminLogin) && TypeAccessWait == eTypeAccess.ExciseStamp)
                     //    customWindow = new CustomWindow(pCW, pStr);
@@ -514,6 +514,12 @@ namespace Front
                             switch (TypeAccessWait)
                             {
                                 case eTypeAccess.FixWeight:
+                                    if (CS.StateScale == eStateScale.WaitClear)
+                                    {
+                                        WaitAdminTitle.Visibility = Visibility.Collapsed;
+                                        WaitAdminImage.Visibility = Visibility.Collapsed;
+                                    }
+                                    break;
                                 case eTypeAccess.AddNewWeight:
                                     //case eTypeAccess.
                                     // WaitAdminWeightButtons.ItemsSource = customWindow.Buttons;
@@ -702,8 +708,8 @@ namespace Front
 
                 InputNumberPhone.CallBackResult = (string result) =>
                 {
-                    decimal tempQuantity ;
-                    if (result != "" && result !="0")
+                    decimal tempQuantity;
+                    if (result != "" && result != "0")
                     {
                         tempQuantity = Convert.ToDecimal(result);
 
@@ -720,7 +726,7 @@ namespace Front
                     Background.Visibility = Visibility.Collapsed;
                     BackgroundWares.Visibility = Visibility.Collapsed;
                 };
-               
+
             }
 
 
@@ -786,7 +792,7 @@ namespace Front
             if (Access.GetRight(eTypeAccess.DelReciept) || curReceipt?.SumReceipt == 0)
             {
                 Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
-               
+
                 SetCurReceipt(null);
                 //NewReceipt();
                 SetStateView(eStateMainWindows.StartWindow);
@@ -1162,7 +1168,7 @@ namespace Front
                 }
                 if (res.CustomWindow?.Id == eWindows.ConfirmWeight)
                 {
-                    
+
                     if (res.Id == -1)
                     {
                         IsShowWeightWindows = false;
@@ -1211,22 +1217,24 @@ namespace Front
                     }
                     return;
                 }
-                 if (res.CustomWindow?.Id == eWindows.ConfirmAge)
+                if (res.CustomWindow?.Id == eWindows.ConfirmAge)
                 {
                     TypeAccessWait = eTypeAccess.NoDefine;
                     SetStateView(eStateMainWindows.WaitInput);
-                   
+
                     if (res.Id == 1)
                     {
-                        Task.Run(new Action(() => {                           
+                        Task.Run(new Action(() =>
+                        {
                             Bl.AddEventAge(curReceipt);
                             //Thread.Sleep(1000);
-                            PrintAndCloseReceipt(); }
+                            PrintAndCloseReceipt();
+                        }
                         ));
-                    }                    
+                    }
                     return;
                 }
-            
+
 
                 var r = new CustomWindowAnswer()
                 {
