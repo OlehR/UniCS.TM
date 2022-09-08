@@ -243,8 +243,12 @@ namespace Front
                 case "Помилки":
                     RefreshLog();
                     break;
-
+                case "Вихід":
+                    MW.SetStateView(Models.eStateMainWindows.StartWindow);
+                    this.WindowState = WindowState.Minimized;
+                    break;
                 default:
+                    
                     return;
             }
         }

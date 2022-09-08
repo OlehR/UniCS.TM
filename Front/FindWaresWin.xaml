@@ -138,7 +138,7 @@
                     </Image>-->
                 </Button>
 
-                <Button Grid.Column="5" Grid.ColumnSpan="2" Style="{StaticResource Default}"  FontSize="22" Click="ClickButtonCancel">
+                <Button Grid.Column="5" Grid.ColumnSpan="2" Style="{StaticResource greenButton}"  FontSize="22" Click="ClickButtonCancel">
                     <StackPanel Orientation="Horizontal">
                         <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
                         <TextBlock FontSize="28" FontWeight="DemiBold" Text="{DynamicResource ReturnCheck}"  Margin="5,0,5,0"/>

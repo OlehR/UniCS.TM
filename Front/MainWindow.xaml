@@ -109,7 +109,7 @@
                     <Button x:Name="pl" Click="_ChangeLanguage" Grid.Column="4" Grid.Row="1" Style="{StaticResource Default}" Margin="10,5,10,5" Width="70">
                         <Image Margin="10" Source="icons\pln.png"/>
                     </Button>
-                    <Button Style="{StaticResource Default}" Click="_VolumeButton" Margin="10,5,10,5" Width="70">
+                    <Button Style="{StaticResource Default}" Height="60" Click="_VolumeButton" Margin="10,5,10,5" Width="70">
                         <Image x:Name="ButtonImage">
                             <Image.Style>
                                 <Style TargetType="{x:Type Image}">

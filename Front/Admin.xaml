@@ -144,7 +144,7 @@
                         <DockPanel x:Name="dockPanel">
                             <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" ContentTemplate="{TemplateBinding ContentTemplate}" RecognizesAccessKey="True" VerticalAlignment="Center" />
                             <Grid>
-                                <Border x:Name="BackgroundBorder" BorderBrush="#FF939393" BorderThickness="1" CornerRadius="3" Height="27" Width="94">
+                                <Border x:Name="BackgroundBorder" BorderBrush="#FF939393" BorderThickness="1" CornerRadius="3" Height="40" Width="94">
                                     <Border.Background>
                                         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                                             <GradientStop Color="#FFB5B5B5" Offset="0" />
@@ -163,7 +163,7 @@
                                         <Line x:Name="On" X1="0" Y1="0" X2="0" Y2="14" Stroke="#FF7A7A7A" StrokeThickness="2" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                     </Grid>
                                 </Border>
-                                <Border BorderBrush="#FF939393" HorizontalAlignment="Left" x:Name="slider" Width="41" Height="27" BorderThickness="1" CornerRadius="3" RenderTransformOrigin="0.5,0.5" Margin="0">
+                                <Border BorderBrush="#FF939393" HorizontalAlignment="Left" x:Name="slider" Width="41" Height="40" BorderThickness="1" CornerRadius="3" RenderTransformOrigin="0.5,0.5" Margin="0">
                                     <Border.RenderTransform>
                                         <TransformGroup>
                                             <ScaleTransform ScaleX="1" ScaleY="1" />
@@ -229,17 +229,17 @@
 
                     <GroupBox Grid.Column="0" Header="POS-термінал" Margin="20, 20 , 10 ,20">
                         <StackPanel>
-                            <Button x:Name="POS_X" Style="{StaticResource Default}" Content="X звіт"  Height="60"  Width="280" Click="POS_X_Click"/>
-                            <Button x:Name="POS_Z" Style="{StaticResource Default}" Content="Z звіт" Height="60" Width="280" Click="POS_Z_Click"/>
-                            <Button x:Name="POS_X_Copy" Style="{StaticResource Default}" Content="X звіт(копія)"  Height="60"  Width="280" Click="POS_X_Copy_Click"/>
+                            <Button x:Name="POS_X" Style="{StaticResource Default}" Content="X звіт"   Click="POS_X_Click"/>
+                            <Button x:Name="POS_Z" Style="{StaticResource Default}" Content="Z звіт"  Click="POS_Z_Click"/>
+                            <Button x:Name="POS_X_Copy" Style="{StaticResource Default}" Content="X звіт(копія)"  Click="POS_X_Copy_Click"/>
                         </StackPanel>
                     </GroupBox>
                     <GroupBox Grid.Column="1" Header="Фіскальний реєстратор" Margin="10, 20, 10, 20">
                         <StackPanel>
-                            <Button x:Name="EKKA_X" Style="{StaticResource Default}" Content="X звіт"  Height="60"  VerticalAlignment="Top"  Width="280" Click="EKKA_X_Click"/>
-                            <Button x:Name="EKKA_Z" Style="{StaticResource Default}" Content="Z звіт" Height="60" Width="280" Click="EKKA_Z_Click"/>
-                            <Button x:Name="EKKA_Z_Period" Style="{StaticResource Default}" Content="Z-звіт(Періодичний))"  Height="60"  Width="280" Click="EKKA_Z_Period_Click"/>
-                            <Button x:Name="EKKA_Copy" Style="{StaticResource Default}" Content="Копія Квитанції"  Height="60"  VerticalAlignment="Top" Width="280" Click="EKKA_Copy_Click"/>
+                            <Button x:Name="EKKA_X" Style="{StaticResource Default}" Content="X звіт"      VerticalAlignment="Top"  Width="280" Click="EKKA_X_Click"/>
+                            <Button x:Name="EKKA_Z" Style="{StaticResource Default}" Content="Z звіт"    Width="280" Click="EKKA_Z_Click"/>
+                            <Button x:Name="EKKA_Z_Period" Style="{StaticResource Default}" Content="Z-звіт(Періодичний))"      Width="280" Click="EKKA_Z_Period_Click"/>
+                            <Button x:Name="EKKA_Copy" Style="{StaticResource Default}" Content="Копія Квитанції"      VerticalAlignment="Top" Width="280" Click="EKKA_Copy_Click"/>
                         </StackPanel>
 
 
@@ -247,7 +247,7 @@
                     </GroupBox>
                     <GroupBox Grid.Column="2" Header="Зміна" Margin="10, 20 , 20 ,20">
                         <StackPanel>
-                            <Button x:Name="WorkStart"  Content="Почати зміну"  Height="60"  Width="280" Click="WorkStart_Click">
+                            <Button x:Name="WorkStart"  Content="Почати зміну"      Width="280" Click="WorkStart_Click">
                                 <Button.Style>
                                     <Style BasedOn="{StaticResource Default}" TargetType="Button">
                                         <Setter Property="IsEnabled" Value="True"/>
@@ -264,7 +264,7 @@
                                     </Style>
                                 </Button.Style>
                             </Button>
-                            <Button x:Name="WorkFinish" Content="Завершити зміну"  Height="60" Width="280" Click="WorkFinish_Click" >
+                            <Button x:Name="WorkFinish" Content="Завершити зміну"     Width="280" Click="WorkFinish_Click" >
                                 <Button.Style>
                                     <Style BasedOn="{StaticResource Default}" TargetType="Button">
                                         <Setter Property="IsEnabled" Value="True"/>
@@ -281,7 +281,7 @@
                                     </Style>
                                 </Button.Style>
                             </Button>
-                            <Button x:Name="CloseDay" Style="{StaticResource Default}" Content="Закриття дня" Height="60" Width="280" Click="CloseDay_Click" />
+                            <Button x:Name="CloseDay" Style="{StaticResource Default}" Content="Закриття дня"    Width="280" Click="CloseDay_Click" />
                         </StackPanel>
                     </GroupBox>
                 </Grid>
@@ -334,7 +334,7 @@
                                             <TextBlock Grid.Column="2" Text="{Binding Name}" FontWeight="Bold" FontSize="20"/>
 
 
-                                            <Button Grid.Column="3"  Width="40"  BorderBrush="Transparent" IsHitTestVisible="False" >
+                                            <Button Grid.Column="3" Height="60" Width="60"  BorderBrush="Transparent" IsHitTestVisible="False" >
 
                                                 <Button.Style>
                                                     <Style BasedOn="{StaticResource RoundButton}" TargetType="Button">
@@ -393,10 +393,10 @@
                                                 </Image>
                                             </Button>
 
-                                            <Button Grid.Column="4" Width="40" Style="{StaticResource Default}" Click="Test_Click">
+                                            <Button Grid.Column="4" Height="60" Width="60" Style="{StaticResource Default}" Click="Test_Click">
                                                 <Image Source="icons\Ok.png"/>
                                             </Button>
-                                            <Button Grid.Column="5" Width="40" Style="{StaticResource Default}" Click="Info_Click">
+                                            <Button Grid.Column="5" Height="60" Width="60" Style="{StaticResource Default}" Click="Info_Click">
                                                 <Image Source="icons\Inform.png"/>
                                             </Button>
 
@@ -409,29 +409,29 @@
                     </ScrollViewer>
                     <StackPanel Orientation="Horizontal" Grid.Row="1"  VerticalAlignment="Center" >
                         <Button Name="CalibrationControlScale" Click="CalibrationControlScaleButton"
-                                Style="{StaticResource Default}" Content="Калібрування" HorizontalAlignment="Left" Margin="5" Grid.Row="1"   Height="60"/>
+                                Style="{StaticResource Default}" Content="Калібрування" HorizontalAlignment="Left" Margin="5" Grid.Row="1"     />
                         <Button Name="TarControlScale" Click="TarControlScaleButton"
-                                Style="{StaticResource Default}" Content="Тарування" HorizontalAlignment="Left" Margin="5" Grid.Row="1"   Height="60"/>
+                                Style="{StaticResource Default}" Content="Тарування" HorizontalAlignment="Left" Margin="5" Grid.Row="1"     />
                         <TextBlock Name="ControlScaleWeightHaml"  Text="{Binding ControlScaleWeightDouble, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}"  Margin="5" Grid.Row="1"    />
+                                   Mode=FindAncestor, AncestorType=Window}}"  FontSize="28" Margin="5" Grid.Row="1"    />
                     </StackPanel>
                     <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" >
                         <Button Name="RefreshData" Style="{StaticResource Default}"  
                                 HorizontalAlignment="Left" Margin="5" Grid.Row="1" 
-                                 Height="60" Click="RefreshDataButton" 
+                                    Click="RefreshDataButton" 
                                 Content="Оновити дані"/>
                         <Button Style="{StaticResource Default}"  
                                 HorizontalAlignment="Left" Margin="5" Grid.Row="1" 
-                                Height="60" Click="CloseApplicationButton" 
+                                   Click="CloseApplicationButton" 
                                 Content="Вийти з програми"/>
                         <Button Name="PowerOffOn" Style="{StaticResource Default}"  
                                 HorizontalAlignment="Left" Margin="5" Grid.Row="1" 
-                                Width="60" Height="60" Click="PowerOff">
+                                Width="60"    Click="PowerOff">
                             <Image Margin="5" Source="icons\on-off.png"/>
                         </Button>
                         <Button Name="Reboot" Style="{StaticResource Default}"  
                                 HorizontalAlignment="Left" Margin="5" Grid.Row="1" 
-                                Width="60" Height="60" Click="RebootPC">
+                                Width="60"    Click="RebootPC">
                             <Image Margin="5" Source="icons\reboot.png"/>
                         </Button>
                     </StackPanel>
@@ -447,7 +447,7 @@
                     <StackPanel Orientation="Horizontal">
                         <DatePicker Name="dataHistori" FontSize="30" IsTodayHighlighted="True" SelectedDate="{Binding DateSoSearch, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
                                     Width="200" Height="50" HorizontalAlignment="Left"></DatePicker>
-                        <Button Width="300" Height="50" Margin="10,0,0,0" Style="{StaticResource Default}" Click="FindChecksByDate">
+                        <Button Width="300" Height="80" Margin="10,0,0,0" Style="{StaticResource Default}" Click="FindChecksByDate">
                             Знайти
                         </Button>
                         <StackPanel Orientation="Horizontal" Margin="20,0,0,0">
@@ -476,15 +476,69 @@
                             </Grid.RowDefinitions>
                             <TextBlock Grid.Row="0" HorizontalAlignment="Center" FontSize="28" Text="Деталі чеку"/>
 
-                            <ListBox x:Name="ListWaresReceipt"
+                            <ListView x:Name="ListWaresReceipt"
                      Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="6">
-                                <ListBox.ItemTemplate>
+                                <ListView.View>
+                                    <GridView >
+                                        <GridViewColumn  Header="Назва товару">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Path=NameWares}" TextAlignment="Center" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+
+                                        <GridViewColumn Header="Кількість" >
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Path=Quantity}" TextAlignment="Center" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+
+                                        <GridViewColumn Header="Код товару" >
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Path=CodeWares}" TextAlignment="Center" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+
+                                        <GridViewColumn Header="Ціна продажу">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding SumTotal, StringFormat=0.00}" TextAlignment="Center" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+
+                                        <GridViewColumn Header="Знижка">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock   FontSize="20" FontWeight="DemiBold" Foreground="Red">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Text" Value="{Binding DiscountEKKA, StringFormat=-0.00}"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding DiscountEKKA}" Value="0">
+                                                                        <Setter Property="Text" Value=""/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                    </GridView>
+                                </ListView.View>
+                                <!--<ListView.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel Margin="5" Orientation="Horizontal">
                                             <TextBlock FontSize="25"  Text="{Binding Path=NameWares}" TextWrapping="Wrap" HorizontalAlignment="Center" Width="650" />
                                             <TextBlock Text="  "/>
                                             <TextBlock  Text="{Binding Path=Quantity}" HorizontalAlignment="Center" Width="100"/>
-
+                                            <TextBlock  Text="{Binding Path=CodeWares}" HorizontalAlignment="Center" Width="100"/>
                                             <TextBlock Grid.Column="5" Text="{Binding SumTotal, StringFormat=0.00}" FontWeight="Bold" FontSize="30"/>
 
                                             <TextBlock   FontSize="20" FontWeight="DemiBold" Foreground="Red">
@@ -502,8 +556,8 @@
                                         </StackPanel>
 
                                     </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
+                                </ListView.ItemTemplate>-->
+                            </ListView>
                             <Button Grid.Row="3" Style="{StaticResource Default}"  FontSize="22" Click="Cancel" 
                         Height="80" Width="300" Margin="10">
                                 <TextBlock FontSize="28" Text="{DynamicResource cancel}"/>
@@ -622,7 +676,7 @@
                                 <GridViewColumn Header="Деталі чеку">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Button Style="{StaticResource Default}" Content="Деталі" Click="ShowDetailsReceiptClick"/>
+                                            <Button Style="{StaticResource Default}"  Content="Деталі" Click="ShowDetailsReceiptClick"/>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
@@ -653,10 +707,10 @@
 
 
                     <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
-                        <Button  Grid.Column="2" FontSize="20" Click="FiscalizCheckButton" Height="60">
+                        <Button  Grid.Column="2" FontSize="20" Click="FiscalizCheckButton"   >
                             <TextBlock FontSize="22" Text="Фіскалізувати" Margin="5"/>
                             <Button.Style>
-                                <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                                <Style BasedOn="{StaticResource Default}" TargetType="Button">
                                     <Setter Property="IsEnabled" Value="False"/>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsPrintReceipt, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="True">
@@ -667,10 +721,10 @@
                             </Button.Style>
                         </Button>
 
-                        <Button  Grid.Column="2" FontSize="20" Click="PaymentDetailsAdminPanelButton" Height="60">
+                        <Button  Grid.Column="2" FontSize="20" Click="PaymentDetailsAdminPanelButton"   >
                             <TextBlock FontSize="22" Text="Ввести реквізити" Margin="5"/>
                             <Button.Style>
-                                <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                                <Style BasedOn="{StaticResource Default}" TargetType="Button">
                                     <Setter Property="IsEnabled" Value="False"/>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsInputPay, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="True">
@@ -681,10 +735,10 @@
                             </Button.Style>
                         </Button>
 
-                        <Button Grid.Column="2" FontSize="22" Click="Transfer1CButton" Height="60">
+                        <Button Grid.Column="2" FontSize="22" Click="Transfer1CButton"   >
                             <TextBlock FontSize="20" Text="Передати в 1С" Margin="5"/>
                             <Button.Style>
-                                <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                                <Style BasedOn="{StaticResource Default}" TargetType="Button">
                                     <Setter Property="IsEnabled" Value="False"/>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsSendTo1C, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="True">
@@ -695,10 +749,10 @@
                             </Button.Style>
                         </Button>
 
-                        <Button Grid.Column="2" FontSize="22" Click="ReturnCheckButton" Height="60">
+                        <Button Grid.Column="2" FontSize="22" Click="ReturnCheckButton"   >
                             <TextBlock FontSize="20" Text="Повернути" Margin="5"/>
                             <Button.Style>
-                                <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                                <Style BasedOn="{StaticResource Default}" TargetType="Button">
                                     <Setter Property="IsEnabled" Value="False"/>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsCreateReturn, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="True">
@@ -708,10 +762,10 @@
                                 </Style>
                             </Button.Style>
                         </Button>
-                        <Button Grid.Column="2" FontSize="22" Click="ReturnAllCheckButton" Height="60">
+                        <Button Grid.Column="2" FontSize="22" Click="ReturnAllCheckButton"   >
                             <TextBlock FontSize="20" Text="Повернути весь чек" Margin="5"/>
                             <Button.Style>
-                                <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                                <Style BasedOn="{StaticResource Default}" TargetType="Button">
                                     <Setter Property="IsEnabled" Value="False"/>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsCreateReturn, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="True">
@@ -721,10 +775,10 @@
                                 </Style>
                             </Button.Style>
                         </Button>
-                        <Button Grid.Column="2" FontSize="22" Click="CloneReceipt" Height="60">
+                        <Button Grid.Column="2" FontSize="22" Click="CloneReceipt"   >
                             <TextBlock FontSize="20" Text="Дублювання чеку" Margin="5"/>
                             <Button.Style>
-                                <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                                <Style BasedOn="{StaticResource Default}" TargetType="Button">
                                     <Setter Property="IsEnabled" Value="True"/>
                                     <!--<Style.Triggers>
                                         <DataTrigger Binding="{Binding IsCreateReturn, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="True">
@@ -778,8 +832,9 @@
                     </Border>
                 </Grid>
             </TabItem>
+            <TabItem Header="Вихід"/>
         </TabControl>
-        <Button Grid.Row="1" x:Name="Exit" Style="{StaticResource Default}" Content="Вихід" Height="50" Width="110" Margin="0, 15,20,0"  HorizontalAlignment="Right" VerticalAlignment="Top"  Click="Exit_Click"/>
+        <!--<Button Grid.Row="1" x:Name="Exit" Style="{StaticResource Default}" Content="Вихід" Height="70" Width="110" Margin="0, 15,20,0"  HorizontalAlignment="Right" VerticalAlignment="Top"  Click="Exit_Click"/>-->
 
     </Grid>
 </Window>
