@@ -137,7 +137,7 @@
                     <StackPanel Margin="10,0,0,0" >
                         <TextBlock  FontSize="22" Foreground="DarkGreen" FontWeight="Bold" Text="{Binding Client.Wallet, StringFormat=0.00₴, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}"/>
-                        <TextBlock  FontSize="22" Foreground="DarkGreen" FontWeight="Bold" Text="{Binding Client.SumMoneyBonus, StringFormat=0.00₴, RelativeSource={RelativeSource 
+                        <TextBlock  FontSize="22" Foreground="DarkGreen" FontWeight="Bold" Text="{Binding Client.SumMoneyBonus, StringFormat=0.00, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}"/>
                     </StackPanel>
                 </StackPanel>
@@ -856,7 +856,7 @@
 
 
                         <Grid x:Name="ExciseStampButtons" Visibility="Collapsed">
-                            <Button Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                            <Button Grid.Row="2" HorizontalAlignment="Center" 
                                 Click="AddExciseStamp"  Height="70" Width="150" Margin="5,0,0,5">
                                 <Button.Content>
                                     <TextBlock FontSize="30" Text="{DynamicResource ok}" Margin="5,0,5,0"/>
@@ -878,7 +878,7 @@
                                 </Button.Style>
                             </Button>
 
-                            <Button Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                            <!--<Button Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Bottom"
                                 Click="ExciseStampNone" Height="70" Width="360" Margin="0,0,5,5">
                                 <Button.Content>
                                     <TextBlock FontSize="30" Text="{DynamicResource ExciseStampEmpty}" Margin="5,0,5,0"/>
@@ -898,7 +898,7 @@
                                         </Style.Triggers>
                                     </Style>
                                 </Button.Style>
-                            </Button>
+                            </Button>-->
                         </Grid>
 
 

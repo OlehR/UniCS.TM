@@ -524,8 +524,8 @@ namespace Front
                                     WaitAdminCancel.Visibility = Visibility.Collapsed;
                                     TBExciseStamp.Visibility = Visibility.Visible;
                                     KBAdmin.Visibility = Visibility.Collapsed;
-                                   // ExciseStampButtons.Visibility = Visibility.Visible;
-                                   // ExciseStampNameWares.Visibility = Visibility.Visible;
+                                    ExciseStampButtons.Visibility = Visibility.Visible;
+                                    ExciseStampNameWares.Visibility = Visibility.Visible;
                                     WaitAdminTitle.Visibility = Visibility.Collapsed;
                                     // CustomButtonsWaitAdmin.ItemsSource = customWindow.Buttons;
 
@@ -1195,7 +1195,10 @@ namespace Front
                     //if(res.Id==31)
 
                     if (res.Id == 32)
+                    {
+                        WaitAdminTitle.Visibility = Visibility.Visible;
                         EF.SetColor(System.Drawing.Color.Red);
+                    }
                     else
                     if (res.Id == 33)
                     {

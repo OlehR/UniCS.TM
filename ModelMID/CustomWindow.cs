@@ -98,7 +98,7 @@ namespace ModelMID
                     {
                        // new CustomButton() {CustomWindow = this,  Id = 31, Text = "Ok", IsNeedAdmin = false},
                         new CustomButton() {CustomWindow = this,  Id = 32, Text = "Акцизний код відсутній", IsNeedAdmin = false },
-                        new CustomButton() {CustomWindow = this,  Id = 32, Text = "Підтвердження акцизу", IsNeedAdmin = true }
+                        new CustomButton() {CustomWindow = this,  Id = 33, Text = "Підтвердження акцизу", IsNeedAdmin = true }
                     };
                     break;
                 case eWindows.PhoneClient:

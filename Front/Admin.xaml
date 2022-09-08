@@ -544,11 +544,90 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </ScrollViewer>-->
-                    <ListBox x:Name="ListReceipts" SelectionChanged="historiReceiptList_SelectionChanged"
+                    <ListView  x:Name="ListReceipts" SelectionChanged="historiReceiptList_SelectionChanged"
                      Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="6">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Margin="5" Orientation="Horizontal">
+                        <ListView.View>
+                            <GridView >
+                                <GridViewColumn  Header="#">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Path=CodeReceipt}" TextAlignment="Center" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+
+                                <GridViewColumn Header="Тип чека" >
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Path=TranslationTypeReceipt}" TextAlignment="Center" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+
+                                <GridViewColumn Header="Час" >
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Path=DateReceipt}" TextAlignment="Center" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+
+                                <GridViewColumn Header="Стан чека">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Path=TranslationStateReceipt}" TextAlignment="Center" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+
+                                <GridViewColumn Header="Сума чека">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Path=SumReceipt}" TextAlignment="Center" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+
+                                <GridViewColumn Header="Номер чека ФР">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Path=NumberReceipt}" TextAlignment="Center" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+
+                                <GridViewColumn Header="Сума по ФР">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Path=SumFiscal}" TextAlignment="Center" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+
+                                <GridViewColumn Header="Чек постерміналу">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Path=NumberReceiptPOS}" TextAlignment="Center" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+
+                                <GridViewColumn Header="Сума оплачена кредиткою">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Path=SumCreditCard}" TextAlignment="Center" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="Деталі чеку">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Style="{StaticResource Default}" Content="Деталі" Click="ShowDetailsReceiptClick"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                            <!--<StackPanel Margin="5" Orientation="Horizontal">
                                     <TextBlock FontSize="16" Text="{Binding Path=CodeReceipt}" HorizontalAlignment="Center" Width="40" />
                                     <TextBlock FontSize="16" Text="  "/>
                                     <TextBlock FontSize="16" Text="{Binding Path=TranslationTypeReceipt}" HorizontalAlignment="Center" Width="80"/>
@@ -563,31 +642,17 @@
                                     <TextBlock FontSize="16" Text="   "/>
                                     <TextBlock FontSize="16" Text="{Binding Path=SumFiscal}" HorizontalAlignment="Center" Width="20"/>
                                     <TextBlock FontSize="16" Text="   "/>
+                                    <TextBlock FontSize="16" Text="{Binding Path=NumberReceiptPOS}" HorizontalAlignment="Center" Width="100"/>
+                                    <TextBlock FontSize="16" Text="   "/>
                                     <TextBlock FontSize="16" Text="{Binding Path=SumCreditCard}" HorizontalAlignment="Center" Width="80" />
                                     <Button Style="{StaticResource Default}" Content="Деталі" Click="ShowDetailsReceiptClick"/>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
+                                </StackPanel>-->
+                        </ListView.View>
+                    </ListView>
 
 
 
                     <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
-
-                        <Button  Grid.Column="2" FontSize="20" Click="PayAdminPanelButton" Height="60">
-                            <TextBlock FontSize="22" Text="Оплатити" Margin="5"/>
-                            <Button.Style>
-                                <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
-                                    <Setter Property="IsEnabled" Value="False"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding= "{Binding IsPayReceipt, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"  Value="True">
-                                            <Setter Property="IsEnabled" Value="True"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-
                         <Button  Grid.Column="2" FontSize="20" Click="FiscalizCheckButton" Height="60">
                             <TextBlock FontSize="22" Text="Фіскалізувати" Margin="5"/>
                             <Button.Style>

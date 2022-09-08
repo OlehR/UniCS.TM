@@ -7,7 +7,7 @@ namespace Front.Equipments
 {
     public enum eStatusPos
     {
-        [Description("Код статусу недоступний")]
+        [Description("Код статусу: недоступний")]
         StatusCodeIsNotAvailable = 0,
         [Description("Считування картки")]
         CardWasRead = 1,
@@ -31,7 +31,7 @@ namespace Front.Equipments
         InProgress = 10,
         [Description("Правильна трансакція")]
         CorrectTransaction = 11,
-        [Description("Клавіша очікування введення PIN-коду")]
+        [Description("Очікування введення PIN-коду")]
         PinInputWaitKey = 12,
         [Description("Pin Input Backspace Натиснуто")]
         PinInputBackspacePressed = 13,
@@ -49,7 +49,7 @@ namespace Front.Equipments
         SuccessfullyFulfilled = 19,
         [Description("Помилка")]
         Error = 20,
-        [Description("Авторизацію відхилено Немає платежу")]
+        [Description("Авторизацію відхилено. Немає платежу")]
         AuthorizationRejectedNoPayment = 21,
         [Description("Неправильний PIN-код")]
         WrongPIN = 22,
