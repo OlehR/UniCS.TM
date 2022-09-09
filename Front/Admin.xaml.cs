@@ -117,7 +117,7 @@ namespace Front
             // var L = EF.GetLastReceiptPos();
             //List<string> list = new() { "X-звіт постермінал", $"Всього: {r.DebitSum}({r.DebitCount})", $"Всього2: {r.CreditSum} ({r.CreditCount}) ", $"Crfcjdf: {r.CencelledSum} ({r.CencelledCount}) " };
             LogRRO d = new(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() })
-            { TypeOperation = eTypeOperation.XReportPOS, JSON = r.ToJSON(), TextReceipt = string.Join(Environment.NewLine, r.Receipt) };
+            { TypeOperation = eTypeOperation.XReportPOS, JSON = r.ToJSON(), TextReceipt = r.Receipt == null ? null : string.Join(Environment.NewLine, r.Receipt) };
             Bl.InsertLogRRO(d);
             EF.PrintNoFiscalReceipt(r.Receipt);
         }
@@ -126,7 +126,7 @@ namespace Front
         {
             var r = EF.PosPrintZ();
             LogRRO d = new(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() })
-            { TypeOperation = eTypeOperation.XReportPOS, JSON = r.ToJSON(), TextReceipt = string.Join(Environment.NewLine, r.Receipt) };
+            { TypeOperation = eTypeOperation.XReportPOS, JSON = r.ToJSON(), TextReceipt = r.Receipt==null?null: string.Join(Environment.NewLine, r.Receipt) };
             Bl.InsertLogRRO(d);
             EF.PrintNoFiscalReceipt(r.Receipt);
 
