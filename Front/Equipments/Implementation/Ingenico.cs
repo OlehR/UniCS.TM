@@ -74,8 +74,7 @@ namespace Front.Equipments
 
         public override string GetDeviceInfo()
         {
-            string res = (!string.IsNullOrEmpty(SerialPort) && BaudRate > 0) ? $" Port={SerialPort} BaudRate={BaudRate}" : $"IP ={IP} IpPort = {IpPort}";
-            return $"pModelEquipment={Model} State={State} {res}";
+            return EquipmentIngenico.GetInfoSync();
         }
 
         Payment PaymentResultModelToPayment(PaymentResultModel pRP, ModelMID.eTypePay pTypePay = ModelMID.eTypePay.Card)

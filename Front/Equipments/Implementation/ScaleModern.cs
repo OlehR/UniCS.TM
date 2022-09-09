@@ -68,8 +68,7 @@ namespace Front.Equipments
         }
 
         public override StatusEquipment TestDevice() 
-        {
-           
+        {           
             //bst.Dispose();
             Task.Delay(200);
             Init();

@@ -79,7 +79,7 @@ namespace Front.Equipments
         }
         public override string GetDeviceInfo() 
         { 
-            return $"State={State} Port={SerialPort} BaudRate={BaudRate}"; 
+            return  $"State={State} Port={SerialPort} BaudRate={BaudRate}"; 
         }
 
         

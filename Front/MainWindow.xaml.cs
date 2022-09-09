@@ -36,6 +36,7 @@ namespace Front
 
         Sound s = Sound.GetSound();
         public User AdminSSC { get; set; } = null;
+        public DateTime DTAdminSSC { get; set; }
 
         Admin ad;
         //public int TextBlockFontSize { get; set; } = 40;
@@ -252,6 +253,7 @@ namespace Front
                 if (TimeAdminSSC.Date == DateTime.Now.Date)
                 {
                     AdminSSC = Bl.GetUserByBarCode(BarCodeAdminSSC);
+                    DTAdminSSC = TimeAdminSSC;
                     Bl.StartWork(Global.IdWorkPlace, BarCodeAdminSSC);//!!!TMP треба штрихкод
                 }
                 else BarCodeAdminSSC = null;
@@ -637,6 +639,7 @@ namespace Front
                 SetPropertyChanged();
             }
         }
+       
         private void _Delete(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;

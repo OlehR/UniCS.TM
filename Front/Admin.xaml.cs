@@ -169,6 +169,7 @@ namespace Front
         private void WorkStart_Click(object sender, RoutedEventArgs e)
         {
             MW.AdminSSC = AdminUser;
+            MW.DTAdminSSC = DateTime.Now;
             MW.Bl.db.SetConfig<DateTime>("DateAdminSSC", DateTime.Now);
             MW.Bl.db.SetConfig<string>("CodeAdminSSC", AdminUser.BarCode);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClosedShift"));
