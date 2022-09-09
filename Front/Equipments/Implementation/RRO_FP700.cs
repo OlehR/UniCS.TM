@@ -138,6 +138,11 @@ namespace Front.Equipments
             return new LogRRO(new IdReceipt() { CodePeriod=Global.GetCodePeriod(),CodeReceipt=Global.IdWorkPlace} ){ TypeOperation =  eTypeOperation.NoFiscalReceipt, TypeRRO = "RRO_FP700" };
         }
 
+        public override StatusEquipment TestDevice() { 
+         var res=Fp700.TestDeviceSync();
+            return new StatusEquipment() { TextState = res.ToString() };
+        }
+        public override string GetDeviceInfo() { return Fp700.GetInfoSync(); }
 
         public ReceiptViewModel GetReceiptViewModel(ModelMID.Receipt receiptMID)
         {

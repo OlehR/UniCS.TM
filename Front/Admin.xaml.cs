@@ -321,7 +321,8 @@ namespace Front
 
         private void Transfer1CButton(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Передати в 1С");
+            Bl.ds.SendReceiptTo1C(curReceipt);
+            //MessageBox.Show("Передати в 1С");
         }
 
         private void ReturnCheckButton(object sender, RoutedEventArgs e)

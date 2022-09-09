@@ -485,6 +485,7 @@ namespace Front
                             }
                             
                         }
+                        Bl.ds.SendReceiptTo1C(curReceipt);
                         SetCurReceipt(null);
                         //NewReceipt();
                         //Global.OnReceiptCalculationComplete?.Invoke(new List<ReceiptWares>(), Global.IdWorkPlace);
