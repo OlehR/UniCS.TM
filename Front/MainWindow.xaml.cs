@@ -146,7 +146,7 @@ namespace Front
                 tb.TextAlignment = TextAlignment.Center;
                 tb.FontSize = 24;
                 tb.Margin = new Thickness(10);
-                WaitAdminTitle.Visibility = Visibility.Visible;
+               // WaitAdminTitle.Visibility = Visibility.Visible;
                 switch (TypeAccessWait)
                 {
                     case eTypeAccess.DelWares:

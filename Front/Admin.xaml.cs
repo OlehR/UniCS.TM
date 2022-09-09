@@ -82,6 +82,7 @@ namespace Front
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClosedShift"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AdminUser"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("NameAdminUserOpenShift"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DataOpenShift"));
             if (EF != null)
                 ListEquipment.ItemsSource = new ObservableCollection<Equipment>(EF.GetListEquipment);
         }
