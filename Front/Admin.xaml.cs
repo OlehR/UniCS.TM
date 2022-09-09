@@ -34,6 +34,8 @@ namespace Front
         Receipt curReceipt = null;
         public bool ClosedShift { get { return MW.IsLockSale; } }
         public User AdminUser { get; set; }
+        public string NameAdminUserOpenShift { get { return MW?.AdminSSC?.NameUser; } }
+        public DateTime DataOpenShift { get { return MW.DTAdminSSC; } }
         public bool IsShowAllReceipts { get; set; }
 
         public DateTime DateSoSearch { get; set; } = DateTime.Now.Date;
@@ -79,6 +81,7 @@ namespace Front
             //adminastratorName.Text = AdminUser.NameUser;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClosedShift"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AdminUser"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("NameAdminUserOpenShift"));
             if (EF != null)
                 ListEquipment.ItemsSource = new ObservableCollection<Equipment>(EF.GetListEquipment);
         }
@@ -173,6 +176,9 @@ namespace Front
             MW.Bl.db.SetConfig<DateTime>("DateAdminSSC", DateTime.Now);
             MW.Bl.db.SetConfig<string>("CodeAdminSSC", AdminUser.BarCode);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClosedShift"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("NameAdminUserOpenShift"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DataOpenShift"));
+            OpenShiftShow.Visibility = Visibility.Visible;
         }
 
         private void WorkFinish_Click(object sender, RoutedEventArgs e)
@@ -180,6 +186,9 @@ namespace Front
             MW.AdminSSC = null;
             MW.Bl.db.SetConfig<string>("CodeAdminSSC", string.Empty);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClosedShift"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("NameAdminUserOpenShift"));
+            //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DataOpenShift"));
+            OpenShiftShow.Visibility = Visibility.Collapsed;
         }
 
         private void CloseDay_Click(object sender, RoutedEventArgs e)

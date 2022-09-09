@@ -245,8 +245,14 @@
 
 
                     </GroupBox>
-                    <GroupBox Grid.Column="2" Header="Зміна" Margin="10, 20 , 20 ,20">
+                    <GroupBox Grid.Column="2" Header="Зміна" Margin="10, 20 , 20 ,20"  >
                         <StackPanel>
+                            <StackPanel x:Name="OpenShiftShow" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding NameAdminUserOpenShift, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}"/>
+                            <TextBlock Text="{Binding DataOpenShift, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}"></TextBlock>
+                            </StackPanel>
                             <Button x:Name="WorkStart"  Content="Почати зміну"      Width="280" Click="WorkStart_Click">
                                 <Button.Style>
                                     <Style BasedOn="{StaticResource Default}" TargetType="Button">
