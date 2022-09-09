@@ -123,7 +123,8 @@ namespace Front
             LogRRO d = new(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() })
             { TypeOperation = eTypeOperation.XReportPOS, JSON = r.ToJSON(), TextReceipt = r.Receipt == null ? null : string.Join(Environment.NewLine, r.Receipt) };
             Bl.InsertLogRRO(d);
-            EF.PrintNoFiscalReceipt(r.Receipt);
+            if (r.Receipt != null)
+                EF.PrintNoFiscalReceipt(r.Receipt);
         }
 
         private void POS_Z_Click(object sender, RoutedEventArgs e)
@@ -132,9 +133,10 @@ namespace Front
             LogRRO d = new(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() })
             { TypeOperation = eTypeOperation.XReportPOS, JSON = r.ToJSON(), TextReceipt = r.Receipt==null?null: string.Join(Environment.NewLine, r.Receipt) };
             Bl.InsertLogRRO(d);
-            EF.PrintNoFiscalReceipt(r.Receipt);
+            if(r.Receipt!=null)
+                EF.PrintNoFiscalReceipt(r.Receipt);
 
-            EF.PosPrintZ();
+           // EF.PosPrintZ();
         }
 
         private void POS_X_Copy_Click(object sender, RoutedEventArgs e)
