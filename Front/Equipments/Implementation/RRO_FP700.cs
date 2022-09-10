@@ -47,11 +47,12 @@ namespace Front.Equipments
         {
             try
             {
+                ILogger<Fp700> logger = pLoggerFactory?.CreateLogger<Fp700>();
                 Fp700DataController fp = new Fp700DataController(pConfiguration);
-                Fp700 = new Fp700(pConfiguration, fp);
+                Fp700 = new Fp700(pConfiguration, fp, logger);
                 Fp700.Init();
-                
-                State = Fp700.IsReady? eStateEquipment.On: eStateEquipment.Error;
+
+                State = Fp700.IsReady ? eStateEquipment.On : eStateEquipment.Error;
             }
             catch (Exception ex)
             {
@@ -67,20 +68,41 @@ namespace Front.Equipments
 
         public override LogRRO PrintCopyReceipt(int parNCopy = 1)
         {
-           var res= Fp700.CopyReceipt();
-            return new LogRRO(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), CodeReceipt = Global.IdWorkPlace }) { TypeOperation = eTypeOperation.CopyReceipt, TypeRRO = "RRO_FP700", FiscalNumber = Fp700.GetLastZReportNumber() };
-       }
-
-        public override async Task<LogRRO> PrintZAsync(IdReceipt pIdR)
-        {           
-            string res = Fp700.ZReport();
-            return new  LogRRO(pIdR) { TypeOperation = eTypeOperation.PeriodZReport, TypeRRO = "RRO_FP700", FiscalNumber = Fp700.GetLastZReportNumber() ,TextReceipt= res };
+            try
+            {
+                var res = Fp700.CopyReceipt();
+                return new LogRRO(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace }) { TypeOperation = eTypeOperation.CopyReceipt, TypeRRO = "RRO_FP700", FiscalNumber = Fp700.GetLastZReportNumber() };
+            }
+            catch (Exception e)
+            {
+                return new LogRRO(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace }) { TypeOperation = eTypeOperation.CopyReceipt, TypeRRO = "RRO_FP700", CodeError = -1, Error = e.Message };
+            }
         }
+        public override async Task<LogRRO> PrintZAsync(IdReceipt pIdR)
+        {
+            try
+            {
+                string res = Fp700.ZReport();
+                return new LogRRO(pIdR) { TypeOperation = eTypeOperation.ZReport, TypeRRO = "RRO_FP700", FiscalNumber = Fp700.GetLastZReportNumber(), TextReceipt = res };
+            }
+            catch (Exception e)
+            {
+                return new LogRRO(pIdR) { TypeOperation = eTypeOperation.ZReport, TypeRRO = "RRO_FP700", CodeError = -1, Error = e.Message };
+            }
+        }
+
 
         public override async Task<LogRRO> PrintXAsync(IdReceipt pIdR)
         {
-            string res = Fp700.XReport();
-            return new LogRRO(pIdR) { TypeOperation = eTypeOperation.XReport, TypeRRO = "RRO_FP700", FiscalNumber = Fp700.GetLastZReportNumber(),TextReceipt= res };
+            try
+            {
+                string res = Fp700.XReport();
+                return new LogRRO(pIdR) { TypeOperation = eTypeOperation.XReport, TypeRRO = "RRO_FP700", FiscalNumber = Fp700.GetLastZReportNumber(), TextReceipt = res };
+            }
+            catch (Exception e)
+            {
+                return new LogRRO(pIdR) { TypeOperation = eTypeOperation.XReport, TypeRRO = "RRO_FP700", CodeError = -1, Error = e.Message };
+            }
         }
 
 
@@ -91,10 +113,18 @@ namespace Front.Equipments
         /// <returns></returns>
         public override async Task<LogRRO> MoveMoneyAsync(decimal pSum, IdReceipt pIdR = null)
         {
-            var d = new MoneyMovingModel() { Sum = pSum };
-            Fp700.MoneyMoving(d);
-            return new LogRRO(pIdR) { TypeOperation = pSum>0?eTypeOperation.MoneyIn:eTypeOperation.MoneyIn, TypeRRO = "RRO_FP700", FiscalNumber = Fp700.GetLastZReportNumber() };
-        }
+            try
+            {
+                var d = new MoneyMovingModel() { Sum = pSum };
+                Fp700.MoneyMoving(d);
+                return new LogRRO(pIdR) { TypeOperation = pSum > 0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyIn, TypeRRO = "RRO_FP700", FiscalNumber = Fp700.GetLastZReportNumber() };
+            }
+            catch (Exception e)
+            {
+                return new LogRRO(pIdR) { TypeOperation = pSum > 0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyIn, TypeRRO = "RRO_FP700", CodeError = -1, Error = e.Message };
+            }
+
+        } 
 
         /// <summary>
         /// Друк чека
@@ -110,39 +140,80 @@ namespace Front.Equipments
                 if (pR.TypeReceipt == eTypeReceipt.Sale) FiscalNumber=Fp700.PrintReceipt(d);
                 else
                     FiscalNumber=Fp700.ReturnReceipt(d);
-
                 pR.NumberReceipt = FiscalNumber;
-            }catch(Exception e)
-            {
-               var d= e.Message;
+                return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, TypeRRO = "RRO_FP700", FiscalNumber = FiscalNumber, SUM = pR.SumReceipt };
             }
-            return new LogRRO(pR) { TypeOperation = pR.TypeReceipt==eTypeReceipt.Sale? eTypeOperation.Sale:eTypeOperation.Refund, TypeRRO = "RRO_FP700", FiscalNumber = FiscalNumber,SUM=pR.SumReceipt };
-
+            catch (Exception e)            
+            {
+                return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, TypeRRO = "RRO_FP700", CodeError = -1, Error = e.Message };
+            }       
+  
         }
 
 
         public override bool PutToDisplay(string ptext)
         {
-            throw new NotImplementedException();
+            return true;
         }
 
         public override bool PeriodZReport(DateTime pBegin, DateTime pEnd, bool IsFull = true)
         {
-            return Fp700.FullReportByDate(pBegin, pEnd); 
+            try
+            {
+                return Fp700.FullReportByDate(pBegin, pEnd);
+            }
+            catch(Exception e)
+            {
+                return false;
+            }
         }
 
         public override async Task<LogRRO> PrintNoFiscalReceiptAsync(IEnumerable<string> pR)
         {
-            List<ReceiptText> d = pR.Select(el => new ReceiptText() { Text = el.StartsWith("QR=>")?el.SubString(4) : el,RenderType = el.StartsWith("QR=>")? RenderAs.QR: RenderAs.Text }).ToList();
-            Fp700.PrintSeviceReceipt(d);
-            return new LogRRO(new IdReceipt() { CodePeriod=Global.GetCodePeriod(),CodeReceipt=Global.IdWorkPlace} ){ TypeOperation =  eTypeOperation.NoFiscalReceipt, TypeRRO = "RRO_FP700" };
+            try
+            {
+                List<ReceiptText> d = pR.Select(el => new ReceiptText() { Text = el.StartsWith("QR=>") ? el.SubString(4) : el, RenderType = el.StartsWith("QR=>") ? RenderAs.QR : RenderAs.Text }).ToList();
+                Fp700.PrintSeviceReceipt(d);
+                return new LogRRO(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace }) { TypeOperation = eTypeOperation.NoFiscalReceipt, TypeRRO = "RRO_FP700" };
+            }
+            catch (Exception e)
+            {
+                return new LogRRO(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace }) { TypeOperation = eTypeOperation.NoFiscalReceipt, TypeRRO = "RRO_FP700", CodeError = -1, Error = e.Message };
+            }
         }
 
-        public override StatusEquipment TestDevice() { 
-         var res=Fp700.TestDeviceSync();
-            return new StatusEquipment() { TextState = res.ToString() };
+        public override StatusEquipment TestDevice() {
+            try
+            {
+                var res = Fp700.TestDeviceSync();
+                return new StatusEquipment() { TextState = res.ToString() };
+            }catch(Exception e)
+            {
+                return new StatusEquipment() { State= -1, TextState = e.Message};
+            }
         }
-        public override string GetDeviceInfo() { return Fp700.GetInfoSync(); }
+        public override string GetDeviceInfo() 
+        {
+            try
+            {
+                return Fp700.GetInfoSync();
+            }
+            catch (Exception e)
+            {
+                return  e.Message ;
+            }
+        }
+
+        override public async Task<bool> ProgramingArticleAsync(IEnumerable<ReceiptWares> pRW)
+        {
+            if (pRW != null && pRW.Count() > 0)
+            {
+               var xx= GetReceiptItem(pRW,true);              
+                Fp700.SetupArticleTable(xx);
+            }
+            return true;
+        }
+
 
         public ReceiptViewModel GetReceiptViewModel(ModelMID.Receipt receiptMID)
         {
@@ -1248,7 +1319,7 @@ namespace Front.Equipments.FP700
             return list;
         }
 
-        private List<ProductArticle> SetupArticleTable(List<ReceiptItem> products)
+        public List<ProductArticle> SetupArticleTable(List<ReceiptItem> products)
         {
             List<ProductArticle> articles = new List<ProductArticle>();
             int firstFreeArticle = this.FindFirstFreeArticle();

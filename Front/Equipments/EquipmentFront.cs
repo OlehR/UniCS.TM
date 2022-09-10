@@ -16,6 +16,7 @@ using Utils;
 using Microsoft.Extensions.Logging;
 using ModernExpo.SelfCheckout.Entities.CommandServer;
 
+
 namespace Front
 {
     public class EquipmentFront
@@ -102,8 +103,18 @@ namespace Front
 
         public static EquipmentFront GetEquipmentFront { get { return sEquipmentFront; } }
 
+        ILoggerFactory LF = LoggerFactory.Create(builder =>
+        {
+            builder.AddConsole();
+            //builder.AddDebug();
+        });
+
         public EquipmentFront(Action<string, string> pSetBarCode,  Action<StatusEquipment> pActionStatus = null)
         {
+            ILogger<EquipmentFront> logger = LF?.CreateLogger<EquipmentFront>();
+            logger.LogDebug("Fp700 getInfo error");
+            logger.LogInformation("LogInformation Fp700 getInfo error");
+
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             sEquipmentFront = this;
             //OnControlWeight += (pWeight, pIsStable) => { pSetControlWeight?.Invoke(pWeight, pIsStable); };                
@@ -139,10 +150,10 @@ namespace Front
                 switch (ElEquipment.Model)
                 {
                     case eModelEquipment.MagellanScaner:
-                        Scaner = new MagellanScaner(ElEquipment, config, null, pSetBarCode);
+                        Scaner = new MagellanScaner(ElEquipment, config, LF, pSetBarCode);
                         break;
                     case eModelEquipment.VirtualScaner:
-                        Scaner = new VirtualScaner(ElEquipment, config, null, pSetBarCode);
+                        Scaner = new VirtualScaner(ElEquipment, config, LF, pSetBarCode);
                         break;
                     default:
                         Scaner = new Scaner(ElEquipment, config);
@@ -158,7 +169,7 @@ namespace Front
                         Scale = new MagellanScale(((MagellanScaner)Scaner), OnWeight);//TMP!!! OnControlWeight - Нафіг                        
                         break;
                     case eModelEquipment.VirtualScale:
-                        Scale = new VirtualScale(ElEquipment, config, null, OnWeight);
+                        Scale = new VirtualScale(ElEquipment, config, LF, OnWeight);
                         break;
                     default:
                         Scale = new Scale(ElEquipment, config);
@@ -174,10 +185,10 @@ namespace Front
                     switch (ElEquipment.Model)
                     {
                         case eModelEquipment.ScaleModern:
-                            ControlScale = new ScaleModern(ElEquipment, config, null, ControlWeight);
+                            ControlScale = new ScaleModern(ElEquipment, config, LF, ControlWeight);
                             break;
                         case eModelEquipment.VirtualControlScale: 
-                            ControlScale = new VirtualControlScale(ElEquipment, config,null,null);
+                            ControlScale = new VirtualControlScale(ElEquipment, config, LF, null);
                             Scale?.StartWeight();
                             break;
                         default:
@@ -207,10 +218,10 @@ namespace Front
                     switch (ElEquipment.Model)
                     {
                         case eModelEquipment.Ingenico:
-                            Terminal = new IngenicoH(el, config, null, PosStatus);
+                            Terminal = new IngenicoH(el, config, LF, PosStatus);
                             break;
                         case eModelEquipment.VirtualBankPOS:
-                            Terminal = new VirtualBankPOS(el, config, null, PosStatus);
+                            Terminal = new VirtualBankPOS(el, config, LF, PosStatus);
                             break;
                         default:
                             Terminal = new BankTerminal(el, config);
@@ -228,23 +239,23 @@ namespace Front
                     switch (ElEquipment.Model)
                     {
                         case eModelEquipment.ExellioFP:
-                            RRO = new Equipments.ExellioFP(ElEquipment, config, null);
+                            RRO = new Equipments.ExellioFP(ElEquipment, config, LF);
                             break;
                         case eModelEquipment.pRRO_SG:
-                            RRO = new pRRO_SG(ElEquipment, config, null, pActionStatus);
+                            RRO = new pRRO_SG(ElEquipment, config, LF, pActionStatus);
                             break;
                         case eModelEquipment.pRRo_WebCheck:
-                            RRO = new pRRO_WebCheck(ElEquipment, config, null, pActionStatus);
+                            RRO = new pRRO_WebCheck(ElEquipment, config, LF, pActionStatus);
                             RRO.Init();
                             break;
                         case eModelEquipment.Maria:
-                            RRO = new RRO_Maria(ElEquipment, config, null, pActionStatus);
+                            RRO = new RRO_Maria(ElEquipment, config, LF, pActionStatus);
                             break;
                         case eModelEquipment.VirtualRRO:
-                            RRO = new VirtualRRO(ElEquipment, config, null, pActionStatus);
+                            RRO = new VirtualRRO(ElEquipment, config, LF, pActionStatus);
                             break;
                         case eModelEquipment.FP700:
-                            RRO = new RRO_FP700(ElEquipment, config, null, pActionStatus);
+                            RRO = new RRO_FP700(ElEquipment, config, LF, pActionStatus);
                             break;
                         default:
                             RRO = new Rro(ElEquipment, config);
@@ -303,6 +314,12 @@ namespace Front
             return RRO.PrintNoFiscalReceiptAsync(pR).Result;
         }
 
+        public bool ProgramingArticleAsync(IEnumerable<ReceiptWares> pRW)
+        {
+             RRO?.ProgramingArticleAsync(pRW);
+            return true;
+        }
+ 
         /// <summary>
         /// Оплата по банківському терміналу
         /// </summary>

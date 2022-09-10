@@ -106,6 +106,15 @@ namespace Front.Equipments
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Програмування артикулів для фіскального апарата
+        /// </summary>
+        /// <param name="pRW"></param>
+        /// <returns></returns>
+        virtual public async Task<bool> ProgramingArticleAsync(IEnumerable<ReceiptWares> pRW)
+        {
+            return true;
+        }
         /*     /// <summary>
        ///
        /// </summary>

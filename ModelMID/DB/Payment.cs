@@ -47,7 +47,9 @@ namespace ModelMID
         public string  TransactionId { get; set; } //НОВЕ!
         
         public DateTime DateCreate { get; set; }
-        
+
+        //public string Error { get; set; } = null;
+
         public Payment(Guid parReceipt) : base(parReceipt) { }
         public Payment(IdReceipt parIdReceipt) : base(parIdReceipt) { }
         public Payment() { }

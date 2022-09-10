@@ -410,9 +410,13 @@ namespace Front
         /// </summary>
         /// <returns></returns>
         public bool PrintAndCloseReceipt(Receipt pR=null)
-        {   
+        {
+           
             var R = Bl.GetReceiptHead(pR??curReceipt, true);
             curReceipt = R;
+            // Програмування артикулів.
+            EF.ProgramingArticleAsync(R?.Wares);
+
             if (R.AgeRestrict > 0 && R.IsConfirmAgeRestrict == false)
             {
                 SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ConfirmAge);
@@ -474,8 +478,7 @@ namespace Front
 
                         var QR=Bl.GetQR(R);
                         if(QR!=null && QR.Count()>0)
-                        {
-                           
+                        {                           
                             foreach(var el in QR)
                             {
                                 List<string> list = new List<string>() { el.Name, $"QR=>{el.Qr}" };
@@ -496,9 +499,10 @@ namespace Front
                     {
                         R.StateReceipt = eStateReceipt.Pay;
                         Bl.SetStateReceipt(curReceipt, eStateReceipt.Pay);
-                        ShowErrorMessage(res.Error + "Помилка друку чеків");
+                        ShowErrorMessage( "Помилка друку чеків"+ res.Error );
                         //MessageBox.Show(res.Error, "Помилка друку чеків");
-                    }
+                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Помилка друку чеків"+ res.Error , eTypeLog.Error);
+                  }
                     SetStateView(eStateMainWindows.WaitInput);
                 }
                 catch (Exception e)
