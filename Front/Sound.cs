@@ -23,8 +23,8 @@ namespace Front
         ClearPlatform, // + Очистіть платформу
         DoNotForgetProducts, // + Не забутьте забрати товар
         IncorectWeight, // + Вага не вірна Зверніться до адміністратора
-        //InsertCardIntoBankTerminal,
-        InsertCardIntoBankTerminal_new, // + Вставте картку в банківський термінал та виконайте вказівку.
+        InsertCardIntoBankTerminal,
+        //InsertCardIntoBankTerminal_new, // + Вставте картку в банківський термінал та виконайте вказівку.
         //InsertMoney, // Внесіть кошти
         ProductNotFound, //Товар відсутній в базі
         PutPackageOnPlatform, // + Покладіть ваш пакет на платформу
@@ -141,7 +141,7 @@ namespace Front
         public void Play(eStateMainWindows pState, eTypeAccess pTypeAccess, eStateScale pStateScale, int pExPar = 0)
         {             
             if(pState==eStateMainWindows.WaitInput) Play(eTypeSound.ScanAndPutProductOnPlatform);
-            if (pState == eStateMainWindows.ProcessPay) Play(eTypeSound.InsertCardIntoBankTerminal_new);
+            if (pState == eStateMainWindows.ProcessPay) Play(eTypeSound.InsertCardIntoBankTerminal);
             if (pState == eStateMainWindows.WaitOwnBag) Play(eTypeSound.PutPackageOnPlatform);
 
             if (pState == eStateMainWindows.WaitAdmin)
