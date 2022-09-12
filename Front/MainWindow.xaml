@@ -1168,14 +1168,13 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="1*"></RowDefinition>
                         <RowDefinition Height="3*"></RowDefinition>
-                        <RowDefinition Height="1*"></RowDefinition>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="28" 
+                    <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28" 
                                 Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0"
                                 Text="{DynamicResource WaitPayment }"/>
                     <Image  Grid.Column="1" Grid.Row="1" x:Name="PaymentImage"
@@ -1207,12 +1206,9 @@
                                 Text="{Binding EquipmentInfo, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}"/>
                     </Grid>
-                    <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource Default}"  FontSize="22" Click="_Cancel" 
-                        Height="80" Width="300" VerticalAlignment="Top">
-                        <StackPanel Orientation="Horizontal">
-                            <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
-                            <TextBlock FontSize="28" Text="{DynamicResource cancel}" Margin="5,0,0,5"/>
-                        </StackPanel>
+                    <Button Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" 
+                            BorderBrush="Transparent" Background="Transparent" HorizontalAlignment="Right" FontSize="22" Click="_Cancel" 
+                        Height="50" Width="50" VerticalAlignment="Top">
                     </Button>
                 </Grid>
             </Border>
@@ -1623,6 +1619,10 @@
                                         <DataTrigger Binding="{Binding IsCheckReturn, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="False">
                                             <Setter Property="Text" Value="{DynamicResource payment}" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsCheckPaid, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                            <Setter Property="Text" Value="Фіскалізувати" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>

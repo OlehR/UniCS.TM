@@ -68,6 +68,7 @@ namespace Front
         // public bool IsFixWeight { get; set; }
         public bool IsExciseStamp { get; set; }
         public bool IsCheckReturn { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? true : false; } }
+        public bool IsCheckPaid { get { return curReceipt?.StateReceipt == eStateReceipt.Pay ? true : false; } }
         /// <summary>
         /// Чи заброкована зміна
         /// </summary>
@@ -300,6 +301,7 @@ namespace Front
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("GetBackgroundColor"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnabledPaymentButton"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCheckReturn"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCheckPaid"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClientName"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsAgeRestrict"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnabledFindButton"));
