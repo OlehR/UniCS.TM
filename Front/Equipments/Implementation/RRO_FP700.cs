@@ -34,6 +34,7 @@ using Receipt = ModernExpo.SelfCheckout.Entities.Models.Receipt;
 using Front.Equipments;
 
 using DeviceLog=ModernExpo.SelfCheckout.Entities.Models.FiscalPrinterDeviceLog;
+using Utils;
 
 //using ModernExpo.SelfCheckout.Utils;
 using Front.Equipments.FP700;
@@ -174,7 +175,7 @@ namespace Front.Equipments
             {
                 List<ReceiptText> d = pR.Select(el => new ReceiptText() { Text = el.StartsWith("QR=>") ? el.SubString(4) : el, RenderType = el.StartsWith("QR=>") ? RenderAs.QR : RenderAs.Text }).ToList();
                 Fp700.PrintSeviceReceipt(d);
-                return new LogRRO(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace }) { TypeOperation = eTypeOperation.NoFiscalReceipt, TypeRRO = "RRO_FP700" };
+                return new LogRRO(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace }) { TypeOperation = eTypeOperation.NoFiscalReceipt, TypeRRO = "RRO_FP700",JSON=pR.ToJSON() };
             }
             catch (Exception e)
             {

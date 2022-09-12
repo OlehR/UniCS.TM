@@ -23,7 +23,6 @@ namespace Front
 
         public void InitAction()
         {
-            //return;
             EF.OnControlWeight += (pWeight, pIsStable) =>
             {
                 ControlScaleCurrentWeight = pWeight;
@@ -180,8 +179,9 @@ namespace Front
             //Обробка стану контрольної ваги.
             CS.OnStateScale += (pStateScale, pRW, pСurrentlyWeight) =>
             {
-                //StateScale = pStateScale;
-
+                //Якщо повернення ігноруємо вагу.
+                if (curReceipt.TypeReceipt == eTypeReceipt.Refund && pStateScale != eStateScale.Stabilized)
+                    return;
                 switch (pStateScale)
                 {
                     case eStateScale.WaitGoods:
@@ -470,8 +470,7 @@ namespace Front
                 {
                     SetStateView(eStateMainWindows.ProcessPrintReceipt);
                     //Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
-                    var res = EF.PrintReceipt(R);
-                    Bl.InsertLogRRO(res);
+                    var res = EF.PrintReceipt(R);                  
                     SetStateView(eStateMainWindows.WaitInput);
                     if (res.CodeError == 0)
                     {

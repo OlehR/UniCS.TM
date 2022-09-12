@@ -117,26 +117,12 @@ namespace Front
         }
         private void POS_X_Click(object sender, RoutedEventArgs e)
         {
-            var r = EF.PosPrintX();
-            // var L = EF.GetLastReceiptPos();
-            //List<string> list = new() { "X-звіт постермінал", $"Всього: {r.DebitSum}({r.DebitCount})", $"Всього2: {r.CreditSum} ({r.CreditCount}) ", $"Crfcjdf: {r.CencelledSum} ({r.CencelledCount}) " };
-            LogRRO d = new(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() })
-            { TypeOperation = eTypeOperation.XReportPOS, JSON = r.ToJSON(), TextReceipt = r.Receipt == null ? null : string.Join(Environment.NewLine, r.Receipt) };
-            Bl.InsertLogRRO(d);
-            if (r.Receipt != null)
-                EF.PrintNoFiscalReceipt(r.Receipt);
+            EF.PosPrintX();           
         }
 
         private void POS_Z_Click(object sender, RoutedEventArgs e)
         {
-            var r = EF.PosPrintZ();
-            LogRRO d = new(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() })
-            { TypeOperation = eTypeOperation.XReportPOS, JSON = r.ToJSON(), TextReceipt = r.Receipt==null?null: string.Join(Environment.NewLine, r.Receipt) };
-            Bl.InsertLogRRO(d);
-            if(r.Receipt!=null)
-                EF.PrintNoFiscalReceipt(r.Receipt);
-
-           // EF.PosPrintZ();
+            EF.PosPrintZ();            
         }
 
         private void POS_X_Copy_Click(object sender, RoutedEventArgs e)
@@ -148,8 +134,7 @@ namespace Front
         {
             var task = Task.Run(() =>
             {
-                var r = EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() });
-                Bl.InsertLogRRO(r);
+                var r = EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() });               
             });
         }
 
@@ -157,14 +142,16 @@ namespace Front
         {
             var task = Task.Run(() =>
             {
-                var r = EF.RroPrintZ(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() });
-                Bl.InsertLogRRO(r);
+                var r = EF.RroPrintZ(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() });              
             });
         }
 
         private void EKKA_Z_Period_Click(object sender, RoutedEventArgs e)
         {
-
+            var task = Task.Run(() =>
+            {
+                var r = EF.RroPrintZ(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() });
+            });
         }
 
         private void EKKA_Copy_Click(object sender, RoutedEventArgs e)
@@ -196,7 +183,13 @@ namespace Front
 
         private void CloseDay_Click(object sender, RoutedEventArgs e)
         {
-
+            //TMP!!!! Треба задати питання.
+            return;
+            var task = Task.Run(() =>
+            {
+                EF.PosPrintZ();
+                var r = EF.RroPrintZ(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() });
+            });
         }
 
         private void Test_Click(object sender, RoutedEventArgs e)

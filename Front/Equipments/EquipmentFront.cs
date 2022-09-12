@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using Utils;
 using Microsoft.Extensions.Logging;
 using ModernExpo.SelfCheckout.Entities.CommandServer;
+using SharedLib;
 
 
 namespace Front
@@ -26,6 +27,7 @@ namespace Front
         private IEnumerable<Equipment> ListEquipment = new List<Equipment>();
         eStateEquipment _State = eStateEquipment.Off;
 
+        BL Bl = BL.GetBL;
         Scaner Scaner;
         Scale Scale;
         public Scale ControlScale;
@@ -62,15 +64,6 @@ namespace Front
             }
         }
                 
-        /*public eStateEquipment SaleIsReady
-        {
-            get
-            {
-                var Res = ListEquipment.Where(el => (el.Type == eTypeEquipment.RRO || el.Type == eTypeEquipment.BankTerminal) && el.State != eStateEquipment.On && el.IsСritical);
-                return Res != null && Res.Any() ? eStateEquipment.Error : eStateEquipment.On;
-            }
-        }*/
-        
         public eStateEquipment State
         {
             get { return _State; }
@@ -291,27 +284,37 @@ namespace Front
         /// </summary>
         public LogRRO PrintReceipt(Receipt pReceipt)
         {
-            return RRO.PrintReceiptAsync(pReceipt).Result;
+            var r = RRO.PrintReceiptAsync(pReceipt).Result;
+            Bl.InsertLogRRO(r);
+            return r;
         }
 
         public LogRRO RroPrintX(IdReceipt pIdR)
         {
-            return RRO.PrintXAsync(pIdR).Result;
+            var r= RRO.PrintXAsync(pIdR).Result;
+            Bl.InsertLogRRO(r);
+            return r;
         }
 
         public LogRRO RroPrintZ(IdReceipt pIdR)
         {
-            return RRO.PrintZAsync(pIdR).Result;
+            var r= RRO.PrintZAsync(pIdR).Result;
+            Bl.InsertLogRRO(r);
+            return r;
         }
 
         public LogRRO RroPrintCopyReceipt()
         {
-            return RRO.PrintCopyReceipt();
+            var r= RRO.PrintCopyReceipt();
+            Bl.InsertLogRRO(r);
+            return r;
         }
 
         public LogRRO PrintNoFiscalReceipt(IEnumerable<string> pR)
         {
-            return RRO.PrintNoFiscalReceiptAsync(pR).Result;
+            var r = RRO.PrintNoFiscalReceiptAsync(pR).Result;
+            Bl.InsertLogRRO(r);
+            return r;
         }
 
         public bool ProgramingArticleAsync(IEnumerable<ReceiptWares> pRW)
@@ -343,12 +346,43 @@ namespace Front
 
         public BatchTotals PosPrintX()
         {
-            return Terminal.PrintX();             
+            BatchTotals r = null;
+            try
+            {
+                r = Terminal.PrintX();
+                LogRRO d = new(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() })
+                { TypeOperation = eTypeOperation.XReportPOS, JSON = r.ToJSON(), TextReceipt = r.Receipt == null ? null : string.Join(Environment.NewLine, r.Receipt) };
+                Bl.InsertLogRRO(d);
+                if (r.Receipt != null)
+                    PrintNoFiscalReceipt(r.Receipt);
+                return r;               
+            }
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);                
+            }
+            return r;
         }
 
         public BatchTotals PosPrintZ()
         {
-            return Terminal.PrintZ();       
+            BatchTotals r = null;
+            try
+            {
+                r = Terminal.PrintZ();
+                LogRRO d = new(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() })
+                { TypeOperation = eTypeOperation.ZReportPOS, JSON = r.ToJSON(), TextReceipt = r.Receipt == null ? null : string.Join(Environment.NewLine, r.Receipt) };
+                Bl.InsertLogRRO(d);
+                if (r.Receipt != null)
+                    PrintNoFiscalReceipt(r.Receipt);
+                return r;
+            }
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);               
+            }
+            return r;
+
         }
 
         public IEnumerable<string> GetLastReceiptPos()
@@ -409,7 +443,8 @@ namespace Front
                 if(ControlScale.Model!=eModelEquipment.VirtualControlScale)
                     Scale?.StartWeight();
             }
-            catch (Exception) { }//Необхідна обробка коли немає обладнання !!!TMP
+            catch (Exception e)
+            { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e); }//Необхідна обробка коли немає обладнання!!!TMP
         }
 
         /// <summary>
@@ -423,8 +458,8 @@ namespace Front
                 if (ControlScale.Model != eModelEquipment.VirtualControlScale)
                     Scale?.StopWeight();
             }
-            catch (Exception) { }//Необхідна обробка коли немає обладнання!!!TMP
-
+            catch (Exception e) 
+            { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e); }//Необхідна обробка коли немає обладнання!!!TMP
         }
 
         /// <summary>
@@ -432,19 +467,13 @@ namespace Front
         /// </summary>
         /// <param name="maxValue"></param>
         /// <returns></returns>
-        public bool ControlScaleCalibrateMax(double maxValue)
-        {
-            return ControlScale.CalibrateMax(maxValue);
-        }
+        public bool ControlScaleCalibrateMax(double maxValue)  { return ControlScale.CalibrateMax(maxValue); }
 
         /// <summary>
         ///  Калібрація нуля
         /// </summary>
         /// <returns></returns>
-        public bool ControlScaleCalibrateZero()
-        {
-            return ControlScale.CalibrateZero();
-        }
+        public bool ControlScaleCalibrateZero() {  return ControlScale.CalibrateZero(); }
 
         public  void StartMultipleTone() { Scaner.StartMultipleTone(); }
         public  void StopMultipleTone() { Scaner.StopMultipleTone(); }
