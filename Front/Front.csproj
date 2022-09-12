@@ -111,9 +111,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Exellio">
-      <HintPath>..\DLL\Exellio.DLL</HintPath>
-    </Reference>
     <Reference Include="Interop.ECRCommXLib">
       <HintPath>..\SharedLib\dll\Interop.ECRCommXLib.dll</HintPath>
     </Reference>
@@ -137,9 +134,6 @@
     </Reference>
     <Reference Include="Resonance.OLEManager">
       <HintPath>..\DLL\Resonance.OLEManager.dll</HintPath>
-    </Reference>
-    <Reference Include="WebCheck">
-      <HintPath>C:\Program Files (x86)\WebCheck\PRRO64\WebCheck.dll</HintPath>
     </Reference>
   </ItemGroup>
 
