@@ -180,7 +180,7 @@ namespace Front
             CS.OnStateScale += (pStateScale, pRW, pСurrentlyWeight) =>
             {
                 //Якщо повернення ігноруємо вагу.
-                if (curReceipt.TypeReceipt == eTypeReceipt.Refund && pStateScale != eStateScale.Stabilized)
+                if (curReceipt?.TypeReceipt == eTypeReceipt.Refund && pStateScale != eStateScale.Stabilized)
                     return;
                 switch (pStateScale)
                 {

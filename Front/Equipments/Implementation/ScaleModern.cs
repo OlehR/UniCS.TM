@@ -74,7 +74,7 @@ namespace Front.Equipments
             Init();
             var r=bst.TestDevice().Result;
             State = r==ModernExpo.SelfCheckout.Entities.Enums.Device.DeviceConnectionStatus.Enabled ? eStateEquipment.On : eStateEquipment.Error;
-            return new StatusEquipment(Model, State,"");
+            return new StatusEquipment(Model, State,r.ToString());
         }
 
         public override string GetDeviceInfo()
