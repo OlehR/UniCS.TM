@@ -70,8 +70,8 @@ namespace Front.Equipments
         public override StatusEquipment TestDevice() 
         {           
             //bst.Dispose();
-            Task.Delay(200);
-            Init();
+            //Task.Delay(200);
+           // Init();
             var r=bst.TestDevice().Result;
             State = r==ModernExpo.SelfCheckout.Entities.Enums.Device.DeviceConnectionStatus.Enabled ? eStateEquipment.On : eStateEquipment.Error;
             return new StatusEquipment(Model, State,r.ToString());
@@ -79,6 +79,7 @@ namespace Front.Equipments
 
         public override string GetDeviceInfo()
         {
+            
             return bst.GetInfo().Result;// $"pModelEquipment={Model} State={State} Port={SerialPort} BaudRate={BaudRate}{Environment.NewLine}";
         }
         /// <summary>
