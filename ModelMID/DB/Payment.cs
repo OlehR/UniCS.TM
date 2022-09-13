@@ -49,6 +49,7 @@ namespace ModelMID
         public DateTime DateCreate { get; set; }
 
         //public string Error { get; set; } = null;
+        public IEnumerable<string> Receipt { get; set; }
 
         public Payment(Guid parReceipt) : base(parReceipt) { }
         public Payment(IdReceipt parIdReceipt) : base(parIdReceipt) { }

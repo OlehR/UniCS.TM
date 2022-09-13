@@ -322,15 +322,27 @@ namespace Front
              RRO?.ProgramingArticleAsync(pRW);
             return true;
         }
- 
+
         /// <summary>
         /// Оплата по банківському терміналу
         /// </summary>
         /// <param name="pSum">Власне сума</param>
         /// <returns></returns>
-        public Payment PosPurchase(decimal pSum)
+        public Payment PosPurchase(IdReceipt pIdR, decimal pSum)
         {
-            return Terminal?.Purchase(pSum);
+            Payment r = null;
+            try
+            {
+                r = Terminal?.Purchase(pSum);
+                LogRRO d = new(pIdR)
+                { TypeOperation = eTypeOperation.SalePOS, TypeRRO = "Ingenico", JSON = r.ToJSON(), TextReceipt = r.Receipt == null ? null : string.Join(Environment.NewLine, r.Receipt) };
+                Bl.InsertLogRRO(d);
+            }
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+            }
+            return r;
         }
 
         /// <summary>
@@ -339,9 +351,21 @@ namespace Front
         /// <param name="pSum"></param>
         /// <param name="pRNN"></param>
         /// <returns></returns>
-        public Payment PosRefund(decimal pSum, string pRNN)
+        public Payment PosRefund(IdReceipt pIdR, decimal pSum, string pRNN)
         {
-            return Terminal.Refund(pSum, pRNN);
+            Payment r = null;
+            try
+            {
+                r = Terminal?.Refund(pSum, pRNN);
+                LogRRO d = new(pIdR)
+                { TypeOperation = eTypeOperation.Refund, TypeRRO = "Ingenico", JSON = r.ToJSON(), TextReceipt = r.Receipt == null ? null : string.Join(Environment.NewLine, r.Receipt) };
+                Bl.InsertLogRRO(d);
+            }
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+            }
+            return r;             
         }
 
         public BatchTotals PosPrintX()
@@ -351,7 +375,7 @@ namespace Front
             {
                 r = Terminal.PrintX();
                 LogRRO d = new(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() })
-                { TypeOperation = eTypeOperation.XReportPOS, JSON = r.ToJSON(), TextReceipt = r.Receipt == null ? null : string.Join(Environment.NewLine, r.Receipt) };
+                { TypeOperation = eTypeOperation.XReportPOS, TypeRRO= "Ingenico",  JSON = r.ToJSON(), TextReceipt = r.Receipt == null ? null : string.Join(Environment.NewLine, r.Receipt) };
                 Bl.InsertLogRRO(d);
                 if (r.Receipt != null)
                     PrintNoFiscalReceipt(r.Receipt);
@@ -371,7 +395,7 @@ namespace Front
             {
                 r = Terminal.PrintZ();
                 LogRRO d = new(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() })
-                { TypeOperation = eTypeOperation.ZReportPOS, JSON = r.ToJSON(), TextReceipt = r.Receipt == null ? null : string.Join(Environment.NewLine, r.Receipt) };
+                { TypeOperation = eTypeOperation.ZReportPOS, TypeRRO = "Ingenico", JSON = r.ToJSON(), TextReceipt = r.Receipt == null ? null : string.Join(Environment.NewLine, r.Receipt) };
                 Bl.InsertLogRRO(d);
                 if (r.Receipt != null)
                     PrintNoFiscalReceipt(r.Receipt);

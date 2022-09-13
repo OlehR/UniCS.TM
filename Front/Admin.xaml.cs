@@ -303,7 +303,7 @@ namespace Front
             {
                 decimal sum = R.Wares.Sum(r => r.Sum); //TMP!!!Треба переробити
 
-                var pay = EF.PosPurchase(sum);
+                var pay = EF.PosPurchase(R,sum);
                 if (pay != null)
                 {
                     pay.SetIdReceipt(R);

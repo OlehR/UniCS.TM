@@ -81,7 +81,7 @@ namespace Front.Equipments
         {
             return new Payment()
             {
-                IsSuccess= pRP.IsSuccess,
+                IsSuccess = pRP.IsSuccess,
                 TypePay = pTypePay,
                 SumPay = pRP.PosPaid,
                 NumberReceipt = pRP.InvoiceNumber, //parRP.TransactionId,
@@ -94,7 +94,8 @@ namespace Front.Equipments
                 DateCreate = pRP.OperationDateTime,
                 CardHolder = pRP.CardHolder,
                 IssuerName = pRP.IssuerName,
-                Bank = pRP.Bank
+                Bank = pRP.Bank,
+                Receipt = EquipmentIngenico.GetLastReceipt()
             };
         }
 
@@ -1648,7 +1649,7 @@ namespace Front.Equipments.Ingenico
                     onResponse((IPosResponse)new PayPosResponse()
                     {
                         Response = result
-                    });
+                    });                
                 StopBPOS();
                 return Task.FromResult<PaymentResultModel>(result);
             }

@@ -17,7 +17,7 @@ namespace Front.Equipments
     public class ExellioFP : Rro
     {
         //FiscalPrinterClass 
-           dynamic FP;
+           dynamic FP=null;
         
         public ExellioFP(Equipment pEquipment, IConfiguration pConfiguration, ILoggerFactory pLoggerFactory = null) : base(pEquipment, pConfiguration,eModelEquipment.ExellioFP, pLoggerFactory)
         {

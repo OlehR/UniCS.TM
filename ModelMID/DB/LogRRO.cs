@@ -19,6 +19,8 @@ namespace ModelMID.DB
         ClosePort,
         ZReportPOS = 2000,
         XReportPOS = 2001,
+        SalePOS =   20100,
+        RefundPOS = 20101
     }
 
     public class LogRRO: IdReceipt
