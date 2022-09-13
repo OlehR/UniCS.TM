@@ -1352,10 +1352,16 @@ where r.STATE_RECEIPT=-1
     where (Login=@Login and Password=@Password) or BAR_CODE=@BarCode;
 
 [SqlInsertLogRRO]
-insert into Log_RRO  (
+insert into   (
       ID_WORKPLACE,CODE_PERIOD,CODE_RECEIPT,FiscalNumber, Number_Operation,Type_Operation, SUM ,Type_RRO,JSON, Text_Receipt,Error, USER_CREATE) VALUES
     (@IdWorkplace, @CodePeriod,@CodeReceipt,@FiscalNumber,@NumberOperation,@TypeOperation,@SUM,@TypeRRO,@JSON,@TextReceipt,@Error,@UserCreate)
 
+[SqlGetLogRRO]
+Select ID_WORKPLACE as IdWorkplace,CODE_PERIOD as CodePeriod,CODE_RECEIPT as CodeReceipt,
+      FiscalNumber as FiscalNumber, Number_Operation as NumberOperation,Type_Operation as TypeOperation, SUM as SUM,
+      Type_RRO as TypeRRO,JSON as JSON, Text_Receipt as TextReceipt,Error as Error, USER_CREATE as UserCreate
+        from Log_RRO where ID_WORKPLACE = @IdWorkplace and CODE_PERIOD = @CodePeriod
+        and CODE_RECEIPT = case when @CodeReceipt=0 then CODE_RECEIPT else @CodeReceipt end
 
 [SqlEnd]
 */

@@ -196,6 +196,7 @@ namespace SharedLib
         protected string SqlInsertLogRRO = "";
         protected string SqlReplaceSalesBan = "";
         protected string SqlGetQuantitySalesBan = "";
+        protected string SqlGetLogRRO = "";
 
         public WDB(string pFileSQL,SQL pDB=null)
         {
@@ -641,6 +642,7 @@ namespace SharedLib
             SqlReplaceSalesBan = GetSQL("SqlReplaceSalesBan");
 
             SqlGetQuantitySalesBan = GetSQL("SqlGetQuantitySalesBan");
+            SqlGetLogRRO = GetSQL("SqlGetLogRRO");
 
 
             return true;
@@ -1082,11 +1084,18 @@ namespace SharedLib
             return db.Execute<User,User>(SqlGetUser, pUser);            
         }
 
+        public virtual IEnumerable<LogRRO> GetLogRRO(IdReceipt pR)
+        {
+            return db.Execute<IdReceipt, LogRRO>(SqlGetLogRRO, pR);
+        }
+
         public virtual void Close(bool isWait = false)
         {
             if (db != null)
                 db.Close(isWait);
         }
+
+
 
         public void Dispose()
         {
