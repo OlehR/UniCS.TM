@@ -1,5 +1,5 @@
 ﻿//using Exellio;
-using ExellioFP;
+//using ExellioFP;
 using Front.Equipments.Implementation;
 using Front.Equipments.Virtual;
 using Microsoft.Extensions.Configuration;
@@ -16,7 +16,8 @@ namespace Front.Equipments
 {
     public class ExellioFP : Rro
     {
-        private  FiscalPrinterClass FP;
+        //FiscalPrinterClass 
+           dynamic FP;
         
         public ExellioFP(Equipment pEquipment, IConfiguration pConfiguration, ILoggerFactory pLoggerFactory = null) : base(pEquipment, pConfiguration,eModelEquipment.ExellioFP, pLoggerFactory)
         {
@@ -27,7 +28,8 @@ namespace Front.Equipments
                 BaudRate = Convert.ToInt32(Configuration["Devices:ExellioFP:BaudRate"]);
                 IP = Configuration["Devices:ExellioFP:IP"];
                 IpPort = Convert.ToInt32(Configuration["Devices:ExellioFP:IpPort"]);
-                FP = new FiscalPrinterClass();                
+                //TMP!!! 
+                //FP = new FiscalPrinterClass();                
                 State = eStateEquipment.On;
             }
             catch(Exception e)
