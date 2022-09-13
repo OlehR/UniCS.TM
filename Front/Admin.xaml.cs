@@ -285,7 +285,7 @@ namespace Front
             IsPrintReceipt = curReceipt?.StateReceipt == eStateReceipt.Pay || curReceipt?.StateReceipt == eStateReceipt.StartPrint;
             IsPayReceipt = curReceipt?.StateReceipt == eStateReceipt.Prepare || curReceipt?.StateReceipt == eStateReceipt.StartPay;
             IsInputPay = curReceipt?.StateReceipt == eStateReceipt.Prepare || curReceipt?.StateReceipt == eStateReceipt.StartPay;
-            IsSendTo1C = curReceipt?.StateReceipt == eStateReceipt.Print;
+            IsSendTo1C = curReceipt?.StateReceipt == eStateReceipt.Print || curReceipt?.StateReceipt == eStateReceipt.Send;
             IsCreateReturn = (curReceipt?.StateReceipt == eStateReceipt.Send || curReceipt?.StateReceipt == eStateReceipt.Print) && curReceipt?.TypeReceipt == eTypeReceipt.Sale;
         }
 
