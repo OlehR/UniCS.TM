@@ -413,13 +413,12 @@ namespace Front
         /// </summary>
         /// <returns></returns>
         public bool PrintAndCloseReceipt(Receipt pR=null)
-        {
-           
+        {           
             var R = Bl.GetReceiptHead(pR??curReceipt, true);
             curReceipt = R;
-            // Програмування артикулів.
-            var RR = Bl.GetReceiptHead(pR ?? curReceipt, true);
-            EF.ProgramingArticleAsync(RR?.Wares);
+            // Програмування артикулів. Жахливий баг якщо передавати R.Wares
+            var RR = Bl.db.ViewReceiptWares(R);
+            EF.ProgramingArticleAsync(RR);
 
             if (R.AgeRestrict > 0 && R.IsConfirmAgeRestrict == false)
             {
