@@ -63,11 +63,11 @@ namespace Front
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ControlScaleWeightDouble"));
             };
 
-            
+
             InitializeComponent();
 
 
-
+            ProgramVersion.Text = $"Версія КСО: {MW.Version}";
             //поточний час
             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);

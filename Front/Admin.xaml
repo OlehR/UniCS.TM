@@ -214,7 +214,8 @@
 
         <TextBlock Grid.Row="0"  Text="{Binding KasaNumber, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" 
-                   Name="kasaNumberTextBlock" FontSize="24" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                   Name="kasaNumberTextBlock" FontSize="24" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,15,0,0"/>
+        <TextBlock Grid.Row="0" Name="ProgramVersion" FontSize="24" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="15,0,0,0"/>
         <Label Grid.Row="0"  Content="Error" Name="lblTime" FontSize="48" HorizontalAlignment="Right" VerticalAlignment="Top" />
         <TextBlock Grid.Row="0"  Text="{Binding AdminUser.NameUser, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Name="adminastratorName" FontSize="20" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
@@ -229,9 +230,9 @@
 
                     <GroupBox Grid.Column="0" Header="POS-термінал" Margin="20, 20 , 10 ,20">
                         <StackPanel>
-                            <Button x:Name="POS_X" Style="{StaticResource Default}" Content="X звіт"   Click="POS_X_Click"/>
-                            <Button x:Name="POS_Z" Style="{StaticResource Default}" Content="Z звіт"  Click="POS_Z_Click"/>
-                            <Button x:Name="POS_X_Copy" Style="{StaticResource Default}" Content="X звіт(копія)"  Click="POS_X_Copy_Click"/>
+                            <Button x:Name="POS_X" Style="{StaticResource Default}" Content="X звіт" Width="280"  Click="POS_X_Click"/>
+                            <Button x:Name="POS_Z" Style="{StaticResource Default}" Content="Z звіт" Width="280" Click="POS_Z_Click"/>
+                            <Button x:Name="POS_X_Copy" Style="{StaticResource Default}" Content="X звіт(копія)" Width="280" Click="POS_X_Copy_Click"/>
                         </StackPanel>
                     </GroupBox>
                     <GroupBox Grid.Column="1" Header="Фіскальний реєстратор" Margin="10, 20, 10, 20">
@@ -608,7 +609,7 @@
                      Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="6">
                         <ListView.View>
                             <GridView >
-                                <GridViewColumn  Header="#">
+                                <GridViewColumn  Header="№">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
                                             <TextBlock Text="{Binding Path=CodeReceipt}" TextAlignment="Center" />
@@ -672,7 +673,7 @@
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
 
-                                <GridViewColumn Header="Сума оплачена кредиткою">
+                                <GridViewColumn Header="Оплачено">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
                                             <TextBlock Text="{Binding Path=SumCreditCard}" TextAlignment="Center" />
