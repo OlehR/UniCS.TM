@@ -418,7 +418,8 @@ namespace Front
             var R = Bl.GetReceiptHead(pR??curReceipt, true);
             curReceipt = R;
             // Програмування артикулів.
-            EF.ProgramingArticleAsync(R?.Wares);
+            var RR = Bl.GetReceiptHead(pR ?? curReceipt, true);
+            EF.ProgramingArticleAsync(RR?.Wares);
 
             if (R.AgeRestrict > 0 && R.IsConfirmAgeRestrict == false)
             {

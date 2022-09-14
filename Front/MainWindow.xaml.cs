@@ -27,7 +27,7 @@ namespace Front
 {
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        string Version { get { return Assembly.GetExecutingAssembly().GetName().Version.ToString(); } }
+        public string Version { get { return Assembly.GetExecutingAssembly().GetName().Version.ToString(); } }
         public event PropertyChangedEventHandler PropertyChanged;
         private readonly object _locker = new object();
         Access Access = Access.GetAccess();
