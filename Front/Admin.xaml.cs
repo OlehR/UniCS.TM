@@ -430,6 +430,7 @@ namespace Front
         {
             if (MessageBox.Show("Завершити роботу програми?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
+                System.Diagnostics.Process.Start("explorer.exe");
                 Application.Current.Shutdown();
             }
         }
