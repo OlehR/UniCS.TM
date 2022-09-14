@@ -134,7 +134,7 @@ namespace Front
                }));
 
             var NewListEquipment = new List<Equipment>();
-            var config = Config("appsettings.json");
+            var config = GetConfig();
             State = eStateEquipment.Init;
             try
             {
@@ -427,13 +427,9 @@ namespace Front
             }
         }
 
-        public IConfiguration Config(string settingsFilePath)
-        {
-            var CurDir = AppDomain.CurrentDomain.BaseDirectory;
-            var AppConfiguration = new ConfigurationBuilder()
-                .SetBasePath(CurDir)
-                .AddJsonFile(settingsFilePath).Build();
-
+        public IConfiguration GetConfig()
+        {            
+            var AppConfiguration = Config.AppConfiguration;
             AppConfiguration.GetSection("MID:Equipment").Bind(ListEquipment);
             //var r = AppConfiguration.GetSection("MID:Equipment");
             return AppConfiguration;

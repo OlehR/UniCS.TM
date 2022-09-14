@@ -222,8 +222,7 @@ namespace Front
         public MainWindow()
         {
             CS = new ControlScale();
-            var c = new Config("appsettings.json");// Конфігурація Програми(Шляхів до БД тощо)
-
+         
             var fc = new List<FlagColor>();
             Config.GetConfiguration().GetSection("MID:FlagColor").Bind(fc);
             foreach (var el in fc)
@@ -487,7 +486,7 @@ namespace Front
                             if (CurWares != null && CurWares.Prices != null && CurWares.Prices.Count() > 0)
                             {
                                 var rrr = new ObservableCollection<Models.Price>(CurWares.Prices.OrderByDescending(r => r.Price).Select(r => new Models.Price(r.Price, Access.GetRight(TypeAccessWait), r.TypeWares)));
-                                //rrr.First().IsEnable = true;
+                                rrr.First().IsEnable = true;
                                 Prices.ItemsSource = rrr;//new ObservableCollection<Price>(rr);
                             }
                             Background.Visibility = Visibility.Visible;

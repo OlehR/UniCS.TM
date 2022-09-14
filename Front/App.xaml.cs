@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Globalization;
-
+using SharedLib;
 
 namespace Front
 {
@@ -24,8 +24,17 @@ namespace Front
 			InitializeComponent();			
 		}
 
-		//Евент для оповещения всех окон приложения
-		public static event EventHandler LanguageChanged;
+        private void Application_Startup(object sender, StartupEventArgs e)
+        {
+			var FileConfig = e.Args.Length == 1 ? e.Args[0] : "appsettings.json";
+            var c = new Config(FileConfig);// Конфігурація Програми(Шляхів до БД тощо)
+            //MainWindow wnd = new MainWindow();
+         /*   if (e.Args.Length == 1)
+                MessageBox.Show("Now opening file: \n\n" + e.Args[0]);
+            wnd.Show();*/
+        }
+        //Евент для оповещения всех окон приложения
+        public static event EventHandler LanguageChanged;
 
 		static CultureInfo _Language= new CultureInfo("uk");
 

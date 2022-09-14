@@ -10,10 +10,15 @@ namespace SharedLib
 {
     public class Config
     {
-        static IConfigurationRoot AppConfiguration;
+        static Config sConfig= null;
+
+        static Config GetConfig { get { if(sConfig == null) sConfig = new Config();  return sConfig; } }
+
+        public static IConfigurationRoot AppConfiguration;
 
         public Config(string settingsFilePath = "appsettings.json")
         {
+            sConfig=this;
             var CurDir = AppDomain.CurrentDomain.BaseDirectory;
             AppConfiguration = new ConfigurationBuilder()
                 .SetBasePath(CurDir)
