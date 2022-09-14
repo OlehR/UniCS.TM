@@ -21,12 +21,13 @@ using Utils;
 using Microsoft.Extensions.Configuration;
 using System.Windows.Media;
 using System.Windows.Documents;
-
+using System.Reflection;
 
 namespace Front
 {
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        string Version { get { return Assembly.GetExecutingAssembly().GetName().Version.ToString(); } }
         public event PropertyChangedEventHandler PropertyChanged;
         private readonly object _locker = new object();
         Access Access = Access.GetAccess();
