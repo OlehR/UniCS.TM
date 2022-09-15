@@ -233,7 +233,7 @@ namespace ModelMID
                         AdditionalWeights.Select(r => new WaitWeight(r, WeightDelta > 0 ? WeightDelta : r * Global.GetCoefDeltaWeight(r))).ToList()
                         : new List<WaitWeight>();
                 if (CodeUnit == Global.WeightCodeUnit)
-                    res.Add(new WaitWeight(1, WeightDelta > 0 ? WeightDelta : Quantity * Global.GetCoefDeltaWeight(Quantity)));
+                    res.Add(new WaitWeight(1, WeightDelta > 0 ? WeightDelta : Global.GetCoefDeltaWeight(Quantity)));
                 else
                 {
                     if (WeightBrutto > 0)
