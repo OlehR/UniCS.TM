@@ -1201,10 +1201,11 @@
                         <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28" 
                                 Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="1"
                                 Text="{DynamicResource PaymentStatus}"/>
-                        <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="28" 
+                        <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="28" x:Name="EquipmentStatusInPayment" 
                                 Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="2" TextWrapping="Wrap"
-                                Text="{Binding EquipmentInfo, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}"/>
+                                />
+                        <!--Text="{Binding EquipmentInfo, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}"-->
                     </Grid>
                     <Button Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" 
                             BorderBrush="Transparent" Background="Transparent" HorizontalAlignment="Right" FontSize="22" Click="_Cancel" 
