@@ -897,6 +897,7 @@ namespace Front
 
         private void _ButtonPayment(object sender, RoutedEventArgs e)
         {
+            EquipmentStatusInPayment.Text = "";
             if (Global.TypeWorkplace == eTypeWorkplace.СashRegister)
                 SetStateView(eStateMainWindows.ChoicePaymentMethod);
             else

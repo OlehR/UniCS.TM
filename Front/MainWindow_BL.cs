@@ -42,10 +42,12 @@ namespace Front
                 {
                     PosStatus PS = info as PosStatus;
                     if (PS != null)
-                        EquipmentInfo = PS.Status.GetDescription();
+                        EquipmentStatusInPayment.Text = PS.Status.GetDescription(); //TMP - не працює через гетер
+                    //EquipmentInfo = PS.Status.GetDescription();
                     RroStatus rroStatus = info as RroStatus;
                     if (rroStatus != null)
-                        EquipmentInfo = rroStatus.Status.GetDescription();
+                        EquipmentStatusInPayment.Text = rroStatus.Status.GetDescription();//TMP - не працює через гетер
+                    //EquipmentInfo = rroStatus.Status.GetDescription();
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EquipmentInfo"));
                 }));
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"SetStatus ({info.ToJSON()})", eTypeLog.Expanded);
