@@ -334,9 +334,14 @@ namespace Front
             try
             {
                 r = Terminal?.Purchase(pSum);
-                LogRRO d = new(pIdR)
-                { TypeOperation = eTypeOperation.SalePOS, TypeRRO = "Ingenico", JSON = r.ToJSON(), TextReceipt = r.Receipt == null ? null : string.Join(Environment.NewLine, r.Receipt) };
-                Bl.InsertLogRRO(d);
+                if (r.IsSuccess)
+                {
+                    LogRRO d = new(pIdR)
+                    { TypeOperation = eTypeOperation.SalePOS, TypeRRO = "Ingenico", JSON = r.ToJSON(), TextReceipt = r.Receipt == null ? null : string.Join(Environment.NewLine, r.Receipt) };
+                    Bl.InsertLogRRO(d);
+                    r.SetIdReceipt(pIdR);
+                    Bl.db.ReplacePayment(new List<Payment>() { r });
+                }               
             }
             catch (Exception e)
             {
@@ -357,9 +362,14 @@ namespace Front
             try
             {
                 r = Terminal?.Refund(pSum, pRNN);
-                LogRRO d = new(pIdR)
-                { TypeOperation = eTypeOperation.Refund, TypeRRO = "Ingenico", JSON = r.ToJSON(), TextReceipt = r.Receipt == null ? null : string.Join(Environment.NewLine, r.Receipt) };
-                Bl.InsertLogRRO(d);
+                if (r.IsSuccess)
+                {
+                    LogRRO d = new(pIdR)
+                    { TypeOperation = eTypeOperation.Refund, TypeRRO = "Ingenico", JSON = r.ToJSON(), TextReceipt = r.Receipt == null ? null : string.Join(Environment.NewLine, r.Receipt) };
+                    Bl.InsertLogRRO(d);
+                    r.SetIdReceipt(pIdR);
+                    Bl.db.ReplacePayment(new List<Payment>() { r });
+                }
             }
             catch (Exception e)
             {

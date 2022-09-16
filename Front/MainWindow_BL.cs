@@ -438,25 +438,17 @@ namespace Front
                 SetStateView(eStateMainWindows.ProcessPay);
                 var pay =R.TypeReceipt==eTypeReceipt.Sale? EF.PosPurchase(R,sum): EF.PosRefund(R,sum, R.AdditionC1);
 
-                if (pay != null)
+                if (pay != null && pay.IsSuccess)
                 {
-                    pay.SetIdReceipt(R);
-                    Bl.db.ReplacePayment(new List<Payment>() { pay });
-                    if (pay.IsSuccess)
-                    {
-                        R.StateReceipt = eStateReceipt.Pay;
-                        R.CodeCreditCard = pay.NumberCard;
-                        R.NumberReceiptPOS = pay.NumberReceipt;
-                        //R.Client = null;
-                        R.SumCreditCard = pay.SumPay;
-                        Bl.db.ReplaceReceipt(R);
-                        
-                       // Bl.SetStateReceipt(curReceipt, eStateReceipt.Pay);
-                       // R.StateReceipt = eStateReceipt.Pay;
-                        R.Payment = new List<Payment>() { pay };
-                    }
+                    R.StateReceipt = eStateReceipt.Pay;
+                    R.CodeCreditCard = pay.NumberCard;
+                    R.NumberReceiptPOS = pay.NumberReceipt;
+                    //R.Client = null;
+                    R.SumCreditCard = pay.SumPay;
+                    Bl.db.ReplaceReceipt(R);
+                    R.Payment = new List<Payment>() { pay };
                 }
-                if(pay == null || !pay.IsSuccess)
+                else                
                 {
                     SetStateView(eStateMainWindows.WaitInput);
                     R.StateReceipt = eStateReceipt.Prepare;

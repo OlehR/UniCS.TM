@@ -142,7 +142,7 @@ namespace Front.Equipments
                 else
                     FiscalNumber=Fp700.ReturnReceipt(d);
                 pR.NumberReceipt = FiscalNumber;
-                return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, TypeRRO = "RRO_FP700", FiscalNumber = FiscalNumber, SUM = pR.SumReceipt };
+                return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, TypeRRO = "RRO_FP700", FiscalNumber = FiscalNumber, SUM = pR.SumReceipt-pR.SumBonus, };
             }
             catch (Exception e)            
             {
