@@ -166,6 +166,7 @@ namespace Front
             MW.DTAdminSSC = DateTime.Now;
             MW.Bl.db.SetConfig<DateTime>("DateAdminSSC", DateTime.Now);
             MW.Bl.db.SetConfig<string>("CodeAdminSSC", AdminUser.BarCode);
+            MW.Bl.StartWork(Global.IdWorkPlace, AdminUser.BarCode);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClosedShift"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("NameAdminUserOpenShift"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DataOpenShift"));
@@ -176,6 +177,7 @@ namespace Front
         {
             MW.AdminSSC = null;
             MW.Bl.db.SetConfig<string>("CodeAdminSSC", string.Empty);
+            MW.Bl.StoptWork(Global.IdWorkPlace);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClosedShift"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("NameAdminUserOpenShift"));
             //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DataOpenShift"));

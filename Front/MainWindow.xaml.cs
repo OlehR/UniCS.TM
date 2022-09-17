@@ -261,8 +261,6 @@ namespace Front
 
             }
 
-
-
             ua.Tag = new CultureInfo("uk");
             en.Tag = new CultureInfo("en");
             hu.Tag = new CultureInfo("hu");
