@@ -335,13 +335,14 @@ namespace Front
             {
                 r = Terminal?.Purchase(pSum);
                 if (r.IsSuccess)
-                {
+                {                   
                     LogRRO d = new(pIdR)
                     { TypeOperation = eTypeOperation.SalePOS, TypeRRO = "Ingenico", JSON = r.ToJSON(), TextReceipt = r.Receipt == null ? null : string.Join(Environment.NewLine, r.Receipt) };
                     Bl.InsertLogRRO(d);
                     r.SetIdReceipt(pIdR);
                     Bl.db.ReplacePayment(new List<Payment>() { r });
-                }               
+                }
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"(pIdR=>{pIdR.ToJSON()},pSum={pSum})=>{r.ToJSON()}",eTypeLog.Expanded);
             }
             catch (Exception e)
             {
@@ -369,6 +370,7 @@ namespace Front
                     Bl.InsertLogRRO(d);
                     r.SetIdReceipt(pIdR);
                     Bl.db.ReplacePayment(new List<Payment>() { r });
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"(pIdR=>{pIdR.ToJSON()},pSum={pSum})=>{r.ToJSON()}", eTypeLog.Expanded);
                 }
             }
             catch (Exception e)

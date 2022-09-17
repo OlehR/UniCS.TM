@@ -453,24 +453,24 @@ namespace ModelMID
             return true;
         }
 
-        /*string OldpMetod = string.Empty, OldpMessage =string.Empty;
+        string OldpMetod = string.Empty, OldpMessage =string.Empty;
         eStateScale OldStateScale=eStateScale.NotDefine;
         double OldBeforeWeight= -999999d;
         double OldСurrentlyWeight= -999999d;
-        */
+        
         public void OnScalesLog(string pMetod, string pMessage =null)
         {
-            /*if (OldStateScale != StateScale || OldBeforeWeight != BeforeWeight || OldСurrentlyWeight != СurrentlyWeight || 
+            if (OldStateScale != StateScale || OldBeforeWeight != BeforeWeight || OldСurrentlyWeight != СurrentlyWeight || 
                 string.Compare(OldpMetod,pMetod)==0 || string.Compare(OldpMessage, pMessage) ==0)
-            {*/
+            {
                 FileLogger.WriteLogMessage(this, pMetod, $" StateScale=>{StateScale} BeforeWeight=>{BeforeWeight} СurrentlyWeight=>{СurrentlyWeight} {pMessage}");
 
-            /*   OldpMetod = pMetod;
+               OldpMetod = pMetod;
                OldpMessage = pMessage;
                OldStateScale = StateScale;
                OldBeforeWeight = BeforeWeight;
                OldСurrentlyWeight = СurrentlyWeight;
-           }*/
+           }
 
 
         }

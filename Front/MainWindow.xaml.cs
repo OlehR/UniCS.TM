@@ -486,7 +486,7 @@ namespace Front
                             if (CurWares != null && CurWares.Prices != null && CurWares.Prices.Count() > 0)
                             {
                                 var rrr = new ObservableCollection<Models.Price>(CurWares.Prices.OrderByDescending(r => r.Price).Select(r => new Models.Price(r.Price, Access.GetRight(TypeAccessWait), r.TypeWares)));
-                                //rrr.First().IsEnable = true;
+                                rrr.First().IsEnable = true;
                                 Prices.ItemsSource = rrr;//new ObservableCollection<Price>(rr);
                             }
                             Background.Visibility = Visibility.Visible;
@@ -933,9 +933,10 @@ namespace Front
                     TextBlock Tb = btn.Content as TextBlock;
                     if (Tb != null)
                     {
+                        if (price.IsConfirmAge)
+                            Bl.AddEventAge(curReceipt);
                         AddWares(CurWares.CodeWares, CurWares.CodeUnit, QuantityCigarettes, price.price);
-                        QuantityCigarettes = 1;
-                        Bl.AddEventAge(curReceipt);
+                        QuantityCigarettes = 1;                       
                     }
                 }
             }

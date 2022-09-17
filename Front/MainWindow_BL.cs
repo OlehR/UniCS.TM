@@ -285,7 +285,10 @@ namespace Front
                     break;
                 case eTypeAccess.ChoicePrice:
                     foreach (Models.Price el in Prices.ItemsSource)
+                    {
                         el.IsEnable = true;
+                        el.IsConfirmAge = true;
+                    }
                     TypeAccessWait = eTypeAccess.NoDefine;
                     break;
                 case eTypeAccess.AddNewWeight:
@@ -418,6 +421,8 @@ namespace Front
         {           
             var R = Bl.GetReceiptHead(pR??curReceipt, true);
             curReceipt = R;
+            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name,$"{curReceipt.ToJSON()}" , eTypeLog.Expanded);
+
             // Програмування артикулів. Жахливий баг якщо передавати R.Wares
             var RR = Bl.db.ViewReceiptWares(R);
             EF.ProgramingArticleAsync(RR);
@@ -435,6 +440,7 @@ namespace Front
                 R.StateReceipt = eStateReceipt.StartPay;
                 Bl.SetStateReceipt(curReceipt, eStateReceipt.StartPay);
                 decimal sum = R.Wares.Sum(r => (r.SumTotal)); //TMP!!!Треба переробити
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Sum={sum}", eTypeLog.Expanded);
                 SetStateView(eStateMainWindows.ProcessPay);
                 var pay =R.TypeReceipt==eTypeReceipt.Sale? EF.PosPurchase(R,sum): EF.PosRefund(R,sum, R.AdditionC1);
 
@@ -531,7 +537,8 @@ namespace Front
             curReceipt = Bl.GetNewIdReceipt();
             s.NewReceipt(curReceipt.CodeReceipt);
             Dispatcher.BeginInvoke(new ThreadStart(() => { ShowClientBonus.Visibility = Visibility.Collapsed; }));
+            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"{curReceipt.ToJSON()}");
         }
-   
+
     }
 }

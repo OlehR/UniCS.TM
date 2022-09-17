@@ -19,6 +19,7 @@ namespace Front.Models
         public decimal price { get; set; }
         public string StrPrice { get { return $"{price.ToString("n2", CultureInfo.InvariantCulture)} ₴"; } }
         public bool IsEnable { get; set; }
+        public bool IsConfirmAge { get; set; } = false;
         public Brush BackGroundColor
         {
             get
