@@ -14,7 +14,8 @@ SELECT CODE_GROUP_WARES AS CodeGroupWares,CODE_PARENT_GROUP_WARES AS CodeParentG
 [SqlGetDimWares]
 SELECT w.code_wares AS CodeWares, w.name_wares AS NameWares, w.code_group AS CodeGroup
 		, CASE WHEN W.ARTICL='' OR W.ARTICL IS NULL THEN '-'+W.code_wares ELSE W.ARTICL END  AS Articl
-		, w.code_unit AS CodeUnit, w.VAT AS PercentVat , w.VAT_OPERATION AS TypeVat, w.code_brand AS CodeBrand,Type_wares as TypeWares
+		, w.code_unit AS CodeUnit, w.VAT AS PercentVat , w.VAT_OPERATION AS TypeVat, w.code_brand AS CodeBrand
+        ,CASE WHEN  Type_wares=2 AND  w.Code_Direction='000147850' THEN 4 ELSE Type_wares  END  as TypeWares
 		,Weight_Brutto as WeightBrutto 
   --,Weight_Fact as WeightFact_
   ,CASE WHEN @CodeWarehouse<>9  AND Weight_Fact<0 AND Code_Direction=000160565 THEN -1 ELSE CASE WHEN Weight_Fact<0 and Weight_Fact<>-1 THEN -Weight_Fact ELSE Weight_Fact END end AS WeightFact
