@@ -78,6 +78,11 @@ namespace Front
                         {
                             IsDel = true;             
                         }
+
+                        if (pReceipt.GetLastWares!=null)
+                        { 
+                            EF.ProgramingArticleAsync(new List<ReceiptWares>() { pReceipt.GetLastWares } );
+                        }
                     }
                    // if (curReceipt?.Wares?.Count() == 0 && curReceipt.OwnBag==0d) CS.WaitClear();
 
@@ -431,15 +436,14 @@ namespace Front
                     SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ConfirmAge);
                     return true;
                 }
-            // Програмування артикулів. Жахливий баг якщо передавати R.Wares
-            var RR = Bl.db.ViewReceiptWares(R);
-            EF.ProgramingArticleAsync(RR);
+
 
             lock (LockPayPrint)
             {
 
                 if (R.StateReceipt == eStateReceipt.Prepare)
                 {
+
                     try
                     {
                         if (R.TypeReceipt == eTypeReceipt.Sale)
