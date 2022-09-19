@@ -88,7 +88,7 @@ namespace ModelMID
 
         public string CodeCreditCard { get; set; }
         public string NumberSlip { get; set; }
-        public long    NumberReceiptPOS { get; set; }
+        public long NumberReceiptPOS { get; set; }
 
         public DateTime DateCreate { get; set; }
         public long UserCreate { get; set; }
@@ -226,23 +226,25 @@ namespace ModelMID
         /// <summary>
         /// Вага власної сумки.
         /// </summary>
-        public double OwnBag { get { return ReceiptEvent?.Sum(r=> Convert.ToDouble(r.ProductConfirmedWeight))??0d; } }
+        public double OwnBag { get { return ReceiptEvent?.Sum(r => Convert.ToDouble(r.ProductConfirmedWeight)) ?? 0d; } }
 
-        public List<string> ReceiptComments {
-            get 
+        public List<string> ReceiptComments
+        {
+            get
             {
                 List<string> Res = new List<string>() { NumberReceipt1C };
-                if(Client!=null)
+                if (Client != null)
                 {
                     if (!string.IsNullOrEmpty(Client.NameClient))
                         Res.Add(Client.NameClient);
-                    if(Client.SumBonus>0)
+                    if (Client.SumBonus > 0)
                         Res.Add($"Бонуси:{Client.SumBonus}");
-                    if (Client.Wallet>0)
+                    if (Client.Wallet > 0)
                         Res.Add($"Скарбничка:{Client.Wallet}");
                 }
                 return Res;
 
             }
+        }
     }
 }
