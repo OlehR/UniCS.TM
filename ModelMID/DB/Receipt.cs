@@ -34,6 +34,10 @@ namespace ModelMID
         public Client Client { get; set; }
         public int CodePattern { get; set; }
         public ulong NumberCashier { get; set; }
+        /// <summary>
+        /// Назва касира необхідно для друку на чеку.
+        /// </summary>
+        public string NameCashier { get; set; }
 
         /// <summary>
         /// 0- готується,1- оплачено,2- фіскалізовано,3 - Send
@@ -224,5 +228,21 @@ namespace ModelMID
         /// </summary>
         public double OwnBag { get { return ReceiptEvent?.Sum(r=> Convert.ToDouble(r.ProductConfirmedWeight))??0d; } }
 
+        public List<string> ReceiptComments {
+            get 
+            {
+                List<string> Res = new List<string>() { NumberReceipt1C };
+                if(Client!=null)
+                {
+                    if (!string.IsNullOrEmpty(Client.NameClient))
+                        Res.Add(Client.NameClient);
+                    if(Client.SumBonus>0)
+                        Res.Add($"Бонуси:{Client.SumBonus}");
+                    if (Client.Wallet>0)
+                        Res.Add($"Скарбничка:{Client.Wallet}");
+                }
+                return Res;
+
+            }
     }
 }

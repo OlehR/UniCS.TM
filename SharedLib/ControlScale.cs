@@ -324,7 +324,8 @@ namespace ModelMID
         /// <param name="pIsStable">Чи платформа стабільна</param>
         public void OnScalesData(double pWeight, bool pIsStable)
         {          
-            if(BeforeFullWeight!= curFullWeight || curFullWeight != pWeight)
+            // не записуємо в лог якщо зміни не значні.
+            if(Math.Abs(curFullWeight - pWeight)>3)
                 OnScalesLog("OnScalesData", $"Weight=>{pWeight} isStable=>{pIsStable}");
             // !!! Ідея не вдала. Після стабілізації ваги пропускаємо кілька подій Оскільки контрольна вага бреше щодо pIsStable
             /*   if ((DateTime.Now - LastStabilized).TotalSeconds < 600)

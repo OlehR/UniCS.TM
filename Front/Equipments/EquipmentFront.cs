@@ -270,7 +270,7 @@ namespace Front
             }
             catch (Exception e)
             {
-                FileLogger.WriteLogMessage($"EquipmentFront Exception => Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace}", eTypeLog.Error);
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
                 State = eStateEquipment.Error;
             }
         }

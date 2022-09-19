@@ -137,8 +137,11 @@ namespace Front.Equipments
             string FiscalNumber=null;
             try
             {
+                List<ReceiptText> Comments=null;
+                if(pR?.ReceiptComments?.Count()>0)
+                  Comments = pR.ReceiptComments.Select(r => new ReceiptText() { Text = r, RenderType = RenderAs.Text }).ToList();
                 var d = GetReceiptViewModel(pR);
-                if (pR.TypeReceipt == eTypeReceipt.Sale) FiscalNumber=Fp700.PrintReceipt(d);
+                if (pR.TypeReceipt == eTypeReceipt.Sale) FiscalNumber=Fp700.PrintReceipt(d, Comments);
                 else
                     FiscalNumber=Fp700.ReturnReceipt(d);
                 pR.NumberReceipt = FiscalNumber;
@@ -193,6 +196,7 @@ namespace Front.Equipments
                 return new StatusEquipment() { State= -1, TextState = e.Message};
             }
         }
+        
         public override string GetDeviceInfo() 
         {
             try
@@ -235,7 +239,7 @@ namespace Front.Equipments
                 CustomerId = new Client(receiptMID.CodeClient).ClientId,
                 CreatedAt = receiptMID.DateCreate,
                 UpdatedAt = receiptMID.DateReceipt,
-
+                
                 //ReceiptItems=
                 //Customer /// !!!TMP Модель клієнта
                 //PaymentInfo
@@ -256,8 +260,9 @@ namespace Front.Equipments
             if (receiptMID.ReceiptEvent != null && receiptMID.ReceiptEvent.Count() > 0)
                 Res.ReceiptEvents = receiptMID.ReceiptEvent.Select(r => GetReceiptEvent(r)).ToList();
             Res.Customer = GetCustomerViewModelByClient(receiptMID.Client);
+            Res.Cashier = receiptMID.NameCashier;
            // if (pIsDetail) !!!!TMP
-              //  Bl.GenQRAsync(receiptMID.Wares);
+           //  Bl.GenQRAsync(receiptMID.Wares);
             return Res;
         }
 
@@ -775,21 +780,20 @@ namespace Front.Equipments.FP700
 
 
 
-        public string PrintReceipt(ReceiptViewModel receipt)
+        public string PrintReceipt(ReceiptViewModel receipt, List<ReceiptText> Comments=null)
         {
             this.ObliterateFiscalReceipt();
             string s = this.GetLastReceiptNumber();
-            ILogger<Fp700> logger1 = this._logger;
-            if (logger1 != null)
-                logger1.LogDebug("{START_PRINTING}");
-            ILogger<Fp700> logger2 = this._logger;
-            if (logger2 != null)
-                logger2.LogDebug("{LAST_RECEIPTNUMBER}" + s);
+            
+                _logger?.LogDebug("{START_PRINTING}");
+                _logger?.LogDebug("{LAST_RECEIPTNUMBER}" + s);
             if (string.IsNullOrEmpty(s))
                 s = "0";
             int result1;
             int.TryParse(s, out result1);
             this.OpenReceipt(receipt);
+            if(Comments!=null && Comments.Count()>0)
+                PrintFiscalComments(Comments);
             this.FillUpReceiptItems(receipt.ReceiptItems);
             if (!this.PayReceipt(receipt))
             {
@@ -874,16 +878,14 @@ namespace Front.Equipments.FP700
                 int num2 = this.OnSynchronizeWaitCommandResult(Command.RegisterProductInReceiptWithDisplay, data, (Action<string>)(res => { })) ? 1 : 0;
                 string errCode = string.Empty;
                 this.OnSynchronizeWaitCommandResult(Command.GetLastError, onResponseCallback: ((Action<string>)(res => errCode = res)));
-                ILogger<Fp700> logger = this._logger;
-                if (logger != null)
-                    logger.LogDebug("[ FP700 ] FillUpItemLastCode: " + errCode);
+                _logger?.LogDebug("[ FP700 ] FillUpItemLastCode: " + errCode);
                 if (num2 == 0)
                     throw new Exception("Registed product in receipt");
             }
             return true;
         }
 
-        public bool PrintFiscalComments(List<IReceiptText> comments)
+        public bool PrintFiscalComments(List<ReceiptText> comments)
         {
             foreach (ReceiptText comment in comments)
             {
