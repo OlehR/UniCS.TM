@@ -441,8 +441,29 @@ namespace ModelMID
                     OnStateScale?.Invoke(_StateScale, RW, СurrentlyWeight);
                 //StateScale = eStateScale.NotDefine;
             }
+
+
+            //Не переходимо в BadWeight з Stabilized протягом 400 мC 
+            if (NewStateScale == eStateScale.Stabilized)
+                DTBadWeight = DateTime.MinValue;
+
+            if (StateScale == eStateScale.Stabilized && NewStateScale == eStateScale.BadWeight)
+            {
+                if (DTBadWeight == DateTime.MinValue)
+                {
+                    DTBadWeight = DateTime.Now;
+                    NewStateScale = eStateScale.Stabilized;
+                }
+                else
+                {
+                    if ((DateTime.Now - DTBadWeight).TotalMilliseconds < 400)
+                        NewStateScale = eStateScale.Stabilized;
+                }
+            }
+
             StateScale = NewStateScale;
         }
+        DateTime DTBadWeight= DateTime.MinValue;
 
         public bool WaitClear(double pOwnBag=0d)
         {
