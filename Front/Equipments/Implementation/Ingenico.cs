@@ -1542,15 +1542,15 @@ namespace Front.Equipments.Ingenico
         }
 
 
-        public async Task<BatchTotals> GetXZ(bool IsX=true)
+        public async Task<BatchTotals> GetXZ(bool IsX = true)
         {
             if (!this.StartBPOS())
                 return (BatchTotals)null;
-            if(IsX)
+            if (IsX)
                 _bpos1LibClass.PrintBatchTotals(this.merchantId);
             else
-            _bpos1LibClass.Settlement(this.merchantId);
-            this.WaitResponse();            
+                _bpos1LibClass.Settlement(this.merchantId);
+            this.WaitResponse();
             BatchTotals batchTotals = new BatchTotals()
             {
                 DebitCount = _bpos1LibClass.TotalsDebitNum,
@@ -1558,10 +1558,10 @@ namespace Front.Equipments.Ingenico
                 CreditCount = _bpos1LibClass.TotalsCreditNum,
                 CreditSum = _bpos1LibClass.TotalsCreditAmt,
                 CencelledCount = _bpos1LibClass.TotalsCancelledNum,
-                CencelledSum = _bpos1LibClass.TotalsCancelledAmt,      
+                CencelledSum = _bpos1LibClass.TotalsCancelledAmt,
             };
             batchTotals.Receipt = GetLastReceipt(false);
-            StopBPOS();
+            //StopBPOS();
             return batchTotals;
         }
 

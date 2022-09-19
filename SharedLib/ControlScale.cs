@@ -323,19 +323,20 @@ namespace ModelMID
         /// <param name="pWeight">Власне вага</param>
         /// <param name="pIsStable">Чи платформа стабільна</param>
         public void OnScalesData(double pWeight, bool pIsStable)
-        {
-          
+        {          
             if(BeforeFullWeight!= curFullWeight || curFullWeight != pWeight)
-                OnScalesLog("OnScalesData", $"weight=>{pWeight} isStable=>{pIsStable}");
+                OnScalesLog("OnScalesData", $"Weight=>{pWeight} isStable=>{pIsStable}");
             // !!! Ідея не вдала. Після стабілізації ваги пропускаємо кілька подій Оскільки контрольна вага бреше щодо pIsStable
-         /*   if ((DateTime.Now - LastStabilized).TotalSeconds < 600)
-            {
-                OnScalesLog("OnScalesData", "Skip after stabilizate");
-                return;
-            }*/
-
+            /*   if ((DateTime.Now - LastStabilized).TotalSeconds < 600)
+               {
+                   OnScalesLog("OnScalesData", "Skip after stabilizate");
+                   return;
+               }*/
+            //Сподіваюсь ця буде вдаліша.
+            if (!pIsStable && Math.Abs(curFullWeight - pWeight) <= 3)
+                pIsStable = true;
+                            
             curFullWeight = pWeight;
-
             eStateScale NewStateScale = StateScale;
 
             //(pWeight, pIsStable) = MidlWeight.AddValue(pWeight, pIsStable);
@@ -461,7 +462,7 @@ namespace ModelMID
         public void OnScalesLog(string pMetod, string pMessage =null)
         {
             if (OldStateScale != StateScale || OldBeforeWeight != BeforeWeight || OldСurrentlyWeight != СurrentlyWeight || 
-                string.Compare(OldpMetod,pMetod)==0 || string.Compare(OldpMessage, pMessage) ==0)
+                string.Compare(OldpMetod,pMetod)!=0 || string.Compare(OldpMessage, pMessage) !=0)
             {
                 FileLogger.WriteLogMessage(this, pMetod, $" StateScale=>{StateScale} BeforeWeight=>{BeforeWeight} СurrentlyWeight=>{СurrentlyWeight} {pMessage}");
 

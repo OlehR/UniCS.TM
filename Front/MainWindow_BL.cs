@@ -315,7 +315,7 @@ namespace Front
 
         public void GetBarCode(string pBarCode, string pTypeBarCode)
         {
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"(pBarCode=>{pBarCode},  pTypeBarCode=>{pTypeBarCode}");
+            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"(pBarCode=>{pBarCode},  pTypeBarCode=>{pTypeBarCode})");
             if (State == eStateMainWindows.StartWindow)
                 SetStateView(eStateMainWindows.WaitInput);
 
