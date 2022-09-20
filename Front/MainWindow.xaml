@@ -1158,7 +1158,7 @@
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
                  Grid.Column="0" Grid.ColumnSpan="6"
-                 Name="WaitPayment" Visibility="Collapsed" Grid.ZIndex="2" 
+                 Name="WaitPayment" Visibility="Visible" Grid.ZIndex="2" 
                 CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
@@ -1196,7 +1196,7 @@
                                 Text="{DynamicResource AmountPayment}"/>
                         <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28" 
                                 Grid.Column="1"  Grid.Row="0"
-                                Text="{Binding MoneySum, RelativeSource={RelativeSource 
+                                Text="{Binding MoneySum, StringFormat=0.00₴, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}"/>
                         <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28" 
                                 Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="1"
