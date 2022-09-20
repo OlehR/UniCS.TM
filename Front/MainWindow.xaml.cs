@@ -1359,6 +1359,11 @@ namespace Front
             SetStateView(eStateMainWindows.WaitOwnBag);
         }
 
+        private void CancelPayment(object sender, RoutedEventArgs e)
+        {
+            //MessageBox.Show("Прихована кнопка відміни оплати");
+            EF.PosCancel();
+        }
     }
 
 }
