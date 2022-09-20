@@ -428,10 +428,17 @@ namespace Front
         }
 
         /// <summary>
-        /// Статус банківського термінала (Очікуєм карточки, Очікуєм підтвердження і ТД) 
+        /// Скасування оплати.
         /// </summary>
-        /// <param name="ww"></param>
-        void PosStatus(StatusEquipment ww)
+        public void PosCancel()
+        {
+            Terminal.Cancel();
+        }
+            /// <summary>
+            /// Статус банківського термінала (Очікуєм карточки, Очікуєм підтвердження і ТД) 
+            /// </summary>
+            /// <param name="ww"></param>
+            void PosStatus(StatusEquipment ww)
         {
             if (ww is PosStatus status)
             {

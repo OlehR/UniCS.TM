@@ -77,6 +77,11 @@ namespace Front.Equipments
             return EquipmentIngenico.GetInfoSync();
         }
 
+        public override void Cancel() 
+        { 
+            EquipmentIngenico.Cancel();
+        }
+
         Payment PaymentResultModelToPayment(PaymentResultModel pRP, ModelMID.eTypePay pTypePay = ModelMID.eTypePay.Card)
         {
             return new Payment()

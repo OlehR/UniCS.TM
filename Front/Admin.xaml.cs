@@ -118,12 +118,18 @@ namespace Front
         }
         private void POS_X_Click(object sender, RoutedEventArgs e)
         {
-            EF.PosPrintX();           
+            var task = Task.Run(() =>
+            {
+                EF.PosPrintX();
+            });
         }
 
         private void POS_Z_Click(object sender, RoutedEventArgs e)
         {
-            EF.PosPrintZ();            
+            var task = Task.Run(() =>
+            {
+                EF.PosPrintZ();
+            });
         }
 
         private void POS_X_Copy_Click(object sender, RoutedEventArgs e)

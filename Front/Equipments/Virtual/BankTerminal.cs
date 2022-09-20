@@ -24,7 +24,7 @@ namespace Front.Equipments
 
         public virtual IEnumerable<string> GetLastReceipt() { throw new NotImplementedException(); }
 
-        
+        public virtual void Cancel() { throw new NotImplementedException(); }
 
         protected void SetStatus(eStatusPos pStatus)
         {
