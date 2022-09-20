@@ -451,7 +451,7 @@ namespace Front
         {
             if (ww is PosStatus status)
             {
-                SetStatus?.Invoke(new StatusEquipment(Terminal.Model, status.Status.GetStateEquipment(), $"{status.TextState} {status.Status}"));
+                SetStatus?.Invoke( ww /*new StatusEquipment(Terminal.Model, status.Status.GetStateEquipment(), $"{status.TextState} {status.Status.GetDescription}")*/);
                 FileLogger.WriteLogMessage($"EquipmentFront.PosStatus {Terminal.Model} {status.TextState} {status.Status}");
             }
         }

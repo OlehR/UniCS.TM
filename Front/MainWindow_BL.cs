@@ -34,20 +34,28 @@ namespace Front
                 CS.OnScalesData(pWeight, pIsStable);
             };
 
-            EF.OnWeight += (pWeight, pIsStable) => { Weight = pWeight/1000; };
+            EF.OnWeight += (pWeight, pIsStable) => { Weight = pWeight / 1000; };
 
             EF.SetStatus += (info) =>
             {
                 var r = Dispatcher.BeginInvoke(new ThreadStart(() =>
                 {
                     PosStatus PS = info as PosStatus;
+                    //if (info.TypeEquipment == eTypeEquipment.BankTerminal || info.TypeEquipment == eTypeEquipment.RRO)
+                    //{
+                    //info.Status
+                    //}
+                    //EquipmentStatusInPayment.Text = PS.Status.GetDescription(); //TMP - не працює через гетер
                     if (PS != null)
-                        EquipmentStatusInPayment.Text = PS.Status.GetDescription(); //TMP - не працює через гетер
+                        EquipmentStatusInPayment.Text = PS.Status.GetDescription();
                     //EquipmentInfo = PS.Status.GetDescription();
-                    RroStatus rroStatus = info as RroStatus;
-                    if (rroStatus != null)
-                        EquipmentStatusInPayment.Text = rroStatus.Status.GetDescription();//TMP - не працює через гетер
-                    //EquipmentInfo = rroStatus.Status.GetDescription();
+                    else
+                    {
+                        RroStatus rroStatus = info as RroStatus;
+                        if (rroStatus != null)
+                            EquipmentStatusInPayment.Text = rroStatus.Status.GetDescription();//TMP - не працює через гетер
+                                                                                              //EquipmentInfo = rroStatus.Status.GetDescription();
+                    }
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EquipmentInfo"));
                 }));
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"SetStatus ({info.ToJSON()})", eTypeLog.Expanded);
@@ -76,15 +84,15 @@ namespace Front
                         //Видалили товар але список не пустий.
                         if ((lw == null || lw.Count() == 0) && CurWares != null && curReceipt != null && curReceipt.Wares != null && curReceipt.Wares.Any() && curReceipt.Equals(CurWares))
                         {
-                            IsDel = true;             
+                            IsDel = true;
                         }
 
-                        if (pReceipt.GetLastWares!=null)
-                        { 
-                            EF.ProgramingArticleAsync(new List<ReceiptWares>() { pReceipt.GetLastWares } );
+                        if (pReceipt.GetLastWares != null)
+                        {
+                            EF.ProgramingArticleAsync(new List<ReceiptWares>() { pReceipt.GetLastWares });
                         }
                     }
-                   // if (curReceipt?.Wares?.Count() == 0 && curReceipt.OwnBag==0d) CS.WaitClear();
+                    // if (curReceipt?.Wares?.Count() == 0 && curReceipt.OwnBag==0d) CS.WaitClear();
 
                     CS.StartWeightNewGoogs(curReceipt, IsDel ? CurWares : null);
                 }
@@ -132,7 +140,7 @@ namespace Front
             Global.OnClientChanged += (pClient, pIdWorkPlace) =>
             {
                 Client = pClient;
-                
+
                 var r = Dispatcher.BeginInvoke(new ThreadStart(() =>
                 {
                     NumericPad.Visibility = Visibility.Collapsed;
@@ -143,7 +151,7 @@ namespace Front
                         ShowClientBonus.Visibility = Visibility.Visible;
                     }
                 }
-                ));             
+                ));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClientName"));
                 if (Client.BirthDay > new DateTime(1990, 1, 1))
                     if (Client.BirthDay.AddYears(18).Date <= DateTime.Now.Date)
@@ -154,11 +162,11 @@ namespace Front
 
             Bl.OnAdminBarCode += (pUser) =>
             {
-                if (TypeAccessWait > 0 )//TypeAccessWait != eTypeAccess.NoDefinition 
+                if (TypeAccessWait > 0)//TypeAccessWait != eTypeAccess.NoDefinition 
                 {
                     SetConfirm(pUser);
                     return;
-                }           
+                }
 
                 if (Access.GetRight(pUser, eTypeAccess.AdminPanel))
                 {
@@ -178,9 +186,9 @@ namespace Front
 
             };
 
-            Bl.OnCustomWindow += (pCW) => 
-            { 
-                SetStateView(eStateMainWindows.WaitCustomWindows,eTypeAccess.NoDefine,null, pCW); 
+            Bl.OnCustomWindow += (pCW) =>
+            {
+                SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, pCW);
             };
 
             //Обробка стану контрольної ваги.
@@ -193,15 +201,15 @@ namespace Front
                 {
                     case eStateScale.WaitGoods:
                         // if (State != eStateMainWindows.BlockWeight)
-                        IsShowWeightWindows=false;
+                        IsShowWeightWindows = false;
                         SetStateView(eStateMainWindows.BlockWeight);
                         break;
-                    
+
                     case eStateScale.NotStabilized:
-                        IsShowWeightWindows=true;
+                        IsShowWeightWindows = true;
                         if ((State == eStateMainWindows.WaitAdmin && (TypeAccessWait == eTypeAccess.DelReciept || TypeAccessWait == eTypeAccess.DelWares)))
                             break;
-                        SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.FixWeight, pRW,null,eSender.ControlScale);
+                        SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.FixWeight, pRW, null, eSender.ControlScale);
                         break;
                     case eStateScale.BadWeight:
                     case eStateScale.WaitClear:
@@ -209,14 +217,14 @@ namespace Front
                         SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.FixWeight, pRW, null, eSender.ControlScale);
                         break;
                     case eStateScale.Stabilized:
-                        if (State == eStateMainWindows.WaitWeight || State == eStateMainWindows.BlockWeight || State == eStateMainWindows.WaitAdmin || 
-                            State == eStateMainWindows.ProcessPrintReceipt || State == eStateMainWindows.ProcessPay )
-                            SetStateView(eStateMainWindows.WaitInput, eTypeAccess.NoDefine, null,null, eSender.ControlScale);
+                        if (State == eStateMainWindows.WaitWeight || State == eStateMainWindows.BlockWeight || State == eStateMainWindows.WaitAdmin ||
+                            State == eStateMainWindows.ProcessPrintReceipt || State == eStateMainWindows.ProcessPay)
+                            SetStateView(eStateMainWindows.WaitInput, eTypeAccess.NoDefine, null, null, eSender.ControlScale);
                         if (pRW != null)
                             Bl.FixWeight(pRW);
                         break;
                 }
-                SetPropertyChanged();                
+                SetPropertyChanged();
             };
         }
 
@@ -225,7 +233,7 @@ namespace Front
             if (pUser == null)
             {
                 switch (TypeAccessWait)
-                {  
+                {
                     case eTypeAccess.DelReciept:
                     case eTypeAccess.DelWares:
                         TypeAccessWait = eTypeAccess.NoDefine;
@@ -239,18 +247,18 @@ namespace Front
             }
 
             //!!!TMP НЕ зовсім правильно треба провірити права перед розблокуванням кнопок
-           //if (pUser.TypeUser >= eTypeUser.AdminSSC && customWindow?.Buttons != null)
-               // foreach (var item in customWindow.Buttons)
-                 //   item.IsNeedAdmin = false;
+            //if (pUser.TypeUser >= eTypeUser.AdminSSC && customWindow?.Buttons != null)
+            // foreach (var item in customWindow.Buttons)
+            //   item.IsNeedAdmin = false;
 
             //IsIgnoreExciseStamp = Access.GetRight(pUser, eTypeAccess.ExciseStamp);
-            if(TypeAccessWait == eTypeAccess.FixWeight)
-               IsConfirmAdmin = Access.GetRight(pUser, eTypeAccess.FixWeight);
+            if (TypeAccessWait == eTypeAccess.FixWeight)
+                IsConfirmAdmin = Access.GetRight(pUser, eTypeAccess.FixWeight);
             else
-              if (TypeAccessWait == eTypeAccess.ExciseStamp )
+              if (TypeAccessWait == eTypeAccess.ExciseStamp)
                 IsConfirmAdmin = Access.GetRight(pUser, eTypeAccess.ExciseStamp);
 
-            
+
 
             if (TypeAccessWait == eTypeAccess.NoDefine || TypeAccessWait < 0)
                 return false;
@@ -277,8 +285,8 @@ namespace Front
                     Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
 
                     //NewReceipt(); //!!!TMP Трохи через Ж Пізніше зроблю краще.
-                    SetCurReceipt(null); 
-                    
+                    SetCurReceipt(null);
+
                     TypeAccessWait = eTypeAccess.NoDefine;
                     SetStateView(eStateMainWindows.StartWindow);
                     break;
@@ -364,12 +372,12 @@ namespace Front
             var u = Bl.GetUserByBarCode(pBarCode);
             if (u != null)
             { Bl.OnAdminBarCode?.Invoke(u); return; }
-            if( (State != eStateMainWindows.WaitInput && State != eStateMainWindows.StartWindow) ||  curReceipt?.IsLockChange==true)  
-                if(State != eStateMainWindows.ProcessPay && State!= eStateMainWindows.ProcessPrintReceipt )
+            if ((State != eStateMainWindows.WaitInput && State != eStateMainWindows.StartWindow) || curReceipt?.IsLockChange == true)
+                if (State != eStateMainWindows.ProcessPay && State != eStateMainWindows.ProcessPrintReceipt)
                     SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.AdminPanel);
 
         }
-      
+
         public void AddWares(int pCodeWares, int pCodeUnit = 0, decimal pQuantity = 0m, decimal pPrice = 0m, GW pGV = null)
         {
             if (pGV != null)
@@ -416,26 +424,26 @@ namespace Front
                     IsPrises(pQuantity, pPrice);
                 }
             }
-        }              
+        }
 
         object LockPayPrint = new object();
         /// <summary>
         /// Безготівкова оплата і Друк чека.
         /// </summary>
         /// <returns></returns>
-        public bool PrintAndCloseReceipt(Receipt pR=null)
+        public bool PrintAndCloseReceipt(Receipt pR = null)
         {
-            
-                var R = Bl.GetReceiptHead(pR ?? curReceipt, true);
-                curReceipt = R;
-                R.NameCashier = AdminSSC?.NameUser;
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"{curReceipt.ToJSON()}", eTypeLog.Expanded);
 
-                if (R.AgeRestrict > 0 && R.IsConfirmAgeRestrict == false)
-                {
-                    SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ConfirmAge);
-                    return true;
-                }
+            var R = Bl.GetReceiptHead(pR ?? curReceipt, true);
+            curReceipt = R;
+            R.NameCashier = AdminSSC?.NameUser;
+            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"{curReceipt.ToJSON()}", eTypeLog.Expanded);
+
+            if (R.AgeRestrict > 0 && R.IsConfirmAgeRestrict == false)
+            {
+                SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ConfirmAge);
+                return true;
+            }
 
 
             lock (LockPayPrint)
@@ -472,7 +480,7 @@ namespace Front
                             Bl.SetStateReceipt(curReceipt, eStateReceipt.Prepare);
                         }
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         R.StateReceipt = eStateReceipt.Prepare;
                         Bl.SetStateReceipt(curReceipt, eStateReceipt.Prepare);
@@ -533,13 +541,13 @@ namespace Front
                     {
                         R.StateReceipt = eStateReceipt.Pay;
                         Bl.SetStateReceipt(curReceipt, eStateReceipt.Pay);
-                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name,e);
+                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
                     }
                 }
                 return false;
             }
         }
-         
+
 
         void AddExciseStamp(string pES)
         {
