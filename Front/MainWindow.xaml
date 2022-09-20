@@ -1208,7 +1208,7 @@
                                    Mode=FindAncestor, AncestorType=Window}}"-->
                     </Grid>
                     <Button Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" 
-                            BorderBrush="Transparent" Background="Transparent" HorizontalAlignment="Right" FontSize="22" Click="_Cancel" 
+                            BorderBrush="Transparent" Background="Transparent" HorizontalAlignment="Right" FontSize="22" Click="CancelPayment" 
                         Height="50" Width="50" VerticalAlignment="Top">
                     </Button>
                 </Grid>
