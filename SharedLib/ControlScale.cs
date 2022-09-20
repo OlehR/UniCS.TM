@@ -325,7 +325,7 @@ namespace ModelMID
         public void OnScalesData(double pWeight, bool pIsStable)
         {          
             // не записуємо в лог якщо зміни не значні.
-            if(Math.Abs(curFullWeight - pWeight)>3)
+            if(Math.Abs(curFullWeight - pWeight)>1)
                 OnScalesLog("OnScalesData", $"Weight=>{pWeight} isStable=>{pIsStable}");
             // !!! Ідея не вдала. Після стабілізації ваги пропускаємо кілька подій Оскільки контрольна вага бреше щодо pIsStable
             /*   if ((DateTime.Now - LastStabilized).TotalSeconds < 600)
@@ -334,7 +334,7 @@ namespace ModelMID
                    return;
                }*/
             //Сподіваюсь ця буде вдаліша.
-            if (!pIsStable && Math.Abs(curFullWeight - pWeight) <= 3)
+            if (!pIsStable && Math.Abs(curFullWeight - pWeight) <= 2)
                 pIsStable = true;
                             
             curFullWeight = pWeight;
@@ -483,16 +483,16 @@ namespace ModelMID
         
         public void OnScalesLog(string pMetod, string pMessage =null)
         {
-            if (OldStateScale != StateScale || OldBeforeWeight != BeforeWeight || OldСurrentlyWeight != СurrentlyWeight || 
-                string.Compare(OldpMetod,pMetod)!=0 || string.Compare(OldpMessage, pMessage) !=0)
+           // if (OldStateScale != StateScale || OldBeforeWeight != BeforeWeight || OldСurrentlyWeight != СurrentlyWeight || 
+           //     string.Compare(OldpMetod,pMetod)!=0 || string.Compare(OldpMessage, pMessage) !=0)
             {
                 FileLogger.WriteLogMessage(this, pMetod, $" StateScale=>{StateScale} BeforeWeight=>{BeforeWeight} СurrentlyWeight=>{СurrentlyWeight} {pMessage}");
 
-               OldpMetod = pMetod;
-               OldpMessage = pMessage;
-               OldStateScale = StateScale;
-               OldBeforeWeight = BeforeWeight;
-               OldСurrentlyWeight = СurrentlyWeight;
+             //  OldpMetod = pMetod;
+             //  OldpMessage = pMessage;
+             //  OldStateScale = StateScale;
+             //  OldBeforeWeight = BeforeWeight;
+            //   OldСurrentlyWeight = СurrentlyWeight;
            }
 
 

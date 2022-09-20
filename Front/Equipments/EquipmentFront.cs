@@ -312,9 +312,18 @@ namespace Front
 
         public LogRRO PrintNoFiscalReceipt(IEnumerable<string> pR)
         {
-            var r = RRO.PrintNoFiscalReceiptAsync(pR).Result;
-            Bl.InsertLogRRO(r);
-            return r;
+            if (pR != null && pR.Count()>0)
+            try
+            {                 
+               var r = RRO?.PrintNoFiscalReceiptAsync(pR).Result;
+                Bl.InsertLogRRO(r);
+                return r;
+            }
+            catch (Exception e)
+            {
+              FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+            }
+            return null;
         }
 
         public bool ProgramingArticleAsync(IEnumerable<ReceiptWares> pRW)
@@ -381,7 +390,7 @@ namespace Front
             return r;             
         }
 
-        public BatchTotals PosPrintX()
+        public BatchTotals PosPrintX(bool IsPrint=true)
         {
             BatchTotals r = null;
             try
@@ -390,7 +399,7 @@ namespace Front
                 LogRRO d = new(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() })
                 { TypeOperation = eTypeOperation.XReportPOS, TypeRRO= "Ingenico",  JSON = r.ToJSON(), TextReceipt = r.Receipt == null ? null : string.Join(Environment.NewLine, r.Receipt) };
                 Bl.InsertLogRRO(d);
-                if (r.Receipt != null)
+                if (IsPrint && r.Receipt != null)
                     PrintNoFiscalReceipt(r.Receipt);
                 return r;               
             }
