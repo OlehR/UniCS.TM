@@ -291,6 +291,44 @@
                             <Button x:Name="CloseDay" Style="{StaticResource Default}" Content="Закриття дня"    Width="280" Click="CloseDay_Click" />
                         </StackPanel>
                     </GroupBox>
+                    <!--Інформація з пос-термінала-->
+                    <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="0" Grid.RowSpan="6"
+                Grid.Column="0" Grid.ColumnSpan="4"
+                 Name="Revision" Visibility="Collapsed" Grid.ZIndex="3" 
+                CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center"  Width="1000" Height="850">
+                        <Border.Effect>
+                            <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+                        </Border.Effect>
+
+                        <Grid >
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="0.5*"></RowDefinition>
+                                <RowDefinition Height="3*"></RowDefinition>
+                                <RowDefinition Height="100"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" HorizontalAlignment="Center" FontSize="28" Text="Деталі"/>
+                            <TextBox x:Name="RevisionText" Grid.Row="1" FontSize="28" HorizontalAlignment="Center"/>
+                            <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Button  Style="{StaticResource Default}"  FontSize="22" Click="Print" 
+                        Height="80" Width="300" Margin="10">
+                                    <TextBlock FontSize="28" Text="Друк"/>
+                                </Button>
+                                <Button  Style="{StaticResource Default}"  FontSize="22" Click="Cancel" 
+                        Height="80" Width="300" Margin="10">
+                                    <TextBlock FontSize="28" Text="{DynamicResource cancel}"/>
+                                </Button>
+                            </StackPanel>
+
+                        </Grid>
+                    </Border>
+
+                    <!--ФОН-->
+                    <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="0" Grid.RowSpan="6"
+                Grid.Column="0" Grid.ColumnSpan="6"
+                 Name="BackgroundShift" Visibility="Collapsed" Grid.ZIndex="2" 
+                Opacity="0.9"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Пристрої" >

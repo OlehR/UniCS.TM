@@ -66,7 +66,7 @@ namespace Front
 
             InitializeComponent();
 
-
+            RevisionText.Text = $"\"         Супермаркет ВОПАК          \r\n             м. Ужгород             \r\n         вул. Бестужева, 9          \r\n19/09/2022                  22:45:18\r\n      ========================      \r\n      *****[ Z - БАЛАНС ]*****      \r\n      ========================      \r\nТермінал.# 50603263           B:1511\r\nМерчант.# 40600587                  \r\n      ========================      \r\n      ========================      \r\n             MasterCard             \r\nВалюта:ГРНТранзакцій:                     [27]\r\nСума:                     4836.67ГРН\r\n             Дебет:[27]             \r\n          Сума:4836.67ГРН           \r\n      ........................      \r\nПІДСУМОК:               4836.67ГРН  \r\n      ========================      \r\n                VISA                \r\nВалюта:ГРНТранзакцій:                     [15]\r\nСума:                     3513.59ГРН\r\n             Дебет:[15]             \r\n          Сума:3513.59ГРН           \r\n      ........................      \r\nПІДСУМОК:               3513.59ГРН  \r\n      ========================      \r\n      ========================      \r\n[Валюта:ГРН                        ]\r\nТранзакцій:                     [42]\r\nСума:                     8350.26ГРН\r\n      ........................      \r\nВСЬОГО:                  8350.26ГРН \r\n\r\n           TAUN177211219            \"";
             ProgramVersion.Text = $"Версія КСО: {MW.Version}";
             //поточний час
             DispatcherTimer timer = new DispatcherTimer();
@@ -122,6 +122,8 @@ namespace Front
             {
                 EF.PosPrintX();
             });
+            Revision.Visibility = Visibility.Visible;
+            BackgroundShift.Visibility = Visibility.Visible;
         }
 
         private void POS_Z_Click(object sender, RoutedEventArgs e)
@@ -466,6 +468,8 @@ namespace Front
 
         private void Cancel(object sender, RoutedEventArgs e)
         {
+            Revision.Visibility = Visibility.Collapsed;
+            BackgroundShift.Visibility = Visibility.Collapsed;
             DetailsReceiptBorder.Visibility = Visibility.Collapsed;
             BackgroundReceipts.Visibility = Visibility.Collapsed;
         }
@@ -478,6 +482,11 @@ namespace Front
                 IsShowAllReceipts = (bool)AllReceiptsCheckBox.IsChecked;
                 CollectionViewSource.GetDefaultView(ListReceipts.ItemsSource).Refresh();
             }
+
+        }
+
+        private void Print(object sender, RoutedEventArgs e)
+        {
 
         }
     }
