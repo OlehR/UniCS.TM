@@ -562,7 +562,7 @@ namespace Front
         }
 
         void NewReceipt()
-        {
+        {        
             curReceipt = Bl.GetNewIdReceipt();
             s.NewReceipt(curReceipt.CodeReceipt);
             Dispatcher.BeginInvoke(new ThreadStart(() => { ShowClientBonus.Visibility = Visibility.Collapsed; }));

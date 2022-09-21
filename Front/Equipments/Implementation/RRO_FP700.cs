@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using Front.Equipments.Virtual;
 //using ModernExpo.SelfCheckout.Devices.FP700;
-using ModernExpo.SelfCheckout.TerminalAdmin.DAL.DataControllers;
+//using ModernExpo.SelfCheckout.TerminalAdmin.DAL.DataControllers;
 using Microsoft.Extensions.Logging;
 using ModelMID.DB;
 using ModelMID;
@@ -16,7 +16,7 @@ using System.Collections.Generic;
 
 using ModernExpo.SelfCheckout.Entities.Enums;
 using ModernExpo.SelfCheckout.Entities.Models;
-using ModernExpo.SelfCheckout.TerminalAdmin.DAL;
+//using ModernExpo.SelfCheckout.TerminalAdmin.DAL;
 using ModernExpo.SelfCheckout.Utils;
 
 using ModernExpo.SelfCheckout.Entities.Enums.Device;
@@ -38,11 +38,16 @@ using Utils;
 
 //using ModernExpo.SelfCheckout.Utils;
 using Front.Equipments.FP700;
+using Dapper;
+using System.Data.SQLite;
+using ModernExpo.SelfCheckout.TerminalAdmin.DAL;
+
 namespace Front.Equipments
 {
     internal class RRO_FP700 : Rro
     {
         Fp700 Fp700;
+        Object Lock;
 
         public RRO_FP700(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment, pConfiguration, eModelEquipment.FP700, pLoggerFactory, pActionStatus)
         {
@@ -71,7 +76,10 @@ namespace Front.Equipments
         {
             try
             {
-                var res = Fp700.CopyReceipt();
+                lock (Lock)
+                {
+                    var res = Fp700.CopyReceipt();
+                }
                 return new LogRRO(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace }) { TypeOperation = eTypeOperation.CopyReceipt, TypeRRO = "RRO_FP700", FiscalNumber = Fp700.GetLastZReportNumber() };
             }
             catch (Exception e)
@@ -97,7 +105,11 @@ namespace Front.Equipments
         {
             try
             {
-                string res = Fp700.XReport();
+                string res;
+                lock (Lock)
+                {
+                    res = Fp700.XReport();
+                }
                 return new LogRRO(pIdR) { TypeOperation = eTypeOperation.XReport, TypeRRO = "RRO_FP700", FiscalNumber = Fp700.GetLastZReportNumber(), TextReceipt = res };
             }
             catch (Exception e)
@@ -117,7 +129,10 @@ namespace Front.Equipments
             try
             {
                 var d = new MoneyMovingModel() { Sum = pSum };
-                Fp700.MoneyMoving(d);
+                lock (Lock)
+                {
+                    Fp700.MoneyMoving(d);
+                }
                 return new LogRRO(pIdR) { TypeOperation = pSum > 0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyIn, TypeRRO = "RRO_FP700", FiscalNumber = Fp700.GetLastZReportNumber() };
             }
             catch (Exception e)
@@ -141,9 +156,12 @@ namespace Front.Equipments
                 if(pR?.ReceiptComments?.Count()>0)
                   Comments = pR.ReceiptComments.Select(r => new ReceiptText() { Text = r, RenderType = RenderAs.Text }).ToList();
                 var d = GetReceiptViewModel(pR);
-                if (pR.TypeReceipt == eTypeReceipt.Sale) FiscalNumber=Fp700.PrintReceipt(d, Comments);
-                else
-                    FiscalNumber=Fp700.ReturnReceipt(d);
+                lock (Lock)
+                {
+                    if (pR.TypeReceipt == eTypeReceipt.Sale) FiscalNumber = Fp700.PrintReceipt(d, Comments);
+                    else
+                        FiscalNumber = Fp700.ReturnReceipt(d);
+                }
                 pR.NumberReceipt = FiscalNumber;
                 return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, TypeRRO = "RRO_FP700", FiscalNumber = FiscalNumber, SUM = pR.SumReceipt-pR.SumBonus, };
             }
@@ -164,7 +182,10 @@ namespace Front.Equipments
         {
             try
             {
-                return Fp700.FullReportByDate(pBegin, pEnd);
+                lock (Lock)
+                {
+                    return Fp700.FullReportByDate(pBegin, pEnd);
+                }
             }
             catch(Exception e)
             {
@@ -177,7 +198,10 @@ namespace Front.Equipments
             try
             {
                 List<ReceiptText> d = pR.Select(el => new ReceiptText() { Text = el.StartsWith("QR=>") ? el.SubString(4) : el, RenderType = el.StartsWith("QR=>") ? RenderAs.QR : RenderAs.Text }).ToList();
-                Fp700.PrintSeviceReceipt(d);
+                lock (Lock)
+                {
+                    Fp700.PrintSeviceReceipt(d);
+                }
                 return new LogRRO(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace }) { TypeOperation = eTypeOperation.NoFiscalReceipt, TypeRRO = "RRO_FP700",JSON=pR.ToJSON() };
             }
             catch (Exception e)
@@ -189,7 +213,11 @@ namespace Front.Equipments
         public override StatusEquipment TestDevice() {
             try
             {
-                var res = Fp700.TestDeviceSync();
+                DeviceConnectionStatus res;
+                lock (Lock)
+                {
+                    res = Fp700.TestDeviceSync();
+                }
                 return new StatusEquipment() { TextState = res.ToString() };
             }catch(Exception e)
             {
@@ -201,7 +229,10 @@ namespace Front.Equipments
         {
             try
             {
-                return Fp700.GetInfoSync();
+                lock (Lock)
+                {
+                    return Fp700.GetInfoSync();
+                }
             }
             catch (Exception e)
             {
@@ -213,8 +244,12 @@ namespace Front.Equipments
         {
             if (pRW != null && pRW.Count() > 0)
             {
-               var xx= GetReceiptItem(pRW,true);              
-                Fp700.SetupArticleTable(xx);
+               var xx= GetReceiptItem(pRW,true);
+                
+                lock (Lock)
+                {
+                    Fp700.SetupArticleTable(xx);
+                }
             }
             return true;
         }
@@ -2215,6 +2250,136 @@ namespace Front.Equipments.FP700
         S,
         P,
         G,
+    }
+
+    public abstract class SqLiteDataController
+    {
+        private readonly IConfiguration _configuration;
+
+        private readonly string _tableName;
+
+        private string _dbFile;
+
+        protected SqLiteDataController(IConfiguration configuration, string tableName)
+        {
+             _configuration = configuration;
+            _tableName = tableName;
+            _dbFile = Path.Combine(configuration["MID:PathData"], "DB",_configuration.GetConnectionString("LocalDbConnection"));
+        }
+
+        protected SQLiteConnection GetConnection()
+        {
+            return new SQLiteConnection("Data Source=" + _dbFile);
+        }
+
+        protected async Task<bool> ExecuteNonQuery(string scriptBody, DynamicParameters obj = null, bool customName = false)
+        {
+            //string scriptBody = GetScriptBody(scriptName, customName);
+            using SQLiteConnection connection = GetConnection();
+            return await connection.ExecuteAsync(scriptBody, obj) > 0;
+        }
+
+        protected Task<TModel> GetByParams<TModel>(string scriptBody, DynamicParameters obj = null, bool customName = false)
+        {
+            //string scriptBody = GetScriptBody(scriptName, customName);
+            using SQLiteConnection cnn = GetConnection();
+            return cnn.QueryFirstOrDefaultAsync<TModel>(scriptBody, obj);
+        }
+
+        protected Task<IEnumerable<TModel>> GetMany<TModel>(string scriptBody, DynamicParameters obj = null, bool customName = false)
+        {
+            //string scriptBody = GetScriptBody(scriptName, customName);
+            using SQLiteConnection cnn = GetConnection();
+            return cnn.QueryAsync<TModel>(scriptBody, obj);
+        }
+
+        /*protected Task<TModel> ExecuteScalar<TModel>(string scriptName, DynamicParameters obj = null, bool customName = false)
+        {
+            string scriptBody = GetScriptBody(scriptName, customName);
+            using SQLiteConnection cnn = GetConnection();
+            return cnn.ExecuteScalarAsync<TModel>(scriptBody, obj);
+        } 
+        
+        private string GeFileName(string suffix)
+        {
+            return "script_" + _tableName + "_" + suffix + ".sql";
+        }
+
+        private string GetScriptBody(string scriptName, bool customName = false)
+        {
+            string path = (customName ? (scriptName + ".sql") : GeFileName(scriptName));
+            return File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Scripts", path));
+        }*/
+    }
+
+    public class Fp700DataController : SqLiteDataController
+    {
+        public Fp700DataController(IConfiguration configuration)
+            : base(configuration, "FP700FiscalPrinterArticles")
+        {
+        }
+
+        public Task<int> CreateOrUpdateArticle(ReceiptItem product, int plu)
+        {
+            string sql = @"INSERT INTO FP700FiscalPrinterArticles (Barcode, PLU, ProductName, Price) VALUES (@Barcode, @ProductPLU, @ProductName, @Price)";
+            DynamicParameters dynamicParameters = new DynamicParameters();
+            dynamicParameters.Add("@Barcode", product.ProductId.ToString());
+            dynamicParameters.Add("@ProductPLU", plu);
+            dynamicParameters.Add("@ProductName", product.ProductName);
+            dynamicParameters.Add("@Price", product.ProductPrice);
+            return GetByParams<int>("CreateArticle", dynamicParameters);
+        }
+
+        /*public Task<int> UpdateArticle(ReceiptItem product, int plu)
+        {
+            string sql = @"UPDATE FP700FiscalPrinterArticles 
+			SET 
+			Price = @Price,
+			ProductName = @ProductName
+			WHERE Barcode = @Barcode";
+            DynamicParameters dynamicParameters = new DynamicParameters();
+            dynamicParameters.Add("@Barcode", product.ProductId.ToString());
+            dynamicParameters.Add("@ProductPLU", plu);
+            dynamicParameters.Add("@ProductName", product.ProductName);
+            dynamicParameters.Add("@Price", product.ProductPrice);
+            return GetByParams<int>("UpdateArticle", dynamicParameters);
+        }*/
+
+        public Task<bool> DeleteArticle(int plu)
+        {
+            string sql = @"DELETE FROM FP700FiscalPrinterArticles WHERE PLU = @PLU";
+            DynamicParameters dynamicParameters = new DynamicParameters();
+            dynamicParameters.Add("@PLU", plu);
+            return ExecuteNonQuery("DeleteArticle", dynamicParameters);
+        }
+
+        public Task<bool> DeleteAllArticles()
+        {
+            string sql = @"DELETE FROM FP700FiscalPrinterArticles";
+            return ExecuteNonQuery("DeleteAllArticles");
+        }
+        /*
+        public Task<IEnumerable<ProductArticle>> GetAllArticles()
+        {
+            string sql = $"SELECT * FROM FP700FiscalPrinterArticles";
+            return GetMany<ProductArticle>("GetAllArticles");
+        }
+        
+        public Task<ProductArticle> GetArticleByBarcode(string barcode)
+        {
+            string sql = "SELECT * FROM FP700FiscalPrinterArticles WHERE Barcode = @Barcode";
+            DynamicParameters dynamicParameters = new DynamicParameters();
+            dynamicParameters.Add("@Barcode", barcode);
+            return GetByParams<ProductArticle>("GetArticleByBarcode", dynamicParameters);
+        }*/
+
+        public Task<ProductArticle> GetArticleById(Guid id)
+        {
+            string sql = "SELECT * FROM FP700FiscalPrinterArticles WHERE Barcode = @Barcode";
+            DynamicParameters dynamicParameters = new DynamicParameters();
+            dynamicParameters.Add("@Barcode", id.ToString());
+            return GetByParams<ProductArticle>("GetArticleByBarcode", dynamicParameters);
+        }
     }
 
 }

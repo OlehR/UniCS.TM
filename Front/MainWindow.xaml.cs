@@ -414,7 +414,9 @@ namespace Front
                         customWindow = new CustomWindow(eWindows.ExciseStamp);
                     else
                         customWindow = (State == eStateMainWindows.WaitCustomWindows ? pCW : null);
-
+                    
+                    if(State == eStateMainWindows.StartWindow)
+                        Volume = true;
 
                     s.Play(State, TypeAccessWait, CS.StateScale, 0);
                     //if ((State == eStateMainWindows.WaitAdmin || State == eStateMainWindows.WaitAdminLogin) && TypeAccessWait == eTypeAccess.ExciseStamp)
