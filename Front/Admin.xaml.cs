@@ -1,4 +1,5 @@
 ﻿using Front.Equipments;
+using Front.Equipments.Ingenico;
 using ModelMID;
 using ModelMID.DB;
 using SharedLib;
@@ -10,6 +11,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -38,6 +40,7 @@ namespace Front
         public string NameAdminUserOpenShift { get { return MW?.AdminSSC?.NameUser; } }
         public DateTime DataOpenShift { get { return MW.DTAdminSSC; } }
         public bool IsShowAllReceipts { get; set; }
+        BatchTotals LastReceipt=null;
 
         public DateTime DateSoSearch { get; set; } = DateTime.Now.Date;
         public string KasaNumber { get { return Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace).Name; } }
@@ -115,23 +118,40 @@ namespace Front
             this.WindowState = WindowState.Minimized;
             // this.NavigationService.GoBack();
         }
+
         private void POS_X_Click(object sender, RoutedEventArgs e)
         {
             var task = Task.Run(() =>
             {
-                EF.PosPrintX();
+                LastReceipt = EF.PosPrintX(false);
+                ViewReceipt();
             });
-            RevisionText.Text = $"\"         Супермаркет ВОПАК          \r\n             м. Ужгород             \r\n         вул. Бестужева, 9          \r\n19/09/2022                  22:45:18\r\n      ========================      \r\n      *****[ Z - БАЛАНС ]*****      \r\n      ========================      \r\nТермінал.# 50603263           B:1511\r\nМерчант.# 40600587                  \r\n      ========================      \r\n      ========================      \r\n             MasterCard             \r\nВалюта:ГРНТранзакцій:                     [27]\r\nСума:                     4836.67ГРН\r\n             Дебет:[27]             \r\n          Сума:4836.67ГРН           \r\n      ........................      \r\nПІДСУМОК:               4836.67ГРН  \r\n      ========================      \r\n                VISA                \r\nВалюта:ГРНТранзакцій:                     [15]\r\nСума:                     3513.59ГРН\r\n             Дебет:[15]             \r\n          Сума:3513.59ГРН           \r\n      ........................      \r\nПІДСУМОК:               3513.59ГРН  \r\n      ========================      \r\n      ========================      \r\n[Валюта:ГРН                        ]\r\nТранзакцій:                     [42]\r\nСума:                     8350.26ГРН\r\n      ........................      \r\nВСЬОГО:                  8350.26ГРН \r\n\r\n           TAUN177211219            \"";
-            Revision.Visibility = Visibility.Visible;
-            BackgroundShift.Visibility = Visibility.Visible;
+            
         }
 
         private void POS_Z_Click(object sender, RoutedEventArgs e)
         {
-            var task = Task.Run(() =>
+            if (MessageBox.Show("Ви хочете зробити Z-звіт на банківському терміналі?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
-                EF.PosPrintZ();
+                var task = Task.Run(() =>
+            {
+                LastReceipt = EF.PosPrintZ();
+                ViewReceipt();
             });
+            }
+        }
+
+        void ViewReceipt()
+        {
+            if (LastReceipt?.Receipt?.Count() > 0)
+            {
+                Dispatcher.BeginInvoke(new ThreadStart(() =>
+                {
+                    RevisionText.Text = string.Join(Environment.NewLine, LastReceipt.Receipt);
+                    Revision.Visibility = Visibility.Visible;
+                    BackgroundShift.Visibility = Visibility.Visible;
+                }));
+            }
         }
 
         private void POS_X_Copy_Click(object sender, RoutedEventArgs e)
@@ -149,10 +169,13 @@ namespace Front
 
         private void EKKA_Z_Click(object sender, RoutedEventArgs e)
         {
-            var task = Task.Run(() =>
+            if (MessageBox.Show("Ви хочете зробити Z-звіт на фіскальному апараті?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
-                var r = EF.RroPrintZ(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() });              
+                var task = Task.Run(() =>
+            {
+                var r = EF.RroPrintZ(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() });
             });
+            }
         }
 
         private void EKKA_Z_Period_Click(object sender, RoutedEventArgs e)
@@ -488,7 +511,8 @@ namespace Front
 
         private void Print(object sender, RoutedEventArgs e)
         {
-
+            if (LastReceipt?.Receipt?.Count()>0)
+                EF.PrintNoFiscalReceipt(LastReceipt.Receipt);
         }
     }
 
