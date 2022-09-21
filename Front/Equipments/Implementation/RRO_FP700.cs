@@ -2327,7 +2327,7 @@ namespace Front.Equipments.FP700
             dynamicParameters.Add("@ProductPLU", plu);
             dynamicParameters.Add("@ProductName", product.ProductName);
             dynamicParameters.Add("@Price", product.ProductPrice);
-            return GetByParams<int>("CreateArticle", dynamicParameters);
+            return GetByParams<int>(sql, dynamicParameters);
         }
 
         /*public Task<int> UpdateArticle(ReceiptItem product, int plu)
@@ -2350,13 +2350,13 @@ namespace Front.Equipments.FP700
             string sql = @"DELETE FROM FP700FiscalPrinterArticles WHERE PLU = @PLU";
             DynamicParameters dynamicParameters = new DynamicParameters();
             dynamicParameters.Add("@PLU", plu);
-            return ExecuteNonQuery("DeleteArticle", dynamicParameters);
+            return ExecuteNonQuery(sql, dynamicParameters);
         }
 
         public Task<bool> DeleteAllArticles()
         {
             string sql = @"DELETE FROM FP700FiscalPrinterArticles";
-            return ExecuteNonQuery("DeleteAllArticles");
+            return ExecuteNonQuery(sql);
         }
         /*
         public Task<IEnumerable<ProductArticle>> GetAllArticles()
@@ -2377,8 +2377,8 @@ namespace Front.Equipments.FP700
         {
             string sql = "SELECT * FROM FP700FiscalPrinterArticles WHERE Barcode = @Barcode";
             DynamicParameters dynamicParameters = new DynamicParameters();
-            dynamicParameters.Add("@Barcode", id.ToString());
-            return GetByParams<ProductArticle>("GetArticleByBarcode", dynamicParameters);
+            dynamicParameters.Add(sql, id.ToString());
+            return GetByParams<ProductArticle>(sql, dynamicParameters);
         }
     }
 
