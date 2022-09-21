@@ -1366,8 +1366,10 @@ namespace Front.Equipments.FP700
                 logger1.LogDebug("{firstPluNumber} " + firstFreeArticle.ToString());
             foreach (ReceiptItem product1 in products)
             {
+
                 ReceiptItem product = product1;
                 Task<ProductArticle> articleById = this._fp700DataController?.GetArticleById(product.ProductId);
+
                 articleById?.Wait();
                 if (articleById?.Result == null)
                 {
@@ -2377,7 +2379,7 @@ namespace Front.Equipments.FP700
         {
             string sql = "SELECT * FROM FP700FiscalPrinterArticles WHERE Barcode = @Barcode";
             DynamicParameters dynamicParameters = new DynamicParameters();
-            dynamicParameters.Add(sql, id.ToString());
+            dynamicParameters.Add("@Barcode", id.ToString());
             return GetByParams<ProductArticle>(sql, dynamicParameters);
         }
     }
