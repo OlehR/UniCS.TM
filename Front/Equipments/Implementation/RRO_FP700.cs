@@ -47,7 +47,7 @@ namespace Front.Equipments
     internal class RRO_FP700 : Rro
     {
         Fp700 Fp700;
-        Object Lock;
+        object Lock = new();
 
         public RRO_FP700(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment, pConfiguration, eModelEquipment.FP700, pLoggerFactory, pActionStatus)
         {
