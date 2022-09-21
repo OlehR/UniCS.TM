@@ -118,7 +118,10 @@ namespace Front
         public string NameSecondTerminal { get { return IsPresentSecondTerminal ? EF?.BankTerminal2.Name : null; } }
 
         public string GetBackgroundColor { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? "#ff9999" : "#FFFFFF"; } }
-
+        public bool IsHorizontalScreen { get { return SystemParameters.PrimaryScreenWidth < SystemParameters.PrimaryScreenHeight ? true : false; } }
+        public int WidthScreen { get { return (int)SystemParameters.PrimaryScreenWidth; } }
+        public int HeightScreen { get { return (int)SystemParameters.PrimaryScreenHeight; } }
+        public int HeightStartVideo { get { return SystemParameters.PrimaryScreenWidth < SystemParameters.PrimaryScreenHeight ? 1300 : 700; } }
         /// <summary>
         /// треба переробити(інтегрувати в основну форму)
         /// </summary>
@@ -221,6 +224,7 @@ namespace Front
 
         public MainWindow()
         {
+
             CS = new ControlScale();
          
             var fc = new List<FlagColor>();

@@ -29,9 +29,18 @@
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>-->
         <Style TargetType="TextBlock">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                    <Setter Property="FontSize" Value="20" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                    <Setter Property="FontSize" Value="20" />
+                </DataTrigger>
+            </Style.Triggers>
             <Setter Property="FontFamily" Value="Source Sans Pro" />
             <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="FontSize" Value="20" />
             <Setter Property="FontWeight" Value="DemiBold" />
 
         </Style>
@@ -59,7 +68,7 @@
             </Border.Effect>
             <Grid  Grid.Row="0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="3*"></ColumnDefinition>
+                    <ColumnDefinition Width="3.1*"></ColumnDefinition>
                     <ColumnDefinition Width="1*"></ColumnDefinition>
                     <ColumnDefinition Width="1*"></ColumnDefinition>
                     <ColumnDefinition Width="2*"></ColumnDefinition>
@@ -71,7 +80,23 @@
                 <Button Style="{StaticResource yelowButton}" Grid.Column="0" FontSize="30" Click="_ButtonHelp">
 
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock FontSize="35" Text="{DynamicResource buttonHelp}"/>
+                        <TextBlock TextWrapping="Wrap" Text="{DynamicResource buttonHelp}">
+                            <TextBlock.Style>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                            <Setter Property="FontSize" Value="35" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                            <Setter Property="FontSize" Value="24" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
                         <Image Width="35">
                             <Image.Style>
                                 <Style TargetType="{x:Type Image}">
@@ -239,11 +264,13 @@
 
             <ListBox  Name="WaresList" Background="{Binding GetBackgroundColor, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" HorizontalContentAlignment="Stretch"
-                          Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="6"  Grid.RowSpan="6">
+                          Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="6"  Grid.RowSpan="6"
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Border  BorderBrush="Silver" BorderThickness="0,0,0,1" >
-                            <Grid Margin="10,0,0,0">
+                            <Grid Margin="10,0,0,0" Width="{Binding WidthScreen, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="7*"></ColumnDefinition>
                                     <ColumnDefinition Width="3*"></ColumnDefinition>
@@ -253,13 +280,13 @@
                                     <ColumnDefinition Width="1.5*"></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="100"/>
+                                    <RowDefinition Height="auto"/>
                                 </Grid.RowDefinitions>
                                 <!-- Устанавливаем две строки -->
 
                                 <StackPanel Orientation="Vertical" Grid.Column="0">
                                     <TextBlock Margin="0"  FontSize="12"  Text="{Binding GetStrWaresReceiptPromotion}" Visibility="{Binding IsReceiptPromotion,Converter={StaticResource BoolToHiddenConverter}}"/>
-                                    <TextBlock Margin="0" FontSize="35"  Text="{Binding NameWares}" MaxWidth="900"  FontFamily="Roboto Condensed" FontWeight="DemiBold"/>
+                                    <TextBlock Margin="0" FontSize="35"  Text="{Binding NameWares}" TextWrapping="Wrap"  FontFamily="Roboto Condensed" FontWeight="DemiBold"/>
                                 </StackPanel>
 
                                 <Grid Grid.Column="1">
@@ -305,11 +332,15 @@
                                     </Button>
 
                                     <Button Grid.Column="2" Background="Transparent" BorderBrush="Transparent"
-                                            Click="_ChangeCountWares" Width="100">
+                                            Click="_ChangeCountWares" >
                                         <Button.Style>
                                             <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
                                                 <Setter Property="IsEnabled" Value="True"/>
                                                 <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                                        <Setter Property="Width" Value="100" />
+                                                    </DataTrigger>
                                                     <DataTrigger Binding="{Binding IsPlus}" Value="True">
                                                         <Setter Property="IsEnabled" Value="True" />
                                                     </DataTrigger>
@@ -359,7 +390,7 @@
                                         </Button.Style>
                                     </Button>
                                 </Grid>
-                                
+
                                 <StackPanel Grid.Column="2" HorizontalAlignment="Left">
                                     <TextBlock >
                                         <TextBlock.Style>
@@ -369,11 +400,19 @@
                                                 <Setter Property="HorizontalAlignment" Value="Left"></Setter>
                                                 <Setter Property="VerticalAlignment" Value="Center"></Setter>
                                                 <Setter Property="FontWeight" Value="DemiBold"></Setter>
-                                                <Setter Property="FontSize" Value="25"></Setter>
                                                 <Setter Property="Text" Value="{Binding WeightBrutto}"/>
+                                                <Setter Property="FontWeight" Value="SemiBold"/>
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsWeight}" Value="True">
                                                         <Setter Property="Text" Value="{Binding Quantity}"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                                        <Setter Property="FontSize" Value="25" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                                        <Setter Property="FontSize" Value="20" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -387,16 +426,58 @@
                                                 <Setter Property="HorizontalAlignment" Value="Left"></Setter>
                                                 <Setter Property="VerticalAlignment" Value="Center"></Setter>
                                                 <Setter Property="FontWeight" Value="DemiBold"></Setter>
-                                                <Setter Property="FontSize" Value="25"></Setter>
                                                 <Setter Property="Text" Value="{Binding FixedWeightInKg}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                                        <Setter Property="FontSize" Value="25" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                                        <Setter Property="FontSize" Value="20" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
                                             </Style>
                                         </TextBlock.Style>
                                     </TextBlock>
                                 </StackPanel>
-                                <TextBlock Grid.Column="3" Text="{Binding PriceDealer, StringFormat=0.00 }" FontSize="25" FontWeight="DemiBold"/>
+                                <TextBlock Grid.Column="3" Text="{Binding PriceDealer, StringFormat=0.00 }"  >
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                            <Setter Property="FontWeight" Value="DemiBold"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                                    <Setter Property="FontSize" Value="25" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                                    <Setter Property="FontSize" Value="20" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
                                 <StackPanel Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <TextBlock Grid.Column="5" Text="{Binding SumTotal, StringFormat=0.00}" FontWeight="Bold" FontSize="30"/>
-                                    <TextBlock   FontSize="20" FontWeight="DemiBold" Foreground="Red">
+                                    <TextBlock Grid.Column="5" Text="{Binding SumTotal, StringFormat=0.00}" FontWeight="Bold" >
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                                        <Setter Property="FontSize" Value="30" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                                        <Setter Property="FontSize" Value="24" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                    <TextBlock    FontWeight="DemiBold" Foreground="Red">
                                         <TextBlock.Style>
                                             <Style TargetType="TextBlock">
                                                 <Setter Property="Text" Value="{Binding DiscountEKKA, StringFormat=-0.00}"/>
@@ -404,12 +485,20 @@
                                                     <DataTrigger Binding="{Binding DiscountEKKA}" Value="0">
                                                         <Setter Property="Text" Value=""/>
                                                     </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                                        <Setter Property="FontSize" Value="20" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                                        <Setter Property="FontSize" Value="15" />
+                                                    </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
                                         </TextBlock.Style>
                                     </TextBlock>
                                 </StackPanel>
-                                
+
 
                             </Grid>
                         </Border>
@@ -919,7 +1008,7 @@
                                                     <DataTrigger Binding="{Binding IsNeedAdmin}" Value="True">
                                                         <Setter Property="IsEnabled" Value="False" />
                                                     </DataTrigger>
-                                                    
+
                                                     <DataTrigger Binding="{Binding IsNeedAdmin}" Value="False">
                                                         <Setter Property="IsEnabled" Value="True" />
                                                     </DataTrigger>
@@ -1070,7 +1159,7 @@
                  Grid.Row="0" Grid.RowSpan="6"
                 Grid.Column="1" Grid.ColumnSpan="4"
                  Name="WeightWares" Visibility="Collapsed" Grid.ZIndex="2" 
-                CornerRadius="10">
+                CornerRadius="10" MaxHeight="800">
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
                 </Border.Effect>
@@ -1094,7 +1183,7 @@
                                 Content="Покладіть товар на вагу" />-->
                     <TextBlock 
                                 x:Name="NameWares"  Grid.ColumnSpan="2" Grid.Row="2" Grid.RowSpan="1"  HorizontalAlignment="Center" VerticalAlignment="Center" 
-                                FontSize="35"
+                                FontSize="35" TextWrapping="Wrap"
                                 Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=CurW.Name}" />
                     <!--{Binding NameW, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}-->
                     <TextBlock Name="LWeight"
@@ -1158,7 +1247,7 @@
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
                  Grid.Column="0" Grid.ColumnSpan="6"
-                 Name="WaitPayment" Visibility="Visible" Grid.ZIndex="2" 
+                 Name="WaitPayment" Visibility="Collapsed" Grid.ZIndex="2" 
                 CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
@@ -1573,15 +1662,29 @@
                 </Button.Style>
             </Button>
             <Button  Grid.Column="2" Grid.Row="0" Grid.RowSpan="2"                          
-                     Style="{StaticResource yelowButton}"
+                     Style="{StaticResource yelowButton}" HorizontalContentAlignment="Stretch"
                          Click="FindClientByPhoneClick"
-                           Visibility="Visible"  
-                           Foreground="Black">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock  FontSize="35" Text="{Binding ClientName, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}"/>
+                           Visibility="Visible">
+                <TextBlock HorizontalAlignment="Center"   Text="{Binding ClientName, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}">
+                    <TextBlock.Style>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                    <Setter Property="FontSize" Value="35" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                    <Setter Property="FontSize" Value="24" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                            <Setter Property="FontWeight" Value="SemiBold"/>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
 
-                </StackPanel>
+
             </Button>
             <!--<Button Style="{StaticResource Default}" Grid.Column="2" FontSize="22" Click="_Cancel" Height="38" Margin="1,1,1,0" VerticalAlignment="Top">
                 <TextBlock FontSize="14" Text="{DynamicResource ownBag}"/>
@@ -1712,64 +1815,77 @@
         <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="1" Grid.RowSpan="4"
                 Grid.Column="0" Grid.ColumnSpan="4"
-                 Name="StartShopping" Visibility="Collapsed" Grid.ZIndex="2" >
+                 Name="StartShopping" Visibility="Visible" Grid.ZIndex="2" >
             <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
 
-
-                <TextBlock TextWrapping="Wrap"   
-                    HorizontalAlignment="Center" VerticalAlignment="Bottom" FontSize="36" 
-                                Grid.Column="0"  Grid.Row="0" Grid.RowSpan="2">
+                <StackPanel >
+                    <TextBlock TextWrapping="Wrap"   
+                    HorizontalAlignment="Center" FontSize="36" Margin="0,50,0,20" >
                     Доброго дня, ласкаво просимо до нашого магазину
-                </TextBlock>
-                <Button Grid.Row="2" Grid.Column="0"  Style="{StaticResource greenButton}"  FontSize="48" Click="StartBuy" 
-                        Margin="5,20,5,20">
-                    <StackPanel Orientation="Horizontal">
-                        <Image  Height="50" Width="50"  Source="icons\shoppingBag.png"></Image>
-                        <TextBlock FontSize="50" Text="{DynamicResource startShopping}" FontFamily="Source Sans Pro" Margin="5,10,5,0"/>
-                    </StackPanel>
-                </Button>
-                <Button Grid.Row="3" Grid.Column="0"  Style="{StaticResource greenButton}"  FontSize="48"  Click="StartOwnBag" 
-                          Margin="5,20,5,20">
-                    <StackPanel Orientation="Horizontal">
-                        <Image  Height="50" Width="50"  Source="icons\shoppingBag.png"></Image>
-                        <TextBlock FontSize="50" Text="{DynamicResource ownBag}" FontFamily="Source Sans Pro" Margin="5,10,5,0"/>
-                    </StackPanel>
-                </Button>
-                <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top">
-                    <Image Width="100" Source="icons\visa.png" Margin="0,0,15,0"/>
-                    <Image Width="100" Source="icons\MasterCard.png"/>
-                </StackPanel>
-                <Grid Grid.Row="1" Grid.RowSpan="3" Grid.Column="1" Grid.ColumnSpan="2" >
-                    <Image Source="icons\VopakLogo.png"/>
-                    <!--<MediaElement   Name="StartVideo" Source="icons\sparVideo.mp4" LoadedBehavior="Manual" Volume="0"   />-->
+                    </TextBlock>
+                    <Grid Height="{Binding HeightStartVideo, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}">
+                        <Image Source="icons\VopakLogo.png" Height="500"/>
+                        <!--<MediaElement   Name="StartVideo" Source="icons\sparVideo.mp4" LoadedBehavior="Manual" Volume="0"   />-->
 
-                    <!--<MediaElement Name="StartVideo" Volume="0" LoadedBehavior="Manual">
-                        <MediaElement.Triggers>
-                            <EventTrigger RoutedEvent="MediaElement.Loaded">
-                                <EventTrigger.Actions>
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <MediaTimeline Source="icons\sparVideo.mp4" Storyboard.TargetName="StartVideo"  
+                        <!--<MediaElement Name="StartVideo" Volume="0" LoadedBehavior="Manual">
+                            <MediaElement.Triggers>
+                                <EventTrigger RoutedEvent="MediaElement.Loaded">
+                                    <EventTrigger.Actions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <MediaTimeline Source="icons\sparVideo.mp4" Storyboard.TargetName="StartVideo"  
                                                            RepeatBehavior="Forever" />
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </EventTrigger.Actions>
-                            </EventTrigger>
-                        </MediaElement.Triggers>
-                    </MediaElement>-->
-                </Grid>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger.Actions>
+                                </EventTrigger>
+                            </MediaElement.Triggers>
+                        </MediaElement>-->
+                    </Grid>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <StackPanel>
+
+                            <StackPanel>
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                                <Setter Property="Orientation" Value="Vertical" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                                <Setter Property="Orientation" Value="Horizontal" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                                <Button Margin="10"  Style="{StaticResource greenButton}"  FontSize="48" Click="StartBuy" 
+                         Height="100" Width="500">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image  Height="50" Width="50"  Source="icons\shoppingBag.png"></Image>
+                                        <TextBlock FontSize="50" Text="{DynamicResource startShopping}" FontFamily="Source Sans Pro" Margin="5,10,5,0"/>
+                                    </StackPanel>
+                                </Button>
+                                <Button Margin="10" Style="{StaticResource greenButton}"  FontSize="48"  Click="StartOwnBag" 
+                           Height="100" Width="500">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image  Height="50" Width="50"  Source="icons\shoppingBag.png"></Image>
+                                        <TextBlock FontSize="50" Text="{DynamicResource ownBag}" FontFamily="Source Sans Pro" Margin="5,10,5,0"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                            <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Image Width="100" Source="icons\visa.png" Margin="0,0,15,0"/>
+                                <Image Width="100" Source="icons\MasterCard.png"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+
+
+                </StackPanel>
 
             </Grid>
         </Border>

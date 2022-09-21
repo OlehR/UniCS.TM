@@ -28,8 +28,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="80" />
             <RowDefinition Height="5.5*" />
-            <RowDefinition Height="1*" />
-            <RowDefinition Height="5*" />
+            <RowDefinition Height="80" />
+            <RowDefinition Height="400" />
         </Grid.RowDefinitions>
         <Border Grid.Row="0" Margin="5" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
             <Border.Effect>
@@ -47,8 +47,23 @@
                 </Grid.ColumnDefinitions>
 
                 <Button Style="{StaticResource yelowButton}" Grid.Column="0" Click="_ButtonHelp"  >
-                     
-                    <TextBlock FontSize="35" Text="{DynamicResource buttonHelp}"/>
+                    <TextBlock  Text="{DynamicResource buttonHelp}">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                        <Setter Property="FontSize" Value="35" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                        <Setter Property="FontSize" Value="24" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
                 </Button>
 
                 <!--<Grid Grid.Column="1"  Grid.ColumnSpan="1"
@@ -141,7 +156,23 @@
                 <Button Grid.Column="5" Grid.ColumnSpan="2" Style="{StaticResource greenButton}"  FontSize="22" Click="ClickButtonCancel">
                     <StackPanel Orientation="Horizontal">
                         <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
-                        <TextBlock FontSize="28" FontWeight="DemiBold" Text="{DynamicResource ReturnCheck}"  Margin="5,0,5,0"/>
+                        <TextBlock  FontWeight="DemiBold" Text="{DynamicResource ReturnCheck}" >
+                            <TextBlock.Style>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                            <Setter Property="FontSize" Value="28" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                            <Setter Property="FontSize" Value="20" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
                     </StackPanel>
                 </Button>
                 
@@ -164,20 +195,7 @@
             
 
             <Grid Grid.Column="1"  Name="PictureGrid">
-                <!--Grid.ColumnSpan="4"-->
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*"></ColumnDefinition>
-                    <ColumnDefinition Width="1*"></ColumnDefinition>
-                    <ColumnDefinition Width="1*"></ColumnDefinition>
-                    <ColumnDefinition Width="1*"></ColumnDefinition>
-                    <ColumnDefinition Width="1*"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="1*" />
-                    
-                    <RowDefinition Height="1*" />
-                    
-                </Grid.RowDefinitions>
+
 
             </Grid>
             <Button Grid.Column="0" Grid.Row="0" Click="ClickButtonLeft" Name="ButtonLeft" Style="{StaticResource yelowButton}">

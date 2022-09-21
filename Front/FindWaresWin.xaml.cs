@@ -24,26 +24,70 @@ namespace Front
         BL Bl;
         int CodeFastGroup = 0;
         int OffSet = 0;
-        int Limit = 10;
+
         int MaxPage = 0;
         public bool IsUp { get { return CodeFastGroup > 0; } }
         public bool Volume { get; set; }
+        public bool IsHorizontalScreen { get { return SystemParameters.PrimaryScreenWidth < SystemParameters.PrimaryScreenHeight ? true : false; } }
+        public int WidthScreen { get { return (int)SystemParameters.PrimaryScreenWidth; } }
+        public int HeightScreen { get { return (int)SystemParameters.PrimaryScreenHeight; } }
+        /// <summary>
+        /// максимальна кількість товарів на вікні
+        /// </summary>
+        int Limit = SystemParameters.PrimaryScreenWidth < SystemParameters.PrimaryScreenHeight ? 20 : 10;
+        /// <summary>
+        /// Кількість рядків в пошуку (залежить від розміру екрану)
+        /// </summary>
+        int CountRowWares;
+        /// <summary>
+        /// Кількість колонок в пошуку (залежить від розміру екрану)
+        /// </summary>
+        int CountColumWares;
         MainWindow MW;
         public FindWaresWin(MainWindow pMW)
         {
+
             InitializeComponent();
             WindowState = WindowState.Maximized;
             //WindowStyle = WindowStyle.None;
-
+            CountRowWares = IsHorizontalScreen ? 4 : 2;
+            CountColumWares = IsHorizontalScreen ? 4 : 5;
+            CreateGridForWares(); //створення гріду з товарами
             MW = pMW;
             Bl = BL.GetBL;
             KB.SetInput(WaresName);
             NewB();
-        }
 
-        string LastStr=null;
+        }
+        void CreateGridForWares()
+        {
+            if (!IsHorizontalScreen)
+            {
+                for (int i = 0; i < CountRowWares; i++)
+                {
+                    PictureGrid.RowDefinitions.Add(new RowDefinition());
+                }
+                for (int i = 0; i < CountColumWares; i++)
+                {
+                    PictureGrid.ColumnDefinitions.Add(new ColumnDefinition());
+                }
+            }
+            else
+            {
+                for (int i = 0; i < CountRowWares; i++)
+                {
+                    PictureGrid.RowDefinitions.Add(new RowDefinition());
+                }
+                for (int i = 0; i < CountColumWares; i++)
+                {
+                    PictureGrid.ColumnDefinitions.Add(new ColumnDefinition());
+                }
+            }
+        }
+        string LastStr = null;
         void NewB()
         {
+
             IEnumerable<GW> WG = null;
             if (CodeFastGroup == 0 && WaresName.Text.Length == 0)
             {
@@ -56,12 +100,12 @@ namespace Front
             }
             else
             {
-                if(WaresName.Text!= LastStr)
+                if (WaresName.Text != LastStr)
                 {
-                    LastStr= WaresName.Text;
+                    LastStr = WaresName.Text;
                     OffSet = 0;
                 }
-                WG = Bl.GetProductsByName(MW.curReceipt, (WaresName.Text.Length > 1 ? WaresName.Text : ""),  OffSet * Limit, Limit, CodeFastGroup)?.Select(r => new GW(r));
+                WG = Bl.GetProductsByName(MW.curReceipt, (WaresName.Text.Length > 1 ? WaresName.Text : ""), OffSet * Limit, Limit, CodeFastGroup)?.Select(r => new GW(r));
                 if (WG != null)
                     MaxPage = WG.First().TotalRows / Limit;
                 else
@@ -77,6 +121,9 @@ namespace Front
 
         void BildButtom(IEnumerable<GW> pGW)
         {
+
+
+
             PictureGrid.Children.Clear();
             if (pGW == null)
                 return;
@@ -95,7 +142,7 @@ namespace Front
                 var StackP = new StackPanel();
                 //фото
                 var ImageStackPanel = new Image();
-                
+
                 Bor.BorderBrush = new SolidColorBrush(Color.FromRgb(128, 128, 128));
                 Bor.BorderThickness = new Thickness(2.0);
 
@@ -110,7 +157,7 @@ namespace Front
                     //    VerticalAlignment = VerticalAlignment.Center
                     //};
                 }
-                   
+
                 else
                     Bt.Content = "Скоро буде ;)";
 
@@ -131,10 +178,10 @@ namespace Front
                 //Розділення на 2 радки якщо текст завеликий
                 var leng = el.Name.Length;
                 var lengthText = 20;
+                NameWares.TextWrapping = TextWrapping.Wrap;
                 if (leng > lengthText)
                 {
                     NameWares.FontSize = 20;
-                    NameWares.TextWrapping = TextWrapping.Wrap;
                     NameWares.Text = el.Name;//.Insert(lengthText, Environment.NewLine);
                 }
                 else
@@ -181,8 +228,15 @@ namespace Front
                     PictureGrid.Children.Add(WeightImg);
                 }
                 if (++i >= 5)
-                { j ++; i = 0; }
-                if (j >= 2) break;
+                { j++; i = 0; }
+                if (!IsHorizontalScreen)
+                {
+                    if (j >= 2) break;
+                }
+                else
+                {
+                    if (j >= CountRowWares) break;
+                }
             }
         }
 

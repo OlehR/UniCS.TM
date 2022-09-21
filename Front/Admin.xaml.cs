@@ -150,6 +150,7 @@ namespace Front
                     RevisionText.Text = string.Join(Environment.NewLine, LastReceipt.Receipt);
                     Revision.Visibility = Visibility.Visible;
                     BackgroundShift.Visibility = Visibility.Visible;
+                    RevisionScrollViewer.ScrollToEnd();
                 }));
             }
         }
@@ -285,6 +286,7 @@ namespace Front
                     break;
                 case "Вихід":
                     MW.SetStateView(Models.eStateMainWindows.StartWindow);
+                    TabAdmin.SelectedIndex=0;
                     this.WindowState = WindowState.Minimized;
                     break;
                 default:
