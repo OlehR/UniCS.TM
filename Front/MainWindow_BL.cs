@@ -364,9 +364,11 @@ namespace Front
                 }
                 if (w != null)
                     return;
-                var c = Bl.GetClientByBarCode(curReceipt, pBarCode);
-                if (c != null) return;
-                //SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.AdminPanel);
+                if (curReceipt != null)
+                {
+                    var c = Bl.GetClientByBarCode(curReceipt, pBarCode);
+                    if (c != null) return;
+                }                
             }
 
             var u = Bl.GetUserByBarCode(pBarCode);
