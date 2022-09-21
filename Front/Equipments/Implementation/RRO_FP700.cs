@@ -337,14 +337,18 @@ namespace Front.Equipments
                     int i = 1;
                     foreach (var p in PromotionPrice)
                     {
-                        el.Quantity = p.Quantity;
-                        el.Price = p.Price;
-                        el.PriceDealer = p.Price;
-                        el.Order = i++;
-                        var PVM = this.GetProductViewModel(el);
-                        if (PVM.Excises == null)
-                            PVM.Excises = new();
-                        Res.Add(PVM.ToReceiptItem());
+                        ReceiptWares c = el.Clone() as ReceiptWares;
+                        if (c != null)
+                        {
+                            c.Quantity = p.Quantity;
+                            c.Price = p.Price;
+                            c.PriceDealer = p.Price;
+                            c.Order = i++;
+                            var PVM = this.GetProductViewModel(c);
+                            if (PVM.Excises == null)
+                                PVM.Excises = new();
+                            Res.Add(PVM.ToReceiptItem());
+                        }
                     }
                 }
                 else

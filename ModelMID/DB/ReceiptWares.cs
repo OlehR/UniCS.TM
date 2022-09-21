@@ -9,7 +9,7 @@ namespace ModelMID
 {
     // - ділерська категорія - 2 ділерська категорія+знижка,3 -фіксація ціни,4-Обмеження по нижньому індикативу, 5-Обмеження по верхньому індикативу, 9 -акція
 
-    public class ReceiptWares : IdReceiptWares
+    public class ReceiptWares : IdReceiptWares, ICloneable
     {
         /// <summary>
         /// Код компанії (важливо коли кілька підприємців)
@@ -410,6 +410,11 @@ namespace ModelMID
         public bool IsConfirmDel { get { return WeightFact != -1; } }
 
         public bool IsNeedExciseStamp { get { return TypeWares == eTypeWares.Alcohol && GetExciseStamp.Length<Quantity; } }
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+        }
 
     }
 }
