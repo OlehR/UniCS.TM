@@ -46,6 +46,13 @@ namespace SharedLib
 
         public ReceiptWares AddReceiptWares(ReceiptWares pW, bool pRecalcPriceOnLine = true)
         {
+            var State = db.GetGetStateReceipt(pW);
+            if (State != eStateReceipt.Prepare)
+            {
+                OnCustomWindow?.Invoke(new CustomWindow(eWindows.NoPrice, $"Чеку в стані {State} заборонено {Environment.NewLine} добавляти товар"));
+                return null;
+            }
+
             bool isZeroPrice = false;
             lock (db.GetObjectForLockByIdWorkplace(pW.IdWorkplace))
             {
@@ -250,6 +257,12 @@ namespace SharedLib
 
         public ReceiptWares AddWaresCode(IdReceipt pIdReceipt, int pCodeWares, int pCodeUnit, decimal pQuantity = 0, decimal pPrice = 0)
         {
+            var State = db.GetGetStateReceipt(pIdReceipt);
+            if (State != eStateReceipt.Prepare)
+            {
+                OnCustomWindow?.Invoke(new CustomWindow(eWindows.NoPrice, $"Чеку в стані {State} заборонено {Environment.NewLine} добавляти товар"));
+                return null;
+            }
             var w = db.FindWares(null, null, pCodeWares, pCodeUnit);
             if (w.Count() == 1)
             {
@@ -288,6 +301,13 @@ namespace SharedLib
 
         public bool ChangeQuantity(IdReceiptWares pReceiptWaresId, decimal pQuantity)
         {
+            var State = db.GetGetStateReceipt(pReceiptWaresId);
+            if (State != eStateReceipt.Prepare)
+            {
+                OnCustomWindow?.Invoke(new CustomWindow(eWindows.NoPrice, $"Чеку в стані {State} заборонено {Environment.NewLine} змінювати кількість"));
+                return false;
+            }
+
             bool isZeroPrice = false;
             var res = false;
             var W = db.FindWares(null, null, pReceiptWaresId.CodeWares, pReceiptWaresId.CodeUnit);
@@ -368,6 +388,13 @@ namespace SharedLib
 
         private void UpdateClientInReceipt(IdReceipt pIdReceipt, Client parClient)
         {
+            var State = db.GetGetStateReceipt(pIdReceipt);
+            if (State != eStateReceipt.Prepare)
+            {
+                OnCustomWindow?.Invoke(new CustomWindow(eWindows.NoPrice, $"Чеку в стані {State} заборонено {Environment.NewLine} змінювати клієнта"));
+                return;
+            }
+
             var RH = GetReceiptHead(pIdReceipt);
             RH.CodeClient = parClient.CodeClient;
             RH.PercentDiscount = parClient.PersentDiscount;
@@ -451,7 +478,8 @@ namespace SharedLib
 
         public IEnumerable<ReceiptWares> GetWaresReceipt(IdReceipt pIdReceipt = null)
         {
-            return db.ViewReceiptWares(pIdReceipt);
+            var ldb = pIdReceipt.CodePeriod==Global.GetCodePeriod()? db: new WDB_SQLite(pIdReceipt.DTPeriod);
+            return ldb.ViewReceiptWares(pIdReceipt);
         }
 
         public IEnumerable<Receipt> GetReceipts(DateTime parStartDate, DateTime parFinishDate, int IdWorkPlace)

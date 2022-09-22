@@ -1363,5 +1363,12 @@ Select ID_WORKPLACE as IdWorkplace,CODE_PERIOD as CodePeriod,CODE_RECEIPT as Cod
         from Log_RRO where ID_WORKPLACE = @IdWorkplace and CODE_PERIOD = @CodePeriod
         and CODE_RECEIPT = case when @CodeReceipt=0 then CODE_RECEIPT else @CodeReceipt end
 
+[SqlGetStateReceipt]
+select max(STATE_RECEIPT) StateReceipt
+  FROM RECEIPT
+ Where ID_WORKPLACE = @IdWorkplace
+   and CODE_PERIOD = @CodePeriod
+   and CODE_RECEIPT = @CodeReceipt
+  
 [SqlEnd]
 */

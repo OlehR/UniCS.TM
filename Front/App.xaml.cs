@@ -126,6 +126,16 @@ namespace Front
             {
                 FileLogger.WriteLogMessage(this, message, exception);              
             }
+            try
+            {
+                System.Diagnostics.Process.Start("explorer.exe");
+                Application.Current.Shutdown();
+            }
+            catch (Exception ex)
+            {
+                FileLogger.WriteLogMessage(this, "Exception in LogUnhandledException", ex);
+
+            }
         }
 
 

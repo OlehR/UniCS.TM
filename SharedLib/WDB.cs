@@ -197,6 +197,7 @@ namespace SharedLib
         protected string SqlReplaceSalesBan = "";
         protected string SqlGetQuantitySalesBan = "";
         protected string SqlGetLogRRO = "";
+        protected string SqlGetStateReceipt = "";
 
         public WDB(string pFileSQL,SQL pDB=null)
         {
@@ -643,6 +644,7 @@ namespace SharedLib
 
             SqlGetQuantitySalesBan = GetSQL("SqlGetQuantitySalesBan");
             SqlGetLogRRO = GetSQL("SqlGetLogRRO");
+            SqlGetStateReceipt = GetSQL("SqlGetStateReceipt");
 
 
             return true;
@@ -1089,12 +1091,18 @@ namespace SharedLib
             return db.Execute<IdReceipt, LogRRO>(SqlGetLogRRO, pR);
         }
 
+        public virtual eStateReceipt GetGetStateReceipt(IdReceipt pR)
+        {
+            return db.ExecuteScalar<IdReceipt, eStateReceipt>(SqlGetStateReceipt, pR);
+        }
+
         public virtual void Close(bool isWait = false)
         {
             if (db != null)
                 db.Close(isWait);
         }
 
+        
 
 
         public void Dispose()

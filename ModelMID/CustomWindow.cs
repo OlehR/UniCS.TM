@@ -17,7 +17,8 @@ namespace ModelMID
         NoPrice,
         RestoreLastRecipt,
         LimitSales,
-        ConfirmAge
+        ConfirmAge,
+        Info
 
     }
 
@@ -126,7 +127,11 @@ namespace ModelMID
                         new CustomButton() { CustomWindow = this, Id = 0, Text = "Ні, мені менше 18 років", IsNeedAdmin = false }
                          };                                                                    
                     break;
-
+                case eWindows.Info:
+                    Caption = "Увага";
+                    Text = pObject as string;
+                    AnswerRequired = true;
+                    break;
                 default:
                     Buttons = new ObservableCollection<CustomButton>();
                     break;
