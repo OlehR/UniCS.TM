@@ -386,8 +386,6 @@ namespace Front
                             pSMV = eStateMainWindows.WaitAdmin;
                             pTypeAccess = Res;
                         }
-
-
                     }
 
                     if (pRW != null)

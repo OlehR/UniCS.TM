@@ -20,7 +20,6 @@ namespace Front
 {
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-
         public void InitAction()
         {
             EF.OnControlWeight += (pWeight, pIsStable) =>
@@ -395,9 +394,7 @@ namespace Front
                     Grid.SetRow(im, 1);
                     GridWeightWares.Children.Add(im);
                 }
-
-                //GridWeightWares.Children.Clear();
-
+                 
                 SetStateView(eStateMainWindows.WaitWeight);
                 return;
             }
@@ -537,7 +534,6 @@ namespace Front
                 return false;
             }
         }
-
 
         void AddExciseStamp(string pES)
         {

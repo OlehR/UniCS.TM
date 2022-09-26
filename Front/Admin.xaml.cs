@@ -66,18 +66,15 @@ namespace Front
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ControlScaleWeightDouble"));
             };
 
-
             InitializeComponent();
-
             ProgramVersion.Text = $"Версія КСО: {MW.Version}";
             //поточний час
             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += timer_Tick;
             timer.Start();
-
-
         }
+
         public void Init(User AdminUser = null)
         {
             this.AdminUser = AdminUser;
@@ -504,7 +501,6 @@ namespace Front
         {
             if (Receipts != null)
             {
-
                 IsShowAllReceipts = (bool)AllReceiptsCheckBox.IsChecked;
                 CollectionViewSource.GetDefaultView(ListReceipts.ItemsSource).Refresh();
             }
