@@ -168,22 +168,10 @@ namespace Front
                     return;
                 }
 
-                if (Access.GetRight(pUser, eTypeAccess.AdminPanel))
-                {
-                    SetStateView(eStateMainWindows.WaitInput);
-                    //Admin ad = new Admin(U, this,EF);
-                    Dispatcher.Invoke(new Action(() =>
-                    {
-                        ad.Init(pUser);
-                        ad.WindowState = WindowState.Maximized;
-                    }));
-                }
-                else
-                {
+                if (Access.GetRight(pUser, eTypeAccess.AdminPanel)) 
+                    ShowAdmin(pUser);                
+                else                
                     ShowErrorMessage($"Не достатньо прав на вхід в адмін панель для  {pUser.NameUser}");
-                    //                MessageBox.Show($"Не достатньо прав на вхід в адмін панель для  {U.NameUser}");
-                }
-
             };
 
             Bl.OnCustomWindow += (pCW) =>
@@ -258,8 +246,6 @@ namespace Front
               if (TypeAccessWait == eTypeAccess.ExciseStamp)
                 IsConfirmAdmin = Access.GetRight(pUser, eTypeAccess.ExciseStamp);
 
-
-
             if (TypeAccessWait == eTypeAccess.NoDefine || TypeAccessWait < 0)
                 return false;
             if (!Access.GetRight(pUser, TypeAccessWait) && !pIsAccess)
@@ -283,8 +269,6 @@ namespace Front
                     break;
                 case eTypeAccess.DelReciept:
                     Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
-
-                    //NewReceipt(); //!!!TMP Трохи через Ж Пізніше зроблю краще.
                     SetCurReceipt(null);
 
                     TypeAccessWait = eTypeAccess.NoDefine;
@@ -313,17 +297,21 @@ namespace Front
                     SetStateView(eStateMainWindows.WaitAdmin);
                     break;
                 case eTypeAccess.AdminPanel:
-                    TypeAccessWait = eTypeAccess.NoDefine;
-                    SetStateView(eStateMainWindows.WaitInput);
-                    //Admin ad = new Admin(U, this,EF);
-                    Dispatcher.Invoke(new Action(() =>
-                    {
-                        ad.Init(pUser);
-                        ad.WindowState = WindowState.Maximized;
-                    }));
+                    TypeAccessWait = eTypeAccess.NoDefine;                    
+                    ShowAdmin(pUser);
                     break;
             }
             return true;
+        }
+
+        void ShowAdmin(ModelMID.DB.User pUser)
+        {
+            SetStateView(eStateMainWindows.WaitInput);
+            Dispatcher.Invoke(new Action(() =>
+            {
+                ad.Init(pUser);
+                ad.WindowState = WindowState.Maximized;
+            }));
         }
 
         public void GetBarCode(string pBarCode, string pTypeBarCode)

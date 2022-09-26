@@ -335,19 +335,33 @@ namespace Front.Equipments
                     }
                     el.SumDiscount = 0;
                     int i = 1;
+                    decimal FullQuantity = el.Quantity;
                     foreach (var p in PromotionPrice)
                     {
                         ReceiptWares c = el.Clone() as ReceiptWares;
                         if (c != null)
                         {
-                            c.Quantity = p.Quantity;
+                            if (p.Quantity <= FullQuantity)
+                            {
+                                c.Quantity = p.Quantity;
+                                FullQuantity -= p.Quantity;
+                            }
+                            else
+                            {
+                                c.Quantity = FullQuantity;
+                                FullQuantity = 0;                                
+                            }
+                            
                             c.Price = p.Price;
                             c.PriceDealer = p.Price;
                             c.Order = i++;
-                            var PVM = this.GetProductViewModel(c);
-                            if (PVM.Excises == null)
-                                PVM.Excises = new();
-                            Res.Add(PVM.ToReceiptItem());
+                            if (c.Quantity > 0)
+                            {
+                                var PVM = this.GetProductViewModel(c);
+                                if (PVM.Excises == null)
+                                    PVM.Excises = new();
+                                Res.Add(PVM.ToReceiptItem());
+                            }
                         }
                     }
                 }

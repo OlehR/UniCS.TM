@@ -10,6 +10,7 @@ using System.Media;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using Utils;
 
 namespace Front
 { 
@@ -89,6 +90,7 @@ namespace Front
         {            
             if(!IsSound)
                 return;
+            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, pS.ToString(),eTypeLog.Expanded);
             var FileName = Path.Combine(Global.PathCur,"Sound",App.Language.Name,pS.ToString()+ ".wav");
             if(!File.Exists(FileName))
                 FileName = Path.Combine(Global.PathCur, "Sound", "en", pS.ToString()+ ".wav");// $@"D:\MID\Sound\en\{pS}.wav";
