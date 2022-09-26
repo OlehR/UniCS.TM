@@ -79,19 +79,7 @@ namespace Front.Control
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ControlScaleWeightDouble"));
                 };
             };
-            Dispatcher.BeginInvoke(new ThreadStart(() =>
-            {
-                try
-                {
-                    if (EF != null && EF.GetListEquipment?.Count() > 0)
-                    {
-                        //ObservableCollection<Equipment> r = new ObservableCollection<Equipment>(EF.GetListEquipment);
-                        ListEquipment.ItemsSource = EF.GetListEquipment;// r;
-                    }
-                }
-                catch (Exception e) { }
-
-            }));
+            
         }
 
         public void Init(User pAdminUser = null)
@@ -106,6 +94,19 @@ namespace Front.Control
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DataOpenShift"));
             //TB_NameAdminUserOpenShift.Text = NameAdminUserOpenShift;
             //TB_DataOpenShift.Text= $"{DataOpenShift}";
+            Dispatcher.BeginInvoke(new ThreadStart(() =>
+            {
+                try
+                {
+                    if (EF != null && EF.GetListEquipment?.Count() > 0)
+                    {
+                        ObservableCollection<Equipment> r = new ObservableCollection<Equipment>(EF.GetListEquipment);
+                        ListEquipment.ItemsSource = r;
+                    }
+                }
+                catch (Exception e) { }
+
+            }));
 
         }
         private bool LogFilter(object item)

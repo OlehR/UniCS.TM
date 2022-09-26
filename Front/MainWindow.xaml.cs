@@ -337,11 +337,8 @@ namespace Front
                         EF.StopMultipleTone();
                     return;
                 }
-                //Під час відновлення чека
-                if (customWindow?.Id == eWindows.RestoreLastRecipt)
-                    return;
-                //Якщо очікуємо ввід ціни.
-                if (State == eStateMainWindows.WaitInputPrice) return;
+                //Ігноруємо в  Адмін панелі. //Під час відновлення чека  //Якщо очікуємо ввід ціни.
+                if (State == eStateMainWindows.AdminPanel || customWindow?.Id == eWindows.RestoreLastRecipt || State == eStateMainWindows.WaitInputPrice) return;
             }
 
             if ((pSMV != eStateMainWindows.ProcessPay && pSMV != eStateMainWindows.ProcessPrintReceipt) && (State == eStateMainWindows.ProcessPay || State == eStateMainWindows.ProcessPrintReceipt))
