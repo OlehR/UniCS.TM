@@ -674,34 +674,6 @@ namespace Front
 
         private void _ChangeCountWares(object sender, RoutedEventArgs e)
         {
-            //Background.Visibility = Visibility.Visible;
-            //BackgroundWares.Visibility = Visibility.Visible;
-            //KeyPad keyPad = new KeyPad(this);
-            //Button btn = sender as Button;
-            //if (btn.DataContext is ReceiptWares)
-            //{
-            //    decimal tempQuantity = 0;
-            //    ReceiptWares temp = btn.DataContext as ReceiptWares;
-            //    keyPad.productNameChanges.Text = Convert.ToString(temp.NameWares);
-            //    keyPad.Result = Convert.ToString(temp.Quantity);
-            //    if (keyPad.ShowDialog() == true)
-            //        tempQuantity = Convert.ToDecimal(keyPad.Result);
-            //    if (tempQuantity != 0)
-            //    {
-
-            //        temp.Quantity = tempQuantity;
-            //        if (curReceipt?.TypeReceipt == eTypeReceipt.Refund && tempQuantity > temp.MaxRefundQuantity)
-            //        {
-            //            temp.Quantity = (decimal)temp.MaxRefundQuantity;
-            //        }
-            //        if (curReceipt?.IsLockChange == false)
-            //        {
-            //            Bl.ChangeQuantity(temp, temp.Quantity);
-            //        }
-            //    }
-            //    Background.Visibility = Visibility.Collapsed;
-            //    BackgroundWares.Visibility = Visibility.Collapsed;
-            //}
             Button btn = sender as Button;
             if (btn.DataContext is ReceiptWares)
             {
@@ -733,10 +705,7 @@ namespace Front
                     Background.Visibility = Visibility.Collapsed;
                     BackgroundWares.Visibility = Visibility.Collapsed;
                 };
-
             }
-
-
         }
 
         private void _VolumeButton(object sender, RoutedEventArgs e)
@@ -1258,45 +1227,6 @@ namespace Front
             }
         }
 
-        /*
-        private void FindClientByPhoneClick(object sender, RoutedEventArgs e)
-        {
-            s.Play(eTypeSound.ScanCustomerCardOrEnterPhone);
-            //SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, eWindows.PhoneClient);
-            if (curReceipt == null)
-                NewReceipt();
-            Background.Visibility = Visibility.Visible;
-            BackgroundWares.Visibility = Visibility.Visible;
-            keyPad = new KeyPad(this);
-            keyPad.ValidationMask = @"^[0-9]{9,12}$";
-            keyPad.productNameChanges.Text = Convert.ToString("Введіть номер телефону");
-            //keyPad.Result = Convert.ToString(0); 0503720278
-            if (keyPad.ShowDialog() == true)
-            {
-                if (keyPad.Result.Length >= 10 )
-                {
-
-                    var r = new CustomWindowAnswer()
-                    {
-                        idReceipt = curReceipt,
-                        Id = eWindows.PhoneClient,
-                        IdButton = 1,
-                        Text = keyPad.Result,
-                        ExtData = CS?.RW
-                    };
-                    Bl.SetCustomWindows(r);                   
-                }
-            }
-            keyPad = null;
-            if (Client?.Wallet !=0 || Client?.SumMoneyBonus != 0 || Client?.SumBonus !=0)
-            {
-                ShowClientBonus.Visibility = Visibility.Visible;
-
-            }
-            Background.Visibility = Visibility.Collapsed;
-            BackgroundWares.Visibility = Visibility.Collapsed;
-        }
-        */
         private void FindClientByPhoneClick(object sender, RoutedEventArgs e)
         {
             s.Play(eTypeSound.ScanCustomerCardOrEnterPhone);
@@ -1311,9 +1241,7 @@ namespace Front
 
         private void FindClientByPhone(string pResult)
         {
-
-            //SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, eWindows.PhoneClient);
-            if (curReceipt == null)
+         if (curReceipt == null)
                 NewReceipt();
 
             if (pResult.Length >= 10)
