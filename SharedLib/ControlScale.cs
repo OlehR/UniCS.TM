@@ -146,7 +146,7 @@ namespace ModelMID
                 switch (StateScale)
                 {
                     case eStateScale.WaitClear:
-                        res = $"Очистіть вагу";
+                        res = $"Очистіть вагову платформу";
                         break;
                     case eStateScale.WaitGoods:                  
                         res = $"Покладіть товар на вагу";
