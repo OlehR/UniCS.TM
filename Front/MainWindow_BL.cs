@@ -88,7 +88,8 @@ namespace Front
 
                         if (pReceipt.GetLastWares != null)
                         {
-                            EF.ProgramingArticleAsync(new List<ReceiptWares>() { pReceipt.GetLastWares });
+                            ReceiptWares cl = (ReceiptWares) pReceipt.GetLastWares.Clone();
+                            EF.ProgramingArticleAsync(new List<ReceiptWares>() { cl});
                         }
                     }
                     // if (curReceipt?.Wares?.Count() == 0 && curReceipt.OwnBag==0d) CS.WaitClear();
@@ -103,7 +104,10 @@ namespace Front
                 try
                 {
                     ListWares = new ObservableCollection<ReceiptWares>(pReceipt?.Wares);
-                    Dispatcher.BeginInvoke(new ThreadStart(() => { WaresList.ItemsSource = ListWares; Recalc(); }));
+                    Dispatcher.BeginInvoke(new ThreadStart(() => {
+                        WaresList.ItemsSource = ListWares; 
+                        Recalc(); 
+                    }));
                 }
                 catch (Exception e)
                 {

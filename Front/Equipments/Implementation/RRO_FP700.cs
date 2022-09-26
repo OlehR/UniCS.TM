@@ -306,8 +306,7 @@ namespace Front.Equipments
         {
             var Res = new List<ReceiptItem>();
             foreach (var el in res)
-            {
-
+            {                
                 decimal PromotionQuantity = 0;
                 IEnumerable<WaresReceiptPromotion> PromotionPrice = null;
 
