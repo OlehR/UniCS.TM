@@ -55,6 +55,10 @@ namespace Front.Models
         /// </summary>
         WaitAdmin,
         /// <summary>
+        /// Відображаємо адмінпанель
+        /// </summary>
+        AdminPanel,
+        /// <summary>
         /// Очікуємо логін адміністратора
         /// </summary>
         WaitAdminLogin,

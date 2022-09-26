@@ -307,14 +307,16 @@ namespace Front
             return true;
         }
 
-        void ShowAdmin(ModelMID.DB.User pUser)
+        void ShowAdmin(User pUser)
         {
-            SetStateView(eStateMainWindows.WaitInput);
-            Dispatcher.Invoke(new Action(() =>
+            AdminControl.Init(pUser);
+            SetStateView(eStateMainWindows.AdminPanel);
+            
+            /*Dispatcher.Invoke(new Action(() =>
             {
                 ad.Init(pUser);
                 ad.WindowState = WindowState.Maximized;
-            }));
+            }));*/
         }
 
         public void GetBarCode(string pBarCode, string pTypeBarCode)
@@ -442,7 +444,6 @@ namespace Front
 
                 if (R.StateReceipt == eStateReceipt.Prepare)
                 {
-
                     try
                     {
                         if (R.TypeReceipt == eTypeReceipt.Sale)

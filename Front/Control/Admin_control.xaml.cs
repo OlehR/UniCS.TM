@@ -19,12 +19,12 @@ using System.Windows.Data;
 using System.Windows.Threading;
 using Utils;
 
-namespace Front
+namespace Front.Control
 {
     /// <summary>
     /// Interaction logic for Admin.xaml
     /// </summary>
-    public partial class Admin : Window, INotifyPropertyChanged
+    public partial class Admin_control : UserControl, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         EquipmentFront EF;
@@ -51,23 +51,12 @@ namespace Front
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ControlScaleWeightDouble"));
         }
 
-        public Admin(MainWindow pMW, EquipmentFront pEF)
+        public Admin_control() 
         {
-
-            MW = pMW;
-            //EF = EquipmentFront.GetEquipmentFront;
             Bl = BL.GetBL;
-            EF = pEF;
-
-            EF.OnControlWeight += (pWeight, pIsStable) =>
-            {
-                double r = pWeight;
-                ControlScaleWeightDouble = Convert.ToString(pWeight / 1000);
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ControlScaleWeightDouble"));
-            };
-
             InitializeComponent();
-            ProgramVersion.Text = $"Версія КСО: {MW.Version}";
+            this.DataContext = this;
+
             //поточний час
             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
@@ -75,16 +64,49 @@ namespace Front
             timer.Start();
         }
 
-        public void Init(User AdminUser = null)
+        public void Init(MainWindow pMW)
         {
-            this.AdminUser = AdminUser;
+            MW = pMW;
+            ProgramVersion.Text = $"Версія КСО: {MW?.Version}";
+            
+            if (MW != null)
+            {
+                EF = MW?.EF;
+                EF.OnControlWeight += (pWeight, pIsStable) =>
+                {
+                    double r = pWeight;
+                    ControlScaleWeightDouble = Convert.ToString(pWeight / 1000);
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ControlScaleWeightDouble"));
+                };
+            };
+            Dispatcher.BeginInvoke(new ThreadStart(() =>
+            {
+                try
+                {
+                    if (EF != null && EF.GetListEquipment?.Count() > 0)
+                    {
+                        //ObservableCollection<Equipment> r = new ObservableCollection<Equipment>(EF.GetListEquipment);
+                        ListEquipment.ItemsSource = EF.GetListEquipment;// r;
+                    }
+                }
+                catch (Exception e) { }
+
+            }));
+        }
+
+        public void Init(User pAdminUser = null)
+        {
+            if (pAdminUser != null)
+                AdminUser = pAdminUser;
+
             //adminastratorName.Text = AdminUser.NameUser;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClosedShift"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AdminUser"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("NameAdminUserOpenShift"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DataOpenShift"));
-            if (EF != null)
-                ListEquipment.ItemsSource = new ObservableCollection<Equipment>(EF.GetListEquipment);
+            //TB_NameAdminUserOpenShift.Text = NameAdminUserOpenShift;
+            //TB_DataOpenShift.Text= $"{DataOpenShift}";
+
         }
         private bool LogFilter(object item)
         {
@@ -93,6 +115,7 @@ namespace Front
             else
                 return ((item as ParsLog).LineLog.IndexOf(TypeLog, StringComparison.OrdinalIgnoreCase) >= 0);
         }
+
         private bool ReceiptFilter(object item)
         {
 
@@ -112,7 +135,7 @@ namespace Front
         private void Exit_Click(object sender, RoutedEventArgs e)
         {
             MW.SetStateView(Models.eStateMainWindows.StartWindow);
-            this.WindowState = WindowState.Minimized;
+            //this.WindowState = WindowState.Minimized;
             // this.NavigationService.GoBack();
         }
 
@@ -196,10 +219,11 @@ namespace Front
             MW.Bl.db.SetConfig<DateTime>("DateAdminSSC", DateTime.Now);
             MW.Bl.db.SetConfig<string>("CodeAdminSSC", AdminUser.BarCode);
             MW.Bl.StartWork(Global.IdWorkPlace, AdminUser.BarCode);
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClosedShift"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("NameAdminUserOpenShift"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DataOpenShift"));
+            //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClosedShift"));
+            //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("NameAdminUserOpenShift"));
+            //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DataOpenShift"));
             OpenShiftShow.Visibility = Visibility.Visible;
+            Init();
         }
 
         private void WorkFinish_Click(object sender, RoutedEventArgs e)
@@ -207,10 +231,11 @@ namespace Front
             MW.AdminSSC = null;
             MW.Bl.db.SetConfig<string>("CodeAdminSSC", string.Empty);
             MW.Bl.StoptWork(Global.IdWorkPlace);
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClosedShift"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("NameAdminUserOpenShift"));
+            //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClosedShift"));
+            //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("NameAdminUserOpenShift"));
             //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DataOpenShift"));
             OpenShiftShow.Visibility = Visibility.Collapsed;
+            Init();
         }
 
         private void CloseDay_Click(object sender, RoutedEventArgs e)
@@ -284,7 +309,7 @@ namespace Front
                 case "Вихід":
                     MW.SetStateView(Models.eStateMainWindows.StartWindow);
                     TabAdmin.SelectedIndex=0;
-                    this.WindowState = WindowState.Minimized;
+                    //this.WindowState = WindowState.Minimized;
                     break;
                 default:
                     
@@ -350,8 +375,9 @@ namespace Front
 
         private void PaymentDetailsAdminPanelButton(object sender, RoutedEventArgs e)
         {
+            //TMP!!!
             //MessageBox.Show("Реквізити на оплату");
-            TerminalPaymentInfo terminalPaymentInfo = new TerminalPaymentInfo(this);
+            TerminalPaymentInfo terminalPaymentInfo = new TerminalPaymentInfo(MW);
             if (terminalPaymentInfo.ShowDialog() == true)
             {
                 var Res = terminalPaymentInfo.enteredDataFromTerminal;
@@ -368,7 +394,7 @@ namespace Front
         {
 
             Bl.CreateRefund(curReceipt);
-            this.WindowState = WindowState.Minimized;
+            //this.WindowState = WindowState.Minimized;
             //Close();
         }
 
@@ -382,7 +408,7 @@ namespace Front
         private void ReturnAllCheckButton(object sender, RoutedEventArgs e)
         {
             Bl.CreateRefund(curReceipt, true);
-            this.WindowState = WindowState.Minimized;
+            //this.WindowState = WindowState.Minimized;
             //MessageBox.Show("Повернути весь чек");
         }
 
@@ -447,7 +473,8 @@ namespace Front
 
         private void CalibrationControlScaleButton(object sender, RoutedEventArgs e)
         {
-            KeyPad keyPad = new KeyPad(this);
+            //!!!TMP
+            KeyPad keyPad = new KeyPad(MW);
             keyPad.productNameChanges.Text = "Введіть вагу в грамах";
             if (keyPad.ShowDialog() == true)
                 EF.ControlScaleCalibrateMax(Convert.ToDouble(keyPad.Result));
@@ -470,7 +497,7 @@ namespace Front
         private void CloneReceipt(object sender, RoutedEventArgs e)
         {
             Bl.CreateRefund(curReceipt, true, false);
-            this.WindowState = WindowState.Minimized;
+            //this.WindowState = WindowState.Minimized;
             //MessageBox.Show("Клонування чеку");
         }
 

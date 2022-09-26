@@ -32,14 +32,14 @@ namespace Front
         private readonly object _locker = new object();
         Access Access = Access.GetAccess();
         public BL Bl;
-        EquipmentFront EF;
+        public EquipmentFront EF;
         public ControlScale CS { get; set; }
 
         Sound s = Sound.GetSound();
         public User AdminSSC { get; set; } = null;
         public DateTime DTAdminSSC { get; set; }
 
-        Admin ad;
+        //Admin ad;
         //public int TextBlockFontSize { get; set; } = 40;
 
         public Receipt curReceipt;//{ get; set; } = null;
@@ -245,10 +245,12 @@ namespace Front
             MoneySum = 0;
             Volume = true;
 
-            ad = new Admin(this, EF);
-            ad.WindowState = WindowState.Minimized;
-            ad.Show();
+
+            //ad = new Admin(this, EF);
+            //ad.WindowState = WindowState.Minimized;
+            //ad.Show();
             InitializeComponent();
+            AdminControl.Init(this);
 
             //Провіряємо чи зміна відкрита.
             string BarCodeAdminSSC = Bl.db.GetConfig<string>("CodeAdminSSC");
@@ -354,7 +356,7 @@ namespace Front
                 var r = Dispatcher.BeginInvoke(new ThreadStart(() =>
                 {
                     if ((EF.StatCriticalEquipment != eStateEquipment.On || !Bl.ds.IsReady || IsLockSale || CS.IsProblem || curReceipt?.IsNeedExciseStamp == true || IsChoicePrice) &&
-                       pSMV != eStateMainWindows.WaitAdminLogin)
+                       pSMV != eStateMainWindows.WaitAdminLogin && pSMV != eStateMainWindows.AdminPanel)
                     {
                         eTypeAccess Res = eTypeAccess.NoDefine;
                         if (EF.StatCriticalEquipment != eStateEquipment.On) Res = eTypeAccess.ErrorEquipment;
@@ -472,6 +474,7 @@ namespace Front
                     ExciseStampNameWares.Visibility = Visibility.Collapsed;
                     WaitAdminTitle.Visibility = Visibility.Visible;
 
+                    AdminControl.Visibility = (State == eStateMainWindows.AdminPanel?Visibility.Visible:  Visibility.Collapsed);
 
                     //StartVideo.Stop();
 
@@ -942,7 +945,7 @@ namespace Front
                 ShowErrorMessage("Не вірний логін чи пароль");
                 return;
             }
-            SetStateView(eStateMainWindows.WaitAdmin);
+            //SetStateView(eStateMainWindows.WaitAdmin);
             Bl.OnAdminBarCode?.Invoke(U);
         }
 

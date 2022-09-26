@@ -12,9 +12,6 @@
     <Compile Update="AddWeightWares.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Admin.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Update="Control\NumericPad.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -29,7 +26,7 @@
     <Page Update="AddWeightWares.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Admin.xaml">
+    <Page Update="Control\Admin_control.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Control\NumericPad.xaml">

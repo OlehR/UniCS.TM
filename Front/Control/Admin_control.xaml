@@ -1,15 +1,13 @@
-﻿<Window x:Class="Front.Admin"
+﻿<UserControl x:Class="Front.Control.Admin_control"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:Front"
-      mc:Ignorable="d" 
-      Height="768" Width="1024"
-      WindowStyle="None"
-      WindowState="Maximized"
-      Title="Admin">
-    <Window.Resources>
+xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Type=control:Admin_control}"
+             mc:Ignorable="d" 
+      Height="1080" Width="1920"
+      >
+    <UserControl.Resources>
         <Style TargetType="Button" x:Key="RoundButton">
             <Style.Resources>
                 <Style TargetType="Border">
@@ -204,7 +202,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-    </Window.Resources>
+    </UserControl.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -212,13 +210,11 @@
             <RowDefinition Height="10*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0"  Text="{Binding KasaNumber, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" 
+        <TextBlock Grid.Row="0"  Text="{Binding KasaNumber}" 
                    Name="kasaNumberTextBlock" FontSize="24" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,15,0,0"/>
         <TextBlock Grid.Row="0" Name="ProgramVersion" FontSize="24" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="15,0,0,0"/>
         <Label Grid.Row="0"  Content="Error" Name="lblTime" FontSize="48" HorizontalAlignment="Right" VerticalAlignment="Top" />
-        <TextBlock Grid.Row="0"  Text="{Binding AdminUser.NameUser, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Name="adminastratorName" FontSize="20" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+        <TextBlock Grid.Row="0"  Text="{Binding AdminUser.NameUser}" Name="adminastratorName" FontSize="20" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
         <TabControl Grid.Row="1" Name="TabAdmin" Margin="20" SelectionChanged="TabControl_SelectionChanged" >
             <TabItem Header="Зміна" >
                 <Grid >
@@ -249,22 +245,18 @@
                     <GroupBox Grid.Column="2" Header="Зміна" Margin="10, 20 , 20 ,20"  >
                         <StackPanel>
                             <StackPanel x:Name="OpenShiftShow" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <TextBlock Text="{Binding NameAdminUserOpenShift, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}"/>
-                                <TextBlock Text="{Binding DataOpenShift, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}"></TextBlock>
+                                <TextBlock x:Name="TB_NameAdminUserOpenShift" Text="{Binding NameAdminUserOpenShift}"/>
+                                <TextBlock x:Name="TB_DataOpenShift" Text="{Binding DataOpenShift}"></TextBlock>
                             </StackPanel>
                             <Button x:Name="WorkStart"  Content="Почати зміну"      Width="280" Click="WorkStart_Click">
                                 <Button.Style>
                                     <Style BasedOn="{StaticResource Default}" TargetType="Button">
                                         <Setter Property="IsEnabled" Value="True"/>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding ClosedShift, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                            <DataTrigger Binding="{Binding ClosedShift}" Value="True">
                                                 <Setter Property="IsEnabled" Value="True" />
                                             </DataTrigger>
-                                            <DataTrigger Binding="{Binding ClosedShift, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                            <DataTrigger Binding="{Binding ClosedShift}" Value="False">
                                                 <Setter Property="IsEnabled" Value="False" />
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -276,12 +268,10 @@
                                     <Style BasedOn="{StaticResource Default}" TargetType="Button">
                                         <Setter Property="IsEnabled" Value="True"/>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding ClosedShift, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                            <DataTrigger Binding="{Binding ClosedShift}" Value="True">
                                                 <Setter Property="IsEnabled" Value="False" />
                                             </DataTrigger>
-                                            <DataTrigger Binding="{Binding ClosedShift, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                            <DataTrigger Binding="{Binding ClosedShift}" Value="False">
                                                 <Setter Property="IsEnabled" Value="True" />
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -413,27 +403,27 @@
                                                             <Style.Triggers>
                                                                 <!--Якщо сканер-->
                                                                 <DataTrigger Binding="{Binding Type}" Value="Scaner">
-                                                                    <Setter Property="Source" Value="icons\Scaner.png" />
+                                                                    <Setter Property="Source" Value="\icons\Scaner.png" />
                                                                 </DataTrigger>
                                                                 <!--Якщо Вага-->
                                                                 <DataTrigger Binding="{Binding Type}" Value="Scale">
-                                                                    <Setter Property="Source" Value="icons\Scale.png" />
+                                                                    <Setter Property="Source" Value="\icons\Scale.png" />
                                                                 </DataTrigger>
                                                                 <!--Якщо контрольна вага-->
                                                                 <DataTrigger Binding="{Binding Type}" Value="ControlScale">
-                                                                    <Setter Property="Source" Value="icons\ControlScale.png" />
+                                                                    <Setter Property="Source" Value="\icons\ControlScale.png" />
                                                                 </DataTrigger>
                                                                 <!--Якщо банківський термінал-->
                                                                 <DataTrigger Binding="{Binding Type}" Value="BankTerminal">
-                                                                    <Setter Property="Source" Value="icons\BankTerminal.png" />
+                                                                    <Setter Property="Source" Value="\icons\BankTerminal.png" />
                                                                 </DataTrigger>
                                                                 <!--Якщо прапорець-->
                                                                 <DataTrigger Binding="{Binding Type}" Value="Signal">
-                                                                    <Setter Property="Source" Value="icons\Signal.png" />
+                                                                    <Setter Property="Source" Value="\icons\Signal.png" />
                                                                 </DataTrigger>
                                                                 <!--Якщо Фіскальний апарат-->
                                                                 <DataTrigger Binding="{Binding Type}" Value="RRO">
-                                                                    <Setter Property="Source" Value="icons\RRO.png" />
+                                                                    <Setter Property="Source" Value="\icons\RRO.png" />
                                                                 </DataTrigger>
                                                             </Style.Triggers>
                                                         </Style>
@@ -442,10 +432,10 @@
                                             </Button>
 
                                             <Button Grid.Column="4" Height="60" Width="60" Style="{StaticResource Default}" Click="Test_Click">
-                                                <Image Source="icons\Ok.png"/>
+                                                <Image Source="\icons\Ok.png"/>
                                             </Button>
                                             <Button Grid.Column="5" Height="60" Width="60" Style="{StaticResource Default}" Click="Info_Click">
-                                                <Image Source="icons\Inform.png"/>
+                                                <Image Source="\icons\Inform.png"/>
                                             </Button>
 
                                             <CheckBox Height="40" Grid.Column="6" HorizontalAlignment="Center" Style="{DynamicResource OrangeSwitchStyleCheckBox}" VerticalAlignment="Center" />
@@ -460,8 +450,7 @@
                                 Style="{StaticResource Default}" Content="Калібрування" HorizontalAlignment="Left" Margin="5" Grid.Row="1"     />
                         <Button Name="TarControlScale" Click="TarControlScaleButton"
                                 Style="{StaticResource Default}" Content="Тарування" HorizontalAlignment="Left" Margin="5" Grid.Row="1"     />
-                        <TextBlock Name="ControlScaleWeightHaml"  Text="{Binding ControlScaleWeightDouble, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}"  FontSize="28" Margin="5" Grid.Row="1"    />
+                        <TextBlock Name="ControlScaleWeightHaml"  Text="{Binding ControlScaleWeightDouble}"  FontSize="28" Margin="5" Grid.Row="1"    />
                     </StackPanel>
                     <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" >
                         <Button Name="RefreshData" Style="{StaticResource Default}"  
@@ -493,7 +482,7 @@
                         <RowDefinition Height="*"></RowDefinition>
                     </Grid.RowDefinitions>
                     <StackPanel Orientation="Horizontal">
-                        <DatePicker Name="dataHistori" FontSize="30" IsTodayHighlighted="True" SelectedDate="{Binding DateSoSearch, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+                        <DatePicker Name="dataHistori" FontSize="30" IsTodayHighlighted="True" SelectedDate="{Binding DateSoSearch}"
                                     Width="200" Height="50" HorizontalAlignment="Left"></DatePicker>
                         <Button Width="300" Height="80" Margin="10,0,0,0" Style="{StaticResource Default}" Click="FindChecksByDate">
                             Знайти
@@ -761,7 +750,7 @@
                                 <Style BasedOn="{StaticResource Default}" TargetType="Button">
                                     <Setter Property="IsEnabled" Value="False"/>
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsPrintReceipt, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                        <DataTrigger Binding="{Binding IsPrintReceipt}" Value="True">
                                             <Setter Property="IsEnabled" Value="True"/>
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -775,7 +764,7 @@
                                 <Style BasedOn="{StaticResource Default}" TargetType="Button">
                                     <Setter Property="IsEnabled" Value="False"/>
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsInputPay, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                        <DataTrigger Binding="{Binding IsInputPay}" Value="True">
                                             <Setter Property="IsEnabled" Value="True"/>
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -789,7 +778,7 @@
                                 <Style BasedOn="{StaticResource Default}" TargetType="Button">
                                     <Setter Property="IsEnabled" Value="False"/>
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsSendTo1C, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                        <DataTrigger Binding="{Binding IsSendTo1C}" Value="True">
                                             <Setter Property="IsEnabled" Value="True"/>
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -803,7 +792,7 @@
                                 <Style BasedOn="{StaticResource Default}" TargetType="Button">
                                     <Setter Property="IsEnabled" Value="False"/>
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsCreateReturn, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                        <DataTrigger Binding="{Binding IsCreateReturn}" Value="True">
                                             <Setter Property="IsEnabled" Value="True"/>
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -816,7 +805,7 @@
                                 <Style BasedOn="{StaticResource Default}" TargetType="Button">
                                     <Setter Property="IsEnabled" Value="False"/>
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsCreateReturn, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                        <DataTrigger Binding="{Binding IsCreateReturn}" Value="True">
                                             <Setter Property="IsEnabled" Value="True"/>
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -885,4 +874,4 @@
         <!--<Button Grid.Row="1" x:Name="Exit" Style="{StaticResource Default}" Content="Вихід" Height="70" Width="110" Margin="0, 15,20,0"  HorizontalAlignment="Right" VerticalAlignment="Top"  Click="Exit_Click"/>-->
 
     </Grid>
-</Window>
+</UserControl>

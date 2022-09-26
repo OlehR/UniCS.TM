@@ -215,6 +215,7 @@
 
             </Grid>
         </Border>
+        
         <Border Grid.Row="2"  Background="White" BorderThickness="0,0,0,1" >
             <Border.Effect>
                 <DropShadowEffect ShadowDepth="5" BlurRadius="4" Color="#f2f2f2"/>
@@ -627,8 +628,7 @@
                 <WebBrowser Height="200" Name="myWebBrowser" ></WebBrowser>
                 
             </Grid>-->
-
-
+           
             <!-- цифрова клавіатура -->
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
@@ -639,7 +639,7 @@
                     <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
                 </Border.Effect>
                 <uc:NumericPad x:Name="InputNumberPhone"   />
-            </Border>
+            </Border>  
 
             <!-- Кастомне вікно    -->
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
@@ -650,9 +650,6 @@
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
                 </Border.Effect>
-
-
-
                 <Grid >
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -1889,6 +1886,16 @@
 
             </Grid>
         </Border>
+        
+        <!-- Адмінка -->
+        <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
+                Grid.Row="0" Grid.RowSpan="5"
+                Grid.Column="0" Grid.ColumnSpan="4"
+                 Name="AdminPanel" Visibility="Visible" Grid.ZIndex="4" 
+                CornerRadius="10" VerticalAlignment="Center" HorizontalAlignment="Center">           
+            <uc:Admin_control x:Name="AdminControl"/>
+        </Border>
+
     </Grid>
 
 </Window>
