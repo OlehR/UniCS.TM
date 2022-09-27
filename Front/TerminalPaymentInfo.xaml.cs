@@ -13,6 +13,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ModelMID;
+
 
 namespace Front
 {
@@ -23,7 +25,7 @@ namespace Front
     {
         public event PropertyChangedEventHandler PropertyChanged;
     
-        public EnteredDataFromTerminal enteredDataFromTerminal { get; set; }
+        public Payment enteredDataFromTerminal { get; set; }
         public bool CorrectWriteTextOne { get; set; } = false;
         public bool CorrectWriteTextTwo { get; set; } = false;
         public bool CorrectWriteTextThree { get; set; } = false;
@@ -38,19 +40,21 @@ namespace Front
         }
 
         private void Cancel(object sender, RoutedEventArgs e)
-        {
-            
+        {           
             
             this.DialogResult = false;
         }
 
         private void Ok(object sender, RoutedEventArgs e)
         {
-            enteredDataFromTerminal = new EnteredDataFromTerminal();
-            enteredDataFromTerminal.CardNumber = NameCardNumber.Text;
-            enteredDataFromTerminal.AuthorizationCode = NameAuthorizationCode.Text;
-            enteredDataFromTerminal.RRN = NameRRN.Text;
-            
+            enteredDataFromTerminal = new()
+            {
+                IsSuccess = true,
+                IssuerName = "????",
+                NumberCard = $"XXXXXXXXXXXX{NameCardNumber.Text}",
+                NumberReceipt = long.Parse(NameAuthorizationCode.Text),
+                CodeAuthorization = NameRRN.Text                
+            };            
             this.DialogResult = true;
         }
 

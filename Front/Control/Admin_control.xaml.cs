@@ -379,9 +379,16 @@ namespace Front.Control
             //TMP!!!
             //MessageBox.Show("Реквізити на оплату");
             TerminalPaymentInfo terminalPaymentInfo = new TerminalPaymentInfo(MW);
-            if (terminalPaymentInfo.ShowDialog() == true)
-            {
+            var R = MW?.curReceipt;
+            if (terminalPaymentInfo.ShowDialog() == true && R!=null)
+            {               
                 var Res = terminalPaymentInfo.enteredDataFromTerminal;
+                Res.SetIdReceipt(R);
+                MW.SetManualPay(Res);
+
+
+
+
             }
         }
 

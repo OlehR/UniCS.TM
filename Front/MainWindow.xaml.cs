@@ -151,7 +151,7 @@ namespace Front
                 tb.TextAlignment = TextAlignment.Center;
                 tb.FontSize = 24;
                 tb.Margin = new Thickness(10);
-               // WaitAdminTitle.Visibility = Visibility.Visible;
+                // WaitAdminTitle.Visibility = Visibility.Visible;
                 switch (TypeAccessWait)
                 {
                     case eTypeAccess.DelWares:
@@ -226,7 +226,7 @@ namespace Front
         {
 
             CS = new ControlScale();
-         
+
             var fc = new List<FlagColor>();
             Config.GetConfiguration().GetSection("MID:FlagColor").Bind(fc);
             foreach (var el in fc)
@@ -415,11 +415,11 @@ namespace Front
                         customWindow = new CustomWindow(eWindows.ExciseStamp);
                     else
                         customWindow = (State == eStateMainWindows.WaitCustomWindows ? pCW : null);
-                    
-                    if(State == eStateMainWindows.StartWindow)
-                        Volume = true;
 
-                    s.Play(State, TypeAccessWait, CS.StateScale, 0);
+                    if (State == eStateMainWindows.StartWindow)
+                        Volume = true;
+                    if(TypeAccessWait==eTypeAccess.FixWeight || !IsConfirmAdmin)
+                     s.Play(State, TypeAccessWait, CS.StateScale, 0);
                     //if ((State == eStateMainWindows.WaitAdmin || State == eStateMainWindows.WaitAdminLogin) && TypeAccessWait == eTypeAccess.ExciseStamp)
                     //    customWindow = new CustomWindow(pCW, pStr);
 
@@ -471,7 +471,7 @@ namespace Front
                     ExciseStampNameWares.Visibility = Visibility.Collapsed;
                     WaitAdminTitle.Visibility = Visibility.Visible;
 
-                    AdminControl.Visibility = (State == eStateMainWindows.AdminPanel?Visibility.Visible:  Visibility.Collapsed);
+                    AdminControl.Visibility = (State == eStateMainWindows.AdminPanel ? Visibility.Visible : Visibility.Collapsed);
 
                     //StartVideo.Stop();
 
@@ -643,7 +643,7 @@ namespace Front
                 SetPropertyChanged();
             }
         }
-       
+
         private void _Delete(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
@@ -907,7 +907,7 @@ namespace Front
                         if (price.IsConfirmAge)
                             Bl.AddEventAge(curReceipt);
                         AddWares(CurWares.CodeWares, CurWares.CodeUnit, QuantityCigarettes, price.price);
-                        QuantityCigarettes = 1;                       
+                        QuantityCigarettes = 1;
                     }
                 }
             }
@@ -1105,10 +1105,26 @@ namespace Front
             TerminalPaymentInfo terminalPaymentInfo = new TerminalPaymentInfo(this);
             if (terminalPaymentInfo.ShowDialog() == true)
             {
+                var Res = terminalPaymentInfo.enteredDataFromTerminal;
+                Res.SetIdReceipt(curReceipt);
+                SetManualPay(terminalPaymentInfo.enteredDataFromTerminal);
                 //отримуємо введені дані
-                ShowErrorMessage(terminalPaymentInfo.enteredDataFromTerminal.AuthorizationCode);
+                //ShowErrorMessage(terminalPaymentInfo.enteredDataFromTerminal.AuthorizationCode);
                 //                MessageBox.Show(terminalPaymentInfo.enteredDataFromTerminal.AuthorizationCode);//як приклад
             }
+        }
+
+        public void SetManualPay(Payment pPay)
+        {
+            pPay.SumPay = pPay.PosPaid = curReceipt.SumTotal;
+            Bl.db.ReplacePayment(new List<Payment>() { pPay });
+
+            curReceipt.StateReceipt = eStateReceipt.Pay;
+            curReceipt.CodeCreditCard = pPay.NumberCard;
+            curReceipt.NumberReceiptPOS = pPay.NumberReceipt;
+            curReceipt.SumCreditCard = pPay.SumPay;
+            Bl.db.ReplaceReceipt(curReceipt);
+            curReceipt.Payment = new List<Payment>() { pPay };
         }
 
         private void CustomWindowClickButton(object sender, RoutedEventArgs e)

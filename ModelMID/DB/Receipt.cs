@@ -66,7 +66,7 @@ namespace ModelMID
         public decimal PercentDiscount { get; set; }
         public decimal SumDiscount { get; set; }
         public decimal SumRest { get; set; }
-
+        public decimal SumTotal { get { return SumReceipt - SumDiscount; } }
         /// <summary>
         /// Оплачено Готівкою
         /// </summary>

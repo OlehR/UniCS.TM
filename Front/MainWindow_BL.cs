@@ -244,7 +244,11 @@ namespace Front
 
             //IsIgnoreExciseStamp = Access.GetRight(pUser, eTypeAccess.ExciseStamp);
             if (TypeAccessWait == eTypeAccess.FixWeight)
+            {
                 IsConfirmAdmin = Access.GetRight(pUser, eTypeAccess.FixWeight);
+                if (State == eStateMainWindows.BlockWeight)
+                    SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.FixWeight);
+            }
             else
               if (TypeAccessWait == eTypeAccess.ExciseStamp)
                 IsConfirmAdmin = Access.GetRight(pUser, eTypeAccess.ExciseStamp);
