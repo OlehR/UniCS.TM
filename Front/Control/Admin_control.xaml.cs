@@ -1,5 +1,6 @@
 ﻿using Front.Equipments;
 using Front.Equipments.Ingenico;
+using Front.Models;
 using ModelMID;
 using ModelMID.DB;
 using SharedLib;
@@ -385,10 +386,6 @@ namespace Front.Control
                 var Res = terminalPaymentInfo.enteredDataFromTerminal;
                 Res.SetIdReceipt(R);
                 MW.SetManualPay(Res);
-
-
-
-
             }
         }
 
@@ -402,8 +399,7 @@ namespace Front.Control
         {
 
             Bl.CreateRefund(curReceipt);
-            //this.WindowState = WindowState.Minimized;
-            //Close();
+            MW.SetStateView(eStateMainWindows.WaitInput);            
         }
 
         //Якогось не працює через get як я хочу :) Тому пока реалізація через Ж.
@@ -505,8 +501,7 @@ namespace Front.Control
         private void CloneReceipt(object sender, RoutedEventArgs e)
         {
             Bl.CreateRefund(curReceipt, true, false);
-            //this.WindowState = WindowState.Minimized;
-            //MessageBox.Show("Клонування чеку");
+            MW.SetStateView(eStateMainWindows.WaitInput);
         }
 
         private void ShowDetailsReceiptClick(object sender, RoutedEventArgs e)

@@ -442,7 +442,7 @@
                                         </TextBlock.Style>
                                     </TextBlock>
                                 </StackPanel>
-                                <TextBlock Grid.Column="3" Text="{Binding PriceDealer, StringFormat=0.00 }"  >
+                                <TextBlock Grid.Column="3" Text="{Binding Price, StringFormat=0.00 }"  >
                                     <TextBlock.Style>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="HorizontalAlignment" Value="Center"/>
