@@ -53,7 +53,9 @@ namespace Front
                 IssuerName = "????",
                 NumberCard = $"XXXXXXXXXXXX{NameCardNumber.Text}",
                 NumberReceipt = long.Parse(NameAuthorizationCode.Text),
-                CodeAuthorization = NameRRN.Text                
+                CodeAuthorization = NameRRN.Text,
+                TypePay= eTypePay.Card,
+                NumberSlip = "123456"
             };            
             this.DialogResult = true;
         }
