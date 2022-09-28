@@ -321,7 +321,7 @@ namespace Front
         {
 
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"pSMV={pSMV}/{State}, pTypeAccess={pTypeAccess}/{TypeAccessWait}, pRW ={pRW} , pCW={pCW},  pS={pS}", eTypeLog.Full);
-
+            SetPropertyChanged();
 
             if (State == eStateMainWindows.WaitOwnBag && pTypeAccess == eTypeAccess.FixWeight)
                 return;
@@ -395,7 +395,11 @@ namespace Front
                     }
 
                     //Якщо 
-                    if (pSMV == eStateMainWindows.NotDefine) return;
+                    if (pSMV == eStateMainWindows.NotDefine)
+                    {
+                        SetPropertyChanged();
+                        return;
+                    }
                     else
                     {
                         State = pSMV;

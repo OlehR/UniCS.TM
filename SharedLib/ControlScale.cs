@@ -324,9 +324,6 @@ namespace ModelMID
         /// <param name="pIsStable">Чи платформа стабільна</param>
         public void OnScalesData(double pWeight, bool pIsStable)
         {          
-            // не записуємо в лог якщо зміни не значні.
-            if(Math.Abs(curFullWeight - pWeight)>1)
-                OnScalesLog("OnScalesData", $"Weight=>{pWeight} isStable=>{pIsStable}");
             // !!! Ідея не вдала. Після стабілізації ваги пропускаємо кілька подій Оскільки контрольна вага бреше щодо pIsStable
             /*   if ((DateTime.Now - LastStabilized).TotalSeconds < 600)
                {
@@ -335,14 +332,19 @@ namespace ModelMID
                }*/
             //Сподіваюсь ця буде вдаліша.
             if (!pIsStable && Math.Abs(curFullWeight - pWeight) <= 2)
-                pIsStable = true;
-                            
-            curFullWeight = pWeight;
-            eStateScale NewStateScale = StateScale;
+                pIsStable = true;   
 
             //(pWeight, pIsStable) = MidlWeight.AddValue(pWeight, pIsStable);
 
             СurrentlyWeight = pWeight-BeforeWeight;
+
+            // не записуємо в лог якщо зміни не значні.
+            if (Math.Abs(curFullWeight - pWeight) > 1)
+                OnScalesLog("OnScalesData", $"Weight=>{pWeight} isStable=>{pIsStable}");
+
+            curFullWeight = pWeight;
+            eStateScale NewStateScale = StateScale;
+
             if ((BeforeWeight == 0d && WaitWeight == null) || RW == null ) // Якщо товару на вазі не повинно бути (Завершений/анулюваний/Новий чек )
             {
                 //if (StateScale != eStateScale.WaitGoods)
