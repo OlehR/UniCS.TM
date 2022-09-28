@@ -76,6 +76,8 @@ namespace Front.Equipments.Implementation
             });
         }
 
+        public override void StartWeight() { }
+
         public override StatusEquipment TestDevice()
         {
             return new StatusEquipment(Model, State, "Ok");
