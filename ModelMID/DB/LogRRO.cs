@@ -25,6 +25,7 @@ namespace ModelMID.DB
 
     public class LogRRO: IdReceipt
     {
+        public LogRRO() { }
         public LogRRO(IdReceipt pIdReceipt) : base(pIdReceipt) { }
         public int NumberOperation { get; set; }
         public string FiscalNumber { get; set; }
