@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Type=control:Admin_control}"
              mc:Ignorable="d"
-             
+             MinHeight="768" MinWidth="1024" 
       >
     <UserControl.Resources>
         <Style TargetType="Button" x:Key="RoundButton">
@@ -205,377 +205,377 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
     </UserControl.Resources>
 
     <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="10*"/>
-        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="10*"/>
+            </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0"  Text="{Binding KasaNumber}" 
+            <TextBlock Grid.Row="0"  Text="{Binding KasaNumber}" 
                    Name="kasaNumberTextBlock" FontSize="24" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,15,0,0"/>
-        <TextBlock Grid.Row="0" Name="ProgramVersion" FontSize="24" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="15,0,0,0"/>
-        <Label Grid.Row="0"  Content="Error" Name="lblTime" FontSize="48" HorizontalAlignment="Right" VerticalAlignment="Top" />
-        <TextBlock Grid.Row="0"  Text="{Binding AdminUser.NameUser}" Name="adminastratorName" FontSize="20" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
-        <TabControl Grid.Row="1" Name="TabAdmin" Margin="20" SelectionChanged="TabControl_SelectionChanged" >
-            <TabItem Header="Зміна" >
-                <Grid >
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0" Name="ProgramVersion" FontSize="24" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="15,0,0,0"/>
+            <Label Grid.Row="0"  Content="Error" Name="lblTime" FontSize="48" HorizontalAlignment="Right" VerticalAlignment="Top" />
+            <TextBlock Grid.Row="0"  Text="{Binding AdminUser.NameUser}" Name="adminastratorName" FontSize="20" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+            <TabControl Grid.Row="1" Name="TabAdmin" Margin="20" SelectionChanged="TabControl_SelectionChanged" >
+                <TabItem Header="Зміна" >
+                    <Grid >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
 
-                    <GroupBox Grid.Column="0" Header="POS-термінал" Margin="20, 20 , 10 ,20">
-                        <StackPanel>
-                            <Button x:Name="POS_X" Style="{StaticResource Default}" Content="X звіт" Width="280"  Click="POS_X_Click"/>
-                            <Button x:Name="POS_Z" Style="{StaticResource Default}" Content="Z звіт" Width="280" Click="POS_Z_Click"/>
-                            <Button x:Name="POS_X_Copy" Style="{StaticResource Default}" Content="X звіт(копія)" Width="280" Click="POS_X_Copy_Click"/>
-                        </StackPanel>
-                    </GroupBox>
-                    <GroupBox Grid.Column="1" Header="Фіскальний реєстратор" Margin="10, 20, 10, 20">
-                        <StackPanel>
-                            <Button x:Name="EKKA_X" Style="{StaticResource Default}" Content="X звіт"      VerticalAlignment="Top"  Width="280" Click="EKKA_X_Click"/>
-                            <Button x:Name="EKKA_Z" Style="{StaticResource Default}" Content="Z звіт"    Width="280" Click="EKKA_Z_Click"/>
-                            <Button x:Name="EKKA_Z_Period" Style="{StaticResource Default}" Content="Z-звіт(Періодичний))"      Width="280" Click="EKKA_Z_Period_Click"/>
-                            <Button x:Name="EKKA_Copy" Style="{StaticResource Default}" Content="Копія Квитанції"      VerticalAlignment="Top" Width="280" Click="EKKA_Copy_Click"/>
-                        </StackPanel>
-
-
-
-                    </GroupBox>
-                    <GroupBox Grid.Column="2" Header="Зміна" Margin="10, 20 , 20 ,20"  >
-                        <StackPanel>
-                            <StackPanel x:Name="OpenShiftShow" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <TextBlock x:Name="TB_NameAdminUserOpenShift" Text="{Binding NameAdminUserOpenShift}"/>
-                                <TextBlock x:Name="TB_DataOpenShift" Text="{Binding DataOpenShift}"></TextBlock>
+                        <GroupBox Grid.Column="0" Header="POS-термінал" Margin="20, 20 , 10 ,20">
+                            <StackPanel>
+                                <Button x:Name="POS_X" Style="{StaticResource Default}" Content="X звіт" Width="280"  Click="POS_X_Click"/>
+                                <Button x:Name="POS_Z" Style="{StaticResource Default}" Content="Z звіт" Width="280" Click="POS_Z_Click"/>
+                                <Button x:Name="POS_X_Copy" Style="{StaticResource Default}" Content="X звіт(копія)" Width="280" Click="POS_X_Copy_Click"/>
                             </StackPanel>
-                            <Button x:Name="WorkStart"  Content="Почати зміну"      Width="280" Click="WorkStart_Click">
-                                <Button.Style>
-                                    <Style BasedOn="{StaticResource Default}" TargetType="Button">
-                                        <Setter Property="IsEnabled" Value="True"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding ClosedShift}" Value="True">
-                                                <Setter Property="IsEnabled" Value="True" />
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding ClosedShift}" Value="False">
-                                                <Setter Property="IsEnabled" Value="False" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                            </Button>
-                            <Button x:Name="WorkFinish" Content="Завершити зміну"     Width="280" Click="WorkFinish_Click" >
-                                <Button.Style>
-                                    <Style BasedOn="{StaticResource Default}" TargetType="Button">
-                                        <Setter Property="IsEnabled" Value="True"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding ClosedShift}" Value="True">
-                                                <Setter Property="IsEnabled" Value="False" />
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding ClosedShift}" Value="False">
-                                                <Setter Property="IsEnabled" Value="True" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                            </Button>
-                            <Button x:Name="CloseDay" Style="{StaticResource Default}" Content="Закриття дня"    Width="280" Click="CloseDay_Click" />
-                        </StackPanel>
-                    </GroupBox>
-                    <!--Інформація з пос-термінала-->
-                    <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
+                        </GroupBox>
+                        <GroupBox Grid.Column="1" Header="Фіскальний реєстратор" Margin="10, 20, 10, 20">
+                            <StackPanel>
+                                <Button x:Name="EKKA_X" Style="{StaticResource Default}" Content="X звіт"      VerticalAlignment="Top"  Width="280" Click="EKKA_X_Click"/>
+                                <Button x:Name="EKKA_Z" Style="{StaticResource Default}" Content="Z звіт"    Width="280" Click="EKKA_Z_Click"/>
+                                <Button x:Name="EKKA_Z_Period" Style="{StaticResource Default}" Content="Z-звіт(Періодичний))"      Width="280" Click="EKKA_Z_Period_Click"/>
+                                <Button x:Name="EKKA_Copy" Style="{StaticResource Default}" Content="Копія Квитанції"      VerticalAlignment="Top" Width="280" Click="EKKA_Copy_Click"/>
+                            </StackPanel>
+
+
+
+                        </GroupBox>
+                        <GroupBox Grid.Column="2" Header="Зміна" Margin="10, 20 , 20 ,20"  >
+                            <StackPanel>
+                                <StackPanel x:Name="OpenShiftShow" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <TextBlock x:Name="TB_NameAdminUserOpenShift" Text="{Binding NameAdminUserOpenShift}"/>
+                                    <TextBlock x:Name="TB_DataOpenShift" Text="{Binding DataOpenShift}"></TextBlock>
+                                </StackPanel>
+                                <Button x:Name="WorkStart"  Content="Почати зміну"      Width="280" Click="WorkStart_Click">
+                                    <Button.Style>
+                                        <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                            <Setter Property="IsEnabled" Value="True"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ClosedShift}" Value="True">
+                                                    <Setter Property="IsEnabled" Value="True" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding ClosedShift}" Value="False">
+                                                    <Setter Property="IsEnabled" Value="False" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <Button x:Name="WorkFinish" Content="Завершити зміну"     Width="280" Click="WorkFinish_Click" >
+                                    <Button.Style>
+                                        <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                            <Setter Property="IsEnabled" Value="True"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ClosedShift}" Value="True">
+                                                    <Setter Property="IsEnabled" Value="False" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding ClosedShift}" Value="False">
+                                                    <Setter Property="IsEnabled" Value="True" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <Button x:Name="CloseDay" Style="{StaticResource Default}" Content="Закриття дня"    Width="280" Click="CloseDay_Click" />
+                            </StackPanel>
+                        </GroupBox>
+                        <!--Інформація з пос-термінала-->
+                        <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
                 Grid.Column="0" Grid.ColumnSpan="4"
                  Name="Revision" Visibility="Collapsed" Grid.ZIndex="3" 
                 CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center"  Width="1000" Height="850">
-                        <Border.Effect>
-                            <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
-                        </Border.Effect>
+                            <Border.Effect>
+                                <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+                            </Border.Effect>
 
-                        <Grid >
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="0.5*"></RowDefinition>
-                                <RowDefinition Height="3*"></RowDefinition>
-                                <RowDefinition Height="100"></RowDefinition>
-                            </Grid.RowDefinitions>
-                            <TextBlock Grid.Row="0" HorizontalAlignment="Center" FontSize="28" Text="Деталі"/>
-                            <ScrollViewer Grid.Row="1" x:Name="RevisionScrollViewer">
-                                <TextBlock x:Name="RevisionText" FontSize="28" HorizontalAlignment="Center"/>
-                            </ScrollViewer>
-                            <!--<TextBox x:Name="RevisionText" Grid.Row="1" FontSize="28" HorizontalAlignment="Center"/>-->
-                            <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
-                                <Button  Style="{StaticResource Default}"  FontSize="22" Click="Print" 
+                            <Grid >
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="0.5*"></RowDefinition>
+                                    <RowDefinition Height="3*"></RowDefinition>
+                                    <RowDefinition Height="100"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" HorizontalAlignment="Center" FontSize="28" Text="Деталі"/>
+                                <ScrollViewer Grid.Row="1" x:Name="RevisionScrollViewer">
+                                    <TextBlock x:Name="RevisionText" FontSize="28" HorizontalAlignment="Center"/>
+                                </ScrollViewer>
+                                <!--<TextBox x:Name="RevisionText" Grid.Row="1" FontSize="28" HorizontalAlignment="Center"/>-->
+                                <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Button  Style="{StaticResource Default}"  FontSize="22" Click="Print" 
                         Height="80" Width="300" Margin="10">
-                                    <TextBlock FontSize="28" Text="Друк"/>
-                                </Button>
-                                <Button  Style="{StaticResource Default}"  FontSize="22" Click="Cancel" 
+                                        <TextBlock FontSize="28" Text="Друк"/>
+                                    </Button>
+                                    <Button  Style="{StaticResource Default}"  FontSize="22" Click="Cancel" 
                         Height="80" Width="300" Margin="10">
-                                    <TextBlock FontSize="28" Text="{DynamicResource cancel}"/>
-                                </Button>
-                            </StackPanel>
+                                        <TextBlock FontSize="28" Text="{DynamicResource cancel}"/>
+                                    </Button>
+                                </StackPanel>
 
-                        </Grid>
-                    </Border>
+                            </Grid>
+                        </Border>
 
-                    <!--ФОН-->
-                    <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
+                        <!--ФОН-->
+                        <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
                 Grid.Column="0" Grid.ColumnSpan="6"
                  Name="BackgroundShift" Visibility="Collapsed" Grid.ZIndex="2" 
                 Opacity="0.9"/>
-                </Grid>
-            </TabItem>
-            <TabItem Header="Пристрої" >
-                <Grid >
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="5*"></RowDefinition>
-                        <RowDefinition Height="1*"></RowDefinition>
-                    </Grid.RowDefinitions>
-                    <Border Grid.Row="0" Height="45" VerticalAlignment="Top" Background="White"  BorderThickness="2" BorderBrush="#D7A900" CornerRadius="10">
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Пристрої" >
+                    <Grid >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="5*"></RowDefinition>
+                            <RowDefinition Height="1*"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Border Grid.Row="0" Height="45" VerticalAlignment="Top" Background="White"  BorderThickness="2" BorderBrush="#D7A900" CornerRadius="10">
 
-                        <Grid Margin="10,0,0,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="1*"></ColumnDefinition>
-                                <ColumnDefinition Width="2*"></ColumnDefinition>
-                                <ColumnDefinition Width="1*"></ColumnDefinition>
-                                <ColumnDefinition Width="1*"></ColumnDefinition>
-                                <ColumnDefinition Width="1*"></ColumnDefinition>
-                                <ColumnDefinition Width="1*"></ColumnDefinition>
-                                <ColumnDefinition Width="1*"></ColumnDefinition>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="Тип обладнання" Margin="10,9,0,8" VerticalAlignment="Stretch"/>
-                            <TextBlock Grid.Column="1" Text="Модель"/>
-                            <TextBlock Grid.Column="2" Text="Назва"/>
-                            <TextBlock Grid.Column="3" Text="Стан" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Column="4" Text="Тест" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Column="5" Text="Інформація" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Column="6" Text="Вкл/Викл" HorizontalAlignment="Center"/>
-                        </Grid>
-                    </Border>
-                    <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" Margin="0,45,0,0">
-                        <ItemsControl Grid.Row="0" Name="ListEquipment">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border  BorderBrush="Silver" BorderThickness="0,0,0,1" >
-                                        <Grid Margin="10,0,0,0">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="1*"></ColumnDefinition>
-                                                <ColumnDefinition Width="2*"></ColumnDefinition>
-                                                <ColumnDefinition Width="1*"></ColumnDefinition>
-                                                <ColumnDefinition Width="1*"></ColumnDefinition>
-                                                <ColumnDefinition Width="1*"></ColumnDefinition>
-                                                <ColumnDefinition Width="1*"></ColumnDefinition>
-                                                <ColumnDefinition Width="1*"></ColumnDefinition>
-                                            </Grid.ColumnDefinitions>
+                            <Grid Margin="10,0,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                                    <ColumnDefinition Width="2*"></ColumnDefinition>
+                                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Тип обладнання" Margin="10,9,0,8" VerticalAlignment="Stretch"/>
+                                <TextBlock Grid.Column="1" Text="Модель"/>
+                                <TextBlock Grid.Column="2" Text="Назва"/>
+                                <TextBlock Grid.Column="3" Text="Стан" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="4" Text="Тест" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="5" Text="Інформація" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="6" Text="Вкл/Викл" HorizontalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" Margin="0,45,0,0">
+                            <ItemsControl Grid.Row="0" Name="ListEquipment">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border  BorderBrush="Silver" BorderThickness="0,0,0,1" >
+                                            <Grid Margin="10,0,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                                                    <ColumnDefinition Width="2*"></ColumnDefinition>
+                                                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                                                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                                                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                                                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                                                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                                                </Grid.ColumnDefinitions>
 
-                                            <TextBlock Grid.Column="0" Text="{Binding Type}" FontWeight="Bold" FontSize="20"/>
-                                            <TextBlock Grid.Column="1" Text="{Binding TranslationModel}" FontWeight="Bold" FontSize="20"/>
-                                            <TextBlock Grid.Column="2" Text="{Binding Name}" FontWeight="Bold" FontSize="20"/>
+                                                <TextBlock Grid.Column="0" Text="{Binding Type}" FontWeight="Bold" FontSize="20"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding TranslationModel}" FontWeight="Bold" FontSize="20"/>
+                                                <TextBlock Grid.Column="2" Text="{Binding Name}" FontWeight="Bold" FontSize="20"/>
 
 
-                                            <Button Grid.Column="3" Height="60" Width="60"  BorderBrush="Transparent" IsHitTestVisible="False" >
+                                                <Button Grid.Column="3" Height="60" Width="60"  BorderBrush="Transparent" IsHitTestVisible="False" >
 
-                                                <Button.Style>
-                                                    <Style BasedOn="{StaticResource RoundButton}" TargetType="Button">
-                                                        <Setter Property="Background" Value="Purple"/>
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding State}" Value="On">
-                                                                <Setter Property="Background" Value="Green" />
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding State}" Value="Off">
-                                                                <Setter Property="Background" Value="Orange" />
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding State}" Value="Init">
-                                                                <Setter Property="Background" Value="Yellow" />
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding State}" Value="Error">
-                                                                <Setter Property="Background" Value="Red" />
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding State}" Value="Process">
-                                                                <Setter Property="Background" Value="Purple" />
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </Button.Style>
-
-                                                <Image  >
-                                                    <Image.Style>
-                                                        <Style TargetType="{x:Type Image}">
+                                                    <Button.Style>
+                                                        <Style BasedOn="{StaticResource RoundButton}" TargetType="Button">
+                                                            <Setter Property="Background" Value="Purple"/>
                                                             <Style.Triggers>
-                                                                <!--Якщо сканер-->
-                                                                <DataTrigger Binding="{Binding Type}" Value="Scaner">
-                                                                    <Setter Property="Source" Value="\icons\Scaner.png" />
+                                                                <DataTrigger Binding="{Binding State}" Value="On">
+                                                                    <Setter Property="Background" Value="Green" />
                                                                 </DataTrigger>
-                                                                <!--Якщо Вага-->
-                                                                <DataTrigger Binding="{Binding Type}" Value="Scale">
-                                                                    <Setter Property="Source" Value="\icons\Scale.png" />
+                                                                <DataTrigger Binding="{Binding State}" Value="Off">
+                                                                    <Setter Property="Background" Value="Orange" />
                                                                 </DataTrigger>
-                                                                <!--Якщо контрольна вага-->
-                                                                <DataTrigger Binding="{Binding Type}" Value="ControlScale">
-                                                                    <Setter Property="Source" Value="\icons\ControlScale.png" />
+                                                                <DataTrigger Binding="{Binding State}" Value="Init">
+                                                                    <Setter Property="Background" Value="Yellow" />
                                                                 </DataTrigger>
-                                                                <!--Якщо банківський термінал-->
-                                                                <DataTrigger Binding="{Binding Type}" Value="BankTerminal">
-                                                                    <Setter Property="Source" Value="\icons\BankTerminal.png" />
+                                                                <DataTrigger Binding="{Binding State}" Value="Error">
+                                                                    <Setter Property="Background" Value="Red" />
                                                                 </DataTrigger>
-                                                                <!--Якщо прапорець-->
-                                                                <DataTrigger Binding="{Binding Type}" Value="Signal">
-                                                                    <Setter Property="Source" Value="\icons\Signal.png" />
-                                                                </DataTrigger>
-                                                                <!--Якщо Фіскальний апарат-->
-                                                                <DataTrigger Binding="{Binding Type}" Value="RRO">
-                                                                    <Setter Property="Source" Value="\icons\RRO.png" />
+                                                                <DataTrigger Binding="{Binding State}" Value="Process">
+                                                                    <Setter Property="Background" Value="Purple" />
                                                                 </DataTrigger>
                                                             </Style.Triggers>
                                                         </Style>
-                                                    </Image.Style>
-                                                </Image>
-                                            </Button>
+                                                    </Button.Style>
 
-                                            <Button Grid.Column="4" Height="60" Width="60" Style="{StaticResource Default}" Click="Test_Click">
-                                                <Image Source="\icons\Ok.png"/>
-                                            </Button>
-                                            <Button Grid.Column="5" Height="60" Width="60" Style="{StaticResource Default}" Click="Info_Click">
-                                                <Image Source="\icons\Inform.png"/>
-                                            </Button>
+                                                    <Image  >
+                                                        <Image.Style>
+                                                            <Style TargetType="{x:Type Image}">
+                                                                <Style.Triggers>
+                                                                    <!--Якщо сканер-->
+                                                                    <DataTrigger Binding="{Binding Type}" Value="Scaner">
+                                                                        <Setter Property="Source" Value="\icons\Scaner.png" />
+                                                                    </DataTrigger>
+                                                                    <!--Якщо Вага-->
+                                                                    <DataTrigger Binding="{Binding Type}" Value="Scale">
+                                                                        <Setter Property="Source" Value="\icons\Scale.png" />
+                                                                    </DataTrigger>
+                                                                    <!--Якщо контрольна вага-->
+                                                                    <DataTrigger Binding="{Binding Type}" Value="ControlScale">
+                                                                        <Setter Property="Source" Value="\icons\ControlScale.png" />
+                                                                    </DataTrigger>
+                                                                    <!--Якщо банківський термінал-->
+                                                                    <DataTrigger Binding="{Binding Type}" Value="BankTerminal">
+                                                                        <Setter Property="Source" Value="\icons\BankTerminal.png" />
+                                                                    </DataTrigger>
+                                                                    <!--Якщо прапорець-->
+                                                                    <DataTrigger Binding="{Binding Type}" Value="Signal">
+                                                                        <Setter Property="Source" Value="\icons\Signal.png" />
+                                                                    </DataTrigger>
+                                                                    <!--Якщо Фіскальний апарат-->
+                                                                    <DataTrigger Binding="{Binding Type}" Value="RRO">
+                                                                        <Setter Property="Source" Value="\icons\RRO.png" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Image.Style>
+                                                    </Image>
+                                                </Button>
 
-                                            <CheckBox Height="40" Grid.Column="6" HorizontalAlignment="Center" Style="{DynamicResource OrangeSwitchStyleCheckBox}" VerticalAlignment="Center" />
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </ScrollViewer>
-                    <StackPanel Orientation="Horizontal" Grid.Row="1"  VerticalAlignment="Center" >
-                        <Button Name="CalibrationControlScale" Click="CalibrationControlScaleButton"
+                                                <Button Grid.Column="4" Height="60" Width="60" Style="{StaticResource Default}" Click="Test_Click">
+                                                    <Image Source="\icons\Ok.png"/>
+                                                </Button>
+                                                <Button Grid.Column="5" Height="60" Width="60" Style="{StaticResource Default}" Click="Info_Click">
+                                                    <Image Source="\icons\Inform.png"/>
+                                                </Button>
+
+                                                <CheckBox Height="40" Grid.Column="6" HorizontalAlignment="Center" Style="{DynamicResource OrangeSwitchStyleCheckBox}" VerticalAlignment="Center" />
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                        <StackPanel Orientation="Horizontal" Grid.Row="1"  VerticalAlignment="Center" >
+                            <Button Name="CalibrationControlScale" Click="CalibrationControlScaleButton"
                                 Style="{StaticResource Default}" Content="Калібрування" HorizontalAlignment="Left" Margin="5" Grid.Row="1"     />
-                        <Button Name="TarControlScale" Click="TarControlScaleButton"
+                            <Button Name="TarControlScale" Click="TarControlScaleButton"
                                 Style="{StaticResource Default}" Content="Тарування" HorizontalAlignment="Left" Margin="5" Grid.Row="1"     />
-                        <TextBlock Name="ControlScaleWeightHaml"  Text="{Binding ControlScaleWeightDouble}"  FontSize="28" Margin="5" Grid.Row="1"    />
-                    </StackPanel>
-                    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" >
-                        <Button Name="RefreshData" Style="{StaticResource Default}"  
+                            <TextBlock Name="ControlScaleWeightHaml"  Text="{Binding ControlScaleWeightDouble}"  FontSize="28" Margin="5" Grid.Row="1"    />
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" >
+                            <Button Name="RefreshData" Style="{StaticResource Default}"  
                                 HorizontalAlignment="Left" Margin="5" Grid.Row="1" 
                                     Click="RefreshDataButton" 
                                 Content="Оновити дані"/>
-                        <Button Style="{StaticResource Default}"  
+                            <Button Style="{StaticResource Default}"  
                                 HorizontalAlignment="Left" Margin="5" Grid.Row="1" 
                                    Click="CloseApplicationButton" 
                                 Content="Вийти з програми"/>
-                        <Button Name="PowerOffOn" Style="{StaticResource Default}"  
+                            <Button Name="PowerOffOn" Style="{StaticResource Default}"  
                                 HorizontalAlignment="Left" Margin="5" Grid.Row="1" 
                                 Width="60"    Click="PowerOff">
-                            <Image Margin="5" Source="\icons\on-off.png"/>
-                        </Button>
-                        <Button Name="Reboot" Style="{StaticResource Default}"  
+                                <Image Margin="5" Source="\icons\on-off.png"/>
+                            </Button>
+                            <Button Name="Reboot" Style="{StaticResource Default}"  
                                 HorizontalAlignment="Left" Margin="5" Grid.Row="1" 
                                 Width="60"    Click="RebootPC">
-                            <Image Margin="5" Source="\icons\reboot.png"/>
-                        </Button>
-                    </StackPanel>
-                </Grid>
-            </TabItem>
-            <TabItem Name="TabHistory" Header="Історія">
-                <Grid >
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="1*"></RowDefinition>
-                        <RowDefinition Height="7*"></RowDefinition>
-                        <RowDefinition Height="*"></RowDefinition>
-                    </Grid.RowDefinitions>
-                    <StackPanel Orientation="Horizontal">
-                        <DatePicker Name="dataHistori" FontSize="30" IsTodayHighlighted="True" SelectedDate="{Binding DateSoSearch}"
+                                <Image Margin="5" Source="\icons\reboot.png"/>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </TabItem>
+                <TabItem Name="TabHistory" Header="Історія">
+                    <Grid >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*"></RowDefinition>
+                            <RowDefinition Height="7*"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <StackPanel Orientation="Horizontal">
+                            <DatePicker Name="dataHistori" FontSize="30" IsTodayHighlighted="True" SelectedDate="{Binding DateSoSearch}"
                                     Width="200" Height="50" HorizontalAlignment="Left"></DatePicker>
-                        <Button Width="300" Height="80" Margin="10,0,0,0" Style="{StaticResource Default}" Click="FindChecksByDate">
-                            Знайти
-                        </Button>
-                        <StackPanel Orientation="Horizontal" Margin="20,0,0,0">
-                            <TextBlock Text="Всі чеки: "/>
-                            <CheckBox Height="40" Grid.Column="6"  Style="{DynamicResource OrangeSwitchStyleCheckBox}"
+                            <Button Width="300" Height="80" Margin="10,0,0,0" Style="{StaticResource Default}" Click="FindChecksByDate">
+                                Знайти
+                            </Button>
+                            <StackPanel Orientation="Horizontal" Margin="20,0,0,0">
+                                <TextBlock Text="Всі чеки: "/>
+                                <CheckBox Height="40" Grid.Column="6"  Style="{DynamicResource OrangeSwitchStyleCheckBox}"
                                       x:Name="AllReceiptsCheckBox" IsChecked="False" Checked="IsShowAllreceiptsChecked" Unchecked="IsShowAllreceiptsChecked"
                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </StackPanel>
                         </StackPanel>
-                    </StackPanel>
 
-                    <!--деталі чеку-->
-                    <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
+                        <!--деталі чеку-->
+                        <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
                 Grid.Column="1" Grid.ColumnSpan="4"
                  Name="DetailsReceiptBorder" Visibility="Collapsed" Grid.ZIndex="3" 
                 CornerRadius="10" HorizontalAlignment="Center"  MinWidth="1000" Height="850">
-                        <Border.Effect>
-                            <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
-                        </Border.Effect>
+                            <Border.Effect>
+                                <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+                            </Border.Effect>
 
-                        <Grid >
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="0.5*"></RowDefinition>
-                                <RowDefinition Height="3*"></RowDefinition>
-                                <RowDefinition Height="100"></RowDefinition>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="400"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Row="0"  Grid.Column="0" Grid.ColumnSpan="6"
+                            <Grid >
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="0.5*"></RowDefinition>
+                                    <RowDefinition Height="3*"></RowDefinition>
+                                    <RowDefinition Height="100"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="400"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Row="0"  Grid.Column="0" Grid.ColumnSpan="6"
                                        HorizontalAlignment="Center" FontSize="28" Text="Деталі чеку"/>
 
-                            <ListView x:Name="ListWaresReceipt"
+                                <ListView x:Name="ListWaresReceipt"
                      Grid.Row="1" Grid.Column="0" >
-                                <ListView.View>
-                                    <GridView >
-                                        <GridViewColumn  Header="Назва товару">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <TextBlock Text="{Binding Path=NameWares}" TextAlignment="Center" />
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
+                                    <ListView.View>
+                                        <GridView >
+                                            <GridViewColumn  Header="Назва товару">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Path=NameWares}" TextAlignment="Center" />
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
 
-                                        <GridViewColumn Header="Кількість" >
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <TextBlock Text="{Binding Path=Quantity}" TextAlignment="Center" />
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
+                                            <GridViewColumn Header="Кількість" >
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Path=Quantity}" TextAlignment="Center" />
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
 
-                                        <GridViewColumn Header="Код товару" >
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <TextBlock Text="{Binding Path=CodeWares}" TextAlignment="Center" />
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
+                                            <GridViewColumn Header="Код товару" >
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Path=CodeWares}" TextAlignment="Center" />
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
 
-                                        <GridViewColumn Header="Ціна продажу">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <TextBlock Text="{Binding SumTotal, StringFormat=0.00}" TextAlignment="Center" />
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
+                                            <GridViewColumn Header="Ціна продажу">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding SumTotal, StringFormat=0.00}" TextAlignment="Center" />
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
 
-                                        <GridViewColumn Header="Знижка">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <TextBlock   FontSize="20" FontWeight="DemiBold" Foreground="Red">
-                                                        <TextBlock.Style>
-                                                            <Style TargetType="TextBlock">
-                                                                <Setter Property="Text" Value="{Binding DiscountEKKA, StringFormat=-0.00}"/>
-                                                                <Style.Triggers>
-                                                                    <DataTrigger Binding="{Binding DiscountEKKA}" Value="0">
-                                                                        <Setter Property="Text" Value=""/>
-                                                                    </DataTrigger>
-                                                                </Style.Triggers>
-                                                            </Style>
-                                                        </TextBlock.Style>
-                                                    </TextBlock>
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
-                                    </GridView>
-                                </ListView.View>
-                                <!--<ListView.ItemTemplate>
+                                            <GridViewColumn Header="Знижка">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock   FontSize="20" FontWeight="DemiBold" Foreground="Red">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="TextBlock">
+                                                                    <Setter Property="Text" Value="{Binding DiscountEKKA, StringFormat=-0.00}"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding DiscountEKKA}" Value="0">
+                                                                            <Setter Property="Text" Value=""/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                        </GridView>
+                                    </ListView.View>
+                                    <!--<ListView.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel Margin="5" Orientation="Horizontal">
                                             <TextBlock FontSize="25"  Text="{Binding Path=NameWares}" TextWrapping="Wrap" HorizontalAlignment="Center" Width="650" />
@@ -600,30 +600,30 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
 
                                     </DataTemplate>
                                 </ListView.ItemTemplate>-->
-                            </ListView>
-                            <StackPanel Grid.Row="1" Grid.Column="2" Margin="15,0,15,0">
-                                <TextBlock  FontSize="28" HorizontalAlignment="Center" FontWeight="DemiBold" TextWrapping="Wrap"
+                                </ListView>
+                                <StackPanel Grid.Row="1" Grid.Column="2" Margin="15,0,15,0">
+                                    <TextBlock  FontSize="28" HorizontalAlignment="Center" FontWeight="DemiBold" TextWrapping="Wrap"
                                             Text="Чек з пос-термінала:"/>
-                                <ScrollViewer  x:Name="PosCheckScrollViewer">
-                                    <TextBlock x:Name="PosCheckText" FontSize="24" HorizontalAlignment="Center" TextWrapping="Wrap"/>
-                                </ScrollViewer>
-                            </StackPanel>
-                            <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="6"
+                                    <ScrollViewer  x:Name="PosCheckScrollViewer">
+                                        <TextBlock x:Name="PosCheckText" FontSize="24" HorizontalAlignment="Center" TextWrapping="Wrap"/>
+                                    </ScrollViewer>
+                                </StackPanel>
+                                <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="6"
                                     Style="{StaticResource Default}"  FontSize="22" Click="Cancel" 
                         Height="80" Width="300" Margin="10">
-                                <TextBlock FontSize="28" Text="{DynamicResource cancel}"/>
-                            </Button>
+                                    <TextBlock FontSize="28" Text="{DynamicResource cancel}"/>
+                                </Button>
 
-                        </Grid>
-                    </Border>
+                            </Grid>
+                        </Border>
 
-                    <!--ФОН-->
-                    <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
+                        <!--ФОН-->
+                        <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
                 Grid.Column="0" Grid.ColumnSpan="6"
                  Name="BackgroundReceipts" Visibility="Collapsed" Grid.ZIndex="2" 
                 Opacity="0.9"/>
-                    <!--<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <!--<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                         <ItemsControl Grid.Row="0" Name="ListReceipts" PreviewMouseLeftButtonDown="down">
                             <ItemsControl.ItemTemplate >
                                 <DataTemplate>
@@ -649,90 +649,90 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </ScrollViewer>-->
-                    <ListView  x:Name="ListReceipts" SelectionChanged="historiReceiptList_SelectionChanged"
+                        <ListView  x:Name="ListReceipts" SelectionChanged="historiReceiptList_SelectionChanged"
                      Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="6">
-                        <ListView.View>
-                            <GridView >
-                                <GridViewColumn  Header="№">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Path=CodeReceipt}" TextAlignment="Center" />
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
+                            <ListView.View>
+                                <GridView >
+                                    <GridViewColumn  Header="№">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Path=CodeReceipt}" TextAlignment="Center" />
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
 
-                                <GridViewColumn Header="Тип чека" >
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Path=TranslationTypeReceipt}" TextAlignment="Center" />
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
+                                    <GridViewColumn Header="Тип чека" >
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Path=TranslationTypeReceipt}" TextAlignment="Center" />
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
 
-                                <GridViewColumn Header="Час" >
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Path=DateReceipt}" TextAlignment="Center" />
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
+                                    <GridViewColumn Header="Час" >
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Path=DateReceipt}" TextAlignment="Center" />
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
 
-                                <GridViewColumn Header="Стан чека">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Path=TranslationStateReceipt}" TextAlignment="Center" />
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
+                                    <GridViewColumn Header="Стан чека">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Path=TranslationStateReceipt}" TextAlignment="Center" />
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
 
-                                <GridViewColumn Header="Сума чека">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Path=SumReceipt}" TextAlignment="Center" />
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
+                                    <GridViewColumn Header="Сума чека">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Path=SumReceipt}" TextAlignment="Center" />
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
 
-                                <GridViewColumn Header="Номер чека ФР">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Path=NumberReceipt}" TextAlignment="Center" />
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
+                                    <GridViewColumn Header="Номер чека ФР">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Path=NumberReceipt}" TextAlignment="Center" />
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
 
-                                <GridViewColumn Header="Сума по ФР">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Path=SumFiscal}" TextAlignment="Center" />
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
+                                    <GridViewColumn Header="Сума по ФР">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Path=SumFiscal}" TextAlignment="Center" />
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
 
-                                <GridViewColumn Header="Чек постерміналу">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Path=NumberReceiptPOS}" TextAlignment="Center" />
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
+                                    <GridViewColumn Header="Чек постерміналу">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Path=NumberReceiptPOS}" TextAlignment="Center" />
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
 
-                                <GridViewColumn Header="Оплачено">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Path=SumCreditCard}" TextAlignment="Center" />
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn Header="Деталі чеку">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Button Style="{StaticResource Default}"  Content="Деталі" Click="ShowDetailsReceiptClick"/>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                            </GridView>
-                            <!--<StackPanel Margin="5" Orientation="Horizontal">
+                                    <GridViewColumn Header="Оплачено">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Path=SumCreditCard}" TextAlignment="Center" />
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Header="Деталі чеку">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Style="{StaticResource Default}"  Content="Деталі" Click="ShowDetailsReceiptClick"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                </GridView>
+                                <!--<StackPanel Margin="5" Orientation="Horizontal">
                                     <TextBlock FontSize="16" Text="{Binding Path=CodeReceipt}" HorizontalAlignment="Center" Width="40" />
                                     <TextBlock FontSize="16" Text="  "/>
                                     <TextBlock FontSize="16" Text="{Binding Path=TranslationTypeReceipt}" HorizontalAlignment="Center" Width="80"/>
@@ -752,141 +752,192 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                     <TextBlock FontSize="16" Text="{Binding Path=SumCreditCard}" HorizontalAlignment="Center" Width="80" />
                                     <Button Style="{StaticResource Default}" Content="Деталі" Click="ShowDetailsReceiptClick"/>
                                 </StackPanel>-->
-                        </ListView.View>
-                    </ListView>
+                            </ListView.View>
+                        </ListView>
 
 
 
-                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
-                        <Button  Grid.Column="2" FontSize="20" Click="FiscalizCheckButton"   >
-                            <TextBlock FontSize="22" Text="Фіскалізувати" Margin="5"/>
-                            <Button.Style>
-                                <Style BasedOn="{StaticResource Default}" TargetType="Button">
-                                    <Setter Property="IsEnabled" Value="False"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsPrintReceipt}" Value="True">
-                                            <Setter Property="IsEnabled" Value="True"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
+                        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Button  Grid.Column="2" FontSize="20" Click="FiscalizCheckButton"   >
+                                <TextBlock FontSize="22" Text="Фіскалізувати" Margin="5"/>
+                                <Button.Style>
+                                    <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsPrintReceipt}" Value="True">
+                                                <Setter Property="IsEnabled" Value="True"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
 
-                        <Button  Grid.Column="2" FontSize="20" Click="PaymentDetailsAdminPanelButton"   >
-                            <TextBlock FontSize="22" Text="Ввести реквізити" Margin="5"/>
-                            <Button.Style>
-                                <Style BasedOn="{StaticResource Default}" TargetType="Button">
-                                    <Setter Property="IsEnabled" Value="False"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsInputPay}" Value="True">
-                                            <Setter Property="IsEnabled" Value="True"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
+                            <Button  Grid.Column="2" FontSize="20" Click="PaymentDetailsAdminPanelButton"   >
+                                <TextBlock FontSize="22" Text="Ввести реквізити" Margin="5"/>
+                                <Button.Style>
+                                    <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsInputPay}" Value="True">
+                                                <Setter Property="IsEnabled" Value="True"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
 
-                        <Button Grid.Column="2" FontSize="22" Click="Transfer1CButton"   >
-                            <TextBlock FontSize="20" Text="Передати в 1С" Margin="5"/>
-                            <Button.Style>
-                                <Style BasedOn="{StaticResource Default}" TargetType="Button">
-                                    <Setter Property="IsEnabled" Value="False"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsSendTo1C}" Value="True">
-                                            <Setter Property="IsEnabled" Value="True"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
+                            <Button Grid.Column="2" FontSize="22" Click="Transfer1CButton"   >
+                                <TextBlock FontSize="20" Text="Передати в 1С" Margin="5"/>
+                                <Button.Style>
+                                    <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsSendTo1C}" Value="True">
+                                                <Setter Property="IsEnabled" Value="True"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
 
-                        <Button Grid.Column="2" FontSize="22" Click="ReturnCheckButton"   >
-                            <TextBlock FontSize="20" Text="Повернути" Margin="5"/>
-                            <Button.Style>
-                                <Style BasedOn="{StaticResource Default}" TargetType="Button">
-                                    <Setter Property="IsEnabled" Value="False"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsCreateReturn}" Value="True">
-                                            <Setter Property="IsEnabled" Value="True"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-                        <Button Grid.Column="2" FontSize="22" Click="ReturnAllCheckButton"   >
-                            <TextBlock FontSize="20" Text="Повернути весь чек" Margin="5"/>
-                            <Button.Style>
-                                <Style BasedOn="{StaticResource Default}" TargetType="Button">
-                                    <Setter Property="IsEnabled" Value="False"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsCreateReturn}" Value="True">
-                                            <Setter Property="IsEnabled" Value="True"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-                        <Button Grid.Column="2" FontSize="22" Click="CloneReceipt"   >
-                            <TextBlock FontSize="20" Text="Дублювання чеку" Margin="5"/>
-                            <Button.Style>
-                                <Style BasedOn="{StaticResource Default}" TargetType="Button">
-                                    <Setter Property="IsEnabled" Value="True"/>
-                                    <!--<Style.Triggers>
+                            <Button Grid.Column="2" FontSize="22" Click="ReturnCheckButton"   >
+                                <TextBlock FontSize="20" Text="Повернути" Margin="5"/>
+                                <Button.Style>
+                                    <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsCreateReturn}" Value="True">
+                                                <Setter Property="IsEnabled" Value="True"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button Grid.Column="2" FontSize="22" Click="ReturnAllCheckButton"   >
+                                <TextBlock FontSize="20" Text="Повернути весь чек" Margin="5"/>
+                                <Button.Style>
+                                    <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsCreateReturn}" Value="True">
+                                                <Setter Property="IsEnabled" Value="True"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button Grid.Column="2" FontSize="22" Click="CloneReceipt"   >
+                                <TextBlock FontSize="20" Text="Дублювання чеку" Margin="5"/>
+                                <Button.Style>
+                                    <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                        <Setter Property="IsEnabled" Value="True"/>
+                                        <!--<Style.Triggers>
                                         <DataTrigger Binding="{Binding IsCreateReturn, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="True">
                                             <Setter Property="IsEnabled" Value="True"/>
                                         </DataTrigger>
                                     </Style.Triggers>-->
-                                </Style>
-                            </Button.Style>
-                        </Button>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
 
-                    </StackPanel>
-                </Grid>
-            </TabItem>
-            <TabItem Header="Помилки">
-                <Grid >
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="1*"></RowDefinition>
-                        <RowDefinition Height="7*"></RowDefinition>
-                        <RowDefinition Height="*"></RowDefinition>
-                    </Grid.RowDefinitions>
-                    <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
+                        </StackPanel>
+                    </Grid>
+                </TabItem>
+                <TabItem Name="TabPrintJournal" Header="Журнал">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="80"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.ColumnSpan="2">
+                            <DatePicker Name="DataJornal" FontSize="30" IsTodayHighlighted="True" SelectedDate="{Binding DateSoSearch}"
+                                    Width="200" Height="50" HorizontalAlignment="Left"></DatePicker>
+                            <Button Width="300" Height="80" Margin="10,0,0,0" Style="{StaticResource Default}" Click="FindJournalDate">
+                                Знайти
+                            </Button>
+                            <StackPanel Orientation="Horizontal" Margin="20,0,0,0">
+                                <TextBlock Text="Весь журнал "/>
+                                <CheckBox Height="40" Grid.Column="6"  Style="{DynamicResource OrangeSwitchStyleCheckBox}"
+                                      x:Name="AllListJornal" IsChecked="False" Checked="IsAllJournalChecked" Unchecked="IsAllJournalChecked"
+                                      VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </StackPanel>
+                        <ListView  x:Name="ListJournal" SelectionChanged="ListJournalSelectionChanged"
+                     Grid.Column="0" Grid.Row="1" >
+                            <ListView.View>
+                                <GridView >
+                                    <GridViewColumn Header="Тип операції" >
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Path=TranslationTypeOperation}" TextAlignment="Center" />
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn  Header="Сума">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Path=SUM, StringFormat=0.00}" TextAlignment="Center" />
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                        <ScrollViewer Grid.Row="1"  Grid.Column="1">
+                            <TextBlock x:Name="JornalText" FontSize="28" HorizontalAlignment="Center" TextWrapping="Wrap"/>
+                        </ScrollViewer>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Помилки">
+                    <Grid >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*"></RowDefinition>
+                            <RowDefinition Height="7*"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                             CornerRadius="10" Margin="5,0,5,0">
-                        <Border.Effect>
-                            <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
-                        </Border.Effect>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock Text="Пошук:"/>
-                            <TextBox FontSize="25"  VerticalAlignment="Center" Width="400" TextChanged="FindFogTextChanged"/>
-                        </StackPanel>
-                    </Border>
+                            <Border.Effect>
+                                <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+                            </Border.Effect>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBlock Text="Пошук:"/>
+                                <TextBox FontSize="25"  VerticalAlignment="Center" Width="400" TextChanged="FindFogTextChanged"/>
+                            </StackPanel>
+                        </Border>
 
 
-                    <ListBox Grid.Row="1"  Name="ListLog" HorizontalAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Border  BorderBrush="Silver" BorderThickness="0,0,0,1" >
-                                    <StackPanel>
-                                        <TextBlock Grid.Column="0" Text="{Binding LineLog}" FontWeight="Bold" FontSize="18" TextWrapping="Wrap"
+                        <ListBox Grid.Row="1"  Name="ListLog" HorizontalAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Border  BorderBrush="Silver" BorderThickness="0,0,0,1" >
+                                        <StackPanel>
+                                            <TextBlock Grid.Column="0" Text="{Binding LineLog}" FontWeight="Bold" FontSize="18" TextWrapping="Wrap"
                                                    Width="{Binding ActualWidth,RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ScrollContentPresenter}}}" />
-                                    </StackPanel>
-                                </Border>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                    <Border Grid.Row="2"  >
-                        <StackPanel  Orientation="Horizontal" Grid.ColumnSpan="3" HorizontalAlignment="Center">
-                            <RadioButton GroupName="Log" FontSize="20" Style="{DynamicResource OrangeSwitchStyle}" Content="Full" Checked="CheckTypeLog"/>
-                            <RadioButton GroupName="Log" FontSize="20" Style="{DynamicResource OrangeSwitchStyle}" Content="Expanded" Checked="CheckTypeLog"/>
-                            <RadioButton GroupName="Log"  FontSize="20" Style="{DynamicResource OrangeSwitchStyle}" Content="Error" Checked="CheckTypeLog"/>
-                        </StackPanel>
-                    </Border>
-                </Grid>
-            </TabItem>
-            <TabItem Header="Вихід"/>
-        </TabControl>
-        <!--<Button Grid.Row="1" x:Name="Exit" Style="{StaticResource Default}" Content="Вихід" Height="70" Width="110" Margin="0, 15,20,0"  HorizontalAlignment="Right" VerticalAlignment="Top"  Click="Exit_Click"/>-->
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <Border Grid.Row="2"  >
+                            <StackPanel  Orientation="Horizontal" Grid.ColumnSpan="3" HorizontalAlignment="Center">
+                                <RadioButton GroupName="Log" FontSize="20" Style="{DynamicResource OrangeSwitchStyle}" Content="Full" Checked="CheckTypeLog"/>
+                                <RadioButton GroupName="Log" FontSize="20" Style="{DynamicResource OrangeSwitchStyle}" Content="Expanded" Checked="CheckTypeLog"/>
+                                <RadioButton GroupName="Log"  FontSize="20" Style="{DynamicResource OrangeSwitchStyle}" Content="Error" Checked="CheckTypeLog"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Вихід"/>
+            </TabControl>
+            <!--<Button Grid.Row="1" x:Name="Exit" Style="{StaticResource Default}" Content="Вихід" Height="70" Width="110" Margin="0, 15,20,0"  HorizontalAlignment="Right" VerticalAlignment="Top"  Click="Exit_Click"/>-->
 
-    </Grid>
+        </Grid>
     </Border>
 </UserControl>

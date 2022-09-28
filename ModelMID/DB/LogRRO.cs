@@ -1,25 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
+using Utils;
 
 namespace ModelMID.DB
 {
     public enum eTypeOperation
     {
+        [Description("Продаж")]
         Sale = 0,
+        [Description("Повернення")]
         Refund = 1,
+        [Description("MoneyIn")]
         MoneyIn = 2,
+        [Description("MoneyOut")]
         MoneyOut = 4,
+        [Description("Не фіскальний")]
         NoFiscalReceipt = 100,
+        [Description("Анульований чек")]
         CanceledCheck = 101,
+        [Description("Z звіт")]
         ZReport =1000,
+        [Description("Х звіт")]
         XReport = 1001,
+        [Description("Періодичний Z звіт")]
         PeriodZReport = 1002,
+        [Description("Копія чеку")]
         CopyReceipt =1010,
+        [Description("Закритий порт")]
         ClosePort,
+        [Description("Z звіт POS")]
         ZReportPOS = 2000,
+        [Description("X звіт POS")]
         XReportPOS = 2001,
+        [Description("Продаж POS")]
         SalePOS =   20100,
+        [Description("Повернення POS")]
         RefundPOS = 20101
     }
 
@@ -30,6 +47,7 @@ namespace ModelMID.DB
         public int NumberOperation { get; set; }
         public string FiscalNumber { get; set; }
         public eTypeOperation TypeOperation { get; set; }
+        public string TranslationTypeOperation { get { return TypeOperation.GetDescription(); } }
         public decimal SUM { get; set; }
         public string TypeRRO { get; set; }
         public string JSON { get; set; }

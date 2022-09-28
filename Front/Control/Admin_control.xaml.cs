@@ -31,7 +31,8 @@ namespace Front.Control
         EquipmentFront EF;
         ObservableCollection<Receipt> Receipts;
         ObservableCollection<ParsLog> LogsCollection;
-        public string TypeLog { get; set; } = "Full";
+        ObservableCollection<LogRRO> SourcesListJournal;
+        public string TypeLog { get; set; } = "Error";
         BL Bl;
         public string ControlScaleWeightDouble { get; set; } = "0";
         MainWindow MW;
@@ -41,7 +42,8 @@ namespace Front.Control
         public string NameAdminUserOpenShift { get { return MW?.AdminSSC?.NameUser; } }
         public DateTime DataOpenShift { get { return MW.DTAdminSSC; } }
         public bool IsShowAllReceipts { get; set; }
-        BatchTotals LastReceipt=null;
+        public bool IsShowAllJournal { get; set; }
+        BatchTotals LastReceipt = null;
 
         public DateTime DateSoSearch { get; set; } = DateTime.Now.Date;
         public string KasaNumber { get { return Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace).Name; } }
@@ -52,7 +54,7 @@ namespace Front.Control
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ControlScaleWeightDouble"));
         }
 
-        public Admin_control() 
+        public Admin_control()
         {
             Bl = BL.GetBL;
             InitializeComponent();
@@ -63,13 +65,14 @@ namespace Front.Control
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += timer_Tick;
             timer.Start();
+
         }
 
         public void Init(MainWindow pMW)
         {
             MW = pMW;
             ProgramVersion.Text = $"Версія КСО: {MW?.Version}";
-            
+
             if (MW != null)
             {
                 EF = MW?.EF;
@@ -80,7 +83,7 @@ namespace Front.Control
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ControlScaleWeightDouble"));
                 };
             };
-            
+
         }
 
         public void Init(User pAdminUser = null)
@@ -128,6 +131,16 @@ namespace Front.Control
             else return ((item as Receipt).SumReceipt > 0);
 
         }
+        private bool JournalFilter(object item)
+        {
+
+            if (IsShowAllJournal)
+            {
+                return true;
+            }
+            else return ((item as LogRRO).TypeOperation > 0);
+
+        }
 
         void timer_Tick(object sender, EventArgs e)
         {
@@ -148,7 +161,7 @@ namespace Front.Control
                 LastReceipt = EF.PosPrintX(false);
                 ViewReceipt();
             });
-            
+
         }
 
         private void POS_Z_Click(object sender, RoutedEventArgs e)
@@ -186,7 +199,7 @@ namespace Front.Control
         {
             var task = Task.Run(() =>
             {
-                var r = EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() });               
+                var r = EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() });
             });
         }
 
@@ -305,16 +318,23 @@ namespace Front.Control
 
                 case "Історія":
                     break;
+                case "Журнал":
+                    var TMPIdRecipt = new IdReceipt { CodePeriod = Global.GetCodePeriod(), CodeReceipt = 0, IdWorkplace = Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace).IdWorkplace };
+                    SourcesListJournal = new ObservableCollection<LogRRO>(Bl.db.GetLogRRO(TMPIdRecipt));
+                    ListJournal.ItemsSource = SourcesListJournal;
+                    CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(ListJournal.ItemsSource);
+                    view.Filter = JournalFilter;
+                    break;
                 case "Помилки":
                     RefreshLog();
                     break;
                 case "Вихід":
                     MW.SetStateView(Models.eStateMainWindows.StartWindow);
-                    TabAdmin.SelectedIndex=0;
+                    TabAdmin.SelectedIndex = 0;
                     //this.WindowState = WindowState.Minimized;
                     break;
                 default:
-                    
+
                     return;
             }
         }
@@ -363,7 +383,7 @@ namespace Front.Control
             {
                 decimal sum = R.Wares.Sum(r => r.Sum); //TMP!!!Треба переробити
 
-                var pay = EF.PosPurchase(R,sum);
+                var pay = EF.PosPurchase(R, sum);
                 if (pay != null)
                 {
                     pay.SetIdReceipt(R);
@@ -381,8 +401,8 @@ namespace Front.Control
             //MessageBox.Show("Реквізити на оплату");
             TerminalPaymentInfo terminalPaymentInfo = new TerminalPaymentInfo(MW);
             var R = MW?.curReceipt;
-            if (terminalPaymentInfo.ShowDialog() == true && R!=null)
-            {               
+            if (terminalPaymentInfo.ShowDialog() == true && R != null)
+            {
                 var Res = terminalPaymentInfo.enteredDataFromTerminal;
                 Res.SetIdReceipt(R);
                 MW.SetManualPay(Res);
@@ -399,7 +419,7 @@ namespace Front.Control
         {
 
             Bl.CreateRefund(curReceipt);
-            MW.SetStateView(eStateMainWindows.WaitInput);            
+            MW.SetStateView(eStateMainWindows.WaitInput);
         }
 
         //Якогось не працює через get як я хочу :) Тому пока реалізація через Ж.
@@ -513,11 +533,11 @@ namespace Front.Control
                 PosCheckText.Text = "";
                 DetailsReceiptBorder.Visibility = Visibility.Visible;
                 BackgroundReceipts.Visibility = Visibility.Visible;
-                
+
                 var TMPvalue = Bl.db.GetLogRRO(tmpReceipt);
                 foreach (var item in TMPvalue)
                 {
-                    if (item.TypeOperation==eTypeOperation.SalePOS)
+                    if (item.TypeOperation == eTypeOperation.SalePOS)
                     {
                         PosCheckText.Text = string.Join(Environment.NewLine, item.TextReceipt);
                         break;
@@ -550,8 +570,40 @@ namespace Front.Control
 
         private void Print(object sender, RoutedEventArgs e)
         {
-            if (LastReceipt?.Receipt?.Count()>0)
+            if (LastReceipt?.Receipt?.Count() > 0)
                 EF.PrintNoFiscalReceipt(LastReceipt.Receipt);
+        }
+
+        private void ListJournalSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            JornalText.Text = "";
+            var selectedListJournal = ListJournal.SelectedItem as LogRRO;
+            if (selectedListJournal != null)
+            {
+                JornalText.Text = selectedListJournal.TextReceipt != null ? selectedListJournal.TextReceipt : selectedListJournal.JSON;
+            }
+        }
+
+        private void FindJournalDate(object sender, RoutedEventArgs e)
+        {
+            if (TabPrintJournal.IsSelected)
+            {
+                var TMPIdRecipt = new IdReceipt { CodePeriod = Global.GetCodePeriod(DateSoSearch), CodeReceipt = 0, IdWorkplace = Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace).IdWorkplace };
+                SourcesListJournal = new ObservableCollection<LogRRO>(Bl.db.GetLogRRO(TMPIdRecipt));
+                ListJournal.ItemsSource = SourcesListJournal;
+                CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(ListJournal.ItemsSource);
+                view.Filter = JournalFilter;
+            }
+        }
+
+        private void IsAllJournalChecked(object sender, RoutedEventArgs e)
+        {
+            if (SourcesListJournal != null)
+            {
+                IsShowAllJournal = (bool)AllListJornal.IsChecked;
+                CollectionViewSource.GetDefaultView(ListJournal.ItemsSource).Refresh();
+            }
+
         }
     }
 
