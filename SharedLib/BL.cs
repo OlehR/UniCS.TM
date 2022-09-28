@@ -65,19 +65,19 @@ namespace SharedLib
                     pW.Quantity = pW.AmountSalesBan;
                     if (Global.IsOldInterface)
                     {
-                        isZeroPrice = true;                       
+                        isZeroPrice = true;
                     }
                     else
-                    {                       
+                    {
                         Global.OnClientWindows?.Invoke(pW.IdWorkplace, eTypeWindows.LimitSales, $"Даний товар {pW.NameWares} {Environment.NewLine} має обмеження в кількості {pW.AmountSalesBan} шт");
 
                         OnCustomWindow?.Invoke(new CustomWindow(eWindows.LimitSales, $"Даний товар {pW.NameWares} {Environment.NewLine} має обмеження в кількості {pW.AmountSalesBan} шт"));
                     }
                     return null;
                 }
-                if(pW.PriceDealer==0)
+                if (pW.PriceDealer == 0)
                 {
-                    OnCustomWindow?.Invoke(new CustomWindow(eWindows.NoPrice,pW.NameWares));
+                    OnCustomWindow?.Invoke(new CustomWindow(eWindows.NoPrice, pW.NameWares));
                     return null;
                 }
 
@@ -144,7 +144,7 @@ namespace SharedLib
 
         public Receipt GetNewIdReceipt(int pIdWorkplace = 0, int pCodePeriod = 0)
         {
-            var idReceip = new IdReceipt() { IdWorkplace = (pIdWorkplace == 0 ? Global.IdWorkPlace : pIdWorkplace), CodePeriod = (pCodePeriod == 0 ? Global.GetCodePeriod() : pCodePeriod),CodeReceipt=Global.StartCodeReceipt };
+            var idReceip = new IdReceipt() { IdWorkplace = (pIdWorkplace == 0 ? Global.IdWorkPlace : pIdWorkplace), CodePeriod = (pCodePeriod == 0 ? Global.GetCodePeriod() : pCodePeriod), CodeReceipt = Global.StartCodeReceipt };
             var Recipt = new Receipt(db.GetNewReceipt(idReceip));
             db.RecalcPriceAsync(new IdReceiptWares(Recipt));
             //Global.OnReceiptChanged?.Invoke(Recipt);
@@ -334,7 +334,7 @@ namespace SharedLib
                         else
                             Global.OnClientWindows?.Invoke(w.IdWorkplace, eTypeWindows.LimitSales, $"Даний товар {w.NameWares} {Environment.NewLine} має обмеження в кількості {w.AmountSalesBan} шт");
                     }
-                    
+
                     res = db.UpdateQuantityWares(w);
                     _ = VR.SendMessageAsync(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum, VR.eTypeVRMessage.UpdateWares);
                 }
@@ -380,7 +380,7 @@ namespace SharedLib
             if (Global.TypeWorkplace != eTypeWorkplace.NotDefine && r.Count() > 1)//Якщо не модерн і є кілька клієнтів.
             {
                 // Створюємо  користувацьке вікно
-                var CW = new CustomWindow(eWindows.ChoiceClient,r);                            
+                var CW = new CustomWindow(eWindows.ChoiceClient, r);
                 OnCustomWindow?.Invoke(CW);
             }
             return null;
@@ -478,7 +478,7 @@ namespace SharedLib
 
         public IEnumerable<ReceiptWares> GetWaresReceipt(IdReceipt pIdReceipt = null)
         {
-            var ldb = pIdReceipt.CodePeriod==Global.GetCodePeriod()? db: new WDB_SQLite(pIdReceipt.DTPeriod);
+            var ldb = pIdReceipt.CodePeriod == Global.GetCodePeriod() ? db : new WDB_SQLite(pIdReceipt.DTPeriod);
             return ldb.ViewReceiptWares(pIdReceipt);
         }
 
@@ -650,7 +650,7 @@ namespace SharedLib
         /// </summary>
         /// <param name="IdR">Чек на який робиться повернення</param>
         /// <returns></returns>
-        public Receipt CreateRefund(IdReceipt IdR,bool pIsFull=false,bool IsRefund=true)
+        public Receipt CreateRefund(IdReceipt IdR, bool pIsFull = false, bool IsRefund = true)
         {
             try
             {
@@ -659,7 +659,7 @@ namespace SharedLib
                 R.AdditionC1 = R.Payment?.First()?.CodeAuthorization;
                 R.Payment = null;
                 R.ReceiptEvent = null;
-                if(IsRefund)
+                if (IsRefund)
                     R.TypeReceipt = eTypeReceipt.Refund;
                 R.StateReceipt = eStateReceipt.Prepare;
                 R.RefundId = new IdReceipt(R);
@@ -669,7 +669,7 @@ namespace SharedLib
                 foreach (var el in R.Wares)
                 {
                     el.MaxRefundQuantity = el.Quantity - el.RefundedQuantity;
-                    if(!pIsFull)
+                    if (!pIsFull)
                         el.Quantity = 0;
                     db.AddWares(el);
                 }
@@ -714,22 +714,22 @@ namespace SharedLib
                             {
                                 case 1: //Фіксування ваги
                                     if (r != null)
-                                    { 
+                                    {
                                         List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(r) { EventType = eReceiptEventType.IncorrectWeight, EventName = "Ручне підтвердження ваги", CreatedAt = DateTime.Now } };
                                         db.InsertReceiptEvent(rr);
                                         FixWeight(r);
                                     }
                                     break;
                                 case 2: //Добавити вагу
-                                    if (r != null && r.FixWeight>0 && r.FixWeightQuantity>0)
+                                    if (r != null && r.FixWeight > 0 && r.FixWeightQuantity > 0)
                                     {
-                                          FixWeight(r);
-                                       // db.InsertWeight(new  { BarCode = r.CodeWares, Weight = (decimal) r.FixWeight /(r.FixWeightQuantity*1000m), Status = -1 });
+                                        FixWeight(r);
+                                        // db.InsertWeight(new  { BarCode = r.CodeWares, Weight = (decimal) r.FixWeight /(r.FixWeightQuantity*1000m), Status = -1 });
                                         db.InsertAddWeight(new AddWeight { CodeWares = r.CodeWares, CodeUnit = r.CodeUnit, Weight = (decimal)r.FixWeight / (r.FixWeightQuantity * 1000m), IsManual = true });
                                     }
                                     break;
                                 case 3: //видалення поточної позиції
-                                    if (r != null) ChangeQuantity(r, 0);                                   
+                                    if (r != null) ChangeQuantity(r, 0);
                                     break;
                             }
                         }
@@ -738,14 +738,21 @@ namespace SharedLib
                 }
             }
         }
-        
-        public void AddOwnBag(IdReceipt pR,decimal pWeight)
+
+        public void AddOwnBag(IdReceipt pR, decimal pWeight)
         {
-            List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(pR) { EventType = eReceiptEventType.OwnBag, EventName = "Власна думка",ProductConfirmedWeight=Convert.ToInt32(pWeight), CreatedAt = DateTime.Now } };
+            List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(pR) { EventType = eReceiptEventType.OwnBag, EventName = "Власна думка", ProductConfirmedWeight = Convert.ToInt32(pWeight), CreatedAt = DateTime.Now } };
             db.InsertReceiptEvent(rr);
 
             var r = GetReceiptHead(pR, true);
             Global.OnReceiptCalculationComplete?.Invoke(r);
+        }
+
+        public IEnumerable<LogRRO> GetLogRRO(IdReceipt pR)
+        {
+            DateTime Ldc = pR.DTPeriod;
+            WDB_SQLite ldb = (Ldc == DateTime.Now.Date ? db : new WDB_SQLite(Ldc));
+            return ldb.GetLogRRO(pR);
         }
     }
 }

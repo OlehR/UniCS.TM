@@ -320,7 +320,7 @@ namespace Front.Control
                     break;
                 case "Журнал":
                     var TMPIdRecipt = new IdReceipt { CodePeriod = Global.GetCodePeriod(), CodeReceipt = 0, IdWorkplace = Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace).IdWorkplace };
-                    SourcesListJournal = new ObservableCollection<LogRRO>(Bl.db.GetLogRRO(TMPIdRecipt));
+                    SourcesListJournal = new ObservableCollection<LogRRO>(Bl.GetLogRRO(TMPIdRecipt));
                     ListJournal.ItemsSource = SourcesListJournal;
                     CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(ListJournal.ItemsSource);
                     view.Filter = JournalFilter;
@@ -589,7 +589,7 @@ namespace Front.Control
             if (TabPrintJournal.IsSelected)
             {
                 var TMPIdRecipt = new IdReceipt { CodePeriod = Global.GetCodePeriod(DateSoSearch), CodeReceipt = 0, IdWorkplace = Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace).IdWorkplace };
-                SourcesListJournal = new ObservableCollection<LogRRO>(Bl.db.GetLogRRO(TMPIdRecipt));
+                SourcesListJournal = new ObservableCollection<LogRRO>(Bl.GetLogRRO(TMPIdRecipt));
                 ListJournal.ItemsSource = SourcesListJournal;
                 CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(ListJournal.ItemsSource);
                 view.Filter = JournalFilter;
