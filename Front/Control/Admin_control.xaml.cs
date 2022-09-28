@@ -510,8 +510,19 @@ namespace Front.Control
             var tmpReceipt = btn.DataContext as Receipt;
             if (tmpReceipt != null)
             {
+                PosCheckText.Text = "";
                 DetailsReceiptBorder.Visibility = Visibility.Visible;
                 BackgroundReceipts.Visibility = Visibility.Visible;
+                
+                var TMPvalue = Bl.db.GetLogRRO(tmpReceipt);
+                foreach (var item in TMPvalue)
+                {
+                    if (item.TypeOperation==eTypeOperation.SalePOS)
+                    {
+                        PosCheckText.Text = string.Join(Environment.NewLine, item.TextReceipt);
+                        break;
+                    }
+                }
                 var curReceiptWares = Bl.GetWaresReceipt(tmpReceipt);
                 ListWaresReceipt.ItemsSource = curReceiptWares;
             }

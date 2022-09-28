@@ -1888,13 +1888,12 @@
         </Border>
         
         <!-- Адмінка -->
-        <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
-                Grid.Row="0" Grid.RowSpan="5"
-                Grid.Column="0" Grid.ColumnSpan="4"
-                 Name="AdminPanel" Visibility="Visible" Grid.ZIndex="4" 
-                CornerRadius="10" VerticalAlignment="Center" HorizontalAlignment="Center">           
-            <uc:Admin_control x:Name="AdminControl"/>
-        </Border>
+
+            <uc:Admin_control Grid.Row="0" Grid.RowSpan="5"
+                              Grid.Column="0" Grid.ColumnSpan="4" 
+                              x:Name="AdminControl" VerticalAlignment="Stretch" 
+                              Grid.ZIndex="4" />
+
 
     </Grid>
 
