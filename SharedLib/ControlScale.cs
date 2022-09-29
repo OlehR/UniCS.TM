@@ -329,32 +329,13 @@ namespace ModelMID
         /// <param name="pIsStable">Чи платформа стабільна</param>
         public void OnScalesData(double pWeight, bool pIsStable)
         {
-            // !!! Ідея не вдала. Після стабілізації ваги пропускаємо кілька подій Оскільки контрольна вага бреше щодо pIsStable
-            /*   if ((DateTime.Now - LastStabilized).TotalSeconds < 600)
-               {
-                   OnScalesLog("OnScalesData", "Skip after stabilizate");
-                   return;
-               }*/
-            //Сподіваюсь ця буде вдаліша.               
-
-            OnScalesLog("OnScalesData", $"Weight=>{pWeight} isStable=>{pIsStable}");
-            if (!pIsStable)
-            {
-                (pWeight, pIsStable) = MidlWeight.AddValue(pWeight, pIsStable);
-                OnScalesLog("OnScalesData", $"After Weight=>{pWeight} isStable=>{pIsStable}");
-            }
-            СurrentlyWeight = pWeight-BeforeWeight;
-
-            //OnScalesLog("OnScalesData", $"Weight=>{pWeight} isStable=>{pIsStable}");
-            /*
             // не записуємо в лог якщо зміни не значні.
-            if (Math.Abs(curFullWeight - pWeight) >=2)
+            if (Math.Abs(curFullWeight - pWeight) >= 2)
             {
-                //    n = 0;
-                //    OnScalesLog("OnScalesData", $"Weight=>{pWeight} isStable=>{pIsStable} Ext=({sb.ToString()})");
-                //   sb.Clear();
-                if(pIsStable)
-                OnScalesLog("OnScalesData", $"Велика дельта Weight=>{pWeight} isStable=>{pIsStable}");
+                n = 0;
+                СurrentlyWeight = pWeight - BeforeWeight;
+                OnScalesLog("OnScalesData", $"Weight=>{pWeight} isStable=>{pIsStable} Ext=({sb})");
+                sb.Clear();
             }
             else
             {
@@ -362,13 +343,19 @@ namespace ModelMID
                     n++;
                 else
                 {
-                    sb.Append($"{DateTime.Now:ss:ffff},{n+1},{curFullWeight} ;");
+                    sb.Append($"({DateTime.Now:ss:ffff},{n + 1},{curFullWeight})");
                     n = 0;
                 }
-                if (!pIsStable)
-                    pIsStable = true;
-            }*/
+            }
 
+            //Сподіваюсь ця буде вдаліша.
+            if (!pIsStable)
+            {
+                (pWeight, pIsStable) = MidlWeight.AddValue(pWeight, pIsStable);                
+            }
+
+            СurrentlyWeight = pWeight-BeforeWeight;
+               
             curFullWeight = pWeight;
             eStateScale NewStateScale = StateScale;
 
