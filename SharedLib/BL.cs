@@ -659,6 +659,7 @@ namespace SharedLib
                 R.AdditionC1 = R.Payment?.First()?.CodeAuthorization;
                 R.Payment = null;
                 R.ReceiptEvent = null;
+                R.DateReceipt = DateTime.Now;
                 if (IsRefund)
                     R.TypeReceipt = eTypeReceipt.Refund;
                 R.StateReceipt = eStateReceipt.Prepare;
