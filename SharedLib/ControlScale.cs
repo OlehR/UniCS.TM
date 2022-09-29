@@ -342,6 +342,7 @@ namespace ModelMID
             // не записуємо в лог якщо зміни не значні.
             if (Math.Abs(curFullWeight - pWeight) >=2)
             {
+                n = 0;
                 OnScalesLog("OnScalesData", $"Weight=>{pWeight} isStable=>{pIsStable} Ext=({sb.ToString()})");
                 sb.Clear();
             }
