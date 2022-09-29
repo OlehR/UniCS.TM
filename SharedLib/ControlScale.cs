@@ -30,8 +30,8 @@ namespace ModelMID
     {
 
         int i = 0;
-        double Delta;
-        readonly WeightTime[] Weights = new WeightTime[4];
+        double Delta;       
+        readonly WeightTime[] Weights = new WeightTime[3];
 
         public MidlWeight(double pDelta)
         {
@@ -74,12 +74,12 @@ namespace ModelMID
             get
             {
                 //bool isStable = true;
-                DateTime UseTime = DateTime.Now.AddMilliseconds(-700);
+                //DateTime UseTime = DateTime.Now.AddMilliseconds(-700);
                 double n = 0;
                 double Sum = 0d, Max = Weights[i].Weight, Min = Weights[i].Weight;
                 for (int ind = 0; ind < Weights.Length; ind++)
                 {
-                    if (Weights[ind].Time >= UseTime)
+                    //if (Weights[ind].Time >= UseTime)
                     {
                         if (Max < Weights[ind].Weight)
                             Max = Weights[ind].Weight;
@@ -89,16 +89,16 @@ namespace ModelMID
                         Sum += Weights[ind].Weight;
                     }
                 }
-                if (n == 0d && (Max - Min > Delta)) //Якщо похибка велика То берем останню вагу.
-                    return (Weights[i].Weight, (Max - Min < Delta));
+                if (n == 0d || (Max - Min > Delta)) //Якщо похибка велика То берем останню вагу.
+                    return (Weights[i].Weight, (Max - Min <= Delta));
                 /*if (n > 2)
                 {
                     double dddd = n;
                 }*/
-                return (Sum / n, (Max - Min > Delta));
+                return (Sum / n, (Max - Min <= Delta));
             }
         }
-        public double GetMidl {get{ double Weight;  bool IsStable; (Weight, IsStable) = Midl; return Weight; } }
+        //public double GetMidl {get{ double Weight;  bool IsStable; (Weight, IsStable) = Midl; return Weight; } }
       
     }
 
@@ -238,7 +238,7 @@ namespace ModelMID
         public ControlScale(double pDelta = 10d)
         {
             Delta = pDelta;
-            MidlWeight = new MidlWeight(pDelta);
+            MidlWeight = new MidlWeight(2);
         }
 
         bool IsTooLight { get { return WaitWeight.Length>0 && WaitWeight.Count(e => e.Weight*Quantity < Delta) > 0; } }
@@ -321,13 +321,14 @@ namespace ModelMID
 
         StringBuilder sb =new();
         int n = 0;
+        //double Before2Weight = 0;
         /// <summary>
         /// Подія від контрольної ваги.
         /// </summary>
         /// <param name="pWeight">Власне вага</param>
         /// <param name="pIsStable">Чи платформа стабільна</param>
         public void OnScalesData(double pWeight, bool pIsStable)
-        {          
+        {
             // !!! Ідея не вдала. Після стабілізації ваги пропускаємо кілька подій Оскільки контрольна вага бреше щодо pIsStable
             /*   if ((DateTime.Now - LastStabilized).TotalSeconds < 600)
                {
@@ -336,10 +337,16 @@ namespace ModelMID
                }*/
             //Сподіваюсь ця буде вдаліша.               
 
-            //(pWeight, pIsStable) = MidlWeight.AddValue(pWeight, pIsStable);
-
-            СurrentlyWeight = pWeight-BeforeWeight;
             OnScalesLog("OnScalesData", $"Weight=>{pWeight} isStable=>{pIsStable}");
+            if (!pIsStable)
+            {
+                (pWeight, pIsStable) = MidlWeight.AddValue(pWeight, pIsStable);
+                OnScalesLog("OnScalesData", $"After Weight=>{pWeight} isStable=>{pIsStable}");
+            }
+            СurrentlyWeight = pWeight-BeforeWeight;
+
+            //OnScalesLog("OnScalesData", $"Weight=>{pWeight} isStable=>{pIsStable}");
+            /*
             // не записуємо в лог якщо зміни не значні.
             if (Math.Abs(curFullWeight - pWeight) >=2)
             {
@@ -351,16 +358,16 @@ namespace ModelMID
             }
             else
             {
-                /*if (curFullWeight == pWeight)
+                if (curFullWeight == pWeight)
                     n++;
                 else
                 {
                     sb.Append($"{DateTime.Now:ss:ffff},{n+1},{curFullWeight} ;");
                     n = 0;
-                }*/
+                }
                 if (!pIsStable)
                     pIsStable = true;
-            }
+            }*/
 
             curFullWeight = pWeight;
             eStateScale NewStateScale = StateScale;
