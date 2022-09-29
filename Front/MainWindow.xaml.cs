@@ -53,10 +53,10 @@ namespace Front
         public ObservableCollection<ReceiptWares> ListWares { get; set; }
         public CustomWindow customWindow { get; set; }
         //public ObservableCollection<CustomButton> customWindowButtons { get; set; }
-        public string WaresQuantity { get; set; }
-        decimal _MoneySum;
+        public string WaresQuantity { get { return curReceipt?.Wares?.Count().ToString() ?? "0"; } } 
+        
         double tempMoneySum;
-        public decimal MoneySum { get; set; }
+        public decimal MoneySum { get { return curReceipt?.Wares?.Sum(r => r.SumTotal) ?? 0; } }
         public string MoneySumToRound { get; set; }
         public string EquipmentInfo { get; set; }
         bool _Volume = true;
@@ -89,7 +89,7 @@ namespace Front
         /// Чи активна кнопка оплати
         /// </summary>
         //bool _IsEnabledPaymentButton;
-        public bool IsEnabledPaymentButton { get { return (_MoneySum >= 0 && WaresQuantity != "0" && IsAddNewWares) || curReceipt?.TypeReceipt == eTypeReceipt.Refund; } }// set { _IsEnabledPaymentButton = value; } }
+        public bool IsEnabledPaymentButton { get { return (MoneySum >= 0 && WaresQuantity != "0" && IsAddNewWares) || curReceipt?.TypeReceipt == eTypeReceipt.Refund; } }// set { _IsEnabledPaymentButton = value; } }
         /// <summary>
         /// чи активна кнопка пошуку
         /// </summary>
@@ -240,12 +240,7 @@ namespace Front
             Bl = new BL(true);
             EF = new EquipmentFront(GetBarCode);
             InitAction();
-
-            WaresQuantity = "0";
-            MoneySum = 0;
-            Volume = true;
-
-
+           
             //ad = new Admin(this, EF);
             //ad.WindowState = WindowState.Minimized;
             //ad.Show();
@@ -273,7 +268,7 @@ namespace Front
             pl.Tag = new CultureInfo("pl");
 
             //CultureInfo currLang = App.Language;
-            Recalc();
+            SetCurReceipt(null);
             Task.Run(() => Bl.ds.SyncDataAsync());
 
             var LastR = Bl.GetLastReceipt();
@@ -289,13 +284,31 @@ namespace Front
 
         void SetCurReceipt(Receipt pReceipt)
         {
-            curReceipt = pReceipt;
-            if (curReceipt == null)
+            try
             {
-                Dispatcher.BeginInvoke(new ThreadStart(() => ListWares?.Clear()));
-                // = new ObservableCollection<ReceiptWares>();
-                Client = null;
-                CS.WaitClear();
+                curReceipt = pReceipt;
+                if (curReceipt == null)
+                {
+                    Dispatcher.BeginInvoke(new ThreadStart(() => { ListWares?.Clear(); }));
+                    Client = null;
+                    CS.WaitClear();
+                }
+
+                ListWares = new ObservableCollection<ReceiptWares>(pReceipt?.Wares);
+                Dispatcher.BeginInvoke(new ThreadStart(() =>
+                {
+                    WaresList.ItemsSource = ListWares;
+                    if (VisualTreeHelper.GetChildrenCount(WaresList) > 0)
+                    {
+                        Border border = (Border)VisualTreeHelper.GetChild(WaresList, 0);
+                        ScrollViewer scrollViewer = (ScrollViewer)VisualTreeHelper.GetChild(border, 0);
+                        scrollViewer.ScrollToBottom();
+                    }
+                }));
+            }
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
             }
             SetPropertyChanged();
         }
@@ -314,6 +327,8 @@ namespace Front
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WaitAdminText"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CS"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Client"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MoneySum"));    
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WaresQuantity"));
             //ChangeWaitAdminText();
         }
 
@@ -716,21 +731,7 @@ namespace Front
         {
             Volume = !Volume;
         }
-
-        private void Recalc()
-        {
-            _MoneySum = ListWares?.Sum(r => r.SumTotal) ?? 0;
-            MoneySum = _MoneySum;
-            WaresQuantity = ListWares?.Count().ToString() ?? "0";
-            if (VisualTreeHelper.GetChildrenCount(WaresList) > 0)
-            {
-                Border border = (Border)VisualTreeHelper.GetChild(WaresList, 0);
-                ScrollViewer scrollViewer = (ScrollViewer)VisualTreeHelper.GetChild(border, 0);
-                scrollViewer.ScrollToBottom();
-            }
-            //SV_WaresList.ScrollToEnd();
-        }
-
+        
         private void _ChangeLanguage(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;

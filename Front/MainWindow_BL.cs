@@ -100,19 +100,7 @@ namespace Front
                 {
                     FileLogger.WriteLogMessage($"MainWindow.OnReceiptCalculationComplete Exception =>(pReceipt=>{pReceipt.ToJSON()}) => ({Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace})", eTypeLog.Error);
                 }
-
-                try
-                {
-                    ListWares = new ObservableCollection<ReceiptWares>(pReceipt?.Wares);
-                    Dispatcher.BeginInvoke(new ThreadStart(() => {
-                        WaresList.ItemsSource = ListWares; 
-                        Recalc(); 
-                    }));
-                }
-                catch (Exception e)
-                {
-                    FileLogger.WriteLogMessage($"MainWindow.OnReceiptCalculationComplete Exception =>(pReceipt=>{pReceipt.ToJSON()}) => ({Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace})", eTypeLog.Error);
-                }
+              
                 FileLogger.WriteLogMessage($"MainWindow.OnReceiptCalculationComplete(pReceipt=>{pReceipt.ToJSON()})", eTypeLog.Full);
             };
 
