@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Utils;
 
 namespace ModelMID
@@ -268,7 +269,7 @@ namespace ModelMID
             else
                 return false;
         }
-
+        
         public void StartWeightNewGoogs(Receipt pR, ReceiptWares pDelRW = null)
         {
 
@@ -317,6 +318,8 @@ namespace ModelMID
             //FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"(pBeforeWeight={pBeforeWeight},pWeight={pWeight.ToJSON()},pQuantity={pQuantity},{RW.NameWares})", eTypeLog.Full);
         }
 
+        StringBuilder sb =new();
+        int n = 0;
         /// <summary>
         /// Подія від контрольної ваги.
         /// </summary>
@@ -330,17 +333,30 @@ namespace ModelMID
                    OnScalesLog("OnScalesData", "Skip after stabilizate");
                    return;
                }*/
-            //Сподіваюсь ця буде вдаліша.
-            if (!pIsStable && Math.Abs(curFullWeight - pWeight) <= 2)
-                pIsStable = true;   
+            //Сподіваюсь ця буде вдаліша.               
 
             //(pWeight, pIsStable) = MidlWeight.AddValue(pWeight, pIsStable);
 
             СurrentlyWeight = pWeight-BeforeWeight;
 
             // не записуємо в лог якщо зміни не значні.
-            if (Math.Abs(curFullWeight - pWeight) > 1)
-                OnScalesLog("OnScalesData", $"Weight=>{pWeight} isStable=>{pIsStable}");
+            if (Math.Abs(curFullWeight - pWeight) >=2)
+            {
+                OnScalesLog("OnScalesData", $"Weight=>{pWeight} isStable=>{pIsStable} Ext=({sb.ToString()})");
+                sb.Clear();
+            }
+            else
+            {
+                if (curFullWeight == pWeight)
+                    n++;
+                else
+                {
+                    sb.Append($"{DateTime.Now:ss:ffff} {n} {curFullWeight} ");
+                    n = 0;
+                }
+                if (!pIsStable)
+                    pIsStable = true;
+            }
 
             curFullWeight = pWeight;
             eStateScale NewStateScale = StateScale;
