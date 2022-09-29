@@ -90,12 +90,12 @@ namespace ModelMID
                     }
                 }
                 if (n == 0d || (Max - Min > Delta)) //Якщо похибка велика То берем останню вагу.
-                    return (Weights[i].Weight, (Max - Min <= Delta));
+                    return (Math.Round(Weights[i].Weight), (Max - Min <= Delta));
                 /*if (n > 2)
                 {
                     double dddd = n;
                 }*/
-                return (Sum / n, (Max - Min <= Delta));
+                return (Math.Round(Sum / n), (Max - Min <= Delta));
             }
         }
         //public double GetMidl {get{ double Weight;  bool IsStable; (Weight, IsStable) = Midl; return Weight; } }
