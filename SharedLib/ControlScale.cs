@@ -238,7 +238,7 @@ namespace ModelMID
         public ControlScale(double pDelta = 10d)
         {
             Delta = pDelta;
-            MidlWeight = new MidlWeight(2);
+            MidlWeight = new MidlWeight(3);
         }
 
         bool IsTooLight { get { return WaitWeight.Length>0 && WaitWeight.Count(e => e.Weight*Quantity < Delta) > 0; } }
