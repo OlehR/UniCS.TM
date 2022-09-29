@@ -123,10 +123,11 @@ namespace ModelMID
                 if (_StateScale != value)
                 {
                     _StateScale = value;
+                    OnScalesLog("NewState", $"{_StateScale} Ext=({sb})");
                     if (value != eStateScale.NotDefine)
                         OnStateScale?.Invoke(_StateScale, RW, СurrentlyWeight);
                     //new cStateScale() { StateScale = _StateScale, FixWeight = Convert.ToDecimal(MidlWeight.GetMidl), FixWeightQuantity = Convert.ToDecimal(Quantity) });
-                    OnScalesLog("NewState", _StateScale.ToString());
+                 
                     if (_StateScale == eStateScale.StartStabilized)
                         LastStabilized = DateTime.Now;
                 }
@@ -338,23 +339,23 @@ namespace ModelMID
             //(pWeight, pIsStable) = MidlWeight.AddValue(pWeight, pIsStable);
 
             СurrentlyWeight = pWeight-BeforeWeight;
-
+            OnScalesLog("OnScalesData", $"Weight=>{pWeight} isStable=>{pIsStable}");
             // не записуємо в лог якщо зміни не значні.
             if (Math.Abs(curFullWeight - pWeight) >=2)
             {
-                n = 0;
-                OnScalesLog("OnScalesData", $"Weight=>{pWeight} isStable=>{pIsStable} Ext=({sb.ToString()})");
-                sb.Clear();
+            //    n = 0;
+            //    OnScalesLog("OnScalesData", $"Weight=>{pWeight} isStable=>{pIsStable} Ext=({sb.ToString()})");
+             //   sb.Clear();
             }
             else
             {
-                if (curFullWeight == pWeight)
+                /*if (curFullWeight == pWeight)
                     n++;
                 else
                 {
-                    sb.Append($"{DateTime.Now:ss:ffff} {n} {curFullWeight} ");
+                    sb.Append($"{DateTime.Now:ss:ffff},{n+1},{curFullWeight} ;");
                     n = 0;
-                }
+                }*/
                 if (!pIsStable)
                     pIsStable = true;
             }
