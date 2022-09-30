@@ -1024,7 +1024,7 @@ namespace Front.Equipments.FP700
                 string[] strArray = response.Split(',');
                 if (strArray.Length < 3)
                     return;
-                res = strArray[1];
+                res = strArray[3];
             })));
             this.ClearDisplay();
             return res;
@@ -1274,6 +1274,8 @@ namespace Front.Equipments.FP700
                 documentNumbers.LastDocumentNumber = strArray[0];
                 documentNumbers.LastFiscalDocumentNumber = strArray[1];
                 documentNumbers.LastRefundFiscalDocumentNumber = strArray[2];
+                if(strArray.Length > 3)
+                    documentNumbers.GlobalDocumentNumber = strArray[3];
             })));
             return documentNumbers;
         }
@@ -2129,6 +2131,35 @@ namespace Front.Equipments.FP700
             this.CloseIfOpened();
             ((Stream)this._serialDevice).Dispose();
         }
+
+        bool IsFinish;
+        StringBuilder bb;
+        public string KSEFGetReceipt(int pCodeReceipt)
+        {
+            bb = new();
+            string res = (string)null;
+            this.OnSynchronizeWaitCommandResult(Command.KSEF,$"R{pCodeReceipt}" , ResKSEF);
+            while(!IsFinish)
+            {
+                this.OnSynchronizeWaitCommandResult(Command.KSEF, $"N", ResKSEF);
+            }
+            return bb.ToString() ;
+        }
+       
+        void ResKSEF(string response)
+        {
+            if (string.IsNullOrEmpty(response))
+            {
+                IsFinish = true;
+            }
+            else
+            {
+                var b = response[0];
+                IsFinish = (b=='F');
+                bb.Append(response.Substring(1));                
+            }
+        }
+
     }
 
     public class PrinterStatus
@@ -2193,6 +2224,8 @@ namespace Front.Equipments.FP700
         public string LastFiscalDocumentNumber { get; set; }
 
         public string LastRefundFiscalDocumentNumber { get; set; }
+
+        public string GlobalDocumentNumber { get; set; }
     }
     
     public class DiagnosticInfo
@@ -2262,6 +2295,7 @@ namespace Front.Equipments.FP700
         LogoProgramming = 115, // 0x00000073
         StateOfDataTransmission = 122, // 0x0000007A
         PrintServiceReceipts = 125, // 0x0000007D
+        KSEF = 126  //   0x0000007Eh  РАБОТА С КЛЭФ
     }
 
     public enum ArticleReportType

@@ -143,7 +143,7 @@ namespace Front
 
             System.Drawing.Color c = FC.ContainsKey(pStateMainWindows) ? FC[pStateMainWindows] : System.Drawing.Color.Black;
             if (pSS == eStateScale.WaitGoods)
-                return System.Drawing.Color.Yellow;
+                return System.Drawing.Color.Orange;
             if (pSS == eStateScale.BadWeight || pSS == eStateScale.NotStabilized)
                 return System.Drawing.Color.Red;
             return c;
