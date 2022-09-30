@@ -49,7 +49,7 @@ namespace Front.Equipments
         Fp700 Fp700;
         object Lock = new();
 
-        public RRO_FP700(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment, pConfiguration, eModelEquipment.FP700, pLoggerFactory, pActionStatus)
+        public RRO_FP700(Equipment pEquipment, IConfiguration pConfiguration, ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment, pConfiguration, eModelEquipment.FP700, pLoggerFactory, pActionStatus)
         {
             try
             {
@@ -254,6 +254,12 @@ namespace Front.Equipments
             return true;
         }
 
+
+        public override async Task<string> GetTextLastReceipt()
+        {
+            var r= Fp700.GetLastReceiptNumber();
+            return Fp700.KSEFGetReceipt(r);
+        }
 
         public ReceiptViewModel GetReceiptViewModel(ModelMID.Receipt receiptMID)
         {
@@ -1186,10 +1192,7 @@ namespace Front.Equipments.FP700
             string Res = null;
             this.ObliterateFiscalReceipt();
              this.OnSynchronizeWaitCommandResult(Command.EveryDayReport, this._operatorPassword + ",2", ((Action<string>)(response => Res = response)));
-
-            var ssss = this.GetLastReceiptNumber();
-
-            var aa=KSEFGetReceipt(ssss);
+            
             return Res;
         }
 
@@ -2142,7 +2145,7 @@ namespace Front.Equipments.FP700
         public string KSEFGetReceipt(string pCodeReceipt)
         {
             bb = new();
-            string res = (string)null;
+            string res = null;
             this.OnSynchronizeWaitCommandResult(Command.KSEF,$"R,{pCodeReceipt}" , ResKSEF);
             while(!IsFinish)
             {

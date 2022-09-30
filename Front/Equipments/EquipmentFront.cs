@@ -285,21 +285,34 @@ namespace Front
         public LogRRO PrintReceipt(Receipt pReceipt)
         {
             var r = RRO.PrintReceiptAsync(pReceipt).Result;
-            Bl.InsertLogRRO(r);
+            Task.Run(() =>
+            {
+                if (string.IsNullOrEmpty(r.TextReceipt))
+                    r.TextReceipt = RRO.GetTextLastReceipt().Result;
+                Bl.InsertLogRRO(r);
+            });
             return r;
         }
 
         public LogRRO RroPrintX(IdReceipt pIdR)
         {
             var r= RRO.PrintXAsync(pIdR).Result;
-            Bl.InsertLogRRO(r);
+            Task.Run(() => {
+                if (string.IsNullOrEmpty(r.TextReceipt))
+                    r.TextReceipt = RRO.GetTextLastReceipt().Result;
+                Bl.InsertLogRRO(r);
+            });
             return r;
         }
 
         public LogRRO RroPrintZ(IdReceipt pIdR)
         {
             var r= RRO.PrintZAsync(pIdR).Result;
-            Bl.InsertLogRRO(r);
+            Task.Run(() => {
+                if (string.IsNullOrEmpty(r.TextReceipt))
+                    r.TextReceipt = RRO.GetTextLastReceipt().Result;
+                Bl.InsertLogRRO(r);
+            });
             return r;
         }
 
