@@ -365,9 +365,6 @@ namespace Front
                 if (State == eStateMainWindows.AdminPanel || customWindow?.Id == eWindows.RestoreLastRecipt || State == eStateMainWindows.WaitInputPrice) return;
             }
 
-            if ((pSMV != eStateMainWindows.ProcessPay && pSMV != eStateMainWindows.ProcessPrintReceipt) && (State == eStateMainWindows.ProcessPay || State == eStateMainWindows.ProcessPrintReceipt))
-                EF.StopMultipleTone();
-
             if (pSMV == eStateMainWindows.StartWindow && curReceipt != null)
                 pSMV = eStateMainWindows.WaitInput;
             if (pSMV == eStateMainWindows.WaitInput && curReceipt == null)
@@ -431,6 +428,9 @@ namespace Front
                         EF.SetColor(GetFlagColor(State, TypeAccessWait, CS.StateScale));
                     }
 
+                    //Зупиняєм пищання сканера
+                    if (State != eStateMainWindows.ProcessPay && State != eStateMainWindows.ProcessPrintReceipt )
+                        EF.StopMultipleTone();
 
                     //Генеруємо з кастомні вікна
                     if (TypeAccessWait == eTypeAccess.FixWeight)
@@ -456,7 +456,6 @@ namespace Front
                         WaitAdminWeightButtons.ItemsSource = new ObservableCollection<CustomButton>(customWindow?.Buttons);
                     else
                         WaitAdminWeightButtons.ItemsSource = null;
-
 
                     if (State != eStateMainWindows.WaitAdmin && State != eStateMainWindows.WaitAdminLogin)
                         TypeAccessWait = eTypeAccess.NoDefine;
