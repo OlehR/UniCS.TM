@@ -287,7 +287,7 @@ namespace Front
             var r = RRO.PrintReceiptAsync(pReceipt).Result;
             Task.Run(() =>
             {
-                if (string.IsNullOrEmpty(r.TextReceipt))
+                if (string.IsNullOrEmpty(r.TextReceipt) || RRO.Model == eModelEquipment.FP700)
                     r.TextReceipt = RRO.GetTextLastReceipt().Result;
                 Bl.InsertLogRRO(r);
             });
@@ -298,7 +298,7 @@ namespace Front
         {
             var r= RRO.PrintXAsync(pIdR).Result;
             Task.Run(() => {
-                if (string.IsNullOrEmpty(r.TextReceipt))
+                if (string.IsNullOrEmpty(r.TextReceipt) || RRO.Model == eModelEquipment.FP700)
                     r.TextReceipt = RRO.GetTextLastReceipt().Result;
                 Bl.InsertLogRRO(r);
             });
@@ -309,7 +309,7 @@ namespace Front
         {
             var r= RRO.PrintZAsync(pIdR).Result;
             Task.Run(() => {
-                if (string.IsNullOrEmpty(r.TextReceipt))
+                if (string.IsNullOrEmpty(r.TextReceipt) || RRO.Model == eModelEquipment.FP700)
                     r.TextReceipt = RRO.GetTextLastReceipt().Result;
                 Bl.InsertLogRRO(r);
             });
