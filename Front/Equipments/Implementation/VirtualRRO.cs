@@ -51,9 +51,8 @@ namespace Front.Equipments.Implementation
         /// <returns></returns>
         override public async Task<LogRRO> PrintReceiptAsync(Receipt pR)
         {
-            return new LogRRO(pR) {TypeOperation= eTypeOperation.Sale,FiscalNumber="V0001111",SUM=pR.SumReceipt }; 
+            return new LogRRO(pR) {TypeOperation= eTypeOperation.Sale,FiscalNumber="V0001111",SUM=pR.SumReceipt,CodeError=0,Error="Проблема з лентою" }; 
         }
-              
 
         override public bool PutToDisplay(string ptext)
         {

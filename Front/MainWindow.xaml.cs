@@ -53,8 +53,8 @@ namespace Front
         public ObservableCollection<ReceiptWares> ListWares { get; set; }
         public CustomWindow customWindow { get; set; }
         //public ObservableCollection<CustomButton> customWindowButtons { get; set; }
-        public string WaresQuantity { get { return curReceipt?.Wares?.Count().ToString() ?? "0"; } } 
-        
+        public string WaresQuantity { get { return curReceipt?.Wares?.Count().ToString() ?? "0"; } }
+
         double tempMoneySum;
         public decimal MoneySum { get { return curReceipt?.Wares?.Sum(r => r.SumTotal) ?? 0; } }
         public string MoneySumToRound { get; set; }
@@ -89,7 +89,15 @@ namespace Front
         /// Чи активна кнопка оплати
         /// </summary>
         //bool _IsEnabledPaymentButton;
-        public bool IsEnabledPaymentButton { get { return (MoneySum >= 0 && WaresQuantity != "0" && IsAddNewWares) || curReceipt?.TypeReceipt == eTypeReceipt.Refund; } }// set { _IsEnabledPaymentButton = value; } }
+        public bool IsEnabledPaymentButton
+        {
+            get
+            {
+                return (MoneySum >= 0 && WaresQuantity != "0" && IsAddNewWares)
+                                                           || curReceipt?.TypeReceipt == eTypeReceipt.Refund || curReceipt?.StateReceipt == eStateReceipt.Pay;
+            }
+        }
+        // set { _IsEnabledPaymentButton = value; } }
         /// <summary>
         /// чи активна кнопка пошуку
         /// </summary>
@@ -240,7 +248,7 @@ namespace Front
             Bl = new BL(true);
             EF = new EquipmentFront(GetBarCode);
             InitAction();
-           
+
             //ad = new Admin(this, EF);
             //ad.WindowState = WindowState.Minimized;
             //ad.Show();
@@ -327,7 +335,7 @@ namespace Front
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WaitAdminText"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CS"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Client"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MoneySum"));    
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MoneySum"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WaresQuantity"));
             //ChangeWaitAdminText();
         }
@@ -437,8 +445,8 @@ namespace Front
 
                     if (State == eStateMainWindows.StartWindow)
                         Volume = true;
-                    if(TypeAccessWait==eTypeAccess.FixWeight || !IsConfirmAdmin)
-                     s.Play(State, TypeAccessWait, CS.StateScale, 0);
+                    if (TypeAccessWait == eTypeAccess.FixWeight || !IsConfirmAdmin)
+                        s.Play(State, TypeAccessWait, CS.StateScale, 0);
                     //if ((State == eStateMainWindows.WaitAdmin || State == eStateMainWindows.WaitAdminLogin) && TypeAccessWait == eTypeAccess.ExciseStamp)
                     //    customWindow = new CustomWindow(pCW, pStr);
 
@@ -731,7 +739,7 @@ namespace Front
         {
             Volume = !Volume;
         }
-        
+
         private void _ChangeLanguage(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
@@ -1199,7 +1207,6 @@ namespace Front
 
                 if (res.CustomWindow?.Id == eWindows.ExciseStamp)
                 {
-
                     //if(res.Id==31)
 
                     if (res.Id == 32)
@@ -1234,7 +1241,6 @@ namespace Front
                     return;
                 }
 
-
                 var r = new CustomWindowAnswer()
                 {
                     idReceipt = curReceipt,
@@ -1262,7 +1268,7 @@ namespace Front
 
         private void FindClientByPhone(string pResult)
         {
-         if (curReceipt == null)
+            if (curReceipt == null)
                 NewReceipt();
 
             if (pResult.Length >= 10)
@@ -1280,8 +1286,6 @@ namespace Front
             Background.Visibility = Visibility.Collapsed;
             BackgroundWares.Visibility = Visibility.Collapsed;
         }
-
-
 
         private void CustomWindowVerificationText(object sender, TextChangedEventArgs e)
         {
@@ -1314,7 +1318,6 @@ namespace Front
 
         private void CancelPayment(object sender, RoutedEventArgs e)
         {
-            //MessageBox.Show("Прихована кнопка відміни оплати");
             EF.PosCancel();
         }
     }

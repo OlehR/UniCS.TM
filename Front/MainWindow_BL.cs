@@ -46,15 +46,15 @@ namespace Front
                     //}
                     //EquipmentStatusInPayment.Text = PS.Status.GetDescription(); //TMP - не працює через гетер
                     if (PS != null)
-                        EquipmentStatusInPayment.Text = PS.Status.GetDescription();
-                    //EquipmentInfo = PS.Status.GetDescription();
+                        EquipmentInfo = PS.Status.GetDescription();                    
                     else
                     {
                         RroStatus rroStatus = info as RroStatus;
                         if (rroStatus != null)
-                            EquipmentStatusInPayment.Text = rroStatus.Status.GetDescription();//TMP - не працює через гетер
-                                                                                              //EquipmentInfo = rroStatus.Status.GetDescription();
+                            EquipmentInfo = rroStatus.Status.GetDescription();                                                                                             
                     }
+                    if (EquipmentInfo != null)
+                        EquipmentStatusInPayment.Text = EquipmentInfo; //TMP - не працює через гетер
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EquipmentInfo"));
                 }));
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"SetStatus ({info.ToJSON()})", eTypeLog.Expanded);
@@ -418,6 +418,8 @@ namespace Front
         /// <returns></returns>
         public bool PrintAndCloseReceipt(Receipt pR = null)
         {
+            bool Res = false;
+            string TextError = null;
 
             var R = Bl.GetReceiptHead(pR ?? curReceipt, true);
             curReceipt = R;
@@ -433,7 +435,6 @@ namespace Front
 
             lock (LockPayPrint)
             {
-
                 if (R.StateReceipt == eStateReceipt.Prepare)
                 {
                     try
@@ -459,9 +460,10 @@ namespace Front
                         }
                         else
                         {
-                            SetStateView(eStateMainWindows.WaitInput);
+                            //SetStateView(eStateMainWindows.WaitInput);
                             R.StateReceipt = eStateReceipt.Prepare;
                             Bl.SetStateReceipt(curReceipt, eStateReceipt.Prepare);
+                            TextError=$"Оплата не пройшла: {EquipmentInfo}";
                         }
                     }
                     catch (Exception e)
@@ -481,8 +483,7 @@ namespace Front
                     {
                         SetStateView(eStateMainWindows.ProcessPrintReceipt);
                         //Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
-                        var res = EF.PrintReceipt(R);
-                        SetStateView(eStateMainWindows.WaitInput);
+                        var res = EF.PrintReceipt(R);                        
                         if (res.CodeError == 0)
                         {
                             R.StateReceipt = eStateReceipt.Print;
@@ -505,30 +506,32 @@ namespace Front
                                 }
                             }
                             Bl.ds.SendReceiptTo1C(curReceipt);
-                            SetCurReceipt(null);
-                            //NewReceipt();
-                            //Global.OnReceiptCalculationComplete?.Invoke(new List<ReceiptWares>(), Global.IdWorkPlace);
-
-                            return true;
+                            SetCurReceipt(null);                            
+                            Res= true;
                         }
                         else
                         {
                             R.StateReceipt = eStateReceipt.Pay;
                             Bl.SetStateReceipt(curReceipt, eStateReceipt.Pay);
-                            ShowErrorMessage("Помилка друку чеків" + res.Error);
+                            TextError = $"Помилка друку чеків:({res.CodeError}){Environment.NewLine}{res.Error}";                            
                             //MessageBox.Show(res.Error, "Помилка друку чеків");
                             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Помилка друку чеків" + res.Error, eTypeLog.Error);
-                        }
-                        SetStateView(eStateMainWindows.WaitInput);
+                        }                      
                     }
                     catch (Exception e)
                     {
                         R.StateReceipt = eStateReceipt.Pay;
                         Bl.SetStateReceipt(curReceipt, eStateReceipt.Pay);
                         FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
-                    }
+                    }                    
                 }
-                return false;
+                SetStateView(eStateMainWindows.WaitInput);
+                if (TextError != null)
+                {
+                    Thread.Sleep(100);
+                    ShowErrorMessage(TextError);
+                }                
+                return Res;
             }
         }
 
