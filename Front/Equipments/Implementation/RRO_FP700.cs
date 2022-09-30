@@ -875,6 +875,7 @@ namespace Front.Equipments.FP700
             if (str != null)
                 return str;
             this.ObliterateFiscalReceipt();
+           // var rrrrr=KSEFGetReceipt(str);
             return str;
         }
 
@@ -1185,6 +1186,10 @@ namespace Front.Equipments.FP700
             string Res = null;
             this.ObliterateFiscalReceipt();
              this.OnSynchronizeWaitCommandResult(Command.EveryDayReport, this._operatorPassword + ",2", ((Action<string>)(response => Res = response)));
+
+            var ssss = this.GetLastReceiptNumber();
+
+            var aa=KSEFGetReceipt(ssss);
             return Res;
         }
 
@@ -2134,11 +2139,11 @@ namespace Front.Equipments.FP700
 
         bool IsFinish;
         StringBuilder bb;
-        public string KSEFGetReceipt(int pCodeReceipt)
+        public string KSEFGetReceipt(string pCodeReceipt)
         {
             bb = new();
             string res = (string)null;
-            this.OnSynchronizeWaitCommandResult(Command.KSEF,$"R{pCodeReceipt}" , ResKSEF);
+            this.OnSynchronizeWaitCommandResult(Command.KSEF,$"R,{pCodeReceipt}" , ResKSEF);
             while(!IsFinish)
             {
                 this.OnSynchronizeWaitCommandResult(Command.KSEF, $"N", ResKSEF);
@@ -2156,7 +2161,9 @@ namespace Front.Equipments.FP700
             {
                 var b = response[0];
                 IsFinish = (b=='F');
-                bb.Append(response.Substring(1));                
+                bb.Append(response.Substring(2));
+                bb.Append(Environment.NewLine);
+                
             }
         }
 
