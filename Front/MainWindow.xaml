@@ -56,6 +56,17 @@
             <RowDefinition></RowDefinition>
             <RowDefinition Height="95"></RowDefinition>
         </Grid.RowDefinitions>
+        <!-- цифрова клавіатура -->
+        <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="0" Grid.RowSpan="6"
+                 Grid.Column="0" Grid.ColumnSpan="6"
+                 Name="NumericPad" Visibility="Collapsed" Grid.ZIndex="4" 
+                CornerRadius="10" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Border.Effect>
+                <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+            </Border.Effect>
+            <uc:NumericPad x:Name="InputNumberPhone"   />
+        </Border>
 
         <!--<DockPanel Grid.ColumnSpan="10" Grid.RowSpan="10">
             <wv2:WebView2  x:Name="WebView2"
@@ -629,17 +640,7 @@
                 
             </Grid>-->
            
-            <!-- цифрова клавіатура -->
-            <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
-                 Grid.Row="0" Grid.RowSpan="6"
-                 Grid.Column="0" Grid.ColumnSpan="6"
-                 Name="NumericPad" Visibility="Collapsed" Grid.ZIndex="2" 
-                CornerRadius="10" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <Border.Effect>
-                    <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
-                </Border.Effect>
-                <uc:NumericPad x:Name="InputNumberPhone"   />
-            </Border>  
+
 
             <!-- Кастомне вікно    -->
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
@@ -1343,7 +1344,7 @@
                     <Button Grid.Row="2" Grid.Column="0" Style="{StaticResource Default}"  FontSize="22" Margin="10" Click="_Cancel">
                         <StackPanel Orientation="Horizontal">
                             <Image  Height="15" Width="15"  Source="icons\X.png"></Image>
-                            <TextBlock FontSize="24" Text="{DynamicResource cancel}" Margin="5,0,0,5"/>
+                            <TextBlock FontSize="24" Text="{DynamicResource cancel}" Margin="5,0,5,0"/>
                         </StackPanel>
                     </Button>
 
@@ -1812,7 +1813,7 @@
         <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="1" Grid.RowSpan="4"
                 Grid.Column="0" Grid.ColumnSpan="4"
-                 Name="StartShopping" Visibility="Visible" Grid.ZIndex="2" >
+                 Name="StartShopping" Visibility="Collapsed" Grid.ZIndex="2" >
             <Grid>
 
                 <StackPanel >
@@ -1889,10 +1890,14 @@
         
         <!-- Адмінка -->
 
-            <uc:Admin_control Grid.Row="0" Grid.RowSpan="5"
+            <uc:Admin_control Grid.Row="0" Grid.RowSpan="5" Visibility="Collapsed"
                               Grid.Column="0" Grid.ColumnSpan="4" 
                               x:Name="AdminControl" VerticalAlignment="Stretch" 
                               Grid.ZIndex="4" />
+        <uc:PaymentWindow Grid.Row="0" Grid.RowSpan="5" Visibility="Collapsed"
+                              Grid.Column="0" Grid.ColumnSpan="4" 
+                              x:Name="PaymentWindow" VerticalAlignment="Stretch" 
+                              Grid.ZIndex="2" />
 
 
     </Grid>

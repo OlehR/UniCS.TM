@@ -13,6 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Front.Control;
 using ModelMID;
 
 
@@ -23,6 +24,8 @@ namespace Front
     /// </summary>
     public partial class TerminalPaymentInfo : Window, INotifyPropertyChanged
     {
+        private PaymentWindow paymentWindow;
+
         public event PropertyChangedEventHandler PropertyChanged;
     
         public Payment enteredDataFromTerminal { get; set; }
@@ -37,6 +40,11 @@ namespace Front
             NameCardNumber.Focus();
             this.Owner = owner;
             this.DataContext = this;
+        }
+
+        public TerminalPaymentInfo(PaymentWindow paymentWindow)
+        {
+            this.paymentWindow = paymentWindow;
         }
 
         private void Cancel(object sender, RoutedEventArgs e)

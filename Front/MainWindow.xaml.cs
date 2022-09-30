@@ -254,6 +254,7 @@ namespace Front
             //ad.Show();
             InitializeComponent();
             AdminControl.Init(this);
+            PaymentWindow.Init(this);
 
             //Провіряємо чи зміна відкрита.
             string BarCodeAdminSSC = Bl.db.GetConfig<string>("CodeAdminSSC");
@@ -611,9 +612,6 @@ namespace Front
                             CashDisbursementTextBox.Text = "0";
                             RoundSum.Text = "0";
                             RoundSumDown.Text = "0";
-                            WaitKashier.Visibility = Visibility.Visible;
-                            Background.Visibility = Visibility.Visible;
-                            BackgroundWares.Visibility = Visibility.Visible;
                             break;
                         case eStateMainWindows.WaitCustomWindows:
 
@@ -1320,6 +1318,7 @@ namespace Front
         {
             EF.PosCancel();
         }
+
     }
 
 }

@@ -1,4 +1,5 @@
-﻿using ModelMID;
+﻿using Front.Control;
+using ModelMID;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -31,6 +32,7 @@ namespace Front
             set { _result = value; this.OnPropertyChanged("Result"); }
         }
         public int firs = 0;
+        private PaymentWindow paymentWindow;
 
         #endregion
 
@@ -47,6 +49,11 @@ namespace Front
             //Top = primaryMonitorArea.Bottom - Height - 100;
             //this.Owner = owner;
             //this.DataContext = this;
+        }
+
+        public KeyPad(PaymentWindow paymentWindow)
+        {
+            this.paymentWindow = paymentWindow;
         }
 
         private void button_Click(object sender, RoutedEventArgs e)
