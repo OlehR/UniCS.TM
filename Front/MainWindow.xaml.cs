@@ -22,6 +22,8 @@ using Microsoft.Extensions.Configuration;
 using System.Windows.Media;
 using System.Windows.Documents;
 using System.Reflection;
+using Front.API;
+using System.Net.Sockets;
 
 namespace Front
 {
@@ -232,7 +234,8 @@ namespace Front
 
         public MainWindow()
         {
-
+            SocketServer SocketS = new SocketServer();
+            _ =SocketS.StartSocketServer();
             CS = new ControlScale();
 
             var fc = new List<FlagColor>();

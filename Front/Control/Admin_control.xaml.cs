@@ -1,8 +1,10 @@
-﻿using Front.Equipments;
+﻿using Front.API;
+using Front.Equipments;
 using Front.Equipments.Ingenico;
 using Front.Models;
 using ModelMID;
 using ModelMID.DB;
+using ModernExpo.SelfCheckout.Utils;
 using SharedLib;
 using System;
 using System.Collections.Generic;
@@ -11,6 +13,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -46,7 +49,9 @@ namespace Front.Control
         BatchTotals LastReceipt = null;
 
         public DateTime DateSoSearch { get; set; } = DateTime.Now.Date;
+        public eTypeMessage TypeAPIMessage { get; set; }
         public string KasaNumber { get { return Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace).Name; } }
+        public ObservableCollection<APIRadiobuton> TypeMessageRadiobuton { get; set; }
 
         public void ControlScale(double pWeight, bool pIsStable)
         {
@@ -57,8 +62,14 @@ namespace Front.Control
         public Admin_control()
         {
             Bl = BL.GetBL;
+            TypeMessageRadiobuton = new ObservableCollection<APIRadiobuton>();
+            foreach (eTypeMessage item in Enum.GetValues(typeof(eTypeMessage)))
+            {
+                TypeMessageRadiobuton.Add(new APIRadiobuton() {ServerTypeMessage = item});
+            }
             InitializeComponent();
             this.DataContext = this;
+            ListRadioButtonAPI.ItemsSource = TypeMessageRadiobuton;
 
             //поточний час
             DispatcherTimer timer = new DispatcherTimer();
@@ -605,8 +616,29 @@ namespace Front.Control
             }
 
         }
-    }
 
+        private void CheckTypeMessage(object sender, RoutedEventArgs e)
+        {
+            RadioButton rbtn = sender as RadioButton;
+            if (rbtn.DataContext is APIRadiobuton)
+            {
+                APIRadiobuton temp = rbtn.DataContext as APIRadiobuton;
+                TypeAPIMessage = temp.ServerTypeMessage;
+            }
+        }
+
+        private void SetdAPIMessage(object sender, RoutedEventArgs e)
+        {
+            KasaSocketClient socketKasaClient = new KasaSocketClient();
+            string Response = socketKasaClient.SendMessage(APITextMessage.Text, TypeAPIMessage, "127.0.0.1", 8068);
+            MessageBox.Show("Відповідь сервера: " + Response);
+        }
+    }
+    public class APIRadiobuton
+    {
+        public eTypeMessage ServerTypeMessage { get; set; }
+        public string TranslateServerTypeMessage { get { return ServerTypeMessage.GetDescription(); } }
+    }
     public class ParsLog
     {
         public string LineLog { get; set; }

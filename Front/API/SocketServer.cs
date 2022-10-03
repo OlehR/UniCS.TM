@@ -1,28 +1,21 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
-using Front.Equipments.Virtual;
+using ModelMID;
+using System.Windows;
 
-namespace Front.Equipments.Implementation
+namespace Front.API
 {
-    public class VirtualScaner : Scaner
+    public class SocketServer
     {
-        public VirtualScaner(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory, Action<string, string> pOnBarCode) : base(pEquipment, pConfiguration, eModelEquipment.VirtualScaner, pLoggerFactory, pOnBarCode)
-        {
-            IpPort = Convert.ToInt32( Configuration["Devices:VirtualScaner:Port"]);
-            IP = Configuration["Devices:VirtualScaner:IP"];
-            _ = Work();
-            State = eStateEquipment.On;
-        }
+        int IpPort = 8068;//Convert.ToInt32($"80{Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace).IdWorkplace}");
+        string IP = "127.0.0.1";
 
-        public override void Enable() { }
-
-        public async Task Work()
+        public async Task StartSocketServer()
         {
             await Task.Run(() =>
             {
@@ -39,7 +32,7 @@ namespace Front.Equipments.Implementation
                     // начинаем прослушивание
                     listenSocket.Listen(10);
 
-                    Console.WriteLine("Сервер запущен. Ожидание подключений...");
+                   // Console.WriteLine("Сервер запущен. Ожидание подключений...");
 
                     while (true)
                     {
@@ -58,11 +51,9 @@ namespace Front.Equipments.Implementation
 
                         //Console.WriteLine(DateTime.Now.ToShortTimeString() + ": " + builder.ToString());
 
-
-                        OnBarCode?.Invoke(builder.ToString(), null);
-
+                        MessageBox.Show(builder.ToString());
                         // отправляем ответ
-                        string message = "ваше сообщение доставлено";
+                        string message = "Повідомлення доставлено";
                         data = Encoding.Unicode.GetBytes(message);
 
                         handler.Send(data);
@@ -77,16 +68,5 @@ namespace Front.Equipments.Implementation
                 }
             });
         }
-        public override StatusEquipment TestDevice()
-        {
-            return new StatusEquipment(Model, State, "Ok");
-        }
-        public override void StopMultipleTone() { }
-        public override void StartMultipleTone() { }
-        public override string GetDeviceInfo()
-        {
-            return $"pModelEquipment={Model} State={State} Port={SerialPort} BaudRate={BaudRate}{Environment.NewLine}";
-        }
-
     }
 }
