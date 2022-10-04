@@ -935,7 +935,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                     </Grid>
                 </TabItem>
                 <!--ВИДИМІСТЬ АПІ API Visibility="Collapsed" -->
-                <TabItem Header="API" Visibility="Visible"> 
+                <TabItem Header="API" Visibility="Collapsed"> 
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>

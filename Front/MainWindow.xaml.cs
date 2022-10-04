@@ -86,7 +86,7 @@ namespace Front
         /// <summary>
         /// Чи можна добавляти товар 
         /// </summary>
-        public bool IsAddNewWares { get { return curReceipt == null ? true : !curReceipt.IsLockChange && State == eStateMainWindows.WaitInput; } }
+        public bool IsAddNewWares { get { return curReceipt == null ? true : !curReceipt.IsLockChange && State == eStateMainWindows.WaitInput && !CS.IsProblem; } }
         /// <summary>
         /// Чи активна кнопка оплати
         /// </summary>
