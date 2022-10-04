@@ -235,7 +235,7 @@ namespace Front
         public MainWindow()
         {
             SocketServer SocketS = new SocketServer();
-            _ =SocketS.StartSocketServer();
+            _ = SocketS.StartSocketServer();
             CS = new ControlScale();
 
             var fc = new List<FlagColor>();
@@ -432,7 +432,7 @@ namespace Front
                     }
 
                     //Зупиняєм пищання сканера
-                    if (State != eStateMainWindows.ProcessPay && State != eStateMainWindows.ProcessPrintReceipt )
+                    if (State != eStateMainWindows.ProcessPay && State != eStateMainWindows.ProcessPrintReceipt)
                         EF.StopMultipleTone();
 
                     //Генеруємо з кастомні вікна
@@ -708,6 +708,9 @@ namespace Front
                 InputNumberPhone.Desciption = Convert.ToString(temp.NameWares);
                 InputNumberPhone.Result = "";//Convert.ToString(temp.Quantity);
                 InputNumberPhone.ValidationMask = "";
+                if (temp.IsWeight) InputNumberPhone.IsEnableComma = true;
+                else InputNumberPhone.IsEnableComma = false;
+
                 NumericPad.Visibility = Visibility.Visible;
                 Background.Visibility = Visibility.Visible;
                 BackgroundWares.Visibility = Visibility.Visible;
@@ -1260,6 +1263,7 @@ namespace Front
             InputNumberPhone.Desciption = "Введіть номер телефону";
             InputNumberPhone.ValidationMask = "^[0-9]{10,13}$";
             InputNumberPhone.Result = "";
+            InputNumberPhone.IsEnableComma = false;
             InputNumberPhone.CallBackResult = FindClientByPhone;
             NumericPad.Visibility = Visibility.Visible;
             Background.Visibility = Visibility.Visible;
