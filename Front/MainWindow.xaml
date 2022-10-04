@@ -1864,14 +1864,14 @@
                          Height="100" Width="500">
                                     <StackPanel Orientation="Horizontal">
                                         <Image  Height="50" Width="50"  Source="icons\shoppingBag.png"></Image>
-                                        <TextBlock FontSize="50" Text="{DynamicResource startShopping}" FontFamily="Source Sans Pro" Margin="5,10,5,0"/>
+                                        <TextBlock FontSize="50" Text="{DynamicResource startShopping}" FontFamily="Source Sans Pro" Foreground="White"  Margin="5,10,5,0"/>
                                     </StackPanel>
                                 </Button>
                                 <Button Margin="10" Style="{StaticResource greenButton}"  FontSize="48"  Click="StartOwnBag" 
                            Height="100" Width="500">
                                     <StackPanel Orientation="Horizontal">
                                         <Image  Height="50" Width="50"  Source="icons\shoppingBag.png"></Image>
-                                        <TextBlock FontSize="50" Text="{DynamicResource ownBag}" FontFamily="Source Sans Pro" Margin="5,10,5,0"/>
+                                        <TextBlock FontSize="50" Text="{DynamicResource ownBag}" FontFamily="Source Sans Pro" Foreground="White" Margin="5,10,5,0"/>
                                     </StackPanel>
                                 </Button>
                             </StackPanel>

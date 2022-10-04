@@ -890,7 +890,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                             </ListView.View>
                         </ListView>
                         <ScrollViewer Grid.Row="1"  Grid.Column="1">
-                            <TextBlock x:Name="JornalText" FontSize="28" HorizontalAlignment="Center" TextWrapping="Wrap"/>
+                            <TextBlock x:Name="JornalText" FontSize="24" HorizontalAlignment="Center" TextWrapping="Wrap"/>
                         </ScrollViewer>
                     </Grid>
                 </TabItem>
@@ -932,6 +932,38 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                 <RadioButton GroupName="Log"  FontSize="20" Style="{DynamicResource OrangeSwitchStyle}" Content="Error" Checked="CheckTypeLog"/>
                             </StackPanel>
                         </Border>
+                    </Grid>
+                </TabItem>
+                <!--ВИДИМІСТЬ АПІ API Visibility="Collapsed" -->
+                <TabItem Header="API" Visibility="Collapsed"> 
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Top">
+                            <ItemsControl Grid.Row="0" Name="ListRadioButtonAPI">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                        <RadioButton GroupName="TypeMessage"  FontSize="20" Checked="CheckTypeMessage" 
+                                                     Style="{DynamicResource OrangeSwitchStyle}"/>
+                                            <TextBlock Text="{Binding TranslateServerTypeMessage}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <TextBox  FontSize="28" Margin="15" FontWeight="SemiBold" Name="APITextMessage"/>
+                            <Button Content="Відправити" Style="{StaticResource Default}" Click="SetdAPIMessage"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Top">
+
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Top">
+
+                        </StackPanel>
                     </Grid>
                 </TabItem>
                 <TabItem Header="Вихід"/>

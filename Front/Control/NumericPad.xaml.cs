@@ -37,6 +37,7 @@ namespace Front.Control
                 return res;
             }
         }
+        public bool IsEnableComma { get; set; } = false;
         public string Desciption { get; set; }
         #region Public Properties
 

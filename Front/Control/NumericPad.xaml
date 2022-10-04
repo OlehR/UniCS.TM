@@ -131,9 +131,22 @@
         </Grid>
         <Grid Grid.Column="2" Grid.Row="6">
 
-            <Button Style="{StaticResource yelowButton}" x:Name="button19" Background="WhiteSmoke"
+            <Button  x:Name="button19" Background="WhiteSmoke"
 				Command="{Binding PressAndRelease}" CommandParameter=","	Click="button_Click" >
                 <TextBlock Text=","  FontSize="{Binding TextBlockFontSize}"/>
+                <Button.Style>
+                    <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                        <Setter Property="IsEnabled" Value="false"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsEnableComma}" Value="True">
+                                <Setter Property="IsEnabled" Value="True" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsEnableComma}" Value="False">
+                                <Setter Property="IsEnabled" Value="False" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
             </Button>
         </Grid>
         

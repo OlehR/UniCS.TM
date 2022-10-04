@@ -22,6 +22,8 @@ using Microsoft.Extensions.Configuration;
 using System.Windows.Media;
 using System.Windows.Documents;
 using System.Reflection;
+using Front.API;
+using System.Net.Sockets;
 
 namespace Front
 {
@@ -84,7 +86,7 @@ namespace Front
         /// <summary>
         /// Чи можна добавляти товар 
         /// </summary>
-        public bool IsAddNewWares { get { return curReceipt == null ? true : !curReceipt.IsLockChange && State == eStateMainWindows.WaitInput; } }
+        public bool IsAddNewWares { get { return curReceipt == null ? true : !curReceipt.IsLockChange && State == eStateMainWindows.WaitInput && !CS.IsProblem; } }
         /// <summary>
         /// Чи активна кнопка оплати
         /// </summary>
@@ -232,7 +234,8 @@ namespace Front
 
         public MainWindow()
         {
-
+            SocketServer SocketS = new SocketServer();
+            _ = SocketS.StartSocketServer();
             CS = new ControlScale();
 
             var fc = new List<FlagColor>();
@@ -429,7 +432,7 @@ namespace Front
                     }
 
                     //Зупиняєм пищання сканера
-                    if (State != eStateMainWindows.ProcessPay && State != eStateMainWindows.ProcessPrintReceipt )
+                    if (State != eStateMainWindows.ProcessPay && State != eStateMainWindows.ProcessPrintReceipt)
                         EF.StopMultipleTone();
 
                     //Генеруємо з кастомні вікна
@@ -705,6 +708,9 @@ namespace Front
                 InputNumberPhone.Desciption = Convert.ToString(temp.NameWares);
                 InputNumberPhone.Result = "";//Convert.ToString(temp.Quantity);
                 InputNumberPhone.ValidationMask = "";
+                if (temp.IsWeight) InputNumberPhone.IsEnableComma = true;
+                else InputNumberPhone.IsEnableComma = false;
+
                 NumericPad.Visibility = Visibility.Visible;
                 Background.Visibility = Visibility.Visible;
                 BackgroundWares.Visibility = Visibility.Visible;
@@ -1257,6 +1263,7 @@ namespace Front
             InputNumberPhone.Desciption = "Введіть номер телефону";
             InputNumberPhone.ValidationMask = "^[0-9]{10,13}$";
             InputNumberPhone.Result = "";
+            InputNumberPhone.IsEnableComma = false;
             InputNumberPhone.CallBackResult = FindClientByPhone;
             NumericPad.Visibility = Visibility.Visible;
             Background.Visibility = Visibility.Visible;
