@@ -19,7 +19,7 @@ namespace Front.Equipments
         
         virtual public BatchTotals PrintZ() {throw new NotImplementedException();}
         virtual public BatchTotals PrintX(){ throw new NotImplementedException();}
-        public virtual Payment Purchase(decimal pAmount) { throw new NotImplementedException(); }
+        public virtual Payment Purchase(decimal pAmount,decimal pCash=0) { throw new NotImplementedException(); }
         public virtual Payment Refund(decimal pAmount, string pRRN) { throw new NotImplementedException(); }
 
         public virtual IEnumerable<string> GetLastReceipt() { throw new NotImplementedException(); }

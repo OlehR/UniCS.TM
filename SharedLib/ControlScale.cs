@@ -115,11 +115,12 @@ namespace ModelMID
         /// <summary>
         /// Стан ваги (Не поставили товар, вірна вага, вага не вірна)
         /// </summary>
-        public eStateScale StateScale //{ get; set; } 
+        public eStateScale StateScale
         {
-            get { return _StateScale; }
+            get { return IsOn? _StateScale: eStateScale.Stabilized; }
             set
             {
+                if(IsOn)
                 if (_StateScale != value)
                 {
                     _StateScale = value;
@@ -232,13 +233,15 @@ namespace ModelMID
         // private Scales bst;
 
         bool TooLightWeight;
+        bool IsOn;
 
         MidlWeight MidlWeight;
 
-        public ControlScale(double pDelta = 10d)
+        public ControlScale(double pDelta = 10d, bool pIsOn = true)
         {
             Delta = pDelta;
             MidlWeight = new MidlWeight(3);
+            IsOn = pIsOn;
         }
 
         bool IsTooLight { get { return WaitWeight.Length>0 && WaitWeight.Count(e => e.Weight*Quantity < Delta) > 0; } }
@@ -275,7 +278,6 @@ namespace ModelMID
         {
 
             DelRW = pDelRW;
-
             if (pR==null || pR.Wares == null || pR.Wares.Count() == 0 )
             {
                 WaitClear(pR.OwnBag );

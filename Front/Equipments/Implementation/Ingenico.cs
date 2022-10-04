@@ -43,9 +43,9 @@ namespace Front.Equipments
             }
         }
 
-        public override Payment Purchase(decimal pAmount)
-        {
-            return PaymentResultModelToPayment(EquipmentIngenico.Purchase(Convert.ToDouble(pAmount)).Result);
+        public override Payment Purchase(decimal pAmount, decimal pCash = 0)
+        {           
+            return PaymentResultModelToPayment(EquipmentIngenico.Purchase(Convert.ToDouble(pAmount), Convert.ToDouble(pCash)).Result);
         }
 
         public override Payment Refund(decimal pAmount, string pRRN)
@@ -1623,7 +1623,7 @@ namespace Front.Equipments.Ingenico
             StopBPOS();
         }
 
-        public Task<PaymentResultModel> Purchase(double amount)
+        public Task<PaymentResultModel> Purchase(double amount,double pCash)
         {
             try
             {
@@ -1634,6 +1634,7 @@ namespace Front.Equipments.Ingenico
                     });
                 _isCancelRequested = false;
                 _bpos1LibClass.Purchase(Convert.ToUInt32(amount * 100.0), 0U, this.merchantId);
+
                 Action<StatusEquipment> onStatus = this.OnStatus;
                 if (onStatus != null)
                     onStatus((StatusEquipment)new PosStatus()

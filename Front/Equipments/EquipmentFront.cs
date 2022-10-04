@@ -59,11 +59,11 @@ namespace Front
             get
             {
                 var Res = ListEquipment.Where(el => !(el.State == eStateEquipment.On || el.State == eStateEquipment.Init || el.State == eStateEquipment.Off) && el.IsСritical);
-                var aa= Res != null && Res.Any() ? eStateEquipment.Error : eStateEquipment.On;
+                var aa = Res != null && Res.Any() ? eStateEquipment.Error : eStateEquipment.On;
                 return aa;
             }
         }
-                
+
         public eStateEquipment State
         {
             get { return _State; }
@@ -98,11 +98,10 @@ namespace Front
 
         ILoggerFactory LF = LoggerFactory.Create(builder =>
         {
-            builder.AddConsole();
-            //builder.AddDebug();
+            builder.AddConsole();            
         });
 
-        public EquipmentFront(Action<string, string> pSetBarCode,  Action<StatusEquipment> pActionStatus = null)
+        public EquipmentFront(Action<string, string> pSetBarCode, Action<StatusEquipment> pActionStatus = null)
         {
             ILogger<EquipmentFront> logger = LF?.CreateLogger<EquipmentFront>();
             logger.LogDebug("Fp700 getInfo error");
@@ -114,15 +113,11 @@ namespace Front
 
             OnWeight += (pWeight, pIsStable) =>
             { if (IsControlScale && ControlScale.Model == eModelEquipment.VirtualControlScale) OnControlWeight?.Invoke(pWeight, pIsStable); };
-            Task.Run(() =>  Init(pSetBarCode, pActionStatus) );
-            
-        }
+            Task.Run(() => Init(pSetBarCode, pActionStatus));
 
-       /* public void ControlWeight(double pWeight,bool IsStable)
-        {
-            OnControlWeight?.Invoke(pWeight, IsStable);
-        }*/
-        public void Init(Action<string, string> pSetBarCode,  Action<StatusEquipment> pActionStatus = null)
+        }
+        
+        public void Init(Action<string, string> pSetBarCode, Action<StatusEquipment> pActionStatus = null)
         {
             using ILoggerFactory loggerFactory =
            LoggerFactory.Create(builder =>
@@ -180,7 +175,7 @@ namespace Front
                         case eModelEquipment.ScaleModern:
                             ControlScale = new ScaleModern(ElEquipment, config, LF, ControlWeight);
                             break;
-                        case eModelEquipment.VirtualControlScale: 
+                        case eModelEquipment.VirtualControlScale:
                             ControlScale = new VirtualControlScale(ElEquipment, config, LF, null);
                             Scale?.StartWeight();
                             break;
@@ -277,7 +272,7 @@ namespace Front
 
 
 
-    public IEnumerable<Equipment> GetListEquipment { get { return ListEquipment; } }
+        public IEnumerable<Equipment> GetListEquipment { get { return ListEquipment; } }
 
         /// <summary>
         /// Друк чека
@@ -296,8 +291,9 @@ namespace Front
 
         public LogRRO RroPrintX(IdReceipt pIdR)
         {
-            var r= RRO.PrintXAsync(pIdR).Result;
-            Task.Run(() => {
+            var r = RRO.PrintXAsync(pIdR).Result;
+            Task.Run(() =>
+            {
                 if (string.IsNullOrEmpty(r.TextReceipt) || RRO.Model == eModelEquipment.FP700)
                     r.TextReceipt = RRO.GetTextLastReceipt().Result;
                 Bl.InsertLogRRO(r);
@@ -307,8 +303,9 @@ namespace Front
 
         public LogRRO RroPrintZ(IdReceipt pIdR)
         {
-            var r= RRO.PrintZAsync(pIdR).Result;
-            Task.Run(() => {
+            var r = RRO.PrintZAsync(pIdR).Result;
+            Task.Run(() =>
+            {
                 if (string.IsNullOrEmpty(r.TextReceipt) || RRO.Model == eModelEquipment.FP700)
                     r.TextReceipt = RRO.GetTextLastReceipt().Result;
                 Bl.InsertLogRRO(r);
@@ -318,30 +315,30 @@ namespace Front
 
         public LogRRO RroPrintCopyReceipt()
         {
-            var r= RRO.PrintCopyReceipt();
+            var r = RRO.PrintCopyReceipt();
             Bl.InsertLogRRO(r);
             return r;
         }
 
         public LogRRO PrintNoFiscalReceipt(IEnumerable<string> pR)
         {
-            if (pR != null && pR.Count()>0)
-            try
-            {                 
-               var r = RRO?.PrintNoFiscalReceiptAsync(pR).Result;
-                Bl.InsertLogRRO(r);
-                return r;
-            }
-            catch (Exception e)
-            {
-              FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
-            }
+            if (pR != null && pR.Count() > 0)
+                try
+                {
+                    var r = RRO?.PrintNoFiscalReceiptAsync(pR).Result;
+                    Bl.InsertLogRRO(r);
+                    return r;
+                }
+                catch (Exception e)
+                {
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+                }
             return null;
         }
 
         public bool ProgramingArticleAsync(IEnumerable<ReceiptWares> pRW)
         {
-             RRO?.ProgramingArticleAsync(pRW);
+            RRO?.ProgramingArticleAsync(pRW);
             return true;
         }
 
@@ -362,10 +359,10 @@ namespace Front
                     LogRRO d = new(pIdR)
                     { TypeOperation = eTypeOperation.SalePOS, TypeRRO = "Ingenico", JSON = r.ToJSON(), TextReceipt = r.Receipt == null ? null : string.Join(Environment.NewLine, r.Receipt) };
                     Bl.InsertLogRRO(d);
-                    
+
                     Bl.db.ReplacePayment(new List<Payment>() { r });
                 }
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"(pIdR=>{pIdR.ToJSON()},pSum={pSum})=>{r.ToJSON()}",eTypeLog.Expanded);
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"(pIdR=>{pIdR.ToJSON()},pSum={pSum})=>{r.ToJSON()}", eTypeLog.Expanded);
             }
             catch (Exception e)
             {
@@ -400,25 +397,25 @@ namespace Front
             {
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
             }
-            return r;             
+            return r;
         }
 
-        public BatchTotals PosPrintX(bool IsPrint=true)
+        public BatchTotals PosPrintX(bool IsPrint = true)
         {
             BatchTotals r = null;
             try
             {
                 r = Terminal.PrintX();
                 LogRRO d = new(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() })
-                { TypeOperation = eTypeOperation.XReportPOS, TypeRRO= "Ingenico",  JSON = r.ToJSON(), TextReceipt = r.Receipt == null ? null : string.Join(Environment.NewLine, r.Receipt) };
+                { TypeOperation = eTypeOperation.XReportPOS, TypeRRO = "Ingenico", JSON = r.ToJSON(), TextReceipt = r.Receipt == null ? null : string.Join(Environment.NewLine, r.Receipt) };
                 Bl.InsertLogRRO(d);
                 if (IsPrint && r.Receipt != null)
                     PrintNoFiscalReceipt(r.Receipt);
-                return r;               
+                return r;
             }
             catch (Exception e)
             {
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);                
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
             }
             return r;
         }
@@ -438,7 +435,7 @@ namespace Front
             }
             catch (Exception e)
             {
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);               
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
             }
             return r;
 
@@ -456,21 +453,21 @@ namespace Front
         {
             Terminal.Cancel();
         }
-            /// <summary>
-            /// Статус банківського термінала (Очікуєм карточки, Очікуєм підтвердження і ТД) 
-            /// </summary>
-            /// <param name="ww"></param>
-            void PosStatus(StatusEquipment ww)
+        /// <summary>
+        /// Статус банківського термінала (Очікуєм карточки, Очікуєм підтвердження і ТД) 
+        /// </summary>
+        /// <param name="ww"></param>
+        void PosStatus(StatusEquipment ww)
         {
             if (ww is PosStatus status)
             {
-                SetStatus?.Invoke( ww /*new StatusEquipment(Terminal.Model, status.Status.GetStateEquipment(), $"{status.TextState} {status.Status.GetDescription}")*/);
+                SetStatus?.Invoke(ww /*new StatusEquipment(Terminal.Model, status.Status.GetStateEquipment(), $"{status.TextState} {status.Status.GetDescription}")*/);
                 FileLogger.WriteLogMessage($"EquipmentFront.PosStatus {Terminal.Model} {status.TextState} {status.Status}");
             }
         }
 
         public IConfiguration GetConfig()
-        {            
+        {
             var AppConfiguration = Config.AppConfiguration;
             AppConfiguration.GetSection("MID:Equipment").Bind(ListEquipment);
             //var r = AppConfiguration.GetSection("MID:Equipment");
@@ -488,7 +485,7 @@ namespace Front
                 Task.Run(() =>
                 { Signal?.SwitchToColor(pColor); });
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
             }
@@ -502,7 +499,7 @@ namespace Front
             try
             {
                 IsControlScale = false;
-                if(ControlScale.Model!=eModelEquipment.VirtualControlScale)
+                if (ControlScale.Model != eModelEquipment.VirtualControlScale)
                     Scale?.StartWeight();
             }
             catch (Exception e)
@@ -520,7 +517,7 @@ namespace Front
                 if (ControlScale.Model != eModelEquipment.VirtualControlScale)
                     Scale?.StopWeight();
             }
-            catch (Exception e) 
+            catch (Exception e)
             { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e); }//Необхідна обробка коли немає обладнання!!!TMP
         }
 
@@ -529,15 +526,15 @@ namespace Front
         /// </summary>
         /// <param name="maxValue"></param>
         /// <returns></returns>
-        public bool ControlScaleCalibrateMax(double maxValue)  { return ControlScale.CalibrateMax(maxValue); }
+        public bool ControlScaleCalibrateMax(double maxValue) { return ControlScale.CalibrateMax(maxValue); }
 
         /// <summary>
         ///  Калібрація нуля
         /// </summary>
         /// <returns></returns>
-        public bool ControlScaleCalibrateZero() {  return ControlScale.CalibrateZero(); }
+        public bool ControlScaleCalibrateZero() { return ControlScale.CalibrateZero(); }
 
-        public  void StartMultipleTone() { Scaner.StartMultipleTone(); }
-        public  void StopMultipleTone() { Scaner.StopMultipleTone(); }
+        public void StartMultipleTone() { Scaner.StartMultipleTone(); }
+        public void StopMultipleTone() { Scaner.StopMultipleTone(); }
     }
 }

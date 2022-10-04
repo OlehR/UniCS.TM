@@ -50,7 +50,7 @@ namespace Front.Equipments.Implementation
             };
         }
 
-        public override Payment Purchase(decimal pAmount)
+        public override Payment Purchase(decimal pAmount,decimal pCash)
         {
             int Interval = 1500;
             SetStatus(eStatusPos.WaitingForCard);
