@@ -257,8 +257,18 @@ namespace Front.Equipments
 
         public override async Task<string> GetTextLastReceipt()
         {
-            var r= Fp700.GetLastReceiptNumber();
-            return Fp700.KSEFGetReceipt(r);
+            try
+            {
+                lock (Lock)
+                {
+                    var r = Fp700.GetLastReceiptNumber();
+                    return Fp700.KSEFGetReceipt(r);
+                }
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
         }
 
         public ReceiptViewModel GetReceiptViewModel(ModelMID.Receipt receiptMID)

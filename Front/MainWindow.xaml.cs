@@ -356,7 +356,7 @@ namespace Front
             if (pS == eSender.ControlScale)
             {
                 // під час оплати - ігноруємо її
-                if ((State == eStateMainWindows.ProcessPay || State == eStateMainWindows.ProcessPrintReceipt))
+                if ((State == eStateMainWindows.ProcessPay )) //|| State == eStateMainWindows.ProcessPrintReceipt
                 {
                     if (pTypeAccess == eTypeAccess.FixWeight)
                         EF.StartMultipleTone();
@@ -432,7 +432,7 @@ namespace Front
                     }
 
                     //Зупиняєм пищання сканера
-                    if (State != eStateMainWindows.ProcessPay && State != eStateMainWindows.ProcessPrintReceipt)
+                    if (State != eStateMainWindows.ProcessPay)
                         EF.StopMultipleTone();
 
                     //Генеруємо з кастомні вікна

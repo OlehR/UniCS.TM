@@ -279,15 +279,26 @@ namespace Front
         /// </summary>
         public LogRRO PrintReceipt(Receipt pReceipt)
         {
+            FileLogger.WriteLogMessage(this, "PrintReceipt", "Start Print Receipt");
+
             var r = RRO.PrintReceiptAsync(pReceipt).Result;
-            Task.Run(() =>
+            //GetLastReceipt(r);
+            FileLogger.WriteLogMessage(this, "PrintReceipt", "End Print Receipt");
+            return r;
+        }
+
+        /*public async void  GetLastReceipt(LogRRO r)
+        {
+             Task.Run( () =>
             {
+                FileLogger.WriteLogMessage(this, "PrintReceipt", "Get receipt Start");
+
                 if (string.IsNullOrEmpty(r.TextReceipt) || RRO.Model == eModelEquipment.FP700)
                     r.TextReceipt = RRO.GetTextLastReceipt().Result;
                 Bl.InsertLogRRO(r);
+                FileLogger.WriteLogMessage(this, "PrintReceipt", "Get receipt end");
             });
-            return r;
-        }
+        }*/
 
         public LogRRO RroPrintX(IdReceipt pIdR)
         {
