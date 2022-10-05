@@ -342,7 +342,7 @@ namespace Front
                             if (curReceipt == null)
                                 NewReceipt();
                             w = Bl.AddWaresBarCode(curReceipt, pBarCode, 1);
-                            if (w != null)
+                            if (w != null && w.CodeWares > 0)
                             {
                                 CurWares = w;
                                 IsPrises(1, 0);
