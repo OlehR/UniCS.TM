@@ -124,6 +124,7 @@ namespace Front.Control
             }));
 
         }
+        
         private bool LogFilter(object item)
         {
             if (String.IsNullOrEmpty(TypeLog))
@@ -134,7 +135,6 @@ namespace Front.Control
 
         private bool ReceiptFilter(object item)
         {
-
             if (IsShowAllReceipts)
             {
                 return true;
@@ -142,9 +142,9 @@ namespace Front.Control
             else return ((item as Receipt).SumReceipt > 0);
 
         }
+        
         private bool JournalFilter(object item)
         {
-
             if (IsShowAllJournal)
             {
                 return true;

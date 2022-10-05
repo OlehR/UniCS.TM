@@ -666,7 +666,7 @@ namespace SharedLib
                 R.RefundId = new IdReceipt(R);
                 R.SetIdReceipt(NewR);
                 db.ReplaceReceipt(R);
-
+                
                 foreach (var el in R.Wares)
                 {
                     el.MaxRefundQuantity = el.Quantity - el.RefundedQuantity;
@@ -674,6 +674,14 @@ namespace SharedLib
                         el.Quantity = 0;
                     db.AddWares(el);
                 }
+                var pr = db.GetReceiptWaresPromotion(IdR);
+                if (pr != null && pr.Any())
+                {
+                    foreach (var el in pr)
+                        el.SetIdReceipt(NewR);
+                    db.ReplaceWaresReceiptPromotion(pr);
+                }
+
                 Global.OnReceiptCalculationComplete?.Invoke(R);
                 return R;
             }

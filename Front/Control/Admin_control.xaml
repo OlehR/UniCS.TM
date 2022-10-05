@@ -688,7 +688,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                     <GridViewColumn Header="Сума чека">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
-                                                <TextBlock Text="{Binding Path=SumReceipt}" TextAlignment="Center" />
+                                                <TextBlock Text="{Binding Path=SumTotal}" TextAlignment="Center" />
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
