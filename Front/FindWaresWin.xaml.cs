@@ -34,7 +34,7 @@ namespace Front
         /// <summary>
         /// максимальна кількість товарів на вікні
         /// </summary>
-        int Limit = SystemParameters.PrimaryScreenWidth < SystemParameters.PrimaryScreenHeight ? 20 : 10;
+        int Limit = SystemParameters.PrimaryScreenWidth < SystemParameters.PrimaryScreenHeight ? 16 : 10;
         /// <summary>
         /// Кількість рядків в пошуку (залежить від розміру екрану)
         /// </summary>
@@ -61,28 +61,15 @@ namespace Front
         }
         void CreateGridForWares()
         {
-            if (!IsHorizontalScreen)
+            for (int i = 0; i < CountRowWares; i++)
             {
-                for (int i = 0; i < CountRowWares; i++)
-                {
-                    PictureGrid.RowDefinitions.Add(new RowDefinition());
-                }
-                for (int i = 0; i < CountColumWares; i++)
-                {
-                    PictureGrid.ColumnDefinitions.Add(new ColumnDefinition());
-                }
+                PictureGrid.RowDefinitions.Add(new RowDefinition());
             }
-            else
+            for (int i = 0; i < CountColumWares; i++)
             {
-                for (int i = 0; i < CountRowWares; i++)
-                {
-                    PictureGrid.RowDefinitions.Add(new RowDefinition());
-                }
-                for (int i = 0; i < CountColumWares; i++)
-                {
-                    PictureGrid.ColumnDefinitions.Add(new ColumnDefinition());
-                }
+                PictureGrid.ColumnDefinitions.Add(new ColumnDefinition());
             }
+
         }
         string LastStr = null;
         void NewB()
@@ -176,7 +163,10 @@ namespace Front
                 Grid.SetRow(Bor, j);
                 //Grid.SetRowSpan(Bor, 2);
                 //Розділення на 2 радки якщо текст завеликий
-                var leng = el.Name.Length;
+                int leng;
+                if (el.Name != null) leng = el.Name.Length;
+                else leng=0;
+
                 var lengthText = 20;
                 NameWares.TextWrapping = TextWrapping.Wrap;
                 if (leng > lengthText)
@@ -227,16 +217,11 @@ namespace Front
                     Grid.SetRow(WeightImg, j);
                     PictureGrid.Children.Add(WeightImg);
                 }
-                if (++i >= 5)
+                if (++i >= CountColumWares)
                 { j++; i = 0; }
-                if (!IsHorizontalScreen)
-                {
-                    if (j >= 2) break;
-                }
-                else
-                {
-                    if (j >= CountRowWares) break;
-                }
+                if (j >= CountRowWares) break;
+
+
             }
         }
 

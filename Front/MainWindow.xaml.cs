@@ -24,6 +24,7 @@ using System.Windows.Documents;
 using System.Reflection;
 using Front.API;
 using System.Net.Sockets;
+using System.Windows.Media.Media3D;
 
 namespace Front
 {
@@ -104,6 +105,7 @@ namespace Front
         /// чи активна кнопка пошуку
         /// </summary>
         public bool IsEnabledFindButton { get { return IsAddNewWares; } }
+        public bool IsWeightMagellan { get { return Weight > 0 ? true : false; } }
         /// <summary>
         /// Чи можна підтвердити власну сумку
         /// </summary>
@@ -356,7 +358,7 @@ namespace Front
             if (pS == eSender.ControlScale)
             {
                 // під час оплати - ігноруємо її
-                if ((State == eStateMainWindows.ProcessPay )) //|| State == eStateMainWindows.ProcessPrintReceipt
+                if ((State == eStateMainWindows.ProcessPay)) //|| State == eStateMainWindows.ProcessPrintReceipt
                 {
                     if (pTypeAccess == eTypeAccess.FixWeight)
                         EF.StartMultipleTone();
@@ -387,8 +389,8 @@ namespace Front
                             if (IsLockSale) Res = eTypeAccess.LockSale;
                         else
                         if (!(pTypeAccess == eTypeAccess.DelReciept || pTypeAccess == eTypeAccess.DelWares ||
-                        ( (TypeAccessWait == eTypeAccess.DelReciept || TypeAccessWait == eTypeAccess.DelWares) 
-                            && !(pTypeAccess == eTypeAccess.NoDefine && pSMV == eStateMainWindows.WaitInput) )   ))
+                        ((TypeAccessWait == eTypeAccess.DelReciept || TypeAccessWait == eTypeAccess.DelWares)
+                            && !(pTypeAccess == eTypeAccess.NoDefine && pSMV == eStateMainWindows.WaitInput))))
                         {
                             if (curReceipt?.IsNeedExciseStamp == true) Res = eTypeAccess.ExciseStamp;
                             else
@@ -538,7 +540,8 @@ namespace Front
                         case eStateMainWindows.WaitWeight:
                             EF.StartWeight();
                             WeightWares.Visibility = Visibility.Visible;
-
+                            Background.Visibility = Visibility.Visible;
+                            BackgroundWares.Visibility = Visibility.Visible;
                             break;
                         case eStateMainWindows.WaitAdmin:
                             WaitAdmin.Visibility = Visibility.Visible;

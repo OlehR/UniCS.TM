@@ -33,7 +33,11 @@ namespace Front
                 CS.OnScalesData(pWeight, pIsStable);
             };
 
-            EF.OnWeight += (pWeight, pIsStable) => { Weight = pWeight / 1000; };
+            EF.OnWeight += (pWeight, pIsStable) =>
+            {
+                Weight = pWeight / 1000;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsWeightMagellan"));
+            };
 
             EF.SetStatus += (info) =>
             {
@@ -46,12 +50,12 @@ namespace Front
                     //}
                     //EquipmentStatusInPayment.Text = PS.Status.GetDescription(); //TMP - не працює через гетер
                     if (PS != null)
-                        EquipmentInfo = PS.Status.GetDescription();                    
+                        EquipmentInfo = PS.Status.GetDescription();
                     else
                     {
                         RroStatus rroStatus = info as RroStatus;
                         if (rroStatus != null)
-                            EquipmentInfo = rroStatus.Status.GetDescription();                                                                                             
+                            EquipmentInfo = rroStatus.Status.GetDescription();
                     }
                     if (EquipmentInfo != null)
                         EquipmentStatusInPayment.Text = EquipmentInfo; //TMP - не працює через гетер
@@ -88,8 +92,8 @@ namespace Front
 
                         if (pReceipt.GetLastWares != null)
                         {
-                            ReceiptWares cl = (ReceiptWares) pReceipt.GetLastWares.Clone();
-                            EF.ProgramingArticleAsync(new List<ReceiptWares>() { cl});
+                            ReceiptWares cl = (ReceiptWares)pReceipt.GetLastWares.Clone();
+                            EF.ProgramingArticleAsync(new List<ReceiptWares>() { cl });
                         }
                     }
                     // if (curReceipt?.Wares?.Count() == 0 && curReceipt.OwnBag==0d) CS.WaitClear();
@@ -100,7 +104,7 @@ namespace Front
                 {
                     FileLogger.WriteLogMessage($"MainWindow.OnReceiptCalculationComplete Exception =>(pReceipt=>{pReceipt.ToJSON()}) => ({Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace})", eTypeLog.Error);
                 }
-              
+
                 FileLogger.WriteLogMessage($"MainWindow.OnReceiptCalculationComplete(pReceipt=>{pReceipt.ToJSON()})", eTypeLog.Full);
             };
 
@@ -159,9 +163,9 @@ namespace Front
                     return;
                 }
 
-                if (Access.GetRight(pUser, eTypeAccess.AdminPanel)) 
-                    ShowAdmin(pUser);                
-                else                
+                if (Access.GetRight(pUser, eTypeAccess.AdminPanel))
+                    ShowAdmin(pUser);
+                else
                     ShowErrorMessage($"Не достатньо прав на вхід в адмін панель для  {pUser.NameUser}");
             };
 
@@ -292,7 +296,7 @@ namespace Front
                     SetStateView(eStateMainWindows.WaitAdmin);
                     break;
                 case eTypeAccess.AdminPanel:
-                    TypeAccessWait = eTypeAccess.NoDefine;                    
+                    TypeAccessWait = eTypeAccess.NoDefine;
                     ShowAdmin(pUser);
                     break;
             }
@@ -303,7 +307,7 @@ namespace Front
         {
             AdminControl.Init(pUser);
             SetStateView(eStateMainWindows.AdminPanel);
-            
+
             /*Dispatcher.Invoke(new Action(() =>
             {
                 ad.Init(pUser);
@@ -356,7 +360,7 @@ namespace Front
                 {
                     var c = Bl.GetClientByBarCode(curReceipt, pBarCode);
                     if (c != null) return;
-                }                
+                }
             }
 
             var u = Bl.GetUserByBarCode(pBarCode);
@@ -395,7 +399,7 @@ namespace Front
                     Grid.SetRow(im, 1);
                     GridWeightWares.Children.Add(im);
                 }
-                 
+
                 SetStateView(eStateMainWindows.WaitWeight);
                 return;
             }
@@ -466,7 +470,7 @@ namespace Front
                             //SetStateView(eStateMainWindows.WaitInput);
                             R.StateReceipt = eStateReceipt.Prepare;
                             Bl.SetStateReceipt(curReceipt, eStateReceipt.Prepare);
-                            TextError=$"Оплата не пройшла: {EquipmentInfo}";
+                            TextError = $"Оплата не пройшла: {EquipmentInfo}";
                         }
                     }
                     catch (Exception e)
@@ -486,7 +490,7 @@ namespace Front
                     {
                         SetStateView(eStateMainWindows.ProcessPrintReceipt);
                         //Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
-                        var res = EF.PrintReceipt(R);                        
+                        var res = EF.PrintReceipt(R);
                         if (res.CodeError == 0)
                         {
                             R.StateReceipt = eStateReceipt.Print;
@@ -509,31 +513,31 @@ namespace Front
                                 }
                             }
                             Bl.ds.SendReceiptTo1C(curReceipt);
-                            SetCurReceipt(null);                            
-                            Res= true;
+                            SetCurReceipt(null);
+                            Res = true;
                         }
                         else
                         {
                             R.StateReceipt = eStateReceipt.Pay;
                             Bl.SetStateReceipt(curReceipt, eStateReceipt.Pay);
-                            TextError = $"Помилка друку чеків:({res.CodeError}){Environment.NewLine}{res.Error}";                            
+                            TextError = $"Помилка друку чеків:({res.CodeError}){Environment.NewLine}{res.Error}";
                             //MessageBox.Show(res.Error, "Помилка друку чеків");
                             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Помилка друку чеків" + res.Error, eTypeLog.Error);
-                        }                      
+                        }
                     }
                     catch (Exception e)
                     {
                         R.StateReceipt = eStateReceipt.Pay;
                         Bl.SetStateReceipt(curReceipt, eStateReceipt.Pay);
                         FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
-                    }                    
+                    }
                 }
                 SetStateView(eStateMainWindows.WaitInput);
                 if (TextError != null)
                 {
                     Thread.Sleep(100);
                     ShowErrorMessage(TextError);
-                }                
+                }
                 return Res;
             }
         }
@@ -551,7 +555,7 @@ namespace Front
         }
 
         void NewReceipt()
-        {        
+        {
             curReceipt = Bl.GetNewIdReceipt();
             s.NewReceipt(curReceipt.CodeReceipt);
             Dispatcher.BeginInvoke(new ThreadStart(() => { ShowClientBonus.Visibility = Visibility.Collapsed; }));
