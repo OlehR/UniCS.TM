@@ -386,7 +386,9 @@ namespace Front
                         else
                             if (IsLockSale) Res = eTypeAccess.LockSale;
                         else
-                        if (!(pTypeAccess == eTypeAccess.DelReciept || pTypeAccess == eTypeAccess.DelWares || TypeAccessWait == eTypeAccess.DelReciept || TypeAccessWait == eTypeAccess.DelWares))
+                        if (!(pTypeAccess == eTypeAccess.DelReciept || pTypeAccess == eTypeAccess.DelWares ||
+                        ( (TypeAccessWait == eTypeAccess.DelReciept || TypeAccessWait == eTypeAccess.DelWares) 
+                            && !(pTypeAccess == eTypeAccess.NoDefine && pSMV == eStateMainWindows.WaitInput) )   ))
                         {
                             if (curReceipt?.IsNeedExciseStamp == true) Res = eTypeAccess.ExciseStamp;
                             else

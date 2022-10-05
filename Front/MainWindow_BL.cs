@@ -328,27 +328,30 @@ namespace Front
             }
             else
             {
-                ReceiptWares w = null;
-                if (State == eStateMainWindows.WaitInput || State == eStateMainWindows.StartWindow)
+                if (IsAddNewWares)
                 {
-                    if (curReceipt == null || !curReceipt.IsLockChange)
+                    ReceiptWares w = null;
+                    if (State == eStateMainWindows.WaitInput || State == eStateMainWindows.StartWindow)
                     {
-                        if (curReceipt == null)
-                            NewReceipt();
-                        w = Bl.AddWaresBarCode(curReceipt, pBarCode, 1);
-                        if (w != null)
+                        if (curReceipt == null || !curReceipt.IsLockChange)
                         {
-                            CurWares = w;
-                            IsPrises(1, 0);
+                            if (curReceipt == null)
+                                NewReceipt();
+                            w = Bl.AddWaresBarCode(curReceipt, pBarCode, 1);
+                            if (w != null)
+                            {
+                                CurWares = w;
+                                IsPrises(1, 0);
+                            }
                         }
                     }
+                    else
+                    {
+                        w = Bl.AddWaresBarCode(curReceipt, pBarCode, 1, true);
+                    }
+                    if (w != null)
+                        return;
                 }
-                else
-                {
-                    w = Bl.AddWaresBarCode(curReceipt, pBarCode, 1, true);
-                }
-                if (w != null)
-                    return;
                 if (curReceipt != null)
                 {
                     var c = Bl.GetClientByBarCode(curReceipt, pBarCode);
@@ -359,7 +362,7 @@ namespace Front
             var u = Bl.GetUserByBarCode(pBarCode);
             if (u != null)
             { Bl.OnAdminBarCode?.Invoke(u); return; }
-            if ((State != eStateMainWindows.WaitInput && State != eStateMainWindows.StartWindow) || curReceipt?.IsLockChange == true)
+            if ((State != eStateMainWindows.WaitInput && State != eStateMainWindows.StartWindow) || curReceipt?.IsLockChange == true || !IsAddNewWares)
                 if (State != eStateMainWindows.ProcessPay && State != eStateMainWindows.ProcessPrintReceipt)
                     SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.AdminPanel);
 
