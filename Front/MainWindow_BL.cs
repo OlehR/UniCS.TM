@@ -332,30 +332,28 @@ namespace Front
             }
             else
             {
-                if (IsAddNewWares)
+                ReceiptWares w = null;
+                if (IsAddNewWares && (State == eStateMainWindows.WaitInput || State == eStateMainWindows.StartWindow))
                 {
-                    ReceiptWares w = null;
-                    if (State == eStateMainWindows.WaitInput || State == eStateMainWindows.StartWindow)
+                    if (curReceipt == null || !curReceipt.IsLockChange)
                     {
-                        if (curReceipt == null || !curReceipt.IsLockChange)
+                        if (curReceipt == null)
+                            NewReceipt();
+                        w = Bl.AddWaresBarCode(curReceipt, pBarCode, 1);
+                        if (w != null && w.CodeWares > 0)
                         {
-                            if (curReceipt == null)
-                                NewReceipt();
-                            w = Bl.AddWaresBarCode(curReceipt, pBarCode, 1);
-                            if (w != null && w.CodeWares > 0)
-                            {
-                                CurWares = w;
-                                IsPrises(1, 0);
-                            }
+                            CurWares = w;
+                            IsPrises(1, 0);
                         }
                     }
-                    else
-                    {
-                        w = Bl.AddWaresBarCode(curReceipt, pBarCode, 1, true);
-                    }
-                    if (w != null)
-                        return;
                 }
+                else
+                {
+                    w = Bl.AddWaresBarCode(curReceipt, pBarCode, 1, true);
+                }
+                if (w != null)
+                    return;
+
                 if (curReceipt != null)
                 {
                     var c = Bl.GetClientByBarCode(curReceipt, pBarCode);
