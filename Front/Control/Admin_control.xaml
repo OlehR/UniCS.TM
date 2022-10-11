@@ -510,6 +510,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="0.5*"></RowDefinition>
                                     <RowDefinition Height="3*"></RowDefinition>
+                                    <RowDefinition Height="3*"></RowDefinition>
                                     <RowDefinition Height="100"></RowDefinition>
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
@@ -520,7 +521,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                        HorizontalAlignment="Center" FontSize="28" Text="Деталі чеку"/>
 
                                 <ListView x:Name="ListWaresReceipt"
-                     Grid.Row="1" Grid.Column="0" >
+                     Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" >
                                     <ListView.View>
                                         <GridView >
                                             <GridViewColumn  Header="Назва товару">
@@ -575,37 +576,19 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                             </GridViewColumn>
                                         </GridView>
                                     </ListView.View>
-                                    <!--<ListView.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Margin="5" Orientation="Horizontal">
-                                            <TextBlock FontSize="25"  Text="{Binding Path=NameWares}" TextWrapping="Wrap" HorizontalAlignment="Center" Width="650" />
-                                            <TextBlock Text="  "/>
-                                            <TextBlock  Text="{Binding Path=Quantity}" HorizontalAlignment="Center" Width="100"/>
-                                            <TextBlock  Text="{Binding Path=CodeWares}" HorizontalAlignment="Center" Width="100"/>
-                                            <TextBlock Grid.Column="5" Text="{Binding SumTotal, StringFormat=0.00}" FontWeight="Bold" FontSize="30"/>
-
-                                            <TextBlock   FontSize="20" FontWeight="DemiBold" Foreground="Red">
-                                                <TextBlock.Style>
-                                                    <Style TargetType="TextBlock">
-                                                        <Setter Property="Text" Value="{Binding DiscountEKKA, StringFormat=-0.00}"/>
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding DiscountEKKA}" Value="0">
-                                                                <Setter Property="Text" Value=""/>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </TextBlock.Style>
-                                            </TextBlock>
-                                        </StackPanel>
-
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>-->
                                 </ListView>
                                 <StackPanel Grid.Row="1" Grid.Column="2" Margin="15,0,15,0">
                                     <TextBlock  FontSize="28" HorizontalAlignment="Center" FontWeight="DemiBold" TextWrapping="Wrap"
                                             Text="Чек з пос-термінала:"/>
                                     <ScrollViewer  x:Name="PosCheckScrollViewer">
-                                        <TextBlock x:Name="PosCheckText" FontSize="24" HorizontalAlignment="Center" TextWrapping="Wrap"/>
+                                        <TextBlock x:Name="PosCheckText" FontSize="20" HorizontalAlignment="Center" TextWrapping="Wrap"/>
+                                    </ScrollViewer>
+                                </StackPanel>
+                                <StackPanel Grid.Row="2" Grid.Column="2" Margin="15,0,15,0">
+                                    <TextBlock  FontSize="28" HorizontalAlignment="Center" FontWeight="DemiBold" TextWrapping="Wrap"
+                                            Text="Чек з фіскального апарату:"/>
+                                    <ScrollViewer  x:Name="FiscallCheckScrollViewer">
+                                        <TextBlock x:Name="FiscalCheckText" FontSize="20" HorizontalAlignment="Center" TextWrapping="Wrap"/>
                                     </ScrollViewer>
                                 </StackPanel>
                                 <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="6"
@@ -857,7 +840,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                             <DatePicker Name="DataJornal" FontSize="30" IsTodayHighlighted="True" SelectedDate="{Binding DateSoSearch}"
                                     Width="200" Height="50" HorizontalAlignment="Left"></DatePicker>
                             <Button Width="300" Height="80" Margin="10,0,0,0" Style="{StaticResource Default}" Click="FindJournalDate">
-                                Знайти
+                                Знайти/Оновити
                             </Button>
                             <StackPanel Orientation="Horizontal" Margin="20,0,0,0">
                                 <TextBlock Text="Весь журнал "/>
@@ -870,10 +853,24 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                      Grid.Column="0" Grid.Row="1" >
                             <ListView.View>
                                 <GridView >
+                                    <GridViewColumn  Header="№ чека">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Path=CodeReceipt}" TextAlignment="Center" />
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
                                     <GridViewColumn Header="Тип операції" >
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
                                                 <TextBlock Text="{Binding Path=TranslationTypeOperation}" TextAlignment="Center" />
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn  Header="Чек в 1С">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Path=NumberReceipt1C}" TextAlignment="Center" />
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
@@ -890,7 +887,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                             </ListView.View>
                         </ListView>
                         <ScrollViewer Grid.Row="1"  Grid.Column="1">
-                            <TextBlock x:Name="JornalText" FontSize="24" HorizontalAlignment="Center" TextWrapping="Wrap"/>
+                            <TextBlock x:Name="JornalText" FontSize="20" HorizontalAlignment="Center" TextWrapping="Wrap"/>
                         </ScrollViewer>
                     </Grid>
                 </TabItem>

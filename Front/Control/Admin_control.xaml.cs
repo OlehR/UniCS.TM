@@ -65,12 +65,12 @@ namespace Front.Control
             TypeMessageRadiobuton = new ObservableCollection<APIRadiobuton>();
             foreach (eTypeMessage item in Enum.GetValues(typeof(eTypeMessage)))
             {
-                TypeMessageRadiobuton.Add(new APIRadiobuton() {ServerTypeMessage = item});
+                TypeMessageRadiobuton.Add(new APIRadiobuton() { ServerTypeMessage = item });
             }
             InitializeComponent();
             this.DataContext = this;
             ListRadioButtonAPI.ItemsSource = TypeMessageRadiobuton;
-
+            RefreshJournal();
             //поточний час
             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
@@ -124,7 +124,7 @@ namespace Front.Control
             }));
 
         }
-        
+
         private bool LogFilter(object item)
         {
             if (String.IsNullOrEmpty(TypeLog))
@@ -142,14 +142,17 @@ namespace Front.Control
             else return ((item as Receipt).SumReceipt > 0);
 
         }
-        
+
         private bool JournalFilter(object item)
         {
             if (IsShowAllJournal)
             {
                 return true;
             }
-            else return ((item as LogRRO).TypeOperation > 0);
+            else return ((item as LogRRO).TypeOperation == eTypeOperation.ZReport ||
+                    (item as LogRRO).TypeOperation == eTypeOperation.ZReportPOS ||
+                    (item as LogRRO).TypeOperation == eTypeOperation.XReport ||
+                    (item as LogRRO).TypeOperation == eTypeOperation.XReportPOS);
 
         }
 
@@ -315,6 +318,7 @@ namespace Front.Control
                 ListReceipts.ItemsSource = Receipts.Reverse();
                 CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(ListReceipts.ItemsSource);
                 view.Filter = ReceiptFilter;
+
             }
             string tabItem = ((sender as TabControl).SelectedItem as TabItem).Header as string;
 
@@ -330,11 +334,7 @@ namespace Front.Control
                 case "Історія":
                     break;
                 case "Журнал":
-                    var TMPIdRecipt = new IdReceipt { CodePeriod = Global.GetCodePeriod(), CodeReceipt = 0, IdWorkplace = Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace).IdWorkplace };
-                    SourcesListJournal = new ObservableCollection<LogRRO>(Bl.GetLogRRO(TMPIdRecipt));
-                    ListJournal.ItemsSource = SourcesListJournal;
-                    CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(ListJournal.ItemsSource);
-                    view.Filter = JournalFilter;
+
                     break;
                 case "Помилки":
                     RefreshLog();
@@ -348,6 +348,14 @@ namespace Front.Control
 
                     return;
             }
+        }
+        private void RefreshJournal()
+        {
+            var TMPIdRecipt = new IdReceipt { CodePeriod = Global.GetCodePeriod(), CodeReceipt = 0, IdWorkplace = Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace).IdWorkplace };
+            SourcesListJournal = new ObservableCollection<LogRRO>(Bl.GetLogRRO(TMPIdRecipt));
+            ListJournal.ItemsSource = SourcesListJournal.Reverse();
+            CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(ListJournal.ItemsSource);
+            view.Filter = JournalFilter;
         }
         private void RefreshLog()
         {
@@ -365,7 +373,7 @@ namespace Front.Control
             }
             //LogsCollection = new ObservableCollection<string>(AllLog.Split($"{Environment.NewLine}[").Select(a => "[" + a));
 
-            ListLog.ItemsSource = LogsCollection;
+            ListLog.ItemsSource = LogsCollection.Reverse();
             CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(ListLog.ItemsSource);
             view.Filter = LogFilter;
         }
@@ -546,14 +554,8 @@ namespace Front.Control
                 BackgroundReceipts.Visibility = Visibility.Visible;
 
                 var TMPvalue = Bl.db.GetLogRRO(tmpReceipt);
-                foreach (var item in TMPvalue)
-                {
-                    if (item.TypeOperation == eTypeOperation.SalePOS)
-                    {
-                        PosCheckText.Text = string.Join(Environment.NewLine, item.TextReceipt);
-                        break;
-                    }
-                }
+                PosCheckText.Text = TMPvalue?.Where(e => e.TypeOperation == eTypeOperation.SalePOS).FirstOrDefault()?.TextReceipt;
+                FiscalCheckText.Text = TMPvalue?.Where(e => e.TypeOperation == eTypeOperation.Sale).FirstOrDefault()?.TextReceipt;
                 var curReceiptWares = Bl.GetWaresReceipt(tmpReceipt);
                 ListWaresReceipt.ItemsSource = curReceiptWares;
             }
@@ -598,13 +600,8 @@ namespace Front.Control
         private void FindJournalDate(object sender, RoutedEventArgs e)
         {
             if (TabPrintJournal.IsSelected)
-            {
-                var TMPIdRecipt = new IdReceipt { CodePeriod = Global.GetCodePeriod(DateSoSearch), CodeReceipt = 0, IdWorkplace = Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace).IdWorkplace };
-                SourcesListJournal = new ObservableCollection<LogRRO>(Bl.GetLogRRO(TMPIdRecipt));
-                ListJournal.ItemsSource = SourcesListJournal;
-                CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(ListJournal.ItemsSource);
-                view.Filter = JournalFilter;
-            }
+                RefreshJournal();
+
         }
 
         private void IsAllJournalChecked(object sender, RoutedEventArgs e)
