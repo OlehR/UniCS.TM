@@ -26,8 +26,7 @@ namespace Front
         public Action<double, bool> OnWeight { get; set; }
         private IEnumerable<Equipment> ListEquipment = new List<Equipment>();
         eStateEquipment _State = eStateEquipment.Off;
-
-        BL Bl = BL.GetBL;
+        readonly BL Bl = BL.GetBL;
         Scaner Scaner;
         Scale Scale;
         public Scale ControlScale;
@@ -96,7 +95,7 @@ namespace Front
 
         public static EquipmentFront GetEquipmentFront { get { return sEquipmentFront; } }
 
-        ILoggerFactory LF = LoggerFactory.Create(builder =>
+        readonly ILoggerFactory LF = LoggerFactory.Create(builder =>
         {
             builder.AddConsole();            
         });
@@ -114,7 +113,6 @@ namespace Front
             OnWeight += (pWeight, pIsStable) =>
             { if (IsControlScale && ControlScale.Model == eModelEquipment.VirtualControlScale) OnControlWeight?.Invoke(pWeight, pIsStable); };
             Task.Run(() => Init(pSetBarCode, pActionStatus));
-
         }
         
         public void Init(Action<string, string> pSetBarCode, Action<StatusEquipment> pActionStatus = null)
@@ -270,8 +268,6 @@ namespace Front
             }
         }
 
-
-
         public IEnumerable<Equipment> GetListEquipment { get { return ListEquipment; } }
 
         /// <summary>
@@ -333,7 +329,7 @@ namespace Front
 
         public LogRRO PrintNoFiscalReceipt(IEnumerable<string> pR)
         {
-            if (pR != null && pR.Count() > 0)
+            if (pR != null && pR.Any())
                 try
                 {
                     var r = RRO?.PrintNoFiscalReceiptAsync(pR).Result;

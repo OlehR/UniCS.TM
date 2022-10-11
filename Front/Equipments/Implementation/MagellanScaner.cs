@@ -18,7 +18,7 @@ namespace Front.Equipments
 
         Timer mTimer;
         public bool IsMultipleTone { get; set; } = true;
-        Regex Reg = new Regex(@"^[0-9]{8,13}[S]{1}[0-9]{7}$");
+        Regex Reg = new (@"^[0-9]{8,13}[S]{1}[0-9]{7}$");
         public Magellan9300S Magellan9300;
 /*        public MagellanScaner(string pSerialPortName, int pBaudRate, Action<string, string> pLogger, Action<string, string> pOnBarCode) : base(pSerialPortName, pBaudRate, pLogger, pOnBarCode)
         {

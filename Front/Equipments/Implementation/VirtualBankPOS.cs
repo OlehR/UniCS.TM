@@ -46,7 +46,9 @@ namespace Front.Equipments.Implementation
                 CodeAuthorization = $"{AuthCode++}",
                 NumberTerminal = "SML_Local",                
                 NumberSlip= $"{TransactionCode++}",
-                IsSuccess=true
+                IsSuccess=true,
+                Receipt = new List<string>() { "Тестовий Чек", $"Сума: {pAmount}",$"CodeAuthorization{AuthCode}","Тестова Оплата" }
+                
             };
         }
 
