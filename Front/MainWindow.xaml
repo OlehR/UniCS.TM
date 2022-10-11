@@ -1292,7 +1292,7 @@
                 </Grid>
             </Border>
 
-            <!-- ОПЛАТА ЗВИЧАЙНА КАСА  -->
+            <!-- ОПЛАТА ЗВИЧАЙНА КАСА  --><!--
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
                  Grid.Column="0" Grid.ColumnSpan="6"
@@ -1536,7 +1536,7 @@
 
                     </Border>
                 </Grid>
-            </Border>
+            </Border>-->
 
             <!-- Підтвердження віку ПОПЕРЕДЖЕННЯ  -->
             <!--<Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"

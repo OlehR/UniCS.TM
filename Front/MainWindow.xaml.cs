@@ -60,7 +60,7 @@ namespace Front
 
         double tempMoneySum;
         public decimal MoneySum { get { return curReceipt?.Wares?.Sum(r => r.SumTotal) ?? 0; } }
-        public string MoneySumToRound { get; set; }
+        
         public string EquipmentInfo { get; set; }
         bool _Volume = true;
         public bool Volume { get { return _Volume; } set { _Volume = value; if (s != null) s.IsSound = value; } }
@@ -488,7 +488,7 @@ namespace Front
                     //textInAll.Visibility = Visibility.Visible;
                     //valueInAll.Visibility = Visibility.Visible;
                     ConfirmAge.Visibility = Visibility.Collapsed;
-                    WaitKashier.Visibility = Visibility.Collapsed;
+                    //WaitKashier.Visibility = Visibility.Collapsed;
                     CustomWindows.Visibility = Visibility.Collapsed;
                     ErrorBackground.Visibility = Visibility.Collapsed;
                     OwnBagWindows.Visibility = Visibility.Collapsed;
@@ -616,11 +616,9 @@ namespace Front
                             break;
 
                         case eStateMainWindows.ChoicePaymentMethod:
-                            MoneySumToRound = Convert.ToString(MoneySum);
+                            PaymentWindow.MoneySumToRound = (double)MoneySum;
                             ChangeSumPaymant = "0";
-                            CashDisbursementTextBox.Text = "0";
-                            RoundSum.Text = "0";
-                            RoundSumDown.Text = "0";
+                            PaymentWindow.Visibility = Visibility.Visible;
                             break;
                         case eStateMainWindows.WaitCustomWindows:
 
@@ -892,6 +890,8 @@ namespace Front
         private void _ButtonPayment(object sender, RoutedEventArgs e)
         {
             EquipmentStatusInPayment.Text = "";
+            //SetStateView(eStateMainWindows.ChoicePaymentMethod);
+
             if (Global.TypeWorkplace == eTypeWorkplace.СashRegister)
                 SetStateView(eStateMainWindows.ChoicePaymentMethod);
             else
@@ -1008,134 +1008,6 @@ namespace Front
             Bl.AddEventAge(curReceipt);
         }
 
-        private void ChangeSumPaymentButton(object sender, RoutedEventArgs e)
-        {
-            Button btn = sender as Button;
-            switch (btn.Content)
-            {
-                case "C":
-                    if (ChangeSumPaymant.Length <= 1)
-                    {
-                        ChangeSumPaymant = "0";
-                        break;
-                    }
-                    else
-                        ChangeSumPaymant = ChangeSumPaymant.Remove(ChangeSumPaymant.Length - 1);
-                    break;
-
-                case ",":
-                    if (ChangeSumPaymant.IndexOf(",") != -1)
-                    {
-                        break;
-                    }
-                    ChangeSumPaymant += btn.Content;
-                    break;
-                default:
-                    ChangeSumPaymant += btn.Content;
-                    break;
-
-            }
-            MoneySumPayTextBox.Text = ChangeSumPaymant;
-        }
-
-        private void MoneySumPayChange(object sender, TextChangedEventArgs e)
-        {
-            try
-            {
-                ResMoney.Text = Math.Round((Convert.ToDouble(MoneySumPayTextBox.Text) - Convert.ToDouble(MoneySumToRound)), 2).ToString();
-            }
-            catch (Exception ex)
-            {
-                ShowErrorMessage(ex.Message);
-            }
-
-        }
-
-        private void CashDisbursement(object sender, RoutedEventArgs e)
-        {
-            Background.Visibility = Visibility.Visible;
-            BackgroundWares.Visibility = Visibility.Visible;
-            KeyPad keyPad = new KeyPad(this);
-
-            keyPad.productNameChanges.Text = "Введіть суму видачі";
-            keyPad.Result = "100";
-            if (keyPad.ShowDialog() == true)
-                CashDisbursementTextBox.Text = keyPad.Result;
-        }
-
-        private void CancelCashDisbursement(object sender, RoutedEventArgs e)
-        {
-            CashDisbursementTextBox.Text = "0";
-        }
-
-
-        public double RoundingPrice(double price, double precision)
-        {
-            price = Convert.ToInt32(Math.Round(price * 100, 3));
-            precision = Math.Round(precision, 2);
-            return Math.Round(Math.Ceiling(Math.Ceiling(price / precision / 100)) * precision, 2);
-        }
-        public double RoundingDownPrice(double price, double precision)
-        {
-            price = Convert.ToInt32(Math.Round(price * 100, 3));
-            precision = Math.Round(precision, 2);
-            return Math.Round(Math.Floor(Math.Floor(price / precision / 100)) * precision, 2);
-        }
-
-        private void Round(object sender, RoutedEventArgs e)
-        {
-            Button btn = sender as Button;
-
-            tempMoneySum = Convert.ToDouble(MoneySum);
-            RoundSum.Text = "0";
-            RoundSumDown.Text = "0";
-
-            switch (btn.Name)
-            {
-                case "plus01":
-                    MoneySumToRound = RoundingPrice(tempMoneySum, 0.1).ToString();
-                    RoundSum.Text = (Math.Round(Convert.ToDouble(MoneySumToRound) - tempMoneySum, 2)).ToString();
-                    break;
-                case "plus05":
-                    MoneySumToRound = RoundingPrice(tempMoneySum, 0.5).ToString();
-                    RoundSum.Text = (Math.Round(Convert.ToDouble(MoneySumToRound) - tempMoneySum, 2)).ToString();
-                    break;
-                case "plus1":
-                    MoneySumToRound = RoundingPrice(tempMoneySum, 1.0).ToString();
-                    RoundSum.Text = (Math.Round(Convert.ToDouble(MoneySumToRound) - tempMoneySum, 2)).ToString();
-                    break;
-                case "plus2":
-                    MoneySumToRound = RoundingPrice(tempMoneySum, 2.0).ToString();
-                    RoundSum.Text = (Math.Round(Convert.ToDouble(MoneySumToRound) - tempMoneySum, 2)).ToString();
-                    break;
-                case "plus5":
-                    MoneySumToRound = RoundingPrice(tempMoneySum, 5.0).ToString();
-                    RoundSum.Text = (Math.Round(Convert.ToDouble(MoneySumToRound) - tempMoneySum, 2)).ToString();
-                    break;
-                case "minus1":
-                    MoneySumToRound = RoundingDownPrice(tempMoneySum, 1.0).ToString();
-                    RoundSumDown.Text = (Math.Round(Convert.ToDouble(MoneySumToRound) - tempMoneySum, 2)).ToString();
-                    break;
-
-                default:
-                    MoneySumToRound = Convert.ToString(MoneySum);
-                    break;
-            }
-        }
-
-        private void F5Button(object sender, RoutedEventArgs e)
-        {
-            TerminalPaymentInfo terminalPaymentInfo = new TerminalPaymentInfo(this);
-            if (terminalPaymentInfo.ShowDialog() == true)
-            {
-                var Res = terminalPaymentInfo.enteredDataFromTerminal;
-                Res.SetIdReceipt(curReceipt);
-                SetManualPay(terminalPaymentInfo.enteredDataFromTerminal);
-                //отримуємо введені дані
-                //ShowErrorMessage(terminalPaymentInfo.enteredDataFromTerminal.AuthorizationCode);
-                //                MessageBox.Show(terminalPaymentInfo.enteredDataFromTerminal.AuthorizationCode);//як приклад
-            }
-        }
 
         public void SetManualPay(Payment pPay)
         {

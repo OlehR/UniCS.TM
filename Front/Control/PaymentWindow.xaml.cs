@@ -27,8 +27,15 @@ namespace Front.Control
     public partial class PaymentWindow : UserControl, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        public string ChangeSumPaymant { get; set; } = "0";
+        public string ChangeSumPaymant { get; set; } = "";
         double tempMoneySum;
+        private double _MoneySumToRound;
+        public double MoneySumToRound { get 
+            {
+                MoneySumPayTextBox.Text = _MoneySumToRound.ToString();
+                CheckAmountTextBlock.Text = _MoneySumToRound.ToString();
+                return _MoneySumToRound;
+            } set { _MoneySumToRound = value; } }
         public Receipt curReceipt;
         MainWindow MW;
         EquipmentFront EF;
@@ -37,6 +44,7 @@ namespace Front.Control
         {
             Bl = BL.GetBL;
             InitializeComponent();
+            //MessageBox.Show(MoneySumToRound.ToString());
         }
         public void Init(MainWindow pMW)
         {
@@ -56,7 +64,7 @@ namespace Front.Control
                 case "C":
                     if (ChangeSumPaymant.Length <= 1)
                     {
-                        ChangeSumPaymant = "0";
+                        ChangeSumPaymant = "";
                         break;
                     }
                     else
@@ -104,22 +112,12 @@ namespace Front.Control
             curReceipt.Payment = new List<Payment>() { pPay };
         }
 
-        private void MoneySumPayChange(object sender, TextChangedEventArgs e)
-        {
-            try
-            {
-                ResMoney.Text = Math.Round((Convert.ToDouble(MoneySumPayTextBox.Text) - Convert.ToDouble(MW.MoneySumToRound)), 2).ToString();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
+
 
 
         private void _Cancel(object sender, RoutedEventArgs e)
         {
-            MW.SetStateView(Models.eStateMainWindows.StartWindow);
+            MW.SetStateView(Models.eStateMainWindows.WaitInput);
         }
 
         private void _ButtonPaymentBank(object sender, RoutedEventArgs e)
@@ -159,46 +157,7 @@ namespace Front.Control
             MW.NumericPad.Visibility = Visibility.Visible;
         }
 
-        private void Round(object sender, RoutedEventArgs e)
-        {
-            Button btn = sender as Button;
-
-            tempMoneySum = Convert.ToDouble(MW.MoneySum);
-            RoundSum.Text = "0";
-            RoundSumDown.Text = "0";
-
-            switch (btn.Name)
-            {
-                case "plus01":
-                    MW.MoneySumToRound = RoundingPrice(tempMoneySum, 0.1).ToString();
-                    RoundSum.Text = (Math.Round(Convert.ToDouble(MW.MoneySumToRound) - tempMoneySum, 2)).ToString();
-                    break;
-                case "plus05":
-                    MW.MoneySumToRound = RoundingPrice(tempMoneySum, 0.5).ToString();
-                    RoundSum.Text = (Math.Round(Convert.ToDouble(MW.MoneySumToRound) - tempMoneySum, 2)).ToString();
-                    break;
-                case "plus1":
-                    MW.MoneySumToRound = RoundingPrice(tempMoneySum, 1.0).ToString();
-                    RoundSum.Text = (Math.Round(Convert.ToDouble(MW.MoneySumToRound) - tempMoneySum, 2)).ToString();
-                    break;
-                case "plus2":
-                    MW.MoneySumToRound = RoundingPrice(tempMoneySum, 2.0).ToString();
-                    RoundSum.Text = (Math.Round(Convert.ToDouble(MW.MoneySumToRound) - tempMoneySum, 2)).ToString();
-                    break;
-                case "plus5":
-                    MW.MoneySumToRound = RoundingPrice(tempMoneySum, 5.0).ToString();
-                    RoundSum.Text = (Math.Round(Convert.ToDouble(MW.MoneySumToRound) - tempMoneySum, 2)).ToString();
-                    break;
-                case "minus1":
-                    MW.MoneySumToRound = RoundingDownPrice(tempMoneySum, 1.0).ToString();
-                    RoundSumDown.Text = (Math.Round(Convert.ToDouble(MW.MoneySumToRound) - tempMoneySum, 2)).ToString();
-                    break;
-
-                default:
-                    MW.MoneySumToRound = Convert.ToString(MW.MoneySum);
-                    break;
-            }
-        }
+       
         public double RoundingPrice(double price, double precision)
         {
             price = Convert.ToInt32(Math.Round(price * 100, 3));
@@ -211,5 +170,59 @@ namespace Front.Control
             precision = Math.Round(precision, 2);
             return Math.Round(Math.Floor(Math.Floor(price / precision / 100)) * precision, 2);
         }
+
+        private void MoneySumPayChange(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                ResMoney.Text = Math.Round((Convert.ToDouble(MoneySumPayTextBox.Text) - Convert.ToDouble(MoneySumToRound)), 2).ToString();
+                
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                //MW.ShowErrorMessage(ex.Message);
+            }
+        }
+
+        private void Round(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            tempMoneySum = (double)MW.MoneySum;
+            RoundSum.Text = "0";
+            RoundSumDown.Text = "0";
+            switch (btn.Name)
+            {
+                case "plus01":
+                    MoneySumToRound = RoundingPrice(tempMoneySum, 0.1);
+                    RoundSum.Text = (Math.Round(Convert.ToDouble(MoneySumToRound) - tempMoneySum, 2)).ToString();
+                    break;
+                case "plus05":
+                    MoneySumToRound = RoundingPrice(tempMoneySum, 0.5);
+                    RoundSum.Text = (Math.Round(Convert.ToDouble(MoneySumToRound) - tempMoneySum, 2)).ToString();
+                    break;
+                case "plus1":
+                    MoneySumToRound = RoundingPrice(tempMoneySum, 1.0);
+                    RoundSum.Text = (Math.Round(Convert.ToDouble(MoneySumToRound) - tempMoneySum, 2)).ToString();
+                    break;
+                case "plus2":
+                    MoneySumToRound = RoundingPrice(tempMoneySum, 2.0);
+                    RoundSum.Text = (Math.Round(Convert.ToDouble(MoneySumToRound) - tempMoneySum, 2)).ToString();
+                    break;
+                case "plus5":
+                    MoneySumToRound = RoundingPrice(tempMoneySum, 5.0);
+                    RoundSum.Text = (Math.Round(Convert.ToDouble(MoneySumToRound) - tempMoneySum, 2)).ToString();
+                    break;
+                case "minus1":
+                    MoneySumToRound = RoundingDownPrice(tempMoneySum, 1.0);
+                    RoundSumDown.Text = (Math.Round(Convert.ToDouble(MoneySumToRound) - tempMoneySum, 2)).ToString();
+                    break;
+                default:
+                    MoneySumToRound = (double)MW.MoneySum;
+                    break;
+            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MoneySumToRound"));
+        }
+
     }
 }
