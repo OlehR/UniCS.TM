@@ -87,19 +87,22 @@ namespace Front.Equipments
                 return new LogRRO(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace }) { TypeOperation = eTypeOperation.CopyReceipt, TypeRRO = "RRO_FP700", CodeError = -1, Error = e.Message };
             }
         }
+        
         public override async Task<LogRRO> PrintZAsync(IdReceipt pIdR)
         {
             try
             {
-                string res = Fp700.ZReport();
-                return new LogRRO(pIdR) { TypeOperation = eTypeOperation.ZReport, TypeRRO = "RRO_FP700", FiscalNumber = Fp700.GetLastZReportNumber(), TextReceipt = res };
+                lock (Lock)
+                {
+                    string res = Fp700.ZReport();
+                    return new LogRRO(pIdR) { TypeOperation = eTypeOperation.ZReport, TypeRRO = "RRO_FP700", FiscalNumber = Fp700.GetLastZReportNumber(), TextReceipt = res };
+                }
             }
             catch (Exception e)
             {
                 return new LogRRO(pIdR) { TypeOperation = eTypeOperation.ZReport, TypeRRO = "RRO_FP700", CodeError = -1, Error = e.Message };
             }
         }
-
 
         public override async Task<LogRRO> PrintXAsync(IdReceipt pIdR)
         {
@@ -845,8 +848,6 @@ namespace Front.Equipments.FP700
         }
 
         public Task<DeviceConnectionStatus> TestDevice() => Task.Run<DeviceConnectionStatus>(new Func<DeviceConnectionStatus>(this.TestDeviceSync));
-
-
 
         public string PrintReceipt(ReceiptViewModel receipt, List<ReceiptText> Comments=null)
         {

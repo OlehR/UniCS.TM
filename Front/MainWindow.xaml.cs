@@ -307,18 +307,20 @@ namespace Front
                     Client = null;
                     CS.WaitClear();
                 }
-
-                ListWares = new ObservableCollection<ReceiptWares>(pReceipt?.Wares);
-                Dispatcher.BeginInvoke(new ThreadStart(() =>
+                else
                 {
-                    WaresList.ItemsSource = ListWares;
-                    if (VisualTreeHelper.GetChildrenCount(WaresList) > 0)
+                    ListWares = new ObservableCollection<ReceiptWares>(pReceipt?.Wares);
+                    Dispatcher.BeginInvoke(new ThreadStart(() =>
                     {
-                        Border border = (Border)VisualTreeHelper.GetChild(WaresList, 0);
-                        ScrollViewer scrollViewer = (ScrollViewer)VisualTreeHelper.GetChild(border, 0);
-                        scrollViewer.ScrollToBottom();
-                    }
-                }));
+                        WaresList.ItemsSource = ListWares;
+                        if (VisualTreeHelper.GetChildrenCount(WaresList) > 0)
+                        {
+                            Border border = (Border)VisualTreeHelper.GetChild(WaresList, 0);
+                            ScrollViewer scrollViewer = (ScrollViewer)VisualTreeHelper.GetChild(border, 0);
+                            scrollViewer.ScrollToBottom();
+                        }
+                    }));
+                }
             }
             catch (Exception e)
             {

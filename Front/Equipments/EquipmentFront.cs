@@ -349,7 +349,16 @@ namespace Front
 
         public bool ProgramingArticleAsync(IEnumerable<ReceiptWares> pRW)
         {
-            RRO?.ProgramingArticleAsync(pRW);
+            try
+            {
+                RRO?.ProgramingArticleAsync(pRW);
+            }
+            catch (Exception e)
+            {
+                RRO.State = eStateEquipment.Error;
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+                SetStatus?.Invoke(new RroStatus() { Status = eStatusRRO.Error,StateEquipment = eStateEquipment.Error,ModelEquipment= RRO.Model, TextState=e.Message,State=-1,IsСritical=RRO.IsСritical });
+             }
             return true;
         }
 
