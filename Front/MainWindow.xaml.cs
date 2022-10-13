@@ -152,7 +152,7 @@ namespace Front
             return c;
         }
 
-
+        string LastErrorEquipment = null;
         public string WaitAdminText
         {
             get
@@ -180,6 +180,8 @@ namespace Front
                         break;
                     case eTypeAccess.ErrorEquipment:
                         tb.Inlines.Add(new Run("Проблема з критично важливим обладнанням") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red });
+                        if (!string.IsNullOrEmpty(LastErrorEquipment))
+                            tb.Inlines.Add(new Run(LastErrorEquipment) { FontWeight = FontWeights.Bold, Foreground = Brushes.Red });                         
                         break;
                     case eTypeAccess.LockSale:
                         tb.Inlines.Add("Зміна заблокована");

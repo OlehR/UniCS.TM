@@ -25,7 +25,7 @@ namespace Front
         public Action<double, bool> OnControlWeight { get; set; }
         public Action<double, bool> OnWeight { get; set; }
         private IEnumerable<Equipment> ListEquipment = new List<Equipment>();
-        eStateEquipment _State = eStateEquipment.Off;
+        //eStateEquipment _State = eStateEquipment.Off;
         readonly BL Bl = BL.GetBL;
         Scaner Scaner;
         Scale Scale;
@@ -65,8 +65,11 @@ namespace Front
 
         public eStateEquipment State
         {
-            get { return _State; }
-            set
+            get 
+            {
+                 return ListEquipment.Where(el=>el.IsСritical==true).Max(el => el.State);  
+            }
+           /* set
             {
                 if (_State != value)
                     if (value == eStateEquipment.Error)
@@ -77,19 +80,21 @@ namespace Front
                         eStateEquipment st = eStateEquipment.On;
                         foreach (var el in ListEquipment)
                         {
-                            if (el.State == eStateEquipment.Off)
-                                st = eStateEquipment.Off;
+                            if (el.State == eStateEquipment.Off || el.State == eStateEquipment.Error)
+                            {
+                                st = el.State;
+                                break;
+                            }
                         }
                         _State = st;
                     }
-                if (_State != value)
-                    SetState?.Invoke(_State);
-            }
+               // if (_State != value) SetState?.Invoke(_State);
+            }*/
         }
 
         public Action<StatusEquipment> SetStatus { get; set; }
 
-        public Action<eStateEquipment> SetState { get; set; }
+        //public Action<eStateEquipment> SetState { get; set; }
 
         static EquipmentFront sEquipmentFront;
 
@@ -128,7 +133,7 @@ namespace Front
 
             var NewListEquipment = new List<Equipment>();
             var config = GetConfig();
-            State = eStateEquipment.Init;
+            //State = eStateEquipment.Init;
             try
             {
                 //Scaner
@@ -258,13 +263,13 @@ namespace Front
                     el.ActionStatus += (Status) => { SetStatus?.Invoke(Status); };
                 }
 
-                State = eStateEquipment.On;
+                //State = eStateEquipment.On;
                 SetStatus?.Invoke(new StatusEquipment(eModelEquipment.NotDefine, eStateEquipment.On));
             }
             catch (Exception e)
             {
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
-                State = eStateEquipment.Error;
+                //State = eStateEquipment.Error;
             }
         }
 
@@ -375,10 +380,11 @@ namespace Front
                     catch (Exception e)
                     {
                         SetStatus?.Invoke(new StatusEquipment(RRO.Model, eStateEquipment.Error, e.Message) { IsСritical = false });
-                        return new LogRRO() { TypeOperation = eTypeOperation.NoFiscalReceipt, TypeRRO = RRO.Model.ToString(), CodeError = -1, Error = e.Message };
+                        return new LogRRO() { TypeOperation = eTypeOperation.NoFiscalReceipt, TypeRRO = RRO?.Model.ToString(), CodeError = -1, Error = e.Message };
                     }
                 }
             )).Result;
+                return r;
             }
             return null;
         }
@@ -512,6 +518,7 @@ namespace Front
         {
             Terminal.Cancel();
         }
+        
         /// <summary>
         /// Статус банківського термінала (Очікуєм карточки, Очікуєм підтвердження і ТД) 
         /// </summary>

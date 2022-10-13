@@ -33,7 +33,7 @@ using System.Timers;
 using Receipt = ModernExpo.SelfCheckout.Entities.Models.Receipt;
 using Front.Equipments;
 
-using DeviceLog=ModernExpo.SelfCheckout.Entities.Models.FiscalPrinterDeviceLog;
+using DeviceLog = ModernExpo.SelfCheckout.Entities.Models.FiscalPrinterDeviceLog;
 using Utils;
 
 //using ModernExpo.SelfCheckout.Utils;
@@ -59,64 +59,42 @@ namespace Front.Equipments
                 Fp700.Init();
                 State = Fp700.IsReady ? eStateEquipment.On : eStateEquipment.Error;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 State = eStateEquipment.Error;
             }
         }
 
-        public override bool OpenWorkDay()
-        {
-            return true; 
-        }
+        public override bool OpenWorkDay() { return true; }
 
         public override LogRRO PrintCopyReceipt(int parNCopy = 1)
         {
-            try
+            lock (Lock)
             {
-                lock (Lock)
-                {
-                    var res = Fp700.CopyReceipt();
-                }
-                return new LogRRO(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace }) { TypeOperation = eTypeOperation.CopyReceipt, TypeRRO = "RRO_FP700", FiscalNumber = Fp700.GetLastZReportNumber() };
+                var res = Fp700.CopyReceipt();
             }
-            catch (Exception e)
-            {
-                return new LogRRO(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace }) { TypeOperation = eTypeOperation.CopyReceipt, TypeRRO = "RRO_FP700", CodeError = -1, Error = e.Message };
-            }
+            return new LogRRO(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace }) { TypeOperation = eTypeOperation.CopyReceipt, TypeRRO = Type.ToString(), FiscalNumber = Fp700.GetLastZReportNumber() };
         }
-        
+
         public override LogRRO PrintZ(IdReceipt pIdR)
         {
-            try
+            string res;
+            lock (Lock)
             {
-                lock (Lock)
-                {
-                    string res = Fp700.ZReport();
-                    return new LogRRO(pIdR) { TypeOperation = eTypeOperation.ZReport, TypeRRO = "RRO_FP700", FiscalNumber = Fp700.GetLastZReportNumber(), TextReceipt = res };
-                }
+                res = Fp700.ZReport();
             }
-            catch (Exception e)
-            {
-                return new LogRRO(pIdR) { TypeOperation = eTypeOperation.ZReport, TypeRRO = "RRO_FP700", CodeError = -1, Error = e.Message };
-            }
+            return new LogRRO(pIdR) { TypeOperation = eTypeOperation.ZReport, TypeRRO = Type.ToString(), FiscalNumber = Fp700.GetLastZReportNumber(), TextReceipt = res };
+
         }
 
         public override LogRRO PrintX(IdReceipt pIdR)
         {
-            try
+            string res;
+            lock (Lock)
             {
-                string res;
-                lock (Lock)
-                {
-                    res = Fp700.XReport();
-                }
-                return new LogRRO(pIdR) { TypeOperation = eTypeOperation.XReport, TypeRRO = "RRO_FP700", FiscalNumber = Fp700.GetLastZReportNumber(), TextReceipt = res };
+                res = Fp700.XReport();
             }
-            catch (Exception e)
-            {
-                return new LogRRO(pIdR) { TypeOperation = eTypeOperation.XReport, TypeRRO = "RRO_FP700", CodeError = -1, Error = e.Message };
-            }
+            return new LogRRO(pIdR) { TypeOperation = eTypeOperation.XReport, TypeRRO = Type.ToString(), FiscalNumber = Fp700.GetLastZReportNumber(), TextReceipt = res };
         }
 
 
@@ -127,21 +105,13 @@ namespace Front.Equipments
         /// <returns></returns>
         public override LogRRO MoveMoney(decimal pSum, IdReceipt pIdR = null)
         {
-            try
+            var d = new MoneyMovingModel() { Sum = pSum };
+            lock (Lock)
             {
-                var d = new MoneyMovingModel() { Sum = pSum };
-                lock (Lock)
-                {
-                    Fp700.MoneyMoving(d);
-                }
-                return new LogRRO(pIdR) { TypeOperation = pSum > 0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyIn, TypeRRO = "RRO_FP700", FiscalNumber = Fp700.GetLastZReportNumber() };
+                Fp700.MoneyMoving(d);
             }
-            catch (Exception e)
-            {
-                return new LogRRO(pIdR) { TypeOperation = pSum > 0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyIn, TypeRRO = "RRO_FP700", CodeError = -1, Error = e.Message };
-            }
-
-        } 
+            return new LogRRO(pIdR) { TypeOperation = pSum > 0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyIn, TypeRRO = Type.ToString(), FiscalNumber = Fp700.GetLastZReportNumber() };
+        }
 
         /// <summary>
         /// Друк чека
@@ -150,27 +120,19 @@ namespace Front.Equipments
         /// <returns></returns>
         public override LogRRO PrintReceipt(ModelMID.Receipt pR)
         {
-            string FiscalNumber=null;
-            try
+            string FiscalNumber = null;
+            List<ReceiptText> Comments = null;
+            if (pR?.ReceiptComments?.Count() > 0)
+                Comments = pR.ReceiptComments.Select(r => new ReceiptText() { Text = r, RenderType = RenderAs.Text }).ToList();
+            var d = GetReceiptViewModel(pR);
+            lock (Lock)
             {
-                List<ReceiptText> Comments=null;
-                if(pR?.ReceiptComments?.Count()>0)
-                  Comments = pR.ReceiptComments.Select(r => new ReceiptText() { Text = r, RenderType = RenderAs.Text }).ToList();
-                var d = GetReceiptViewModel(pR);
-                lock (Lock)
-                {
-                    if (pR.TypeReceipt == eTypeReceipt.Sale) FiscalNumber = Fp700.PrintReceipt(d, Comments);
-                    else
-                        FiscalNumber = Fp700.ReturnReceipt(d);
-                }
-                pR.NumberReceipt = FiscalNumber;
-                return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, TypeRRO = "RRO_FP700", FiscalNumber = FiscalNumber, SUM = pR.SumReceipt-pR.SumBonus, };
+                if (pR.TypeReceipt == eTypeReceipt.Sale) FiscalNumber = Fp700.PrintReceipt(d, Comments);
+                else
+                    FiscalNumber = Fp700.ReturnReceipt(d);
             }
-            catch (Exception e)            
-            {
-                return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, TypeRRO = "RRO_FP700", CodeError = -1, Error = e.Message };
-            }       
-  
+            pR.NumberReceipt = FiscalNumber;
+            return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, TypeRRO = Type.ToString(), FiscalNumber = FiscalNumber, SUM = pR.SumReceipt - pR.SumBonus, };
         }
 
 
@@ -181,52 +143,43 @@ namespace Front.Equipments
 
         public override bool PeriodZReport(DateTime pBegin, DateTime pEnd, bool IsFull = true)
         {
-            try
+            lock (Lock)
             {
-                lock (Lock)
-                {
-                    return Fp700.FullReportByDate(pBegin, pEnd);
-                }
+                return Fp700.FullReportByDate(pBegin, pEnd);
             }
-            catch(Exception e)
-            {
-                return false;
-            }
+
         }
 
         public override LogRRO PrintNoFiscalReceipt(IEnumerable<string> pR)
         {
-            try
+            List<ReceiptText> d = pR.Select(el => new ReceiptText() { Text = el.StartsWith("QR=>") ? el.SubString(4) : el, RenderType = el.StartsWith("QR=>") ? RenderAs.QR : RenderAs.Text }).ToList();
+            lock (Lock)
             {
-                List<ReceiptText> d = pR.Select(el => new ReceiptText() { Text = el.StartsWith("QR=>") ? el.SubString(4) : el, RenderType = el.StartsWith("QR=>") ? RenderAs.QR : RenderAs.Text }).ToList();
-                lock (Lock)
-                {
-                    Fp700.PrintSeviceReceipt(d);
-                }
-                return new LogRRO(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace }) { TypeOperation = eTypeOperation.NoFiscalReceipt, TypeRRO = "RRO_FP700",JSON=pR.ToJSON() };
+                Fp700.PrintSeviceReceipt(d);
             }
-            catch (Exception e)
-            {
-                return new LogRRO(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace }) { TypeOperation = eTypeOperation.NoFiscalReceipt, TypeRRO = "RRO_FP700", CodeError = -1, Error = e.Message };
-            }
+            return new LogRRO(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace }) { TypeOperation = eTypeOperation.NoFiscalReceipt, TypeRRO = Type.ToString(), JSON = pR.ToJSON() };
         }
 
-        public override StatusEquipment TestDevice() {
+        public override StatusEquipment TestDevice()
+        {
             try
             {
                 DeviceConnectionStatus res;
                 lock (Lock)
                 {
                     res = Fp700.TestDeviceSync();
+                    State = eStateEquipment.On;
                 }
                 return new StatusEquipment() { TextState = res.ToString() };
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
-                return new StatusEquipment() { State= -1, TextState = e.Message};
+                State = eStateEquipment.Error;
+                return new StatusEquipment() { State = -1, TextState = e.Message };
             }
         }
-        
-        public override string GetDeviceInfo() 
+
+        public override string GetDeviceInfo()
         {
             try
             {
@@ -237,7 +190,7 @@ namespace Front.Equipments
             }
             catch (Exception e)
             {
-                return  e.Message ;
+                return e.Message;
             }
         }
 
@@ -245,8 +198,8 @@ namespace Front.Equipments
         {
             if (pRW != null && pRW.Count() > 0)
             {
-               var xx= GetReceiptItem(pRW,true);
-                
+                var xx = GetReceiptItem(pRW, true);
+
                 lock (Lock)
                 {
                     Fp700.SetupArticleTable(xx);
@@ -258,17 +211,10 @@ namespace Front.Equipments
 
         public override string GetTextLastReceipt()
         {
-            try
+            lock (Lock)
             {
-                lock (Lock)
-                {
-                    var r = Fp700.GetLastReceiptNumber();
-                    return Fp700.KSEFGetReceipt(r);
-                }
-            }
-            catch (Exception e)
-            {
-                return e.Message;
+                var r = Fp700.GetLastReceiptNumber();
+                return Fp700.KSEFGetReceipt(r);
             }
         }
 
@@ -276,7 +222,7 @@ namespace Front.Equipments
         {
             if (receiptMID == null)
                 return null;
-       
+
             var receipt = new Receipt()
             {
                 Id = receiptMID.ReceiptId,
@@ -291,7 +237,7 @@ namespace Front.Equipments
                 CustomerId = new Client(receiptMID.CodeClient).ClientId,
                 CreatedAt = receiptMID.DateCreate,
                 UpdatedAt = receiptMID.DateReceipt,
-                
+
                 //ReceiptItems=
                 //Customer /// !!!TMP Модель клієнта
                 //PaymentInfo
@@ -313,17 +259,17 @@ namespace Front.Equipments
                 Res.ReceiptEvents = receiptMID.ReceiptEvent.Select(r => GetReceiptEvent(r)).ToList();
             Res.Customer = GetCustomerViewModelByClient(receiptMID.Client);
             Res.Cashier = receiptMID.NameCashier;
-           // if (pIsDetail) !!!!TMP
-           //  Bl.GenQRAsync(receiptMID.Wares);
+            // if (pIsDetail) !!!!TMP
+            //  Bl.GenQRAsync(receiptMID.Wares);
             return Res;
         }
 
-    
+
         private List<ReceiptItem> GetReceiptItem(IEnumerable<ReceiptWares> res, bool IsDetail = false)
         {
             var Res = new List<ReceiptItem>();
             foreach (var el in res)
-            {                
+            {
                 decimal PromotionQuantity = 0;
                 IEnumerable<WaresReceiptPromotion> PromotionPrice = null;
 
@@ -346,7 +292,7 @@ namespace Front.Equipments
                         el.SumDiscount = QuantityDiscount * (el.Price - SumDiscount / QuantityDiscount);
                         el.ReceiptWaresPromotions = OtherPromotion;
                         el.Quantity = AllQuantity - PromotionQuantity;
-                        var PVM = this.GetProductViewModel(el);
+                        var PVM = GetProductViewModel(el);
                         Res.Add(PVM.ToReceiptItem());
                     }
                     el.SumDiscount = 0;
@@ -365,15 +311,15 @@ namespace Front.Equipments
                             else
                             {
                                 c.Quantity = FullQuantity;
-                                FullQuantity = 0;                                
+                                FullQuantity = 0;
                             }
-                            
+
                             c.Price = p.Price;
                             c.PriceDealer = p.Price;
                             c.Order = i++;
                             if (c.Quantity > 0)
                             {
-                                var PVM = this.GetProductViewModel(c);
+                                var PVM = GetProductViewModel(c);
                                 if (PVM.Excises == null)
                                     PVM.Excises = new();
                                 Res.Add(PVM.ToReceiptItem());
@@ -383,7 +329,7 @@ namespace Front.Equipments
                 }
                 else
                 {
-                    var PVM = this.GetProductViewModel(el);
+                    var PVM = GetProductViewModel(el);
                     if (PVM.Excises == null)
                         PVM.Excises = new();
                     Res.Add(PVM.ToReceiptItem());
@@ -499,7 +445,7 @@ namespace Front.Equipments
                                                            //receiptWares.SumDiscount > 0 ? receiptWares.SumDiscount : 0,
                                                            //Global.RoundDown(receiptWares.SumDiscount>0 ? receiptWares.SumDiscount : (receiptWares.PriceDealer > receiptWares.Price ? (receiptWares.PriceDealer * receiptWares.Quantity - receiptWares.Sum):0)),
                 WeightCategory = 2, //вимірювання Похибки в відсотках,2 в грамах
-                Weight = (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity*1000m) : (receiptWares.WeightBrutto == 0m ? 100000 : Convert.ToDouble(receiptWares.WeightBrutto))),
+                Weight = (receiptWares.IsWeight ? Convert.ToDouble(receiptWares.Quantity * 1000m) : (receiptWares.WeightBrutto == 0m ? 100000 : Convert.ToDouble(receiptWares.WeightBrutto))),
                 DeltaWeight = Convert.ToDouble(receiptWares.WeightDelta) + Convert.ToDouble(Global.GetCoefDeltaWeight((receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto)) * (receiptWares.IsWeight ? receiptWares.Quantity : receiptWares.WeightBrutto)),
                 AdditionalWeights = LWI,
                 ProductWeightType = receiptWares.IsWeight ? ProductWeightType.ByWeight : ProductWeightType.ByBarcode,
@@ -570,19 +516,19 @@ namespace Front.Equipments.FP700
         private readonly Timer _packageBufferTimer;
         private const string ReportDateFormat = "ddMMyy";
 
-        private string _port => this._configuration["Devices:Fp700:Port"];
+        private string _port => _configuration["Devices:Fp700:Port"];
 
-        private int _baudRate => this._configuration.GetValue<int>("Devices:Fp700:BaudRate");
+        private int _baudRate => _configuration.GetValue<int>("Devices:Fp700:BaudRate");
 
-        private int _tillNumber => this._configuration.GetValue<int>("Devices:Fp700:TillNumber");
+        private int _tillNumber => _configuration.GetValue<int>("Devices:Fp700:TillNumber");
 
         private int _operatorCode => 1;
 
-        private string _operatorPassword => this._configuration["Devices:Fp700:OperatorPassword"];
+        private string _operatorPassword => _configuration["Devices:Fp700:OperatorPassword"];
 
-        private string _adminPassword => this._configuration["Devices:Fp700:AdminPassword"];
+        private string _adminPassword => _configuration["Devices:Fp700:AdminPassword"];
 
-        private int _maxItemLength => this._configuration.GetValue<int>("Devices:Fp700:MaxItemLength");
+        private int _maxItemLength => _configuration.GetValue<int>("Devices:Fp700:MaxItemLength");
 
         public bool IsZReportAlreadyDone { get; private set; }
 
@@ -594,7 +540,7 @@ namespace Front.Equipments.FP700
         {
             get
             {
-                SerialPortStreamWrapper serialDevice = this._serialDevice;
+                SerialPortStreamWrapper serialDevice = _serialDevice;
                 return serialDevice != null && serialDevice.IsOpen;
             }
         }
@@ -605,26 +551,26 @@ namespace Front.Equipments.FP700
           ILogger<Fp700> logger = null,
           PrinterUtils printerUtils = null)
         {
-            this._fp700DataController = fp700DataController;
-            this._configuration = configuration;
-            this._logger = logger;
-            this._printerUtils = printerUtils;
-            this._commandsCallbacks = new Dictionary<Command, Action<string>>();
-            this._currentPrinterStatus = new PrinterStatus();
-            SerialPortStreamWrapper portStreamWrapper = new SerialPortStreamWrapper(this._port, this._baudRate, onReceivedData: new Func<byte[], bool>(this.OnDataReceived));
+            _fp700DataController = fp700DataController;
+            _configuration = configuration;
+            _logger = logger;
+            _printerUtils = printerUtils;
+            _commandsCallbacks = new Dictionary<Command, Action<string>>();
+            _currentPrinterStatus = new PrinterStatus();
+            SerialPortStreamWrapper portStreamWrapper = new SerialPortStreamWrapper(_port, _baudRate, onReceivedData: new Func<byte[], bool>(OnDataReceived));
             portStreamWrapper.Encoding = Encoding.GetEncoding(1251);
-            this._serialDevice = portStreamWrapper;
-            this._packageBufferTimer = new Timer();
-            this._packageBufferTimer.Elapsed += new ElapsedEventHandler(this.OnTimedEvent);
-            this._packageBufferTimer.Interval = 5000.0;
-            this._packageBufferTimer.Enabled = true;
+            _serialDevice = portStreamWrapper;
+            _packageBufferTimer = new Timer();
+            _packageBufferTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+            _packageBufferTimer.Interval = 5000.0;
+            _packageBufferTimer.Enabled = true;
         }
 
         private void OnTimedEvent(object sender, ElapsedEventArgs e)
         {
-            if (this._packageBuffer.Count > 0)
-                this._packageBuffer.Clear();
-            this._packageBufferTimer.Stop();
+            if (_packageBuffer.Count > 0)
+                _packageBuffer.Clear();
+            _packageBufferTimer.Stop();
         }
 
         private void OnZReportTimedEvent(object sender, ElapsedEventArgs e)
@@ -635,12 +581,12 @@ namespace Front.Equipments.FP700
         {
             try
             {
-                if (this._serialDevice.PortName == null || this._serialDevice.BaudRate == 0)
+                if (_serialDevice.PortName == null || _serialDevice.BaudRate == 0)
                     return DeviceConnectionStatus.InitializationError;
-                ILogger<Fp700> logger = this._logger;
+                ILogger<Fp700> logger = _logger;
                 if (logger != null)
                     logger.LogDebug("Fp700 init started");
-                Action<DeviceLog> onDeviceWarning1 = this.OnDeviceWarning;
+                Action<DeviceLog> onDeviceWarning1 = OnDeviceWarning;
                 if (onDeviceWarning1 != null)
                 {
                     FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
@@ -648,9 +594,9 @@ namespace Front.Equipments.FP700
                     printerDeviceLog.Message = "[FP700] - Start Initialization";
                     onDeviceWarning1((DeviceLog)printerDeviceLog);
                 }
-                this.CloseIfOpened();
-                this._serialDevice.Open();
-                Action<DeviceLog> onDeviceWarning2 = this.OnDeviceWarning;
+                CloseIfOpened();
+                _serialDevice.Open();
+                Action<DeviceLog> onDeviceWarning2 = OnDeviceWarning;
                 if (onDeviceWarning2 != null)
                 {
                     FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
@@ -658,8 +604,8 @@ namespace Front.Equipments.FP700
                     printerDeviceLog.Message = "[FP700] - Get info about printer";
                     onDeviceWarning2((DeviceLog)printerDeviceLog);
                 }
-                string infoSync = this.GetInfoSync();
-                Action<DeviceLog> onDeviceWarning3 = this.OnDeviceWarning;
+                string infoSync = GetInfoSync();
+                Action<DeviceLog> onDeviceWarning3 = OnDeviceWarning;
                 if (onDeviceWarning3 != null)
                 {
                     FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
@@ -669,7 +615,7 @@ namespace Front.Equipments.FP700
                 }
                 if (string.IsNullOrEmpty(infoSync))
                 {
-                    Action<DeviceLog> onDeviceWarning4 = this.OnDeviceWarning;
+                    Action<DeviceLog> onDeviceWarning4 = OnDeviceWarning;
                     if (onDeviceWarning4 != null)
                     {
                         FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
@@ -679,10 +625,10 @@ namespace Front.Equipments.FP700
                     }
                     return DeviceConnectionStatus.InitializationError;
                 }
-                int num = this.IsZReportDone() ? 1 : 0;
+                int num = IsZReportDone() ? 1 : 0;
                 if (num == 0)
                 {
-                    Action<DeviceLog> onDeviceWarning5 = this.OnDeviceWarning;
+                    Action<DeviceLog> onDeviceWarning5 = OnDeviceWarning;
                     if (onDeviceWarning5 != null)
                     {
                         FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
@@ -691,15 +637,15 @@ namespace Front.Equipments.FP700
                         onDeviceWarning5((DeviceLog)printerDeviceLog);
                     }
                 }
-                this.ClearDisplay();
-                return (num & (this.OnSynchronizeWaitCommandResult(Command.PaperCut) ? 1 : 0)) != 0 ? DeviceConnectionStatus.Enabled : DeviceConnectionStatus.InitializationError;
+                ClearDisplay();
+                return (num & (OnSynchronizeWaitCommandResult(Command.PaperCut) ? 1 : 0)) != 0 ? DeviceConnectionStatus.Enabled : DeviceConnectionStatus.InitializationError;
             }
             catch (Exception ex)
             {
-                ILogger<Fp700> logger = this._logger;
+                ILogger<Fp700> logger = _logger;
                 if (logger != null)
                     logger.LogError(ex, ex.Message);
-                Action<DeviceLog> onDeviceWarning = this.OnDeviceWarning;
+                Action<DeviceLog> onDeviceWarning = OnDeviceWarning;
                 if (onDeviceWarning != null)
                 {
                     FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
@@ -715,21 +661,21 @@ namespace Front.Equipments.FP700
         {
             try
             {
-                DiagnosticInfo diagnosticInfo = this.GetDiagnosticInfo();
-                DocumentNumbers lastNumbers = this.GetLastNumbers();
+                DiagnosticInfo diagnosticInfo = GetDiagnosticInfo();
+                DocumentNumbers lastNumbers = GetLastNumbers();
                 if (diagnosticInfo == null || lastNumbers == null)
                     throw new Exception("Fp700 getInfo error");
-                return "" + "Model: " + diagnosticInfo.Model + "\n" + "SoftVersion: " + diagnosticInfo.SoftVersion + "\n" + string.Format("SoftReleaseDate: {0}\n", (object)diagnosticInfo.SoftReleaseDate) + "SerialNumber: " + diagnosticInfo.SerialNumber + "\n" + "RegistrationNumber: " + diagnosticInfo.FiscalNumber + "\n" + string.Format("BaudRate: {0}\n", (object)this._serialDevice.BaudRate) + "ComPort: " + this._serialDevice.PortName + "\n" + "LastDocumentNumber: " + lastNumbers.LastDocumentNumber + "\n" + "LastReceiptNumber: " + lastNumbers.LastFiscalDocumentNumber + "\n" + "LastZReportNumber: " + this.GetLastZReportNumber() + "\n" + string.Format("IsZReportDone: {0}\n", (object)this.IsZReportDone()) + string.Format("CurentTime: {0}\n", (object)(this.GetCurrentFiscalPrinterDate() ?? DateTime.MinValue));
+                return "" + "Model: " + diagnosticInfo.Model + "\n" + "SoftVersion: " + diagnosticInfo.SoftVersion + "\n" + string.Format("SoftReleaseDate: {0}\n", (object)diagnosticInfo.SoftReleaseDate) + "SerialNumber: " + diagnosticInfo.SerialNumber + "\n" + "RegistrationNumber: " + diagnosticInfo.FiscalNumber + "\n" + string.Format("BaudRate: {0}\n", (object)_serialDevice.BaudRate) + "ComPort: " + _serialDevice.PortName + "\n" + "LastDocumentNumber: " + lastNumbers.LastDocumentNumber + "\n" + "LastReceiptNumber: " + lastNumbers.LastFiscalDocumentNumber + "\n" + "LastZReportNumber: " + GetLastZReportNumber() + "\n" + string.Format("IsZReportDone: {0}\n", (object)IsZReportDone()) + string.Format("CurentTime: {0}\n", (object)(GetCurrentFiscalPrinterDate() ?? DateTime.MinValue));
             }
             catch (Exception ex)
             {
-                ILogger<Fp700> logger1 = this._logger;
+                ILogger<Fp700> logger1 = _logger;
                 if (logger1 != null)
                     logger1.LogDebug("Fp700 getInfo error");
-                ILogger<Fp700> logger2 = this._logger;
+                ILogger<Fp700> logger2 = _logger;
                 if (logger2 != null)
                     logger2.LogError(ex, ex.Message);
-                Action<DeviceLog> onDeviceWarning = this.OnDeviceWarning;
+                Action<DeviceLog> onDeviceWarning = OnDeviceWarning;
                 if (onDeviceWarning != null)
                 {
                     FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
@@ -741,39 +687,39 @@ namespace Front.Equipments.FP700
             }
         }
 
-        public Task<string> GetInfo() => Task.Run<string>((Func<string>)(() => this.GetInfoSync()));
+        public Task<string> GetInfo() => Task.Run<string>((Func<string>)(() => GetInfoSync()));
 
         public DeviceConnectionStatus GetDeviceStatusSync()
         {
             try
             {
-                ILogger<Fp700> logger1 = this._logger;
+                ILogger<Fp700> logger1 = _logger;
                 if (logger1 != null)
                     logger1.LogDebug("Fp700 init started");
-                this.CloseIfOpened();
-                ILogger<Fp700> logger2 = this._logger;
+                CloseIfOpened();
+                ILogger<Fp700> logger2 = _logger;
                 if (logger2 != null)
-                    logger2.LogDebug("Fp700 PORT " + this._serialDevice.PortName);
-                ILogger<Fp700> logger3 = this._logger;
+                    logger2.LogDebug("Fp700 PORT " + _serialDevice.PortName);
+                ILogger<Fp700> logger3 = _logger;
                 if (logger3 != null)
-                    logger3.LogDebug(string.Format("Fp700 BAUD {0}", (object)this._serialDevice.BaudRate));
-                if (this._serialDevice.PortName == null || this._serialDevice.BaudRate == 0)
+                    logger3.LogDebug(string.Format("Fp700 BAUD {0}", (object)_serialDevice.BaudRate));
+                if (_serialDevice.PortName == null || _serialDevice.BaudRate == 0)
                     return DeviceConnectionStatus.InitializationError;
-                this._serialDevice.Open();
-                ILogger<Fp700> logger4 = this._logger;
+                _serialDevice.Open();
+                ILogger<Fp700> logger4 = _logger;
                 if (logger4 != null)
                     logger4.LogDebug("Fp700 after open");
-                return this.GetDiagnosticInfo() == null ? DeviceConnectionStatus.NotConnected : DeviceConnectionStatus.Enabled;
+                return GetDiagnosticInfo() == null ? DeviceConnectionStatus.NotConnected : DeviceConnectionStatus.Enabled;
             }
             catch (Exception ex)
             {
-                ILogger<Fp700> logger5 = this._logger;
+                ILogger<Fp700> logger5 = _logger;
                 if (logger5 != null)
                     logger5.LogDebug("Fp700 open error");
-                ILogger<Fp700> logger6 = this._logger;
+                ILogger<Fp700> logger6 = _logger;
                 if (logger6 != null)
                     logger6.LogError(ex, ex.Message);
-                Action<DeviceLog> onDeviceWarning = this.OnDeviceWarning;
+                Action<DeviceLog> onDeviceWarning = OnDeviceWarning;
                 if (onDeviceWarning != null)
                 {
                     FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
@@ -785,34 +731,34 @@ namespace Front.Equipments.FP700
             }
         }
 
-        public Task<DeviceConnectionStatus> GetDeviceStatus() => Task.Run<DeviceConnectionStatus>((Func<DeviceConnectionStatus>)(() => this.GetDeviceStatusSync()));
+        public Task<DeviceConnectionStatus> GetDeviceStatus() => Task.Run<DeviceConnectionStatus>((Func<DeviceConnectionStatus>)(() => GetDeviceStatusSync()));
 
         public DeviceConnectionStatus TestDeviceSync()
         {
             try
             {
-                this._hasCriticalError = false;
-                this.ObliterateFiscalReceipt();
-                if (!this.ReopenPort())
+                _hasCriticalError = false;
+                ObliterateFiscalReceipt();
+                if (!ReopenPort())
                     return DeviceConnectionStatus.InitializationError;
-                ILogger<Fp700> logger = this._logger;
+                ILogger<Fp700> logger = _logger;
                 if (logger != null)
                     logger.LogDebug("Fp700 after open");
-                this.ClearDisplay();
-                this.IsZReportDone();
-                if (this.SendPackage(Command.PrintDiagnosticInformation))
+                ClearDisplay();
+                IsZReportDone();
+                if (SendPackage(Command.PrintDiagnosticInformation))
                     return DeviceConnectionStatus.Enabled;
-                return this._serialDevice.IsOpen ? DeviceConnectionStatus.InitializationError : DeviceConnectionStatus.NotConnected;
+                return _serialDevice.IsOpen ? DeviceConnectionStatus.InitializationError : DeviceConnectionStatus.NotConnected;
             }
             catch (Exception ex)
             {
-                ILogger<Fp700> logger1 = this._logger;
+                ILogger<Fp700> logger1 = _logger;
                 if (logger1 != null)
                     logger1.LogDebug("Fp700 open error");
-                ILogger<Fp700> logger2 = this._logger;
+                ILogger<Fp700> logger2 = _logger;
                 if (logger2 != null)
                     logger2.LogError(ex, ex.Message);
-                Action<DeviceLog> onDeviceWarning = this.OnDeviceWarning;
+                Action<DeviceLog> onDeviceWarning = OnDeviceWarning;
                 if (onDeviceWarning != null)
                 {
                     FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
@@ -826,52 +772,52 @@ namespace Front.Equipments.FP700
 
         private bool ReopenPort()
         {
-            ILogger<Fp700> logger1 = this._logger;
+            ILogger<Fp700> logger1 = _logger;
             if (logger1 != null)
                 logger1.LogDebug("Fp700 init started");
-            this.CloseIfOpened();
-            ILogger<Fp700> logger2 = this._logger;
+            CloseIfOpened();
+            ILogger<Fp700> logger2 = _logger;
             if (logger2 != null)
-                logger2.LogDebug("Fp700 PORT " + this._serialDevice.PortName);
-            ILogger<Fp700> logger3 = this._logger;
+                logger2.LogDebug("Fp700 PORT " + _serialDevice.PortName);
+            ILogger<Fp700> logger3 = _logger;
             if (logger3 != null)
-                logger3.LogDebug(string.Format("Fp700 BAUD {0}", (object)this._serialDevice.BaudRate));
-            if (this._serialDevice.PortName == null || this._serialDevice.BaudRate == 0)
+                logger3.LogDebug(string.Format("Fp700 BAUD {0}", (object)_serialDevice.BaudRate));
+            if (_serialDevice.PortName == null || _serialDevice.BaudRate == 0)
                 return false;
-            this._serialDevice.Open();
-            this._isReady = true;
-            this._isError = false;
-            this._isWaiting = false;
+            _serialDevice.Open();
+            _isReady = true;
+            _isError = false;
+            _isWaiting = false;
             return true;
         }
 
-        public Task<DeviceConnectionStatus> TestDevice() => Task.Run<DeviceConnectionStatus>(new Func<DeviceConnectionStatus>(this.TestDeviceSync));
+        public Task<DeviceConnectionStatus> TestDevice() => Task.Run<DeviceConnectionStatus>(new Func<DeviceConnectionStatus>(TestDeviceSync));
 
-        public string PrintReceipt(ReceiptViewModel receipt, List<ReceiptText> Comments=null)
+        public string PrintReceipt(ReceiptViewModel receipt, List<ReceiptText> Comments = null)
         {
-            this.ObliterateFiscalReceipt();
-            string s = this.GetLastReceiptNumber();
-            
-                _logger?.LogDebug("{START_PRINTING}");
-                _logger?.LogDebug("{LAST_RECEIPTNUMBER}" + s);
+            ObliterateFiscalReceipt();
+            string s = GetLastReceiptNumber();
+
+            _logger?.LogDebug("{START_PRINTING}");
+            _logger?.LogDebug("{LAST_RECEIPTNUMBER}" + s);
             if (string.IsNullOrEmpty(s))
                 s = "0";
             int result1;
             int.TryParse(s, out result1);
-            this.OpenReceipt(receipt);
-            if(Comments!=null && Comments.Count()>0)
+            OpenReceipt(receipt);
+            if (Comments != null && Comments.Count() > 0)
                 PrintFiscalComments(Comments);
-            this.FillUpReceiptItems(receipt.ReceiptItems);
-            if (!this.PayReceipt(receipt))
+            FillUpReceiptItems(receipt.ReceiptItems);
+            if (!PayReceipt(receipt))
             {
-                Action<IFiscalPrinterResponse> fiscalPrinterResponse = this.OnFiscalPrinterResponse;
+                Action<IFiscalPrinterResponse> fiscalPrinterResponse = OnFiscalPrinterResponse;
                 if (fiscalPrinterResponse != null)
                     fiscalPrinterResponse((IFiscalPrinterResponse)new FiscalPrinterError()
                     {
                         Text = "Check was not printed",
                         ErrorCode = FiscalPrinterErrorEnum.CheckingError
                     });
-                Action<DeviceLog> onDeviceWarning = this.OnDeviceWarning;
+                Action<DeviceLog> onDeviceWarning = OnDeviceWarning;
                 if (onDeviceWarning != null)
                 {
                     FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
@@ -880,17 +826,17 @@ namespace Front.Equipments.FP700
                     onDeviceWarning((DeviceLog)printerDeviceLog);
                 }
             }
-            this.CloseReceipt(receipt);
-            this.ClearDisplay();
+            CloseReceipt(receipt);
+            ClearDisplay();
             int result2;
-            if (!int.TryParse(this.GetLastReceiptNumber(), out result2))
+            if (!int.TryParse(GetLastReceiptNumber(), out result2))
                 return (string)null;
             _logger?.LogDebug(string.Format("[ FP700 ] newLastReceipt = {0} / lastReceipt = {1}", (object)result2, (object)result1));
             string str = result2 > result1 ? result2.ToString() : (string)null;
             if (str != null)
                 return str;
-            this.ObliterateFiscalReceipt();
-           // var rrrrr=KSEFGetReceipt(str);
+            ObliterateFiscalReceipt();
+            // var rrrrr=KSEFGetReceipt(str);
             return str;
         }
 
@@ -901,17 +847,17 @@ namespace Front.Equipments.FP700
                 string str = receipt.Cashier;
                 if (str.Length >= 24)
                     str = str.Remove(23);
-                this.OnSynchronizeWaitCommandResult(Command.SetOperatorName, string.Format("{0},{1},{2}", (object)this._operatorCode, (object)this._operatorPassword, (object)str));
+                OnSynchronizeWaitCommandResult(Command.SetOperatorName, string.Format("{0},{1},{2}", (object)_operatorCode, (object)_operatorPassword, (object)str));
             }
-            this.ClearDisplay();
-            this.OnSynchronizeWaitCommandResult(Command.OpenFiscalReceipt, string.Format("{0},{1},{2}", (object)this._operatorCode, (object)this._operatorPassword, (object)this._tillNumber), (Action<string>)(res => Console.WriteLine(res)));
+            ClearDisplay();
+            OnSynchronizeWaitCommandResult(Command.OpenFiscalReceipt, string.Format("{0},{1},{2}", (object)_operatorCode, (object)_operatorPassword, (object)_tillNumber), (Action<string>)(res => Console.WriteLine(res)));
             return true;
         }
 
         public bool FillUpReceiptItems(List<ReceiptItem> receiptItems)
         {
-            receiptItems = this.UngroupByExcise(receiptItems);
-            List<ProductArticle> productArticleList = receiptItems != null && receiptItems.Count != 0 ? this.SetupArticleTable(receiptItems) : throw new Exception("Cannot register clear receipt items");
+            receiptItems = UngroupByExcise(receiptItems);
+            List<ProductArticle> productArticleList = receiptItems != null && receiptItems.Count != 0 ? SetupArticleTable(receiptItems) : throw new Exception("Cannot register clear receipt items");
             for (int index = 0; index < productArticleList.Count; ++index)
             {
                 ProductArticle productArticle = productArticleList[index];
@@ -943,9 +889,9 @@ namespace Front.Equipments.FP700
                     data = data + "&" + receiptItem.ProductBarcode;
                 if (receiptItem.Excises != null && receiptItem.Excises.Count == 1 && !string.IsNullOrWhiteSpace(receiptItem.Excises[0]))
                     data = data + "!" + receiptItem.Excises[0];
-                int num2 = this.OnSynchronizeWaitCommandResult(Command.RegisterProductInReceiptWithDisplay, data, (Action<string>)(res => { })) ? 1 : 0;
+                int num2 = OnSynchronizeWaitCommandResult(Command.RegisterProductInReceiptWithDisplay, data, (Action<string>)(res => { })) ? 1 : 0;
                 string errCode = string.Empty;
-                this.OnSynchronizeWaitCommandResult(Command.GetLastError, onResponseCallback: ((Action<string>)(res => errCode = res)));
+                OnSynchronizeWaitCommandResult(Command.GetLastError, onResponseCallback: ((Action<string>)(res => errCode = res)));
                 _logger?.LogDebug("[ FP700 ] FillUpItemLastCode: " + errCode);
                 if (num2 == 0)
                     throw new Exception("Registed product in receipt");
@@ -958,7 +904,7 @@ namespace Front.Equipments.FP700
             foreach (ReceiptText comment in comments)
             {
                 if (!string.IsNullOrWhiteSpace(comment.Text))
-                    this.OnSynchronizeWaitCommandResult(Command.PrintFiscalComment, comment.Text);
+                    OnSynchronizeWaitCommandResult(Command.PrintFiscalComment, comment.Text);
             }
             return true;
         }
@@ -966,14 +912,14 @@ namespace Front.Equipments.FP700
         public bool PayReceipt(ReceiptViewModel receipt)
         {
             StringBuilder stringBuilder = new StringBuilder();
-            ILogger<Fp700> logger1 = this._logger;
+            ILogger<Fp700> logger1 = _logger;
             if (logger1 != null)
                 logger1.LogDebug(string.Format("[FP700] PayReceipt {0}", (object)receipt?.PaymentType));
             switch (receipt.PaymentType)
             {
                 case PaymentType.Card:
                     Decimal totalAmount = 0M;
-                    this.OnSynchronizeWaitCommandResult(Command.FiscalTransactionStatus, onResponseCallback: ((Action<string>)(res =>
+                    OnSynchronizeWaitCommandResult(Command.FiscalTransactionStatus, onResponseCallback: ((Action<string>)(res =>
                     {
                         string[] strArray = res.Split(',');
                         if (strArray.Length == 1)
@@ -1006,9 +952,9 @@ namespace Front.Equipments.FP700
             bool paySuccess = false;
             char paidCode = char.MinValue;
             int amount = 0;
-            this.OnSynchronizeWaitCommandResult(Command.PayInfoFiscalReceipt, data, (Action<string>)(res =>
+            OnSynchronizeWaitCommandResult(Command.PayInfoFiscalReceipt, data, (Action<string>)(res =>
             {
-                ILogger<Fp700> logger2 = this._logger;
+                ILogger<Fp700> logger2 = _logger;
                 if (logger2 != null)
                     logger2.LogDebug("[ FP700 ] PayInfoFiscalReceipt res = " + res);
                 paidCode = res[0];
@@ -1020,8 +966,8 @@ namespace Front.Equipments.FP700
                 if (amount == 0)
                 {
                     string errCode = string.Empty;
-                    this.OnSynchronizeWaitCommandResult(Command.GetLastError, onResponseCallback: ((Action<string>)(res => errCode = res)));
-                    ILogger<Fp700> logger3 = this._logger;
+                    OnSynchronizeWaitCommandResult(Command.GetLastError, onResponseCallback: ((Action<string>)(res => errCode = res)));
+                    ILogger<Fp700> logger3 = _logger;
                     if (logger3 != null)
                         logger3.LogDebug("[ FP700 ] GetLastError: " + errCode);
                 }
@@ -1033,7 +979,7 @@ namespace Front.Equipments.FP700
         public string CloseReceipt(ReceiptViewModel receipt)
         {
             string res = (string)null;
-            this.OnSynchronizeWaitCommandResult(Command.CloseFiscalReceipt, onResponseCallback: ((Action<string>)(response =>
+            OnSynchronizeWaitCommandResult(Command.CloseFiscalReceipt, onResponseCallback: ((Action<string>)(response =>
             {
                 if (string.IsNullOrEmpty(response))
                     return;
@@ -1042,13 +988,13 @@ namespace Front.Equipments.FP700
                     return;
                 res = strArray[3];
             })));
-            this.ClearDisplay();
+            ClearDisplay();
             return res;
         }
 
-        public void PrintDividerLine(bool shouldPrintBeforeFiscalInfo) => this.OnSynchronizeWaitCommandResult(Command.PrintDividerLine);
+        public void PrintDividerLine(bool shouldPrintBeforeFiscalInfo) => OnSynchronizeWaitCommandResult(Command.PrintDividerLine);
 
-        public bool CopyReceipt() => this.OnSynchronizeWaitCommandResult(Command.FiscalReceiptCopy, "1");
+        public bool CopyReceipt() => OnSynchronizeWaitCommandResult(Command.FiscalReceiptCopy, "1");
 
         public bool MoneyMoving(MoneyMovingModel moneyMovingModel)
         {
@@ -1063,7 +1009,7 @@ namespace Front.Equipments.FP700
                     break;
             }
             bool res = false;
-            this.OnSynchronizeWaitCommandResult(Command.ServiceCashInOut, str + moneyMovingModel.Sum.ToString((IFormatProvider)CultureInfo.InvariantCulture), (Action<string>)(response =>
+            OnSynchronizeWaitCommandResult(Command.ServiceCashInOut, str + moneyMovingModel.Sum.ToString((IFormatProvider)CultureInfo.InvariantCulture), (Action<string>)(response =>
             {
                 string[] strArray = response.Split(',');
                 if (strArray.Length < 4)
@@ -1087,21 +1033,21 @@ namespace Front.Equipments.FP700
             string str = "";
             if (endDate.HasValue)
                 str = "," + endDate.Value.ToString("ddMMyy");
-            return this.OnSynchronizeWaitCommandResult(Command.FullReportByPeriod, this._operatorPassword + "," + startDate.ToString("ddMMyy") + str);
+            return OnSynchronizeWaitCommandResult(Command.FullReportByPeriod, _operatorPassword + "," + startDate.ToString("ddMMyy") + str);
         }
 
-        public void OpenReturnReceipt(ReceiptViewModel receipt) => this.OnSynchronizeWaitCommandResult(Command.ReturnReceipt, string.Format("{0},{1},{2}", (object)this._operatorCode, (object)this._operatorPassword, (object)this._tillNumber), (Action<string>)(res => this._logger.LogDebug("[ FP700 ] ReturnReceipt res = " + res)));
+        public void OpenReturnReceipt(ReceiptViewModel receipt) => OnSynchronizeWaitCommandResult(Command.ReturnReceipt, string.Format("{0},{1},{2}", (object)_operatorCode, (object)_operatorPassword, (object)_tillNumber), (Action<string>)(res => _logger.LogDebug("[ FP700 ] ReturnReceipt res = " + res)));
 
         public string ReturnReceipt(ReceiptViewModel receipt)
         {
-            this.ObliterateFiscalReceipt();
-            List<ProductArticle> productArticleList = this.SetupArticleTable(receipt.ReceiptItems);
-            string s = this.GetLastRefundReceiptNumber();
+            ObliterateFiscalReceipt();
+            List<ProductArticle> productArticleList = SetupArticleTable(receipt.ReceiptItems);
+            string s = GetLastRefundReceiptNumber();
             if (string.IsNullOrEmpty(s))
                 s = "0";
             int result1;
             int.TryParse(s, out result1);
-            this.OpenReturnReceipt(receipt);
+            OpenReturnReceipt(receipt);
             for (int index = 0; index < productArticleList.Count; ++index)
             {
                 ProductArticle productArticle = productArticleList[index];
@@ -1112,12 +1058,12 @@ namespace Front.Equipments.FP700
                     str1 = "#" + receiptItem.ProductPrice.ToString((IFormatProvider)CultureInfo.InvariantCulture);
                 if (receiptItem.Discount != 0M)
                     str2 = ";" + (receiptItem.Discount > 0M ? "-" : "+") + receiptItem.Discount.ToString((IFormatProvider)CultureInfo.InvariantCulture);
-                this.OnSynchronizeWaitCommandResult(Command.RegisterProductInReceipt, string.Format("{0}*{1}{2}{3}", (object)productArticle.PLU, (object)receiptItem.ProductQuantity.ToString((IFormatProvider)CultureInfo.InvariantCulture), (object)str1, (object)str2), (Action<string>)(res => this._logger.LogDebug("[ FP700 ] RegisterProductInReceipt res = " + res)));
+                OnSynchronizeWaitCommandResult(Command.RegisterProductInReceipt, string.Format("{0}*{1}{2}{3}", (object)productArticle.PLU, (object)receiptItem.ProductQuantity.ToString((IFormatProvider)CultureInfo.InvariantCulture), (object)str1, (object)str2), (Action<string>)(res => _logger.LogDebug("[ FP700 ] RegisterProductInReceipt res = " + res)));
             }
-            this.PayReceipt(receipt);
-            this.OnSynchronizeWaitCommandResult(Command.CloseFiscalReceipt, onResponseCallback: ((Action<string>)(res => this._logger.LogDebug("[ FP700 ] CloseFiscalReceipt res = " + res))));
+            PayReceipt(receipt);
+            OnSynchronizeWaitCommandResult(Command.CloseFiscalReceipt, onResponseCallback: ((Action<string>)(res => _logger.LogDebug("[ FP700 ] CloseFiscalReceipt res = " + res))));
             int result2;
-            if (!int.TryParse(this.GetLastRefundReceiptNumber(), out result2))
+            if (!int.TryParse(GetLastRefundReceiptNumber(), out result2))
                 return (string)null;
             _logger?.LogDebug(string.Format("[ FP700 ] newLastReceipt = {0} / lastReceipt = {1}", (object)result2, (object)result1));
             return result2 <= result1 ? (string)null : result2.ToString();
@@ -1125,38 +1071,38 @@ namespace Front.Equipments.FP700
 
         public bool PrintSeviceReceipt(List<ReceiptText> texts)
         {
-            this.ObliterateFiscalReceipt();
-            this.ClearDisplay();
-            this.OnSynchronizeWaitCommandResult(Command.OpenNonFiscalReceipt);
+            ObliterateFiscalReceipt();
+            ClearDisplay();
+            OnSynchronizeWaitCommandResult(Command.OpenNonFiscalReceipt);
             foreach (ReceiptText text in texts)
             {
                 switch (text.RenderType)
                 {
                     case RenderAs.Text:
-                        this.OnSynchronizeWaitCommandResult(Command.PrintNonFiscalComment, text.Text);
+                        OnSynchronizeWaitCommandResult(Command.PrintNonFiscalComment, text.Text);
                         continue;
                     case RenderAs.QR:
-                        this.OnSynchronizeWaitCommandResult(Command.PrintCode, "Q," + text.Text);
+                        OnSynchronizeWaitCommandResult(Command.PrintCode, "Q," + text.Text);
                         continue;
                     default:
                         continue;
                 }
             }
-            this.OnSynchronizeWaitCommandResult(Command.CloseNonFiscalReceipt);
+            OnSynchronizeWaitCommandResult(Command.CloseNonFiscalReceipt);
             return true;
         }
 
         public bool OpenServiceReceipt()
         {
-            this.ObliterateFiscalReceipt();
-            this.ClearDisplay();
-            this.OnSynchronizeWaitCommandResult(Command.OpenNonFiscalReceipt);
+            ObliterateFiscalReceipt();
+            ClearDisplay();
+            OnSynchronizeWaitCommandResult(Command.OpenNonFiscalReceipt);
             return true;
         }
 
         public bool CloseServiceReceipt()
         {
-            this.OnSynchronizeWaitCommandResult(Command.CloseNonFiscalReceipt);
+            OnSynchronizeWaitCommandResult(Command.CloseNonFiscalReceipt);
             return true;
         }
 
@@ -1164,14 +1110,14 @@ namespace Front.Equipments.FP700
         {
             if (string.IsNullOrEmpty(text?.Text))
                 return true;
-            this.OnSynchronizeWaitCommandResult(Command.PrintNonFiscalComment, text.Text);
+            OnSynchronizeWaitCommandResult(Command.PrintNonFiscalComment, text.Text);
             return true;
         }
 
         public bool PrintServiceLines(List<ReceiptText> texts)
         {
             foreach (ReceiptText text in texts)
-                this.PrintServiceLine(text);
+                PrintServiceLine(text);
             return true;
         }
 
@@ -1179,63 +1125,63 @@ namespace Front.Equipments.FP700
         {
             if (!(configuration is Fp700ReceiptConfiguration receiptConfiguration))
                 return false;
-            this.SendPackage(Command.ReceiptDetailsPrintSetupAdditionalSettings, "0" + receiptConfiguration.HeaderLine1);
-            this.SendPackage(Command.ReceiptDetailsPrintSetupAdditionalSettings, "1" + receiptConfiguration.HeaderLine2);
-            this.SendPackage(Command.ReceiptDetailsPrintSetupAdditionalSettings, "2" + receiptConfiguration.HeaderLine3);
-            this.SendPackage(Command.ReceiptDetailsPrintSetupAdditionalSettings, "3" + receiptConfiguration.HeaderLine4);
-            this.SendPackage(Command.ReceiptDetailsPrintSetupAdditionalSettings, "4" + receiptConfiguration.HeaderLine5);
-            this.SendPackage(Command.ReceiptDetailsPrintSetupAdditionalSettings, "5" + receiptConfiguration.HeaderLine6);
-            this.SendPackage(Command.ReceiptDetailsPrintSetupAdditionalSettings, "6" + receiptConfiguration.FooterLine1);
-            this.SendPackage(Command.ReceiptDetailsPrintSetupAdditionalSettings, "7" + receiptConfiguration.FooterLine2);
-            return this.SendPackage(Command.ReceiptDetailsPrintSetupAdditionalSettings, string.Format("L{0}", (object)(receiptConfiguration.ShouldPrintLogo ? 1 : 0)));
+            SendPackage(Command.ReceiptDetailsPrintSetupAdditionalSettings, "0" + receiptConfiguration.HeaderLine1);
+            SendPackage(Command.ReceiptDetailsPrintSetupAdditionalSettings, "1" + receiptConfiguration.HeaderLine2);
+            SendPackage(Command.ReceiptDetailsPrintSetupAdditionalSettings, "2" + receiptConfiguration.HeaderLine3);
+            SendPackage(Command.ReceiptDetailsPrintSetupAdditionalSettings, "3" + receiptConfiguration.HeaderLine4);
+            SendPackage(Command.ReceiptDetailsPrintSetupAdditionalSettings, "4" + receiptConfiguration.HeaderLine5);
+            SendPackage(Command.ReceiptDetailsPrintSetupAdditionalSettings, "5" + receiptConfiguration.HeaderLine6);
+            SendPackage(Command.ReceiptDetailsPrintSetupAdditionalSettings, "6" + receiptConfiguration.FooterLine1);
+            SendPackage(Command.ReceiptDetailsPrintSetupAdditionalSettings, "7" + receiptConfiguration.FooterLine2);
+            return SendPackage(Command.ReceiptDetailsPrintSetupAdditionalSettings, string.Format("L{0}", (object)(receiptConfiguration.ShouldPrintLogo ? 1 : 0)));
         }
 
         public bool SetupPrinter() => true;
 
-        public bool SetupPaperWidth(FiscalPrinterPaperWidthEnum width) => this.OnSynchronizeWaitCommandResult(Command.ReceiptDetailsPrintSetupAdditionalSettings, "N" + (width == FiscalPrinterPaperWidthEnum.Width80mm ? "0" : "1"));
+        public bool SetupPaperWidth(FiscalPrinterPaperWidthEnum width) => OnSynchronizeWaitCommandResult(Command.ReceiptDetailsPrintSetupAdditionalSettings, "N" + (width == FiscalPrinterPaperWidthEnum.Width80mm ? "0" : "1"));
 
-        public bool SetupTime(DateTime time) => this.OnSynchronizeWaitCommandResult(Command.SetDateTime, time.ToString(this.DateFormat));
+        public bool SetupTime(DateTime time) => OnSynchronizeWaitCommandResult(Command.SetDateTime, time.ToString(DateFormat));
 
         public string XReport()
         {
             string Res = null;
-            this.ObliterateFiscalReceipt();
-             this.OnSynchronizeWaitCommandResult(Command.EveryDayReport, this._operatorPassword + ",2", ((Action<string>)(response => Res = response)));
-            
+            ObliterateFiscalReceipt();
+            OnSynchronizeWaitCommandResult(Command.EveryDayReport, _operatorPassword + ",2", ((Action<string>)(response => Res = response)));
+
             return Res;
         }
 
         public string ZReport()
         {
-            string Res = null ;
-            this.ObliterateFiscalReceipt();
-            this.OnSynchronizeWaitCommandResult(Command.EveryDayReport, this._operatorPassword + ",0", ((Action<string>)(response => Res = response)));
-            this.IsZReportAlreadyDone = true;
-            this.DeleteAllArticles();
+            string Res = null;
+            ObliterateFiscalReceipt();
+            OnSynchronizeWaitCommandResult(Command.EveryDayReport, _operatorPassword + ",0", ((Action<string>)(response => Res = response)));
+            IsZReportAlreadyDone = true;
+            DeleteAllArticles();
             return Res;
         }
 
-        public bool ArticleReport() => this.OnSynchronizeWaitCommandResult(Command.ArticleReport, string.Format("{0},{1}", (object)this._operatorPassword, (object)ArticleReportType.S));
+        public bool ArticleReport() => OnSynchronizeWaitCommandResult(Command.ArticleReport, string.Format("{0},{1}", (object)_operatorPassword, (object)ArticleReportType.S));
 
-        private void DeleteArticle(int plu) => this._fp700DataController?.DeleteArticle(plu).Wait();
+        private void DeleteArticle(int plu) => _fp700DataController?.DeleteArticle(plu).Wait();
 
-        public void DeleteAllProgrammingArticles() => this._fp700DataController?.DeleteAllArticles().Wait();
+        public void DeleteAllProgrammingArticles() => _fp700DataController?.DeleteAllArticles().Wait();
 
         public bool ObliterateFiscalReceipt()
         {
-            this.OnSynchronizeWaitCommandResult(Command.CloseNonFiscalReceipt);
-            this.OnSynchronizeWaitCommandResult(Command.ObliterateFiscalReceipt, onResponseCallback: ((Action<string>)(res => this._logger.LogDebug("[ FP700 ] ObliterateFiscalReceipt res = " + res))));
+            OnSynchronizeWaitCommandResult(Command.CloseNonFiscalReceipt);
+            OnSynchronizeWaitCommandResult(Command.ObliterateFiscalReceipt, onResponseCallback: ((Action<string>)(res => _logger.LogDebug("[ FP700 ] ObliterateFiscalReceipt res = " + res))));
             return true;
         }
 
-        public string GetLastReceiptNumber() => this.GetLastNumbers().LastDocumentNumber;
+        public string GetLastReceiptNumber() => GetLastNumbers().LastDocumentNumber;
 
-        public string GetLastRefundReceiptNumber() => this.GetLastNumbers().LastDocumentNumber;
+        public string GetLastRefundReceiptNumber() => GetLastNumbers().LastDocumentNumber;
 
         public string GetLastZReportNumber()
         {
             string result = "";
-            this.OnSynchronizeWaitCommandResult(Command.LastZReportInfo, "0", (Action<string>)(res =>
+            OnSynchronizeWaitCommandResult(Command.LastZReportInfo, "0", (Action<string>)(res =>
             {
                 if (string.IsNullOrEmpty(res))
                     return;
@@ -1250,7 +1196,7 @@ namespace Front.Equipments.FP700
         private bool IsZReportDone()
         {
             bool result = false;
-            this.OnSynchronizeWaitCommandResult(Command.ShiftInfo, onResponseCallback: ((Action<string>)(res =>
+            OnSynchronizeWaitCommandResult(Command.ShiftInfo, onResponseCallback: ((Action<string>)(res =>
             {
                 if (string.IsNullOrWhiteSpace(res))
                     return;
@@ -1271,16 +1217,16 @@ namespace Front.Equipments.FP700
                         break;
                 }
             })));
-            this.IsZReportAlreadyDone = result;
+            IsZReportAlreadyDone = result;
             return result;
         }
 
         private DocumentNumbers GetLastNumbers()
         {
             DocumentNumbers documentNumbers = new DocumentNumbers();
-            this.OnSynchronizeWaitCommandResult(Command.LastDocumentsNumbers, onResponseCallback: ((Action<string>)(res =>
+            OnSynchronizeWaitCommandResult(Command.LastDocumentsNumbers, onResponseCallback: ((Action<string>)(res =>
             {
-                ILogger<Fp700> logger = this._logger;
+                ILogger<Fp700> logger = _logger;
                 if (logger != null)
                     logger.LogDebug("FP700 [GetLastNumbers] " + res);
                 if (string.IsNullOrEmpty(res))
@@ -1291,7 +1237,7 @@ namespace Front.Equipments.FP700
                 documentNumbers.LastDocumentNumber = strArray[0];
                 documentNumbers.LastFiscalDocumentNumber = strArray[1];
                 documentNumbers.LastRefundFiscalDocumentNumber = strArray[2];
-                if(strArray.Length > 3)
+                if (strArray.Length > 3)
                     documentNumbers.GlobalDocumentNumber = strArray[3];
             })));
             return documentNumbers;
@@ -1300,15 +1246,15 @@ namespace Front.Equipments.FP700
         public DateTime? GetCurrentFiscalPrinterDate()
         {
             DateTime? currentDate = new DateTime?();
-            this.OnSynchronizeWaitCommandResult(Command.GetDateTime, onResponseCallback: ((Action<string>)(response => currentDate = new DateTime?(DateTime.ParseExact(response, this.DateFormat, (IFormatProvider)CultureInfo.InvariantCulture)))));
+            OnSynchronizeWaitCommandResult(Command.GetDateTime, onResponseCallback: ((Action<string>)(response => currentDate = new DateTime?(DateTime.ParseExact(response, DateFormat, (IFormatProvider)CultureInfo.InvariantCulture)))));
             return currentDate;
         }
 
-        private void DeleteAllArticles() => this.OnSynchronizeWaitCommandResult(Command.ArticleProgramming, "DA," + this._operatorPassword, (Action<string>)(res =>
+        private void DeleteAllArticles() => OnSynchronizeWaitCommandResult(Command.ArticleProgramming, "DA," + _operatorPassword, (Action<string>)(res =>
         {
             if (res.Trim().ToUpper().StartsWith("F"))
             {
-                ILogger<Fp700> logger = this._logger;
+                ILogger<Fp700> logger = _logger;
                 if (logger == null)
                     return;
                 logger.LogDebug("[Fp700] Error during articles deleting");
@@ -1317,7 +1263,7 @@ namespace Front.Equipments.FP700
             {
                 if (!res.Trim().ToUpper().StartsWith("P"))
                     return;
-                this._fp700DataController.DeleteAllArticles().RunAsync();
+                _fp700DataController.DeleteAllArticles().RunAsync();
             }
         }));
 
@@ -1325,11 +1271,11 @@ namespace Front.Equipments.FP700
         {
             List<ProductArticle> list = new List<ProductArticle>();
             bool isEnd = false;
-            this.OnSynchronizeWaitCommandResult(Command.ArticleProgramming, "F", (Action<string>)(res =>
+            OnSynchronizeWaitCommandResult(Command.ArticleProgramming, "F", (Action<string>)(res =>
             {
                 if (res.Trim().ToUpper().StartsWith("F"))
                 {
-                    ILogger<Fp700> logger = this._logger;
+                    ILogger<Fp700> logger = _logger;
                     if (logger != null)
                         logger.LogDebug("[Fp700] No articles in memory");
                     isEnd = true;
@@ -1338,7 +1284,7 @@ namespace Front.Equipments.FP700
                 {
                     if (!res.Trim().ToUpper().StartsWith("P"))
                         return;
-                    ILogger<Fp700> logger = this._logger;
+                    ILogger<Fp700> logger = _logger;
                     if (logger != null)
                         logger.LogDebug("[Fp700] Found first article");
                     res = res.Remove(0, 1);
@@ -1358,11 +1304,11 @@ namespace Front.Equipments.FP700
                 }
             }));
             while (!isEnd)
-                this.OnSynchronizeWaitCommandResult(Command.ArticleProgramming, "N", (Action<string>)(res =>
+                OnSynchronizeWaitCommandResult(Command.ArticleProgramming, "N", (Action<string>)(res =>
                 {
                     if (res.Trim().ToUpper().StartsWith("F"))
                     {
-                        ILogger<Fp700> logger = this._logger;
+                        ILogger<Fp700> logger = _logger;
                         if (logger != null)
                             logger.LogDebug("[Fp700] No articles in memory");
                         isEnd = true;
@@ -1371,7 +1317,7 @@ namespace Front.Equipments.FP700
                     {
                         if (!res.Trim().ToUpper().StartsWith("P"))
                             return;
-                        ILogger<Fp700> logger = this._logger;
+                        ILogger<Fp700> logger = _logger;
                         if (logger != null)
                             logger.LogDebug("[Fp700] Found first article");
                         res = res.Remove(0, 1);
@@ -1396,15 +1342,15 @@ namespace Front.Equipments.FP700
         public List<ProductArticle> SetupArticleTable(List<ReceiptItem> products)
         {
             List<ProductArticle> articles = new List<ProductArticle>();
-            int firstFreeArticle = this.FindFirstFreeArticle();
-            ILogger<Fp700> logger1 = this._logger;
+            int firstFreeArticle = FindFirstFreeArticle();
+            ILogger<Fp700> logger1 = _logger;
             if (logger1 != null)
                 logger1.LogDebug("{firstPluNumber} " + firstFreeArticle.ToString());
             foreach (ReceiptItem product1 in products)
             {
 
                 ReceiptItem product = product1;
-                Task<ProductArticle> articleById = this._fp700DataController?.GetArticleById(product.ProductId);
+                Task<ProductArticle> articleById = _fp700DataController?.GetArticleById(product.ProductId);
 
                 articleById?.Wait();
                 if (articleById?.Result == null)
@@ -1416,15 +1362,15 @@ namespace Front.Equipments.FP700
                         string str = string.Empty;
                         if (!string.IsNullOrWhiteSpace(product.Uktzed))
                             str = "^" + product.Uktzed + ",";
-                        string data = string.Format("P{0}{1},1,{2}{3},{4},", (object)product.TaxGroup, (object)number, (object)str, (object)product.ProductPrice.ToString("F2", (IFormatProvider)CultureInfo.InvariantCulture), (object)this._operatorPassword) + product.ProductName.LimitCharactersForTwoLines(this._maxItemLength, '\t');
-                        ILogger<Fp700> logger2 = this._logger;
+                        string data = string.Format("P{0}{1},1,{2}{3},{4},", (object)product.TaxGroup, (object)number, (object)str, (object)product.ProductPrice.ToString("F2", (IFormatProvider)CultureInfo.InvariantCulture), (object)_operatorPassword) + product.ProductName.LimitCharactersForTwoLines(_maxItemLength, '\t');
+                        ILogger<Fp700> logger2 = _logger;
                         if (logger2 != null)
                             logger2.LogDebug("[FP700] SetupArticleTable " + data);
-                        this.OnSynchronizeWaitCommandResult(Command.ArticleProgramming, data, (Action<string>)(res =>
+                        OnSynchronizeWaitCommandResult(Command.ArticleProgramming, data, (Action<string>)(res =>
                         {
                             if (res.Trim().ToUpper().Equals("F"))
                             {
-                                Action<DeviceLog> onDeviceWarning = this.OnDeviceWarning;
+                                Action<DeviceLog> onDeviceWarning = OnDeviceWarning;
                                 if (onDeviceWarning != null)
                                     onDeviceWarning((DeviceLog)new FiscalPrinterDeviceLog()
                                     {
@@ -1432,10 +1378,10 @@ namespace Front.Equipments.FP700
                                         Message = ("Fp700 writing article FALSE: " + res)
                                     });
                                 isSuccess = false;
-                                ILogger<Fp700> logger3 = this._logger;
+                                ILogger<Fp700> logger3 = _logger;
                                 if (logger3 != null)
                                     logger3.LogDebug("Fp700 writing article FALSE: " + res);
-                                ILogger<Fp700> logger4 = this._logger;
+                                ILogger<Fp700> logger4 = _logger;
                                 if (logger4 == null)
                                     return;
                                 logger4.LogDebug(string.Format("Product {{ Name :{0}, PLU={1},  Price={2}}}", (object)product.ProductName, (object)number, (object)product.ProductPrice));
@@ -1444,13 +1390,13 @@ namespace Front.Equipments.FP700
                             {
                                 if (!res.Trim().ToUpper().Equals("P"))
                                     return;
-                                ILogger<Fp700> logger5 = this._logger;
+                                ILogger<Fp700> logger5 = _logger;
                                 if (logger5 != null)
                                     logger5.LogDebug("Fp700 writing article TRUE: " + res);
-                                ILogger<Fp700> logger6 = this._logger;
+                                ILogger<Fp700> logger6 = _logger;
                                 if (logger6 != null)
                                     logger6.LogDebug(string.Format("PLU: {0}", (object)number));
-                                this._fp700DataController?.CreateOrUpdateArticle(product, number).Wait();
+                                _fp700DataController?.CreateOrUpdateArticle(product, number).Wait();
                                 articles.Add(new ProductArticle()
                                 {
                                     Barcode = product.ProductBarcode,
@@ -1479,11 +1425,11 @@ namespace Front.Equipments.FP700
 
         private void ClearDisplay()
         {
-            ILogger<Fp700> logger1 = this._logger;
+            ILogger<Fp700> logger1 = _logger;
             if (logger1 != null)
                 logger1.LogDebug("Fp700 clear display start");
-            this.OnSynchronizeWaitCommandResult(Command.ClearDisplay);
-            ILogger<Fp700> logger2 = this._logger;
+            OnSynchronizeWaitCommandResult(Command.ClearDisplay);
+            ILogger<Fp700> logger2 = _logger;
             if (logger2 == null)
                 return;
             logger2.LogDebug("Fp700 clear display finish");
@@ -1492,7 +1438,7 @@ namespace Front.Equipments.FP700
         private int FindFirstFreeArticle()
         {
             int firstPluNumber = 1;
-            this.OnSynchronizeWaitCommandResult(Command.ArticleProgramming, "X", (Action<string>)(response =>
+            OnSynchronizeWaitCommandResult(Command.ArticleProgramming, "X", (Action<string>)(response =>
             {
                 int startIndex = -1;
                 for (int index = 0; index < response.Length; ++index)
@@ -1514,7 +1460,7 @@ namespace Front.Equipments.FP700
         private DiagnosticInfo GetDiagnosticInfo()
         {
             DiagnosticInfo diagnosticInfo = (DiagnosticInfo)null;
-            this.OnSynchronizeWaitCommandResult(Command.DiagnosticInfo, onResponseCallback: ((Action<string>)(res =>
+            OnSynchronizeWaitCommandResult(Command.DiagnosticInfo, onResponseCallback: ((Action<string>)(res =>
             {
                 try
                 {
@@ -1541,7 +1487,7 @@ namespace Front.Equipments.FP700
                 }
                 catch (Exception ex)
                 {
-                    ILogger<Fp700> logger = this._logger;
+                    ILogger<Fp700> logger = _logger;
                     if (logger == null)
                         return;
                     logger.LogError(ex, ex.Message);
@@ -1550,13 +1496,13 @@ namespace Front.Equipments.FP700
             return diagnosticInfo;
         }
 
-        public bool CanOpenReceipt() => this.CheckModemStatus() && this.IsZReportDone();
+        public bool CanOpenReceipt() => CheckModemStatus() && IsZReportDone();
 
         private bool CheckModemStatus(bool tryToReopen = false)
         {
             bool result = false;
             bool shouldThrow = false;
-            this.OnSynchronizeWaitCommandResult(Command.StateOfDataTransmission, onResponseCallback: ((Action<string>)(res =>
+            OnSynchronizeWaitCommandResult(Command.StateOfDataTransmission, onResponseCallback: ((Action<string>)(res =>
             {
                 if (string.IsNullOrWhiteSpace(res))
                 {
@@ -1564,9 +1510,9 @@ namespace Front.Equipments.FP700
                     {
                         try
                         {
-                            if (this.ReopenPort())
+                            if (ReopenPort())
                             {
-                                result = this.CheckModemStatus(true);
+                                result = CheckModemStatus(true);
                                 return;
                             }
                             shouldThrow = true;
@@ -1596,13 +1542,13 @@ namespace Front.Equipments.FP700
           Action<Exception> onExceptionCallback = null)
         {
             bool isResultGot = false;
-            if (!StaticTimer.Wait((Func<bool>)(() => this._commandsCallbacks.ContainsKey(command)), 2))
-                this._commandsCallbacks.Remove(command);
-            this._commandsCallbacks.Add(command, (Action<string>)(response =>
+            if (!StaticTimer.Wait((Func<bool>)(() => _commandsCallbacks.ContainsKey(command)), 2))
+                _commandsCallbacks.Remove(command);
+            _commandsCallbacks.Add(command, (Action<string>)(response =>
             {
                 try
                 {
-                    ILogger<Fp700> logger = this._logger;
+                    ILogger<Fp700> logger = _logger;
                     if (logger != null)
                         logger.LogDebug(string.Format("[FP700] Response for command {0}", (object)command));
                     Action<string> action = onResponseCallback;
@@ -1619,12 +1565,12 @@ namespace Front.Equipments.FP700
                 }
                 finally
                 {
-                    this._commandsCallbacks.Remove(command);
+                    _commandsCallbacks.Remove(command);
                 }
             }));
             try
             {
-                if (!this.SendPackage(command, data))
+                if (!SendPackage(command, data))
                     return false;
                 StaticTimer.Wait((Func<bool>)(() => !isResultGot));
                 return isResultGot;
@@ -1632,51 +1578,51 @@ namespace Front.Equipments.FP700
             catch (Exception ex)
             {
                 if (ex.Message.StartsWith("FP 700 has critical error"))
-                    this._commandsCallbacks.Remove(command);
+                    _commandsCallbacks.Remove(command);
                 throw;
             }
         }
 
         public bool SendPackage(Command command, string data = "", int waitingTimeout = 10)
         {
-            ILogger<Fp700> logger1 = this._logger;
+            ILogger<Fp700> logger1 = _logger;
             if (logger1 != null)
                 logger1.LogDebug("SendPackage start");
             bool flag = command != Command.ClearDisplay && command != Command.ShiftInfo && command != Command.DiagnosticInfo && command != Command.EveryDayReport && command != Command.LastDocumentsNumbers && command != Command.ObliterateFiscalReceipt && command != Command.PaperCut && command != Command.GetDateTime && command != Command.PaperPulling && command != Command.LastZReportInfo && command != Command.PrintDiagnosticInformation;
-            if (!this.IsZReportAlreadyDone & flag)
+            if (!IsZReportAlreadyDone & flag)
                 return false;
-            if (this._hasCriticalError & flag)
-                throw new Exception("FP 700 has critical error: " + JsonConvert.SerializeObject((object)this._currentPrinterStatus));
-            if (!this._serialDevice.IsOpen)
+            if (_hasCriticalError & flag)
+                throw new Exception("FP 700 has critical error: " + JsonConvert.SerializeObject((object)_currentPrinterStatus));
+            if (!_serialDevice.IsOpen)
                 return false;
-            if (!this._isReady)
+            if (!_isReady)
             {
-                ILogger<Fp700> logger2 = this._logger;
+                ILogger<Fp700> logger2 = _logger;
                 if (logger2 != null)
                     logger2.LogDebug("SendPackage printer not ready. Start waiting");
-                this._isReady = this.WaitForReady(waitingTimeout);
-                ILogger<Fp700> logger3 = this._logger;
+                _isReady = WaitForReady(waitingTimeout);
+                ILogger<Fp700> logger3 = _logger;
                 if (logger3 != null)
                     logger3.LogDebug("SendPackage printer not ready. Waiting complete");
             }
-            if (!this._isReady)
+            if (!_isReady)
             {
-                ILogger<Fp700> logger4 = this._logger;
+                ILogger<Fp700> logger4 = _logger;
                 if (logger4 != null)
                     logger4.LogDebug("SendPackage printer not ready. Exiting");
                 return false;
             }
-            ILogger<Fp700> logger5 = this._logger;
+            ILogger<Fp700> logger5 = _logger;
             if (logger5 != null)
                 logger5.LogDebug(string.Format("SendPackage executing command start : {0}", (object)command));
-            ILogger<Fp700> logger6 = this._logger;
+            ILogger<Fp700> logger6 = _logger;
             if (logger6 != null)
                 logger6.LogDebug("SendPackage command  data: " + data);
             byte[] bytes = Encoding.Convert(Encoding.UTF8, Encoding.GetEncoding(1251), Encoding.UTF8.GetBytes(data));
-            ILogger<Fp700> logger7 = this._logger;
+            ILogger<Fp700> logger7 = _logger;
             if (logger7 != null)
                 logger7.LogDebug("SendPackage command  data converted : " + Encoding.GetEncoding(1251).GetString(bytes));
-            ILogger<Fp700> logger8 = this._logger;
+            ILogger<Fp700> logger8 = _logger;
             if (logger8 != null)
                 logger8.LogDebug("--------------------------------------------------------------------------------");
             byte[] buffer = new byte[218];
@@ -1697,15 +1643,15 @@ namespace Front.Equipments.FP700
             byte[] numArray3 = buffer;
             int index3 = num4;
             int num6 = index3 + 1;
-            int num7 = (int)(byte)this._sequenceNumber++;
+            int num7 = (int)(byte)_sequenceNumber++;
             numArray3[index3] = (byte)num7;
             byte[] numArray4 = buffer;
             int index4 = num6;
             int num8 = index4 + 1;
             int num9 = (int)(byte)command;
             numArray4[index4] = (byte)num9;
-            if (this._sequenceNumber == 100)
-                this._sequenceNumber = 90;
+            if (_sequenceNumber == 100)
+                _sequenceNumber = 90;
             for (int index5 = 0; index5 < length; ++index5)
                 buffer[num8++] = bytes[index5];
             byte[] numArray5 = buffer;
@@ -1738,10 +1684,10 @@ namespace Front.Equipments.FP700
             int index12 = num17;
             int count = index12 + 1;
             numArray10[index12] = (byte)3;
-            ((Stream)this._serialDevice).Write(buffer, 0, count);
-            ((Stream)this._serialDevice).Flush();
-            this._isReady = false;
-            ILogger<Fp700> logger9 = this._logger;
+            ((Stream)_serialDevice).Write(buffer, 0, count);
+            ((Stream)_serialDevice).Flush();
+            _isReady = false;
+            ILogger<Fp700> logger9 = _logger;
             if (logger9 != null)
                 logger9.LogDebug("SendPackage executing command complete");
             return true;
@@ -1749,53 +1695,53 @@ namespace Front.Equipments.FP700
 
         private bool OnDataReceived(byte[] data)
         {
-            this._isError = false;
+            _isError = false;
             if (data.Length == 1)
             {
                 if (data[0] == (byte)21)
                 {
-                    ILogger<Fp700> logger = this._logger;
+                    ILogger<Fp700> logger = _logger;
                     if (logger != null)
                         logger.LogDebug("OnDataReceived: Printer error occured");
-                    this._isError = true;
+                    _isError = true;
                     return false;
                 }
                 if (data[0] == (byte)22)
                 {
-                    this._isReady = false;
-                    ILogger<Fp700> logger = this._logger;
+                    _isReady = false;
+                    ILogger<Fp700> logger = _logger;
                     if (logger != null)
                         logger.LogDebug("OnDataReceived: Printer is waiting for a command");
                     return false;
                 }
             }
-            this._isReady = true;
+            _isReady = true;
             int num1 = Array.IndexOf<byte>(data, (byte)1);
             int num2 = Array.IndexOf<byte>(data, (byte)4);
             int num3 = Array.IndexOf<byte>(data, (byte)5);
             int num4 = Array.IndexOf<byte>(data, (byte)3);
             if (num1 < 0 || num2 < 0 || num3 < 0 || num4 < 0)
             {
-                this._packageBuffer.AddRange((IEnumerable<byte>)data);
-                if (!this._packageBuffer.Contains((byte)3))
+                _packageBuffer.AddRange((IEnumerable<byte>)data);
+                if (!_packageBuffer.Contains((byte)3))
                 {
-                    ILogger<Fp700> logger = this._logger;
+                    ILogger<Fp700> logger = _logger;
                     if (logger != null)
                         logger.LogDebug("OnDataReceived: Printer received part of package. Waiting more...");
-                    this._packageBufferTimer.Start();
+                    _packageBufferTimer.Start();
                     return false;
                 }
-                this._packageBufferTimer.Stop();
-                data = this._packageBuffer.ToArray();
-                this._packageBuffer.Clear();
+                _packageBufferTimer.Stop();
+                data = _packageBuffer.ToArray();
+                _packageBuffer.Clear();
                 num1 = Array.IndexOf<byte>(data, (byte)1);
                 num2 = Array.IndexOf<byte>(data, (byte)4);
                 num3 = Array.IndexOf<byte>(data, (byte)5);
                 int num5 = Array.IndexOf<byte>(data, (byte)3);
                 if (num1 < 0 || num2 < 0 || num3 < 0 || num5 < 0)
                 {
-                    this._packageBufferTimer.Start();
-                    ILogger<Fp700> logger = this._logger;
+                    _packageBufferTimer.Start();
+                    ILogger<Fp700> logger = _logger;
                     if (logger != null)
                         logger.LogDebug("OnDataReceived: Printer received invalid package.");
                     return false;
@@ -1809,7 +1755,7 @@ namespace Front.Equipments.FP700
             Buffer.BlockCopy((Array)data, num2 + 1, (Array)numArray2, 0, 6);
             byte[] dst = new byte[4];
             Buffer.BlockCopy((Array)data, num3 + 1, (Array)dst, 0, 4);
-            this.ShowStatus(cmdNumber, numArray1, (IReadOnlyList<byte>)numArray2);
+            ShowStatus(cmdNumber, numArray1, (IReadOnlyList<byte>)numArray2);
             return true;
         }
 
@@ -1821,13 +1767,13 @@ namespace Front.Equipments.FP700
                 for (int index2 = str.Length - 1; index2 >= 0; --index2)
                 {
                     if (int.Parse(str[index2].ToString()) == 1)
-                        this.GetStatusBitDescriptionBg(index1, str.Length - 1 - index2);
+                        GetStatusBitDescriptionBg(index1, str.Length - 1 - index2);
                 }
             }
             string str1 = Encoding.UTF8.GetString(Encoding.Convert(Encoding.GetEncoding(1251), Encoding.UTF8, receivedData));
-            if (!this._commandsCallbacks.ContainsKey(cmdNumber))
+            if (!_commandsCallbacks.ContainsKey(cmdNumber))
                 return;
-            Action<string> commandsCallback = this._commandsCallbacks[cmdNumber];
+            Action<string> commandsCallback = _commandsCallbacks[cmdNumber];
             if (commandsCallback == null)
                 return;
             commandsCallback(str1);
@@ -1845,26 +1791,26 @@ namespace Front.Equipments.FP700
                         {
                             case 0:
                                 bitDescriptionBg = "# Синтаксическая ошибка.";
-                                this._currentPrinterStatus.IsSyntaxError = true;
+                                _currentPrinterStatus.IsSyntaxError = true;
                                 break;
                             case 1:
                                 bitDescriptionBg = "# Недопустимая команда";
-                                this._currentPrinterStatus.IsCommandNotPermited = true;
+                                _currentPrinterStatus.IsCommandNotPermited = true;
                                 break;
                             case 2:
                                 bitDescriptionBg = "Не установлены дата/время";
-                                this._currentPrinterStatus.IsDateAndTimeNotSet = true;
+                                _currentPrinterStatus.IsDateAndTimeNotSet = true;
                                 break;
                             case 3:
                                 bitDescriptionBg = "Внешний дисплей не подключен.";
-                                this._currentPrinterStatus.IsDisplayDisconnected = true;
+                                _currentPrinterStatus.IsDisplayDisconnected = true;
                                 break;
                             case 4:
                                 bitDescriptionBg = "# SAM не от этого устройства (регистратор не персонализирован).";
                                 break;
                             case 5:
                                 bitDescriptionBg = "Общая ошибка или все ошибки, обозначенные `#`";
-                                this._currentPrinterStatus.IsCommonError = true;
+                                _currentPrinterStatus.IsCommonError = true;
                                 break;
                         }
                         break;
@@ -1888,9 +1834,9 @@ namespace Front.Equipments.FP700
                                 break;
                             case 5:
                                 bitDescriptionBg = "Крышка принтера открыта.";
-                                this._hasCriticalError = true;
-                                this._currentPrinterStatus.IsCoverOpen = true;
-                                Action<DeviceLog> onDeviceWarning1 = this.OnDeviceWarning;
+                                _hasCriticalError = true;
+                                _currentPrinterStatus.IsCoverOpen = true;
+                                Action<DeviceLog> onDeviceWarning1 = OnDeviceWarning;
                                 if (onDeviceWarning1 != null)
                                 {
                                     FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
@@ -1902,7 +1848,7 @@ namespace Front.Equipments.FP700
                                 break;
                             case 6:
                                 bitDescriptionBg = "Регистратор персонализирован";
-                                this._currentPrinterStatus.IsPrinterFiscaled = true;
+                                _currentPrinterStatus.IsPrinterFiscaled = true;
                                 break;
                         }
                         break;
@@ -1910,9 +1856,9 @@ namespace Front.Equipments.FP700
                         switch (bitIndex)
                         {
                             case 0:
-                                this._hasCriticalError = true;
+                                _hasCriticalError = true;
                                 bitDescriptionBg = "# Бумага закончилась. Если этот статус возникнет при выполнении команды, связанной с печатью, то команда будет отклонена и состояние регистратора не изменится.";
-                                Action<DeviceLog> onDeviceWarning2 = this.OnDeviceWarning;
+                                Action<DeviceLog> onDeviceWarning2 = OnDeviceWarning;
                                 if (onDeviceWarning2 != null)
                                 {
                                     FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
@@ -1924,8 +1870,8 @@ namespace Front.Equipments.FP700
                                 break;
                             case 1:
                                 bitDescriptionBg = "Заканчивается бумага";
-                                this._currentPrinterStatus.IsPaperNearEnd = true;
-                                Action<DeviceLog> onDeviceWarning3 = this.OnDeviceWarning;
+                                _currentPrinterStatus.IsPaperNearEnd = true;
+                                Action<DeviceLog> onDeviceWarning3 = OnDeviceWarning;
                                 if (onDeviceWarning3 != null)
                                 {
                                     FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
@@ -1937,8 +1883,8 @@ namespace Front.Equipments.FP700
                                 break;
                             case 2:
                                 bitDescriptionBg = "Носитель КЛЭФ заполнен (Осталось менее 1 МБ)";
-                                this._hasCriticalError = true;
-                                Action<DeviceLog> onDeviceWarning4 = this.OnDeviceWarning;
+                                _hasCriticalError = true;
+                                Action<DeviceLog> onDeviceWarning4 = OnDeviceWarning;
                                 if (onDeviceWarning4 != null)
                                 {
                                     FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
@@ -1950,7 +1896,7 @@ namespace Front.Equipments.FP700
                                 break;
                             case 3:
                                 bitDescriptionBg = "Открыт фискальный чек";
-                                this._currentPrinterStatus.IsFiscalReceiptOpen = true;
+                                _currentPrinterStatus.IsFiscalReceiptOpen = true;
                                 break;
                             case 4:
                                 bitDescriptionBg = "Носитель КЛЭФ приближается к заполнению (осталось не более 2 МБ)";
@@ -1993,10 +1939,10 @@ namespace Front.Equipments.FP700
                         switch (bitIndex)
                         {
                             case 0:
-                                this._hasCriticalError = true;
+                                _hasCriticalError = true;
                                 bitDescriptionBg = "*В фискальной памяти присутствуют ошибки";
-                                this._currentPrinterStatus.IsErrorOnWritingToFiscalMemory = true;
-                                Action<DeviceLog> onDeviceWarning5 = this.OnDeviceWarning;
+                                _currentPrinterStatus.IsErrorOnWritingToFiscalMemory = true;
+                                Action<DeviceLog> onDeviceWarning5 = OnDeviceWarning;
                                 if (onDeviceWarning5 != null)
                                 {
                                     FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
@@ -2007,10 +1953,10 @@ namespace Front.Equipments.FP700
                                 }
                                 break;
                             case 1:
-                                this._hasCriticalError = true;
+                                _hasCriticalError = true;
                                 bitDescriptionBg = "Фискальная память неработоспособна";
-                                this._currentPrinterStatus.IsCommonFiscalError = true;
-                                Action<DeviceLog> onDeviceWarning6 = this.OnDeviceWarning;
+                                _currentPrinterStatus.IsCommonFiscalError = true;
+                                Action<DeviceLog> onDeviceWarning6 = OnDeviceWarning;
                                 if (onDeviceWarning6 != null)
                                 {
                                     FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
@@ -2022,15 +1968,15 @@ namespace Front.Equipments.FP700
                                 break;
                             case 2:
                                 bitDescriptionBg = "Заводской номер запрограммирован";
-                                this._currentPrinterStatus.IsSerialNumberSet = true;
+                                _currentPrinterStatus.IsSerialNumberSet = true;
                                 break;
                             case 3:
                                 bitDescriptionBg = "Осталось менее 50 записей в фискальную память";
-                                this._currentPrinterStatus.IsRecordsLowerThanFifty = true;
+                                _currentPrinterStatus.IsRecordsLowerThanFifty = true;
                                 break;
                             case 4:
                                 bitDescriptionBg = "* Заполнение фискальной памяти.";
-                                this._currentPrinterStatus.IsFiscalMemoryFull = true;
+                                _currentPrinterStatus.IsFiscalMemoryFull = true;
                                 break;
                             case 5:
                                 bitDescriptionBg = "Все ошибки с пометкой «*» для байтов 4 и 5.";
@@ -2042,7 +1988,7 @@ namespace Front.Equipments.FP700
                         {
                             case 0:
                                 bitDescriptionBg = "* Фискальная память в режиме READONLY (`только чтение`)";
-                                this._currentPrinterStatus.IsFiscalMemoryReadOnly = true;
+                                _currentPrinterStatus.IsFiscalMemoryReadOnly = true;
                                 break;
                             case 1:
                                 bitDescriptionBg = "Последняя запись в фискальную память была неудачной";
@@ -2052,7 +1998,7 @@ namespace Front.Equipments.FP700
                                 break;
                             case 3:
                                 bitDescriptionBg = "Регистратор фискализирован";
-                                this._currentPrinterStatus.IsPrinterFiscaled = true;
+                                _currentPrinterStatus.IsPrinterFiscaled = true;
                                 break;
                             case 4:
                                 bitDescriptionBg = "Налоговые ставки запрограммирован";
@@ -2072,7 +2018,7 @@ namespace Front.Equipments.FP700
             }
             catch (Exception ex)
             {
-                ILogger<Fp700> logger = this._logger;
+                ILogger<Fp700> logger = _logger;
                 if (logger != null)
                     logger.LogDebug(ex.Message, (object)ex.StackTrace);
             }
@@ -2131,22 +2077,22 @@ namespace Front.Equipments.FP700
 
         private bool WaitForReady(int waitingTimeOut = 5)
         {
-            StaticTimer.Wait((Func<bool>)(() => !this._isReady), waitingTimeOut);
-            return this._isReady;
+            StaticTimer.Wait((Func<bool>)(() => !_isReady), waitingTimeOut);
+            return _isReady;
         }
 
         private void CloseIfOpened()
         {
-            this._serialDevice.Close();
-            if (!this._serialDevice.PortName.Equals(this._port))
-                this._serialDevice.PortName = this._port;
-            this._serialDevice.BaudRate = this._baudRate;
+            _serialDevice.Close();
+            if (!_serialDevice.PortName.Equals(_port))
+                _serialDevice.PortName = _port;
+            _serialDevice.BaudRate = _baudRate;
         }
 
         public void Dispose()
         {
-            this.CloseIfOpened();
-            ((Stream)this._serialDevice).Dispose();
+            CloseIfOpened();
+            ((Stream)_serialDevice).Dispose();
         }
 
         bool IsFinish;
@@ -2155,14 +2101,14 @@ namespace Front.Equipments.FP700
         {
             bb = new();
             string res = null;
-            this.OnSynchronizeWaitCommandResult(Command.KSEF,$"R,{pCodeReceipt}" , ResKSEF);
-            while(!IsFinish)
+            OnSynchronizeWaitCommandResult(Command.KSEF, $"R,{pCodeReceipt}", ResKSEF);
+            while (!IsFinish)
             {
-                this.OnSynchronizeWaitCommandResult(Command.KSEF, $"N", ResKSEF);
+                OnSynchronizeWaitCommandResult(Command.KSEF, $"N", ResKSEF);
             }
-            return bb.ToString() ;
+            return bb.ToString();
         }
-       
+
         void ResKSEF(string response)
         {
             if (string.IsNullOrEmpty(response))
@@ -2172,10 +2118,10 @@ namespace Front.Equipments.FP700
             else
             {
                 var b = response[0];
-                IsFinish = (b=='F');
+                IsFinish = (b == 'F');
                 bb.Append(response.Substring(2));
                 bb.Append(Environment.NewLine);
-                
+
             }
         }
 
@@ -2246,7 +2192,7 @@ namespace Front.Equipments.FP700
 
         public string GlobalDocumentNumber { get; set; }
     }
-    
+
     public class DiagnosticInfo
     {
         public string Model { get; set; }
@@ -2334,9 +2280,9 @@ namespace Front.Equipments.FP700
 
         protected SqLiteDataController(IConfiguration configuration, string tableName)
         {
-             _configuration = configuration;
+            _configuration = configuration;
             _tableName = tableName;
-            _dbFile = Path.Combine(configuration["MID:PathData"], "DB",_configuration.GetConnectionString("LocalDbConnection"));
+            _dbFile = Path.Combine(configuration["MID:PathData"], "DB", _configuration.GetConnectionString("LocalDbConnection"));
         }
 
         protected SQLiteConnection GetConnection()

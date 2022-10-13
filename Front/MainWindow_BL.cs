@@ -41,6 +41,12 @@ namespace Front
 
             EF.SetStatus += (info) =>
             {
+                if(info.IsСritical==true)
+                {
+                    LastErrorEquipment= info.TextState;
+                    SetStateView(eStateMainWindows.AdminPanel,eTypeAccess.ErrorEquipment);
+                    return;
+                }
                 var r = Dispatcher.BeginInvoke(new ThreadStart(() =>
                 {
                     PosStatus PS = info as PosStatus;
