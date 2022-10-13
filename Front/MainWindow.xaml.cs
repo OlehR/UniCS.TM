@@ -64,7 +64,6 @@ namespace Front
         public string EquipmentInfo { get; set; }
         bool _Volume = true;
         public bool Volume { get { return _Volume; } set { _Volume = value; if (s != null) s.IsSound = value; } }
-        public string ChangeSumPaymant { get; set; } = "0";
 
         public bool IsShowWeightWindows { get; set; } = false;
         //public bool IsIgnoreExciseStamp { get; set; }
@@ -492,6 +491,7 @@ namespace Front
                     CustomWindows.Visibility = Visibility.Collapsed;
                     ErrorBackground.Visibility = Visibility.Collapsed;
                     OwnBagWindows.Visibility = Visibility.Collapsed;
+                    PaymentWindow.Visibility = Visibility.Collapsed;
 
                     CaptionCustomWindows.Visibility = Visibility.Visible;
                     ImageCustomWindows.Visibility = Visibility.Visible;
@@ -616,8 +616,9 @@ namespace Front
                             break;
 
                         case eStateMainWindows.ChoicePaymentMethod:
-                            PaymentWindow.MoneySumToRound = (double)MoneySum;
-                            ChangeSumPaymant = "0";
+                            PaymentWindow.TransferAmounts((double)MoneySum);
+                            Background.Visibility = Visibility.Visible;
+                            BackgroundWares.Visibility = Visibility.Visible;
                             PaymentWindow.Visibility = Visibility.Visible;
                             break;
                         case eStateMainWindows.WaitCustomWindows:
@@ -891,14 +892,12 @@ namespace Front
         {
             EquipmentStatusInPayment.Text = "";
             //SetStateView(eStateMainWindows.ChoicePaymentMethod);
-
             if (Global.TypeWorkplace == eTypeWorkplace.СashRegister)
                 SetStateView(eStateMainWindows.ChoicePaymentMethod);
             else
             {
                 var task = Task.Run(() => PrintAndCloseReceipt());
-            }
-            //var result = task.Result;            
+            }       
         }
 
         private void ShowErrorMessage(string ErrorMessage)

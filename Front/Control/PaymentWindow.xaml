@@ -58,7 +58,8 @@
             <TextBlock Grid.Column="2" Grid.Row="0" VerticalAlignment="Top" FontSize="24">Всього (грн.):</TextBlock>
             <TextBlock Grid.Column="2" Grid.Row="0"  FontSize="24">Решта (грн.):</TextBlock>
             <TextBlock Grid.Column="3" Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="24"
-                         x:Name="CheckAmountTextBlock"  />
+                         x:Name="CheckAmountTextBlock"  Text="{Binding MoneySumToRound, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=UserControl}}" />
             <TextBlock Grid.Column="3" Grid.Row="0" HorizontalAlignment="Center"  FontSize="24" x:Name="ResMoney"></TextBlock>
             <TextBlock Grid.Column="0" Grid.Row="1" FontWeight="Bold">Сума оплати:</TextBlock>
             <TextBox Grid.Column="1" Grid.Row="1" Margin="5" FontSize="24"  x:Name="MoneySumPayTextBox"
@@ -66,7 +67,7 @@
                              />
             <Button Grid.Row="2" Grid.Column="0" Style="{StaticResource Default}"  FontSize="22" Margin="10" Click="_Cancel">
                 <StackPanel Orientation="Horizontal">
-                    <Image  Height="15" Width="15"  Source="\icons\X.png"></Image>
+                    <Image  Height="15" Width="15" Margin="10,0,0,0" Source="\icons\X.png"></Image>
                     <TextBlock FontSize="24" Text="{DynamicResource cancel}" Margin="5,0,5,0"/>
                 </StackPanel>
             </Button>
@@ -123,9 +124,24 @@
 
 
 
-            <Button Style="{StaticResource yelowButton}" Grid.Column="3"  Grid.Row="2"  FontSize="22"
+            <Button  Grid.Column="3"  Grid.Row="2"  FontSize="22"
                             Margin="10" Click="_ButtonPayment">
                 <TextBlock FontSize="28" Text="Готівка"/>
+                <Button.Style>
+                    <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                        <Setter Property="IsEnabled" Value="True"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsCashPayment, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=UserControl}}" Value="True">
+                                <Setter Property="IsEnabled" Value="True" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsCashPayment, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=UserControl}}" Value="False">
+                                <Setter Property="IsEnabled" Value="False" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
             </Button>
             <Border Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="3" 
                             Background="GhostWhite" BorderBrush="Gainsboro"

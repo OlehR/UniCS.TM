@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -23,19 +24,32 @@ namespace Front.Control
     /// <summary>
     /// Interaction logic for PaymentWindow.xaml
     /// </summary>
-    
+
     public partial class PaymentWindow : UserControl, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public string ChangeSumPaymant { get; set; } = "";
         double tempMoneySum;
-        private double _MoneySumToRound;
-        public double MoneySumToRound { get 
+        public bool IsCashPayment
+        {
+            get
             {
-                MoneySumPayTextBox.Text = _MoneySumToRound.ToString();
-                CheckAmountTextBlock.Text = _MoneySumToRound.ToString();
+                if (ResMoney?.Text != null)
+                    return Convert.ToDouble(ResMoney?.Text) >= 0 ? true : false;
+                else
+                    return false;
+            }
+        }
+        private double _MoneySumToRound;
+        public double MoneySumToRound
+        {
+            get
+            {
+                //CheckAmountTextBlock.Text = _MoneySumToRound.ToString();
                 return _MoneySumToRound;
-            } set { _MoneySumToRound = value; } }
+            }
+            set { _MoneySumToRound = value; }
+        }
         public Receipt curReceipt;
         MainWindow MW;
         EquipmentFront EF;
@@ -55,35 +69,55 @@ namespace Front.Control
             }
 
         }
-
+        public void TransferAmounts(double moneySum)
+        {
+            MoneySumToRound = moneySum;
+            MoneySumPayTextBox.Text = moneySum.ToString();
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MoneySumToRound"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCashPayment"));
+            CalculateReturn();
+        }
         private void ChangeSumPaymentButton(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
             switch (btn.Content)
             {
                 case "C":
-                    if (ChangeSumPaymant.Length <= 1)
+                    if (ChangeSumPaymant.Length <= 1)// якщо видаляють всю суму тоді виводимо 0
                     {
-                        ChangeSumPaymant = "";
+                        ChangeSumPaymant = "0";
                         break;
                     }
                     else
-                        ChangeSumPaymant = ChangeSumPaymant.Remove(ChangeSumPaymant.Length - 1);
+                        ChangeSumPaymant = ChangeSumPaymant.Remove(ChangeSumPaymant.Length - 1);//видаляємо останній елемент
                     break;
 
                 case ",":
-                    if (ChangeSumPaymant.IndexOf(",") != -1)
+                    if (ChangeSumPaymant.IndexOf(",") != -1) // можна поставити лише 1 кому
+                    {
+                        break;
+                    }
+                    ChangeSumPaymant += btn.Content;
+                    break;
+                case "0":
+                    if (ChangeSumPaymant.StartsWith("0")) //заборона вводу купи нулів на початку
                     {
                         break;
                     }
                     ChangeSumPaymant += btn.Content;
                     break;
                 default:
+                    if (ChangeSumPaymant.StartsWith("0") && !ChangeSumPaymant.StartsWith("0,"))
+                    {
+                        ChangeSumPaymant = btn.Content.ToString();
+                        break;
+                    }
                     ChangeSumPaymant += btn.Content;
                     break;
 
             }
             MoneySumPayTextBox.Text = ChangeSumPaymant;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCashPayment"));
         }
 
         private void F5Button(object sender, RoutedEventArgs e)
@@ -117,6 +151,7 @@ namespace Front.Control
 
         private void _Cancel(object sender, RoutedEventArgs e)
         {
+            ChangeSumPaymant = "0";
             MW.SetStateView(Models.eStateMainWindows.WaitInput);
         }
 
@@ -157,7 +192,7 @@ namespace Front.Control
             MW.NumericPad.Visibility = Visibility.Visible;
         }
 
-       
+
         public double RoundingPrice(double price, double precision)
         {
             price = Convert.ToInt32(Math.Round(price * 100, 3));
@@ -173,10 +208,14 @@ namespace Front.Control
 
         private void MoneySumPayChange(object sender, TextChangedEventArgs e)
         {
+            CalculateReturn();
+        }
+        private void CalculateReturn()
+        {
             try
             {
                 ResMoney.Text = Math.Round((Convert.ToDouble(MoneySumPayTextBox.Text) - Convert.ToDouble(MoneySumToRound)), 2).ToString();
-                
+
             }
             catch (Exception ex)
             {
@@ -184,7 +223,6 @@ namespace Front.Control
                 //MW.ShowErrorMessage(ex.Message);
             }
         }
-
         private void Round(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
@@ -222,6 +260,8 @@ namespace Front.Control
                     break;
             }
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MoneySumToRound"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCashPayment"));
+            CalculateReturn();
         }
 
     }
