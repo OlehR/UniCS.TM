@@ -503,9 +503,9 @@ namespace SharedLib
 
         public Receipt GetReceiptByFiscalNumber(int IdWorkplace, string pFiscalNumber, DateTime pStartDate = default(DateTime), DateTime pFinishDate = default(DateTime))
         {
-            if (pStartDate == default(DateTime))
+            if (pStartDate == default)
                 pStartDate = DateTime.Now.Date.AddDays(-14);
-            if (pFinishDate == default(DateTime))
+            if (pFinishDate == default)
                 pFinishDate = DateTime.Now;
 
             var Ldc = pStartDate.Date;
@@ -757,11 +757,8 @@ namespace SharedLib
             Global.OnReceiptCalculationComplete?.Invoke(r);
         }
 
-        public IEnumerable<LogRRO> GetLogRRO(IdReceipt pR)
-        {
-            DateTime Ldc = pR.DTPeriod;
-            WDB_SQLite ldb = (Ldc == DateTime.Now.Date ? db : new WDB_SQLite(Ldc));
-            return ldb.GetLogRRO(pR);
-        }
+        public IEnumerable<LogRRO> GetLogRRO(IdReceipt pR) { return DB(pR).GetLogRRO(pR);}
+
+        WDB_SQLite DB(IdReceipt pR){ return (pR.CodePeriod == Global.GetCodePeriod() ? db : new WDB_SQLite(pR.DTPeriod)); }
     }
 }
