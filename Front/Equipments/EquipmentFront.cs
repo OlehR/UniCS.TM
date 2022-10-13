@@ -275,12 +275,21 @@ namespace Front
         /// </summary>
         public LogRRO PrintReceipt(Receipt pReceipt)
         {
-            FileLogger.WriteLogMessage(this, "PrintReceipt", "Start Print Receipt");
-
-            var r = RRO.PrintReceiptAsync(pReceipt).Result;
-            //GetLastReceipt(r);
-            FileLogger.WriteLogMessage(this, "PrintReceipt", "End Print Receipt");
-            return r;
+            return Task.Run<LogRRO>((Func<LogRRO>)(() =>
+            {                
+                try
+                {
+                    FileLogger.WriteLogMessage(this, "PrintReceipt", "Start Print Receipt");
+                    var r = RRO?.PrintReceipt(pReceipt);
+                    FileLogger.WriteLogMessage(this, "PrintReceipt", "End Print Receipt");
+                    return r;
+                }
+                catch (Exception e)
+                {
+                    SetStatus?.Invoke(new StatusEquipment(RRO.Model, eStateEquipment.Error, e.Message) { IsСritical = true });
+                    return new LogRRO(pReceipt) { TypeOperation = eTypeOperation.Sale, TypeRRO = RRO.Model.ToString(), CodeError = -1, Error = e.Message };
+                }                
+            })).Result;
         }
 
         /*public async void  GetLastReceipt(LogRRO r)
@@ -298,11 +307,23 @@ namespace Front
 
         public LogRRO RroPrintX(IdReceipt pIdR)
         {
-            var r = RRO.PrintXAsync(pIdR).Result;
+            var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
+            {
+                try
+                {
+                    return RRO?.PrintX(pIdR);
+                }
+                catch (Exception e)
+                {
+                    SetStatus?.Invoke(new StatusEquipment(RRO.Model, eStateEquipment.Error, e.Message) { IsСritical = true });
+                    return new LogRRO(pIdR) { TypeOperation = eTypeOperation.XReport, TypeRRO = RRO.Model.ToString(), CodeError = -1, Error = e.Message };
+                }
+            }
+            )).Result;
             Task.Run(() =>
             {
                 if (string.IsNullOrEmpty(r.TextReceipt) || RRO.Model == eModelEquipment.FP700)
-                    r.TextReceipt = RRO.GetTextLastReceipt().Result;
+                    r.TextReceipt = RRO.GetTextLastReceipt();
                 Bl.InsertLogRRO(r);
             });
             return r;
@@ -310,11 +331,23 @@ namespace Front
 
         public LogRRO RroPrintZ(IdReceipt pIdR)
         {
-            var r = RRO.PrintZAsync(pIdR).Result;
+            var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
+            {
+                try
+                {
+                    return RRO?.PrintZ(pIdR);
+                }
+                catch (Exception e)
+                {
+                    SetStatus?.Invoke(new StatusEquipment(RRO.Model, eStateEquipment.Error, e.Message) { IsСritical=true});
+                    return new LogRRO(pIdR) { TypeOperation = eTypeOperation.ZReport, TypeRRO = RRO.Model.ToString(), CodeError = -1, Error = e.Message };
+                }
+            }
+            )).Result;
             Task.Run(() =>
             {
                 if (string.IsNullOrEmpty(r.TextReceipt) || RRO.Model == eModelEquipment.FP700)
-                    r.TextReceipt = RRO.GetTextLastReceipt().Result;
+                    r.TextReceipt = RRO.GetTextLastReceipt();
                 Bl.InsertLogRRO(r);
             });
             return r;
@@ -322,7 +355,7 @@ namespace Front
 
         public LogRRO RroPrintCopyReceipt()
         {
-            var r = RRO.PrintCopyReceipt();
+            var r = RRO?.PrintCopyReceipt();
             Bl.InsertLogRRO(r);
             return r;
         }
@@ -330,32 +363,42 @@ namespace Front
         public LogRRO PrintNoFiscalReceipt(IEnumerable<string> pR)
         {
             if (pR != null && pR.Any())
+            {
+                var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
+                {
+                    try
+                    {
+                        var r = RRO?.PrintNoFiscalReceipt(pR);
+                        Bl.InsertLogRRO(r);
+                        return r;
+                    }
+                    catch (Exception e)
+                    {
+                        SetStatus?.Invoke(new StatusEquipment(RRO.Model, eStateEquipment.Error, e.Message) { IsСritical = false });
+                        return new LogRRO() { TypeOperation = eTypeOperation.NoFiscalReceipt, TypeRRO = RRO.Model.ToString(), CodeError = -1, Error = e.Message };
+                    }
+                }
+            )).Result;
+            }
+            return null;
+        }
+
+        public void ProgramingArticleAsync(IEnumerable<ReceiptWares> pRW)
+        {
+            Task.Run(() =>
+            {
                 try
                 {
-                    var r = RRO?.PrintNoFiscalReceiptAsync(pR).Result;
-                    Bl.InsertLogRRO(r);
-                    return r;
+                    RRO?.ProgramingArticle(pRW);
                 }
                 catch (Exception e)
                 {
                     FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+                    SetStatus?.Invoke(new StatusEquipment(RRO.Model, eStateEquipment.Error, e.Message) { IsСritical = true });
                 }
-            return null;
-        }
-
-        public bool ProgramingArticleAsync(IEnumerable<ReceiptWares> pRW)
-        {
-            try
-            {
-                RRO?.ProgramingArticleAsync(pRW);
-            }
-            catch (Exception e)
-            {
-                RRO.State = eStateEquipment.Error;
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
-                SetStatus?.Invoke(new RroStatus() { Status = eStatusRRO.Error,StateEquipment = eStateEquipment.Error,ModelEquipment= RRO.Model, TextState=e.Message,State=-1,IsСritical=RRO.IsСritical });
-             }
-            return true;
+                return true;
+            }            
+            );
         }
 
         /// <summary>

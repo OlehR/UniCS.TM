@@ -57,7 +57,6 @@ namespace Front.Equipments
                 Fp700DataController fp = new Fp700DataController(pConfiguration);
                 Fp700 = new Fp700(pConfiguration, fp, logger);
                 Fp700.Init();
-
                 State = Fp700.IsReady ? eStateEquipment.On : eStateEquipment.Error;
             }
             catch (Exception ex)
@@ -66,10 +65,9 @@ namespace Front.Equipments
             }
         }
 
-
         public override bool OpenWorkDay()
         {
-            return true; //throw new NotImplementedException();
+            return true; 
         }
 
         public override LogRRO PrintCopyReceipt(int parNCopy = 1)
@@ -88,7 +86,7 @@ namespace Front.Equipments
             }
         }
         
-        public override async Task<LogRRO> PrintZAsync(IdReceipt pIdR)
+        public override LogRRO PrintZ(IdReceipt pIdR)
         {
             try
             {
@@ -104,7 +102,7 @@ namespace Front.Equipments
             }
         }
 
-        public override async Task<LogRRO> PrintXAsync(IdReceipt pIdR)
+        public override LogRRO PrintX(IdReceipt pIdR)
         {
             try
             {
@@ -127,7 +125,7 @@ namespace Front.Equipments
         /// </summary>
         /// <param name="pSum"></param>
         /// <returns></returns>
-        public override async Task<LogRRO> MoveMoneyAsync(decimal pSum, IdReceipt pIdR = null)
+        public override LogRRO MoveMoney(decimal pSum, IdReceipt pIdR = null)
         {
             try
             {
@@ -150,7 +148,7 @@ namespace Front.Equipments
         /// </summary>
         /// <param name="pR"></param>
         /// <returns></returns>
-        public override async Task<LogRRO> PrintReceiptAsync(ModelMID.Receipt pR)
+        public override LogRRO PrintReceipt(ModelMID.Receipt pR)
         {
             string FiscalNumber=null;
             try
@@ -196,7 +194,7 @@ namespace Front.Equipments
             }
         }
 
-        public override async Task<LogRRO> PrintNoFiscalReceiptAsync(IEnumerable<string> pR)
+        public override LogRRO PrintNoFiscalReceipt(IEnumerable<string> pR)
         {
             try
             {
@@ -243,7 +241,7 @@ namespace Front.Equipments
             }
         }
 
-        override public async Task<bool> ProgramingArticleAsync(IEnumerable<ReceiptWares> pRW)
+        override public bool ProgramingArticle(IEnumerable<ReceiptWares> pRW)
         {
             if (pRW != null && pRW.Count() > 0)
             {
@@ -258,7 +256,7 @@ namespace Front.Equipments
         }
 
 
-        public override async Task<string> GetTextLastReceipt()
+        public override string GetTextLastReceipt()
         {
             try
             {

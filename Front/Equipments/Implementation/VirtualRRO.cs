@@ -23,12 +23,12 @@ namespace Front.Equipments.Implementation
             throw new NotImplementedException();
         }        
 
-        override public async Task<LogRRO> PrintZAsync(IdReceipt pIdR)
+        override public   LogRRO PrintZ(IdReceipt pIdR)
         {
             return new LogRRO(pIdR) { TypeOperation = eTypeOperation.ZReport, FiscalNumber = "V0001111" };
         }
 
-        override public async Task<LogRRO> PrintXAsync(IdReceipt pIdR)
+        override public   LogRRO PrintX(IdReceipt pIdR)
         {
             return new LogRRO(pIdR) { TypeOperation = eTypeOperation.XReport, FiscalNumber = "V0001111" };
         }
@@ -39,7 +39,7 @@ namespace Front.Equipments.Implementation
         /// </summary>
         /// <param name="pSum"></param>
         /// <returns></returns>
-        override public async Task<LogRRO> MoveMoneyAsync(decimal pSum, IdReceipt pIdR = null)
+        override public   LogRRO MoveMoney(decimal pSum, IdReceipt pIdR = null)
         {
             return new LogRRO(pIdR) { TypeOperation = eTypeOperation.MoneyIn, FiscalNumber = "V0001111", SUM = 1230m };
         }
@@ -49,7 +49,7 @@ namespace Front.Equipments.Implementation
         /// </summary>
         /// <param name="pR"></param>
         /// <returns></returns>
-        override public async Task<LogRRO> PrintReceiptAsync(Receipt pR)
+        override public   LogRRO PrintReceipt(Receipt pR)
         {
             return new LogRRO(pR) {TypeOperation= eTypeOperation.Sale,FiscalNumber="V0001111",SUM=pR.SumReceipt,CodeError=0,Error="Проблема з лентою" }; 
         }

@@ -38,7 +38,7 @@ namespace Front.Equipments
                 State = eStateEquipment.Error;
             }
         }
-
+/*
         ///відкрити порт 
         private bool FpOpenPort(IdReceipt pReceipt = null)
         {
@@ -317,5 +317,7 @@ namespace Front.Equipments
         {            
             return $"pModelEquipment={Model} State={State} {InfoConnect}";
         }
+*/
     }
+
 }

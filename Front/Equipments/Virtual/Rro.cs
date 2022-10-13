@@ -51,12 +51,12 @@ namespace Front.Equipments
             throw new NotImplementedException();
         }
 
-        public virtual async Task<LogRRO> PrintZAsync(IdReceipt pIdR)
+        public virtual  LogRRO PrintZ(IdReceipt pIdR)
         {
             return null;//throw new NotImplementedException();
         }
 
-        public virtual async Task<LogRRO>  PrintXAsync(IdReceipt pIdR)
+        public virtual  LogRRO  PrintX(IdReceipt pIdR)
         {
             return null;//throw new NotImplementedException();
         }
@@ -67,7 +67,7 @@ namespace Front.Equipments
         /// </summary>
         /// <param name="pSum"></param>
         /// <returns></returns>
-        virtual public async Task<LogRRO> MoveMoneyAsync(decimal pSum, IdReceipt pIdR=null)
+        virtual public LogRRO MoveMoney(decimal pSum, IdReceipt pIdR=null)
         {
             return null;//throw new NotImplementedException();
         }
@@ -77,7 +77,7 @@ namespace Front.Equipments
         /// </summary>
         /// <param name="pR"></param>
         /// <returns></returns>
-        virtual public async Task<LogRRO> PrintReceiptAsync(Receipt pR)
+        virtual public LogRRO PrintReceipt(Receipt pR)
         {
             return null; //throw new NotImplementedException();
         }
@@ -87,7 +87,7 @@ namespace Front.Equipments
         /// </summary>
         /// <param name="pR"></param>
         /// <returns></returns>
-        virtual public async Task<LogRRO> PrintNoFiscalReceiptAsync(IEnumerable<string> pR)
+        virtual public LogRRO PrintNoFiscalReceipt(IEnumerable<string> pR)
         {
             return null; //throw new NotImplementedException();
         }
@@ -107,13 +107,13 @@ namespace Front.Equipments
         /// </summary>
         /// <param name="pRW"></param>
         /// <returns></returns>
-        virtual public async Task<bool> ProgramingArticleAsync(IEnumerable<ReceiptWares> pRW)
+        virtual public bool ProgramingArticle(IEnumerable<ReceiptWares> pRW)
         {
             return true;
         }
 
 
-        public virtual async Task<string> GetTextLastReceipt()
+        public virtual string GetTextLastReceipt()
         {
             return null;
         }

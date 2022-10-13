@@ -135,7 +135,7 @@ namespace Front.Equipments.Implementation
             return $"<L {pay}/>";
         }
 
-        override public async Task<LogRRO> PrintReceiptAsync(Receipt pR)
+  /*      override public async Task<LogRRO> PrintReceiptAsync(Receipt pR)
         {
             string xml = $"<Check Number=\"{pR.CodeReceipt}\" FN = \"{FN}\" OperationType=\"{(pR.TypeReceipt == eTypeReceipt.Sale ? 0 : 1)}\" uuid=\"{pR.ReceiptId}\">\n" +
                 GenL(pR) + "\n" + GenGoods(pR.Wares) +
@@ -187,14 +187,14 @@ namespace Front.Equipments.Implementation
         {
             return PrintXY(pIdR, eTypeOperation.XReport);
         }
-
+  */
 
         /// <summary>
         /// Внесення/Винесення коштів коштів. pSum>0 - внесення
         /// </summary>
         /// <param name="pSum"></param>
         /// <returns></returns>
-        override public async Task<LogRRO> MoveMoneyAsync(decimal pSum, IdReceipt pIdR)
+   /*     override public async Task<LogRRO> MoveMoneyAsync(decimal pSum, IdReceipt pIdR)
         {
             string xml = $"<InputParameters> <Parameters FN = \"{FN}\" /> Sum{(pSum > 0 ? "In" : "Out")} = \"{Math.Abs(pSum)}\"";
             if (WCh.CashInOut(xml))
@@ -235,7 +235,7 @@ namespace Front.Equipments.Implementation
             else
                 res = "GetCurrentStatus Не виконався";
             return $"State={State} {res}";
-        }
+        }*/
     }
 }
 

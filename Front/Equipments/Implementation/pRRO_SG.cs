@@ -29,7 +29,7 @@ namespace Front.Equipments.pRRO_SG
             Wait = int.Parse(pConfiguration["Devices:pRRO_SG:Wait"] ?? "10000");
             client.Timeout = TimeSpan.FromMilliseconds(Wait);           
         }
-
+/*
         async Task<(string, HttpStatusCode)> HttpAsync(string pMetod, string pBody)
         {
             string res = null;
@@ -176,6 +176,6 @@ namespace Front.Equipments.pRRO_SG
             else
                 Res.Error = Response.ToString();
             return Res;
-        }
+        }*/
     }
 }
