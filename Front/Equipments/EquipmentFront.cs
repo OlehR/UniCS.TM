@@ -399,6 +399,8 @@ namespace Front
                 }
                 catch (Exception e)
                 {
+                if (RRO != null)
+                    RRO.State = eStateEquipment.Error;
                     FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
                     SetStatus?.Invoke(new StatusEquipment(RRO.Model, eStateEquipment.Error, e.Message) { IsСritical = true });
                 }

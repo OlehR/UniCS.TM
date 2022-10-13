@@ -34,7 +34,7 @@ namespace Front.Control
         {
             get
             {
-                if (ResMoney?.Text != null)
+                if (!string.IsNullOrEmpty( ResMoney?.Text) )
                     return Convert.ToDouble(ResMoney?.Text) >= 0 ? true : false;
                 else
                     return false;

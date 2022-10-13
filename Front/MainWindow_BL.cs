@@ -44,7 +44,7 @@ namespace Front
                 if(info.IsСritical==true)
                 {
                     LastErrorEquipment= info.TextState;
-                    SetStateView(eStateMainWindows.AdminPanel,eTypeAccess.ErrorEquipment);
+                    SetStateView(eStateMainWindows.WaitAdmin,eTypeAccess.ErrorEquipment);
                     return;
                 }
                 var r = Dispatcher.BeginInvoke(new ThreadStart(() =>
