@@ -49,9 +49,12 @@ namespace Front.Control
         BatchTotals LastReceipt = null;
 
         public DateTime DateSoSearch { get; set; } = DateTime.Now.Date;
+        public DateTime DateStartPeriodZ { get; set; } = DateTime.Now.Date;
+        public DateTime DateEndPeriodZ { get; set; } = DateTime.Now.Date;
         public eTypeMessage TypeAPIMessage { get; set; }
         public string KasaNumber { get { return Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace).Name; } }
         public ObservableCollection<APIRadiobuton> TypeMessageRadiobuton { get; set; }
+        public bool IsShortPeriodZ { get; set; } = true;
 
         public void ControlScale(double pWeight, bool pIsStable)
         {
@@ -232,7 +235,8 @@ namespace Front.Control
         {
             var task = Task.Run(() =>
             {
-                var r = EF.RroPrintZ(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() });
+                var tmpReceipt = new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() };
+                var r = EF.RroPeriodZReport(tmpReceipt, DateStartPeriodZ, DateEndPeriodZ, IsShortPeriodZ);
             });
         }
 
@@ -565,6 +569,7 @@ namespace Front.Control
         private void Cancel(object sender, RoutedEventArgs e)
         {
             RevisionText.Text = "";
+            SettingPeriodZReport.Visibility = Visibility.Collapsed;
             Revision.Visibility = Visibility.Collapsed;
             BackgroundShift.Visibility = Visibility.Collapsed;
             DetailsReceiptBorder.Visibility = Visibility.Collapsed;
@@ -629,6 +634,20 @@ namespace Front.Control
             KasaSocketClient socketKasaClient = new KasaSocketClient();
             string Response = socketKasaClient.SendMessage(APITextMessage.Text, TypeAPIMessage, "127.0.0.1", 8068);
             MessageBox.Show("Відповідь сервера: " + Response);
+        }
+
+        private void IsPeriodZClick(object sender, RoutedEventArgs e)
+        {
+            IsShortPeriodZ = (bool)PeriodZCheckBox.IsChecked;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsShortPeriodZ"));
+        }
+
+        private void EKKA_Z_Period_Show(object sender, RoutedEventArgs e)
+        {
+            SettingPeriodZReport.Visibility = Visibility.Visible;
+            BackgroundShift.Visibility = Visibility.Visible;
+            DetailsReceiptBorder.Visibility = Visibility.Visible;
+            BackgroundReceipts.Visibility = Visibility.Visible;
         }
     }
     public class APIRadiobuton

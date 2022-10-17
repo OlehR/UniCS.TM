@@ -236,7 +236,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                             <StackPanel>
                                 <Button x:Name="EKKA_X" Style="{StaticResource Default}" Content="X звіт"      VerticalAlignment="Top"  Width="280" Click="EKKA_X_Click"/>
                                 <Button x:Name="EKKA_Z" Style="{StaticResource Default}" Content="Z звіт"    Width="280" Click="EKKA_Z_Click"/>
-                                <Button x:Name="EKKA_Z_Period" Style="{StaticResource Default}" Content="Z-звіт(Періодичний))"      Width="280" Click="EKKA_Z_Period_Click"/>
+                                <Button x:Name="EKKA_Z_Period" Style="{StaticResource Default}" Content="Z-звіт(Періодичний))"      Width="280" Click="EKKA_Z_Period_Show"/>
                                 <Button x:Name="EKKA_Copy" Style="{StaticResource Default}" Content="Копія Квитанції"      VerticalAlignment="Top" Width="280" Click="EKKA_Copy_Click"/>
                             </StackPanel>
 
@@ -323,6 +323,88 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                 Grid.Column="0" Grid.ColumnSpan="6"
                  Name="BackgroundShift" Visibility="Collapsed" Grid.ZIndex="2" 
                 Opacity="0.9"/>
+
+                        <!--Налаштування періодичного звіту-->
+                        <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="0" Grid.RowSpan="6"
+                Grid.Column="0" Grid.ColumnSpan="4"
+                 Name="SettingPeriodZReport" Visibility="Collapsed" Grid.ZIndex="3" 
+                CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center"  Width="700" Height="500">
+                            <Border.Effect>
+                                <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+                            </Border.Effect>
+
+                            <Grid >
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="100"></RowDefinition>
+                                    <RowDefinition Height="*"></RowDefinition>
+                                    <RowDefinition Height="100"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" HorizontalAlignment="Center" FontSize="28" Text="Друк періодичного Z-звіту"/>
+                                <StackPanel Grid.Row="1">
+                                    <TextBlock Text="Введіть дати початку та кінця звіту"  FontSize="28" HorizontalAlignment="Center" FontWeight="DemiBold"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="15">
+                                        <TextBlock Text="Початок звіту:" FontSize="24" Margin="0,0,20,0"/>
+                                        <DatePicker  FontSize="30" IsTodayHighlighted="True" SelectedDate="{Binding DateStartPeriodZ}"
+                                    Width="200" Height="50" HorizontalAlignment="Left" Style="{StaticResource DatePickerStyle1}" />
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="15">
+                                        <TextBlock Text="Кінець звіту:" FontSize="24" Margin="0,0,20,0"/>
+                                        <DatePicker  FontSize="30" IsTodayHighlighted="True" SelectedDate="{Binding DateEndPeriodZ}"
+                                    Width="200" Height="50" HorizontalAlignment="Left" Style="{StaticResource DatePickerStyle1}" />
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="15">
+                                        <TextBlock x:Name="LongPeriodZ" Text="Повний звіт " FontSize="24" VerticalAlignment="Center" FontWeight="DemiBold">
+                                            <TextBlock.Style>
+                                                <Style TargetType="{x:Type TextBlock}">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsShortPeriodZ, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=UserControl}}" Value="True">
+                                                            <Setter Property="Foreground" Value="Black" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding IsShortPeriodZ, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=UserControl}}" Value="False">
+                                                            <Setter Property="Foreground" Value="Green" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                        <CheckBox Height="40" x:Name="PeriodZCheckBox" Style="{DynamicResource OrangeSwitchStyleCheckBox}"
+                                      IsChecked="True" Checked="IsPeriodZClick" Unchecked="IsPeriodZClick"
+                                      VerticalAlignment="Center" HorizontalAlignment="Center"/>
+
+                                        <TextBlock x:Name="ShortPeriodZ" Text=" Короткий звіт" FontSize="24" VerticalAlignment="Center" FontWeight="DemiBold">
+                                            <TextBlock.Style>
+                                                <Style TargetType="{x:Type TextBlock}">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsShortPeriodZ, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=UserControl}}" Value="False">
+                                                            <Setter Property="Foreground" Value="Black" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding IsShortPeriodZ, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=UserControl}}" Value="True">
+                                                            <Setter Property="Foreground" Value="Green" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </StackPanel>
+                                <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Button  Style="{StaticResource Default}"  FontSize="22" Click="EKKA_Z_Period_Click" 
+                        Height="80" Width="300" Margin="10">
+                                        <TextBlock FontSize="28" Text="Друк"/>
+                                    </Button>
+                                    <Button  Style="{StaticResource Default}"  FontSize="22" Click="Cancel" 
+                        Height="80" Width="300" Margin="10">
+                                        <TextBlock FontSize="28" Text="Закрити"/>
+                                    </Button>
+                                </StackPanel>
+
+                            </Grid>
+                        </Border>
                     </Grid>
                 </TabItem>
                 <TabItem Header="Пристрої" >
@@ -484,7 +566,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                         </Grid.RowDefinitions>
                         <StackPanel Orientation="Horizontal">
                             <DatePicker Name="dataHistori" FontSize="30" IsTodayHighlighted="True" SelectedDate="{Binding DateSoSearch}"
-                                    Width="200" Height="50" HorizontalAlignment="Left"></DatePicker>
+                                    Width="200" Height="50" HorizontalAlignment="Left" Style="{StaticResource DatePickerStyle1}" ></DatePicker>
                             <Button Width="300" Height="80" Margin="10,0,0,0" Style="{StaticResource Default}" Click="FindChecksByDate">
                                 Знайти
                             </Button>
