@@ -434,15 +434,7 @@ namespace Front.Equipments.Utils
 
         public static explicit operator string(PrefixOfCodes str) => str._name;
     }
-
-    public enum DeviceConnectionStatus
-    {
-        NotConnected = 1,
-        InitializationError = 2,
-        Enabled = 3,
-        Disabled = 4,
-    }
-
+  
     public enum TerminalLogCategory
     {
         All = 0,

@@ -335,7 +335,8 @@ SELECT  --Вид дисконтної карти (Тип Клієнта)
   JOIN dbo.V1C_dim_warehouse wh ON wh.subdivision_RRef=pg.subdivision_RRef
   LEFT JOIN dbo.V1C_DIM_Priority_Promotion PP ON  tp.Priority_Promotion_RRef=pp.Priority_Promotion_RRef
   where pg.date_end>GETDATE()
-  AND wh.code = 9
+  AND wh.code = @CodeWarehouse
+  --and pg.IsOnlyCard=1 
   GROUP BY CONVERT( INT,YEAR(dpg.date_time)*100000+dpg.number)
   HAVING  SUM(CASE WHEN pg.IsOnlyCard=1 THEN 1 ELSE 0 end)>0 AND SUM(CASE WHEN pg.IsOnlyCard=1 THEN 0 ELSE 1 end)=0
 

@@ -8,7 +8,7 @@ namespace ModelMID
     public class IdReceipt
     {
         protected string PrefixWarehouse { get { switch (Global.CodeWarehouse) { case 9: return "K"; case 15: return "B"; default: return "X"; } } }
-
+      
         public Guid ReceiptId
         {
             get
@@ -19,13 +19,8 @@ namespace ModelMID
             }
             set
             {
-                SetGuid(value);
-                /*var IdStr = value.ToString();
-                IdWorkplace = Convert.ToInt32(IdStr.Substring(0, 8));
-                CodePeriod = Convert.ToInt32(IdStr.Substring(14, 9).Replace("-",""));
-                CodeReceipt = Convert.ToInt32(IdStr.Substring(24, 12));*/
+                SetGuid(value);                
             }
-
         }
 
         public int IdWorkplace { get; set; }
@@ -47,7 +42,6 @@ namespace ModelMID
             CodeReceipt = 0;
         }
 
-
         public IdReceipt(IdReceipt parIdReceipt)
         {
             SetIdReceipt(parIdReceipt);
@@ -55,12 +49,7 @@ namespace ModelMID
 
         public IdReceipt(Guid parReceiptId)
         {
-            SetGuid(parReceiptId);
-            /*var strReceiptId = parReceiptId.ToString();
-            IdWorkplace = Convert.ToInt32(strReceiptId.Substring(0, 8));
-            CodePeriod = Convert.ToInt32(strReceiptId.Substring(14, 4)) * 10000 + Convert.ToInt32(strReceiptId.Substring(19, 4));
-            CodeReceipt = Convert.ToInt32(strReceiptId.Substring(24, 12));
-        */
+            SetGuid(parReceiptId);            
         }
 
         public void  SetGuid(Guid parReceiptId)
@@ -68,14 +57,9 @@ namespace ModelMID
             var strReceiptId = parReceiptId.ToString();
             int v;
             IdWorkplace = int.TryParse(strReceiptId.Substring(0, 8), out v) ? v : 0;
-            //IdWorkplace = Convert.ToInt32(strReceiptId.Substring(0, 8));
-
-            CodePeriod = int.TryParse(strReceiptId.Substring(14, 9).Replace("-", ""), out v) ? v:0;
-            //CodePeriod = Convert.ToInt32(strReceiptId.Substring(14, 4)) * 10000 + Convert.ToInt32(strReceiptId.Substring(19, 4));
-
+            CodePeriod = int.TryParse(strReceiptId.Substring(14, 9).Replace("-", ""), out v) ? v:0; 
             CodeReceipt = int.TryParse(strReceiptId.Substring(24, 12), out v) ? v : 0;
-            //CodeReceipt = Convert.ToInt32(strReceiptId.Substring(24, 12));
-        }
+       }
         public void SetIdReceipt(IdReceipt idReceipt)
         {
             if (idReceipt == null)
@@ -106,6 +90,5 @@ namespace ModelMID
                 return PrefixWarehouse + Global.GetNumberCashDeskByIdWorkplace(IdWorkplace) + d + CodeReceipt.ToString("D4");
             }
         }
-
     }
 }

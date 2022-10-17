@@ -5,6 +5,14 @@ using System.Text;
 
 namespace Front.Equipments
 {
+    public enum DeviceConnectionStatus
+    {
+        NotConnected = 1,
+        InitializationError,
+        Enabled,
+        Disabled
+    }
+
     public enum eStatusPos
     {
         [Description("Код статусу: недоступний")]
@@ -219,8 +227,14 @@ namespace Front.Equipments
         TryOpenPort,
         [Description("Відкрити порт")]
         OpenPort,
+        [Description("Критична Помилка(Необхідо звернутись в сервісний центр)")]
+        Error,
         [Description("Помилка")]
-        Error
+        CriticalError,
+        [Description("Ініціалізація")]
+        Init,
+        [Description("Попередження")]
+        Warning
     }
 
     public enum ePosTypeError

@@ -2,45 +2,29 @@
 using System;
 using System.Linq;
 using Front.Equipments.Virtual;
-//using ModernExpo.SelfCheckout.Devices.FP700;
-//using ModernExpo.SelfCheckout.TerminalAdmin.DAL.DataControllers;
 using Microsoft.Extensions.Logging;
 using ModelMID.DB;
 using ModelMID;
 using System.Threading.Tasks;
-using ModernExpo.SelfCheckout.Entities.FiscalPrinter;
-using ModernExpo.SelfCheckout.Entities.ViewModels;
-using SharedLib;
 using System.Collections.Generic;
-
-
-using ModernExpo.SelfCheckout.Entities.Enums;
-using ModernExpo.SelfCheckout.Entities.Models;
-//using ModernExpo.SelfCheckout.TerminalAdmin.DAL;
-using ModernExpo.SelfCheckout.Utils;
-
-using ModernExpo.SelfCheckout.Entities.Enums.Device;
-//using ModernExpo.SelfCheckout.Entities.FiscalPrinter;
-using ModernExpo.SelfCheckout.Entities.FiscalPrinter.FiscalPrinterResponses;
-//using ModernExpo.SelfCheckout.Entities.Interfaces.Devices;
-
 using Newtonsoft.Json;
 using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Timers;
-
-using Receipt = ModernExpo.SelfCheckout.Entities.Models.Receipt;
-using Front.Equipments;
-
-using DeviceLog = ModernExpo.SelfCheckout.Entities.Models.FiscalPrinterDeviceLog;
 using Utils;
-
-//using ModernExpo.SelfCheckout.Utils;
 using Front.Equipments.FP700;
 using Dapper;
 using System.Data.SQLite;
-using ModernExpo.SelfCheckout.TerminalAdmin.DAL;
+
+using ModernExpo.SelfCheckout.Entities.FiscalPrinter;
+using ModernExpo.SelfCheckout.Entities.ViewModels;
+using ModernExpo.SelfCheckout.Entities.Enums;
+using ModernExpo.SelfCheckout.Entities.Models;
+using ModernExpo.SelfCheckout.Utils;
+
+using Receipt = ModernExpo.SelfCheckout.Entities.Models.Receipt;
+
 
 namespace Front.Equipments
 {
@@ -55,7 +39,7 @@ namespace Front.Equipments
             {
                 ILogger<Fp700> logger = pLoggerFactory?.CreateLogger<Fp700>();
                 Fp700DataController fp = new Fp700DataController(pConfiguration);
-                Fp700 = new Fp700(pConfiguration, fp, logger);
+                Fp700 = new Fp700(pConfiguration, fp, logger, pActionStatus);
                 Fp700.Init();
                 State = Fp700.IsReady ? eStateEquipment.On : eStateEquipment.Error;
             }
@@ -263,7 +247,6 @@ namespace Front.Equipments
             //  Bl.GenQRAsync(receiptMID.Wares);
             return Res;
         }
-
 
         private List<ReceiptItem> GetReceiptItem(IEnumerable<ReceiptWares> res, bool IsDetail = false)
         {
@@ -492,7 +475,6 @@ namespace Front.Equipments
             };
         }
     }
-
 }
 
 namespace Front.Equipments.FP700
@@ -509,12 +491,13 @@ namespace Front.Equipments.FP700
         private volatile bool _hasCriticalError;
         private int _sequenceNumber = 90;
         private readonly ILogger<Fp700> _logger;
-        private readonly PrinterUtils _printerUtils;
+        //private readonly PrinterUtils _printerUtils;
         private string DateFormat = "dd-MM-yy HH:mm:ss";
         private Dictionary<Command, Action<string>> _commandsCallbacks;
         private readonly List<byte> _packageBuffer = new List<byte>();
         private readonly Timer _packageBufferTimer;
         private const string ReportDateFormat = "ddMMyy";
+
 
         private string _port => _configuration["Devices:Fp700:Port"];
 
@@ -532,9 +515,9 @@ namespace Front.Equipments.FP700
 
         public bool IsZReportAlreadyDone { get; private set; }
 
-        public Action<IFiscalPrinterResponse> OnFiscalPrinterResponse { get; set; }
+        //public Action<IFiscalPrinterResponse> OnFiscalPrinterResponse { get; set; }
 
-        public Action<DeviceLog> OnDeviceWarning { get; set; }
+        //public Action<DeviceLog> OnDeviceWarning { get; set; }
 
         public bool IsReady
         {
@@ -545,16 +528,21 @@ namespace Front.Equipments.FP700
             }
         }
 
+        Action<StatusEquipment> ActionStatus { get; set; }
+       
         public Fp700(
           IConfiguration configuration,
           Fp700DataController fp700DataController,
           ILogger<Fp700> logger = null,
-          PrinterUtils printerUtils = null)
+          Action<StatusEquipment> pActionStatus = null
+           // ,PrinterUtils printerUtils = null
+            )
         {
             _fp700DataController = fp700DataController;
             _configuration = configuration;
             _logger = logger;
-            _printerUtils = printerUtils;
+            ActionStatus = pActionStatus;
+            //_printerUtils = printerUtils;
             _commandsCallbacks = new Dictionary<Command, Action<string>>();
             _currentPrinterStatus = new PrinterStatus();
             SerialPortStreamWrapper portStreamWrapper = new SerialPortStreamWrapper(_port, _baudRate, onReceivedData: new Func<byte[], bool>(OnDataReceived));
@@ -571,11 +559,7 @@ namespace Front.Equipments.FP700
             if (_packageBuffer.Count > 0)
                 _packageBuffer.Clear();
             _packageBufferTimer.Stop();
-        }
-
-        private void OnZReportTimedEvent(object sender, ElapsedEventArgs e)
-        {
-        }
+        }        
 
         public DeviceConnectionStatus Init()
         {
@@ -586,56 +570,28 @@ namespace Front.Equipments.FP700
                 ILogger<Fp700> logger = _logger;
                 if (logger != null)
                     logger.LogDebug("Fp700 init started");
-                Action<DeviceLog> onDeviceWarning1 = OnDeviceWarning;
-                if (onDeviceWarning1 != null)
-                {
-                    FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
-                    printerDeviceLog.Category = TerminalLogCategory.All;
-                    printerDeviceLog.Message = "[FP700] - Start Initialization";
-                    onDeviceWarning1((DeviceLog)printerDeviceLog);
-                }
+                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Init, "[FP700] - Start Initialization") 
+                                                  { Status =eStatusRRO.Init });                 
                 CloseIfOpened();
                 _serialDevice.Open();
-                Action<DeviceLog> onDeviceWarning2 = OnDeviceWarning;
-                if (onDeviceWarning2 != null)
-                {
-                    FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
-                    printerDeviceLog.Category = TerminalLogCategory.All;
-                    printerDeviceLog.Message = "[FP700] - Get info about printer";
-                    onDeviceWarning2((DeviceLog)printerDeviceLog);
-                }
+                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Init, "[FP700] - Get info about printer")
+                { Status = eStatusRRO.Init });
+              
                 string infoSync = GetInfoSync();
-                Action<DeviceLog> onDeviceWarning3 = OnDeviceWarning;
-                if (onDeviceWarning3 != null)
-                {
-                    FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
-                    printerDeviceLog.Category = TerminalLogCategory.All;
-                    printerDeviceLog.Message = string.Format("[FP700] - Initialization result {0}", (object)!string.IsNullOrEmpty(infoSync));
-                    onDeviceWarning3((DeviceLog)printerDeviceLog);
-                }
+                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Init, $"[FP700] - Initialization result {infoSync}")
+                { Status = eStatusRRO.Init });
+                
                 if (string.IsNullOrEmpty(infoSync))
                 {
-                    Action<DeviceLog> onDeviceWarning4 = OnDeviceWarning;
-                    if (onDeviceWarning4 != null)
-                    {
-                        FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
-                        printerDeviceLog.Category = TerminalLogCategory.Critical;
-                        printerDeviceLog.Message = "Cannot read data from printer";
-                        onDeviceWarning4((DeviceLog)printerDeviceLog);
-                    }
+                    ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "Cannot read data from printer")
+                    { Status = eStatusRRO.Error,IsСritical=true });                    
                     return DeviceConnectionStatus.InitializationError;
                 }
                 int num = IsZReportDone() ? 1 : 0;
                 if (num == 0)
                 {
-                    Action<DeviceLog> onDeviceWarning5 = OnDeviceWarning;
-                    if (onDeviceWarning5 != null)
-                    {
-                        FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
-                        printerDeviceLog.Category = TerminalLogCategory.Critical;
-                        printerDeviceLog.Message = "[FP700] - Should end previous day and create Z-Report";
-                        onDeviceWarning5((DeviceLog)printerDeviceLog);
-                    }
+                    ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "[FP700] - Should end previous day and create Z-Report")
+                    { Status = eStatusRRO.Error, IsСritical = true });                    
                 }
                 ClearDisplay();
                 return (num & (OnSynchronizeWaitCommandResult(Command.PaperCut) ? 1 : 0)) != 0 ? DeviceConnectionStatus.Enabled : DeviceConnectionStatus.InitializationError;
@@ -645,14 +601,8 @@ namespace Front.Equipments.FP700
                 ILogger<Fp700> logger = _logger;
                 if (logger != null)
                     logger.LogError(ex, ex.Message);
-                Action<DeviceLog> onDeviceWarning = OnDeviceWarning;
-                if (onDeviceWarning != null)
-                {
-                    FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
-                    printerDeviceLog.Category = TerminalLogCategory.Critical;
-                    printerDeviceLog.Message = "Device not connected";
-                    onDeviceWarning((DeviceLog)printerDeviceLog);
-                }
+                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "Device not connected")
+                { Status = eStatusRRO.Error, IsСritical = true });                
                 return DeviceConnectionStatus.NotConnected;
             }
         }
@@ -665,24 +615,14 @@ namespace Front.Equipments.FP700
                 DocumentNumbers lastNumbers = GetLastNumbers();
                 if (diagnosticInfo == null || lastNumbers == null)
                     throw new Exception("Fp700 getInfo error");
-                return "" + "Model: " + diagnosticInfo.Model + "\n" + "SoftVersion: " + diagnosticInfo.SoftVersion + "\n" + string.Format("SoftReleaseDate: {0}\n", (object)diagnosticInfo.SoftReleaseDate) + "SerialNumber: " + diagnosticInfo.SerialNumber + "\n" + "RegistrationNumber: " + diagnosticInfo.FiscalNumber + "\n" + string.Format("BaudRate: {0}\n", (object)_serialDevice.BaudRate) + "ComPort: " + _serialDevice.PortName + "\n" + "LastDocumentNumber: " + lastNumbers.LastDocumentNumber + "\n" + "LastReceiptNumber: " + lastNumbers.LastFiscalDocumentNumber + "\n" + "LastZReportNumber: " + GetLastZReportNumber() + "\n" + string.Format("IsZReportDone: {0}\n", (object)IsZReportDone()) + string.Format("CurentTime: {0}\n", (object)(GetCurrentFiscalPrinterDate() ?? DateTime.MinValue));
+                return _currentPrinterStatus.TextError + "Model: " + diagnosticInfo.Model + "\n" + "SoftVersion: " + diagnosticInfo.SoftVersion + "\n" + string.Format("SoftReleaseDate: {0}\n", (object)diagnosticInfo.SoftReleaseDate) + "SerialNumber: " + diagnosticInfo.SerialNumber + "\n" + "RegistrationNumber: " + diagnosticInfo.FiscalNumber + "\n" + string.Format("BaudRate: {0}\n", (object)_serialDevice.BaudRate) + "ComPort: " + _serialDevice.PortName + "\n" + "LastDocumentNumber: " + lastNumbers.LastDocumentNumber + "\n" + "LastReceiptNumber: " + lastNumbers.LastFiscalDocumentNumber + "\n" + "LastZReportNumber: " + GetLastZReportNumber() + "\n" + string.Format("IsZReportDone: {0}\n", (object)IsZReportDone()) + string.Format("CurentTime: {0}\n", (object)(GetCurrentFiscalPrinterDate() ?? DateTime.MinValue));
             }
             catch (Exception ex)
             {
-                ILogger<Fp700> logger1 = _logger;
-                if (logger1 != null)
-                    logger1.LogDebug("Fp700 getInfo error");
-                ILogger<Fp700> logger2 = _logger;
-                if (logger2 != null)
-                    logger2.LogError(ex, ex.Message);
-                Action<DeviceLog> onDeviceWarning = OnDeviceWarning;
-                if (onDeviceWarning != null)
-                {
-                    FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
-                    printerDeviceLog.Category = TerminalLogCategory.Critical;
-                    printerDeviceLog.Message = "Get info error";
-                    onDeviceWarning((DeviceLog)printerDeviceLog);
-                }
+                _logger?.LogDebug("Fp700 getInfo error");
+                _logger?.LogError(ex, ex.Message);
+                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "Get info error" + _currentPrinterStatus.TextError)
+                                                   { Status = eStatusRRO.Error, IsСritical = true });
                 return (string)null;
             }
         }
@@ -693,40 +633,23 @@ namespace Front.Equipments.FP700
         {
             try
             {
-                ILogger<Fp700> logger1 = _logger;
-                if (logger1 != null)
-                    logger1.LogDebug("Fp700 init started");
+                _logger?.LogDebug("Fp700 init started");
                 CloseIfOpened();
-                ILogger<Fp700> logger2 = _logger;
-                if (logger2 != null)
-                    logger2.LogDebug("Fp700 PORT " + _serialDevice.PortName);
-                ILogger<Fp700> logger3 = _logger;
-                if (logger3 != null)
-                    logger3.LogDebug(string.Format("Fp700 BAUD {0}", (object)_serialDevice.BaudRate));
+                _logger?.LogDebug("Fp700 PORT " + _serialDevice.PortName);
+                _logger?.LogDebug(string.Format("Fp700 BAUD {0}", (object)_serialDevice.BaudRate));
                 if (_serialDevice.PortName == null || _serialDevice.BaudRate == 0)
                     return DeviceConnectionStatus.InitializationError;
                 _serialDevice.Open();
-                ILogger<Fp700> logger4 = _logger;
-                if (logger4 != null)
-                    logger4.LogDebug("Fp700 after open");
+                _logger?.LogDebug("Fp700 after open");
                 return GetDiagnosticInfo() == null ? DeviceConnectionStatus.NotConnected : DeviceConnectionStatus.Enabled;
             }
             catch (Exception ex)
             {
-                ILogger<Fp700> logger5 = _logger;
-                if (logger5 != null)
-                    logger5.LogDebug("Fp700 open error");
-                ILogger<Fp700> logger6 = _logger;
-                if (logger6 != null)
-                    logger6.LogError(ex, ex.Message);
-                Action<DeviceLog> onDeviceWarning = OnDeviceWarning;
-                if (onDeviceWarning != null)
-                {
-                    FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
-                    printerDeviceLog.Category = TerminalLogCategory.Critical;
-                    printerDeviceLog.Message = ex.Message;
-                    onDeviceWarning((DeviceLog)printerDeviceLog);
-                }
+                _logger?.LogDebug("Fp700 open error");                
+                _logger?.LogError(ex, ex.Message);
+                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, _currentPrinterStatus.TextError+ex.Message)
+                { Status = eStatusRRO.Error, IsСritical = true });
+                
                 return DeviceConnectionStatus.NotConnected;
             }
         }
@@ -752,20 +675,10 @@ namespace Front.Equipments.FP700
             }
             catch (Exception ex)
             {
-                ILogger<Fp700> logger1 = _logger;
-                if (logger1 != null)
-                    logger1.LogDebug("Fp700 open error");
-                ILogger<Fp700> logger2 = _logger;
-                if (logger2 != null)
-                    logger2.LogError(ex, ex.Message);
-                Action<DeviceLog> onDeviceWarning = OnDeviceWarning;
-                if (onDeviceWarning != null)
-                {
-                    FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
-                    printerDeviceLog.Category = TerminalLogCategory.Critical;
-                    printerDeviceLog.Message = ex.Message;
-                    onDeviceWarning((DeviceLog)printerDeviceLog);
-                }
+                _logger?.LogDebug("Fp700 open error");
+                _logger?.LogError(ex, ex.Message);
+                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, ex.Message)
+                { Status = eStatusRRO.Error, IsСritical = true });
                 return DeviceConnectionStatus.NotConnected;
             }
         }
@@ -804,34 +717,21 @@ namespace Front.Equipments.FP700
                 s = "0";
             int result1;
             int.TryParse(s, out result1);
-            OpenReceipt(receipt);
+            OpenReceipt(receipt?.Cashier);
             if (Comments != null && Comments.Count() > 0)
                 PrintFiscalComments(Comments);
             FillUpReceiptItems(receipt.ReceiptItems);
             if (!PayReceipt(receipt))
             {
-                Action<IFiscalPrinterResponse> fiscalPrinterResponse = OnFiscalPrinterResponse;
-                if (fiscalPrinterResponse != null)
-                    fiscalPrinterResponse((IFiscalPrinterResponse)new FiscalPrinterError()
-                    {
-                        Text = "Check was not printed",
-                        ErrorCode = FiscalPrinterErrorEnum.CheckingError
-                    });
-                Action<DeviceLog> onDeviceWarning = OnDeviceWarning;
-                if (onDeviceWarning != null)
-                {
-                    FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
-                    printerDeviceLog.Category = TerminalLogCategory.Critical;
-                    printerDeviceLog.Message = "Check was not printed";
-                    onDeviceWarning((DeviceLog)printerDeviceLog);
-                }
+                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "Check was not printed")
+                { Status = eStatusRRO.Error, IsСritical = true });                
             }
-            CloseReceipt(receipt);
+            CloseReceipt();
             ClearDisplay();
             int result2;
             if (!int.TryParse(GetLastReceiptNumber(), out result2))
                 return (string)null;
-            _logger?.LogDebug(string.Format("[ FP700 ] newLastReceipt = {0} / lastReceipt = {1}", (object)result2, (object)result1));
+            _logger?.LogDebug($"[ FP700 ] newLastReceipt = {result2} / lastReceipt = {result1}");
             string str = result2 > result1 ? result2.ToString() : (string)null;
             if (str != null)
                 return str;
@@ -840,11 +740,11 @@ namespace Front.Equipments.FP700
             return str;
         }
 
-        public bool OpenReceipt(ReceiptViewModel receipt)
+        public bool OpenReceipt(string pCashier=null)
         {
-            if (!string.IsNullOrEmpty(receipt?.Cashier))
+            if (!string.IsNullOrEmpty(pCashier))
             {
-                string str = receipt.Cashier;
+                string str = pCashier;
                 if (str.Length >= 24)
                     str = str.Remove(23);
                 OnSynchronizeWaitCommandResult(Command.SetOperatorName, string.Format("{0},{1},{2}", (object)_operatorCode, (object)_operatorPassword, (object)str));
@@ -976,7 +876,7 @@ namespace Front.Equipments.FP700
             return paySuccess;
         }
 
-        public string CloseReceipt(ReceiptViewModel receipt)
+        public string CloseReceipt()//ReceiptViewModel receipt
         {
             string res = (string)null;
             OnSynchronizeWaitCommandResult(Command.CloseFiscalReceipt, onResponseCallback: ((Action<string>)(response =>
@@ -1370,13 +1270,9 @@ namespace Front.Equipments.FP700
                         {
                             if (res.Trim().ToUpper().Equals("F"))
                             {
-                                Action<DeviceLog> onDeviceWarning = OnDeviceWarning;
-                                if (onDeviceWarning != null)
-                                    onDeviceWarning((DeviceLog)new FiscalPrinterDeviceLog()
-                                    {
-                                        Category = TerminalLogCategory.Critical,
-                                        Message = ("Fp700 writing article FALSE: " + res)
-                                    });
+                                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "Fp700 writing article FALSE: " + res)
+                                { Status = eStatusRRO.Error, IsСritical = true });
+                                
                                 isSuccess = false;
                                 ILogger<Fp700> logger3 = _logger;
                                 if (logger3 != null)
@@ -1592,7 +1488,7 @@ namespace Front.Equipments.FP700
             if (!IsZReportAlreadyDone & flag)
                 return false;
             if (_hasCriticalError & flag)
-                throw new Exception("FP 700 has critical error: " + JsonConvert.SerializeObject((object)_currentPrinterStatus));
+                throw new Exception("FP 700 has critical error: " +_currentPrinterStatus.TextError + Environment.NewLine + JsonConvert.SerializeObject((object)_currentPrinterStatus));
             if (!_serialDevice.IsOpen)
                 return false;
             if (!_isReady)
@@ -1836,15 +1732,8 @@ namespace Front.Equipments.FP700
                                 bitDescriptionBg = "Крышка принтера открыта.";
                                 _hasCriticalError = true;
                                 _currentPrinterStatus.IsCoverOpen = true;
-                                Action<DeviceLog> onDeviceWarning1 = OnDeviceWarning;
-                                if (onDeviceWarning1 != null)
-                                {
-                                    FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
-                                    printerDeviceLog.Category = TerminalLogCategory.Critical;
-                                    printerDeviceLog.Message = "[FP700] Cover is open";
-                                    onDeviceWarning1((DeviceLog)printerDeviceLog);
-                                    break;
-                                }
+                                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "[FP700] Cover is open")
+                                { Status = eStatusRRO.Error, IsСritical = true });                                
                                 break;
                             case 6:
                                 bitDescriptionBg = "Регистратор персонализирован";
@@ -1856,44 +1745,26 @@ namespace Front.Equipments.FP700
                         switch (bitIndex)
                         {
                             case 0:
-                                _hasCriticalError = true;
                                 bitDescriptionBg = "# Бумага закончилась. Если этот статус возникнет при выполнении команды, связанной с печатью, то команда будет отклонена и состояние регистратора не изменится.";
-                                Action<DeviceLog> onDeviceWarning2 = OnDeviceWarning;
-                                if (onDeviceWarning2 != null)
-                                {
-                                    FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
-                                    printerDeviceLog.Category = TerminalLogCategory.Critical;
-                                    printerDeviceLog.Message = "[FP700] Paper was ended";
-                                    onDeviceWarning2((DeviceLog)printerDeviceLog);
-                                    break;
-                                }
-                                break;
+                                _hasCriticalError = true;
+                                _currentPrinterStatus.IsOutOffPaper = true;                                
+                                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "[FP700] Paper was ended")
+                                { Status = eStatusRRO.Error, IsСritical = true });                                
+                               break;
                             case 1:
                                 bitDescriptionBg = "Заканчивается бумага";
                                 _currentPrinterStatus.IsPaperNearEnd = true;
-                                Action<DeviceLog> onDeviceWarning3 = OnDeviceWarning;
-                                if (onDeviceWarning3 != null)
-                                {
-                                    FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
-                                    printerDeviceLog.Category = TerminalLogCategory.Warning;
-                                    printerDeviceLog.Message = "[FP700] Paper near end";
-                                    onDeviceWarning3((DeviceLog)printerDeviceLog);
-                                    break;
-                                }
+                                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.On, "[FP700] Paper near end")
+                                { Status = eStatusRRO.Warning, IsСritical = false });
+
                                 break;
                             case 2:
                                 bitDescriptionBg = "Носитель КЛЭФ заполнен (Осталось менее 1 МБ)";
+                                _currentPrinterStatus.IsKSEFMemoryFull = true;
                                 _hasCriticalError = true;
-                                Action<DeviceLog> onDeviceWarning4 = OnDeviceWarning;
-                                if (onDeviceWarning4 != null)
-                                {
-                                    FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
-                                    printerDeviceLog.Category = TerminalLogCategory.Critical;
-                                    printerDeviceLog.Message = "[FP700] Fiscal memory is full";
-                                    onDeviceWarning4((DeviceLog)printerDeviceLog);
-                                    break;
-                                }
-                                break;
+                                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "[FP700] Fiscal memory is full")
+                                { Status = eStatusRRO.Error, IsСritical = true });
+                                 break;
                             case 3:
                                 bitDescriptionBg = "Открыт фискальный чек";
                                 _currentPrinterStatus.IsFiscalReceiptOpen = true;
@@ -1902,6 +1773,7 @@ namespace Front.Equipments.FP700
                                 bitDescriptionBg = "Носитель КЛЭФ приближается к заполнению (осталось не более 2 МБ)";
                                 break;
                             case 5:
+                                _currentPrinterStatus.IsNoFiscalReceiptOpen = true;
                                 bitDescriptionBg = "Открыт нефискальный чек.";
                                 break;
                             case 6:
@@ -1942,29 +1814,18 @@ namespace Front.Equipments.FP700
                                 _hasCriticalError = true;
                                 bitDescriptionBg = "*В фискальной памяти присутствуют ошибки";
                                 _currentPrinterStatus.IsErrorOnWritingToFiscalMemory = true;
-                                Action<DeviceLog> onDeviceWarning5 = OnDeviceWarning;
-                                if (onDeviceWarning5 != null)
-                                {
-                                    FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
-                                    printerDeviceLog.Category = TerminalLogCategory.Critical;
-                                    printerDeviceLog.Message = "[FP700] Fiscal Memory have error";
-                                    onDeviceWarning5((DeviceLog)printerDeviceLog);
-                                    break;
-                                }
+                                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "[FP700] Fiscal Memory have error")
+                                { Status = eStatusRRO.Error, IsСritical = true });
+                                
                                 break;
                             case 1:
                                 _hasCriticalError = true;
                                 bitDescriptionBg = "Фискальная память неработоспособна";
                                 _currentPrinterStatus.IsCommonFiscalError = true;
-                                Action<DeviceLog> onDeviceWarning6 = OnDeviceWarning;
-                                if (onDeviceWarning6 != null)
-                                {
-                                    FiscalPrinterDeviceLog printerDeviceLog = new FiscalPrinterDeviceLog();
-                                    printerDeviceLog.Category = TerminalLogCategory.Critical;
-                                    printerDeviceLog.Message = "[FP700] Fiscal Memory not working";
-                                    onDeviceWarning6((DeviceLog)printerDeviceLog);
-                                    break;
-                                }
+                                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "[FP700] Fiscal Memory not working")
+                                { Status = eStatusRRO.Error, IsСritical = true });
+
+                                
                                 break;
                             case 2:
                                 bitDescriptionBg = "Заводской номер запрограммирован";
@@ -2121,10 +1982,8 @@ namespace Front.Equipments.FP700
                 IsFinish = (b == 'F');
                 bb.Append(response.Substring(2));
                 bb.Append(Environment.NewLine);
-
             }
         }
-
     }
 
     public class PrinterStatus
@@ -2151,6 +2010,8 @@ namespace Front.Equipments.FP700
 
         public bool IsFiscalMemoryFull { get; set; }
 
+        public bool IsKSEFMemoryFull { get; set; }
+
         public bool IsErrorOnWritingToFiscalMemory { get; set; }
 
         public bool IsFiscalMemoryReadOnly { get; set; }
@@ -2158,6 +2019,8 @@ namespace Front.Equipments.FP700
         public bool IsFiscalReceiptNotOpened { get; set; }
 
         public bool IsFiscalReceiptOpen { get; set; }
+
+        public bool IsNoFiscalReceiptOpen { get; set; }
 
         public bool IsPaperNearEnd { get; set; }
 
@@ -2180,6 +2043,31 @@ namespace Front.Equipments.FP700
         public bool IsPrinterResponse { get; set; }
 
         public bool IsProtocolError { get; set; }
+
+        public string TextError
+        {
+            get
+            {
+                StringBuilder er = new();
+                if (IsOutOffPaper)
+                    er.Append("Папір закінчився!" + Environment.NewLine);
+                if (IsCoverOpen)
+                    er.Append("Кришка принтера відкрита." + Environment.NewLine);
+                if (IsKSEFMemoryFull)
+                    er.Append("КЛЕФ память Заповненна" + Environment.NewLine);
+                if(IsErrorOnWritingToFiscalMemory)
+                    er.Append("Фіскальна пам'ять має помилки" + Environment.NewLine);
+                if (IsCommonFiscalError)
+                    er.Append("Фіскальна пам'ять непрацездатна" + Environment.NewLine);
+                if (IsCommonFiscalError)
+                    er.Append("Фіскальна пам'ять непрацездатна" + Environment.NewLine);
+                if (IsCommonFiscalError)
+                    er.Append("Фіскальна пам'ять непрацездатна" + Environment.NewLine);
+
+
+                return er.ToString();
+            }
+        }
     }
 
     public class DocumentNumbers
@@ -2273,9 +2161,7 @@ namespace Front.Equipments.FP700
     public abstract class SqLiteDataController
     {
         private readonly IConfiguration _configuration;
-
         private readonly string _tableName;
-
         private string _dbFile;
 
         protected SqLiteDataController(IConfiguration configuration, string tableName)
@@ -2292,43 +2178,17 @@ namespace Front.Equipments.FP700
 
         protected async Task<bool> ExecuteNonQuery(string scriptBody, DynamicParameters obj = null, bool customName = false)
         {
-            //string scriptBody = GetScriptBody(scriptName, customName);
             using SQLiteConnection connection = GetConnection();
             return await connection.ExecuteAsync(scriptBody, obj) > 0;
         }
 
         protected Task<TModel> GetByParams<TModel>(string scriptBody, DynamicParameters obj = null, bool customName = false)
         {
-            //string scriptBody = GetScriptBody(scriptName, customName);
             using SQLiteConnection cnn = GetConnection();
             return cnn.QueryFirstOrDefaultAsync<TModel>(scriptBody, obj);
         }
 
-        protected Task<IEnumerable<TModel>> GetMany<TModel>(string scriptBody, DynamicParameters obj = null, bool customName = false)
-        {
-            //string scriptBody = GetScriptBody(scriptName, customName);
-            using SQLiteConnection cnn = GetConnection();
-            return cnn.QueryAsync<TModel>(scriptBody, obj);
-        }
-
-        /*protected Task<TModel> ExecuteScalar<TModel>(string scriptName, DynamicParameters obj = null, bool customName = false)
-        {
-            string scriptBody = GetScriptBody(scriptName, customName);
-            using SQLiteConnection cnn = GetConnection();
-            return cnn.ExecuteScalarAsync<TModel>(scriptBody, obj);
-        } 
-        
-        private string GeFileName(string suffix)
-        {
-            return "script_" + _tableName + "_" + suffix + ".sql";
-        }
-
-        private string GetScriptBody(string scriptName, bool customName = false)
-        {
-            string path = (customName ? (scriptName + ".sql") : GeFileName(scriptName));
-            return File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Scripts", path));
-        }*/
-    }
+      }
 
     public class Fp700DataController : SqLiteDataController
     {
@@ -2348,21 +2208,6 @@ namespace Front.Equipments.FP700
             return GetByParams<int>(sql, dynamicParameters);
         }
 
-        /*public Task<int> UpdateArticle(ReceiptItem product, int plu)
-        {
-            string sql = @"UPDATE FP700FiscalPrinterArticles 
-			SET 
-			Price = @Price,
-			ProductName = @ProductName
-			WHERE Barcode = @Barcode";
-            DynamicParameters dynamicParameters = new DynamicParameters();
-            dynamicParameters.Add("@Barcode", product.ProductId.ToString());
-            dynamicParameters.Add("@ProductPLU", plu);
-            dynamicParameters.Add("@ProductName", product.ProductName);
-            dynamicParameters.Add("@Price", product.ProductPrice);
-            return GetByParams<int>("UpdateArticle", dynamicParameters);
-        }*/
-
         public Task<bool> DeleteArticle(int plu)
         {
             string sql = @"DELETE FROM FP700FiscalPrinterArticles WHERE PLU = @PLU";
@@ -2375,21 +2220,7 @@ namespace Front.Equipments.FP700
         {
             string sql = @"DELETE FROM FP700FiscalPrinterArticles";
             return ExecuteNonQuery(sql);
-        }
-        /*
-        public Task<IEnumerable<ProductArticle>> GetAllArticles()
-        {
-            string sql = $"SELECT * FROM FP700FiscalPrinterArticles";
-            return GetMany<ProductArticle>("GetAllArticles");
-        }
-        
-        public Task<ProductArticle> GetArticleByBarcode(string barcode)
-        {
-            string sql = "SELECT * FROM FP700FiscalPrinterArticles WHERE Barcode = @Barcode";
-            DynamicParameters dynamicParameters = new DynamicParameters();
-            dynamicParameters.Add("@Barcode", barcode);
-            return GetByParams<ProductArticle>("GetArticleByBarcode", dynamicParameters);
-        }*/
+        }       
 
         public Task<ProductArticle> GetArticleById(Guid id)
         {

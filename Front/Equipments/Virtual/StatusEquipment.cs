@@ -22,11 +22,15 @@ namespace Front.Equipments.Virtual
     }
     public class PosStatus : StatusEquipment
     {
+        public PosStatus() : base() { }
         public eStatusPos Status { get; set; }
     }
 
     public class RroStatus : StatusEquipment
     {
+        public RroStatus() : base() { }
+        public RroStatus(eModelEquipment pME, eStateEquipment pStateEquipment, string pTextState = null) : base(pME, pStateEquipment, pTextState) 
+        { }
         public eStatusRRO Status { get; set; }
     }
 }

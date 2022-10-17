@@ -358,7 +358,25 @@ namespace Front
             return r;
         }
 
-        public LogRRO RroPrintCopyReceipt()
+        public LogRRO RroPeriodZReport(IdReceipt pIdR, DateTime pBegin, DateTime pEnd, bool IsFull = true)
+        {
+            var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
+            {
+                try
+                {
+                    RRO?.PeriodZReport(pBegin, pEnd, IsFull);
+                    return new LogRRO(pIdR) { TypeOperation = eTypeOperation.PeriodZReport, TypeRRO = RRO.Model.ToString(), TextReceipt = $"{pBegin} {pEnd} {IsFull}" };
+                }
+                catch (Exception e)
+                {
+                    SetStatus?.Invoke(new StatusEquipment(RRO.Model, eStateEquipment.Error, e.Message) { IsСritical = true });
+                    return new LogRRO(pIdR) { TypeOperation = eTypeOperation.PeriodZReport, TypeRRO = RRO.Model.ToString(), CodeError = -1, Error = e.Message };
+                }
+            })).Result;
+            return r;
+        }
+
+            public LogRRO RroPrintCopyReceipt()
         {
             var r = RRO?.PrintCopyReceipt();
             Bl.InsertLogRRO(r);

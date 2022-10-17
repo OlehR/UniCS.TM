@@ -29,6 +29,8 @@ alter TABLE WARES_RECEIPT_PROMOTION  add Type_Wares  INTEGER  NOT NULL  DEFAULT 
 alter TABLE WARES_RECEIPT add Code_Company INTEGER  NOT NULL DEFAULT 0;--Ver=>7
 alter TABLE WARES_RECEIPT add Fix_Weight_Quantity NOT NULL DEFAULT 0;--Ver=>8
 alter TABLE RECEIPT    add  NUMBER_RECEIPT_POS TEXT;--Ver=>9
+alter TABLE RECEIPT    add Sum_Wallet NUMBER   NOT NULL DEFAULT 0;--Ver=>10
+alter TABLE RECEIPT    add ReceiptId TEXT;--Ver=>11
 
 
 [SqlUpdateMID]
@@ -201,16 +203,16 @@ Price as Price/*, wr.sum as Sum*/, Type_Price as TypePrice
 insert into receipt (id_workplace, code_period, code_receipt, date_receipt, 
 sum_receipt, vat_receipt, code_pattern, state_receipt, code_client,
  number_cashier, number_receipt, code_discount, sum_discount, percent_discount, 
- code_bonus, sum_bonus, sum_cash, sum_credit_card, code_outcome, 
+ code_bonus, sum_bonus, sum_cash, Sum_Wallet, sum_credit_card, code_outcome, 
  code_credit_card, number_slip,Number_Receipt_POS, number_tax_income,USER_CREATE,
  ADDITION_N1,ADDITION_N2,ADDITION_N3,
  ADDITION_C1,ADDITION_D1,Type_Receipt, 
  Id_Workplace_Refund,Code_Period_Refund,Code_Receipt_Refund
  ) values 
- (@IdWorkplace, @CodePeriod, @CodeReceipt, @DateReceipt, 
+ (@IdWorkplace, @CodePeriod, @CodeReceipt,  @DateReceipt, 
  @SumReceipt, @VatReceipt, @CodePattern, @StateReceipt, @CodeClient,
  @NumberCashier, @NumberReceipt, 0, @SumDiscount, @PercentDiscount,
- 0, @SumBonus, @SumCash, @SumCreditCard, 0, 
+ 0, @SumBonus, @SumCash, @SumWallet, @SumCreditCard, 0, 
  @CodeCreditCard, @NumberSlip,@NumberReceiptPOS, 0,@UserCreate,
  @AdditionN1,@AdditionN2,@AdditionN3,
  @AdditionC1,@AdditionD1,@TypeReceipt,
@@ -375,7 +377,7 @@ update GEN_WORKPLACE set CODE_RECEIPT=CODE_RECEIPT+1 where ID_WORKPLACE=@IdWorkp
 select CODE_RECEIPT from GEN_WORKPLACE where ID_WORKPLACE=@IdWorkplace and CODE_PERIOD=@CodePeriod;
 
 [SqlGetNewReceipt2]
-insert into receipt (id_workplace, code_period, code_receipt) values (@IdWorkplace,@CodePeriod,@CodeReceipt);
+insert into receipt (id_workplace, code_period, code_receipt,ReceiptId) values (@IdWorkplace,@CodePeriod,@CodeReceipt,@ReceiptId);
 
 [SqlLogin]
 SELECT u.CODE_USER code_user, p.NAME_FOR_PRINT name_user, u.login login, u.PassWord password
@@ -603,6 +605,7 @@ CREATE TABLE RECEIPT (
     CODE_PERIOD       INTEGER  NOT NULL,
     CODE_RECEIPT      INTEGER  NOT NULL,
     DATE_RECEIPT      DATETIME NOT NULL DEFAULT (datetime('now','localtime')),
+    ReceiptId TEXT,
 --    CODE_WAREHOUSE    INTEGER  NOT NULL,
     Type_Receipt INTEGER  NOT NULL DEFAULT 1,
     SUM_RECEIPT       NUMBER   NOT NULL DEFAULT 0, 
@@ -618,6 +621,7 @@ CREATE TABLE RECEIPT (
     PERCENT_DISCOUNT  INTEGER,
     CODE_BONUS        INTEGER,
     SUM_BONUS         NUMBER   NOT NULL DEFAULT 0,
+    Sum_Wallet        NUMBER   NOT NULL DEFAULT 0,
     SUM_CASH          NUMBER,
     SUM_CREDIT_CARD   NUMBER,
     CODE_OUTCOME      INTEGER  NOT NULL DEFAULT 0,

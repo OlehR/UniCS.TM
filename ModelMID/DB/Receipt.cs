@@ -29,6 +29,7 @@ namespace ModelMID
         /// </summary>
         public string TranslationTypeReceipt { get { return TypeReceipt.GetDescription(); } }
         public Guid TerminalId { get; set; }
+       
         int _CodeClient;
         public int CodeClient { get { return Client?.CodeClient ?? _CodeClient; } set { _CodeClient = value; } }
         public Client Client { get; set; }
@@ -71,6 +72,10 @@ namespace ModelMID
         /// Оплачено Готівкою
         /// </summary>
         public decimal SumCash { get; set; }
+        /// <summary>
+        /// Списані/нараховані гроші скарбничка
+        /// </summary>
+        public decimal SumWallet { get; set; }
 
         decimal _SumCreditCard;
         /// <summary>

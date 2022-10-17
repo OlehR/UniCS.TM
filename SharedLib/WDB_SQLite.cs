@@ -373,7 +373,7 @@ namespace SharedLib
                     if (pIdReceipt.CodePeriod == 0)
                         pIdReceipt.CodePeriod = Global.GetCodePeriod();
                     pIdReceipt.CodeReceipt = DB.ExecuteScalar<IdReceipt, int>(SqlGetNewReceipt, pIdReceipt);
-
+                    
                     using (var DB_R = new SQLite(ReceiptFile))
                     {
                         DB_R.ExecuteNonQuery<IdReceipt>(SqlGetNewReceipt2, pIdReceipt);

@@ -18,10 +18,13 @@ using System.Windows.Controls;
 using ModernExpo.SelfCheckout.Entities;
 using ModernExpo.SelfCheckout.Entities.Enums;
 using ModernExpo.SelfCheckout.Entities.Models;
-using Receipt = ModelMID.Receipt;
+using Receipt = Front.Equipments.Utils;
+using ReceiptEvent = ModernExpo.SelfCheckout.Entities.Models.ReceiptEvent;//Front.Equipments.Utils.ReceiptEvent;
 using Dapper;
 using System.Data.SQLite;
 using System.Data;
+using System.ComponentModel.DataAnnotations;
+using ModernExpo.SelfCheckout.Entities.Session;
 
 namespace Front.Equipments.Utils
 {
@@ -403,7 +406,18 @@ namespace Front.Equipments.Utils
             Status = DeviceConnectionStatus.NotConnected
         };
     }
+    public class MoneyMovingModel
+    {
+        public MoneyMovingDestination MoneyDestination { get; set; }
 
+        public decimal Sum { get; set; }
+
+        public string Description { get; set; }
+
+        public int OperatorNumber { get; set; }
+    }
+
+    /*
     public class Fp700DataController : SqLiteDataController
     {
         public Fp700DataController(IConfiguration configuration)
@@ -519,7 +533,595 @@ namespace Front.Equipments.Utils
         private string GetScriptBody(string scriptName, bool customName = false) => File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Scripts", customName ? scriptName + ".sql" : this.GeFileName(scriptName)));
     }
 
+    */
+    public class WeightInfo
+    {
+        public double Weight { get; set; }
+
+        public double DeltaWeight { get; set; }
+
+        public override int GetHashCode()
+        {
+            return (int)(Weight + DeltaWeight);
+        }
+
+        public override bool Equals(object obj)
+        {
+            WeightInfo weightInfo = obj as WeightInfo;
+            if (weightInfo != null)
+            {
+                if (Weight == weightInfo.Weight)
+                {
+                    return DeltaWeight == weightInfo.DeltaWeight;
+                }
+
+                return false;
+            }
+
+            return false;
+        }
+
+        public static WeightInfo operator +(WeightInfo first, WeightInfo second)
+        {
+            return new WeightInfo
+            {
+                Weight = first.Weight + second.Weight,
+                DeltaWeight = first.DeltaWeight + second.DeltaWeight
+            };
+        }
+
+        public override string ToString()
+        {
+            return $"WeightInfo:{Weight};{DeltaWeight}";
+        }
+    }
+
+    [Serializable]
+    public class ProductViewModel
+    {
+        private decimal _discountValue;
+
+        public Guid Id { get; set; }
+
+        [Required(ErrorMessage = "Barcode is required")]
+        public string Barcode { get; set; }
+
+        [Required(ErrorMessage = "Name is required")]
+        public string Name { get; set; }
+
+        public string AdditionalDescription { get; set; }
+
+        public string Image { get; set; }
+
+        [Required(ErrorMessage = "Price is required")]
+        public decimal Price { get; set; }
+
+        [Required(ErrorMessage = "Weight is required")]
+        public double Weight { get; set; }
+
+        public List<WeightInfo> AdditionalWeights { get; set; }
+
+        [Required(ErrorMessage = "Delta weight is required")]
+        public double DeltaWeight { get; set; }
+
+        public double TotalDelta => DeltaWeight * (double)Quantity;
+
+        public double DeltaWeightKg
+        {
+            get
+            {
+                string[] array = (DeltaWeight / 1000.0).ToString().Split(',', '.');
+                if (array.Length == 1 || array.Length == 0)
+                {
+                    return DeltaWeight / 1000.0;
+                }
+
+                if (array[1].Length > 3)
+                {
+                    return DeltaWeight;
+                }
+
+                return DeltaWeight / 1000.0;
+            }
+        }
+
+        [Required(ErrorMessage = "Product weight type is required")]
+        public ProductWeightType ProductWeightType { get; set; }
+
+        public bool IsAgeRestrictedConfirmed { get; set; }
+
+        public bool IsNeedExcise { get; set; }
+
+        public decimal Quantity { get; set; }
+
+        public decimal? CustomFullPrice { get; set; }
+
+        public decimal FullPrice
+        {
+            get
+            {
+                if (CustomFullPrice.HasValue)
+                {
+                    return CustomFullPrice.Value;
+                }
+
+                return Math.Round(((ProductWeightType != ProductWeightType.ByWeight) ? (Price * Quantity) : (Price * ((decimal)Weight / 1000m))) - Math.Round(DiscountValue, 2, MidpointRounding.AwayFromZero), 2, MidpointRounding.AwayFromZero);
+            }
+        }
+
+        public decimal DiscountValue
+        {
+            get
+            {
+                return _discountValue;
+            }
+            set
+            {
+                _discountValue = Math.Round(value, 2, MidpointRounding.AwayFromZero);
+            }
+        }
+
+        public string DiscountName { get; set; }
+
+        public WarningType? WarningType { get; set; }
+
+        public double CalculatedWeight { get; set; }
+
+        public double TotalWeight
+        {
+            get
+            {
+                if (ProductWeightType == ProductWeightType.ByWeight)
+                {
+                    return Weight;
+                }
+
+                return Weight * (double)Quantity;
+            }
+        }
+
+        public List<Tag> Tags { get; set; }
+
+        public bool HasSecurityMark { get; set; }
+
+        public int TotalRows { get; set; }
+
+        [Required(ErrorMessage = "Category weight is required")]
+        public int WeightCategory { get; set; }
+
+        public bool IsProductOnProcessing { get; set; }
+
+        public string TaxGroup { get; set; }
+
+        public Guid CategoryId { get; set; }
+
+        public string Uktzed { get; set; }
+
+        public bool IsUktzedNeedToPrint { get; set; }
+
+        public List<string> Excises { get; set; }
+
+        public ProductViewModel()
+        {
+            CalculatedWeight = -1.0;
+            Excises = new List<string>();
+        }
+
+        public ProductViewModel(Product product)
+        {
+            Id = product.Id;
+            Barcode = product.Barcode;
+            Name = product.Name;
+            Image = product.Image;
+            Price = product.Price;
+            Weight = product.Weight;
+            Quantity = 1m;
+            DeltaWeight = product.DeltaWeight;
+            ProductWeightType = product.ProductWeightType;
+            IsAgeRestrictedConfirmed = product.IsAgeRestrictedConfirmed;
+            CalculatedWeight = -1.0;
+            Tags = product.Tags;
+            HasSecurityMark = product.HasSecurityMark;
+            TotalRows = product.TotalRows;
+            WeightCategory = product.WeightCategory;
+            CategoryId = product.CategoryId;
+            TaxGroup = product.TaxGroup;
+            Uktzed = product.Uktzed;
+            IsUktzedNeedToPrint = product.IsUktzedNeedToPrint;
+            Excises = new List<string>(product.Excises);
+            AdditionalWeights = new List<WeightInfo>
+            {
+                new WeightInfo
+                {
+                    DeltaWeight = DeltaWeight,
+                    Weight = Weight
+                }
+            };
+        }
+
+        public ProductViewModel(ProductViewModel product)
+        {
+            Id = product.Id;
+            Barcode = product.Barcode;
+            Name = product.Name;
+            Image = product.Image;
+            Price = product.Price;
+            Weight = product.Weight;
+            Quantity = product.Quantity;
+            DeltaWeight = product.DeltaWeight;
+            ProductWeightType = product.ProductWeightType;
+            IsAgeRestrictedConfirmed = product.IsAgeRestrictedConfirmed;
+            IsNeedExcise = product.IsNeedExcise;
+            CalculatedWeight = product.CalculatedWeight;
+            Tags = product.Tags;
+            HasSecurityMark = product.HasSecurityMark;
+            TotalRows = product.TotalRows;
+            WeightCategory = product.WeightCategory;
+            CategoryId = product.CategoryId;
+            AdditionalDescription = product.AdditionalDescription;
+            DiscountValue = product.DiscountValue;
+            DiscountName = product.DiscountName;
+            WarningType = product.WarningType;
+            IsProductOnProcessing = product.IsProductOnProcessing;
+            TaxGroup = product.TaxGroup;
+            Uktzed = product.Uktzed;
+            IsUktzedNeedToPrint = product.IsUktzedNeedToPrint;
+            Excises = new List<string>(product.Excises);
+            AdditionalWeights = new List<WeightInfo>
+            {
+                new WeightInfo
+                {
+                    DeltaWeight = DeltaWeight,
+                    Weight = Weight
+                }
+            };
+        }
+
+        public virtual Product ToProduct()
+        {
+            return new Product
+            {
+                Id = Id,
+                Barcode = Barcode,
+                Name = Name,
+                Image = Image,
+                Price = Price,
+                Weight = Weight,
+                DeltaWeight = DeltaWeight,
+                ProductWeightType = ProductWeightType,
+                IsAgeRestrictedConfirmed = IsAgeRestrictedConfirmed,
+                HasSecurityMark = HasSecurityMark,
+                WeightCategory = WeightCategory,
+                CategoryId = CategoryId,
+                TaxGroup = TaxGroup,
+                Uktzed = Uktzed,
+                IsUktzedNeedToPrint = IsUktzedNeedToPrint,
+                Excises = new List<string>(Excises)
+            };
+        }
+
+        public ReceiptItem ToReceiptItem()
+        {
+            return new ReceiptItem
+            {
+                Discount = DiscountValue,
+                FullPrice = FullPrice,
+                TotalPrice = FullPrice,
+                Id = Guid.NewGuid(),
+                ProductBarcode = Barcode,
+                ProductId = Id,
+                ProductName = Name,
+                ProductPrice = Price,
+                ProductWeight = (int)Math.Round(Weight, MidpointRounding.AwayFromZero),
+                ProductCalculatedWeight = (int)Math.Round(CalculatedWeight, MidpointRounding.AwayFromZero),
+                ProductQuantity = ((ProductWeightType == ProductWeightType.ByWeight) ? ((decimal)Weight / 1000m) : Quantity),
+                ProductWeightType = ProductWeightType,
+                TaxGroup = TaxGroup,
+                Uktzed = Uktzed,
+                IsUktzedNeedToPrint = IsUktzedNeedToPrint,
+                Excises = new List<string>(Excises)
+            };
+        }
+    }
+
+    public class Receipt
+    {
+        public Guid Id { get; set; }
+
+        public string FiscalNumber { get; set; }
+
+        public string CustomId { get; set; }
+
+        public ReceiptStatusType Status { get; set; }
+
+        public Guid TerminalId { get; set; }
+
+        public decimal Amount { get; set; }
+
+        public decimal Discount { get; set; }
+
+        public decimal TotalAmount { get; set; }
+
+        public Guid? CustomerId { get; set; }
+
+        public DateTime CreatedAt { get; set; }
+
+        public DateTime UpdatedAt { get; set; }
+
+        public bool IsTransferred { get; set; }
+
+        public DateTime? TransferredAt { get; set; }
+    }
+
+    public class ReceiptViewModel
+    {
+        private List<ReceiptItem> _receiptItems;
+
+        private string _cashier;
+
+        private ReceiptPayment _paymentInfo;
+
+        public Guid Id { get; set; }
+
+        public string CustomId { get; set; }
+
+        public Guid TerminalId { get; set; }
+
+        public ReceiptStatusType Status { get; set; }
+
+        public PaymentType PaymentType { get; set; }
+
+        public string FiscalNumber { get; set; }
+
+        public decimal Amount { get; set; }
+
+        public decimal PaidAmount { get; set; }
+
+        public decimal Discount { get; set; }
+
+        public decimal TotalAmount { get; set; }
+
+        public decimal MaxBonusesToUse { get; set; }
+
+        public decimal BonusesApplied { get; set; }
+
+        public List<ReceiptItem> ReceiptItems
+        {
+            get
+            {
+                return _receiptItems;
+            }
+            set
+            {
+                _receiptItems = value;
+                if (_receiptItems == null)
+                {
+                    return;
+                }
+
+                foreach (ReceiptItem receiptItem in _receiptItems)
+                {
+                    receiptItem.ReceiptId = Id;
+                }
+            }
+        }
+
+        public CustomerViewModel Customer { get; set; }
+
+        public string Cashier
+        {
+            get
+            {
+                string cashier = _cashier;
+                if (cashier != null && cashier.Length == 10)
+                {
+                    return _cashier + " ";
+                }
+
+                return _cashier;
+            }
+            set
+            {
+                _cashier = value;
+            }
+        }
+
+        public ReceiptPayment PaymentInfo
+        {
+            get
+            {
+                return _paymentInfo;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    _paymentInfo = null;
+                    return;
+                }
+
+                value.ReceiptId = Id;
+                _paymentInfo = value;
+            }
+        }
+
+        public List<ReceiptEvent> ReceiptEvents { get; set; }
+
+        public DateTime CreatedAt { get; set; }
+
+        public DateTime UpdatedAt { get; set; }
+
+        public string DisplayName { get; set; }
+
+        public bool IsTransferred { get; set; }
+
+        public DateTime? TransferredAt { get; set; }
+
+        public ReceiptViewModel()
+        {
+            Status = ReceiptStatusType.Created;
+        }
+
+        public ReceiptViewModel(Receipt receipt, List<ReceiptItem> receiptItems, CustomerViewModel customer, List<SessionProductEvent> sessionEvents)
+        {
+            Id = receipt.Id;
+            FiscalNumber = receipt.FiscalNumber;
+            Status = receipt.Status;
+            TerminalId = receipt.TerminalId;
+            TotalAmount = receipt.TotalAmount;
+            Customer = customer;
+            CreatedAt = receipt.CreatedAt;
+            UpdatedAt = receipt.UpdatedAt;
+            IsTransferred = receipt.IsTransferred;
+            TransferredAt = receipt.TransferredAt;
+            CustomId = receipt.CustomId;
+            ReceiptItems = receiptItems;
+            if (sessionEvents == null)
+            {
+                return;
+            }
+
+            ReceiptEvents = sessionEvents.Select((SessionProductEvent s) => new ReceiptEvent(s, Id, ReceiptItems.FirstOrDefault(delegate (ReceiptItem f)
+            {
+                Guid productId = f.ProductId;
+                Guid? productId2 = s.ProductId;
+                return productId == productId2;
+            })?.Id)).ToList();
+        }
+
+        public ReceiptViewModel(ReceiptViewModel model)
+        {
+            Id = model.Id;
+            DisplayName = model.DisplayName;
+            TerminalId = model.TerminalId;
+            Status = model.Status;
+            PaymentType = model.PaymentType;
+            FiscalNumber = model.FiscalNumber;
+            Amount = model.Amount;
+            Discount = model.Discount;
+            TotalAmount = model.TotalAmount;
+            PaidAmount = model.PaidAmount;
+            CustomId = model.CustomId;
+            IsTransferred = model.IsTransferred;
+            TransferredAt = model.TransferredAt;
+            ReceiptItems = new List<ReceiptItem>();
+            if (model.ReceiptItems != null)
+            {
+                ReceiptItems.AddRange(model.ReceiptItems);
+            }
+
+            Customer = model.Customer;
+            PaymentInfo = model.PaymentInfo;
+            CreatedAt = model.CreatedAt;
+            UpdatedAt = model.UpdatedAt;
+        }
+
+        public Receipt ToReceipt()
+        {
+            CreatedAt = ((CreatedAt == default(DateTime)) ? DateTime.Now : CreatedAt);
+            UpdatedAt = ((UpdatedAt == default(DateTime)) ? DateTime.Now : UpdatedAt);
+            Id = ((Id == default(Guid)) ? Guid.NewGuid() : Id);
+            return new Receipt
+            {
+                Id = Id,
+                FiscalNumber = FiscalNumber,
+                Status = Status,
+                Amount = Amount,
+                Discount = Discount,
+                TerminalId = TerminalId,
+                TotalAmount = TotalAmount,
+                CustomerId = Customer?.Id,
+                CreatedAt = CreatedAt,
+                UpdatedAt = UpdatedAt,
+                CustomId = CustomId,
+                IsTransferred = IsTransferred,
+                TransferredAt = TransferredAt
+            };
+        }
+    }
 
 
+    public class CustomerViewModel
+    {
+        public Guid Id { get; set; }
 
+        public string CustomerId { get; set; }
+
+        public string Name { get; set; }
+
+        public double DiscountPercent { get; set; }
+
+        public decimal Bonuses { get; set; }
+
+        public decimal Wallet { get; set; }
+
+        public string PhoneNumber { get; set; }
+
+        public CustomerViewModel(Customer customer)
+        {
+            Id = customer.Id;
+            CustomerId = customer.CardNumber;
+            Name = customer.FullName;
+            DiscountPercent = customer.DiscountPercent;
+            Bonuses = customer.Bonuses;
+            Wallet = customer.Wallet;
+            PhoneNumber = customer.PhoneNumber;
+        }
+
+        public CustomerViewModel()
+        {
+        }
+
+        public Customer ToCustomer()
+        {
+            return new Customer
+            {
+                CardNumber = CustomerId,
+                FullName = Name,
+                DiscountPercent = DiscountPercent,
+                Bonuses = Bonuses,
+                Wallet = Wallet,
+                PhoneNumber = PhoneNumber
+            };
+        }
+
+        public CustomerViewModel Clone()
+        {
+            return new CustomerViewModel
+            {
+                Id = Id,
+                CustomerId = CustomerId,
+                DiscountPercent = DiscountPercent,
+                Bonuses = Bonuses,
+                Wallet = Wallet,
+                Name = Name,
+                PhoneNumber = PhoneNumber
+            };
+        }
+    }
+    
+    /*public class SessionProductEvent
+    {
+        public Guid? MobileDeviceId { get; set; }
+
+        public Guid? ProductId { get; set; }
+
+        public ReceiptEventType EventType { get; set; }
+
+        public Guid? UserId { get; set; }
+
+        public string UserFullName { get; set; }
+
+        public DateTime CreatedAt { get; set; }
+
+        public DateTime? ResolvedAt { get; set; }
+
+        public string FiscalNumber { get; set; }
+
+        public PaymentType PaymentType { get; set; }
+
+        public long InvoiceNumber { get; set; }
+
+        public int ProductWeight { get; set; }
+    }*/
 }

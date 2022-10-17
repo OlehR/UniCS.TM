@@ -44,17 +44,14 @@ namespace Front
                 if(info.IsСritical==true)
                 {
                     LastErrorEquipment= info.TextState;
+                    FileLogger.WriteLogMessage(this, $"EF.SetStatus {info.ModelEquipment}", $"{info.TextState}", eTypeLog.Error);
                     SetStateView(eStateMainWindows.WaitAdmin,eTypeAccess.ErrorEquipment);
                     return;
                 }
                 var r = Dispatcher.BeginInvoke(new ThreadStart(() =>
                 {
                     PosStatus PS = info as PosStatus;
-                    //if (info.TypeEquipment == eTypeEquipment.BankTerminal || info.TypeEquipment == eTypeEquipment.RRO)
-                    //{
-                    //info.Status
-                    //}
-                    //EquipmentStatusInPayment.Text = PS.Status.GetDescription(); //TMP - не працює через гетер
+
                     if (PS != null)
                         EquipmentInfo = PS.Status.GetDescription();
                     else
@@ -65,7 +62,7 @@ namespace Front
                     }
                     if (EquipmentInfo != null)
                         EquipmentStatusInPayment.Text = EquipmentInfo; //TMP - не працює через гетер
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EquipmentInfo"));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EquipmentInfo)));
                 }));
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"SetStatus ({info.ToJSON()})", eTypeLog.Expanded);
                 if (EF.StatCriticalEquipment != eStateEquipment.On)
