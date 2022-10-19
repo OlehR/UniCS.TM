@@ -129,7 +129,7 @@ namespace Front.Equipments
         {
             lock (Lock)
             {
-                return Fp700.FullReportByDate(pBegin, pEnd);
+                return Fp700.FullReportByDate(pBegin, pEnd,IsFull);
             }
 
         }
@@ -928,12 +928,12 @@ namespace Front.Equipments.FP700
             return res;
         }
 
-        public bool FullReportByDate(DateTime startDate, DateTime? endDate)
+        public bool FullReportByDate(DateTime startDate, DateTime? endDate,bool IsFull)
         {
             string str = "";
             if (endDate.HasValue)
                 str = "," + endDate.Value.ToString("ddMMyy");
-            return OnSynchronizeWaitCommandResult(Command.FullReportByPeriod, _operatorPassword + "," + startDate.ToString("ddMMyy") + str);
+            return OnSynchronizeWaitCommandResult(IsFull?Command.FullReportByPeriod: Command.ShortReportByPeriod, _operatorPassword + "," + startDate.ToString("ddMMyy") + str);
         }
 
         public void OpenReturnReceipt(ReceiptViewModel receipt) => OnSynchronizeWaitCommandResult(Command.ReturnReceipt, string.Format("{0},{1},{2}", (object)_operatorCode, (object)_operatorPassword, (object)_tillNumber), (Action<string>)(res => _logger.LogDebug("[ FP700 ] ReturnReceipt res = " + res)));
@@ -1488,7 +1488,7 @@ namespace Front.Equipments.FP700
             if (!IsZReportAlreadyDone & flag)
                 return false;
             if (_hasCriticalError & flag)
-                throw new Exception("FP 700 has critical error: " +_currentPrinterStatus.TextError + Environment.NewLine + JsonConvert.SerializeObject((object)_currentPrinterStatus));
+                throw new Exception(Environment.NewLine+"Проблема з фіскальним реєстратором FP700: " + Environment.NewLine + _currentPrinterStatus.TextError);
             if (!_serialDevice.IsOpen)
                 return false;
             if (!_isReady)
@@ -1651,6 +1651,7 @@ namespace Front.Equipments.FP700
             Buffer.BlockCopy((Array)data, num2 + 1, (Array)numArray2, 0, 6);
             byte[] dst = new byte[4];
             Buffer.BlockCopy((Array)data, num3 + 1, (Array)dst, 0, 4);
+            _currentPrinterStatus = new();
             ShowStatus(cmdNumber, numArray1, (IReadOnlyList<byte>)numArray2);
             return true;
         }
@@ -2133,12 +2134,14 @@ namespace Front.Equipments.FP700
         ServiceCashInOut = 70, // 0x00000046
         PrintDiagnosticInformation = 71, // 0x00000047
         FiscalTransactionStatus = 76, // 0x0000004C
+        ShortReportByPeriod = 79, // 0x0000004F
         SendSound = 80, // 0x00000050
         ReturnReceipt = 85, // 0x00000055
         PrintCode = 88, // 0x00000058
         DiagnosticInfo = 90, // 0x0000005A
         PrintDividerLine = 93, // 0x0000005D
         FullReportByPeriod = 94, // 0x0000005E
+       
         SetOperatorName = 102, // 0x00000066
         ArticleProgramming = 107, // 0x0000006B
         FiscalReceiptCopy = 109, // 0x0000006D
