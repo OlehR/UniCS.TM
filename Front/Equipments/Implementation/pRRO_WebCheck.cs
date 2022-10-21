@@ -28,9 +28,11 @@ namespace Front.Equipments.Implementation
             //TMP!!!
             //WCh = new WebCheck.ClassFiscal();
             Url = pConfiguration["Devices:pRRO_WebCheck:Url"];
-            FN =  RequestAsync($"{Url}/FN", HttpMethod.Post, null, 5000, "application/json").Replace("\"","");
+            FN =  RequestAsync($"{Url}/FN", HttpMethod.Post, null, 10000, "application/json").Replace("\"","");
             if(string.IsNullOrEmpty(FN))
-                State = eStateEquipment.Init;
+                State = eStateEquipment.Error;
+            else
+            State = eStateEquipment.On;
         }
 
         override public bool OpenWorkDay()
@@ -59,7 +61,7 @@ namespace Front.Equipments.Implementation
 
         override public LogRRO PrintZ(IdReceipt pIdR)
         {
-            var r = RequestAsync($"{Url}/PrintZ", HttpMethod.Post, null, 5000, "application/json");
+            var r = RequestAsync($"{Url}/PrintZ", HttpMethod.Post, pIdR.ToJSON(), 5000, "application/json");
             if (!string.IsNullOrEmpty(r))
                 return JsonConvert.DeserializeObject<LogRRO>(r);
             return null;
@@ -67,7 +69,7 @@ namespace Front.Equipments.Implementation
 
         override public LogRRO PrintX(IdReceipt pIdR)
         {
-            var r = RequestAsync($"{Url}/PrintX", HttpMethod.Post, null, 5000, "application/json");
+            var r = RequestAsync($"{Url}/PrintX", HttpMethod.Post, pIdR.ToJSON(), 5000, "application/json");
             if (!string.IsNullOrEmpty(r))
                 return JsonConvert.DeserializeObject<LogRRO>(r);
             return null;
@@ -86,6 +88,20 @@ namespace Front.Equipments.Implementation
             if (!string.IsNullOrEmpty(r))
                 return JsonConvert.DeserializeObject<LogRRO>(r);
             return null;
+        }
+
+        override public StatusEquipment TestDevice() 
+        {
+            var r = RequestAsync($"{Url}/TestDevice", HttpMethod.Post, null, 5000, "application/json");            
+            var Res= JsonConvert.DeserializeObject<StatusEquipment>(r);
+            if (Res?.status == true)
+                State = eStateEquipment.On;
+            return Res;
+        }
+        override public string GetDeviceInfo() 
+        { 
+            var r = RequestAsync($"{Url}/GetDeviceInfo", HttpMethod.Post, null, 5000, "application/json");
+            return r;
         }
 
         /*   string FN;
@@ -307,13 +323,20 @@ namespace Front.Equipments.Implementation
 
         string GenL(Receipt pR)
         {
-            string pay = "";
+            string pay = "",Comment="";
             if (pR.Payment != null && pR.Payment.Count() > 0)
             {
                 var el = pR.Payment.First();
                 pay = $"PA=\"{el.Bank}\" PB=\"{el.NumberTerminal}\" PC=\"{(pR.TypeReceipt == eTypeReceipt.Sale ? "СПЛАТА" : "Повернення")}\" PD=\"{el.NumberCard}\" PE=\"{el.NumberSlip}\" PSNM=\"{el.CardHolder}\" RRN=\"{el.CodeAuthorization}\"";
             }
-            return $"<L {pay}/>";
+            if (pR.ReceiptComments != null && pR.ReceiptComments.Any())
+            {
+                int i = 1;
+                foreach (var el in pR.ReceiptComments)
+                    Comment += $" UP{i++}=\"{el}\"";
+            }
+
+            return $"<L {pay} {Comment}/>";
         }
 
         static public string RequestAsync(string parUrl, HttpMethod pMethod, string pBody = null, int pWait = 5000, string pContex = "application/json;charset=UTF-8", AuthenticationHeaderValue pAuthentication = null)

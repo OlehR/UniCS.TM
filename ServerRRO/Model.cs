@@ -100,6 +100,13 @@ namespace ServerRRO
 
         [DataMember]
         public int CodeReceipt { get; set; }
+        public IdReceipt(int idWorkplace, int codePeriod, int codeReceipt=0)
+        {
+            IdWorkplace = idWorkplace;
+            CodePeriod = codePeriod;
+            CodeReceipt = codeReceipt;
+        }
+
         public IdReceipt(IdReceipt idReceipt)
         {
             if (idReceipt == null)

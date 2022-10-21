@@ -54,6 +54,7 @@ namespace ServerRRO
           ResponseFormat = WebMessageFormat.Json,
            BodyStyle = WebMessageBodyStyle.Bare)]
         LogRRO MoveMoney(PrintReceiptData pData);
+
         [OperationContract]
         [WebInvoke(
           Method = "POST",
@@ -62,6 +63,25 @@ namespace ServerRRO
           ResponseFormat = WebMessageFormat.Json,
            BodyStyle = WebMessageBodyStyle.Bare)]
         string GetFN();
+
+        [OperationContract]
+        [WebInvoke(
+          Method = "POST",
+          UriTemplate = "/TestDevice",
+          RequestFormat = WebMessageFormat.Json,
+          ResponseFormat = WebMessageFormat.Json,
+           BodyStyle = WebMessageBodyStyle.Bare)]
+        StatusEquipment TestDevice();
+
+
+        [OperationContract]
+        [WebInvoke(
+          Method = "POST",
+          UriTemplate = "/GetDeviceInfo",
+          RequestFormat = WebMessageFormat.Json,
+          ResponseFormat = WebMessageFormat.Json,
+           BodyStyle = WebMessageBodyStyle.Bare)]
+        string GetDeviceInfo();
     }
        
 }

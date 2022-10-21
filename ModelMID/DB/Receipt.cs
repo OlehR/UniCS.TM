@@ -243,7 +243,7 @@ namespace ModelMID
                     if (!string.IsNullOrEmpty(Client.NameClient))
                         Res.Add(Client.NameClient);
                     if (Client.SumBonus > 0)
-                        Res.Add($"Бонуси:{Client.SumBonus}");
+                        Res.Add($"Бонуси:{Client.SumMoneyBonus}");
                     if (Client.Wallet > 0)
                         Res.Add($"Скарбничка:{Client.Wallet}");
                 }

@@ -280,7 +280,7 @@ namespace Front
         /// </summary>
         public LogRRO PrintReceipt(Receipt pReceipt)
         {
-            return Task.Run<LogRRO>((Func<LogRRO>)(() =>
+            var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
             {                
                 try
                 {
@@ -291,10 +291,27 @@ namespace Front
                 }
                 catch (Exception e)
                 {
+                    if(RRO!=null) RRO.State = eStateEquipment.Error;
                     SetStatus?.Invoke(new StatusEquipment(RRO.Model, eStateEquipment.Error, e.Message) { IsСritical = true });
                     return new LogRRO(pReceipt) { TypeOperation = eTypeOperation.Sale, TypeRRO = RRO.Model.ToString(), CodeError = -1, Error = e.Message };
                 }                
             })).Result;
+
+            Task.Run(() =>
+            {
+                try
+                {
+                    if (string.IsNullOrEmpty(r.TextReceipt) || RRO.Model == eModelEquipment.FP700)
+                        r.TextReceipt = RRO.GetTextLastReceipt();
+                    Bl.InsertLogRRO(r);
+                }
+                catch (Exception e)
+                {
+                    var ee = e.Message;
+                }
+            });
+            return r;
+
         }
 
         /*public async void  GetLastReceipt(LogRRO r)
@@ -327,9 +344,15 @@ namespace Front
             )).Result;
             Task.Run(() =>
             {
-                if (string.IsNullOrEmpty(r.TextReceipt) || RRO.Model == eModelEquipment.FP700)
-                    r.TextReceipt = RRO.GetTextLastReceipt();
-                Bl.InsertLogRRO(r);
+                try
+                {
+                    if (string.IsNullOrEmpty(r.TextReceipt) || RRO.Model == eModelEquipment.FP700)
+                        r.TextReceipt = RRO.GetTextLastReceipt();
+                    Bl.InsertLogRRO(r);
+                }catch(Exception e)
+                {
+                    var ee = e.Message;
+                }
             });
             return r;
         }
