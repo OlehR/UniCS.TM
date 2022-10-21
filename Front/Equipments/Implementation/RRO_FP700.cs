@@ -441,7 +441,7 @@ namespace Front.Equipments
                 TotalRows = receiptWares.TotalRows, //Сортування популярного.
                 IsProductOnProcessing = false, //
                 ///CategoryId=   !!!TMP Групи 1 рівня.
-                TaxGroup = Global.GetTaxGroup(receiptWares.TypeVat, (int)receiptWares.TypeWares),
+                TaxGroup = receiptWares.TaxGroup,//Global.GetTaxGroup(receiptWares.TypeVat, (int)receiptWares.TypeWares),
                 Barcode = receiptWares.TypeWares > 0 ? receiptWares.BarCode : null,
                 //FullPrice = receiptWares.Sum
                 //RefundedQuantity = receiptWares.RefundedQuantity,

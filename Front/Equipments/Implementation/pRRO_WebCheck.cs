@@ -13,6 +13,8 @@ using Utils;
 using static System.Net.WebRequestMethods;
 using Newtonsoft.Json;
 using System.Runtime.Serialization;
+using System.Threading;
+using System.Globalization;
 
 namespace Front.Equipments.Implementation
 {
@@ -26,21 +28,27 @@ namespace Front.Equipments.Implementation
             //TMP!!!
             //WCh = new WebCheck.ClassFiscal();
             Url = pConfiguration["Devices:pRRO_WebCheck:Url"];
-            FN = pConfiguration["Devices:pRRO_WebCheck:FN"];
-            OperatorName = pConfiguration["Devices:pRRO_WebCheck:OperatorID"];
+            FN =  RequestAsync($"{Url}/FN", HttpMethod.Post, null, 5000, "application/json").Replace("\"","");
+            if(string.IsNullOrEmpty(FN))
+                State = eStateEquipment.Init;
         }
 
         override public bool OpenWorkDay()
         {
-            var r= RequestAsync($"{Url}/OpenWorkDay", HttpMethod.Post, null, 5000, "application/json");
-            return true;
+             var r = RequestAsync($"{Url}/OpenWorkDay", HttpMethod.Post, null, 5000, "application/json");
+                return true;            
         }
 
         override public LogRRO PrintReceipt(Receipt pR)
         {
+            var culture = new CultureInfo("en-US");
+            culture.NumberFormat.NumberDecimalSeparator = ".";
+            CultureInfo.DefaultThreadCurrentCulture = culture;
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
+
             string xml = $"<Check Number=\"{pR.CodeReceipt}\" FN = \"{FN}\" OperationType=\"{(pR.TypeReceipt == eTypeReceipt.Sale ? 0 : 1)}\" uuid=\"{pR.ReceiptId}\">\n" +
                 GenL(pR) + "\n" + GenGoods(pR.Wares) +
-                $"\n<Payments> <Payment ID=\"{1}\" Sum = \"{pR.SumReceipt}\"/></Payments>\n</Check>";
+                $"\n<Payments> <Payment ID=\"{1}\" Sum = \"{pR.SumReceipt.ToS()}\"/></Payments>\n</Check>";
 
             PrintReceiptData Data = new() { Xml = xml, Id = pR, TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, Sum = pR.SumTotal };
             var r = RequestAsync($"{Url}/PrintReceipt", HttpMethod.Post, Data.ToJSON(), 5000, "application/json");
@@ -259,10 +267,10 @@ namespace Front.Equipments.Implementation
 
         string XmlWares(ReceiptWares pRW)
         {
-            string Add = (pRW.IsUseCodeUKTZED ? $"UKTZED={pRW.CodeUKTZED}" : "") +
-                         (!string.IsNullOrEmpty(pRW.ExciseStamp) ? " ExciseStamp=\"{pRW.ExciseStamp}\"" : "") +
+            string Add = (pRW.IsUseCodeUKTZED ? $"UKTZED=\"{pRW.CodeUKTZED}\"" : "") +
+                         (!string.IsNullOrEmpty(pRW.ExciseStamp) ? $" ExciseStamp=\"{pRW.ExciseStamp}\"" : "") +
                          (!string.IsNullOrEmpty(pRW.BarCode) ? $" Barcode=\"{pRW.BarCode}\"" : "");
-            return $"<Good Code=\"{pRW.CodeWares}\" Name=\"{pRW.NameWares.ToXMLString()}\" Quantity=\"{pRW.Quantity}\" Price=\"{pRW.PriceEKKA}\" Sum=\"{pRW.Sum}\" TaxRate=\"1\"  {Add} />";
+            return $"<Good Code=\"{pRW.CodeWares}\" Name=\"{pRW.NameWares.ToXMLString()}\" Quantity=\"{pRW.Quantity.ToS()}\" Price=\"{pRW.PriceEKKA.ToS()}\" Sum=\"{pRW.Sum.ToS()}\" TaxRate=\"{pRW.TaxGroup}\"  {Add} />";
         }
 
         string GetElement(string pStr, string pSeek, string pStart = null, string pStop = null)

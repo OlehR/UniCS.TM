@@ -502,6 +502,6 @@ SELECT CODE_GROUP_WARES AS CodeGroupWares, amount
         when @CodeWarehouse=148 then 0x8689005056883C0611ECEBD71B1AE559 -- Каса ККМ СО Ера №3
         end) ;
 [SqlGetUser]
- SELECT e.CodeUser,NameUser,BarCode,Login,PassWord,CodeProfile AS TypeUser FROM dbo.V1C_employee e ;
+ SELECT e.CodeUser,NameUser,BarCode,Login,PassWord,CodeProfile AS TypeUser FROM dbo.V1C_employee e where e.IsWork=1;
 [SqlEnd]
 */

@@ -34,6 +34,7 @@ namespace ServerRRO
         {
             try
             {
+                State = eStateEquipment.Init;
                 // !!!TMP Перенести асинхронно бо дуже довго
                 if (WCh.Initialization($"<InputParameters> <Parameters FN = \"{FN}\" />  </InputParameters>"))
                 {
@@ -53,6 +54,7 @@ namespace ServerRRO
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
             }
         }
+        public string GetFN() { return State==eStateEquipment.On?FN:null; }
 
         public bool OpenWorkDay()
         {
@@ -91,6 +93,9 @@ namespace ServerRRO
 
         public LogRRO PrintReceipt(PrintReceiptData pData)
         {
+            if(!IsOpenWorkDay)
+                OpenWorkDay();
+            Console.WriteLine(pData.Xml);
             bool r = WCh.FiscalReceipt(pData.Xml);
             var res = WCh.StatusBarXML();
             return GetResLogRRO(pData.Id, pData.TypeOperation, pData.Sum, res);
@@ -170,6 +175,37 @@ namespace ServerRRO
 
             return null;
         }
+
+        public StatusEquipment TestDevice()
+        {
+            try
+            {
+
+                IsOpenWorkDay = false;
+                WCh = null;
+                WCh = new WebCheck.ClassFiscal();
+                Init(); 
+                return new StatusEquipment() { TextState = res.ToString(),ModelEquipment=eModelEquipment.pRRo_WebCheck };
+            }
+            catch (Exception e)
+            {
+                State = eStateEquipment.Error;
+                return new StatusEquipment() { State = -1, TextState = e.Message };
+            }
+        }
+
+        public string GetDeviceInfo()
+        {
+            try
+            {
+                return "fff";
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
+        }
+
 
     }
 }

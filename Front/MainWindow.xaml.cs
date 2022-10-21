@@ -791,7 +791,8 @@ namespace Front
             // Правильний блок.
             if (Access.GetRight(eTypeAccess.DelReciept) || curReceipt?.SumReceipt == 0)
             {
-                Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
+                if(curReceipt.StateReceipt==eStateReceipt.Prepare)
+                    Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
 
                 SetCurReceipt(null);
                 //NewReceipt();

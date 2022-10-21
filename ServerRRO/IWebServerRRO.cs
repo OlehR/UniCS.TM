@@ -54,6 +54,14 @@ namespace ServerRRO
           ResponseFormat = WebMessageFormat.Json,
            BodyStyle = WebMessageBodyStyle.Bare)]
         LogRRO MoveMoney(PrintReceiptData pData);
+        [OperationContract]
+        [WebInvoke(
+          Method = "POST",
+          UriTemplate = "/FN",
+          RequestFormat = WebMessageFormat.Json,
+          ResponseFormat = WebMessageFormat.Json,
+           BodyStyle = WebMessageBodyStyle.Bare)]
+        string GetFN();
     }
        
 }

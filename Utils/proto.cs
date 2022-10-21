@@ -1,7 +1,8 @@
 ﻿    using Newtonsoft.Json;
-    using System;
+using System;
     using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -35,6 +36,11 @@ namespace Utils
             return res;
         }
 
+
+        public static string ToS(this decimal s)
+        {
+            return Convert.ToString(s, CultureInfo.InvariantCulture);            
+         }
         public static string GetDescription(this Enum value)
         {
             var enumMember = value.GetType().GetMember(value.ToString()).FirstOrDefault();

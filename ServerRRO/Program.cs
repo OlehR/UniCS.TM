@@ -71,7 +71,8 @@ namespace PrintServer
                 };
             _serviceHost.AddServiceEndpoint(typeof(IWebServerRRO), new BasicHttpBinding(), "");
             _serviceHost.Description.Behaviors.Find<ServiceDebugBehavior>().IncludeExceptionDetailInFaults = true;
-            //netsh http add urlacl url=http://+:8089/ user=VOPAK\O.Rutkovskyj
+            //netsh http add urlacl url=http://+:8089/  user=\Everyone --user=VOPAK\O.Rutkovskyj 
+            //netsh http delete urlacl url=http://+:8089/
             _serviceHost.Open();
         }
 

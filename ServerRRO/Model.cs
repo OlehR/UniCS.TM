@@ -48,7 +48,48 @@ namespace ServerRRO
         RefundPOS = 20101
     }
 
-    [DataContract]
+    public enum eModelEquipment
+    {
+        [Description("Невизначено")]
+    NotDefine,
+        [Description("Магелан-сканер")]
+    MagellanScaner,
+        [Description("Магелан-вага")]
+    MagellanScale,
+        [Description("Контррльна вага")]
+    ScaleModern,
+        [Description("Сигнальний стяг")]
+    SignalFlagModern,
+        [Description("POS-термінал Ingenico")]
+    Ingenico,
+        [Description("Віртуальний POS-термінал")]
+    VirtualBankPOS,
+        [Description("ФР Exellio")]
+    ExellioFP,
+        [Description("Програмний ФР pRRO_SG")]
+    //Exellio,
+    pRRO_SG,
+        [Description("ФР Марія")]
+    Maria,
+        [Description("ФР FP700")]
+    FP700,
+        [Description("ФР WebCheck")]
+    pRRo_WebCheck,
+        [Description("Віртуальний ФР")]
+    VirtualRRO,
+        [Description("Віртуальна вага")]
+    VirtualScale,
+        [Description("Віртуальний сканер")]
+    VirtualScaner,
+        [Description("Віртуальна контрольна вага")]
+    /// <summary>
+    /// Контрольна вага на основі основної.
+    /// </summary>
+    VirtualControlScale
+
+}
+
+[DataContract]
     public class IdReceipt
     {
         [DataMember]
@@ -108,5 +149,52 @@ namespace ServerRRO
         public eTypeOperation TypeOperation { get; set; }
         [DataMember]
         public decimal Sum { get; set; }
+    }
+
+    [DataContract]
+    public class StatusEquipment : Status
+    {
+        [DataMember]
+        public eStateEquipment StateEquipment { get; set; }
+        [DataMember]
+        public eModelEquipment ModelEquipment { get; set; }
+        [DataMember]
+        public bool IsСritical { get; set; } = false;
+        
+        public StatusEquipment() : base() { }
+        public StatusEquipment(eModelEquipment pME, eStateEquipment pStateEquipment, string pTextState = null) : base((int)pStateEquipment, pTextState ?? pStateEquipment.ToString())
+        {
+            StateEquipment = pStateEquipment;
+            ModelEquipment = pME;
+        }
+    }
+    [DataContract]
+    public class Status
+    {
+        [DataMember]
+        /// <summary>
+        /// 0 - Ok, інші стани код помилки.
+        /// </summary>
+        public int State { get; set; } = 0;
+        [DataMember]
+        /// <summary>
+        /// Ok або текст помилки
+        /// </summary>
+        public string TextState { get; set; } = "Ok";
+     
+
+        public Status(bool pState)
+        {
+            if (!pState)
+            {
+                State = -1;
+                TextState = "Error";
+            }
+        }
+        public Status(int pState = 0, string pTextState = "Ok")
+        {
+            State = pState;
+            TextState = pTextState;
+        }
     }
 }
