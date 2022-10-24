@@ -7,8 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Utils;
-using static System.Net.WebRequestMethods;
-using static System.Windows.Forms.AxHost;
+
 using File = System.IO.File;
 
 namespace ServerRRO
@@ -24,13 +23,22 @@ namespace ServerRRO
         //int y = 1;
         public WebServerRRO()
         {
-            FN = System.Configuration.ConfigurationManager.AppSettings["FN"];
-            OperatorName = System.Configuration.ConfigurationManager.AppSettings["OperatorID"];
-            IsOpenWorkDay = false;         
-
-            WCh = new WebCheck.ClassFiscal();
-            Init();
-            //y = 0;
+            try
+            {
+                FN = System.Configuration.ConfigurationManager.AppSettings["FN"];
+                OperatorName = System.Configuration.ConfigurationManager.AppSettings["OperatorID"];
+                string PathLog = System.Configuration.ConfigurationManager.AppSettings["PathLog"];
+                string IdWorkplace = System.Configuration.ConfigurationManager.AppSettings["IdWorkplace"];
+                IsOpenWorkDay = false;
+                FileLogger.Init(PathLog, int.Parse(IdWorkplace));
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"FN={FN} OperatorID={OperatorName} IdWorkplace={IdWorkplace} PathLog={PathLog}");
+                WCh = new WebCheck.ClassFiscal();
+                Init();
+            }
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+            }
         }
     
         public void Init()
@@ -50,6 +58,7 @@ namespace ServerRRO
                 }
                 else
                     State = eStateEquipment.Error;
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "End");
             }
             catch (Exception e)
             {
@@ -57,6 +66,7 @@ namespace ServerRRO
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
             }
         }
+
         public string GetFN() { return State==eStateEquipment.On?FN:null; }
 
         public bool OpenWorkDay()
@@ -77,12 +87,12 @@ namespace ServerRRO
                         if (iShiftNumber <= 0)
                         {
                             xml = $"<InputParameters> <Parameters FN=\"{FN}\" OperatorID=\"{OperatorName}\" /> </InputParameters>";
-
                             IsOpenWorkDay = WCh.OpenShift(xml);
                             ResXML = WCh.StatusBarXML();
                         }
                         else
                             IsOpenWorkDay = true;
+                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"IsOpenWorkDay={IsOpenWorkDay}");
                     }
                 }
             }
@@ -96,13 +106,20 @@ namespace ServerRRO
 
         public LogRRO PrintReceipt(PrintReceiptData pData)
         {
-            //Thread.Sleep(10000);
-            if(!IsOpenWorkDay)
-                OpenWorkDay();
-            Console.WriteLine(pData.Xml);
-            bool r = WCh.FiscalReceipt(pData.Xml);
-            //var res = WCh.StatusBarXML();
-            return GetResLogRRO(pData.Id, pData.TypeOperation, pData.Sum);
+            try
+            {
+                if (!IsOpenWorkDay)
+                    OpenWorkDay();
+                Console.WriteLine(pData.Xml);
+                bool r = WCh.FiscalReceipt(pData.Xml);
+                return GetResLogRRO(pData.Id, pData.TypeOperation, pData.Sum);
+            }
+            catch (Exception e)
+            {
+                State = eStateEquipment.Error;
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+                return new LogRRO(pData.Id) { CodeError=-1,Error=e.Message, TypeOperation = pData.TypeOperation, TypeRRO = "WebCheck" };
+            }           
         }
 
         public LogRRO PrintZ(IdReceipt pIdR)
@@ -125,38 +142,56 @@ namespace ServerRRO
 
         LogRRO PrintXY(IdReceipt pIdR, eTypeOperation pTypeOperation)
         {
-            string xml = $"<InputParameters> <Parameters FN = \"{FN}\"  OperatorID = \"{OperatorName}\" /> </InputParameters>";
-            if (pTypeOperation == eTypeOperation.ZReport)
-                WCh.ReportZ(xml);
-            else
-                WCh.ReportX(xml);
-
-            return GetResLogRRO(pIdR, pTypeOperation,0, WCh.StatusBarXML());
+            try
+            {
+                string xml = $"<InputParameters> <Parameters FN = \"{FN}\"  OperatorID = \"{OperatorName}\" /> </InputParameters>";
+                if (pTypeOperation == eTypeOperation.ZReport)
+                    WCh.ReportZ(xml);
+                else
+                    WCh.ReportX(xml);
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"pTypeOperation=>{pTypeOperation}");
+                return GetResLogRRO(pIdR, pTypeOperation, 0, WCh.StatusBarXML());
+            }
+            catch (Exception e)
+            {
+                State = eStateEquipment.Error;
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+                return new LogRRO(pIdR) { CodeError = -1, Error = e.Message, TypeOperation = pTypeOperation, TypeRRO = "WebCheck" };
+            }            
         }
 
-        LogRRO GetResLogRRO(IdReceipt pIdR, eTypeOperation pTypeOperation, decimal pSum = 0, string pResXML=null)
-        {            
-            string ReceiptXML=null, TextReceipt = null, ResXML = WCh.StatusBarXML();
-
-            var FiscalNumber = GetElement(ResXML, "CheckID", "\"", "\"");
-            
-            string Error = GetElement(ResXML, "ErrHelp", "\"", "\"");
-
-            CodeError = GetElement(ResXML, "Err", "\"", "\"").ToInt();
-
-            if (!string.IsNullOrEmpty(FiscalNumber))
+        LogRRO GetResLogRRO(IdReceipt pIdR, eTypeOperation pTypeOperation, decimal pSum = 0, string pResXML = null)
+        {
+            try
             {
-                ReceiptXML = GetCheckByFiscalNumber(FiscalNumber);
-                TextReceipt = GetCheck(FiscalNumber);
-            }
-            if (pTypeOperation == eTypeOperation.XReport)
-                TextReceipt = GetCheck("LastX");
-            if (pTypeOperation == eTypeOperation.ZReport)
-              TextReceipt = GetLastCheck();
-            if (!string.IsNullOrEmpty(pResXML))
-                ReceiptXML = pResXML;
+                string ReceiptXML = null, TextReceipt = null, ResXML = WCh.StatusBarXML();
 
-            return new LogRRO(pIdR) { TypeOperation = pTypeOperation, TypeRRO = "WebCheck", FiscalNumber = FiscalNumber, SUM = pSum, JSON = ReceiptXML, TextReceipt = TextReceipt, Error = Error, CodeError = CodeError };
+                var FiscalNumber = GetElement(ResXML, "CheckID", "\"", "\"");
+
+                string Error = GetElement(ResXML, "ErrHelp", "\"", "\"");
+
+                CodeError = GetElement(ResXML, "Err", "\"", "\"").ToInt();
+
+                if (!string.IsNullOrEmpty(FiscalNumber))
+                {
+                    ReceiptXML = GetCheckByFiscalNumber(FiscalNumber);
+                    TextReceipt = GetCheck(FiscalNumber);
+                }
+                if (pTypeOperation == eTypeOperation.XReport)
+                    TextReceipt = GetCheck("LastX");
+                if (pTypeOperation == eTypeOperation.ZReport)
+                    TextReceipt = GetLastCheck();
+                if (!string.IsNullOrEmpty(pResXML))
+                    ReceiptXML = pResXML;
+
+                return new LogRRO(pIdR) { TypeOperation = pTypeOperation, TypeRRO = "WebCheck", FiscalNumber = FiscalNumber, SUM = pSum, JSON = ReceiptXML, TextReceipt = TextReceipt, Error = Error, CodeError = CodeError };
+            }
+            catch (Exception e)
+            {
+                State = eStateEquipment.Error;
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+                return new LogRRO(pIdR) { CodeError = -1, Error = e.Message, TypeOperation = pTypeOperation, TypeRRO = "WebCheck" };
+            }
         }
 
         string GetCheckByFiscalNumber(string pTaxNum)
@@ -166,15 +201,25 @@ namespace ServerRRO
         }
 
         string Path { get {
-                DateTime D = DateTime.Now; return $"C:/ProgramData/WebCheck/Archive/{FN}/{D.Year}/{D.Month}/{D.Day}/";  } } 
+                DateTime D = DateTime.Now; return $"C:/ProgramData/WebCheck/Archive/{FN}/{D.Year}/{D.Month}/{D.Day}/";  } }
+
         string GetCheck(string pTaxNum)
         {
-            DateTime D = DateTime.Now;
-            string file = $"{Path}{pTaxNum}.txt";
-            if(File.Exists(file))
-             return  File.ReadAllText(file);            
-            return null;            
+            try
+            {
+                DateTime D = DateTime.Now;
+                string file = $"{Path}{pTaxNum}.txt";
+                if (File.Exists(file))
+                    return File.ReadAllText(file);
+            }
+            catch (Exception e)
+            {
+                State = eStateEquipment.Error;
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+            }
+            return null;
         }
+        
         string GetLastCheck()
         {
             try
@@ -185,7 +230,11 @@ namespace ServerRRO
                               select f).First();
                 return File.ReadAllText(myFile.FullName);
             }
-            catch (Exception e) { }
+            catch (Exception e)
+            {
+                State = eStateEquipment.Error;
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+            }
             return null;
         }
 
@@ -241,8 +290,6 @@ namespace ServerRRO
                 return e.Message;
             }
         }
-
-
     }
 }
 
