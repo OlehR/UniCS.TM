@@ -313,6 +313,8 @@ namespace Front.Equipments
         FP700,
         [Description("ФР WebCheck")]
         pRRo_WebCheck,
+        [Description("пФР Vchasno")]
+        pRRO_Vchasno,
         [Description("Віртуальний ФР")]
         VirtualRRO,
         [Description("Віртуальна вага")]
@@ -365,6 +367,7 @@ namespace Front.Equipments
                 case eModelEquipment.Maria:
                 case eModelEquipment.VirtualRRO:
                 case eModelEquipment.FP700:
+                case eModelEquipment.pRRO_Vchasno:
 
                     return eTypeEquipment.RRO;
                 default:

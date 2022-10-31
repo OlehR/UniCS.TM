@@ -9,6 +9,10 @@ namespace ModelMID
         public bool IsSuccess { get; set; }
         public eTypePay TypePay { get; set;}
         public decimal SumPay  { get; set;}
+        /// <summary>
+        /// Здача(для готівкових операцій)
+        /// </summary>
+        public decimal Rest { get; set;}
         public decimal SumExt { get; set; }
         public string NumberTerminal { get; set; }
         /// <summary>

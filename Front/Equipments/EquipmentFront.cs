@@ -248,6 +248,10 @@ namespace Front
                         case eModelEquipment.FP700:
                             RRO = new RRO_FP700(ElEquipment, config, LF, pActionStatus);
                             break;
+                        case eModelEquipment.pRRO_Vchasno:
+                            RRO = new pRRO_Vchasno(ElEquipment, config, LF, pActionStatus);
+                            break;
+
                         default:
                             RRO = new Rro(ElEquipment, config);
                             break;
@@ -301,7 +305,7 @@ namespace Front
             {
                 try
                 {
-                    if (string.IsNullOrEmpty(r.TextReceipt) || RRO.Model == eModelEquipment.FP700)
+                    if (r.CodeError==0 && (  string.IsNullOrEmpty(r.TextReceipt) || RRO.Model == eModelEquipment.FP700) )
                         r.TextReceipt = RRO.GetTextLastReceipt();
                     Bl.InsertLogRRO(r);
                 }

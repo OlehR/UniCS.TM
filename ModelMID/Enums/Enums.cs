@@ -24,8 +24,8 @@ namespace ModelMID
         None = 0,
         Card = 1,
         Cash = 2,
-        Both = 3
-
+        Both = 3,
+        IssueOfCash = 4,
     }
 
     public enum eTypeBonus
