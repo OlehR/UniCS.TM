@@ -93,6 +93,7 @@ namespace Front.Equipments
                 Magellan9300.Init();
 
                 Res = Magellan9300.GetInfo().Result;
+                State = eStateEquipment.On;
             }
             catch (Exception e)
             {

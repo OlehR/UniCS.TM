@@ -36,6 +36,7 @@ namespace Front.Equipments
             State = pMagellan.State;
     
         }
+
         public override void StartWeight() 
         {
             try
@@ -48,8 +49,7 @@ namespace Front.Equipments
         }
 
         public override void StopWeight()
-        {
-           
+        {           
             try
             {
                 Magellan?.StopGetWeight();
@@ -65,10 +65,9 @@ namespace Front.Equipments
             string Error = null;
             try
             {
-                Magellan?.StopGetWeight();
-                Magellan?.StartGetWeight();
-                Magellan?.StopGetWeight();
-
+                Magellan.Init();
+                Error= Magellan.GetInfo().Result;                
+                State = eStateEquipment.On;
             }
             catch (Exception e)
             {
@@ -77,6 +76,7 @@ namespace Front.Equipments
             }
             return new StatusEquipment(Model,State,Error);
         }
+
         public override string GetDeviceInfo() 
         { 
             return  $"State={State} Port={SerialPort} BaudRate={BaudRate}"; 
