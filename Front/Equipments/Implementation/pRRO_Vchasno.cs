@@ -24,7 +24,7 @@ namespace Front.Equipments.Implementation
     public class pRRO_Vchasno : Rro
     {
         Encoding win1251 = Encoding.GetEncoding("windows-1251");
-        string Url,Token, devise= "Test";
+        string Url,Token, Device= "Test";
         public pRRO_Vchasno(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) :
                 base(pEquipment, pConfiguration, eModelEquipment.pRRO_Vchasno, pLoggerFactory, pActionStatus)
         {
@@ -33,6 +33,8 @@ namespace Front.Equipments.Implementation
             {
                 Url = pConfiguration["Devices:pRRO_Vchasno:Url"];
                 Token= pConfiguration["Devices:pRRO_Vchasno:Token"]; // "3nRiCVig2hdxBHtRWOkQOBogtQ8kEZnz"
+                Device = pConfiguration["Devices:pRRO_Vchasno:Device"];
+
                 var d = GetDeviceInfo2();
                 IsOpenWorkDay = !string.IsNullOrEmpty(d?.info?.shift_dt);
 
@@ -50,9 +52,9 @@ namespace Front.Equipments.Implementation
 
         override public bool OpenWorkDay()
         {
-            ApiRRO d = new(eTask.OpenShift) { token = Token,   device=devise };
+            ApiRRO d = new(eTask.OpenShift) { token = Token,   device=Device };
             string dd = d.ToJSON();
-            var r = RequestAsync($"{Url}/execute", HttpMethod.Post, dd, 5000, "application/json");
+            var r = RequestAsync($"{Url}", HttpMethod.Post, dd, 5000, "application/json");
             Responce<ResponceOpenShift> Res= JsonConvert.DeserializeObject<Responce<ResponceOpenShift>>(r);
             IsOpenWorkDay = Res.res == 0;
             return IsOpenWorkDay;
@@ -63,10 +65,10 @@ namespace Front.Equipments.Implementation
             if (!IsOpenWorkDay) OpenWorkDay();
             if (!IsOpenWorkDay) return new LogRRO(pR) { CodeError = -1,  Error= "Не вдалось відкрити зміну" };
 
-            ApiRRO d = new(pR) { token = Token, device = devise };
+            ApiRRO d = new(pR) { token = Token, device = Device };
             string dd= d.ToJSON();
             
-            var r = RequestAsync($"{Url}/execute", HttpMethod.Post, dd, 5000, "application/json");
+            var r = RequestAsync($"{Url}", HttpMethod.Post, dd, 5000, "application/json");
 
             var Res = JsonConvert.DeserializeObject<Responce<ResponceReceipt>>(r);
             return GetLogRRO(pR, Res,  pR.TypeReceipt==eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund); ;
@@ -87,9 +89,9 @@ namespace Front.Equipments.Implementation
 
         LogRRO PrintXZ(IdReceipt pIdR,bool IsZ)
         {
-            ApiRRO d = new(IsZ?eTask.ZReport:eTask.XReport) { token = Token, device = devise };
+            ApiRRO d = new(IsZ?eTask.ZReport:eTask.XReport) { token = Token, device = Device };
             string dd = d.ToJSON();
-            var r = RequestAsync($"{Url}/execute", HttpMethod.Post, dd, 5000, "application/json");
+            var r = RequestAsync($"{Url}", HttpMethod.Post, dd, 5000, "application/json");
             Responce<ResponceReport> Res = JsonConvert.DeserializeObject<Responce<ResponceReport>>(r);
             return GetLogRRO(pIdR, Res, IsZ ? eTypeOperation.ZReport : eTypeOperation.XReport);
         }
@@ -101,10 +103,10 @@ namespace Front.Equipments.Implementation
         /// <returns></returns>
         override public LogRRO MoveMoney(decimal pSum, IdReceipt pIdR)
         {
-            ApiRRO d = new(pSum>0?eTask.MoneyIn:eTask.MoneyOut) { token = Token, device = devise};
+            ApiRRO d = new(pSum>0?eTask.MoneyIn:eTask.MoneyOut) { token = Token, device = Device};
             d.fiscal.cash = new Cash() { sum = pSum, type = eTypePayRRO.Cash };
             string dd = d.ToJSON();            
-            var r = RequestAsync($"{Url}//execute", HttpMethod.Post, dd, 5000, "application/json");
+            var r = RequestAsync($"{Url}/", HttpMethod.Post, dd, 5000, "application/json");
             Responce<ResponceReport> Res = JsonConvert.DeserializeObject<Responce<ResponceReport>>(r);
             return GetLogRRO(pIdR, Res, pSum>0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyIn);            
         }
@@ -150,9 +152,9 @@ namespace Front.Equipments.Implementation
 
         Responce<ResponseDeviceInfo> GetDeviceInfo2()
         {
-            ApiRRO d = new(eTask.DeviceInfo) { token = Token, device = devise };
+            ApiRRO d = new(eTask.DeviceInfo) { token = Token, device = Device };
             string dd = d.ToJSON();
-            var r = RequestAsync($"{Url}/execute", HttpMethod.Post, dd, 5000, "application/json");
+            var r = RequestAsync($"{Url}", HttpMethod.Post, dd, 5000, "application/json");
             Responce<ResponseDeviceInfo> Res = JsonConvert.DeserializeObject<Responce<ResponseDeviceInfo>>(r);
             return Res;
         }    
