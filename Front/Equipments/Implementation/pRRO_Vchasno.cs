@@ -106,7 +106,7 @@ namespace Front.Equipments.Implementation
             ApiRRO d = new(pSum>0?eTask.MoneyIn:eTask.MoneyOut) { token = Token, device = Device};
             d.fiscal.cash = new Cash() { sum = pSum, type = eTypePayRRO.Cash };
             string dd = d.ToJSON();            
-            var r = RequestAsync($"{Url}/", HttpMethod.Post, dd, 5000, "application/json");
+            var r = RequestAsync($"{Url}", HttpMethod.Post, dd, 5000, "application/json");
             Responce<ResponceReport> Res = JsonConvert.DeserializeObject<Responce<ResponceReport>>(r);
             return GetLogRRO(pIdR, Res, pSum>0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyIn);            
         }
