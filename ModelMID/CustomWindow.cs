@@ -18,7 +18,8 @@ namespace ModelMID
         RestoreLastRecipt,
         LimitSales,
         ConfirmAge,
-        Info
+        Info,
+        BlockSale
 
     }
 
@@ -128,6 +129,11 @@ namespace ModelMID
                          };                                                                    
                     break;
                 case eWindows.Info:
+                    Caption = "Увага";
+                    Text = pObject as string;
+                    AnswerRequired = true;
+                    break;
+                case eWindows.BlockSale:
                     Caption = "Увага";
                     Text = pObject as string;
                     AnswerRequired = true;

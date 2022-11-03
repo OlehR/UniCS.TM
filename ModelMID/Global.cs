@@ -114,12 +114,13 @@ namespace ModelMID
         public static double MaxWeightBag = 100;
 
         public static List<CustomerBarCode> CustomerBarCode { get; set; }
+        public static List<BlockSale> BlockSales { get; set; }
 
         public static eMethodExecutionLoggingType MethodExecutionLogging = eMethodExecutionLoggingType.Always;
         public static long LimitMethodExecutionTimeInMillis = 200;
 
-        public static string AlcoholTimeStart = "07:00:00.0000";
-        public static string AlcoholTimeStop = "23:00:00.0000";
+        public static string AlcoholTimeStart = "07:00:00";
+        public static string AlcoholTimeStop = "23:00:00";
 
         public static bool IsOldInterface = true;
        

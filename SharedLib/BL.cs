@@ -52,6 +52,13 @@ namespace SharedLib
                 OnCustomWindow?.Invoke(new CustomWindow(eWindows.NoPrice, $"Чеку в стані {State} заборонено {Environment.NewLine} добавляти товар"));
                 return null;
             }
+            //Провірка на час продажу алкоголю
+
+            if(Global.BlockSales?.Max(el=>el.IsBlock(pW.TypeWares) )==true )
+            {             
+                OnCustomWindow?.Invoke(new CustomWindow(eWindows.BlockSale, $"Товари {pW.NameWares} з групи {pW.TypeWares}{Environment.NewLine} продаж тимчасово заборонено на даній КСО"));
+                return null;
+            }
 
             bool isZeroPrice = false;
             lock (db.GetObjectForLockByIdWorkplace(pW.IdWorkplace))

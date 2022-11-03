@@ -135,6 +135,7 @@ namespace Front.Equipments.Implementation
         LogRRO GetLogRRO<Ob>(IdReceipt pIdR ,Responce<Ob> pR, eTypeOperation pTypeOperation)
         {
             var aa = pR.info as ResponseInfo;
+            var rr = pR.info as ResponceReceipt;
             string TextReceipt = null;
             if (pR.pf_text != null && pR.pf_text.Length > 0)
             {
@@ -145,7 +146,7 @@ namespace Front.Equipments.Implementation
                     TextReceipt= win1251.GetString(Convert.FromBase64String(TextReceipt));
                 }
              }
-            var Res = new LogRRO(pIdR) { TypeOperation= pTypeOperation, TypeRRO="Vchasno", FiscalNumber= Convert.ToString( aa?.fisid), Error = pR.errortxt, CodeError = pR.res, TextReceipt= TextReceipt , JSON=pR.ToJSON() };
+            var Res = new LogRRO(pIdR) { TypeOperation= pTypeOperation, TypeRRO="Vchasno", FiscalNumber=  rr?.doccode, Error = pR.errortxt, CodeError = pR.res, TextReceipt= TextReceipt , JSON=pR.ToJSON() };
             return Res;
         }
 
@@ -248,7 +249,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
         public string source { get; set; }
         public string device { get; set; }
         public string tag { get; set; }
-        public string dt { get { return DateTime.Now.ToString("yyyyMMddHHmmfff"); } }
+        public string dt { get { return DateTime.Now.ToString("yyyyMMddHHmmssfff"); } }
         public string token { get; set; }
         public int need_pf_img { get; set; }
         public int need_pf_pdf { get; set; }
@@ -433,7 +434,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
         public string source { get; set; }
         public string device { get; set; }
         public string tag { get; set; }
-        public string dt { get { return DateTime.Now.ToString("yyyyMMddHHmmfff"); } }
+        public string dt { get { return DateTime.Now.ToString("yyyyMMddHHmmssfff"); } }
         /// <summary>
         /// Код результату: 0 = ОК,>0 код помилки
         /// </summary>
