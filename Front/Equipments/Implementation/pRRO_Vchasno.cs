@@ -18,7 +18,7 @@ using Utils;
 using System.Buffers.Text;
 using System.Web;
 using System.Windows.Media;
-using Front.Equipments.Utils;
+//using Front.Equipments.Utils;
 
 namespace Front.Equipments.Implementation
 {
@@ -82,7 +82,7 @@ namespace Front.Equipments.Implementation
                 token = Token,
                 device = Device,
                 fiscal = new(eTask.NoFiscalReceipt)
-                { lines = pR.Select(el => new Lines() { t = el.StartsWith("QR=>") ? el.SubString(4) : el, qr_type = el.StartsWith("QR=>") ? TypeLine.QR : TypeLine.Text }) }
+                { lines = pR.Select(el => new Lines() { t = el.StartsWith("QR=>") ? el.Substring(4) : el, qr_type = el.StartsWith("QR=>") ? TypeLine.QR : TypeLine.Text }) }
             };
 
             string dd = d.ToJSON();
