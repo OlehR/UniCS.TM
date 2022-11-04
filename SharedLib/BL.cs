@@ -54,7 +54,7 @@ namespace SharedLib
             }
             //Провірка на час продажу алкоголю
 
-            if(Global.BlockSales?.Max(el=>el.IsBlock(pW.TypeWares) )==true )
+            if(Global.BlockSales!=null  && Global.BlockSales.Any() &&  Global.BlockSales.Max(el=>el.IsBlock(pW.TypeWares) ) )
             {             
                 OnCustomWindow?.Invoke(new CustomWindow(eWindows.BlockSale, $"Товари {pW.NameWares} з групи {pW.TypeWares}{Environment.NewLine} продаж тимчасово заборонено на даній КСО"));
                 return null;
