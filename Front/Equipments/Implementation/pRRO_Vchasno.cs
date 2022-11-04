@@ -18,21 +18,22 @@ using Utils;
 using System.Buffers.Text;
 using System.Web;
 using System.Windows.Media;
+using Front.Equipments.Utils;
 
 namespace Front.Equipments.Implementation
 {
     public class pRRO_Vchasno : Rro
     {
         Encoding win1251 = Encoding.GetEncoding("windows-1251");
-        string Url,Token, Device= "Test";
+        string Url, Token, Device = "Test";
         public pRRO_Vchasno(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) :
                 base(pEquipment, pConfiguration, eModelEquipment.pRRO_Vchasno, pLoggerFactory, pActionStatus)
         {
-            State = eStateEquipment.Init;            
+            State = eStateEquipment.Init;
             try
             {
                 Url = pConfiguration["Devices:pRRO_Vchasno:Url"];
-                Token= pConfiguration["Devices:pRRO_Vchasno:Token"]; // "3nRiCVig2hdxBHtRWOkQOBogtQ8kEZnz"
+                Token = pConfiguration["Devices:pRRO_Vchasno:Token"]; // "3nRiCVig2hdxBHtRWOkQOBogtQ8kEZnz"
                 Device = pConfiguration["Devices:pRRO_Vchasno:Device"];
 
                 var d = GetDeviceInfo2();
@@ -44,7 +45,7 @@ namespace Front.Equipments.Implementation
                     OpenWorkDay();
                 State = eStateEquipment.On;
             }
-            catch(Exception)
+            catch (Exception)
             {
                 State = eStateEquipment.Error;
             }
@@ -52,10 +53,10 @@ namespace Front.Equipments.Implementation
 
         override public bool OpenWorkDay()
         {
-            ApiRRO d = new(eTask.OpenShift) { token = Token,   device=Device };
+            ApiRRO d = new(eTask.OpenShift) { token = Token, device = Device };
             string dd = d.ToJSON();
             var r = RequestAsync($"{Url}", HttpMethod.Post, dd, 5000, "application/json");
-            Responce<ResponceOpenShift> Res= JsonConvert.DeserializeObject<Responce<ResponceOpenShift>>(r);
+            Responce<ResponceOpenShift> Res = JsonConvert.DeserializeObject<Responce<ResponceOpenShift>>(r);
             IsOpenWorkDay = Res.res == 0;
             return IsOpenWorkDay;
         }
@@ -63,15 +64,33 @@ namespace Front.Equipments.Implementation
         override public LogRRO PrintReceipt(Receipt pR)
         {
             if (!IsOpenWorkDay) OpenWorkDay();
-            if (!IsOpenWorkDay) return new LogRRO(pR) { CodeError = -1,  Error= "Не вдалось відкрити зміну" };
+            if (!IsOpenWorkDay) return new LogRRO(pR) { CodeError = -1, Error = "Не вдалось відкрити зміну" };
 
             ApiRRO d = new(pR) { token = Token, device = Device };
-            string dd= d.ToJSON();
-            
+            string dd = d.ToJSON();
+
             var r = RequestAsync($"{Url}", HttpMethod.Post, dd, 5000, "application/json");
 
             var Res = JsonConvert.DeserializeObject<Responce<ResponceReceipt>>(r);
-            return GetLogRRO(pR, Res,  pR.TypeReceipt==eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund); ;
+            return GetLogRRO(pR, Res, pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund); ;
+        }
+
+        override public LogRRO PrintNoFiscalReceipt(IEnumerable<string> pR)
+        {
+            ApiRRO d = new()
+            {
+                token = Token,
+                device = Device,
+                fiscal = new(eTask.NoFiscalReceipt)
+                { lines = pR.Select(el => new Lines() { t = el.StartsWith("QR=>") ? el.SubString(4) : el, qr_type = el.StartsWith("QR=>") ? TypeLine.QR : TypeLine.Text }) }
+            };
+
+            string dd = d.ToJSON();
+            var r = RequestAsync($"{Url}", HttpMethod.Post, dd, 5000, "application/json");
+
+            var Res = JsonConvert.DeserializeObject<Responce<ResponceReceipt>>(r);
+            return GetLogRRO(new IdReceipt() { CodePeriod=Global.GetCodePeriod(),IdWorkplace=Global.IdWorkPlace}, Res, eTypeOperation.NoFiscalReceipt);
+              
         }
 
         override public LogRRO PrintZ(IdReceipt pIdR)
@@ -230,6 +249,14 @@ namespace Front.Equipments.Implementation.ModelVchasno
         Card = 2
     }
 
+    enum TypeLine {
+        Text = 0,
+        Ean13 = 1,
+        Code128 = 2,
+        QR = 100
+    }
+
+    
     class ApiRRO
     {
         public ApiRRO() { }
@@ -279,7 +306,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
         public int n_to { get; set; }
         public string dt_from { get; set; }
         public string dt_to { get; set; }
-        public IEnumerable<Lines> lines { get; set; }
+        public IEnumerable<Lines> lines { get; set; }       
     }
 
     class ReciptRRO
@@ -350,7 +377,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
     class Lines
     {
         public string t { get; set; }
-        public string qr_type { get; set; }
+        public TypeLine qr_type { get; set; }
     }
 
     class CardPay
