@@ -368,7 +368,7 @@ namespace Front
             if (u != null)
             { Bl.OnAdminBarCode?.Invoke(u); return; }
             if ((State != eStateMainWindows.WaitInput && State != eStateMainWindows.StartWindow) || curReceipt?.IsLockChange == true || !IsAddNewWares)
-                if (State != eStateMainWindows.ProcessPay && State != eStateMainWindows.ProcessPrintReceipt)
+                if (State != eStateMainWindows.ProcessPay && State != eStateMainWindows.ProcessPrintReceipt && State != eStateMainWindows.WaitCustomWindows)
                     SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.AdminPanel);
 
         }

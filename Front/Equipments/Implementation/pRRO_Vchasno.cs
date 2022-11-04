@@ -295,7 +295,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
                 if (c != null && c.Any())
                     cash = c.Select(el => new CashPay(el)).First();
                 comment_up = String.Join('\n', pR.ReceiptComments);
-                sum = pR.SumTotal;
+                sum = pR.Wares.Sum(el => Math.Round(el.Price * el.Quantity, 2) - Math.Round(el.SumDiscount, 2)); //pR.SumTotal;
             }
         }
         public decimal sum { get; set; }
@@ -328,6 +328,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
             name = pRW.NameWares;
             cnt = pRW.Quantity;
             price = pRW.Price;
+            cost= Math.Round(pRW.Price * pRW.Quantity, 2) - Math.Round(pRW.SumDiscount, 2);
             disc = pRW.SumDiscount;
             taxgrp = int.Parse(pRW.TaxGroup);
         }
