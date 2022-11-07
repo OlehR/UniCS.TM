@@ -117,8 +117,20 @@ namespace Front.Equipments.Implementation
             string dd = d.ToJSON();
             var r = RequestAsync($"{Url}", HttpMethod.Post, dd, 5000, "application/json");
             Responce<ResponceReport> Res = JsonConvert.DeserializeObject<Responce<ResponceReport>>(r);
-            return GetLogRRO(pIdR, Res, IsZ ? eTypeOperation.ZReport : eTypeOperation.XReport);
+            return GetLogRRO<ResponceReport>(pIdR, Res, IsZ ? eTypeOperation.ZReport : eTypeOperation.XReport);
         }
+
+        override public bool PeriodZReport(DateTime pBegin, DateTime pEnd, bool IsFull = true)
+        {
+            ApiRRO d = new(eTask.PeriodZReport ) { token = Token, device = Device };
+            d.fiscal.dt_from = pBegin.Date.ToString("yyyyMMddHHmmss");
+            d.fiscal.dt_to = pEnd.Date.ToString("yyyyMMddHHmmss");
+            string dd = d.ToJSON();
+            var r = RequestAsync($"{Url}", HttpMethod.Post, dd, 5000, "application/json");
+            Responce<ResponceReport> Res = JsonConvert.DeserializeObject<Responce<ResponceReport>>(r);
+            return true;// GetLogRRO<ResponceReport>(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace }, Res,eTypeOperation.PeriodZReport);
+        }
+
 
         /// <summary>
         /// Внесення/Винесення коштів коштів. pSum>0 - внесення
