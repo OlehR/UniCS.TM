@@ -75,6 +75,11 @@ namespace Front.Equipments.Implementation
             return GetLogRRO(pR, Res, pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund); ;
         }
 
+        public override LogRRO PrintCopyReceipt(int parNCopy = 1)
+        {
+            return null;
+        }
+
         override public LogRRO PrintNoFiscalReceipt(IEnumerable<string> pR)
         {
             ApiRRO d = new()
@@ -355,7 +360,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
             name = pRW.NameWares;
             cnt = pRW.Quantity;
             price = pRW.Price;
-            cost= Math.Round(pRW.Price * pRW.Quantity, 2) - Math.Round(pRW.SumDiscount, 2);
+            cost = Math.Round(pRW.Price * pRW.Quantity, 2);// - Math.Round(pRW.SumDiscount, 2);
             disc = pRW.SumDiscount;
             taxgrp = int.Parse(pRW.TaxGroup);
         }
