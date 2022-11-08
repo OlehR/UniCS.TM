@@ -647,7 +647,7 @@ namespace Front
         /// <returns></returns>
         public bool ControlScaleCalibrateZero() { return ControlScale.CalibrateZero(); }
 
-        public void StartMultipleTone() { Scaner.StartMultipleTone(); }
-        public void StopMultipleTone() { Scaner.StopMultipleTone(); }
+        public void StartMultipleTone() { Scaner?.StartMultipleTone(); }
+        public void StopMultipleTone() { Scaner?.StopMultipleTone(); }
     }
 }
