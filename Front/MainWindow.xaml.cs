@@ -1051,10 +1051,11 @@ namespace Front
                     {
                         curReceipt = Bl.GetLastReceipt();
                         Bl.db.RecalcPriceAsync(new IdReceiptWares(curReceipt));
+                        SetStateView(eStateMainWindows.WaitInput);
                     }
                     if (res.Id == 2)
-                        NewReceipt();
-                    SetStateView(eStateMainWindows.WaitInput);
+                        //NewReceipt();
+                    SetStateView(eStateMainWindows.StartWindow);
                     return;
                 }
                 if (res.CustomWindow?.Id == eWindows.ConfirmWeight)
