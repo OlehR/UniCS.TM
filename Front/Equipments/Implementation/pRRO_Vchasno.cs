@@ -182,7 +182,7 @@ namespace Front.Equipments.Implementation
                     TextReceipt= win1251.GetString(Convert.FromBase64String(TextReceipt));
                 }
              }
-            var Res = new LogRRO(pIdR) { TypeOperation= pTypeOperation, TypeRRO="Vchasno", FiscalNumber=  rr?.doccode, Error = pR.errortxt, CodeError = pR.res, TextReceipt= TextReceipt , JSON=pR.ToJSON() };
+            var Res = new LogRRO(pIdR) { TypeOperation= pTypeOperation, TypeRRO="pRRO_Vchasno", FiscalNumber=  rr?.doccode, Error = pR.errortxt, CodeError = pR.res, TextReceipt= TextReceipt , JSON=pR.ToJSON() };
             return Res;
         }
 

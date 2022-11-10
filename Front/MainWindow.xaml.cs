@@ -1054,8 +1054,11 @@ namespace Front
                         SetStateView(eStateMainWindows.WaitInput);
                     }
                     if (res.Id == 2)
-                        //NewReceipt();
-                    SetStateView(eStateMainWindows.StartWindow);
+                    {
+                        var Res = Bl.GetLastReceipt();
+                        Bl.SetStateReceipt(Res, eStateReceipt.Canceled);
+                        SetStateView(eStateMainWindows.StartWindow);
+                    } 
                     return;
                 }
                 if (res.CustomWindow?.Id == eWindows.ConfirmWeight)

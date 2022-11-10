@@ -466,7 +466,7 @@ where RE.EVENT_TYPE=1"
 ""amount-base"": 3,
 ""plu-from"": {PLU},
 ""plu-to"": 0
-}".Replace("{Order}", (++pOrder).ToString()).Replace("{PLU}", pReceiptWares.PLU.ToString()).Replace("{Kassa}", (pReceiptWares.IdWorkplace - 60).ToString());
+}".Replace("{Order}", (++pOrder).ToString()).Replace("{PLU}", pReceiptWares.PLU.ToString()).Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString());
 
             List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(pReceiptWares) { EventType = eReceiptEventType.AskQR, EventName = Body, CreatedAt = DateTime.Now } };
             try
