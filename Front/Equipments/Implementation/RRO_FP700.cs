@@ -1903,10 +1903,8 @@ namespace Front.Equipments.FP700
                         ReceiptItem receiptItem2 = new ReceiptItem(receiptItem1);
                         receiptItem2.ProductPrice = Math.Round(receiptItem2.ProductPrice, 2, MidpointRounding.AwayFromZero);
                         receiptItem2.ProductQuantity = 1M;
-                        receiptItem2.Excises = new List<string>()
-            {
-              receiptItem1.Excises[index]
-            };
+                        receiptItem2.Excises = new List<string>() {  receiptItem1.Excises[index] };
+
                         if (index != receiptItem1.Excises.Count - 1)
                         {
                             receiptItem2.Discount = Math.Round(receiptItem1.Discount / (Decimal)receiptItem1.Excises.Count, 2, MidpointRounding.AwayFromZero);
