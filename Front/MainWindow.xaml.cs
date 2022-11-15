@@ -135,7 +135,7 @@ namespace Front
         public int WidthScreen { get { return (int)SystemParameters.PrimaryScreenWidth; } }
         public int HeightScreen { get { return (int)SystemParameters.PrimaryScreenHeight; } }
         public int HeightStartVideo { get { return SystemParameters.PrimaryScreenWidth < SystemParameters.PrimaryScreenHeight ? 1300 : 700; } }
-        public string[] PathVideo = Directory.GetFiles(Global.PathPictures + "Video\\");
+        public string[] PathVideo=null;
         /// <summary>x`
         /// треба переробити(інтегрувати в основну форму)
         /// </summary>
@@ -262,17 +262,25 @@ namespace Front
             //ad.WindowState = WindowState.Minimized;
             //ad.Show();
             InitializeComponent();
-            
 
-            if (PathVideo.Length != 0)
+            string DirName = Path.Combine(Global.PathPictures, "Video");
+
+             if (Directory.Exists(DirName))
+                PathVideo=Directory.GetFiles(DirName);
+
+            if (PathVideo!=null&&PathVideo.Length != 0)
             {
                 VideoPlayer.Source = new Uri(PathVideo[0]); // TMP ПЕРЕРОБИТИ
             }
             else
             {
-                string[] PathLogo = Directory.GetFiles(Global.PathPictures + "Logo\\");
-                StartLogo.Source = new BitmapImage(new Uri(PathLogo[0]));// TMP ПЕРЕРОБИТИ
-                //StartLogo.Source = myImage3; 
+                DirName = Path.Combine(Global.PathPictures, "Logo");
+                if (Directory.Exists(DirName))
+                {
+                    var PathLogo = Directory.GetFiles(DirName,"*.png");
+                    if (PathLogo != null && PathLogo.Any())
+                        StartLogo.Source = new BitmapImage(new Uri(PathLogo[0]));
+                }
             }
            
             AdminControl.Init(this);
@@ -533,7 +541,7 @@ namespace Front
                     switch (State)
                     {
                         case eStateMainWindows.StartWindow:
-                            if (PathVideo.Length !=0)
+                            if (PathVideo!=null && PathVideo.Length !=0)
                             {
                                 StartShopping.Visibility = Visibility.Visible;
                             }

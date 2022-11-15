@@ -2,7 +2,7 @@
   "profiles": {
     "Front": {
       "commandName": "Project",
-      "commandLineArgs": "c:\\mid\\appsettings.json"
+      "commandLineArgs": "d:\\mid\\appsettings.json"
     }
   }
 }

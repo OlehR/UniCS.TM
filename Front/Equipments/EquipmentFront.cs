@@ -284,18 +284,20 @@ namespace Front
         /// </summary>
         public LogRRO PrintReceipt(Receipt pReceipt)
         {
+            string NameMetod = System.Reflection.MethodBase.GetCurrentMethod().Name;
             var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
             {                
                 try
                 {
-                    FileLogger.WriteLogMessage(this, "PrintReceipt", "Start Print Receipt");
+                    FileLogger.WriteLogMessage(this, NameMetod, "Start Print Receipt");
                     var r = RRO?.PrintReceipt(pReceipt);
-                    FileLogger.WriteLogMessage(this, "PrintReceipt", "End Print Receipt");
+                    FileLogger.WriteLogMessage(this, NameMetod, "End Print Receipt");
                     return r;
                 }
                 catch (Exception e)
                 {
-                    if(RRO!=null) RRO.State = eStateEquipment.Error;
+                    FileLogger.WriteLogMessage(this, NameMetod, e);
+                    if (RRO!=null) RRO.State = eStateEquipment.Error;
                     SetStatus?.Invoke(new StatusEquipment(RRO.Model, eStateEquipment.Error, e.Message) { IsСritical = true });
                     return new LogRRO(pReceipt) { TypeOperation = eTypeOperation.Sale, TypeRRO = RRO.Model.ToString(), CodeError = -1, Error = e.Message };
                 }                
