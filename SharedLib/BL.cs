@@ -46,7 +46,7 @@ namespace SharedLib
 
         public ReceiptWares AddReceiptWares(ReceiptWares pW, bool pRecalcPriceOnLine = true)
         {
-            var State = db.GetGetStateReceipt(pW);
+            var State = db.GetStateReceipt(pW);
             if (State != eStateReceipt.Prepare)
             {
                 OnCustomWindow?.Invoke(new CustomWindow(eWindows.NoPrice, $"Чеку в стані {State} заборонено {Environment.NewLine} добавляти товар"));
@@ -264,7 +264,7 @@ namespace SharedLib
 
         public ReceiptWares AddWaresCode(IdReceipt pIdReceipt, int pCodeWares, int pCodeUnit, decimal pQuantity = 0, decimal pPrice = 0)
         {
-            var State = db.GetGetStateReceipt(pIdReceipt);
+            var State = db.GetStateReceipt(pIdReceipt);
             if (State != eStateReceipt.Prepare)
             {
                 OnCustomWindow?.Invoke(new CustomWindow(eWindows.NoPrice, $"Чеку в стані {State} заборонено {Environment.NewLine} добавляти товар"));
@@ -308,7 +308,7 @@ namespace SharedLib
 
         public bool ChangeQuantity(IdReceiptWares pReceiptWaresId, decimal pQuantity)
         {
-            var State = db.GetGetStateReceipt(pReceiptWaresId);
+            var State = db.GetStateReceipt(pReceiptWaresId);
             if (State != eStateReceipt.Prepare)
             {
                 OnCustomWindow?.Invoke(new CustomWindow(eWindows.NoPrice, $"Чеку в стані {State} заборонено {Environment.NewLine} змінювати кількість"));
@@ -395,7 +395,7 @@ namespace SharedLib
 
         private void UpdateClientInReceipt(IdReceipt pIdReceipt, Client parClient)
         {
-            var State = db.GetGetStateReceipt(pIdReceipt);
+            var State = db.GetStateReceipt(pIdReceipt);
             if (State != eStateReceipt.Prepare)
             {
                 OnCustomWindow?.Invoke(new CustomWindow(eWindows.NoPrice, $"Чеку в стані {State} заборонено {Environment.NewLine} змінювати клієнта"));

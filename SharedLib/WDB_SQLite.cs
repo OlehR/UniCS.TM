@@ -163,7 +163,7 @@ namespace SharedLib
         public override bool RecalcPrice(IdReceiptWares pIdReceiptWares)
         {
             var startTime = System.Diagnostics.Stopwatch.StartNew();
-            var State = GetGetStateReceipt(pIdReceiptWares);
+            var State = GetStateReceipt(pIdReceiptWares);
             if (State != eStateReceipt.Prepare)
                 return false;
 

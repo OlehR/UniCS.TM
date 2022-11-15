@@ -1091,7 +1091,7 @@ namespace SharedLib
             return db.Execute<IdReceipt, LogRRO>(SqlGetLogRRO, pR);
         }
 
-        public virtual eStateReceipt GetGetStateReceipt(IdReceipt pR)
+        public virtual eStateReceipt GetStateReceipt(IdReceipt pR)
         {
             return db.ExecuteScalar<IdReceipt, eStateReceipt>(SqlGetStateReceipt, pR);
         }
@@ -1124,6 +1124,7 @@ namespace SharedLib
 
             isDisposed = true;
         }
+
 
         /// <summary>
         /// Оновлення структури бази даних
