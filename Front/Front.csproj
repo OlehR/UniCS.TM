@@ -43,6 +43,7 @@
     <None Remove="icons\Scale.png" />
     <None Remove="icons\Scaner.png" />
     <None Remove="icons\shoppingBag.png" />
+    <None Remove="icons\shoppingCart.png" />
     <None Remove="icons\Signal.png" />
     <None Remove="icons\sparVideo.mp4" />
     <None Remove="icons\ua.png" />
@@ -95,6 +96,9 @@
     <Content Include="icons\sparVideo.mp4">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="icons\shoppingCart.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="icons\Signal.png" />
     <Resource Include="icons\ua.png" />
   </ItemGroup>
@@ -154,9 +158,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="icons\volume.png" />
-    <Resource Include="icons\VopakLogo.png">
+    <Content Include="icons\VopakLogo.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    </Content>
     <Resource Include="icons\warning.png" />
     <Resource Include="icons\weight.png" />
     <Resource Include="icons\X.png" />

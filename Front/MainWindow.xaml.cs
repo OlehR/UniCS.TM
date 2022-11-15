@@ -25,6 +25,8 @@ using System.Reflection;
 using Front.API;
 using System.Net.Sockets;
 using System.Windows.Media.Media3D;
+using System.IO;
+using ModernExpo.SelfCheckout.Utils;
 
 namespace Front
 {
@@ -133,7 +135,8 @@ namespace Front
         public int WidthScreen { get { return (int)SystemParameters.PrimaryScreenWidth; } }
         public int HeightScreen { get { return (int)SystemParameters.PrimaryScreenHeight; } }
         public int HeightStartVideo { get { return SystemParameters.PrimaryScreenWidth < SystemParameters.PrimaryScreenHeight ? 1300 : 700; } }
-        /// <summary>
+        public string[] PathVideo = Directory.GetFiles(Global.PathPictures + "Video\\");
+        /// <summary>x`
         /// треба переробити(інтегрувати в основну форму)
         /// </summary>
         //[Obsolete]
@@ -259,6 +262,19 @@ namespace Front
             //ad.WindowState = WindowState.Minimized;
             //ad.Show();
             InitializeComponent();
+            
+
+            if (PathVideo.Length != 0)
+            {
+                VideoPlayer.Source = new Uri(PathVideo[0]); // TMP ПЕРЕРОБИТИ
+            }
+            else
+            {
+                string[] PathLogo = Directory.GetFiles(Global.PathPictures + "Logo\\");
+                StartLogo.Source = new BitmapImage(new Uri(PathLogo[0]));// TMP ПЕРЕРОБИТИ
+                //StartLogo.Source = myImage3; 
+            }
+           
             AdminControl.Init(this);
             PaymentWindow.Init(this);
 
@@ -486,6 +502,7 @@ namespace Front
                     WeightWares.Visibility = Visibility.Collapsed;
                     WaitPayment.Visibility = Visibility.Collapsed;
                     StartShopping.Visibility = Visibility.Collapsed;
+                    StartShoppingLogo.Visibility = Visibility.Collapsed;
                     //textInAll.Visibility = Visibility.Visible;
                     //valueInAll.Visibility = Visibility.Visible;
                     ConfirmAge.Visibility = Visibility.Collapsed;
@@ -516,7 +533,13 @@ namespace Front
                     switch (State)
                     {
                         case eStateMainWindows.StartWindow:
-                            StartShopping.Visibility = Visibility.Visible;
+                            if (PathVideo.Length !=0)
+                            {
+                                StartShopping.Visibility = Visibility.Visible;
+                            }
+                            else
+                                StartShoppingLogo.Visibility = Visibility.Visible;
+
                             //textInAll.Visibility = Visibility.Collapsed;
                             //valueInAll.Visibility = Visibility.Collapsed;
                             //StartVideo.Play();
