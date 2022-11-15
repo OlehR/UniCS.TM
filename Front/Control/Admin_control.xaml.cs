@@ -206,6 +206,19 @@ namespace Front.Control
                 }));
             }
         }
+        void ViewReceiptFiscal(LogRRO LastReceipt)
+        {
+            if (LastReceipt?.TextReceipt?.Count() > 0)
+            {
+                Dispatcher.BeginInvoke(new ThreadStart(() =>
+                {
+                    RevisionText.Text = string.Join(Environment.NewLine, LastReceipt.TextReceipt);
+                    Revision.Visibility = Visibility.Visible;
+                    BackgroundShift.Visibility = Visibility.Visible;
+                    RevisionScrollViewer.ScrollToEnd();
+                }));
+            }
+        }
 
         private void POS_X_Copy_Click(object sender, RoutedEventArgs e)
         {
@@ -217,6 +230,7 @@ namespace Front.Control
             var task = Task.Run(() =>
             {
                 var r = EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() });
+                ViewReceiptFiscal(r);
             });
         }
 

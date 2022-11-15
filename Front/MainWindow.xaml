@@ -1828,7 +1828,7 @@
                 <Button   FontSize="22" Click="ButtonOkErrorWin"  Grid.Row="1" Style="{StaticResource Default}"
                         Height="80" Width="300" VerticalAlignment="Center">
                     <StackPanel Orientation="Horizontal">
-                        <Image  Height="30" Width="30"  Source="icons\right.png"></Image>
+                        <Image  Height="30" Width="30"  Source="icons\shoppingCart.pngright.png"></Image>
                         <TextBlock FontSize="28"  Text="ОК" Margin="5,0,0,5"/>
                     </StackPanel>
                 </Button>
@@ -1836,85 +1836,68 @@
         </Border>
 
 
-        <!--Початок покупки - стартове вікно-->
+        <!--Початок покупки - стартове вікно ВІДЕО-->
         <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
-                 Grid.Row="1" Grid.RowSpan="4"
+                 Grid.Row="0" Grid.RowSpan="5"
                 Grid.Column="0" Grid.ColumnSpan="4"
-                 Name="StartShopping" Visibility="Collapsed" Grid.ZIndex="2" >
-            <Grid>
+                 Name="StartShopping" Visibility="Visible" Grid.ZIndex="2" >
+            <Grid x:Name="MP">
 
-                <StackPanel >
-                    <TextBlock TextWrapping="Wrap"   
-                    HorizontalAlignment="Center" FontSize="36" Margin="0,50,0,20" >
-                    Доброго дня, ласкаво просимо до нашого магазину
-                    </TextBlock>
-                    <Grid Height="{Binding HeightStartVideo, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}">
-                        <Image Source="icons\VopakLogo.png" Height="500"/>
-                        <!--<MediaElement   Name="StartVideo" Source="icons\sparVideo.mp4" LoadedBehavior="Manual" Volume="0"   />-->
 
-                        <!--<MediaElement Name="StartVideo" Volume="0" LoadedBehavior="Manual">
-                            <MediaElement.Triggers>
-                                <EventTrigger RoutedEvent="MediaElement.Loaded">
-                                    <EventTrigger.Actions>
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <MediaTimeline Source="icons\sparVideo.mp4" Storyboard.TargetName="StartVideo"  
-                                                           RepeatBehavior="Forever" />
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </EventTrigger.Actions>
-                                </EventTrigger>
-                            </MediaElement.Triggers>
-                        </MediaElement>-->
-                    </Grid>
-
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <StackPanel>
-
-                            <StackPanel>
-                                <StackPanel.Style>
-                                    <Style TargetType="StackPanel">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                                <Setter Property="Orientation" Value="Vertical" />
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
-                                                <Setter Property="Orientation" Value="Horizontal" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </StackPanel.Style>
-                                <Button Margin="10"  Style="{StaticResource greenButton}"  FontSize="48" Click="StartBuy" 
-                         Height="100" Width="500">
-                                    <StackPanel Orientation="Horizontal">
-                                        <Image  Height="50" Width="50"  Source="icons\shoppingBag.png"></Image>
-                                        <TextBlock FontSize="50" Text="{DynamicResource startShopping}" FontFamily="Source Sans Pro" Foreground="White"  Margin="5,10,5,0"/>
-                                    </StackPanel>
-                                </Button>
-                                <Button Margin="10" Style="{StaticResource greenButton}"  FontSize="48"  Click="StartOwnBag" 
-                           Height="100" Width="500">
-                                    <StackPanel Orientation="Horizontal">
-                                        <Image  Height="50" Width="50"  Source="icons\shoppingBag.png"></Image>
-                                        <TextBlock FontSize="50" Text="{DynamicResource ownBag}" FontFamily="Source Sans Pro" Foreground="White" Margin="5,10,5,0"/>
-                                    </StackPanel>
-                                </Button>
-                            </StackPanel>
-                            <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center">
-                                <Image Width="100" Source="icons\visa.png" Margin="0,0,15,0"/>
-                                <Image Width="100" Source="icons\MasterCard.png"/>
-                            </StackPanel>
-                        </StackPanel>
+                <Button Margin="10,10,10,100"  Opacity="0.7" Style="{StaticResource StartButtun}"  FontSize="48" Click="StartBuy"  Grid.ZIndex="2"
+                         Height="70" Width="500" VerticalAlignment="Bottom">
+                    <StackPanel Orientation="Horizontal">
+                        <Image  Height="50" Width="50"  Source="icons\shoppingCart.png"></Image>
+                        <TextBlock FontSize="50" Text="{DynamicResource startShopping}" FontFamily="Source Sans Pro"   Margin="5,10,5,0"/>
                     </StackPanel>
+                </Button>
 
+                    <!--<Image Source="icons\VopakLogo.png" Height="500"/>-->
+                    <!--<MediaElement   Name="StartVideo" Source="icons\sparVideo.mp4" LoadedBehavior="Manual" Volume="0"   />-->
 
-                </StackPanel>
+                <MediaElement Name="StartVideo" Volume="0" LoadedBehavior="Manual">
+                    <MediaElement.Triggers>
+                        <EventTrigger RoutedEvent="MediaElement.Loaded">
+                            <EventTrigger.Actions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <MediaTimeline x:Name="VideoPlayer"  Source="icons/VopakLogo.png"
+                                                       Storyboard.TargetName="StartVideo"  
+                                                           RepeatBehavior="Forever" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger.Actions>
+                        </EventTrigger>
+                    </MediaElement.Triggers>
+                </MediaElement>
+
 
             </Grid>
         </Border>
-        
+
+        <!--Початок покупки - стартове вікно Логотип-->
+        <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="0" Grid.RowSpan="5"
+                Grid.Column="0" Grid.ColumnSpan="4"
+                 Name="StartShoppingLogo" Visibility="Collapsed" Grid.ZIndex="2" >
+            <Grid >
+                
+                <Image x:Name="StartLogo"  Height="500"/>
+
+                <Button Margin="10,10,10,100"  Style="{StaticResource greenButton}"  FontSize="48" Click="StartBuy"  Grid.ZIndex="2"
+                         Height="100" Width="500" VerticalAlignment="Bottom">
+                    <StackPanel Orientation="Horizontal">
+                        <Image  Height="50" Width="50"  Source="icons\shoppingBag.png"></Image>
+                        <TextBlock FontSize="50" Text="{DynamicResource startShopping}" FontFamily="Source Sans Pro" Foreground="White"  Margin="10,10,5,0"/>
+                    </StackPanel>
+                </Button>
+
+
+
+
+
+            </Grid>
+        </Border>
         <!-- Адмінка -->
 
             <uc:Admin_control Grid.Row="0" Grid.RowSpan="5" Visibility="Collapsed"
