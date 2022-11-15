@@ -103,7 +103,7 @@ namespace ModelMID
     }
 
     public class ControlScale
-    {
+    {        
         public DateTime LastStabilized=DateTime.MinValue;
         public ReceiptWares RW,DelRW;
         public Action<eStateScale, ReceiptWares, double> OnStateScale { get; set; }
@@ -136,6 +136,7 @@ namespace ModelMID
         }
 
         bool IsMultyWeight { get { return RW != null && RW.AllWeights != null && RW.AllWeights.Count() >1; } }
+        
         string AllWeights 
         { 
             get{ return (IsMultyWeight ? "(":"") +
@@ -143,6 +144,7 @@ namespace ModelMID
                 + (IsMultyWeight ? ")" : "");
             } 
         }
+        
         public string Info { get {
                 string res=null;
                 
@@ -233,7 +235,16 @@ namespace ModelMID
         // private Scales bst;
 
         bool TooLightWeight;
+
+        /// <summary>
+        /// Чи працює контрольна вага
+        /// </summary>
         bool IsOn;
+        bool _IsControl = true;
+        /// <summary>
+        /// Тимчасове відключення контролю (наприклад після оплати)
+        /// </summary>        
+        public bool IsControl { get { return _IsControl; } set { _IsControl = value; if(!_IsControl) StateScale = eStateScale.Stabilized;  } }
 
         MidlWeight MidlWeight;
 
@@ -284,7 +295,6 @@ namespace ModelMID
                 return;
             }
 
-
             double BeforeWeight = Convert.ToDouble(pR.Wares?.Sum(el => el.FixWeight)) + pR.OwnBag;
             var ww = pR.Wares?.Where(el => el.IsLast);
             //Нештатна ситуація
@@ -314,6 +324,7 @@ namespace ModelMID
             BeforeСurrentlyWeight = 0;
             BeforeFullWeight = 0;
             OwnBag= pOwnBag;
+            IsControl = true;
 
             TooLightWeight = WaitWeight.Max(r => r.Max) <= Delta;
             if (RW != null && RW.Quantity != RW.FixWeightQuantity && RW.WeightFact != -1)
@@ -485,6 +496,7 @@ namespace ModelMID
 
         public bool WaitClear(double pOwnBag=0d)
         {
+            IsControl = true;
             OnScalesLog("WaitClear");
             RW = null;
             WaitWeight = null;

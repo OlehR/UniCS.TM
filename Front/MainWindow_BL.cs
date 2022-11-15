@@ -484,6 +484,8 @@ namespace Front
 
                 if (R.StateReceipt == eStateReceipt.Pay || R.StateReceipt == eStateReceipt.StartPrint)
                 {
+                    //Відключаємо контроль контрольної ваги тимчасово до наступної зміни товарного складу.
+                    CS.IsControl = false;
                     R.Client = Client;
                     R.StateReceipt = eStateReceipt.StartPrint;
                     Bl.SetStateReceipt(curReceipt, eStateReceipt.StartPrint);
