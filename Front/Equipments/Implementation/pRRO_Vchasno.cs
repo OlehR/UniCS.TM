@@ -373,7 +373,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
             cnt = pRW.Quantity;
             price = pRW.Price;
             cost = Math.Round(pRW.Price * pRW.Quantity, 2);// - Math.Round(pRW.SumDiscount, 2);
-            disc = pRW.SumDiscount;
+            disc = Math.Round(pRW.SumDiscount,2);
             taxgrp = int.Parse(pRW.TaxGroup);
         }
         public string code { get; set; }
