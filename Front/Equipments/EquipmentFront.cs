@@ -405,11 +405,20 @@ namespace Front
             return r;
         }
 
-            public LogRRO RroPrintCopyReceipt()
+        public LogRRO RroPrintCopyReceipt()
         {
             var r = RRO?.PrintCopyReceipt();
             Bl.InsertLogRRO(r);
             return r;
+        }
+
+        public decimal SumReceiptFiscal(Receipt pR)
+        {
+            decimal sum = 0;
+            if(pR==null) return 0;
+            if (RRO != null)
+                sum = RRO != null? RRO.SumReceiptFiscal(pR): pR.Wares.Sum(r => (r.SumTotal));
+             return sum; 
         }
 
         public LogRRO PrintNoFiscalReceipt(IEnumerable<string> pR)

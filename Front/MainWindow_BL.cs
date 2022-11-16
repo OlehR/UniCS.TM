@@ -452,7 +452,7 @@ namespace Front
                             Bl.GenQRAsync(R.Wares);
                         R.StateReceipt = eStateReceipt.StartPay;
                         Bl.SetStateReceipt(curReceipt, eStateReceipt.StartPay);
-                        decimal sum = R.Wares.Sum(r => (r.SumTotal)); //TMP!!!Треба переробити
+                        decimal sum = EF.SumReceiptFiscal(R); //R.Wares.Sum(r => (r.SumTotal)); //TMP!!!Треба переробити
                         FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Sum={sum}", eTypeLog.Expanded);
                         SetStateView(eStateMainWindows.ProcessPay);
                         var pay = R.TypeReceipt == eTypeReceipt.Sale ? EF.PosPurchase(R, sum) : EF.PosRefund(R, sum, R.AdditionC1);

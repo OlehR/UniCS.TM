@@ -7,6 +7,7 @@ using ModelMID.DB;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 // using System.Data.SQLite;
 //using DatabaseLib;
@@ -118,7 +119,13 @@ namespace Front.Equipments
             return null;
         }
 
-
+        virtual public decimal SumReceiptFiscal(Receipt pR)
+        {
+            decimal sum = pR.Wares.Sum(r => (r.SumTotal));
+            //decimal sum = pR.Wares.Sum(el => Math.Round(el.Price * el.Quantity, 2) - Math.Round(el.SumDiscount, 2)); //pR.SumTotal;
+            return sum; //throw new NotImplementedException();
+        }
+       
 
     }
 }
