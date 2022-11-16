@@ -663,6 +663,29 @@ namespace Front.Control
             DetailsReceiptBorder.Visibility = Visibility.Visible;
             BackgroundReceipts.Visibility = Visibility.Visible;
         }
+
+        private void ChangeReceiptStatus(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            var tmpReceipt = btn.DataContext as Receipt;
+            if (tmpReceipt != null)
+            {
+                PosCheckText.Text = "";
+                DetailsReceiptBorder.Visibility = Visibility.Visible;
+                BackgroundReceipts.Visibility = Visibility.Visible;
+
+                var TMPvalue = Bl.db.GetLogRRO(tmpReceipt);
+                PosCheckText.Text = TMPvalue?.Where(e => e.TypeOperation == eTypeOperation.SalePOS).FirstOrDefault()?.TextReceipt;
+                FiscalCheckText.Text = TMPvalue?.Where(e => e.TypeOperation == eTypeOperation.Sale).FirstOrDefault()?.TextReceipt;
+                var curReceiptWares = Bl.GetWaresReceipt(tmpReceipt);
+                ListWaresReceipt.ItemsSource = curReceiptWares;
+            }
+        }
+
+        private void CancelChangeReceiptStatus(object sender, RoutedEventArgs e)
+        {
+            WindowChangeReceiptStatus.Visibility = Visibility.Collapsed;
+        }
     }
     public class APIRadiobuton
     {

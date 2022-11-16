@@ -682,6 +682,46 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                             </Grid>
                         </Border>
 
+                        <!--Зміна статусу чеку-->
+                        <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="0" Grid.RowSpan="6"
+                Grid.Column="1" Grid.ColumnSpan="4"
+                 Name="WindowChangeReceiptStatus" Visibility="Visible" Grid.ZIndex="3" 
+                CornerRadius="10" HorizontalAlignment="Center"  Width="800" Height="500">
+                            <Border.Effect>
+                                <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+                            </Border.Effect>
+
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"></RowDefinition>
+                                    <RowDefinition Height="3*"></RowDefinition>
+                                    <RowDefinition Height="3*"></RowDefinition>
+                                    <RowDefinition Height="100"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                           Text="Зміна стану чека" FontSize="28"/>
+
+
+
+                                <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="6" HorizontalAlignment="Left"
+                                    Style="{StaticResource Default}"  FontSize="22" Click="CancelChangeReceiptStatus" 
+                        Height="80" Width="300" Margin="10">
+                                    <TextBlock FontSize="28" Text="Змінити стан"/>
+                                </Button>
+                                <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="6" HorizontalAlignment="Right"
+                                    Style="{StaticResource Default}"  FontSize="22" Click="CancelChangeReceiptStatus" 
+                        Height="80" Width="300" Margin="10">
+                                    <TextBlock FontSize="28" Text="{DynamicResource cancel}"/>
+                                </Button>
+                            </Grid>
+                        </Border>
+
                         <!--ФОН-->
                         <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
@@ -745,7 +785,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                     <GridViewColumn Header="Стан чека">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
-                                                <TextBlock Text="{Binding Path=TranslationStateReceipt}" TextAlignment="Center" />
+                                                <Button Content="{Binding Path=TranslationStateReceipt}" Click="ChangeReceiptStatus"/>
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
