@@ -86,7 +86,7 @@ namespace Front.Equipments
 
         public override LogRRO PrintX(IdReceipt pIdR)
         {
-            string res;
+            string res=null;
             try
             {
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock");
