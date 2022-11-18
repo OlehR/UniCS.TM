@@ -26,7 +26,7 @@ using ModernExpo.SelfCheckout.Utils;
 using Receipt = ModernExpo.SelfCheckout.Entities.Models.Receipt;
 using System.Threading;
 using System.Xml.Linq;
-
+using Timer = System.Timers.Timer;
 
 namespace Front.Equipments
 {
