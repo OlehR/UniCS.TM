@@ -934,7 +934,7 @@ namespace Front
             }       
         }
 
-        private void ShowErrorMessage(string ErrorMessage)
+        public void ShowErrorMessage(string ErrorMessage)
         {
             Dispatcher.BeginInvoke(new ThreadStart(() =>
             {

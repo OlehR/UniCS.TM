@@ -230,7 +230,13 @@ namespace Front.Control
             var task = Task.Run(() =>
             {
                 var r = EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() });
-                ViewReceiptFiscal(r);
+                if(r.CodeError==0)
+                    ViewReceiptFiscal(r);
+                else
+                {
+                  Thread.Sleep(100);
+                  MW.ShowErrorMessage($"Помилка друку звіта:({r.CodeError}){Environment.NewLine}{r.Error}");
+                } 
             });
         }
 
@@ -241,6 +247,13 @@ namespace Front.Control
                 var task = Task.Run(() =>
             {
                 var r = EF.RroPrintZ(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() });
+                if (r.CodeError == 0)
+                    ViewReceiptFiscal(r);
+                else
+                {
+                    Thread.Sleep(100);
+                    MW.ShowErrorMessage($"Помилка друку звіта:({r.CodeError}){Environment.NewLine}{r.Error}");
+                }
             });
             }
         }
