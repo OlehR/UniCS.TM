@@ -27,16 +27,16 @@ namespace Front.Equipments
         /// </summary>
         public bool IsOpenWorkDay { get; set; } = false;
 
-        protected void SetStatus(eStatusRRO pStatus,string pMsg=null,int? pMsgCode = null)
+        protected void SetStatus(eStatusRRO pStatus, string pMsg = null, int? pMsgCode = null)
         {
-            ActionStatus?.Invoke(new RroStatus() { Status = pStatus, ModelEquipment = Model, State = pMsgCode??(int)pStatus, TextState = pMsg??pStatus.ToString() });
+            ActionStatus?.Invoke(new RroStatus() { Status = pStatus, ModelEquipment = Model, State = pMsgCode ?? (int)pStatus, TextState = pMsg ?? pStatus.ToString() });
         }
 
-        public Rro(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefine, ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment, pConfiguration,pModelEquipment, pLoggerFactory) 
+        public Rro(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefine, ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment, pConfiguration, pModelEquipment, pLoggerFactory)
         {
-            ActionStatus =  pActionStatus;
+            ActionStatus = pActionStatus;
         }
-        
+
         public virtual void SetOperatorName(string pOperatorName)
         {
             OperatorName = pOperatorName;
@@ -47,28 +47,28 @@ namespace Front.Equipments
             throw new NotImplementedException();
         }
 
-        public virtual LogRRO PrintCopyReceipt(int parNCopy=1)
+        public virtual LogRRO PrintCopyReceipt(int parNCopy = 1)
         {
             throw new NotImplementedException();
         }
 
-        public virtual  LogRRO PrintZ(IdReceipt pIdR)
+        public virtual LogRRO PrintZ(IdReceipt pIdR)
         {
             return null;//throw new NotImplementedException();
         }
 
-        public virtual  LogRRO  PrintX(IdReceipt pIdR)
+        public virtual LogRRO PrintX(IdReceipt pIdR)
         {
             return null;//throw new NotImplementedException();
         }
 
-        
+
         /// <summary>
         /// Внесення/Винесення коштів коштів. pSum>0 - внесення
         /// </summary>
         /// <param name="pSum"></param>
         /// <returns></returns>
-        virtual public LogRRO MoveMoney(decimal pSum, IdReceipt pIdR=null)
+        virtual public LogRRO MoveMoney(decimal pSum, IdReceipt pIdR = null)
         {
             return null;//throw new NotImplementedException();
         }
@@ -93,12 +93,12 @@ namespace Front.Equipments
             return null; //throw new NotImplementedException();
         }
 
-        virtual public bool PutToDisplay(string ptext )
+        virtual public bool PutToDisplay(string ptext)
         {
             throw new NotImplementedException();
         }
-        
-        virtual public bool PeriodZReport(DateTime pBegin, DateTime pEnd,bool IsFull=true)
+
+        virtual public bool PeriodZReport(DateTime pBegin, DateTime pEnd, bool IsFull = true)
         {
             throw new NotImplementedException();
         }
@@ -121,10 +121,12 @@ namespace Front.Equipments
 
         virtual public decimal SumReceiptFiscal(Receipt pR)
         {
-            decimal sum = pR.Wares.Sum(r => (r.SumTotal));
+            decimal sum = 0;
+            if (pR != null && pR.Wares != null && !pR.Wares.Any())
+                sum = pR.Wares.Sum(r => (r.SumTotal));
             //decimal sum = pR.Wares.Sum(el => Math.Round(el.Price * el.Quantity, 2) - Math.Round(el.SumDiscount, 2)); //pR.SumTotal;
             return sum; //throw new NotImplementedException();
-        }       
+        }
 
     }
 }
