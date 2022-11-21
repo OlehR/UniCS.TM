@@ -686,8 +686,8 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                         <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
                 Grid.Column="1" Grid.ColumnSpan="4"
-                 Name="WindowChangeReceiptStatus" Visibility="Visible" Grid.ZIndex="3" 
-                CornerRadius="10" HorizontalAlignment="Center"  Width="800" Height="500">
+                 Name="WindowChangeReceiptStatus" Visibility="Collapsed" Grid.ZIndex="3" 
+                CornerRadius="10" HorizontalAlignment="Center"  Width="800" Height="600">
                             <Border.Effect>
                                 <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
                             </Border.Effect>
@@ -706,11 +706,47 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Center" VerticalAlignment="Center"
                                            Text="Зміна стану чека" FontSize="28"/>
+                                <ScrollViewer Grid.Column="0" Grid.ColumnSpan="3" 
+                                               Grid.Row="1" Grid.RowSpan="2">
+                                    
+                                <ItemsControl  Name="ListReceiptState"  
+                                               HorizontalAlignment="Center">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border  Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
+                                                <Border.Effect>
+                                                    <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
+                                                </Border.Effect>
+                                                <Grid Margin="10,0,0,0">
+                                                    <Grid Margin="0,5,0,5">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="110"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
 
-
+                                                            <RadioButton Grid.Column="0" GroupName="GroupRadioButton" FontSize="18" Checked="CheckReceiptState">
+                                                                <RadioButton.Style>
+                                                                    <Style BasedOn="{StaticResource OrangeSwitchStyle}" TargetType="RadioButton">
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding Selected}" Value="True">
+                                                                                <Setter Property="IsChecked" Value="True"/>
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </RadioButton.Style>
+                                                            </RadioButton>
+                                                            <TextBlock Grid.Column="1" Text="{Binding TranslateStateReceipt_}" TextWrapping="Wrap"
+                                                           FontSize="24" FontWeight="SemiBold"/>
+                                                    </Grid>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                </ScrollViewer>
 
                                 <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="6" HorizontalAlignment="Left"
-                                    Style="{StaticResource Default}"  FontSize="22" Click="CancelChangeReceiptStatus" 
+                                    Style="{StaticResource Default}"  FontSize="22" Click="ChangeReceiptStatus" 
                         Height="80" Width="300" Margin="10">
                                     <TextBlock FontSize="28" Text="Змінити стан"/>
                                 </Button>
@@ -785,7 +821,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                     <GridViewColumn Header="Стан чека">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
-                                                <Button Content="{Binding Path=TranslationStateReceipt}" Click="ChangeReceiptStatus"/>
+                                                <Button Content="{Binding Path=TranslationStateReceipt}" Click="ChoiceReceiptStatus"/>
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>

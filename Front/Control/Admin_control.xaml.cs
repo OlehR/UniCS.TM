@@ -40,6 +40,8 @@ namespace Front.Control
         public string ControlScaleWeightDouble { get; set; } = "0";
         MainWindow MW;
         Receipt curReceipt = null;
+        Receipt ChangeStateReceipt = null;
+        public eStateReceipt newStateReceipt;
         public bool ClosedShift { get { return MW.IsLockSale; } }
         public User AdminUser { get; set; }
         public string NameAdminUserOpenShift { get { return MW?.AdminSSC?.NameUser; } }
@@ -230,13 +232,13 @@ namespace Front.Control
             var task = Task.Run(() =>
             {
                 var r = EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() });
-                if(r.CodeError==0)
+                if (r.CodeError == 0)
                     ViewReceiptFiscal(r);
                 else
                 {
-                  Thread.Sleep(100);
-                  MW.ShowErrorMessage($"Помилка друку звіта:({r.CodeError}){Environment.NewLine}{r.Error}");
-                } 
+                    Thread.Sleep(100);
+                    MW.ShowErrorMessage($"Помилка друку звіта:({r.CodeError}){Environment.NewLine}{r.Error}");
+                }
             });
         }
 
@@ -677,27 +679,57 @@ namespace Front.Control
             BackgroundReceipts.Visibility = Visibility.Visible;
         }
 
-        private void ChangeReceiptStatus(object sender, RoutedEventArgs e)
+        private void ChoiceReceiptStatus(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
-            var tmpReceipt = btn.DataContext as Receipt;
-            if (tmpReceipt != null)
+            ChangeStateReceipt = btn.DataContext as Receipt;
+            if (ChangeStateReceipt != null)
             {
-                PosCheckText.Text = "";
-                DetailsReceiptBorder.Visibility = Visibility.Visible;
+                WindowChangeReceiptStatus.Visibility = Visibility.Visible;
                 BackgroundReceipts.Visibility = Visibility.Visible;
 
-                var TMPvalue = Bl.db.GetLogRRO(tmpReceipt);
-                PosCheckText.Text = TMPvalue?.Where(e => e.TypeOperation == eTypeOperation.SalePOS).FirstOrDefault()?.TextReceipt;
-                FiscalCheckText.Text = TMPvalue?.Where(e => e.TypeOperation == eTypeOperation.Sale).FirstOrDefault()?.TextReceipt;
-                var curReceiptWares = Bl.GetWaresReceipt(tmpReceipt);
-                ListWaresReceipt.ItemsSource = curReceiptWares;
+
+                var ListStateReceiptRadiobuton = new ObservableCollection<StateReceiptRadiobuton>();
+                foreach (eStateReceipt type in Enum.GetValues(typeof(eStateReceipt)))
+                {
+                    bool select_ = false;
+                    if (type == ChangeStateReceipt.StateReceipt) select_ = true;
+                    ListStateReceiptRadiobuton.Add(new StateReceiptRadiobuton()
+                    {
+                        StateReceipt_ = type,
+                        Selected = select_
+
+                    });
+
+                }
+                ListReceiptState.ItemsSource = ListStateReceiptRadiobuton;
             }
         }
 
         private void CancelChangeReceiptStatus(object sender, RoutedEventArgs e)
         {
             WindowChangeReceiptStatus.Visibility = Visibility.Collapsed;
+            BackgroundReceipts.Visibility = Visibility.Collapsed;
+        }
+
+        private void ChangeReceiptStatus(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show($"Змінити стан чека з \"{ChangeStateReceipt.StateReceipt.GetDescription()}\" на \"{newStateReceipt.GetDescription()}\"?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            {
+                //ChangeStateReceipt.StateReceipt = newStateReceipt;
+                Bl.SetStateReceipt(ChangeStateReceipt, newStateReceipt);
+                WindowChangeReceiptStatus.Visibility = Visibility.Collapsed;
+                BackgroundReceipts.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void CheckReceiptState(object sender, RoutedEventArgs e)
+        {
+            RadioButton btn = sender as RadioButton;
+            var selectedState = btn.DataContext as StateReceiptRadiobuton;
+            if (selectedState.IsNotNull())
+                newStateReceipt = selectedState.StateReceipt_;
+
         }
     }
     public class APIRadiobuton
@@ -709,6 +741,12 @@ namespace Front.Control
     {
         public string LineLog { get; set; }
         public eTypeLog TypeLog { get; set; }
+    }
+    public class StateReceiptRadiobuton
+    {
+        public eStateReceipt StateReceipt_ { get; set; }
+        public string TranslateStateReceipt_ { get { return StateReceipt_.GetDescription(); } }
+        public bool Selected { get; set; } = false;
     }
 
 

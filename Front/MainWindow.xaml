@@ -1840,7 +1840,7 @@
         <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="5"
                 Grid.Column="0" Grid.ColumnSpan="4"
-                 Name="StartShopping" Visibility="Visible" Grid.ZIndex="2" >
+                 Name="StartShopping" Visibility="Collapsed" Grid.ZIndex="2" >
             <Grid x:Name="MP">
 
 
