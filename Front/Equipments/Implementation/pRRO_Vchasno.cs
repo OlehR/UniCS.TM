@@ -223,7 +223,8 @@ namespace Front.Equipments.Implementation
 
         override public decimal SumReceiptFiscal(Receipt pR)
         {
-            decimal sum = pR.Wares.Sum(el => Math.Round(el.Price * el.Quantity, 2) - Math.Round(el.SumDiscount, 2)); //pR.SumTotal;
+            decimal sum = 0;
+            if(pR!=null && pR.Wares!=null && pR.Wares.Any()) sum=pR.Wares.Sum(el => Math.Round(el.Price * el.Quantity, 2) - Math.Round(el.SumDiscount, 2)); //pR.SumTotal;
             return sum; //throw new NotImplementedException();
         }
 

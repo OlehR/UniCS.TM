@@ -418,7 +418,7 @@ namespace Front
         public decimal SumReceiptFiscal(Receipt pR)
         {
             decimal sum = 0;
-            if(pR==null) return 0;
+            if (pR == null || pR.Wares == null || !pR.Wares.Any()) return 0;
             if (RRO != null)
                 sum = RRO != null? RRO.SumReceiptFiscal(pR): pR.Wares.Sum(r => (r.SumTotal));
              return sum; 
