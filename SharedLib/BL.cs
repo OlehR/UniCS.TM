@@ -500,7 +500,7 @@ namespace SharedLib
                 {
                     using (var ldb = new WDB_SQLite(Ldc))
                     {
-                        var l = ldb.GetReceipts(Ldc.Date, Ldc.Date.AddDays(1), IdWorkPlace);
+                        var l = ldb.GetReceipts(Ldc.Date, DateTime.Now.Date.AddDays(1)/*Ldc.Date.AddDays(1)*/, IdWorkPlace);
                         res.AddRange(l);
                         Ldc = Ldc.AddDays(1);
                     }
