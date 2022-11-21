@@ -469,7 +469,8 @@ namespace SharedLib
             if (pIdReceipt == null)
                 return false;
             var receipt = new Receipt(pIdReceipt) { StateReceipt = pStateReceipt, DateReceipt = DateTime.Now, UserCreate = GetUserIdbyWorkPlace(pIdReceipt.IdWorkplace) };
-            return db.CloseReceipt(receipt);
+            WDB_SQLite ldb = (pIdReceipt.DTPeriod == DateTime.Now.Date ? db : new WDB_SQLite(pIdReceipt.DTPeriod));
+            return ldb.CloseReceipt(receipt);
         }
 
         public bool InsertWeight(string pBarCode, int parWeight, Guid parWares, TypeSaveWeight parTypeSaveWeight)

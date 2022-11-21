@@ -449,9 +449,11 @@ namespace Front.Equipments.Ingenico
                 Action<DeviceLog> onDeviceWarning = this.OnDeviceWarning;
                 if (onDeviceWarning != null)
                 {
-                    PosDeviceLog posDeviceLog = new PosDeviceLog();
-                    posDeviceLog.Category = TerminalLogCategory.Warning;
-                    posDeviceLog.Message = "Cannot get information during error - " + ex.Message;
+                    PosDeviceLog posDeviceLog = new PosDeviceLog()
+                    {
+                        Category = TerminalLogCategory.Warning,
+                        Message = "Cannot get information during error - " + ex.Message
+                    };
                     onDeviceWarning((DeviceLog)posDeviceLog);
                 }
                 return (string)null;
@@ -461,31 +463,21 @@ namespace Front.Equipments.Ingenico
         public Task<string> GetInfo() => Task.Run<string>((Func<string>)(() => this.GetInfoSync()));
 
         public PaymentResultModel WaitPosRespone()
-        {
-            ILogger<Ingenico> logger1 = this._logger;
-            if (logger1 != null)
-                LoggerExtensions.LogDebug((ILogger)logger1, "[Ingenico] WaitPosRespone 1", Array.Empty<object>());
+        {            
+            if (_logger != null)
+                LoggerExtensions.LogDebug((ILogger)_logger, "[Ingenico] WaitPosRespone 1");
             int num = 0;
             while (_bpos1LibClass.LastResult == (byte)2 && num < 120)
-            {
-                ILogger<Ingenico> logger2 = this._logger;
-                if (logger2 != null)
-                    LoggerExtensions.LogDebug((ILogger)logger2, "[Ingenico] WaitPosRespone *", Array.Empty<object>());
+            {             
+                LoggerExtensions.LogDebug((ILogger)_logger, "[Ingenico] WaitPosRespone *");
                 if (_isCancelRequested)
                 {
                     _isCancelRequested = false;
                     _bpos1LibClass.Cancel();
                     Thread.Sleep(1000);
                     Action<StatusEquipment> onStatus = this.OnStatus;
-                    if (onStatus != null)
-                        onStatus((StatusEquipment)new PosStatus()
-                        {
-                            Status = eStatusPos.TransactionCanceledByUser
-                        });
-                    return new PaymentResultModel()
-                    {
-                        IsSuccess = false
-                    };
+                    if (onStatus != null)  onStatus((StatusEquipment)new PosStatus() { Status = eStatusPos.TransactionCanceledByUser });
+                    return new PaymentResultModel() { IsSuccess = false };
                 }
                 Thread.Sleep(1000);
                 ++num;
