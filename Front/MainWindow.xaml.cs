@@ -820,7 +820,7 @@ namespace Front
         private void _Back(object sender, RoutedEventArgs e)
         {
             // Правильний блок.
-            if (Access.GetRight(eTypeAccess.DelReciept) || curReceipt?.SumReceipt == 0)
+            if (Access.GetRight(eTypeAccess.DelReciept) || curReceipt?.SumReceipt == 0 || curReceipt?.StateReceipt>= eStateReceipt.Print)
             {
                 if(curReceipt.StateReceipt==eStateReceipt.Prepare)
                     Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);

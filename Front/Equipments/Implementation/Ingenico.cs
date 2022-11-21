@@ -392,24 +392,22 @@ namespace Front.Equipments.Ingenico
                 return connectionStatus1;
             }
             _bpos1LibClass.Ping();
-            ILogger<Ingenico> logger1 = this._logger;
-            if (logger1 != null)
-                LoggerExtensions.LogDebug((ILogger)logger1, "[Ingenico] Get Device Connection Status", Array.Empty<object>());
+           
+            if (_logger != null)
+                LoggerExtensions.LogDebug((ILogger)_logger, "[Ingenico] Get Device Connection Status");
             DeviceConnectionStatus connectionStatus2;
             if (_bpos1LibClass.LastResult == (byte)2)
             {
                 int lastResult = (int)_bpos1LibClass.LastResult;
                 int lastErrorCode = (int)_bpos1LibClass.LastErrorCode;
                 byte lastStatMsgCode = _bpos1LibClass.LastStatMsgCode;
-                ILogger<Ingenico> logger2 = this._logger;
-                if (logger2 != null)
-                    LoggerExtensions.LogTrace((ILogger)logger2, string.Format("[Ingenico] LastStatMsgCode = {0}", (object)lastStatMsgCode), Array.Empty<object>());
-                ILogger<Ingenico> logger3 = this._logger;
-                if (logger3 != null)
-                    LoggerExtensions.LogTrace((ILogger)logger3, "[Ingenico] Description = " + _bpos1LibClass.LastStatMsgDescription, Array.Empty<object>());
-                ILogger<Ingenico> logger4 = this._logger;
-                if (logger4 != null)
-                    LoggerExtensions.LogTrace((ILogger)logger4, "[Ingenico] LastErrorDescription = " + _bpos1LibClass.LastErrorDescription, Array.Empty<object>());
+
+                if (_logger != null)
+                {
+                    LoggerExtensions.LogTrace((ILogger)_logger, $"[Ingenico] LastStatMsgCode = {lastStatMsgCode}");
+                    LoggerExtensions.LogTrace((ILogger)_logger, "[Ingenico] Description = " + _bpos1LibClass.LastStatMsgDescription);
+                    LoggerExtensions.LogTrace((ILogger)_logger, "[Ingenico] LastErrorDescription = " + _bpos1LibClass.LastErrorDescription);
+                }
                 connectionStatus2 = DeviceConnectionStatus.Enabled;
             }
             else
@@ -1517,7 +1515,6 @@ namespace Front.Equipments.Ingenico
             StopBPOS();
             return batchTotals;
         }
-
         
         public void PrintBatchJournal()
         {
@@ -1540,44 +1537,29 @@ namespace Front.Equipments.Ingenico
             try
             {
                 if (!this.StartBPOS())
-                    return Task.FromResult<PaymentResultModel>(new PaymentResultModel()
-                    {
-                        IsSuccess = false
-                    });
+                    return Task.FromResult<PaymentResultModel>(new PaymentResultModel() { IsSuccess = false });
                 _isCancelRequested = false;
                 _bpos1LibClass.Purchase(Convert.ToUInt32(amount * 100.0), 0U, this.merchantId);
 
-                Action<StatusEquipment> onStatus = this.OnStatus;
-                if (onStatus != null)
-                    onStatus((StatusEquipment)new PosStatus()
-                    {
-                        Status = eStatusPos.WaitingForCard
-                    });
-                PaymentResultModel result = this.WaitPosRespone();
-                ILogger<Ingenico> logger = this._logger;
-                if (logger != null)
-                    LoggerExtensions.LogDebug((ILogger)logger, "[Ingenico] Purches " + JsonConvert.SerializeObject((object)result), Array.Empty<object>());
+                if (OnStatus != null)
+                    OnStatus((StatusEquipment)new PosStatus() {  Status = eStatusPos.WaitingForCard });
+                PaymentResultModel result = this.WaitPosRespone();                
+                if (_logger != null)
+                    LoggerExtensions.LogDebug((ILogger)_logger, "[Ingenico] Purches " + JsonConvert.SerializeObject((object)result), Array.Empty<object>());
                 if (result.IsSuccess)
                 {
                     _bpos1LibClass.Confirm();
-                    this.WaitResponse();
+                    WaitResponse();
                 }
-                Action<IPosResponse> onResponse = this.OnResponse;
-                if (onResponse != null)
-                    onResponse((IPosResponse)new PayPosResponse()
-                    {
-                        Response = result
-                    });                
+                
+                if (OnResponse != null) OnResponse((IPosResponse)new PayPosResponse() { Response = result });                
                 StopBPOS();
                 return Task.FromResult<PaymentResultModel>(result);
             }
             catch (Exception ex)
             {
-                LoggerExtensions.LogError((ILogger)this._logger, ex, "[Ingenico] " + ex.Message, Array.Empty<object>());
-                return Task.FromResult<PaymentResultModel>(new PaymentResultModel()
-                {
-                    IsSuccess = false
-                });
+                LoggerExtensions.LogError((ILogger)this._logger, ex, "[Ingenico] " + ex.Message);
+                return Task.FromResult<PaymentResultModel>(new PaymentResultModel(){ IsSuccess = false });
             }
             finally
             {
