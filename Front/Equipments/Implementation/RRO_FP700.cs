@@ -58,26 +58,26 @@ namespace Front.Equipments
 
         public override LogRRO PrintCopyReceipt(int parNCopy = 1)
         {
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Before Lock");
-            lock (Lock)
-            {
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock");
+            //FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Before Lock");
+            //lock (Lock)
+            //{
+               // FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock");
                 var res = Fp700.CopyReceipt();                
-            }
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock End");
+            //}
+           // FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock End");
             return new LogRRO(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace }) { TypeOperation = eTypeOperation.CopyReceipt, TypeRRO = Type.ToString(), FiscalNumber = Fp700.GetLastZReportNumber() };
         }
 
         public override LogRRO PrintZ(IdReceipt pIdR)
         {
             string res;
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Before Lock");
-            lock (Lock)
-            {
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock");
+            //FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Before Lock");
+           // lock (Lock)
+            //{
+               // FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock");
                 res = Fp700.ZReport();               
-            }
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock End");
+            //}
+           // FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock End");
             return new LogRRO(pIdR) { TypeOperation = eTypeOperation.ZReport, TypeRRO = Type.ToString(), FiscalNumber = Fp700.GetLastZReportNumber(), TextReceipt = res };
         }
 
@@ -109,12 +109,12 @@ namespace Front.Equipments
 
             */           
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Before Lock");
-            lock (Lock)
-            {
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock");
+            //lock (Lock)
+            //{
+             //   FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock");
                 res = Fp700.XReport();              
-            }
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock End");
+            //}
+            //FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock End");
             return new LogRRO(pIdR) { TypeOperation = eTypeOperation.XReport, TypeRRO = Type.ToString(), FiscalNumber = Fp700.GetLastZReportNumber(), TextReceipt = res };       
         }
 
@@ -126,13 +126,13 @@ namespace Front.Equipments
         public override LogRRO MoveMoney(decimal pSum, IdReceipt pIdR = null)
         {
             var d = new MoneyMovingModel() { Sum = pSum };
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Before Lock");
-            lock (Lock)
-            {
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock");
+            //FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Before Lock");
+            //lock (Lock)
+            //{
+              //  FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock");
                 Fp700.MoneyMoving(d);                
-            }
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock End");
+           // }
+           // FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock End");
             return new LogRRO(pIdR) { TypeOperation = pSum > 0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyIn, TypeRRO = Type.ToString(), FiscalNumber = Fp700.GetLastZReportNumber() };
         }
 
@@ -148,16 +148,16 @@ namespace Front.Equipments
             if (pR?.ReceiptComments?.Count() > 0)
                 Comments = pR.ReceiptComments.Select(r => new ReceiptText() { Text = r, RenderType = RenderAs.Text }).ToList();
             var d = GetReceiptViewModel(pR);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Before Lock");
-            lock (Lock)
-            {
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock");
+            //FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Before Lock");
+            //lock (Lock)
+           // {
+               // FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock");
                 if (pR.TypeReceipt == eTypeReceipt.Sale) FiscalNumber = Fp700.PrintReceipt(d, Comments);
                 else
                     FiscalNumber = Fp700.ReturnReceipt(d);
                 pR.NumberReceipt = FiscalNumber;
-            }
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock End");
+            //}
+           // FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock End");
             return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, TypeRRO = Type.ToString(), FiscalNumber = FiscalNumber, SUM = pR.SumReceipt - pR.SumBonus, };
             
             /* try
@@ -193,13 +193,13 @@ namespace Front.Equipments
         public override bool PeriodZReport(DateTime pBegin, DateTime pEnd, bool IsFull = true)
         {
             bool res = false;
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Before Lock");
-            lock (Lock)
-            {
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock");
+           // FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Before Lock");
+           // lock (Lock)
+            //{
+               // FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock");
                 res= Fp700.FullReportByDate(pBegin, pEnd,IsFull);                
-            }
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock End");
+           // }
+            //FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock End");
             return res;
         }
 
@@ -231,48 +231,48 @@ namespace Front.Equipments
                 return new LogRRO(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace }) { TypeOperation = eTypeOperation.NoFiscalReceipt, TypeRRO = Type.ToString(), CodeError = -1, Error = "Операція заблокована. Спрбуйте повторно." };
             */
             
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Before Lock");
-            lock (Lock)
-            {
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock");
+           //FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Before Lock");
+           // lock (Lock)
+            //{
+              //  FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock");
                 Fp700.PrintSeviceReceipt(d);                
-            }
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock End");
+            //}
+           // FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock End");
             return new LogRRO(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace }) { TypeOperation = eTypeOperation.NoFiscalReceipt, TypeRRO = Type.ToString(), JSON = pR.ToJSON() };
         }
 
         public override StatusEquipment TestDevice()
         {
             DeviceConnectionStatus res;
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Before Lock");
-            lock (Lock)
-            {
+            //FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Before Lock");
+            //lock (Lock)
+            //{
                 try
                 {
-                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock");
+                   //FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock");
                     res = Fp700.TestDeviceSync();
                     State = eStateEquipment.On;
                 }
                 catch (Exception e)
                 {
-                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+                   // FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
                     State = eStateEquipment.Error;
                     return new StatusEquipment() { State = -1, TextState = e.Message };
                 }
-            }
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock End");
+            //}
+            //FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock End");
             return new StatusEquipment() { TextState = res.ToString() };
         }
 
         public override string GetDeviceInfo()
         {
             string res = null;
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Before Lock");
-            lock (Lock)
+          //  FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Before Lock");
+           // lock (Lock)
             {
                 try
                 {
-                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock");
+                 //   FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock");
                     res = Fp700.GetInfoSync();                   
                 }
                 catch (Exception e)
@@ -281,7 +281,7 @@ namespace Front.Equipments
                     res= e.Message;
                 }
             }            
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock End");
+            //FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock End");
             return res;
         }
 
@@ -290,30 +290,32 @@ namespace Front.Equipments
             if (pRW != null && pRW.Count() > 0)
             {
                 var xx = GetReceiptItem(pRW, true);
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Before Lock");
-                lock (Lock)
-                {
-                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock");
+                //FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Before Lock");
+                //lock (Lock)
+                //{
+                 //   FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock");
                     Fp700.SetupArticleTable(xx);                   
-                }
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock End");
+                //}
+                //FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock End");
             }
             return true;
         }
 
-        public override string GetTextLastReceipt()
+        public  string GetTextLastReceipt()
         {
             string res = null;
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Before Lock");
-            lock (Lock)
-            {
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock");
+            //FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Before Lock");
+            //lock (Lock)
+            //{
+             //   FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock");
                 var r = Fp700.GetLastReceiptNumber();
                 res= Fp700.KSEFGetReceipt(r);                
-            }
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock End");
+            //}
+            //FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Lock End");
             return res;
         }
+
+        public override void Stop() { Fp700.Stop(); }
 
         public ReceiptViewModel GetReceiptViewModel(ModelMID.Receipt receiptMID)
         {
@@ -2068,17 +2070,21 @@ namespace Front.Equipments.FP700
             ((Stream)_serialDevice).Dispose();
         }
 
+        public void Stop() { IsStop = true; }
+        bool IsStop = false;
         bool IsFinish;
         StringBuilder bb;
         public string KSEFGetReceipt(string pCodeReceipt)
         {
+            IsStop = false;
             bb = new();
             string res = null;
             OnSynchronizeWaitCommandResult(Command.KSEF, $"R,{pCodeReceipt}", ResKSEF);
-            while (!IsFinish)
+            while (!IsFinish && !IsStop)
             {
                 OnSynchronizeWaitCommandResult(Command.KSEF, $"N", ResKSEF);
             }
+            IsStop = false;
             return bb.ToString();
         }
 

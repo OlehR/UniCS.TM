@@ -96,7 +96,7 @@ namespace Front
                         if (pReceipt.GetLastWares != null)
                         {
                             ReceiptWares cl = (ReceiptWares)pReceipt.GetLastWares.Clone();
-                            EF.ProgramingArticleAsync(new List<ReceiptWares>() { cl });
+                            EF.ProgramingArticleAsync(pReceipt, new List<ReceiptWares>() { cl });
                         }
                     }
                     // if (curReceipt?.Wares?.Count() == 0 && curReceipt.OwnBag==0d) CS.WaitClear();
@@ -511,7 +511,7 @@ namespace Front
                                         foreach (string elQr in el.Qr.Split(","))
                                         {
                                             List<string> list = new List<string>() { el.Name, $"QR=>{elQr}" };
-                                            EF.PrintNoFiscalReceipt(list);
+                                            EF.PrintNoFiscalReceipt(R,list);
                                         }
                                     }
                                 }

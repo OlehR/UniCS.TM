@@ -6,8 +6,11 @@ using Utils;
 
 namespace ModelMID.DB
 {
+
     public enum eTypeOperation
     {
+        [Description("NotDefine")]
+        NotDefine = -1,
         [Description("Продаж")]
         Sale = 0,
         [Description("Повернення")]
@@ -23,15 +26,19 @@ namespace ModelMID.DB
         [Description("Тест RRO")]
         TestDevice = 150,
         [Description("Інформація про RRO")]
-        DeviceInfo =151,
+        DeviceInfo = 151,
+        [Description("Програмування Артикулу РРО")]
+        ProgramingArticle=152,
+        [Description("Отримання тексту останнього чека")]
+        LastReceipt =153,
         [Description("Z звіт")]
-        ZReport =1000,
+        ZReport = 1000,
         [Description("Х звіт")]
         XReport = 1001,
         [Description("Періодичний Z звіт")]
         PeriodZReport = 1002,
         [Description("Копія чеку")]
-        CopyReceipt =1010,
+        CopyReceipt = 1010,
         [Description("Закритий порт")]
         ClosePort,
         [Description("Z звіт POS")]
@@ -39,7 +46,7 @@ namespace ModelMID.DB
         [Description("X звіт POS")]
         XReportPOS = 2001,
         [Description("Продаж POS")]
-        SalePOS =   20100,
+        SalePOS = 20100,
         [Description("Повернення POS")]
         RefundPOS = 20101
     }

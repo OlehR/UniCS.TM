@@ -16,12 +16,14 @@ using Utils;
 using Microsoft.Extensions.Logging;
 using ModernExpo.SelfCheckout.Entities.CommandServer;
 using SharedLib;
-
+using System.Threading;
+using System.Net.Sockets;
 
 namespace Front
 {
     public class EquipmentFront
     {
+        #region Init
         public Action<double, bool> OnControlWeight { get; set; }
         public Action<double, bool> OnWeight { get; set; }
         private IEnumerable<Equipment> ListEquipment = new List<Equipment>();
@@ -33,6 +35,10 @@ namespace Front
         SignalFlag Signal;
         BankTerminal Terminal;
         Rro RRO;
+        /// <summary>
+        /// Текуча операція РРО для блокування операцій.
+        /// </summary>
+        eTypeOperation curTypeOperation = eTypeOperation.NotDefine;
         /// <summary>
         /// Для віртуальної ваги куди йде подія.
         /// </summary>
@@ -276,8 +282,46 @@ namespace Front
                 //State = eStateEquipment.Error;
             }
         }
-
+        public IConfiguration GetConfig()
+        {
+            var AppConfiguration = Config.AppConfiguration;
+            AppConfiguration.GetSection("MID:Equipment").Bind(ListEquipment);
+            //var r = AppConfiguration.GetSection("MID:Equipment");
+            return AppConfiguration;
+        }
+#endregion
+        
+        #region RRO
         public IEnumerable<Equipment> GetListEquipment { get { return ListEquipment; } }
+        object Lock=new object();
+        DateTime LockDT;
+        LogRRO WaitRRO(IdReceipt pReceipt, eTypeOperation pTypeOperation, int pMilisecond = 500,bool pIsStop=true)
+        {
+            LogRRO Res = null;
+            lock (Lock)
+            {
+                if(pIsStop)
+                    RRO?.Stop();
+                while (pMilisecond > 0 && curTypeOperation != eTypeOperation.NotDefine)
+                {
+                    Thread.Sleep(50);
+                    pMilisecond -= 50;
+                }
+                if (curTypeOperation == eTypeOperation.NotDefine)
+                {
+                    curTypeOperation = pTypeOperation;
+                    LockDT = DateTime.Now;
+                }
+                else
+                {
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"LastTypeOperation=>{curTypeOperation} LockDT=> {LockDT} TryTypeOperation=>{pTypeOperation}");
+                    Res = new LogRRO(pReceipt) { TypeOperation = pTypeOperation, TypeRRO = RRO.Model.ToString(), CodeError = -1, Error = $"Не вдалось виконати текучу операцію {pTypeOperation} на RRO{Environment.NewLine}Оскільки не виконалась попередня: LastTypeOperation=>{curTypeOperation} LockDT=> {LockDT}" };
+                }
+            }
+            return Res;
+        }
+
+
 
         /// <summary>
         /// Друк чека
@@ -286,81 +330,97 @@ namespace Front
         {
             string NameMetod = System.Reflection.MethodBase.GetCurrentMethod().Name;
             var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
-            {                
+            {
+                LogRRO Res;
                 try
                 {
-                    FileLogger.WriteLogMessage(this, NameMetod, "Start Print Receipt");
-                    var r = RRO?.PrintReceipt(pReceipt);
-                    FileLogger.WriteLogMessage(this, NameMetod, "End Print Receipt");
-                    return r;
+                    Res = WaitRRO(pReceipt, eTypeOperation.Sale);
+                    if (Res==null)
+                    {
+                        curTypeOperation = eTypeOperation.Sale;
+                        FileLogger.WriteLogMessage(this, NameMetod, "Start Print Receipt");
+                        Res  = RRO?.PrintReceipt(pReceipt);
+                        FileLogger.WriteLogMessage(this, NameMetod, "End Print Receipt");                        
+                    }                    
                 }
                 catch (Exception e)
                 {
                     FileLogger.WriteLogMessage(this, NameMetod, e);
                     if (RRO!=null) RRO.State = eStateEquipment.Error;
                     SetStatus?.Invoke(new StatusEquipment(RRO.Model, eStateEquipment.Error, e.Message) { IsСritical = true });
-                    return new LogRRO(pReceipt) { TypeOperation = eTypeOperation.Sale, TypeRRO = RRO.Model.ToString(), CodeError = -1, Error = e.Message };
-                }                
+                    Res= new LogRRO(pReceipt) { TypeOperation = eTypeOperation.Sale, TypeRRO = RRO.Model.ToString(), CodeError = -1, Error = e.Message };
+                } 
+                finally
+                {
+                    curTypeOperation = eTypeOperation.NotDefine;
+                }
+                return Res;
             })).Result;
 
-            Task.Run(() =>
-            {
-                try
-                {
-                    if (r.CodeError==0 && (  string.IsNullOrEmpty(r.TextReceipt) || RRO.Model == eModelEquipment.FP700) )
-                        r.TextReceipt = RRO.GetTextLastReceipt();
-                    Bl.InsertLogRRO(r);
-                }
-                catch (Exception e)
-                {
-                    var ee = e.Message;
-                }
-            });
+            GetLastReceipt(pReceipt,r);
             return r;
-
         }
 
-        /*public async void  GetLastReceipt(LogRRO r)
+        void GetLastReceipt(IdReceipt pIdR,LogRRO r)
         {
              Task.Run( () =>
             {
-                FileLogger.WriteLogMessage(this, "PrintReceipt", "Get receipt Start");
+                try {
+                    if (r.CodeError == 0 && (string.IsNullOrEmpty(r.TextReceipt) || RRO.Model == eModelEquipment.FP700))
+                    {
+                        LogRRO Res;
+                        try
+                        {
+                            Res = WaitRRO(pIdR, eTypeOperation.LastReceipt,500,false);
+                            if (Res == null)
+                            {
+                                r.TextReceipt = RRO.GetTextLastReceipt();
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+                        }
+                        finally
+                        {
+                            curTypeOperation = eTypeOperation.NotDefine;
+                        }
 
-                if (string.IsNullOrEmpty(r.TextReceipt) || RRO.Model == eModelEquipment.FP700)
-                    r.TextReceipt = RRO.GetTextLastReceipt().Result;
-                Bl.InsertLogRRO(r);
-                FileLogger.WriteLogMessage(this, "PrintReceipt", "Get receipt end");
+                        Bl.InsertLogRRO(r);
+                    }
+                }
+                catch (Exception e)
+                {
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+                }
             });
-        }*/
+        }
 
         public LogRRO RroPrintX(IdReceipt pIdR)
         {
             var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
             {
+                LogRRO Res;
                 try
                 {
-                    return RRO?.PrintX(pIdR);
+                    Res = WaitRRO(pIdR, eTypeOperation.XReport);
+                    if (Res == null)                    
+                        Res= RRO?.PrintX(pIdR);
                 }
                 catch (Exception e)
                 {
                     FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
                     SetStatus?.Invoke(new StatusEquipment(RRO.Model, eStateEquipment.Error, e.Message) { IsСritical = true });
-                    return new LogRRO(pIdR) { TypeOperation = eTypeOperation.XReport, TypeRRO = RRO.Model.ToString(), CodeError = -1, Error = e.Message };
+                    Res= new LogRRO(pIdR) { TypeOperation = eTypeOperation.XReport, TypeRRO = RRO.Model.ToString(), CodeError = -1, Error = e.Message };
                 }
+                finally
+                {
+                    curTypeOperation = eTypeOperation.NotDefine;
+                }
+                return Res;
             }
             )).Result;
-            Task.Run(() =>
-            {
-                try
-                {
-                    if (string.IsNullOrEmpty(r.TextReceipt) || RRO.Model == eModelEquipment.FP700)
-                        r.TextReceipt = RRO.GetTextLastReceipt();
-                    Bl.InsertLogRRO(r);
-                }catch(Exception e)
-                {
-                    var ee = e.Message;
-                }
-            });
+            GetLastReceipt(pIdR, r);
             return r;
         }
 
@@ -368,24 +428,27 @@ namespace Front
         {
             var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
             {
+                LogRRO Res;
                 try
                 {
-                    return RRO?.PrintZ(pIdR);
+                    Res = WaitRRO(pIdR, eTypeOperation.ZReport);
+                    if (Res == null)
+                        Res = RRO?.PrintZ(pIdR);
                 }
                 catch (Exception e)
                 {
                     FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
                     SetStatus?.Invoke(new StatusEquipment(RRO.Model, eStateEquipment.Error, e.Message) { IsСritical=true});
-                    return new LogRRO(pIdR) { TypeOperation = eTypeOperation.ZReport, TypeRRO = RRO.Model.ToString(), CodeError = -1, Error = e.Message };
+                    Res= new LogRRO(pIdR) { TypeOperation = eTypeOperation.ZReport, TypeRRO = RRO.Model.ToString(), CodeError = -1, Error = e.Message };
                 }
+                finally
+                {
+                    curTypeOperation = eTypeOperation.NotDefine;
+                }
+                return Res;
             }
             )).Result;
-            Task.Run(() =>
-            {
-                if (string.IsNullOrEmpty(r.TextReceipt) || RRO.Model == eModelEquipment.FP700)
-                    r.TextReceipt = RRO.GetTextLastReceipt();
-                Bl.InsertLogRRO(r);
-            });
+            GetLastReceipt(pIdR, r);
             return r;
         }
 
@@ -393,17 +456,25 @@ namespace Front
         {
             var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
             {
+                LogRRO Res;
                 try
                 {
-                    RRO?.PeriodZReport(pBegin, pEnd, IsFull);
-                    return new LogRRO(pIdR) { TypeOperation = eTypeOperation.PeriodZReport, TypeRRO = RRO.Model.ToString(), TextReceipt = $"{pBegin} {pEnd} {IsFull}" };
+                    Res = WaitRRO(pIdR, eTypeOperation.PeriodZReport);
+                    if (Res == null)
+                        RRO?.PeriodZReport(pBegin, pEnd, IsFull);
+                    Res = new LogRRO(pIdR) { TypeOperation = eTypeOperation.PeriodZReport, TypeRRO = RRO.Model.ToString(), TextReceipt = $"{pBegin} {pEnd} {IsFull}" };
                 }
                 catch (Exception e)
                 {
                     FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
                     SetStatus?.Invoke(new StatusEquipment(RRO.Model, eStateEquipment.Error, e.Message) { IsСritical = true });
-                    return new LogRRO(pIdR) { TypeOperation = eTypeOperation.PeriodZReport, TypeRRO = RRO.Model.ToString(), CodeError = -1, Error = e.Message };
+                    Res = new LogRRO(pIdR) { TypeOperation = eTypeOperation.PeriodZReport, TypeRRO = RRO.Model.ToString(), CodeError = -1, Error = e.Message };
                 }
+                finally
+                {
+                    curTypeOperation = eTypeOperation.NotDefine;
+                }
+                return Res;
             })).Result;
             return r;
         }
@@ -424,24 +495,31 @@ namespace Front
              return sum; 
         }
 
-        public LogRRO PrintNoFiscalReceipt(IEnumerable<string> pR)
+        public LogRRO PrintNoFiscalReceipt(IdReceipt pReceipt ,IEnumerable<string> pR)
         {
             if (pR != null && pR.Any())
             {
                 var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
                 {
+                    LogRRO Res;
                     try
                     {
-                        var r = RRO?.PrintNoFiscalReceipt(pR);
-                        Bl.InsertLogRRO(r);
-                        return r;
+                        Res = WaitRRO(pReceipt, eTypeOperation.NoFiscalReceipt);
+                        if (Res == null)
+                            Res = RRO?.PrintNoFiscalReceipt(pR);
+                        Bl.InsertLogRRO(Res);                       
                     }
                     catch (Exception e)
                     {
                         FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
                         SetStatus?.Invoke(new StatusEquipment(RRO.Model, eStateEquipment.Error, e.Message) { IsСritical = false });
-                        return new LogRRO() { TypeOperation = eTypeOperation.NoFiscalReceipt, TypeRRO = RRO?.Model.ToString(), CodeError = -1, Error = e.Message };
+                        Res= new LogRRO() { TypeOperation = eTypeOperation.NoFiscalReceipt, TypeRRO = RRO?.Model.ToString(), CodeError = -1, Error = e.Message };
                     }
+                    finally
+                    {
+                        curTypeOperation = eTypeOperation.NotDefine;
+                    }
+                    return Res;
                 }
             )).Result;
                 return r;
@@ -449,13 +527,16 @@ namespace Front
             return null;
         }
 
-        public void ProgramingArticleAsync(IEnumerable<ReceiptWares> pRW)
+        public void ProgramingArticleAsync(IdReceipt pIdR, IEnumerable<ReceiptWares> pRW)
         {
             Task.Run(() =>
             {
+                LogRRO Res;
                 try
                 {
-                    RRO?.ProgramingArticle(pRW);
+                    Res = WaitRRO(pIdR, eTypeOperation.ProgramingArticle);
+                    if (Res == null)
+                        RRO?.ProgramingArticle(pRW);
                 }
                 catch (Exception e)
                 {
@@ -464,11 +545,17 @@ namespace Front
                     FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
                     SetStatus?.Invoke(new StatusEquipment(RRO.Model, eStateEquipment.Error, e.Message) { IsСritical = true });
                 }
+                finally
+                {
+                    curTypeOperation = eTypeOperation.NotDefine;
+                }
                 return true;
             }            
             );
         }
+        #endregion
 
+        #region POS
         /// <summary>
         /// Оплата по банківському терміналу
         /// </summary>
@@ -529,15 +616,16 @@ namespace Front
 
         public BatchTotals PosPrintX(bool IsPrint = true)
         {
+            var IdR = new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() };
             BatchTotals r = null;
             try
             {
                 r = Terminal.PrintX();
-                LogRRO d = new(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() })
+                LogRRO d = new()
                 { TypeOperation = eTypeOperation.XReportPOS, TypeRRO = "Ingenico", JSON = r.ToJSON(), TextReceipt = r.Receipt == null ? null : string.Join(Environment.NewLine, r.Receipt) };
                 Bl.InsertLogRRO(d);
                 if (IsPrint && r.Receipt != null)
-                    PrintNoFiscalReceipt(r.Receipt);
+                    PrintNoFiscalReceipt(IdR, r.Receipt);
                 return r;
             }
             catch (Exception e)
@@ -550,14 +638,15 @@ namespace Front
         public BatchTotals PosPrintZ()
         {
             BatchTotals r = null;
+            var IdR = new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() };
             try
             {
                 r = Terminal.PrintZ();
-                LogRRO d = new(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() })
+                LogRRO d = new(IdR)
                 { TypeOperation = eTypeOperation.ZReportPOS, TypeRRO = "Ingenico", JSON = r.ToJSON(), TextReceipt = r.Receipt == null ? null : string.Join(Environment.NewLine, r.Receipt) };
                 Bl.InsertLogRRO(d);
                 if (r.Receipt != null)
-                    PrintNoFiscalReceipt(r.Receipt);
+                    PrintNoFiscalReceipt(IdR,r.Receipt);
                 return r;
             }
             catch (Exception e)
@@ -593,15 +682,8 @@ namespace Front
                 FileLogger.WriteLogMessage($"EquipmentFront.PosStatus {Terminal.Model} {status.TextState} {status.Status}");
             }
         }
-
-        public IConfiguration GetConfig()
-        {
-            var AppConfiguration = Config.AppConfiguration;
-            AppConfiguration.GetSection("MID:Equipment").Bind(ListEquipment);
-            //var r = AppConfiguration.GetSection("MID:Equipment");
-            return AppConfiguration;
-        }
-
+        #endregion
+        
         /// <summary>
         /// Зміна кольору прапорця
         /// </summary>

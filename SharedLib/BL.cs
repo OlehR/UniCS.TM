@@ -177,7 +177,7 @@ namespace SharedLib
 
             DateTime Ldc = pReceiptId.DTPeriod;
 
-            WDB_SQLite ldb = (Ldc == DateTime.Now.Date ? db : new WDB_SQLite(Ldc));
+            WDB_SQLite ldb = DB(pReceiptId);
 
             var Res = ldb.CloseReceipt(receipt);
             var r = db.ViewReceipt(pReceiptId, true);
@@ -353,11 +353,7 @@ namespace SharedLib
 
         public Receipt GetReceiptHead(IdReceipt idReceipt, bool parWithDetail = false)
         {
-            DateTime Ldc = idReceipt.DTPeriod;
-            if (Ldc == DateTime.Now.Date)
-                return db.ViewReceipt(idReceipt, parWithDetail);
-
-            var ldb = new WDB_SQLite(Ldc);
+            var ldb = DB(idReceipt);
             return ldb.ViewReceipt(idReceipt, parWithDetail);
         }
 
@@ -469,7 +465,7 @@ namespace SharedLib
             if (pIdReceipt == null)
                 return false;
             var receipt = new Receipt(pIdReceipt) { StateReceipt = pStateReceipt, DateReceipt = DateTime.Now, UserCreate = GetUserIdbyWorkPlace(pIdReceipt.IdWorkplace) };
-            WDB_SQLite ldb = (pIdReceipt.DTPeriod == DateTime.Now.Date ? db : new WDB_SQLite(pIdReceipt.DTPeriod));
+            WDB_SQLite ldb = DB(pIdReceipt);
             return ldb.CloseReceipt(receipt);
         }
 
@@ -486,7 +482,7 @@ namespace SharedLib
 
         public IEnumerable<ReceiptWares> GetWaresReceipt(IdReceipt pIdReceipt = null)
         {
-            var ldb = pIdReceipt.CodePeriod == Global.GetCodePeriod() ? db : new WDB_SQLite(pIdReceipt.DTPeriod);
+            var ldb = DB(pIdReceipt);
             return ldb.ViewReceiptWares(pIdReceipt);
         }
 

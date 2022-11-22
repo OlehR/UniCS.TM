@@ -825,20 +825,11 @@ namespace Front
                 if(curReceipt.StateReceipt==eStateReceipt.Prepare)
                     Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
 
-                SetCurReceipt(null);
-                //NewReceipt();
+                SetCurReceipt(null);                
                 SetStateView(eStateMainWindows.StartWindow);
             }
             else
-                SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.DelReciept, null);
-            /*//!!!TMP
-            var rand = new Random();
-            string sql = @"select CODE_WARES from (select CODE_WARES,row_number() over (order by code_wares)  as nn from price p where p.code_DEALER=2)
-                        where nn=  cast(abs(random()/9223372036854775808.0)*1000 as int)";
-            var CodeWares = Bl.db.db.ExecuteScalar<int>(sql);
-            if (CodeWares > 0)
-                Bl.AddWaresCode(CodeWares, 0, Math.Round(1M + 5M * rand.Next() / (decimal)int.MaxValue));
-            */
+                SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.DelReciept, null);            
         }
 
         private void _Search(object sender, RoutedEventArgs e)

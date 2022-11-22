@@ -127,6 +127,10 @@ namespace Front.Equipments
             //decimal sum = pR.Wares.Sum(el => Math.Round(el.Price * el.Quantity, 2) - Math.Round(el.SumDiscount, 2)); //pR.SumTotal;
             return sum; //throw new NotImplementedException();
         }
+        /// <summary>
+        /// Зупиняє останню довготривалу операцію. Наприклад Отримання текста чеку на фізичних фіскалках. 
+        /// </summary>
+        virtual public void Stop() { }
 
     }
 }
