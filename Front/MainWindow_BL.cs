@@ -20,6 +20,7 @@ namespace Front
 {
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        int LastCodeWares = 0;
         public void InitAction()
         {
             EF.OnControlWeight += (pWeight, pIsStable) =>
@@ -93,8 +94,9 @@ namespace Front
                             IsDel = true;
                         }
 
-                        if (pReceipt.GetLastWares != null)
+                        if (pReceipt.GetLastWares != null && LastCodeWares!= pReceipt.GetLastWares.CodeWares)
                         {
+                            LastCodeWares = pReceipt.GetLastWares.CodeWares;
                             ReceiptWares cl = (ReceiptWares)pReceipt.GetLastWares.Clone();
                             EF.ProgramingArticleAsync(pReceipt, new List<ReceiptWares>() { cl });
                         }
