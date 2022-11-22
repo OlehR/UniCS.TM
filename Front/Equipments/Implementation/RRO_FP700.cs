@@ -301,7 +301,7 @@ namespace Front.Equipments
             return true;
         }
 
-        public  string GetTextLastReceipt()
+        override public  string GetTextLastReceipt()
         {
             string res = null;
             //FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Before Lock");
@@ -929,8 +929,8 @@ namespace Front.Equipments.FP700
             StringBuilder stringBuilder = new StringBuilder();
             ILogger<Fp700> logger1 = _logger;
             if (logger1 != null)
-                logger1.LogDebug(string.Format("[FP700] PayReceipt {0}", (object)receipt?.PaymentType));
-            switch (receipt.PaymentType)
+                logger1.LogDebug(string.Format("[FP700] PayReceipt {0}", (object)receipt?.PaymentInfo.PaymentType));
+            switch (receipt.PaymentInfo.PaymentType)
             {
                 case PaymentType.Card:
                     Decimal totalAmount = 0M;

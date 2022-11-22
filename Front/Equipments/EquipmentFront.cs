@@ -289,38 +289,46 @@ namespace Front
             //var r = AppConfiguration.GetSection("MID:Equipment");
             return AppConfiguration;
         }
-#endregion
-        
-        #region RRO
+
         public IEnumerable<Equipment> GetListEquipment { get { return ListEquipment; } }
-        object Lock=new object();
+        #endregion
+
+        #region RRO
+        object Lock =new object();
         DateTime LockDT;
         LogRRO WaitRRO(IdReceipt pReceipt, eTypeOperation pTypeOperation, int pMilisecond = 500,bool pIsStop=true)
         {
             LogRRO Res = null;
             lock (Lock)
             {
-                if(pIsStop)
-                    RRO?.Stop();
-                while (pMilisecond > 0 && curTypeOperation != eTypeOperation.NotDefine)
+                try
                 {
-                    Thread.Sleep(50);
-                    pMilisecond -= 50;
+                    if (pIsStop)
+                        RRO?.Stop();
+                    while (pMilisecond > 0 && curTypeOperation != eTypeOperation.NotDefine)
+                    {
+                        Thread.Sleep(50);
+                        pMilisecond -= 50;
+                    }
+                    if (curTypeOperation == eTypeOperation.NotDefine)
+                    {
+                        curTypeOperation = pTypeOperation;
+                        LockDT = DateTime.Now;
+                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"TypeOperation=>{pTypeOperation}");
+                    }
+                    else
+                    {
+                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"LastTypeOperation=>{curTypeOperation} LockDT=> {LockDT} TryTypeOperation=>{pTypeOperation}",eTypeLog.Error);
+                        Res = new LogRRO(pReceipt) { TypeOperation = pTypeOperation, TypeRRO = RRO.Model.ToString(), CodeError = -1, Error = $"Не вдалось виконати текучу операцію {pTypeOperation} на RRO{Environment.NewLine}Оскільки не виконалась попередня: LastTypeOperation=>{curTypeOperation} LockDT=> {LockDT}" };
+                    }
                 }
-                if (curTypeOperation == eTypeOperation.NotDefine)
+                catch(Exception e)
                 {
-                    curTypeOperation = pTypeOperation;
-                    LockDT = DateTime.Now;
-                }
-                else
-                {
-                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"LastTypeOperation=>{curTypeOperation} LockDT=> {LockDT} TryTypeOperation=>{pTypeOperation}");
-                    Res = new LogRRO(pReceipt) { TypeOperation = pTypeOperation, TypeRRO = RRO.Model.ToString(), CodeError = -1, Error = $"Не вдалось виконати текучу операцію {pTypeOperation} на RRO{Environment.NewLine}Оскільки не виконалась попередня: LastTypeOperation=>{curTypeOperation} LockDT=> {LockDT}" };
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
                 }
             }
             return Res;
         }
-
 
 
         /// <summary>
