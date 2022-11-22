@@ -618,7 +618,7 @@ namespace Front.Control
         private void Print(object sender, RoutedEventArgs e)
         {
             if (LastReceipt?.Receipt?.Count() > 0)
-                EF.PrintNoFiscalReceipt(LastReceipt.Receipt);
+                EF.PrintNoFiscalReceipt(MW.curReceipt,LastReceipt.Receipt);
         }
 
         private void ListJournalSelectionChanged(object sender, SelectionChangedEventArgs e)
