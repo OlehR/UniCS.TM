@@ -45,7 +45,6 @@
     <None Remove="icons\shoppingBag.png" />
     <None Remove="icons\shoppingCart.png" />
     <None Remove="icons\Signal.png" />
-    <None Remove="icons\sparVideo.mp4" />
     <None Remove="icons\ua.png" />
     <None Remove="icons\uk.png" />
     <None Remove="icons\Up.png" />
@@ -93,9 +92,6 @@
     <Resource Include="icons\Scale.png" />
     <Resource Include="icons\Scaner.png" />
     <Resource Include="icons\shoppingBag.png" />
-    <Content Include="icons\sparVideo.mp4">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Resource Include="icons\shoppingCart.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>

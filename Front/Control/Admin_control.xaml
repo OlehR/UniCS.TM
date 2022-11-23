@@ -980,6 +980,20 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                     </Style>
                                 </Button.Style>
                             </Button>
+                            <Button Grid.Column="2" FontSize="22" Click="PrintCoffeeQR"   >
+                                <TextBlock FontSize="20" Text="QR на каву" Margin="5"/>
+                                <Button.Style>
+                                    <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsPrintCoffeQR, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=UserControl}}" Value="True">
+                                            <Setter Property="IsEnabled" Value="True"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
 
                         </StackPanel>
                     </Grid>

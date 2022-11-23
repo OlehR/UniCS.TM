@@ -57,6 +57,7 @@ namespace Front.Control
         public string KasaNumber { get { return Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace).Name; } }
         public ObservableCollection<APIRadiobuton> TypeMessageRadiobuton { get; set; }
         public bool IsShortPeriodZ { get; set; } = true;
+        public bool IsPrintCoffeQR { get; set; }= false;
 
         public void ControlScale(double pWeight, bool pIsStable)
         {
@@ -413,12 +414,14 @@ namespace Front.Control
         private void historiReceiptList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             curReceipt = ListReceipts.SelectedItem as Receipt;
+            curReceipt.Wares = Bl.GetWaresReceipt(curReceipt);
             //Якогось не працює через get як я хочу :) Тому пока реалізація через Ж.
             IsPrintReceipt = curReceipt?.StateReceipt == eStateReceipt.Pay || curReceipt?.StateReceipt == eStateReceipt.StartPrint;
             IsPayReceipt = curReceipt?.StateReceipt == eStateReceipt.Prepare || curReceipt?.StateReceipt == eStateReceipt.StartPay;
             IsInputPay = curReceipt?.StateReceipt == eStateReceipt.Prepare || curReceipt?.StateReceipt == eStateReceipt.StartPay;
             IsSendTo1C = curReceipt?.StateReceipt == eStateReceipt.Print || curReceipt?.StateReceipt == eStateReceipt.Send;
             IsCreateReturn = (curReceipt?.StateReceipt == eStateReceipt.Send || curReceipt?.StateReceipt == eStateReceipt.Print) && curReceipt?.TypeReceipt == eTypeReceipt.Sale;
+            IsPrintCoffeQR = (bool)curReceipt?.IsQR();
         }
 
         private void FiscalizCheckButton(object sender, RoutedEventArgs e)
@@ -729,6 +732,11 @@ namespace Front.Control
             var selectedState = btn.DataContext as StateReceiptRadiobuton;
             if (selectedState.IsNotNull())
                 newStateReceipt = selectedState.StateReceipt_;
+
+        }
+
+        private void PrintCoffeeQR(object sender, RoutedEventArgs e)
+        {
 
         }
     }
