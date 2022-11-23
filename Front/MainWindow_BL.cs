@@ -506,7 +506,7 @@ namespace Front
                             if (R.TypeReceipt == eTypeReceipt.Sale)
                             {
                                 var QR = Bl.GetQR(R);
-                                if (QR != null && QR.Count() > 0)
+                                if (QR != null && QR.Any())
                                 {
                                     foreach (var el in QR)
                                     {
