@@ -251,5 +251,9 @@ namespace ModelMID
 
             }
         }
+        public bool IsQR()
+        {
+            return Wares?.Where(r=>!string.IsNullOrEmpty( r.QR)).Any()?? false;
+        }
     }
 }
