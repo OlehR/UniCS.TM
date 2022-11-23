@@ -343,29 +343,30 @@ namespace Front
                 try
                 {
                     Res = WaitRRO(pReceipt, eTypeOperation.Sale);
-                    if (Res==null)
+                    if (Res == null)
                     {
                         curTypeOperation = eTypeOperation.Sale;
                         FileLogger.WriteLogMessage(this, NameMetod, "Start Print Receipt");
-                        Res  = RRO?.PrintReceipt(pReceipt);
-                        FileLogger.WriteLogMessage(this, NameMetod, "End Print Receipt");                        
-                    }                    
+                        Res = RRO?.PrintReceipt(pReceipt);
+                        FileLogger.WriteLogMessage(this, NameMetod, "End Print Receipt");
+                    }
                 }
                 catch (Exception e)
                 {
                     FileLogger.WriteLogMessage(this, NameMetod, e);
-                    if (RRO!=null) RRO.State = eStateEquipment.Error;
+                    if (RRO != null) RRO.State = eStateEquipment.Error;
                     SetStatus?.Invoke(new StatusEquipment(RRO.Model, eStateEquipment.Error, e.Message) { IsСritical = true });
-                    Res= new LogRRO(pReceipt) { TypeOperation = eTypeOperation.Sale, TypeRRO = RRO.Model.ToString(), CodeError = -1, Error = e.Message };
-                } 
+                    Res = new LogRRO(pReceipt) { TypeOperation = eTypeOperation.Sale, TypeRRO = RRO.Model.ToString(), CodeError = -1, Error = e.Message };
+                }
                 finally
                 {
                     curTypeOperation = eTypeOperation.NotDefine;
                 }
                 return Res;
             })).Result;
-
-            GetLastReceipt(pReceipt,r);
+            if (r.CodeError == 0 && pReceipt.TypeReceipt == eTypeReceipt.Sale)
+                PrintQR(pReceipt);
+            GetLastReceipt(pReceipt, r);
             return r;
         }
 
@@ -533,6 +534,22 @@ namespace Front
                 return r;
             }
             return null;
+        }
+
+        public void PrintQR(IdReceipt pIdR)
+        {
+            var QR = Bl.GetQR(pIdR);
+            if (QR != null && QR.Any())
+            {
+                foreach (var el in QR)
+                {
+                    foreach (string elQr in el.Qr.Split(","))
+                    {
+                        List<string> list = new List<string>() { el.Name, $"QR=>{elQr}" };
+                        PrintNoFiscalReceipt(pIdR, list);
+                    }
+                }
+            }
         }
 
         public void ProgramingArticleAsync(IdReceipt pIdR, IEnumerable<ReceiptWares> pRW)

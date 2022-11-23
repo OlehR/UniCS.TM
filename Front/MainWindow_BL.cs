@@ -503,7 +503,7 @@ namespace Front
                             Bl.UpdateReceiptFiscalNumber(R, res.FiscalNumber, res.SUM);
                             s.Play(eTypeSound.DoNotForgetProducts);
 
-                            if (R.TypeReceipt == eTypeReceipt.Sale)
+                            /*if (R.TypeReceipt == eTypeReceipt.Sale)
                             {
                                 var QR = Bl.GetQR(R);
                                 if (QR != null && QR.Any())
@@ -517,7 +517,7 @@ namespace Front
                                         }
                                     }
                                 }
-                            }
+                            }*/
                             Bl.ds.SendReceiptTo1C(curReceipt);
                             SetCurReceipt(null);
                             Res = true;

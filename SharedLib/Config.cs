@@ -76,11 +76,11 @@ namespace SharedLib
             try
             {
                 Global.IsGenQrCoffe = false;
-                Global.IsGenQrCoffe = AppConfiguration["MID:IsGenQrCoffe"].Equals("True");
+                Global.IsGenQrCoffe = AppConfiguration["MID:IsGenQrCoffe"].ToLower().Equals("true");
             }
             catch
             { Global.IsGenQrCoffe = false; }
-
+             
 
             try
             {
