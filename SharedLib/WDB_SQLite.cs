@@ -166,7 +166,9 @@ namespace SharedLib
             var State = GetStateReceipt(pIdReceiptWares);
             if (State != eStateReceipt.Prepare)
                 return false;
-
+            var Type = GetTypeReceipt(pIdReceiptWares);
+            if (Type==eTypeReceipt.Refund)
+                return false;
             lock (GetObjectForLockByIdWorkplace(pIdReceiptWares.IdWorkplace))
             {
                 try

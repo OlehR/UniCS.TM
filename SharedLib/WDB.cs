@@ -1096,6 +1096,16 @@ namespace SharedLib
             return db.ExecuteScalar<IdReceipt, eStateReceipt>(SqlGetStateReceipt, pR);
         }
 
+        public virtual eTypeReceipt GetTypeReceipt(IdReceipt pR)
+        {
+            string Sql = @"select max(Type_Receipt) Type_Receipt
+  FROM RECEIPT
+ Where ID_WORKPLACE = @IdWorkplace
+   and CODE_PERIOD = @CodePeriod
+   and CODE_RECEIPT = @CodeReceipt";
+            return db.ExecuteScalar<IdReceipt, eTypeReceipt>(Sql, pR);
+        }
+
         public virtual void Close(bool isWait = false)
         {
             if (db != null)

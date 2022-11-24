@@ -674,18 +674,26 @@ namespace SharedLib
                 foreach (var el in R.Wares)
                 {
                     el.MaxRefundQuantity = el.Quantity - el.RefundedQuantity;
+                    if (IsRefund && el.SumDiscount > 0)
+                    {
+                        el.Sum -= el.SumDiscount;
+                        el.Price = el.Sum / el.Quantity;
+                    }
                     if (!pIsFull)
                         el.Quantity = 0;
+                    
                     db.AddWares(el);
                 }
-                var pr = db.GetReceiptWaresPromotion(IdR);
-                if (pr != null && pr.Any())
+                if (!IsRefund)
                 {
-                    foreach (var el in pr)
-                        el.SetIdReceipt(NewR);
-                    db.ReplaceWaresReceiptPromotion(pr);
+                    var pr = db.GetReceiptWaresPromotion(IdR);
+                    if (pr != null && pr.Any())
+                    {
+                        foreach (var el in pr)
+                            el.SetIdReceipt(NewR);
+                        db.ReplaceWaresReceiptPromotion(pr);
+                    }
                 }
-
                 Global.OnReceiptCalculationComplete?.Invoke(R);
                 return R;
             }
