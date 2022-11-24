@@ -737,7 +737,7 @@ namespace Front.Control
 
         private void PrintCoffeeQR(object sender, RoutedEventArgs e)
         {
-            EF.PrintQR(MW.curReceipt);
+            EF.PrintQR(curReceipt);
         }
     }
     public class APIRadiobuton
