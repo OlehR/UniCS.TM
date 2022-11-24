@@ -668,7 +668,7 @@ namespace SharedLib
                     R.TypeReceipt = eTypeReceipt.Refund;
                 R.StateReceipt = eStateReceipt.Prepare;
                 R.RefundId = new IdReceipt(R);
-                R.SetIdReceipt(NewR);
+                R.SetIdReceipt(NewR);                
                 db.ReplaceReceipt(R);
                 
                 foreach (var el in R.Wares)
@@ -684,7 +684,8 @@ namespace SharedLib
                     
                     db.AddWares(el);
                 }
-                if (!IsRefund)
+
+                if (!IsRefund)                 
                 {
                     var pr = db.GetReceiptWaresPromotion(IdR);
                     if (pr != null && pr.Any())
@@ -694,6 +695,7 @@ namespace SharedLib
                         db.ReplaceWaresReceiptPromotion(pr);
                     }
                 }
+                
                 Global.OnReceiptCalculationComplete?.Invoke(R);
                 return R;
             }
