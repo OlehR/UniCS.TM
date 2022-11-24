@@ -165,10 +165,10 @@ namespace SharedLib
             var startTime = System.Diagnostics.Stopwatch.StartNew();
             var State = GetStateReceipt(pIdReceiptWares);
             if (State != eStateReceipt.Prepare)
-                return false;
+                return true;
             var Type = GetTypeReceipt(pIdReceiptWares);
             if (Type==eTypeReceipt.Refund)
-                return false;
+                return true;
             lock (GetObjectForLockByIdWorkplace(pIdReceiptWares.IdWorkplace))
             {
                 try
