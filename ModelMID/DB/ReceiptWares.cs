@@ -408,7 +408,7 @@ namespace ModelMID
 
         public bool IsPlus { get { return (Parent?.IsLockChange != true && !IsWeight && (MaxRefundQuantity == null || Quantity < MaxRefundQuantity) && IsLast) && TypeWares!=eTypeWares.Tobacco; } } // { get; set; } = false;//
 
-        public bool IsMinus { get { return Parent?.IsLockChange != true && !IsWeight && Quantity > 1 && IsLast && TypeWares != eTypeWares.Tobacco; ; } } //{ get; set; } = false;//
+        public bool IsMinus { get { return Parent?.IsLockChange != true && !IsWeight && Quantity > 1 && IsLast && TypeWares != eTypeWares.Tobacco && TypeWares != eTypeWares.Alcohol; } } //{ get; set; } = false;//
 
         public bool IsDel { get { return  Parent?.IsLockChange != true; } }
 
