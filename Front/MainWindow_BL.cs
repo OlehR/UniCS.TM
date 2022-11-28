@@ -445,7 +445,7 @@ namespace Front
 
             lock (LockPayPrint)
             {
-                R.StateReceipt = Bl.db.GetStateReceipt(R);
+                R.StateReceipt = Bl.GetStateReceipt(R);
                 if (R.StateReceipt == eStateReceipt.Prepare)
                 {
                     try
@@ -484,7 +484,7 @@ namespace Front
                         FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
                     }
                 }
-                R.StateReceipt = Bl.db.GetStateReceipt(R);
+                R.StateReceipt = Bl.GetStateReceipt(R);
                 if (R.StateReceipt == eStateReceipt.Pay || R.StateReceipt == eStateReceipt.StartPrint)
                 {
                     //Відключаємо контроль контрольної ваги тимчасово до наступної зміни товарного складу.

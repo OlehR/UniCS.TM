@@ -317,6 +317,20 @@ namespace Front.Equipments
 
         public override void Stop() { Fp700.Stop(); }
 
+        public virtual decimal GetSumFromTextReceipt(string pTextReceipt) 
+        {
+            decimal Res = 0;
+            try
+            {
+                var Start = pTextReceipt.IndexOf("С У М А       ");
+                var End = pTextReceipt.IndexOf("Г Р Н");
+                string Sum = pTextReceipt.Substring(Start + 10, End - Start - 10).Replace(" ", "");
+                Res = decimal.Parse(Sum);
+            }
+            catch { }
+            return Res;
+        }
+
         public ReceiptViewModel GetReceiptViewModel(ModelMID.Receipt receiptMID)
         {
             if (receiptMID == null)

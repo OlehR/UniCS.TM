@@ -46,7 +46,7 @@ namespace SharedLib
 
         public ReceiptWares AddReceiptWares(ReceiptWares pW, bool pRecalcPriceOnLine = true)
         {
-            var State = db.GetStateReceipt(pW);
+            var State = GetStateReceipt(pW);
             if (State != eStateReceipt.Prepare)
             {
                 OnCustomWindow?.Invoke(new CustomWindow(eWindows.NoPrice, $"Чеку в стані {State} заборонено {Environment.NewLine} добавляти товар"));
@@ -264,7 +264,7 @@ namespace SharedLib
 
         public ReceiptWares AddWaresCode(IdReceipt pIdReceipt, int pCodeWares, int pCodeUnit, decimal pQuantity = 0, decimal pPrice = 0)
         {
-            var State = db.GetStateReceipt(pIdReceipt);
+            var State = GetStateReceipt(pIdReceipt);
             if (State != eStateReceipt.Prepare)
             {
                 OnCustomWindow?.Invoke(new CustomWindow(eWindows.NoPrice, $"Чеку в стані {State} заборонено {Environment.NewLine} добавляти товар"));
@@ -308,7 +308,7 @@ namespace SharedLib
 
         public bool ChangeQuantity(IdReceiptWares pReceiptWaresId, decimal pQuantity)
         {
-            var State = db.GetStateReceipt(pReceiptWaresId);
+            var State = GetStateReceipt(pReceiptWaresId);
             if (State != eStateReceipt.Prepare)
             {
                 OnCustomWindow?.Invoke(new CustomWindow(eWindows.NoPrice, $"Чеку в стані {State} заборонено {Environment.NewLine} змінювати кількість"));
@@ -391,7 +391,7 @@ namespace SharedLib
 
         private void UpdateClientInReceipt(IdReceipt pIdReceipt, Client parClient)
         {
-            var State = db.GetStateReceipt(pIdReceipt);
+            var State = GetStateReceipt(pIdReceipt);
             if (State != eStateReceipt.Prepare)
             {
                 OnCustomWindow?.Invoke(new CustomWindow(eWindows.NoPrice, $"Чеку в стані {State} заборонено {Environment.NewLine} змінювати клієнта"));
@@ -770,6 +770,12 @@ namespace SharedLib
             var r = GetReceiptHead(pR, true);
             Global.OnReceiptCalculationComplete?.Invoke(r);
         }
+
+        public  eStateReceipt GetStateReceipt(IdReceipt pR)
+        {
+            return DB(pR).GetStateReceipt(pR);
+        }
+        
 
         public IEnumerable<LogRRO> GetLogRRO(IdReceipt pR) { return DB(pR).GetLogRRO(pR);}
 

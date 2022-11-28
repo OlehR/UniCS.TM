@@ -60,7 +60,7 @@ namespace ModelMID.DB
         public eTypeOperation TypeOperation { get; set; }
         public string TranslationTypeOperation { get { return TypeOperation.GetDescription(); } }
         public decimal SUM { get; set; }
-        public string TypeRRO { get; set; }
+        public string TypeRRO { get; set; }        
         public string JSON { get; set; }
         public string TextReceipt { get; set; }
         public string Error { get; set; } = null;

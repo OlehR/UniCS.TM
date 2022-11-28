@@ -282,6 +282,7 @@ namespace Front
                 //State = eStateEquipment.Error;
             }
         }
+        
         public IConfiguration GetConfig()
         {
             var AppConfiguration = Config.AppConfiguration;
@@ -384,7 +385,8 @@ namespace Front
                             if (Res == null)
                             {
                                 r.TextReceipt = RRO.GetTextLastReceipt();
-                            }
+                                r.SUM = RRO.GetSumFromTextReceipt(r.TextReceipt);
+                            }                           
                         }
                         catch (Exception e)
                         {

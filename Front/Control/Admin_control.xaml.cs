@@ -589,9 +589,9 @@ namespace Front.Control
                 DetailsReceiptBorder.Visibility = Visibility.Visible;
                 BackgroundReceipts.Visibility = Visibility.Visible;
 
-                var TMPvalue = Bl.db.GetLogRRO(tmpReceipt);
-                PosCheckText.Text = TMPvalue?.Where(e => e.TypeOperation == eTypeOperation.SalePOS).FirstOrDefault()?.TextReceipt;
-                FiscalCheckText.Text = TMPvalue?.Where(e => e.TypeOperation == eTypeOperation.Sale).FirstOrDefault()?.TextReceipt;
+                var TMPvalue = Bl.GetLogRRO(tmpReceipt);
+                PosCheckText.Text = TMPvalue?.Where(e => e.TypeOperation == (tmpReceipt.TypeReceipt==eTypeReceipt.Sale? eTypeOperation.SalePOS:eTypeOperation.RefundPOS)).FirstOrDefault()?.TextReceipt;
+                FiscalCheckText.Text = TMPvalue?.Where(e => e.TypeOperation == (tmpReceipt.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund)).FirstOrDefault()?.TextReceipt;
                 var curReceiptWares = Bl.GetWaresReceipt(tmpReceipt);
                 ListWaresReceipt.ItemsSource = curReceiptWares;
             }

@@ -132,5 +132,10 @@ namespace Front.Equipments
         /// </summary>
         virtual public void Stop() { }
 
+       /// <summary>
+       /// Отримуємо Суму з текста чека.
+       /// </summary>
+       /// <returns></returns>
+        public virtual decimal GetSumFromTextReceipt(string pTextReceipt) { return 0; }
     }
 }
