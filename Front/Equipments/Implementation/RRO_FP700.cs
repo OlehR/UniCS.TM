@@ -416,9 +416,7 @@ namespace Front.Equipments.FP700
             {
                 if (_serialDevice.PortName == null || _serialDevice.BaudRate == 0)
                     return DeviceConnectionStatus.InitializationError;
-                ILogger<Fp700> logger = _logger;
-                if (logger != null)
-                    logger.LogDebug("Fp700 init started");
+                _logger?.LogDebug("Fp700 init started");
                 ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Init, "[FP700] - Start Initialization") 
                                                   { Status =eStatusRRO.Init });                 
                 CloseIfOpened();
@@ -447,9 +445,7 @@ namespace Front.Equipments.FP700
             }
             catch (Exception ex)
             {
-                ILogger<Fp700> logger = _logger;
-                if (logger != null)
-                    logger.LogError(ex, ex.Message);
+                _logger?.LogError(ex, ex.Message);
                 ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "Device not connected")
                 { Status = eStatusRRO.Error, IsСritical = true });                
                 return DeviceConnectionStatus.NotConnected;
@@ -513,9 +509,7 @@ namespace Front.Equipments.FP700
                 ObliterateFiscalReceipt();
                 if (!ReopenPort())
                     return DeviceConnectionStatus.InitializationError;
-                ILogger<Fp700> logger = _logger;
-                if (logger != null)
-                    logger.LogDebug("Fp700 after open");
+                _logger?.LogDebug("Fp700 after open");
                 ClearDisplay();
                 IsZReportDone();
                 if (SendPackage(eCommand.PrintDiagnosticInformation))
@@ -534,16 +528,10 @@ namespace Front.Equipments.FP700
 
         private bool ReopenPort()
         {
-            ILogger<Fp700> logger1 = _logger;
-            if (logger1 != null)
-                logger1.LogDebug("Fp700 init started");
+            _logger?.LogDebug("Fp700 init started");
             CloseIfOpened();
-            ILogger<Fp700> logger2 = _logger;
-            if (logger2 != null)
-                logger2.LogDebug("Fp700 PORT " + _serialDevice.PortName);
-            ILogger<Fp700> logger3 = _logger;
-            if (logger3 != null)
-                logger3.LogDebug(string.Format("Fp700 BAUD {0}", (object)_serialDevice.BaudRate));
+            _logger?.LogDebug("Fp700 PORT " + _serialDevice.PortName);
+            _logger?.LogDebug(string.Format("Fp700 BAUD {0}", (object)_serialDevice.BaudRate));
             if (_serialDevice.PortName == null || _serialDevice.BaudRate == 0)
                 return false;
             _serialDevice.Open();
@@ -760,7 +748,7 @@ namespace Front.Equipments.FP700
             return OnSynchronizeWaitCommandResult(IsFull?eCommand.FullReportByPeriod: eCommand.ShortReportByPeriod, _operatorPassword + "," + startDate.ToString("ddMMyy") + str);
         }
 
-        public void OpenReturnReceipt() => OnSynchronizeWaitCommandResult(eCommand.ReturnReceipt, string.Format("{0},{1},{2}", (object)_operatorCode, (object)_operatorPassword, (object)_tillNumber), (Action<string>)(res => _logger.LogDebug("[ FP700 ] ReturnReceipt res = " + res)));
+        public void OpenReturnReceipt() => OnSynchronizeWaitCommandResult(eCommand.ReturnReceipt, string.Format("{0},{1},{2}", (object)_operatorCode, (object)_operatorPassword, (object)_tillNumber), (Action<string>)(res => _logger?.LogDebug("[ FP700 ] ReturnReceipt res = " + res)));
 
         public string ReturnReceipt(ModelMID.Receipt pR)
         {
@@ -786,7 +774,7 @@ namespace Front.Equipments.FP700
                 OnSynchronizeWaitCommandResult(Command.RegisterProductInReceipt, string.Format("{0}*{1}{2}{3}", (object)FiscalArticle.PLU, (object)receiptItem.ProductQuantity.ToString((IFormatProvider)CultureInfo.InvariantCulture), (object)str1, (object)str2), (Action<string>)(res => _logger.LogDebug("[ FP700 ] RegisterProductInReceipt res = " + res)));
             }*/
             PayReceipt(pR);
-            OnSynchronizeWaitCommandResult(eCommand.CloseFiscalReceipt, onResponseCallback: ((Action<string>)(res => _logger.LogDebug("[ FP700 ] CloseFiscalReceipt res = " + res))));
+            OnSynchronizeWaitCommandResult(eCommand.CloseFiscalReceipt, onResponseCallback: ((Action<string>)(res => _logger?.LogDebug("[ FP700 ] CloseFiscalReceipt res = " + res))));
             int result2;
             if (!int.TryParse(GetLastRefundReceiptNumber(), out result2))
                 return (string)null;
@@ -895,7 +883,7 @@ namespace Front.Equipments.FP700
         public bool ObliterateFiscalReceipt()
         {
             OnSynchronizeWaitCommandResult(eCommand.CloseNonFiscalReceipt);
-            OnSynchronizeWaitCommandResult(eCommand.ObliterateFiscalReceipt, onResponseCallback: ((Action<string>)(res => _logger.LogDebug("[ FP700 ] ObliterateFiscalReceipt res = " + res))));
+            OnSynchronizeWaitCommandResult(eCommand.ObliterateFiscalReceipt, onResponseCallback: ((Action<string>)(res => _logger?.LogDebug("[ FP700 ] ObliterateFiscalReceipt res = " + res))));
             return true;
         }
 
@@ -951,9 +939,7 @@ namespace Front.Equipments.FP700
             DocumentNumbers documentNumbers = new DocumentNumbers();
             OnSynchronizeWaitCommandResult(eCommand.LastDocumentsNumbers, onResponseCallback: ((Action<string>)(res =>
             {
-                ILogger<Fp700> logger = _logger;
-                if (logger != null)
-                    logger.LogDebug("FP700 [GetLastNumbers] " + res);
+                _logger?.LogDebug("FP700 [GetLastNumbers] " + res);
                 if (string.IsNullOrEmpty(res))
                     return;
                 string[] strArray = res.Split(',');
@@ -979,10 +965,7 @@ namespace Front.Equipments.FP700
         {
             if (res.Trim().ToUpper().StartsWith("F"))
             {
-                ILogger<Fp700> logger = _logger;
-                if (logger == null)
-                    return;
-                logger.LogDebug("[Fp700] Error during articles deleting");
+                _logger?.LogDebug("[Fp700] Error during articles deleting");
             }
             else
             {
@@ -1038,14 +1021,9 @@ namespace Front.Equipments.FP700
      
         private void ClearDisplay()
         {
-            ILogger<Fp700> logger1 = _logger;
-            if (logger1 != null)
-                logger1.LogDebug("Fp700 clear display start");
+            _logger?.LogDebug("Fp700 clear display start");
             OnSynchronizeWaitCommandResult(eCommand.ClearDisplay);
-            ILogger<Fp700> logger2 = _logger;
-            if (logger2 == null)
-                return;
-            logger2.LogDebug("Fp700 clear display finish");
+            _logger?.LogDebug("Fp700 clear display finish");
         }
 
         private int FindFirstFreeArticle()
@@ -1100,10 +1078,7 @@ namespace Front.Equipments.FP700
                 }
                 catch (Exception ex)
                 {
-                    ILogger<Fp700> logger = _logger;
-                    if (logger == null)
-                        return;
-                    logger.LogError(ex, ex.Message);
+                    _logger?.LogError(ex, ex.Message);
                 }
             })));
             return diagnosticInfo;
@@ -1161,9 +1136,7 @@ namespace Front.Equipments.FP700
             {
                 try
                 {
-                    ILogger<Fp700> logger = _logger;
-                    if (logger != null)
-                        logger.LogDebug(string.Format("[FP700] Response for command {0}", (object)command));
+                    _logger?.LogDebug(string.Format("[FP700] Response for command {0}", (object)command));
                     Action<string> action = onResponseCallback;
                     if (action != null)
                         action(response);
@@ -1198,9 +1171,7 @@ namespace Front.Equipments.FP700
 
         public bool SendPackage(eCommand command, string data = "", int waitingTimeout = 10)
         {
-            ILogger<Fp700> logger1 = _logger;
-            if (logger1 != null)
-                logger1.LogDebug("SendPackage start");
+            _logger?.LogDebug("SendPackage start");
             bool flag = command != eCommand.ClearDisplay && command != eCommand.ShiftInfo && command != eCommand.DiagnosticInfo && command != eCommand.EveryDayReport && command != eCommand.LastDocumentsNumbers && command != eCommand.ObliterateFiscalReceipt && command != eCommand.PaperCut && command != eCommand.GetDateTime && command != eCommand.PaperPulling && command != eCommand.LastZReportInfo && command != eCommand.PrintDiagnosticInformation;
             if (!IsZReportAlreadyDone & flag)
                 return false;
@@ -1210,34 +1181,20 @@ namespace Front.Equipments.FP700
                 return false;
             if (!_isReady)
             {
-                ILogger<Fp700> logger2 = _logger;
-                if (logger2 != null)
-                    logger2.LogDebug("SendPackage printer not ready. Start waiting");
+                _logger?.LogDebug("SendPackage printer not ready. Start waiting");
                 _isReady = WaitForReady(waitingTimeout);
-                ILogger<Fp700> logger3 = _logger;
-                if (logger3 != null)
-                    logger3.LogDebug("SendPackage printer not ready. Waiting complete");
+                _logger?.LogDebug("SendPackage printer not ready. Waiting complete");
             }
             if (!_isReady)
             {
-                ILogger<Fp700> logger4 = _logger;
-                if (logger4 != null)
-                    logger4.LogDebug("SendPackage printer not ready. Exiting");
+                _logger?.LogDebug("SendPackage printer not ready. Exiting");
                 return false;
             }
-            ILogger<Fp700> logger5 = _logger;
-            if (logger5 != null)
-                logger5.LogDebug(string.Format("SendPackage executing command start : {0}", (object)command));
-            ILogger<Fp700> logger6 = _logger;
-            if (logger6 != null)
-                logger6.LogDebug("SendPackage command  data: " + data);
+            _logger?.LogDebug(string.Format("SendPackage executing command start : {0}", (object)command));
+            _logger?.LogDebug("SendPackage command  data: " + data);
             byte[] bytes = Encoding.Convert(Encoding.UTF8, Encoding.GetEncoding(1251), Encoding.UTF8.GetBytes(data));
-            ILogger<Fp700> logger7 = _logger;
-            if (logger7 != null)
-                logger7.LogDebug("SendPackage command  data converted : " + Encoding.GetEncoding(1251).GetString(bytes));
-            ILogger<Fp700> logger8 = _logger;
-            if (logger8 != null)
-                logger8.LogDebug("--------------------------------------------------------------------------------");
+            _logger?.LogDebug("SendPackage command  data converted : " + Encoding.GetEncoding(1251).GetString(bytes));
+            _logger?.LogDebug("--------------------------------------------------------------------------------");
             byte[] buffer = new byte[218];
             int num1 = 0;
             int length = bytes.Length;
@@ -1300,9 +1257,7 @@ namespace Front.Equipments.FP700
             ((Stream)_serialDevice).Write(buffer, 0, count);
             ((Stream)_serialDevice).Flush();
             _isReady = false;
-            ILogger<Fp700> logger9 = _logger;
-            if (logger9 != null)
-                logger9.LogDebug("SendPackage executing command complete");
+            _logger?.LogDebug("SendPackage executing command complete");
             return true;
         }
 
@@ -1313,18 +1268,14 @@ namespace Front.Equipments.FP700
             {
                 if (data[0] == (byte)21)
                 {
-                    ILogger<Fp700> logger = _logger;
-                    if (logger != null)
-                        logger.LogDebug("OnDataReceived: Printer error occured");
+                    _logger?.LogDebug("OnDataReceived: Printer error occured");
                     _isError = true;
                     return false;
                 }
                 if (data[0] == (byte)22)
                 {
                     _isReady = false;
-                    ILogger<Fp700> logger = _logger;
-                    if (logger != null)
-                        logger.LogDebug("OnDataReceived: Printer is waiting for a command");
+                    _logger?.LogDebug("OnDataReceived: Printer is waiting for a command");
                     return false;
                 }
             }
@@ -1338,9 +1289,7 @@ namespace Front.Equipments.FP700
                 _packageBuffer.AddRange((IEnumerable<byte>)data);
                 if (!_packageBuffer.Contains((byte)3))
                 {
-                    ILogger<Fp700> logger = _logger;
-                    if (logger != null)
-                        logger.LogDebug("OnDataReceived: Printer received part of package. Waiting more...");
+                    _logger?.LogDebug("OnDataReceived: Printer received part of package. Waiting more...");
                     _packageBufferTimer.Start();
                     return false;
                 }
@@ -1354,9 +1303,7 @@ namespace Front.Equipments.FP700
                 if (num1 < 0 || num2 < 0 || num3 < 0 || num5 < 0)
                 {
                     _packageBufferTimer.Start();
-                    ILogger<Fp700> logger = _logger;
-                    if (logger != null)
-                        logger.LogDebug("OnDataReceived: Printer received invalid package.");
+                    _logger?.LogDebug("OnDataReceived: Printer received invalid package.");
                     return false;
                 }
             }
@@ -1597,9 +1544,7 @@ namespace Front.Equipments.FP700
             }
             catch (Exception ex)
             {
-                ILogger<Fp700> logger = _logger;
-                if (logger != null)
-                    logger.LogDebug(ex.Message, (object)ex.StackTrace);
+                _logger?.LogDebug(ex.Message, (object)ex.StackTrace);
             }
             return bitDescriptionBg;
         }
