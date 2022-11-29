@@ -371,40 +371,43 @@ namespace Front
             return r;
         }
 
-        void GetLastReceipt(IdReceipt pIdR,LogRRO r)
+        void GetLastReceipt(IdReceipt pIdR, LogRRO r)
         {
-             Task.Run( () =>
-            {
-                try {
-                    if (r.CodeError == 0 && (string.IsNullOrEmpty(r.TextReceipt) || RRO.Model == eModelEquipment.FP700))
-                    {
-                        LogRRO Res;
-                        try
-                        {
-                            Res = WaitRRO(pIdR, eTypeOperation.LastReceipt,500,false);
-                            if (Res == null)
-                            {
-                                r.TextReceipt = RRO.GetTextLastReceipt();
-                                r.SUM = RRO.GetSumFromTextReceipt(r.TextReceipt);
-                            }                           
-                        }
-                        catch (Exception e)
-                        {
-                            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
-                        }
-                        finally
-                        {
-                            curTypeOperation = eTypeOperation.NotDefine;
-                        }
-
-                        Bl.InsertLogRRO(r);
-                    }
-                }
-                catch (Exception e)
-                {
-                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
-                }
-            });
+            Task.Run(() =>
+           {
+               try
+               {
+                   if (r.CodeError == 0)
+                   {
+                       if (string.IsNullOrEmpty(r.TextReceipt) || RRO.Model == eModelEquipment.FP700)
+                       {
+                           LogRRO Res;
+                           try
+                           {
+                               Res = WaitRRO(pIdR, eTypeOperation.LastReceipt, 500, false);
+                               if (Res == null)
+                               {
+                                   r.TextReceipt = RRO.GetTextLastReceipt();
+                                   r.SUM = RRO.GetSumFromTextReceipt(r.TextReceipt);
+                               }
+                           }
+                           catch (Exception e)
+                           {
+                               FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+                           }
+                           finally
+                           {
+                               curTypeOperation = eTypeOperation.NotDefine;
+                           }
+                       }
+                       Bl.InsertLogRRO(r);
+                   }
+               }
+               catch (Exception e)
+               {
+                   FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+               }
+           });
         }
 
         public LogRRO RroPrintX(IdReceipt pIdR)
@@ -554,7 +557,7 @@ namespace Front
             }
         }
 
-        public void ProgramingArticleAsync(IdReceipt pIdR, IEnumerable<ReceiptWares> pRW)
+        public void ProgramingArticleAsync(IdReceipt pIdR, ReceiptWares pRW)
         {
             Task.Run(() =>
             {

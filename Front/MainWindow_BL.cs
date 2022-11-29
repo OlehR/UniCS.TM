@@ -98,7 +98,7 @@ namespace Front
                         {
                             LastCodeWares = pReceipt.GetLastWares.CodeWares;
                             ReceiptWares cl = (ReceiptWares)pReceipt.GetLastWares.Clone();
-                            EF.ProgramingArticleAsync(pReceipt, new List<ReceiptWares>() { cl });
+                            EF.ProgramingArticleAsync(pReceipt, cl );
                         }
                     }
                     // if (curReceipt?.Wares?.Count() == 0 && curReceipt.OwnBag==0d) CS.WaitClear();

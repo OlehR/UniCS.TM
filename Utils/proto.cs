@@ -7,6 +7,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
     using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Threading;
+
 namespace Utils
 {
     public static class proto
@@ -54,5 +57,45 @@ namespace Utils
                     : descriptionAttribute.Description;
         }
 
+    }
+
+    public static class ThreadExtensions
+    {
+        public static void RunAsync(this Task val, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            Task.Factory.StartNew((Func<Task>)async delegate
+            {
+                await val;
+            }, cancellationToken);
+        }
+
+        public static void RunAsync(this Func<Task> val, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            Task.Factory.StartNew(val, cancellationToken);
+        }
+
+        public static void RunAsync(this Action action, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            Task.Factory.StartNew(action, cancellationToken);
+        }
+
+        public static Task TaskDelayWithoutException(this object val, int timeoutInMillis, CancellationToken cancellationToken)
+        {
+            return Task.Delay(timeoutInMillis, cancellationToken).ContinueWith(delegate
+            {
+            });
+        }
+
+        public static Task TaskDelayWithoutException(this object val, int timeoutInMillis, CancellationTokenSource cts, Action<bool> onFinish = null, bool shouldDisposeToken = true)
+        {
+            return Task.Delay(timeoutInMillis, cts.Token).ContinueWith(delegate
+            {
+                onFinish?.Invoke(cts.Token.IsCancellationRequested);
+                if (shouldDisposeToken)
+                {
+                    cts.Dispose();
+                }
+            });
+        }
     }
 }

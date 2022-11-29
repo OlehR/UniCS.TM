@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace ModelMID
@@ -175,8 +176,8 @@ namespace ModelMID
         public int Sort { get; set; }
 
         public string ExciseStamp { get; set; }
-        public string[] GetExciseStamp { get { return ExciseStamp?.Split(',')??new string[0]; } }
-        
+        public string[] GetExciseStamp { get { return ExciseStamp?.Split(',') ?? new string[0]; } }
+
         public bool AddExciseStamp(string pES)
         {
             if (string.IsNullOrEmpty(ExciseStamp))
@@ -215,7 +216,7 @@ namespace ModelMID
         public string BarCode2Category { get; set; }
 
         /// <summary>
-        /// Штрихкод 2 категорії
+        /// Штрихкод товару
         /// </summary>
         public string BarCode { get; set; }
 
@@ -247,9 +248,9 @@ namespace ModelMID
                         res.Add(new WaitWeight(WeightFact, WeightDelta > 0 ? WeightDelta : WeightFact * Global.GetCoefDeltaWeight(WeightFact)));
 
                 }
-                if (WeightFact==-1)
+                if (WeightFact == -1)
                     res.Add(new WaitWeight(0d, 10d));
-                if(res.Count==0)
+                if (res.Count == 0)
                     res.Add(new WaitWeight(100000d, 0d));
 
                 return res.ToArray();
@@ -295,8 +296,8 @@ namespace ModelMID
                 }
                 catch (Exception e) { }
                 //
-                    return Res;
-               // return Res?.Substring(0, Res.Length - 1);
+                return Res;
+                // return Res?.Substring(0, Res.Length - 1);
             }
         }
 
@@ -313,10 +314,10 @@ namespace ModelMID
         /// <summary>
         /// Зафіксована вага контрольною вагою.
         /// </summary>
-        public decimal FixWeight { get { return _FixWeight == null && WeightFact == -1 ? 0 : _FixWeight??0; } set { _FixWeight = value; } }
+        public decimal FixWeight { get { return _FixWeight == null && WeightFact == -1 ? 0 : _FixWeight ?? 0; } set { _FixWeight = value; } }
         public decimal FixedWeightInKg { get { return FixWeight / 1000; } }
 
-        decimal _FixWeightQuantity=0;
+        decimal _FixWeightQuantity = 0;
         /// <summary>
         /// Для якої кількості зафіксована вага.
         /// </summary>
@@ -326,11 +327,11 @@ namespace ModelMID
         /// Код УКТЗЕТ
         /// </summary>
         public string CodeUKTZED { get; set; }
-        public bool IsUseCodeUKTZED { get { return TypeWares >0; } }
+        public bool IsUseCodeUKTZED { get { return TypeWares > 0; } }
 
         public bool IsMultiplePrices { get { return Prices != null && Prices.Count() > 1 && TypeWares == eTypeWares.Tobacco; } }
 
-        decimal _LimitAge =0;
+        decimal _LimitAge = 0;
         /// <summary>
         /// Вікові обмеження (Піротехніка)
         /// </summary>
@@ -395,6 +396,7 @@ namespace ModelMID
             Quantity = 0;
             IsSave = false;
         }
+        
         public void RecalcTobacco()
         {
             if (TypeWares == eTypeWares.Tobacco && Prices != null && Prices.Count() == 1)
@@ -406,20 +408,116 @@ namespace ModelMID
             }
         }
 
-        public bool IsPlus { get { return (Parent?.IsLockChange != true && !IsWeight && (MaxRefundQuantity == null || Quantity < MaxRefundQuantity) && IsLast) && TypeWares!=eTypeWares.Tobacco; } } // { get; set; } = false;//
+        public bool IsPlus { get { return (Parent?.IsLockChange != true && !IsWeight && (MaxRefundQuantity == null || Quantity < MaxRefundQuantity) && IsLast) && TypeWares != eTypeWares.Tobacco; } } // { get; set; } = false;//
 
         public bool IsMinus { get { return Parent?.IsLockChange != true && !IsWeight && Quantity > 1 && IsLast && TypeWares != eTypeWares.Tobacco && TypeWares != eTypeWares.Alcohol; } } //{ get; set; } = false;//
 
-        public bool IsDel { get { return  Parent?.IsLockChange != true; } }
+        public bool IsDel { get { return Parent?.IsLockChange != true; } }
 
         public bool IsConfirmDel { get { return WeightFact != -1; } }
 
-        public bool IsNeedExciseStamp { get { return TypeWares == eTypeWares.Alcohol && GetExciseStamp.Length<Quantity; } }
+        public bool IsNeedExciseStamp { get { return TypeWares == eTypeWares.Alcohol && GetExciseStamp.Length < Quantity; } }
 
         public object Clone()
         {
             return this.MemberwiseClone();
         }
 
+        public List<ReceiptWares> ParseByPrice()
+        {
+            var Res = new List<ReceiptWares>();
+            ReceiptWares el = this.Clone() as ReceiptWares;
+            decimal PromotionQuantity = 0;
+            IEnumerable<WaresReceiptPromotion> PromotionPrice = null;
+
+            if (el.ReceiptWaresPromotions != null)
+            {
+                PromotionPrice = el.ReceiptWaresPromotions.Where(r => r.TypeDiscount == eTypeDiscount.Price);
+                PromotionQuantity = PromotionPrice.Sum(r => r.Quantity);
+            }
+
+            if (PromotionQuantity > 0)
+            {
+                decimal AllQuantity = el.Quantity;
+                var OtherPromotion = el.ReceiptWaresPromotions.Where(r => r.TypeDiscount != eTypeDiscount.Price);
+                el.ReceiptWaresPromotions = null;
+
+                if (PromotionQuantity < AllQuantity)
+                {
+                    var SumDiscount = OtherPromotion.Sum(r => r.Sum);
+                    var QuantityDiscount = OtherPromotion.Sum(r => r.Quantity);
+                    el.SumDiscount = QuantityDiscount * (el.Price - SumDiscount / QuantityDiscount);
+                    el.ReceiptWaresPromotions = OtherPromotion;
+                    el.Quantity = AllQuantity - PromotionQuantity;
+                    Res.Add(el);
+                }
+                el.SumDiscount = 0;
+                int i = 1;
+                decimal FullQuantity = el.Quantity;
+                foreach (var p in PromotionPrice)
+                {
+                    ReceiptWares c = el.Clone() as ReceiptWares;
+                    if (c != null)
+                    {
+                        if (p.Quantity <= FullQuantity)
+                        {
+                            c.Quantity = p.Quantity;
+                            FullQuantity -= p.Quantity;
+                        }
+                        else
+                        {
+                            c.Quantity = FullQuantity;
+                            FullQuantity = 0;
+                        }
+
+                        c.Price = p.Price;
+                        c.PriceDealer = p.Price;
+                        c.Order = i++;
+                        if (c.Quantity > 0)
+                        {
+                            Res.Add(c);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                Res.Add(el);
+            }
+            return Res;
+        }
+
+        public List<ReceiptWares> ParseByExcise()
+        {
+            List<ReceiptWares> Res = new();
+            ReceiptWares el = this.Clone() as ReceiptWares;
+
+            el.Quantity = Math.Round(el.Quantity, 3, MidpointRounding.AwayFromZero);
+            
+            var ExciseStamp = el.GetExciseStamp.Where(el => !el.Equals("None")).ToArray();
+            decimal Quantity = el.Quantity;
+
+            if (ExciseStamp.Count() > 1)
+            {
+                for (int index = 0; index < Math.Min(el.GetExciseStamp.Count(), Quantity); ++index)
+                {
+                    ReceiptWares NewEl =el.Clone() as ReceiptWares;
+                    NewEl.Quantity = 1M;
+                    NewEl.ExciseStamp = ExciseStamp[index];
+                    el.Quantity--;
+                    NewEl.SumDiscount = Math.Round(NewEl.Quantity * el.SumDiscount / Quantity, 2, MidpointRounding.AwayFromZero);
+                    Res.Add(NewEl);
+                }
+            }
+
+            if (el.Quantity > 0)
+            {
+                el.Price = Math.Round(el.Price, 2, MidpointRounding.AwayFromZero);
+                el.SumDiscount = Math.Round(el.Quantity * el.SumDiscount / Quantity, 2, MidpointRounding.AwayFromZero);
+                el.ExciseStamp = null;
+                Res.Add(el);
+            }
+            return Res;
+        }
     }
 }

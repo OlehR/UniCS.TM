@@ -5,6 +5,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
 using ModelMID;
 using ModelMID.DB;
 using Utils;
@@ -784,6 +785,35 @@ and @TypeDiscount=11; ";
             using (var DB = new SQLite(ReceiptFile))
             {
                 return DB.ExecuteNonQuery<LogRRO>(SqlInsertLogRRO, pLog) > 0;
+            }
+        }
+
+        public bool AddFiscalArticle(FiscalArticle pFiscalArticle)
+        {
+            
+            var SQL = "replace into FiscalArticle (CodeWares,NameWares ,PLU ,Price) values (@CodeWares,@NameWares ,@PLU ,@Price)";
+            using (var DB = new SQLite(ConfigFile))
+            {
+                return DB.ExecuteNonQuery<FiscalArticle>(SQL,pFiscalArticle) > 0;
+            }
+
+        }
+
+        public bool DelAllFiscalArticle()
+        {
+            var SQL = "delete from FiscalArticle";
+            using (var DB = new SQLite(ConfigFile))
+            {
+                return DB.ExecuteNonQuery(SQL) > 0;
+            }
+        }
+
+        public FiscalArticle GetFiscalArticle(int pCodeWares)
+        {
+            var SQL = "select * from FiscalArticle where CodeWares=@CodeWares";
+            using (var DB = new SQLite(ConfigFile))
+            {
+                return DB.connection.QueryFirstOrDefault<FiscalArticle>(SQL,new FiscalArticle() { CodeWares=pCodeWares} );
             }
         }
         /// <summary>

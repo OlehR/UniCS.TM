@@ -340,7 +340,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
         {
             if (pR != null)
             {
-                rows = pR.Wares?.Select(el => new WaresRRO(el));
+                rows = pR.GetParserWaresReceipt(true,false)?.Select(el => new WaresRRO(el));
                 pays = pR.Payment?.Where(el => el.TypePay != eTypePay.IssueOfCash).Select(el => new PaysRRO(el));
                 var c = pR.Payment?.Where(el => el.TypePay == eTypePay.IssueOfCash);
                 if (c != null && c.Any())
@@ -375,7 +375,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
             code = pRW.CodeWares.ToString();
             code1 = pRW.BarCode;
             code2 = pRW.CodeUKTZED;
-            code_aa = pRW.ExciseStamp;
+            code_aa = pRW.GetExciseStamp;
             name = pRW.NameWares;
             cnt = pRW.Quantity;
             price = pRW.Price;
@@ -388,7 +388,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
         public string code2 { get; set; }
         public string code3 { get; set; }
         public string code_a { get; set; }
-        public string code_aa { get; set; }
+        public string[] code_aa { get; set; }
         public string name { get; set; }
         public decimal cnt { get; set; }
         public decimal price { get; set; }

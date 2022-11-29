@@ -67,7 +67,7 @@ namespace ModelMID
         public decimal PercentDiscount { get; set; }
         public decimal SumDiscount { get; set; }
         public decimal SumRest { get; set; }
-        public decimal SumTotal { get { return SumReceipt - SumDiscount; } }
+        public decimal SumTotal { get { return SumReceipt - SumDiscount- SumBonus; } }
         /// <summary>
         /// Оплачено Готівкою
         /// </summary>
@@ -254,6 +254,29 @@ namespace ModelMID
         public bool IsQR()
         {
             return Wares?.Where(r=>!string.IsNullOrEmpty( r.QR)).Any()?? false;
+        }
+
+        public IEnumerable<ReceiptWares> GetParserWaresReceipt(bool pIsPrice=true,bool pIsExcise=true)
+        {
+            if (!pIsPrice && !pIsExcise)
+                return Wares;
+            IEnumerable<ReceiptWares> Res = Wares;
+            if(pIsPrice)
+            {
+                var res = new List<ReceiptWares>();
+                foreach (var el in Res)
+                    res.AddRange(el.ParseByPrice());
+                Res = res;
+            }            
+
+            if (pIsExcise)
+            {
+                var res = new List<ReceiptWares>();
+                foreach (var el in Res)
+                    res.AddRange(el.ParseByExcise());
+                Res = res;
+            }
+            return Res;
         }
     }
 }

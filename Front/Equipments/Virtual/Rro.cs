@@ -108,7 +108,7 @@ namespace Front.Equipments
         /// </summary>
         /// <param name="pRW"></param>
         /// <returns></returns>
-        virtual public bool ProgramingArticle(IEnumerable<ReceiptWares> pRW)
+        virtual public bool ProgramingArticle(ReceiptWares pRW)
         {
             return true;
         }

@@ -14,7 +14,7 @@ namespace SharedLib
 {        
     public class SQLite:SQL,IDisposable
     {
-        SQLiteConnection connection = null;
+        public SQLiteConnection connection = null;
         SQLiteTransaction transaction = null;
         private bool disposedValue;
 
