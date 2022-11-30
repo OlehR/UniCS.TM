@@ -14,10 +14,8 @@ using Front.Equipments.Implementation;
 using System.Threading.Tasks;
 using Utils;
 using Microsoft.Extensions.Logging;
-using ModernExpo.SelfCheckout.Entities.CommandServer;
 using SharedLib;
 using System.Threading;
-using System.Net.Sockets;
 
 namespace Front
 {
