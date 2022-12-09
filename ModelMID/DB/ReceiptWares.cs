@@ -13,9 +13,9 @@ namespace ModelMID
     public class ReceiptWares : IdReceiptWares, ICloneable
     {
         /// <summary>
-        /// Код компанії (важливо коли кілька підприємців)
+        /// Код робочого місця (важливо коли кілька підприємців)
         /// </summary>
-        public int CodeCompany { get; set; }
+        public int IdWorkplacePay { get; set; }
         /// <summary>
         /// Код групи товару
         /// </summary>

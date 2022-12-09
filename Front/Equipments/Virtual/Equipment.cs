@@ -20,12 +20,14 @@ namespace Front.Equipments
         public eModelEquipment Model { get; set; } = eModelEquipment.NotDefine;
         public string TranslationModel { get { return Model.GetDescription(); } }
         public eTypeEquipment Type { get { return Model.GetTypeEquipment(); } }
+        public string DeviceConfigName { get; set; }
 
         protected string SerialPort;
         protected int BaudRate;
         protected string IP;
         protected int IpPort;
         protected IConfiguration Configuration;
+
 
         //protected Action<string, string> Logger = null;
         protected ILoggerFactory LoggerFactory;

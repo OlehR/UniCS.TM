@@ -454,12 +454,11 @@ namespace Front.Control
         {
             //TMP!!!
             //MessageBox.Show("Реквізити на оплату");
-            TerminalPaymentInfo terminalPaymentInfo = new TerminalPaymentInfo(MW);
-            var R = MW?.curReceipt;
-            if (terminalPaymentInfo.ShowDialog() == true && R != null)
+            TerminalPaymentInfo terminalPaymentInfo = new TerminalPaymentInfo(MW);            
+            if (terminalPaymentInfo.ShowDialog() == true && curReceipt != null)
             {
                 var Res = terminalPaymentInfo.enteredDataFromTerminal;
-                Res.SetIdReceipt(R);
+                Res.SetIdReceipt(curReceipt);
                 MW.SetManualPay(Res);
             }
         }
