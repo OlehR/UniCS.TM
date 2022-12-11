@@ -499,7 +499,7 @@ namespace ModelMID
 
             if (ExciseStamp.Count() > 1)
             {
-                for (int index = 0; index < Math.Min(el.GetExciseStamp.Count(), Quantity); ++index)
+                for (int index = 0; index < Math.Min(ExciseStamp.Count(), Quantity); ++index)
                 {
                     ReceiptWares NewEl =el.Clone() as ReceiptWares;
                     NewEl.Quantity = 1M;

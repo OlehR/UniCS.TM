@@ -88,25 +88,28 @@ namespace SharedLib
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             return true;
         }
-        public async Task<bool> SendReceiptTo1CAsync(Receipt parReceipt, WDB_SQLite parDB)
+        public async Task<bool> SendReceiptTo1CAsync(Receipt pReceipt, WDB_SQLite parDB)
         {
             try
             {
-                var r = new Receipt1C(parReceipt);
+                var rr = pReceipt.Wares.Where(r => r.Quantity != 0m);
+                pReceipt.Wares = rr;
+
+                var r = new Receipt1C(pReceipt);
                 var body = soapTo1C.GenBody("JSONCheck", new Parameters[] { new Parameters("JSONSting", r.GetBase64()) });
                 var res = await soapTo1C.RequestAsync(Global.Server1C, body, 240000, "application/json");
 
                if (!string.IsNullOrEmpty(res) && res.Equals("0"))
                 {
-                    parReceipt.StateReceipt = eStateReceipt.Send;
-                    parDB.SetStateReceipt(parReceipt);//Змінюєм стан чека на відправлено.
+                    pReceipt.StateReceipt = eStateReceipt.Send;
+                    parDB.SetStateReceipt(pReceipt);//Змінюєм стан чека на відправлено.
                     return true;
                 }
                 return false;
             }
             catch (Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(parReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "SendReceiptTo1CAsync=>" + parReceipt.ReceiptId.ToString() + " " + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "SendReceiptTo1CAsync=>" + pReceipt.ReceiptId.ToString() + " " + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
                 return false;
             }
         }

@@ -346,6 +346,11 @@ namespace Front
                     {
                         curTypeOperation = eTypeOperation.Sale;
                         FileLogger.WriteLogMessage(this, NameMetod, "Start Print Receipt");
+                        if(pReceipt?.TypeReceipt==eTypeReceipt.Refund && pReceipt.Wares!=null)
+                        {
+                            var rr = pReceipt.Wares.Where(r => r.Quantity != 0m);
+                            pReceipt.Wares = rr;
+                        }
                         Res = RRO?.PrintReceipt(pReceipt);
                         FileLogger.WriteLogMessage(this, NameMetod, "End Print Receipt");
                     }
