@@ -15,6 +15,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -383,14 +384,17 @@ namespace Front.Control
                     return;
             }
         }
+        
         private void RefreshJournal()
         {
-            var TMPIdRecipt = new IdReceipt { CodePeriod = Global.GetCodePeriod(), CodeReceipt = 0, IdWorkplace = Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace).IdWorkplace };
+            
+            var TMPIdRecipt = new IdReceipt { CodePeriod = Global.GetCodePeriod(DateSoSearch), CodeReceipt = 0, IdWorkplace = Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace).IdWorkplace };
             SourcesListJournal = new ObservableCollection<LogRRO>(Bl.GetLogRRO(TMPIdRecipt));
             ListJournal.ItemsSource = SourcesListJournal.Reverse();
             CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(ListJournal.ItemsSource);
             view.Filter = JournalFilter;
         }
+        
         private void RefreshLog()
         {
             string AllLog = File.ReadAllText(Utils.FileLogger.GetFileName);
@@ -411,6 +415,7 @@ namespace Front.Control
             CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(ListLog.ItemsSource);
             view.Filter = LogFilter;
         }
+        
         private void historiReceiptList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             curReceipt = ListReceipts.SelectedItem as Receipt;
@@ -501,6 +506,8 @@ namespace Front.Control
                 view.Filter = ReceiptFilter;
             }
             // Поки не знаю як реалізувати пошук
+
+            RefreshJournal();
         }
 
         private void PowerOff(object sender, RoutedEventArgs e)
@@ -738,12 +745,49 @@ namespace Front.Control
         {
             EF.PrintQR(curReceipt);
         }
+
+        private void Check1C_Click(object sender, RoutedEventArgs e)
+        {
+            StringBuilder Res = new();
+            var MsSQL = new WDB_MsSql();
+            var Receipts = new ObservableCollection<Receipt>(Bl.GetReceipts(DateSoSearch, DateSoSearch, Global.IdWorkPlace)); 
+            var R1C = MsSQL.GetReceipt1C(DateSoSearch, Global.IdWorkPlace);
+            Res.Append($"Звіт за {DateSoSearch} {Environment.NewLine}");
+            var Sum=R1C.Sum(el=>el.Value);
+            Res.Append($"Всього 1С => {Sum}{Environment.NewLine}");
+            Sum = Receipts.Where(el=>el.StateReceipt>=eStateReceipt.Pay).Sum(el => el.SumTotal);
+            Res.Append($"Всього Програма => {Sum}{Environment.NewLine}");
+            Sum = Receipts.Where(el => el.StateReceipt >= eStateReceipt.Pay && el.StateReceipt < eStateReceipt.Send).Sum(el => el.SumTotal);
+            Res.Append($"Всього в проміжних станах => {Sum}{Environment.NewLine}");
+
+            foreach (var el in Receipts)
+            {
+                if (R1C.ContainsKey(el.NumberReceipt1C))
+                {
+                    decimal Sum1c = R1C[el.NumberReceipt1C];
+                    if (Math.Abs(el.SumTotal - Sum1c) > 0.01m)
+                        Res.Append($"{el.NumberReceipt1C} Сума чека:{el.SumTotal} В 1с:{Sum1c}{Environment.NewLine}");
+                }
+                else
+                {
+                    if(el.StateReceipt>=eStateReceipt.Pay)
+                    {
+                        Res.Append($"{el.NumberReceipt1C} Відсутній чек в 1С на суму {el.SumTotal:n2} {el.StateReceipt}{Environment.NewLine}");
+                    }
+                }               
+               
+            }
+
+            MessageBox.Show(Res.ToString());
+        }
     }
+
     public class APIRadiobuton
     {
         public eTypeMessage ServerTypeMessage { get; set; }
         public string TranslateServerTypeMessage { get { return ServerTypeMessage.GetDescription(); } }
     }
+
     public class ParsLog
     {
         public string LineLog { get; set; }
@@ -755,6 +799,7 @@ namespace Front.Control
         public string TranslateStateReceipt_ { get { return StateReceipt_.GetDescription(); } }
         public bool Selected { get; set; } = false;
     }
+
 
 
 }

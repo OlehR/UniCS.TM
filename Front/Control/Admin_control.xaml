@@ -280,6 +280,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                     </Button.Style>
                                 </Button>
                                 <Button x:Name="CloseDay" Style="{StaticResource Default}" Content="Закриття дня"    Width="280" Click="CloseDay_Click" />
+                                <Button x:Name="Check1C" Style="{StaticResource Default}" Content="Звірка з 1С"    Width="280" Click="Check1C_Click" />
                             </StackPanel>
                         </GroupBox>
                         <!--Інформація з пос-термінала-->
@@ -993,7 +994,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                     </Style.Triggers>
                                     </Style>
                                 </Button.Style>
-                            </Button>
+                            </Button>                            
 
                         </StackPanel>
                     </Grid>

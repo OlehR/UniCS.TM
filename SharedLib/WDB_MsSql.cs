@@ -222,6 +222,22 @@ namespace SharedLib
             return varMessageNoMax;
         }
 
+        public Dictionary<string,decimal> GetReceipt1C(DateTime pDT,int pIdWorkplace)
+        {
+            var Res = new Dictionary<string, decimal>();
+            var par = new { DT = pDT, IdWorkplace = pIdWorkplace };
+            var SQL = "SELECT number,sum FROM dbo.V1C_doc_receipt WHERE IdWorkplace=@IdWorkplace AND  _Date_Time > DATEADD(year,2000, @DT) AND _Date_Time < DATEADD(day,1,DATEADD(year,2000, @DT))";
+            var res = db.Execute<object, Res>(SQL,par );
+            foreach (var el in res)
+                Res.Add(el.number, el.sum);
+            return Res;
+        }
+
+    }
+    class Res
+    {
+        public string number { get; set; }
+        public decimal sum { get; set; }
     }
     class pWarehouse { public int CodeWarehouse { get; set; } }
     class pMessage : pWarehouse
