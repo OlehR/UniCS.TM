@@ -40,7 +40,7 @@ namespace Front
         public EquipmentFront EF;
         public ControlScale CS { get; set; }
 
-        Sound s = Sound.GetSound();
+        Sound s;
         public User AdminSSC { get; set; } = null;
         public DateTime DTAdminSSC { get; set; }
 
@@ -243,6 +243,7 @@ namespace Front
             SocketServer SocketS = new SocketServer();
             _ = SocketS.StartSocketServer();
             CS = new ControlScale();
+           s = Sound.GetSound(CS);
 
             var fc = new List<FlagColor>();
             Config.GetConfiguration().GetSection("MID:FlagColor").Bind(fc);

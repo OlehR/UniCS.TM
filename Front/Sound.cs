@@ -43,6 +43,7 @@ namespace Front
     
     public class Sound
     {
+        ControlScale CS;
         public bool IsPlaying = false;
         public string  NextSound;
         public bool IsSound = true;
@@ -62,14 +63,15 @@ namespace Front
        SortedList<eTypeSound, int> IsUse = new();
         eTypeSound LastTypeSound;
         
-        public Sound()
+        public Sound(ControlScale pCS)
         {
+            CS = pCS;
             //Player.Volume = 0.5d;
         }
-        public static Sound GetSound()
+        public static Sound GetSound(ControlScale pCS)
         {
             if (_Sound == null)
-                _Sound = new Sound();
+                _Sound = new Sound(pCS);
             return _Sound;
         }
 
@@ -90,14 +92,25 @@ namespace Front
         {            
             if(!IsSound)
                 return;
+            if (pS == eTypeSound.IncorectWeight)
+            {
+                Task.Delay(500).Wait();
+                if (CS.StateScale != eStateScale.BadWeight)
+                    return;
+            }
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, pS.ToString(),eTypeLog.Expanded);
             var FileName = Path.Combine(Global.PathCur,"Sound",App.Language.Name,pS.ToString()+ ".wav");
             if(!File.Exists(FileName))
                 FileName = Path.Combine(Global.PathCur, "Sound", "en", pS.ToString()+ ".wav");// $@"D:\MID\Sound\en\{pS}.wav";
             if(File.Exists(FileName) && Player != null && LastTypeSound != pS)
             {
-                if(LastTypeSound == eTypeSound.IncorectWeight)
-                    LastTypeSound=eTypeSound.NotDefine;
+                if (LastTypeSound == eTypeSound.IncorectWeight)
+                    Task.Run(() => {
+                        Task.Delay(1000);
+                        if(LastTypeSound == eTypeSound.IncorectWeight)
+                            LastTypeSound = eTypeSound.NotDefine;
+                    });
+                   
                 else
                   LastTypeSound = pS;
 
@@ -109,8 +122,16 @@ namespace Front
                 if (IsPlaying)
                     NextSound = FileName;
                 else
+                {
                     Playing(FileName);
-                                
+                    //Якщо проблема з вагою.
+                    if (LastTypeSound == eTypeSound.IncorectWeight)
+                        Task.Run(() => {
+                            Task.Delay(1000);
+                            if (LastTypeSound == eTypeSound.IncorectWeight)
+                                LastTypeSound = eTypeSound.NotDefine;
+                        });
+                }
             }            
         }
 
@@ -138,7 +159,6 @@ namespace Front
         });
 
         }
-
 
         public void Play(eStateMainWindows pState, eTypeAccess pTypeAccess, eStateScale pStateScale, int pExPar = 0)
         {   if (pState == eStateMainWindows.BlockWeight) //Якщо немає вікна то і не повинно бути звуку.
