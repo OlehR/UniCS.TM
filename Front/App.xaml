@@ -554,8 +554,7 @@
                 <Setter Property="SnapsToDevicePixels" Value="True" />
                 <Setter Property="OverridesDefaultStyle" Value="True" />
                 <Setter Property="FocusVisualStyle" Value="{StaticResource ButtonFocusVisual}" />
-                <Setter Property="Margin" Value="5"></Setter>
-                <Setter Property="Height" Value="80"/>
+                <Setter Property="Margin" Value="1"></Setter>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
@@ -567,10 +566,10 @@
                                 <Border.Background>
                                     <LinearGradientBrush StartPoint="0.0, 0" EndPoint="0.0, 1">
                                         <GradientStopCollection>
-                                            <GradientStop Color="#cccccc" Offset="0" />
+                                            <GradientStop Color="#d9d9d9" Offset="0" />
                                             <GradientStop Color="#d9d9d9" Offset="0.1" />
                                             <GradientStop Color="#d9d9d9" Offset="0.9" />
-                                            <GradientStop Color="#cccccc" Offset="1" />
+                                            <GradientStop Color="#d9d9d9" Offset="1" />
                                         </GradientStopCollection>
                                     </LinearGradientBrush>
                                 </Border.Background>
@@ -585,19 +584,19 @@
                                             <Storyboard>
                                                 <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[0].(GradientStop.Color)" 
                                                                           Storyboard.TargetName="Border">
-                                                    <EasingColorKeyFrame KeyTime="0" Value="Red" />
+                                                    <EasingColorKeyFrame KeyTime="0" Value="Gray" />
                                                 </ColorAnimationUsingKeyFrames>
                                                 <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)" 
                                                                           Storyboard.TargetName="Border">
-                                                    <EasingColorKeyFrame KeyTime="0" Value="#f2f2f2" />
+                                                    <EasingColorKeyFrame KeyTime="0" Value="Gray" />
                                                 </ColorAnimationUsingKeyFrames>
                                                 <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[2].(GradientStop.Color)" 
                                                                           Storyboard.TargetName="Border">
-                                                    <EasingColorKeyFrame KeyTime="0" Value="#f2f2f2" />
+                                                    <EasingColorKeyFrame KeyTime="0" Value="Gray" />
                                                 </ColorAnimationUsingKeyFrames>
                                                 <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[3].(GradientStop.Color)" 
                                                                           Storyboard.TargetName="Border">
-                                                    <EasingColorKeyFrame KeyTime="0" Value="Red" />
+                                                    <EasingColorKeyFrame KeyTime="0" Value="Gray" />
                                                 </ColorAnimationUsingKeyFrames>
                                             </Storyboard>
                                         </VisualState>
@@ -605,19 +604,19 @@
                                             <Storyboard>
                                                 <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[0].(GradientStop.Color)" 
                                                                           Storyboard.TargetName="Border">
-                                                    <EasingColorKeyFrame KeyTime="0" Value="Gray" />
+                                                    <EasingColorKeyFrame KeyTime="0" Value="#d9d9d9" />
                                                 </ColorAnimationUsingKeyFrames>
                                                 <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)" 
                                                                           Storyboard.TargetName="Border">
-                                                    <EasingColorKeyFrame KeyTime="0" Value="Gray" />
+                                                    <EasingColorKeyFrame KeyTime="0" Value="#d9d9d9" />
                                                 </ColorAnimationUsingKeyFrames>
                                                 <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[2].(GradientStop.Color)" 
                                                                           Storyboard.TargetName="Border">
-                                                    <EasingColorKeyFrame KeyTime="0" Value="Gray" />
+                                                    <EasingColorKeyFrame KeyTime="0" Value="#d9d9d9" />
                                                 </ColorAnimationUsingKeyFrames>
                                                 <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[3].(GradientStop.Color)" 
                                                                           Storyboard.TargetName="Border">
-                                                    <EasingColorKeyFrame KeyTime="0" Value="Gray" />
+                                                    <EasingColorKeyFrame KeyTime="0" Value="#d9d9d9" />
                                                 </ColorAnimationUsingKeyFrames>
                                             </Storyboard>
                                         </VisualState>
@@ -714,10 +713,9 @@
                 </Setter>
             </Style>
 
+            <!--Біла КНОПКА-->
 
-
-            <!--Зелена кнопка-->
-            <Style TargetType="Button" x:Key="greenButton">
+            <Style TargetType="Button" x:Key="WhiteButton">
 
                 <Setter Property="SnapsToDevicePixels" Value="True" />
                 <Setter Property="OverridesDefaultStyle" Value="True" />
@@ -730,14 +728,15 @@
                                 TextBlock.FontWeight="Bold"
                                 x:Name="Border"
                                 CornerRadius="15"
-                                BorderThickness="1">
+                                BorderThickness="3"
+                                BorderBrush="Black">
                                 <Border.Background>
                                     <LinearGradientBrush StartPoint="0.0, 0" EndPoint="0.0, 1">
                                         <GradientStopCollection>
-                                            <GradientStop Color="#39E639" Offset="0" />
-                                            <GradientStop Color="#00CC00" Offset="0.1" />
-                                            <GradientStop Color="#00CC00" Offset="0.9" />
-                                            <GradientStop Color="#39E639" Offset="1" />
+                                            <GradientStop Color="Transparent" Offset="0" />
+                                            <GradientStop Color="Transparent" Offset="0.1" />
+                                            <GradientStop Color="Transparent" Offset="0.9" />
+                                            <GradientStop Color="Transparent" Offset="1" />
                                         </GradientStopCollection>
                                     </LinearGradientBrush>
                                 </Border.Background>
@@ -753,19 +752,184 @@
                                             <Storyboard>
                                                 <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[0].(GradientStop.Color)" 
                                                                           Storyboard.TargetName="Border">
-                                                    <EasingColorKeyFrame KeyTime="0" Value="#fff0b3" />
+                                                    <EasingColorKeyFrame KeyTime="0" Value="LightGray" />
                                                 </ColorAnimationUsingKeyFrames>
                                                 <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)" 
                                                                           Storyboard.TargetName="Border">
-                                                    <EasingColorKeyFrame KeyTime="0" Value="#fff0b3" />
+                                                    <EasingColorKeyFrame KeyTime="0" Value="LightGray" />
                                                 </ColorAnimationUsingKeyFrames>
                                                 <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[2].(GradientStop.Color)" 
                                                                           Storyboard.TargetName="Border">
-                                                    <EasingColorKeyFrame KeyTime="0" Value="#fff0b3" />
+                                                    <EasingColorKeyFrame KeyTime="0" Value="LightGray" />
                                                 </ColorAnimationUsingKeyFrames>
                                                 <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[3].(GradientStop.Color)" 
                                                                           Storyboard.TargetName="Border">
-                                                    <EasingColorKeyFrame KeyTime="0" Value="#fff0b3" />
+                                                    <EasingColorKeyFrame KeyTime="0" Value="LightGray" />
+                                                </ColorAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="Pressed">
+                                            <Storyboard>
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[0].(GradientStop.Color)" 
+                                                                          Storyboard.TargetName="Border">
+                                                    <EasingColorKeyFrame KeyTime="0" Value="White" />
+                                                </ColorAnimationUsingKeyFrames>
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)" 
+                                                                          Storyboard.TargetName="Border">
+                                                    <EasingColorKeyFrame KeyTime="0" Value="White" />
+                                                </ColorAnimationUsingKeyFrames>
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[2].(GradientStop.Color)" 
+                                                                          Storyboard.TargetName="Border">
+                                                    <EasingColorKeyFrame KeyTime="0" Value="White" />
+                                                </ColorAnimationUsingKeyFrames>
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[3].(GradientStop.Color)" 
+                                                                          Storyboard.TargetName="Border">
+                                                    <EasingColorKeyFrame KeyTime="0" Value="White" />
+                                                </ColorAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center" />
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            
+            
+            <!--Біла КНОПКА без рамки-->
+
+            <Style TargetType="Button" x:Key="WhiteNotBorderButton">
+
+                <Setter Property="SnapsToDevicePixels" Value="True" />
+                <Setter Property="OverridesDefaultStyle" Value="True" />
+                <Setter Property="FocusVisualStyle" Value="{StaticResource ButtonFocusVisual}" />
+                <Setter Property="Margin" Value="1"></Setter>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border TextBlock.Foreground="Black"
+                                TextBlock.FontWeight="Bold"
+                                x:Name="Border"
+                                CornerRadius="15">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0.0, 0" EndPoint="0.0, 1">
+                                        <GradientStopCollection>
+                                            <GradientStop Color="Transparent" Offset="0" />
+                                            <GradientStop Color="Transparent" Offset="0.1" />
+                                            <GradientStop Color="Transparent" Offset="0.9" />
+                                            <GradientStop Color="Transparent" Offset="1" />
+                                        </GradientStopCollection>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualStateGroup.Transitions>
+                                            <VisualTransition GeneratedDuration="0:0:0.5" />
+                                            <VisualTransition GeneratedDuration="0" To="Pressed" />
+                                            <VisualTransition GeneratedDuration="0" To="Disabled" />
+                                        </VisualStateGroup.Transitions>
+                                        <VisualState x:Name="Normal"/>
+                                        <VisualState x:Name="Disabled">
+                                            <Storyboard>
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[0].(GradientStop.Color)" 
+                                                                          Storyboard.TargetName="Border">
+                                                    <EasingColorKeyFrame KeyTime="0" Value="LightGray" />
+                                                </ColorAnimationUsingKeyFrames>
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)" 
+                                                                          Storyboard.TargetName="Border">
+                                                    <EasingColorKeyFrame KeyTime="0" Value="LightGray" />
+                                                </ColorAnimationUsingKeyFrames>
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[2].(GradientStop.Color)" 
+                                                                          Storyboard.TargetName="Border">
+                                                    <EasingColorKeyFrame KeyTime="0" Value="LightGray" />
+                                                </ColorAnimationUsingKeyFrames>
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[3].(GradientStop.Color)" 
+                                                                          Storyboard.TargetName="Border">
+                                                    <EasingColorKeyFrame KeyTime="0" Value="LightGray" />
+                                                </ColorAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="Pressed">
+                                            <Storyboard>
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[0].(GradientStop.Color)" 
+                                                                          Storyboard.TargetName="Border">
+                                                    <EasingColorKeyFrame KeyTime="0" Value="White" />
+                                                </ColorAnimationUsingKeyFrames>
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)" 
+                                                                          Storyboard.TargetName="Border">
+                                                    <EasingColorKeyFrame KeyTime="0" Value="White" />
+                                                </ColorAnimationUsingKeyFrames>
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[2].(GradientStop.Color)" 
+                                                                          Storyboard.TargetName="Border">
+                                                    <EasingColorKeyFrame KeyTime="0" Value="White" />
+                                                </ColorAnimationUsingKeyFrames>
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[3].(GradientStop.Color)" 
+                                                                          Storyboard.TargetName="Border">
+                                                    <EasingColorKeyFrame KeyTime="0" Value="White" />
+                                                </ColorAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center" />
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!--Зелена кнопка-->
+            <Style TargetType="Button" x:Key="greenButton">
+
+                <Setter Property="SnapsToDevicePixels" Value="True" />
+                <Setter Property="OverridesDefaultStyle" Value="True" />
+                <Setter Property="FocusVisualStyle" Value="{StaticResource ButtonFocusVisual}" />
+                <Setter Property="Margin" Value="1"></Setter>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border TextBlock.Foreground="White"
+                                TextBlock.FontWeight="Bold"
+                                x:Name="Border"
+                                CornerRadius="15"
+                                BorderThickness="1">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0.0, 0" EndPoint="0.0, 1">
+                                        <GradientStopCollection>
+                                            <GradientStop Color="#419e08" Offset="0" />
+                                            <GradientStop Color="#419e08" Offset="0.1" />
+                                            <GradientStop Color="#419e08" Offset="0.9" />
+                                            <GradientStop Color="#419e08" Offset="1" />
+                                        </GradientStopCollection>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualStateGroup.Transitions>
+                                            <VisualTransition GeneratedDuration="0:0:0.5" />
+                                            <VisualTransition GeneratedDuration="0" To="Pressed" />
+                                            <VisualTransition GeneratedDuration="0" To="Disabled" />
+                                        </VisualStateGroup.Transitions>
+                                        <VisualState x:Name="Normal"/>
+                                        <VisualState x:Name="Disabled">
+                                            <Storyboard>
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[0].(GradientStop.Color)" 
+                                                                          Storyboard.TargetName="Border">
+                                                    <EasingColorKeyFrame KeyTime="0" Value="Gray" />
+                                                </ColorAnimationUsingKeyFrames>
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)" 
+                                                                          Storyboard.TargetName="Border">
+                                                    <EasingColorKeyFrame KeyTime="0" Value="Gray" />
+                                                </ColorAnimationUsingKeyFrames>
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[2].(GradientStop.Color)" 
+                                                                          Storyboard.TargetName="Border">
+                                                    <EasingColorKeyFrame KeyTime="0" Value="Gray" />
+                                                </ColorAnimationUsingKeyFrames>
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(GradientBrush.GradientStops)[3].(GradientStop.Color)" 
+                                                                          Storyboard.TargetName="Border">
+                                                    <EasingColorKeyFrame KeyTime="0" Value="Gray" />
                                                 </ColorAnimationUsingKeyFrames>
                                             </Storyboard>
                                         </VisualState>
@@ -888,9 +1052,9 @@
                 <Setter Property="Background">
                     <Setter.Value>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                            <GradientStop Offset="0.2" Color="#FFE2DEBF" />
-                            <GradientStop Offset="0.85" Color="#f3f6f4" />
-                            <GradientStop Offset="1" Color="#FFE2DEBF" />
+                            <GradientStop Offset="0.2" Color="White" />
+                            <GradientStop Offset="0.85" Color="White" />
+                            <GradientStop Offset="1" Color="White" />
                             <!--
                     <GradientStop Color="#FFFFD190" Offset="0.2"/>
                     <GradientStop Color="DarkGray" Offset="0.85"/>
@@ -934,9 +1098,9 @@
                                     <Setter Property="Background">
                                         <Setter.Value>
                                             <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                                <GradientStop Offset="0.35" Color="#FFDFEFEF" />
-                                                <GradientStop Offset="0.95" Color="#FF9EB7BA" />
-                                                <GradientStop Offset="1" Color="#FFDFEFEF" />
+                                                <GradientStop Offset="0.35" Color="White" />
+                                                <GradientStop Offset="0.95" Color="White" />
+                                                <GradientStop Offset="1" Color="White" />
                                                 <!--<GradientStop Color="#FFFFD190" Offset="0.35"/>
                                         <GradientStop Color="Orange" Offset="0.95"/>
                                         <GradientStop Color="#FFFFD190" Offset="1"/>-->

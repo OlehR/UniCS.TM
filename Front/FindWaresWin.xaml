@@ -32,9 +32,7 @@
             <RowDefinition Height="400" />
         </Grid.RowDefinitions>
         <Border Grid.Row="0" Margin="5" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
-            <Border.Effect>
-                <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
-            </Border.Effect>
+
             <Grid  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4"  >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="3*"></ColumnDefinition>
@@ -46,25 +44,29 @@
                     <ColumnDefinition Width="1.5*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
-                <Button Style="{StaticResource yelowButton}" Grid.Column="0" Click="_ButtonHelp"  >
-                    <TextBlock  Text="{DynamicResource buttonHelp}">
-                        <TextBlock.Style>
-                            <Style TargetType="{x:Type TextBlock}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
+
+                <Button  Style="{StaticResource Default}"  Grid.Column="0" FontSize="22" Click="ClickButtonCancel">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock  FontWeight="DemiBold" Text="{DynamicResource ReturnCheck}" >
+                            <TextBlock.Style>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="False">
-                                        <Setter Property="FontSize" Value="35" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
+                                            <Setter Property="FontSize" Value="28" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                        <Setter Property="FontSize" Value="24" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                                <Setter Property="FontWeight" Value="SemiBold"/>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
+                                            <Setter Property="FontSize" Value="20" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </StackPanel>
                 </Button>
+               
 
                 <!--<Grid Grid.Column="1"  Grid.ColumnSpan="1"
                   >
@@ -126,7 +128,7 @@
                         </StackPanel>
                     </Button.Content>
                     <Button.Style>
-                        <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                        <Style BasedOn="{StaticResource Default}" TargetType="Button">
                             <Setter Property="IsEnabled" Value="True"/>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsUp, RelativeSource={RelativeSource 
@@ -140,42 +142,28 @@
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
-                    <!--<Image Source="icons\Up.png" Stretch="Fill">
-                        <Image.Style>
-                            <Style TargetType="Image">
-                                <Style.Triggers>
-                                    <Trigger Property="IsEnabled" Value="False">
-                                        <Setter Property="Opacity" Value="0.5" />
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Image.Style>
-                    </Image>-->
+
                 </Button>
 
-                <Button Grid.Column="5" Grid.ColumnSpan="2" Style="{StaticResource greenButton}"  FontSize="22" Click="ClickButtonCancel">
-                    <StackPanel Orientation="Horizontal">
-                        <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
-                        <TextBlock  FontWeight="DemiBold" Text="{DynamicResource ReturnCheck}" >
-                            <TextBlock.Style>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
+                <Button Style="{StaticResource Default}" Grid.Column="5" Grid.ColumnSpan="2" Click="_ButtonHelp"  >
+                    <TextBlock  Text="{DynamicResource buttonHelp}">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="False">
-                                            <Setter Property="FontSize" Value="28" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
+                                        <Setter Property="FontSize" Value="35" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                            <Setter Property="FontSize" Value="20" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                    <Setter Property="FontWeight" Value="SemiBold"/>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                    </StackPanel>
+                                        <Setter Property="FontSize" Value="24" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
                 </Button>
-                
 
             </Grid>
         </Border>
@@ -198,7 +186,7 @@
 
 
             </Grid>
-            <Button Grid.Column="0" Grid.Row="0" Click="ClickButtonLeft" Name="ButtonLeft" Style="{StaticResource yelowButton}">
+            <Button Grid.Column="0" Grid.Row="0" Click="ClickButtonLeft" Margin="5" Name="ButtonLeft" Style="{StaticResource WhiteButton}">
                 <!-- Click="_ChangeLanguage" -->
                 <Image  Source="icons\back.png">
                     <Image.Style>
@@ -213,7 +201,7 @@
                 </Image>
             </Button>
 
-            <Button Grid.Column="2" Click="ClickButtonRight" Name ="ButtonRight" Style="{StaticResource yelowButton}">
+            <Button Grid.Column="2" Click="ClickButtonRight" Name ="ButtonRight" Margin="5" Style="{StaticResource WhiteButton}">
                 <Image  Source="icons\right.png">
                     <Image.Style>
                         <Style TargetType="Image">

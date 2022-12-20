@@ -165,6 +165,7 @@ namespace Front
                 tb.TextAlignment = TextAlignment.Center;
                 tb.FontSize = 24;
                 tb.Margin = new Thickness(10);
+                WaitAdminImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/clock.png"));
                 // WaitAdminTitle.Visibility = Visibility.Visible;
                 switch (TypeAccessWait)
                 {
@@ -194,7 +195,9 @@ namespace Front
                         tb.Inlines.Add(new Run(CS.InfoEx) { Foreground = Brushes.Black, FontSize = 20 });
                         break;
                     case eTypeAccess.ConfirmAge:
-                        tb.Inlines.Add("Вам виповнилось 18 років?");
+                        WaitAdminTitle.Visibility = Visibility.Collapsed;
+                        WaitAdminImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/18PlusRed.png"));
+                        tb.Inlines.Add(new Run("Вам виповнилось 18 років?") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red, FontSize = 32 });
                         break;
                     case eTypeAccess.ExciseStamp:
                         WaitAdminTitle.Visibility = Visibility.Collapsed;
@@ -623,7 +626,7 @@ namespace Front
                             break;
                         case eStateMainWindows.WaitAdminLogin:
                             LoginTextBlock.Text = "";
-                            PasswordTextBlock.Text = "";
+                            PasswordTextBlock.Password = "";
                             WaitAdminLogin.Visibility = Visibility.Visible;
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;
@@ -634,14 +637,14 @@ namespace Front
                             FWW.Show();
                             break;
                         case eStateMainWindows.ProcessPay:
-                            PaymentImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/paymentTerminal.png"));
+                            PaymentImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/newPaymentTerminal.png"));
                             WaitPayment.Visibility = Visibility.Visible;
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;
                             //PaymentImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/paymentTerminal.png"));
                             break;
                         case eStateMainWindows.ProcessPrintReceipt:
-                            PaymentImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/receipt.png"));
+                            PaymentImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/newReceipt.png"));
                             WaitPayment.Visibility = Visibility.Visible;
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;
@@ -797,23 +800,23 @@ namespace Front
                 }
             }
             catch { }
-            ua.Style = (Style)ua.FindResource("Default");
-            en.Style = (Style)en.FindResource("Default");
-            hu.Style = (Style)hu.FindResource("Default");
-            pl.Style = (Style)pl.FindResource("Default");
+            ua.Style = (Style)ua.FindResource("WhiteNotBorderButton");
+            en.Style = (Style)en.FindResource("WhiteNotBorderButton");
+            hu.Style = (Style)hu.FindResource("WhiteNotBorderButton");
+            pl.Style = (Style)pl.FindResource("WhiteNotBorderButton");
             switch (btn.Name)
             {
                 case "ua":
-                    ua.Style = (Style)ua.FindResource("yelowButton");
+                    ua.Style = (Style)ua.FindResource("WhiteButton");
                     break;
                 case "en":
-                    en.Style = (Style)en.FindResource("yelowButton");
+                    en.Style = (Style)en.FindResource("WhiteButton");
                     break;
                 case "hu":
-                    hu.Style = (Style)hu.FindResource("yelowButton");
+                    hu.Style = (Style)hu.FindResource("WhiteButton");
                     break;
                 case "pl":
-                    pl.Style = (Style)pl.FindResource("yelowButton");
+                    pl.Style = (Style)pl.FindResource("WhiteButton");
                     break;
             }
         }
@@ -984,7 +987,7 @@ namespace Front
         }
         private void LoginButton(object sender, RoutedEventArgs e)
         {
-            var U = Bl.GetUserByLogin(LoginTextBlock.Text, PasswordTextBlock.Text);
+            var U = Bl.GetUserByLogin(LoginTextBlock.Text, PasswordTextBlock.Password);
             if (U == null)
             {
                 ShowErrorMessage("Не вірний логін чи пароль");
@@ -1233,6 +1236,10 @@ namespace Front
             EF.PosCancel();
         }
 
+        private void TextPasswordChanged(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 
 }

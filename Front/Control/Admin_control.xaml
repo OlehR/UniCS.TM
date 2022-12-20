@@ -227,17 +227,17 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
 
                         <GroupBox Grid.Column="0" Header="POS-термінал" Margin="20, 20 , 10 ,20">
                             <StackPanel>
-                                <Button x:Name="POS_X" Style="{StaticResource Default}" Content="X звіт" Width="280"  Click="POS_X_Click"/>
-                                <Button x:Name="POS_Z" Style="{StaticResource Default}" Content="Z звіт" Width="280" Click="POS_Z_Click"/>
-                                <Button x:Name="POS_X_Copy" Style="{StaticResource Default}" Content="X звіт(копія)" Width="280" Click="POS_X_Copy_Click"/>
+                                <Button x:Name="POS_X" Style="{StaticResource Default}" Content="X звіт" Width="280" Height="80"  Click="POS_X_Click"/>
+                                <Button x:Name="POS_Z" Style="{StaticResource Default}" Content="Z звіт" Width="280" Height="80" Click="POS_Z_Click"/>
+                                <Button x:Name="POS_X_Copy" Style="{StaticResource Default}" Content="X звіт(копія)" Width="280" Height="80" Click="POS_X_Copy_Click"/>
                             </StackPanel>
                         </GroupBox>
                         <GroupBox Grid.Column="1" Header="Фіскальний реєстратор" Margin="10, 20, 10, 20">
                             <StackPanel>
-                                <Button x:Name="EKKA_X" Style="{StaticResource Default}" Content="X звіт"      VerticalAlignment="Top"  Width="280" Click="EKKA_X_Click"/>
-                                <Button x:Name="EKKA_Z" Style="{StaticResource Default}" Content="Z звіт"    Width="280" Click="EKKA_Z_Click"/>
-                                <Button x:Name="EKKA_Z_Period" Style="{StaticResource Default}" Content="Z-звіт(Періодичний))"      Width="280" Click="EKKA_Z_Period_Show"/>
-                                <Button x:Name="EKKA_Copy" Style="{StaticResource Default}" Content="Копія Квитанції"      VerticalAlignment="Top" Width="280" Click="EKKA_Copy_Click"/>
+                                <Button x:Name="EKKA_X" Style="{StaticResource Default}" Content="X звіт"      VerticalAlignment="Top"  Width="280" Height="80" Click="EKKA_X_Click"/>
+                                <Button x:Name="EKKA_Z" Style="{StaticResource Default}" Content="Z звіт"    Width="280" Height="80" Click="EKKA_Z_Click"/>
+                                <Button x:Name="EKKA_Z_Period" Style="{StaticResource Default}" Content="Z-звіт(Періодичний))"      Width="280" Height="80" Click="EKKA_Z_Period_Show"/>
+                                <Button x:Name="EKKA_Copy" Style="{StaticResource Default}" Content="Копія Квитанції"      VerticalAlignment="Top" Width="280" Height="80" Click="EKKA_Copy_Click"/>
                             </StackPanel>
 
 
@@ -249,7 +249,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                     <TextBlock x:Name="TB_NameAdminUserOpenShift" Text="{Binding NameAdminUserOpenShift}"/>
                                     <TextBlock x:Name="TB_DataOpenShift" Text="{Binding DataOpenShift}"></TextBlock>
                                 </StackPanel>
-                                <Button x:Name="WorkStart"  Content="Почати зміну"      Width="280" Click="WorkStart_Click">
+                                <Button x:Name="WorkStart"  Content="Почати зміну"      Width="280"  Height="80" Click="WorkStart_Click">
                                     <Button.Style>
                                         <Style BasedOn="{StaticResource Default}" TargetType="Button">
                                             <Setter Property="IsEnabled" Value="True"/>
@@ -264,7 +264,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                         </Style>
                                     </Button.Style>
                                 </Button>
-                                <Button x:Name="WorkFinish" Content="Завершити зміну"     Width="280" Click="WorkFinish_Click" >
+                                <Button x:Name="WorkFinish" Content="Завершити зміну"     Width="280" Height="80" Click="WorkFinish_Click" >
                                     <Button.Style>
                                         <Style BasedOn="{StaticResource Default}" TargetType="Button">
                                             <Setter Property="IsEnabled" Value="True"/>
@@ -279,8 +279,8 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                         </Style>
                                     </Button.Style>
                                 </Button>
-                                <Button x:Name="CloseDay" Style="{StaticResource Default}" Content="Закриття дня"    Width="280" Click="CloseDay_Click" />
-                                <Button x:Name="Check1C" Style="{StaticResource Default}" Content="Звірка з 1С"    Width="280" Click="Check1C_Click" />
+                                <!--<Button x:Name="CloseDay" Style="{StaticResource Default}" Content="Закриття дня"    Width="280" Height="80" Click="CloseDay_Click" />-->
+                                <Button x:Name="Check1C" Style="{StaticResource Default}" Content="Звірка з 1С"    Width="280" Height="80" Click="Check1C_Click" />
                             </StackPanel>
                         </GroupBox>
                         <!--Інформація з пос-термінала-->
@@ -412,7 +412,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                     <Grid >
                         <Grid.RowDefinitions>
                             <RowDefinition Height="5*"></RowDefinition>
-                            <RowDefinition Height="1*"></RowDefinition>
+                            <RowDefinition Height="80"></RowDefinition>
                         </Grid.RowDefinitions>
                         <Border Grid.Row="0" Height="45" VerticalAlignment="Top" Background="White"  BorderThickness="2" BorderBrush="#D7A900" CornerRadius="10">
 
@@ -529,9 +529,9 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                         </ScrollViewer>
-                        <StackPanel Orientation="Horizontal" Grid.Row="1"  VerticalAlignment="Center" >
+                        <StackPanel Orientation="Horizontal" Grid.Row="1"  VerticalAlignment="Stretch" >
                             <Button Name="CalibrationControlScale" Click="CalibrationControlScaleButton"
-                                Style="{StaticResource Default}" Content="Калібрування" HorizontalAlignment="Left" Margin="5" Grid.Row="1"     />
+                                Style="{StaticResource Default}" Content="Калібрування"   HorizontalAlignment="Left" Margin="5" Grid.Row="1"     />
                             <Button Name="TarControlScale" Click="TarControlScaleButton"
                                 Style="{StaticResource Default}" Content="Тарування" HorizontalAlignment="Left" Margin="5" Grid.Row="1"     />
                             <TextBlock Name="ControlScaleWeightHaml"  Text="{Binding ControlScaleWeightDouble}"  FontSize="28" Margin="5" Grid.Row="1"    />
@@ -561,15 +561,15 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                 <TabItem Name="TabHistory" Header="Історія">
                     <Grid >
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="1*"></RowDefinition>
+                            <RowDefinition Height="80"></RowDefinition>
                             <RowDefinition Height="7*"></RowDefinition>
-                            <RowDefinition Height="*"></RowDefinition>
+                            <RowDefinition Height="80"></RowDefinition>
                         </Grid.RowDefinitions>
                         <StackPanel Orientation="Horizontal">
                             <DatePicker Name="dataHistori" FontSize="30" IsTodayHighlighted="True" SelectedDate="{Binding DateSoSearch}"
-                                    Width="200" Height="50" HorizontalAlignment="Left" Style="{StaticResource DatePickerStyle1}" ></DatePicker>
+                                    Width="220" Height="50" HorizontalAlignment="Left" Style="{StaticResource DatePickerStyle1}" ></DatePicker>
                             <Button Width="300" Height="80" Margin="10,0,0,0" Style="{StaticResource Default}" Click="FindChecksByDate">
-                                Знайти
+                                Знайти/Оновити
                             </Button>
                             <StackPanel Orientation="Horizontal" Margin="20,0,0,0">
                                 <TextBlock Text="Всі чеки: "/>
@@ -898,8 +898,9 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                         </ListView>
 
 
-
-                        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                        <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="auto"   HorizontalAlignment="Center">
+                            
+                        <StackPanel Grid.Row="2" Orientation="Horizontal" >
                             <Button  Grid.Column="2" FontSize="20" Click="FiscalizCheckButton"   >
                                 <TextBlock FontSize="22" Text="Фіскалізувати" Margin="5"/>
                                 <Button.Style>
@@ -997,6 +998,8 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                             </Button>                            
 
                         </StackPanel>
+                        </ScrollViewer>
+
                     </Grid>
                 </TabItem>
                 <TabItem Name="TabPrintJournal" Header="Журнал">
@@ -1011,7 +1014,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                         </Grid.ColumnDefinitions>
                         <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.ColumnSpan="2">
                             <DatePicker Name="DataJornal" FontSize="30" IsTodayHighlighted="True" SelectedDate="{Binding DateSoSearch}"
-                                    Width="200" Height="50" HorizontalAlignment="Left"></DatePicker>
+                                    Width="220" Height="50" HorizontalAlignment="Left" Style="{StaticResource DatePickerStyle1}" ></DatePicker>
                             <Button Width="300" Height="80" Margin="10,0,0,0" Style="{StaticResource Default}" Click="FindJournalDate">
                                 Знайти/Оновити
                             </Button>

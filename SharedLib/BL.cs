@@ -359,21 +359,26 @@ namespace SharedLib
 
         public Client GetClientByCode(IdReceipt pIdReceipt, int pCode)
         {
-            return SetClient(pIdReceipt, db.FindClient(null, null, null, pCode));
+            return SetClient(pIdReceipt, db.FindClient(null, null, null, pCode), pCode.ToString());
         }
 
         public Client GetClientByBarCode(IdReceipt pIdReceipt, string pBarCode)
         {
-            return SetClient(pIdReceipt, db.FindClient(pBarCode));
+            return SetClient(pIdReceipt, db.FindClient(pBarCode), pBarCode);
         }
 
         public Client GetClientByPhone(IdReceipt pIdReceipt, string pPhone)
         {
-            return SetClient(pIdReceipt, db.FindClient(null, pPhone));
+            return SetClient(pIdReceipt, db.FindClient(null, pPhone), pPhone);
         }
 
-        Client SetClient(IdReceipt pIdReceipt, IEnumerable<Client> r)
+        Client SetClient(IdReceipt pIdReceipt, IEnumerable<Client> r, string pPhone)
         {
+            if (r.Count() == 0)
+            {
+                OnCustomWindow?.Invoke(new CustomWindow(eWindows.Info, $"Клієнта з номером {pPhone} не знайдено в базі!"));
+                return null;
+            }
             if (r.Count() == 1)
             {
                 var client = r.First();
@@ -386,6 +391,7 @@ namespace SharedLib
                 var CW = new CustomWindow(eWindows.ChoiceClient, r);
                 OnCustomWindow?.Invoke(CW);
             }
+
             return null;
         }
 

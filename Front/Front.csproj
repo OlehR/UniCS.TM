@@ -17,9 +17,11 @@
 
   <ItemGroup>
     <None Remove="icons\18plus.png" />
+    <None Remove="icons\18PlusRed.png" />
     <None Remove="icons\back.png" />
     <None Remove="icons\backArrow.png" />
     <None Remove="icons\BankTerminal.png" />
+    <None Remove="icons\ClientBonus.png" />
     <None Remove="icons\clock.png" />
     <None Remove="icons\Close.png" />
     <None Remove="icons\ControlScale.png" />
@@ -29,6 +31,8 @@
     <None Remove="icons\Inform.png" />
     <None Remove="icons\MasterCard.png" />
     <None Remove="icons\minus.png" />
+    <None Remove="icons\newPaymentTerminal.png" />
+    <None Remove="icons\newReceipt.png" />
     <None Remove="icons\no_volume.png" />
     <None Remove="icons\Ok.png" />
     <None Remove="icons\on-off.png" />
@@ -39,6 +43,7 @@
     <None Remove="icons\reboot.png" />
     <None Remove="icons\receipt.png" />
     <None Remove="icons\right.png" />
+    <None Remove="icons\rightWhite.png" />
     <None Remove="icons\RRO.png" />
     <None Remove="icons\Scale.png" />
     <None Remove="icons\Scaner.png" />
@@ -70,14 +75,25 @@
 
   <ItemGroup>
     <Resource Include="icons\18plus.png" />
+    <Resource Include="icons\18PlusRed.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="icons\backArrow.png" />
     <Resource Include="icons\BankTerminal.png" />
-    <Resource Include="icons\clock.png" />
+    <Resource Include="icons\ClientBonus.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="icons\clock.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="icons\Close.png" />
     <Resource Include="icons\ControlScale.png" />
     <Resource Include="icons\help.png" />
     <Resource Include="icons\Inform.png" />
     <Resource Include="icons\MasterCard.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="icons\newPaymentTerminal.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="icons\no_volume.png" />
@@ -88,6 +104,9 @@
     <Resource Include="icons\reboot.png" />
     <Resource Include="icons\receipt.png" />
     <Resource Include="icons\right.png" />
+    <Resource Include="icons\rightWhite.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="icons\RRO.png" />
     <Resource Include="icons\Scale.png" />
     <Resource Include="icons\Scaner.png" />
@@ -157,6 +176,9 @@
     <Content Include="icons\VopakLogo.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="icons\newReceipt.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="icons\warning.png" />
     <Resource Include="icons\weight.png" />
     <Resource Include="icons\X.png" />
