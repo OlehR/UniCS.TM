@@ -78,7 +78,11 @@ namespace Front.Equipments.Implementation
 
         public override LogRRO PrintCopyReceipt(int parNCopy = 1)
         {
-            return null;
+            ApiRRO d = new( eTask.CopyReceipt ) { token = Token, device = Device };
+            string dd = d.ToJSON();
+            var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");
+            Responce<ResponceReceipt > Res = JsonConvert.DeserializeObject<Responce<ResponceReceipt>>(r);
+            return GetLogRRO(new IdReceipt() {IdWorkplace=Global.IdWorkPlace, CodePeriod=Global.GetCodePeriod() } , Res, eTypeOperation.CopyReceipt);
         }
 
         override public LogRRO PrintNoFiscalReceipt(IEnumerable<string> pR)
@@ -147,6 +151,7 @@ namespace Front.Equipments.Implementation
             Responce<ResponceReport> Res = JsonConvert.DeserializeObject<Responce<ResponceReport>>(r);
             return GetLogRRO(pIdR, Res, pSum>0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyIn);            
         }
+
 
         override public StatusEquipment TestDevice()
         {

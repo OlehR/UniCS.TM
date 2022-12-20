@@ -161,7 +161,9 @@ namespace Front
         }
 
         public void Play(eStateMainWindows pState, eTypeAccess pTypeAccess, eStateScale pStateScale, int pExPar = 0)
-        {   if (pState == eStateMainWindows.BlockWeight) //Якщо немає вікна то і не повинно бути звуку.
+        {
+            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"pState=>{pState}  pTypeAccess=>{pTypeAccess} pStateScale={pStateScale} ", eTypeLog.Expanded);
+            if (pState == eStateMainWindows.BlockWeight) //Якщо немає вікна то і не повинно бути звуку.
                 return;
             if(pState==eStateMainWindows.WaitInput) Play(eTypeSound.ScanAndPutProductOnPlatform);
             if (pState == eStateMainWindows.ProcessPay) Play(eTypeSound.InsertCardIntoBankTerminal);

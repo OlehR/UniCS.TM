@@ -62,7 +62,7 @@ namespace Front.Control
 
         public void ControlScale(double pWeight, bool pIsStable)
         {
-            ControlScaleWeightDouble = Convert.ToString(pWeight / 1000);
+            ControlScaleWeightDouble = $"{(pWeight / 1000):N3}";
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ControlScaleWeightDouble"));
         }
 
@@ -96,9 +96,7 @@ namespace Front.Control
                 EF = MW?.EF;
                 EF.OnControlWeight += (pWeight, pIsStable) =>
                 {
-                    double r = pWeight;
-                    ControlScaleWeightDouble = Convert.ToString(pWeight / 1000);
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ControlScaleWeightDouble"));
+                    ControlScale(pWeight, pIsStable);                    
                 };
             };
 
