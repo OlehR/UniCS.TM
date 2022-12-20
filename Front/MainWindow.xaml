@@ -73,22 +73,73 @@
                    Source="https://www.microsoft.com" 
    />
         </DockPanel>-->
-        <Border Grid.Row="0" Margin="5" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
-            <Border.Effect>
-                <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
-            </Border.Effect>
+        <Border Grid.Row="0" Margin="5" Background="White"  >
+
             <Grid  Grid.Row="0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="3.1*"></ColumnDefinition>
                     <ColumnDefinition Width="1*"></ColumnDefinition>
                     <ColumnDefinition Width="1*"></ColumnDefinition>
-                    <ColumnDefinition Width="2*"></ColumnDefinition>
                     <ColumnDefinition Width="1*"></ColumnDefinition>
-                    <ColumnDefinition Width="1*"></ColumnDefinition>
-                    <ColumnDefinition Width="1.6*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
-                <Button Style="{StaticResource yelowButton}" Grid.Column="0" FontSize="30" Click="_ButtonHelp">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" x:Name="ShowClientBonus" Visibility="Collapsed">
+                    <Border   BorderBrush="gray" BorderThickness="1"  CornerRadius="15">
+                        <StackPanel  Orientation="Horizontal" Margin="10,0,10,0"
+                            VerticalAlignment="Center" HorizontalAlignment="Right"  >
+                            <StackPanel >
+                                <TextBlock  FontSize="22" Text="Скарбничка: "/>
+                                <TextBlock  FontSize="22" Text="Сума бонусів: "/>
+                            </StackPanel>
+                            <StackPanel Margin="10,0,0,0" >
+                                <TextBlock  FontSize="22" Foreground="DarkGreen" FontWeight="Bold" Text="{Binding Client.Wallet, StringFormat=0.00₴, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}"/>
+                                <TextBlock  FontSize="22" Foreground="DarkGreen" FontWeight="Bold" Text="{Binding Client.SumMoneyBonus, StringFormat=0.00, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    <Image Source="icons\ClientBonus.png"/>
+                </StackPanel>
+
+
+
+                <StackPanel Grid.Column="1"  Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button x:Name="ua" Click="_ChangeLanguage" Grid.Column="1" Style="{StaticResource WhiteButton}"  Width="70">
+                        <Image Margin="10" Source="icons\ua.png"/>
+                    </Button>
+
+                    <Button x:Name="en" Click="_ChangeLanguage" Grid.Column="2" Style="{StaticResource WhiteNotBorderButton}"  Width="70">
+                        <Image Margin="10" Source="icons\uk.png"/>
+                    </Button>
+
+                    <Button x:Name="hu" Click="_ChangeLanguage" Grid.Row="3" Style="{StaticResource WhiteNotBorderButton}"  Width="70">
+                        <Image Margin="10" Source="icons\hu.png"/>
+                    </Button>
+
+                    <Button x:Name="pl" Click="_ChangeLanguage" Grid.Column="4" Grid.Row="1" Style="{StaticResource WhiteNotBorderButton}" Width="70">
+                        <Image Margin="10" Source="icons\pln.png"/>
+                    </Button>
+                    <Button Style="{StaticResource WhiteNotBorderButton}" Height="60" Click="_VolumeButton"  Width="70">
+                        <Image x:Name="ButtonImage">
+                            <Image.Style>
+                                <Style TargetType="{x:Type Image}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Volume, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                            <Setter Property="Source" Value="icons\volume.png" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Volume, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                            <Setter Property="Source" Value="icons\no_volume.png" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+                    </Button>
+                </StackPanel>
+
+                <Button Style="{StaticResource Default}" Grid.Column="2" FontSize="30" Click="_ButtonHelp">
 
                     <StackPanel Orientation="Horizontal">
                         <TextBlock TextWrapping="Wrap" Text="{DynamicResource buttonHelp}">
@@ -127,57 +178,6 @@
 
                     </StackPanel>
                 </Button>
-
-
-                <StackPanel Grid.Column="1" Grid.ColumnSpan="4" Orientation="Horizontal">
-                    <Button x:Name="ua" Click="_ChangeLanguage" Grid.Column="1" Style="{StaticResource yelowButton}" Margin="10,5,10,5" Width="70">
-                        <Image Margin="10" Source="icons\ua.png"/>
-                    </Button>
-
-                    <Button x:Name="en" Click="_ChangeLanguage" Grid.Column="2" Style="{StaticResource Default}" Margin="10,5,10,5" Width="70">
-                        <Image Margin="10" Source="icons\uk.png"/>
-                    </Button>
-
-                    <Button x:Name="hu" Click="_ChangeLanguage" Grid.Row="3" Style="{StaticResource Default}" Margin="10,5,10,5" Width="70">
-                        <Image Margin="10" Source="icons\hu.png"/>
-                    </Button>
-
-                    <Button x:Name="pl" Click="_ChangeLanguage" Grid.Column="4" Grid.Row="1" Style="{StaticResource Default}" Margin="10,5,10,5" Width="70">
-                        <Image Margin="10" Source="icons\pln.png"/>
-                    </Button>
-                    <Button Style="{StaticResource Default}" Height="60" Click="_VolumeButton" Margin="10,5,10,5" Width="70">
-                        <Image x:Name="ButtonImage">
-                            <Image.Style>
-                                <Style TargetType="{x:Type Image}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Volume, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                            <Setter Property="Source" Value="icons\volume.png" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding Volume, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
-                                            <Setter Property="Source" Value="icons\no_volume.png" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Image.Style>
-                        </Image>
-                    </Button>
-                </StackPanel>
-
-                <StackPanel Grid.Column="5" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,0,5,0"
-                            VerticalAlignment="Center" HorizontalAlignment="Right" x:Name="ShowClientBonus" Visibility="Collapsed">
-                    <StackPanel >
-                        <TextBlock  FontSize="22" Text="Скарбничка: "/>
-                        <TextBlock  FontSize="22" Text="Сума бонусів: "/>
-                    </StackPanel>
-                    <StackPanel Margin="10,0,0,0" >
-                        <TextBlock  FontSize="22" Foreground="DarkGreen" FontWeight="Bold" Text="{Binding Client.Wallet, StringFormat=0.00₴, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}"/>
-                        <TextBlock  FontSize="22" Foreground="DarkGreen" FontWeight="Bold" Text="{Binding Client.SumMoneyBonus, StringFormat=0.00, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}"/>
-                    </StackPanel>
-                </StackPanel>
 
 
 
@@ -227,8 +227,8 @@
 
             </Grid>
         </Border>
-        
-        <Border Grid.Row="2"  Background="White" BorderThickness="0,0,0,1" >
+
+        <Border Grid.Row="2"  Background="#e4f7da" BorderThickness="0,0,0,1" >
             <Border.Effect>
                 <DropShadowEffect ShadowDepth="5" BlurRadius="4" Color="#f2f2f2"/>
             </Border.Effect>
@@ -312,10 +312,10 @@
 
                                     <Button x:Name="Delete" Click="_Delete">
                                         <Button.Content>
-                                            <Image Margin="5" Source="icons\delete.png"></Image>
+                                            <Image  Margin="5" Source="icons\delete.png"></Image>
                                         </Button.Content>
                                         <Button.Style>
-                                            <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                                            <Style BasedOn="{StaticResource WhiteButton}" TargetType="Button">
                                                 <Setter Property="IsEnabled" Value="False"/>
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsDel}" Value="True">
@@ -330,7 +330,7 @@
                                             <Image Margin="15" Source="icons\minus.png"></Image>
                                         </Button.Content>
                                         <Button.Style>
-                                            <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                                            <Style BasedOn="{StaticResource WhiteButton}" TargetType="Button">
                                                 <Setter Property="IsEnabled" Value="False"/>
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsMinus}" Value="True">
@@ -347,7 +347,7 @@
                                     <Button Grid.Column="2" Background="Transparent" BorderBrush="Transparent"
                                             Click="_ChangeCountWares" >
                                         <Button.Style>
-                                            <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                                            <Style BasedOn="{StaticResource WhiteNotBorderButton}" TargetType="Button">
                                                 <Setter Property="IsEnabled" Value="True"/>
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
@@ -372,7 +372,7 @@
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
                                                     <Setter Property="Margin" Value="10"></Setter>
-                                                    <Setter Property="FontSize" Value="30"></Setter>
+                                                    <Setter Property="FontSize" Value="35"></Setter>
                                                     <Setter Property="FontWeight" Value="Medium"></Setter>
                                                     <Setter Property="HorizontalAlignment" Value="Center"></Setter>
                                                     <Setter Property="VerticalAlignment" Value="Center"></Setter>
@@ -392,7 +392,7 @@
                                             <Image Margin="15" Source="icons\plus.png"></Image>
                                         </Button.Content>
                                         <Button.Style>
-                                            <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                                            <Style BasedOn="{StaticResource WhiteButton}" TargetType="Button">
                                                 <Setter Property="IsEnabled" Value="False"/>
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsPlus}" Value="True">
@@ -640,7 +640,7 @@
                 <WebBrowser Height="200" Name="myWebBrowser" ></WebBrowser>
                 
             </Grid>-->
-           
+
 
 
             <!-- Кастомне вікно    -->
@@ -821,7 +821,7 @@
                  Grid.Row="0" Grid.RowSpan="6"
                 Grid.Column="1" Grid.ColumnSpan="4"
                  Name="ChoicePrice" Visibility="Collapsed" Grid.ZIndex="2" 
-                CornerRadius="10" HorizontalAlignment="Center"  MinWidth="500" Height="650">
+                CornerRadius="10" HorizontalAlignment="Center"  Width="600" Height="700">
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
                 </Border.Effect>
@@ -834,11 +834,11 @@
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" HorizontalAlignment="Center" FontSize="28" Text="{DynamicResource ChoicePriceTobacco }"/>
 
-                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Name="SV_Prices"  Background='#f2f2f2'>
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Name="SV_Prices"  Background='GhostWhite'>
                         <ItemsControl  Name="Prices">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Button Click="_AddWaresPrice"  Height="80"  Width="450" Margin="2" Style="{StaticResource yelowButton}" Background="{Binding BackGroundColor}"
+                                    <Button Click="_AddWaresPrice"  Height="80"  Width="450" Margin="2" Style="{StaticResource WhiteButton}" Background="{Binding BackGroundColor}"
                                         IsEnabled="{Binding IsEnable}"
                                         >
                                         <TextBlock FontSize="28" Text="{Binding StrPrice}" Tag="{Binding}" />
@@ -855,9 +855,9 @@
 
 
                     <StackPanel Grid.Row="2" Margin="10">
-                        <TextBlock Visibility="Visible" HorizontalAlignment="Center"
+                        <TextBlock Visibility="Visible" HorizontalAlignment="Center" TextWrapping="Wrap"
                                    Foreground="Red"
-                                   Text="Для продажу сигарет, зачекайте будь ласка адміністратора"/>
+                                   Text="Виберіть зазначену ціну або для вибору іншої ціни викличте адміністратора"/>
 
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <Button x:Name="MinusCigarettesButton" Height="80" Width="80" Margin="5" Click="PlusOrMinusCigarettes">
@@ -865,7 +865,7 @@
                                     <Image Margin="15" Source="icons\minus.png"></Image>
                                 </Button.Content>
                                 <Button.Style>
-                                    <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                                    <Style BasedOn="{StaticResource WhiteButton}" TargetType="Button">
                                         <Setter Property="IsEnabled" Value="True"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding QuantityCigarettes, RelativeSource={RelativeSource 
@@ -877,13 +877,14 @@
                                 </Button.Style>
                             </Button>
 
-                            <Button Height="80" Width="80" Margin="5" Style="{StaticResource yelowButton}"
-                                    x:Name="QuantityCigarettesText" Content="{Binding QuantityCigarettes, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" IsEnabled="False">
+                            <Button Height="80" Width="80" Margin="5" Style="{StaticResource WhiteNotBorderButton}"
+                                    x:Name="QuantityCigarettesText"  IsEnabled="False">
+                                <TextBlock FontSize="34" Text="{Binding QuantityCigarettes, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" />
 
                             </Button>
                             <Button x:Name="PlusCigarettesButton" Click="PlusOrMinusCigarettes"
-                                Height="80" Width="80" Margin="5" Style="{StaticResource yelowButton}">
+                                Height="80" Width="80" Margin="5" Style="{StaticResource WhiteButton}">
                                 <Button.Content>
                                     <Image Margin="15" Source="icons\plus.png"></Image>
                                 </Button.Content>
@@ -995,7 +996,7 @@
                                 <DataTemplate>
                                     <Button Height="75" Width="Auto" Margin="2"  HorizontalAlignment="Center" 
                                                     Click="CustomWindowClickButton">
-                                        <TextBlock Text="{Binding Text}" FontSize=" 24" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding Text}" Foreground="White" FontSize=" 24" FontWeight="Bold"/>
                                         <Button.Style>
                                             <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
                                                 <Setter Property="IsEnabled" Value="True"/>
@@ -1123,7 +1124,7 @@
                         <TextBlock Grid.Row="0" Grid.Column="0" FontSize="25" Text="Login" HorizontalAlignment="Center" VerticalAlignment="Center" />
                         <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" TabIndex="1" Name="LoginTextBlock" FontSize="25" TextChanged="TextLoginChanged"  VerticalAlignment="Center"  />
                         <TextBlock Grid.Row="1" Grid.Column="0" FontSize="25" Text="Password" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" TabIndex="2" Name="PasswordTextBlock" FontSize="25" TextChanged="TextPasswordChanged"  VerticalAlignment="Center" />
+                        <PasswordBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" TabIndex="2" Name="PasswordTextBlock" FontSize="25"  PasswordChanged="TextPasswordChanged"  VerticalAlignment="Center" />
                         <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"  Style="{StaticResource Default}" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="22" Click="LoginButton" 
                         Height="60" Width="200">
                             <StackPanel Orientation="Horizontal">
@@ -1292,7 +1293,8 @@
                 </Grid>
             </Border>
 
-            <!-- ОПЛАТА ЗВИЧАЙНА КАСА  --><!--
+            <!-- ОПЛАТА ЗВИЧАЙНА КАСА  -->
+            <!--
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
                  Grid.Column="0" Grid.ColumnSpan="6"
@@ -1629,13 +1631,13 @@
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
-            <Button Style="{StaticResource yelowButton}" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" FontSize="22"   Click="_Back">
+            <Button Style="{StaticResource WhiteButton}" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" FontSize="22"   Click="_Back">
                 <Image Margin="5" Source="icons\back.png"/>
             </Button>
             <Button  Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" FontSize="22" Click="_Search">
                 <TextBlock FontSize="35" Text="{DynamicResource search}"/>
                 <Button.Style>
-                    <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                    <Style BasedOn="{StaticResource Default}" TargetType="Button">
                         <Setter Property="IsEnabled" Value="True"/>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsEnabledFindButton, RelativeSource={RelativeSource 
@@ -1651,7 +1653,7 @@
                 </Button.Style>
             </Button>
             <Button  Grid.Column="2" Grid.Row="0" Grid.RowSpan="2"                          
-                     Style="{StaticResource yelowButton}" HorizontalContentAlignment="Stretch"
+                     Style="{StaticResource Default}" HorizontalContentAlignment="Stretch"
                          Click="FindClientByPhoneClick"
                            Visibility="Visible">
                 <TextBlock HorizontalAlignment="Center"   Text="{Binding ClientName, RelativeSource={RelativeSource 
@@ -1685,35 +1687,35 @@
 
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">
-                        <Image Width="35" Margin="5">
+                        <Image  Height="40" Margin="0,0,5,0" >
                             <Image.Style>
                                 <Style TargetType="{x:Type Image}">
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsAgeRestrict, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                            <Setter Property="Source" Value="icons\right.png" />
+                                            <Setter Property="Source" Value="icons\rightWhite.png" />
                                         </DataTrigger>
                                         <DataTrigger Binding="{Binding IsAgeRestrict, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="False">
-                                            <Setter Property="Source" Value="icons\18plus.png" />
+                                            <Setter Property="Source" Value="icons\18PlusRed.png" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </Image.Style>
                         </Image>
-                        <TextBlock  FontWeight="Bold">
+                        <TextBlock Foreground="White" >
                             <TextBlock.Style>
                                 <Style TargetType="{x:Type TextBlock}">
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="False">
-                                                <Setter Property="FontSize" Value="35" />
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
+                                            <Setter Property="FontSize" Value="35" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                                <Setter Property="FontSize" Value="24" />
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding IsCheckReturn, RelativeSource={RelativeSource 
+                                            <Setter Property="FontSize" Value="24" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsCheckReturn, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="True">
                                             <Setter Property="Text" Value="{DynamicResource refund}" />
                                         </DataTrigger>
@@ -1731,7 +1733,7 @@
                         </TextBlock>
                         <TextBlock Margin="10,0,0,0" 
                            FontWeight="Bold"
-                           Foreground="Black" Text="{Binding MoneySum, StringFormat=0.00₴, RelativeSource={RelativeSource 
+                           Foreground="White" Text="{Binding MoneySum, StringFormat=0.00₴, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window} }">
                             <TextBlock.Style>
                                 <Style TargetType="{x:Type TextBlock}">
@@ -1751,7 +1753,7 @@
                         </TextBlock>
                         <TextBlock
                            FontWeight="Bold"
-                           Foreground="Black" Text="{Binding WaresQuantity, StringFormat={}({0}), RelativeSource={RelativeSource 
+                           Foreground="White" Text="{Binding WaresQuantity, StringFormat={}({0}), RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window} }">
                             <TextBlock.Style>
                                 <Style TargetType="{x:Type TextBlock}">
@@ -1852,8 +1854,8 @@
                     </StackPanel>
                 </Button>
 
-                    <!--<Image Source="icons\VopakLogo.png" Height="500"/>-->
-                    <!--<MediaElement   Name="StartVideo" Source="icons\sparVideo.mp4" LoadedBehavior="Manual" Volume="0"   />-->
+                <!--<Image Source="icons\VopakLogo.png" Height="500"/>-->
+                <!--<MediaElement   Name="StartVideo" Source="icons\sparVideo.mp4" LoadedBehavior="Manual" Volume="0"   />-->
 
                 <MediaElement Name="StartVideo" Volume="0" LoadedBehavior="Manual">
                     <MediaElement.Triggers>
@@ -1881,7 +1883,7 @@
                 Grid.Column="0" Grid.ColumnSpan="4"
                  Name="StartShoppingLogo" Visibility="Collapsed" Grid.ZIndex="2" >
             <Grid >
-                
+
                 <Image x:Name="StartLogo"  Height="500"/>
 
                 <Button Margin="10,10,10,100"  Style="{StaticResource greenButton}"  FontSize="48" Click="StartBuy"  Grid.ZIndex="2"
@@ -1900,7 +1902,7 @@
         </Border>
         <!-- Адмінка -->
 
-            <uc:Admin_control Grid.Row="0" Grid.RowSpan="5" Visibility="Collapsed"
+        <uc:Admin_control Grid.Row="0" Grid.RowSpan="5" Visibility="Collapsed"
                               Grid.Column="0" Grid.ColumnSpan="4" 
                               x:Name="AdminControl" VerticalAlignment="Stretch" 
                               Grid.ZIndex="4" />

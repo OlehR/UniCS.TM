@@ -132,6 +132,8 @@ namespace Front
 
                 Bor.BorderBrush = new SolidColorBrush(Color.FromRgb(128, 128, 128));
                 Bor.BorderThickness = new Thickness(2.0);
+                Bor.CornerRadius = new CornerRadius(15);
+                Bor.Margin = new Thickness(5);
 
                 Bt.Name = el.GetName;// $"BtGr{el.Code}";				
                 if (File.Exists(el.Pictures))
