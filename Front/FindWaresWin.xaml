@@ -53,7 +53,7 @@
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="False">
-                                            <Setter Property="FontSize" Value="28" />
+                                            <Setter Property="FontSize" Value="35" />
                                         </DataTrigger>
                                         <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="True">
@@ -124,7 +124,23 @@
                     <Button.Content>
                         <StackPanel Orientation="Horizontal">
                             <Image  Height="40" Width="40"  Source="icons\backArrow.png"></Image>
-                            <TextBlock FontSize="28" Text="Назад" Margin="5,0,5,0"/>
+                            <TextBlock  Text="Назад" Margin="5,0,5,0">
+                                <TextBlock.Style>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                                <Setter Property="FontSize" Value="35" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                                <Setter Property="FontSize" Value="20" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                        <Setter Property="FontWeight" Value="SemiBold"/>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
                         </StackPanel>
                     </Button.Content>
                     <Button.Style>
@@ -156,7 +172,7 @@
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                        <Setter Property="FontSize" Value="24" />
+                                        <Setter Property="FontSize" Value="20" />
                                     </DataTrigger>
                                 </Style.Triggers>
                                 <Setter Property="FontWeight" Value="SemiBold"/>

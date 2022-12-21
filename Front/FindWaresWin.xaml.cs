@@ -34,7 +34,7 @@ namespace Front
         /// <summary>
         /// максимальна кількість товарів на вікні
         /// </summary>
-        int Limit = SystemParameters.PrimaryScreenWidth < SystemParameters.PrimaryScreenHeight ? 16 : 10;
+        int Limit = SystemParameters.PrimaryScreenWidth < SystemParameters.PrimaryScreenHeight ? 15 : 10;
         /// <summary>
         /// Кількість рядків в пошуку (залежить від розміру екрану)
         /// </summary>
@@ -50,8 +50,8 @@ namespace Front
             InitializeComponent();
             WindowState = WindowState.Maximized;
             //WindowStyle = WindowStyle.None;
-            CountRowWares = IsHorizontalScreen ? 4 : 2;
-            CountColumWares = IsHorizontalScreen ? 4 : 5;
+            CountRowWares = IsHorizontalScreen ? 5 : 2;
+            CountColumWares = IsHorizontalScreen ? 3 : 5;
             CreateGridForWares(); //створення гріду з товарами
             MW = pMW;
             Bl = BL.GetBL;
@@ -140,6 +140,7 @@ namespace Front
                 {
                     ImageStackPanel.Source = new BitmapImage(new Uri(el.Pictures));
                     ImageStackPanel.Height = 180;
+                    ImageStackPanel.Margin = new Thickness(5);
                     //Bt.Content = new Image
                     //{
                     //    Source = new BitmapImage(new Uri(el.Pictures)),
@@ -178,7 +179,7 @@ namespace Front
                 }
                 else
                 {
-                    NameWares.FontSize = 30;
+                    NameWares.FontSize = 20;
                     NameWares.Text = el.Name; //max 19 
 
                 }
@@ -186,6 +187,7 @@ namespace Front
                 NameWares.FontWeight = FontWeights.DemiBold;
                 NameWares.HorizontalAlignment = HorizontalAlignment.Center;
                 NameWares.VerticalAlignment = VerticalAlignment.Center;
+                NameWares.Margin = new Thickness(5,0,5,0);
                 if (el.Type == 1) //якщо група товарів тоді показати лише фото
                 {
                     StackP.Children.Add(ImageStackPanel);
