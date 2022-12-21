@@ -1844,7 +1844,7 @@
                 Grid.Column="0" Grid.ColumnSpan="4"
                  Name="StartShopping" Visibility="Collapsed" Grid.ZIndex="2" >
             <Grid x:Name="MP">
-
+                <Button Style="{StaticResource TransparentButton}" Click="StartBuy" Panel.ZIndex="3"/>
 
                 <Button Margin="10,10,10,100"  Opacity="0.7" Style="{StaticResource StartButtun}"  FontSize="48" Click="StartBuy"  Grid.ZIndex="2"
                          Height="70" Width="500" VerticalAlignment="Bottom">
