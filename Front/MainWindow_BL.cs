@@ -326,6 +326,10 @@ namespace Front
             if (State == eStateMainWindows.StartWindow)
                 SetStateView(eStateMainWindows.WaitInput);
 
+            var u = Bl.GetUserByBarCode(pBarCode);
+            if (u != null)
+            { Bl.OnAdminBarCode?.Invoke(u); return; } 
+
             if (TypeAccessWait == eTypeAccess.ExciseStamp)
             {
                 string ExciseStamp = GetExciseStamp(pBarCode);
@@ -366,9 +370,7 @@ namespace Front
                 }
             }
 
-            var u = Bl.GetUserByBarCode(pBarCode);
-            if (u != null)
-            { Bl.OnAdminBarCode?.Invoke(u); return; }
+           
             if ((State != eStateMainWindows.WaitInput && State != eStateMainWindows.StartWindow) || curReceipt?.IsLockChange == true || !IsAddNewWares)
                 if (State != eStateMainWindows.ProcessPay && State != eStateMainWindows.ProcessPrintReceipt && State != eStateMainWindows.WaitCustomWindows)
                     SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.AdminPanel);

@@ -1,6 +1,7 @@
 ﻿using Front.Equipments.Implementation;
 using Front.Models;
 using ModelMID;
+using ModernExpo.SelfCheckout.Utils;
 using System;
 using System.Collections.Generic;
 using System.Drawing.Drawing2D;
@@ -62,11 +63,18 @@ namespace Front
 
        SortedList<eTypeSound, int> IsUse = new();
         eTypeSound LastTypeSound;
-        
+
         public Sound(ControlScale pCS)
         {
             CS = pCS;
             //Player.Volume = 0.5d;
+
+            CS.OnStateScale += (pStateScale, pRW, pСurrentlyWeight) =>
+            {
+                if (pStateScale != eStateScale.BadWeight)
+                    if (IsUse.ContainsKey(eTypeSound.IncorectWeight))
+                        IsUse.Remove(eTypeSound.IncorectWeight);
+            };
         }
         public static Sound GetSound(ControlScale pCS)
         {
@@ -77,7 +85,7 @@ namespace Front
 
         bool IsUse1Time(eTypeSound pS )
         {
-            return pS==eTypeSound.ThanksForShopping || pS==eTypeSound.ScanAndPutProductOnPlatform;
+            return pS==eTypeSound.ThanksForShopping || pS==eTypeSound.ScanAndPutProductOnPlatform || pS==eTypeSound.IncorectWeight;
         }
 
         public void NewReceipt(int pCodeReceipt)
@@ -94,7 +102,7 @@ namespace Front
                 return;
             if (pS == eTypeSound.IncorectWeight)
             {
-                Task.Delay(500).Wait();
+                Task.Delay(800).Wait();
                 if (CS.StateScale != eStateScale.BadWeight)
                     return;
             }
@@ -104,15 +112,8 @@ namespace Front
                 FileName = Path.Combine(Global.PathCur, "Sound", "en", pS.ToString()+ ".wav");// $@"D:\MID\Sound\en\{pS}.wav";
             if(File.Exists(FileName) && Player != null && LastTypeSound != pS)
             {
-                if (LastTypeSound == eTypeSound.IncorectWeight)
-                    Task.Run(() => {
-                        Task.Delay(1000);
-                        if(LastTypeSound == eTypeSound.IncorectWeight)
-                            LastTypeSound = eTypeSound.NotDefine;
-                    });
-                   
-                else
-                  LastTypeSound = pS;
+                
+                LastTypeSound = pS;
 
                 if (IsUse1Time(pS))
                     if (IsUse.ContainsKey(pS)) return;
@@ -123,14 +124,7 @@ namespace Front
                     NextSound = FileName;
                 else
                 {
-                    Playing(FileName);
-                    //Якщо проблема з вагою.
-                    if (LastTypeSound == eTypeSound.IncorectWeight)
-                        Task.Run(() => {
-                            Task.Delay(1000);
-                            if (LastTypeSound == eTypeSound.IncorectWeight)
-                                LastTypeSound = eTypeSound.NotDefine;
-                        });
+                    Playing(FileName);                    
                 }
             }            
         }
@@ -142,9 +136,11 @@ namespace Front
             IsPlaying = true;
             try
             {
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Start {pFileName} NextSound={NextSound}", eTypeLog.Full);
                 player.SoundLocation = pFileName;
                 player.Load();
                 player.PlaySync();
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"End {pFileName} NextSound={NextSound}", eTypeLog.Full);
             }
             finally
             {
