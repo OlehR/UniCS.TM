@@ -378,6 +378,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
         public WaresRRO() { }
         public WaresRRO(ReceiptWares pRW)
         {
+            decimal discont = pRW.Price < pRW.PriceDealer ? Math.Round((pRW.PriceDealer- pRW.Price)* pRW.Quantity,2) : 0;
             code = pRW.CodeWares.ToString();
             code1 = pRW.BarCode;
             code2 = pRW.CodeUKTZED;
@@ -385,8 +386,8 @@ namespace Front.Equipments.Implementation.ModelVchasno
             name = pRW.NameWares;
             cnt = pRW.Quantity;
             price = pRW.Price;
-            cost = Math.Round(pRW.Price * pRW.Quantity, 2);// - Math.Round(pRW.SumDiscount, 2);
-            disc = Math.Round(pRW.SumDiscount,2);
+            cost = Math.Round(pRW.Price * pRW.Quantity, 2)+ discont;// - Math.Round(pRW.SumDiscount, 2);
+            disc = Math.Round(pRW.SumDiscount,2)+ discont;
             taxgrp = int.Parse(pRW.TaxGroup);
         }
         public string code { get; set; }
