@@ -32,7 +32,7 @@ namespace ModelMID
         /// <summary>
         /// !!!TMP Щоб розмежувати чеки на модерновських касах і наші. Стандарто має бути 0.
         /// </summary>
-        public static int StartCodeReceipt = 500;
+        public static int StartCodeReceipt = 0;
 
         public static int DefaultCodeDealer { get { switch (CodeWarehouse) { case 9: return 2; case 15: return 4; case 148: return 42; default: return 0; } } }//!!!!TMP
 
