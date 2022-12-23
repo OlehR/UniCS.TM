@@ -24,7 +24,7 @@ namespace Front.Equipments.Implementation
 {
     public class pRRO_Vchasno : Rro
     {
-        int TimeOut = 30000;
+        int TimeOut = 45000;
         Encoding win1251 = Encoding.GetEncoding("windows-1251");
         string Url, Token, Device = "Test";
         public pRRO_Vchasno(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) :
@@ -67,7 +67,7 @@ namespace Front.Equipments.Implementation
             if (!IsOpenWorkDay) OpenWorkDay();
             if (!IsOpenWorkDay) return new LogRRO(pR) { CodeError = -1, Error = "Не вдалось відкрити зміну" };
 
-            ApiRRO d = new(pR) { token = Token, device = Device };
+            ApiRRO d = new(pR) { token = Token, device = Device,tag=pR.NumberReceipt1C };
             string dd = d.ToJSON();
 
             var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");

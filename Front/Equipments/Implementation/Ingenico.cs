@@ -31,7 +31,7 @@ namespace Front.Equipments
                 State = eStateEquipment.Init;
                 //ILoggerFactory loggerFactory = new LoggerFactory().AddConsole((_, __) => true);
                 ILogger<Ingenico.Ingenico> logger = LoggerFactory?.CreateLogger<Ingenico.Ingenico>();
-                EquipmentIngenico = new Ingenico.Ingenico(pConfiguration, logger);
+                EquipmentIngenico = new Ingenico.Ingenico(pConfiguration, logger,pEquipment.DeviceConfigName);
 
                 EquipmentIngenico.OnStatus += pActionStatus;
                 State = eStateEquipment.On;
@@ -254,7 +254,7 @@ namespace Front.Equipments.Ingenico
     
     public class Ingenico :  IBaseDevice, IDisposable //IPosTerminal,
     {
-        private const string KeyPrefix = "Devices:Ingenico:";
+        private string KeyPrefix = "Devices:Ingenico:";
         private static BPOS1LibClass _bpos1LibClass;
         private static bool _isCancelRequested;
         private byte port;
@@ -273,13 +273,23 @@ namespace Front.Equipments.Ingenico
 
         public bool IsReady => true;
 
-        public Ingenico(IConfiguration configuration, ILogger<Ingenico> logger)
+        public Ingenico(IConfiguration configuration, ILogger<Ingenico> logger,string pDeviceConfigName= null)
         {
+            if (string.IsNullOrEmpty(pDeviceConfigName))
+                pDeviceConfigName = "Ingenico";
             this._configuration = configuration;
             this._logger = logger;
+            KeyPrefix = $"Devices:{pDeviceConfigName}:";
+
+            this.port = Convert.ToByte(this._configuration[$"{KeyPrefix}Port"]);
+            this.boundRate = Convert.ToInt32(this._configuration[$"{KeyPrefix}BaudRate"]);
+            this.merchantId = Convert.ToByte(this._configuration[$"{KeyPrefix}MerchanId"]);
+
         }
 
-        public async Task<PaymentResultModel> Refund(double amount, string bsRRN)
+        public string GetTerminalID { get { return _bpos1LibClass.TerminalID; } }
+
+        public async Task<PaymentResultModel> Refund(double amount, string bsRRN,byte pMerchantId=0)
         {
             Ingenico ingenico = this;
             try
@@ -1574,7 +1584,7 @@ namespace Front.Equipments.Ingenico
             return this.ParseReceipt(receipt);
         }
 
-        private string GetString(string input) => string.IsNullOrWhiteSpace(input) || !ConfigurationBinder.GetValue<bool>(this._configuration, "Devices:Ingenico:Use1252Encoder", false) ? input : Encoding.UTF8.GetString(Encoding.Convert(this._encoding1251, Encoding.UTF8, this._encoding1252.GetBytes(input)));
+        private string GetString(string input) => string.IsNullOrWhiteSpace(input) || !ConfigurationBinder.GetValue<bool>(this._configuration, $"{KeyPrefix}Use1252Encoder", false) ? input : Encoding.UTF8.GetString(Encoding.Convert(this._encoding1251, Encoding.UTF8, this._encoding1252.GetBytes(input)));
 
         private List<string> ParseReceipt(string res)
         {
@@ -1593,9 +1603,7 @@ namespace Front.Equipments.Ingenico
 
         private bool StartBPOS()
         {
-            this.port = Convert.ToByte(this._configuration["Devices:Ingenico:Port"]);
-            this.boundRate = Convert.ToInt32(this._configuration["Devices:Ingenico:BaudRate"]);
-            this.merchantId = Convert.ToByte(this._configuration["Devices:Ingenico:MerchanId"]);
+           
             int num = 120;
             while (_bpos1LibClass != null)
             {

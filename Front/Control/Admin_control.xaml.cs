@@ -441,7 +441,7 @@ namespace Front.Control
             //MessageBox.Show("Фiскалізовано");
         }
 
-        private void PayAdminPanelButton(object sender, RoutedEventArgs e)
+        /*private void PayAdminPanelButton(object sender, RoutedEventArgs e)
         {
             var R = Bl.GetReceiptHead(curReceipt, true);
             if (R.StateReceipt == eStateReceipt.Prepare)
@@ -458,7 +458,7 @@ namespace Front.Control
                 }
             }
             //MessageBox.Show("Оплачено");
-        }
+        }*/
 
         private void PaymentDetailsAdminPanelButton(object sender, RoutedEventArgs e)
         {
@@ -469,8 +469,23 @@ namespace Front.Control
             {
                 var Res = terminalPaymentInfo.enteredDataFromTerminal;
                 Res.SetIdReceipt(curReceipt);
-                MW.SetManualPay(Res);
+                SetManualPay(Res);
             }
+        }
+
+        public void SetManualPay(Payment pPay)
+        {
+            pPay.SumPay = pPay.PosPaid = curReceipt.SumTotal;
+            pPay.PosPaid = pPay.SumPay;
+            pPay.NumberTerminal = "Manual";
+            Bl.db.ReplacePayment(new List<Payment>() { pPay });           
+
+            curReceipt.StateReceipt = eStateReceipt.Pay;
+            curReceipt.CodeCreditCard = pPay.NumberCard;
+            curReceipt.NumberReceiptPOS = pPay.NumberReceipt;
+            curReceipt.SumCreditCard = pPay.SumPay;
+            Bl.db.ReplaceReceipt(curReceipt);
+            curReceipt.Payment = new List<Payment>() { pPay };
         }
 
         private void Transfer1CButton(object sender, RoutedEventArgs e)

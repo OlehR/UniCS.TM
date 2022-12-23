@@ -245,6 +245,7 @@ namespace Front
 
         public MainWindow()
         {
+            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Ver={Version}",eTypeLog.Expanded);
             SocketServer SocketS = new SocketServer();
             _ = SocketS.StartSocketServer();
             CS = new ControlScale();
@@ -1037,20 +1038,7 @@ namespace Front
             AddExciseStamp("None");
             Bl.AddEventAge(curReceipt);
         }
-
-
-        public void SetManualPay(Payment pPay)
-        {
-            pPay.SumPay = pPay.PosPaid = curReceipt.SumTotal;
-            Bl.db.ReplacePayment(new List<Payment>() { pPay });
-
-            curReceipt.StateReceipt = eStateReceipt.Pay;
-            curReceipt.CodeCreditCard = pPay.NumberCard;
-            curReceipt.NumberReceiptPOS = pPay.NumberReceipt;
-            curReceipt.SumCreditCard = pPay.SumPay;
-            Bl.db.ReplaceReceipt(curReceipt);
-            curReceipt.Payment = new List<Payment>() { pPay };
-        }
+              
 
         private void CustomWindowClickButton(object sender, RoutedEventArgs e)
         {
