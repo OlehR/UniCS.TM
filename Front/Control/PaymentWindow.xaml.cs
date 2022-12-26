@@ -185,7 +185,7 @@ namespace Front.Control
         private void CashDisbursement(object sender, RoutedEventArgs e)
         {
 
-            MW.InputNumberPhone.Desciption = "Введіть номер телефону";
+            MW.InputNumberPhone.Desciption = "Введіть суму видачі";
             MW.InputNumberPhone.ValidationMask = "";
             MW.InputNumberPhone.Result = "";
             MW.InputNumberPhone.CallBackResult = (string result) => CashDisbursementTextBox.Text = result;
