@@ -27,7 +27,7 @@
 
         </Style>
     </UserControl.Resources>
-    <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
+    <Border Background="White" BorderBrush="White" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
                  Grid.Column="0" Grid.ColumnSpan="6"
                  Name="WaitKashier" Visibility="Visible" Grid.ZIndex="2" 
@@ -36,7 +36,7 @@
             <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
         </Border.Effect>
 
-        <Grid  Width="1000" Height="550">
+        <Grid  MinWidth="1000" MinHeight="550">
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"></RowDefinition>
                 <RowDefinition Height="0.4*"></RowDefinition>
@@ -68,14 +68,14 @@
             <Button Grid.Row="2" Grid.Column="0" Style="{StaticResource Default}"  FontSize="22" Margin="10" Click="_Cancel">
                 <StackPanel Orientation="Horizontal">
                     <Image  Height="15" Width="15" Margin="10,0,0,0" Source="\icons\X.png"></Image>
-                    <TextBlock FontSize="24" Text="{DynamicResource cancel}" Margin="5,0,5,0"/>
+                    <TextBlock FontSize="24"  Text="{DynamicResource cancel}" Margin="5,0,5,0"/>
                 </StackPanel>
             </Button>
 
             <Button  Grid.Column="1"  Grid.Row="2"  FontSize="22"
                             Margin="10" Click="_ButtonPaymentBank">
                 <Button.Content>
-                    <TextBlock FontSize="20" Text="{Binding NameFirstTerminal, RelativeSource={RelativeSource 
+                    <TextBlock FontSize="24" Foreground="white" Text="{Binding NameFirstTerminal, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}"/>
                 </Button.Content>
                 <Button.Style>
@@ -100,7 +100,7 @@
             <Button Grid.Column="2"  Grid.Row="2"  FontSize="22"
                             Margin="10" Click="_ButtonPaymentBank">
                 <Button.Content>
-                    <TextBlock FontSize="20" Text="{Binding NameSecondTerminal, RelativeSource={RelativeSource 
+                    <TextBlock FontSize="20" Foreground="white" Text="{Binding NameSecondTerminal, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}"/>
                 </Button.Content>
                 <Button.Style>
@@ -126,9 +126,9 @@
 
             <Button  Grid.Column="3"  Grid.Row="2"  FontSize="22"
                             Margin="10" Click="_ButtonPayment">
-                <TextBlock FontSize="28" Text="Готівка"/>
+                <TextBlock FontSize="24" Text="Готівка" Foreground="white"/>
                 <Button.Style>
-                    <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                    <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
                         <Setter Property="IsEnabled" Value="True"/>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsCashPayment, RelativeSource={RelativeSource 
@@ -153,17 +153,18 @@
                     <Button Style="{StaticResource Default}" Margin="10"
                                     Width="120" Height="50" Click="CancelCashDisbursement"
                                     >
-                        <TextBlock FontSize="14" TextWrapping="Wrap" Text="Вiдмінити  видачу готівки" Margin="5,0,0,5"/>
+                        <TextBlock FontSize="14" TextWrapping="Wrap" Text="Вiдмінити  видачу готівки" Margin="5" HorizontalAlignment="Center"/>
                     </Button>
                     <TextBlock FontSize="20"> Сума видачі грошових коштів:</TextBlock>
-                    <TextBlock  Height="30" x:Name="CashDisbursementTextBox"
+                    <TextBlock  x:Name="CashDisbursementTextBox"
                                      FontSize="20" TextWrapping="Wrap"
-                                        HorizontalAlignment="Center"
+                                        HorizontalAlignment="Center" VerticalAlignment="Center"
                                      >0</TextBlock>
                     <Button Style="{StaticResource yelowButton}" Margin="10"
                                     Width="120" Height="50" Click="CashDisbursement"
                                     >
-                        <TextBlock FontSize="14" TextWrapping="Wrap" Text="Ввести суму видачі готівки" Margin="5,0,0,5"/>
+                        <TextBlock FontSize="14" TextWrapping="Wrap" 
+                                   Text="Ввести суму видачі готівки" Margin="5,0,5,0"/>
                     </Button>
                 </StackPanel>
             </Border>
@@ -236,27 +237,27 @@
                     <Button Grid.Row="0" Grid.Column="1" Click="Round" x:Name="plus01"
                                     Style="{StaticResource Default}" Margin="10"
                                     >
-                        <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 10коп." Margin="5,0,0,5"/>
+                        <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 10коп." Margin="5"/>
                     </Button>
                     <Button Grid.Row="0" Grid.Column="2" Click="Round" x:Name="plus05"
                                     Style="{StaticResource Default}" Margin="10"
                                     >
-                        <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 50коп." Margin="5,0,0,5"/>
+                        <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 50коп." Margin="5"/>
                     </Button>
                     <Button Grid.Row="0" Grid.Column="3" Click="Round" x:Name="plus1"
                                     Style="{StaticResource Default}" Margin="10"
                                     >
-                        <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 1грн" Margin="5,0,0,5"/>
+                        <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 1грн" Margin="5"/>
                     </Button>
                     <Button Grid.Row="0" Grid.Column="4" Click="Round" x:Name="plus2"
                                     Style="{StaticResource Default}" Margin="10"
                                     >
-                        <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 2грн" Margin="5,0,0,5"/>
+                        <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 2грн" Margin="5"/>
                     </Button>
                     <Button Grid.Row="0" Grid.Column="5" Click="Round" x:Name="plus5"
                                     Style="{StaticResource Default}" Margin="10"
                                     >
-                        <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 5грн" Margin="5,0,0,5"/>
+                        <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 5грн" Margin="5"/>
                     </Button>
                     <StackPanel Orientation="Vertical" Grid.Row="1">
                         <TextBlock> Сума списати:</TextBlock>
@@ -268,17 +269,17 @@
                     <Button Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"
                                     Style="{StaticResource Default}" Margin="10"
                                     >
-                        <TextBlock FontSize="14" TextWrapping="Wrap" Text=" " Margin="5,0,0,5"/>
+                        <TextBlock FontSize="14" TextWrapping="Wrap" Text=" " Margin="5"/>
                     </Button>
                     <Button Grid.Row="1" Grid.Column="4" Click="Round" x:Name="minus1"
                                     Style="{StaticResource Default}" Margin="10"
                                     >
-                        <TextBlock FontSize="14" TextWrapping="Wrap" Text="Списати до 1грн" Margin="5,0,0,5"/>
+                        <TextBlock FontSize="14" TextWrapping="Wrap" Text="Списати до 1грн" Margin="5"/>
                     </Button>
                     <Button Grid.Row="1" Grid.Column="5" Click="Round"
                                     Style="{StaticResource Default}" Margin="10"
                                     >
-                        <TextBlock FontSize="14" TextWrapping="Wrap" Text="Відміна заокруглень та списань" Margin="5,0,0,5"/>
+                        <TextBlock FontSize="14" TextWrapping="Wrap" Text="Відміна заокруглень та списань" Margin="5"/>
                     </Button>
                 </Grid>
 
