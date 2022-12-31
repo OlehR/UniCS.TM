@@ -16,6 +16,7 @@ using Front.Equipments.Implementation;
 using Front.Equipments.Virtual;
 using Utils;
 using Front.Equipments.Utils;
+using ModelMID.DB;
 
 namespace Front.Equipments
 {
@@ -43,25 +44,24 @@ namespace Front.Equipments
             }
         }
 
-        public override Payment Purchase(decimal pAmount, decimal pCash = 0)
+        public override Payment Purchase(decimal pAmount, decimal pCash = 0, int IdWorkPlace = 0)
         {           
-            return PaymentResultModelToPayment(EquipmentIngenico.Purchase(Convert.ToDouble(pAmount), Convert.ToDouble(pCash)).Result);
+            return PaymentResultModelToPayment(EquipmentIngenico.Purchase(Convert.ToDouble(pAmount), Convert.ToDouble(pCash), IdWorkPlace).Result );
         }
 
-        public override Payment Refund(decimal pAmount, string pRRN)
+        public override Payment Refund(decimal pAmount, string pRRN, int IdWorkPlace = 0)
         {
-            return PaymentResultModelToPayment(EquipmentIngenico.Refund(Convert.ToDouble(pAmount), pRRN).Result);
+            return PaymentResultModelToPayment(EquipmentIngenico.Refund(Convert.ToDouble(pAmount), pRRN, IdWorkPlace).Result);
         }
-
-        public override BatchTotals PrintZ()
+        public override BatchTotals PrintZ(int pIdWorkPlace = 0)
         {
-            var r = EquipmentIngenico.GetXZ(false);
+            var r = EquipmentIngenico.GetXZ(false, pIdWorkPlace);
             return r.Result;
         }
 
-        public override BatchTotals PrintX()
+        public override BatchTotals PrintX(int pIdWorkPlace = 0)
         {
-            var r = EquipmentIngenico.GetXZ(true);
+            var r = EquipmentIngenico.GetXZ(true, pIdWorkPlace);
             return r.Result;
         }
 
@@ -259,7 +259,7 @@ namespace Front.Equipments.Ingenico
         private static bool _isCancelRequested;
         private byte port;
         private int boundRate;
-        private byte merchantId;
+        private byte MerchantId;
         private readonly IConfiguration _configuration;
         private readonly ILogger<Ingenico> _logger;
         private readonly Encoding _encoding1251 = Encoding.GetEncoding(1251);
@@ -283,13 +283,16 @@ namespace Front.Equipments.Ingenico
 
             this.port = Convert.ToByte(this._configuration[$"{KeyPrefix}Port"]);
             this.boundRate = Convert.ToInt32(this._configuration[$"{KeyPrefix}BaudRate"]);
-            this.merchantId = Convert.ToByte(this._configuration[$"{KeyPrefix}MerchanId"]);
-
+            this.MerchantId = Convert.ToByte(this._configuration[$"{KeyPrefix}MerchanId"]);
+        }
+        byte GetMechantIdByIdWorkPlace(int ppIdWorkPlace)
+        {
+            return this.MerchantId;
         }
 
         public string GetTerminalID { get { return _bpos1LibClass.TerminalID; } }
 
-        public async Task<PaymentResultModel> Refund(double amount, string bsRRN,byte pMerchantId=0)
+        public async Task<PaymentResultModel> Refund(double amount, string bsRRN,int pIdWorkPlace = 0)
         {
             Ingenico ingenico = this;
             try
@@ -300,7 +303,7 @@ namespace Front.Equipments.Ingenico
                         IsSuccess = false
                     };
                 _isCancelRequested = false;
-                _bpos1LibClass.Refund(Convert.ToUInt32(amount * 100.0), 0U, ingenico.merchantId, bsRRN);
+                _bpos1LibClass.Refund(Convert.ToUInt32(amount * 100.0), 0U, GetMechantIdByIdWorkPlace(pIdWorkPlace), bsRRN);
                 PaymentResultModel paymentResultModel = ingenico.WaitPosRespone();
                 if (paymentResultModel.IsSuccess)
                 {
@@ -1449,24 +1452,25 @@ namespace Front.Equipments.Ingenico
             }
         }
 
-        public void Settlement()
+        public void Settlement(byte pMerchantId=0)
         {
             if (!this.StartBPOS())
                 return;
-            _bpos1LibClass.Settlement(this.merchantId);
+            _bpos1LibClass.Settlement(pMerchantId);
             this.WaitResponse();
             StopBPOS();
         }
 
 
-        public async Task<BatchTotals> GetXZ(bool IsX=true)
+        public async Task<BatchTotals> GetXZ(bool IsX=true, int pIdWorkPlace = 0)
         {
+            byte MerchantId = GetMechantIdByIdWorkPlace(pIdWorkPlace);
             if (!this.StartBPOS())
                 return (BatchTotals)null;
             if(IsX)
-                _bpos1LibClass.PrintBatchTotals(this.merchantId);
+                _bpos1LibClass.PrintBatchTotals(MerchantId);
             else
-            _bpos1LibClass.Settlement(this.merchantId);
+            _bpos1LibClass.Settlement(MerchantId);
             this.WaitResponse();            
             BatchTotals batchTotals = new BatchTotals()
             {
@@ -1482,11 +1486,11 @@ namespace Front.Equipments.Ingenico
             return batchTotals;
         }
 
-        public void PrintBatchTotals()
+        public void PrintBatchTotals(byte pMerchantId = 0)
         {
             if (!this.StartBPOS())
                 return;
-            _bpos1LibClass.PrintBatchTotals(this.merchantId);
+            _bpos1LibClass.PrintBatchTotals(pMerchantId);
             this.WaitResponse();
             StopBPOS();
         }
@@ -1499,11 +1503,11 @@ namespace Front.Equipments.Ingenico
                 Thread.Sleep(1000);
         }
 
-        public async Task<BatchTotals> GetBatchTotals()
+        public async Task<BatchTotals> GetBatchTotals(byte pMerchantId=0)
         {
             if (!this.StartBPOS())
                 return (BatchTotals)null;
-            _bpos1LibClass.GetBatchTotals(this.merchantId);
+            _bpos1LibClass.GetBatchTotals(pMerchantId);
             this.WaitResponse();
             BatchTotals batchTotals = new BatchTotals() {
                 DebitCount = _bpos1LibClass.TotalsDebitNum,
@@ -1518,30 +1522,30 @@ namespace Front.Equipments.Ingenico
             return batchTotals;
         }
         
-        public void PrintBatchJournal()
+        public void PrintBatchJournal(byte pMerchantId=0)
         {
             if (!this.StartBPOS())
                 return;
-            _bpos1LibClass.PrintBatchJournal(this.merchantId);
+            _bpos1LibClass.PrintBatchJournal(pMerchantId);
             StopBPOS();
         }
 
-        public void PrintLastSettleCopy()
+        public void PrintLastSettleCopy(byte pMerchantId=0)
         {
             if (!this.StartBPOS())
                 return;
-            _bpos1LibClass.PrintLastSettleCopy(this.merchantId);
+            _bpos1LibClass.PrintLastSettleCopy(pMerchantId);
             StopBPOS();
         }
 
-        public Task<PaymentResultModel> Purchase(double amount,double pCash)
+        public Task<PaymentResultModel> Purchase(double amount,double pCash, int pIdWorkPlace = 0)
         {
             try
             {
                 if (!this.StartBPOS())
                     return Task.FromResult<PaymentResultModel>(new PaymentResultModel() { IsSuccess = false });
                 _isCancelRequested = false;
-                _bpos1LibClass.Purchase(Convert.ToUInt32(amount * 100.0), 0U, this.merchantId);
+                _bpos1LibClass.Purchase(Convert.ToUInt32(amount * 100.0), 0U, GetMechantIdByIdWorkPlace(pIdWorkPlace));
 
                 if (OnStatus != null)
                     OnStatus((StatusEquipment)new PosStatus() {  Status = eStatusPos.WaitingForCard });

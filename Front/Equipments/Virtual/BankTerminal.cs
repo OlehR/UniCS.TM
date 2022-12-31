@@ -17,10 +17,10 @@ namespace Front.Equipments
 
         public BankTerminal(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment  = eModelEquipment.NotDefine, ILoggerFactory pLoggerFactory = null) : base(pEquipment, pConfiguration,pModelEquipment, pLoggerFactory) { }
         
-        virtual public BatchTotals PrintZ() {throw new NotImplementedException();}
-        virtual public BatchTotals PrintX(){ throw new NotImplementedException();}
-        public virtual Payment Purchase(decimal pAmount,decimal pCash=0) { throw new NotImplementedException(); }
-        public virtual Payment Refund(decimal pAmount, string pRRN) { throw new NotImplementedException(); }
+        virtual public BatchTotals PrintZ(int IdWorkPlace  = 0) {throw new NotImplementedException();}
+        virtual public BatchTotals PrintX(int IdWorkPlace = 0) { throw new NotImplementedException();}
+        public virtual Payment Purchase(decimal pAmount,decimal pCash=0, int IdWorkPlace = 0) { throw new NotImplementedException(); }
+        public virtual Payment Refund(decimal pAmount, string pRRN, int IdWorkPlace = 0) { throw new NotImplementedException(); }
 
         public virtual IEnumerable<string> GetLastReceipt() { throw new NotImplementedException(); }
 

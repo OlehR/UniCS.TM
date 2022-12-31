@@ -52,7 +52,7 @@ namespace Front.Equipments.Implementation
             };
         }
 
-        public override Payment Purchase(decimal pAmount,decimal pCash)
+        public override Payment Purchase(decimal pAmount,decimal pCash, int IdWorkPlace = 0)
         {
             int Interval = 100;
             SetStatus(eStatusPos.WaitingForCard);
@@ -64,7 +64,7 @@ namespace Front.Equipments.Implementation
             return GetPaymentResultModel(pAmount);
         }
 
-        public override Payment Refund(decimal pAmount, string pRRN)
+        public override Payment Refund(decimal pAmount, string pRRN, int IdWorkPlace = 0)
         {
             return GetPaymentResultModel(pAmount);
         }
@@ -74,12 +74,12 @@ namespace Front.Equipments.Implementation
             return new BatchTotals() { CencelledCount = 0, CencelledSum = 0, CreditCount = Count, CreditSum = (uint)Sum, DebitCount = CountRefund, DebitSum = (uint)SumRefund };
         }
 
-        public override BatchTotals PrintZ()
+        public override BatchTotals PrintZ(int IdWorkPlace = 0)
         {
             return GetBatchTotals();
         }
 
-        public override BatchTotals PrintX()
+        public override BatchTotals PrintX(int IdWorkPlace = 0)
         {
             return GetBatchTotals();
         }

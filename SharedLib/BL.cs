@@ -684,6 +684,7 @@ namespace SharedLib
                     {
                         el.Sum -= el.SumDiscount;
                         el.Price = el.Sum / el.Quantity;
+                        el.SumDiscount = 0;
                     }
                     if (!pIsFull)
                         el.Quantity = 0;
