@@ -1097,6 +1097,9 @@ CREATE UNIQUE INDEX MRC_ID ON MRC ( CODE_WARES,PRICE);
 
 CREATE INDEX Sales_Ban_ID  on Sales_Ban (CODE_GROUP_WARES);
 
+CREATE INDEX USER_ID  on USER (CODE_USER);
+
+
 
 [SqlReplaceUnitDimension]
 replace into UNIT_DIMENSION ( CODE_UNIT, NAME_UNIT, ABR_UNIT) values (@CodeUnit, @NameUnit,@AbrUnit);

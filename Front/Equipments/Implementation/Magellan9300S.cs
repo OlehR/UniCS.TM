@@ -44,7 +44,7 @@ namespace Front.Equipments
         private SerialPortStreamWrapper _serialDevice;
         private int _attempt;
         private double _currentWeight;
-        private DeviceConnectionStatus _currentStatus = DeviceConnectionStatus.InitializationError;
+        private eDeviceConnectionStatus _currentStatus = eDeviceConnectionStatus.InitializationError;
 
         private string _port => this._configuration["Devices:Magellan9300S:Port"];
 
@@ -81,15 +81,15 @@ namespace Front.Equipments
             this._timer.AutoReset = true;
         }
 
-        public DeviceConnectionStatus Init()
+        public eDeviceConnectionStatus Init()
         {
             lock (this._locker)
             {
                 try
                 {
                     this._tmpStr = string.Empty;
-                    if (this._currentStatus == DeviceConnectionStatus.Enabled)
-                        return DeviceConnectionStatus.Enabled;
+                    if (this._currentStatus == eDeviceConnectionStatus.Enabled)
+                        return eDeviceConnectionStatus.Enabled;
                     Action<DeviceLog> onDeviceWarning1 = this.OnDeviceWarning;
                     if (onDeviceWarning1 != null)
                     {
@@ -132,7 +132,7 @@ namespace Front.Equipments
                         barcodeScannerLog.Message = string.Format("[Magellan9300S] - Initialization result {0}", (object)flag);
                         onDeviceWarning3((DeviceLog)barcodeScannerLog);
                     }
-                    this._currentStatus = flag ? DeviceConnectionStatus.Enabled : DeviceConnectionStatus.InitializationError;
+                    this._currentStatus = flag ? eDeviceConnectionStatus.Enabled : eDeviceConnectionStatus.InitializationError;
                     return this._currentStatus;
                 }
                 catch (Exception ex)
@@ -150,7 +150,7 @@ namespace Front.Equipments
                             barcodeScannerLog.Message = "Device not connected";
                             onDeviceWarning((DeviceLog)barcodeScannerLog);
                         }
-                        return DeviceConnectionStatus.NotConnected;
+                        return eDeviceConnectionStatus.NotConnected;
                     }
                     Action<DeviceLog> onDeviceWarning1 = this.OnDeviceWarning;
                     if (onDeviceWarning1 != null)
@@ -160,7 +160,7 @@ namespace Front.Equipments
                         barcodeScannerLog.Message = "Initialization error";
                         onDeviceWarning1((DeviceLog)barcodeScannerLog);
                     }
-                    return DeviceConnectionStatus.InitializationError;
+                    return eDeviceConnectionStatus.InitializationError;
                 }
                 finally
                 {
@@ -169,7 +169,7 @@ namespace Front.Equipments
             }
         }
 
-        public Task<DeviceConnectionStatus> GetDeviceStatus() => this.TestDevice();
+        public Task<eDeviceConnectionStatus> GetDeviceStatus() => this.TestDevice();
 
         public void GetReadDataSync(string command, Action<string> onDatAction)
         {
@@ -184,7 +184,7 @@ namespace Front.Equipments
             onDatAction(Encoding.ASCII.GetString(numArray));
         }
 
-        public Task<DeviceConnectionStatus> TestDevice()
+        public Task<eDeviceConnectionStatus> TestDevice()
         {
             lock (this._locker)
             {
@@ -193,40 +193,40 @@ namespace Front.Equipments
                 {
                     this._serialDevice.Open();
                     this._serialDevice.OnReceivedData = (Func<byte[], bool>)null;
-                    DeviceConnectionStatus result = DeviceConnectionStatus.InitializationError;
+                    eDeviceConnectionStatus result = eDeviceConnectionStatus.InitializationError;
                     this.GetReadDataSync("3p=", (Action<string>)(res =>
                     {
                         if (!res.ContainsIgnoreCase("OK"))
                         {
-                            result = DeviceConnectionStatus.InitializationError;
+                            result = eDeviceConnectionStatus.InitializationError;
                         }
                         else
                         {
                             this.ForceGoodReadTone();
-                            result = DeviceConnectionStatus.Enabled;
+                            result = eDeviceConnectionStatus.Enabled;
                         }
                     }));
-                    StaticTimer.Wait((Func<bool>)(() => result == DeviceConnectionStatus.InitializationError), 2);
-                    if (result == DeviceConnectionStatus.InitializationError)
-                        return Task.FromResult<DeviceConnectionStatus>(result);
-                    result = DeviceConnectionStatus.InitializationError;
+                    StaticTimer.Wait((Func<bool>)(() => result == eDeviceConnectionStatus.InitializationError), 2);
+                    if (result == eDeviceConnectionStatus.InitializationError)
+                        return Task.FromResult<eDeviceConnectionStatus>(result);
+                    result = eDeviceConnectionStatus.InitializationError;
                     this.GetReadDataSync("14", (Action<string>)(res =>
                     {
                         if (!res.StartsWith("S14"))
                         {
-                            result = DeviceConnectionStatus.InitializationError;
+                            result = eDeviceConnectionStatus.InitializationError;
                         }
                         else
                         {
                             res = res.Substring(3);
                             if (!res.StartsWith("3") && !res.StartsWith("5"))
-                                result = DeviceConnectionStatus.InitializationError;
+                                result = eDeviceConnectionStatus.InitializationError;
                             else
-                                result = DeviceConnectionStatus.Enabled;
+                                result = eDeviceConnectionStatus.Enabled;
                         }
                     }));
-                    StaticTimer.Wait((Func<bool>)(() => result == DeviceConnectionStatus.InitializationError), 2);
-                    return Task.FromResult<DeviceConnectionStatus>(result);
+                    StaticTimer.Wait((Func<bool>)(() => result == eDeviceConnectionStatus.InitializationError), 2);
+                    return Task.FromResult<eDeviceConnectionStatus>(result);
                 }
                 catch (Exception ex)
                 {
@@ -243,7 +243,7 @@ namespace Front.Equipments
                             barcodeScannerLog.Message = "Device not connected";
                             onDeviceWarning((DeviceLog)barcodeScannerLog);
                         }
-                        return Task.FromResult<DeviceConnectionStatus>(DeviceConnectionStatus.NotConnected);
+                        return Task.FromResult<eDeviceConnectionStatus>(eDeviceConnectionStatus.NotConnected);
                     }
                     Action<DeviceLog> onDeviceWarning1 = this.OnDeviceWarning;
                     if (onDeviceWarning1 != null)
@@ -253,7 +253,7 @@ namespace Front.Equipments
                         barcodeScannerLog.Message = "Initialization error";
                         onDeviceWarning1((DeviceLog)barcodeScannerLog);
                     }
-                    return Task.FromResult<DeviceConnectionStatus>(DeviceConnectionStatus.InitializationError);
+                    return Task.FromResult<eDeviceConnectionStatus>(eDeviceConnectionStatus.InitializationError);
                 }
                 finally
                 {

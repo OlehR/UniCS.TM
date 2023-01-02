@@ -481,11 +481,11 @@ namespace Front.Equipments.Utils
 
         bool IsReady { get; }
 
-        DeviceConnectionStatus Init();
+        eDeviceConnectionStatus Init();
 
-        Task<DeviceConnectionStatus> GetDeviceStatus();
+        Task<eDeviceConnectionStatus> GetDeviceStatus();
 
-        Task<DeviceConnectionStatus> TestDevice();
+        Task<eDeviceConnectionStatus> TestDevice();
 
         Task<string> GetInfo();
     }

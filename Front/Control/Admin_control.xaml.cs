@@ -1,6 +1,6 @@
 ﻿using Front.API;
 using Front.Equipments;
-using Front.Equipments.Ingenico;
+//using Front.Equipments.Ingenico;
 using Front.Models;
 using ModelMID;
 using ModelMID.DB;

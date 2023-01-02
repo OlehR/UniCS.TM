@@ -185,6 +185,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="AssemblyInfo.cs">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Compile>
     <Compile Update="Control\Admin_control.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

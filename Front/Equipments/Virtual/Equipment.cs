@@ -27,8 +27,7 @@ namespace Front.Equipments
         protected string IP;
         protected int IpPort;
         protected IConfiguration Configuration;
-
-
+        protected string KeyPrefix;
         //protected Action<string, string> Logger = null;
         protected ILoggerFactory LoggerFactory;
         public Action<StatusEquipment> ActionStatus;
@@ -49,14 +48,7 @@ namespace Front.Equipments
 
         public Equipment() { }
 
-        /*public Equipment(IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefined, Action<string, string> pLogger = null)
-        {
-            Configuration = pConfiguration;
-            Model = pModelEquipment;
-            Logger = pLogger;
-        }*/
-
-        public Equipment(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefine, ILoggerFactory pLoggerFactory= null)
+        public Equipment(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefine, ILoggerFactory pLoggerFactory= null, string pKeyPrefix=null   )
         {
             Configuration = pConfiguration;
             LoggerFactory = pLoggerFactory;
@@ -67,6 +59,7 @@ namespace Front.Equipments
                 IsСritical = pEquipment.IsСritical;
                 Model = pEquipment.Model;
             }
+            KeyPrefix = pKeyPrefix;
         }
         public virtual void Init() { }
         public virtual StatusEquipment TestDevice() { throw new NotImplementedException(); }

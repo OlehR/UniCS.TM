@@ -1,4 +1,4 @@
-﻿using Front.Equipments.Ingenico;
+﻿
 using Front.Equipments.Virtual;
 using Microsoft.Extensions.Configuration;
 using ModelMID;

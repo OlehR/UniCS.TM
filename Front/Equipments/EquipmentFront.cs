@@ -1,5 +1,5 @@
 ﻿using Front.Equipments;
-using Front.Equipments.Ingenico;
+//using Front.Equipments.Ingenico;
 using Front.Equipments.pRRO_SG;
 using Front.Equipments.Virtual;
 using Microsoft.Extensions.Configuration;
@@ -213,7 +213,7 @@ namespace Front
                     switch (ElEquipment.Model)
                     {
                         case eModelEquipment.Ingenico:
-                            Terminal = new IngenicoH(el, config, LF, PosStatus);
+                            Terminal = new Ingenico(el, config, LF, PosStatus);
                             break;
                         case eModelEquipment.VirtualBankPOS:
                             Terminal = new VirtualBankPOS(el, config, LF, PosStatus);

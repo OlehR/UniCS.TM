@@ -7,7 +7,7 @@ namespace ModelMID
     public class Payment:IdReceipt
     {
         public bool IsSuccess { get; set; }
-        public eTypePay TypePay { get; set;}
+        public eTypePay TypePay { get; set; } = eTypePay.Card;
         public decimal SumPay  { get; set;}
         /// <summary>
         /// Здача(для готівкових операцій)
@@ -51,6 +51,8 @@ namespace ModelMID
         public string  TransactionId { get; set; } //НОВЕ!
         
         public DateTime DateCreate { get; set; }
+
+        public string TransactionStatus { get; set; }
 
         //public string Error { get; set; } = null;
         public IEnumerable<string> Receipt { get; set; }

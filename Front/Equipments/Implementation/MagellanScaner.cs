@@ -46,7 +46,7 @@ namespace Front.Equipments
                 ILogger<Magellan9300S> logger = LoggerFactory?.CreateLogger<Magellan9300S>();
                 Magellan9300 = new Magellan9300S(pConfiguration, logger);
                 var Res = Magellan9300.Init();
-                if (Res == DeviceConnectionStatus.Enabled)
+                if (Res == eDeviceConnectionStatus.Enabled)
                 {                    
                     if (pOnBarCode != null)
                         Magellan9300.OnBarcodeScannerChange += (BarCode) =>

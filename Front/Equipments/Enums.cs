@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Front.Equipments
 {
-    public enum DeviceConnectionStatus
+    public enum eDeviceConnectionStatus
     {
         NotConnected = 1,
         InitializationError,

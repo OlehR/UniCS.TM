@@ -114,7 +114,7 @@ namespace Front.Equipments
 
         public override StatusEquipment TestDevice()
         {
-            DeviceConnectionStatus res;
+            eDeviceConnectionStatus res;
             try
             {
                 res = Fp700.TestDeviceSync();
@@ -262,12 +262,12 @@ namespace Front.Equipments.FP700
             _packageBufferTimer.Stop();
         }        
 
-        public DeviceConnectionStatus Init()
+        public eDeviceConnectionStatus Init()
         {
             try
             {
                 if (_serialDevice.PortName == null || _serialDevice.BaudRate == 0)
-                    return DeviceConnectionStatus.InitializationError;
+                    return eDeviceConnectionStatus.InitializationError;
                 _logger?.LogDebug("Fp700 init started");
                 ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Init, "[FP700] - Start Initialization") 
                                                   { Status =eStatusRRO.Init });                 
@@ -284,7 +284,7 @@ namespace Front.Equipments.FP700
                 {
                     ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "Cannot read data from printer")
                     { Status = eStatusRRO.Error,IsСritical=true });                    
-                    return DeviceConnectionStatus.InitializationError;
+                    return eDeviceConnectionStatus.InitializationError;
                 }
                 int num = IsZReportDone() ? 1 : 0;
                 if (num == 0)
@@ -293,14 +293,14 @@ namespace Front.Equipments.FP700
                     { Status = eStatusRRO.Error, IsСritical = true });                    
                 }
                 ClearDisplay();
-                return (num & (OnSynchronizeWaitCommandResult(eCommand.PaperCut) ? 1 : 0)) != 0 ? DeviceConnectionStatus.Enabled : DeviceConnectionStatus.InitializationError;
+                return (num & (OnSynchronizeWaitCommandResult(eCommand.PaperCut) ? 1 : 0)) != 0 ? eDeviceConnectionStatus.Enabled : eDeviceConnectionStatus.InitializationError;
             }
             catch (Exception ex)
             {
                 _logger?.LogError(ex, ex.Message);
                 ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "Device not connected")
                 { Status = eStatusRRO.Error, IsСritical = true });                
-                return DeviceConnectionStatus.NotConnected;
+                return eDeviceConnectionStatus.NotConnected;
             }
         }
 
@@ -326,7 +326,7 @@ namespace Front.Equipments.FP700
 
         public Task<string> GetInfo() => Task.Run<string>((Func<string>)(() => GetInfoSync()));
 
-        public DeviceConnectionStatus GetDeviceStatusSync()
+        public eDeviceConnectionStatus GetDeviceStatusSync()
         {
             try
             {
@@ -335,10 +335,10 @@ namespace Front.Equipments.FP700
                 _logger?.LogDebug("Fp700 PORT " + _serialDevice.PortName);
                 _logger?.LogDebug(string.Format("Fp700 BAUD {0}", (object)_serialDevice.BaudRate));
                 if (_serialDevice.PortName == null || _serialDevice.BaudRate == 0)
-                    return DeviceConnectionStatus.InitializationError;
+                    return eDeviceConnectionStatus.InitializationError;
                 _serialDevice.Open();
                 _logger?.LogDebug("Fp700 after open");
-                return GetDiagnosticInfo() == null ? DeviceConnectionStatus.NotConnected : DeviceConnectionStatus.Enabled;
+                return GetDiagnosticInfo() == null ? eDeviceConnectionStatus.NotConnected : eDeviceConnectionStatus.Enabled;
             }
             catch (Exception ex)
             {
@@ -347,26 +347,26 @@ namespace Front.Equipments.FP700
                 ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, _currentPrinterStatus.TextError+ex.Message)
                 { Status = eStatusRRO.Error, IsСritical = true });
                 
-                return DeviceConnectionStatus.NotConnected;
+                return eDeviceConnectionStatus.NotConnected;
             }
         }
 
-        public Task<DeviceConnectionStatus> GetDeviceStatus() => Task.Run<DeviceConnectionStatus>((Func<DeviceConnectionStatus>)(() => GetDeviceStatusSync()));
+        public Task<eDeviceConnectionStatus> GetDeviceStatus() => Task.Run<eDeviceConnectionStatus>((Func<eDeviceConnectionStatus>)(() => GetDeviceStatusSync()));
 
-        public DeviceConnectionStatus TestDeviceSync()
+        public eDeviceConnectionStatus TestDeviceSync()
         {
             try
             {
                 _hasCriticalError = false;
                 ObliterateFiscalReceipt();
                 if (!ReopenPort())
-                    return DeviceConnectionStatus.InitializationError;
+                    return eDeviceConnectionStatus.InitializationError;
                 _logger?.LogDebug("Fp700 after open");
                 ClearDisplay();
                 IsZReportDone();
                 if (SendPackage(eCommand.PrintDiagnosticInformation))
-                    return DeviceConnectionStatus.Enabled;
-                return _serialDevice.IsOpen ? DeviceConnectionStatus.InitializationError : DeviceConnectionStatus.NotConnected;
+                    return eDeviceConnectionStatus.Enabled;
+                return _serialDevice.IsOpen ? eDeviceConnectionStatus.InitializationError : eDeviceConnectionStatus.NotConnected;
             }
             catch (Exception ex)
             {
@@ -374,7 +374,7 @@ namespace Front.Equipments.FP700
                 _logger?.LogError(ex, ex.Message);
                 ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, ex.Message)
                 { Status = eStatusRRO.Error, IsСritical = true });
-                return DeviceConnectionStatus.NotConnected;
+                return eDeviceConnectionStatus.NotConnected;
             }
         }
 
@@ -393,7 +393,7 @@ namespace Front.Equipments.FP700
             return true;
         }
 
-        public Task<DeviceConnectionStatus> TestDevice() => Task.Run<DeviceConnectionStatus>(new Func<DeviceConnectionStatus>(TestDeviceSync));
+        public Task<eDeviceConnectionStatus> TestDevice() => Task.Run<eDeviceConnectionStatus>(new Func<eDeviceConnectionStatus>(TestDeviceSync));
 
         public string PrintReceipt(ModelMID.Receipt pR, List<ReceiptText> Comments = null)
         {
