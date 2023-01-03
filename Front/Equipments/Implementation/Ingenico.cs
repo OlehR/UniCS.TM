@@ -19,9 +19,8 @@ namespace Front.Equipments
     {        
         private static BPOS1LibClass BPOS;
         private static bool CancelRequested;
-        private byte port;
+        private byte port;        
         
-        private readonly IConfiguration Configuration;
         private readonly ILogger<Ingenico> Logger;
         private readonly Encoding Encoding1251 = Encoding.GetEncoding(1251);
         private readonly Encoding Encoding1252 = Encoding.GetEncoding(1252);
@@ -33,7 +32,7 @@ namespace Front.Equipments
         public Action<DeviceLog> OnDeviceWarning { get; set; }        
 
         public Ingenico(Equipment pEquipment, IConfiguration pConfiguration, ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null, string pKeyPrefix = null) : 
-                                base(pEquipment, pConfiguration, eModelEquipment.Ingenico, pLoggerFactory, pKeyPrefix?? "Devices:Ingenico:")
+                                base(pEquipment, pConfiguration, eModelEquipment.Ingenico, pLoggerFactory)
         {            
             try
             {
@@ -62,32 +61,28 @@ namespace Front.Equipments
         }
 
         public async Task<Payment> Refund(double amount, string bsRRN,int pIdWorkPlace = 0)
-        {
-            Ingenico ingenico = this;
+        {           
             try
             {
-                if (!ingenico.StartBPOS())
+                if (!StartBPOS())
                     return new Payment()
                     {
                         IsSuccess = false
                     };
                 CancelRequested = false;
                 BPOS.Refund(Convert.ToUInt32(amount * 100.0), 0U, GetMechantIdByIdWorkPlace(pIdWorkPlace), bsRRN);
-                Payment paymentResultModel = ingenico.WaitPosRespone();
+                Payment paymentResultModel = WaitPosRespone();
                 if (paymentResultModel.IsSuccess)
                 {
                     BPOS.Confirm();
-                    ingenico.WaitResponse();                    
+                    WaitResponse();                    
                 }
                 StopBPOS();
                 return paymentResultModel;
             }
             catch (Exception ex)
             {
-                return new Payment()
-                {
-                    IsSuccess = false
-                };
+                return new Payment() { IsSuccess = false };
             }
             finally
             {
@@ -137,17 +132,17 @@ namespace Front.Equipments
 
         public eDeviceConnectionStatus TestDeviceSync()
         {
-            eDeviceConnectionStatus connectionStatus1 = eDeviceConnectionStatus.NotConnected;
+            eDeviceConnectionStatus connectionStatus = eDeviceConnectionStatus.NotConnected;
             if (!this.StartBPOS())
             {
                 OnDeviceWarning?.Invoke(new PosDeviceLog() { Category = TerminalLogCategory.Critical, Message = "Device not connected" });
-                return connectionStatus1;
+                return connectionStatus;
             }
             BPOS.Ping();
            
             if (Logger != null)
                 LoggerExtensions.LogDebug((ILogger)Logger, "[Ingenico] Get Device Connection Status");
-            eDeviceConnectionStatus connectionStatus2;
+           
             if (BPOS.LastResult == (byte)2)
             {
                 int lastResult = (int)BPOS.LastResult;
@@ -160,15 +155,15 @@ namespace Front.Equipments
                     LoggerExtensions.LogTrace((ILogger)Logger, "[Ingenico] Description = " + BPOS.LastStatMsgDescription);
                     LoggerExtensions.LogTrace((ILogger)Logger, "[Ingenico] LastErrorDescription = " + BPOS.LastErrorDescription);
                 }
-                connectionStatus2 = eDeviceConnectionStatus.Enabled;
+                connectionStatus = eDeviceConnectionStatus.Enabled;
             }
             else
             {
                 OnDeviceWarning?.Invoke(new PosDeviceLog() { Category = TerminalLogCategory.Critical, Message = $"Test failure with code {BPOS.LastResult}" });
-                connectionStatus2 = eDeviceConnectionStatus.InitializationError;
+                connectionStatus = eDeviceConnectionStatus.InitializationError;
             }
             StopBPOS();
-            return connectionStatus2;
+            return connectionStatus;
         }
 
         public Task<eDeviceConnectionStatus> TestDeviceAsync() => Task.Run<eDeviceConnectionStatus>((Func<eDeviceConnectionStatus>)(() => this.TestDeviceSync()));
@@ -223,7 +218,7 @@ namespace Front.Equipments
                         OnStatus?.Invoke(new PosStatus(){ Status = eStatusPos.TransactionCanceledByUser});
                     return new Payment(){ IsSuccess = false};
                 }
-                this.InvokeLastStatusMsg(BPOS.LastStatMsgCode);
+                InvokeLastStatusMsg(BPOS.LastStatMsgCode);
             }
 
             if (Logger != null)

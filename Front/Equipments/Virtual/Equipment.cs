@@ -27,7 +27,7 @@ namespace Front.Equipments
         protected string IP;
         protected int IpPort;
         protected IConfiguration Configuration;
-        protected string KeyPrefix;
+        protected string KeyPrefix {get { return "Devices:" + (string.IsNullOrEmpty(DeviceConfigName) ? this.GetType().Name : DeviceConfigName) + ":"; }}
         //protected Action<string, string> Logger = null;
         protected ILoggerFactory LoggerFactory;
         public Action<StatusEquipment> ActionStatus;
@@ -48,7 +48,7 @@ namespace Front.Equipments
 
         public Equipment() { }
 
-        public Equipment(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefine, ILoggerFactory pLoggerFactory= null, string pKeyPrefix=null   )
+        public Equipment(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefine, ILoggerFactory pLoggerFactory= null )
         {
             Configuration = pConfiguration;
             LoggerFactory = pLoggerFactory;
@@ -58,8 +58,7 @@ namespace Front.Equipments
                 Name = pEquipment.Name;
                 IsСritical = pEquipment.IsСritical;
                 Model = pEquipment.Model;
-            }
-            KeyPrefix = pKeyPrefix;
+            }            
         }
         public virtual void Init() { }
         public virtual StatusEquipment TestDevice() { throw new NotImplementedException(); }

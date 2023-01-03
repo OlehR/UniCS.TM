@@ -16,7 +16,8 @@ namespace Front.Equipments
     {
         protected byte MerchantId;
         List<Merchants> Merchants = new List<Merchants>();
-        public BankTerminal(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefine, ILoggerFactory pLoggerFactory = null, string pKeyPrefix = null) : base(pEquipment, pConfiguration, pModelEquipment, pLoggerFactory, pKeyPrefix) 
+        public BankTerminal(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefine, ILoggerFactory pLoggerFactory = null) : 
+            base(pEquipment, pConfiguration, pModelEquipment, pLoggerFactory) 
         {
             pConfiguration.GetSection($"{KeyPrefix}Merchants").Bind(Merchants);
         }
