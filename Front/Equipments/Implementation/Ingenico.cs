@@ -176,9 +176,13 @@ namespace Front.Equipments
                     return string.Empty;
                 BPOS.POSGetInfo();
                 Thread.Sleep(1000);
-                string terminalInfo = BPOS.TerminalInfo;
-                StopBPOS();
-                string str = "Model: Ingenico\n" + string.Format("COM port: COM{0}\n", (object)this.port) + string.Format("Baud rate: {0}\n", (object)this.BaudRate);
+                string terminalInfo = BPOS.TerminalInfo;                
+                string str = @$"Model: Ingenico
+COM port: COM{port}
+Baud rate: {BaudRate}
+TerminalId: {GetTerminalID}";
+                StopBPOS();                
+
                 if (!string.IsNullOrEmpty(terminalInfo))
                     str = str + "Software version: " + new string(terminalInfo.TakeWhile<char>((Func<char, bool>)(x => x != ' ')).ToArray<char>()) + "\nTerminal profile ID: " + new string(terminalInfo.Substring(terminalInfo.IndexOf(" ", StringComparison.Ordinal)).Take<char>(8).ToArray<char>());
                 return str;
