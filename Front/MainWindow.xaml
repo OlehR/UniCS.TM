@@ -312,7 +312,7 @@
 
                                     <Button x:Name="Delete" Click="_Delete">
                                         <Button.Content>
-                                            <Image  Margin="5" Source="icons\delete.png"></Image>
+                                            <Image  Margin="5" MaxWidth="50" Source="icons\delete.png"></Image>
                                         </Button.Content>
                                         <Button.Style>
                                             <Style BasedOn="{StaticResource WhiteButton}" TargetType="Button">
@@ -327,7 +327,7 @@
                                     </Button>
                                     <Button x:Name="Minus" Click="BtnClickMinusPlus" Grid.Column="1">
                                         <Button.Content>
-                                            <Image Margin="15" Source="icons\minus.png"></Image>
+                                            <Image Margin="15" MaxWidth="40" Source="icons\minus.png"></Image>
                                         </Button.Content>
                                         <Button.Style>
                                             <Style BasedOn="{StaticResource WhiteButton}" TargetType="Button">
@@ -389,7 +389,7 @@
 
                                     <Button x:Name="Plus" Click="BtnClickMinusPlus" Grid.Column="3">
                                         <Button.Content>
-                                            <Image Margin="15" Source="icons\plus.png"></Image>
+                                            <Image Margin="15" MaxWidth="40" Source="icons\plus.png"></Image>
                                         </Button.Content>
                                         <Button.Style>
                                             <Style BasedOn="{StaticResource WhiteButton}" TargetType="Button">
@@ -1204,7 +1204,7 @@
                         Height="60" Width="auto" Click="ClickButtonOk">
                             <StackPanel Orientation="Horizontal">
                                 <!-- <Image  Height="20" Width="20"  Source="icons\right.png"></Image>-->
-                                <TextBlock FontSize="35" Text="Додати вагу у чек" Margin="10,0,10,0"/>
+                                <TextBlock Foreground="White" FontSize="35" Text="Додати вагу у чек" Margin="10,0,10,0"/>
                             </StackPanel>
                             <Button.Style>
                                 <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
