@@ -67,7 +67,7 @@ namespace Front.Equipments.Implementation
             if (!IsOpenWorkDay) OpenWorkDay();
             if (!IsOpenWorkDay) return new LogRRO(pR) { CodeError = -1, Error = "Не вдалось відкрити зміну" };
 
-            ApiRRO d = new(pR) { token = Token, device = Device,tag=pR.NumberReceipt1C };
+            ApiRRO d = new(pR) { token = Token, device = Device,tag=pR.NumberReceiptRRO };
             string dd = d.ToJSON();
 
             var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");
@@ -136,7 +136,6 @@ namespace Front.Equipments.Implementation
             return true;// GetLogRRO<ResponceReport>(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace }, Res,eTypeOperation.PeriodZReport);
         }
 
-
         /// <summary>
         /// Внесення/Винесення коштів коштів. pSum>0 - внесення
         /// </summary>
@@ -151,7 +150,6 @@ namespace Front.Equipments.Implementation
             Responce<ResponceReport> Res = JsonConvert.DeserializeObject<Responce<ResponceReport>>(r);
             return GetLogRRO(pIdR, Res, pSum>0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyIn);            
         }
-
 
         override public StatusEquipment TestDevice()
         {
@@ -170,8 +168,12 @@ namespace Front.Equipments.Implementation
 
         override public string GetDeviceInfo()
         {
-            var r = RequestAsync($"{Url}/vchasno-kasa/api/v1/dashboard", HttpMethod.Get, null, TimeOut, "application/json");
-            return r;
+            //int ind = Url.IndexOf(@"/dm");
+            //string url = ind > 0 ?Url.Substring(0,ind+3) : Url;
+            //var r = RequestAsync($"{url}/vchasno-kasa/api/v1/dashboard", HttpMethod.Get, null, TimeOut, "application/json");
+
+            var r = GetDeviceInfo2().ToJSON();
+            return  $"IdWorkplacePay=>{IdWorkplacePay}{Environment.NewLine}Url=>{Url}{Environment.NewLine}{r}";
         }
 
         LogRRO GetLogRRO<Ob>(IdReceipt pIdR ,Responce<Ob> pR, eTypeOperation pTypeOperation)
@@ -192,7 +194,6 @@ namespace Front.Equipments.Implementation
             return Res;
         }
 
-
         Responce<ResponseDeviceInfo> GetDeviceInfo2()
         {
             ApiRRO d = new(eTask.DeviceInfo) { token = Token, device = Device };
@@ -202,7 +203,7 @@ namespace Front.Equipments.Implementation
             return Res;
         }    
 
-    static public string RequestAsync(string parUrl, HttpMethod pMethod, string pBody = null, int pWait = 5000, string pContex = "application/json;charset=UTF-8", AuthenticationHeaderValue pAuthentication = null)
+        static public string RequestAsync(string parUrl, HttpMethod pMethod, string pBody = null, int pWait = 5000, string pContex = "application/json;charset=UTF-8", AuthenticationHeaderValue pAuthentication = null)
         {
             string res = null;
             HttpClient client = new HttpClient();
@@ -227,11 +228,13 @@ namespace Front.Equipments.Implementation
             return res;
         }
 
-        override public decimal SumReceiptFiscal(Receipt pR)
+        override public decimal SumReceiptFiscal(Receipt pR, int pIdWorkplacePay = 0)
         {
             decimal sum = 0;
-            if(pR!=null && pR.Wares!=null && pR.Wares.Any()) sum=pR.Wares.Sum(el => Math.Round(el.Price * el.Quantity, 2) - Math.Round(el.SumDiscount, 2)); //pR.SumTotal;
-            return sum; //throw new NotImplementedException();
+            if (pR != null && pR.Wares != null && pR.Wares.Any())
+                sum = pR.Wares.Where(el => el.IdWorkplacePay == pIdWorkplacePay || pIdWorkplacePay == 0).
+                        Sum(el => Math.Round(el.Price * el.Quantity, 2) - Math.Round(el.SumDiscount, 2));                    
+            return sum; 
         }
 
     }

@@ -12,10 +12,9 @@ namespace ModelMID
 
     public class ReceiptWares : IdReceiptWares, ICloneable
     {
-        /// <summary>
-        /// Код робочого місця (важливо коли кілька підприємців)
-        /// </summary>
-        public int IdWorkplacePay { get; set; }
+        public int IdWorkplacePay { get { if (_IdWorkplacePay == 0) _IdWorkplacePay = Global.GetIdWorkPlacePay(CodeDirection); return _IdWorkplacePay; } set { _IdWorkplacePay = value; } }
+        int _IdWorkplacePay;
+
         /// <summary>
         /// Код групи товару
         /// </summary>

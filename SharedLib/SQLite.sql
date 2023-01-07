@@ -35,6 +35,9 @@ alter TABLE RECEIPT    add  NUMBER_RECEIPT_POS TEXT;--Ver=>9
 alter TABLE RECEIPT    add Sum_Wallet NUMBER   NOT NULL DEFAULT 0;--Ver=>10
 alter TABLE RECEIPT    add ReceiptId TEXT;--Ver=>11
 alter TABLE WARES_RECEIPT add id_workplace_pay INTEGER  NOT NULL DEFAULT 0;--Ver=>12
+alter TABLE payment add id_workplace_pay INTEGER  NOT NULL DEFAULT 0;--Ver=>13
+alter TABLE LOG_RRO add id_workplace_pay INTEGER  NOT NULL DEFAULT 0;--Ver=>13
+
 
 
 [SqlUpdateMID]
@@ -740,6 +743,7 @@ CREATE UNIQUE INDEX id_wares_ekka ON wares_ekka(CODE_WARES,price);
 CREATE TABLE payment	
  (
     ID_WORKPLACE      INTEGER  NOT NULL,
+    id_workplace_pay  INTEGER  NOT NULL DEFAULT 0,
     CODE_PERIOD       INTEGER  NOT NULL,
     CODE_RECEIPT      INTEGER  NOT NULL,
     TYPE_PAY INTEGER  NOT NULL,
@@ -786,6 +790,7 @@ CREATE INDEX id_RECEIPT_Event ON RECEIPT_Event (CODE_RECEIPT,CODE_WARES,ID_WORKP
 
 CREATE TABLE Log_RRO (
     ID_WORKPLACE      INTEGER  NOT NULL,
+    ID_WORKPLACE_PAY  INTEGER  NOT NULL DEFAULT 0,
     CODE_PERIOD       INTEGER  NOT NULL,
     CODE_RECEIPT      INTEGER  NOT NULL,
     FiscalNumber      TEXT,
@@ -1159,8 +1164,8 @@ Select min(case when CODE_DEALER=-888888  then PRICE_DEALER else null end) as Mi
  from price where CODE_DEALER in(-999999,-888888) and CODE_WARES=@CodeWares
  
  [SqlReplacePayment]
- replace into  payment	(ID_WORKPLACE, CODE_PERIOD, CODE_RECEIPT, TYPE_PAY, SUM_PAY, SUM_ext, NUMBER_TERMINAL, NUMBER_RECEIPT, CODE_authorization, NUMBER_SLIP, Number_Card,Pos_Paid , Pos_Add_Amount ,Card_Holder,Issuer_Name, Bank, TransactionId,DATE_CREATE) values
-                        (@IdWorkplace, @CodePeriod, @CodeReceipt, @TypePay, @SumPay, @SumExt, @NumberTerminal, @NumberReceipt, @CodeAuthorization, @NumberSlip, @NumberCard, @PosPaid, @PosAddAmount ,@CardHolder,@IssuerName, @Bank,@TransactionId, @DateCreate);
+ replace into  payment	(ID_WORKPLACE, id_workplace_pay ,CODE_PERIOD, CODE_RECEIPT, TYPE_PAY, SUM_PAY, SUM_ext, NUMBER_TERMINAL, NUMBER_RECEIPT, CODE_authorization, NUMBER_SLIP, Number_Card,Pos_Paid , Pos_Add_Amount ,Card_Holder,Issuer_Name, Bank, TransactionId,DATE_CREATE) values
+                        (@IdWorkplace, @IdWorkplacePay , @CodePeriod, @CodeReceipt, @TypePay, @SumPay, @SumExt, @NumberTerminal, @NumberReceipt, @CodeAuthorization, @NumberSlip, @NumberCard, @PosPaid, @PosAddAmount ,@CardHolder,@IssuerName, @Bank,@TransactionId, @DateCreate);
 
 [SqlReplaceMRC]
  replace into  MRC	(Code_Wares, Price,Type_Wares) values  (@CodeWares, @Price,@TypeWares);
@@ -1172,7 +1177,7 @@ replace into User (CODE_USER, NAME_USER,  BAR_CODE,Type_User, LOGIN, PASSWORD) v
  replace into  Sales_Ban (CODE_GROUP_WARES, Amount) values  (@CodeGroupWares, @Amount);
 
 [SqlGetPayment]
-select id_workplace as IdWorkplace, code_period as CodePeriod, code_receipt as CodeReceipt, 
+select id_workplace as IdWorkplace, id_workplace_pay as IdWorkplacePay,code_period as CodePeriod, code_receipt as CodeReceipt, 
  TYPE_PAY as TypePay, SUM_PAY as SumPay, SUM_EXT as SumExt,
     NUMBER_TERMINAL as NumberTerminal,   NUMBER_RECEIPT as NumberReceipt, CODE_AUTHORIZATION as CodeAuthorization, NUMBER_SLIP as NumberSlip,
     Pos_Paid as PosPaid, Pos_Add_Amount as PosAddAmount, DATE_CREATE as DateCreate,Number_Card as NumberCard,
@@ -1371,9 +1376,8 @@ where r.STATE_RECEIPT=-1
     where (Login=@Login and Password=@Password) or BAR_CODE=@BarCode;
 
 [SqlInsertLogRRO]
-insert into Log_RRO  (
-      ID_WORKPLACE,CODE_PERIOD,CODE_RECEIPT,FiscalNumber, Number_Operation,Type_Operation, SUM ,Type_RRO,JSON, Text_Receipt,Error, USER_CREATE) VALUES
-    (@IdWorkplace, @CodePeriod,@CodeReceipt,@FiscalNumber,@NumberOperation,@TypeOperation,@SUM,@TypeRRO,@JSON,@TextReceipt,@Error,@UserCreate)
+insert into Log_RRO  (ID_WORKPLACE,ID_WORKPLACE_PAY,CODE_PERIOD,CODE_RECEIPT,FiscalNumber, Number_Operation,Type_Operation, SUM ,Type_RRO,JSON, Text_Receipt,Error, USER_CREATE) VALUES
+                     (@IdWorkplace, @IdWorkplacePay,@CodePeriod,@CodeReceipt,@FiscalNumber,@NumberOperation,@TypeOperation,@SUM,@TypeRRO,@JSON,@TextReceipt,@Error,@UserCreate)
 
 [SqlGetLogRRO]
 Select ID_WORKPLACE as IdWorkplace,CODE_PERIOD as CodePeriod,CODE_RECEIPT as CodeReceipt,

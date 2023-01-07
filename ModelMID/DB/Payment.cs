@@ -6,6 +6,7 @@ namespace ModelMID
 {
     public class Payment:IdReceipt
     {
+        public int IdWorkplacePay { get; set; }
         public bool IsSuccess { get; set; }
         public eTypePay TypePay { get; set; } = eTypePay.Card;
         public decimal SumPay  { get; set;}

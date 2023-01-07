@@ -12,7 +12,7 @@ namespace ModelMID
     /// Зберігає інформацію про чек
     /// </summary>
     public class Receipt : IdReceipt
-    {
+    {        
         private DateTime _DateReceipt;
         /// <summary>
         /// Дата Чека

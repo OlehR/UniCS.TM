@@ -13,6 +13,7 @@ using Front.Equipments.Virtual;
 using Front.Models;
 using ModelMID;
 using ModelMID.DB;
+using ModernExpo.SelfCheckout.Utils;
 using SharedLib;
 using Utils;
 
@@ -98,7 +99,7 @@ namespace Front
                         {
                             LastCodeWares = pReceipt.GetLastWares.CodeWares;
                             ReceiptWares cl = (ReceiptWares)pReceipt.GetLastWares.Clone();
-                            EF.ProgramingArticleAsync(pReceipt, cl );
+                            EF.ProgramingArticleAsync(pReceipt, cl, cl.IdWorkplacePay);
                         }
                     }
                     // if (curReceipt?.Wares?.Count() == 0 && curReceipt.OwnBag==0d) CS.WaitClear();
@@ -369,7 +370,6 @@ namespace Front
                     if (c != null) return;
                 }
             }
-
            
             if ((State != eStateMainWindows.WaitInput && State != eStateMainWindows.StartWindow) || curReceipt?.IsLockChange == true || !IsAddNewWares)
                 if (State != eStateMainWindows.ProcessPay && State != eStateMainWindows.ProcessPrintReceipt && State != eStateMainWindows.WaitCustomWindows)
@@ -444,39 +444,45 @@ namespace Front
                 return true;
             }
 
-
             lock (LockPayPrint)
             {
+                int[] IdWorkplacePays = R.Wares.Select(el => el.IdWorkplacePay).Distinct().OrderBy(el => el).ToArray();
                 R.StateReceipt = Bl.GetStateReceipt(R);
-                if (R.StateReceipt == eStateReceipt.Prepare)
+                if (R.StateReceipt == eStateReceipt.Prepare || R.StateReceipt == eStateReceipt.PartialPay)
                 {
                     try
                     {
                         if (R.TypeReceipt == eTypeReceipt.Sale)
                             Bl.GenQRAsync(R.Wares);
-                        R.StateReceipt = eStateReceipt.StartPay;
-                        Bl.SetStateReceipt(curReceipt, eStateReceipt.StartPay);
-                        decimal sum = EF.SumReceiptFiscal(R); //R.Wares.Sum(r => (r.SumTotal)); //TMP!!!Треба переробити
-                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Sum={sum}", eTypeLog.Expanded);
-                        SetStateView(eStateMainWindows.ProcessPay);
-                        var pay = R.TypeReceipt == eTypeReceipt.Sale ? EF.PosPurchase(R, sum) : EF.PosRefund(R, sum, R.AdditionC1);
+                        var Pays = new List<Payment>();
+                        foreach (var IdWorkplacePay in IdWorkplacePays)
+                        {                            
+                            if (R.Payment!=null && R.Payment.Any(el=>el.IdWorkplacePay == IdWorkplacePay && el.IsSuccess ))
+                                continue;
+                            R.StateReceipt = eStateReceipt.StartPay;
+                            Bl.SetStateReceipt(curReceipt, eStateReceipt.StartPay);
+                            decimal sum = EF.SumReceiptFiscal(R, IdWorkplacePay);
+                            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Sum={sum}", eTypeLog.Expanded);
+                            SetStateView(eStateMainWindows.ProcessPay);
+                            var pay = R.TypeReceipt == eTypeReceipt.Sale ? EF.PosPurchase(R, sum, IdWorkplacePay) : EF.PosRefund(R, sum, R.AdditionC1, IdWorkplacePay);
 
-                        if (pay != null && pay.IsSuccess)
-                        {
-                            R.StateReceipt = eStateReceipt.Pay;
-                            R.CodeCreditCard = pay.NumberCard;
-                            R.NumberReceiptPOS = pay.NumberReceipt;
-                            //R.Client = null;
-                            R.SumCreditCard = pay.SumPay;
-                            Bl.db.ReplaceReceipt(R);
-                            R.Payment = new List<Payment>() { pay };
-                        }
-                        else
-                        {
-                            //SetStateView(eStateMainWindows.WaitInput);
-                            R.StateReceipt = eStateReceipt.Prepare;
-                            Bl.SetStateReceipt(curReceipt, eStateReceipt.Prepare);
-                            TextError = $"Оплата не пройшла: {EquipmentInfo}";
+                            if (pay != null && pay.IsSuccess)
+                            {
+                                R.StateReceipt = eStateReceipt.Pay;
+                                R.CodeCreditCard = pay.NumberCard;
+                                R.NumberReceiptPOS = pay.NumberReceipt;
+                                //R.Client = null;
+                                R.SumCreditCard = pay.SumPay;
+                                Bl.db.ReplaceReceipt(R);                               
+                                R.Payment = Bl.db.GetPayment(R);
+                            }
+                            else
+                            {                                
+                                R.StateReceipt = R.Payment?.Any()==true? eStateReceipt.PartialPay : eStateReceipt.Prepare;
+                                Bl.SetStateReceipt(curReceipt, R.StateReceipt);
+                                TextError = $"Оплата не пройшла: {EquipmentInfo}";
+                                break;
+                            }
                         }
                     }
                     catch (Exception e)
@@ -487,56 +493,52 @@ namespace Front
                     }
                 }
                 R.StateReceipt = Bl.GetStateReceipt(R);
-                if (R.StateReceipt == eStateReceipt.Pay || R.StateReceipt == eStateReceipt.StartPrint)
+                if (R.StateReceipt == eStateReceipt.Pay || R.StateReceipt == eStateReceipt.PartialPrint )
                 {
+                    LogRRO res = null;
                     //Відключаємо контроль контрольної ваги тимчасово до наступної зміни товарного складу.
                     CS.IsControl = false;
                     R.Client = Client;
                     R.StateReceipt = eStateReceipt.StartPrint;
-                    Bl.SetStateReceipt(curReceipt, eStateReceipt.StartPrint);
+                    Bl.SetStateReceipt(curReceipt, R.StateReceipt);
                     try
                     {
                         SetStateView(eStateMainWindows.ProcessPrintReceipt);
-                        //Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
-                        var res = EF.PrintReceipt(R);
+                        var Log= Bl.GetLogRRO(R).Where(el=> el.TypeOperation == (R.TypeReceipt== eTypeReceipt.Sale?eTypeOperation.Sale:eTypeOperation.Refund)).
+                            Select(el=>el.IdWorkplacePay);
+                        for (var i=0;i< IdWorkplacePays.Length;i++)
+                        {
+                            if(Log!=null && Log.Any() && Log.Where(el => el == IdWorkplacePays[i]).Any())
+                                continue;
+                            R.IdWorkplacePay= IdWorkplacePays[i];
+                            res = EF.PrintReceipt(R);
+                            if (res.CodeError == 0)
+                            {
+                                R.SumFiscal += res.SUM;
+                                R.StateReceipt = (i== IdWorkplacePays.Length-1? eStateReceipt.Print: eStateReceipt.PartialPrint);                               
+                            }
+                        }
+                        if (res == null)
+                            return true;
                         if (res.CodeError == 0)
                         {
-                            R.StateReceipt = eStateReceipt.Print;
-                            Bl.UpdateReceiptFiscalNumber(R, res.FiscalNumber, res.SUM);
+                            Bl.UpdateReceiptFiscalNumber(R, res.FiscalNumber, R.SumFiscal);
                             s.Play(eTypeSound.DoNotForgetProducts);
-
-                            /*if (R.TypeReceipt == eTypeReceipt.Sale)
-                            {
-                                var QR = Bl.GetQR(R);
-                                if (QR != null && QR.Any())
-                                {
-                                    foreach (var el in QR)
-                                    {
-                                        foreach (string elQr in el.Qr.Split(","))
-                                        {
-                                            List<string> list = new List<string>() { el.Name, $"QR=>{elQr}" };
-                                            EF.PrintNoFiscalReceipt(R,list);
-                                        }
-                                    }
-                                }
-                            }*/
                             Bl.ds.SendReceiptTo1C(curReceipt);
                             SetCurReceipt(null);
                             Res = true;
                         }
                         else
                         {
-                            R.StateReceipt = eStateReceipt.Pay;
-                            Bl.SetStateReceipt(curReceipt, eStateReceipt.Pay);
-                            TextError = $"Помилка друку чеків:({res.CodeError}){Environment.NewLine}{res.Error}";
+                            Bl.SetStateReceipt(curReceipt, R.StateReceipt == eStateReceipt.StartPrint? eStateReceipt.Pay: eStateReceipt.StartPrint);
+                            TextError = $"Помилка друку чеків:({res?.CodeError}){Environment.NewLine}{res.Error}";
                             //MessageBox.Show(res.Error, "Помилка друку чеків");
                             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Помилка друку чеків" + res.Error, eTypeLog.Error);
                         }
                     }
                     catch (Exception e)
                     {
-                        R.StateReceipt = eStateReceipt.Pay;
-                        Bl.SetStateReceipt(curReceipt, eStateReceipt.Pay);
+                        Bl.SetStateReceipt(curReceipt, R.StateReceipt);
                         FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
                     }
                 }

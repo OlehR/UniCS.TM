@@ -22,6 +22,8 @@ namespace ModelMID
         public static SortedList<Guid, WorkPlace> WorkPlaceByTerminalId;
         public static SortedList<int, WorkPlace> WorkPlaceByWorkplaceId;
 
+        public static SortedList<int, int> IdWorkPlacePay = new();
+
         public static eTypeWorkplace TypeWorkplace = eTypeWorkplace.SelfServicCheckout;
         /// <summary>
         /// Id робочого місця
@@ -207,7 +209,14 @@ namespace ModelMID
                 return WorkPlaceByWorkplaceId[parIdWorkPlace].VideoCameraIP;
             return null;
         }
-        
+
+        public static int GetIdWorkPlacePay(int pCodeDirection)
+        {
+            if (IdWorkPlacePay.ContainsKey(pCodeDirection))
+                return IdWorkPlacePay[pCodeDirection];
+            return IdWorkPlace;
+        }
+                
         public static string GetTaxGroup(int parTypeVat, int parTypeWares = 0)
         {
             if (parTypeVat == 0 && parTypeWares == 0)

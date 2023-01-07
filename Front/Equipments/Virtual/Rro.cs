@@ -22,6 +22,7 @@ namespace Front.Equipments
         protected string OperatorPass = "0000";
         protected int CodeError = -1;
         protected string StrError;
+        public int IdWorkplacePay;
         /// <summary>
         /// Чи відкрита зміна.
         /// </summary>
@@ -34,7 +35,14 @@ namespace Front.Equipments
 
         public Rro(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefine, ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment, pConfiguration, pModelEquipment, pLoggerFactory)
         {
+
             ActionStatus = pActionStatus;
+            try
+            {
+              IdWorkplacePay = Convert.ToInt32(Configuration[$"{KeyPrefix}IdWorkplacePay"]);
+            }catch(Exception ex) { IdWorkplacePay = Global.IdWorkPlace; }
+            if (IdWorkplacePay == 0)
+                IdWorkplacePay = Global.IdWorkPlace;
         }
 
         public virtual void SetOperatorName(string pOperatorName)
@@ -119,12 +127,12 @@ namespace Front.Equipments
             return null;
         }
 
-        virtual public decimal SumReceiptFiscal(Receipt pR)
+        virtual public decimal SumReceiptFiscal(Receipt pR, int pIdWorkplacePay=0)
         {
             decimal sum = 0;
-            if (pR != null && pR.Wares != null && pR.Wares.Any())
-                sum = pR.Wares.Sum(r => (r.SumTotal));
-            //decimal sum = pR.Wares.Sum(el => Math.Round(el.Price * el.Quantity, 2) - Math.Round(el.SumDiscount, 2)); //pR.SumTotal;
+            if (pR != null && pR.Wares != null && pR.Wares.Any())            
+                 sum = pIdWorkplacePay == 0  ? pR.Wares.Sum(r => (r.SumTotal)): pR.Wares.Where(r=>r.IdWorkplacePay== pIdWorkplacePay).Sum(r => (r.SumTotal));
+             //decimal sum = pR.Wares.Sum(el => Math.Round(el.Price * el.Quantity, 2) - Math.Round(el.SumDiscount, 2)); //pR.SumTotal;
             return sum; //throw new NotImplementedException();
         }
         /// <summary>

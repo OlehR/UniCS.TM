@@ -53,11 +53,13 @@ namespace Front.Equipments
             Configuration = pConfiguration;
             LoggerFactory = pLoggerFactory;
             Model = pModelEquipment;
+            
             if (pEquipment != null)
             {
                 Name = pEquipment.Name;
                 IsСritical = pEquipment.IsСritical;
                 Model = pEquipment.Model;
+                DeviceConfigName = pEquipment.DeviceConfigName;
             }            
         }
         public virtual void Init() { }

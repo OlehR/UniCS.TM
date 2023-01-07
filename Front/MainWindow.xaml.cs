@@ -61,7 +61,7 @@ namespace Front
         public string WaresQuantity { get { return curReceipt?.Wares?.Count().ToString() ?? "0"; } }
 
         //double tempMoneySum;
-        public decimal MoneySum { get { return EF.SumReceiptFiscal(curReceipt); } } //return curReceipt?.Wares?.Sum(r => r.SumTotal) ?? 0; } }
+        public decimal MoneySum { get { return EF.SumReceiptFiscal(curReceipt,0); } } //return curReceipt?.Wares?.Sum(r => r.SumTotal) ?? 0; } }
         
         public string EquipmentInfo { get; set; }
         bool _Volume = true;

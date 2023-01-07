@@ -51,10 +51,11 @@ namespace ModelMID.DB
         RefundPOS = 20101
     }
 
-    public class LogRRO: IdReceipt
+    public class LogRRO : IdReceipt
     {
         public LogRRO() { }
         public LogRRO(IdReceipt pIdReceipt) : base(pIdReceipt) { }
+        public int IdWorkplacePay {get;set;}
         public int NumberOperation { get; set; }
         public string FiscalNumber { get; set; }
         public eTypeOperation TypeOperation { get; set; }

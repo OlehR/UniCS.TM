@@ -180,7 +180,7 @@ namespace Front.Equipments
                 string str = @$"Model: Ingenico
 COM port: COM{port}
 Baud rate: {BaudRate}
-TerminalId: {GetTerminalID}";
+TerminalId: {GetTerminalID}{Environment.NewLine}";
                 StopBPOS();                
 
                 if (!string.IsNullOrEmpty(terminalInfo))
@@ -652,7 +652,7 @@ TerminalId: {GetTerminalID}";
             StopBPOS();
         }
 
-        public override ModelMID.Payment Purchase(decimal pAmount, decimal pCash = 0, int IdWorkPlace = 0)
+        public override Payment Purchase(decimal pAmount, decimal pCash = 0, int IdWorkPlace = 0)
         {
             return Purchase(Convert.ToDouble(pAmount), Convert.ToDouble(pCash), IdWorkPlace).Result;
         }

@@ -150,16 +150,26 @@ namespace ModelMID
         /// Початок оплати (Для блокування дій з чеком)
         /// </summary>
         StartPay = 1,
+        [Description("Часткова оплата")]
+        /// <summary>
+        /// Часткова оплата
+        /// </summary>
+        PartialPay = 2,
         [Description("Оплачено")]
         /// <summary>
         /// Оплачено
         /// </summary>
-        Pay = 2,
+        Pay = 3,
         [Description("Початок Фіскалізації")]
         /// <summary>
         /// Початок Фіскалізації (Для блокування дій з чеком)
         /// </summary>
-        StartPrint = 3,
+        StartPrint = 6,
+        [Description("Часткова Фіскалізації")]
+        /// <summary>
+        /// Часткова Фіскалізації (Для блокування дій з чеком)
+        /// </summary>
+        PartialPrint = 7,
         [Description("Фіскалізацізовано")]
         /// <summary>
         /// Надруковано

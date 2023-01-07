@@ -10,15 +10,15 @@ namespace SharedLib
 {
     public class Config
     {
-        static Config sConfig= null;
+        static Config sConfig = null;
 
-        static Config GetConfig { get { if(sConfig == null) sConfig = new Config();  return sConfig; } }
+        static Config GetConfig { get { if (sConfig == null) sConfig = new Config(); return sConfig; } }
 
         public static IConfigurationRoot AppConfiguration;
 
         public Config(string settingsFilePath = "appsettings.json")
         {
-            sConfig=this;
+            sConfig = this;
             var CurDir = AppDomain.CurrentDomain.BaseDirectory;
             AppConfiguration = new ConfigurationBuilder()
                 .SetBasePath(CurDir)
@@ -80,7 +80,7 @@ namespace SharedLib
             }
             catch
             { Global.IsGenQrCoffe = false; }
-             
+
 
             try
             {
@@ -115,7 +115,7 @@ namespace SharedLib
 
             Global.PathPictures = AppConfiguration["MID:PathPictures"];
             if (string.IsNullOrWhiteSpace(Global.PathPictures))
-                Global.PathPictures = @"D:\Pictures\";            
+                Global.PathPictures = @"D:\Pictures\";
 
             //Global.DefaultCodeDealer = Convert.ToInt32(AppConfiguration["MID:DefaultCodeDealer"]);
             if (!Directory.Exists(Global.PathDB))
@@ -127,6 +127,8 @@ namespace SharedLib
             }
             catch
             { Global.TypeWorkplace = eTypeWorkplace.SelfServicCheckout; }
+
+
 
             try
             {
@@ -148,6 +150,14 @@ namespace SharedLib
             }
             catch
             { Global.MaxWeightBag = 100; }
+
+
+            var IdWorkPlaces = new List<IdWorkPlaces>();
+            AppConfiguration.GetSection("MID:IdWorkPlaces").Bind(IdWorkPlaces);
+
+            foreach(var el in IdWorkPlaces)
+                foreach(var dir in el.CodeDirections)
+                    Global.IdWorkPlacePay.Add(dir,el.IdWorkPlace);
         }
 
         public static IConfigurationRoot GetConfiguration()
@@ -155,4 +165,12 @@ namespace SharedLib
             return AppConfiguration;
         }
     }
+
+
+    class IdWorkPlaces
+    {
+        public int IdWorkPlace { get; set; }
+        public int[] CodeDirections { get; set; }
+    }
 }
+

@@ -23,7 +23,12 @@ namespace ModelMID
             }
         }
 
+        public int IdWorkplacePay { get; set; }
         public int IdWorkplace { get; set; }
+        /// <summary>
+        /// Код робочого місця (важливо коли кілька підприємців)
+        /// </summary>
+   
         public int CodePeriod { get; set; }
         public int CodeReceipt { get; set; }
 
@@ -89,6 +94,13 @@ namespace ModelMID
                 var d = Convert.ToInt32(Math.Floor((DTPeriod - new DateTime(2019, 01, 01)).TotalDays)).ToString("D4");
                 return PrefixWarehouse + Global.GetNumberCashDeskByIdWorkplace(IdWorkplace) + d + CodeReceipt.ToString("D4");
             }
+        }
+        /// <summary>
+        /// Унікальний номер чека  коли 2 підприємця і 2 чека 
+        /// </summary>
+        public string NumberReceiptRRO
+        {
+            get { return NumberReceipt1C + (IdWorkplacePay>0?$"_{IdWorkplacePay}":"");}
         }
     }
 }
