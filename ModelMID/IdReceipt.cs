@@ -72,6 +72,7 @@ namespace ModelMID
             IdWorkplace = idReceipt.IdWorkplace;
             CodePeriod = idReceipt.CodePeriod;
             CodeReceipt = idReceipt.CodeReceipt;
+            IdWorkplacePay= idReceipt.IdWorkplacePay;
         }
         public override bool Equals(object obj)
         {

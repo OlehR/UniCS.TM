@@ -231,7 +231,7 @@ namespace Front.Control
         {
             var task = Task.Run(() =>
             {
-                var r = EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() }, Global.IdWorkPlace  );
+                var r = EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(),IdWorkplacePay= Global.IdWorkPlace });
                 if (r.CodeError == 0)
                     ViewReceiptFiscal(r);
                 else
@@ -248,7 +248,7 @@ namespace Front.Control
             {
                 var task = Task.Run(() =>
             {
-                var r = EF.RroPrintZ(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() }, Global.IdWorkPlace);
+                var r = EF.RroPrintZ(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(),IdWorkplacePay = Global.IdWorkPlace });
                 if (r.CodeError == 0)
                     ViewReceiptFiscal(r);
                 else
@@ -264,8 +264,8 @@ namespace Front.Control
         {
             var task = Task.Run(() =>
             {
-                var tmpReceipt = new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() };
-                var r = EF.RroPeriodZReport(tmpReceipt, DateStartPeriodZ, DateEndPeriodZ,Global.IdWorkPlace , !IsShortPeriodZ);
+                var tmpReceipt = new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() ,IdWorkplacePay= Global.IdWorkPlace };
+                var r = EF.RroPeriodZReport(tmpReceipt, DateStartPeriodZ, DateEndPeriodZ , !IsShortPeriodZ);
             });
         }
 
@@ -307,7 +307,7 @@ namespace Front.Control
             var task = Task.Run(() =>
             {
                 EF.PosPrintZ();
-                var r = EF.RroPrintZ(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() }, Global.IdWorkPlace);
+                var r = EF.RroPrintZ(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = Global.IdWorkPlace });
             });
         }
 
@@ -647,7 +647,10 @@ namespace Front.Control
         private void Print(object sender, RoutedEventArgs e)
         {
             if (LastReceipt?.Receipt?.Count() > 0)
-                EF.PrintNoFiscalReceipt(MW.curReceipt,LastReceipt.Receipt, Global.IdWorkPlace);
+            {
+                MW.curReceipt.IdWorkplacePay= Global.IdWorkPlace;
+                EF.PrintNoFiscalReceipt(MW.curReceipt, LastReceipt.Receipt );
+            }
         }
 
         private void ListJournalSelectionChanged(object sender, SelectionChangedEventArgs e)

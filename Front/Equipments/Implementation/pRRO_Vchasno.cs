@@ -5,20 +5,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Front.Equipments.Implementation.ModelVchasno;
 using ModelMID;
 using Newtonsoft.Json;
-using System.Globalization;
 using System.Net.Http;
-using System.Security.Policy;
 using System.Net.Http.Headers;
 using ModelMID.DB;
 using Utils;
-using System.Buffers.Text;
-using System.Web;
-using System.Windows.Media;
-//using Front.Equipments.Utils;
 
 namespace Front.Equipments.Implementation
 {
@@ -228,15 +221,14 @@ namespace Front.Equipments.Implementation
             return res;
         }
 
-        override public decimal SumReceiptFiscal(Receipt pR, int pIdWorkplacePay = 0)
+        override public decimal SumReceiptFiscal(Receipt pR)
         {
             decimal sum = 0;
             if (pR != null && pR.Wares != null && pR.Wares.Any())
-                sum = pR.Wares.Where(el => el.IdWorkplacePay == pIdWorkplacePay || pIdWorkplacePay == 0).
+                sum = pR.Wares.Where(el => el.IdWorkplacePay == pR.IdWorkplacePay || pR.IdWorkplacePay == 0).
                         Sum(el => Math.Round(el.Price * el.Quantity, 2) - Math.Round(el.SumDiscount, 2));                    
             return sum; 
         }
-
     }
 }
 
@@ -264,13 +256,12 @@ namespace Front.Equipments.Implementation.ModelVchasno
         NumberZReport = 12,
         [Description("Періодичний Z звіт")]
         PeriodZReport = 13,
+        [Description("Видача готівки")]
         IssueOfCash = 14,
-
         [Description("Інформація про RRO")]
         DeviceInfo = 18,
         NumberFiscal = 20,
         NumberReceipt = 21,
-
         [Description("Копія чеку")]
         CopyReceipt = 22
 

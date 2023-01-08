@@ -55,7 +55,7 @@ namespace ModelMID.DB
     {
         public LogRRO() { }
         public LogRRO(IdReceipt pIdReceipt) : base(pIdReceipt) { }
-        public int IdWorkplacePay {get;set;}
+        
         public int NumberOperation { get; set; }
         public string FiscalNumber { get; set; }
         public eTypeOperation TypeOperation { get; set; }

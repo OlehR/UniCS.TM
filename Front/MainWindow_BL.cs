@@ -99,7 +99,7 @@ namespace Front
                         {
                             LastCodeWares = pReceipt.GetLastWares.CodeWares;
                             ReceiptWares cl = (ReceiptWares)pReceipt.GetLastWares.Clone();
-                            EF.ProgramingArticleAsync(pReceipt, cl, cl.IdWorkplacePay);
+                            EF.ProgramingArticleAsync( cl);
                         }
                     }
                     // if (curReceipt?.Wares?.Count() == 0 && curReceipt.OwnBag==0d) CS.WaitClear();
@@ -460,11 +460,12 @@ namespace Front
                             if (R.Payment!=null && R.Payment.Any(el=>el.IdWorkplacePay == IdWorkplacePay && el.IsSuccess ))
                                 continue;
                             R.StateReceipt = eStateReceipt.StartPay;
+                            R.IdWorkplacePay = IdWorkplacePay;
                             Bl.SetStateReceipt(curReceipt, eStateReceipt.StartPay);
-                            decimal sum = EF.SumReceiptFiscal(R, IdWorkplacePay);
+                            decimal sum = EF.SumReceiptFiscal(R);
                             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Sum={sum}", eTypeLog.Expanded);
                             SetStateView(eStateMainWindows.ProcessPay);
-                            var pay = R.TypeReceipt == eTypeReceipt.Sale ? EF.PosPurchase(R, sum, IdWorkplacePay) : EF.PosRefund(R, sum, R.AdditionC1, IdWorkplacePay);
+                            var pay = R.TypeReceipt == eTypeReceipt.Sale ? EF.PosPurchase(R, sum) : EF.PosRefund(R, sum, R.AdditionC1);
 
                             if (pay != null && pay.IsSuccess)
                             {
