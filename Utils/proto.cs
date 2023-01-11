@@ -39,6 +39,13 @@ namespace Utils
             return res;
         }
 
+        public static decimal ToDecimal(this string s, decimal pDefault = 0)
+        {
+            decimal res;
+            if (!Decimal.TryParse(s, out res))
+                res = pDefault;
+            return res;
+        }
 
         public static string ToS(this decimal s)
         {

@@ -61,6 +61,10 @@ namespace ModelMID.DB
         public eTypeOperation TypeOperation { get; set; }
         public string TranslationTypeOperation { get { return TypeOperation.GetDescription(); } }
         public decimal SUM { get; set; }
+        /// <summary>
+        /// Для XZ сума повернення
+        /// </summary>
+        public decimal SumRefund { get; set; }
         public string TypeRRO { get; set; }        
         public string JSON { get; set; }
         public string TextReceipt { get; set; }

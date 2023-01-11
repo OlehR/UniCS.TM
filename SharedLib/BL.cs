@@ -781,8 +781,7 @@ namespace SharedLib
         public  eStateReceipt GetStateReceipt(IdReceipt pR)
         {
             return DB(pR).GetStateReceipt(pR);
-        }
-        
+        }        
 
         public IEnumerable<LogRRO> GetLogRRO(IdReceipt pR) { return DB(pR).GetLogRRO(pR);}
 

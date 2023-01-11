@@ -1,5 +1,5 @@
 ﻿using Front.Equipments;
-using Front.Models;
+using Utils;
 using ModelMID;
 using SharedLib;
 using System;
@@ -160,21 +160,17 @@ namespace Front.Control
             var btn = sender as Button;
             var str = btn.Content as TextBlock;
             var r = EF.GetBankTerminal.Where(el => str.Text.Equals(el.Name));
+            decimal IssuingCash = CashDisbursementTextBox.Text.ToDecimal();
             if (r.Count() == 1)
                 EF.SetBankTerminal(r.First() as BankTerminal);
 
-            var task = Task.Run(() => MW.PrintAndCloseReceipt());
+            var task = Task.Run(() => MW.PrintAndCloseReceipt(null,eTypePay.Card,0, IssuingCash));
         }
 
-        private void _ButtonPayment(object sender, RoutedEventArgs e)
+        private void _ButtonPaymentCash(object sender, RoutedEventArgs e)
         {
             MW.EquipmentStatusInPayment.Text = "";
-            if (Global.TypeWorkplace == eTypeWorkplace.СashRegister)
-                MW.SetStateView(eStateMainWindows.ChoicePaymentMethod);
-            else
-            {
-                var task = Task.Run(() => MW.PrintAndCloseReceipt());
-            }
+            var task = Task.Run(() => MW.PrintAndCloseReceipt(null,eTypePay.Cash, ChangeSumPaymant.ToDecimal()));            
         }
 
         private void CancelCashDisbursement(object sender, RoutedEventArgs e)
@@ -184,7 +180,6 @@ namespace Front.Control
 
         private void CashDisbursement(object sender, RoutedEventArgs e)
         {
-
             MW.InputNumberPhone.Desciption = "Введіть суму видачі";
             MW.InputNumberPhone.ValidationMask = "";
             MW.InputNumberPhone.Result = "";

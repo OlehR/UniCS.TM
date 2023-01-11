@@ -12,6 +12,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using ModelMID.DB;
 using Utils;
+using System.Security.Policy;
 
 namespace Front.Equipments.Implementation
 {
@@ -57,16 +58,30 @@ namespace Front.Equipments.Implementation
 
         override public LogRRO PrintReceipt(Receipt pR)
         {
+            Responce<ResponceReceipt> Res=null;
             if (!IsOpenWorkDay) OpenWorkDay();
             if (!IsOpenWorkDay) return new LogRRO(pR) { CodeError = -1, Error = "Не вдалось відкрити зміну" };
 
-            ApiRRO d = new(pR) { token = Token, device = Device,tag=pR.NumberReceiptRRO };
-            string dd = d.ToJSON();
-
-            var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");
-
-            var Res = JsonConvert.DeserializeObject<Responce<ResponceReceipt>>(r);
-            return GetLogRRO(pR, Res, pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund); ;
+            var c = pR.Payment?.Where(el => el.TypePay == eTypePay.IssueOfCash);
+           
+            if (pR.Payment?.Where(el => el.TypePay != eTypePay.IssueOfCash)?.Any() == true)
+            {
+                pR.Payment = pR.Payment?.Where(el => el.TypePay != eTypePay.IssueOfCash);
+                ApiRRO d = new(pR) { token = Token, device = Device, tag = pR.NumberReceiptRRO };
+                string dd = d.ToJSON();
+                var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");
+                Res = JsonConvert.DeserializeObject<Responce<ResponceReceipt>>(r);
+            }
+            if (c != null && c.Any())
+            {
+                pR.Payment = c;
+                pR.Wares = null;
+                ApiRRO d = new(pR) { token = Token, device = Device, tag = pR.NumberReceiptRRO+"_IC" };
+                string dd = d.ToJSON();
+                var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");
+                Res = JsonConvert.DeserializeObject<Responce<ResponceReceipt>>(r);
+            }
+            return GetLogRRO(pR, Res, pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, Res?.info?.printinfo?.sum_topay ?? 0m);
         }
 
         public override LogRRO PrintCopyReceipt(int parNCopy = 1)
@@ -75,7 +90,8 @@ namespace Front.Equipments.Implementation
             string dd = d.ToJSON();
             var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");
             Responce<ResponceReceipt > Res = JsonConvert.DeserializeObject<Responce<ResponceReceipt>>(r);
-            return GetLogRRO(new IdReceipt() {IdWorkplace=Global.IdWorkPlace, CodePeriod=Global.GetCodePeriod() } , Res, eTypeOperation.CopyReceipt);
+            
+            return GetLogRRO(new IdReceipt() {IdWorkplace=Global.IdWorkPlace, CodePeriod=Global.GetCodePeriod() } , Res, eTypeOperation.CopyReceipt, Res?.info?.printinfo?.sum_topay ?? 0m);
         }
 
         override public LogRRO PrintNoFiscalReceipt(IEnumerable<string> pR)
@@ -115,7 +131,9 @@ namespace Front.Equipments.Implementation
             string dd = d.ToJSON();
             var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");
             Responce<ResponceReport> Res = JsonConvert.DeserializeObject<Responce<ResponceReport>>(r);
-            return GetLogRRO<ResponceReport>(pIdR, Res, IsZ ? eTypeOperation.ZReport : eTypeOperation.XReport);
+            decimal Sum = Res?.info?.pays?.Sum(el => el.sum_p + el.round_pu - el.round_pd) ??0;
+            decimal SumRefund = Res?.info?.pays?.Sum(el => el.sum_m + el.round_mu-el.round_md) ?? 0;
+            return GetLogRRO<ResponceReport>(pIdR, Res, IsZ ? eTypeOperation.ZReport : eTypeOperation.XReport,Sum, SumRefund);
         }
 
         override public bool PeriodZReport(DateTime pBegin, DateTime pEnd, bool IsFull = true)
@@ -137,7 +155,7 @@ namespace Front.Equipments.Implementation
         override public LogRRO MoveMoney(decimal pSum, IdReceipt pIdR)
         {
             ApiRRO d = new(pSum>0?eTask.MoneyIn:eTask.MoneyOut) { token = Token, device = Device};
-            d.fiscal.cash = new Cash() { sum = pSum, type = eTypePayRRO.Cash };
+            d.fiscal.receipt.cash = new Cash() { sum = pSum, type = eTypePayRRO.Cash };
             string dd = d.ToJSON();            
             var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");
             Responce<ResponceReport> Res = JsonConvert.DeserializeObject<Responce<ResponceReport>>(r);
@@ -169,7 +187,7 @@ namespace Front.Equipments.Implementation
             return  $"IdWorkplacePay=>{IdWorkplacePay}{Environment.NewLine}Url=>{Url}{Environment.NewLine}{r}";
         }
 
-        LogRRO GetLogRRO<Ob>(IdReceipt pIdR ,Responce<Ob> pR, eTypeOperation pTypeOperation)
+        LogRRO GetLogRRO<Ob>(IdReceipt pIdR ,Responce<Ob> pR, eTypeOperation pTypeOperation,decimal pSum = 0m,decimal pRefund=0m)
         {
             var aa = pR.info as ResponseInfo;
             var rr = pR.info as ResponceReceipt;
@@ -183,7 +201,8 @@ namespace Front.Equipments.Implementation
                     TextReceipt= win1251.GetString(Convert.FromBase64String(TextReceipt));
                 }
              }
-            var Res = new LogRRO(pIdR) { TypeOperation= pTypeOperation, TypeRRO="pRRO_Vchasno", FiscalNumber=  rr?.doccode, Error = pR.errortxt, CodeError = pR.res, TextReceipt= TextReceipt , JSON=pR.ToJSON() };
+            var Res = new LogRRO(pIdR) { TypeOperation= pTypeOperation, TypeRRO="pRRO_Vchasno", FiscalNumber=  rr?.doccode, 
+                Error = pR.errortxt, CodeError = pR.res, TextReceipt= TextReceipt , JSON=pR.ToJSON(),SUM=pSum,SumRefund= pRefund};
             return Res;
         }
 
@@ -270,7 +289,20 @@ namespace Front.Equipments.Implementation.ModelVchasno
     enum eTypePayRRO
     {
         Cash = 0,
-        Card = 2
+        Noncash =1,
+        Card = 2,
+        /// <summary>
+        /// Передплата
+        /// </summary>
+        Subscription=3,
+        /// <summary>
+        /// Післяоплата
+        /// </summary>
+        PostPay = 4,
+        Credit= 5,
+        Certificate= 6
+
+
     }
 
     enum TypeLine {
@@ -318,14 +350,25 @@ namespace Front.Equipments.Implementation.ModelVchasno
             if (pR != null)
             {
                 task = pR.TypeReceipt == eTypeReceipt.Sale ? eTask.Sale : eTask.Refund;
-                receipt = new ReciptRRO(pR);
+                
+                var c = pR.Payment?.Where(el => el.TypePay == eTypePay.IssueOfCash);
+                if (c?.Count() == 1)
+                {
+                    task = eTask.IssueOfCash;
+                    cash = c.Select(el => new CashPay(el)).First();
+                }                
+                else
+                 receipt = new ReciptRRO(pR);
                 cashier = pR.NameCashier;
             }
         }
         public eTask task { get; set; }
         public string cashier { get; set; }
         public ReciptRRO receipt { get; set; }
-        public Cash cash { get; set; }
+        /// <summary>
+        /// Видача готівки
+        /// </summary>
+        public CashPay cash { get; set; }
         public int n_from { get; set; }
         public int n_to { get; set; }
         public string dt_from { get; set; }
@@ -341,24 +384,19 @@ namespace Front.Equipments.Implementation.ModelVchasno
             if (pR != null)
             {
                 rows = pR.GetParserWaresReceipt(true,false)?.Select(el => new WaresRRO(el));
-                pays = pR.Payment?.Where(el => el.TypePay != eTypePay.IssueOfCash).Select(el => new PaysRRO(el));
-                var c = pR.Payment?.Where(el => el.TypePay == eTypePay.IssueOfCash);
-                if (c != null && c.Any())
-                    cash = c.Select(el => new CashPay(el)).First();
+                pays = pR.Payment?.Where(el => el.TypePay != eTypePay.IssueOfCash).Select(el => new PaysRRO(el));               
                 comment_up = String.Join('\n', pR.ReceiptComments);
-                sum = pR.Wares.Sum(el => Math.Round(el.Price * el.Quantity, 2) - Math.Round(el.SumDiscount, 2)); //pR.SumTotal;
+                sum = pR.Wares?.Sum(el => Math.Round(el.Price * el.Quantity, 2) - Math.Round(el.SumDiscount, 2))??0m; //pR.SumTotal;
             }
         }
         public decimal sum { get; set; }
-        public decimal round { get; set; }
+        public decimal round { get {return  -sum + pays?.Sum(r => r.sum) ?? 0m; } }
         public string comment_up { get; set; }
         public string comment_down { get; set; }
         public IEnumerable<WaresRRO> rows { get; set; }
         public IEnumerable<PaysRRO> pays { get; set; }
-        /// <summary>
-        /// Видача готівки
-        /// </summary>
-        public CashPay cash { get; set; }
+        
+        public Cash cash { get; set; }
     }
 
     class Cash 
@@ -425,7 +463,6 @@ namespace Front.Equipments.Implementation.ModelVchasno
                     type = eTypePayRRO.Cash; break;
                 default:
                     break;
-
             }
         }
         public eTypePayRRO type { get; set; }
@@ -441,7 +478,12 @@ namespace Front.Equipments.Implementation.ModelVchasno
     class PaysRRO : CardPay
     {
         public PaysRRO() { }
-        public PaysRRO(Payment pP) : base(pP) { }
+        public PaysRRO(Payment pP) : base(pP)
+        {
+            if (pP.TypePay == eTypePay.Cash)
+                change = pP.SumExt > pP.SumPay ? pP.SumExt - pP.SumPay : 0m;
+        }
+                    
         public string currency { get; set; }
         public string comment { get; set; }
         public decimal change { get; set; }
@@ -451,7 +493,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
     class CashPay : CardPay
     {
         public CashPay() { }
-        public CashPay(Payment pP) : base(pP) { }
+        public CashPay(Payment pP) : base(pP) { type = eTypePayRRO.Card; }
         public string comment_up { get; set; }
         public string comment_down { get; set; }
     }
@@ -531,7 +573,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
         public string qr { set; get; }
         public string cancelid { set; get; }
         public int isprint { set; get; }
-        public dynamic printinfo { set; get; }       
+        public PrintInfo printinfo { set; get; }       
         public decimal safe { set; get; }        
         public int dataid { set; get; }      
     }
@@ -569,13 +611,13 @@ namespace Front.Equipments.Implementation.ModelVchasno
 
     class ResponcePay
     {
-        public int type { set; get; }
+        public eTypePayRRO type { set; get; }
         public string name { set; get; }
         public decimal sum_p { set; get; }
         public decimal sum_m { set; get; }
         public decimal round_pu { set; get; }
         public decimal round_pd { set; get; }
-        public string round_mu { set; get; }
+        public decimal round_mu { set; get; }
         public decimal round_md { set; get; }
     }
 
@@ -604,8 +646,33 @@ namespace Front.Equipments.Implementation.ModelVchasno
     {        
         public int last_receipt_no { set; get; }
         public int last_back_no { set; get; }
-        public int last_z_no { set; get; }
-       
+        public int last_z_no { set; get; }       
     }
 
+    class PrintInfo
+    {
+        public string name { set; get; }
+        public string shopname { set; get; }
+        public string shopad { set; get;}
+        public string vat_code { set; get; }
+        public string fis_code { set; get; }
+        public string comment_up { set; get; }
+        public string comment_down { set; get; }
+        public dynamic goods { set; get; }
+        public decimal sum_0 { set; get; }
+        public decimal sum_disc { set; get; }
+        public decimal sum_receipt { set; get; }
+        public decimal round { set; get; }
+        public decimal sum_topay { set; get; }
+        public dynamic pays { set; get; }
+        public dynamic taxes { set; get; }
+        public string fisn { set; get; }
+        public string dt { set; get; }
+        public string qr { set; get; }
+        public bool isOffline { set; get; }
+        public string mac { set; get; }
+        public decimal fisid { set; get; }
+        public string manuf { set; get; }
+        public string cashier { set; get; }
+    }
 }

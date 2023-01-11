@@ -29,8 +29,12 @@ namespace ModelMID
         /// Id робочого місця
         /// </summary>
         public static int IdWorkPlace = 62;
-        
+
+        public static int IdWorkPlaceIssuingCash;
+
         public static int CodeWarehouse = 9;
+
+        public static bool IsTest = false;
         /// <summary>
         /// !!!TMP Щоб розмежувати чеки на модерновських касах і наші. Стандарто має бути 0.
         /// </summary>

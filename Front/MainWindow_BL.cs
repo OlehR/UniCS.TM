@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -428,7 +429,7 @@ namespace Front
         /// Безготівкова оплата і Друк чека.
         /// </summary>
         /// <returns></returns>
-        public bool PrintAndCloseReceipt(Receipt pR = null)
+        public bool PrintAndCloseReceipt(Receipt pR = null, eTypePay eTP = eTypePay.Card, decimal pSumCash=0m, decimal pIssuingCash=0)
         {
             bool Res = false;
             string TextError = null;
@@ -455,17 +456,25 @@ namespace Front
                         if (R.TypeReceipt == eTypeReceipt.Sale)
                             Bl.GenQRAsync(R.Wares);
                         var Pays = new List<Payment>();
-                        foreach (var IdWorkplacePay in IdWorkplacePays)
+                        for (var i = 0; i < IdWorkplacePays.Length; i++)
                         {                            
-                            if (R.Payment!=null && R.Payment.Any(el=>el.IdWorkplacePay == IdWorkplacePay && el.IsSuccess ))
+                            if (R.Payment!=null && R.Payment.Any(el=>el.IdWorkplacePay == IdWorkplacePays[i] && el.IsSuccess ))
                                 continue;
                             R.StateReceipt = eStateReceipt.StartPay;
-                            R.IdWorkplacePay = IdWorkplacePay;
+                            R.IdWorkplacePay = IdWorkplacePays[i];
                             Bl.SetStateReceipt(curReceipt, eStateReceipt.StartPay);
                             decimal sum = EF.SumReceiptFiscal(R);
                             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Sum={sum}", eTypeLog.Expanded);
                             SetStateView(eStateMainWindows.ProcessPay);
-                            var pay = R.TypeReceipt == eTypeReceipt.Sale ? EF.PosPurchase(R, sum) : EF.PosRefund(R, sum, R.AdditionC1);
+                            Payment pay=null;
+                            if(eTP == eTypePay.Cash)
+                            {
+                                var SumCash = Math.Round(sum, 1);
+                                pay = new Payment(R) { IsSuccess = true, TypePay = eTypePay.Cash, SumPay = SumCash, SumExt = (i == IdWorkplacePays.Length - 1 ? pSumCash : SumCash) };
+                                pSumCash -= SumCash;
+                                if (pSumCash < 0) pSumCash = 0;
+                            }
+                            pay = EF.PosPay(R, R.TypeReceipt == eTypeReceipt.Sale ? sum : -sum, R.AdditionC1, pay, Global.IdWorkPlaceIssuingCash == IdWorkplacePays[i] ? pIssuingCash : 0);  
 
                             if (pay != null && pay.IsSuccess)
                             {

@@ -1,6 +1,6 @@
 ﻿using Front.Equipments;
 //using Front.Equipments.Ingenico;
-using Front.Equipments.pRRO_SG;
+//using Front.Equipments.pRRO_SG;
 using Front.Equipments.Virtual;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -238,7 +238,7 @@ namespace Front
                             RRO = new Equipments.ExellioFP(el, config, LF);
                             break;
                         case eModelEquipment.pRRO_SG:
-                            RRO = new pRRO_SG(el, config, LF, pActionStatus);
+                            RRO = new Front.Equipments.pRRO_SG.pRRO_SG(el, config, LF, pActionStatus);
                             break;
                         case eModelEquipment.pRRo_WebCheck:
                             RRO = new pRRO_WebCheck(el, config, LF, pActionStatus);
@@ -605,35 +605,7 @@ namespace Front
         }
         #endregion
 
-        #region POS
-        /// <summary>
-        /// Оплата по банківському терміналу
-        /// </summary>
-        /// <param name="pSum">Власне сума</param>
-        /// <returns></returns>
-        public Payment PosPurchase(IdReceipt pIdR, decimal pSum)
-        {
-            Payment r = null;
-            try
-            {
-                r = Terminal?.Purchase(pSum, pIdR.IdWorkplacePay);                
-                if (r.IsSuccess)
-                {
-                    r.SetIdReceipt(pIdR);
-                    LogRRO d = new(pIdR)
-                    { TypeOperation = eTypeOperation.SalePOS, TypeRRO = "Ingenico", JSON = r.ToJSON(), TextReceipt = r.Receipt == null ? null : string.Join(Environment.NewLine, r.Receipt) };
-                    Bl.InsertLogRRO(d);
-
-                    Bl.db.ReplacePayment(new List<Payment>() { r });
-                }
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"(pIdR=>{pIdR.ToJSON()},pSum={pSum})=>{r.ToJSON()}", eTypeLog.Expanded);
-            }
-            catch (Exception e)
-            {
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
-            }
-            return r;
-        }
+        #region POS        
 
         /// <summary>
         /// Повернення покупцю грошей по банківському терміналу
@@ -641,20 +613,37 @@ namespace Front
         /// <param name="pSum"></param>
         /// <param name="pRNN"></param>
         /// <returns></returns>
-        public Payment PosRefund(IdReceipt pIdR, decimal pSum, string pRNN)
+        public Payment PosPay(IdReceipt pIdR, decimal pSum, string pRNN, Payment pP = null, decimal pIssuingCash = 0)
         {
             Payment r = null;
             try
             {
-                r = Terminal?.Refund(pSum, pRNN, pIdR.IdWorkplacePay);
-                
+                if (pP != null)
+                    r = pP;
+                else
+                {
+                    if (pSum < 0)
+                        r = Terminal?.Refund(pSum, pRNN, pIdR.IdWorkplacePay);
+                    else
+                        r = Terminal?.Purchase(pSum, pIssuingCash, pIdR.IdWorkplacePay);
+                    r.SetIdReceipt(pIdR);
+                }
                 if (r.IsSuccess)
                 {
+                    var LP = new List<Payment>() { r };
+                    if (pIssuingCash > 0)
+                    {
+                        Payment C = (Payment)r.Clone();
+                        C.TypePay = eTypePay.IssueOfCash;
+                        C.SumPay = pIssuingCash;
+                        C.SumExt= pIssuingCash;
+                        LP.Add(C);
+                    }
+                    Bl.db.ReplacePayment(LP);
                     LogRRO d = new(pIdR)
-                    { TypeOperation = eTypeOperation.Refund, TypeRRO = "Ingenico", JSON = r.ToJSON(), TextReceipt = r.Receipt == null ? null : string.Join(Environment.NewLine, r.Receipt) };
+                    { TypeOperation = eTypeOperation.Refund, TypeRRO = r.TypePay == eTypePay.Card ? "Ingenico" : "Cash", JSON = r.ToJSON(), TextReceipt = r.Receipt == null ? null : string.Join(Environment.NewLine, r.Receipt) };
                     Bl.InsertLogRRO(d);
-                    r.SetIdReceipt(pIdR);                   
-                    Bl.db.ReplacePayment(new List<Payment>() { r });
+
                     FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"(pIdR=>{pIdR.ToJSON()},pSum={pSum})=>{r.ToJSON()}", eTypeLog.Expanded);
                 }
             }

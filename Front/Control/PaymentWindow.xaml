@@ -125,7 +125,7 @@
 
 
             <Button  Grid.Column="3"  Grid.Row="2"  FontSize="22"
-                            Margin="10" Click="_ButtonPayment">
+                            Margin="10" Click="_ButtonPaymentCash">
                 <TextBlock FontSize="24" Text="Готівка" Foreground="white"/>
                 <Button.Style>
                     <Style BasedOn="{StaticResource greenButton}" TargetType="Button">

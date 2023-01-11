@@ -258,7 +258,7 @@ namespace ModelMID
 
         public IEnumerable<ReceiptWares> GetParserWaresReceipt(bool pIsPrice=true,bool pIsExcise=true)
         {
-            if (!pIsPrice && !pIsExcise)
+            if ((!pIsPrice && !pIsExcise) || Wares==null)
                 return Wares;
             IEnumerable<ReceiptWares> Res = Wares;
             if(pIsPrice)

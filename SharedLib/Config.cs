@@ -67,11 +67,23 @@ namespace SharedLib
                 Global.CodeFastGroupBag = Convert.ToInt32(AppConfiguration["MID:CodeFastGroupBag"]);
             try
             {
-                Global.IdWorkPlace = 99;
+                Global.IdWorkPlace = 36;
                 Global.IdWorkPlace = Convert.ToInt32(AppConfiguration["MID:IdWorkPlace"]);
             }
             catch
-            { Global.IdWorkPlace = 99; }
+            { Global.IdWorkPlace = 36; }
+            
+            try
+            {
+                Global.IdWorkPlaceIssuingCash = Convert.ToInt32(AppConfiguration["MID:IdWorkPlaceIssuingCash"]);
+            }
+            catch
+            {}
+            finally
+            {
+                if(Global.IdWorkPlaceIssuingCash==0)
+                Global.IdWorkPlaceIssuingCash = Global.IdWorkPlace;
+            }
 
             try
             {
@@ -158,6 +170,15 @@ namespace SharedLib
             foreach(var el in IdWorkPlaces)
                 foreach(var dir in el.CodeDirections)
                     Global.IdWorkPlacePay.Add(dir,el.IdWorkPlace);
+
+            try
+            {
+                Global.IsTest = Convert.ToBoolean(AppConfiguration["MID:IsTest"]);
+            }
+            catch
+            { Global.IsTest = false; }
+
+            
         }
 
         public static IConfigurationRoot GetConfiguration()
