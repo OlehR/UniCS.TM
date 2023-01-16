@@ -18,6 +18,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ModernExpo.SelfCheckout.Utils;
 
 namespace Front.Control
 {
@@ -30,14 +31,21 @@ namespace Front.Control
         public event PropertyChangedEventHandler PropertyChanged;
         public string ChangeSumPaymant { get; set; } = "";
         double tempMoneySum;
+        public double SumCashDisbursement { get; set; } = 0;
+       
         public bool IsCashPayment
         {
             get
             {
-                if (!string.IsNullOrEmpty( ResMoney?.Text) )
-                    return Convert.ToDouble(ResMoney?.Text) >= 0 ? true : false;
-                else
+                if (SumCashDisbursement > 0)
                     return false;
+                else
+                {
+                    if (!string.IsNullOrEmpty(ResMoney?.Text))
+                        return Convert.ToDouble(ResMoney?.Text) >= 0 ? true : false;
+                    else
+                        return false;
+                }
             }
         }
         private double _MoneySumToRound;
@@ -54,6 +62,19 @@ namespace Front.Control
         MainWindow MW;
         EquipmentFront EF;
         BL Bl;
+        public bool IsRounding
+        {
+            get
+            {
+                if (SumCashDisbursement > 0)
+                    return false;
+                if (MW.Client.IsNotNull())
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
         public PaymentWindow()
         {
             Bl = BL.GetBL;
@@ -157,6 +178,7 @@ namespace Front.Control
 
         private void _ButtonPaymentBank(object sender, RoutedEventArgs e)
         {
+            Rounding();
             var btn = sender as Button;
             var str = btn.Content as TextBlock;
             var r = EF.GetBankTerminal.Where(el => str.Text.Equals(el.Name));
@@ -164,18 +186,19 @@ namespace Front.Control
             if (r.Count() == 1)
                 EF.SetBankTerminal(r.First() as BankTerminal);
 
-            var task = Task.Run(() => MW.PrintAndCloseReceipt(null,eTypePay.Card,0, IssuingCash));
+            var task = Task.Run(() => MW.PrintAndCloseReceipt(null, eTypePay.Card, 0, IssuingCash));
         }
 
         private void _ButtonPaymentCash(object sender, RoutedEventArgs e)
         {
             MW.EquipmentStatusInPayment.Text = "";
-            var task = Task.Run(() => MW.PrintAndCloseReceipt(null,eTypePay.Cash, ChangeSumPaymant.ToDecimal()));            
+            var task = Task.Run(() => MW.PrintAndCloseReceipt(null, eTypePay.Cash, ChangeSumPaymant.ToDecimal()));
         }
 
         private void CancelCashDisbursement(object sender, RoutedEventArgs e)
         {
-            CashDisbursementTextBox.Text = "0";
+            SumCashDisbursement = 0;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCashPayment"));
         }
 
         private void CashDisbursement(object sender, RoutedEventArgs e)
@@ -183,8 +206,10 @@ namespace Front.Control
             MW.InputNumberPhone.Desciption = "Введіть суму видачі";
             MW.InputNumberPhone.ValidationMask = "";
             MW.InputNumberPhone.Result = "";
-            MW.InputNumberPhone.CallBackResult = (string result) => CashDisbursementTextBox.Text = result;
+            MW.InputNumberPhone.CallBackResult = (string result) => SumCashDisbursement = string.IsNullOrEmpty(result)? 0 : Convert.ToDouble(result);
             MW.NumericPad.Visibility = Visibility.Visible;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCashPayment"));
+            Rounding();
         }
 
 
@@ -218,13 +243,12 @@ namespace Front.Control
                 //MW.ShowErrorMessage(ex.Message);
             }
         }
-        private void Round(object sender, RoutedEventArgs e)
+        private void Rounding (string Name = "")
         {
-            Button btn = sender as Button;
             tempMoneySum = (double)MW.MoneySum;
             RoundSum.Text = "0";
             RoundSumDown.Text = "0";
-            switch (btn.Name)
+            switch (Name)
             {
                 case "plus01":
                     MoneySumToRound = RoundingPrice(tempMoneySum, 0.1);
@@ -257,6 +281,11 @@ namespace Front.Control
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MoneySumToRound"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCashPayment"));
             CalculateReturn();
+        }
+        private void Round(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            Rounding(btn.Name);
         }
 
     }

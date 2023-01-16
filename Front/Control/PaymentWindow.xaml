@@ -62,7 +62,8 @@
                                    Mode=FindAncestor, AncestorType=UserControl}}" />
             <TextBlock Grid.Column="3" Grid.Row="0" HorizontalAlignment="Center"  FontSize="24" x:Name="ResMoney"></TextBlock>
             <TextBlock Grid.Column="0" Grid.Row="1" FontWeight="Bold">Сума оплати:</TextBlock>
-            <TextBox Grid.Column="1" Grid.Row="1" Margin="5" FontSize="24"  x:Name="MoneySumPayTextBox"
+            <TextBox Grid.Column="1" Grid.Row="1" Margin="5" FontSize="24" Text="{Binding ChangeSumPaymant, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=UserControl}}" x:Name="MoneySumPayTextBox"
                              TextChanged="MoneySumPayChange"
                              />
             <Button Grid.Row="2" Grid.Column="0" Style="{StaticResource Default}"  FontSize="22" Margin="10" Click="_Cancel">
@@ -157,9 +158,10 @@
                     </Button>
                     <TextBlock FontSize="20"> Сума видачі грошових коштів:</TextBlock>
                     <TextBlock  x:Name="CashDisbursementTextBox"
-                                     FontSize="20" TextWrapping="Wrap"
-                                        HorizontalAlignment="Center" VerticalAlignment="Center"
-                                     >0</TextBlock>
+                                FontSize="20" TextWrapping="Wrap"
+                                HorizontalAlignment="Center" VerticalAlignment="Center"
+                                Text="{Binding SumCashDisbursement, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=UserControl}}"/>
                     <Button Style="{StaticResource yelowButton}" Margin="10"
                                     Width="120" Height="50" Click="CashDisbursement"
                                     >
@@ -208,82 +210,121 @@
                 <Button Grid.Column="2" Grid.Row="3"
                                 Content="C" Style="{StaticResource Default}"  Click="ChangeSumPaymentButton"/>
             </Grid>
-            <Border Grid.Column="0" Grid.ColumnSpan="6" Grid.Row="4" Grid.RowSpan="2" 
+            <StackPanel  Grid.Column="0" Grid.ColumnSpan="6" Grid.Row="4" Grid.RowSpan="2" VerticalAlignment="Center">
+                
+                <StackPanel Orientation="Horizontal" Margin="5,5,0,0">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsRounding, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=UserControl}}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsRounding, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=UserControl}}" Value="False">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <TextBlock Text="Сума на копілочці: "/>
+                    <TextBlock Text="{Binding Client.Wallet,StringFormat=0.00₴, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window} }"/>
+                </StackPanel>
+
+                <Border 
                             Background="GhostWhite" BorderBrush="Gainsboro"
-                            CornerRadius="10" BorderThickness="1" Margin="10">
-                <Border.Effect>
-                    <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
-                </Border.Effect>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Orientation="Vertical" Grid.Row="0" >
-                        <TextBlock> Сума відкласти:</TextBlock>
-                        <TextBlock Height="30"  x:Name="RoundSum" TextWrapping="Wrap"
+                            CornerRadius="10" BorderThickness="1" Margin="10" >
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="IsEnabled" Value="True"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsRounding, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=UserControl}}" Value="True">
+                                    <Setter Property="IsEnabled" Value="True" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsRounding, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=UserControl}}" Value="False">
+                                    <Setter Property="IsEnabled" Value="False" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <Border.Effect>
+                        <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+                    </Border.Effect>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Vertical" Grid.Row="0" >
+                            <TextBlock> Сума відкласти:</TextBlock>
+                            <TextBlock Height="30"  x:Name="RoundSum" TextWrapping="Wrap"
                                             HorizontalAlignment="Center" VerticalAlignment="Center"
                                             FontSize="20"
                                             Text="0"></TextBlock>
-                    </StackPanel>
-                    <Button Grid.Row="0" Grid.Column="1" Click="Round" x:Name="plus01"
+                        </StackPanel>
+                        <Button Grid.Row="0" Grid.Column="1" Click="Round" x:Name="plus01"
                                     Style="{StaticResource Default}" Margin="10"
                                     >
-                        <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 10коп." Margin="5"/>
-                    </Button>
-                    <Button Grid.Row="0" Grid.Column="2" Click="Round" x:Name="plus05"
+                            <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 10коп." Margin="5"/>
+                        </Button>
+                        <Button Grid.Row="0" Grid.Column="2" Click="Round" x:Name="plus05"
                                     Style="{StaticResource Default}" Margin="10"
                                     >
-                        <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 50коп." Margin="5"/>
-                    </Button>
-                    <Button Grid.Row="0" Grid.Column="3" Click="Round" x:Name="plus1"
+                            <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 50коп." Margin="5"/>
+                        </Button>
+                        <Button Grid.Row="0" Grid.Column="3" Click="Round" x:Name="plus1"
                                     Style="{StaticResource Default}" Margin="10"
                                     >
-                        <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 1грн" Margin="5"/>
-                    </Button>
-                    <Button Grid.Row="0" Grid.Column="4" Click="Round" x:Name="plus2"
+                            <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 1грн" Margin="5"/>
+                        </Button>
+                        <Button Grid.Row="0" Grid.Column="4" Click="Round" x:Name="plus2"
                                     Style="{StaticResource Default}" Margin="10"
                                     >
-                        <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 2грн" Margin="5"/>
-                    </Button>
-                    <Button Grid.Row="0" Grid.Column="5" Click="Round" x:Name="plus5"
+                            <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 2грн" Margin="5"/>
+                        </Button>
+                        <Button Grid.Row="0" Grid.Column="5" Click="Round" x:Name="plus5"
                                     Style="{StaticResource Default}" Margin="10"
                                     >
-                        <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 5грн" Margin="5"/>
-                    </Button>
-                    <StackPanel Orientation="Vertical" Grid.Row="1">
-                        <TextBlock> Сума списати:</TextBlock>
-                        <TextBlock  Height="30"  TextWrapping="Wrap"
+                            <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 5грн" Margin="5"/>
+                        </Button>
+                        <StackPanel Orientation="Vertical" Grid.Row="1">
+                            <TextBlock> Сума списати:</TextBlock>
+                            <TextBlock  Height="30"  TextWrapping="Wrap"
                                             HorizontalAlignment="Center" VerticalAlignment="Center"
                                             FontSize="20" x:Name="RoundSumDown"
                                      >0</TextBlock>
-                    </StackPanel>
-                    <Button Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"
+                        </StackPanel>
+                        <Button Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"
                                     Style="{StaticResource Default}" Margin="10"
                                     >
-                        <TextBlock FontSize="14" TextWrapping="Wrap" Text=" " Margin="5"/>
-                    </Button>
-                    <Button Grid.Row="1" Grid.Column="4" Click="Round" x:Name="minus1"
+                            <TextBlock FontSize="14" TextWrapping="Wrap" Text=" " Margin="5"/>
+                        </Button>
+                        <Button Grid.Row="1" Grid.Column="4" Click="Round" x:Name="minus1"
                                     Style="{StaticResource Default}" Margin="10"
                                     >
-                        <TextBlock FontSize="14" TextWrapping="Wrap" Text="Списати до 1грн" Margin="5"/>
-                    </Button>
-                    <Button Grid.Row="1" Grid.Column="5" Click="Round"
+                            <TextBlock FontSize="14" TextWrapping="Wrap" Text="Списати до 1грн" Margin="5"/>
+                        </Button>
+                        <Button Grid.Row="1" Grid.Column="5" Click="Round"
                                     Style="{StaticResource Default}" Margin="10"
                                     >
-                        <TextBlock FontSize="14" TextWrapping="Wrap" Text="Відміна заокруглень та списань" Margin="5"/>
-                    </Button>
-                </Grid>
+                            <TextBlock FontSize="14" TextWrapping="Wrap" Text="Відміна заокруглень та списань" Margin="5"/>
+                        </Button>
+                    </Grid>
 
-            </Border>
+                </Border>
+            </StackPanel>
+
         </Grid>
     </Border>
 </UserControl>

@@ -924,9 +924,13 @@ namespace Front
         private void _ButtonPayment(object sender, RoutedEventArgs e)
         {
             EquipmentStatusInPayment.Text = "";
+            //PropertyChanged?.Invoke(PaymentWindow, new PropertyChangedEventArgs("IsRounding"));
             //SetStateView(eStateMainWindows.ChoicePaymentMethod);
             if (Global.TypeWorkplace == eTypeWorkplace.СashRegister)
+            {
+                PropertyChanged?.Invoke(PaymentWindow, new PropertyChangedEventArgs("IsRounding"));
                 SetStateView(eStateMainWindows.ChoicePaymentMethod);
+            }
             else
             {
                 var task = Task.Run(() => PrintAndCloseReceipt());
