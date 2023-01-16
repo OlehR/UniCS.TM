@@ -178,6 +178,12 @@ namespace SharedLib
             catch
             { Global.IsTest = false; }
 
+            try
+            {
+                Global.CodeWaresMoneyBox = Convert.ToInt32(AppConfiguration["MID:CodeWaresMoneyBox"]);
+            }
+            catch
+            { Global.CodeWaresMoneyBox = 0; }
             
         }
 

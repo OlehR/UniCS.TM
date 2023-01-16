@@ -12,7 +12,7 @@ namespace ModelMID
     /// Зберігає інформацію про чек
     /// </summary>
     public class Receipt : IdReceipt
-    {        
+    {
         private DateTime _DateReceipt;
         /// <summary>
         /// Дата Чека
@@ -29,7 +29,7 @@ namespace ModelMID
         /// </summary>
         public string TranslationTypeReceipt { get { return TypeReceipt.GetDescription(); } }
         public Guid TerminalId { get; set; }
-       
+
         int _CodeClient;
         public int CodeClient { get { return Client?.CodeClient ?? _CodeClient; } set { _CodeClient = value; } }
         public Client Client { get; set; }
@@ -67,7 +67,7 @@ namespace ModelMID
         public decimal PercentDiscount { get; set; }
         public decimal SumDiscount { get; set; }
         public decimal SumRest { get; set; }
-        public decimal SumTotal { get { return SumReceipt - SumDiscount- SumBonus; } }
+        public decimal SumTotal { get { return SumReceipt - SumDiscount - SumBonus; } }
         /// <summary>
         /// Оплачено Готівкою
         /// </summary>
@@ -253,21 +253,21 @@ namespace ModelMID
         }
         public bool IsQR()
         {
-            return Wares?.Where(r=>!string.IsNullOrEmpty( r.QR)).Any()?? false;
+            return Wares?.Where(r => !string.IsNullOrEmpty(r.QR)).Any() ?? false;
         }
 
-        public IEnumerable<ReceiptWares> GetParserWaresReceipt(bool pIsPrice=true,bool pIsExcise=true)
+        public IEnumerable<ReceiptWares> GetParserWaresReceipt(bool pIsPrice = true, bool pIsExcise = true)
         {
-            if ((!pIsPrice && !pIsExcise) || Wares==null)
+            if ((!pIsPrice && !pIsExcise) || Wares == null)
                 return Wares;
             IEnumerable<ReceiptWares> Res = Wares;
-            if(pIsPrice)
+            if (pIsPrice)
             {
                 var res = new List<ReceiptWares>();
                 foreach (var el in Res)
                     res.AddRange(el.ParseByPrice());
                 Res = res;
-            }            
+            }
 
             if (pIsExcise)
             {
@@ -278,5 +278,7 @@ namespace ModelMID
             }
             return Res;
         }
+        public bool IsUseBonus{get{ return Wares?.Where(el => el.TypeWares != eTypeWares.Ordinary).Any() == true; } }
+        public decimal MaxSumMoneyBox { get { return Wares.Where(el => el.TypeWares != eTypeWares.Ordinary).Sum(el => el.SumTotal * 0.25m); } }
     }
 }

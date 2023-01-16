@@ -46,6 +46,8 @@ namespace ModelMID
 
         public static bool IsGenQrCoffe = true;
 
+        public static int CodeWaresMoneyBox = 0;
+
         /// <summary>
         /// Чи можна розраховуватись готівкою.
         /// </summary>

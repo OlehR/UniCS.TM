@@ -35,7 +35,7 @@ namespace Front
         public string Version { get { return Assembly.GetExecutingAssembly().GetName().Version.ToString(); } }
         public event PropertyChangedEventHandler PropertyChanged;
         private readonly object _locker = new object();
-        Access Access = Access.GetAccess();
+        public Access Access = Access.GetAccess();
         public BL Bl;
         public EquipmentFront EF;
         public ControlScale CS { get; set; }
@@ -258,8 +258,8 @@ namespace Front
                     FC.Add(el.State, el.Color);
 
             //Для касового місця Запит логін пароль.
-            if (Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout)
-                Access.СurUser = new User() { TypeUser = eTypeUser.Client, CodeUser = 99999999, Login = "Client", NameUser = "Client" };
+            //if (Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout)
+            Access.СurUser = new User() { TypeUser = eTypeUser.Client, CodeUser = 99999999, Login = "Client", NameUser = "Client" };
 
             Bl = new BL(true);
             EF = new EquipmentFront(GetBarCode);
@@ -896,6 +896,7 @@ namespace Front
             //NewReceipt();
             SetStateView(eStateMainWindows.WaitInput);
         }
+        
         private void StartBuy(object sender, RoutedEventArgs e)
         {
             NewReceipt();
