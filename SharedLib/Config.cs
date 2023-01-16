@@ -180,10 +180,10 @@ namespace SharedLib
 
             try
             {
-                Global.CodeWaresMoneyBox = Convert.ToInt32(AppConfiguration["MID:CodeWaresMoneyBox"]);
+                Global.CodeWaresWallet = Convert.ToInt32(AppConfiguration["MID:CodeWaresWallet"]);
             }
             catch
-            { Global.CodeWaresMoneyBox = 0; }
+            { Global.CodeWaresWallet = 0; }
             
         }
 

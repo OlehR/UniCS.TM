@@ -279,6 +279,6 @@ namespace ModelMID
             return Res;
         }
         public bool IsUseBonus{get{ return Wares?.Where(el => el.TypeWares != eTypeWares.Ordinary).Any() == true; } }
-        public decimal MaxSumMoneyBox { get { return Wares.Where(el => el.TypeWares != eTypeWares.Ordinary).Sum(el => el.SumTotal * 0.25m); } }
+        public decimal MaxSumMoneyBox { get { return Wares?.Where(el => el.TypeWares != eTypeWares.Ordinary).Sum(el => el.SumTotal * 0.25m)??0; } }
     }
 }
