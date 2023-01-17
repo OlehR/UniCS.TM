@@ -250,10 +250,7 @@ namespace Front.Control
             RoundSumDown.Text = "0";
             switch (Name)
             {
-                case "plus01":
-                    MoneySumToRound = RoundingPrice(tempMoneySum, 0.1);
-                    RoundSum.Text = (Math.Round(Convert.ToDouble(MoneySumToRound) - tempMoneySum, 2)).ToString();
-                    break;
+
                 case "plus05":
                     MoneySumToRound = RoundingPrice(tempMoneySum, 0.5);
                     RoundSum.Text = (Math.Round(Convert.ToDouble(MoneySumToRound) - tempMoneySum, 2)).ToString();
@@ -268,6 +265,10 @@ namespace Front.Control
                     break;
                 case "plus5":
                     MoneySumToRound = RoundingPrice(tempMoneySum, 5.0);
+                    RoundSum.Text = (Math.Round(Convert.ToDouble(MoneySumToRound) - tempMoneySum, 2)).ToString();
+                    break;
+                case "plus10":
+                    MoneySumToRound = RoundingPrice(tempMoneySum, 0.1);
                     RoundSum.Text = (Math.Round(Convert.ToDouble(MoneySumToRound) - tempMoneySum, 2)).ToString();
                     break;
                 case "minus1":

@@ -273,11 +273,9 @@
                                             FontSize="20"
                                             Text="0"></TextBlock>
                         </StackPanel>
-                        <Button Grid.Row="0" Grid.Column="1" Click="Round" x:Name="plus01"
-                                    Style="{StaticResource Default}" Margin="10"
-                                    >
-                            <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 10коп." Margin="5"/>
-                        </Button>
+                        <StackPanel Grid.Column="1" Grid.ColumnSpan="5" Orientation="Horizontal"> 
+                            
+                        
                         <Button Grid.Row="0" Grid.Column="2" Click="Round" x:Name="plus05"
                                     Style="{StaticResource Default}" Margin="10"
                                     >
@@ -298,6 +296,12 @@
                                     >
                             <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 5грн" Margin="5"/>
                         </Button>
+                        <Button Grid.Row="0" Grid.Column="1" Click="Round" x:Name="plus10"
+                                    Style="{StaticResource Default}" Margin="10"
+                                    >
+                            <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 10грн" Margin="5"/>
+                        </Button>
+                        </StackPanel>
                         <StackPanel Orientation="Vertical" Grid.Row="1">
                             <TextBlock> Сума списати:</TextBlock>
                             <TextBlock  Height="30"  TextWrapping="Wrap"
