@@ -648,7 +648,7 @@
                  Grid.Row="0" Grid.RowSpan="6"
                  Grid.Column="0" Grid.ColumnSpan="6"
                  Name="CustomWindows" Visibility="Collapsed" Grid.ZIndex="2" 
-                CornerRadius="10"  Margin="10,0,10,0" >
+                CornerRadius="10"  Margin="10,0,10,0" Width="700" Height="800" >
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
                 </Border.Effect>
@@ -664,9 +664,9 @@
                         HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,30,0"
                         Click="_Cancel"/>
                         <StackPanel VerticalAlignment="Center">
-                            <TextBlock HorizontalAlignment="Center" FontSize="20" x:Name="CaptionCustomWindows"
+                            <TextBlock HorizontalAlignment="Center" FontSize="36" x:Name="CaptionCustomWindows" TextWrapping="Wrap"
                                        Text="{Binding customWindow.Caption, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"/>
-                            <TextBlock HorizontalAlignment="Center" FontSize="16" x:Name="TextCustomWindows"
+                            <TextBlock HorizontalAlignment="Center" FontSize="24" x:Name="TextCustomWindows"
                                        Text="{Binding customWindow.Text, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"/>
                             <Image Grid.Row="1" HorizontalAlignment="Center"  Height="40" x:Name="ImageCustomWindows"
                                    Source="{Binding customWindow.PathPicture, RelativeSource={RelativeSource 
@@ -675,7 +675,7 @@
                                      TextChanged="CustomWindowVerificationText" 
                                      FontSize="20"  VerticalAlignment="Center" />
 
-                            <ScrollViewer  VerticalScrollBarVisibility="Auto" Height="150"  x:Name="ButtonsCustomWindows" >
+                            <ScrollViewer  VerticalScrollBarVisibility="Auto" Height="250"  x:Name="ButtonsCustomWindows" >
                                 <ItemsControl Name="CustomWindowsItemControl" VerticalAlignment="Center">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
