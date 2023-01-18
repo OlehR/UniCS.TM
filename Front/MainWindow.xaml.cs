@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -23,10 +21,8 @@ using System.Windows.Media;
 using System.Windows.Documents;
 using System.Reflection;
 using Front.API;
-using System.Net.Sockets;
-using System.Windows.Media.Media3D;
 using System.IO;
-using ModernExpo.SelfCheckout.Utils;
+
 
 namespace Front
 {
