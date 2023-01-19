@@ -181,11 +181,16 @@ namespace Front.Equipments
 COM port: COM{port}
 Baud rate: {BaudRate}
 TerminalId: {GetTerminalID}{Environment.NewLine}";
-                StopBPOS();                
+                StopBPOS();
 
                 if (!string.IsNullOrEmpty(terminalInfo))
+                {
                     str = str + "Software version: " + new string(terminalInfo.TakeWhile<char>((Func<char, bool>)(x => x != ' ')).ToArray<char>()) + "\nTerminal profile ID: " + new string(terminalInfo.Substring(terminalInfo.IndexOf(" ", StringComparison.Ordinal)).Take<char>(8).ToArray<char>());
-                return str;
+                    var a = terminalInfo.Split('/');
+                    if(a.Length > 2) 
+                        str+= $"TerminalId: {a[1]}{Environment.NewLine}";
+                }
+                    return str;
             }
             catch (Exception ex)
             {
