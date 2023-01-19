@@ -185,10 +185,10 @@ TerminalId: {GetTerminalID}{Environment.NewLine}";
 
                 if (!string.IsNullOrEmpty(terminalInfo))
                 {
-                    str = str + "Software version: " + new string(terminalInfo.TakeWhile<char>((Func<char, bool>)(x => x != ' ')).ToArray<char>()) + "\nTerminal profile ID: " + new string(terminalInfo.Substring(terminalInfo.IndexOf(" ", StringComparison.Ordinal)).Take<char>(8).ToArray<char>());
+                    str = str + "Software version: " + new string(terminalInfo.TakeWhile<char>((Func<char, bool>)(x => x != ' ')).ToArray<char>()) + $"{Environment.NewLine}Terminal profile ID: " + new string(terminalInfo.Substring(terminalInfo.IndexOf(" ", StringComparison.Ordinal)).Take<char>(8).ToArray<char>());
                     var a = terminalInfo.Split('/');
                     if(a.Length > 2) 
-                        str+= $"TerminalId: {a[1]}{Environment.NewLine}";
+                        str+= $"{Environment.NewLine}TerminalId: {a[1]}{Environment.NewLine}";
                 }
                     return str;
             }
