@@ -500,7 +500,7 @@ namespace Front.Control
         {
 
             Bl.CreateRefund(curReceipt);
-            MW.SetStateView(eStateMainWindows.WaitInput);
+            MW.SetStateView(Models.eStateMainWindows.WaitInputRefund);
         }
 
         //Якогось не працює через get як я хочу :) Тому пока реалізація через Ж.
@@ -513,6 +513,7 @@ namespace Front.Control
         private void ReturnAllCheckButton(object sender, RoutedEventArgs e)
         {
             Bl.CreateRefund(curReceipt, true);
+            MW.SetStateView(Models.eStateMainWindows.WaitInputRefund);
             //this.WindowState = WindowState.Minimized;
             //MessageBox.Show("Повернути весь чек");
         }
