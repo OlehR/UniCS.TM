@@ -623,7 +623,7 @@ namespace Front
                 else
                 {
                     if (pSum < 0)
-                        r = Terminal?.Refund(pSum, pRNN, pIdR.IdWorkplacePay);
+                        r = Terminal?.Refund(-pSum, pRNN, pIdR.IdWorkplacePay);
                     else
                         r = Terminal?.Purchase(pSum, pIssuingCash, pIdR.IdWorkplacePay);
                     r.SetIdReceipt(pIdR);
