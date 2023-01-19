@@ -58,7 +58,7 @@ namespace Front
 
         //double tempMoneySum;
         public decimal MoneySum { get { return EF.SumReceiptFiscal(curReceipt); } } //return curReceipt?.Wares?.Sum(r => r.SumTotal) ?? 0; } }
-        
+
         public string EquipmentInfo { get; set; }
         bool _Volume = true;
         public bool Volume { get { return _Volume; } set { _Volume = value; if (s != null) s.IsSound = value; } }
@@ -131,7 +131,7 @@ namespace Front
         public int WidthScreen { get { return (int)SystemParameters.PrimaryScreenWidth; } }
         public int HeightScreen { get { return (int)SystemParameters.PrimaryScreenHeight; } }
         public int HeightStartVideo { get { return SystemParameters.PrimaryScreenWidth < SystemParameters.PrimaryScreenHeight ? 1300 : 700; } }
-        public string[] PathVideo=null;
+        public string[] PathVideo = null;
         /// <summary>x`
         /// треба переробити(інтегрувати в основну форму)
         /// </summary>
@@ -183,7 +183,7 @@ namespace Front
                     case eTypeAccess.ErrorEquipment:
                         tb.Inlines.Add(new Run("Проблема з критично важливим обладнанням") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red });
                         if (!string.IsNullOrEmpty(LastErrorEquipment))
-                            tb.Inlines.Add(new Run(LastErrorEquipment) { FontWeight = FontWeights.Bold, Foreground = Brushes.Red });                         
+                            tb.Inlines.Add(new Run(LastErrorEquipment) { FontWeight = FontWeights.Bold, Foreground = Brushes.Red });
                         break;
                     case eTypeAccess.LockSale:
                         tb.Inlines.Add("Зміна заблокована");
@@ -241,11 +241,11 @@ namespace Front
 
         public MainWindow()
         {
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Ver={Version}",eTypeLog.Expanded);
+            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Ver={Version}", eTypeLog.Expanded);
             SocketServer SocketS = new SocketServer();
             _ = SocketS.StartSocketServer();
             CS = new ControlScale();
-           s = Sound.GetSound(CS);
+            s = Sound.GetSound(CS);
 
             var fc = new List<FlagColor>();
             Config.GetConfiguration().GetSection("MID:FlagColor").Bind(fc);
@@ -268,10 +268,10 @@ namespace Front
 
             string DirName = Path.Combine(Global.PathPictures, "Video");
 
-             if (Directory.Exists(DirName))
-                PathVideo=Directory.GetFiles(DirName);
+            if (Directory.Exists(DirName))
+                PathVideo = Directory.GetFiles(DirName);
 
-            if (PathVideo!=null&&PathVideo.Length != 0)
+            if (PathVideo != null && PathVideo.Length != 0)
             {
                 VideoPlayer.Source = new Uri(PathVideo[0]); // TMP ПЕРЕРОБИТИ
             }
@@ -280,12 +280,12 @@ namespace Front
                 DirName = Path.Combine(Global.PathPictures, "Logo");
                 if (Directory.Exists(DirName))
                 {
-                    var PathLogo = Directory.GetFiles(DirName,"*.png");
+                    var PathLogo = Directory.GetFiles(DirName, "*.png");
                     if (PathLogo != null && PathLogo.Any())
                         StartLogo.Source = new BitmapImage(new Uri(PathLogo[0]));
                 }
             }
-           
+
             AdminControl.Init(this);
             PaymentWindow.Init(this);
 
@@ -544,7 +544,7 @@ namespace Front
                     switch (State)
                     {
                         case eStateMainWindows.StartWindow:
-                            if (PathVideo!=null && PathVideo.Length !=0)
+                            if (PathVideo != null && PathVideo.Length != 0)
                             {
                                 StartShopping.Visibility = Visibility.Visible;
                             }
@@ -658,7 +658,8 @@ namespace Front
                             PaymentWindow.Visibility = Visibility.Visible;
                             break;
                         case eStateMainWindows.WaitCustomWindows:
-
+                            Background.Visibility = Visibility.Visible;
+                            BackgroundWares.Visibility = Visibility.Visible;
                             TextBoxCustomWindows.Text = null;
                             if (customWindow?.Buttons != null)
                             {
@@ -823,16 +824,16 @@ namespace Front
         private void _Back(object sender, RoutedEventArgs e)
         {
             // Правильний блок.
-            if (Access.GetRight(eTypeAccess.DelReciept) || curReceipt?.SumReceipt == 0 || curReceipt?.StateReceipt>= eStateReceipt.Print)
+            if (Access.GetRight(eTypeAccess.DelReciept) || curReceipt?.SumReceipt == 0 || curReceipt?.StateReceipt >= eStateReceipt.Print)
             {
-                if(curReceipt.StateReceipt==eStateReceipt.Prepare)
+                if (curReceipt.StateReceipt == eStateReceipt.Prepare)
                     Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
 
-                SetCurReceipt(null);                
+                SetCurReceipt(null);
                 SetStateView(eStateMainWindows.StartWindow);
             }
             else
-                SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.DelReciept, null);            
+                SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.DelReciept, null);
         }
 
         private void _Search(object sender, RoutedEventArgs e)
@@ -892,7 +893,7 @@ namespace Front
             //NewReceipt();
             SetStateView(eStateMainWindows.WaitInput);
         }
-        
+
         private void StartBuy(object sender, RoutedEventArgs e)
         {
             NewReceipt();
@@ -920,17 +921,17 @@ namespace Front
         private void _ButtonPayment(object sender, RoutedEventArgs e)
         {
             EquipmentStatusInPayment.Text = "";
-            //PropertyChanged?.Invoke(PaymentWindow, new PropertyChangedEventArgs("IsRounding"));
+            //PaymentWindow.UpdatePaymentWindow();
             //SetStateView(eStateMainWindows.ChoicePaymentMethod);
             if (Global.TypeWorkplace == eTypeWorkplace.СashRegister)
             {
-                PropertyChanged?.Invoke(PaymentWindow, new PropertyChangedEventArgs("IsRounding"));
+                PaymentWindow.UpdatePaymentWindow();
                 SetStateView(eStateMainWindows.ChoicePaymentMethod);
             }
             else
             {
                 var task = Task.Run(() => PrintAndCloseReceipt());
-            }       
+            }
         }
 
         public void ShowErrorMessage(string ErrorMessage)
@@ -1039,7 +1040,7 @@ namespace Front
             AddExciseStamp("None");
             Bl.AddEventAge(curReceipt);
         }
-              
+
 
         private void CustomWindowClickButton(object sender, RoutedEventArgs e)
         {
@@ -1075,7 +1076,7 @@ namespace Front
                         var Res = Bl.GetLastReceipt();
                         Bl.SetStateReceipt(Res, eStateReceipt.Canceled);
                         SetStateView(eStateMainWindows.StartWindow);
-                    } 
+                    }
                     return;
                 }
                 if (res.CustomWindow?.Id == eWindows.ConfirmWeight)
@@ -1189,8 +1190,8 @@ namespace Front
                 };
                 Bl.SetCustomWindows(r);
             }
-            Background.Visibility = Visibility.Collapsed;
-            BackgroundWares.Visibility = Visibility.Collapsed;
+            //Background.Visibility = Visibility.Collapsed;
+            //BackgroundWares.Visibility = Visibility.Collapsed;
         }
 
         private void CustomWindowVerificationText(object sender, TextChangedEventArgs e)
