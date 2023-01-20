@@ -25,7 +25,14 @@ namespace ModelMID
         Card = 1,
         Cash = 2,
         Both = 3,
-        IssueOfCash = 4
+        /// <summary>
+        /// Видача готівки
+        /// </summary>
+        IssueOfCash = 4,
+        /// <summary>
+        /// Скарбничка(Здача)
+        /// </summary>
+        Wallet= 5
     }
 
     public enum eTypeBonus

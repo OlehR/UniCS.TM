@@ -255,7 +255,8 @@ TerminalId: {GetTerminalID}{Environment.NewLine}";
                     NumberReceipt = (long)BPOS.InvoiceNum,
                     CardHolder = this.GetString(BPOS.CardHolder),
                     IssuerName = this.GetString(BPOS.IssuerName),
-                    Bank = this.GetString(BPOS.ECRDataTM)
+                    Bank = this.GetString(BPOS.ECRDataTM),
+                    Receipt= this.ParseReceipt(BPOS.Receipt)
                 };
             }
             if (Logger != null)

@@ -641,7 +641,7 @@ namespace Front
                     }
                     Bl.db.ReplacePayment(LP);
                     LogRRO d = new(pIdR)
-                    { TypeOperation = eTypeOperation.Refund, TypeRRO = r.TypePay == eTypePay.Card ? "Ingenico" : "Cash", JSON = r.ToJSON(), TextReceipt = r.Receipt == null ? null : string.Join(Environment.NewLine, r.Receipt) };
+                    { TypeOperation = pSum>0? eTypeOperation.SalePOS: eTypeOperation.RefundPOS, TypeRRO = r.TypePay == eTypePay.Card ? "Ingenico" : "Cash", JSON = r.ToJSON(), TextReceipt = r.Receipt == null ? null : string.Join(Environment.NewLine, r.Receipt) };
                     Bl.InsertLogRRO(d);
 
                     FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"(pIdR=>{pIdR.ToJSON()},pSum={pSum})=>{r.ToJSON()}", eTypeLog.Expanded);
