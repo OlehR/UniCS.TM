@@ -240,6 +240,7 @@ TerminalId: {GetTerminalID}{Environment.NewLine}";
                 if (Logger != null)
                     LoggerExtensions.LogDebug((ILogger)Logger, "[Ingenico] WaitPosRespone 3", Array.Empty<object>());
                 OnStatus?.Invoke(new PosStatus(){ Status = eStatusPos.SuccessfullyFulfilled});
+               // GetLastReceipt(false);
                 return new Payment()
                 {
                     IsSuccess = true,
@@ -256,7 +257,7 @@ TerminalId: {GetTerminalID}{Environment.NewLine}";
                     CardHolder = this.GetString(BPOS.CardHolder),
                     IssuerName = this.GetString(BPOS.IssuerName),
                     Bank = this.GetString(BPOS.ECRDataTM),
-                    Receipt= this.ParseReceipt(BPOS.Receipt)
+                    //Receipt= this.ParseReceipt(BPOS.Receipt)
                 };
             }
             if (Logger != null)
@@ -679,9 +680,10 @@ TerminalId: {GetTerminalID}{Environment.NewLine}";
                 {
                     BPOS.Confirm();
                     WaitResponse();
-                }
+                }              
                 
-                if (OnResponse != null) OnResponse((IPosResponse)new PayPosResponse() { Response = result });                
+                if (OnResponse != null) OnResponse((IPosResponse)new PayPosResponse() { Response = result });
+                result.Receipt = GetLastReceipt(false);
                 StopBPOS();
                 return Task.FromResult<Payment>(result);
             }
