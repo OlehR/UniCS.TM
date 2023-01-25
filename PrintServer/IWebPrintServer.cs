@@ -18,7 +18,7 @@ namespace PrintServer
         //[WebGet]
         //[WebMethod]
         //[HttpPost]
- 
+
         [OperationContract]
         [WebInvoke(
         Method = "POST",
@@ -30,7 +30,7 @@ namespace PrintServer
 
         [WebInvoke(
         Method = "GET",
-        UriTemplate = "/GetQueue",       
+        UriTemplate = "/GetQueue",
         ResponseFormat = WebMessageFormat.Json,
          BodyStyle = WebMessageBodyStyle.Bare)]
         string GetQueue();
@@ -47,10 +47,29 @@ namespace PrintServer
         public string NameDocument { get; set; }
         public int CodeWarehouse { get; set; }
         public DateTime Date { get; set; }
-        public string  SerialNumber { get; set; }
+        public string SerialNumber { get; set; }
         public string NameDCT { get; set; }
         public string Login { get; set; }
-       
+        public eBrandName BrandName
+        {
+            get
+            {
+                if (CodeWarehouse < 30)
+                    return eBrandName.Vopak;
+                else if (CodeWarehouse == 163 || CodeWarehouse == 170)
+                    return eBrandName.Lubo;
+                else return eBrandName.Spar;
+
+            }
+        }
+
+
+    }
+    public enum eBrandName
+    {
+        Spar,
+        Vopak,
+        Lubo
     }
 }
 

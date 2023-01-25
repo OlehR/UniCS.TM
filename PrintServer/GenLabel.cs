@@ -11,6 +11,7 @@ using System.Drawing.Printing;
 using System.Windows.Forms;
 using System.Drawing.Drawing2D;
 using System.Globalization;
+using System.Data.Common;
 
 namespace PrintServer
 {
@@ -18,6 +19,7 @@ namespace PrintServer
     {
         int current = 0;
         cPrice[] price;
+        eBrandName BrandName;
         MSSQL db = new MSSQL();//("Server = SQLSRV2; Database=DW;Trusted_Connection=True;"
         QRCodeGenerator qrGenerator = new QRCodeGenerator();
         Image logo;// = Image.FromFile("D:\\Vopak.bmp");
@@ -28,6 +30,12 @@ namespace PrintServer
         //string NamePrinterYelow;
         string NameDocument;
 
+        // Тестовий запит
+        //{
+        //  "CodeWares": "000151859,000137049,000148925,000139319,000090678,000139321,000187135,000122696,000176872",
+        //  "CodeWarehouse": 68,
+        //  "Login":"Gelo"
+        //}
         public GenLabel()
         {
             //string Warehouse = System.Configuration.ConfigurationManager.AppSettings["CodeWarehouse"];
@@ -73,9 +81,10 @@ namespace PrintServer
             return price;
         }
 
-        public void Print(IEnumerable<cPrice> parPrice, string parNamePrinter, string parNamePrinterYelow, string pNameDocument = null, bool isMainLogo = true, bool isShort = true)
+        public void Print(IEnumerable<cPrice> parPrice, string parNamePrinter, string parNamePrinterYelow, string pNameDocument = null, eBrandName brandName = eBrandName.Vopak, bool isShort = true)
         {
-            CurLogo = (isMainLogo || logo2 == null ? logo : logo2);
+            CurLogo = (brandName == eBrandName.Vopak || logo2 == null ? logo : logo2);
+            BrandName = brandName;
             current = 0;
             if (string.IsNullOrEmpty(parNamePrinterYelow))
             {
@@ -91,31 +100,40 @@ namespace PrintServer
                 current = 0;
                 price = parPrice.Where(el => el.ActionType != 0).ToArray();
                 if (price.Count() > 0)
-                    PrintServer(parNamePrinterYelow, pNameDocument, true); //Жовті завжди короткі.
+                    PrintServer(parNamePrinterYelow, pNameDocument, true, true); //Жовті завжди короткі.
             }
 
         }
 
-        public void PrintServer(string pNamePrinter, string pNameDoc = "Label", bool isShort = true)
+        public void PrintServer(string pNamePrinter, string pNameDoc = "Label", bool isShort = true, bool isYelow = false)
         {
             // объект для печати
             PrintDocument printDocument = new PrintDocument();
 
             // обработчик события печати
-
-            if (isShort)//звичайний цінник
+            if (isYelow)
             {
-                printDocument.PrintPage += PrintPageHandler;
+                printDocument.PrintPage += PrintPageHandlerYelow;
                 printDocument.DocumentName = $"{pNameDoc}_{price.Count()}";
                 printDocument.DefaultPageSettings.PaperSize = new PaperSize("54 x 30 mm", 230, 130);
             }
-            else //цінник для опту
+            else
             {
-                printDocument.PrintPage += PrintPageHandlerOpt;
-                printDocument.DocumentName = $"{pNameDoc}_{price.Count()}";
-                printDocument.DefaultPageSettings.PaperSize = new PaperSize("80 x 30 mm", 340, 130);
+
+                if (isShort)//звичайний цінник
+                {
+                    printDocument.PrintPage += PrintPageHandler;
+                    printDocument.DocumentName = $"{pNameDoc}_{price.Count()}";
+                    printDocument.DefaultPageSettings.PaperSize = new PaperSize("54 x 30 mm", 230, 130);
+                }
+                else //цінник для опту
+                {
+                    printDocument.PrintPage += PrintPageHandlerOpt;
+                    printDocument.DocumentName = $"{pNameDoc}_{price.Count()}";
+                    printDocument.DefaultPageSettings.PaperSize = new PaperSize("80 x 30 mm", 340, 130);
+                }
             }
-                
+
 
 
 
@@ -130,12 +148,18 @@ namespace PrintServer
             printDialog.Document.Print(); // печатаем
             if (!string.IsNullOrEmpty(NameDocument))//Друкуємо підсумок по документу.
             {
-                if (isShort)
-                    printDocument.PrintPage -= PrintPageHandler;
+                if (isYelow)
+                    printDocument.PrintPage -= PrintPageHandlerYelow;
                 else
-                    printDocument.PrintPage -= PrintPageHandlerOpt;
-                printDocument.PrintPage += PrintTotal;
-                printDialog.Document.Print();
+                {
+
+                    if (isShort)
+                        printDocument.PrintPage -= PrintPageHandler;
+                    else
+                        printDocument.PrintPage -= PrintPageHandlerOpt;
+                    printDocument.PrintPage += PrintTotal;
+                    printDialog.Document.Print();
+                }
             }
         }
 
@@ -183,6 +207,19 @@ namespace PrintServer
             while (current < price.Count())
             {
                 PrintLabelOpt(price[current], e);
+                current++;
+                e.HasMorePages = (current != price.Count());
+                if (current != price.Count())
+                    return;
+            }
+        }
+        void PrintPageHandlerYelow(object sender, PrintPageEventArgs e)
+        {
+            if (price == null)
+                return;
+            while (current < price.Count())
+            {
+                PrintLabelYelow(price[current], e);
                 current++;
                 e.HasMorePages = (current != price.Count());
                 if (current != price.Count())
@@ -275,6 +312,137 @@ namespace PrintServer
             e.Graphics.DrawLine(new Pen(Color.Black, 1), 0, 133, 150, 133);
             //e.Graphics.DrawString(parPrice.Article.ToString(), new Font("Arial", 8), Brushes.Black, 170, 120);
         }
+
+        public void PrintLabelYelow(cPrice parPrice, PrintPageEventArgs e)
+        {
+            int LengthName = 18;
+            string Name1, Name2 = "", Name3 = "";
+            int startSecondColumn = 170;
+            if (parPrice.Name.Length < LengthName)
+                Name1 = parPrice.Name;
+            else
+            {
+                int pos = parPrice.Name.Substring(0, LengthName).LastIndexOf(" ");
+                Name1 = parPrice.Name.Substring(0, pos);
+                Name2 = parPrice.Name.Substring(pos);
+                if (Name2.Length > LengthName)
+                {
+                    pos = Name2.Substring(0, LengthName).LastIndexOf(" ");
+                    Name3 = Name2.Substring(pos);
+                    Name2 = Name2.Substring(0, pos);
+                    //if (Name3.Length < LengthName)
+                    //    Name3 = new string(' ', (LengthName - Name3.Length) / 2) + Name3;
+
+                }
+
+            }
+            //Name1 = new string(' ', ((LengthName - Name1.Length) / 2)) + Name1;
+            //Name2 = new string(' ', (LengthName - Name2.Length) / 2) + Name2;
+            if (Name3.Length > LengthName + 3)
+                Name3 = Name3.Substring(0, LengthName);
+
+            //QR
+            int strPrice = ((int)(parPrice.Price * 100M));
+            var qrCodeData = qrGenerator.CreateQrCode($"{parPrice.Code}-{strPrice}", QRCodeGenerator.ECCLevel.Q);
+            var qrCode = new QRCode(qrCodeData);
+            e.Graphics.DrawImage(qrCode.GetGraphic(2), startSecondColumn, 10);
+            //назви
+            e.Graphics.DrawString(" "+Name1, new Font("Arial", 11, FontStyle.Bold), Brushes.Black, 3, 0);
+            e.Graphics.DrawString(Name2, new Font("Arial", 11, FontStyle.Bold), Brushes.Black, 3, 17);
+            e.Graphics.DrawString(Name3, new Font("Arial", 11, FontStyle.Bold), Brushes.Black, 3, 34);
+            //Час
+            e.Graphics.DrawString(DateTime.Now.ToString("dd/MM/yyyy H:mm"), new Font("Arial", 5), Brushes.Black, startSecondColumn, 0);
+            //штрихкод
+            if (parPrice.BarCodes != null)
+            {
+                if (parPrice.BarCodes.Length > 13)
+                    parPrice.BarCodes = parPrice.BarCodes.Substring(0, 13);
+                e.Graphics.DrawString(parPrice.BarCodes, new Font("Arial", 5), Brushes.Black, startSecondColumn + 3, 7);
+            }
+            //артикул
+            e.Graphics.DrawString(parPrice.Article.ToString(), new Font("Arial", 5, FontStyle.Bold), Brushes.Black, startSecondColumn + 15, 62);
+
+
+
+            int leftIndentMainPrice = 0, topIndentMainPrice = 55, LeftCoinMain = 135;
+            int leftIndentSecondPrice = 0, topIndentSecondPrice = 75, LeftCoinSecond = 190;
+            float coef = 1;
+            var price = parPrice.StrPrice.Split('.');
+            var priceNormal = parPrice.StrPriceNormal.Split('.');
+            //price[0] = "4293";
+            switch (price[0].Count())
+            {
+                case 1:
+                    leftIndentMainPrice = 30;
+                    LeftCoinMain = 75;
+                    leftIndentSecondPrice = 170;
+                    LeftCoinSecond = 195;
+                    break;
+                case 2:
+                    leftIndentMainPrice = 15;
+                    LeftCoinMain = 100;
+                    leftIndentSecondPrice = 155;
+                    LeftCoinSecond = 205;
+                    break;
+                case 3:
+                    leftIndentMainPrice = 23;
+                    LeftCoinMain = 95;
+                    leftIndentSecondPrice = 218;
+                    LeftCoinSecond = 205;
+                    coef = 0.7f;
+                    break;
+                default:
+                    leftIndentMainPrice = 50;
+                    LeftCoinMain = 100;
+                    leftIndentSecondPrice = 305;
+                    LeftCoinSecond = 205;
+                    coef = 0.50f;
+                    break;
+            }
+            Pen myPen = new Pen(Color.Black, 1);
+            e.Graphics.DrawRectangle(myPen, 10, 55, 135, 74);
+            Graphics gr = e.Graphics;
+            GraphicsState state = gr.Save();
+            gr.ResetTransform();
+            gr.ScaleTransform(coef, 1.0f);
+            e.Graphics.DrawString(price[0], new Font("Arial Black", 40), Brushes.Black, leftIndentMainPrice, topIndentMainPrice);
+            if (parPrice.Price < parPrice.PriceNormal)
+                e.Graphics.DrawString(priceNormal[0], new Font("Arial Black", 25), Brushes.Black, leftIndentSecondPrice, topIndentSecondPrice);
+            gr.Restore(state);
+
+            //e.Graphics.DrawString(price[0], new Font("Arial Black", 35), Brushes.Black, LeftBill, 35);
+            e.Graphics.DrawString(price[1], new Font("Arial Black", 15), Brushes.Black, LeftCoinMain, topIndentMainPrice += 15);
+            e.Graphics.DrawString("грн", new Font("Arial", 10, FontStyle.Bold), Brushes.Black, LeftCoinMain + 3, topIndentMainPrice += 20);
+            e.Graphics.DrawString(parPrice.StrUnit, new Font("Arial", 11), Brushes.Black, LeftCoinMain + 3, topIndentMainPrice += 13);
+
+            if (parPrice.Price < parPrice.PriceNormal)
+            {
+                e.Graphics.DrawString(priceNormal[1], new Font("Arial Black", 8), Brushes.Black, LeftCoinSecond, topIndentSecondPrice += 10);
+                e.Graphics.DrawString("грн", new Font("Arial", 6, FontStyle.Bold), Brushes.Black, LeftCoinSecond + 2, topIndentSecondPrice += 10);
+                e.Graphics.DrawString(parPrice.StrUnit, new Font("Arial", 6), Brushes.Black, LeftCoinSecond + 2, topIndentSecondPrice += 10);
+            }
+
+            if (parPrice.IsOnlyCard)
+            {
+                if (BrandName == eBrandName.Spar)
+                {
+                    e.Graphics.DrawString("Ціна з карткою \"Мій Spar\"", new Font("Arial Black", 6), Brushes.Black, 13, 58);
+                }
+                else
+                    e.Graphics.DrawString("Ціна з карткою лояльності", new Font("Arial Black", 6), Brushes.Black, 13, 58);
+                e.Graphics.DrawString("Звичайна ціна", new Font("Arial Black", 6), Brushes.Black, 156, topIndentSecondPrice - 30);
+
+            }
+            else
+                e.Graphics.DrawLine(new Pen(Color.Black, 2), leftIndentSecondPrice * coef - 7, topIndentSecondPrice += 15, LeftCoinSecond + 20, 80);
+
+
+
+            // e.Graphics.DrawLine(new Pen(Color.Black, 1), 0, 133, 231, 133);
+            // e.Graphics.DrawLine(new Pen(Color.Black, 1), 231, 0, 231, 130);
+            //e.Graphics.DrawString(parPrice.Article.ToString(), new Font("Arial", 8), Brushes.Black, 170, 120);
+        }
+
         public void PrintLabelOpt(cPrice parPrice, PrintPageEventArgs e)
         {
             int LengthName = 28;
@@ -432,5 +600,8 @@ namespace PrintServer
         public decimal Sum { get; set; }
         public string BarCodes { get; set; }
         public bool Is100g { get; set; } = false;
+        public bool IsOnlyCard { get; set; }
+        public decimal PriceNormal { get; set; }
+        public string StrPriceNormal { get { return (Is100g && Unit.ToLower().Equals("кг") ? PriceNormal / 10m : PriceNormal).ToString("F", (IFormatProvider)CultureInfo.GetCultureInfo("en-US")); } }
     }
 }
