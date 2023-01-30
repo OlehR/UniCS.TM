@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ModelMID
 {
-    public class Payment:IdReceipt,ICloneable
+    public class Payment:IdReceiptWares,ICloneable
     {        
         public bool IsSuccess { get; set; }
         public eTypePay TypePay { get; set; } = eTypePay.Card;
@@ -57,8 +57,9 @@ namespace ModelMID
         //public string Error { get; set; } = null;
         public IEnumerable<string> Receipt { get; set; }
 
-        public Payment(Guid parReceipt) : base(parReceipt) { }
+        //public Payment(Guid parReceipt) : base(parReceipt) { }
         public Payment(IdReceipt parIdReceipt) : base(parIdReceipt) { }
+        public Payment(IdReceiptWares parIdReceiptWares) : base(parIdReceiptWares) { }
         public Payment() { }
         public object Clone()
         {

@@ -16,8 +16,8 @@ namespace Front.Equipments.Implementation
         int AuthCode = 123456000;
         long NumberReceipt = 0;
         int TransactionCode = 7700000;
-        decimal Sum =0m, SumRefund = 0m;
-        uint Count=0, CountRefund = 0;       
+        decimal LastSum=0m,Sum = 0m, SumRefund = 0m;
+        uint Count = 0, CountRefund = 0;       
       
         public VirtualBankPOS(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment, pConfiguration, eModelEquipment.VirtualBankPOS, pLoggerFactory)
         {
@@ -30,9 +30,11 @@ namespace Front.Equipments.Implementation
         }
         Payment GetPaymentResultModel(decimal pAmount)
         {
+            LastSum = pAmount;
+            Sum += pAmount;
             return new Payment()
             {
-                TypePay= eTypePay.Card,
+                TypePay = eTypePay.Card,
                 Bank = "Приват",
                 CardHolder = "VISA",
                 NumberReceipt = NumberReceipt++,
@@ -41,14 +43,14 @@ namespace Front.Equipments.Implementation
                 PosAddAmount = 0,
                 PosPaid = pAmount,
                 SumPay = pAmount,
-                SumExt =0,
-                NumberCard ="******0123",                
+                SumExt = 0,
+                NumberCard = "******0123",
                 CodeAuthorization = $"{AuthCode++}",
-                NumberTerminal = "SML_Local",                
-                NumberSlip= $"{TransactionCode++}",
-                IsSuccess=true,
-                Receipt = new List<string>() { "Тестовий Чек", $"Сума: {pAmount}",$"CodeAuthorization{AuthCode}","Тестова Оплата" }
-                
+                NumberTerminal = "SML_Local",
+                NumberSlip = $"{TransactionCode++}",
+                IsSuccess = true,
+                Receipt = GetLastReceipt()
+            //new List<string>() { "Тестовий Чек", $"Сума: {pAmount}",$"CodeAuthorization{AuthCode}","Тестова Оплата" }                
             };
         }
 
@@ -91,6 +93,11 @@ namespace Front.Equipments.Implementation
         public override string GetDeviceInfo()
         {
             return $"pModelEquipment={Model} State={State} Port={SerialPort} BaudRate={BaudRate}{Environment.NewLine}";
+        }
+
+        public override IEnumerable<string> GetLastReceipt() 
+        {
+            return new List<string>() { "Тестовий Чек", $"Сума: {LastSum}", $"CodeAuthorization{AuthCode}", "Тестова Оплата" };
         }
     }
 }

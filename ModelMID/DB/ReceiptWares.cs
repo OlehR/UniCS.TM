@@ -12,7 +12,7 @@ namespace ModelMID
 
     public class ReceiptWares : IdReceiptWares, ICloneable
     {
-        public int IdWorkplacePay { get { if (_IdWorkplacePay == 0) _IdWorkplacePay = Global.GetIdWorkPlacePay(CodeDirection); return _IdWorkplacePay; } set { _IdWorkplacePay = value; } }
+        public int IdWorkplacePay { get { if (_IdWorkplacePay == 0) _IdWorkplacePay = Global.GetIdWorkPlacePay(CodeDirection,CodeTM); return _IdWorkplacePay; } set { _IdWorkplacePay = value; } }
         int _IdWorkplacePay;
 
         /// <summary>
@@ -192,7 +192,10 @@ namespace ModelMID
             }
             return true;
         }
-
+        /// <summary>
+        /// Сума списаних грошей 
+        /// </summary>
+        public decimal SumWallet { get; set; }
         public int UserCreate { get; set; }
 
         //  public int CodeWarehouse { get; set; }
@@ -355,6 +358,11 @@ namespace ModelMID
         public bool IsLast { get; set; }
         public int CodeDirection { get; set; }
 
+        /// <summary>
+        /// Торгова марка (в 1С - Бренд) 
+        /// </summary>
+        public int CodeTM { get; set; }
+
         public string GetPrices { get { return Prices == null ? null : string.Join(";", Prices.Select(n => n.Price.ToString(CultureInfo.InvariantCulture)).ToArray()); } }
         public ReceiptWares()
         {
@@ -416,6 +424,7 @@ namespace ModelMID
         public bool IsConfirmDel { get { return WeightFact != -1; } }
 
         public bool IsNeedExciseStamp { get { return TypeWares == eTypeWares.Alcohol && GetExciseStamp.Length < Quantity; } }
+
 
         public object Clone()
         {

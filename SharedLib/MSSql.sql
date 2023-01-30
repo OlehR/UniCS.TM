@@ -20,6 +20,7 @@ SELECT w.code_wares AS CodeWares, w.name_wares AS NameWares, w.code_group AS Cod
   --,Weight_Fact as WeightFact_
   ,CASE WHEN @CodeWarehouse<>9  AND Weight_Fact<0 AND Code_Direction=000160565 THEN -1 ELSE CASE WHEN Weight_Fact<0 and Weight_Fact<>-1 THEN -Weight_Fact ELSE Weight_Fact END end AS WeightFact
   ,w.Weight_Delta as WeightDelta, w.code_UKTZED AS CodeUKTZED,w.Limit_age as LimitAge,w.PLU,w.Code_Direction as CodeDirection
+  ,w.code_brand as CodeTM -- бо в 1С спутано.
   FROM dbo.Wares w 
   WHERE w.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull=1
   

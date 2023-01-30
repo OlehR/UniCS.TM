@@ -37,6 +37,7 @@ alter TABLE RECEIPT    add ReceiptId TEXT;--Ver=>11
 alter TABLE WARES_RECEIPT add id_workplace_pay INTEGER  NOT NULL DEFAULT 0;--Ver=>12
 alter TABLE payment add id_workplace_pay INTEGER  NOT NULL DEFAULT 0;--Ver=>13
 alter TABLE LOG_RRO add id_workplace_pay INTEGER  NOT NULL DEFAULT 0;--Ver=>13
+alter TABLE payment    add CODE_WARES        INTEGER  NOT NULL DEFAULT 0;--Ver=>14
 
 
 
@@ -48,6 +49,7 @@ alter TABLE wares add Limit_Age NUMBER;--Ver=>0
 alter TABLE wares add PLU INTEGER;--Ver=>0
 alter TABLE wares add Code_Direction INTEGER;--Ver=>0;
 alter TABLE wares add Type_Wares INTEGER  NOT NULL DEFAULT 2; --Ver=>6;
+alter TABLE wares add Code_TM INTEGER NOT NULL DEFAULT 0; --Ver=>7;
 
 [SqlConfig]
 SELECT Data_Var  FROM CONFIG  WHERE UPPER(Name_Var) = UPPER(trim(@NameVar));
@@ -110,6 +112,7 @@ select t.code_wares as CodeWares,w.name_wares NameWares,w.name_wares_receipt  as
         ,w.Limit_Age as LimitAge
         ,w.PLU    
         ,w.Code_Direction as CodeDirection
+        ,w.Code_TM as CodeTM
         ,(select max(AMOUNT)  as AMOUNT from SALES_BAN sb where sb.CODE_GROUP_WARES=w.CODE_GROUP) as AmountSalesBan
 from t$1 t
 left join wares w on t.code_wares=w.code_wares
@@ -193,6 +196,7 @@ Price as Price/*, wr.sum as Sum*/, Type_Price as TypePrice
  ,wr.QR
  ,wr.Excise_Stamp as ExciseStamp
  ,w.Code_Direction as CodeDirection
+ ,w.Code_TM as CodeTM
  ,wr.Max_Refund_Quantity as MaxRefundQuantity
  ,wr.Sum_Bonus as Sum_Bonus
  ,wr.id_workplace_pay as IdWorkplacePay
@@ -747,6 +751,7 @@ CREATE TABLE payment
     CODE_PERIOD       INTEGER  NOT NULL,
     CODE_RECEIPT      INTEGER  NOT NULL,
     TYPE_PAY INTEGER  NOT NULL,
+    CODE_WARES        INTEGER  NOT NULL DEFAULT 0,
     SUM_PAY          NUMBER,
     SUM_ext      NUMBER,
     NUMBER_TERMINAL      TEXT,
@@ -895,8 +900,8 @@ CREATE TABLE WARES (
       code_UKTZED TEXT,
       Limit_Age NUMBER,
       PLU INTEGER,
-      Code_Direction INTEGER
-
+      Code_Direction INTEGER,
+      Code_TM INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE ADDITION_UNIT (
@@ -1112,8 +1117,12 @@ replace into UNIT_DIMENSION ( CODE_UNIT, NAME_UNIT, ABR_UNIT) values (@CodeUnit,
 replace into  GROUP_WARES (CODE_GROUP_WARES,CODE_PARENT_GROUP_WARES,NAME)
              values (@CodeGroupWares,@CodeParentGroupWares,@Name);
 [SqlReplaceWares]
-replace into  Wares (CODE_WARES,CODE_GROUP,NAME_WARES,Name_Wares_Upper, ARTICL,CODE_BRAND, CODE_UNIT, Percent_Vat,Type_VAT,NAME_WARES_RECEIPT, DESCRIPTION,Type_Wares,Weight_brutto,Weight_Fact,Weight_Delta,CODE_UKTZED,Limit_Age,PLU,Code_Direction)
-             values (@CodeWares,@CodeGroup,@NameWares,@NameWaresUpper, @Articl,@CodeBrand,@CodeUnit, @PercentVat, @TypeVat,@NameWaresReceipt, @Description,@TypeWares,@WeightBrutto,@WeightFact,@WeightDelta,@CodeUKTZED,@LimitAge,@PLU,@CodeDirection);
+replace into  Wares (CODE_WARES,CODE_GROUP,NAME_WARES,Name_Wares_Upper, ARTICL,CODE_BRAND, CODE_UNIT, 
+                     Percent_Vat,Type_VAT,NAME_WARES_RECEIPT, DESCRIPTION,Type_Wares,Weight_brutto,
+                     Weight_Fact,Weight_Delta,CODE_UKTZED,Limit_Age,PLU, Code_Direction,Code_TM)
+             values (@CodeWares,@CodeGroup,@NameWares,@NameWaresUpper, @Articl,@CodeBrand,@CodeUnit, 
+                     @PercentVat, @TypeVat,@NameWaresReceipt, @Description,@TypeWares,@WeightBrutto,
+                     @WeightFact,@WeightDelta,@CodeUKTZED,@LimitAge,@PLU,@CodeDirection,@CodeTM);
 [SqlReplaceAdditionUnit]
 replace into  Addition_Unit (CODE_WARES, CODE_UNIT, COEFFICIENT, DEFAULT_UNIT, WEIGHT, WEIGHT_NET )
               values (@CodeWares,@CodeUnit,@Coefficient, @DefaultUnit, @Weight, @WeightNet);
@@ -1164,8 +1173,8 @@ Select min(case when CODE_DEALER=-888888  then PRICE_DEALER else null end) as Mi
  from price where CODE_DEALER in(-999999,-888888) and CODE_WARES=@CodeWares
  
  [SqlReplacePayment]
- replace into  payment	(ID_WORKPLACE, id_workplace_pay ,CODE_PERIOD, CODE_RECEIPT, TYPE_PAY, SUM_PAY, SUM_ext, NUMBER_TERMINAL, NUMBER_RECEIPT, CODE_authorization, NUMBER_SLIP, Number_Card,Pos_Paid , Pos_Add_Amount ,Card_Holder,Issuer_Name, Bank, TransactionId,DATE_CREATE) values
-                        (@IdWorkplace, @IdWorkplacePay , @CodePeriod, @CodeReceipt, @TypePay, @SumPay, @SumExt, @NumberTerminal, @NumberReceipt, @CodeAuthorization, @NumberSlip, @NumberCard, @PosPaid, @PosAddAmount ,@CardHolder,@IssuerName, @Bank,@TransactionId, @DateCreate);
+ replace into  payment	(ID_WORKPLACE, id_workplace_pay ,CODE_PERIOD, CODE_RECEIPT, TYPE_PAY, CODE_WARES, SUM_PAY, SUM_ext, NUMBER_TERMINAL, NUMBER_RECEIPT, CODE_authorization, NUMBER_SLIP, Number_Card,Pos_Paid , Pos_Add_Amount ,Card_Holder,Issuer_Name, Bank, TransactionId,DATE_CREATE) values
+                        (@IdWorkplace, @IdWorkplacePay , @CodePeriod, @CodeReceipt, @TypePay, @CodeWares, @SumPay, @SumExt, @NumberTerminal, @NumberReceipt, @CodeAuthorization, @NumberSlip, @NumberCard, @PosPaid, @PosAddAmount ,@CardHolder,@IssuerName, @Bank,@TransactionId, @DateCreate);
 
 [SqlReplaceMRC]
  replace into  MRC	(Code_Wares, Price,Type_Wares) values  (@CodeWares, @Price,@TypeWares);
@@ -1178,7 +1187,7 @@ replace into User (CODE_USER, NAME_USER,  BAR_CODE,Type_User, LOGIN, PASSWORD) v
 
 [SqlGetPayment]
 select id_workplace as IdWorkplace, id_workplace_pay as IdWorkplacePay,code_period as CodePeriod, code_receipt as CodeReceipt, 
- TYPE_PAY as TypePay, SUM_PAY as SumPay, SUM_EXT as SumExt,
+ TYPE_PAY as TypePay, CODE_WARES as CodeWares, SUM_PAY as SumPay, SUM_EXT as SumExt,
     NUMBER_TERMINAL as NumberTerminal,   NUMBER_RECEIPT as NumberReceipt, CODE_AUTHORIZATION as CodeAuthorization, NUMBER_SLIP as NumberSlip,
     Pos_Paid as PosPaid, Pos_Add_Amount as PosAddAmount, DATE_CREATE as DateCreate,Number_Card as NumberCard,
     Card_Holder as CardHolder ,Issuer_Name as IssuerName, Bank,TransactionId

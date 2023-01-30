@@ -22,7 +22,8 @@ namespace ModelMID
         public static SortedList<Guid, WorkPlace> WorkPlaceByTerminalId;
         public static SortedList<int, WorkPlace> WorkPlaceByWorkplaceId;
 
-        public static SortedList<int, int> IdWorkPlacePay = new();
+        public static SortedList<int, int> IdWorkPlacePayDirection = new();
+        public static SortedList<int, int> IdWorkPlacePayTM = new();
 
         public static eTypeWorkplace TypeWorkplace = eTypeWorkplace.SelfServicCheckout;
         /// <summary>
@@ -216,10 +217,12 @@ namespace ModelMID
             return null;
         }
 
-        public static int GetIdWorkPlacePay(int pCodeDirection)
+        public static int GetIdWorkPlacePay(int pCodeDirection,int pCodeTM)
         {
-            if (IdWorkPlacePay.ContainsKey(pCodeDirection))
-                return IdWorkPlacePay[pCodeDirection];
+            if (IdWorkPlacePayDirection.ContainsKey(pCodeDirection))
+                return IdWorkPlacePayDirection[pCodeDirection];
+            if (IdWorkPlacePayTM.ContainsKey(pCodeTM))
+                return IdWorkPlacePayDirection[pCodeTM];
             return IdWorkPlace;
         }
                 

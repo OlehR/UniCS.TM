@@ -63,5 +63,9 @@ namespace ModelMID
         /// Напрямок
         /// </summary>
         public int CodeDirection { get; set; }
+        /// <summary>
+        /// Торгова марка (в 1С - Бренд) 
+        /// </summary>
+        public int CodeTM { get; set; }
     }
 }
