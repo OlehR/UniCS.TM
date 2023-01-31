@@ -268,7 +268,7 @@ namespace ModelMID
         /// </summary>
         public decimal? MaxRefundQuantity { get; set; } = null;
         /// <summary>
-        /// Сума списаних бонусів
+        /// Сума списаних бонусів в грн
         /// </summary>
         public decimal SumBonus { get; set; }
         /// <summary>

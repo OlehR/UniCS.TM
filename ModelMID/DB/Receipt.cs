@@ -233,6 +233,7 @@ namespace ModelMID
         /// </summary>
         public double OwnBag { get { return ReceiptEvent?.Sum(r => Convert.ToDouble(r.ProductConfirmedWeight)) ?? 0d; } }
 
+        public WorkplacePay[] WorkplacePays { get; set; }
         public List<string> ReceiptComments
         {
             get
@@ -278,7 +279,40 @@ namespace ModelMID
             }
             return Res;
         }
-        public bool IsUseBonus{get{ return Wares?.Where(el => el.TypeWares != eTypeWares.Ordinary).Any() == true; } }
-        public decimal MaxSumWallet { get { return Math.Round(Wares?.Where(el => el.TypeWares == eTypeWares.Ordinary).Sum(el => el.SumTotal * 0.25m)??0,2); } }
+        public bool IsUseBonus { get { return Wares?.Where(el => el.TypeWares != eTypeWares.Ordinary).Any() == true; } }
+        public decimal MaxSumWallet { get { return Math.Round(Wares?.Where(el => el.TypeWares == eTypeWares.Ordinary).Sum(el => el.SumTotal * 0.25m) ?? 0, 2); } }
+
+        public void ReCalc()
+        {
+            SumWallet = Payment?.Where(r => r.TypePay == eTypePay.Wallet).Sum(r => r.SumPay) ?? 0;
+            if (SumWallet > 0)
+            {
+                var OrdinaryWares = Wares.Where(el => el.TypeWares == eTypeWares.Ordinary);
+                decimal Sum = OrdinaryWares.Sum(el => el.SumTotal);
+                foreach (var el in Wares)
+                    el.SumWallet = Math.Round(el.SumTotal * SumWallet / Sum, 2);
+                decimal SumW = OrdinaryWares.Sum(el => el.SumWallet);
+                if (SumW != SumWallet)
+                {
+                    var Wr = OrdinaryWares.First();
+                    Wr.SumWallet += (SumWallet - SumW);
+                }
+            }
+            else
+            if (SumWallet < 0)
+            {
+                Wares.Concat(new List<ReceiptWares> { new ReceiptWares(this)
+                { CodeWares = Global.CodeWaresWallet, Quantity = 1, CodeUnit = 19, CodeDefaultUnit = 19, Sum = -SumWallet, NameWares = "Скарбничка", TypeVat = 0, PercentVat = 20 } });
+            }
+        }
+
     }
+    public class WorkplacePay
+    {
+        public int IdWorkplacePay { get; set; }
+        public decimal SumCash { get; set; }
+        public decimal Sum { get; set; }
+    }
+
+
 }

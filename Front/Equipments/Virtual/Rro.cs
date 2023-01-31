@@ -4,6 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ModelMID;
 using ModelMID.DB;
+using ModernExpo.SelfCheckout.Utils;
+using SharedLib;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -135,6 +137,12 @@ namespace Front.Equipments
              //decimal sum = pR.Wares.Sum(el => Math.Round(el.Price * el.Quantity, 2) - Math.Round(el.SumDiscount, 2)); //pR.SumTotal;
             return sum; //throw new NotImplementedException();
         }
+
+        public virtual decimal SumCashReceiptFiscal(Receipt pR)
+        {
+            decimal sum = SumReceiptFiscal(pR);
+            return Math.Round(sum, 1);
+        }
         /// <summary>
         /// Зупиняє останню довготривалу операцію. Наприклад Отримання текста чеку на фізичних фіскалках. 
         /// </summary>
@@ -145,5 +153,33 @@ namespace Front.Equipments
        /// </summary>
        /// <returns></returns>
         public virtual decimal GetSumFromTextReceipt(string pTextReceipt) { return 0; }
+
+        public void ReCalc(Receipt pR)
+        {
+            var SumWallet = pR.Payment?.Where(r => r.TypePay == eTypePay.Wallet).Sum(r=>r.SumPay) ?? 0;
+            if(SumWallet>0)
+            {
+                var OrdinaryWares = pR.Wares.Where(el => el.TypeWares == eTypeWares.Ordinary);
+                decimal Sum = OrdinaryWares.Sum(el=>el.SumTotal);
+                foreach(var el in pR.Wares)
+                    el.SumWallet=Math.Round( el.SumTotal*  SumWallet/ Sum,2);
+                decimal SumW = OrdinaryWares.Sum(el => el.SumWallet);
+                if (SumW != SumWallet)
+                {
+                    var Wr = OrdinaryWares.First();
+                    Wr.SumWallet += (SumWallet - SumW);
+                }
+                BL Bl = BL.GetBL;
+                foreach(var el in OrdinaryWares)
+                    Bl.db.ReplaceWaresReceipt(el);
+
+            }else 
+            if(SumWallet < 0)
+            {
+                pR.Wares.Add(new ReceiptWares(pR) 
+                    { CodeWares = Global.CodeWaresWallet, Quantity = 1, CodeUnit=19,CodeDefaultUnit=19 ,Sum = -SumWallet, NameWares = "Скарбничка",TypeVat=0,PercentVat=20 });
+            }
+
+        }
     }
 }

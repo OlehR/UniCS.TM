@@ -429,7 +429,7 @@ namespace Front
         /// Безготівкова оплата і Друк чека.
         /// </summary>
         /// <returns></returns>
-        public bool PrintAndCloseReceipt(Receipt pR = null, eTypePay eTP = eTypePay.Card, decimal pSumCash=0m, decimal pIssuingCash=0)
+        public bool PrintAndCloseReceipt(Receipt pR = null, eTypePay eTP = eTypePay.Card, decimal pSumCash=0m, decimal pIssuingCash=0, decimal pSumWallet=0)
         {
             bool Res = false;
             string TextError = null;
@@ -445,9 +445,16 @@ namespace Front
                 return true;
             }
 
+            int[] IdWorkplacePays = R.Wares.Select(el => el.IdWorkplacePay).Distinct().OrderBy(el => el).ToArray();
+            R.WorkplacePays = new WorkplacePay[IdWorkplacePays.Length];
+            for (var i = 0; i < IdWorkplacePays.Length; i++)
+            {
+                R.IdWorkplacePay = IdWorkplacePays[i];
+                R.WorkplacePays[i] = new WorkplacePay() {IdWorkplacePay= IdWorkplacePays[i],Sum = EF.SumReceiptFiscal(R),SumCash=EF.SumCashReceiptFiscal(R) };
+             }
+
             lock (LockPayPrint)
             {
-                int[] IdWorkplacePays = R.Wares.Select(el => el.IdWorkplacePay).Distinct().OrderBy(el => el).ToArray();
                 R.StateReceipt = Bl.GetStateReceipt(R);
                 if (R.StateReceipt == eStateReceipt.Prepare || R.StateReceipt == eStateReceipt.PartialPay)
                 {
@@ -463,13 +470,13 @@ namespace Front
                             R.StateReceipt = eStateReceipt.StartPay;
                             R.IdWorkplacePay = IdWorkplacePays[i];
                             Bl.SetStateReceipt(curReceipt, eStateReceipt.StartPay);
-                            decimal sum = EF.SumReceiptFiscal(R);
+                            decimal sum = R.WorkplacePays[i].Sum;
                             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Sum={sum}", eTypeLog.Expanded);
                             SetStateView(eStateMainWindows.ProcessPay);
                             Payment pay=null;
                             if(eTP == eTypePay.Cash)
                             {
-                                var SumCash = Math.Round(sum, 1);
+                                var SumCash = R.WorkplacePays[i].SumCash;
                                 pay = new Payment(R) { IsSuccess = true, TypePay = eTypePay.Cash, SumPay = SumCash, SumExt = (i == IdWorkplacePays.Length - 1 ? pSumCash : SumCash) };
                                 pSumCash -= SumCash;
                                 if (pSumCash < 0) pSumCash = 0;
@@ -505,6 +512,7 @@ namespace Front
                 R.StateReceipt = Bl.GetStateReceipt(R);
                 if (R.StateReceipt == eStateReceipt.Pay || R.StateReceipt == eStateReceipt.PartialPrint )
                 {
+                    R.ReCalc();
                     LogRRO res = null;
                     //Відключаємо контроль контрольної ваги тимчасово до наступної зміни товарного складу.
                     CS.IsControl = false;

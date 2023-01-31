@@ -521,10 +521,32 @@ namespace Front
         {
             if (pR == null || pR.Wares == null || !pR.Wares.Any()) return 0;
             var RRO = GetRRO(pR.IdWorkplacePay);
-            decimal sum = 0;            
-            if (RRO != null)
-                sum = RRO != null? RRO.SumReceiptFiscal(pR) : pR.Wares.Sum(r => (r.SumTotal));
-             return sum; 
+            decimal sum = 0;
+            sum = RRO != null ? RRO.SumReceiptFiscal(pR) : pR.Wares.Sum(r => (r.SumTotal)) ;
+            return sum;
+        }
+        /// <summary>
+        /// Розрахунок суми готівкуою з врахуванням завкруглення фіскалки
+        /// </summary>
+        /// <param name="pR"></param>
+        /// <param name="pIdWorkplacePay"></param>
+        /// <returns></returns>
+        public decimal SumCashReceiptFiscal(Receipt pR)
+        {
+            int[] IdWorkplacePays = pR.Wares.Select(el => el.IdWorkplacePay).Distinct().OrderBy(el => el).ToArray();
+            decimal Sum = 0;
+            var Id = pR.IdWorkplacePay;
+            for (var i = 0; i < IdWorkplacePays.Length; i++)
+            {
+                if (IdWorkplacePays[i]== pR.IdWorkplacePay || pR.IdWorkplacePay>0)
+                {
+                    pR.IdWorkplacePay = IdWorkplacePays[i];
+                    var RRO = GetRRO(pR.IdWorkplacePay);
+                    Sum = RRO.SumCashReceiptFiscal(pR);
+                }
+            }
+            pR.IdWorkplacePay = Id;
+            return Sum;
         }
 
         public LogRRO PrintNoFiscalReceipt(IdReceipt pReceipt ,IEnumerable<string> pR)

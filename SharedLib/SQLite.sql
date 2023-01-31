@@ -38,7 +38,7 @@ alter TABLE WARES_RECEIPT add id_workplace_pay INTEGER  NOT NULL DEFAULT 0;--Ver
 alter TABLE payment add id_workplace_pay INTEGER  NOT NULL DEFAULT 0;--Ver=>13
 alter TABLE LOG_RRO add id_workplace_pay INTEGER  NOT NULL DEFAULT 0;--Ver=>13
 alter TABLE payment    add CODE_WARES        INTEGER  NOT NULL DEFAULT 0;--Ver=>14
-
+alter TABLE WARES_RECEIPT add Sum_Wallet NUMBER   NOT NULL DEFAULT 0;--Ver=>15
 
 
 [SqlUpdateMID]
@@ -200,6 +200,7 @@ Price as Price/*, wr.sum as Sum*/, Type_Price as TypePrice
  ,wr.Max_Refund_Quantity as MaxRefundQuantity
  ,wr.Sum_Bonus as Sum_Bonus
  ,wr.id_workplace_pay as IdWorkplacePay
+ ,wr.sum_wallet as SumWallet
  ,case when max(SORT) over( PARTITION BY CODE_RECEIPT) = sort then  1 else 0 end as IsLast
                      from wares_receipt wr
                      join wares w on (wr.code_wares =w.code_wares)
@@ -266,13 +267,13 @@ insert into wares_receipt (id_workplace, code_period, code_receipt, id_workplace
   type_price,  quantity, price, Price_Dealer, sum, sum_vat,
   Priority,PAR_PRICE_1,PAR_PRICE_2,PAR_PRICE_3, sum_discount, type_vat, sort, Excise_Stamp,user_create,
  ADDITION_N1,ADDITION_N2,ADDITION_N3,
- ADDITION_C1,ADDITION_D1,BARCODE_2_CATEGORY,DESCRIPTION,Refunded_Quantity,Max_Refund_Quantity,SUM_BONUS) 
+ ADDITION_C1,ADDITION_D1,BARCODE_2_CATEGORY,DESCRIPTION,Refunded_Quantity,Max_Refund_Quantity,SUM_BONUS,sum_wallet ) 
  values (
   @IdWorkplace, @CodePeriod, @CodeReceipt,@IdWorkplacePay, @CodeWares, @CodeUnit,
   @TypePrice, @Quantity, @Price,@PriceDealer, @Sum, @SumVat,
   @Priority,@ParPrice1,@ParPrice2,@ParPrice3, round(@SumDiscount,2), @TypeVat, (select COALESCE(max(sort),0)+1 from wares_receipt  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt), @ExciseStamp,@UserCreate,
  @AdditionN1,@AdditionN2,@AdditionN3,
- @AdditionC1,@AdditionD1,@BARCODE2Category,@DESCRIPTION,@RefundedQuantity,@MaxRefundQuantity,@SumBonus);
+ @AdditionC1,@AdditionD1,@BARCODE2Category,@DESCRIPTION,@RefundedQuantity,@MaxRefundQuantity,@SumBonus,@SumWallet);
  ;
 insert into  WARES_RECEIPT_HISTORY ( ID_WORKPLACE,  CODE_PERIOD, CODE_RECEIPT, CODE_WARES, CODE_UNIT, QUANTITY, QUANTITY_OLD, CODE_OPERATION)     
 values ( @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit, @Quantity,@QuantityOld, 0);
@@ -283,13 +284,13 @@ replace into wares_receipt (id_workplace, code_period, code_receipt,id_workplace
   type_price,  quantity, price, Price_Dealer, sum, sum_vat,
   Priority,PAR_PRICE_1,PAR_PRICE_2,PAR_PRICE_3, sum_discount, type_vat, sort,Excise_Stamp, user_create,
  ADDITION_N1,ADDITION_N2,ADDITION_N3,
- ADDITION_C1,ADDITION_D1,BARCODE_2_CATEGORY,DESCRIPTION,Refunded_Quantity,Fix_Weight,Fix_Weight_Quantity,QR,Max_Refund_Quantity,SUM_BONUS) 
+ ADDITION_C1,ADDITION_D1,BARCODE_2_CATEGORY,DESCRIPTION,Refunded_Quantity,Fix_Weight,Fix_Weight_Quantity,QR,Max_Refund_Quantity,SUM_BONUS, Sum_Wallet) 
  values (
   @IdWorkplace, @CodePeriod, @CodeReceipt,@IdWorkplacePay, @CodeWares, @CodeUnit,
   @TypePrice, @Quantity, @Price,@PriceDealer, @Sum, @SumVat,
   @Priority,@ParPrice1,@ParPrice2,@ParPrice3, @SumDiscount, @TypeVat, @Sort,@ExciseStamp, @UserCreate,
  @AdditionN1,@AdditionN2,@AdditionN3,
- @AdditionC1,@AdditionD1,@BARCODE2Category,@DESCRIPTION,@RefundedQuantity,@FixWeight,@FixWeightQuantity,@QR,@MaxRefundQuantity,@SumBonus)
+ @AdditionC1,@AdditionD1,@BARCODE2Category,@DESCRIPTION,@RefundedQuantity,@FixWeight,@FixWeightQuantity,@QR,@MaxRefundQuantity,@SumBonus,@SumWallet)
 
 
 
@@ -681,6 +682,7 @@ CREATE TABLE WARES_RECEIPT (
     SUM_VAT        NUMBER   NOT NULL,
     SUM_DISCOUNT   NUMBER   NOT NULL,
     SUM_BONUS      NUMBER   NOT NULL DEFAULT 0,
+    Sum_Wallet     NUMBER   NOT NULL DEFAULT 0,
 	PRICE_DEALER   NUMBER   NOT NULL,
     Priority       INTEGER  NOT NULL DEFAULT 0,
     TYPE_PRICE     INTEGER  NOT NULL,
