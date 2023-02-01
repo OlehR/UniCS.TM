@@ -585,7 +585,7 @@ namespace Front
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"{curReceipt.ToJSON()}");
         }
 
-        void FillPays(Receipt pR)
+        public void FillPays(Receipt pR)
         {
             int[] IdWorkplacePays = pR.Wares.Select(el => el.IdWorkplacePay).Distinct().OrderBy(el => el).ToArray();
             pR.WorkplacePays = new WorkplacePay[IdWorkplacePays.Length];
