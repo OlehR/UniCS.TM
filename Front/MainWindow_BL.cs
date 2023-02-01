@@ -446,12 +446,7 @@ namespace Front
             }
 
             int[] IdWorkplacePays = R.Wares.Select(el => el.IdWorkplacePay).Distinct().OrderBy(el => el).ToArray();
-            R.WorkplacePays = new WorkplacePay[IdWorkplacePays.Length];
-            for (var i = 0; i < IdWorkplacePays.Length; i++)
-            {
-                R.IdWorkplacePay = IdWorkplacePays[i];
-                R.WorkplacePays[i] = new WorkplacePay() {IdWorkplacePay= IdWorkplacePays[i],Sum = EF.SumReceiptFiscal(R),SumCash=EF.SumCashReceiptFiscal(R) };
-             }
+            FillPays(R);
 
             lock (LockPayPrint)
             {
@@ -590,5 +585,15 @@ namespace Front
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"{curReceipt.ToJSON()}");
         }
 
+        void FillPays(Receipt pR)
+        {
+            int[] IdWorkplacePays = pR.Wares.Select(el => el.IdWorkplacePay).Distinct().OrderBy(el => el).ToArray();
+            pR.WorkplacePays = new WorkplacePay[IdWorkplacePays.Length];
+            for (var i = 0; i < IdWorkplacePays.Length; i++)
+            {
+                pR.IdWorkplacePay = IdWorkplacePays[i];
+                pR.WorkplacePays[i] = new WorkplacePay() { IdWorkplacePay = IdWorkplacePays[i], Sum = EF.SumReceiptFiscal(pR), SumCash = EF.SumCashReceiptFiscal(pR) };
+            }
+        }
     }
 }
