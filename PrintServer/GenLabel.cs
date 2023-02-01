@@ -81,7 +81,7 @@ namespace PrintServer
             return price;
         }
 
-        public void Print(IEnumerable<cPrice> parPrice, string parNamePrinter, string parNamePrinterYelow, string pNameDocument = null, eBrandName brandName = eBrandName.Vopak, bool isShort = true)
+        public void Print(IEnumerable<cPrice> parPrice, string parNamePrinter, string parNamePrinterYelow, string pNameDocument = null, eBrandName brandName = eBrandName.Vopak, bool isShort = true, bool isWarehouseNOV = false) // TMP isWarehouseNOV
         {
             CurLogo = (brandName == eBrandName.Vopak || logo2 == null ? logo : logo2);
             BrandName = brandName;
@@ -100,18 +100,18 @@ namespace PrintServer
                 current = 0;
                 price = parPrice.Where(el => el.ActionType != 0).ToArray();
                 if (price.Count() > 0)
-                    PrintServer(parNamePrinterYelow, pNameDocument, true, true); //Жовті завжди короткі.
+                    PrintServer(parNamePrinterYelow, pNameDocument, true, true, isWarehouseNOV); //Жовті завжди короткі.
             }
 
         }
 
-        public void PrintServer(string pNamePrinter, string pNameDoc = "Label", bool isShort = true, bool isYelow = false)
+        public void PrintServer(string pNamePrinter, string pNameDoc = "Label", bool isShort = true, bool isYelow = false, bool isWarehouseNOV = false)
         {
             // объект для печати
             PrintDocument printDocument = new PrintDocument();
 
             // обработчик события печати
-            if (isYelow)
+            if (isYelow && isWarehouseNOV)
             {
                 printDocument.PrintPage += PrintPageHandlerYelow;
                 printDocument.DocumentName = $"{pNameDoc}_{price.Count()}";
