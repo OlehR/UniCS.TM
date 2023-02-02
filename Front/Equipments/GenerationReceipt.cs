@@ -17,7 +17,7 @@ namespace Front.Equipments
             PrintDocument printDocument = new PrintDocument();
             printDocument.PrintPage += PrintPageReceipt;
             printDocument.DocumentName = $"{receipts[0].NumberReceipt}{receipts[1].NumberReceipt}";
-            printDocument.DefaultPageSettings.
+            //printDocument.DefaultPageSettings.
 
         }
 
