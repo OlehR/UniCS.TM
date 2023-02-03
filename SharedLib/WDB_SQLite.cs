@@ -15,6 +15,7 @@ namespace SharedLib
     public partial class WDB_SQLite : WDB
     {
         private static bool IsFirstStart = true;
+        public static bool IsUseOldDB = false;
         protected string SqlCreateMIDTable = @"";
         protected string SqlCreateMIDIndex = @"";
         protected string SqlGetPricePromotionKit = @"";
@@ -39,26 +40,22 @@ namespace SharedLib
             }
         }
 
-        public WDB_SQLite(DateTime parD = default(DateTime), string parConnect = "", bool pIsUseOldDB = false) : base(Path.Combine(Global.PathIni, "SQLite.sql"))
+        public WDB_SQLite(DateTime parD = default(DateTime), string pConnect = null, bool pIsUseOldDB = false, bool pIsCreateMidFile=false ) : base(Path.Combine(Global.PathIni, "SQLite.sql"))
         {
-            Connect = parConnect;
-            varVersion = "SQLite.0.0.1";
+            Connect = pConnect;
+            Version = "SQLite.0.0.1";
             DT = parD != default(DateTime) ? parD.Date : DateTime.Today.Date;
             InitSQL();
 
-
             if (IsFirstStart)
                 UpdateDB(ref pIsUseOldDB);
-
 
             if (!File.Exists(ConfigFile))
             {
                 db = new SQLite(ConfigFile);
                 db.ExecuteNonQuery(SqlCreateConfigTable);
                 db.Close();
-            }
-            //db = new SQLite(ConfigFile);//,"",this.varCallWriteLogSQL);
-
+            }            
 
             if (!File.Exists(ReceiptFile))
             {
@@ -72,54 +69,29 @@ namespace SharedLib
                 db = null;
             }
 
-
             if (!File.Exists(MidFile))
             {
-                if (pIsUseOldDB)
-                {
-                    db = new SQLite(ConfigFile);
-                    var varLastMidFile = GetConfig<string>("Last_MID");
-                    db = null;
-                    if (!string.IsNullOrEmpty(varLastMidFile) && File.Exists(varLastMidFile))
-                        LastMidFile = varLastMidFile;
-                }
-                if (!pIsUseOldDB || string.IsNullOrEmpty(LastMidFile))
+                if (pIsCreateMidFile)
                 {
                     var db = new SQLite(MidFile);
                     db.ExecuteNonQuery(SqlCreateMIDTable);
                     db.Close();
                     db = null;
                 }
-            }
-            /*
-            if (pTypeDb == eTypeDb.AllMid || pTypeDb == eTypeDb.AllRC)
-            {
-                if (pTypeDb == eTypeDb.AllMid)
-                {
-                    db = new SQLite(MidFile);
-                    db.ExecuteNonQuery("ATTACH '" + ReceiptFile + "' AS rc");
-                }
                 else
+                if (pIsUseOldDB)
                 {
-                    db = new SQLite(ReceiptFile);
-                    db.ExecuteNonQuery("ATTACH '" + MidFile + "' AS mid");
-                    //db.ExecuteNonQuery("ATTACH '" + ConfigFile + "' AS con");
+                    db = new SQLite(ConfigFile);
+                    var vLastMidFile = GetConfig<string>("Last_MID");
+                    db = null;
+                    if (!string.IsNullOrEmpty(vLastMidFile) && File.Exists(vLastMidFile))
+                        this.LastMidFile = vLastMidFile;
                 }
-                db.ExecuteNonQuery("ATTACH '" + ConfigFile + "' AS con");
             }
-           
-            if(pTypeDb == eTypeDb.Mid)
-                db = new SQLite(MidFile);
-
-            if(pTypeDb == eTypeDb.RC)
-                db = new SQLite(ReceiptFile);
-
-            if (pTypeDb == eTypeDb.Config)
-                db = new SQLite(ConfigFile);
-            */
-
+      
             db = new SQLite(ReceiptFile);
-            db.ExecuteNonQuery("ATTACH '" + MidFile + "' AS mid");
+            if (!File.Exists(MidFile))            
+                db.ExecuteNonQuery("ATTACH '" + MidFile + "' AS mid");
             db.ExecuteNonQuery("ATTACH '" + ConfigFile + "' AS con");
 
             db.ExecuteNonQuery("PRAGMA synchronous = EXTRA;");
@@ -289,8 +261,6 @@ namespace SharedLib
             return true;
 
         }
-
-
 
         public override bool CopyWaresReturnReceipt(IdReceipt parIdReceipt, bool parIsCurrentDay = true)
         {

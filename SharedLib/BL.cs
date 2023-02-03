@@ -29,7 +29,7 @@ namespace SharedLib
 
         public static SortedList<int, long> UserIdbyWorkPlace = new SortedList<int, long>();
 
-        public BL(bool pIsUseOldDB = false)
+        public BL(bool pIsUseOldDB = true)
         {
             db = new WDB_SQLite(default(DateTime), null, pIsUseOldDB);
             db.BildWorkplace();
@@ -532,10 +532,9 @@ namespace SharedLib
 
         public bool SaveReceipt(Receipt pReceipt, bool isRefund = true)
         {
-            var ReceiptId = isRefund ? pReceipt.RefundId : (IdReceipt)pReceipt;
+            var ReceiptId = isRefund ? pReceipt.RefundId : pReceipt;
 
-            var dbR = pReceipt.CodePeriod == Global.GetCodePeriod() ? db : new WDB_SQLite(ReceiptId.DTPeriod);
-
+            var dbR = DB(pReceipt);
             dbR.ReplaceReceipt(pReceipt);
             dbR.ReplacePayment(pReceipt.Payment);
 

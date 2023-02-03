@@ -33,7 +33,7 @@ namespace SharedLib
         /// </summary>
 		protected CallWriteLogSQL varCallWriteLogSQL; // это тот самый член-делегат :))
 		*/
-        public string varVersion = "0.0.1";
+        public string Version = "0.0.1";
         protected string SqlCreateReceiptTable = "";
 
         protected string SqlConfig = "";
