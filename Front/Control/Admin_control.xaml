@@ -537,6 +537,10 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                             <TextBlock Name="ControlScaleWeightHaml"  Text="{Binding ControlScaleWeightDouble}"  FontSize="28" Margin="5" Grid.Row="1"    />
                         </StackPanel>
                         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" >
+                            <Button Name="OffLine" Style="{StaticResource Default}"  
+                                HorizontalAlignment="Left" Margin="5" Grid.Row="1" 
+                                    Click="OffLineClick" 
+                                Content="OffLine"/>
                             <Button Name="RefreshData" Style="{StaticResource Default}"  
                                 HorizontalAlignment="Left" Margin="5" Grid.Row="1" 
                                     Click="RefreshDataButton" 

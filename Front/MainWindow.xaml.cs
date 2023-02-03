@@ -652,7 +652,7 @@ namespace Front
                             break;
 
                         case eStateMainWindows.ChoicePaymentMethod:
-                            PaymentWindow.TransferAmounts((double)MoneySum);
+                            PaymentWindow.TransferAmounts(MoneySum);
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;
                             PaymentWindow.Visibility = Visibility.Visible;

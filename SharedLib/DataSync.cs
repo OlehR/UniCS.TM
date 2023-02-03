@@ -20,13 +20,13 @@ namespace SharedLib
         public WDB_SQLite db { get { return bl?.db; } }
         public BL bl;
         private readonly object _locker = new object();
-        public SoapTo1C soapTo1C;
-        
+        public SoapTo1C soapTo1C = new SoapTo1C();
+        public bool IsUseOldDB = false;
+
         public eSyncStatus Status = eSyncStatus.NotDefine;
-        public bool IsReady { get { return Status != eSyncStatus.StartedFullSync && Status != eSyncStatus.Error; } }
+        public bool IsReady { get { return IsUseOldDB || ( Status != eSyncStatus.StartedFullSync && Status != eSyncStatus.Error); } }
         public DataSync(BL pBL)
         {
-            soapTo1C = new SoapTo1C();
             bl = pBL; ///!!!TMP Трохи костиль 
             StartSyncData();
         }
@@ -161,7 +161,7 @@ namespace SharedLib
 
                     Log.Append($"\n{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} varMidFile=>{varMidFile}\n\tLoad_Full=>{TD:yyyy-MM-dd} parIsFull=>{parIsFull}");
 
-
+                    var Db = db;
                     if (parIsFull)
                     {
                         db.SetConfig<DateTime>("Load_Full", DateTime.Now.Date.AddDays(-1));
@@ -175,29 +175,28 @@ namespace SharedLib
                             File.Delete(varMidFile);
                         }
                         Log.Append($"\n{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} Create New DB");
-                        bl.db = new WDB_SQLite(default(DateTime), varMidFile,false,true);
+                        Db = new WDB_SQLite(default(DateTime), varMidFile,false,true);
                     }
 
                     var MsSQL = new WDB_MsSql();
-                    var varMessageNMax = MsSQL.LoadData(db, parIsFull, Log);
+                    var varMessageNMax = MsSQL.LoadData(Db, parIsFull, Log);
 
                     if (parIsFull)
                     {
                         Log.Append($"\n{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} Create MIDIndex");
-
-                        db.CreateMIDIndex();
+                        Db.CreateMIDIndex();
                         Log.Append($"\n{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} Set config");
-                        db.SetConfig<string>("Last_MID", varMidFile);
+                        Db.SetConfig<string>("Last_MID", varMidFile);
+                        bl.db = Db;
                     }
-
+                    
                     db.SetConfig<int>("MessageNo", varMessageNMax);
                     db.SetConfig<DateTime>("Load_" + (parIsFull ? "Full" : "Update"), DateTime.Now /*String.Format("{0:u}", DateTime.Now)*/);
 
                     Log.Append($"\n{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} End");
                     Status = parIsFull ? eSyncStatus.SyncFinishedSuccess : eSyncStatus.NotDefine;
                     FileLogger.WriteLogMessage(Log.ToString());
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.SyncFinishedSuccess, StatusDescription = Log.ToString() });
-                    
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.SyncFinishedSuccess, StatusDescription = Log.ToString() });                    
                 }
                 catch (Exception ex)
                 {

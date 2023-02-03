@@ -194,6 +194,10 @@ namespace Front.Control
             });
             }
         }
+        private void OffLineClick(object sender, RoutedEventArgs e)
+        {
+            MW.Bl.ds.IsUseOldDB = !MW.Bl.ds.IsUseOldDB;
+        }        
 
         void ViewReceipt()
         {

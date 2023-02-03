@@ -14,8 +14,7 @@ namespace SharedLib
 {
     public partial class WDB_SQLite : WDB
     {
-        private static bool IsFirstStart = true;
-        public static bool IsUseOldDB = false;
+        private static bool IsFirstStart = true;        
         protected string SqlCreateMIDTable = @"";
         protected string SqlCreateMIDIndex = @"";
         protected string SqlGetPricePromotionKit = @"";
@@ -40,7 +39,7 @@ namespace SharedLib
             }
         }
 
-        public WDB_SQLite(DateTime parD = default(DateTime), string pConnect = null, bool pIsUseOldDB = false, bool pIsCreateMidFile=false ) : base(Path.Combine(Global.PathIni, "SQLite.sql"))
+        public WDB_SQLite(DateTime parD = default(DateTime), string pConnect = null, bool pIsUseOldDB = true, bool pIsCreateMidFile=false ) : base(Path.Combine(Global.PathIni, "SQLite.sql"))
         {
             Connect = pConnect;
             Version = "SQLite.0.0.1";
@@ -90,7 +89,7 @@ namespace SharedLib
             }
       
             db = new SQLite(ReceiptFile);
-            if (!File.Exists(MidFile))            
+            if (File.Exists(MidFile))            
                 db.ExecuteNonQuery("ATTACH '" + MidFile + "' AS mid");
             db.ExecuteNonQuery("ATTACH '" + ConfigFile + "' AS con");
 
