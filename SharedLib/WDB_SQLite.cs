@@ -288,10 +288,6 @@ namespace SharedLib
         ///////////////////////////////////////////////////////////////////
         /// Переробляю через відкриття закриття конекта.
         ///////////////////////////////////////////////////////////////////
-        ///
-
-        ///////////////// Config
-
         public override bool SetConfig<T>(string parName, T parValue, SQL pDB = null)
         {
             using (var DB = new SQLite(ConfigFile))
