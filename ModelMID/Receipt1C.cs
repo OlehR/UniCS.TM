@@ -60,7 +60,8 @@ namespace ModelMID
             else
                 Description = "0000000";
             var wp = Global.GetWorkPlaceByIdWorkplace(pR.IdWorkplace);
-            CodeBank = (int) pR.Payment.Where(r => r.IsSuccess && r.TypePay == eTypePay.Card).FirstOrDefault().CodeBank;
+            // r.IsSuccess &&
+            CodeBank = (int) (pR.Payment.Where(r => r.TypePay == eTypePay.Card)?.FirstOrDefault().CodeBank??eBank.NotDefine);
 
             //if (wp != null) CodeBank = (int)wp.TypePOS;
         }

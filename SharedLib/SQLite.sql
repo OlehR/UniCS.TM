@@ -51,7 +51,7 @@ alter TABLE wares add Limit_Age NUMBER;--Ver=>0
 alter TABLE wares add PLU INTEGER;--Ver=>0
 alter TABLE wares add Code_Direction INTEGER;--Ver=>0;
 alter TABLE wares add Type_Wares INTEGER  NOT NULL DEFAULT 2; --Ver=>6;
-alter TABLE wares add Code_TM INTEGER NOT NULL DEFAULT 0; --Ver=>7;
+alter TABLE wares add Code_TM INTEGER NOT NULL DEFAULT 0; --Ver=>8;
 
 [SqlConfig]
 SELECT Data_Var  FROM CONFIG  WHERE UPPER(Name_Var) = UPPER(trim(@NameVar));

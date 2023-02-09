@@ -93,9 +93,9 @@ namespace SharedLib
             try
             {
 
-                foreach (var el in pReceipt.WorkplacePays)
+                foreach (var el in pReceipt.IdWorkplacePays)
                 {
-                    pReceipt.IdWorkplacePay = el.IdWorkplacePay;
+                    pReceipt.IdWorkplacePay = el;
                     var r = new Receipt1C(pReceipt);
                     var body = soapTo1C.GenBody("JSONCheck", new Parameters[] { new Parameters("JSONSting", r.GetBase64()) });
                     var res = Global.IsTest ? "0" : await soapTo1C.RequestAsync(Global.Server1C, body, 240000, "application/json");

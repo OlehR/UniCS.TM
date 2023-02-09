@@ -841,7 +841,7 @@ and @TypeDiscount=11; ";
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex);
             }
         }
 

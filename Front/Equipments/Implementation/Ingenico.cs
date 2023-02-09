@@ -173,14 +173,16 @@ namespace Front.Equipments
         {
             if (StartBPOS())
             {
+                BPOS.POSGetInfo();
                 Thread.Sleep(1000);
                 string terminalInfo = BPOS.TerminalInfo;
+                StopBPOS();
                 var a = terminalInfo.Split('/');
                 if (a.Length > 2)
                     return eBank.PrivatBank;
                 else
-                    return eBank.Oschadbank;
-                StopBPOS();
+                    return eBank.Oschadbank; //OSCHADBANK
+               
             }
             return eBank.NotDefine;
         }
