@@ -240,17 +240,15 @@ namespace SharedLib
 
         public virtual bool SetConfig<T>(string parName, T parValue, SQL pDB = null)
         {
-            if(pDB==null)
-                db.ExecuteNonQuery<object>(this.SqlReplaceConfig, new { NameVar = parName, DataVar = parValue, @TypeVar = parValue.GetType().ToString() });
-            else
-                pDB.ExecuteNonQuery<object>(this.SqlReplaceConfig, new { NameVar = parName, DataVar = parValue, @TypeVar = parValue.GetType().ToString() });
+            if (pDB == null) pDB = db;
+            pDB.ExecuteNonQuery<object>(this.SqlReplaceConfig, new { NameVar = parName, DataVar = parValue, @TypeVar = parValue.GetType().ToString() });
             return true;
         }
 
         public virtual T GetConfig<T>(string pStr,SQL pDB=null)
         {
-            return pDB == null?db.ExecuteScalar<object, T>(SqlConfig, new { NameVar = pStr }): pDB.ExecuteScalar<object, T>(SqlConfig, new { NameVar = pStr });
-            //;
+            if (pDB == null) pDB = db;
+            return pDB.ExecuteScalar<object, T>(SqlConfig, new { NameVar = pStr });            
         }
 
         /// <summary>

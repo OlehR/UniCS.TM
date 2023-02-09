@@ -707,7 +707,7 @@ namespace SharedLib
                         db.ReplaceWaresReceiptPromotion(pr);
                     }
                 }
-                
+                db.RecalcHeadReceipt(NewR);
                 Global.OnReceiptCalculationComplete?.Invoke(R);
                 return R;
             }
