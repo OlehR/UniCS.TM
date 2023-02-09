@@ -14,6 +14,7 @@ namespace Front.Equipments
 {
     public class BankTerminal : Equipment
     {
+        
         protected byte MerchantId;
         List<Merchants> Merchants = new List<Merchants>();
         public BankTerminal(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefine, ILoggerFactory pLoggerFactory = null) : 
@@ -21,6 +22,8 @@ namespace Front.Equipments
         {
             pConfiguration.GetSection($"{KeyPrefix}Merchants").Bind(Merchants);
         }
+
+        public eBank CodeBank { get; set; } = eBank.NotDefine;
 
         virtual public BatchTotals PrintZ(int IdWorkPlace = 0) { throw new NotImplementedException(); }
         virtual public BatchTotals PrintX(int IdWorkPlace = 0) { throw new NotImplementedException(); }

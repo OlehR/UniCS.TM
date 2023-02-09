@@ -44,7 +44,8 @@ namespace Front.Equipments
                 MerchantId = Convert.ToByte(Configuration[$"{KeyPrefix}MerchanId"]);
 
                 OnStatus += pActionStatus;
-                State = eStateEquipment.On;
+                CodeBank = GetBank();
+                State = eStateEquipment.On;                
             }
             catch (Exception e)
             {
@@ -168,11 +169,27 @@ namespace Front.Equipments
 
         public Task<eDeviceConnectionStatus> TestDeviceAsync() => Task.Run<eDeviceConnectionStatus>((Func<eDeviceConnectionStatus>)(() => this.TestDeviceSync()));
 
+        eBank GetBank()
+        {
+            if (StartBPOS())
+            {
+                Thread.Sleep(1000);
+                string terminalInfo = BPOS.TerminalInfo;
+                var a = terminalInfo.Split('/');
+                if (a.Length > 2)
+                    return eBank.PrivatBank;
+                else
+                    return eBank.Oschadbank;
+                StopBPOS();
+            }
+            return eBank.NotDefine;
+        }
+
         public override string GetDeviceInfo()
         {
             try
             {
-                if (!this.StartBPOS())
+                if (!StartBPOS())
                     return string.Empty;
                 BPOS.POSGetInfo();
                 Thread.Sleep(1000);
@@ -185,12 +202,14 @@ TerminalId: {GetTerminalID}{Environment.NewLine}";
 
                 if (!string.IsNullOrEmpty(terminalInfo))
                 {
-                    str = str + "Software version: " + new string(terminalInfo.TakeWhile<char>((Func<char, bool>)(x => x != ' ')).ToArray<char>()) + $"{Environment.NewLine}Terminal profile ID: " + new string(terminalInfo.Substring(terminalInfo.IndexOf(" ", StringComparison.Ordinal)).Take<char>(8).ToArray<char>());
+                    str = str + "Software version: " + new string(terminalInfo.TakeWhile<char>((Func<char, bool>)(x => x != ' ')).ToArray<char>()) + 
+                        $"{Environment.NewLine}Terminal profile ID: " + new string(terminalInfo.Substring(terminalInfo.IndexOf(" ", StringComparison.Ordinal)).Take<char>(8).ToArray<char>());
                     var a = terminalInfo.Split('/');
                     if(a.Length > 2) 
                         str+= $"{Environment.NewLine}TerminalId: {a[1]}{Environment.NewLine}";
+                    str += $"{Environment.NewLine}TerminalInfo: {terminalInfo}";
                 }
-                    return str;
+                return str;
             }
             catch (Exception ex)
             {
@@ -240,7 +259,7 @@ TerminalId: {GetTerminalID}{Environment.NewLine}";
                 if (Logger != null)
                     LoggerExtensions.LogDebug((ILogger)Logger, "[Ingenico] WaitPosRespone 3", Array.Empty<object>());
                 OnStatus?.Invoke(new PosStatus(){ Status = eStatusPos.SuccessfullyFulfilled});
-               // GetLastReceipt(false);
+                // GetLastReceipt(false);
                 return new Payment()
                 {
                     IsSuccess = true,
@@ -257,6 +276,7 @@ TerminalId: {GetTerminalID}{Environment.NewLine}";
                     CardHolder = this.GetString(BPOS.CardHolder),
                     IssuerName = this.GetString(BPOS.IssuerName),
                     Bank = this.GetString(BPOS.ECRDataTM),
+                    CodeBank = this.CodeBank
                     //Receipt= this.ParseReceipt(BPOS.Receipt)
                 };
             }

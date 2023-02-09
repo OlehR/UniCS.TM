@@ -113,14 +113,17 @@ namespace ModelMID
                 if (RefundId == null)
                     return null;
                 var d = Convert.ToInt32(Math.Floor((RefundId.DTPeriod - new DateTime(2019, 01, 01)).TotalDays)).ToString("D4");
-                return PrefixWarehouse + Global.GetNumberCashDeskByIdWorkplace(IdWorkplaceRefund) + d + CodeReceiptRefund.ToString("D4");
+                return Prefix + d + CodeReceiptRefund.ToString("D4");//PrefixWarehouse + Global.GetNumberCashDeskByIdWorkplace(IdWorkplaceRefund)
             }
         }
         public int IdWorkplaceRefund { get { return RefundId == null ? 0 : RefundId.IdWorkplace; } set { if (RefundId == null) RefundId = new IdReceipt(); RefundId.IdWorkplace = value; } }
         public int CodePeriodRefund { get { return RefundId == null ? 0 : RefundId.CodePeriod; } set { if (RefundId == null) RefundId = new IdReceipt(); RefundId.CodePeriod = value; } }
         public int CodeReceiptRefund { get { return RefundId == null ? 0 : RefundId.CodeReceipt; } set { if (RefundId == null) RefundId = new IdReceipt(); RefundId.CodeReceipt = value; } }
-        public IEnumerable<ReceiptWares> Wares { get; set; }
-        public IEnumerable<Payment> Payment { get; set; }
+        public IEnumerable<ReceiptWares> _Wares;
+        public IEnumerable<ReceiptWares> Wares { get { return IdWorkplacePay == 0 || _Wares ==null ? _Wares :_Wares.Where(el => el.IdWorkplacePay == IdWorkplacePay && el.Quantity != 0m); } set { _Wares = value; } }
+        IEnumerable<Payment> _Payment;
+        public IEnumerable<Payment> Payment { get { return IdWorkplacePay == 0 || _Payment == null ? _Payment : _Payment.Where(el => el.IdWorkplacePay == IdWorkplacePay); } set { _Payment = value; } }
+        
         public IEnumerable<ReceiptEvent> ReceiptEvent { get; set; }
 
         //public bool _IsLockChange = false;
@@ -234,6 +237,7 @@ namespace ModelMID
         public double OwnBag { get { return ReceiptEvent?.Sum(r => Convert.ToDouble(r.ProductConfirmedWeight)) ?? 0d; } }
 
         public WorkplacePay[] WorkplacePays { get; set; }
+        
         public List<string> ReceiptComments
         {
             get
@@ -252,6 +256,7 @@ namespace ModelMID
 
             }
         }
+       
         public bool IsQR()
         {
             return Wares?.Where(r => !string.IsNullOrEmpty(r.QR)).Any() ?? false;
@@ -281,6 +286,8 @@ namespace ModelMID
         }
         public bool IsUseBonus { get { return Wares?.Where(el => el.TypeWares != eTypeWares.Ordinary).Any() == true; } }
         public decimal MaxSumWallet { get { return Math.Round(Wares?.Where(el => el.TypeWares == eTypeWares.Ordinary).Sum(el => el.SumTotal * 0.25m) ?? 0, 2); } }
+
+        public int[] IdWorkplacePays { get { return _Wares?.Select(el => el.IdWorkplacePay).Distinct().OrderBy(el => el).ToArray() ?? Array.Empty<int>(); } }
 
         public void ReCalc()
         {

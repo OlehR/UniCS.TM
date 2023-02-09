@@ -268,7 +268,7 @@ namespace ModelMID
         WaitClear
     }
 
-    public enum eTypePOS
+    public enum eBank
     {
         NotDefine = 0,
         PrivatBank = 3,

@@ -92,25 +92,30 @@ namespace SharedLib
         {
             try
             {
-                var rr = pReceipt.Wares.Where(r => r.Quantity != 0m);
-                pReceipt.Wares = rr;
 
-                var r = new Receipt1C(pReceipt);
-                var body = soapTo1C.GenBody("JSONCheck", new Parameters[] { new Parameters("JSONSting", r.GetBase64()) });
-                var res = Global.IsTest?  "0": await soapTo1C.RequestAsync(Global.Server1C, body, 240000, "application/json");
-
-               if (!string.IsNullOrEmpty(res) && res.Equals("0"))
+                foreach (var el in pReceipt.WorkplacePays)
                 {
-                    pReceipt.StateReceipt = eStateReceipt.Send;
-                    parDB.SetStateReceipt(pReceipt);//Змінюєм стан чека на відправлено.
-                    return true;
+                    pReceipt.IdWorkplacePay = el.IdWorkplacePay;
+                    var r = new Receipt1C(pReceipt);
+                    var body = soapTo1C.GenBody("JSONCheck", new Parameters[] { new Parameters("JSONSting", r.GetBase64()) });
+                    var res = Global.IsTest ? "0" : await soapTo1C.RequestAsync(Global.Server1C, body, 240000, "application/json");
+
+                    if (string.IsNullOrEmpty(res) || !res.Equals("0"))
+                        return false;
                 }
-                return false;
+
+                pReceipt.StateReceipt = eStateReceipt.Send;
+                parDB.SetStateReceipt(pReceipt);//Змінюєм стан чека на відправлено.
+                return true;
             }
             catch (Exception ex)
             {
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "SendReceiptTo1CAsync=>" + pReceipt.ReceiptId.ToString() + " " + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
                 return false;
+            }
+            finally
+            {
+                pReceipt.IdWorkplacePay = 0;
             }
         }
 

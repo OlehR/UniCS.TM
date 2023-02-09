@@ -7,8 +7,20 @@ namespace ModelMID
 {
     public class IdReceipt
     {
-        protected string PrefixWarehouse { get { switch (Global.CodeWarehouse) { case 9: return "K"; case 15: return "B"; default: return "X"; } } }
-      
+
+        protected string PrefixWarehouse { get { switch (Global.CodeWarehouse) { case 9: return "K"; case 15: return "B"; case 148: return "E"; default: return "X"; } } }
+        
+        protected string Prefix
+        {
+            get
+            {
+                string res = Global.GetWorkPlaceByIdWorkplace(IdWorkplacePay > 0 ? IdWorkplacePay : IdWorkplace)?.Prefix;
+                if (string.IsNullOrEmpty(res))
+                    res = PrefixWarehouse + Global.GetNumberCashDeskByIdWorkplace(IdWorkplace);
+                return res;                
+            }
+        }
+
         public Guid ReceiptId
         {
             get
@@ -93,7 +105,7 @@ namespace ModelMID
             get
             {
                 var d = Convert.ToInt32(Math.Floor((DTPeriod - new DateTime(2019, 01, 01)).TotalDays)).ToString("D4");
-                return PrefixWarehouse + Global.GetNumberCashDeskByIdWorkplace(IdWorkplace) + d + CodeReceipt.ToString("D4");
+                return Prefix + d + CodeReceipt.ToString("D4");//PrefixWarehouse + Global.GetNumberCashDeskByIdWorkplace(IdWorkplace) 
             }
         }
         /// <summary>

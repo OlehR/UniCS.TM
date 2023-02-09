@@ -339,10 +339,7 @@ namespace Front
             var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
             {
                 var RRO = GetRRO(pReceipt.IdWorkplacePay);
-                var FullWares = pReceipt.Wares;
-                var FullPay = pReceipt.Payment;
-                pReceipt.Wares = pReceipt.Wares.Where(el => el.IdWorkplacePay == pReceipt.IdWorkplacePay || pReceipt.IdWorkplacePay ==0);
-                pReceipt.Payment = FullPay.Where(el => el.IdWorkplacePay == pReceipt.IdWorkplacePay || pReceipt.IdWorkplacePay == 0);
+                
                 LogRRO Res;
                 try
                 {
@@ -369,9 +366,7 @@ namespace Front
                 }
                 finally
                 {
-                    curTypeOperation = eTypeOperation.NotDefine;
-                    pReceipt.Wares = FullWares;
-                    pReceipt.Payment = FullPay; 
+                    curTypeOperation = eTypeOperation.NotDefine;                    
                 }
                 Res.IdWorkplacePay = pReceipt.IdWorkplacePay;
                 return Res;
@@ -525,6 +520,7 @@ namespace Front
             sum = RRO != null ? RRO.SumReceiptFiscal(pR) : pR.Wares.Sum(r => (r.SumTotal)) ;
             return sum;
         }
+
         /// <summary>
         /// Розрахунок суми готівкуою з врахуванням завкруглення фіскалки
         /// </summary>
@@ -533,16 +529,21 @@ namespace Front
         /// <returns></returns>
         public decimal SumCashReceiptFiscal(Receipt pR)
         {
-            int[] IdWorkplacePays = pR.Wares.Select(el => el.IdWorkplacePay).Distinct().OrderBy(el => el).ToArray();
             decimal Sum = 0;
             var Id = pR.IdWorkplacePay;
+            int[] IdWorkplacePays;
+            if (pR.IdWorkplacePay > 0)
+                IdWorkplacePays = new int[1] { pR.IdWorkplacePay };
+            else
+                IdWorkplacePays = pR.IdWorkplacePays;
+            
             for (var i = 0; i < IdWorkplacePays.Length; i++)
             {
                 if (IdWorkplacePays[i]== pR.IdWorkplacePay || pR.IdWorkplacePay>0)
                 {
                     pR.IdWorkplacePay = IdWorkplacePays[i];
                     var RRO = GetRRO(pR.IdWorkplacePay);
-                    Sum = RRO.SumCashReceiptFiscal(pR);
+                    Sum += RRO.SumCashReceiptFiscal(pR);
                 }
             }
             pR.IdWorkplacePay = Id;

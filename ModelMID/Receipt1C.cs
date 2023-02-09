@@ -37,31 +37,32 @@ namespace ModelMID
 
         public int CodeBank { get; set; }
         public Receipt1C() { }
-        public Receipt1C(Receipt parR)
+        public Receipt1C(Receipt pR)
         {
-            Date = parR.DateReceipt;
+            Date = pR.DateReceipt;
             //Фінт з датою заради 4 знаків для дати. Вистачить на років 30.
-            Number = parR.NumberReceipt1C;
-            RefundNumber = parR.RefundNumberReceipt1C;
-            TypeReceipt =  (parR.TypeReceipt== eTypeReceipt.Refund? eTypeReceipt.Refund:eTypeReceipt.Sale);
-            NumberCashDesk = parR.IdWorkplace;            
-            CodeClientCard = parR.CodeClient;
-            BarCodeCashier = parR.UserCreate.ToString();
+            Number = pR.NumberReceipt1C;
+            RefundNumber = pR.RefundNumberReceipt1C;
+            TypeReceipt =  (pR.TypeReceipt== eTypeReceipt.Refund? eTypeReceipt.Refund:eTypeReceipt.Sale);
+            NumberCashDesk = pR.IdWorkplace;            
+            CodeClientCard = pR.CodeClient;
+            BarCodeCashier = pR.UserCreate.ToString();
             CodeWarehouse = Global.CodeWarehouse;
 
             UInt64 nr=0;
-            if(UInt64.TryParse(parR.NumberReceipt,out nr))                
+            if(UInt64.TryParse(pR.NumberReceipt,out nr))                
              NumberReceipt = nr;
 
-            if (parR.Wares!=null && parR.StateReceipt>0) 
-              Wares = parR.Wares.Select(r => new ReceiptWares1C(r));
-            if (parR.Payment != null && parR.Payment.Count() > 0)
-                Description = parR.Payment.Where(r => !string.IsNullOrEmpty(r.CodeAuthorization)).FirstOrDefault().CodeAuthorization;
+            if (pR.Wares!=null && pR.StateReceipt>0) 
+              Wares = pR.Wares.Select(r => new ReceiptWares1C(r));
+            if (pR.Payment != null && pR.Payment.Count() > 0)
+                Description = pR.Payment.Where(r => !string.IsNullOrEmpty(r.CodeAuthorization)).FirstOrDefault().CodeAuthorization;
             else
                 Description = "0000000";
-            var wp = Global.GetWorkPlaceByIdWorkplace(parR.IdWorkplace);
-            if (wp != null)
-                CodeBank = (int)wp.TypePOS;
+            var wp = Global.GetWorkPlaceByIdWorkplace(pR.IdWorkplace);
+            CodeBank = (int) pR.Payment.Where(r => r.IsSuccess && r.TypePay == eTypePay.Card).FirstOrDefault().CodeBank;
+
+            //if (wp != null) CodeBank = (int)wp.TypePOS;
         }
 
         public string GetBase64()

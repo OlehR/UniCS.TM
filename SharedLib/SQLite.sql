@@ -13,6 +13,7 @@ alter table WORKPLACE add  CODE_DEALER INTEGER  NOT NULL DEFAULT 0;--Ver=>0
 
 CREATE TABLE FiscalArticle (CodeWares INTEGER NOT NULL, NameWares TEXT NOT NULL, PLU INTEGER NOT NULL, Price REAL NOT NULL);--Ver=>10
 CREATE UNIQUE INDEX id_FiscalArticle ON FiscalArticle(CodeWares);--Ver=>10
+alter table WORKPLACE add  Prefix TEXT;--Ver=>11
 
 [SqlUpdateRC]
 alter TABLE WARES_RECEIPT            add Fix_Weight NUMBER NOT NULL DEFAULT 0;--Ver=>0
@@ -39,6 +40,7 @@ alter TABLE payment add id_workplace_pay INTEGER  NOT NULL DEFAULT 0;--Ver=>13
 alter TABLE LOG_RRO add id_workplace_pay INTEGER  NOT NULL DEFAULT 0;--Ver=>13
 alter TABLE payment    add CODE_WARES        INTEGER  NOT NULL DEFAULT 0;--Ver=>14
 alter TABLE WARES_RECEIPT add Sum_Wallet NUMBER   NOT NULL DEFAULT 0;--Ver=>15
+alter TABLE payment    add Code_Bank    INTEGER  NOT NULL DEFAULT 0;--Ver=>16
 
 
 [SqlUpdateMID]
@@ -557,12 +559,13 @@ select * from FIELD_INFO
 insert into Weight ( BarCode,Weight,STATUS) values (@BarCode,@Weight,@Status);
 
 [SqlReplaceWorkplace]
- INSERT OR IGNORE into WORKPLACE ( ID_WORKPLACE, NAME, Terminal_GUID, Video_Camera_IP, Video_Recorder_IP, Type_POS, Code_Warehouse, CODE_DEALER) values 
-                                 (@IdWorkplace, @Name, @StrTerminalGUID, @VideoCameraIP, @VideoRecorderIP,@TypePOS, @CodeWarehouse, @CodeDealer);
+ replace into WORKPLACE ( ID_WORKPLACE, NAME, Terminal_GUID, Video_Camera_IP, Video_Recorder_IP, Type_POS, Code_Warehouse, CODE_DEALER, Prefix) values 
+                         (@IdWorkplace, @Name, @StrTerminalGUID, @VideoCameraIP, @VideoRecorderIP,@TypePOS, @CodeWarehouse, @CodeDealer,@Prefix);
 
 [SqlGetWorkplace]
 select ID_WORKPLACE as IdWorkplace, NAME as Name, Terminal_GUID as StrTerminalGUID, 
-       Video_Camera_IP as VideoCameraIP, Video_Recorder_IP  as VideoRecorderIP , Type_POS as TypePOS,Code_Warehouse as CodeWarehouse ,CODE_DEALER as CodeDealer from WORKPLACE;
+       Video_Camera_IP as VideoCameraIP, Video_Recorder_IP  as VideoRecorderIP , Type_POS as TypePOS,
+       Code_Warehouse as CodeWarehouse ,CODE_DEALER as CodeDealer,Prefix from WORKPLACE;
 
 [SqlFillQuickGroup]
 WITH RECURSIVE
@@ -588,7 +591,8 @@ CREATE TABLE WORKPLACE (
     Video_Recorder_IP TEXT,
     Type_POS NUMBER   NOT NULL DEFAULT 0,
     Code_Warehouse INTEGER  NOT NULL DEFAULT 0,
-    CODE_DEALER INTEGER  NOT NULL DEFAULT 0
+    CODE_DEALER INTEGER  NOT NULL DEFAULT 0,
+    Prefix TEXT
 	);
 	CREATE UNIQUE INDEX id_WORKPLACE ON WORKPLACE(ID_WORKPLACE);
 	CREATE UNIQUE INDEX WORKPLACE_TG ON WORKPLACE(Terminal_GUID);
@@ -753,6 +757,7 @@ CREATE TABLE payment
     CODE_PERIOD       INTEGER  NOT NULL,
     CODE_RECEIPT      INTEGER  NOT NULL,
     TYPE_PAY INTEGER  NOT NULL,
+    Code_Bank    INTEGER  NOT NULL DEFAULT 0,
     CODE_WARES        INTEGER  NOT NULL DEFAULT 0,
     SUM_PAY          NUMBER,
     SUM_ext      NUMBER,
@@ -1175,8 +1180,8 @@ Select min(case when CODE_DEALER=-888888  then PRICE_DEALER else null end) as Mi
  from price where CODE_DEALER in(-999999,-888888) and CODE_WARES=@CodeWares
  
  [SqlReplacePayment]
- replace into  payment	(ID_WORKPLACE, id_workplace_pay ,CODE_PERIOD, CODE_RECEIPT, TYPE_PAY, CODE_WARES, SUM_PAY, SUM_ext, NUMBER_TERMINAL, NUMBER_RECEIPT, CODE_authorization, NUMBER_SLIP, Number_Card,Pos_Paid , Pos_Add_Amount ,Card_Holder,Issuer_Name, Bank, TransactionId,DATE_CREATE) values
-                        (@IdWorkplace, @IdWorkplacePay , @CodePeriod, @CodeReceipt, @TypePay, @CodeWares, @SumPay, @SumExt, @NumberTerminal, @NumberReceipt, @CodeAuthorization, @NumberSlip, @NumberCard, @PosPaid, @PosAddAmount ,@CardHolder,@IssuerName, @Bank,@TransactionId, @DateCreate);
+ replace into  payment	(ID_WORKPLACE, id_workplace_pay ,CODE_PERIOD, CODE_RECEIPT, TYPE_PAY, Code_Bank, CODE_WARES, SUM_PAY, SUM_ext, NUMBER_TERMINAL, NUMBER_RECEIPT, CODE_authorization, NUMBER_SLIP, Number_Card,Pos_Paid , Pos_Add_Amount ,Card_Holder,Issuer_Name, Bank, TransactionId,DATE_CREATE) values
+                        (@IdWorkplace, @IdWorkplacePay , @CodePeriod, @CodeReceipt, @TypePay, @CodeBank, @CodeWares, @SumPay, @SumExt, @NumberTerminal, @NumberReceipt, @CodeAuthorization, @NumberSlip, @NumberCard, @PosPaid, @PosAddAmount ,@CardHolder,@IssuerName, @Bank,@TransactionId, @DateCreate);
 
 [SqlReplaceMRC]
  replace into  MRC	(Code_Wares, Price,Type_Wares) values  (@CodeWares, @Price,@TypeWares);
@@ -1189,7 +1194,7 @@ replace into User (CODE_USER, NAME_USER,  BAR_CODE,Type_User, LOGIN, PASSWORD) v
 
 [SqlGetPayment]
 select id_workplace as IdWorkplace, id_workplace_pay as IdWorkplacePay,code_period as CodePeriod, code_receipt as CodeReceipt, 
- TYPE_PAY as TypePay, CODE_WARES as CodeWares, SUM_PAY as SumPay, SUM_EXT as SumExt,
+ TYPE_PAY as TypePay, Code_Bank as CodeBank, CODE_WARES as CodeWares, SUM_PAY as SumPay, SUM_EXT as SumExt,
     NUMBER_TERMINAL as NumberTerminal,   NUMBER_RECEIPT as NumberReceipt, CODE_AUTHORIZATION as CodeAuthorization, NUMBER_SLIP as NumberSlip,
     Pos_Paid as PosPaid, Pos_Add_Amount as PosAddAmount, DATE_CREATE as DateCreate,Number_Card as NumberCard,
     Card_Holder as CardHolder ,Issuer_Name as IssuerName, Bank,TransactionId

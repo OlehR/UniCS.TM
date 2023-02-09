@@ -8,6 +8,7 @@ namespace ModelMID
     {        
         public bool IsSuccess { get; set; }
         public eTypePay TypePay { get; set; } = eTypePay.Card;
+        public eBank CodeBank { get; set; } = eBank.NotDefine;
         public decimal SumPay  { get; set;}
         /// <summary>
         /// Здача(для готівкових операцій)

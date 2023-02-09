@@ -13,10 +13,11 @@ namespace ModelMID.DB
 
         public string VideoCameraIP { get; set; }
         public string VideoRecorderIP { get; set; }
-        public eTypePOS TypePOS { get; set; }
+        public eBank TypePOS { get; set; }
         public int CodeWarehouse { get; set; }
         public int CodeDealer { get; set; }
+        public string Prefix { get; set; }
 
-}
+    }
 }
 

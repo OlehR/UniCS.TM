@@ -65,6 +65,14 @@ namespace SharedLib
             var oWarehouse = new pWarehouse() { CodeWarehouse = Global.CodeWarehouse };
             var oMessage = new pMessage() { IsFull = parIsFull ? 1 : 0, MessageNoMin = varMessageNoMin, MessageNoMax = varMessageNoMax, CodeWarehouse = Global.CodeWarehouse };
 
+            Debug.WriteLine("SqlGetDimWorkplace");
+            SQL = GetSQL("SqlGetDimWorkplace");
+            var DW = db.Execute<WorkPlace>(SQL);
+            pDB.ReplaceWorkPlace(DW);
+            Log.Append($"\n{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetDimWorkplace => {DW.Count()}");
+            DW = null;
+            
+
             Debug.WriteLine("SqlGetDimPrice");
             SQL = GetSQL("SqlGetDimPrice");
             var PD = db.Execute<pMessage, Price>(SQL, oMessage);

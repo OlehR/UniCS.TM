@@ -655,8 +655,13 @@ namespace Front.Control
         {
             if (LastReceipt?.Receipt?.Count() > 0)
             {
-                MW.curReceipt.IdWorkplacePay= Global.IdWorkPlace;
-                EF.PrintNoFiscalReceipt(MW.curReceipt, LastReceipt.Receipt );
+                try
+                {
+                    MW.curReceipt.IdWorkplacePay = Global.IdWorkPlace;
+                    EF.PrintNoFiscalReceipt(MW.curReceipt, LastReceipt.Receipt);
+                }
+                finally{ MW.curReceipt.IdWorkplacePay = 0; }
+                
             }
         }
 

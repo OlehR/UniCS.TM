@@ -445,7 +445,7 @@ namespace Front
                 return true;
             }
 
-            int[] IdWorkplacePays = R.Wares.Select(el => el.IdWorkplacePay).Distinct().OrderBy(el => el).ToArray();
+            int[] IdWorkplacePays = R.IdWorkplacePays;// Wares.Select(el => el.IdWorkplacePay).Distinct().OrderBy(el => el).ToArray();
             FillPays(R);
 
             lock (LockPayPrint)
@@ -459,8 +459,8 @@ namespace Front
                             Bl.GenQRAsync(R.Wares);
                         var Pays = new List<Payment>();
                         for (var i = 0; i < IdWorkplacePays.Length; i++)
-                        {                            
-                            if (R.Payment!=null && R.Payment.Any(el=>el.IdWorkplacePay == IdWorkplacePays[i] && el.IsSuccess ))
+                        {
+                            if (R.Payment != null && R.Payment.Any(el => el.IdWorkplacePay == IdWorkplacePays[i] && el.IsSuccess))
                                 continue;
                             R.StateReceipt = eStateReceipt.StartPay;
                             R.IdWorkplacePay = IdWorkplacePays[i];
@@ -468,15 +468,15 @@ namespace Front
                             decimal sum = R.WorkplacePays[i].Sum;
                             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Sum={sum}", eTypeLog.Expanded);
                             SetStateView(eStateMainWindows.ProcessPay);
-                            Payment pay=null;
-                            if(eTP == eTypePay.Cash)
+                            Payment pay = null;
+                            if (eTP == eTypePay.Cash)
                             {
                                 var SumCash = R.WorkplacePays[i].SumCash;
                                 pay = new Payment(R) { IsSuccess = true, TypePay = eTypePay.Cash, SumPay = SumCash, SumExt = (i == IdWorkplacePays.Length - 1 ? pSumCash : SumCash) };
                                 pSumCash -= SumCash;
                                 if (pSumCash < 0) pSumCash = 0;
                             }
-                            pay = EF.PosPay(R, R.TypeReceipt == eTypeReceipt.Sale ? sum : -sum, R.AdditionC1, pay, Global.IdWorkPlaceIssuingCash == IdWorkplacePays[i] ? pIssuingCash : 0);  
+                            pay = EF.PosPay(R, R.TypeReceipt == eTypeReceipt.Sale ? sum : -sum, R.AdditionC1, pay, Global.IdWorkPlaceIssuingCash == IdWorkplacePays[i] ? pIssuingCash : 0);
 
                             if (pay != null && pay.IsSuccess)
                             {
@@ -485,17 +485,18 @@ namespace Front
                                 R.NumberReceiptPOS = pay.NumberReceipt;
                                 //R.Client = null;
                                 R.SumCreditCard = pay.SumPay;
-                                Bl.db.ReplaceReceipt(R);                               
+                                Bl.db.ReplaceReceipt(R);
                                 R.Payment = Bl.db.GetPayment(R);
                             }
                             else
-                            {                                
-                                R.StateReceipt = R.Payment?.Any()==true? eStateReceipt.PartialPay : eStateReceipt.Prepare;
+                            {
+                                R.StateReceipt = R.Payment?.Any() == true ? eStateReceipt.PartialPay : eStateReceipt.Prepare;
                                 Bl.SetStateReceipt(curReceipt, R.StateReceipt);
                                 TextError = $"Оплата не пройшла: {EquipmentInfo}";
                                 break;
                             }
                         }
+
                     }
                     catch (Exception e)
                     {
@@ -503,6 +504,7 @@ namespace Front
                         Bl.SetStateReceipt(curReceipt, eStateReceipt.Prepare);
                         FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
                     }
+                    finally { R.IdWorkplacePay = 0; }
                 }
                 R.StateReceipt = Bl.GetStateReceipt(R);
                 if (R.StateReceipt == eStateReceipt.Pay || R.StateReceipt == eStateReceipt.PartialPrint )
@@ -530,7 +532,7 @@ namespace Front
                                 R.SumFiscal += res.SUM;
                                 R.StateReceipt = (i== IdWorkplacePays.Length-1? eStateReceipt.Print: eStateReceipt.PartialPrint);                               
                             }
-                        }
+                        }                       
                         if (res == null)
                             return true;
                         if (res.CodeError == 0)
@@ -554,6 +556,8 @@ namespace Front
                         Bl.SetStateReceipt(curReceipt, R.StateReceipt);
                         FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
                     }
+                    finally
+                    { R.IdWorkplacePay = 0; }
                 }
                 SetStateView(eStateMainWindows.WaitInput);
                 if (TextError != null)
@@ -587,13 +591,14 @@ namespace Front
 
         public void FillPays(Receipt pR)
         {
-            int[] IdWorkplacePays = pR.Wares.Select(el => el.IdWorkplacePay).Distinct().OrderBy(el => el).ToArray();
+            int[] IdWorkplacePays = pR.IdWorkplacePays;//Wares.Select(el => el.IdWorkplacePay).Distinct().OrderBy(el => el).ToArray();
             pR.WorkplacePays = new WorkplacePay[IdWorkplacePays.Length];
             for (var i = 0; i < IdWorkplacePays.Length; i++)
             {
                 pR.IdWorkplacePay = IdWorkplacePays[i];
                 pR.WorkplacePays[i] = new WorkplacePay() { IdWorkplacePay = IdWorkplacePays[i], Sum = EF.SumReceiptFiscal(pR), SumCash = EF.SumCashReceiptFiscal(pR) };
             }
+            pR.IdWorkplacePay = 0;
         }
     }
 }
