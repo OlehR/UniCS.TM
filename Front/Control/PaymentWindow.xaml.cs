@@ -11,28 +11,28 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using ModernExpo.SelfCheckout.Utils;
 
 namespace Front.Control
-{
-    /// <summary>
-    /// Interaction logic for PaymentWindow.xaml
-    /// </summary>
-
+{ 
     public partial class PaymentWindow : UserControl, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public string ChangeSumPaymant { get; set; } = "";
-        decimal tempMoneySum;
+        decimal MoneySum;
         public decimal SumCashDisbursement { get; set; } = 0;
-        public Receipt MWCurReceipt { get { return MW.curReceipt; } }
+        decimal SumMaxWallet = 0;
+        decimal _SumUseWallet = 0;        
+        public decimal SumUseWallet { get { return _SumUseWallet; } set { _SumUseWallet = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SumUseWalletUp)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SumUseWalletDown)));
+                RoundSum.Text = (Math.Round(SumUseWalletUp, 2)).ToString();
+                RoundSumDown.Text = (Math.Round(SumUseWalletDown, 2)).ToString();
+            }
+        } 
+        public decimal SumUseWalletUp { get { return SumUseWallet>0? SumUseWallet : 0; } }
+        public decimal SumUseWalletDown { get { return SumUseWallet < 0 ? -SumUseWallet : 0; } }
+        public Receipt curReceipt { get { return MW?.curReceipt; } }
         public decimal RestMoney { get; set; }
         public bool IsCashPayment
         {
@@ -48,17 +48,9 @@ namespace Front.Control
                 }
             }
         }
-
-        //private decimal _MoneySumToRound;
-        public decimal MoneySumToRound { get; set; }
-        /*{
-            get
-            {
-                return _MoneySumToRound;
-            }
-            set { _MoneySumToRound = value; }
-        }*/
-        public Receipt curReceipt;
+       
+        public decimal MoneySumToRound { get; set; }    
+        
         MainWindow MW;        
         
         public bool IsRounding
@@ -82,6 +74,8 @@ namespace Front.Control
 
         public void UpdatePaymentWindow()
         {
+            MoneySum = MW.MoneySum;
+            SumMaxWallet = (MW.curReceipt?.MaxSumWallet < MW.Client?.Wallet ? MW.curReceipt?.MaxSumWallet : MW.Client?.Wallet) ?? 0;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsRounding"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MWCurReceipt"));
             Rounding();
@@ -166,9 +160,6 @@ namespace Front.Control
             curReceipt.Payment = new List<Payment>() { pPay };
         }
 
-
-
-
         private void _Cancel(object sender, RoutedEventArgs e)
         {
             ChangeSumPaymant = "0";
@@ -191,7 +182,7 @@ namespace Front.Control
         private void _ButtonPaymentCash(object sender, RoutedEventArgs e)
         {
             MW.EquipmentStatusInPayment.Text = "";
-            var task = Task.Run(() => MW.PrintAndCloseReceipt(null, eTypePay.Cash, MoneySumToRound));
+            var task = Task.Run(() => MW.PrintAndCloseReceipt(null, eTypePay.Cash, MoneySumToRound,0,0));
         }
 
         private void CancelCashDisbursement(object sender, RoutedEventArgs e)
@@ -217,18 +208,26 @@ namespace Front.Control
         }
 
 
-        public decimal RoundingPrice(decimal price, decimal precision)
+        public decimal RoundingUpPrice(decimal price, decimal precision)
         {
             price = Convert.ToInt32(Math.Round(price * 100, 3));
-            precision = Math.Round(precision, 2);
-            return Math.Round(Math.Ceiling(Math.Ceiling(price / precision / 100)) * precision, 2);
+            precision = Math.Round(precision, 2);            
+            MoneySumToRound = Math.Round(Math.Ceiling(Math.Ceiling(price / precision / 100)) * precision, 2);
+            SumUseWallet = MoneySumToRound - MoneySum;
+            return MoneySumToRound;
         }
 
         public decimal RoundingDownPrice(decimal price, decimal precision)
         {
             price = Convert.ToInt32(Math.Round(price * 100, 3));
             precision = Math.Round(precision, 2);
-            return Math.Round(Math.Floor(Math.Floor(price / precision / 100)) * precision, 2);
+            MoneySumToRound = Math.Round(Math.Floor(Math.Floor(price / precision / 100)) * precision, 2);
+            
+            if (MoneySum - MoneySumToRound > SumMaxWallet)
+                MoneySumToRound = RoundingUpPrice(MoneySum - SumMaxWallet, 1.0m);            
+
+            SumUseWallet = MoneySumToRound - MoneySum;
+            return MoneySumToRound;
         }
 
         private void MoneySumPayChange(object sender, TextChangedEventArgs e)
@@ -247,50 +246,39 @@ namespace Front.Control
 
         private void Rounding(string Name = "")
         {
-            tempMoneySum = (decimal)MW.MoneySum;
-            RoundSum.Text = "0";
-            RoundSumDown.Text = "0";
-            var maxAmount = MW.curReceipt?.MaxSumWallet < MW.Client?.Wallet ? MW.curReceipt?.MaxSumWallet : MW.Client?.Wallet;
-            decimal tmp = 0;
-
+              decimal tmp = 0;
             switch (Name)
             {
-
                 case "plus05":
-                    MoneySumToRound = RoundingPrice(tempMoneySum, 0.5m);
-                    RoundSum.Text = (Math.Round(Convert.ToDecimal(MoneySumToRound) - tempMoneySum, 2)).ToString();
+                     RoundingUpPrice(MoneySum, 0.5m);                   
                     break;
                 case "plus1":
-                    MoneySumToRound = RoundingPrice(tempMoneySum, 1.0m);
-                    RoundSum.Text = (Math.Round(Convert.ToDecimal(MoneySumToRound) - tempMoneySum, 2)).ToString();
+                     RoundingUpPrice(MoneySum, 1.0m);
                     break;
                 case "plus2":
-                    MoneySumToRound = RoundingPrice(tempMoneySum, 2.0m);
-                    RoundSum.Text = (Math.Round(Convert.ToDecimal(MoneySumToRound) - tempMoneySum, 2)).ToString();
+                    RoundingUpPrice(MoneySum, 2.0m);                   
                     break;
                 case "plus5":
-                    MoneySumToRound = RoundingPrice(tempMoneySum, 5.0m);
-                    RoundSum.Text = (Math.Round(Convert.ToDecimal(MoneySumToRound) - tempMoneySum, 2)).ToString();
+                    RoundingUpPrice(MoneySum, 5.0m);
+                    
                     break;
                 case "plus10":
-                    MoneySumToRound = RoundingPrice(tempMoneySum, 10.0m);
-                    RoundSum.Text = (Math.Round(Convert.ToDecimal(MoneySumToRound) - tempMoneySum, 2)).ToString();
+                     RoundingUpPrice(MoneySum, 10.0m);
                     break;
                 case "minus1":
-                    CalculationOfSurrender(1, (decimal)maxAmount);
+                    RoundingDownPrice(MoneySum,1);
                     break;
                 case "minus2":
-                    CalculationOfSurrender(2, (decimal)maxAmount);
+                    RoundingDownPrice(MoneySum, 2);
                     break;
                 case "minus5":
-                    CalculationOfSurrender(5, (decimal)maxAmount);
+                    RoundingDownPrice(MoneySum, 5);
                     break;
                 case "minus10":
-                    CalculationOfSurrender(10, (decimal)maxAmount);
+                    RoundingDownPrice(MoneySum, 10);
                     break;
                 case "enterAmount":
-
-                    MW.InputNumberPhone.Desciption = $"Максимальна сума списання: {maxAmount}";
+                    MW.InputNumberPhone.Desciption = $"Максимальна сума списання: {SumMaxWallet}";
                     MW.InputNumberPhone.ValidationMask = "";
                     MW.InputNumberPhone.Result = "";
                     MW.NumericPad.Visibility = Visibility.Visible;
@@ -298,18 +286,15 @@ namespace Front.Control
                     MW.InputNumberPhone.CallBackResult = (string result) =>
                     {
                         tmp = string.IsNullOrEmpty(result) ? 0 : Convert.ToDecimal(result);
-                        if (tmp > tempMoneySum)
+                        if (tmp > MoneySum)
                         {
-                            MoneySumToRound = RoundingPrice(tmp, 1.0m);
-                            RoundSum.Text = (Math.Round(Convert.ToDecimal(MoneySumToRound) - tempMoneySum, 2)).ToString();
+                            RoundingUpPrice(tmp, 1.0m);
                         }
                         else
                         {
-                            if (tempMoneySum - tmp > (decimal)maxAmount)
-                                tmp = tempMoneySum - (decimal)maxAmount;
-
-                            MoneySumToRound = RoundingPrice(tmp, 1.0m);
-                            RoundSumDown.Text = (Math.Round(Convert.ToDecimal(MoneySumToRound) - tempMoneySum, 2)).ToString();
+                            if (MoneySum - tmp > SumMaxWallet)
+                                tmp = MoneySum - SumMaxWallet;
+                            RoundingUpPrice(tmp, 1.0m);
                         }
                         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MoneySumToRound"));
                         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCashPayment"));
@@ -330,18 +315,6 @@ namespace Front.Control
         {
             Button btn = sender as Button;
             Rounding(btn.Name);
-        }
-
-        private void CalculationOfSurrender (decimal roundUpTo, decimal maxAmount)
-        {
-            decimal tmp = RoundingDownPrice(tempMoneySum, roundUpTo);
-            if (tempMoneySum - tmp > maxAmount)
-            {
-                MoneySumToRound = RoundingPrice(tempMoneySum - maxAmount, 1.0m);
-            }
-            else
-                MoneySumToRound = tmp;
-            RoundSumDown.Text = (Math.Round(Convert.ToDecimal(MoneySumToRound) - tempMoneySum, 2)).ToString();
-        }
+        }       
     }
 }

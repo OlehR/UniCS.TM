@@ -296,7 +296,7 @@ namespace ModelMID
             {
                 var OrdinaryWares = Wares.Where(el => el.TypeWares == eTypeWares.Ordinary);
                 decimal Sum = OrdinaryWares.Sum(el => el.SumTotal);
-                foreach (var el in Wares)
+                foreach (var el in OrdinaryWares)
                     el.SumWallet = Math.Round(el.SumTotal * SumWallet / Sum, 2);
                 decimal SumW = OrdinaryWares.Sum(el => el.SumWallet);
                 if (SumW != SumWallet)
