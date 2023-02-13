@@ -446,8 +446,14 @@ namespace Front
             }
 
             int[] IdWorkplacePays = R.IdWorkplacePays;// Wares.Select(el => el.IdWorkplacePay).Distinct().OrderBy(el => el).ToArray();
+            IsManyPayments = IdWorkplacePays.Length > 1;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsManyPayments"));
             FillPays(R);
-
+            AmountManyPayments = "";
+            foreach (var item in R.WorkplacePays)
+                AmountManyPayments += $"{item.Sum} | ";
+            AmountManyPayments = AmountManyPayments.Substring(0, AmountManyPayments.Length - 2);
+            SumTotalManyPayments = $"Загальна сума: {R.SumTotal}₴";
             lock (LockPayPrint)
             {
                 R.StateReceipt = Bl.GetStateReceipt(R);

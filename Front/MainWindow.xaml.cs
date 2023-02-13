@@ -132,6 +132,10 @@ namespace Front
         public int HeightScreen { get { return (int)SystemParameters.PrimaryScreenHeight; } }
         public int HeightStartVideo { get { return SystemParameters.PrimaryScreenWidth < SystemParameters.PrimaryScreenHeight ? 1300 : 700; } }
         public string[] PathVideo = null;
+        public bool IsManyPayments { get; set; } = false;
+        public string AmountManyPayments { get; set; } = "";
+        public string SumTotalManyPayments { get; set; } = "Загальна сума: ";
+
         /// <summary>x`
         /// треба переробити(інтегрувати в основну форму)
         /// </summary>
