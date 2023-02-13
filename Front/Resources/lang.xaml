@@ -35,5 +35,8 @@
     <v:String x:Key="Yes">Так</v:String>
     <v:String x:Key="No">Ні</v:String>
     <v:String x:Key="ReturnCheck">Повернутися до чеку</v:String>
+    <v:String x:Key="ManyPayments">Потрібно здійснити декілька платежів!</v:String>
+    <v:String x:Key="AmountsOfPayments">Суми платежів: </v:String>
+    
 
 </ResourceDictionary>

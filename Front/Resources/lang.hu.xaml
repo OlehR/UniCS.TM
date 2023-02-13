@@ -36,4 +36,8 @@
     <v:String x:Key="No">Nem</v:String>
 
     <v:String x:Key="ReturnCheck">Vissza a csekkbe</v:String>
+    <v:String x:Key="ManyPayments">Több fizetést kell teljesítenie!</v:String>
+    <v:String x:Key="AmountsOfPayments">Befizetések összegei: </v:String>
+
+
 </ResourceDictionary>

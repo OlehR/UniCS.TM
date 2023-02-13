@@ -36,5 +36,9 @@
     <v:String x:Key="No">Nie</v:String>
 
     <v:String x:Key="ReturnCheck">Wróć do czeku</v:String>
+    <v:String x:Key="ManyPayments">Musisz dokonać kilku płatności!</v:String>
+    <v:String x:Key="AmountsOfPayments">Kwoty wpłat:</v:String>
+
+
 
 </ResourceDictionary>
