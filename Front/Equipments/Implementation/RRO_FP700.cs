@@ -30,8 +30,7 @@ namespace Front.Equipments
         private volatile bool _isError;
         private volatile bool _hasCriticalError;
         private int _sequenceNumber = 90;
-        private readonly ILogger<RRO_FP700> _logger;
-        //private readonly PrinterUtils _printerUtils;
+        private readonly ILogger<RRO_FP700> _logger;        
         private string DateFormat = "dd-MM-yy HH:mm:ss";
         private Dictionary<eCommand, Action<string>> _commandsCallbacks;
         private readonly List<byte> _packageBuffer = new List<byte>();
@@ -1377,8 +1376,7 @@ namespace Front.Equipments
             CloseIfOpened();
             ((Stream)_serialDevice).Dispose();
         }
-
-        //public void Stop() { IsStop = true; }
+        
         bool IsStop = false;
         bool IsFinish;
         StringBuilder bb;
