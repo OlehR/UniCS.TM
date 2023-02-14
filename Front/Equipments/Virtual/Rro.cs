@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Threading.Tasks;
 // using System.Data.SQLite;
 //using DatabaseLib;
 namespace Front.Equipments
@@ -43,7 +42,7 @@ namespace Front.Equipments
             ActionStatus = pActionStatus;
             try
             {
-                IdWorkplacePay = Convert.ToInt32(Configuration[$"{KeyPrefix}IdWorkplacePay"]);
+                IdWorkplacePay = Configuration.GetValue<int>($"{KeyPrefix}IdWorkplacePay");
             }
             catch (Exception ex) { IdWorkplacePay = Global.IdWorkPlace; }
             if (IdWorkplacePay == 0)
