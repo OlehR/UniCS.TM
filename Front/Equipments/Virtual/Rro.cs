@@ -25,6 +25,9 @@ namespace Front.Equipments
         protected int CodeError = -1;
         protected string StrError;
         public int IdWorkplacePay;
+
+        string DefaultTax=null;
+        SortedList<int, string> Tax = new SortedList<int, string>();
         /// <summary>
         /// Чи відкрита зміна.
         /// </summary>
@@ -37,14 +40,23 @@ namespace Front.Equipments
 
         public Rro(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefine, ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment, pConfiguration, pModelEquipment, pLoggerFactory)
         {
-
             ActionStatus = pActionStatus;
             try
             {
-              IdWorkplacePay = Convert.ToInt32(Configuration[$"{KeyPrefix}IdWorkplacePay"]);
-            }catch(Exception ex) { IdWorkplacePay = Global.IdWorkPlace; }
+                IdWorkplacePay = Convert.ToInt32(Configuration[$"{KeyPrefix}IdWorkplacePay"]);
+            }
+            catch (Exception ex) { IdWorkplacePay = Global.IdWorkPlace; }
             if (IdWorkplacePay == 0)
                 IdWorkplacePay = Global.IdWorkPlace;
+
+            DefaultTax = Configuration[$"{KeyPrefix}DefaultTax"];
+            var LTax = new List<TAX>();
+            Configuration.GetSection($"{KeyPrefix}Tax").Bind(LTax);
+            if (LTax.Count() == 0)
+                Configuration.GetSection("MID:VAT").Bind(LTax);
+            foreach (var el in LTax)
+                    if (!Tax.ContainsKey(el.Code))
+                        Tax.TryAdd(el.Code, el.CodeEKKA);                    
         }
 
         public virtual void SetOperatorName(string pOperatorName)
@@ -181,5 +193,16 @@ namespace Front.Equipments
             }
 
         }
+
+        public string TaxGroup(ReceiptWares pRW) 
+        {
+            int Key = (int)pRW.TypeWares * 10 + pRW.TypeVat;
+            if (Tax.ContainsKey(Key))            
+                return Tax[Key];
+            return DefaultTax;
+        }
+            
+        
+
     }
 }

@@ -72,7 +72,7 @@ namespace Front.Equipments.pRRO_SG
             quantity = pRW.Quantity;
             discountSum = pRW.DiscountEKKA;
             amount = pRW.Sum ;
-            vatGroup = Global.GetTaxGroup(pRW.TypeVat, (int)pRW.TypeWares);
+            //vatGroup = GetTaxGroup(pRW);
             codeUnit = pRW.CodeUnit;
             unitName = pRW.AbrUnit;
         }

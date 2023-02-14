@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ModelMID.DB
 {
-    public class VAT
+    public class TAX
     {
         public int Code { get; set; }
         public string CodeEKKA { get; set; }

@@ -117,7 +117,7 @@ namespace ModelMID
         
         public static int CodeFastGroupBag = 0;
         public static List<int> Bags;
-        public static SortedList<int, string> Tax = new SortedList<int, string>();
+        //public static SortedList<int, string> Tax = new SortedList<int, string>();
         public static DeltaWeight[] DeltaWeight;
 
         public static string Server1C = "";
@@ -227,12 +227,12 @@ namespace ModelMID
             return IdWorkPlace;
         }
                 
-        public static string GetTaxGroup(int parTypeVat, int parTypeWares = 0)
+        /*public static string GetTaxGroup(int parTypeVat, int parTypeWares = 0)
         {
             if (parTypeVat == 0 && parTypeWares == 0)
                 return Tax[1];
             return Tax[parTypeWares * 10 + parTypeVat];
-        }
+        }*/
 
         public static eExchangeStatus GetExchangeStatus(DateTime parDT)
         {

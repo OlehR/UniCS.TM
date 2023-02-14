@@ -46,7 +46,7 @@ namespace ModelMID
         /// <summary>
         /// Ставка для РРО
         /// </summary>
-        public string TaxGroup { get { return Global.GetTaxGroup(TypeVat, (int)TypeWares); } }
+        //public string TaxGroup { get { return Global.GetTaxGroup(TypeVat, (int)TypeWares); } }
 
         /// <summary>
         /// Код одиниці виміру позамовчуванню

@@ -27,9 +27,9 @@ namespace Front.Equipments.Implementation
             State = eStateEquipment.Init;
             try
             {
-                Url = pConfiguration["Devices:pRRO_Vchasno:Url"];
-                Token = pConfiguration["Devices:pRRO_Vchasno:Token"]; 
-                Device = pConfiguration["Devices:pRRO_Vchasno:Device"];
+                Url = Configuration[$"{KeyPrefix}Url"];
+                Token = Configuration[$"{KeyPrefix}Token"]; 
+                Device = Configuration[$"{KeyPrefix}Device"];
 
                 var d = GetDeviceInfo2();
                 IsOpenWorkDay = !string.IsNullOrEmpty(d?.info?.shift_dt);
@@ -67,7 +67,7 @@ namespace Front.Equipments.Implementation
             if (pR.Payment?.Where(el => el.TypePay != eTypePay.IssueOfCash)?.Any() == true)
             {
                 pR.Payment = pR.Payment?.Where(el => el.TypePay != eTypePay.IssueOfCash);
-                ApiRRO d = new(pR) { token = Token, device = Device, tag = pR.NumberReceiptRRO };
+                ApiRRO d = new(pR,this) { token = Token, device = Device, tag = pR.NumberReceiptRRO };
                 string dd = d.ToJSON();
                 var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");
                 Res = JsonConvert.DeserializeObject<Responce<ResponceReceipt>>(r);
@@ -76,7 +76,7 @@ namespace Front.Equipments.Implementation
             {
                 pR.Payment = c;
                 pR.Wares = null;
-                ApiRRO d = new(pR) { token = Token, device = Device, tag = pR.NumberReceiptRRO+"_IC" };
+                ApiRRO d = new(pR,this) { token = Token, device = Device, tag = pR.NumberReceiptRRO+"_IC" };
                 string dd = d.ToJSON();
                 var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");
                 Res = JsonConvert.DeserializeObject<Responce<ResponceReceipt>>(r);
@@ -321,11 +321,11 @@ namespace Front.Equipments.Implementation.ModelVchasno
             fiscal = new FiscalRRO(pTask);
         }
 
-        public ApiRRO(Receipt pR)
+        public ApiRRO(Receipt pR, Rro pRro)
         {
             if (pR != null)
             {
-                fiscal = new FiscalRRO(pR);
+                fiscal = new FiscalRRO(pR, pRro);
             }
         }
         public int ver { get { return 6; } }
@@ -345,7 +345,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
     {
         public FiscalRRO() { }
         public FiscalRRO(eTask pT) { task = pT; }
-        public FiscalRRO(Receipt pR)
+        public FiscalRRO(Receipt pR, Rro pRro)
         {
             if (pR != null)
             {
@@ -358,7 +358,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
                     cash = c.Select(el => new CashPay(el)).First();
                 }                
                 else
-                 receipt = new ReciptRRO(pR);
+                 receipt = new ReciptRRO(pR, pRro);
                 cashier = pR.NameCashier;
             }
         }
@@ -379,11 +379,11 @@ namespace Front.Equipments.Implementation.ModelVchasno
     class ReciptRRO
     {
         public ReciptRRO() { }
-        public ReciptRRO(Receipt pR)
+        public ReciptRRO(Receipt pR, Rro pRro)
         {
             if (pR != null)
             {
-                rows = pR.GetParserWaresReceipt(true,false)?.Select(el => new WaresRRO(el));
+                rows = pR.GetParserWaresReceipt(true,false)?.Select(el => new WaresRRO(el, pRro));
                 pays = pR.Payment?.Where(el => el.TypePay != eTypePay.IssueOfCash).Select(el => new PaysRRO(el));               
                 comment_up = String.Join('\n', pR.ReceiptComments);
                 sum = pR.Wares?.Sum(el => Math.Round(el.Price * el.Quantity, 2) - Math.Round(el.SumDiscount, 2))??0m; //pR.SumTotal;
@@ -408,7 +408,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
     class WaresRRO
     {
         public WaresRRO() { }
-        public WaresRRO(ReceiptWares pRW)
+        public WaresRRO(ReceiptWares pRW,Rro pRro)
         {
             decimal discont = pRW.Price < pRW.PriceDealer ? Math.Round((pRW.PriceDealer- pRW.Price)* pRW.Quantity,2) : 0;
             code = pRW.CodeWares.ToString();
@@ -420,7 +420,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
             price = pRW.Price;
             cost = Math.Round(pRW.Price * pRW.Quantity, 2)+ discont;// - Math.Round(pRW.SumDiscount, 2);
             disc = Math.Round(pRW.SumDiscount,2)+ discont;
-            taxgrp = int.Parse(pRW.TaxGroup);
+            taxgrp = int.Parse(pRro.TaxGroup(pRW));
         }
         public string code { get; set; }
         public string code1 { get; set; }

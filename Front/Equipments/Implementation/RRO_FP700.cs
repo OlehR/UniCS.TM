@@ -7,13 +7,11 @@ using ModelMID.DB;
 using ModelMID;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Timers;
 using Utils;
-using Front.Equipments.FP700;
 using Front.Equipments.Utils;
 
 using Front.Equipments.Implementation.FP700_Model;
@@ -22,169 +20,8 @@ using SharedLib;
 
 namespace Front.Equipments
 {
-    internal class RRO_FP700 : Rro
+    public class RRO_FP700 : Rro
     {
-        Fp700 Fp700;
-        object Lock = new();
-        TimeSpan TimeOut = TimeSpan.FromMilliseconds(500);
-        bool LockTaken = false;
-
-        public RRO_FP700(Equipment pEquipment, IConfiguration pConfiguration, ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment, pConfiguration, eModelEquipment.FP700, pLoggerFactory, pActionStatus)
-        {
-            try
-            {
-                ILogger<Fp700> logger = pLoggerFactory?.CreateLogger<Fp700>();
-                Fp700 = new Fp700(pConfiguration, logger, pActionStatus);
-                Fp700.Init();
-                State = Fp700.IsReady ? eStateEquipment.On : eStateEquipment.Error;
-            }
-            catch (Exception e)
-            {
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
-                State = eStateEquipment.Error;
-            }
-        }
-
-        public override bool OpenWorkDay() { return true; }
-
-        public override LogRRO PrintCopyReceipt(int parNCopy = 1)
-        {
-            var res = Fp700.CopyReceipt();
-            return new LogRRO(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace }) { TypeOperation = eTypeOperation.CopyReceipt, TypeRRO = Type.ToString(), FiscalNumber = Fp700.GetLastZReportNumber() };
-        }
-
-        public override LogRRO PrintZ(IdReceipt pIdR)
-        {
-            string res;
-            res = Fp700.ZReport();
-            return new LogRRO(pIdR) { TypeOperation = eTypeOperation.ZReport, TypeRRO = Type.ToString(), FiscalNumber = Fp700.GetLastZReportNumber(), TextReceipt = res };
-        }
-
-        public override LogRRO PrintX(IdReceipt pIdR)
-        {
-            string res = null;
-            res = Fp700.XReport();
-            return new LogRRO(pIdR) { TypeOperation = eTypeOperation.XReport, TypeRRO = Type.ToString(), FiscalNumber = Fp700.GetLastZReportNumber(), TextReceipt = res };
-        }
-
-        /// <summary>
-        /// Внесення/Винесення коштів коштів. pSum>0 - внесення
-        /// </summary>
-        /// <param name="pSum"></param>
-        /// <returns></returns>
-        public override LogRRO MoveMoney(decimal pSum, IdReceipt pIdR = null)
-        {
-            Fp700.MoneyMoving(pSum);
-            return new LogRRO(pIdR) { TypeOperation = pSum > 0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyIn, TypeRRO = Type.ToString(), FiscalNumber = Fp700.GetLastZReportNumber() };
-        }
-
-        /// <summary>
-        /// Друк чека
-        /// </summary>
-        /// <param name="pR"></param>
-        /// <returns></returns>
-        public override LogRRO PrintReceipt(ModelMID.Receipt pR)
-        {
-            string FiscalNumber = null;
-            List<ReceiptText> Comments = null;
-            if (pR?.ReceiptComments?.Count() > 0)
-                Comments = pR.ReceiptComments.Select(r => new ReceiptText() { Text = r, RenderType = eRenderAs.Text }).ToList();
-            if (pR.TypeReceipt == eTypeReceipt.Sale) FiscalNumber = Fp700.PrintReceipt(pR, Comments);
-            else
-                FiscalNumber = Fp700.ReturnReceipt(pR);
-            pR.NumberReceipt = FiscalNumber;
-            return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, TypeRRO = Type.ToString(), FiscalNumber = FiscalNumber, SUM = pR.SumReceipt - pR.SumBonus, };
-        }
-
-        public override bool PutToDisplay(string ptext) { return true; }
-
-        public override bool PeriodZReport(DateTime pBegin, DateTime pEnd, bool IsFull = true)
-        {
-            bool res = false;
-            res = Fp700.FullReportByDate(pBegin, pEnd, IsFull);
-            return res;
-        }
-
-        public override LogRRO PrintNoFiscalReceipt(IEnumerable<string> pR)
-        {
-            List<ReceiptText> d = pR.Select(el => new ReceiptText() { Text = el.StartsWith("QR=>") ? el.SubString(4) : el, RenderType = el.StartsWith("QR=>") ? eRenderAs.QR : eRenderAs.Text }).ToList();
-            Fp700.PrintSeviceReceipt(d);
-            return new LogRRO(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace }) { TypeOperation = eTypeOperation.NoFiscalReceipt, TypeRRO = Type.ToString(), JSON = pR.ToJSON() };
-        }
-
-        public override StatusEquipment TestDevice()
-        {
-            eDeviceConnectionStatus res;
-            try
-            {
-                res = Fp700.TestDeviceSync();
-                State = eStateEquipment.On;
-            }
-            catch (Exception e)
-            {
-                State = eStateEquipment.Error;
-                return new StatusEquipment() { State = -1, TextState = e.Message };
-            }
-            return new StatusEquipment() { TextState = res.ToString() };
-        }
-
-        public override string GetDeviceInfo()
-        {
-            string res = null;
-            {
-                try
-                {
-                    res = Fp700.GetInfoSync();
-                }
-                catch (Exception e)
-                {
-                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
-                    res = e.Message;
-                }
-            }
-            return res;
-        }
-
-        override public bool ProgramingArticle(ReceiptWares pRW)
-        {
-            if (pRW != null)
-            {
-                Fp700.SetupArticleTable(pRW);
-            }
-            return true;
-        }
-
-        override public string GetTextLastReceipt()
-        {
-            string res = null;
-            var r = Fp700.GetLastReceiptNumber();
-            res = Fp700.KSEFGetReceipt(r);
-            return res;
-        }
-
-        public override void Stop() { Fp700.Stop(); }
-
-        public virtual decimal GetSumFromTextReceipt(string pTextReceipt)
-        {
-            decimal Res = 0;
-            try
-            {
-                var Start = pTextReceipt.IndexOf("С У М А       ");
-                var End = pTextReceipt.IndexOf("Г Р Н");
-                string Sum = pTextReceipt.Substring(Start + 10, End - Start - 10).Replace(" ", "");
-                Res = decimal.Parse(Sum);
-            }
-            catch { }
-            return Res;
-        }
-    }
-}
-
-namespace Front.Equipments.FP700
-{
-    public class Fp700 : IDisposable //IFiscalPrinter,   IBaseDevice,
-    {
-        //private readonly Fp700DataController _fp700DataController;
         private readonly IConfiguration _configuration;
         private readonly SerialPortStreamWrapper _serialDevice;
         private PrinterStatus _currentPrinterStatus;
@@ -193,7 +30,7 @@ namespace Front.Equipments.FP700
         private volatile bool _isError;
         private volatile bool _hasCriticalError;
         private int _sequenceNumber = 90;
-        private readonly ILogger<Fp700> _logger;
+        private readonly ILogger<RRO_FP700> _logger;
         //private readonly PrinterUtils _printerUtils;
         private string DateFormat = "dd-MM-yy HH:mm:ss";
         private Dictionary<eCommand, Action<string>> _commandsCallbacks;
@@ -217,12 +54,169 @@ namespace Front.Equipments.FP700
 
         private int _maxItemLength => _configuration.GetValue<int>("Devices:Fp700:MaxItemLength");
 
-        public bool IsZReportAlreadyDone { get; private set; }
+        public bool IsZReportAlreadyDone { get; private set; }        
 
-        //public Action<IFiscalPrinterResponse> OnFiscalPrinterResponse { get; set; }
+        public RRO_FP700(Equipment pEquipment, IConfiguration pConfiguration, ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment, pConfiguration, eModelEquipment.FP700, pLoggerFactory, pActionStatus)
+        {
+            try
+            {
+                ILogger<RRO_FP700> logger = pLoggerFactory?.CreateLogger<RRO_FP700>();
 
-        //public Action<DeviceLog> OnDeviceWarning { get; set; }
+                _configuration = pConfiguration;
+                _logger = logger;
+                ActionStatus = pActionStatus;
 
+                _commandsCallbacks = new Dictionary<eCommand, Action<string>>();
+                _currentPrinterStatus = new PrinterStatus();
+                SerialPortStreamWrapper portStreamWrapper = new SerialPortStreamWrapper(_port, _baudRate, onReceivedData: new Func<byte[], bool>(OnDataReceived));
+                portStreamWrapper.Encoding = Encoding.GetEncoding(1251);
+                _serialDevice = portStreamWrapper;
+                _packageBufferTimer = new Timer();
+                _packageBufferTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+                _packageBufferTimer.Interval = 5000.0;
+                _packageBufferTimer.Enabled = true;
+                
+                Init();
+                State = IsReady ? eStateEquipment.On : eStateEquipment.Error;
+            }
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+                State = eStateEquipment.Error;
+            }
+        }
+
+        public override bool OpenWorkDay() { return true; }
+
+        public override LogRRO PrintCopyReceipt(int parNCopy = 1)
+        {
+            var res = CopyReceipt();
+            return new LogRRO(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace }) { TypeOperation = eTypeOperation.CopyReceipt, TypeRRO = Type.ToString(), FiscalNumber = GetLastZReportNumber() };
+        }
+
+        public override LogRRO PrintZ(IdReceipt pIdR)
+        {
+            string res;
+            res = ZReport();
+            return new LogRRO(pIdR) { TypeOperation = eTypeOperation.ZReport, TypeRRO = Type.ToString(), FiscalNumber = GetLastZReportNumber(), TextReceipt = res };
+        }
+
+        public override LogRRO PrintX(IdReceipt pIdR)
+        {
+            string res = null;
+            res = XReport();
+            return new LogRRO(pIdR) { TypeOperation = eTypeOperation.XReport, TypeRRO = Type.ToString(), FiscalNumber = GetLastZReportNumber(), TextReceipt = res };
+        }
+
+        /// <summary>
+        /// Внесення/Винесення коштів коштів. pSum>0 - внесення
+        /// </summary>
+        /// <param name="pSum"></param>
+        /// <returns></returns>
+        public override LogRRO MoveMoney(decimal pSum, IdReceipt pIdR = null)
+        {
+            MoneyMoving(pSum);
+            return new LogRRO(pIdR) { TypeOperation = pSum > 0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyIn, TypeRRO = Type.ToString(), FiscalNumber = GetLastZReportNumber() };
+        }
+
+        /// <summary>
+        /// Друк чека
+        /// </summary>
+        /// <param name="pR"></param>
+        /// <returns></returns>
+        public override LogRRO PrintReceipt(Receipt pR)
+        {
+            string FiscalNumber = null;
+            List<ReceiptText> Comments = null;
+            if (pR?.ReceiptComments?.Count() > 0)
+                Comments = pR.ReceiptComments.Select(r => new ReceiptText() { Text = r, RenderType = eRenderAs.Text }).ToList();
+            if (pR.TypeReceipt == eTypeReceipt.Sale) FiscalNumber = PrintReceipt(pR, Comments);
+            else
+                FiscalNumber = ReturnReceipt(pR);
+            pR.NumberReceipt = FiscalNumber;
+            return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, TypeRRO = Type.ToString(), FiscalNumber = FiscalNumber, SUM = pR.SumReceipt - pR.SumBonus, };
+        }
+
+        public override bool PutToDisplay(string ptext) { return true; }
+
+        public override bool PeriodZReport(DateTime pBegin, DateTime pEnd, bool IsFull = true)
+        {
+            bool res = false;
+            res = FullReportByDate(pBegin, pEnd, IsFull);
+            return res;
+        }
+
+        public override LogRRO PrintNoFiscalReceipt(IEnumerable<string> pR)
+        {
+            List<ReceiptText> d = pR.Select(el => new ReceiptText() { Text = el.StartsWith("QR=>") ? el.SubString(4) : el, RenderType = el.StartsWith("QR=>") ? eRenderAs.QR : eRenderAs.Text }).ToList();
+            PrintSeviceReceipt(d);
+            return new LogRRO(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace }) { TypeOperation = eTypeOperation.NoFiscalReceipt, TypeRRO = Type.ToString(), JSON = pR.ToJSON() };
+        }
+
+        public override StatusEquipment TestDevice()
+        {
+            eDeviceConnectionStatus res;
+            try
+            {
+                res = TestDeviceSync();
+                State = eStateEquipment.On;
+            }
+            catch (Exception e)
+            {
+                State = eStateEquipment.Error;
+                return new StatusEquipment() { State = -1, TextState = e.Message };
+            }
+            return new StatusEquipment() { TextState = res.ToString() };
+        }
+
+        public override string GetDeviceInfo()
+        {
+            string res = null;
+            {
+                try
+                {
+                    res = GetInfoSync();
+                }
+                catch (Exception e)
+                {
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+                    res = e.Message;
+                }
+            }
+            return res;
+        }
+
+        override public bool ProgramingArticle(ReceiptWares pRW)
+        {
+            if (pRW != null)
+                SetupArticleTable(pRW);            
+            return true;
+        }
+
+        override public string GetTextLastReceipt()
+        {
+            string res = null;
+            var r = GetLastReceiptNumber();
+            res = KSEFGetReceipt(r);
+            return res;
+        }
+
+        public override void Stop() {  IsStop = true; } 
+
+        public virtual decimal GetSumFromTextReceipt(string pTextReceipt)
+        {
+            decimal Res = 0;
+            try
+            {
+                var Start = pTextReceipt.IndexOf("С У М А       ");
+                var End = pTextReceipt.IndexOf("Г Р Н");
+                string Sum = pTextReceipt.Substring(Start + 10, End - Start - 10).Replace(" ", "");
+                Res = decimal.Parse(Sum);
+            }
+            catch { }
+            return Res;
+        }
+   
         public bool IsReady
         {
             get
@@ -232,35 +226,14 @@ namespace Front.Equipments.FP700
             }
         }
 
-        Action<StatusEquipment> ActionStatus { get; set; }
-       
-        public Fp700(
-          IConfiguration configuration,
-           ILogger<Fp700> logger = null,
-          Action<StatusEquipment> pActionStatus = null
-             )
-        {
-            _configuration = configuration;
-            _logger = logger;
-            ActionStatus = pActionStatus;
-    
-            _commandsCallbacks = new Dictionary<eCommand, Action<string>>();
-            _currentPrinterStatus = new PrinterStatus();
-            SerialPortStreamWrapper portStreamWrapper = new SerialPortStreamWrapper(_port, _baudRate, onReceivedData: new Func<byte[], bool>(OnDataReceived));
-            portStreamWrapper.Encoding = Encoding.GetEncoding(1251);
-            _serialDevice = portStreamWrapper;
-            _packageBufferTimer = new Timer();
-            _packageBufferTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
-            _packageBufferTimer.Interval = 5000.0;
-            _packageBufferTimer.Enabled = true;
-        }
+        Action<StatusEquipment> ActionStatus { get; set; }        
 
         private void OnTimedEvent(object sender, ElapsedEventArgs e)
         {
             if (_packageBuffer.Count > 0)
                 _packageBuffer.Clear();
             _packageBufferTimer.Stop();
-        }        
+        }
 
         public eDeviceConnectionStatus Init()
         {
@@ -269,28 +242,28 @@ namespace Front.Equipments.FP700
                 if (_serialDevice.PortName == null || _serialDevice.BaudRate == 0)
                     return eDeviceConnectionStatus.InitializationError;
                 _logger?.LogDebug("Fp700 init started");
-                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Init, "[FP700] - Start Initialization") 
-                                                  { Status =eStatusRRO.Init });                 
+                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Init, "[FP700] - Start Initialization")
+                { Status = eStatusRRO.Init });
                 CloseIfOpened();
                 _serialDevice.Open();
                 ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Init, "[FP700] - Get info about printer")
                 { Status = eStatusRRO.Init });
-              
+
                 string infoSync = GetInfoSync();
                 ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Init, $"[FP700] - Initialization result {infoSync}")
                 { Status = eStatusRRO.Init });
-                
+
                 if (string.IsNullOrEmpty(infoSync))
                 {
                     ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "Cannot read data from printer")
-                    { Status = eStatusRRO.Error,IsСritical=true });                    
+                    { Status = eStatusRRO.Error, IsСritical = true });
                     return eDeviceConnectionStatus.InitializationError;
                 }
                 int num = IsZReportDone() ? 1 : 0;
                 if (num == 0)
                 {
                     ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "[FP700] - Should end previous day and create Z-Report")
-                    { Status = eStatusRRO.Error, IsСritical = true });                    
+                    { Status = eStatusRRO.Error, IsСritical = true });
                 }
                 ClearDisplay();
                 return (num & (OnSynchronizeWaitCommandResult(eCommand.PaperCut) ? 1 : 0)) != 0 ? eDeviceConnectionStatus.Enabled : eDeviceConnectionStatus.InitializationError;
@@ -299,7 +272,7 @@ namespace Front.Equipments.FP700
             {
                 _logger?.LogError(ex, ex.Message);
                 ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "Device not connected")
-                { Status = eStatusRRO.Error, IsСritical = true });                
+                { Status = eStatusRRO.Error, IsСritical = true });
                 return eDeviceConnectionStatus.NotConnected;
             }
         }
@@ -319,7 +292,7 @@ namespace Front.Equipments.FP700
                 _logger?.LogDebug("Fp700 getInfo error");
                 _logger?.LogError(ex, ex.Message);
                 ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "Get info error" + _currentPrinterStatus.TextError)
-                                                   { Status = eStatusRRO.Error, IsСritical = true });
+                { Status = eStatusRRO.Error, IsСritical = true });
                 return (string)null;
             }
         }
@@ -342,11 +315,11 @@ namespace Front.Equipments.FP700
             }
             catch (Exception ex)
             {
-                _logger?.LogDebug("Fp700 open error");                
+                _logger?.LogDebug("Fp700 open error");
                 _logger?.LogError(ex, ex.Message);
-                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, _currentPrinterStatus.TextError+ex.Message)
+                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, _currentPrinterStatus.TextError + ex.Message)
                 { Status = eStatusRRO.Error, IsСritical = true });
-                
+
                 return eDeviceConnectionStatus.NotConnected;
             }
         }
@@ -393,7 +366,7 @@ namespace Front.Equipments.FP700
             return true;
         }
 
-        public Task<eDeviceConnectionStatus> TestDevice() => Task.Run<eDeviceConnectionStatus>(new Func<eDeviceConnectionStatus>(TestDeviceSync));
+        public Task<eDeviceConnectionStatus> TestDevice2() => Task.Run<eDeviceConnectionStatus>(new Func<eDeviceConnectionStatus>(TestDeviceSync));
 
         public string PrintReceipt(ModelMID.Receipt pR, List<ReceiptText> Comments = null)
         {
@@ -413,7 +386,7 @@ namespace Front.Equipments.FP700
             if (!PayReceipt(pR))
             {
                 ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "Check was not printed")
-                { Status = eStatusRRO.Error, IsСritical = true });                
+                { Status = eStatusRRO.Error, IsСritical = true });
             }
             CloseReceipt();
             ClearDisplay();
@@ -428,7 +401,7 @@ namespace Front.Equipments.FP700
             return str;
         }
 
-        public bool OpenReceipt(string pCashier=null)
+        public bool OpenReceipt(string pCashier = null)
         {
             if (!string.IsNullOrEmpty(pCashier))
             {
@@ -447,20 +420,20 @@ namespace Front.Equipments.FP700
             //var RW = UngroupByExcise(pRW);
 
             //List<FiscalArticle> FiscalArticleList = receiptItems != null && receiptItems.Count != 0 ? SetupArticleTable(receiptItems) : throw new Exception("Cannot register clear receipt items");
-            foreach(ReceiptWares receiptItem in pRW) //(int index = 0; index < FiscalArticleList.Count; ++index)
+            foreach (ReceiptWares receiptItem in pRW) //(int index = 0; index < FiscalArticleList.Count; ++index)
             {
                 FiscalArticle FiscalArticle = SetupArticleTable(receiptItem);// FiscalArticleList[index];
                 //ReceiptItem receiptItem = receiptItems[index];
                 string Price = string.Empty;
-                
-                if (FiscalArticle.Price != receiptItem.Price)                
-                    Price = "#" + receiptItem.Price.ToString((IFormatProvider)CultureInfo.InvariantCulture); 
-                       
+
+                if (FiscalArticle.Price != receiptItem.Price)
+                    Price = "#" + receiptItem.Price.ToString((IFormatProvider)CultureInfo.InvariantCulture);
+
                 string Quantity = receiptItem.Quantity.ToString((IFormatProvider)CultureInfo.InvariantCulture);
-    
+
                 string data = $"{FiscalArticle.PLU}*{Quantity}{Price}";
                 if (receiptItem.SumDiscount != 0M)
-                    data += ";" + (receiptItem.SumDiscount > 0M ? "-" : "+")+ Math.Abs(receiptItem.SumDiscount).ToString((IFormatProvider)CultureInfo.InvariantCulture);               
+                    data += ";" + (receiptItem.SumDiscount > 0M ? "-" : "+") + Math.Abs(receiptItem.SumDiscount).ToString((IFormatProvider)CultureInfo.InvariantCulture);
 
                 if (!string.IsNullOrWhiteSpace(receiptItem.BarCode))
                     data = data + "&" + receiptItem.BarCode;
@@ -487,18 +460,18 @@ namespace Front.Equipments.FP700
             return true;
         }
 
-        public bool PayReceipt( ModelMID.Receipt pR)
+        public bool PayReceipt(ModelMID.Receipt pR)
         {
             StringBuilder stringBuilder = new StringBuilder();
-            Payment Pay= pR?.Payment?.First();
+            Payment Pay = pR?.Payment?.First();
             _logger?.LogDebug($"[FP700] PayReceipt {Pay?.TypePay}");
             if (Pay == null || Pay.TypePay == eTypePay.Cash)
                 stringBuilder.Append("P+" + pR.SumTotal.ToString("F2", (IFormatProvider)CultureInfo.InvariantCulture));
             else
-            
+
                 if (Pay.TypePay == eTypePay.Card)
-            { 
-                    Decimal totalAmount = 0M;
+            {
+                Decimal totalAmount = 0M;
                 OnSynchronizeWaitCommandResult(eCommand.FiscalTransactionStatus, onResponseCallback: ((Action<string>)(res =>
                 {
                     string[] strArray = res.Split(',');
@@ -511,19 +484,20 @@ namespace Front.Equipments.FP700
                 else
                 {
                     stringBuilder.Append(string.Format((IFormatProvider)CultureInfo.InvariantCulture, "D+{0:0.00}", (object)totalAmount));
-                    stringBuilder.Append("," +Pay.CodeAuthorization);//
+                    stringBuilder.Append("," + Pay.CodeAuthorization);//
                     stringBuilder.Append(",Магазин");
                     stringBuilder.Append("," + Pay.NumberTerminal);//receipt.PaymentInfo.PosTerminalId
                     stringBuilder.Append("," + (string.IsNullOrWhiteSpace(Pay.IssuerName) ? "картка" : Pay.IssuerName));
                     stringBuilder.Append(string.IsNullOrEmpty(pR.NumberReceipt) ? ",оплата" : ",повернення");// receipt.FiscalNumber
-                    stringBuilder.Append("," +Pay.NumberCard );//receipt.PaymentInfo.CardPan
+                    stringBuilder.Append("," + Pay.NumberCard);//receipt.PaymentInfo.CardPan
                     stringBuilder.Append("," + Pay.NumberSlip);// receipt.PaymentInfo.PosAuthCode
                     stringBuilder.Append(",0.00");
                 }
 
-            }else
+            }
+            else
                 throw new Exception("Cannot pay receipt with incorrect payment type");
-                  
+
             string data = $"\n\t{stringBuilder}";
             bool paySuccess = false;
             char paidCode = char.MinValue;
@@ -570,9 +544,9 @@ namespace Front.Equipments.FP700
         public bool CopyReceipt() => OnSynchronizeWaitCommandResult(eCommand.FiscalReceiptCopy, "1");
 
         public bool MoneyMoving(decimal pSum)
-        {          
+        {
             bool res = false;
-            OnSynchronizeWaitCommandResult(eCommand.ServiceCashInOut,( pSum>0? "+" : "-") + pSum.ToString((IFormatProvider)CultureInfo.InvariantCulture), (Action<string>)(response =>
+            OnSynchronizeWaitCommandResult(eCommand.ServiceCashInOut, (pSum > 0 ? "+" : "-") + pSum.ToString((IFormatProvider)CultureInfo.InvariantCulture), (Action<string>)(response =>
             {
                 string[] strArray = response.Split(',');
                 if (strArray.Length < 4)
@@ -591,12 +565,12 @@ namespace Front.Equipments.FP700
             return res;
         }
 
-        public bool FullReportByDate(DateTime startDate, DateTime? endDate,bool IsFull)
+        public bool FullReportByDate(DateTime startDate, DateTime? endDate, bool IsFull)
         {
             string str = "";
             if (endDate.HasValue)
                 str = "," + endDate.Value.ToString("ddMMyy");
-            return OnSynchronizeWaitCommandResult(IsFull?eCommand.FullReportByPeriod: eCommand.ShortReportByPeriod, _operatorPassword + "," + startDate.ToString("ddMMyy") + str);
+            return OnSynchronizeWaitCommandResult(IsFull ? eCommand.FullReportByPeriod : eCommand.ShortReportByPeriod, _operatorPassword + "," + startDate.ToString("ddMMyy") + str);
         }
 
         public void OpenReturnReceipt() => OnSynchronizeWaitCommandResult(eCommand.ReturnReceipt, string.Format("{0},{1},{2}", (object)_operatorCode, (object)_operatorPassword, (object)_tillNumber), (Action<string>)(res => _logger?.LogDebug("[ FP700 ] ReturnReceipt res = " + res)));
@@ -610,7 +584,7 @@ namespace Front.Equipments.FP700
             int.TryParse(s, out result1);
             OpenReturnReceipt();
             FillUpReceiptItems(pR.GetParserWaresReceipt());
- 
+
             PayReceipt(pR);
             OnSynchronizeWaitCommandResult(eCommand.CloseFiscalReceipt, onResponseCallback: ((Action<string>)(res => _logger?.LogDebug("[ FP700 ] CloseFiscalReceipt res = " + res))));
             int result2;
@@ -807,7 +781,7 @@ namespace Front.Equipments.FP700
             {
                 if (!res.Trim().ToUpper().StartsWith("P"))
                     return;
-                db.DelAllFiscalArticle();                
+                db.DelAllFiscalArticle();
             }
         }));
 
@@ -815,7 +789,7 @@ namespace Front.Equipments.FP700
         {
             FiscalArticle article = db.GetFiscalArticle(pRW.CodeWares);
 
-            if (article == null || article.CodeWares!=pRW.CodeWares)
+            if (article == null || article.CodeWares != pRW.CodeWares)
             {
                 if (!(pRW.Price == 0M))
                 {
@@ -826,7 +800,7 @@ namespace Front.Equipments.FP700
                     string str = string.Empty;
                     if (!string.IsNullOrWhiteSpace(pRW.CodeUKTZED))
                         str = "^" + pRW.CodeUKTZED + ",";
-                    string data = string.Format("P{0}{1},1,{2}{3},{4},", (object)pRW.TaxGroup, (object)number, (object)str, (object)pRW.Price.ToString("F2", (IFormatProvider)CultureInfo.InvariantCulture), (object)_operatorPassword) + pRW.NameWares.LimitCharactersForTwoLines(_maxItemLength, '\t');
+                    string data = string.Format("P{0}{1},1,{2}{3},{4},", (object)TaxGroup(pRW), (object)number, (object)str, (object)pRW.Price.ToString("F2", (IFormatProvider)CultureInfo.InvariantCulture), (object)_operatorPassword) + pRW.NameWares.LimitCharactersForTwoLines(_maxItemLength, '\t');
                     _logger?.LogDebug("[FP700] SetupArticleTable " + data);
                     OnSynchronizeWaitCommandResult(eCommand.ArticleProgramming, data, (Action<string>)(res =>
                     {
@@ -850,10 +824,10 @@ namespace Front.Equipments.FP700
                         throw new Exception("Fp700 writing article FALSE");
                 }
             }
-            
+
             return article;
         }
-     
+
         private void ClearDisplay()
         {
             _logger?.LogDebug("Fp700 clear display start");
@@ -1011,7 +985,7 @@ namespace Front.Equipments.FP700
             if (!IsZReportAlreadyDone & flag)
                 return false;
             if (_hasCriticalError & flag)
-                throw new Exception(Environment.NewLine+"Проблема з фіскальним реєстратором FP700: " + Environment.NewLine + _currentPrinterStatus.TextError);
+                throw new Exception(Environment.NewLine + "Проблема з фіскальним реєстратором FP700: " + Environment.NewLine + _currentPrinterStatus.TextError);
             if (!_serialDevice.IsOpen)
                 return false;
             if (!_isReady)
@@ -1233,7 +1207,7 @@ namespace Front.Equipments.FP700
                                 _hasCriticalError = true;
                                 _currentPrinterStatus.IsCoverOpen = true;
                                 ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "[FP700] Cover is open")
-                                { Status = eStatusRRO.Error, IsСritical = true });                                
+                                { Status = eStatusRRO.Error, IsСritical = true });
                                 break;
                             case 6:
                                 bitDescriptionBg = "Регистратор персонализирован";
@@ -1247,10 +1221,10 @@ namespace Front.Equipments.FP700
                             case 0:
                                 bitDescriptionBg = "# Бумага закончилась. Если этот статус возникнет при выполнении команды, связанной с печатью, то команда будет отклонена и состояние регистратора не изменится.";
                                 _hasCriticalError = true;
-                                _currentPrinterStatus.IsOutOffPaper = true;                                
+                                _currentPrinterStatus.IsOutOffPaper = true;
                                 ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "[FP700] Paper was ended")
-                                { Status = eStatusRRO.Error, IsСritical = true });                                
-                               break;
+                                { Status = eStatusRRO.Error, IsСritical = true });
+                                break;
                             case 1:
                                 bitDescriptionBg = "Заканчивается бумага";
                                 _currentPrinterStatus.IsPaperNearEnd = true;
@@ -1264,7 +1238,7 @@ namespace Front.Equipments.FP700
                                 _hasCriticalError = true;
                                 ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "[FP700] Fiscal memory is full")
                                 { Status = eStatusRRO.Error, IsСritical = true });
-                                 break;
+                                break;
                             case 3:
                                 bitDescriptionBg = "Открыт фискальный чек";
                                 _currentPrinterStatus.IsFiscalReceiptOpen = true;
@@ -1316,7 +1290,7 @@ namespace Front.Equipments.FP700
                                 _currentPrinterStatus.IsErrorOnWritingToFiscalMemory = true;
                                 ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "[FP700] Fiscal Memory have error")
                                 { Status = eStatusRRO.Error, IsСritical = true });
-                                
+
                                 break;
                             case 1:
                                 _hasCriticalError = true;
@@ -1325,7 +1299,7 @@ namespace Front.Equipments.FP700
                                 ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "[FP700] Fiscal Memory not working")
                                 { Status = eStatusRRO.Error, IsСritical = true });
 
-                                
+
                                 break;
                             case 2:
                                 bitDescriptionBg = "Заводской номер запрограммирован";
@@ -1404,7 +1378,7 @@ namespace Front.Equipments.FP700
             ((Stream)_serialDevice).Dispose();
         }
 
-        public void Stop() { IsStop = true; }
+        //public void Stop() { IsStop = true; }
         bool IsStop = false;
         bool IsFinish;
         StringBuilder bb;
@@ -1437,5 +1411,6 @@ namespace Front.Equipments.FP700
             }
         }
     }
-   
+
 }
+

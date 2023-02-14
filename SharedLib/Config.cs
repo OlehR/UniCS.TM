@@ -42,11 +42,11 @@ namespace SharedLib
             Global.LimitMethodExecutionTimeInMillis = AppConfiguration.GetValue<long>("MethodExecutionLogging:LimitMethodExecutionTimeInMillis");
 
             //var el=AppConfiguration["MID:WorkPlaces"];
-            var Vat = new List<VAT>();
+           /* var Vat = new List<TAX>();
             AppConfiguration.GetSection("MID:VAT").Bind(Vat);
             foreach (var el in Vat)
                 if (!Global.Tax.ContainsKey(el.Code))
-                    Global.Tax.TryAdd(el.Code, el.CodeEKKA);
+                    Global.Tax.TryAdd(el.Code, el.CodeEKKA);*/
 
             var DeltaWeight = new List<DeltaWeight>();
             AppConfiguration.GetSection("MID:DeltaWeight").Bind(DeltaWeight);
