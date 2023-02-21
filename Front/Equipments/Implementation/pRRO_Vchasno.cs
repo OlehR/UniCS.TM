@@ -412,8 +412,11 @@ namespace Front.Equipments.Implementation.ModelVchasno
         {
             decimal discont = pRW.Price < pRW.PriceDealer ? Math.Round((pRW.PriceDealer- pRW.Price)* pRW.Quantity,2) : 0;
             code = pRW.CodeWares.ToString();
-            code1 = pRW.BarCode;
-            code2 = pRW.CodeUKTZED;
+            if (pRW.IsUseCodeUKTZED)
+            {
+                code1 = pRW.BarCode;
+                code2 = pRW.CodeUKTZED;
+            }
             code_aa = pRW.GetExciseStamp;
             name = pRW.NameWares;
             cnt = pRW.Quantity;
