@@ -360,7 +360,7 @@ namespace ModelMID
         StartFullUpdate = -2,
         ErrorFullUpdate = -3,
         ErrorEquipment = -4,
-
+        ErrorDB =-5
     }
 
     public enum eTypeAccessAnsver
@@ -394,6 +394,12 @@ namespace ModelMID
         /// </summary>
         Beer = 4
     }
-    
 
+    public enum eDBStatus
+    {
+        ErrorUpdateDB = -2,
+        Error = -1,
+        NotDefine = 0,
+        Ok = 1
+    }
 }

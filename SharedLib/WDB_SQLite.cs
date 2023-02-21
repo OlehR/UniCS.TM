@@ -14,7 +14,8 @@ namespace SharedLib
 {
     public partial class WDB_SQLite : WDB
     {
-        private static bool IsFirstStart = true;        
+        private static bool IsFirstStart = true;   
+        
         protected string SqlCreateMIDTable = @"";
         protected string SqlCreateMIDIndex = @"";
         protected string SqlGetPricePromotionKit = @"";
@@ -46,8 +47,12 @@ namespace SharedLib
             DT = parD != default(DateTime) ? parD.Date : DateTime.Today.Date;
             InitSQL();
 
-            if (IsFirstStart)
-                UpdateDB(ref pIsUseOldDB);
+            if (IsFirstStart && !UpdateDB(ref pIsUseOldDB))
+                {
+                DBStatus = eDBStatus.ErrorUpdateDB;
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status =  eSyncStatus.Error, StatusDescription = $"DB={DBStatus}" });
+                return;
+                };
 
             if (!File.Exists(ConfigFile))
             {
@@ -96,6 +101,7 @@ namespace SharedLib
             db.ExecuteNonQuery("PRAGMA synchronous = EXTRA;");
             db.ExecuteNonQuery("PRAGMA journal_mode = DELETE;");
             db.ExecuteNonQuery("PRAGMA wal_autocheckpoint = 5;");
+            DBStatus = eDBStatus.Ok;
         }
         ~WDB_SQLite()
         {
@@ -784,7 +790,7 @@ and @TypeDiscount=11; ";
         /// <summary>
         /// Оновлення структури бази даних
         /// </summary>       
-        protected override void UpdateDB(ref bool pIsUseOld)
+        protected override bool UpdateDB(ref bool pIsUseOld)
         {
             try
             {
@@ -823,7 +829,6 @@ and @TypeDiscount=11; ";
                 }
                 //RC
                 CurVerRC = wDB.GetConfig<int>("VerRC");
-
                 var cDT = DateTime.Now.Date.AddDays(-10);
 
                 while (cDT <= DateTime.Now.Date)
@@ -838,10 +843,12 @@ and @TypeDiscount=11; ";
                 }
                 if (Ver != CurVerRC)
                     wDB.SetConfig<int>("VerRC", Ver);
+                return true;
             }
             catch (Exception ex)
             {
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex);
+                return false;
             }
         }
 
@@ -862,9 +869,12 @@ and @TypeDiscount=11; ";
                         if (Ver > pCurVersion)
                             try
                             {
+                                FileLogger.WriteLogMessage($"WDB_SQLite.Parse ( el=>{el},pCurVersion=>{pCurVersion}) => (Ver=>{Ver}){Environment.NewLine}");
                                 pDB.ExecuteNonQuery(el);
                                 if (All.Length > 1 && All[1].Equals("Reload".ToUpper()))
                                     isReload = true;
+                                if (NewVer <= Ver)
+                                    NewVer = Ver;
                             }
                             catch (Exception e)
                             {
@@ -873,9 +883,7 @@ and @TypeDiscount=11; ";
                                     FileLogger.WriteLogMessage($"WDB_SQLite.Parse Exception =>( el=>{el},pCurVersion=>{pCurVersion}) => (){Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace}", eTypeLog.Error);
                                     throw new Exception(e.Message, e);
                                 }
-                            }
-                        if (NewVer <= Ver)
-                            NewVer = Ver;
+                            }                        
                     }
                 }
             }

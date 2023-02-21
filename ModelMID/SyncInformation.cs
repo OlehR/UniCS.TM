@@ -15,8 +15,9 @@ namespace ModelMID
         SyncFinishedError = 4,
         SyncReceiptSaved =5 ,
         IncorectDiscountBarcode,
-        IncorectProductForDiscount       
-    }
+        IncorectProductForDiscount,
+        ErrorDB = -3
+    }    
 
     public class SyncInformation
     {

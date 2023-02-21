@@ -123,6 +123,9 @@ namespace Front
                 //Помилка оновлення.
                 if (SyncInfo.Status == eSyncStatus.Error)
                     SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ErrorFullUpdate);
+                if (SyncInfo.Status == eSyncStatus.ErrorDB)
+                    SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ErrorDB);
+
 
                 if (TypeAccessWait == eTypeAccess.StartFullUpdate && SyncInfo.Status == eSyncStatus.SyncFinishedSuccess)
                 {
@@ -464,6 +467,10 @@ namespace Front
                         if (R.TypeReceipt == eTypeReceipt.Sale)
                             Bl.GenQRAsync(R.Wares);
                         var Pays = new List<Payment>();
+
+                        IEnumerable<Payment> PayRefaund = Bl.db.GetPayment(R.RefundId);
+                        string rrn = R.AdditionC1;
+
                         for (var i = 0; i < IdWorkplacePays.Length; i++)
                         {
                             if (R.Payment != null && R.Payment.Any(el => el.IdWorkplacePay == IdWorkplacePays[i] && el.IsSuccess))
@@ -482,7 +489,14 @@ namespace Front
                                 pSumCash -= SumCash;
                                 if (pSumCash < 0) pSumCash = 0;
                             }
-                            pay = EF.PosPay(R, R.TypeReceipt == eTypeReceipt.Sale ? sum : -sum, R.AdditionC1, pay, Global.IdWorkPlaceIssuingCash == IdWorkplacePays[i] ? pIssuingCash : 0);
+                            
+                            var PayRef = PayRefaund.Where(el => el.IdWorkplacePay == R.IdWorkplacePay);
+                            if (R.TypeReceipt == eTypeReceipt.Refund)
+                            {  if(PayRef!=null && PayRef.Any())
+                                rrn = PayRef.First().CodeAuthorization;
+                            }
+
+                            pay = EF.PosPay(R, R.TypeReceipt == eTypeReceipt.Sale ? sum : -sum, rrn, pay, Global.IdWorkPlaceIssuingCash == IdWorkplacePays[i] ? pIssuingCash : 0);
 
                             if (pay != null && pay.IsSuccess)
                             {

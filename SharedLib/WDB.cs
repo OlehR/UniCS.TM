@@ -18,8 +18,9 @@ namespace SharedLib
     public class WDB : IDisposable
     {        
         public SQL db;
+        public eDBStatus DBStatus = eDBStatus.NotDefine;
         protected Hashtable keySQL = new Hashtable();
-        private bool isDisposed;
+        private bool isDisposed;       
 
         /// <summary>
         /// Для блокування деяких асинхронних операцій по касі.
@@ -1137,6 +1138,6 @@ namespace SharedLib
         /// <summary>
         /// Оновлення структури бази даних
         /// </summary>       
-        protected virtual void UpdateDB(ref bool pIsUseOld) {}
+        protected virtual bool UpdateDB(ref bool pIsUseOld) { return true; }
     }
 }

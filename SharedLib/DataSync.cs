@@ -24,7 +24,9 @@ namespace SharedLib
         public bool IsUseOldDB = false;
 
         public eSyncStatus Status = eSyncStatus.NotDefine;
-        public bool IsReady { get { return IsUseOldDB || ( Status != eSyncStatus.StartedFullSync && Status != eSyncStatus.Error); } }
+        public bool IsReady { get {
+                if (db.DBStatus != eDBStatus.Ok) Status = eSyncStatus.ErrorDB;
+                return IsUseOldDB || ( Status != eSyncStatus.StartedFullSync && Status != eSyncStatus.Error && Status != eSyncStatus.ErrorDB); } }
         public DataSync(BL pBL)
         {
             bl = pBL; ///!!!TMP Трохи костиль 
