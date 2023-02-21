@@ -106,6 +106,7 @@ namespace Front
             string message = $"Unhandled exception ({source})";
             try
             {
+                FileLogger.WriteLogMessage(this, "LogUnhandledException", exception);
                 System.Reflection.AssemblyName assemblyName = System.Reflection.Assembly.GetExecutingAssembly().GetName();
                 message = string.Format("Unhandled exception in {0} v{1}", assemblyName.Name, assemblyName.Version);
             }
@@ -120,6 +121,7 @@ namespace Front
             }
             try
             {
+                //this.m
                 System.Diagnostics.Process.Start("explorer.exe");
                 Application.Current.Shutdown();
             }
