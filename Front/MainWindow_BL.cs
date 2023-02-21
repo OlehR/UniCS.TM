@@ -468,7 +468,7 @@ namespace Front
                             Bl.GenQRAsync(R.Wares);
                         var Pays = new List<Payment>();
 
-                        IEnumerable<Payment> PayRefaund = Bl.db.GetPayment(R.RefundId);
+                        IEnumerable<Payment> PayRefaund =( R.TypeReceipt== eTypeReceipt.Refund? Bl.db.GetPayment(R.RefundId):null);
                         string rrn = R.AdditionC1;
 
                         for (var i = 0; i < IdWorkplacePays.Length; i++)
@@ -490,9 +490,11 @@ namespace Front
                                 if (pSumCash < 0) pSumCash = 0;
                             }
                             
-                            var PayRef = PayRefaund.Where(el => el.IdWorkplacePay == R.IdWorkplacePay);
-                            if (R.TypeReceipt == eTypeReceipt.Refund)
-                            {  if(PayRef!=null && PayRef.Any())
+                           
+                            if (R.TypeReceipt == eTypeReceipt.Refund && PayRefaund!=null)
+                            {
+                                var PayRef = PayRefaund?.Where(el => el.IdWorkplacePay == R.IdWorkplacePay);
+                                if (PayRef!=null && PayRef.Any())
                                 rrn = PayRef.First().CodeAuthorization;
                             }
 
