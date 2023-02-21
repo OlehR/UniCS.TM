@@ -184,6 +184,9 @@ namespace Front
                     case eTypeAccess.ErrorFullUpdate:
                         tb.Inlines.Add(new Run("Помилка повного оновлення БД") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red, FontSize = 20 });
                         break;
+                    case eTypeAccess.ErrorDB:
+                        tb.Inlines.Add(new Run("Помилка зміни структури БД") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red, FontSize = 20 });
+                        break;
                     case eTypeAccess.ErrorEquipment:
                         tb.Inlines.Add(new Run("Проблема з критично важливим обладнанням") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red });
                         if (!string.IsNullOrEmpty(LastErrorEquipment))
@@ -418,7 +421,20 @@ namespace Front
                         eTypeAccess Res = eTypeAccess.NoDefine;
                         if (EF.StatCriticalEquipment != eStateEquipment.On) Res = eTypeAccess.ErrorEquipment;
                         else
-                           if (!Bl.ds.IsReady) Res = (Bl.ds.Status == eSyncStatus.Error ? eTypeAccess.ErrorFullUpdate : eTypeAccess.StartFullUpdate);
+                           if (!Bl.ds.IsReady) 
+                           // Res = (Bl.ds.Status == eSyncStatus.Error ? eTypeAccess.ErrorFullUpdate : eTypeAccess.StartFullUpdate);
+                        {
+
+                            switch (Bl.ds.Status)
+                            {
+                                case eSyncStatus.Error:
+                                    Res = eTypeAccess.ErrorFullUpdate; break;
+                                case eSyncStatus.StartedFullSync:
+                                    Res= eTypeAccess.StartFullUpdate; break;
+                                case eSyncStatus.ErrorDB:
+                                    Res = eTypeAccess.ErrorDB; break;
+                            }
+                        }
                         else
                             if (IsLockSale) Res = eTypeAccess.LockSale;
                         else

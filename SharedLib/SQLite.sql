@@ -13,7 +13,7 @@ alter table WORKPLACE add  CODE_DEALER INTEGER  NOT NULL DEFAULT 0;--Ver=>0
 
 CREATE TABLE FiscalArticle (CodeWares INTEGER NOT NULL, NameWares TEXT NOT NULL, PLU INTEGER NOT NULL, Price REAL NOT NULL);--Ver=>10
 CREATE UNIQUE INDEX id_FiscalArticle ON FiscalArticle(CodeWares);--Ver=>10
-alter table WORKPLACE add  Prefix TEXT;--Ver=>11
+alter table WORKPLACE add  Prefix TEXT;--Ver=>12
 
 [SqlUpdateRC]
 alter TABLE WARES_RECEIPT            add Fix_Weight NUMBER NOT NULL DEFAULT 0;--Ver=>0
@@ -38,9 +38,9 @@ alter TABLE RECEIPT    add ReceiptId TEXT;--Ver=>11
 alter TABLE WARES_RECEIPT add id_workplace_pay INTEGER  NOT NULL DEFAULT 0;--Ver=>12
 alter TABLE payment add id_workplace_pay INTEGER  NOT NULL DEFAULT 0;--Ver=>13
 alter TABLE LOG_RRO add id_workplace_pay INTEGER  NOT NULL DEFAULT 0;--Ver=>13
-alter TABLE payment    add CODE_WARES        INTEGER  NOT NULL DEFAULT 0;--Ver=>14
-alter TABLE WARES_RECEIPT add Sum_Wallet NUMBER   NOT NULL DEFAULT 0;--Ver=>15
-alter TABLE payment    add Code_Bank    INTEGER  NOT NULL DEFAULT 0;--Ver=>16
+alter TABLE payment    add CODE_WARES        INTEGER  NOT NULL DEFAULT 0;--Ver=>17
+alter TABLE WARES_RECEIPT add Sum_Wallet NUMBER   NOT NULL DEFAULT 0;--Ver=>18
+alter TABLE payment    add Code_Bank    INTEGER  NOT NULL DEFAULT 0;--Ver=>19
 
 
 [SqlUpdateMID]
@@ -51,7 +51,7 @@ alter TABLE wares add Limit_Age NUMBER;--Ver=>0
 alter TABLE wares add PLU INTEGER;--Ver=>0
 alter TABLE wares add Code_Direction INTEGER;--Ver=>0;
 alter TABLE wares add Type_Wares INTEGER  NOT NULL DEFAULT 2; --Ver=>6;
-alter TABLE wares add Code_TM INTEGER NOT NULL DEFAULT 0; --Ver=>8;
+alter TABLE wares add Code_TM INTEGER NOT NULL DEFAULT 0; --Ver=>9;
 
 [SqlConfig]
 SELECT Data_Var  FROM CONFIG  WHERE UPPER(Name_Var) = UPPER(trim(@NameVar));
