@@ -15,6 +15,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Security.Policy;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -59,6 +60,9 @@ namespace Front.Control
         public ObservableCollection<APIRadiobuton> TypeMessageRadiobuton { get; set; }
         public bool IsShortPeriodZ { get; set; } = true;
         public bool IsPrintCoffeQR { get; set; }= false;
+        public IEnumerable<WorkPlace> WorkPlaces {get { return Global.GetIdWorkPlaces; } }
+        WorkPlace _SelectedWorkPlace = null;
+        public WorkPlace SelectedWorkPlace { get { return _SelectedWorkPlace != null? _SelectedWorkPlace: WorkPlaces.First(); } set { _SelectedWorkPlace = value; } } 
 
         public void ControlScale(double pWeight, bool pIsStable)
         {
@@ -75,6 +79,7 @@ namespace Front.Control
                 TypeMessageRadiobuton.Add(new APIRadiobuton() { ServerTypeMessage = item });
             }
             InitializeComponent();
+            WorkPlacesList.ItemsSource = WorkPlaces;
             this.DataContext = this;
             ListRadioButtonAPI.ItemsSource = TypeMessageRadiobuton;
             RefreshJournal();
@@ -235,7 +240,7 @@ namespace Front.Control
         {
             var task = Task.Run(() =>
             {
-                var r = EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(),IdWorkplacePay= Global.IdWorkPlace });
+                var r = EF.RroPrintX(new IdReceipt() { IdWorkplace = SelectedWorkPlace.IdWorkplace, CodePeriod = Global.GetCodePeriod(),IdWorkplacePay= SelectedWorkPlace.IdWorkplace });
                 if (r.CodeError == 0)
                     ViewReceiptFiscal(r);
                 else
@@ -252,7 +257,7 @@ namespace Front.Control
             {
                 var task = Task.Run(() =>
             {
-                var r = EF.RroPrintZ(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(),IdWorkplacePay = Global.IdWorkPlace });
+                var r = EF.RroPrintZ(new IdReceipt() { IdWorkplace = SelectedWorkPlace.IdWorkplace, CodePeriod = Global.GetCodePeriod(),IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
                 if (r.CodeError == 0)
                     ViewReceiptFiscal(r);
                 else
@@ -268,14 +273,14 @@ namespace Front.Control
         {
             var task = Task.Run(() =>
             {
-                var tmpReceipt = new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() ,IdWorkplacePay= Global.IdWorkPlace };
+                var tmpReceipt = new IdReceipt() { IdWorkplace = SelectedWorkPlace.IdWorkplace, CodePeriod = Global.GetCodePeriod() ,IdWorkplacePay= SelectedWorkPlace.IdWorkplace };
                 var r = EF.RroPeriodZReport(tmpReceipt, DateStartPeriodZ, DateEndPeriodZ , !IsShortPeriodZ);
             });
         }
 
         private void EKKA_Copy_Click(object sender, RoutedEventArgs e)
         {
-            EF.RroPrintCopyReceipt(Global.IdWorkPlace);
+            EF.RroPrintCopyReceipt(SelectedWorkPlace.IdWorkplace);
         }
 
         private void WorkStart_Click(object sender, RoutedEventArgs e)
@@ -382,6 +387,14 @@ namespace Front.Control
                     MW.SetStateView(Models.eStateMainWindows.StartWindow);
                     TabAdmin.SelectedIndex = 0;
                     //this.WindowState = WindowState.Minimized;
+                    break;
+                case "Вихід з програми":
+                    if (MessageBox.Show("Завершити роботу програми?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                    {
+                        System.Diagnostics.Process.Start("explorer.exe");
+                        Application.Current.Shutdown();
+                    }
+                    else TabAdmin.SelectedIndex = 0;
                     break;
                 default:
 
@@ -814,6 +827,21 @@ namespace Front.Control
             }
 
             MessageBox.Show(Res.ToString());
+        }
+
+        private void CheckWorkPlaceId(object sender, RoutedEventArgs e)
+        {
+            RadioButton ChBtn = sender as RadioButton;
+            if (ChBtn.DataContext is WorkPlace)
+            {
+                WorkPlace temp = ChBtn.DataContext as WorkPlace;
+                if (ChBtn.IsChecked == true)
+                {
+                    SelectedWorkPlace = temp;
+                   // MessageBox.Show(temp.Name);
+                }
+
+            }
         }
     }
 

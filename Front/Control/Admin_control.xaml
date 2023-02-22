@@ -224,15 +224,58 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="60"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
 
-                        <GroupBox Grid.Column="0" Header="POS-термінал" Margin="20, 20 , 10 ,20">
+
+
+                        <ScrollViewer Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
+                            <ItemsControl x:Name="WorkPlacesList" >
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <RadioButton GroupName="radioWorkPlacesList" FontSize="18" Content="{Binding Name}"
+                                                         Style="{DynamicResource OrangeSwitchStyle}" Checked="CheckWorkPlaceId" />
+                                            <TextBlock Text="   |   "/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+
+                            </ItemsControl>
+                        </ScrollViewer>
+                        <!--<ScrollViewer Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
+                VerticalScrollBarVisibility="Auto" >
+                            <ItemsControl  Name="WorkPlacesList">
+                                
+                                <ItemsControl.ItemTemplate>
+                                    
+                                    <DataTemplate>
+
+                                        <Grid Margin="10,0,0,0">
+                                            <StackPanel Orientation="Horizontal">
+                                                <RadioButton GroupName="radioWorkPlacesList" FontSize="18" Content="{Binding Name}" Checked="CheckWorkPlaceId"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>-->
+                        <GroupBox Grid.Column="0" Grid.Row="1" Header="POS-термінал" Margin="20, 20 , 10 ,20">
                             <StackPanel>
                                 <Button x:Name="POS_X" Style="{StaticResource Default}" Content="X звіт" Width="280" Height="80"  Click="POS_X_Click"/>
                                 <Button x:Name="POS_Z" Style="{StaticResource Default}" Content="Z звіт" Width="280" Height="80" Click="POS_Z_Click"/>
                                 <Button x:Name="POS_X_Copy" Style="{StaticResource Default}" Content="X звіт(копія)" Width="280" Height="80" Click="POS_X_Copy_Click"/>
                             </StackPanel>
                         </GroupBox>
-                        <GroupBox Grid.Column="1" Header="Фіскальний реєстратор" Margin="10, 20, 10, 20">
+                        <GroupBox Grid.Column="1" Grid.Row="1" Header="Фіскальний реєстратор" Margin="10, 20, 10, 20">
                             <StackPanel>
                                 <Button x:Name="EKKA_X" Style="{StaticResource Default}" Content="X звіт"      VerticalAlignment="Top"  Width="280" Height="80" Click="EKKA_X_Click"/>
                                 <Button x:Name="EKKA_Z" Style="{StaticResource Default}" Content="Z звіт"    Width="280" Height="80" Click="EKKA_Z_Click"/>
@@ -243,7 +286,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
 
 
                         </GroupBox>
-                        <GroupBox Grid.Column="2" Header="Зміна" Margin="10, 20 , 20 ,20"  >
+                        <GroupBox Grid.Column="2" Grid.Row="1" Header="Зміна" Margin="10, 20 , 20 ,20"  >
                             <StackPanel>
                                 <StackPanel x:Name="OpenShiftShow" HorizontalAlignment="Center" VerticalAlignment="Center">
                                     <TextBlock x:Name="TB_NameAdminUserOpenShift" Text="{Binding NameAdminUserOpenShift}"/>
@@ -529,37 +572,47 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                         </ScrollViewer>
-                        <StackPanel Orientation="Horizontal" Grid.Row="1"  VerticalAlignment="Stretch" >
-                            <Button Name="CalibrationControlScale" Click="CalibrationControlScaleButton"
+                        <ScrollViewer  Grid.Row="1"  HorizontalScrollBarVisibility="auto">
+                            <Grid >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Orientation="Horizontal"  VerticalAlignment="Stretch" >
+                                    <Button Name="CalibrationControlScale" Click="CalibrationControlScaleButton"
                                 Style="{StaticResource Default}" Content="Калібрування"   HorizontalAlignment="Left" Margin="5" Grid.Row="1"     />
-                            <Button Name="TarControlScale" Click="TarControlScaleButton"
+                                    <Button Name="TarControlScale" Click="TarControlScaleButton"
                                 Style="{StaticResource Default}" Content="Тарування" HorizontalAlignment="Left" Margin="5" Grid.Row="1"     />
-                            <TextBlock Name="ControlScaleWeightHaml"  Text="{Binding ControlScaleWeightDouble}"  FontSize="28" Margin="5" Grid.Row="1"    />
-                        </StackPanel>
-                        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" >
-                            <Button Name="OffLine" Style="{StaticResource Default}"  
+                                    <TextBlock Name="ControlScaleWeightHaml"  Text="{Binding ControlScaleWeightDouble}"  FontSize="28" Margin="5" Grid.Row="1"    />
+                                </StackPanel  >
+                                
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" >
+                                    <Button Name="OffLine" Style="{StaticResource Default}"  
                                 HorizontalAlignment="Left" Margin="5" Grid.Row="1" 
                                     Click="OffLineClick" 
                                 Content="OffLine"/>
-                            <Button Name="RefreshData" Style="{StaticResource Default}"  
+                                    <Button Name="RefreshData" Style="{StaticResource Default}"  
                                 HorizontalAlignment="Left" Margin="5" Grid.Row="1" 
                                     Click="RefreshDataButton" 
                                 Content="Оновити дані"/>
-                            <Button Style="{StaticResource Default}"  
+                                    <Button Style="{StaticResource Default}"  
                                 HorizontalAlignment="Left" Margin="5" Grid.Row="1" 
                                    Click="CloseApplicationButton" 
                                 Content="Вийти з програми"/>
-                            <Button Name="PowerOffOn" Style="{StaticResource Default}"  
+                                    <Button Name="PowerOffOn" Style="{StaticResource Default}"  
                                 HorizontalAlignment="Left" Margin="5" Grid.Row="1" 
                                 Width="60"    Click="PowerOff">
-                                <Image Margin="5" Source="\icons\on-off.png"/>
-                            </Button>
-                            <Button Name="Reboot" Style="{StaticResource Default}"  
+                                        <Image Margin="5" Source="\icons\on-off.png"/>
+                                    </Button>
+                                    <Button Name="Reboot" Style="{StaticResource Default}"  
                                 HorizontalAlignment="Left" Margin="5" Grid.Row="1" 
                                 Width="60"    Click="RebootPC">
-                                <Image Margin="5" Source="\icons\reboot.png"/>
-                            </Button>
-                        </StackPanel>
+                                        <Image Margin="5" Source="\icons\reboot.png"/>
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </ScrollViewer>
                     </Grid>
                 </TabItem>
                 <TabItem Name="TabHistory" Header="Історія">
@@ -713,21 +766,21 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                            Text="Зміна стану чека" FontSize="28"/>
                                 <ScrollViewer Grid.Column="0" Grid.ColumnSpan="3" 
                                                Grid.Row="1" Grid.RowSpan="2">
-                                    
-                                <ItemsControl  Name="ListReceiptState"  
+
+                                    <ItemsControl  Name="ListReceiptState"  
                                                HorizontalAlignment="Center">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <Border  Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
-                                                <Border.Effect>
-                                                    <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
-                                                </Border.Effect>
-                                                <Grid Margin="10,0,0,0">
-                                                    <Grid Margin="0,5,0,5">
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="110"/>
-                                                            <ColumnDefinition Width="*"/>
-                                                        </Grid.ColumnDefinitions>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border  Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
+                                                    <Border.Effect>
+                                                        <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
+                                                    </Border.Effect>
+                                                    <Grid Margin="10,0,0,0">
+                                                        <Grid Margin="0,5,0,5">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="110"/>
+                                                                <ColumnDefinition Width="*"/>
+                                                            </Grid.ColumnDefinitions>
 
                                                             <RadioButton Grid.Column="0" GroupName="GroupRadioButton" FontSize="18" Checked="CheckReceiptState">
                                                                 <RadioButton.Style>
@@ -742,12 +795,12 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                                             </RadioButton>
                                                             <TextBlock Grid.Column="1" Text="{Binding TranslateStateReceipt_}" TextWrapping="Wrap"
                                                            FontSize="24" FontWeight="SemiBold"/>
+                                                        </Grid>
                                                     </Grid>
-                                                </Grid>
-                                            </Border>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
                                 </ScrollViewer>
 
                                 <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="6" HorizontalAlignment="Left"
@@ -903,105 +956,105 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
 
 
                         <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="auto"   HorizontalAlignment="Center">
-                            
-                        <StackPanel Grid.Row="2" Orientation="Horizontal" >
-                            <Button  Grid.Column="2" FontSize="20" Click="FiscalizCheckButton"   >
-                                <TextBlock FontSize="22" Text="Фіскалізувати" Margin="5"/>
-                                <Button.Style>
-                                    <Style BasedOn="{StaticResource Default}" TargetType="Button">
-                                        <Setter Property="IsEnabled" Value="False"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsPrintReceipt}" Value="True">
-                                                <Setter Property="IsEnabled" Value="True"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                            </Button>
 
-                            <Button  Grid.Column="2" FontSize="20" Click="PaymentDetailsAdminPanelButton"   >
-                                <TextBlock FontSize="22" Text="Ввести реквізити" Margin="5"/>
-                                <Button.Style>
-                                    <Style BasedOn="{StaticResource Default}" TargetType="Button">
-                                        <Setter Property="IsEnabled" Value="False"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsInputPay}" Value="True">
-                                                <Setter Property="IsEnabled" Value="True"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                            </Button>
+                            <StackPanel Grid.Row="2" Orientation="Horizontal" >
+                                <Button  Grid.Column="2" FontSize="20" Click="FiscalizCheckButton"   >
+                                    <TextBlock FontSize="22" Text="Фіскалізувати" Margin="5"/>
+                                    <Button.Style>
+                                        <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                            <Setter Property="IsEnabled" Value="False"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsPrintReceipt}" Value="True">
+                                                    <Setter Property="IsEnabled" Value="True"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
 
-                            <Button Grid.Column="2" FontSize="22" Click="Transfer1CButton"   >
-                                <TextBlock FontSize="20" Text="Передати в 1С" Margin="5"/>
-                                <Button.Style>
-                                    <Style BasedOn="{StaticResource Default}" TargetType="Button">
-                                        <Setter Property="IsEnabled" Value="False"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsSendTo1C}" Value="True">
-                                                <Setter Property="IsEnabled" Value="True"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                            </Button>
+                                <Button  Grid.Column="2" FontSize="20" Click="PaymentDetailsAdminPanelButton"   >
+                                    <TextBlock FontSize="22" Text="Ввести реквізити" Margin="5"/>
+                                    <Button.Style>
+                                        <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                            <Setter Property="IsEnabled" Value="False"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsInputPay}" Value="True">
+                                                    <Setter Property="IsEnabled" Value="True"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
 
-                            <Button Grid.Column="2" FontSize="22" Click="ReturnCheckButton"   >
-                                <TextBlock FontSize="20" Text="Повернути" Margin="5"/>
-                                <Button.Style>
-                                    <Style BasedOn="{StaticResource Default}" TargetType="Button">
-                                        <Setter Property="IsEnabled" Value="False"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsCreateReturn}" Value="True">
-                                                <Setter Property="IsEnabled" Value="True"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                            </Button>
-                            <Button Grid.Column="2" FontSize="22" Click="ReturnAllCheckButton"   >
-                                <TextBlock FontSize="20" Text="Повернути весь чек" Margin="5"/>
-                                <Button.Style>
-                                    <Style BasedOn="{StaticResource Default}" TargetType="Button">
-                                        <Setter Property="IsEnabled" Value="False"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsCreateReturn}" Value="True">
-                                                <Setter Property="IsEnabled" Value="True"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                            </Button>
-                            <Button Grid.Column="2" FontSize="22" Click="CloneReceipt"   >
-                                <TextBlock FontSize="20" Text="Дублювання чеку" Margin="5"/>
-                                <Button.Style>
-                                    <Style BasedOn="{StaticResource Default}" TargetType="Button">
-                                        <Setter Property="IsEnabled" Value="True"/>
-                                        <!--<Style.Triggers>
+                                <Button Grid.Column="2" FontSize="22" Click="Transfer1CButton"   >
+                                    <TextBlock FontSize="20" Text="Передати в 1С" Margin="5"/>
+                                    <Button.Style>
+                                        <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                            <Setter Property="IsEnabled" Value="False"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsSendTo1C}" Value="True">
+                                                    <Setter Property="IsEnabled" Value="True"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+
+                                <Button Grid.Column="2" FontSize="22" Click="ReturnCheckButton"   >
+                                    <TextBlock FontSize="20" Text="Повернути" Margin="5"/>
+                                    <Button.Style>
+                                        <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                            <Setter Property="IsEnabled" Value="False"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsCreateReturn}" Value="True">
+                                                    <Setter Property="IsEnabled" Value="True"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <Button Grid.Column="2" FontSize="22" Click="ReturnAllCheckButton"   >
+                                    <TextBlock FontSize="20" Text="Повернути весь чек" Margin="5"/>
+                                    <Button.Style>
+                                        <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                            <Setter Property="IsEnabled" Value="False"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsCreateReturn}" Value="True">
+                                                    <Setter Property="IsEnabled" Value="True"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <Button Grid.Column="2" FontSize="22" Click="CloneReceipt"   >
+                                    <TextBlock FontSize="20" Text="Дублювання чеку" Margin="5"/>
+                                    <Button.Style>
+                                        <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                            <Setter Property="IsEnabled" Value="True"/>
+                                            <!--<Style.Triggers>
                                         <DataTrigger Binding="{Binding IsCreateReturn, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="True">
                                             <Setter Property="IsEnabled" Value="True"/>
                                         </DataTrigger>
                                     </Style.Triggers>-->
-                                    </Style>
-                                </Button.Style>
-                            </Button>
-                            <Button Grid.Column="2" FontSize="22" Click="PrintCoffeeQR"   >
-                                <TextBlock FontSize="20" Text="QR на каву" Margin="5"/>
-                                <Button.Style>
-                                    <Style BasedOn="{StaticResource Default}" TargetType="Button">
-                                        <Setter Property="IsEnabled" Value="False"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsPrintCoffeQR, RelativeSource={RelativeSource 
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <Button Grid.Column="2" FontSize="22" Click="PrintCoffeeQR"   >
+                                    <TextBlock FontSize="20" Text="QR на каву" Margin="5"/>
+                                    <Button.Style>
+                                        <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                            <Setter Property="IsEnabled" Value="False"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsPrintCoffeQR, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=UserControl}}" Value="True">
-                                            <Setter Property="IsEnabled" Value="True"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                            </Button>                            
+                                                    <Setter Property="IsEnabled" Value="True"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
 
-                        </StackPanel>
+                            </StackPanel>
                         </ScrollViewer>
 
                     </Grid>
@@ -1062,7 +1115,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
 
-                                    
+
                                 </GridView>
                             </ListView.View>
                         </ListView>
@@ -1112,7 +1165,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                     </Grid>
                 </TabItem>
                 <!--ВИДИМІСТЬ АПІ API Visibility="Collapsed" -->
-                <TabItem Header="API" Visibility="Collapsed"> 
+                <TabItem Header="API" Visibility="Collapsed">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
@@ -1124,7 +1177,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">
-                                        <RadioButton GroupName="TypeMessage"  FontSize="20" Checked="CheckTypeMessage" 
+                                            <RadioButton GroupName="TypeMessage"  FontSize="20" Checked="CheckTypeMessage" 
                                                      Style="{DynamicResource OrangeSwitchStyle}"/>
                                             <TextBlock Text="{Binding TranslateServerTypeMessage}"/>
                                         </StackPanel>
@@ -1143,7 +1196,9 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                         </StackPanel>
                     </Grid>
                 </TabItem>
+                <TabItem Header="Вихід з програми"/>
                 <TabItem Header="Вихід"/>
+                
             </TabControl>
             <!--<Button Grid.Row="1" x:Name="Exit" Style="{StaticResource Default}" Content="Вихід" Height="70" Width="110" Margin="0, 15,20,0"  HorizontalAlignment="Right" VerticalAlignment="Top"  Click="Exit_Click"/>-->
 
