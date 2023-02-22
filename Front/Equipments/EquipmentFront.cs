@@ -685,13 +685,13 @@ namespace Front
             return r;
         }
 
-        public BatchTotals PosPrintX(bool IsPrint = true)
+        public BatchTotals PosPrintX( IdReceipt IdR, bool IsPrint = true)
         {
-            var IdR = new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() };
+            //var IdR = new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() };
             BatchTotals r = null;
             try
             {
-                r = Terminal.PrintX();
+                r = Terminal.PrintX(IdR.IdWorkplacePay);
                 LogRRO d = new()
                 { TypeOperation = eTypeOperation.XReportPOS, TypeRRO = "Ingenico", JSON = r.ToJSON(), TextReceipt = r.Receipt == null ? null : string.Join(Environment.NewLine, r.Receipt) };
                 Bl.InsertLogRRO(d);
@@ -706,13 +706,13 @@ namespace Front
             return r;
         }
 
-        public BatchTotals PosPrintZ()
+        public BatchTotals PosPrintZ(IdReceipt IdR)
         {
             BatchTotals r = null;
-            var IdR = new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() };
+            //var IdR = new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() };
             try
             {
-                r = Terminal.PrintZ();
+                r = Terminal.PrintZ(IdR.IdWorkplacePay);
                 LogRRO d = new(IdR)
                 { TypeOperation = eTypeOperation.ZReportPOS, TypeRRO = "Ingenico", JSON = r.ToJSON(), TextReceipt = r.Receipt == null ? null : string.Join(Environment.NewLine, r.Receipt) };
                 Bl.InsertLogRRO(d);

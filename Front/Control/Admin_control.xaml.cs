@@ -182,7 +182,7 @@ namespace Front.Control
         {
             var task = Task.Run(() =>
             {
-                LastReceipt = EF.PosPrintX(false);
+                LastReceipt = EF.PosPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace },false);
                 ViewReceipt();
             });
 
@@ -194,7 +194,7 @@ namespace Front.Control
             {
                 var task = Task.Run(() =>
             {
-                LastReceipt = EF.PosPrintZ();
+                LastReceipt = EF.PosPrintZ( new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
                 ViewReceipt();
             });
             }
@@ -240,7 +240,7 @@ namespace Front.Control
         {
             var task = Task.Run(() =>
             {
-                var r = EF.RroPrintX(new IdReceipt() { IdWorkplace = SelectedWorkPlace.IdWorkplace, CodePeriod = Global.GetCodePeriod(),IdWorkplacePay= SelectedWorkPlace.IdWorkplace });
+                var r = EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(),IdWorkplacePay= SelectedWorkPlace.IdWorkplace });
                 if (r.CodeError == 0)
                     ViewReceiptFiscal(r);
                 else
@@ -273,7 +273,7 @@ namespace Front.Control
         {
             var task = Task.Run(() =>
             {
-                var tmpReceipt = new IdReceipt() { IdWorkplace = SelectedWorkPlace.IdWorkplace, CodePeriod = Global.GetCodePeriod() ,IdWorkplacePay= SelectedWorkPlace.IdWorkplace };
+                var tmpReceipt = new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() ,IdWorkplacePay= SelectedWorkPlace.IdWorkplace };
                 var r = EF.RroPeriodZReport(tmpReceipt, DateStartPeriodZ, DateEndPeriodZ , !IsShortPeriodZ);
             });
         }
@@ -317,8 +317,9 @@ namespace Front.Control
             return;
             var task = Task.Run(() =>
             {
-                EF.PosPrintZ();
-                var r = EF.RroPrintZ(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = Global.IdWorkPlace });
+                var IdR = new IdReceipt() { IdWorkplace = Global.IdWorkPlace,CodePeriod = Global.GetCodePeriod(),IdWorkplacePay = SelectedWorkPlace.IdWorkplace };
+                EF.PosPrintZ(IdR);
+                var r = EF.RroPrintZ(IdR);
             });
         }
 

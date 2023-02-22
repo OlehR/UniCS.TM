@@ -17,6 +17,7 @@ namespace ModelMID.DB
         public int CodeWarehouse { get; set; }
         public int CodeDealer { get; set; }
         public string Prefix { get; set; }
+        public bool IsChoice { get; set; }
 
     }
 }

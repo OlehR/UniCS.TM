@@ -232,9 +232,15 @@ namespace ModelMID
         public static IEnumerable<WorkPlace> GetIdWorkPlaces
         {
             get {
+                bool isFirst = true;
                 List < WorkPlace > res= new List<WorkPlace >();
-                foreach (var el in IdWorkPlaces.Distinct())                
-                    res.Add(GetWorkPlaceByIdWorkplace(el));                
+                foreach (var el in IdWorkPlaces.Distinct())
+                {
+                    var xx = GetWorkPlaceByIdWorkplace(el);
+                    xx.IsChoice= isFirst;
+                    res.Add(xx);
+                    isFirst = false;
+                }
                 return res; 
             }
         }
