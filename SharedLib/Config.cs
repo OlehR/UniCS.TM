@@ -165,10 +165,13 @@ namespace SharedLib
 
 
             var IdWorkPlaces = new List<IdWorkPlaces>();
+            var _IdWorkPlaces = new List<int>();
+            _IdWorkPlaces.Add(Global.IdWorkPlace);
             AppConfiguration.GetSection("MID:IdWorkPlaces").Bind(IdWorkPlaces);
-
+            Global.IdWorkPlaces.Add(Global.IdWorkPlace);
             foreach (var el in IdWorkPlaces)
             {
+                _IdWorkPlaces.Add(el.IdWorkPlace);
                 if (el?.CodeDirections != null)
                  foreach (var dir in el.CodeDirections)
                     Global.IdWorkPlacePayDirection.Add(dir, el.IdWorkPlace);
@@ -177,7 +180,7 @@ namespace SharedLib
                  foreach (var TM in el.CodeTM)
                     Global.IdWorkPlacePayTM.Add(TM, el.IdWorkPlace);
             }
-
+            Global.IdWorkPlaces= _IdWorkPlaces;
             try
             {
                 Global.IsTest = Convert.ToBoolean(AppConfiguration["MID:IsTest"]);

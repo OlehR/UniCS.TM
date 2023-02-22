@@ -1,15 +1,7 @@
-﻿using Front.Equipments.Implementation;
-using Front.Equipments.Virtual;
+﻿using Front.Equipments.Virtual;
 using Microsoft.Extensions.Configuration;
-using ModelMID;
-using ModelMID.DB;
-using Newtonsoft.Json;
 using System;
-using System.Diagnostics;
-using System.Net;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Front.Equipments.pRRO_SG
 {

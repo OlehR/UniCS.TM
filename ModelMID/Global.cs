@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ModelMID.DB;
 using Utils;
 
@@ -226,7 +227,19 @@ namespace ModelMID
                 return IdWorkPlacePayDirection[pCodeTM];
             return IdWorkPlace;
         }
-                
+        public static IEnumerable<int> IdWorkPlaces;
+
+        public static IEnumerable<WorkPlace> GetIdWorkPlaces
+        {
+            get {
+                List < WorkPlace > res= new List<WorkPlace >();
+                foreach (var el in IdWorkPlaces.Distinct())                
+                    res.Add(GetWorkPlaceByIdWorkplace(el));                
+                return res; 
+            }
+        }
+
+
         /*public static string GetTaxGroup(int parTypeVat, int parTypeWares = 0)
         {
             if (parTypeVat == 0 && parTypeWares == 0)
