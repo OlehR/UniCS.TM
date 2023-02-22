@@ -168,7 +168,7 @@ namespace SharedLib
             var _IdWorkPlaces = new List<int>();
             _IdWorkPlaces.Add(Global.IdWorkPlace);
             AppConfiguration.GetSection("MID:IdWorkPlaces").Bind(IdWorkPlaces);
-            Global.IdWorkPlaces.Add(Global.IdWorkPlace);
+            _IdWorkPlaces.Add(Global.IdWorkPlace);
             foreach (var el in IdWorkPlaces)
             {
                 _IdWorkPlaces.Add(el.IdWorkPlace);
