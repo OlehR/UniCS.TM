@@ -59,10 +59,10 @@ namespace Front.Control
         public string KasaNumber { get { return Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace).Name; } }
         public ObservableCollection<APIRadiobuton> TypeMessageRadiobuton { get; set; }
         public bool IsShortPeriodZ { get; set; } = true;
-        public bool IsPrintCoffeQR { get; set; }= false;
-        public IEnumerable<WorkPlace> WorkPlaces {get { return Global.GetIdWorkPlaces; } }
+        public bool IsPrintCoffeQR { get; set; } = false;
+        public IEnumerable<WorkPlace> WorkPlaces { get { return Global.GetIdWorkPlaces; } }
         WorkPlace _SelectedWorkPlace = null;
-        public WorkPlace SelectedWorkPlace { get { return _SelectedWorkPlace != null? _SelectedWorkPlace: WorkPlaces.First(); } set { _SelectedWorkPlace = value; } } 
+        public WorkPlace SelectedWorkPlace { get { return _SelectedWorkPlace != null ? _SelectedWorkPlace : WorkPlaces.First(); } set { _SelectedWorkPlace = value; } }
 
         public void ControlScale(double pWeight, bool pIsStable)
         {
@@ -101,7 +101,7 @@ namespace Front.Control
                 EF = MW?.EF;
                 EF.OnControlWeight += (pWeight, pIsStable) =>
                 {
-                    ControlScale(pWeight, pIsStable);                    
+                    ControlScale(pWeight, pIsStable);
                 };
             };
 
@@ -182,7 +182,7 @@ namespace Front.Control
         {
             var task = Task.Run(() =>
             {
-                LastReceipt = EF.PosPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace },false);
+                LastReceipt = EF.PosPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace }, false);
                 ViewReceipt();
             });
 
@@ -194,7 +194,7 @@ namespace Front.Control
             {
                 var task = Task.Run(() =>
             {
-                LastReceipt = EF.PosPrintZ( new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
+                LastReceipt = EF.PosPrintZ(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
                 ViewReceipt();
             });
             }
@@ -202,7 +202,7 @@ namespace Front.Control
         private void OffLineClick(object sender, RoutedEventArgs e)
         {
             MW.Bl.ds.IsUseOldDB = !MW.Bl.ds.IsUseOldDB;
-        }        
+        }
 
         void ViewReceipt()
         {
@@ -240,7 +240,7 @@ namespace Front.Control
         {
             var task = Task.Run(() =>
             {
-                var r = EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(),IdWorkplacePay= SelectedWorkPlace.IdWorkplace });
+                var r = EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
                 if (r.CodeError == 0)
                     ViewReceiptFiscal(r);
                 else
@@ -257,7 +257,7 @@ namespace Front.Control
             {
                 var task = Task.Run(() =>
             {
-                var r = EF.RroPrintZ(new IdReceipt() { IdWorkplace = SelectedWorkPlace.IdWorkplace, CodePeriod = Global.GetCodePeriod(),IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
+                var r = EF.RroPrintZ(new IdReceipt() { IdWorkplace = SelectedWorkPlace.IdWorkplace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
                 if (r.CodeError == 0)
                     ViewReceiptFiscal(r);
                 else
@@ -273,8 +273,8 @@ namespace Front.Control
         {
             var task = Task.Run(() =>
             {
-                var tmpReceipt = new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() ,IdWorkplacePay= SelectedWorkPlace.IdWorkplace };
-                var r = EF.RroPeriodZReport(tmpReceipt, DateStartPeriodZ, DateEndPeriodZ , !IsShortPeriodZ);
+                var tmpReceipt = new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace };
+                var r = EF.RroPeriodZReport(tmpReceipt, DateStartPeriodZ, DateEndPeriodZ, !IsShortPeriodZ);
             });
         }
 
@@ -317,7 +317,7 @@ namespace Front.Control
             return;
             var task = Task.Run(() =>
             {
-                var IdR = new IdReceipt() { IdWorkplace = Global.IdWorkPlace,CodePeriod = Global.GetCodePeriod(),IdWorkplacePay = SelectedWorkPlace.IdWorkplace };
+                var IdR = new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace };
                 EF.PosPrintZ(IdR);
                 var r = EF.RroPrintZ(IdR);
             });
@@ -402,17 +402,17 @@ namespace Front.Control
                     return;
             }
         }
-        
+
         private void RefreshJournal()
         {
-            
+
             var TMPIdRecipt = new IdReceipt { CodePeriod = Global.GetCodePeriod(DateSoSearch), CodeReceipt = 0, IdWorkplace = Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace).IdWorkplace };
             SourcesListJournal = new ObservableCollection<LogRRO>(Bl.GetLogRRO(TMPIdRecipt));
             ListJournal.ItemsSource = SourcesListJournal.Reverse();
             CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(ListJournal.ItemsSource);
             view.Filter = JournalFilter;
         }
-        
+
         private void RefreshLog()
         {
             string AllLog = File.ReadAllText(Utils.FileLogger.GetFileName);
@@ -433,7 +433,7 @@ namespace Front.Control
             CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(ListLog.ItemsSource);
             view.Filter = LogFilter;
         }
-        
+
         private void historiReceiptList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             curReceipt = ListReceipts.SelectedItem as Receipt;
@@ -484,7 +484,7 @@ namespace Front.Control
         {
             //TMP!!!
             //MessageBox.Show("Реквізити на оплату");
-            TerminalPaymentInfo terminalPaymentInfo = new TerminalPaymentInfo(MW);            
+            TerminalPaymentInfo terminalPaymentInfo = new TerminalPaymentInfo(MW);
             if (terminalPaymentInfo.ShowDialog() == true && curReceipt != null)
             {
                 var Res = terminalPaymentInfo.enteredDataFromTerminal;
@@ -498,7 +498,7 @@ namespace Front.Control
             pPay.SumPay = pPay.PosPaid = curReceipt.SumTotal;
             pPay.PosPaid = pPay.SumPay;
             pPay.NumberTerminal = "Manual";
-            Bl.db.ReplacePayment(new List<Payment>() { pPay });           
+            Bl.db.ReplacePayment(new List<Payment>() { pPay });
 
             curReceipt.StateReceipt = eStateReceipt.Pay;
             curReceipt.CodeCreditCard = pPay.NumberCard;
@@ -637,7 +637,7 @@ namespace Front.Control
                 BackgroundReceipts.Visibility = Visibility.Visible;
 
                 var TMPvalue = Bl.GetLogRRO(tmpReceipt);
-                PosCheckText.Text = TMPvalue?.Where(e => e.TypeOperation == (tmpReceipt.TypeReceipt==eTypeReceipt.Sale? eTypeOperation.SalePOS:eTypeOperation.RefundPOS)).FirstOrDefault()?.TextReceipt;
+                PosCheckText.Text = TMPvalue?.Where(e => e.TypeOperation == (tmpReceipt.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.SalePOS : eTypeOperation.RefundPOS)).FirstOrDefault()?.TextReceipt;
                 FiscalCheckText.Text = TMPvalue?.Where(e => e.TypeOperation == (tmpReceipt.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund)).FirstOrDefault()?.TextReceipt;
                 var curReceiptWares = Bl.GetWaresReceipt(tmpReceipt);
                 ListWaresReceipt.ItemsSource = curReceiptWares;
@@ -674,8 +674,8 @@ namespace Front.Control
                     MW.curReceipt.IdWorkplacePay = Global.IdWorkPlace;
                     EF.PrintNoFiscalReceipt(MW.curReceipt, LastReceipt.Receipt);
                 }
-                finally{ MW.curReceipt.IdWorkplacePay = 0; }
-                
+                finally { MW.curReceipt.IdWorkplacePay = 0; }
+
             }
         }
 
@@ -799,12 +799,12 @@ namespace Front.Control
         {
             StringBuilder Res = new();
             var MsSQL = new WDB_MsSql();
-            var Receipts = new ObservableCollection<Receipt>(Bl.GetReceipts(DateSoSearch, DateSoSearch, Global.IdWorkPlace)); 
+            var Receipts = new ObservableCollection<Receipt>(Bl.GetReceipts(DateSoSearch, DateSoSearch, Global.IdWorkPlace));
             var R1C = MsSQL.GetReceipt1C(DateSoSearch, Global.IdWorkPlace);
             Res.Append($"Звіт за {DateSoSearch} {Environment.NewLine}");
-            var Sum=R1C.Sum(el=>el.Value);
+            var Sum = R1C.Sum(el => el.Value);
             Res.Append($"Всього 1С => {Sum}{Environment.NewLine}");
-            Sum = Receipts.Where(el=>el.StateReceipt>=eStateReceipt.Pay).Sum(el => el.SumTotal);
+            Sum = Receipts.Where(el => el.StateReceipt >= eStateReceipt.Pay).Sum(el => el.SumTotal);
             Res.Append($"Всього Програма => {Sum}{Environment.NewLine}");
             Sum = Receipts.Where(el => el.StateReceipt >= eStateReceipt.Pay && el.StateReceipt < eStateReceipt.Send).Sum(el => el.SumTotal);
             Res.Append($"Всього в проміжних станах => {Sum}{Environment.NewLine}");
@@ -819,12 +819,12 @@ namespace Front.Control
                 }
                 else
                 {
-                    if(el.StateReceipt>=eStateReceipt.Pay)
+                    if (el.StateReceipt >= eStateReceipt.Pay)
                     {
                         Res.Append($"{el.NumberReceipt1C} Відсутній чек в 1С на суму {el.SumTotal:n2} {el.StateReceipt}{Environment.NewLine}");
                     }
-                }               
-               
+                }
+
             }
 
             MessageBox.Show(Res.ToString());
@@ -839,7 +839,9 @@ namespace Front.Control
                 if (ChBtn.IsChecked == true)
                 {
                     SelectedWorkPlace = temp;
-                   // MessageBox.Show(temp.Name);
+                    foreach (var workPlace in WorkPlaces)
+                        workPlace.IsChoice = workPlace.IdWorkplace == temp.IdWorkplace;
+
                 }
 
             }

@@ -243,7 +243,9 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">
                                             <RadioButton GroupName="radioWorkPlacesList" FontSize="18" Content="{Binding Name}"
-                                                         Style="{DynamicResource OrangeSwitchStyle}" Checked="CheckWorkPlaceId" />
+                                                         Style="{DynamicResource OrangeSwitchStyle}" IsChecked="{Binding IsChoice}"
+                                                         Checked="CheckWorkPlaceId"
+                                                         />
                                             <TextBlock Text="   |   "/>
                                         </StackPanel>
                                     </DataTemplate>
