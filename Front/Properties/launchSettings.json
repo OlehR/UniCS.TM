@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "Front": {
-      "commandName": "Project",
-      "commandLineArgs": "c:\\mid\\appsettings.json"
-    }
-  }
-}
