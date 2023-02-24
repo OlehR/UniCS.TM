@@ -55,15 +55,12 @@ namespace ModelMID
 
             if (pR.Wares!=null && pR.StateReceipt>0) 
               Wares = pR.Wares.Select(r => new ReceiptWares1C(r));
-            if (pR.Payment != null && pR.Payment.Count() > 0)
+            if (pR.Payment != null && pR.Payment.Any())
                 Description = pR.Payment.Where(r => !string.IsNullOrEmpty(r.CodeAuthorization)).FirstOrDefault().CodeAuthorization;
             else
                 Description = "0000000";
-            var wp = Global.GetWorkPlaceByIdWorkplace(pR.IdWorkplace);
-            // r.IsSuccess &&
-            CodeBank = (int) (pR.Payment.Where(r => r.TypePay == eTypePay.Card)?.FirstOrDefault().CodeBank??eBank.NotDefine);
-
-            //if (wp != null) CodeBank = (int)wp.TypePOS;
+            var wp = Global.GetWorkPlaceByIdWorkplace(pR.IdWorkplace);            
+            CodeBank = (int) ((pR.Payment.Where(r => r.TypePay == eTypePay.Card)?.FirstOrDefault().CodeBank ?? (wp?.TypePOS??eBank.NotDefine)));           
         }
 
         public string GetBase64()
@@ -74,18 +71,7 @@ namespace ModelMID
             
             return res; /// Convert.ToBase64String(plainTextBytes);
         }
-        /*public string GetSOAP()
-        {
-
-            string SoapText = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + "\n" +
-       "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" + "\n" +
-       "<soap:Body><JSONCheck xmlns = \"vopak\" >" + "\n" +
-       "<JSONSting>" + GetBase64() + " </JSONSting>" + "\n" +
-       "</JSONCheck>" + "\n" +
-       "</soap:Body>" + "\n" +
-       "</soap:Envelope>";
-            return SoapText;
-        } */
+        
     }
     
     public class ReceiptWares1C
