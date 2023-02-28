@@ -668,13 +668,13 @@ namespace Front.Control
         private void Print(object sender, RoutedEventArgs e)
         {
             if (LastReceipt?.Receipt?.Count() > 0)
-            {
+            {                
                 try
                 {
-                    MW.curReceipt.IdWorkplacePay = Global.IdWorkPlace;
-                    EF.PrintNoFiscalReceipt(MW.curReceipt, LastReceipt.Receipt);
+                    IdReceipt IdR = new() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace, IdWorkplacePay = Global.IdWorkPlace };
+                    EF.PrintNoFiscalReceipt(IdR, LastReceipt.Receipt);
                 }
-                finally { MW.curReceipt.IdWorkplacePay = 0; }
+                finally {  }
 
             }
         }

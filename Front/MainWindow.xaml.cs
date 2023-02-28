@@ -303,7 +303,7 @@ namespace Front
                 DateTime TimeAdminSSC = Bl.db.GetConfig<DateTime>("DateAdminSSC");
                 if (TimeAdminSSC.Date == DateTime.Now.Date)
                 {
-                    if(string.IsNullOrEmpty( BarCodeAdminSSC))
+                    if(!string.IsNullOrEmpty( BarCodeAdminSSC))
                       AdminSSC = Bl.GetUserByBarCode(BarCodeAdminSSC);
                     DTAdminSSC = TimeAdminSSC;
                     Bl.StartWork(Global.IdWorkPlace, BarCodeAdminSSC);//!!!TMP треба штрихкод
