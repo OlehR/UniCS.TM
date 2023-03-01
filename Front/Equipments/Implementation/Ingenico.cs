@@ -197,6 +197,7 @@ namespace Front.Equipments
                 Thread.Sleep(1000);
                 string terminalInfo = BPOS.TerminalInfo;                
                 string str = @$"Model: Ingenico
+Bank: {CodeBank}
 COM port: COM{port}
 Baud rate: {BaudRate}
 TerminalId: {GetTerminalID}{Environment.NewLine}";
