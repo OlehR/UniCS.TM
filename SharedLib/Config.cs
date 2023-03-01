@@ -208,7 +208,7 @@ namespace SharedLib
     {
         public int IdWorkPlace { get; set; }
         public int[] CodeDirections { get; set; }
-        public int[] CodeTM { get;}
+        public int[] CodeTM { get; set; }
     }
 }
 

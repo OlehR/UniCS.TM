@@ -224,7 +224,7 @@ namespace ModelMID
             if (IdWorkPlacePayDirection.ContainsKey(pCodeDirection))
                 return IdWorkPlacePayDirection[pCodeDirection];
             if (IdWorkPlacePayTM.ContainsKey(pCodeTM))
-                return IdWorkPlacePayDirection[pCodeTM];
+                return IdWorkPlacePayTM[pCodeTM];
             return IdWorkPlace;
         }
         public static IEnumerable<int> IdWorkPlaces;

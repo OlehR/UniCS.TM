@@ -20,7 +20,7 @@ namespace Front.Equipments
         public BankTerminal(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefine, ILoggerFactory pLoggerFactory = null) : 
             base(pEquipment, pConfiguration, pModelEquipment, pLoggerFactory) 
         {
-            pConfiguration.GetSection($"{KeyPrefix}Merchants").Bind(Merchants);
+            pConfiguration.GetSection($"{KeyPrefix}MerchantIds").Bind(Merchants);
         }
 
         public eBank CodeBank { get; set; } = eBank.NotDefine;
