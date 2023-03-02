@@ -813,10 +813,11 @@ namespace Front.Control
                 {
                     if (R1C.ContainsKey(el.NumberReceipt1C))
                     {
-                        decimal Sum1c = R1C[el.NumberReceipt1C];
-                        el.IdWorkplacePay = IdWP.IdWorkplace;
-                        if (Math.Abs(el.SumTotal - Sum1c) > 0.01m)
-                            Res.Append($"{el.NumberReceipt1C} Сума чека:{el.SumTotal} В 1с:{Sum1c}{Environment.NewLine}");
+                        decimal SumPr=0, Sum1c=0;
+                        try { Sum1c = R1C[el.NumberReceipt1C]; } catch (Exception) { }
+                        SumPr = el.WorkplacePays?.Where(e=> e.IdWorkplacePay== IdWP.IdWorkplace)?.Sum(e=>e.Sum)??0m;
+                        if (SumPr>0 && Math.Abs(SumPr - Sum1c) > 0.01m)
+                            Res.Append($"{el.NumberReceipt1C} Сума чека:{SumPr} В 1с:{Sum1c}{Environment.NewLine}");
                     }
                     else
                     {
