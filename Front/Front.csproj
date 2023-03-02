@@ -212,9 +212,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="applicationService.db">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
