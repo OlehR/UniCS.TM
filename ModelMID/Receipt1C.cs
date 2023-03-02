@@ -44,10 +44,11 @@ namespace ModelMID
             Number = pR.NumberReceipt1C;
             RefundNumber = pR.RefundNumberReceipt1C;
             TypeReceipt =  (pR.TypeReceipt== eTypeReceipt.Refund? eTypeReceipt.Refund:eTypeReceipt.Sale);
-            NumberCashDesk = pR.IdWorkplacePay > 0 ? pR.IdWorkplacePay : pR.IdWorkplace;            
+            NumberCashDesk = pR.IdWorkplacePay > 0 ? pR.IdWorkplacePay : pR.IdWorkplace;
+            var wp = Global.GetWorkPlaceByIdWorkplace(NumberCashDesk);
             CodeClientCard = pR.CodeClient;
             BarCodeCashier = pR.UserCreate.ToString();
-            CodeWarehouse = Global.CodeWarehouse;
+            CodeWarehouse = wp.CodeWarehouse;
 
             UInt64 nr=0;
             if(UInt64.TryParse(pR.NumberReceipt,out nr))                
@@ -59,7 +60,7 @@ namespace ModelMID
                 Description = pR.Payment.Where(r => !string.IsNullOrEmpty(r.CodeAuthorization)).FirstOrDefault().CodeAuthorization;
             else
                 Description = "0000000";
-            var wp = Global.GetWorkPlaceByIdWorkplace(NumberCashDesk);            
+                      
             CodeBank = (int) ((pR.Payment.Where(r => r.TypePay == eTypePay.Card)?.FirstOrDefault().CodeBank ?? (wp?.TypePOS??eBank.NotDefine)));           
         }
 
