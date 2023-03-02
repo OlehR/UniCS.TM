@@ -441,7 +441,7 @@ namespace Front.Control
             {
                 curReceipt.Wares = Bl.GetWaresReceipt(curReceipt);
                 //Якогось не працює через get як я хочу :) Тому пока реалізація через Ж.
-                IsPrintReceipt = curReceipt?.StateReceipt == eStateReceipt.Pay || curReceipt?.StateReceipt == eStateReceipt.StartPrint || curReceipt?.StateReceipt == eStateReceipt.Prepare;
+                IsPrintReceipt = curReceipt?.StateReceipt != eStateReceipt.Print && curReceipt?.StateReceipt != eStateReceipt.Send;
                 IsPayReceipt = curReceipt?.StateReceipt == eStateReceipt.Prepare || curReceipt?.StateReceipt == eStateReceipt.StartPay;
                 IsInputPay = curReceipt?.StateReceipt == eStateReceipt.Prepare || curReceipt?.StateReceipt == eStateReceipt.StartPay;
                 IsSendTo1C = curReceipt?.StateReceipt == eStateReceipt.Print || curReceipt?.StateReceipt == eStateReceipt.Send;

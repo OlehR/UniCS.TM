@@ -473,7 +473,7 @@ namespace Front
 
                         for (var i = 0; i < IdWorkplacePays.Length; i++)
                         {
-                            if (R.Payment != null && R.Payment.Any(el => el.IdWorkplacePay == IdWorkplacePays[i] && el.IsSuccess))
+                            if (R.Payment != null && R.Payment.Any(el => el.IdWorkplacePay == IdWorkplacePays[i] ))
                                 continue;
                             R.StateReceipt = eStateReceipt.StartPay;
                             R.IdWorkplacePay = IdWorkplacePays[i];
@@ -502,7 +502,7 @@ namespace Front
 
                             if (pay != null && pay.IsSuccess)
                             {
-                                R.StateReceipt = eStateReceipt.Pay;
+                                R.StateReceipt = ( i ==IdWorkplacePays.Length-1? eStateReceipt.Pay: eStateReceipt.PartialPay);
                                 R.CodeCreditCard = pay.NumberCard;
                                 R.NumberReceiptPOS = pay.NumberReceipt;
                                 //R.Client = null;
