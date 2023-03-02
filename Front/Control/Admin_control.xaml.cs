@@ -800,33 +800,39 @@ namespace Front.Control
             StringBuilder Res = new();
             var MsSQL = new WDB_MsSql();
             var Receipts = new ObservableCollection<Receipt>(Bl.GetReceipts(DateSoSearch, DateSoSearch, Global.IdWorkPlace));
-            var R1C = MsSQL.GetReceipt1C(DateSoSearch, Global.IdWorkPlace);
+            decimal Sum1CTotal = 0, Sum = 0;
             Res.Append($"Звіт за {DateSoSearch} {Environment.NewLine}");
-            var Sum = R1C.Sum(el => el.Value);
-            Res.Append($"Всього 1С => {Sum}{Environment.NewLine}");
+            foreach (var IdWP in Global.GetIdWorkPlaces)
+            {
+                var R1C = MsSQL.GetReceipt1C(DateSoSearch, IdWP.IdWorkplace);
+                Sum = R1C.Sum(el => el.Value);
+                Sum1CTotal += Sum;
+                Res.Append($"Всього 1С => {IdWP.Name}-{Sum}{Environment.NewLine}");
+              
+                foreach (var el in Receipts)
+                {
+                    if (R1C.ContainsKey(el.NumberReceipt1C))
+                    {
+                        decimal Sum1c = R1C[el.NumberReceipt1C];
+                        el.IdWorkplacePay = IdWP.IdWorkplace;
+                        if (Math.Abs(el.SumTotal - Sum1c) > 0.01m)
+                            Res.Append($"{el.NumberReceipt1C} Сума чека:{el.SumTotal} В 1с:{Sum1c}{Environment.NewLine}");
+                    }
+                    else
+                    {
+                        if (el.StateReceipt >= eStateReceipt.Pay)
+                        {
+                            Res.Append($"{el.NumberReceipt1C} Відсутній чек в 1С на суму {el.SumTotal:n2} {el.StateReceipt}{Environment.NewLine}");
+                        }
+                    }
+                }
+            }
+            Res.Append($"Всього 1С => {Sum1CTotal}{Environment.NewLine}");
             Sum = Receipts.Where(el => el.StateReceipt >= eStateReceipt.Pay).Sum(el => el.SumTotal);
             Res.Append($"Всього Програма => {Sum}{Environment.NewLine}");
             Sum = Receipts.Where(el => el.StateReceipt >= eStateReceipt.Pay && el.StateReceipt < eStateReceipt.Send).Sum(el => el.SumTotal);
             Res.Append($"Всього в проміжних станах => {Sum}{Environment.NewLine}");
-
-            foreach (var el in Receipts)
-            {
-                if (R1C.ContainsKey(el.NumberReceipt1C))
-                {
-                    decimal Sum1c = R1C[el.NumberReceipt1C];
-                    if (Math.Abs(el.SumTotal - Sum1c) > 0.01m)
-                        Res.Append($"{el.NumberReceipt1C} Сума чека:{el.SumTotal} В 1с:{Sum1c}{Environment.NewLine}");
-                }
-                else
-                {
-                    if (el.StateReceipt >= eStateReceipt.Pay)
-                    {
-                        Res.Append($"{el.NumberReceipt1C} Відсутній чек в 1С на суму {el.SumTotal:n2} {el.StateReceipt}{Environment.NewLine}");
-                    }
-                }
-
-            }
-
+        
             MessageBox.Show(Res.ToString());
         }
 
