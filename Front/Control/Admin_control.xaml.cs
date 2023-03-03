@@ -632,13 +632,25 @@ namespace Front.Control
             var tmpReceipt = btn.DataContext as Receipt;
             if (tmpReceipt != null)
             {
-                PosCheckText.Text = "";
                 DetailsReceiptBorder.Visibility = Visibility.Visible;
                 BackgroundReceipts.Visibility = Visibility.Visible;
-
+                string fiscalCheckText = "", posCheckText = "";
                 var TMPvalue = Bl.GetLogRRO(tmpReceipt);
-                PosCheckText.Text = TMPvalue?.Where(e => e.TypeOperation == (tmpReceipt.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.SalePOS : eTypeOperation.RefundPOS)).FirstOrDefault()?.TextReceipt;
-                FiscalCheckText.Text = TMPvalue?.Where(e => e.TypeOperation == (tmpReceipt.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund)).FirstOrDefault()?.TextReceipt;
+                foreach (var elem in TMPvalue)
+                {
+                    if (elem.TypeOperation == (tmpReceipt.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.SalePOS : eTypeOperation.RefundPOS))
+                    {
+                        posCheckText += elem.TextReceipt;
+                        posCheckText += $"{Environment.NewLine}@-@-@-@-@-@-@-@-@-@-@-@{Environment.NewLine}";
+                    }
+                    if (elem.TypeOperation == (tmpReceipt.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund))
+                    {
+                        fiscalCheckText += elem.TextReceipt;
+                        fiscalCheckText += $"{Environment.NewLine}@-@-@-@-@-@-@-@-@-@-@-@-@-@{Environment.NewLine}";
+                    }
+                }
+                PosCheckText.Text = posCheckText;//TMPvalue?.Where(e => e.TypeOperation == (tmpReceipt.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.SalePOS : eTypeOperation.RefundPOS)).FirstOrDefault()?.TextReceipt;
+                FiscalCheckText.Text = fiscalCheckText;//TMPvalue?.Where(e => e.TypeOperation == (tmpReceipt.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund)).FirstOrDefault()?.TextReceipt;
                 var curReceiptWares = Bl.GetWaresReceipt(tmpReceipt);
                 ListWaresReceipt.ItemsSource = curReceiptWares;
             }
@@ -668,13 +680,13 @@ namespace Front.Control
         private void Print(object sender, RoutedEventArgs e)
         {
             if (LastReceipt?.Receipt?.Count() > 0)
-            {                
+            {
                 try
                 {
                     IdReceipt IdR = new() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace, IdWorkplacePay = Global.IdWorkPlace };
                     EF.PrintNoFiscalReceipt(IdR, LastReceipt.Receipt);
                 }
-                finally {  }
+                finally { }
 
             }
         }
@@ -808,7 +820,7 @@ namespace Front.Control
                 Sum = R1C.Sum(el => el.Value);
                 Sum1CTotal += Sum;
                 Res.Append($"Всього 1С => {IdWP.Name}-{Sum}{Environment.NewLine}");
-              
+
                 foreach (var el in Receipts)
                 {
                     decimal SumPr = 0, Sum1c = 0;
@@ -838,7 +850,7 @@ namespace Front.Control
             Res.Append($"Всього Програма => {Sum}{Environment.NewLine}");
             Sum = Receipts.Where(el => el.StateReceipt >= eStateReceipt.Pay && el.StateReceipt < eStateReceipt.Send).Sum(el => el.SumTotal);
             Res.Append($"Всього в проміжних станах => {Sum}{Environment.NewLine}");
-        
+
             MessageBox.Show(Res.ToString());
         }
 
