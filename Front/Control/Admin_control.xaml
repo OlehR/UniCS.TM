@@ -590,7 +590,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                 Style="{StaticResource Default}" Content="Тарування" HorizontalAlignment="Left" Margin="5" Grid.Row="1"     />
                                     <TextBlock Name="ControlScaleWeightHaml"  Text="{Binding ControlScaleWeightDouble}"  FontSize="28" Margin="5" Grid.Row="1"    />
                                 </StackPanel  >
-                                
+
                                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" >
                                     <Button Name="OffLine" Style="{StaticResource Default}"  
                                 HorizontalAlignment="Left" Margin="5" Grid.Row="1" 
@@ -722,21 +722,20 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                     </ListView.View>
                                 </ListView>
                                 <ScrollViewer  x:Name="PosCheckScrollViewer" Grid.Row="1" Grid.Column="2">
-                                <StackPanel  Margin="15,0,15,0">
-                                    <TextBlock  FontSize="28" HorizontalAlignment="Center" FontWeight="DemiBold" TextWrapping="Wrap"
+                                    <StackPanel>
+                                        <TextBlock  FontSize="28" HorizontalAlignment="Center" FontWeight="DemiBold" TextWrapping="Wrap"
                                             Text="Чек з пос-термінала:"/>
-                                    
+
                                         <TextBlock x:Name="PosCheckText" FontSize="20" HorizontalAlignment="Center" TextWrapping="Wrap"/>
-                                    
-                                </StackPanel>
+                                    </StackPanel>
                                 </ScrollViewer>
-                                <StackPanel Grid.Row="2" Grid.Column="2" Margin="15,0,15,0">
-                                    <TextBlock  FontSize="28" HorizontalAlignment="Center" FontWeight="DemiBold" TextWrapping="Wrap"
+                                <ScrollViewer  Grid.Row="2" Grid.Column="2" x:Name="FiscallCheckScrollViewer">
+                                    <StackPanel >
+                                        <TextBlock  FontSize="28" HorizontalAlignment="Center" FontWeight="DemiBold" TextWrapping="Wrap"
                                             Text="Чек з фіскального апарату:"/>
-                                    <ScrollViewer  x:Name="FiscallCheckScrollViewer">
                                         <TextBlock x:Name="FiscalCheckText" FontSize="20" HorizontalAlignment="Center" TextWrapping="Wrap"/>
-                                    </ScrollViewer>
-                                </StackPanel>
+                                    </StackPanel>
+                                </ScrollViewer>
                                 <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="6"
                                     Style="{StaticResource Default}"  FontSize="22" Click="Cancel" 
                         Height="80" Width="300" Margin="10">
@@ -1204,7 +1203,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                 </TabItem>
                 <TabItem Header="Вихід з програми"/>
                 <TabItem Header="Вихід"/>
-                
+
             </TabControl>
             <!--<Button Grid.Row="1" x:Name="Exit" Style="{StaticResource Default}" Content="Вихід" Height="70" Width="110" Margin="0, 15,20,0"  HorizontalAlignment="Right" VerticalAlignment="Top"  Click="Exit_Click"/>-->
 
