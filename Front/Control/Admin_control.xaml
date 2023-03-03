@@ -721,13 +721,15 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                         </GridView>
                                     </ListView.View>
                                 </ListView>
-                                <StackPanel Grid.Row="1" Grid.Column="2" Margin="15,0,15,0">
+                                <ScrollViewer  x:Name="PosCheckScrollViewer" Grid.Row="1" Grid.Column="2">
+                                <StackPanel  Margin="15,0,15,0">
                                     <TextBlock  FontSize="28" HorizontalAlignment="Center" FontWeight="DemiBold" TextWrapping="Wrap"
                                             Text="Чек з пос-термінала:"/>
-                                    <ScrollViewer  x:Name="PosCheckScrollViewer">
+                                    
                                         <TextBlock x:Name="PosCheckText" FontSize="20" HorizontalAlignment="Center" TextWrapping="Wrap"/>
-                                    </ScrollViewer>
+                                    
                                 </StackPanel>
+                                </ScrollViewer>
                                 <StackPanel Grid.Row="2" Grid.Column="2" Margin="15,0,15,0">
                                     <TextBlock  FontSize="28" HorizontalAlignment="Center" FontWeight="DemiBold" TextWrapping="Wrap"
                                             Text="Чек з фіскального апарату:"/>
