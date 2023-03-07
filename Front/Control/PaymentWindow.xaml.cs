@@ -130,8 +130,10 @@ namespace Front.Control
                     break;
 
             }
-            MoneySumPayTextBox.Text = ChangeSumPaymant;
+            //MoneySumPayTextBox.Text = ChangeSumPaymant;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCashPayment"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ChangeSumPaymant"));
+
         }
 
         private void F5Button(object sender, RoutedEventArgs e)
@@ -315,6 +317,9 @@ namespace Front.Control
         {
             Button btn = sender as Button;
             Rounding(btn.Name);
-        }       
+            ChangeSumPaymant = MoneySumToRound.ToString();
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ChangeSumPaymant"));
+
+        }
     }
 }
