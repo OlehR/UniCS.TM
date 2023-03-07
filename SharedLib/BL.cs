@@ -170,23 +170,23 @@ namespace SharedLib
             return db.GetLastReceipt(idReceip);
         }
 
-        public bool UpdateReceiptFiscalNumber(IdReceipt pReceiptId, string pFiscalNumber, decimal pSumFiscal = 0, DateTime pDateFiscal = default(DateTime))
+        public bool UpdateReceiptFiscalNumber(IdReceipt pIdR, string pFiscalNumber, decimal pSumFiscal = 0, DateTime pDateFiscal = default(DateTime))
         {
             if (pDateFiscal == default(DateTime))
                 pDateFiscal = DateTime.Now;
-            var receipt = new Receipt(pReceiptId);
+            var receipt = new Receipt(pIdR);
             receipt.NumberReceipt = pFiscalNumber;
             receipt.StateReceipt = eStateReceipt.Print;
-            receipt.UserCreate = GetUserIdbyWorkPlace(pReceiptId.IdWorkplace);
+            receipt.UserCreate = GetUserIdbyWorkPlace(pIdR.IdWorkplace);
             receipt.SumFiscal = pSumFiscal;
             receipt.DateReceipt = pDateFiscal;
 
-            DateTime Ldc = pReceiptId.DTPeriod;
+            DateTime Ldc = pIdR.DTPeriod;
 
-            WDB_SQLite ldb = DB(pReceiptId);
+            WDB_SQLite ldb = DB(pIdR);
 
             var Res = ldb.CloseReceipt(receipt);
-            var r = db.ViewReceipt(pReceiptId, true);
+            var r = db.ViewReceipt(pIdR, true);
             Global.OnReceiptCalculationComplete?.Invoke(r);
             return Res;
         }
@@ -538,19 +538,19 @@ namespace SharedLib
 
         public bool SaveReceipt(Receipt pReceipt, bool isRefund = true)
         {
-            var ReceiptId = isRefund ? pReceipt.RefundId : pReceipt;
+            var IdR = isRefund ? pReceipt.RefundId : pReceipt;
 
             var dbR = DB(pReceipt);
             dbR.ReplaceReceipt(pReceipt);
             dbR.ReplacePayment(pReceipt.Payment);
 
-            var dbr = pReceipt.CodePeriod == pReceipt.CodePeriodRefund ? db : new WDB_SQLite(ReceiptId.DTPeriod);
+            var dbr = pReceipt.CodePeriod == pReceipt.CodePeriodRefund ? db : new WDB_SQLite(IdR.DTPeriod);
             foreach (var el in pReceipt.Wares)
             {
                 dbR.AddWares(el);
                 if (isRefund)
                 {
-                    var w = new ReceiptWares(ReceiptId, el.WaresId);
+                    var w = new ReceiptWares(IdR, el.WaresId);
                     w.Quantity = el.Quantity;
                     dbr.SetRefundedQuantity(w);
                 }

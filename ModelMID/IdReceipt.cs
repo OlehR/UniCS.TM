@@ -21,19 +21,19 @@ namespace ModelMID
             }
         }
 
-        public Guid ReceiptId
+        public Guid _ReceiptId=Guid.Empty;
+        public string ReceiptId
         {
             get
-            {                             
+            { 
+                if(_ReceiptId != Guid.Empty)  
+                    return _ReceiptId.ToString();
                 var strPeriod = CodePeriod.ToString("D8").Substring(0, 4) + "-" + CodePeriod.ToString("D8").Substring(4, 4);                              
                 var strGuid = IdWorkplace.ToString("D8") + "-FFFF-" + strPeriod + "-" + CodeReceipt.ToString("D12"); 
-                return Guid.Parse(strGuid);
+                return strGuid;
             }
-            set
-            {
-                SetGuid(value);                
-            }
-        }
+            set{ if(!Guid.TryParse(value, out _ReceiptId)) _ReceiptId = Guid.Empty; }
+        }        
 
         public int IdWorkplacePay { get; set; }
         public int IdWorkplace { get; set; }
@@ -64,7 +64,7 @@ namespace ModelMID
             SetIdReceipt(parIdReceipt);
         }
 
-        public IdReceipt(Guid parReceiptId)
+        /*public IdReceipt(Guid parReceiptId)
         {
             SetGuid(parReceiptId);            
         }
@@ -76,7 +76,8 @@ namespace ModelMID
             IdWorkplace = int.TryParse(strReceiptId.Substring(0, 8), out v) ? v : 0;
             CodePeriod = int.TryParse(strReceiptId.Substring(14, 9).Replace("-", ""), out v) ? v:0; 
             CodeReceipt = int.TryParse(strReceiptId.Substring(24, 12), out v) ? v : 0;
-       }
+       }*/
+
         public void SetIdReceipt(IdReceipt idReceipt)
         {
             if (idReceipt == null)

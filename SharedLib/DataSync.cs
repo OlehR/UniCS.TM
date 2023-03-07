@@ -112,7 +112,7 @@ namespace SharedLib
             }
             catch (Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "SendReceiptTo1CAsync=>" + pReceipt.ReceiptId.ToString() + " " + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = $"SendReceiptTo1CAsync=> {pReceipt.CodeReceipt}{Environment.NewLine}{ex.Message}{Environment.NewLine}{new System.Diagnostics.StackTrace()}"});
                 return false;
             }
             finally

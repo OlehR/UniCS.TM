@@ -205,7 +205,7 @@ namespace Front.Equipments.pRRO_SG
             if (pR == null) return;
             sum = pR.SumReceipt;
             docSubType = pR.TypeReceipt == eTypeReceipt.Refund ? eTypeDoc.Refund : eTypeDoc.Sale;
-            id = pR.ReceiptId;
+            id = pR._ReceiptId;
             var b = new List<Record>();
             foreach (var el in pR.Wares)
                 b.Add(new RecordSKU(el));

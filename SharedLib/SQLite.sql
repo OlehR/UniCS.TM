@@ -148,7 +148,7 @@ select au.code_unit code_unit,ud.abr_unit abr_unit,au.coefficient coefficient, a
        where au.sign_activity='Y' and au.sign_locking='N' and au.code_wares=
 
 [SqlViewReceipt]
-select  id_workplace IdWorkplace, code_period CodePeriod, code_receipt CodeReceipt, date_receipt DateReceipt, Type_Receipt as TypeReceipt,
+select  id_workplace IdWorkplace, code_period CodePeriod, code_receipt CodeReceipt, date_receipt DateReceipt, Type_Receipt as TypeReceipt, ReceiptId as ReceiptId,
 sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_receipt as StateReceipt, code_client as CodeClient,
  number_cashier as NumberCashier, number_receipt NumberReceipt, code_discount as CodeDiscount, sum_discount as SumDiscount, percent_discount as PercentDiscount, 
  code_bonus as CodeBonus, sum_bonus as SumBonus, sum_cash as SumCash, sum_credit_card as SumCreditCard, code_outcome as CodeOutcome, 
@@ -214,7 +214,7 @@ Price as Price/*, wr.sum as Sum*/, Type_Price as TypePrice
                      order by sort
 
 [SqlAddReceipt]
-insert into receipt (id_workplace, code_period, code_receipt, date_receipt, 
+insert into receipt (id_workplace, code_period, code_receipt, date_receipt, ReceiptId,
 sum_receipt, vat_receipt, code_pattern, state_receipt, code_client,
  number_cashier, number_receipt, code_discount, sum_discount, percent_discount, 
  code_bonus, sum_bonus, sum_cash, Sum_Wallet, sum_credit_card, code_outcome, 
@@ -223,7 +223,7 @@ sum_receipt, vat_receipt, code_pattern, state_receipt, code_client,
  ADDITION_C1,ADDITION_D1,Type_Receipt, 
  Id_Workplace_Refund,Code_Period_Refund,Code_Receipt_Refund
  ) values 
- (@IdWorkplace, @CodePeriod, @CodeReceipt,  @DateReceipt, 
+ (@IdWorkplace, @CodePeriod, @CodeReceipt,  @DateReceipt, @ReceiptId,
  @SumReceipt, @VatReceipt, @CodePattern, @StateReceipt, @CodeClient,
  @NumberCashier, @NumberReceipt, 0, @SumDiscount, @PercentDiscount,
  0, @SumBonus, @SumCash, @SumWallet, @SumCreditCard, 0, 
@@ -388,10 +388,11 @@ delete from  WARES_RECEIPT_PROMOTION
 [SqlGetNewReceipt]
 INSERT OR ignore into GEN_WORKPLACE (ID_WORKPLACE,CODE_PERIOD,CODE_RECEIPT) values (@IdWorkplace,@CodePeriod,@CodeReceipt);
 update GEN_WORKPLACE set CODE_RECEIPT=CODE_RECEIPT+1 where ID_WORKPLACE=@IdWorkplace and CODE_PERIOD=@CodePeriod;
+--insert into receipt (id_workplace, code_period, code_receipt) values (@IdWorkplace,@CodePeriod,(select CODE_RECEIPT from GEN_WORKPLACE where ID_WORKPLACE=@IdWorkplace and CODE_PERIOD=@CodePeriod));
 select CODE_RECEIPT from GEN_WORKPLACE where ID_WORKPLACE=@IdWorkplace and CODE_PERIOD=@CodePeriod;
 
 [SqlGetNewReceipt2]
-insert into receipt (id_workplace, code_period, code_receipt,ReceiptId) values (@IdWorkplace,@CodePeriod,@CodeReceipt,@ReceiptId);
+insert into receipt (id_workplace, code_period, code_receipt) values (@IdWorkplace,@CodePeriod,@CodeReceipt);
 
 [SqlLogin]
 SELECT u.CODE_USER code_user, p.NAME_FOR_PRINT name_user, u.login login, u.PassWord password
