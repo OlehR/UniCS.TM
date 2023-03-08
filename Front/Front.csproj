@@ -123,6 +123,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1210.39" />
     <PackageReference Include="PropertyChanged.Fody" Version="3.2.7" />
+    <PackageReference Include="QRCoder" Version="1.4.3" />
     <PackageReference Include="SerialPortStream" Version="2.2.2" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="5.0.0" />
   </ItemGroup>
