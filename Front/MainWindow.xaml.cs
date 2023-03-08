@@ -260,17 +260,12 @@ namespace Front
                 if (!FC.ContainsKey(el.State))
                     FC.Add(el.State, el.Color);
 
-            //Для касового місця Запит логін пароль.
-            //if (Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout)
             Access.СurUser = new User() { TypeUser = eTypeUser.Client, CodeUser = 99999999, Login = "Client", NameUser = "Client" };
 
             Bl = new BL(true);
             EF = new EquipmentFront(GetBarCode);
             InitAction();
 
-            //ad = new Admin(this, EF);
-            //ad.WindowState = WindowState.Minimized;
-            //ad.Show();
             InitializeComponent();
 
             string DirName = Path.Combine(Global.PathPictures, "Video");
@@ -309,19 +304,23 @@ namespace Front
                     Bl.StartWork(Global.IdWorkPlace, BarCodeAdminSSC);//!!!TMP треба штрихкод
                 }
                 else BarCodeAdminSSC = null;
-
             }
 
             ua.Tag = new CultureInfo("uk");
             en.Tag = new CultureInfo("en");
             hu.Tag = new CultureInfo("hu");
             pl.Tag = new CultureInfo("pl");
-
-            //CultureInfo currLang = App.Language;
-            SetCurReceipt(null);
-            Task.Run(() => Bl.ds.SyncDataAsync());
-
-            var LastR = Bl.GetLastReceipt();
+            
+            SetCurReceipt(null);            
+            Receipt LastR = null;
+            try
+            {
+                LastR = Bl.GetLastReceipt();
+            }
+            catch(Exception e) 
+            {
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+            }
             if (LastR != null && LastR.SumReceipt > 0 && LastR.StateReceipt != eStateReceipt.Canceled && LastR.StateReceipt != eStateReceipt.Print && LastR.StateReceipt != eStateReceipt.Send)
             {
                 //curReceipt = LastR;               
@@ -330,6 +329,7 @@ namespace Front
             }
             else
                 SetStateView(eStateMainWindows.StartWindow);
+            Task.Run(() => Bl.ds.SyncDataAsync());
         }
 
         void SetCurReceipt(Receipt pReceipt)
