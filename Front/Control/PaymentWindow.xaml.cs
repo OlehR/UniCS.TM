@@ -19,6 +19,8 @@ namespace Front.Control
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public string ChangeSumPaymant { get; set; } = "";
+        public decimal ChangeSumPaymantDecimal { get { decimal res=0; decimal.TryParse(ChangeSumPaymant, out res);  return res; } }
+
         decimal MoneySum;
         public decimal SumCashDisbursement { get; set; } = 0;
         decimal SumMaxWallet = 0;
@@ -86,9 +88,10 @@ namespace Front.Control
         public void TransferAmounts(decimal moneySum)
         {
             MoneySumToRound = moneySum;
-            MoneySumPayTextBox.Text = moneySum.ToString();
+            //MoneySumPayTextBox.Text = moneySum.ToString();
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MoneySumToRound"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCashPayment"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ChangeSumPaymant"));
             CalculateReturn();
         }
         private void ChangeSumPaymentButton(object sender, RoutedEventArgs e)
@@ -184,7 +187,7 @@ namespace Front.Control
         private void _ButtonPaymentCash(object sender, RoutedEventArgs e)
         {
             MW.EquipmentStatusInPayment.Text = "";
-            var task = Task.Run(() => MW.PrintAndCloseReceipt(null, eTypePay.Cash, MoneySumToRound,0,0));
+            var task = Task.Run(() => MW.PrintAndCloseReceipt(null, eTypePay.Cash, ChangeSumPaymantDecimal, 0, SumUseWallet));
         }
 
         private void CancelCashDisbursement(object sender, RoutedEventArgs e)
@@ -238,10 +241,9 @@ namespace Front.Control
         }
 
         private void CalculateReturn()
-        {
-                var ParsStr = decimal.TryParse(MoneySumPayTextBox.Text, out decimal res);
-                if (ParsStr)
-                    RestMoney = Math.Round((res - Convert.ToDecimal(MoneySumToRound)), 2);
+        {              
+                if (ChangeSumPaymantDecimal>0)
+                    RestMoney = Math.Round((ChangeSumPaymantDecimal - Convert.ToDecimal(MoneySumToRound)), 2);
                 else
                     RestMoney = 0;
         }

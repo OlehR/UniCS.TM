@@ -289,7 +289,7 @@ namespace ModelMID
 
         public int[] IdWorkplacePays { get { return _Wares?.Select(el => el.IdWorkplacePay).Distinct().OrderBy(el => el).ToArray() ?? Array.Empty<int>(); } }
 
-        public void ReCalc()
+        public bool ReCalc()
         {
             SumWallet = Payment?.Where(r => r.TypePay == eTypePay.Wallet).Sum(r => r.SumPay) ?? 0;
             if (SumWallet > 0)
@@ -311,6 +311,7 @@ namespace ModelMID
                 Wares.Concat(new List<ReceiptWares> { new ReceiptWares(this)
                 { CodeWares = Global.CodeWaresWallet, Quantity = 1, CodeUnit = 19, CodeDefaultUnit = 19, Sum = -SumWallet, NameWares = "Скарбничка", TypeVat = 0, PercentVat = 20 } });
             }
+            return SumWallet > 0;
         }
 
     }

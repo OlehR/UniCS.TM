@@ -35,9 +35,9 @@
         <Border.Effect>
             <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
         </Border.Effect>
-            
-        
-        
+
+
+
         <Grid  MinWidth="1000" MinHeight="550">
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"></RowDefinition>
@@ -73,8 +73,8 @@
             <TextBlock Grid.Column="3" Grid.Row="0" HorizontalAlignment="Center"  FontSize="24" 
                        Text="{Binding RestMoney, StringFormat=0.00₴, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=UserControl}}" />
-            <TextBlock Grid.Column="0" Grid.Row="1" FontWeight="Bold">Сума оплати:</TextBlock>
-            <TextBox Grid.Column="1" Grid.Row="1" Margin="5" FontSize="24" Text="{Binding ChangeSumPaymant, StringFormat=0.00₴, RelativeSource={RelativeSource 
+            <TextBlock Grid.Column="0" Grid.Row="1" FontWeight="Bold" Margin="5,9,5,0" VerticalAlignment="Top">Сума оплати:</TextBlock>
+            <TextBox Grid.Column="1" Grid.Row="1" Margin="5,5,5,5" FontSize="24" Text="{Binding ChangeSumPaymant, StringFormat=0.00₴, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=UserControl}}" x:Name="MoneySumPayTextBox"
                              TextChanged="MoneySumPayChange"
                              />
@@ -316,7 +316,7 @@
                                     >
                             <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 10грн" Margin="5"/>
                         </Button>
-                        
+
                         <StackPanel Orientation="Vertical" Grid.Row="1">
                             <TextBlock> Сума списати:</TextBlock>
                             <TextBlock  Height="30"  TextWrapping="Wrap"

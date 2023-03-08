@@ -165,7 +165,7 @@ namespace Front.Equipments
        /// <returns></returns>
         public virtual decimal GetSumFromTextReceipt(string pTextReceipt) { return 0; }
 
-        public void ReCalc(Receipt pR)
+        /*public void ReCalc(Receipt pR)
         {
             var SumWallet = pR.Payment?.Where(r => r.TypePay == eTypePay.Wallet).Sum(r=>r.SumPay) ?? 0;
             if(SumWallet>0)
@@ -191,7 +191,7 @@ namespace Front.Equipments
                     { CodeWares = Global.CodeWaresWallet, Quantity = 1, CodeUnit=19,CodeDefaultUnit=19 ,Sum = -SumWallet, NameWares = "Скарбничка",TypeVat=0,PercentVat=20 });
             }
 
-        }
+        }*/
 
         public string TaxGroup(ReceiptWares pRW) 
         {

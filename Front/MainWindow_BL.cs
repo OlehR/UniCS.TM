@@ -531,7 +531,10 @@ namespace Front
                 R.StateReceipt = Bl.GetStateReceipt(R);
                 if (R.StateReceipt == eStateReceipt.Pay || R.StateReceipt == eStateReceipt.PartialPrint || R.StateReceipt==eStateReceipt.StartPrint )
                 {
-                    R.ReCalc();
+                    if(R.ReCalc())                  
+                    foreach (var el in R.Wares.Where(el => el.TypeWares == eTypeWares.Ordinary))
+                        Bl.db.ReplaceWaresReceipt(el);
+
                     LogRRO res = null;
                     //Відключаємо контроль контрольної ваги тимчасово до наступної зміни товарного складу.
                     CS.IsControl = false;
