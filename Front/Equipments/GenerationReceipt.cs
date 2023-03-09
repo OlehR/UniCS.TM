@@ -1,8 +1,11 @@
-﻿using ModelMID;
+﻿using Microsoft.Extensions.FileSystemGlobbing;
+using ModelMID;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Printing;
+using System.Linq;
+using QRCoder;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using static System.Net.Mime.MediaTypeNames;
@@ -13,6 +16,13 @@ namespace Front.Equipments
     {
         public string NamePrinter = "SAM4S";
         Receipt Receipt = new Receipt();
+        const int FONTSIZE = 6;
+        const int WIDTHPAGE = 200;//e.PageBounds.Width; // ширина паперу принтера
+        public Font MainFont = new Font("Courier", FONTSIZE, FontStyle.Bold, GraphicsUnit.Point);
+        public int TopIndent;
+        QRCodeGenerator qrGenerator = new QRCodeGenerator();
+
+
         public void PrintReceipt(Receipt R)
         {
             Receipt = R;
@@ -29,72 +39,64 @@ namespace Front.Equipments
         private void PrintPageReceipt(object sender, PrintPageEventArgs e)
         {
             int leftPosition = 0, topPosition = 0;
-            int widthPage = 190;//e.PageBounds.Width; // ширина паперу принтера
-            int fontSize = 10;
-            int maxChar = widthPage / fontSize;
+            int maxChar = (e.PageBounds.Width - 40) / FONTSIZE;
+            TopIndent = FONTSIZE + 1;
             string companyName = "ТОВ \"Ужгород ПСЮ\"";
             string pointOfSale = "Супермаркет ВОПАК";
             string address = "Закарпатська обл, м. Ужгород, вул. Бестужева, буд. 9";
-            Font mainFont = new Font("Courier", fontSize, FontStyle.Bold, GraphicsUnit.Point);
-
+            string nameCashier = $"Касир: {Receipt.NameCashier}";
 
             //Друк шапки
 
+            topPosition = PrintCenter(e, companyName, topPosition - TopIndent, maxChar, MainFont);
+            topPosition = PrintCenter(e, pointOfSale, topPosition, maxChar, MainFont);
+            topPosition = PrintCenter(e, address, topPosition, maxChar, MainFont);
 
-
-            //if (companyName.Length < maxChar)
-            //    companyName = new string(' ', (maxChar - companyName.Length) / 2 ) + companyName;
-            //e.Graphics.DrawString(companyName, mainFont, Brushes.Black, left, topPosition+=fontSize);
-
-            topPosition = CenterPrint(e, companyName, widthPage, fontSize, topPosition, maxChar, mainFont);
-            topPosition = CenterPrint(e, pointOfSale, widthPage, fontSize, topPosition, maxChar, mainFont);
-            topPosition = CenterPrint(e, address, widthPage, fontSize, topPosition, maxChar, mainFont);
+            // касир, номер чеку в 1С, власник картки та бонуси 
+            topPosition = PrintLine(e, nameCashier, topPosition, maxChar);
+            topPosition = PrintLine(e, Receipt.NumberReceipt1C, topPosition, maxChar);
+            if (!string.IsNullOrEmpty(Receipt.Client?.NameClient))
+            {
+                topPosition = PrintLine(e, Receipt.Client?.NameClient, topPosition, maxChar);
+                topPosition = PrintLine(e, $"Скарбничка: {Receipt.Client?.SumBonus}", topPosition, maxChar);
+            }
 
             //розділювач
-            e.Graphics.DrawString("------------------------------------", mainFont, Brushes.Black, 0, topPosition += fontSize);
+            e.Graphics.DrawString("------------------------------------", MainFont, Brushes.Black, 0, topPosition += TopIndent);
+
 
             // Блок друку товарів
             foreach (var item in Receipt.Wares)
             {
-                string price = "";
-                //if (item.NameWares.Length < maxChar-9)
+
+                topPosition = PrintLine(e, item.NameWares, topPosition, maxChar - 8);
+                StringFormat stringFormatQuantity = new StringFormat();
+                stringFormatQuantity.Alignment = StringAlignment.Near;
+                stringFormatQuantity.LineAlignment = StringAlignment.Center;
+
+                StringFormat stringFormatPrice = new StringFormat();
+                stringFormatPrice.Alignment = StringAlignment.Far;
+                stringFormatPrice.LineAlignment = StringAlignment.Center;
+
+                Rectangle rectPrice = new Rectangle(leftPosition, topPosition += TopIndent + 1, WIDTHPAGE-10, TopIndent);
+                string Quantity_x_Price = $"{item.Quantity} x {item.PriceEKKA}";
+                e.Graphics.DrawString(Quantity_x_Price, MainFont, Brushes.Black, rectPrice, stringFormatQuantity);
+                e.Graphics.DrawString(item.Price.ToString("C2"), MainFont, Brushes.Black, rectPrice, stringFormatPrice);
+
+                if (item.DiscountEKKA > 0)
                 {
-                    StringFormat stringFormatName = new StringFormat();
-                    stringFormatName.Alignment = StringAlignment.Near;
-                    stringFormatName.LineAlignment = StringAlignment.Center;
-
-                    StringFormat stringFormatPrice = new StringFormat();
-                    stringFormatPrice.Alignment = StringAlignment.Far;
-                    stringFormatPrice.LineAlignment = StringAlignment.Center;
-
-                    Rectangle rect1 = new Rectangle(leftPosition, topPosition + fontSize, widthPage, fontSize);
-
-                    e.Graphics.DrawString(item.NameWares, mainFont, Brushes.Black, rect1, stringFormatName);
-                    e.Graphics.DrawString(item.Price.ToString(), mainFont, Brushes.Black, rect1, stringFormatPrice);
-
-                    //e.Graphics.DrawString(item.NameWares, mainFont, Brushes.Black, leftPosition, topPosition + fontSize);
-                    //price = new string(' ', (maxChar - 9) ) + item.Price.ToString();
-                    //e.Graphics.DrawString(price, mainFont, Brushes.Black, leftPosition, topPosition + fontSize);
-
+                    Rectangle rectDiscount = new Rectangle(leftPosition, topPosition += TopIndent, WIDTHPAGE-10, TopIndent);
+                    e.Graphics.DrawString("Знижка", MainFont, Brushes.Black, rectDiscount, stringFormatQuantity);
+                    e.Graphics.DrawString(item.DiscountEKKA.ToString("C2"), MainFont, Brushes.Black, rectDiscount, stringFormatPrice);
                 }
-                // else
-                {
-                    //string tmpVar = str;
-                    //int pos = tmpVar.Substring(0, maxChar).LastIndexOf(" ");
-                    //str = tmpVar.Substring(0, pos);
-                    //str2 = tmpVar.Substring(pos);
-                    //leftPosition = (widthPage - (fontSize * str.Length)) / 2;
-                    //e.Graphics.DrawString(str, mainFont, Brushes.Black, leftPosition, topPosition += fontSize);
-                    //leftPosition = (widthPage - (fontSize * str2.Length)) / 2;
-                    //e.Graphics.DrawString(str2, mainFont, Brushes.Black, leftPosition, topPosition += fontSize);
-                }
-                //e.Graphics.DrawString(item.NameWares, mainFont, Brushes.Black, leftPosition, topPosition + fontSize);
-                topPosition += fontSize;
+
             }
 
             //розділювач
-            e.Graphics.DrawString("------------------------------------", mainFont, Brushes.Black, 0, topPosition += fontSize);
+            e.Graphics.DrawString("------------------------------------", MainFont, Brushes.Black, 0, topPosition += TopIndent);
 
+            // Друк суми
+            Font FontTotalSum = new Font("Courier", FONTSIZE+2, FontStyle.Bold, GraphicsUnit.Point);
             StringFormat stringFormatSum = new StringFormat();
             stringFormatSum.Alignment = StringAlignment.Near;
             stringFormatSum.LineAlignment = StringAlignment.Center;
@@ -103,52 +105,110 @@ namespace Front.Equipments
             stringFormatTotalPrice.Alignment = StringAlignment.Far;
             stringFormatTotalPrice.LineAlignment = StringAlignment.Center;
 
-            Rectangle rectTotalSum = new Rectangle(leftPosition, topPosition + fontSize, widthPage, fontSize);
+            Rectangle rectTotalSum = new Rectangle(leftPosition, topPosition + TopIndent, WIDTHPAGE - 10, TopIndent+2);
 
-            e.Graphics.DrawString("Сума", mainFont, Brushes.Black, rectTotalSum, stringFormatSum);
-            e.Graphics.DrawString(Receipt.SumTotal.ToString(), mainFont, Brushes.Black, rectTotalSum, stringFormatTotalPrice);
+            e.Graphics.DrawString("Сума", FontTotalSum, Brushes.Black, rectTotalSum, stringFormatSum);
+            e.Graphics.DrawString(Receipt.SumTotal.ToString("C2"), FontTotalSum, Brushes.Black, rectTotalSum, stringFormatTotalPrice);
+
+            //розділювач
+            e.Graphics.DrawString("------------------------------------", MainFont, Brushes.Black, 0, topPosition += TopIndent+4);
+            
+            
+            //інформація про банк
+            if (Receipt.Payment.Count() >0)
+            {
+                foreach (var item in Receipt.Payment)
+                {
+                    string IDTerminal = "Ідент. еквайра";
+                    string EPZ = "ЕПЗ";
+                    string CardHolder = "Платіжна система";
+                    string RRN = "RRN";
+                    string CodeAuthorization = "Код авт.";
+                    if (item.TypePay == eTypePay.Card)
+                    {
+                        topPosition = PrintTwoColum(e, IDTerminal, item.NumberTerminal, topPosition, maxChar - 8);
+                        topPosition = PrintTwoColum(e, EPZ, item.NumberCard, topPosition, maxChar - 8);
+                        topPosition = PrintTwoColum(e, CardHolder, item.CardHolder, topPosition, maxChar - 8);
+                        topPosition = PrintTwoColum(e, RRN, item.NumberSlip, topPosition, maxChar - 8); //ТРЕБА УТОЧНИТИ
+                        topPosition = PrintTwoColum(e, CodeAuthorization, item.CodeAuthorization, topPosition, maxChar - 8);
+                    }
+                }
+
+            }
+
+            //розділювач
+
+            e.Graphics.DrawString("------------------------------------", MainFont, Brushes.Black, 0, topPosition += TopIndent);
+            topPosition = PrintLine(e, $"ФН чеку {Receipt.NumberReceiptRRO}", topPosition, maxChar);
+            topPosition = PrintLine(e, DateTime.Now.ToString("dd/MM/yyyy H:mm"), topPosition, maxChar);
+
+            var qrCodeData = qrGenerator.CreateQrCode($"Типу QR-код", QRCodeGenerator.ECCLevel.Q);
+            var qrCode = new QRCode(qrCodeData);
+            var QRImage = qrCode.GetGraphic(2);
+            e.Graphics.DrawImage(QRImage, (WIDTHPAGE- QRImage.Width)/2, topPosition);
+            topPosition += QRImage.Height;
+
+            if (Receipt.TypeReceipt == eTypeReceipt.Sale)
+                topPosition = PrintCenter(e, "Фіскальний чек", topPosition, maxChar, FontTotalSum);
+            else
+                topPosition = PrintCenter(e, "Видатковий чек", topPosition, maxChar, FontTotalSum);
 
 
-            //for (int i = 0; i < 5; i++)
-            //{
-            //    e.Graphics.DrawString(DateTime.Now.ToString("dd/MM/yyyy H:mm"), mainFont, Brushes.Black, leftPosition, topPosition += fontSize); //Час
-
-            //}
-
-            //int charactersOnPage = 0;
-            //int linesPerPage = 0;
-            //StringFormat stringFormat = new StringFormat();
-            //stringFormat.Alignment = StringAlignment.Center;
-            //stringFormat.LineAlignment = StringAlignment.Center;
-            //Rectangle rect = new Rectangle(leftPosition, topPosition + fontSize, widthPage, fontSize* (address.Length/maxChar+2));
-
-            //while (address.Length > 0)
-            //{
-            //    e.Graphics.MeasureString(address, mainFont, rect.Size, stringFormat, out charactersOnPage, out linesPerPage);
-            //    e.Graphics.DrawString(address, mainFont, Brushes.Black, rect, stringFormat);
-            //    address = address.Substring(charactersOnPage);
-            //}
 
 
 
         }
-        public int CenterPrint(PrintPageEventArgs e, string str, int widthPage, int fontSize, int topPosition, int maxChar, Font mainFont)
+        public int PrintCenter(PrintPageEventArgs e, string str, int topPosition, int maxChar, Font font)
         {
             int leftPosition = 0;
             string tmpVar = str;
-            int pos = pos = tmpVar.Length > maxChar ? tmpVar.Substring(0, maxChar).LastIndexOf(" ") : tmpVar.Length;
+            int pos = tmpVar.Length > maxChar ? tmpVar.Substring(0, maxChar).LastIndexOf(" ") : tmpVar.Length;
 
             while (str.Length > 0)
             {
                 str = tmpVar.Substring(0, pos);
-                leftPosition = (widthPage - (fontSize * str.Length)) / 2;
+                leftPosition = (WIDTHPAGE - (FONTSIZE * str.Length)) / 2;
                 if (!string.IsNullOrEmpty(str))
-                    e.Graphics.DrawString(str, mainFont, Brushes.Black, leftPosition, topPosition += fontSize);
+                    e.Graphics.DrawString(str, MainFont, Brushes.Black, leftPosition, topPosition += TopIndent);
                 tmpVar = tmpVar.Substring(pos);
                 pos = tmpVar.Length > maxChar ? tmpVar.Substring(0, maxChar).LastIndexOf(" ") : tmpVar.Length;
             }
 
             return topPosition;
         }
+        public int PrintLine(PrintPageEventArgs e, string str, int topPosition, int maxChar)
+        {
+            string tmpVar = str;
+            int maxCharProdukts = maxChar - 8;
+
+            while (str.Length > 0)
+            {
+                str = tmpVar.Length > maxCharProdukts ? tmpVar.Substring(0, maxCharProdukts) : tmpVar;
+                if (!string.IsNullOrEmpty(str))
+                    e.Graphics.DrawString(str, MainFont, Brushes.Black, 0, topPosition += TopIndent);
+                tmpVar = tmpVar.Length > maxCharProdukts ? tmpVar = tmpVar.Substring(maxCharProdukts) : "";
+                str = tmpVar;
+            }
+            return topPosition;
+        }
+
+        public int PrintTwoColum(PrintPageEventArgs e, string str, string str2, int topPosition, int maxChar)
+        {
+            StringFormat stringFormatFirst = new StringFormat();
+            stringFormatFirst.Alignment = StringAlignment.Near;
+            stringFormatFirst.LineAlignment = StringAlignment.Center;
+
+            StringFormat stringFormatSecond = new StringFormat();
+            stringFormatSecond.Alignment = StringAlignment.Far;
+            stringFormatSecond.LineAlignment = StringAlignment.Center;
+
+            Rectangle rectPrice = new Rectangle(0, topPosition += TopIndent + 1, WIDTHPAGE - 10, TopIndent);
+
+            e.Graphics.DrawString(str, MainFont, Brushes.Black, rectPrice, stringFormatFirst);
+            e.Graphics.DrawString(str2, MainFont, Brushes.Black, rectPrice, stringFormatSecond);
+            return topPosition;
+
+        }
+
     }
 }
