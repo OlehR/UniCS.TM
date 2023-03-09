@@ -13,6 +13,7 @@ using System.Net.Http.Headers;
 using ModelMID.DB;
 using Utils;
 using System.Security.Policy;
+using System.Windows.Input;
 
 namespace Front.Equipments.Implementation
 {
@@ -245,7 +246,7 @@ namespace Front.Equipments.Implementation
             decimal sum = 0;
             if (pR != null && pR.Wares != null && pR.Wares.Any())
                 sum = pR.Wares.Where(el => el.IdWorkplacePay == pR.IdWorkplacePay || pR.IdWorkplacePay == 0).
-                        Sum(el => Math.Round(el.Price * el.Quantity, 2) - Math.Round(el.SumDiscount, 2));                    
+                        Sum(el => Math.Round(el.Price * el.Quantity, 2) - Math.Round(el.SumDiscount+el.SumWallet, 2));                    
             return sum; 
         }
     }
@@ -384,9 +385,9 @@ namespace Front.Equipments.Implementation.ModelVchasno
             if (pR != null)
             {
                 rows = pR.GetParserWaresReceipt(true,false)?.Select(el => new WaresRRO(el, pRro));
-                pays = pR.Payment?.Where(el => el.TypePay != eTypePay.IssueOfCash).Select(el => new PaysRRO(el));               
+                pays = pR.Payment?.Where(el => el.TypePay != eTypePay.IssueOfCash && el.TypePay != eTypePay.Wallet).Select(el => new PaysRRO(el));               
                 comment_up = String.Join('\n', pR.ReceiptComments);
-                sum = pR.Wares?.Sum(el => Math.Round(el.Price * el.Quantity, 2) - Math.Round(el.SumDiscount, 2))??0m; //pR.SumTotal;
+                sum = pR.Wares?.Sum(el => Math.Round(el.Price * el.Quantity, 2) - Math.Round(el.SumDiscount+el.SumWallet, 2))??0m; //pR.SumTotal;
             }
         }
         public decimal sum { get; set; }
@@ -422,7 +423,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
             cnt = pRW.Quantity;
             price = pRW.Price;
             cost = Math.Round(pRW.Price * pRW.Quantity, 2)+ discont;// - Math.Round(pRW.SumDiscount, 2);
-            disc = Math.Round(pRW.SumDiscount,2)+ discont;
+            disc = Math.Round(pRW.SumDiscount,2)+ Math.Round(pRW.SumWallet, 2) + discont;
             taxgrp = int.Parse(pRro.TaxGroup(pRW));
         }
         public string code { get; set; }

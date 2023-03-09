@@ -187,7 +187,7 @@ namespace Front.Control
         private void _ButtonPaymentCash(object sender, RoutedEventArgs e)
         {
             MW.EquipmentStatusInPayment.Text = "";
-            var task = Task.Run(() => MW.PrintAndCloseReceipt(null, eTypePay.Cash, ChangeSumPaymantDecimal, 0, SumUseWallet));
+            var task = Task.Run(() => MW.PrintAndCloseReceipt(null, eTypePay.Cash, ChangeSumPaymantDecimal, 0, -SumUseWallet));
         }
 
         private void CancelCashDisbursement(object sender, RoutedEventArgs e)

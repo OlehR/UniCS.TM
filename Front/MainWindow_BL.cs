@@ -466,10 +466,22 @@ namespace Front
                     {
                         if (R.TypeReceipt == eTypeReceipt.Sale)
                             Bl.GenQRAsync(R.Wares);
-                        var Pays = new List<Payment>();
+                        //var Pays = new List<Payment>();
 
                         IEnumerable<Payment> PayRefaund =( R.TypeReceipt== eTypeReceipt.Refund? Bl.db.GetPayment(R.RefundId):null);
                         string rrn = R.AdditionC1;
+                        if (pSumWallet != 0)
+                        {
+                            Bl.db.ReplacePayment(new List<Payment>() { new Payment(R) { IsSuccess = true, TypePay = eTypePay.Wallet, SumPay = pSumWallet, SumExt = pSumWallet } });
+                            R.Payment = Bl.db.GetPayment(R);
+
+                            if (pSumWallet > 0 && R.ReCalc())
+                            {
+                                foreach (var el in R.Wares.Where(el => el.TypeWares == eTypeWares.Ordinary))
+                                    Bl.db.ReplaceWaresReceipt(el);
+                                FillPays(R);
+                            }
+                        }
 
                         for (var i = 0; i < IdWorkplacePays.Length; i++)
                         {
@@ -488,18 +500,20 @@ namespace Front
                                 pay = new Payment(R) { IsSuccess = true, TypePay = eTypePay.Cash, SumPay = SumCash, SumExt = (i == IdWorkplacePays.Length - 1 ? pSumCash : SumCash) };
                                 pSumCash -= SumCash;
                                 if (pSumCash < 0) pSumCash = 0;
+                                Bl.db.ReplacePayment(new List<Payment>() {pay});
+                                
                             }
-                            
-                           
-                            if (R.TypeReceipt == eTypeReceipt.Refund && PayRefaund!=null)
+                            else
                             {
-                                var PayRef = PayRefaund?.Where(el => el.IdWorkplacePay == R.IdWorkplacePay);
-                                if (PayRef!=null && PayRef.Any())
-                                rrn = PayRef.First().CodeAuthorization;
+                                if (R.TypeReceipt == eTypeReceipt.Refund && PayRefaund != null)
+                                {
+                                    var PayRef = PayRefaund?.Where(el => el.IdWorkplacePay == R.IdWorkplacePay);
+                                    if (PayRef != null && PayRef.Any())
+                                        rrn = PayRef.First().CodeAuthorization;
+                                }
+
+                                pay = EF.PosPay(R, R.TypeReceipt == eTypeReceipt.Sale ? sum : -sum, rrn, pay, Global.IdWorkPlaceIssuingCash == IdWorkplacePays[i] ? pIssuingCash : 0);
                             }
-
-                            pay = EF.PosPay(R, R.TypeReceipt == eTypeReceipt.Sale ? sum : -sum, rrn, pay, Global.IdWorkPlaceIssuingCash == IdWorkplacePays[i] ? pIssuingCash : 0);
-
                             if (pay != null && pay.IsSuccess)
                             {
                                 R.StateReceipt = ( i ==IdWorkplacePays.Length-1? eStateReceipt.Pay: eStateReceipt.PartialPay);
@@ -509,6 +523,7 @@ namespace Front
                                 R.SumCreditCard = pay.SumPay;
                                 Bl.db.ReplaceReceipt(R);
                                 R.Payment = Bl.db.GetPayment(R);
+                                
                             }
                             else
                             {
@@ -518,7 +533,6 @@ namespace Front
                                 break;
                             }
                         }
-
                     }
                     catch (Exception e)
                     {
@@ -530,11 +544,7 @@ namespace Front
                 }
                 R.StateReceipt = Bl.GetStateReceipt(R);
                 if (R.StateReceipt == eStateReceipt.Pay || R.StateReceipt == eStateReceipt.PartialPrint || R.StateReceipt==eStateReceipt.StartPrint )
-                {
-                    if(R.ReCalc())                  
-                    foreach (var el in R.Wares.Where(el => el.TypeWares == eTypeWares.Ordinary))
-                        Bl.db.ReplaceWaresReceipt(el);
-
+                { 
                     LogRRO res = null;
                     //Відключаємо контроль контрольної ваги тимчасово до наступної зміни товарного складу.
                     CS.IsControl = false;
