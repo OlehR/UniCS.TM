@@ -787,6 +787,24 @@ and @TypeDiscount=11; ";
                 return DB.connection.QueryFirstOrDefault<FiscalArticle>(SQL,new FiscalArticle() { CodeWares=pCodeWares} );
             }
         }
+
+        public bool DelWallet(IdReceipt pIdR)
+        {
+            var SQL = @"Delete from PAYMENT
+Where ID_WORKPLACE = @IdWorkplace
+   and CODE_PERIOD = @CodePeriod
+   and CODE_RECEIPT = @CodeReceipt
+   and TYPE_PAY = 5;
+Update WARES_RECEIPT set SUM_WALLET = 0
+Where ID_WORKPLACE = @IdWorkplace
+   and CODE_PERIOD = @CodePeriod
+   and CODE_RECEIPT = @CodeReceipt;";
+
+            using (var DB = new SQLite(ReceiptFile))
+            {
+                return DB.ExecuteNonQuery<IdReceipt>(SQL, pIdR) > 0;
+            }
+        }
         /// <summary>
         /// Оновлення структури бази даних
         /// </summary>       

@@ -120,7 +120,27 @@ namespace ModelMID
         public int CodePeriodRefund { get { return RefundId == null ? 0 : RefundId.CodePeriod; } set { if (RefundId == null) RefundId = new IdReceipt(); RefundId.CodePeriod = value; } }
         public int CodeReceiptRefund { get { return RefundId == null ? 0 : RefundId.CodeReceipt; } set { if (RefundId == null) RefundId = new IdReceipt(); RefundId.CodeReceipt = value; } }
         public IEnumerable<ReceiptWares> _Wares;
-        public IEnumerable<ReceiptWares> Wares { get { return IdWorkplacePay == 0 || _Wares ==null ? _Wares :_Wares.Where(el => el.IdWorkplacePay == IdWorkplacePay && el.Quantity != 0m); } set { _Wares = value; } }
+        public IEnumerable<ReceiptWares> Wares { get {
+                IEnumerable<ReceiptWares> res = null;
+                if (IdWorkplacePay == 0 || _Wares == null) 
+                    res = _Wares;
+                else
+                    res= _Wares.Where(el => el.IdWorkplacePay == IdWorkplacePay && el.Quantity != 0m);
+                if (IdWorkplacePay == IdWorkplace)
+                {
+                    decimal SumWallet = Payment?.Where(r => r.TypePay == eTypePay.Wallet).Sum(r => r.SumPay) ?? 0;
+                    if (SumWallet < 0)
+                    {
+                        var r = res.ToList();
+                        r.Add(new ReceiptWares(this)
+                        { CodeWares = Global.CodeWaresWallet, Quantity = 1, CodeUnit = 19, CodeDefaultUnit = 19, Sum = -SumWallet, NameWares = "Скарбничка", TypeVat = 2, PercentVat = 20 });
+                        res= r;
+                    }
+                }
+                return res;
+            }
+            set { _Wares = value; } }
+
         IEnumerable<Payment> _Payment;
         public IEnumerable<Payment> Payment { get { return IdWorkplacePay == 0 || _Payment == null ? _Payment : _Payment.Where(el => el.IdWorkplacePay == IdWorkplacePay); } set { _Payment = value; } }
         
@@ -308,9 +328,7 @@ namespace ModelMID
             else
             if (SumWallet < 0)
             {
-                Wares.Concat(new List<ReceiptWares> { new ReceiptWares(this)
-                { CodeWares = Global.CodeWaresWallet, Quantity = 1, CodeUnit = 19, CodeDefaultUnit = 19, Sum = -SumWallet, NameWares = "Скарбничка", TypeVat = 0, PercentVat = 20 } });
-            }
+           }
             return SumWallet > 0;
         }
 

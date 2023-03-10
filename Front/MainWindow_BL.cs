@@ -432,7 +432,7 @@ namespace Front
         /// Безготівкова оплата і Друк чека.
         /// </summary>
         /// <returns></returns>
-        public bool PrintAndCloseReceipt(Receipt pR = null, eTypePay eTP = eTypePay.Card, decimal pSumCash=0m, decimal pIssuingCash=0, decimal pSumWallet=0)
+        public bool PrintAndCloseReceipt(Receipt pR = null, eTypePay pTP = eTypePay.Card, decimal pSumCash=0m, decimal pIssuingCash=0, decimal pSumWallet=0)
         {
             bool Res = false;
             string TextError = null;
@@ -472,20 +472,21 @@ namespace Front
                         string rrn = R.AdditionC1;
                         if (pSumWallet != 0)
                         {
-                            Bl.db.ReplacePayment(new List<Payment>() { new Payment(R) { IsSuccess = true, TypePay = eTypePay.Wallet, SumPay = pSumWallet, SumExt = pSumWallet } });
+                            Bl.db.DelWallet(R);
+                            Bl.db.ReplacePayment(new List<Payment>() { new Payment(R) {IdWorkplacePay=R.IdWorkplace, IsSuccess = true, TypePay = eTypePay.Wallet, SumPay = pSumWallet, SumExt = pSumWallet } });
                             R.Payment = Bl.db.GetPayment(R);
 
                             if (pSumWallet > 0 && R.ReCalc())
                             {
                                 foreach (var el in R.Wares.Where(el => el.TypeWares == eTypeWares.Ordinary))
-                                    Bl.db.ReplaceWaresReceipt(el);
-                                FillPays(R);
+                                    Bl.db.ReplaceWaresReceipt(el);                                
                             }
+                            FillPays(R);
                         }
 
                         for (var i = 0; i < IdWorkplacePays.Length; i++)
                         {
-                            if (R.Payment != null && R.Payment.Any(el => el.IdWorkplacePay == IdWorkplacePays[i] ))
+                            if (R.Payment != null && R.Payment.Any(el => el.IdWorkplacePay == IdWorkplacePays[i] && el.TypePay!=eTypePay.Wallet ))
                                 continue;
                             R.StateReceipt = eStateReceipt.StartPay;
                             R.IdWorkplacePay = IdWorkplacePays[i];
@@ -494,14 +495,13 @@ namespace Front
                             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Sum={sum}", eTypeLog.Expanded);
                             SetStateView(eStateMainWindows.ProcessPay);
                             Payment pay = null;
-                            if (eTP == eTypePay.Cash)
+                            if (pTP == eTypePay.Cash)
                             {
                                 var SumCash = R.WorkplacePays[i].SumCash;
                                 pay = new Payment(R) { IsSuccess = true, TypePay = eTypePay.Cash, SumPay = SumCash, SumExt = (i == IdWorkplacePays.Length - 1 ? pSumCash : SumCash) };
                                 pSumCash -= SumCash;
                                 if (pSumCash < 0) pSumCash = 0;
-                                Bl.db.ReplacePayment(new List<Payment>() {pay});
-                                
+                                Bl.db.ReplacePayment(new List<Payment>() {pay});                                
                             }
                             else
                             {
@@ -511,7 +511,6 @@ namespace Front
                                     if (PayRef != null && PayRef.Any())
                                         rrn = PayRef.First().CodeAuthorization;
                                 }
-
                                 pay = EF.PosPay(R, R.TypeReceipt == eTypeReceipt.Sale ? sum : -sum, rrn, pay, Global.IdWorkPlaceIssuingCash == IdWorkplacePays[i] ? pIssuingCash : 0);
                             }
                             if (pay != null && pay.IsSuccess)

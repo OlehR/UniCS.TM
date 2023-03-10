@@ -36,6 +36,7 @@ namespace ModelMID
         public IEnumerable<ReceiptWares1C> Wares;
 
         public int CodeBank { get; set; }
+        public decimal SumWallet { get; set; }
         public Receipt1C() { }
         public Receipt1C(Receipt pR)
         {
@@ -50,26 +51,29 @@ namespace ModelMID
             BarCodeCashier = pR.UserCreate.ToString();
             CodeWarehouse = wp.CodeWarehouse;
 
-            UInt64 nr=0;
-            if(UInt64.TryParse(pR.NumberReceipt,out nr))                
-             NumberReceipt = nr;
+            if (ulong.TryParse(pR.NumberReceipt, out ulong nr))
+                NumberReceipt = nr;
 
             if (pR.Wares!=null && pR.StateReceipt>0) 
               Wares = pR.Wares.Select(r => new ReceiptWares1C(r));
             if (pR.Payment != null && pR.Payment.Any())
                 Description = pR.Payment.Where(r => !string.IsNullOrEmpty(r.CodeAuthorization)).FirstOrDefault().CodeAuthorization;
             else
-                Description = "0000000";
-                      
-            CodeBank = (int) ((pR.Payment.Where(r => r.TypePay == eTypePay.Card)?.FirstOrDefault().CodeBank ?? (wp?.TypePOS??eBank.NotDefine)));           
+                Description = "0000000";           
+
+            SumWallet = pR.Payment.Where(r => r.TypePay == eTypePay.Wallet && r.SumPay>0)?.FirstOrDefault().SumPay ?? 0;
+
+            var Cash = pR.Payment.Where(r => r.TypePay == eTypePay.Cash)?.FirstOrDefault();
+            if (Cash == null) CodeBank = 1;
+            else
+                CodeBank = (int) ((pR.Payment.Where(r => r.TypePay == eTypePay.Card)?.FirstOrDefault().CodeBank ?? (wp?.TypePOS??eBank.NotDefine)));           
         }
 
         public string GetBase64()
         {
             var Receipt = JsonConvert.SerializeObject(this);
             var plainTextBytes = Encoding.UTF8.GetBytes(Receipt);
-            var res= Convert.ToBase64String(plainTextBytes);
-            
+            var res= Convert.ToBase64String(plainTextBytes);            
             return res; /// Convert.ToBase64String(plainTextBytes);
         }
         
@@ -102,12 +106,11 @@ namespace ModelMID
             Quantity = parRW.Quantity;
             AbrUnit = parRW.AbrUnit;
             Price = parRW.Price;
-            SumDiscount = parRW.SumDiscount;
-            Sum = parRW.Sum- parRW.SumDiscount;            
+            SumDiscount = parRW.SumDiscount+parRW.SumWallet;
+            Sum = parRW.Sum - SumDiscount;            
             CodePS = ( parRW.TypePrice==eTypePrice.Promotion || parRW.TypePrice == eTypePrice.PromotionIndicative ? parRW.ParPrice1:0);            
-            SumBonus = 0;//TMP!!! ще не реалізовано.
+            SumBonus = 0; //TMP!!! ще не реалізовано.
             BarCode2Category = parRW.BarCode2Category;
-
         }
 
     }

@@ -1104,7 +1104,7 @@ namespace SharedLib
    and CODE_RECEIPT = @CodeReceipt";
             return db.ExecuteScalar<IdReceipt, eTypeReceipt>(Sql, pR);
         }
-
+        
         public virtual void Close(bool isWait = false)
         {
             if (db != null)
