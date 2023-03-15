@@ -15,6 +15,7 @@ namespace ModelMID.DB
         public string VideoRecorderIP { get; set; }
         public eBank TypePOS { get; set; }
         public int CodeWarehouse { get; set; }
+        public string StrCodeWarehouse { get { return $"{CodeWarehouse:D9}"; } }
         public int CodeDealer { get; set; }
         public string Prefix { get; set; }
         public bool IsChoice { get; set; }

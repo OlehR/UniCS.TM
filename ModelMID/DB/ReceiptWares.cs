@@ -44,9 +44,9 @@ namespace ModelMID
         public int TypeVat { get; set; }
 
         /// <summary>
-        /// Ставка для РРО
-        /// </summary>
-        //public string TaxGroup { get { return Global.GetTaxGroup(TypeVat, (int)TypeWares); } }
+        /// Ставка з РРО (Буква)
+        /// </summary>         
+        public string VatChar { get; set; } 
 
         /// <summary>
         /// Код одиниці виміру позамовчуванню
@@ -106,7 +106,7 @@ namespace ModelMID
         /// </summary>
         public decimal SumDiscount { get; set; }
 
-        public decimal SumTotal { get { return Sum - SumDiscount-SumWallet; } }
+        public decimal SumTotal { get { return Sum - SumDiscount-SumWallet - SumBonus; } }
 
         /// <summary>
         /// Назва акції для фіксованих цін. Тощо.

@@ -66,6 +66,9 @@ namespace ModelMID
         public decimal VatReceipt { get; set; }
         public decimal PercentDiscount { get; set; }
         public decimal SumDiscount { get; set; }
+        /// <summary>
+        /// Сума округлення фіскалки
+        /// </summary>
         public decimal SumRest { get; set; }
         public decimal SumTotal { get { return SumReceipt - SumDiscount - SumBonus; } }
         /// <summary>
@@ -149,6 +152,11 @@ namespace ModelMID
         //public bool _IsLockChange = false;
         public bool IsLockChange { get { return /*_IsLockChange ||*/ StateReceipt != eStateReceipt.Prepare || SumBonus > 0m; } }
 
+        public string FiscalQR { get; set; }
+        /// <summary>
+        /// Податки отриманні з фіскалки після фіскалізації
+        /// </summary>
+        public IEnumerable<TaxResult> Taxes;
         /// <summary>
         /// Чи є підтвердження обмеження віку.
         /// </summary>
@@ -268,7 +276,7 @@ namespace ModelMID
                     if (!string.IsNullOrEmpty(Client.NameClient))
                         Res.Add(Client.NameClient);
                     if (Client.SumBonus > 0)
-                        Res.Add($"Бонуси:{Client.SumMoneyBonus}");
+                        Res.Add($"Бонуси:{Client.SumBonus}");
                     if (Client.Wallet > 0)
                         Res.Add($"Скарбничка:{Client.Wallet}");
                 }
@@ -328,7 +336,31 @@ namespace ModelMID
             else
             if (SumWallet < 0)
             {
-           }
+            }
+            var SumBonusPay = Payment?.Where(r => r.TypePay == eTypePay.Wallet).Sum(r => r.SumExt) ?? 0;
+
+            if(SumBonusPay > 0) 
+            {
+                var NotOrdinaryWares = Wares.Where(el => el.TypeWares != eTypeWares.Ordinary);
+                if(!NotOrdinaryWares.Any())
+                {
+                    decimal SumTotal = 0m;
+                    foreach(var el in Wares)
+                    {
+                        el.SumBonus = 0;
+                        el.SumBonus = el.SumTotal - 0.01m;
+                        SumTotal = el.SumTotal;
+                        SumBonus += el.SumBonus;
+                    }
+                    if(SumTotal < 0.06m) 
+                    {
+                        var Wr = Wares.First();
+                        decimal delta= (0.06m - SumTotal);
+                        Wr.SumBonus -= delta;
+                        SumBonus -= delta;
+                    }
+                }
+            }
             return SumWallet > 0;
         }
 
@@ -340,5 +372,10 @@ namespace ModelMID
         public decimal Sum { get; set; }
     }
 
+    public class TaxResult
+    {
+        public string Name { get; set;}
+        public decimal Sum { get; set; }
+    }
 
 }

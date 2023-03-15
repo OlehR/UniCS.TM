@@ -14,6 +14,10 @@ using ModelMID.DB;
 using Utils;
 using System.Security.Policy;
 using System.Windows.Input;
+using SharedLib;
+using System.Xml.Linq;
+using ModernExpo.SelfCheckout.Devices.FP700;
+using System.Windows.Documents;
 
 namespace Front.Equipments.Implementation
 {
@@ -72,6 +76,7 @@ namespace Front.Equipments.Implementation
                 string dd = d.ToJSON();
                 var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");
                 Res = JsonConvert.DeserializeObject<Responce<ResponceReceipt>>(r);
+                GetFiscalInfo(pR, Res);
             }
             if (c != null && c.Any())
             {
@@ -80,7 +85,7 @@ namespace Front.Equipments.Implementation
                 ApiRRO d = new(pR,this) { token = Token, device = Device, tag = pR.NumberReceiptRRO+"_IC" };
                 string dd = d.ToJSON();
                 var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");
-                Res = JsonConvert.DeserializeObject<Responce<ResponceReceipt>>(r);
+                Res = JsonConvert.DeserializeObject<Responce<ResponceReceipt>>(r);                
             }
             return GetLogRRO(pR, Res, pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, Res?.info?.printinfo?.sum_topay ?? 0m);
         }
@@ -249,6 +254,23 @@ namespace Front.Equipments.Implementation
                         Sum(el => Math.Round(el.Price * el.Quantity, 2) - Math.Round(el.SumDiscount+el.SumWallet, 2));                    
             return sum; 
         }
+
+        public override void GetFiscalInfo(Receipt pR, object pRes)
+        {
+            Responce<ResponceReceipt> Res = pRes as Responce<ResponceReceipt>;
+            if (Res != null && Res.info != null && Res.info.printinfo != null)
+            {
+                pR.Taxes = Res.info.printinfo.taxes?.Select(el => new TaxResult() { Name = el.tax_fname, Sum = el.tax_sum });
+                pR.FiscalQR = Res.info.printinfo.qr;
+                foreach(var el in Res.info.printinfo.goods)
+                {
+                   var ww= pR._Wares.Where(w => w.NameWares.Equals(el.name))?.First();
+                   if (ww != null) ww.VatChar= el.taxlit;
+                }
+                pR.SumRest = Res.info.printinfo.round;
+               // pR.SumFiscal = Res.info.printinfo.sum_topay;
+            }
+        }
     }
 }
 
@@ -290,30 +312,31 @@ namespace Front.Equipments.Implementation.ModelVchasno
     enum eTypePayRRO
     {
         Cash = 0,
-        Noncash =1,
+        Noncash = 1,
         Card = 2,
         /// <summary>
         /// Передплата
         /// </summary>
-        Subscription=3,
+        Subscription = 3,
         /// <summary>
         /// Післяоплата
         /// </summary>
         PostPay = 4,
-        Credit= 5,
-        Certificate= 6
+        Credit = 5,
+        Certificate = 6
 
 
     }
 
-    enum TypeLine {
+    enum TypeLine
+    {
         Text = 0,
         Ean13 = 1,
         Code128 = 2,
         QR = 100
     }
 
-    
+
     class ApiRRO
     {
         public ApiRRO() { }
@@ -351,15 +374,15 @@ namespace Front.Equipments.Implementation.ModelVchasno
             if (pR != null)
             {
                 task = pR.TypeReceipt == eTypeReceipt.Sale ? eTask.Sale : eTask.Refund;
-                
+
                 var c = pR.Payment?.Where(el => el.TypePay == eTypePay.IssueOfCash);
                 if (c?.Count() == 1)
                 {
                     task = eTask.IssueOfCash;
                     cash = c.Select(el => new CashPay(el)).First();
-                }                
+                }
                 else
-                 receipt = new ReciptRRO(pR, pRro);
+                    receipt = new ReciptRRO(pR, pRro);
                 cashier = pR.NameCashier;
             }
         }
@@ -374,7 +397,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
         public int n_to { get; set; }
         public string dt_from { get; set; }
         public string dt_to { get; set; }
-        public IEnumerable<Lines> lines { get; set; }       
+        public IEnumerable<Lines> lines { get; set; }
     }
 
     class ReciptRRO
@@ -384,23 +407,23 @@ namespace Front.Equipments.Implementation.ModelVchasno
         {
             if (pR != null)
             {
-                rows = pR.GetParserWaresReceipt(true,false)?.Select(el => new WaresRRO(el, pRro));
-                pays = pR.Payment?.Where(el => el.TypePay != eTypePay.IssueOfCash && el.TypePay != eTypePay.Wallet).Select(el => new PaysRRO(el));               
+                rows = pR.GetParserWaresReceipt(true, false)?.Select(el => new WaresRRO(el, pRro));
+                pays = pR.Payment?.Where(el => el.TypePay != eTypePay.IssueOfCash && el.TypePay != eTypePay.Wallet).Select(el => new PaysRRO(el));
                 comment_up = String.Join('\n', pR.ReceiptComments);
-                sum = pR.Wares?.Sum(el => Math.Round(el.Price * el.Quantity, 2) - Math.Round(el.SumDiscount+el.SumWallet, 2))??0m; //pR.SumTotal;
+                sum = pR.Wares?.Sum(el => Math.Round(el.Price * el.Quantity, 2) - Math.Round(el.SumDiscount + el.SumWallet, 2)) ?? 0m; //pR.SumTotal;
             }
         }
         public decimal sum { get; set; }
-        public decimal round { get {return  -sum + pays?.Sum(r => r.sum) ?? 0m; } }
+        public decimal round { get { return -sum + pays?.Sum(r => r.sum) ?? 0m; } }
         public string comment_up { get; set; }
         public string comment_down { get; set; }
         public IEnumerable<WaresRRO> rows { get; set; }
         public IEnumerable<PaysRRO> pays { get; set; }
-        
+
         public Cash cash { get; set; }
     }
 
-    class Cash 
+    class Cash
     {
         public eTypePayRRO type { get; set; }
         public decimal sum { get; set; }
@@ -409,9 +432,9 @@ namespace Front.Equipments.Implementation.ModelVchasno
     class WaresRRO
     {
         public WaresRRO() { }
-        public WaresRRO(ReceiptWares pRW,Rro pRro)
+        public WaresRRO(ReceiptWares pRW, Rro pRro)
         {
-            decimal discont = pRW.Price < pRW.PriceDealer ? Math.Round((pRW.PriceDealer- pRW.Price)* pRW.Quantity,2) : 0;
+            decimal discont = pRW.Price < pRW.PriceDealer ? Math.Round((pRW.PriceDealer - pRW.Price) * pRW.Quantity, 2) : 0;
             code = pRW.CodeWares.ToString();
             if (pRW.IsUseCodeUKTZED)
             {
@@ -422,8 +445,8 @@ namespace Front.Equipments.Implementation.ModelVchasno
             name = pRW.NameWares;
             cnt = pRW.Quantity;
             price = pRW.Price;
-            cost = Math.Round(pRW.Price * pRW.Quantity, 2)+ discont;// - Math.Round(pRW.SumDiscount, 2);
-            disc = Math.Round(pRW.SumDiscount,2)+ Math.Round(pRW.SumWallet, 2) + discont;
+            cost = Math.Round(pRW.Price * pRW.Quantity, 2) + discont;// - Math.Round(pRW.SumDiscount, 2);
+            disc = Math.Round(pRW.SumDiscount, 2) + Math.Round(pRW.SumWallet, 2) + discont;
             taxgrp = int.Parse(pRro.TaxGroup(pRW));
         }
         public string code { get; set; }
@@ -487,7 +510,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
             if (pP.TypePay == eTypePay.Cash)
                 change = pP.SumExt > pP.SumPay ? pP.SumExt - pP.SumPay : 0m;
         }
-                    
+
         public string currency { get; set; }
         public string comment { get; set; }
         public decimal change { get; set; }
@@ -549,7 +572,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
     }
 
     class ResponseInfo
-        {
+    {
         public string dt { set; get; }
         public long fisid { set; get; }
         public int shift_link { set; get; }
@@ -570,20 +593,20 @@ namespace Front.Equipments.Implementation.ModelVchasno
         public int dataid { set; get; }
     }
 
-    class ResponceReceipt: ResponseInfo
-    {     
+    class ResponceReceipt : ResponseInfo
+    {
         public string docno { set; get; }
         public string doccode { set; get; }
         public string qr { set; get; }
         public string cancelid { set; get; }
         public int isprint { set; get; }
-        public PrintInfo printinfo { set; get; }       
-        public decimal safe { set; get; }        
-        public int dataid { set; get; }      
+        public PrintInfo printinfo { set; get; }
+        public decimal safe { set; get; }
+        public int dataid { set; get; }
     }
 
     class ResponceReport : ResponseInfo
-    {        
+    {
         public string docno { set; get; }
         public int docno_from { set; get; }
         public int docno_to { set; get; }
@@ -592,10 +615,10 @@ namespace Front.Equipments.Implementation.ModelVchasno
         public IEnumerable<ResponcePay> pays { set; get; }
         public IEnumerable<ResponcePay> money { set; get; }
         public Responcereceipt receipt { set; get; }
-        public int isprint { set; get; } 
+        public int isprint { set; get; }
         public decimal safe { set; get; }
-        public IEnumerable<dynamic> reports { set; get; }        
-        public int dataid { set; get; }       
+        public IEnumerable<dynamic> reports { set; get; }
+        public int dataid { set; get; }
     }
 
     class ResponceTax
@@ -611,6 +634,19 @@ namespace Front.Equipments.Implementation.ModelVchasno
         public decimal ex_percent { set; get; }
         public decimal ex_sum_p { set; get; }
         public decimal ex_sum_m { set; get; }
+    }
+
+    class ResponceTaxReceipt
+    {
+        public int gr_code { set; get; }
+        public decimal base_sum { set; get; }
+        public string tax_fname { set; get; }
+        public string tax_name { set; get; }
+        public decimal tax_percent { set; get; }
+        public decimal tax_sum { set; get; }
+        public string ex_name { set; get; }
+        public decimal ex_percent { set; get; }
+        public decimal ex_sum { set; get; }
     }
 
     class ResponcePay
@@ -632,7 +668,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
     }
 
     class ResponseDeviceInfo : ResponseInfo
-    {       
+    {
         public int isFis { set; get; }
         public int shift_status { set; get; }
         public string shift_dt { set; get; }
@@ -641,35 +677,35 @@ namespace Front.Equipments.Implementation.ModelVchasno
         public decimal safe { set; get; }
     }
 
-    class ResponseNumberFiscal: ResponseInfo
+    class ResponseNumberFiscal : ResponseInfo
     {
-       
+
     }
 
-    class NumberReceipt:ResponseInfo
-    {        
+    class NumberReceipt : ResponseInfo
+    {
         public int last_receipt_no { set; get; }
         public int last_back_no { set; get; }
-        public int last_z_no { set; get; }       
+        public int last_z_no { set; get; }
     }
 
     class PrintInfo
     {
         public string name { set; get; }
         public string shopname { set; get; }
-        public string shopad { set; get;}
+        public string shopad { set; get; }
         public string vat_code { set; get; }
         public string fis_code { set; get; }
         public string comment_up { set; get; }
         public string comment_down { set; get; }
-        public dynamic goods { set; get; }
+        public IEnumerable<FiscalWares> goods { set; get; }
         public decimal sum_0 { set; get; }
         public decimal sum_disc { set; get; }
         public decimal sum_receipt { set; get; }
         public decimal round { set; get; }
         public decimal sum_topay { set; get; }
-        public dynamic pays { set; get; }
-        public dynamic taxes { set; get; }
+        public IEnumerable<FiscalPay> pays { set; get; }
+        public IEnumerable<ResponceTaxReceipt> taxes { set; get; }        
         public string fisn { set; get; }
         public string dt { set; get; }
         public string qr { set; get; }
@@ -678,5 +714,124 @@ namespace Front.Equipments.Implementation.ModelVchasno
         public decimal fisid { set; get; }
         public string manuf { set; get; }
         public string cashier { set; get; }
+    }
+
+    class FiscalWares
+    {
+        /// <summary>
+        /// Найменування товару/послуги
+        /// </summary>
+        public string name { set; get; }
+
+        /// <summary>
+        /// Код 1 (ШК)
+        /// </summary>
+        public string code1 { set; get; }
+
+        //Код 2 (УКТЗЕД)
+        public string code2 { set; get; }
+
+        /// <summary>
+        /// Код 3 (ДКПП)
+        /// </summary>
+        public string code3 { set; get; }
+
+        /// <summary>
+        /// Код акцизної марки товару(як було передано на вході)
+        /// </summary>
+        public string code_a { set; get; }
+
+        /// <summary>
+        /// Коди акцизних марок товару, якщо їх дещо на одну позицію(як було передано на вході)
+        /// </summary>
+        public IEnumerable<string> code_aa { set; get; }
+
+        /// <summary>
+        /// Кількість
+        /// </summary>
+        public decimal cnt { set; get; }
+
+        /// <summary>
+        /// Ціна
+        /// </summary>
+        public decimal price { set; get; }
+
+        /// <summary>
+        /// Вартість
+        /// </summary>
+        public decimal cost { set; get; }
+
+        /// <summary>
+        /// Знижка сумова на рядок
+        /// </summary>
+        public decimal disc { set; get; }
+
+        /// <summary>
+        /// Податкова група(літерно)
+        /// </summary>
+        public string taxlit { set; get; }
+
+        /// <summary>
+        /// Коментар на рядок
+        /// </summary>
+        public string comment { set; get; }
+    }
+
+    class FiscalPay
+    {
+        /// <summary>
+     /// Вид оплати(текстом)
+     /// </summary>
+        public string type { set; get; }
+
+        /// <summary>
+        /// Сума оплати
+        /// </summary>
+        public decimal sum { set; get; }
+
+        /// <summary>
+        /// Додаткова інформація до оплати(решта/id карткової транзакції/...)
+        /// </summary>
+        public string info { set; get; }
+
+        /// <summary>
+        /// Коментар на рядок
+        /// </summary>
+        public string comment { set; get; }
+
+        /// <summary>
+        /// Назва платіжної системи(для оплати банківською карткою)
+        /// </summary>
+        public string paysys { set; get; }
+
+        /// <summary>
+        /// Код транзакції(для оплати банківською карткою)
+        /// </summary>
+        public string rrn { set; get; }
+
+        /// <summary>
+        /// Номер картки замаскований(для оплати банківською карткою)
+        /// </summary>
+        public string cardmask { set; get; }
+
+        /// <summary>
+        /// Валюта платежу(коротко)
+        /// </summary>
+        public string currency { set; get; }
+
+        /// <summary>
+        /// Код банківського термінала
+        /// </summary>
+        public string term_id { set; get; }
+
+        /// <summary>
+        /// Ідентифікатор еквайра/банку
+        /// </summary>
+        public string bank_id { set; get; }
+
+        /// <summary>
+        /// Код авторизації
+        /// </summary>
+        public string auth_code { set; get; }
     }
 }

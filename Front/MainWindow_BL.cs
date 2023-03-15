@@ -432,7 +432,7 @@ namespace Front
         /// Безготівкова оплата і Друк чека.
         /// </summary>
         /// <returns></returns>
-        public bool PrintAndCloseReceipt(Receipt pR = null, eTypePay pTP = eTypePay.Card, decimal pSumCash=0m, decimal pIssuingCash=0, decimal pSumWallet=0)
+        public bool PrintAndCloseReceipt(Receipt pR = null, eTypePay pTP = eTypePay.Card, decimal pSumCash=0m, decimal pIssuingCash=0, decimal pSumWallet=0,decimal pSumBonus =0)
         {
             bool Res = false;
             string TextError = null;
@@ -470,13 +470,17 @@ namespace Front
 
                         IEnumerable<Payment> PayRefaund =( R.TypeReceipt== eTypeReceipt.Refund? Bl.db.GetPayment(R.RefundId):null);
                         string rrn = R.AdditionC1;
-                        if (pSumWallet != 0)
+                        if (pSumWallet != 0 || pSumBonus!=0)
                         {
-                            Bl.db.DelWallet(R);
-                            Bl.db.ReplacePayment(new List<Payment>() { new Payment(R) {IdWorkplacePay=R.IdWorkplace, IsSuccess = true, TypePay = eTypePay.Wallet, SumPay = pSumWallet, SumExt = pSumWallet } });
+                            Bl.db.DelPayWalletBonus(R);
+                            if(pSumWallet != 0)
+                              Bl.db.ReplacePayment(new List<Payment>() { new Payment(R) {IdWorkplacePay=R.IdWorkplace, IsSuccess = true, TypePay = eTypePay.Wallet, SumPay = pSumWallet, SumExt = pSumWallet } });
+                            if (pSumBonus != 0)
+                                Bl.db.ReplacePayment(new List<Payment>() { new Payment(R) { IdWorkplacePay = R.IdWorkplace, IsSuccess = true, TypePay = eTypePay.Wallet, SumExt = pSumBonus } });
+
                             R.Payment = Bl.db.GetPayment(R);
 
-                            if (pSumWallet > 0 && R.ReCalc())
+                            if ((pSumWallet > 0 || pSumBonus>0) && R.ReCalc())
                             {
                                 foreach (var el in R.Wares.Where(el => el.TypeWares == eTypeWares.Ordinary))
                                     Bl.db.ReplaceWaresReceipt(el);                                

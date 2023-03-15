@@ -788,13 +788,13 @@ and @TypeDiscount=11; ";
             }
         }
 
-        public bool DelWallet(IdReceipt pIdR)
+        public bool DelPayWalletBonus(IdReceipt pIdR)
         {
             var SQL = @"Delete from PAYMENT
 Where ID_WORKPLACE = @IdWorkplace
    and CODE_PERIOD = @CodePeriod
    and CODE_RECEIPT = @CodeReceipt
-   and TYPE_PAY = 5;
+   and TYPE_PAY in (5,6);
 Update WARES_RECEIPT set SUM_WALLET = 0
 Where ID_WORKPLACE = @IdWorkplace
    and CODE_PERIOD = @CodePeriod

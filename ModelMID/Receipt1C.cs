@@ -56,17 +56,20 @@ namespace ModelMID
 
             if (pR.Wares!=null && pR.StateReceipt>0) 
               Wares = pR.Wares.Select(r => new ReceiptWares1C(r));
-            if (pR.Payment != null && pR.Payment.Any())
-                Description = pR.Payment.Where(r => !string.IsNullOrEmpty(r.CodeAuthorization)).FirstOrDefault().CodeAuthorization;
+
+            var Card=pR.Payment.Where(r => r.TypePay == eTypePay.Card)?.FirstOrDefault();
+
+            if (Card!=null)
+                Description = Card.CodeAuthorization;
             else
                 Description = "0000000";           
 
             SumWallet = pR.Payment.Where(r => r.TypePay == eTypePay.Wallet && r.SumPay>0)?.FirstOrDefault().SumPay ?? 0;
 
             var Cash = pR.Payment.Where(r => r.TypePay == eTypePay.Cash)?.FirstOrDefault();
-            if (Cash == null) CodeBank = 1;
+            if (Cash != null) CodeBank = 1;
             else
-                CodeBank = (int) ((pR.Payment.Where(r => r.TypePay == eTypePay.Card)?.FirstOrDefault().CodeBank ?? (wp?.TypePOS??eBank.NotDefine)));           
+                CodeBank = (int) (Card?.CodeBank ?? (wp?.TypePOS??eBank.NotDefine));           
         }
 
         public string GetBase64()
@@ -75,8 +78,7 @@ namespace ModelMID
             var plainTextBytes = Encoding.UTF8.GetBytes(Receipt);
             var res= Convert.ToBase64String(plainTextBytes);            
             return res; /// Convert.ToBase64String(plainTextBytes);
-        }
-        
+        }        
     }
     
     public class ReceiptWares1C

@@ -288,12 +288,29 @@ namespace SharedLib
         {
             try
             {
-                decimal Sum;
+                decimal Sum=0;
                 var body = soapTo1C.GenBody("GetBonusSum", new Parameters[] { new Parameters("CodeOfCard", pClient.BarCode) });
                 var res = await soapTo1C.RequestAsync(Global.Server1C, body);
                 res = res.Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
                 if (!string.IsNullOrEmpty(res) && decimal.TryParse(res, out Sum))
-                    pClient.SumMoneyBonus = Sum; //!!!TMP
+                    pClient.SumBonus = Sum; //!!!TMP
+                if(Sum>0)
+                {
+                    string Wh=Global.GetWorkPlaceByIdWorkplace(pIdWorkPlace).StrCodeWarehouse;
+                    body = soapTo1C.GenBody("GetOtovProc", new Parameters[] {
+                        new Parameters("CodeOfSklad",Global.GetWorkPlaceByIdWorkplace(pIdWorkPlace).StrCodeWarehouse ),
+                        new Parameters("CodeOfCard", pClient.BarCode),
+                        new Parameters("Summ", Sum.ToString().Replace(",","."))
+                    });
+                    res = await soapTo1C.RequestAsync(Global.Server1C, body);
+                    res = res.Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
+                    if (!string.IsNullOrEmpty(res) && decimal.TryParse(res, out Sum))
+                    {
+                        pClient.PercentBonus = Sum/100m; //!!!TMP
+                        pClient.SumMoneyBonus =Math.Round( pClient.SumBonus * pClient.PercentBonus,2);
+                    }
+                }
+
                 body = soapTo1C.GenBody("GetMoneySum", new Parameters[] { new Parameters("CodeOfCard", pClient.BarCode) });
                 res = await soapTo1C.RequestAsync(Global.Server1C, body);
 

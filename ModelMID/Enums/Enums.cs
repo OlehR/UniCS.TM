@@ -32,7 +32,11 @@ namespace ModelMID
         /// <summary>
         /// Скарбничка(Здача)
         /// </summary>
-        Wallet= 5
+        Wallet= 5,
+        /// <summary>
+        /// Розрахунок бонусами.
+        /// </summary>
+        Bonus = 6
     }
 
     public enum eTypeBonus
