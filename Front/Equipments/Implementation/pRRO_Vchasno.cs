@@ -33,7 +33,7 @@ namespace Front.Equipments.Implementation
             try
             {
                 Url = Configuration[$"{KeyPrefix}Url"];
-                Token = Configuration[$"{KeyPrefix}Token"]; 
+                Token = Configuration[$"{KeyPrefix}Token"];
                 Device = Configuration[$"{KeyPrefix}Device"];
 
                 var d = GetDeviceInfo2();
@@ -63,16 +63,16 @@ namespace Front.Equipments.Implementation
 
         override public LogRRO PrintReceipt(Receipt pR)
         {
-            Responce<ResponceReceipt> Res=null;
+            Responce<ResponceReceipt> Res = null;
             if (!IsOpenWorkDay) OpenWorkDay();
             if (!IsOpenWorkDay) return new LogRRO(pR) { CodeError = -1, Error = "Не вдалось відкрити зміну" };
 
             var c = pR.Payment?.Where(el => el.TypePay == eTypePay.IssueOfCash);
-           
+
             if (pR.Payment?.Where(el => el.TypePay != eTypePay.IssueOfCash)?.Any() == true)
             {
                 pR.Payment = pR.Payment?.Where(el => el.TypePay != eTypePay.IssueOfCash);
-                ApiRRO d = new(pR,this) { token = Token, device = Device, tag = pR.NumberReceiptRRO };
+                ApiRRO d = new(pR, this) { token = Token, device = Device, tag = pR.NumberReceiptRRO };
                 string dd = d.ToJSON();
                 var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");
                 Res = JsonConvert.DeserializeObject<Responce<ResponceReceipt>>(r);
@@ -82,22 +82,22 @@ namespace Front.Equipments.Implementation
             {
                 pR.Payment = c;
                 pR.Wares = null;
-                ApiRRO d = new(pR,this) { token = Token, device = Device, tag = pR.NumberReceiptRRO+"_IC" };
+                ApiRRO d = new(pR, this) { token = Token, device = Device, tag = pR.NumberReceiptRRO + "_IC" };
                 string dd = d.ToJSON();
                 var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");
-                Res = JsonConvert.DeserializeObject<Responce<ResponceReceipt>>(r);                
+                Res = JsonConvert.DeserializeObject<Responce<ResponceReceipt>>(r);
             }
             return GetLogRRO(pR, Res, pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, Res?.info?.printinfo?.sum_topay ?? 0m);
         }
 
         public override LogRRO PrintCopyReceipt(int parNCopy = 1)
         {
-            ApiRRO d = new( eTask.CopyReceipt ) { token = Token, device = Device };
+            ApiRRO d = new(eTask.CopyReceipt) { token = Token, device = Device };
             string dd = d.ToJSON();
             var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");
-            Responce<ResponceReceipt > Res = JsonConvert.DeserializeObject<Responce<ResponceReceipt>>(r);
-            
-            return GetLogRRO(new IdReceipt() {IdWorkplace=Global.IdWorkPlace, CodePeriod=Global.GetCodePeriod() } , Res, eTypeOperation.CopyReceipt, Res?.info?.printinfo?.sum_topay ?? 0m);
+            Responce<ResponceReceipt> Res = JsonConvert.DeserializeObject<Responce<ResponceReceipt>>(r);
+
+            return GetLogRRO(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() }, Res, eTypeOperation.CopyReceipt, Res?.info?.printinfo?.sum_topay ?? 0m);
         }
 
         override public LogRRO PrintNoFiscalReceipt(IEnumerable<string> pR)
@@ -114,13 +114,13 @@ namespace Front.Equipments.Implementation
             var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");
 
             var Res = JsonConvert.DeserializeObject<Responce<ResponceReceipt>>(r);
-            return GetLogRRO(new IdReceipt() { CodePeriod=Global.GetCodePeriod(),IdWorkplace=Global.IdWorkPlace}, Res, eTypeOperation.NoFiscalReceipt);
-              
+            return GetLogRRO(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace }, Res, eTypeOperation.NoFiscalReceipt);
+
         }
 
         override public LogRRO PrintZ(IdReceipt pIdR)
         {
-            var res= PrintXZ(pIdR,true);
+            var res = PrintXZ(pIdR, true);
             if (res != null && res.CodeError == 0)
                 IsOpenWorkDay = false;
             return res;
@@ -128,23 +128,23 @@ namespace Front.Equipments.Implementation
 
         override public LogRRO PrintX(IdReceipt pIdR)
         {
-           return PrintXZ(pIdR, false);
+            return PrintXZ(pIdR, false);
         }
 
-        LogRRO PrintXZ(IdReceipt pIdR,bool IsZ)
+        LogRRO PrintXZ(IdReceipt pIdR, bool IsZ)
         {
-            ApiRRO d = new(IsZ?eTask.ZReport:eTask.XReport) { token = Token, device = Device };
+            ApiRRO d = new(IsZ ? eTask.ZReport : eTask.XReport) { token = Token, device = Device };
             string dd = d.ToJSON();
             var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");
             Responce<ResponceReport> Res = JsonConvert.DeserializeObject<Responce<ResponceReport>>(r);
-            decimal Sum = Res?.info?.pays?.Sum(el => el.sum_p + el.round_pu - el.round_pd) ??0;
-            decimal SumRefund = Res?.info?.pays?.Sum(el => el.sum_m + el.round_mu-el.round_md) ?? 0;
-            return GetLogRRO<ResponceReport>(pIdR, Res, IsZ ? eTypeOperation.ZReport : eTypeOperation.XReport,Sum, SumRefund);
+            decimal Sum = Res?.info?.pays?.Sum(el => el.sum_p + el.round_pu - el.round_pd) ?? 0;
+            decimal SumRefund = Res?.info?.pays?.Sum(el => el.sum_m + el.round_mu - el.round_md) ?? 0;
+            return GetLogRRO<ResponceReport>(pIdR, Res, IsZ ? eTypeOperation.ZReport : eTypeOperation.XReport, Sum, SumRefund);
         }
 
         override public bool PeriodZReport(DateTime pBegin, DateTime pEnd, bool IsFull = true)
         {
-            ApiRRO d = new(eTask.PeriodZReport ) { token = Token, device = Device };
+            ApiRRO d = new(eTask.PeriodZReport) { token = Token, device = Device };
             d.fiscal.dt_from = pBegin.Date.ToString("yyyyMMddHHmmss");
             d.fiscal.dt_to = pEnd.Date.ToString("yyyyMMddHHmmss");
             string dd = d.ToJSON();
@@ -160,12 +160,12 @@ namespace Front.Equipments.Implementation
         /// <returns></returns>
         override public LogRRO MoveMoney(decimal pSum, IdReceipt pIdR)
         {
-            ApiRRO d = new(pSum>0?eTask.MoneyIn:eTask.MoneyOut) { token = Token, device = Device};
+            ApiRRO d = new(pSum > 0 ? eTask.MoneyIn : eTask.MoneyOut) { token = Token, device = Device };
             d.fiscal.receipt.cash = new Cash() { sum = pSum, type = eTypePayRRO.Cash };
-            string dd = d.ToJSON();            
+            string dd = d.ToJSON();
             var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");
             Responce<ResponceReport> Res = JsonConvert.DeserializeObject<Responce<ResponceReport>>(r);
-            return GetLogRRO(pIdR, Res, pSum>0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyIn);            
+            return GetLogRRO(pIdR, Res, pSum > 0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyIn);
         }
 
         override public StatusEquipment TestDevice()
@@ -175,12 +175,12 @@ namespace Front.Equipments.Implementation
                 var res = GetDeviceInfo2();
                 State = eStateEquipment.On;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 State = eStateEquipment.Error;
-                return new StatusEquipment(eModelEquipment.pRRO_Vchasno, State,e.Message);
+                return new StatusEquipment(eModelEquipment.pRRO_Vchasno, State, e.Message);
             }
-            return new StatusEquipment(eModelEquipment.pRRO_Vchasno ,State);
+            return new StatusEquipment(eModelEquipment.pRRO_Vchasno, State);
         }
 
         override public string GetDeviceInfo()
@@ -190,10 +190,10 @@ namespace Front.Equipments.Implementation
             //var r = RequestAsync($"{url}/vchasno-kasa/api/v1/dashboard", HttpMethod.Get, null, TimeOut, "application/json");
 
             var r = GetDeviceInfo2().ToJSON();
-            return  $"IdWorkplacePay=>{IdWorkplacePay}{Environment.NewLine}Url=>{Url}{Environment.NewLine}{r}";
+            return $"IdWorkplacePay=>{IdWorkplacePay}{Environment.NewLine}Url=>{Url}{Environment.NewLine}{r}";
         }
 
-        LogRRO GetLogRRO<Ob>(IdReceipt pIdR ,Responce<Ob> pR, eTypeOperation pTypeOperation,decimal pSum = 0m,decimal pRefund=0m)
+        LogRRO GetLogRRO<Ob>(IdReceipt pIdR, Responce<Ob> pR, eTypeOperation pTypeOperation, decimal pSum = 0m, decimal pRefund = 0m)
         {
             var aa = pR.info as ResponseInfo;
             var rr = pR.info as ResponceReceipt;
@@ -201,14 +201,24 @@ namespace Front.Equipments.Implementation
             if (pR.pf_text != null && pR.pf_text.Length > 0)
             {
                 int pos = pR.pf_text.IndexOf("base64,");
-                if(pos > 0)
+                if (pos > 0)
                 {
                     TextReceipt = pR.pf_text.Substring(pos + 7);
-                    TextReceipt= win1251.GetString(Convert.FromBase64String(TextReceipt));
+                    TextReceipt = win1251.GetString(Convert.FromBase64String(TextReceipt));
                 }
-             }
-            var Res = new LogRRO(pIdR) { TypeOperation= pTypeOperation, TypeRRO="pRRO_Vchasno", FiscalNumber=  rr?.doccode, 
-                Error = pR.errortxt, CodeError = pR.res, TextReceipt= TextReceipt , JSON=pR.ToJSON(),SUM=pSum,SumRefund= pRefund};
+            }
+            var Res = new LogRRO(pIdR)
+            {
+                TypeOperation = pTypeOperation,
+                TypeRRO = "pRRO_Vchasno",
+                FiscalNumber = rr?.doccode,
+                Error = pR.errortxt,
+                CodeError = pR.res,
+                TextReceipt = TextReceipt,
+                JSON = pR.ToJSON(),
+                SUM = pSum,
+                SumRefund = pRefund
+            };
             return Res;
         }
 
@@ -219,7 +229,7 @@ namespace Front.Equipments.Implementation
             var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");
             Responce<ResponseDeviceInfo> Res = JsonConvert.DeserializeObject<Responce<ResponseDeviceInfo>>(r);
             return Res;
-        }    
+        }
 
         static public string RequestAsync(string parUrl, HttpMethod pMethod, string pBody = null, int pWait = 5000, string pContex = "application/json;charset=UTF-8", AuthenticationHeaderValue pAuthentication = null)
         {
@@ -251,8 +261,8 @@ namespace Front.Equipments.Implementation
             decimal sum = 0;
             if (pR != null && pR.Wares != null && pR.Wares.Any())
                 sum = pR.Wares.Where(el => el.IdWorkplacePay == pR.IdWorkplacePay || pR.IdWorkplacePay == 0).
-                        Sum(el => Math.Round(el.Price * el.Quantity, 2) - Math.Round(el.SumDiscount+el.SumWallet, 2));                    
-            return sum; 
+                        Sum(el => Math.Round(el.Price * el.Quantity, 2) - Math.Round(el.SumDiscount + el.SumWallet, 2));
+            return sum;
         }
 
         public override void GetFiscalInfo(Receipt pR, object pRes)
@@ -261,14 +271,28 @@ namespace Front.Equipments.Implementation
             if (Res != null && Res.info != null && Res.info.printinfo != null)
             {
                 pR.Taxes = Res.info.printinfo.taxes?.Select(el => new TaxResult() { Name = el.tax_fname, Sum = el.tax_sum });
-                pR.FiscalQR = Res.info.printinfo.qr;
-                foreach(var el in Res.info.printinfo.goods)
+
+                string QR = null;
+                var QRs = Res.info.printinfo.qr?.Split(";");
+                if (QRs.Length >= 4)
                 {
-                   var ww= pR._Wares.Where(w => w.NameWares.Equals(el.name))?.First();
-                   if (ww != null) ww.VatChar= el.taxlit;
+                    try
+                    {
+                        QR = QRs[0]?.Split("MAC:")[1] + Environment.NewLine + QRs[3]?.Split(":")[1] + Environment.NewLine +
+                            QRs[2]?.Split(":")[1] + Environment.NewLine + QRs[1]?.Split(":")[1];
+                    }
+                    catch (Exception) { QR = Res.info.printinfo.qr; }
+                    pR.FiscalQR = QR;
+
+
+                    foreach (var el in Res.info.printinfo.goods)
+                    {
+                        var ww = pR._Wares.Where(w => w.NameWares.Equals(el.name))?.First();
+                        if (ww != null) ww.VatChar = el.taxlit;
+                    }
+                    pR.SumRest = Res.info.printinfo.round;
+                    // pR.SumFiscal = Res.info.printinfo.sum_topay;
                 }
-                pR.SumRest = Res.info.printinfo.round;
-               // pR.SumFiscal = Res.info.printinfo.sum_topay;
             }
         }
     }
