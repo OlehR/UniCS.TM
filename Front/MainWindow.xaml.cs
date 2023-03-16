@@ -22,7 +22,7 @@ using System.Windows.Documents;
 using System.Reflection;
 using Front.API;
 using System.IO;
-
+using System.Windows.Input;
 
 namespace Front
 {
@@ -245,9 +245,17 @@ namespace Front
         public bool CustomWindowValidText { get; set; }
 
         SortedList<eStateMainWindows, System.Drawing.Color> FC = new();
-
+        List<Key> Keys = new();
+        private void Key_UP(object sender, KeyEventArgs e)
+        {
+            var s = e.Key;
+            Keys.Add(s);
+            if(s==Key.Enter)
+                Keys.Clear();
+        }
         public MainWindow()
         {
+            this.KeyUp += Key_UP;
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Ver={Version}", eTypeLog.Expanded);
             SocketServer SocketS = new SocketServer();
             _ = SocketS.StartSocketServer();
