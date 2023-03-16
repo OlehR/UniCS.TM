@@ -23,7 +23,8 @@ namespace Front.Control
 
         decimal MoneySum;
         public decimal SumCashDisbursement { get; set; } = 0;
-        decimal SumMaxWallet = 0;
+        public decimal SumMaxWallet { get; set; } = 0;
+        public bool IsPaymentBonuses { get; set; } = false;
         decimal _SumUseWallet = 0;        
         public decimal SumUseWallet { get { return _SumUseWallet; } set { _SumUseWallet = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SumUseWalletUp)));
@@ -78,8 +79,10 @@ namespace Front.Control
         {
             MoneySum = MW.MoneySum;
             SumMaxWallet = (MW.curReceipt?.MaxSumWallet < MW.Client?.Wallet ? MW.curReceipt?.MaxSumWallet : MW.Client?.Wallet) ?? 0;
+            IsPaymentBonuses = MW.Client != null && MW.Client?.SumMoneyBonus >= MoneySum;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsRounding"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MWCurReceipt"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SumMaxWallet"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsPaymentBonuses"));
             Rounding();
         }
 
@@ -322,6 +325,11 @@ namespace Front.Control
             ChangeSumPaymant = MoneySumToRound.ToString();
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ChangeSumPaymant"));
 
+        }
+
+        private void _ButtonPaymentBonus(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Оплата бонусами!");
         }
     }
 }

@@ -944,6 +944,7 @@ namespace Front
             EquipmentStatusInPayment.Text = "";
             //PaymentWindow.UpdatePaymentWindow();
             //SetStateView(eStateMainWindows.ChoicePaymentMethod);
+            //return;
             if (Global.TypeWorkplace == eTypeWorkplace.СashRegister)
             {
                 PaymentWindow.UpdatePaymentWindow();
@@ -1211,8 +1212,8 @@ namespace Front
                 };
                 Bl.SetCustomWindows(r);
             }
-            //Background.Visibility = Visibility.Collapsed;
-            //BackgroundWares.Visibility = Visibility.Collapsed;
+            Background.Visibility = Visibility.Collapsed;
+            BackgroundWares.Visibility = Visibility.Collapsed;
         }
 
         private void CustomWindowVerificationText(object sender, TextChangedEventArgs e)
