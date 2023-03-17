@@ -42,6 +42,8 @@ namespace Front.Equipments
                     State = eStateEquipment.Init;                    
                     CloseIfOpen();
                     SerialDevice.Open();
+                    SerialDevice.DiscardInBuffer();
+                    SerialDevice.DiscardOutBuffer();
                     State = eStateEquipment.On;                    
                 }
                 catch (Exception ex)
