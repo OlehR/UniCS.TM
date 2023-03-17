@@ -170,6 +170,9 @@ namespace Front
                     case eModelEquipment.VirtualScale:
                         Scale = new VirtualScale(ElEquipment, config, LF, OnWeight);
                         break;
+                    case eModelEquipment.ScaleCom:
+                        Scale = new ScaleCom(ElEquipment, config, LF, OnWeight);
+                        break;
                     default:
                         Scale = new Scale(ElEquipment, config);
                         break;

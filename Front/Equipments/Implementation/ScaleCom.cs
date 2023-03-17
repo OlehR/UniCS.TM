@@ -21,7 +21,7 @@ namespace Front.Equipments
 
         public bool IsReady { get { return SerialDevice != null; } }
 
-        public ScaleCom(Equipment pEquipment, IConfiguration pConfiguration,ILoggerFactory pLoggerFactory = null, Action<double, bool> pOnScalesData = null) : base(pEquipment, pConfiguration, eModelEquipment.ScaleModern, pLoggerFactory, pOnScalesData)
+        public ScaleCom(Equipment pEquipment, IConfiguration pConfiguration,ILoggerFactory pLoggerFactory = null, Action<double, bool> pOnScalesData = null) : base(pEquipment, pConfiguration, eModelEquipment.ScaleCom, pLoggerFactory, pOnScalesData)
         {            
             SerialPortStreamWrapper portStreamWrapper = new SerialPortStreamWrapper(SerialPort, BaudRate, Parity.Odd, StopBits.One, 7, new Func<byte[], bool>(OnDataReceived));
             portStreamWrapper.RtsEnable = true;
