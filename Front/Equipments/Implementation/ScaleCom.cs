@@ -26,6 +26,7 @@ namespace Front.Equipments
             SerialPortStreamWrapper portStreamWrapper = new SerialPortStreamWrapper(SerialPort, BaudRate, Parity.Odd, StopBits.One, 7, new Func<byte[], bool>(OnDataReceived));
             portStreamWrapper.RtsEnable = true;
             SerialDevice = portStreamWrapper;
+            Init();
             Timer = new System.Timers.Timer(200.0);
             Timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
             Timer.AutoReset = true;
