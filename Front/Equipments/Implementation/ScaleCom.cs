@@ -69,19 +69,19 @@ namespace Front.Equipments
         {
             return $"pModelEquipment={Model} State={State} Port={SerialPort} BaudRate={BaudRate}{Environment.NewLine}";
         }
-
-        public void StartGetWeight()
+        public override void StartWeight() 
         {
             if (!SerialDevice.IsOpen)
-                SerialDevice.Open();            
+                SerialDevice.Open();
             Timer.Start();
         }
 
-        public void StopGetWeight()
+        public override void StopWeight() 
         {
-            //_serialDevice.Write(GetCommand("12"));
             Timer.Stop();
-        }       
+        }
+    
+            
 
         private void OnTimedEvent(object sender, ElapsedEventArgs e) => SerialDevice?.Write(new byte[4] {0,0,0,4});
         //GetReadDataSync(new byte[4] {0,0,0,4},OnDataReceived2);
