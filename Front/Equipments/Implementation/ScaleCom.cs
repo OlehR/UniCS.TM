@@ -14,35 +14,31 @@ namespace Front.Equipments
 {
     public class ScaleCom :Scale, IDisposable
     {
-        private readonly IConfiguration _configuration;
-        private readonly ILogger<ScaleCom> _logger;
-        private string _tmpStr = string.Empty;
-        private readonly System.Timers.Timer _timer;
-        private readonly object _locker = new object();
-        private SerialPortStreamWrapper _serialDevice;
-        
+        private readonly ILogger<ScaleCom> _logger;       
+        private readonly System.Timers.Timer Timer;
+        private readonly object Lock = new object();
+        private SerialPortStreamWrapper SerialDevice;        
 
-        public bool IsReady { get { return _serialDevice != null; } }
+        public bool IsReady { get { return SerialDevice != null; } }
 
         public ScaleCom(Equipment pEquipment, IConfiguration pConfiguration,ILoggerFactory pLoggerFactory = null, Action<double, bool> pOnScalesData = null) : base(pEquipment, pConfiguration, eModelEquipment.ScaleModern, pLoggerFactory, pOnScalesData)
         {            
             SerialPortStreamWrapper portStreamWrapper = new SerialPortStreamWrapper(SerialPort, BaudRate, Parity.Odd, StopBits.One, 7, new Func<byte[], bool>(OnDataReceived));
             portStreamWrapper.RtsEnable = true;
-            _serialDevice = portStreamWrapper;
-            _timer = new System.Timers.Timer(200.0);
-            _timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
-            _timer.AutoReset = true;
+            SerialDevice = portStreamWrapper;
+            Timer = new System.Timers.Timer(200.0);
+            Timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+            Timer.AutoReset = true;
         }
         
         public override void Init()
         {
-            lock (_locker)
+            lock (Lock)
             {
                 TextError = string.Empty;
                 try
                 {
-                    State = eStateEquipment.Init;
-                    _tmpStr = string.Empty;
+                    State = eStateEquipment.Init;                    
                     CloseIfOpen();
                     State = eStateEquipment.On;                    
                 }
@@ -61,7 +57,7 @@ namespace Front.Equipments
                 }
                 finally
                 {
-                    _serialDevice.OnReceivedData = new Func<byte[], bool>(OnDataReceived);
+                    SerialDevice.OnReceivedData = new Func<byte[], bool>(OnDataReceived);
                 }
             }
         }
@@ -75,27 +71,28 @@ namespace Front.Equipments
 
         public void StartGetWeight()
         {
-            if (!_serialDevice.IsOpen)
-                _serialDevice.Open();            
-            _timer.Start();
+            if (!SerialDevice.IsOpen)
+                SerialDevice.Open();            
+            Timer.Start();
         }
 
         public void StopGetWeight()
         {
             //_serialDevice.Write(GetCommand("12"));
-            _timer.Stop();
+            Timer.Stop();
         }       
 
-        private void OnTimedEvent(object sender, ElapsedEventArgs e) => _serialDevice?.Write(new byte[4] {0,0,0,4});
+        private void OnTimedEvent(object sender, ElapsedEventArgs e) => SerialDevice?.Write(new byte[4] {0,0,0,4});
+        //GetReadDataSync(new byte[4] {0,0,0,4},OnDataReceived2);
 
         private void CloseIfOpen()
         {
             if (IsReady)
-                _serialDevice.Close();
-            _serialDevice.Dispose();
+                SerialDevice.Close();
+            SerialDevice.Dispose();
             SerialPortStreamWrapper portStreamWrapper = new SerialPortStreamWrapper(SerialPort, BaudRate, Parity.Odd, StopBits.One, 7, new Func<byte[], bool>(OnDataReceived));
             portStreamWrapper.RtsEnable = true;
-            _serialDevice = portStreamWrapper;
+            SerialDevice = portStreamWrapper;
         }
 
         private bool OnDataReceived(byte[] data)
@@ -106,16 +103,31 @@ namespace Front.Equipments
                 char[] charArray = Str.ToCharArray();
                 Array.Reverse(charArray);
                 if (double.TryParse(charArray, out double Weight))
-                    OnScalesData.Invoke(Weight, true); return true;
+                    OnScalesData.Invoke(Weight/1000d, true); 
+                return true;
             }
             return true;
         }
-    
+
+        public void GetReadDataSync(byte[] command, Action<byte[]> onDatAction)
+        {
+            if (!IsReady || onDatAction == null) return;
+            SerialDevice.Write(command);
+            do; while (SerialDevice.ReadBufferSize < 1);
+            byte[] numArray = new byte[SerialDevice.ReadBufferSize];
+            SerialDevice.Read(numArray, 0, numArray.Length);
+            onDatAction?.Invoke(numArray);
+        }
+
+        private void OnDataReceived2(byte[] data)  => OnDataReceived(data);
+        
+
+
         public void Dispose()
         {
             OnScalesData = null;
-            _serialDevice?.Close();
-            _serialDevice?.Dispose();
+            SerialDevice?.Close();
+            SerialDevice?.Dispose();
         }
     }
 }
