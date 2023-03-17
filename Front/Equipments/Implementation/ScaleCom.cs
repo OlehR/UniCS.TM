@@ -87,8 +87,8 @@ namespace Front.Equipments
     
             
 
-        private void OnTimedEvent(object sender, ElapsedEventArgs e) =>  //SerialDevice?.Write(new byte[4] {0,0,0,3});
-        GetReadDataSync(new byte[4] {0,0,0,3},OnDataReceived2);
+        private void OnTimedEvent(object sender, ElapsedEventArgs e) =>  SerialDevice?.Write(new byte[4] {0,0,0,3});
+        //GetReadDataSync(new byte[4] {0,0,0,3},OnDataReceived2);
 
         private void CloseIfOpen()
         {
