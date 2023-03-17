@@ -34,14 +34,14 @@ namespace Front.Equipments
 
         //public Action<eStateEquipment, eModelEquipment> SetState { get; set; }
         public string InfoConnect { get { return (!string.IsNullOrEmpty(SerialPort) && BaudRate > 0) ? $" Port={SerialPort} BaudRate={BaudRate}" : $"IP ={IP} IpPort = {IpPort}"; } }
-
+        protected string TextError = string.Empty;
         private eStateEquipment _State = eStateEquipment.Off;
         public eStateEquipment State { get { return _State; } set
             {
                 if (_State != value || value != eStateEquipment.On)
                 { _State = value;
-                    ActionStatus?.Invoke(new StatusEquipment(Model, _State));
-                    FileLogger.WriteLogMessage($"Equipment.SetState( {_State}) {Model}");
+                    ActionStatus?.Invoke(new StatusEquipment(Model, _State, TextError));
+                    FileLogger.WriteLogMessage($"Equipment.SetState( {_State}) {Model} {TextError}");
                 }
             }
         }
@@ -60,7 +60,9 @@ namespace Front.Equipments
                 IsСritical = pEquipment.IsСritical;
                 Model = pEquipment.Model;
                 DeviceConfigName = pEquipment.DeviceConfigName;
-            }            
+            }
+            SerialPort = Configuration?.GetValue<string>($"{KeyPrefix}Port");
+            BaudRate = Configuration?.GetValue<int>($"{KeyPrefix}BaudRate")??9600;
         }
         public virtual void Init() { }
         public virtual StatusEquipment TestDevice() { throw new NotImplementedException(); }

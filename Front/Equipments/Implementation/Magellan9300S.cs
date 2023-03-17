@@ -18,7 +18,7 @@ using Front.Equipments.Utils;
 
 namespace Front.Equipments
 {
-    public class Magellan9300S : IBarcodeScanner, IBaseDevice, IDisposable, IUserScales
+    public class Magellan9300S : IDisposable
     {
         private const string ResetDevice = "00";
         private const string EnableDevice = "01";
