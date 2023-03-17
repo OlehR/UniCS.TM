@@ -153,10 +153,13 @@ namespace ModelMID
         public bool IsLockChange { get { return /*_IsLockChange ||*/ StateReceipt != eStateReceipt.Prepare || SumBonus > 0m; } }
 
         public string FiscalQR { get; set; }
+        
+        IEnumerable<TaxResult> _Taxes;
         /// <summary>
         /// Податки отриманні з фіскалки після фіскалізації
         /// </summary>
-        public IEnumerable<TaxResult> Taxes;
+        public IEnumerable<TaxResult> Taxes { get { return IdWorkplacePay == 0 || _Taxes == null ? _Taxes : _Taxes.Where(el => el.IdWorkplacePay == IdWorkplacePay); } set { _Taxes = value; } }
+
         /// <summary>
         /// Чи є підтвердження обмеження віку.
         /// </summary>
@@ -374,6 +377,7 @@ namespace ModelMID
 
     public class TaxResult
     {
+        public int IdWorkplacePay { get; set; }
         public string Name { get; set;}
         public decimal Sum { get; set; }
     }
