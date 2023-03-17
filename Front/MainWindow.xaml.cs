@@ -23,6 +23,8 @@ using System.Reflection;
 using Front.API;
 using System.IO;
 using System.Windows.Input;
+using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Front
 {
@@ -245,14 +247,22 @@ namespace Front
         public bool CustomWindowValidText { get; set; }
 
         SortedList<eStateMainWindows, System.Drawing.Color> FC = new();
-        List<Key> Keys = new();
+        string Barcode = "";
+        DateTime LastCharDateTime = DateTime.Now;
         private void Key_UP(object sender, KeyEventArgs e)
         {
             var s = e.Key;
-            Keys.Add(s);
-            if(s==Key.Enter)
-                Keys.Clear();
+            char Ch = KeyBoardUtilities.GetCharFromKey(e.Key);
+            Barcode += Ch;
+            if (s == Key.Enter)
+            {
+                var ss = Barcode;
+
+                GetBarCode(Barcode, null);
+                Barcode = "";
+            }
         }
+
         public MainWindow()
         {
             this.KeyUp += Key_UP;
@@ -306,8 +316,8 @@ namespace Front
                 DateTime TimeAdminSSC = Bl.db.GetConfig<DateTime>("DateAdminSSC");
                 if (TimeAdminSSC.Date == DateTime.Now.Date)
                 {
-                    if(!string.IsNullOrEmpty( BarCodeAdminSSC))
-                      AdminSSC = Bl.GetUserByBarCode(BarCodeAdminSSC);
+                    if (!string.IsNullOrEmpty(BarCodeAdminSSC))
+                        AdminSSC = Bl.GetUserByBarCode(BarCodeAdminSSC);
                     DTAdminSSC = TimeAdminSSC;
                     Bl.StartWork(Global.IdWorkPlace, BarCodeAdminSSC);//!!!TMP треба штрихкод
                 }
@@ -318,14 +328,14 @@ namespace Front
             en.Tag = new CultureInfo("en");
             hu.Tag = new CultureInfo("hu");
             pl.Tag = new CultureInfo("pl");
-            
-            SetCurReceipt(null);            
+
+            SetCurReceipt(null);
             Receipt LastR = null;
             try
             {
                 LastR = Bl.GetLastReceipt();
             }
-            catch(Exception e) 
+            catch (Exception e)
             {
                 FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, e);
             }
@@ -430,8 +440,8 @@ namespace Front
                         eTypeAccess Res = eTypeAccess.NoDefine;
                         if (EF.StatCriticalEquipment != eStateEquipment.On) Res = eTypeAccess.ErrorEquipment;
                         else
-                           if (!Bl.ds.IsReady) 
-                           // Res = (Bl.ds.Status == eSyncStatus.Error ? eTypeAccess.ErrorFullUpdate : eTypeAccess.StartFullUpdate);
+                           if (!Bl.ds.IsReady)
+                        // Res = (Bl.ds.Status == eSyncStatus.Error ? eTypeAccess.ErrorFullUpdate : eTypeAccess.StartFullUpdate);
                         {
 
                             switch (Bl.ds.Status)
@@ -439,7 +449,7 @@ namespace Front
                                 case eSyncStatus.Error:
                                     Res = eTypeAccess.ErrorFullUpdate; break;
                                 case eSyncStatus.StartedFullSync:
-                                    Res= eTypeAccess.StartFullUpdate; break;
+                                    Res = eTypeAccess.StartFullUpdate; break;
                                 case eSyncStatus.ErrorDB:
                                     Res = eTypeAccess.ErrorDB; break;
                             }

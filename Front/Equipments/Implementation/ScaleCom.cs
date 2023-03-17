@@ -41,12 +41,14 @@ namespace Front.Equipments
                 {
                     State = eStateEquipment.Init;                    
                     CloseIfOpen();
+                    SerialDevice.Open();
                     State = eStateEquipment.On;                    
                 }
                 catch (Exception ex)
                 {
-                    State = eStateEquipment.Error;
                     TextError = ex.Message;
+                    State = eStateEquipment.Error;
+                   
                     _logger?.LogError(ex, ex.Message);
                     /*if (logger != null)                       
                     if (ex.Message.ContainsIgnoreCase("port"))
@@ -83,8 +85,8 @@ namespace Front.Equipments
     
             
 
-        private void OnTimedEvent(object sender, ElapsedEventArgs e) => SerialDevice?.Write(new byte[4] {0,0,0,4});
-        //GetReadDataSync(new byte[4] {0,0,0,4},OnDataReceived2);
+        private void OnTimedEvent(object sender, ElapsedEventArgs e) =>  //SerialDevice?.Write(new byte[4] {0,0,0,3});
+        GetReadDataSync(new byte[4] {0,0,0,3},OnDataReceived2);
 
         private void CloseIfOpen()
         {
@@ -112,12 +114,15 @@ namespace Front.Equipments
 
         public void GetReadDataSync(byte[] command, Action<byte[]> onDatAction)
         {
-            if (!IsReady || onDatAction == null) return;
-            SerialDevice.Write(command);
-            do; while (SerialDevice.ReadBufferSize < 1);
-            byte[] numArray = new byte[SerialDevice.ReadBufferSize];
-            SerialDevice.Read(numArray, 0, numArray.Length);
-            onDatAction?.Invoke(numArray);
+            lock (Lock)
+            {
+                if (!IsReady || onDatAction == null) return;
+                SerialDevice.Write(command);
+                do; while (SerialDevice.ReadBufferSize < 1);
+                byte[] numArray = new byte[SerialDevice.ReadBufferSize];
+                SerialDevice.Read(numArray, 0, numArray.Length);
+                onDatAction?.Invoke(numArray);
+            }
         }
 
         private void OnDataReceived2(byte[] data)  => OnDataReceived(data);
