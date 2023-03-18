@@ -294,6 +294,8 @@ namespace Front.Equipments
         MagellanScaner,
         [Description("Магелан-вага")]
         MagellanScale,
+        [Description("Сканер з емуляцією клавіатури")]
+        ScanerKeyBoard,
         [Description("Вага через COM")]
         ScaleCom,
         [Description("Контррльна вага")]
@@ -350,6 +352,7 @@ namespace Front.Equipments
             {
                 case eModelEquipment.MagellanScaner:
                 case eModelEquipment.VirtualScaner:
+                case eModelEquipment.ScanerKeyBoard:
                     return eTypeEquipment.Scaner;
                 case eModelEquipment.MagellanScale:
                 case eModelEquipment.VirtualScale:

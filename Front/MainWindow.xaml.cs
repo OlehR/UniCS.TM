@@ -248,43 +248,9 @@ namespace Front
         public bool CustomWindowValidText { get; set; }
 
         SortedList<eStateMainWindows, System.Drawing.Color> FC = new();
-        string Barcode = "";
-        DateTime LastCharDateTime = DateTime.Now;
-        int counterChar = 0;
-        string tmpChar = string.Empty;
-        private void Key_UP(object sender, KeyEventArgs e)
-        {
-            var key = e.Key;
-            char Ch = KeyBoardUtilities.GetCharFromKey(key);
-            DateTime CurrentCharDateTime = DateTime.Now;
-            if ((CurrentCharDateTime - LastCharDateTime).TotalSeconds < 0.15 )
-            {
-                
-                if (key == Key.Enter)
-                {
-                    GetBarCode(Barcode, null);
-                    Barcode = "";
-                }else
-                    Barcode += tmpChar + Ch;
-                tmpChar = "";
-            }
-            else if (counterChar < 1)
-            {
-                counterChar++;
-                tmpChar = Ch.ToString();
-            }
-            else
-            {
-                Barcode = "";
-                tmpChar = "";
-                counterChar = 0;
-            }
-            LastCharDateTime = CurrentCharDateTime;
-        }
-
+     
         public MainWindow()
-        {
-            this.KeyUp += Key_UP;
+        {            
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Ver={Version}", eTypeLog.Expanded);
             SocketServer SocketS = new SocketServer();
             _ = SocketS.StartSocketServer();
@@ -300,7 +266,7 @@ namespace Front
             Access.СurUser = new User() { TypeUser = eTypeUser.Client, CodeUser = 99999999, Login = "Client", NameUser = "Client" };
 
             Bl = new BL(true);
-            EF = new EquipmentFront(GetBarCode);
+            EF = new EquipmentFront(GetBarCode,null,this);
             InitAction();
 
             InitializeComponent();

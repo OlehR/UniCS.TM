@@ -18,6 +18,7 @@ using SharedLib;
 using System.Threading;
 using System.Collections;
 using ModernExpo.SelfCheckout.Entities.Models.Terminal;
+using System.Windows;
 
 namespace Front
 {
@@ -50,6 +51,7 @@ namespace Front
         public int CountTerminal { get { return GetBankTerminal.Count(); } }
         public Equipment BankTerminal1 { get { return GetBankTerminal?.First(); } }
         public Equipment BankTerminal2 { get { return GetBankTerminal?.Skip(1).FirstOrDefault(); } }
+        public Window W;
         // eTypeAccess OperationWaitAccess { get; set; } = eTypeAccess.NoDefinition;
 
         /// <summary>
@@ -113,12 +115,13 @@ namespace Front
             builder.AddConsole();            
         });
 
-        public EquipmentFront(Action<string, string> pSetBarCode, Action<StatusEquipment> pActionStatus = null)
+        public EquipmentFront(Action<string, string> pSetBarCode, Action<StatusEquipment> pActionStatus = null, Window pW=null)
         {
             ILogger<EquipmentFront> logger = LF?.CreateLogger<EquipmentFront>();
             logger.LogDebug("Fp700 getInfo error");
             logger.LogInformation("LogInformation Fp700 getInfo error");
 
+            W = pW;
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             sEquipmentFront = this;
             //OnControlWeight += (pWeight, pIsStable) => { pSetControlWeight?.Invoke(pWeight, pIsStable); };                
@@ -153,6 +156,12 @@ namespace Front
                         break;
                     case eModelEquipment.VirtualScaner:
                         Scaner = new VirtualScaner(ElEquipment, config, LF, pSetBarCode);
+                        break;
+                    case eModelEquipment.ScanerKeyBoard:
+                        ScanerKeyBoard Sc = new ScanerKeyBoard(ElEquipment, config, LF, pSetBarCode);
+                        if(W!=null)
+                            W.KeyUp += Sc.Key_UP;
+                        Scaner = Sc;
                         break;
                     default:
                         Scaner = new Scaner(ElEquipment, config);
