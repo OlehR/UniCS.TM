@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using Front.Equipments.Utils;
 using Front.Equipments.Virtual;
+using ModernExpo.SelfCheckout.Devices.FP700;
 
 namespace Front.Equipments
 {
@@ -84,11 +85,13 @@ namespace Front.Equipments
         {
             Timer.Stop();
         }
-    
-            
 
-        private void OnTimedEvent(object sender, ElapsedEventArgs e) =>  //SerialDevice?.Write(new byte[4] {0,0,0,3});
-        GetReadDataSync(new byte[4] {0,0,0,3},OnDataReceived2);
+
+
+        private void OnTimedEvent(object sender, ElapsedEventArgs e) =>  SerialDevice?.Write(new byte[4] {0,0,0,3});
+        //SerialDevice?.Write(Encoding.ASCII.GetBytes("S11\r"));
+        //GetReadDataSync(Encoding.ASCII.GetBytes("S11\r"), OnDataReceived2);
+        //GetReadDataSync(new byte[4] {0,0,0,3},OnDataReceived2);
 
         private void CloseIfOpen()
         {
