@@ -25,6 +25,7 @@ using System.IO;
 using System.Windows.Input;
 using System.Runtime.InteropServices;
 using System.Text;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Front
 {
@@ -249,18 +250,36 @@ namespace Front
         SortedList<eStateMainWindows, System.Drawing.Color> FC = new();
         string Barcode = "";
         DateTime LastCharDateTime = DateTime.Now;
+        int counterChar = 0;
+        string tmpChar = string.Empty;
         private void Key_UP(object sender, KeyEventArgs e)
         {
-            var s = e.Key;
-            char Ch = KeyBoardUtilities.GetCharFromKey(e.Key);
-            Barcode += Ch;
-            if (s == Key.Enter)
+            var key = e.Key;
+            char Ch = KeyBoardUtilities.GetCharFromKey(key);
+            DateTime CurrentCharDateTime = DateTime.Now;
+            if ((CurrentCharDateTime - LastCharDateTime).TotalSeconds < 0.15 )
             {
-                var ss = Barcode;
-
-                GetBarCode(Barcode, null);
-                Barcode = "";
+                
+                if (key == Key.Enter)
+                {
+                    GetBarCode(Barcode, null);
+                    Barcode = "";
+                }else
+                    Barcode += tmpChar + Ch;
+                tmpChar = "";
             }
+            else if (counterChar < 1)
+            {
+                counterChar++;
+                tmpChar = Ch.ToString();
+            }
+            else
+            {
+                Barcode = "";
+                tmpChar = "";
+                counterChar = 0;
+            }
+            LastCharDateTime = CurrentCharDateTime;
         }
 
         public MainWindow()
