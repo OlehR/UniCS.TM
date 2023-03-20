@@ -155,12 +155,12 @@ namespace ModelMID
         public bool IsLockChange { get { return /*_IsLockChange ||*/ StateReceipt != eStateReceipt.Prepare || SumBonus > 0m; } }
 
         public SortedList<int, string> FiscalQRs = new();
-        public string FiscalQR { get { return FiscalQRs[IdWorkplacePay]; } }
+        public string FiscalQR { get { return FiscalQRs.ContainsKey(IdWorkplacePay)? FiscalQRs[IdWorkplacePay]:null; } }
         public SortedList<int, string> FiscalIds = new();
         /// <summary>
         /// Фіскальний номер апарата
         /// </summary>
-        public string FiscalId { get {return FiscalIds[IdWorkplacePay]; } }
+        public string FiscalId { get {return FiscalIds.ContainsKey(IdWorkplacePay)? FiscalIds[IdWorkplacePay]:null; } }
 
 
         public IEnumerable<TaxResult> _Taxes;
@@ -330,7 +330,7 @@ namespace ModelMID
         public int[] IdWorkplacePays { get { return _Wares?.Select(el => el.IdWorkplacePay).Distinct().OrderBy(el => el).ToArray() ?? Array.Empty<int>(); } }
 
         public IEnumerable<LogRRO> LogRROs;
-        public string FiscalReceipt { get { return LogRROs.Where(el => el.IdWorkplacePay == IdWorkplacePay && el.TypeOperation == eTypeOperation.Sale)?.FirstOrDefault().FiscalNumber ?? NumberReceipt; } }
+        public string FiscalReceipt { get { return LogRROs?.Where(el => el.IdWorkplacePay == IdWorkplacePay && el.TypeOperation == eTypeOperation.Sale)?.FirstOrDefault()?.FiscalNumber ?? NumberReceipt; } }
         public bool ReCalc()
         {
             SumWallet = Payment?.Where(r => r.TypePay == eTypePay.Wallet).Sum(r => r.SumPay) ?? 0;
