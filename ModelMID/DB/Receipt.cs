@@ -30,6 +30,8 @@ namespace ModelMID
         public string TranslationTypeReceipt { get { return TypeReceipt.GetDescription(); } }
         public Guid TerminalId { get; set; }
 
+        public string FiscalHead { get; set; }
+
         int _CodeClient;
         public int CodeClient { get { return Client?.CodeClient ?? _CodeClient; } set { _CodeClient = value; } }
         public Client Client { get; set; }
