@@ -154,7 +154,7 @@ namespace ModelMID
 
         public string FiscalQR { get; set; }
         
-        IEnumerable<TaxResult> _Taxes;
+        public IEnumerable<TaxResult> _Taxes;
         /// <summary>
         /// Податки отриманні з фіскалки після фіскалізації
         /// </summary>

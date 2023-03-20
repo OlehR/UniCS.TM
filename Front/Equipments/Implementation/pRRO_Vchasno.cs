@@ -270,7 +270,9 @@ namespace Front.Equipments.Implementation
             Responce<ResponceReceipt> Res = pRes as Responce<ResponceReceipt>;
             if (Res != null && Res.info != null && Res.info.printinfo != null)
             {
-                pR.Taxes = Res.info.printinfo.taxes?.Select(el => new TaxResult() { Name = el.tax_fname, Sum = el.tax_sum, IdWorkplacePay= pR.IdWorkplacePay });
+                var List = pR._Taxes?.ToList()??new List<TaxResult>();
+                List.AddRange(  Res.info.printinfo.taxes?.Select(el => new TaxResult() { Name = el.tax_fname, Sum = el.tax_sum, IdWorkplacePay= pR.IdWorkplacePay }));
+                pR._Taxes = List;
                 string QR = null;
                 var QRs = Res.info.printinfo.qr?.Split(";");
                 if (QRs.Length >= 4)
