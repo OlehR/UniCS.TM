@@ -284,8 +284,7 @@ namespace Front.Equipments.Implementation
                             QRs[2]?.Split(":")[1] + Environment.NewLine + QRs[1]?.Split(":")[1];
                     }
                     catch (Exception) { QR = Res.info.printinfo.qr; }
-                    pR.FiscalQR = QR;
-
+                    pR.FiscalQRs.Add(IdWorkplacePay,QR);
 
                     foreach (var el in Res.info.printinfo.goods)
                     {

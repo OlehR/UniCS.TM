@@ -154,7 +154,8 @@ namespace ModelMID
         //public bool _IsLockChange = false;
         public bool IsLockChange { get { return /*_IsLockChange ||*/ StateReceipt != eStateReceipt.Prepare || SumBonus > 0m; } }
 
-        public string FiscalQR { get; set; }
+        public SortedList<int, string> FiscalQRs = new();
+        public string FiscalQR { get { return FiscalQRs[IdWorkplacePay]; } }
         
         public IEnumerable<TaxResult> _Taxes;
         /// <summary>
