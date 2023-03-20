@@ -153,13 +153,14 @@ namespace Front.Equipments
                 }
 
 
-                topPosition = PrintLine(e, $"ФН чеку {Receipt.NumberReceiptRRO}", topPosition, maxChar);
+                topPosition = PrintLine(e, $"ФН чеку {Receipt.FiscalReceipt}", topPosition, maxChar);
+                topPosition = PrintLine(e, $"ФН ПРРО {Receipt.FiscalId}", topPosition, maxChar);
                 topPosition = PrintLine(e, DateTime.Now.ToString("dd/MM/yyyy H:mm"), topPosition, maxChar);
                 string QRInfo = string.IsNullOrEmpty(Receipt.FiscalQR) ? "no data available" : Receipt.FiscalQR;
                 var qrCodeData = qrGenerator.CreateQrCode(QRInfo, QRCodeGenerator.ECCLevel.Q);
                 var qrCode = new QRCode(qrCodeData);
                 var QRImage = qrCode.GetGraphic(1);
-                e.Graphics.DrawImage(QRImage, (int)((WIDTHPAGE - QRImage.Width)*0.85 / 2), topPosition);
+                e.Graphics.DrawImage(QRImage, (int)((WIDTHPAGE - QRImage.Width) * 0.85 / 2), topPosition += TopIndent+1);
                 topPosition += QRImage.Height;
 
                 if (Receipt.TypeReceipt == eTypeReceipt.Sale)
@@ -177,7 +178,15 @@ namespace Front.Equipments
         {
             int leftPosition = 0;
             string tmpVar = str;
-            int pos = tmpVar.Length > maxChar ? tmpVar.Substring(0, maxChar).LastIndexOf(" ") : tmpVar.Length;
+            int pos = 0;
+            if (str.Contains(Environment.NewLine))
+            {
+                pos = str.IndexOf(Environment.NewLine);
+                str = str.Replace(Environment.NewLine, " ");
+                tmpVar = str;
+            }
+            else
+                pos = tmpVar.Length > maxChar ? tmpVar.Substring(0, maxChar).LastIndexOf(" ") : tmpVar.Length;
 
             while (str.Length > 0)
             {
