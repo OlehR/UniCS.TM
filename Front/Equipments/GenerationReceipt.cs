@@ -44,7 +44,7 @@ namespace Front.Equipments
             TopIndent = FONTSIZE + 1;
             //Винести ці поля в конфіг файл
             string companyName = "ТОВ \"Ужгород ПСЮ\"";
-            string pointOfSale = "Супермаркет ВОПАК";
+            string pointOfSale = Receipt.FiscalHead; //"Супермаркет ВОПАК";
             string address = "Закарпатська обл, м. Ужгород, вул. Бестужева, буд. 9";
             //
             string nameCashier = $"Касир: {Receipt.NameCashier}";
@@ -54,9 +54,9 @@ namespace Front.Equipments
                 Receipt.IdWorkplacePay = IdWorkplacePays[i];
                 //Друк шапки
 
-                topPosition = PrintCenter(e, companyName, topPosition - TopIndent, maxChar, MainFont);
+                //topPosition = PrintCenter(e, companyName, topPosition - TopIndent, maxChar, MainFont);
                 topPosition = PrintCenter(e, pointOfSale, topPosition, maxChar, MainFont);
-                topPosition = PrintCenter(e, address, topPosition, maxChar, MainFont);
+                //topPosition = PrintCenter(e, address, topPosition, maxChar, MainFont);
 
                 // касир, номер чеку в 1С, власник картки та бонуси 
                 topPosition = PrintLine(e, nameCashier, topPosition, maxChar);
@@ -182,7 +182,7 @@ namespace Front.Equipments
             while (str.Length > 0)
             {
                 str = tmpVar.Substring(0, pos);
-                leftPosition = (WIDTHPAGE - (FONTSIZE * str.Length)) / 2;
+                leftPosition = Math.Abs((WIDTHPAGE - (FONTSIZE * str.Length)) / 2);
                 if (!string.IsNullOrEmpty(str))
                     e.Graphics.DrawString(str, MainFont, Brushes.Black, leftPosition, topPosition += TopIndent);
                 tmpVar = tmpVar.Substring(pos);
