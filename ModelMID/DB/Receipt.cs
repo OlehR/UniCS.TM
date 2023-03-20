@@ -156,7 +156,10 @@ namespace ModelMID
 
         public SortedList<int, string> FiscalQRs = new();
         public string FiscalQR { get { return FiscalQRs[IdWorkplacePay]; } }
-        
+        public SortedList<int, string> FiscalIds = new();
+        public string FiscalId { get {return FiscalIds[IdWorkplacePay]; } }
+
+
         public IEnumerable<TaxResult> _Taxes;
         /// <summary>
         /// Податки отриманні з фіскалки після фіскалізації

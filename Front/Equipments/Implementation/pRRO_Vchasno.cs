@@ -18,6 +18,7 @@ using SharedLib;
 using System.Xml.Linq;
 using ModernExpo.SelfCheckout.Devices.FP700;
 using System.Windows.Documents;
+using ModernExpo.SelfCheckout.Utils;
 
 namespace Front.Equipments.Implementation
 {
@@ -285,6 +286,7 @@ namespace Front.Equipments.Implementation
                     }
                     catch (Exception) { QR = Res.info.printinfo.qr; }
                     pR.FiscalQRs.Add(IdWorkplacePay,QR);
+                    pR.FiscalIds.Add(IdWorkplacePay, Res.info.printinfo.fisid.ToString());
 
                     foreach (var el in Res.info.printinfo.goods)
                     {
