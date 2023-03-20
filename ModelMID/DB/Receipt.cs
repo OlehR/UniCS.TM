@@ -322,6 +322,8 @@ namespace ModelMID
 
         public int[] IdWorkplacePays { get { return _Wares?.Select(el => el.IdWorkplacePay).Distinct().OrderBy(el => el).ToArray() ?? Array.Empty<int>(); } }
 
+        public IEnumerable<LogRRO> LogRROs;
+        public string FiscalReceipt { get { return LogRROs.Where(el => el.IdWorkplacePay == IdWorkplacePay && el.TypeOperation == eTypeOperation.Sale)?.FirstOrDefault().FiscalNumber ?? NumberReceipt; } }
         public bool ReCalc()
         {
             SumWallet = Payment?.Where(r => r.TypePay == eTypePay.Wallet).Sum(r => r.SumPay) ?? 0;

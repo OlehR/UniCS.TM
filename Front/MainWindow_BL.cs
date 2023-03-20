@@ -596,6 +596,7 @@ namespace Front
                     }
                     finally
                     { R.IdWorkplacePay = 0; }
+                    R.LogRROs = Bl.db.GetLogRRO(pR);
                 }
                 if (R.StateReceipt == eStateReceipt.Print || R.StateReceipt == eStateReceipt.Send)
                 {

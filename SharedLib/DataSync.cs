@@ -94,7 +94,6 @@ namespace SharedLib
         {
             try
             {
-
                 foreach (var el in pReceipt.IdWorkplacePays)
                 {
                     pReceipt.IdWorkplacePay = el;
