@@ -380,6 +380,7 @@ namespace SharedLib
  
                     r.Payment = GetPayment(parIdReceipt);
                     r.ReceiptEvent = GetReceiptEvent(parIdReceipt);
+                    r.LogRROs = GetLogRRO(parIdReceipt);
                 }
                 return r;
             }
