@@ -157,6 +157,9 @@ namespace ModelMID
         public SortedList<int, string> FiscalQRs = new();
         public string FiscalQR { get { return FiscalQRs[IdWorkplacePay]; } }
         public SortedList<int, string> FiscalIds = new();
+        /// <summary>
+        /// Фіскальний номер апарата
+        /// </summary>
         public string FiscalId { get {return FiscalIds[IdWorkplacePay]; } }
 
 
