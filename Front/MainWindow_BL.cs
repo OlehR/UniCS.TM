@@ -595,8 +595,7 @@ namespace Front
                         FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
                     }
                     finally
-                    { R.IdWorkplacePay = 0; }
-                    R.LogRROs = Bl.db.GetLogRRO(R);
+                    { R.IdWorkplacePay = 0; }                    
                 }
                 if (R.StateReceipt == eStateReceipt.Print || R.StateReceipt == eStateReceipt.Send)
                 {
