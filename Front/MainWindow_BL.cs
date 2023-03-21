@@ -598,9 +598,8 @@ namespace Front
                     { R.IdWorkplacePay = 0; }                    
                 }
                 if (R.StateReceipt == eStateReceipt.Print || R.StateReceipt == eStateReceipt.Send)
-                {
-                    var CustomReceipt = new GenerationReceipt();
-                    CustomReceipt.PrintReceipt(R);
+                {                    
+                    EF.Print(R);
                 }
                 SetStateView(eStateMainWindows.WaitInput);
                 if (TextError != null)

@@ -372,9 +372,7 @@ namespace SharedLib
                     }
                 }
                 if (isGood)
-                {
-                    //Cat2.First()._Sum = Cat2.First().Sum; //Трохи костиль !!!!
-                    //Cat2.First().Quantity = 0;
+                {                    
                     db.ReplaceWaresReceiptPromotion(Cat2);
                     db.InsertBarCode2Cat(Cat2First);
                     db.RecalcHeadReceipt(pIdReceipt);
@@ -502,11 +500,12 @@ where RE.EVENT_TYPE=1"
 ""created-at"": 0,
 ""ttl"": 1,
 ""ttl-type"": 0,
-""amount"": 100,
+""amount"": {Price},
 ""amount-base"": 3,
 ""plu-from"": {PLU},
 ""plu-to"": 0
-}".Replace("{Order}", (++pOrder).ToString()).Replace("{PLU}", pReceiptWares.PLU.ToString()).Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString());
+}".Replace("{Order}", (++pOrder).ToString()).Replace("{PLU}", pReceiptWares.PLU.ToString()).
+Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace("{Price}", "100" /*((int)pReceiptWares.PriceDealer * 100m).ToString()*/); 
 
             List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(pReceiptWares) { EventType = eReceiptEventType.AskQR, EventName = Body, CreatedAt = DateTime.Now } };
             try

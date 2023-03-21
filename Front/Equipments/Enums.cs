@@ -280,7 +280,9 @@ namespace Front.Equipments
         [Description("Кольоровий покажчик")]
         Signal,
         [Description("Фіскальний апарат")]
-        RRO
+        RRO,
+        [Description("Друкарка")]
+        Printer
     }
 
     /// <summary>
@@ -319,6 +321,8 @@ namespace Front.Equipments
         pRRo_WebCheck,
         [Description("пФР Vchasno")]
         pRRO_Vchasno,
+        [Description("Друкарка Sam4s Gcube102")]
+        Printer_Sam4sGcube102,
         [Description("Віртуальний ФР")]
         VirtualRRO,
         [Description("Віртуальна вага")]
@@ -331,21 +335,13 @@ namespace Front.Equipments
         /// </summary>
         VirtualControlScale
 
-    }
-
-
-    //public enum eDirectMoveCash { In=1,Out=0}
+    }   
 
     public enum eTypeOperarionRRO
     { MoveCash, PrintReceipt }
 
     static class ModelMethods
-    {
-        /*public static ePosStatus GetPosStatusFromStatus(this Front.Equipments.Ingenico.ePosStatus pModel)
-        {
-            return (ePosStatus)(int)pModel;
-        }*/
-
+    {        
         public static eTypeEquipment GetTypeEquipment(this eModelEquipment pModel)
         {
             switch (pModel)
@@ -374,8 +370,9 @@ namespace Front.Equipments
                 case eModelEquipment.VirtualRRO:
                 case eModelEquipment.FP700:
                 case eModelEquipment.pRRO_Vchasno:
-
                     return eTypeEquipment.RRO;
+                case eModelEquipment.Printer_Sam4sGcube102:
+                    return eTypeEquipment.Printer;
                 default:
                     return eTypeEquipment.NotDefine;
             }

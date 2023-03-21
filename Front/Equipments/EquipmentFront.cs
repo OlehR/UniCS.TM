@@ -32,6 +32,7 @@ namespace Front
         readonly BL Bl = BL.GetBL;
         Scaner Scaner;
         Scale Scale;
+        Printer Printer;
         public Scale ControlScale;
         SignalFlag Signal;
         BankTerminal Terminal;
@@ -144,138 +145,175 @@ namespace Front
 
             var NewListEquipment = new List<Equipment>();
             var config = GetConfig();
+            Equipment ElEquipment;
             //State = eStateEquipment.Init;
             try
             {
-                //Scaner
-                var ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Scaner).First();
-                switch (ElEquipment.Model)
+                try
                 {
-                    case eModelEquipment.MagellanScaner:
-                        Scaner = new MagellanScaner(ElEquipment, config, LF, pSetBarCode);
-                        break;
-                    case eModelEquipment.VirtualScaner:
-                        Scaner = new VirtualScaner(ElEquipment, config, LF, pSetBarCode);
-                        break;
-                    case eModelEquipment.ScanerKeyBoard:
-                        ScanerKeyBoard Sc = new ScanerKeyBoard(ElEquipment, config, LF, pSetBarCode);
-                        if(W!=null)
-                            W.KeyUp += Sc.Key_UP;
-                        Scaner = Sc;
-                        break;
-                    default:
-                        Scaner = new Scaner(ElEquipment, config);
-                        break;
+                    //Scaner
+                    ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Scaner).First();
+                    switch (ElEquipment.Model)
+                    {
+                        case eModelEquipment.MagellanScaner:
+                            Scaner = new MagellanScaner(ElEquipment, config, LF, pSetBarCode);
+                            break;
+                        case eModelEquipment.VirtualScaner:
+                            Scaner = new VirtualScaner(ElEquipment, config, LF, pSetBarCode);
+                            break;
+                        case eModelEquipment.ScanerKeyBoard:
+                            ScanerKeyBoard Sc = new ScanerKeyBoard(ElEquipment, config, LF, pSetBarCode);
+                            if (W != null)
+                                W.KeyUp += Sc.Key_UP;
+                            Scaner = Sc;
+                            break;
+                        default:
+                            Scaner = new Scaner(ElEquipment, config);
+                            break;
+                    }
+                    NewListEquipment.Add(Scaner);
                 }
-                NewListEquipment.Add(Scaner);
-
+                catch { };
                 //Scale
-                ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Scale)?.First();
-                switch (ElEquipment.Model)
+                try
                 {
-                    case eModelEquipment.MagellanScale:
-                        Scale = new MagellanScale(((MagellanScaner)Scaner), OnWeight);//TMP!!! OnControlWeight - Нафіг                        
-                        break;
-                    case eModelEquipment.VirtualScale:
-                        Scale = new VirtualScale(ElEquipment, config, LF, OnWeight);
-                        break;
-                    case eModelEquipment.ScaleCom:
-                        Scale = new ScaleCom(ElEquipment, config, LF, OnWeight);
-                        break;
-                    default:
-                        Scale = new Scale(ElEquipment, config);
-                        break;
-                }
-                NewListEquipment.Add(Scale);
-
-                //ControlScale               
-                var Equipments = ListEquipment.Where(e => e.Type == eTypeEquipment.ControlScale);
-                if (Equipments.Any())
-                {
-                    ElEquipment = Equipments.First();
+                    ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Scale)?.First();
                     switch (ElEquipment.Model)
                     {
-                        case eModelEquipment.ScaleModern:
-                            ControlScale = new ScaleModern(ElEquipment, config, LF, ControlWeight);
+                        case eModelEquipment.MagellanScale:
+                            Scale = new MagellanScale(((MagellanScaner)Scaner), OnWeight);//TMP!!! OnControlWeight - Нафіг                        
                             break;
-                        case eModelEquipment.VirtualControlScale:
-                            ControlScale = new VirtualControlScale(ElEquipment, config, LF, null);
-                            Scale?.StartWeight();
+                        case eModelEquipment.VirtualScale:
+                            Scale = new VirtualScale(ElEquipment, config, LF, OnWeight);
+                            break;
+                        case eModelEquipment.ScaleCom:
+                            Scale = new ScaleCom(ElEquipment, config, LF, OnWeight);
                             break;
                         default:
-                            ControlScale = new Scale(ElEquipment, config);
-                            //NewListEquipment.Add(ControlScale);
+                            Scale = new Scale(ElEquipment, config);
                             break;
                     }
-                    NewListEquipment.Add(ControlScale);
+                    NewListEquipment.Add(Scale);
                 }
+                catch { };
+                //ControlScale
+                IEnumerable<Equipment> Equipments;
+                try
+                {
+                    Equipments = ListEquipment.Where(e => e.Type == eTypeEquipment.ControlScale);
+                    if (Equipments.Any())
+                    {
+                        ElEquipment = Equipments.First();
+                        switch (ElEquipment.Model)
+                        {
+                            case eModelEquipment.ScaleModern:
+                                ControlScale = new ScaleModern(ElEquipment, config, LF, ControlWeight);
+                                break;
+                            case eModelEquipment.VirtualControlScale:
+                                ControlScale = new VirtualControlScale(ElEquipment, config, LF, null);
+                                Scale?.StartWeight();
+                                break;
+                            default:
+                                ControlScale = new Scale(ElEquipment, config);
+                                //NewListEquipment.Add(ControlScale);
+                                break;
+                        }
+                        NewListEquipment.Add(ControlScale);
+                    }
+                }
+                catch { }
                 //Flag
-                Equipments = ListEquipment.Where(e => e.Type == eTypeEquipment.Signal);
-                if (Equipments.Any())
+                try
                 {
-                    ElEquipment = Equipments.First();
-                    if (ElEquipment.Model == eModelEquipment.SignalFlagModern)
-                        Signal = new SignalFlagModern(ElEquipment, config);
-                    else
-                        Signal = new SignalFlag(ElEquipment, config);
-                    NewListEquipment.Add(Signal);
-                }
+                    Equipments = ListEquipment.Where(e => e.Type == eTypeEquipment.Signal);
+                    if (Equipments.Any())
+                    {
+                        ElEquipment = Equipments.First();
+                        if (ElEquipment.Model == eModelEquipment.SignalFlagModern)
+                            Signal = new SignalFlagModern(ElEquipment, config);
+                        else
+                            Signal = new SignalFlag(ElEquipment, config);
+                        NewListEquipment.Add(Signal);
+                    }
+                } catch { }
                 //Bank Pos Terminal
-
-                foreach (var el in GetBankTerminal)
+                try
                 {
-                    ElEquipment = el;
+                    foreach (var el in GetBankTerminal)
+                    {
+                        ElEquipment = el;
 
+                        switch (ElEquipment.Model)
+                        {
+                            case eModelEquipment.Ingenico:
+                                Terminal = new Ingenico(el, config, LF, PosStatus);
+                                break;
+                            case eModelEquipment.VirtualBankPOS:
+                                Terminal = new VirtualBankPOS(el, config, LF, PosStatus);
+                                break;
+                            default:
+                                Terminal = new BankTerminal(el, config);
+                                break;
+                        }
+                        NewListEquipment.Add(Terminal);
+                    }
+                } catch { }
+
+                //RRO
+                try
+                {
+                    foreach (var el in ListEquipment.Where(e => e.Type == eTypeEquipment.RRO))
+                    {
+                        Rro RRO;
+                        switch (el.Model)
+                        {
+                            case eModelEquipment.ExellioFP:
+                                RRO = new Equipments.ExellioFP(el, config, LF);
+                                break;
+                            case eModelEquipment.pRRO_SG:
+                                RRO = new Front.Equipments.pRRO_SG.pRRO_SG(el, config, LF, pActionStatus);
+                                break;
+                            case eModelEquipment.pRRo_WebCheck:
+                                RRO = new pRRO_WebCheck(el, config, LF, pActionStatus);
+                                RRO.Init();
+                                break;
+                            case eModelEquipment.Maria:
+                                RRO = new RRO_Maria(el, config, LF, pActionStatus);
+                                break;
+                            case eModelEquipment.VirtualRRO:
+                                RRO = new VirtualRRO(el, config, LF, pActionStatus);
+                                break;
+                            case eModelEquipment.FP700:
+                                RRO = new RRO_FP700(el, config, LF, pActionStatus);
+                                break;
+                            case eModelEquipment.pRRO_Vchasno:
+                                RRO = new pRRO_Vchasno(el, config, LF, pActionStatus);
+                                break;
+                            default:
+                                RRO = new Rro(el, config);
+                                break;
+                        }
+                        NewListEquipment.Add(RRO);
+                        RROs.Add(RRO.IdWorkplacePay, RRO);
+                    }
+                  
+                } catch { }
+
+                //Принтер
+                try
+                {
+                    ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Printer)?.First();
                     switch (ElEquipment.Model)
                     {
-                        case eModelEquipment.Ingenico:
-                            Terminal = new Ingenico(el, config, LF, PosStatus);
-                            break;
-                        case eModelEquipment.VirtualBankPOS:
-                            Terminal = new VirtualBankPOS(el, config, LF, PosStatus);
+                        case eModelEquipment.Printer_Sam4sGcube102:
+                            Printer = new Printer_Sam4sGcube102(ElEquipment, config, LF);
                             break;
                         default:
-                            Terminal = new BankTerminal(el, config);
+                             Printer = new Printer(ElEquipment, config);
                             break;
                     }
-                    NewListEquipment.Add(Terminal);
                 }
-
-                //RRO                
-                foreach(var el in ListEquipment.Where(e => e.Type == eTypeEquipment.RRO))
-                {
-                    Rro RRO;
-                    switch (el.Model)
-                    {
-                        case eModelEquipment.ExellioFP:
-                            RRO = new Equipments.ExellioFP(el, config, LF);
-                            break;
-                        case eModelEquipment.pRRO_SG:
-                            RRO = new Front.Equipments.pRRO_SG.pRRO_SG(el, config, LF, pActionStatus);
-                            break;
-                        case eModelEquipment.pRRo_WebCheck:
-                            RRO = new pRRO_WebCheck(el, config, LF, pActionStatus);
-                            RRO.Init();
-                            break;
-                        case eModelEquipment.Maria:
-                            RRO = new RRO_Maria(el, config, LF, pActionStatus);
-                            break;
-                        case eModelEquipment.VirtualRRO:
-                            RRO = new VirtualRRO(el, config, LF, pActionStatus);
-                            break;
-                        case eModelEquipment.FP700:
-                            RRO = new RRO_FP700(el, config, LF, pActionStatus);
-                            break;
-                        case eModelEquipment.pRRO_Vchasno:
-                            RRO = new pRRO_Vchasno(el, config, LF, pActionStatus);
-                            break;
-                        default:
-                            RRO = new Rro(el, config);
-                            break;
-                    }
-                    NewListEquipment.Add(RRO);
-                    RROs.Add(RRO.IdWorkplacePay,RRO);
-                }
+                catch { }
                 ListEquipment = NewListEquipment;
                 //Передаємо зміни станусів наверх.
                 foreach (var el in NewListEquipment)
@@ -571,24 +609,34 @@ namespace Front
             {
                 var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
                 {
-                    var RRO = GetRRO(pReceipt.IdWorkplacePay);
                     LogRRO Res;
-                    try
+                    if (Printer != null)
                     {
-                        Res = WaitRRO(pReceipt, eTypeOperation.NoFiscalReceipt);
-                        if (Res == null)
-                            Res = RRO?.PrintNoFiscalReceipt(pR);
-                        Bl.InsertLogRRO(Res);                       
+                        bool r=Printer.Print(pR);
+                        Res=new LogRRO() { TypeOperation = eTypeOperation.NoFiscalReceipt, TypeRRO = Printer.Model.ToString(), CodeError = r?0:-1 };
                     }
-                    catch (Exception e)
+                    else
                     {
-                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
-                        SetStatus?.Invoke(new StatusEquipment(RRO.Model, eStateEquipment.Error, e.Message) { IsСritical = false });
-                        Res= new LogRRO() { TypeOperation = eTypeOperation.NoFiscalReceipt, TypeRRO = RRO?.Model.ToString(), CodeError = -1, Error = e.Message };
-                    }
-                    finally
-                    {
-                        curTypeOperation = eTypeOperation.NotDefine;
+                        var RRO = GetRRO(pReceipt.IdWorkplacePay);
+                        
+                        try
+                        {
+                            Res = WaitRRO(pReceipt, eTypeOperation.NoFiscalReceipt);
+                            if (Res == null)
+                                Res = RRO?.PrintNoFiscalReceipt(pR);
+                            Bl.InsertLogRRO(Res);
+                        }
+                        catch (Exception e)
+                        {
+                            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+                            SetStatus?.Invoke(new StatusEquipment(RRO.Model, eStateEquipment.Error, e.Message) { IsСritical = false });
+                            Res = new LogRRO() { TypeOperation = eTypeOperation.NoFiscalReceipt, TypeRRO = RRO?.Model.ToString(), CodeError = -1, Error = e.Message };
+                        }
+
+                        finally
+                        {
+                            curTypeOperation = eTypeOperation.NotDefine;
+                        }
                     }
                     return Res;
                 }
@@ -644,6 +692,10 @@ namespace Front
         }
         #endregion
 
+        public bool Print(Receipt pR)
+        {
+           return Printer?.PrintReceipt(pR)??true;
+        }
         #region POS        
 
         /// <summary>
