@@ -366,6 +366,9 @@ namespace Front
                             pReceipt.Wares = rr;
                         }
                         Res = RRO?.PrintReceipt(pReceipt);
+                        var Log = pReceipt.LogRROs?.ToList()?? new List<LogRRO>();
+                        Log.Add(Res);
+                        pReceipt.LogRROs=Log;
                         FileLogger.WriteLogMessage(this, NameMetod, "End Print Receipt");
                     }
                 }
