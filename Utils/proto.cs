@@ -21,6 +21,7 @@ namespace Utils
             NullValueHandling = NullValueHandling.Ignore,
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore
         }; //, Culture = MyCulture 
+
         public static string ToJSON(this object s)
         {
             var res = JsonConvert.SerializeObject(s, JsonSettings);
@@ -51,6 +52,7 @@ namespace Utils
         {
             return Convert.ToString(s, CultureInfo.InvariantCulture);            
          }
+
         public static string GetDescription(this Enum value)
         {
             var enumMember = value.GetType().GetMember(value.ToString()).FirstOrDefault();
@@ -62,6 +64,23 @@ namespace Utils
                 descriptionAttribute == null
                     ? value.ToString()
                     : descriptionAttribute.Description;
+        }
+
+        public static DateTime ToDateTime(this string s,
+                  string format = "ddMMyyyy", string cultureString = "tr-TR")
+        {
+            try
+            {
+                var r = DateTime.ParseExact(
+                    s: s,
+                    format: format,
+                    provider: CultureInfo.GetCultureInfo(cultureString));
+                return r;
+            }
+            catch (Exception)
+            {
+                return DateTime.MinValue;
+            }            
         }
 
     }

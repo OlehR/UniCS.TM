@@ -1,5 +1,6 @@
 ﻿using ModelMID.DB;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,8 +30,6 @@ namespace ModelMID
         /// </summary>
         public string TranslationTypeReceipt { get { return TypeReceipt.GetDescription(); } }
         public Guid TerminalId { get; set; }
-
-        public string FiscalHead { get; set; }
 
         int _CodeClient;
         public int CodeClient { get { return Client?.CodeClient ?? _CodeClient; } set { _CodeClient = value; } }
@@ -127,10 +126,10 @@ namespace ModelMID
         public IEnumerable<ReceiptWares> _Wares;
         public IEnumerable<ReceiptWares> Wares { get {
                 IEnumerable<ReceiptWares> res = null;
-                if (IdWorkplacePay == 0 || _Wares == null) 
+                if (IdWorkplacePay == 0 || _Wares == null)
                     res = _Wares;
                 else
-                    res= _Wares.Where(el => el.IdWorkplacePay == IdWorkplacePay && el.Quantity != 0m);
+                    res = _Wares.Where(el => el.IdWorkplacePay == IdWorkplacePay && el.Quantity != 0m);
                 if (IdWorkplacePay == IdWorkplace)
                 {
                     decimal SumWallet = Payment?.Where(r => r.TypePay == eTypePay.Wallet).Sum(r => r.SumPay) ?? 0;
@@ -139,7 +138,7 @@ namespace ModelMID
                         var r = res.ToList();
                         r.Add(new ReceiptWares(this)
                         { CodeWares = Global.CodeWaresWallet, Quantity = 1, CodeUnit = 19, CodeDefaultUnit = 19, Sum = -SumWallet, NameWares = "Скарбничка", TypeVat = 2, PercentVat = 20 });
-                        res= r;
+                        res = r;
                     }
                 }
                 return res;
@@ -148,26 +147,26 @@ namespace ModelMID
 
         IEnumerable<Payment> _Payment;
         public IEnumerable<Payment> Payment { get { return IdWorkplacePay == 0 || _Payment == null ? _Payment : _Payment.Where(el => el.IdWorkplacePay == IdWorkplacePay); } set { _Payment = value; } }
-        
+
         public IEnumerable<ReceiptEvent> ReceiptEvent { get; set; }
 
         //public bool _IsLockChange = false;
         public bool IsLockChange { get { return /*_IsLockChange ||*/ StateReceipt != eStateReceipt.Prepare || SumBonus > 0m; } }
 
-        public SortedList<int, string> FiscalQRs = new();
-        public string FiscalQR { get { return FiscalQRs.ContainsKey(IdWorkplacePay)? FiscalQRs[IdWorkplacePay]:null; } }
-        public SortedList<int, string> FiscalIds = new();
+        
+        //public string FiscalQR { get { return Fiscal?.QR ; } }
+       
         /// <summary>
         /// Фіскальний номер апарата
         /// </summary>
-        public string FiscalId { get {return FiscalIds.ContainsKey(IdWorkplacePay)? FiscalIds[IdWorkplacePay]:null; } }
+        //public string FiscalId { get { return Fiscal?.Id; } }
 
 
-        public IEnumerable<TaxResult> _Taxes;
+        //public IEnumerable<TaxResult> _Taxes;
         /// <summary>
         /// Податки отриманні з фіскалки після фіскалізації
         /// </summary>
-        public IEnumerable<TaxResult> Taxes { get { return IdWorkplacePay == 0 || _Taxes == null ? _Taxes : _Taxes.Where(el => el.IdWorkplacePay == IdWorkplacePay); } set { _Taxes = value; } }
+        //public IEnumerable<TaxResult> Taxes { get { return Fiscal?.Taxes; } }
 
         /// <summary>
         /// Чи є підтвердження обмеження віку.
@@ -185,6 +184,11 @@ namespace ModelMID
                 return Res;
             }
         }
+
+       // public string FiscalsJSON { get { return Fiscals.ToJSON(); } }
+        public SortedList<int,Fiscal> Fiscals = new();
+
+        public Fiscal Fiscal { get { if(Fiscals.ContainsKey(IdWorkplacePay)) return Fiscals[IdWorkplacePay]; return null; } }
         /// <summary>
         ///  Чи є товар, який потребує підтвердження віку. (0 не потребує підтверження віку)
         /// </summary>
@@ -277,7 +281,7 @@ namespace ModelMID
         public double OwnBag { get { return ReceiptEvent?.Sum(r => Convert.ToDouble(r.ProductConfirmedWeight)) ?? 0d; } }
 
         public WorkplacePay[] WorkplacePays { get; set; }
-        
+
         public List<string> ReceiptComments
         {
             get
@@ -296,7 +300,7 @@ namespace ModelMID
 
             }
         }
-       
+
         public bool IsQR()
         {
             return Wares?.Where(r => !string.IsNullOrEmpty(r.QR)).Any() ?? false;
@@ -330,7 +334,7 @@ namespace ModelMID
         public int[] IdWorkplacePays { get { return _Wares?.Select(el => el.IdWorkplacePay).Distinct().OrderBy(el => el).ToArray() ?? Array.Empty<int>(); } }
 
         public IEnumerable<LogRRO> LogRROs;
-        public string FiscalReceipt { get { return LogRROs?.Where(el => el.IdWorkplacePay == IdWorkplacePay && el.TypeOperation == eTypeOperation.Sale)?.FirstOrDefault()?.FiscalNumber ?? NumberReceipt; } }
+        //public string FiscalReceipt { get { return LogRROs?.Where(el => el.IdWorkplacePay == IdWorkplacePay && el.TypeOperation == eTypeOperation.Sale)?.FirstOrDefault()?.FiscalNumber ?? NumberReceipt; } }
         public bool ReCalc()
         {
             SumWallet = Payment?.Where(r => r.TypePay == eTypePay.Wallet).Sum(r => r.SumPay) ?? 0;
@@ -353,23 +357,23 @@ namespace ModelMID
             }
             var SumBonusPay = Payment?.Where(r => r.TypePay == eTypePay.Wallet).Sum(r => r.SumExt) ?? 0;
 
-            if(SumBonusPay > 0) 
+            if (SumBonusPay > 0)
             {
                 var NotOrdinaryWares = Wares.Where(el => el.TypeWares != eTypeWares.Ordinary);
-                if(!NotOrdinaryWares.Any())
+                if (!NotOrdinaryWares.Any())
                 {
                     decimal SumTotal = 0m;
-                    foreach(var el in Wares)
+                    foreach (var el in Wares)
                     {
                         el.SumBonus = 0;
                         el.SumBonus = el.SumTotal - 0.01m;
                         SumTotal = el.SumTotal;
                         SumBonus += el.SumBonus;
                     }
-                    if(SumTotal < 0.06m) 
+                    if (SumTotal < 0.06m)
                     {
                         var Wr = Wares.First();
-                        decimal delta= (0.06m - SumTotal);
+                        decimal delta = (0.06m - SumTotal);
                         Wr.SumBonus -= delta;
                         SumBonus -= delta;
                     }
@@ -389,8 +393,40 @@ namespace ModelMID
     public class TaxResult
     {
         public int IdWorkplacePay { get; set; }
-        public string Name { get; set;}
+        public string Name { get; set; }
         public decimal Sum { get; set; }
     }
-
+    public class Fiscal
+    {
+        public int IdWorkplacePay { get; set; }
+        /// <summary>
+        /// Номер фіскалки
+        /// </summary>
+        public string Id { get; set; }
+        /// <summary>
+        /// Фіскальний номер чека
+        /// </summary>
+        public string Number { get; set; }
+        /// <summary>
+        /// Заголовок чека (Компанія адреса)
+        /// </summary>
+        public string Head { get; set; }
+        /// <summary>
+        /// Фіскалізована сума
+        /// </summary>
+        public decimal Sum { get; set; }
+        /// <summary>
+        /// Здача
+        /// </summary>
+        public decimal SumRest { get; set; }
+        /// <summary>
+        /// QR код для чека
+        /// </summary>
+        public string QR { get; set; }
+        /// <summary>
+        /// Час чека
+        /// </summary>
+        public DateTime DT { get; set; }
+        public IEnumerable<TaxResult> Taxes { get; set; }
+    }
 }

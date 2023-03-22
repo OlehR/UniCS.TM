@@ -270,11 +270,7 @@ namespace Front.Equipments.Implementation
         {
             Responce<ResponceReceipt> Res = pRes as Responce<ResponceReceipt>;
             if (Res != null && Res.info != null && Res.info.printinfo != null)
-            {
-                pR.FiscalHead = $"{Res.info.printinfo?.name}{Environment.NewLine}{Res.info.printinfo?.shopad}";
-                var List = pR._Taxes?.ToList()??new List<TaxResult>();
-                List.AddRange(  Res.info.printinfo.taxes?.Select(el => new TaxResult() { Name = el.tax_fname, Sum = el.tax_sum, IdWorkplacePay= pR.IdWorkplacePay }));
-                pR._Taxes = List;
+            {                
                 string QR = null;
                 var QRs = Res.info.printinfo.qr?.Split(";");
                 if (QRs.Length >= 4)
@@ -285,21 +281,31 @@ namespace Front.Equipments.Implementation
                             QRs[2]?.Split(":")[1] + Environment.NewLine + QRs[1]?.Split(":")[1];
                     }
                     catch (Exception) { QR = Res.info.printinfo.qr; }
-                    pR.FiscalQRs.Add(IdWorkplacePay,QR);
-                    pR.FiscalIds.Add(IdWorkplacePay, Res.info.printinfo.fisid.ToString());
-
-                    foreach (var el in Res.info.printinfo.goods)
-                    {
-                        var ww = pR._Wares.Where(w => w.NameWares.Equals(el.name))?.First();
-                        if (ww != null) ww.VatChar = el.taxlit;
-                    }
-                    pR.SumRest = Res.info.printinfo.round;
-                    // pR.SumFiscal = Res.info.printinfo.sum_topay;
                 }
-            }
+
+                foreach (var el in Res.info.printinfo.goods)
+                {
+                    var ww = pR._Wares.Where(w => w.NameWares.Equals(el.name))?.First();
+                    if (ww != null) ww.VatChar = el.taxlit;
+                }
+                var DT=Res.info.printinfo.dt.ToDateTime("d-M-yyyy HH:mm:ss");
+                pR.Fiscals.Add(pR.IdWorkplacePay, new Fiscal()
+                {
+                    IdWorkplacePay = pR.IdWorkplacePay,
+                    QR = QR,
+                    Sum = Res.info.printinfo.sum_topay,
+                    SumRest = Res.info.printinfo.round,
+                    Id = Res.info.printinfo.fisid.ToString(),
+                    Number = Res.info.printinfo.fisn,
+                    Head = $"{Res.info.printinfo?.name}{Environment.NewLine}{Res.info.printinfo?.shopad}",
+                    Taxes = Res.info.printinfo.taxes?.Select(el => new TaxResult() { Name = el.tax_fname, Sum = el.tax_sum, IdWorkplacePay = pR.IdWorkplacePay }),
+                    DT = DT
+                });
+            };
         }
     }
 }
+
 
 namespace Front.Equipments.Implementation.ModelVchasno
 {

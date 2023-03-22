@@ -50,7 +50,7 @@ namespace Front.Equipments.Implementation
             int maxChar = (e.PageBounds.Width - 40) / FONTSIZE;
             TopIndent = FONTSIZE + 1;
             //Винести ці поля в конфіг файл            
-            string pointOfSale = Receipt.FiscalHead; //"Супермаркет ВОПАК";            
+            string pointOfSale = Receipt.Fiscal?.Head; //"Супермаркет ВОПАК";            
             //
             string nameCashier = $"Касир: {Receipt.NameCashier}";
 
@@ -122,8 +122,8 @@ namespace Front.Equipments.Implementation
 
                 e.Graphics.DrawString("Сума", FontTotalSum, Brushes.Black, rectTotalSum, stringFormatSum);
                 e.Graphics.DrawString(Receipt.SumCreditCard.ToString("C2"), FontTotalSum, Brushes.Black, rectTotalSum, stringFormatTotalPrice);
-                if (Receipt.Taxes?.Count() > 0)
-                    foreach (var item in (Receipt.Taxes))
+                if (Receipt.Fiscal?.Taxes?.Count() > 0)
+                    foreach (var item in (Receipt.Fiscal.Taxes))
                     {
                         topPosition = PrintTwoColum(e, item.Name, item.Sum.ToString("f2"), topPosition + FONTSIZE + 2, maxChar - 8);
                     }
@@ -156,10 +156,10 @@ namespace Front.Equipments.Implementation
                 }
 
 
-                topPosition = PrintLine(e, $"ФН чеку {Receipt.FiscalReceipt}", topPosition, maxChar);
-                topPosition = PrintLine(e, $"ФН ПРРО {Receipt.FiscalId}", topPosition, maxChar);
+                topPosition = PrintLine(e, $"ФН чеку {Receipt.Fiscal?.Number}", topPosition, maxChar);
+                topPosition = PrintLine(e, $"ФН ПРРО {Receipt.Fiscal?.Id}", topPosition, maxChar);
                 topPosition = PrintLine(e, DateTime.Now.ToString("dd/MM/yyyy H:mm"), topPosition, maxChar);
-                string QRInfo = string.IsNullOrEmpty(Receipt.FiscalQR) ? "no data available" : Receipt.FiscalQR;
+                string QRInfo = string.IsNullOrEmpty(Receipt.Fiscal?.QR) ? "no data available" : Receipt.Fiscal?.QR;
                 var qrCodeData = qrGenerator.CreateQrCode(QRInfo, QRCodeGenerator.ECCLevel.Q);
                 var qrCode = new QRCode(qrCodeData);
                 var QRImage = qrCode.GetGraphic(1);
