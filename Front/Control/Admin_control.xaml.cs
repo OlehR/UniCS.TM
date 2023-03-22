@@ -50,7 +50,7 @@ namespace Front.Control
         public DateTime DataOpenShift { get { return MW.DTAdminSSC; } }
         public bool IsShowAllReceipts { get; set; }
         public bool IsShowAllJournal { get; set; }
-        BatchTotals LastReceipt = null;
+        //BatchTotals LastReceipt = null;
 
         public DateTime DateSoSearch { get; set; } = DateTime.Now.Date;
         public DateTime DateStartPeriodZ { get; set; } = DateTime.Now.Date;
@@ -63,6 +63,7 @@ namespace Front.Control
         public IEnumerable<WorkPlace> WorkPlaces { get { return Global.GetIdWorkPlaces; } }
         WorkPlace _SelectedWorkPlace = null;
         public WorkPlace SelectedWorkPlace { get { return _SelectedWorkPlace != null ? _SelectedWorkPlace : WorkPlaces.First(); } set { _SelectedWorkPlace = value; } }
+        IEnumerable<string> TextReceipt;
 
         public void ControlScale(double pWeight, bool pIsStable)
         {
@@ -182,10 +183,9 @@ namespace Front.Control
         {
             var task = Task.Run(() =>
             {
-                LastReceipt = EF.PosPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace }, false);
-                ViewReceipt();
+                var LastReceipt = EF.PosPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace }, false);
+                ViewReceipt(LastReceipt.Receipt);
             });
-
         }
 
         private void POS_Z_Click(object sender, RoutedEventArgs e)
@@ -194,8 +194,8 @@ namespace Front.Control
             {
                 var task = Task.Run(() =>
             {
-                LastReceipt = EF.PosPrintZ(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
-                ViewReceipt();
+                var LastReceipt = EF.PosPrintZ(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
+                ViewReceipt(LastReceipt.Receipt);
             });
             }
         }
@@ -204,31 +204,24 @@ namespace Front.Control
             MW.Bl.ds.IsUseOldDB = !MW.Bl.ds.IsUseOldDB;
         }
 
-        void ViewReceipt()
+        void ViewReceipt(IEnumerable<string> pText )
         {
-            if (LastReceipt?.Receipt?.Count() > 0)
+            if (pText?.Any()==true)
             {
+                TextReceipt = pText;
                 Dispatcher.BeginInvoke(new ThreadStart(() =>
                 {
-                    RevisionText.Text = string.Join(Environment.NewLine, LastReceipt.Receipt);
+                    RevisionText.Text = string.Join(Environment.NewLine, TextReceipt);
                     Revision.Visibility = Visibility.Visible;
                     BackgroundShift.Visibility = Visibility.Visible;
                     RevisionScrollViewer.ScrollToEnd();
                 }));
             }
         }
-        void ViewReceiptFiscal(LogRRO LastReceipt)
+
+        void ViewReceiptFiscal(LogRRO pLastReceipt)
         {
-            if (LastReceipt?.TextReceipt?.Count() > 0)
-            {
-                Dispatcher.BeginInvoke(new ThreadStart(() =>
-                {
-                    RevisionText.Text = string.Join(Environment.NewLine, LastReceipt.TextReceipt);
-                    Revision.Visibility = Visibility.Visible;
-                    BackgroundShift.Visibility = Visibility.Visible;
-                    RevisionScrollViewer.ScrollToEnd();
-                }));
-            }
+            ViewReceipt(pLastReceipt.TextReceipt.Split(Environment.NewLine)); 
         }
 
         private void POS_X_Copy_Click(object sender, RoutedEventArgs e)
@@ -679,15 +672,14 @@ namespace Front.Control
 
         private void Print(object sender, RoutedEventArgs e)
         {
-            if (LastReceipt?.Receipt?.Count() > 0)
+            if (TextReceipt?.Any()==true)
             {
                 try
                 {
                     IdReceipt IdR = new() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace, IdWorkplacePay = Global.IdWorkPlace };
-                    EF.PrintNoFiscalReceipt(IdR, LastReceipt.Receipt);
+                    EF.PrintNoFiscalReceipt(IdR, TextReceipt);
                 }
                 finally { }
-
             }
         }
 
