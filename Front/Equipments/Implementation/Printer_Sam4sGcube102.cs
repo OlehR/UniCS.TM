@@ -105,11 +105,15 @@ namespace Front.Equipments.Implementation
         private void PrintArrayStrings(object sender, PrintPageEventArgs e)
         {
             int position = 0;
-            int maxChar = (e.PageBounds.Width - 70) / SECONDFONTSIZE;
+            int maxChar = 33;//(e.PageBounds.Width - 40) / FONTSIZE;
+            TopIndent = FONTSIZE + 1;
+            Font Font = new("Courier", 7, FontStyle.Bold, GraphicsUnit.Point);
+
 
             foreach (var item in ArrayStr)
             {
-                position = PrintLine(e, item, position, maxChar, SecondFont);
+               // maxChar = item.Length;
+                position = PrintCenter(e, item, position, maxChar, Font);
             }
         }
 
