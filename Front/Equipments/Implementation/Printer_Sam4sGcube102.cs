@@ -9,22 +9,28 @@ using QRCoder;
 using System.Windows.Forms;
 using static System.Net.Mime.MediaTypeNames;
 using Microsoft.Extensions.Configuration;
+using ModernExpo.SelfCheckout.Utils;
 
 namespace Front.Equipments.Implementation
 {
-    public class Printer_Sam4sGcube102 : Printer    {
-        
+    public class Printer_Sam4sGcube102 : Printer
+    {
+
         Receipt Receipt = new();
+        IEnumerable<string> ArrayStr;
         const int FONTSIZE = 6;
+        const int SECONDFONTSIZE = 8;
         const int WIDTHPAGE = 200;//e.PageBounds.Width; // ширина паперу принтера
         public Font MainFont = new("Courier", FONTSIZE, FontStyle.Bold, GraphicsUnit.Point);
+        public Font SecondFont = new("Courier", SECONDFONTSIZE, FontStyle.Bold, GraphicsUnit.Point);
+
         public int TopIndent;
         QRCodeGenerator qrGenerator = new();
 
         public Printer_Sam4sGcube102(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null) :
                          base(pEquipment, pConfiguration, eModelEquipment.pRRO_SG, pLoggerFactory)
         {
-            NamePrinter=Configuration?.GetValue<string>($"{KeyPrefix}NamePrinter");
+            NamePrinter = Configuration?.GetValue<string>($"{KeyPrefix}NamePrinter");
         }
 
         override public bool PrintReceipt(Receipt R)
@@ -32,8 +38,7 @@ namespace Front.Equipments.Implementation
             Receipt = R;
             PrintDocument printDocument = new PrintDocument();
             printDocument.PrintPage += PrintPageReceipt;
-            printDocument.DocumentName = "Test";  //$"{receipts[0].NumberReceipt}{receipts[1].NumberReceipt}";
-            //printDocument.DefaultPageSettings.PaperSize = new PaperSize();
+            printDocument.DocumentName = "Receipt";
             PrintDialog printDialog = new();
             printDialog.Document = printDocument;
             printDialog.PrinterSettings.PrinterName = NamePrinter;
@@ -41,7 +46,72 @@ namespace Front.Equipments.Implementation
             return true;
         }
 
-        override public bool Print(IEnumerable<string> pR) { return true; }
+        override public bool Print(IEnumerable<string> pR)
+        {
+            var count = pR.Count();
+            if (count > 0)
+            {
+                ArrayStr = pR;
+
+                if (count == 2)
+                {
+                    PrintDocument printDocument = new PrintDocument();
+                    printDocument.PrintPage += PrintCoffeQR;
+                    printDocument.DocumentName = "Coffe QR";
+                    PrintDialog printDialog = new();
+                    printDialog.Document = printDocument;
+                    printDialog.PrinterSettings.PrinterName = NamePrinter;
+                    printDialog.Document.Print(); // печатаем
+
+                }
+                else
+                {
+                    PrintDocument printDocument = new PrintDocument();
+                    printDocument.PrintPage += PrintArrayStrings;
+                    printDocument.DocumentName = "ArrayStrings";
+                    PrintDialog printDialog = new();
+                    printDialog.Document = printDocument;
+                    printDialog.PrinterSettings.PrinterName = NamePrinter;
+                    printDialog.Document.Print(); // печатаем
+                }
+
+
+                return true;
+            }
+            else return false;
+
+        }
+
+        private void PrintCoffeQR(object sender, PrintPageEventArgs e)
+        {
+            int position = 0;
+            int maxChar = (e.PageBounds.Width - 70) / SECONDFONTSIZE;
+            TopIndent = SECONDFONTSIZE + 1;
+
+            foreach (var item in ArrayStr)
+            {
+                if (item.Contains("QR=>"))
+                {
+                    string QRInfo = item.Replace("QR=>", string.Empty);
+                    var qrCodeData = qrGenerator.CreateQrCode(QRInfo, QRCodeGenerator.ECCLevel.Q);
+                    var qrCode = new QRCode(qrCodeData);
+                    var QRImage = qrCode.GetGraphic(2);
+                    e.Graphics.DrawImage(QRImage, (int)((WIDTHPAGE - QRImage.Width) * 0.85 / 2), position += 10);
+                }
+                else position = PrintLine(e, item, position, maxChar, SecondFont);
+            }
+        }
+
+        private void PrintArrayStrings(object sender, PrintPageEventArgs e)
+        {
+            int position = 0;
+            int maxChar = (e.PageBounds.Width - 70) / SECONDFONTSIZE;
+
+            foreach (var item in ArrayStr)
+            {
+                position = PrintLine(e, item, position, maxChar, SecondFont);
+            }
+        }
 
         private void PrintPageReceipt(object sender, PrintPageEventArgs e)
         {
@@ -49,14 +119,15 @@ namespace Front.Equipments.Implementation
             int leftPosition = 0, topPosition = 0;
             int maxChar = (e.PageBounds.Width - 40) / FONTSIZE;
             TopIndent = FONTSIZE + 1;
-            //Винести ці поля в конфіг файл            
-            string pointOfSale = Receipt.Fiscal?.Head; //"Супермаркет ВОПАК";            
-            //
-            string nameCashier = $"Касир: {Receipt.NameCashier}";
+
 
             for (var i = 0; i < IdWorkplacePays.Length; i++)
             {
                 Receipt.IdWorkplacePay = IdWorkplacePays[i];
+
+                string pointOfSale = Receipt.Fiscal?.Head; //"Супермаркет ВОПАК";            
+                                                           //
+                string nameCashier = $"Касир: {Receipt.NameCashier}";
                 //Друк шапки
 
                 //topPosition = PrintCenter(e, companyName, topPosition - TopIndent, maxChar, MainFont);
@@ -64,13 +135,13 @@ namespace Front.Equipments.Implementation
                 //topPosition = PrintCenter(e, address, topPosition, maxChar, MainFont);
 
                 // касир, номер чеку в 1С, власник картки та бонуси 
-                topPosition = PrintLine(e, nameCashier, topPosition, maxChar);
-                topPosition = PrintLine(e, Receipt.NumberReceipt1C, topPosition, maxChar);
+                topPosition = PrintLine(e, nameCashier, topPosition, maxChar, MainFont);
+                topPosition = PrintLine(e, Receipt.NumberReceipt1C, topPosition, maxChar, MainFont);
                 if (!string.IsNullOrEmpty(Receipt.Client?.NameClient))
                 {
-                    topPosition = PrintLine(e, Receipt.Client?.NameClient, topPosition, maxChar);
-                    topPosition = PrintLine(e, $"Бонуси: {Receipt.Client?.SumBonus}", topPosition, maxChar);
-                    topPosition = PrintLine(e, $"Скарбничка: {Receipt.Client?.Wallet}", topPosition, maxChar);
+                    topPosition = PrintLine(e, Receipt.Client?.NameClient, topPosition, maxChar, MainFont);
+                    topPosition = PrintLine(e, $"Бонуси: {Receipt.Client?.SumBonus}", topPosition, maxChar, MainFont);
+                    topPosition = PrintLine(e, $"Скарбничка: {Receipt.Client?.Wallet}", topPosition, maxChar, MainFont);
 
                 }
 
@@ -82,7 +153,7 @@ namespace Front.Equipments.Implementation
                 foreach (var item in Receipt.Wares)
                 {
 
-                    topPosition = PrintLine(e, item.NameWares, topPosition, maxChar - 8);
+                    topPosition = PrintLine(e, item.NameWares, topPosition, maxChar - 8, MainFont);
                     StringFormat stringFormatQuantity = new StringFormat();
                     stringFormatQuantity.Alignment = StringAlignment.Near;
                     stringFormatQuantity.LineAlignment = StringAlignment.Center;
@@ -156,9 +227,9 @@ namespace Front.Equipments.Implementation
                 }
 
 
-                topPosition = PrintLine(e, $"ФН чеку {Receipt.Fiscal?.Number}", topPosition, maxChar);
-                topPosition = PrintLine(e, $"ФН ПРРО {Receipt.Fiscal?.Id}", topPosition, maxChar);
-                topPosition = PrintLine(e, DateTime.Now.ToString("dd/MM/yyyy H:mm"), topPosition, maxChar);
+                topPosition = PrintLine(e, $"ФН чеку {Receipt.Fiscal?.Number}", topPosition, maxChar, MainFont);
+                topPosition = PrintLine(e, $"ФН ПРРО {Receipt.Fiscal?.Id}", topPosition, maxChar, MainFont);
+                topPosition = PrintLine(e, DateTime.Now.ToString("dd/MM/yyyy H:mm"), topPosition, maxChar, MainFont);
                 string QRInfo = string.IsNullOrEmpty(Receipt.Fiscal?.QR) ? "no data available" : Receipt.Fiscal?.QR;
                 var qrCodeData = qrGenerator.CreateQrCode(QRInfo, QRCodeGenerator.ECCLevel.Q);
                 var qrCode = new QRCode(qrCodeData);
@@ -179,6 +250,7 @@ namespace Front.Equipments.Implementation
         }
         public int PrintCenter(PrintPageEventArgs e, string str, int topPosition, int maxChar, Font font)
         {
+            if (str == string.Empty) return topPosition;
             int leftPosition = 0;
             string tmpVar = str;
             int pos = 0;
@@ -203,16 +275,17 @@ namespace Front.Equipments.Implementation
 
             return topPosition;
         }
-        public int PrintLine(PrintPageEventArgs e, string str, int topPosition, int maxChar)
+        public int PrintLine(PrintPageEventArgs e, string str, int topPosition, int maxChar, Font font)
         {
+            if (str == string.Empty) return topPosition;
             string tmpVar = str;
-            int maxCharProdukts = maxChar - 8;
+            int maxCharProdukts = maxChar;
 
             while (str.Length > 0)
             {
                 str = tmpVar.Length > maxCharProdukts ? tmpVar.Substring(0, maxCharProdukts) : tmpVar;
                 if (!string.IsNullOrEmpty(str))
-                    e.Graphics.DrawString(str, MainFont, Brushes.Black, 0, topPosition += TopIndent);
+                    e.Graphics.DrawString(str, font, Brushes.Black, 0, topPosition += TopIndent);
                 tmpVar = tmpVar.Length > maxCharProdukts ? tmpVar = tmpVar.Substring(maxCharProdukts) : "";
                 str = tmpVar;
             }
@@ -221,6 +294,7 @@ namespace Front.Equipments.Implementation
 
         public int PrintTwoColum(PrintPageEventArgs e, string str, string str2, int topPosition, int maxChar)
         {
+            if (str == string.Empty && str2 == string.Empty) return topPosition;
             StringFormat stringFormatFirst = new StringFormat();
             stringFormatFirst.Alignment = StringAlignment.Near;
             stringFormatFirst.LineAlignment = StringAlignment.Center;
