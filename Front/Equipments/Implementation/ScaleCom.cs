@@ -12,26 +12,24 @@ using Front.Equipments.Virtual;
 
 namespace Front.Equipments
 {
-    public class ScaleCom :Scale, IDisposable
+    public class ScaleCom : Scale, IDisposable
     {
-        private readonly ILogger<ScaleCom> _logger;       
+        private readonly ILogger<ScaleCom> _logger;
         private readonly System.Timers.Timer Timer;
         private readonly object Lock = new object();
-        private SerialPortStreamWrapper SerialDevice;        
+        private SerialPortStreamWrapper SerialDevice;
 
         public bool IsReady { get { return SerialDevice != null; } }
 
-        public ScaleCom(Equipment pEquipment, IConfiguration pConfiguration,ILoggerFactory pLoggerFactory = null, Action<double, bool> pOnScalesData = null) : base(pEquipment, pConfiguration, eModelEquipment.ScaleCom, pLoggerFactory, pOnScalesData)
-        {            
-            SerialPortStreamWrapper portStreamWrapper = new SerialPortStreamWrapper(SerialPort, BaudRate, Parity.Odd, StopBits.One, 7, new Func<byte[], bool>(OnDataReceived));
-            portStreamWrapper.RtsEnable = true;
-            SerialDevice = portStreamWrapper;
+        public ScaleCom(Equipment pEquipment, IConfiguration pConfiguration, ILoggerFactory pLoggerFactory = null, Action<double, bool> pOnScalesData = null) : base(pEquipment, pConfiguration, eModelEquipment.ScaleCom, pLoggerFactory, pOnScalesData)
+        {
+            
             Init();
             Timer = new System.Timers.Timer(200.0);
             Timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
             Timer.AutoReset = true;
         }
-        
+
         public override void Init()
         {
             lock (Lock)
@@ -39,25 +37,18 @@ namespace Front.Equipments
                 TextError = string.Empty;
                 try
                 {
-                    State = eStateEquipment.Init;                    
+                    State = eStateEquipment.Init;
                     CloseIfOpen();
                     SerialDevice.Open();
                     SerialDevice.DiscardInBuffer();
                     SerialDevice.DiscardOutBuffer();
-                    State = eStateEquipment.On;                    
+                    State = eStateEquipment.On;
                 }
                 catch (Exception ex)
                 {
                     TextError = ex.Message;
                     State = eStateEquipment.Error;
-                   
-                    _logger?.LogError(ex, ex.Message);
-                    /*if (logger != null)                       
-                    if (ex.Message.ContainsIgnoreCase("port"))
-                    { 
-                            barcodeScannerLog.Message = "Device not connected";                     
-                        barcodeScannerLog.Message = "Initialization error";                       
-                    }*/
+                    _logger?.LogError(ex, ex.Message);                  
 
                 }
                 finally
@@ -73,42 +64,46 @@ namespace Front.Equipments
         {
             return $"pModelEquipment={Model} State={State} Port={SerialPort} BaudRate={BaudRate}{Environment.NewLine}";
         }
-        public override void StartWeight() 
+        public override void StartWeight()
         {
             if (!SerialDevice.IsOpen)
                 SerialDevice.Open();
             Timer.Start();
         }
 
-        public override void StopWeight() 
+        public override void StopWeight()
         {
             Timer.Stop();
         }
-    
-            
 
-        private void OnTimedEvent(object sender, ElapsedEventArgs e) =>  SerialDevice?.Write(new byte[4] {0,0,0,3});
+
+
+        private void OnTimedEvent(object sender, ElapsedEventArgs e) => SerialDevice?.Write(new byte[4] { 0, 0, 0, 3 });
         //GetReadDataSync(new byte[4] {0,0,0,3},OnDataReceived2);
 
         private void CloseIfOpen()
         {
-            if (IsReady)
-                SerialDevice.Close();
-            SerialDevice.Dispose();
-            SerialPortStreamWrapper portStreamWrapper = new SerialPortStreamWrapper(SerialPort, BaudRate, Parity.Odd, StopBits.One, 7, new Func<byte[], bool>(OnDataReceived));
+            if (SerialDevice != null)
+            {
+                if (IsReady)
+                    SerialDevice.Close();
+                SerialDevice.Dispose();
+            }
+            SerialPortStreamWrapper portStreamWrapper = new SerialPortStreamWrapper(SerialPort, BaudRate, Parity.Even, StopBits.One, 8, new Func<byte[], bool>(OnDataReceived));
             portStreamWrapper.RtsEnable = true;
             SerialDevice = portStreamWrapper;
         }
 
         private bool OnDataReceived(byte[] data)
-        {            
+        {
             string Str = Encoding.ASCII.GetString(data);
             if (Str.Length >= 6)
             {
+                Str=Str.Substring(0, 6);
                 char[] charArray = Str.ToCharArray();
                 Array.Reverse(charArray);
                 if (double.TryParse(charArray, out double Weight))
-                    OnScalesData.Invoke(Weight/1000d, true); 
+                    OnScalesData?.Invoke(Weight , true);
                 return true;
             }
             return true;
@@ -127,8 +122,8 @@ namespace Front.Equipments
             }
         }
 
-        private void OnDataReceived2(byte[] data)  => OnDataReceived(data);
-        
+        private void OnDataReceived2(byte[] data) => OnDataReceived(data);
+
 
 
         public void Dispose()
