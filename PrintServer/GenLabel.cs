@@ -552,8 +552,11 @@ namespace PrintServer
                         LeftCoinSecond = 260;
                         break;
                 }
-                e.Graphics.FillRectangle(new SolidBrush(Color.Black), 205, 45, 75, 60);
+                //e.Graphics.FillRectangle(new SolidBrush(Color.Black), 205, 45, 75, 60);
 
+                //
+                //e.Graphics.DrawRectangle(new Pen(Color.Black, 1), 205, 45, 75, 60);
+                //
                 Graphics gr = e.Graphics;
                 GraphicsState state = gr.Save();
                 gr.ResetTransform();
@@ -570,20 +573,20 @@ namespace PrintServer
 
                 if (parPrice.Price < parPrice.PriceNormal)
                 {
-                    e.Graphics.DrawString(priceNormal[0], new Font("Arial Black", 14), Brushes.White, leftIndentSecondPrice, topIndentSecondPrice);
-                    e.Graphics.DrawString(priceNormal[1], new Font("Arial Black", 6), Brushes.White, LeftCoinSecond, topIndentSecondPrice += 4);
+                    e.Graphics.DrawString(priceNormal[0], new Font("Arial Black", 14), Brushes.Black, leftIndentSecondPrice, topIndentSecondPrice); //White
+                    e.Graphics.DrawString(priceNormal[1], new Font("Arial Black", 6), Brushes.Black, LeftCoinSecond, topIndentSecondPrice += 4);//White
 
                 }
                 else
                 {
-                    e.Graphics.DrawString(price[0], new Font("Arial Black", 16), Brushes.White, leftIndentSecondPrice, topIndentSecondPrice);
-                    e.Graphics.DrawString(price[1], new Font("Arial Black", 6), Brushes.White, LeftCoinSecond, topIndentSecondPrice += 4);
+                    e.Graphics.DrawString(price[0], new Font("Arial Black", 16), Brushes.Black, leftIndentSecondPrice, topIndentSecondPrice);//White
+                    e.Graphics.DrawString(price[1], new Font("Arial Black", 6), Brushes.Black, LeftCoinSecond, topIndentSecondPrice += 4);//White
                 }
 
-                e.Graphics.DrawString("грн", new Font("Arial", 6, FontStyle.Bold), Brushes.White, LeftCoinSecond, topIndentSecondPrice += 7);
-                e.Graphics.DrawString(parPrice.StrUnit, new Font("Arial", 6), Brushes.White, LeftCoinSecond, topIndentSecondPrice += 7);
+                e.Graphics.DrawString("грн", new Font("Arial", 6, FontStyle.Bold), Brushes.Black, LeftCoinSecond, topIndentSecondPrice += 7);//White
+                e.Graphics.DrawString(parPrice.StrUnit, new Font("Arial", 6), Brushes.Black, LeftCoinSecond, topIndentSecondPrice += 7);//White
 
-                e.Graphics.DrawLine(new Pen(Color.White, 1), leftIndentSecondPrice - 4, topIndentSecondPrice += 7, LeftCoinSecond + 20, intentLine + 4);
+                e.Graphics.DrawLine(new Pen(Color.Black, 1), leftIndentSecondPrice - 4, topIndentSecondPrice += 7, LeftCoinSecond + 20, intentLine + 4);//White
             }
             else
             {
