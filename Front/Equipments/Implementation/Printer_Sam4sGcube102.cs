@@ -101,7 +101,7 @@ namespace Front.Equipments.Implementation
                     var QRImage = qrCode.GetGraphic(2);
                     e.Graphics.DrawImage(QRImage, (int)((WIDTHPAGE - QRImage.Width) * 0.85 / 2), position += 10);
                 }
-                else position = PrintLine(e, ClearStr(item), position, maxChar, SecondFont);
+                else position = PrintLine(e, item, position, maxChar, SecondFont);
             }
         }
 
@@ -110,13 +110,12 @@ namespace Front.Equipments.Implementation
             int position = 0;
             int maxChar = 35;//(e.PageBounds.Width - 40) / FONTSIZE;
             TopIndent = FONTSIZE + 1;
-            Font Font = new("Courier", 7, FontStyle.Bold, GraphicsUnit.Point);
 
 
             foreach (var item in ArrayStr)
             {
                 // maxChar = item.Length;
-                position = PrintLine(e, item, position, maxChar, Font);
+                position = PrintLine(e, ClearStr(item), position, maxChar, MainFont);
             }
         }
 
