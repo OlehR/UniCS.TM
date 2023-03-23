@@ -13,10 +13,30 @@ namespace TestPsuApi
 {
     class Program
     {
+        static int CharInLine = 34;
+        static string ClearStr(string pS)
+        {
+            string Res = pS;
+            if (string.IsNullOrEmpty(pS) || pS.Length <= CharInLine)
+                return pS;
+            string Space = new string(' ', pS.Length - CharInLine + 1);
+            int ind = pS.IndexOf(Space);
+            if (ind >= 0)            
+                Res = pS.Substring(0, ind) + pS.Substring(ind + Space.Length - 1);            
+            return Res;
+        }
+
+
         private static readonly Guid TerminalId = Guid.Parse("1BB89AA9-DBDF-4EB0-B7A2-094665C3FDD0");
 
         static async Task Main(string[] args)
         {
+
+            var aa = ClearStr("бонуси/знижки                   0.00 ГРН");
+            var ii = aa.Length;
+            aa = ClearStr("                 MASTER                 ");
+            ii = aa.Length;
+
             long lastSize = 0;
             "Start".WriteConsoleDebug();
 

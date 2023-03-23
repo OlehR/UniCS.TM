@@ -15,7 +15,7 @@ namespace Front.Equipments.Implementation
 {
     public class Printer_Sam4sGcube102 : Printer
     {
-
+        const int CharInLine = 34;
         Receipt Receipt = new();
         IEnumerable<string> ArrayStr;
         const int FONTSIZE = 6;
@@ -109,8 +109,20 @@ namespace Front.Equipments.Implementation
 
             foreach (var item in ArrayStr)
             {
-                position = PrintLine(e, item, position, maxChar, SecondFont);
+                position = PrintLine(e, ClearStr(item), position, maxChar, SecondFont);
             }
+        }
+
+        string ClearStr(string pS)
+        {
+            string Res = pS;
+            if (string.IsNullOrEmpty(pS) || pS.Length <= CharInLine)
+                return pS;
+            string Space = new string(' ', pS.Length - CharInLine + 1);
+            int ind = pS.IndexOf(Space);
+            if (ind >= 0)
+                Res = pS.Substring(0, ind) + pS.Substring(ind + Space.Length - 1);
+            return Res;
         }
 
         private void PrintPageReceipt(object sender, PrintPageEventArgs e)
