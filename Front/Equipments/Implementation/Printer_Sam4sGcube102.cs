@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using ModernExpo.SelfCheckout.Utils;
 using System.CodeDom.Compiler;
 using System.Diagnostics.Metrics;
+using Front.Equipments.Utils;
 
 namespace Front.Equipments.Implementation
 {
@@ -131,14 +132,12 @@ namespace Front.Equipments.Implementation
             {
                 Receipt.IdWorkplacePay = IdWorkplacePays[i];
 
-                string pointOfSale = Receipt.Fiscal?.Head; //"Супермаркет ВОПАК";            
-                                                           //
+                string pointOfSale = Receipt.Fiscal?.Head; //$"ТОВ \"Ужгород П.С.Ю.\"{Environment.NewLine}СУПЕРМАРКЕТ ВОПАК ЗАКАРПАТСЬКА ОБЛ, М. УЖГОРОД, ВУЛИЦЯ БЕСТУЖЕВА, БУД. 9{Environment.NewLine} ПН 32953730";            
+                                     
                 string nameCashier = $"Касир: {Receipt.NameCashier}";
                 //Друк шапки
 
-                //topPosition = PrintCenter(e, companyName, topPosition - TopIndent, maxChar, MainFont);
                 topPosition = PrintCenter(e, pointOfSale, topPosition, maxChar, MainFont);
-                //topPosition = PrintCenter(e, address, topPosition, maxChar, MainFont);
 
                 // касир, номер чеку в 1С, власник картки та бонуси 
                 topPosition = PrintLine(e, nameCashier, topPosition, maxChar, MainFont);
@@ -274,8 +273,9 @@ namespace Front.Equipments.Implementation
             if (str.Contains(Environment.NewLine))
             {
                 pos = str.IndexOf(Environment.NewLine);
-                str = str.Replace(Environment.NewLine, " ");
-                tmpVar = str;
+                pos += 2;
+                // str = str.Substring(0, pos+4);//str.Replace(Environment.NewLine, " ");
+                // tmpVar = str;
             }
             else
                 pos = tmpVar.Length > maxChar ? tmpVar.Substring(0, maxChar).LastIndexOf(" ") : tmpVar.Length;
@@ -283,6 +283,12 @@ namespace Front.Equipments.Implementation
             while (str.Length > 0)
             {
                 str = tmpVar.Substring(0, pos);
+                if (str.Contains(Environment.NewLine))
+                {
+                    pos = str.IndexOf(Environment.NewLine);
+                    pos += 2;
+                    str = tmpVar.Substring(0, pos);
+                }
                 leftPosition = Math.Abs((WIDTHPAGE - (FONTSIZE * str.Length)) / 2);
                 if (!string.IsNullOrEmpty(str))
                     e.Graphics.DrawString(str, MainFont, Brushes.Black, leftPosition, topPosition += TopIndent);
