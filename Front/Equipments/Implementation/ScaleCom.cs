@@ -76,8 +76,6 @@ namespace Front.Equipments
             Timer.Stop();
         }
 
-
-
         private void OnTimedEvent(object sender, ElapsedEventArgs e) => SerialDevice?.Write(new byte[4] { 0, 0, 0, 3 });
         //GetReadDataSync(new byte[4] {0,0,0,3},OnDataReceived2);
 
@@ -121,10 +119,6 @@ namespace Front.Equipments
                 onDatAction?.Invoke(numArray);
             }
         }
-
-        private void OnDataReceived2(byte[] data) => OnDataReceived(data);
-
-
 
         public void Dispose()
         {
