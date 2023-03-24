@@ -42,6 +42,8 @@ namespace Front.Control
         public string ControlScaleWeightDouble { get; set; } = "0";
         MainWindow MW;
         Receipt curReceipt = null;
+        LogRRO SelectedListJournal = null;
+        public bool IsSelectedListJournal { get { return SelectedListJournal != null; } }
         Receipt ChangeStateReceipt = null;
         public eStateReceipt newStateReceipt;
         public bool ClosedShift { get { return MW.IsLockSale; } }
@@ -60,6 +62,7 @@ namespace Front.Control
         public ObservableCollection<APIRadiobuton> TypeMessageRadiobuton { get; set; }
         public bool IsShortPeriodZ { get; set; } = true;
         public bool IsPrintCoffeQR { get; set; } = false;
+        public bool IsСurReceipt { get; set; } = false;
         public IEnumerable<WorkPlace> WorkPlaces { get { return Global.GetIdWorkPlaces; } }
         WorkPlace _SelectedWorkPlace = null;
         public WorkPlace SelectedWorkPlace { get { return _SelectedWorkPlace != null ? _SelectedWorkPlace : WorkPlaces.First(); } set { _SelectedWorkPlace = value; } }
@@ -204,9 +207,9 @@ namespace Front.Control
             MW.Bl.ds.IsUseOldDB = !MW.Bl.ds.IsUseOldDB;
         }
 
-        void ViewReceipt(IEnumerable<string> pText )
+        void ViewReceipt(IEnumerable<string> pText)
         {
-            if (pText?.Any()==true)
+            if (pText?.Any() == true)
             {
                 TextReceipt = pText;
                 Dispatcher.BeginInvoke(new ThreadStart(() =>
@@ -221,7 +224,7 @@ namespace Front.Control
 
         void ViewReceiptFiscal(LogRRO pLastReceipt)
         {
-            ViewReceipt(pLastReceipt.TextReceipt.Split(Environment.NewLine)); 
+            ViewReceipt(pLastReceipt.TextReceipt.Split(Environment.NewLine));
         }
 
         private void POS_X_Copy_Click(object sender, RoutedEventArgs e)
@@ -440,6 +443,7 @@ namespace Front.Control
                 IsSendTo1C = curReceipt?.StateReceipt == eStateReceipt.Print || curReceipt?.StateReceipt == eStateReceipt.Send;
                 IsCreateReturn = (curReceipt?.StateReceipt == eStateReceipt.Send || curReceipt?.StateReceipt == eStateReceipt.Print) && curReceipt?.TypeReceipt == eTypeReceipt.Sale;
                 IsPrintCoffeQR = (bool)curReceipt?.IsQR();
+                IsСurReceipt = true;
             }
             else
             {
@@ -672,7 +676,7 @@ namespace Front.Control
 
         private void Print(object sender, RoutedEventArgs e)
         {
-            if (TextReceipt?.Any()==true)
+            if (TextReceipt?.Any() == true)
             {
                 try
                 {
@@ -686,10 +690,11 @@ namespace Front.Control
         private void ListJournalSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             JornalText.Text = "";
-            var selectedListJournal = ListJournal.SelectedItem as LogRRO;
-            if (selectedListJournal != null)
+            SelectedListJournal = ListJournal.SelectedItem as LogRRO;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsSelectedListJournal"));
+            if (SelectedListJournal != null)
             {
-                JornalText.Text = selectedListJournal.TextReceipt != null ? selectedListJournal.TextReceipt : selectedListJournal.JSON;
+                JornalText.Text = SelectedListJournal.TextReceipt != null ? SelectedListJournal.TextReceipt : SelectedListJournal.JSON;
             }
         }
 
@@ -860,6 +865,47 @@ namespace Front.Control
 
                 }
 
+            }
+        }
+
+        private void PrintSelectRecript(object sender, RoutedEventArgs e)
+        {
+            if (curReceipt != null)
+            {
+                IEnumerable<string> ArrayFiscalLine = null;
+                var TMPvalue = Bl.GetLogRRO(curReceipt);
+                foreach (var elem in TMPvalue)
+                {
+                    if (elem.TypeOperation == (curReceipt.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund))
+                    {
+                        ArrayFiscalLine = elem.TextReceipt.Split(Environment.NewLine);
+                    }
+                }
+                try
+                {
+                    IdReceipt IdR = new() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace, IdWorkplacePay = Global.IdWorkPlace };
+                    EF.PrintNoFiscalReceipt(IdR, ArrayFiscalLine);
+                }
+                finally { }
+            }
+        }
+
+        private void PrintSelectRecriptJornal(object sender, RoutedEventArgs e)
+        {
+            if (SelectedListJournal != null)
+            {
+                IEnumerable<string> ArrayFiscalLine = null;
+
+
+                ArrayFiscalLine = SelectedListJournal.TextReceipt.Split(Environment.NewLine);
+
+
+                try
+                {
+                    IdReceipt IdR = new() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace, IdWorkplacePay = Global.IdWorkPlace };
+                    EF.PrintNoFiscalReceipt(IdR, ArrayFiscalLine);
+                }
+                finally { }
             }
         }
     }

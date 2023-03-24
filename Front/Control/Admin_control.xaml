@@ -737,7 +737,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                             FontSize="28" HorizontalAlignment="Center" FontWeight="DemiBold" TextWrapping="Wrap"
                                             Text="Чек з фіскального апарату:" Foreground="Green"/>
                                     <ScrollViewer  Grid.Row="3"  x:Name="FiscallCheckScrollViewer">
-                                            <TextBlock  x:Name="FiscalCheckText" 
+                                        <TextBlock  x:Name="FiscalCheckText" 
                                                    FontSize="18"  TextWrapping="Wrap"/>
                                     </ScrollViewer>
                                 </Grid>
@@ -1063,6 +1063,19 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                         </Style>
                                     </Button.Style>
                                 </Button>
+                                <Button Grid.Column="2" FontSize="22" Click="PrintSelectRecript"   >
+                                    <TextBlock FontSize="20" Text="Друк чеку" Margin="5"/>
+                                    <Button.Style>
+                                        <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                            <Setter Property="IsEnabled" Value="False"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsСurReceipt, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" Value="True">
+                                                    <Setter Property="IsEnabled" Value="True"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
 
                             </StackPanel>
                         </ScrollViewer>
@@ -1091,6 +1104,19 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                       x:Name="AllListJornal" IsChecked="False" Checked="IsAllJournalChecked" Unchecked="IsAllJournalChecked"
                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             </StackPanel>
+                            <Button Margin="10,0,0,0"  FontSize="22" Click="PrintSelectRecriptJornal"   >
+                                <TextBlock FontSize="20" Text="Друк чеку" Margin="5"/>
+                                <Button.Style>
+                                    <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsSelectedListJournal, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" Value="True">
+                                                <Setter Property="IsEnabled" Value="True"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
                         </StackPanel>
                         <ListView  x:Name="ListJournal" SelectionChanged="ListJournalSelectionChanged"
                      Grid.Column="0" Grid.Row="1" >
