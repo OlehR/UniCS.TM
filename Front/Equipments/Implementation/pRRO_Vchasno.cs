@@ -297,7 +297,7 @@ namespace Front.Equipments.Implementation
                     SumRest = Res.info.printinfo.round,
                     Id = Res.info.printinfo.fisid.ToString(),
                     Number = Res.info.printinfo.fisn,
-                    Head = $"{Res.info.printinfo?.name}{Environment.NewLine}{Res.info.printinfo?.shopad}{Environment.NewLine}ПН {Res.info.printinfo?.vat_code}",
+                    Head = $"{Res.info.printinfo?.name}{Environment.NewLine}{Res.info.printinfo?.shopad}{Environment.NewLine}ПН {Res.info.printinfo?.fis_code}",
                     Taxes = Res.info.printinfo.taxes?.Select(el => new TaxResult() { Name = el.tax_fname, Sum = el.tax_sum, IdWorkplacePay = pR.IdWorkplacePay }),
                     DT = DT
                 });
