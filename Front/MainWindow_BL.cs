@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,7 +12,6 @@ using Front.Equipments.Virtual;
 using Front.Models;
 using ModelMID;
 using ModelMID.DB;
-using ModernExpo.SelfCheckout.Utils;
 using SharedLib;
 using Utils;
 
@@ -25,6 +22,7 @@ namespace Front
         int LastCodeWares = 0;
         public void InitAction()
         {
+            #region Action
             EF.OnControlWeight += (pWeight, pIsStable) =>
             {
                 ControlScaleCurrentWeight = pWeight;
@@ -220,6 +218,7 @@ namespace Front
                 SetPropertyChanged();
             };
         }
+        #endregion
 
         bool SetConfirm(User pUser, bool pIsFirst = false, bool pIsAccess = false)
         {
@@ -316,13 +315,7 @@ namespace Front
         void ShowAdmin(User pUser)
         {
             AdminControl.Init(pUser);
-            SetStateView(eStateMainWindows.AdminPanel);
-
-            /*Dispatcher.Invoke(new Action(() =>
-            {
-                ad.Init(pUser);
-                ad.WindowState = WindowState.Maximized;
-            }));*/
+            SetStateView(eStateMainWindows.AdminPanel);            
         }
 
         public void GetBarCode(string pBarCode, string pTypeBarCode)
@@ -429,7 +422,7 @@ namespace Front
 
         object LockPayPrint = new object();
         /// <summary>
-        /// Безготівкова оплата і Друк чека.
+        /// Оплата і Друк чека.
         /// </summary>
         /// <returns></returns>
         public bool PrintAndCloseReceipt(Receipt pR = null, eTypePay pTP = eTypePay.Card, decimal pSumCash=0m, decimal pIssuingCash=0, decimal pSumWallet=0,decimal pSumBonus =0)

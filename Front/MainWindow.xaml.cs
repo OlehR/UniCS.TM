@@ -22,10 +22,6 @@ using System.Windows.Documents;
 using System.Reflection;
 using Front.API;
 using System.IO;
-using System.Windows.Input;
-using System.Runtime.InteropServices;
-using System.Text;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Front
 {
@@ -42,10 +38,7 @@ namespace Front
         Sound s;
         public User AdminSSC { get; set; } = null;
         public DateTime DTAdminSSC { get; set; }
-
-        //Admin ad;
-        //public int TextBlockFontSize { get; set; } = 40;
-
+ 
         public Receipt curReceipt;//{ get; set; } = null;
         public ReceiptWares CurWares { get; set; } = null;
         public Client Client { get; set; }
@@ -214,29 +207,14 @@ namespace Front
                 }
                 StackPanelWaitAdmin.Children.Clear();
                 StackPanelWaitAdmin.Children.Add(tb);
-
-                //WaitAdminTextProblem.Text = new Run(("Повне оновлення БД"),  (FontWeight = FontWeights.Bold, Foreground = Brushes.Red) );
-
-                //switch (TypeAccessWait)
-                //{
-                //    case eTypeAccess.DelWares: return ($"Видалення товару: {CurWares?.NameWares}");
-                //    case eTypeAccess.DelReciept: return "Видалити чек";
-                //    case eTypeAccess.StartFullUpdate: return "Повне оновлення БД";
-                //    case eTypeAccess.ErrorFullUpdate: return "Помилка повного оновлення БД";
-                //    case eTypeAccess.ErrorEquipment: return "Проблема з критично важливим обладнанням";
-                //    case eTypeAccess.LockSale: return "Зміна заблокована";
-                //    case eTypeAccess.FixWeight: return CS.Info;
-                //    case eTypeAccess.ConfirmAge: return "Підтвердження віку";
-                //    case eTypeAccess.ExciseStamp: return "Ввід акцизної марки";
-                //}
+                
                 return null;
             }
         }
         /// <summary>
         /// Вага з основної ваги
         /// </summary>
-        public double Weight { get; set; } = 0d;
-        //public string WeightControl { get; set; }
+        public double Weight { get; set; } = 0d;        
 
         /// <summary>
         /// полоса стану обміну
@@ -913,8 +891,7 @@ namespace Front
         }
 
         private void _Cancel(object sender, RoutedEventArgs e)
-        {
-            //NewReceipt();
+        {            
             SetStateView(eStateMainWindows.WaitInput);
         }
 

@@ -12,13 +12,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using ModelMID.DB;
 using Utils;
-using System.Security.Policy;
-using System.Windows.Input;
-using SharedLib;
-using System.Xml.Linq;
-using ModernExpo.SelfCheckout.Devices.FP700;
-using System.Windows.Documents;
-using ModernExpo.SelfCheckout.Utils;
 
 namespace Front.Equipments.Implementation
 {
