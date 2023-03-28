@@ -112,9 +112,7 @@ namespace SharedLib
 
             if (pRecalcPriceOnLine && Global.RecalcPriceOnLine)
                 db.RecalcPriceAsync(pW);
-
-            /*if (pW.PLU > 0)             
-                 GenQRAsync(pW);*/
+            
             if (isZeroPrice)
             {
                 pW.Price = 0;
