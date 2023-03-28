@@ -694,11 +694,11 @@ TerminalId: {GetTerminalID}{Environment.NewLine}";
                 if (!this.StartBPOS())
                     return Task.FromResult<Payment>(new Payment() { IsSuccess = false });
                 CancelRequested = false;
-                BPOS.Purchase(Convert.ToUInt32(amount * 100.0), 0U, GetMechantIdByIdWorkPlace(pIdWorkPlace));
+                BPOS.Purchase(Convert.ToUInt32(amount * 100d), Convert.ToUInt32(pCash*100d), GetMechantIdByIdWorkPlace(pIdWorkPlace));
                 OnStatus?.Invoke(new PosStatus() {  Status = eStatusPos.WaitingForCard });
                 Payment result = this.WaitPosRespone();                
                 if (Logger != null)
-                    LoggerExtensions.LogDebug((ILogger)Logger, "[Ingenico] Purches " + JsonConvert.SerializeObject((object)result), Array.Empty<object>());
+                    LoggerExtensions.LogDebug(Logger, "[Ingenico] Purches " + JsonConvert.SerializeObject(result));
                 if (result.IsSuccess)
                 {
                     BPOS.Confirm();
@@ -769,7 +769,7 @@ TerminalId: {GetTerminalID}{Environment.NewLine}";
             BPOS = new BPOS1LibClass();
             BPOS.SetErrorLang((byte)1);
             BPOS.useLogging((byte)1, "ingenico.log");
-            BPOS.CommOpen(this.port, this.BaudRate);
+            BPOS.CommOpen(port, BaudRate);
             return true;
         }
 
@@ -777,13 +777,13 @@ TerminalId: {GetTerminalID}{Environment.NewLine}";
         {
             BPOS?.CommClose();
             Task.Delay(100);
-            BPOS = (BPOS1LibClass)null;
+            BPOS = null;
         }
 
         public void Dispose()
         {
             BPOS?.CommClose();
-            BPOS = (BPOS1LibClass)null;
+            BPOS = null;
         }
     }
 

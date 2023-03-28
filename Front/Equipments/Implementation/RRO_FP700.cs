@@ -17,6 +17,7 @@ using Front.Equipments.Utils;
 using Front.Equipments.Implementation.FP700_Model;
 using Timer = System.Timers.Timer;
 using SharedLib;
+using System.Windows.Forms;
 
 namespace Front.Equipments
 {
@@ -376,8 +377,7 @@ namespace Front.Equipments
             _logger?.LogDebug("{LAST_RECEIPTNUMBER}" + s);
             if (string.IsNullOrEmpty(s))
                 s = "0";
-            int result1;
-            int.TryParse(s, out result1);
+            int.TryParse(s, out int result1);
             OpenReceipt(pR?.NameCashier);
             if (Comments != null && Comments.Count() > 0)
                 PrintFiscalComments(Comments);
@@ -389,8 +389,7 @@ namespace Front.Equipments
             }
             CloseReceipt();
             ClearDisplay();
-            int result2;
-            if (!int.TryParse(GetLastReceiptNumber(), out result2))
+            if (!int.TryParse(GetLastReceiptNumber(), out int result2))
                 return (string)null;
             _logger?.LogDebug($"[ FP700 ] newLastReceipt = {result2} / lastReceipt = {result1}");
             string str = result2 > result1 ? result2.ToString() : (string)null;
@@ -462,7 +461,7 @@ namespace Front.Equipments
         public bool PayReceipt(ModelMID.Receipt pR)
         {
             StringBuilder stringBuilder = new StringBuilder();
-            Payment Pay = pR?.Payment?.First();
+            Payment Pay = pR?.Payment?.Where(el=>el.TypePay==eTypePay.Card)?.First();
             _logger?.LogDebug($"[FP700] PayReceipt {Pay?.TypePay}");
             if (Pay == null || Pay.TypePay == eTypePay.Cash)
                 stringBuilder.Append("P+" + pR.SumTotal.ToString("F2", (IFormatProvider)CultureInfo.InvariantCulture));
@@ -520,6 +519,14 @@ namespace Front.Equipments
                 throw new Exception("NotPaid");
             }
             return paySuccess;
+        }
+        string GetPayStr(Payment pPay,eTypeReceipt pTR)
+        {
+            return $"{pPay.CodeAuthorization},Магазин,{pPay.NumberTerminal}," +
+            (string.IsNullOrWhiteSpace(pPay.IssuerName) ) +
+              (pTR==eTypeReceipt.Sale ? "картка" : pPay.IssuerName)+
+             (pPay.TypePay == eTypePay.IssueOfCash ? "Видача" :(pTR==eTypeReceipt.Sale ? ",оплата" : ",повернення"))+        
+        $",{pPay.NumberCard},{pPay.NumberSlip},0.00";
         }
 
         public string CloseReceipt()//ReceiptViewModel receipt
