@@ -28,8 +28,7 @@ namespace Front
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         public string Version { get { return Assembly.GetExecutingAssembly().GetName().Version.ToString(); } }
-        public event PropertyChangedEventHandler PropertyChanged;
-        private readonly object _locker = new object();
+        public event PropertyChangedEventHandler PropertyChanged;        
         public Access Access = Access.GetAccess();
         public BL Bl;
         public EquipmentFront EF;
@@ -132,12 +131,7 @@ namespace Front
         public string AmountManyPayments { get; set; } = "";
         public string SumTotalManyPayments { get; set; } = "Загальна сума: ";
 
-        /// <summary>x`
-        /// треба переробити(інтегрувати в основну форму)
-        /// </summary>
-        //[Obsolete]
-        // KeyPad keyPad;
-
+       
         public System.Drawing.Color GetFlagColor(eStateMainWindows pStateMainWindows, eTypeAccess pTypeAccess, eStateScale pSS)
         {
             if (pTypeAccess == eTypeAccess.ExciseStamp)
