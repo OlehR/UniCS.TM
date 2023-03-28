@@ -137,20 +137,26 @@ namespace SharedLib
             lock (this._locker)
             {
                 StringBuilder Log = new StringBuilder();
-                Log.Append($"\n{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} parIsFull=>{parIsFull}");
+                Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} parIsFull=>{parIsFull}");
                 string varMidFile = db.GetCurrentMIDFile;
                 try
-                {                    
+                {
                     if (!parIsFull && !File.Exists(varMidFile)) //Якщо відсутній файл
+                    {
                         parIsFull = true;
-
+                        Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Відсутній файл {varMidFile} parIsFull=>{parIsFull} ");
+                    }
                     if (!parIsFull && File.Exists(varMidFile)) // Якщо база порожня.
                     {
                         try
                         {
                             int i = db.db.ExecuteScalar<int>("select count(*) from wares");
                             if (i == 0)
+                            {
                                 parIsFull = true;
+                                Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Відсутні дані {varMidFile} parIsFull=>{parIsFull} ");
+
+                            }
                         }
                         catch(Exception) { parIsFull = true; }
                     }
@@ -161,11 +167,13 @@ namespace SharedLib
                     {
                         if (TD == default(DateTime) || DateTime.Now.Date != TD.Date)
                             parIsFull = true;
+                        Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Устарівші дані {TD:yyyy-MM-dd} {varMidFile} parIsFull=>{parIsFull} ");
                     }
+
                     Status = parIsFull ? eSyncStatus.StartedFullSync : eSyncStatus.NotDefine;
                     Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = parIsFull ? eSyncStatus.StartedFullSync : eSyncStatus.StartedPartialSync, StatusDescription = "SendAllReceipt" });
 
-                    Log.Append($"\n{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} varMidFile=>{varMidFile}\n\tLoad_Full=>{TD:yyyy-MM-dd} parIsFull=>{parIsFull}");
+                    Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} varMidFile=>{varMidFile}\n\tLoad_Full=>{TD:yyyy-MM-dd} parIsFull=>{parIsFull}");
 
                     var Db = db;
                     if (parIsFull)
@@ -177,10 +185,10 @@ namespace SharedLib
                         if (File.Exists(varMidFile))
                         {
                             Thread.Sleep(200);
-                            Log.Append($"\n{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} Try Delete file {varMidFile}");
+                            Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Try Delete file {varMidFile}");
                             File.Delete(varMidFile);
                         }
-                        Log.Append($"\n{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} Create New DB");
+                        Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Create New DB");
                         Db = new WDB_SQLite(default(DateTime), varMidFile,false,true);
                     }
 
@@ -189,9 +197,9 @@ namespace SharedLib
 
                     if (parIsFull)
                     {
-                        Log.Append($"\n{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} Create MIDIndex");
+                        Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Create MIDIndex");
                         Db.CreateMIDIndex();
-                        Log.Append($"\n{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} Set config");
+                        Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Set config");
                         Db.SetConfig<string>("Last_MID", varMidFile);
                         bl.db = Db;
                     }
@@ -199,31 +207,32 @@ namespace SharedLib
                     db.SetConfig<int>("MessageNo", varMessageNMax);
                     db.SetConfig<DateTime>("Load_" + (parIsFull ? "Full" : "Update"), DateTime.Now /*String.Format("{0:u}", DateTime.Now)*/);
 
-                    Log.Append($"\n{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} End");
+                    Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} End");
                     Status = parIsFull ? eSyncStatus.SyncFinishedSuccess : eSyncStatus.NotDefine;
-                    FileLogger.WriteLogMessage(Log.ToString());
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.SyncFinishedSuccess, StatusDescription = Log.ToString() });                    
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.SyncFinishedSuccess, StatusDescription = "SyncData=>Ok" });
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name,"Log=>"+ Log.ToString());
                 }
                 catch (Exception ex)
                 {
                     db.Close(true);
-                    if (File.Exists(varMidFile))
+                    if (parIsFull && File.Exists(varMidFile))
                     {
                         try
                         {
                             Thread.Sleep(200);
-                            Log.Append($"\n{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} Try Delete file {varMidFile}");
+                            Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Catch Try Delete file {varMidFile}");
                             File.Delete(varMidFile);
                         }catch(Exception) { }
                     }
                     bl.db = new WDB_SQLite(default(DateTime), null, true);
                     Status = parIsFull ? eSyncStatus.Error : eSyncStatus.NotDefine;
-                    FileLogger.WriteLogMessage(Log.ToString() + '\n' + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString(), eTypeLog.Error);
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = (parIsFull ? eSyncStatus.Error : eSyncStatus.NoFatalError), StatusDescription = "SyncData=>" + Log.ToString() + '\n' + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
-                   
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = (parIsFull ? eSyncStatus.Error : eSyncStatus.NoFatalError), StatusDescription = $"SyncData Error=>{ex.Message}" });
                     Global.OnStatusChanged?.Invoke(db.GetStatus());
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name + Environment.NewLine + "Log=>" + Log.ToString(), ex);
+
                     return false;
                 }
+
             }
             return true;
         }

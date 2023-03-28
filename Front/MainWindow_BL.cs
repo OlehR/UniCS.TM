@@ -124,7 +124,6 @@ namespace Front
                 if (SyncInfo.Status == eSyncStatus.ErrorDB)
                     SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ErrorDB);
 
-
                 if (TypeAccessWait == eTypeAccess.StartFullUpdate && SyncInfo.Status == eSyncStatus.SyncFinishedSuccess)
                 {
                     TypeAccessWait = eTypeAccess.NoDefine;

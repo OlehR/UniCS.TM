@@ -40,15 +40,6 @@ namespace SharedLib
         }
         private new bool InitSQL()
         {
-            /*
-            SqlGetDimUnitDimension = GetSQL("SqlGetDimUnitDimension");
-            SqlGetDimGroupWares = GetSQL("SqlGetDimGroupWares");
-            SqlGetDimWares = GetSQL("SqlGetDimWares");
-            SqlGetDimAdditionUnit = GetSQL("SqlGetDimAdditionUnit");
-            SqlGetDimBarCode = GetSQL("SqlGetDimBarCode");
-            SqlGetDimPrice = GetSQL("SqlGetDimPrice");
-            SqlGetDimTypeDiscount = GetSQL("SqlGetDimTypeDiscount");
-            SqlGetDimClient = GetSQL("SqlGetDimClient");*/
             return true;
         }
         public int LoadData(WDB pDB, bool parIsFull, StringBuilder Log)
