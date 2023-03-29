@@ -28,7 +28,7 @@ namespace Front
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         public string Version { get { return Assembly.GetExecutingAssembly().GetName().Version.ToString(); } }
-        public event PropertyChangedEventHandler PropertyChanged;        
+        public event PropertyChangedEventHandler PropertyChanged;
         public Access Access = Access.GetAccess();
         public BL Bl;
         public EquipmentFront EF;
@@ -37,7 +37,7 @@ namespace Front
         Sound s;
         public User AdminSSC { get; set; } = null;
         public DateTime DTAdminSSC { get; set; }
- 
+
         public Receipt curReceipt;//{ get; set; } = null;
         public ReceiptWares CurWares { get; set; } = null;
         public Client Client { get; set; }
@@ -122,6 +122,54 @@ namespace Front
         public string NameSecondTerminal { get { return IsPresentSecondTerminal ? EF?.BankTerminal2.Name : null; } }
 
         public string GetBackgroundColor { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? "#ff9999" : "#FFFFFF"; } }
+        public eTypeMonitor TypeMonitor
+        {
+            get
+            {
+                if (SystemParameters.PrimaryScreenWidth > SystemParameters.PrimaryScreenHeight && SystemParameters.PrimaryScreenWidth < 1920)
+
+                    return eTypeMonitor.HorisontalMonitorRegular;
+                else if (SystemParameters.PrimaryScreenWidth > SystemParameters.PrimaryScreenHeight)
+
+                    return eTypeMonitor.HorisontalMonitorKSO;
+                else
+                    return eTypeMonitor.VerticalMonitorKSO;
+            }
+        }
+        public class WidthHeaderReceipt
+        {
+            public int WidthName { get; set; }
+            public int WidthWastebasket { get; set; }
+            public int WidthCountWares { get; set; }
+            public int WidthWeight { get; set; }
+            public int WidthPrice { get; set; }
+            public int WidthTotalPrise { get; set; }
+            public WidthHeaderReceipt(int widthName, int widthWastebasket, int widthCountWares, int widthWeight, int widthPrice, int widthTotalPrise)
+            {
+                WidthName = widthName;
+                WidthWastebasket = widthWastebasket;
+                WidthCountWares = widthCountWares;
+                WidthWeight = widthWeight;
+                WidthPrice = widthPrice;
+                WidthTotalPrise = widthTotalPrise;
+            }
+        }
+        public WidthHeaderReceipt widthHeaderReceipt { get; set; }
+        public void calculateWidthHeaderReceipt (eTypeMonitor TypeMonitor) 
+        {
+            switch (TypeMonitor)
+            {
+                case eTypeMonitor.HorisontalMonitorKSO:
+                    widthHeaderReceipt = new WidthHeaderReceipt(400,100,250,100,100,150);
+                    break;
+                case eTypeMonitor.VerticalMonitorKSO:
+                    widthHeaderReceipt = new WidthHeaderReceipt(400, 100, 250, 100, 100, 150);
+                    break;
+                case eTypeMonitor.HorisontalMonitorRegular:
+                    widthHeaderReceipt = new WidthHeaderReceipt(400, 100, 250, 100, 100, 150);
+                    break;
+            }
+        }
         public bool IsHorizontalScreen { get { return SystemParameters.PrimaryScreenWidth < SystemParameters.PrimaryScreenHeight ? true : false; } }
         public int WidthScreen { get { return (int)SystemParameters.PrimaryScreenWidth; } }
         public int HeightScreen { get { return (int)SystemParameters.PrimaryScreenHeight; } }
@@ -131,7 +179,7 @@ namespace Front
         public string AmountManyPayments { get; set; } = "";
         public string SumTotalManyPayments { get; set; } = "Загальна сума: ";
 
-       
+
         public System.Drawing.Color GetFlagColor(eStateMainWindows pStateMainWindows, eTypeAccess pTypeAccess, eStateScale pSS)
         {
             if (pTypeAccess == eTypeAccess.ExciseStamp)
@@ -201,14 +249,14 @@ namespace Front
                 }
                 StackPanelWaitAdmin.Children.Clear();
                 StackPanelWaitAdmin.Children.Add(tb);
-                
+
                 return null;
             }
         }
         /// <summary>
         /// Вага з основної ваги
         /// </summary>
-        public double Weight { get; set; } = 0d;        
+        public double Weight { get; set; } = 0d;
 
         /// <summary>
         /// полоса стану обміну
@@ -220,9 +268,9 @@ namespace Front
         public bool CustomWindowValidText { get; set; }
 
         SortedList<eStateMainWindows, System.Drawing.Color> FC = new();
-     
+
         public MainWindow()
-        {            
+        {
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Ver={Version}", eTypeLog.Expanded);
             SocketServer SocketS = new SocketServer();
             _ = SocketS.StartSocketServer();
@@ -238,8 +286,10 @@ namespace Front
             Access.СurUser = new User() { TypeUser = eTypeUser.Client, CodeUser = 99999999, Login = "Client", NameUser = "Client" };
 
             Bl = new BL(true);
-            EF = new EquipmentFront(GetBarCode,null,this);
+            EF = new EquipmentFront(GetBarCode, null, this);
             InitAction();
+
+            calculateWidthHeaderReceipt(TypeMonitor);
 
             InitializeComponent();
 
@@ -324,6 +374,8 @@ namespace Front
                     Dispatcher.BeginInvoke(new ThreadStart(() =>
                     {
                         WaresList.ItemsSource = ListWares;
+                        if (WaresList.Items.Count > 0)
+                            WaresList.SelectedIndex = WaresList.Items.Count - 1;
                         if (VisualTreeHelper.GetChildrenCount(WaresList) > 0)
                         {
                             Border border = (Border)VisualTreeHelper.GetChild(WaresList, 0);
@@ -885,7 +937,7 @@ namespace Front
         }
 
         private void _Cancel(object sender, RoutedEventArgs e)
-        {            
+        {
             SetStateView(eStateMainWindows.WaitInput);
         }
 

@@ -103,4 +103,11 @@ namespace Front.Models
         Equipment,
         //Scaner
     }
+
+    public enum eTypeMonitor
+    {
+        HorisontalMonitorKSO,
+        VerticalMonitorKSO,
+        HorisontalMonitorRegular
+    }
 }
