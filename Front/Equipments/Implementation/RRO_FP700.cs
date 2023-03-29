@@ -18,6 +18,7 @@ using Front.Equipments.Implementation.FP700_Model;
 using Timer = System.Timers.Timer;
 using SharedLib;
 using System.Windows.Forms;
+using System.Data;
 
 namespace Front.Equipments
 {
@@ -259,6 +260,19 @@ namespace Front.Equipments
                     { Status = eStatusRRO.Error, IsСritical = true });
                     return eDeviceConnectionStatus.InitializationError;
                 }
+                try
+                {
+                    if (Math.Abs(((GetCurrentFiscalPrinterDate() ?? DateTime.Now) - DateTime.Now).Seconds) > 30) //Якщо час фіскалки відрізняється більше ніж на 30 секунд.
+                        if (MinuteLastZReport().TotalMinutes == 0) // і немає відкритої зміни
+                        {
+                            SetupTime(DateTime.Now);//Змінюємо час на фіскалці
+                        }
+                }
+                catch (Exception e {
+                    ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error,e.Message)
+                    { Status = eStatusRRO.Init, IsСritical = false });
+                }
+
                 int num = IsZReportDone() ? 1 : 0;
                 if (num == 0)
                 {
@@ -282,10 +296,12 @@ namespace Front.Equipments
             try
             {
                 DiagnosticInfo diagnosticInfo = GetDiagnosticInfo();
-                DocumentNumbers lastNumbers = GetLastNumbers();
+                DocumentNumbers lastNumbers = GetLastNumbers();                
                 if (diagnosticInfo == null || lastNumbers == null)
                     throw new Exception("Fp700 getInfo error");
-                return _currentPrinterStatus.TextError + "Model: " + diagnosticInfo.Model + "\n" + "SoftVersion: " + diagnosticInfo.SoftVersion + "\n" + string.Format("SoftReleaseDate: {0}\n", (object)diagnosticInfo.SoftReleaseDate) + "SerialNumber: " + diagnosticInfo.SerialNumber + "\n" + "RegistrationNumber: " + diagnosticInfo.FiscalNumber + "\n" + string.Format("BaudRate: {0}\n", (object)_serialDevice.BaudRate) + "ComPort: " + _serialDevice.PortName + "\n" + "LastDocumentNumber: " + lastNumbers.LastDocumentNumber + "\n" + "LastReceiptNumber: " + lastNumbers.LastFiscalDocumentNumber + "\n" + "LastZReportNumber: " + GetLastZReportNumber() + "\n" + string.Format("IsZReportDone: {0}\n", (object)IsZReportDone()) + string.Format("CurentTime: {0}\n", (object)(GetCurrentFiscalPrinterDate() ?? DateTime.MinValue));
+                return _currentPrinterStatus.TextError + $"Model:{diagnosticInfo.Model}\nSoftVersion: {diagnosticInfo.SoftVersion}\nSoftReleaseDate: {diagnosticInfo.SoftReleaseDate}\n SerialNumber: {diagnosticInfo.SerialNumber}\n RegistrationNumber: {diagnosticInfo.FiscalNumber}\n" + 
+                    $"BaudRate: {_serialDevice.BaudRate}\nComPort:{_serialDevice.PortName}\n"+
+                    $"LastDocumentNumber: {lastNumbers.LastDocumentNumber}\nLastReceiptNumber: {lastNumbers.LastFiscalDocumentNumber}\nLastZReportNumber: {GetLastZReportNumber()}\nIsZReportDone: {IsZReportDone()}\nCurentTime: {GetCurrentFiscalPrinterDate() ?? DateTime.MinValue}\n";
             }
             catch (Exception ex)
             {
@@ -782,6 +798,33 @@ namespace Front.Equipments
             })));
             IsZReportAlreadyDone = result;
             return result;
+        }
+
+        /// <summary>
+        /// -1 хв - Помилка, 0 Зміна не розпочата, >0 Час відкритої зміни. 
+        /// </summary>
+        /// <returns></returns>
+        public TimeSpan MinuteLastZReport()
+        {
+            int Time = -1;
+            OnSynchronizeWaitCommandResult(eCommand.ShiftInfo, onResponseCallback: ((Action<string>)(res =>
+            {
+                if (string.IsNullOrWhiteSpace(res))
+                    return;
+
+                if (res[0] == 'F' || res[0] == 'P')
+                {
+                    string[] strArray = res.Split(',');
+                    if (strArray.Length < 2)
+                        return;
+                    if (int.TryParse(strArray[1], out Time))
+                        return;
+                }
+                else
+                if (res[0] == 'Z')
+                    Time = 0;
+            })));           
+            return TimeSpan.FromMinutes(Time);
         }
 
         private DocumentNumbers GetLastNumbers()
