@@ -393,8 +393,8 @@ namespace Front.Equipments
             if (!int.TryParse(GetLastReceiptNumber(), out int result2))
                 return (string)null;
 
-            Payment Pay = pR?.Payment?.Where(el => el.TypePay == eTypePay.IssueOfCash)?.First();
-            if (Pay == null)
+            Payment Pay = pR?.Payment?.Where(el => el.TypePay == eTypePay.IssueOfCash)?.FirstOrDefault();
+            if (Pay != null)
                 CashOut(Pay);
 
             _logger?.LogDebug($"[ FP700 ] newLastReceipt = {result2} / lastReceipt = {result1}");
