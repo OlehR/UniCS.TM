@@ -268,8 +268,8 @@ namespace Front.Equipments
                             SetupTime(DateTime.Now);//Змінюємо час на фіскалці
                         }
                 }
-                catch (Exception e {
-                    ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error,e.Message)
+                catch (Exception e) {
+                    ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Init,e.Message)
                     { Status = eStatusRRO.Init, IsСritical = false });
                 }
 
