@@ -18,6 +18,7 @@ namespace Utils
         public static eTypeLog TypeLog = eTypeLog.Full;
 
         public static string GetFileName { get { return $"{Path.Combine(PathLog, $"Log_{IdWorkplace}_{DateTime.Now:yyyyMMdd}.log")}"; } }
+        public static string GetFileNameDate(DateTime pD) { return $"{Path.Combine(PathLog, $"Log_{IdWorkplace}_{pD:yyyyMMdd}.log")}"; } 
         private static Dictionary<int, Type> _types = new Dictionary<int, Type>();
 
         private static readonly object Locker = new object();

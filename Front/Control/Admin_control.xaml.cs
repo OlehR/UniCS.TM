@@ -411,7 +411,7 @@ namespace Front.Control
 
         private void RefreshLog()
         {
-            string AllLog = File.ReadAllText(Utils.FileLogger.GetFileName);
+            string AllLog = File.ReadAllText(FileLogger.GetFileNameDate(DateSoSearch));
             string[] temp = AllLog.Split($"{Environment.NewLine}[");
             LogsCollection = new ObservableCollection<ParsLog>();
             foreach (string item in temp)
