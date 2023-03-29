@@ -411,6 +411,15 @@ namespace Front.Control
 
         private void RefreshLog()
         {
+            var PathToFileLog = FileLogger.GetFileNameDate(DateSoSearch);
+            if (!File.Exists(PathToFileLog))
+            {
+                MessageBox.Show($"За обраною датою: {DateSoSearch.ToString("dd/MM/yyyy")} лог відсутній");
+                ListLog.ItemsSource = null; ListLog.Items.Clear();
+            }
+            else
+            {
+
             string AllLog = File.ReadAllText(FileLogger.GetFileNameDate(DateSoSearch));
             string[] temp = AllLog.Split($"{Environment.NewLine}[");
             LogsCollection = new ObservableCollection<ParsLog>();
@@ -428,6 +437,8 @@ namespace Front.Control
             ListLog.ItemsSource = LogsCollection.Reverse();
             CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(ListLog.ItemsSource);
             view.Filter = LogFilter;
+            }
+
         }
 
         private void historiReceiptList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -907,6 +918,11 @@ namespace Front.Control
                 }
                 finally { }
             }
+        }
+
+        private void RefreshLogButton(object sender, RoutedEventArgs e)
+        {
+            RefreshLog();
         }
     }
 
