@@ -327,6 +327,10 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                     </Button.Style>
                                 </Button>
                                 <!--<Button x:Name="CloseDay" Style="{StaticResource Default}" Content="Закриття дня"    Width="280" Height="80" Click="CloseDay_Click" />-->
+                                <DatePicker Margin="5"  FontSize="30" 
+                                            IsTodayHighlighted="True" SelectedDate="{Binding DateSoSearch}"
+                                            Width="220" Height="50" HorizontalAlignment="Center" 
+                                            Style="{StaticResource DatePickerStyle1}" />
                                 <Button x:Name="Check1C" Style="{StaticResource Default}" Content="Звірка з 1С"    Width="280" Height="80" Click="Check1C_Click" />
                             </StackPanel>
                         </GroupBox>
@@ -1173,8 +1177,12 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                 <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
                             </Border.Effect>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                               
                                 <TextBlock Text="Пошук:"/>
                                 <TextBox FontSize="25"  VerticalAlignment="Center" Width="400" TextChanged="FindFogTextChanged"/>
+                                <Button  Margin="10,0,0,0" Style="{StaticResource Default}" Click="RefreshLogButton">
+                                    Знайти/Оновити
+                                </Button>
                             </StackPanel>
                         </Border>
 
@@ -1196,6 +1204,9 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                 <RadioButton GroupName="Log" FontSize="20" Style="{DynamicResource OrangeSwitchStyle}" Content="Full" Checked="CheckTypeLog"/>
                                 <RadioButton GroupName="Log" FontSize="20" Style="{DynamicResource OrangeSwitchStyle}" Content="Expanded" Checked="CheckTypeLog"/>
                                 <RadioButton GroupName="Log"  FontSize="20" Style="{DynamicResource OrangeSwitchStyle}" Content="Error" Checked="CheckTypeLog"/>
+                                <DatePicker  FontSize="30" Margin="10,0,0,0"
+                                             IsTodayHighlighted="True" SelectedDate="{Binding DateSoSearch}"
+                                             Width="220" Height="50" HorizontalAlignment="Left" Style="{StaticResource DatePickerStyle1}" />
                             </StackPanel>
                         </Border>
                     </Grid>
