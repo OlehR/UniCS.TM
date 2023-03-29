@@ -389,8 +389,14 @@ namespace Front.Equipments
             }
             CloseReceipt();
             ClearDisplay();
+            
             if (!int.TryParse(GetLastReceiptNumber(), out int result2))
                 return (string)null;
+
+            Payment Pay = pR?.Payment?.Where(el => el.TypePay == eTypePay.IssueOfCash)?.First();
+            if (Pay == null)
+                CashOut(Pay);
+
             _logger?.LogDebug($"[ FP700 ] newLastReceipt = {result2} / lastReceipt = {result1}");
             string str = result2 > result1 ? result2.ToString() : (string)null;
             if (str != null)
@@ -458,7 +464,7 @@ namespace Front.Equipments
             return true;
         }
 
-        public bool PayReceipt(ModelMID.Receipt pR)
+        public bool PayReceipt(Receipt pR)
         {
             StringBuilder stringBuilder = new StringBuilder();
             Payment Pay = pR?.Payment?.Where(el=>el.TypePay==eTypePay.Card)?.First();
@@ -470,26 +476,27 @@ namespace Front.Equipments
                 if (Pay.TypePay == eTypePay.Card)
             {
                 Decimal totalAmount = 0M;
-                OnSynchronizeWaitCommandResult(eCommand.FiscalTransactionStatus, onResponseCallback: ((Action<string>)(res =>
+                OnSynchronizeWaitCommandResult(eCommand.FiscalTransactionStatus, onResponseCallback: (Action<string>)(res =>
                 {
                     string[] strArray = res.Split(',');
                     if (strArray.Length == 1)
                         totalAmount = Decimal.Parse(res.Substring(4, 12)) / 100M;
                     else
                         totalAmount = Decimal.Parse(strArray[2]) / 100M;
-                })));
+                }));
                 if (Pay == null) stringBuilder.Append("D");
                 else
                 {
                     stringBuilder.Append(string.Format((IFormatProvider)CultureInfo.InvariantCulture, "D+{0:0.00}", (object)totalAmount));
-                    stringBuilder.Append("," + Pay.CodeAuthorization);//
+                    stringBuilder.Append("," + GetPayStr(Pay, pR.TypeReceipt));
+                    /*stringBuilder.Append("," + Pay.CodeAuthorization);//
                     stringBuilder.Append(",Магазин");
                     stringBuilder.Append("," + Pay.NumberTerminal);//receipt.PaymentInfo.PosTerminalId
                     stringBuilder.Append("," + (string.IsNullOrWhiteSpace(Pay.IssuerName) ? "картка" : Pay.IssuerName));
                     stringBuilder.Append(string.IsNullOrEmpty(pR.NumberReceipt) ? ",оплата" : ",повернення");// receipt.FiscalNumber
                     stringBuilder.Append("," + Pay.NumberCard);//receipt.PaymentInfo.CardPan
                     stringBuilder.Append("," + Pay.NumberSlip);// receipt.PaymentInfo.PosAuthCode
-                    stringBuilder.Append(",0.00");
+                    stringBuilder.Append(",0.00");*/
                 }
 
             }
@@ -520,13 +527,40 @@ namespace Front.Equipments
             }
             return paySuccess;
         }
-        string GetPayStr(Payment pPay,eTypeReceipt pTR)
+        string GetPayStr(Payment pPay,eTypeReceipt pTR=eTypeReceipt.Sale)
         {
             return $"{pPay.CodeAuthorization},Магазин,{pPay.NumberTerminal}," +
-            (string.IsNullOrWhiteSpace(pPay.IssuerName) ) +
-              (pTR==eTypeReceipt.Sale ? "картка" : pPay.IssuerName)+
-             (pPay.TypePay == eTypePay.IssueOfCash ? "Видача" :(pTR==eTypeReceipt.Sale ? ",оплата" : ",повернення"))+        
+            (string.IsNullOrWhiteSpace(pPay.IssuerName) ? "картка" : pPay.IssuerName)+
+             (pPay.TypePay == eTypePay.IssueOfCash ? ",Видача" :(pTR==eTypeReceipt.Sale ? ",оплата" : ",повернення"))+        
         $",{pPay.NumberCard},{pPay.NumberSlip},0.00";
+        }
+        /// <summary>
+        /// Видача готівки
+        /// </summary>
+        /// <param name="pPay"></param>
+        /// <returns></returns>
+        public bool CashOut(Payment pPay)
+        {
+            bool res = false;
+            string Command = (pPay.SumPay > 0 ? "+" : "-") + pPay.SumPay.ToString((IFormatProvider)CultureInfo.InvariantCulture) +
+                "&" + GetPayStr(pPay);
+            OnSynchronizeWaitCommandResult(eCommand.ServiceCashInOut, Command, (Action<string>)(response =>
+            {
+                string[] strArray = response.Split(',');
+                if (strArray.Length < 4)
+                    return;
+                if (strArray[0].Equals("P"))
+                {
+                    res = true;
+                }
+                else
+                {
+                    if (!strArray[0].Equals("F"))
+                        return;
+                    res = false;
+                }
+            }));
+            return res;
         }
 
         public string CloseReceipt()//ReceiptViewModel receipt
