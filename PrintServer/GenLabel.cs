@@ -360,7 +360,7 @@ namespace PrintServer
             e.Graphics.DrawString(Name2, new Font("Arial", 11, FontStyle.Bold), Brushes.Black, 3, 17);
             e.Graphics.DrawString(Name3, new Font("Arial", 11, FontStyle.Bold), Brushes.Black, 3, 34);
             //Час
-            e.Graphics.DrawString(DateTime.Now.ToString("dd/MM/yyyy H:mm"), new Font("Arial", 5), Brushes.Black, startSecondColumn, 0);
+            e.Graphics.DrawString(DateTime.Now.ToString("dd/MM/yy H:mm"), new Font("Arial", 5), Brushes.Black, startSecondColumn, 0);
             //штрихкод
             if (parPrice.BarCodes != null)
             {
@@ -485,19 +485,19 @@ namespace PrintServer
                 var qrCodeData = qrGenerator.CreateQrCode($"{parPrice.Code}-{strPrice}", QRCodeGenerator.ECCLevel.Q);
                 var qrCode = new QRCode(qrCodeData);
                 var imageQR = qrCode.GetGraphic(2);
-                e.Graphics.DrawImage(imageQR, leftIntentQR+=5, topIntentQR + 5);
+                e.Graphics.DrawImage(imageQR, leftIntentQR+=5, topIntentQR );
 
                 e.Graphics.DrawLine(new Pen(Color.Black, 2), 0, topIntentQR, 300, topIntentQR);
                 //артикул
-                e.Graphics.DrawString(parPrice.Article.ToString(), new Font("Arial", 5, FontStyle.Bold), Brushes.Black, leftIntentQR += 7, topIntentQR += imageQR.Height);
+                e.Graphics.DrawString(parPrice.Article.ToString(), new Font("Arial", 6, FontStyle.Bold), Brushes.Black, leftIntentQR += 7, topIntentQR += imageQR.Height-2);
                 //Час
-                e.Graphics.DrawString(DateTime.Now.ToString("dd/MM/yyyy H:mm"), new Font("Arial", 5), Brushes.Black, leftIntentQR, topIntentQR += 6);
+                e.Graphics.DrawString(DateTime.Now.ToString("dd/MM/yyyy H:mm"), new Font("Arial", 6, FontStyle.Bold), Brushes.Black, leftIntentQR, topIntentQR += 7);
                 //штрихкод
                 if (parPrice.BarCodes != null)
                 {
                     if (parPrice.BarCodes.Length > 13)
                         parPrice.BarCodes = parPrice.BarCodes.Substring(0, 13);
-                    e.Graphics.DrawString(parPrice.BarCodes, new Font("Arial", 5), Brushes.Black, leftIntentQR, topIntentQR += 6);
+                    e.Graphics.DrawString(parPrice.BarCodes, new Font("Arial", 6, FontStyle.Bold), Brushes.Black, leftIntentQR, topIntentQR += 7);
                 }
 
 
@@ -552,7 +552,7 @@ namespace PrintServer
                         LeftCoinSecond = 260;
                         break;
                 }
-                //e.Graphics.FillRectangle(new SolidBrush(Color.Black), 205, 45, 75, 60);
+                e.Graphics.FillRectangle(new SolidBrush(Color.Black), 205, 45, 75, 60);
 
                 //
                 //e.Graphics.DrawRectangle(new Pen(Color.Black, 1), 205, 45, 75, 60);
@@ -573,20 +573,20 @@ namespace PrintServer
 
                 if (parPrice.Price < parPrice.PriceNormal)
                 {
-                    e.Graphics.DrawString(priceNormal[0], new Font("Arial Black", 14), Brushes.Black, leftIndentSecondPrice, topIndentSecondPrice); //White
-                    e.Graphics.DrawString(priceNormal[1], new Font("Arial Black", 6), Brushes.Black, LeftCoinSecond, topIndentSecondPrice += 4);//White
+                    e.Graphics.DrawString(priceNormal[0], new Font("Arial Black", 14), Brushes.White, leftIndentSecondPrice, topIndentSecondPrice); //White
+                    e.Graphics.DrawString(priceNormal[1], new Font("Arial Black", 6), Brushes.White, LeftCoinSecond, topIndentSecondPrice += 4);//White
 
                 }
                 else
                 {
-                    e.Graphics.DrawString(price[0], new Font("Arial Black", 16), Brushes.Black, leftIndentSecondPrice, topIndentSecondPrice);//White
-                    e.Graphics.DrawString(price[1], new Font("Arial Black", 6), Brushes.Black, LeftCoinSecond, topIndentSecondPrice += 4);//White
+                    e.Graphics.DrawString(price[0], new Font("Arial Black", 16), Brushes.White, leftIndentSecondPrice, topIndentSecondPrice);//White
+                    e.Graphics.DrawString(price[1], new Font("Arial Black", 6), Brushes.White, LeftCoinSecond, topIndentSecondPrice += 4);//White
                 }
 
-                e.Graphics.DrawString("грн", new Font("Arial", 6, FontStyle.Bold), Brushes.Black, LeftCoinSecond, topIndentSecondPrice += 7);//White
-                e.Graphics.DrawString(parPrice.StrUnit, new Font("Arial", 6), Brushes.Black, LeftCoinSecond, topIndentSecondPrice += 7);//White
+                e.Graphics.DrawString("грн", new Font("Arial", 6, FontStyle.Bold), Brushes.White, LeftCoinSecond, topIndentSecondPrice += 7);//White
+                e.Graphics.DrawString(parPrice.StrUnit, new Font("Arial", 6), Brushes.White, LeftCoinSecond, topIndentSecondPrice += 7);//White
 
-                e.Graphics.DrawLine(new Pen(Color.Black, 1), leftIndentSecondPrice - 4, topIndentSecondPrice += 7, LeftCoinSecond + 20, intentLine + 4);//White
+                e.Graphics.DrawLine(new Pen(Color.White, 1), leftIndentSecondPrice - 4, topIndentSecondPrice += 7, LeftCoinSecond + 20, intentLine + 4);//White
             }
             else
             {
@@ -603,18 +603,18 @@ namespace PrintServer
                 var qrCodeData = qrGenerator.CreateQrCode($"{parPrice.Code}-{strPrice}", QRCodeGenerator.ECCLevel.Q);
                 var qrCode = new QRCode(qrCodeData);
                 var imageQR = qrCode.GetGraphic(2);
-                e.Graphics.DrawImage(imageQR, leftIntentQR, topIntentQR + 5);
+                e.Graphics.DrawImage(imageQR, leftIntentQR, topIntentQR + 3);
 
                 //артикул
-                e.Graphics.DrawString(parPrice.Article.ToString(), new Font("Arial", 5, FontStyle.Bold), Brushes.Black, leftIntentQR += 7, topIntentQR += imageQR.Height);
+                e.Graphics.DrawString(parPrice.Article.ToString(), new Font("Arial", 6, FontStyle.Bold), Brushes.Black, leftIntentQR += 7, topIntentQR += imageQR.Height-2);
                 //Час
-                e.Graphics.DrawString(DateTime.Now.ToString("dd/MM/yyyy H:mm"), new Font("Arial", 5), Brushes.Black, leftIntentQR, topIntentQR += 6);
+                e.Graphics.DrawString(DateTime.Now.ToString("dd/MM/yy H:mm"), new Font("Arial", 6, FontStyle.Bold), Brushes.Black, leftIntentQR, topIntentQR += 7);
                 //штрихкод
                 if (parPrice.BarCodes != null)
                 {
                     if (parPrice.BarCodes.Length > 13)
                         parPrice.BarCodes = parPrice.BarCodes.Substring(0, 13);
-                    e.Graphics.DrawString(parPrice.BarCodes, new Font("Arial", 5), Brushes.Black, leftIntentQR, topIntentQR += 6);
+                    e.Graphics.DrawString(parPrice.BarCodes, new Font("Arial", 6, FontStyle.Bold), Brushes.Black, leftIntentQR, topIntentQR += 7);
                 }
                 e.Graphics.DrawLine(new Pen(Color.Black, 2), 0, topIntentQR+=10, 300, topIntentQR);
 
@@ -741,7 +741,7 @@ namespace PrintServer
 
 
             // Межі
-            //e.Graphics.DrawLine(new Pen(Color.Black, 2), 275, 0, 280, 130);
+            //e.Graphics.DrawLine(new Pen(Color.Black, 2), 280, 0, 280, 130);
             //e.Graphics.DrawLine(new Pen(Color.Black, 2), 0, 130, 280, 130);
 
 
