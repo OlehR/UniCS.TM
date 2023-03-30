@@ -27,9 +27,34 @@
 
         <Grid.RowDefinitions>
             <RowDefinition Height="80" />
-            <RowDefinition Height="5.5*" />
-            <RowDefinition Height="80" />
-            <RowDefinition Height="400" />
+            <RowDefinition Height="*" />
+            <RowDefinition  >
+                <RowDefinition.Style>
+                    <Style TargetType="RowDefinition">
+                        <Setter Property="Height" Value="80" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
+                                                                     Value="HorisontalMonitorRegular">
+                                <Setter Property="Height" Value="35" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </RowDefinition.Style>
+            </RowDefinition>
+
+            <RowDefinition  >
+                <RowDefinition.Style>
+                    <Style TargetType="RowDefinition">
+                        <Setter Property="Height" Value="400" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
+                                                                     Value="HorisontalMonitorRegular">
+                                <Setter Property="Height" Value="*" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </RowDefinition.Style>
+            </RowDefinition>
         </Grid.RowDefinitions>
         <Border Grid.Row="0" Margin="5" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
 
@@ -51,12 +76,16 @@
                             <TextBlock.Style>
                                 <Style TargetType="{x:Type TextBlock}">
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
                                             <Setter Property="FontSize" Value="35" />
                                         </DataTrigger>
-                                        <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="VerticalMonitorKSO">
+                                            <Setter Property="FontSize" Value="20" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
                                             <Setter Property="FontSize" Value="20" />
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -66,7 +95,7 @@
                         </TextBlock>
                     </StackPanel>
                 </Button>
-               
+
 
                 <!--<Grid Grid.Column="1"  Grid.ColumnSpan="1"
                   >
@@ -80,7 +109,9 @@
                     </Grid.RowDefinitions>
 
                     <Button x:Name="ua"  Style="{StaticResource yelowButton}">
-                        --><!-- Click="_ChangeLanguage" --><!--
+                        -->
+                <!-- Click="_ChangeLanguage" -->
+                <!--
                         <Image Margin="3" Source="icons\ua.png"></Image>
                     </Button>
 
@@ -100,7 +131,9 @@
 
                 <!--<Grid Grid.Column="2">
                     <Button Margin="10" Style="{StaticResource Default}" >
-                        --><!-- Click="_VolumeButton"--><!--
+                        -->
+                <!-- Click="_VolumeButton"-->
+                <!--
                         <Image x:Name="ButtonImage">
                             <Image.Style>
                                 <Style TargetType="{x:Type Image}">
@@ -123,17 +156,40 @@
                 <Button Grid.Column="3" Grid.ColumnSpan="2"  Click="ClickButtonUp" Name="ButtonUp" >
                     <Button.Content>
                         <StackPanel Orientation="Horizontal">
-                            <Image  Height="40" Width="40"  Source="icons\backArrow.png"></Image>
+                            <Image   Source="icons\backArrow.png">
+                                <Image.Style>
+                                    <Style TargetType="{x:Type Image}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
+                                                <Setter Property="Width" Value="40" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="VerticalMonitorKSO">
+                                                <Setter Property="Width" Value="30" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                <Setter Property="Width" Value="30" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Image.Style>
+                            </Image>
                             <TextBlock  Text="Назад" Margin="5,0,5,0">
                                 <TextBlock.Style>
                                     <Style TargetType="{x:Type TextBlock}">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
                                                 <Setter Property="FontSize" Value="35" />
                                             </DataTrigger>
-                                            <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="VerticalMonitorKSO">
+                                                <Setter Property="FontSize" Value="20" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
                                                 <Setter Property="FontSize" Value="20" />
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -166,12 +222,16 @@
                         <TextBlock.Style>
                             <Style TargetType="{x:Type TextBlock}">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
                                         <Setter Property="FontSize" Value="35" />
                                     </DataTrigger>
-                                    <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="VerticalMonitorKSO">
+                                        <Setter Property="FontSize" Value="20" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
                                         <Setter Property="FontSize" Value="20" />
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -196,7 +256,7 @@
             </Grid.RowDefinitions>
 
             <!---->
-            
+
 
             <Grid Grid.Column="1"  Name="PictureGrid">
 
@@ -232,16 +292,70 @@
             </Button>
 
         </Grid>
-        <TextBlock Grid.Row="2" Grid.Column="0" FontSize="34" Text="Назва" />
+        <TextBlock Grid.Row="2" Grid.Column="0" Margin="10,0,0,0"  Text="Назва" >
+            <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                    <Setter Property="FontWeight" Value="SemiBold"/>
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                    
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
+                            <Setter Property="FontSize" Value="34" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="VerticalMonitorKSO">
+                            <Setter Property="FontSize" Value="34" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                            <Setter Property="FontSize" Value="24" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
 
-        <TextBox Grid.Row="2"  Grid.ColumnSpan="2" TabIndex="1" Name="WaresName" FontSize="34"  Height="50"
-                 TextChanged="WaresName_Changed"  VerticalAlignment="Center" Margin="120,0,50,0" />
+        <TextBox Grid.Row="2"  Grid.ColumnSpan="2" TabIndex="1" Name="WaresName" 
+                 TextChanged="WaresName_Changed"  VerticalAlignment="Center">
+            <TextBox.Style>
+                <Style TargetType="TextBox">
+                    <Setter Property="FontWeight" Value="SemiBold"/>
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
+                            <Setter Property="FontSize" Value="34" />
+                            <Setter Property="Height" Value="50" />
+                            <Setter Property="Margin" Value="120,0,50,0" />
+
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="VerticalMonitorKSO">
+                            <Setter Property="FontSize" Value="34" />
+                            <Setter Property="Height" Value="50" />
+                            <Setter Property="Margin" Value="120,0,50,0" />
+
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                            <Setter Property="FontSize" Value="24" />
+                            <Setter Property="Height" Value="35" />
+                            <Setter Property="Margin" Value="90,0,0,0" />
+
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
 
         <keyboard:OnScreenKeyboard Grid.Row="3"
 		                           Grid.Column="0"
 		                           Grid.ColumnSpan="4"
-                                   x:Name="KB"       
-                                   Height="400"
+                                   x:Name="KB" 
+                                   Height="{Binding HeightKeyboard, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}"
 		                           VerticalAlignment="Bottom" 
 								   ToggleButtonStyle="{StaticResource DefaultTouchToggleButtonStyle}"
 		                           ActiveContainer="{Binding ElementName=MainGrid}"

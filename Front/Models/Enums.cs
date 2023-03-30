@@ -108,6 +108,7 @@ namespace Front.Models
     {
         HorisontalMonitorKSO,
         VerticalMonitorKSO,
-        HorisontalMonitorRegular
+        HorisontalMonitorRegular,
+        AnotherTypeMonitor
     }
 }

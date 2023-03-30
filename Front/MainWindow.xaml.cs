@@ -22,6 +22,7 @@ using System.Windows.Documents;
 using System.Reflection;
 using Front.API;
 using System.IO;
+using System.Security.AccessControl;
 
 namespace Front
 {
@@ -126,14 +127,15 @@ namespace Front
         {
             get
             {
-                if (SystemParameters.PrimaryScreenWidth > SystemParameters.PrimaryScreenHeight && SystemParameters.PrimaryScreenWidth < 1920)
-
+                if (SystemParameters.PrimaryScreenWidth > SystemParameters.PrimaryScreenHeight && SystemParameters.PrimaryScreenWidth <= 1024)
                     return eTypeMonitor.HorisontalMonitorRegular;
-                else if (SystemParameters.PrimaryScreenWidth > SystemParameters.PrimaryScreenHeight)
-
+                else if (SystemParameters.PrimaryScreenWidth > SystemParameters.PrimaryScreenHeight && SystemParameters.PrimaryScreenWidth ==1920)
                     return eTypeMonitor.HorisontalMonitorKSO;
-                else
+                else if(SystemParameters.PrimaryScreenWidth < SystemParameters.PrimaryScreenHeight)
                     return eTypeMonitor.VerticalMonitorKSO;
+                else
+                    return eTypeMonitor.AnotherTypeMonitor;
+
             }
         }
         public class WidthHeaderReceipt
@@ -157,16 +159,20 @@ namespace Front
         public WidthHeaderReceipt widthHeaderReceipt { get; set; }
         public void calculateWidthHeaderReceipt (eTypeMonitor TypeMonitor) 
         {
+            var coefWidth = WidthScreen / 100;
             switch (TypeMonitor)
             {
                 case eTypeMonitor.HorisontalMonitorKSO:
-                    widthHeaderReceipt = new WidthHeaderReceipt(400,100,250,100,100,150);
+                    widthHeaderReceipt = new WidthHeaderReceipt(1100, 100, 290, 130, 130, 140);
                     break;
                 case eTypeMonitor.VerticalMonitorKSO:
-                    widthHeaderReceipt = new WidthHeaderReceipt(400, 100, 250, 100, 100, 150);
+                    widthHeaderReceipt = new WidthHeaderReceipt(400, 90, 230, 120, 100, 150);
                     break;
                 case eTypeMonitor.HorisontalMonitorRegular:
-                    widthHeaderReceipt = new WidthHeaderReceipt(400, 100, 250, 100, 100, 150);
+                    widthHeaderReceipt = new WidthHeaderReceipt(465, 70, 200, 90, 80, 100);
+                    break;
+                    default: 
+            widthHeaderReceipt = new WidthHeaderReceipt(40* coefWidth, 5* coefWidth, 15* coefWidth, 10* coefWidth, 10* coefWidth, 20* coefWidth);
                     break;
             }
         }
@@ -1238,8 +1244,12 @@ namespace Front
                 };
                 Bl.SetCustomWindows(r);
             }
-            Background.Visibility = Visibility.Collapsed;
-            BackgroundWares.Visibility = Visibility.Collapsed;
+            if (pResult.Length == 0)
+            {
+                Background.Visibility = Visibility.Collapsed;
+                BackgroundWares.Visibility = Visibility.Collapsed;
+            }
+            
         }
 
         private void CustomWindowVerificationText(object sender, TextChangedEventArgs e)

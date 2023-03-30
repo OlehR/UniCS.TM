@@ -13,6 +13,7 @@ using System.ComponentModel;
 using System.Windows.Media;
 using Front.Models;
 using System.Threading.Tasks;
+using static Front.MainWindow;
 
 namespace Front
 {
@@ -29,6 +30,39 @@ namespace Front
         public bool IsUp { get { return CodeFastGroup > 0; } }
         public bool Volume { get; set; }
         public bool IsHorizontalScreen { get { return SystemParameters.PrimaryScreenWidth < SystemParameters.PrimaryScreenHeight ? true : false; } }
+        public eTypeMonitor TypeMonitor
+        {
+            get
+            {
+                if (SystemParameters.PrimaryScreenWidth > SystemParameters.PrimaryScreenHeight && SystemParameters.PrimaryScreenWidth <= 1024)
+                    return eTypeMonitor.HorisontalMonitorRegular;
+                else if (SystemParameters.PrimaryScreenWidth > SystemParameters.PrimaryScreenHeight && SystemParameters.PrimaryScreenWidth == 1920)
+                    return eTypeMonitor.HorisontalMonitorKSO;
+                else if (SystemParameters.PrimaryScreenWidth < SystemParameters.PrimaryScreenHeight)
+                    return eTypeMonitor.VerticalMonitorKSO;
+                else
+                    return eTypeMonitor.AnotherTypeMonitor;
+            }
+        }
+        public int HeightKeyboard { get; set; } = 400;
+        private void CalculateHeightKeyboard()
+        {
+            switch (TypeMonitor)
+            {
+                case eTypeMonitor.HorisontalMonitorKSO:
+                    HeightKeyboard = 400;
+                    break;
+                case eTypeMonitor.VerticalMonitorKSO:
+                    HeightKeyboard = 400;
+                    break;
+                case eTypeMonitor.HorisontalMonitorRegular:
+                    HeightKeyboard = 320;
+                    break;
+                default:
+                    HeightKeyboard =320;
+                    break;
+            }
+        }
         public int WidthScreen { get { return (int)SystemParameters.PrimaryScreenWidth; } }
         public int HeightScreen { get { return (int)SystemParameters.PrimaryScreenHeight; } }
         /// <summary>
@@ -46,7 +80,7 @@ namespace Front
         MainWindow MW;
         public FindWaresWin(MainWindow pMW)
         {
-
+            CalculateHeightKeyboard();
             InitializeComponent();
             WindowState = WindowState.Maximized;
             //WindowStyle = WindowStyle.None;
@@ -139,7 +173,7 @@ namespace Front
                 if (File.Exists(el.Pictures))
                 {
                     ImageStackPanel.Source = new BitmapImage(new Uri(el.Pictures));
-                    ImageStackPanel.Height = 180;
+                    ImageStackPanel.Height = TypeMonitor == eTypeMonitor.HorisontalMonitorRegular || TypeMonitor == eTypeMonitor.AnotherTypeMonitor ? 100 : 180; //180;
                     ImageStackPanel.Margin = new Thickness(5);
                     //Bt.Content = new Image
                     //{
@@ -168,13 +202,13 @@ namespace Front
                 //Розділення на 2 радки якщо текст завеликий
                 int leng;
                 if (el.Name != null) leng = el.Name.Length;
-                else leng=0;
+                else leng = 0;
 
                 var lengthText = 20;
                 NameWares.TextWrapping = TextWrapping.Wrap;
-                if (leng > lengthText)
+                if (TypeMonitor ==  eTypeMonitor.HorisontalMonitorRegular || TypeMonitor == eTypeMonitor.AnotherTypeMonitor)
                 {
-                    NameWares.FontSize = 20;
+                    NameWares.FontSize = 12;
                     NameWares.Text = el.Name;//.Insert(lengthText, Environment.NewLine);
                 }
                 else
@@ -187,7 +221,7 @@ namespace Front
                 NameWares.FontWeight = FontWeights.DemiBold;
                 NameWares.HorizontalAlignment = HorizontalAlignment.Center;
                 NameWares.VerticalAlignment = VerticalAlignment.Center;
-                NameWares.Margin = new Thickness(5,0,5,0);
+                NameWares.Margin = new Thickness(5, 0, 5, 0);
                 if (el.Type == 1) //якщо група товарів тоді показати лише фото
                 {
                     StackP.Children.Add(ImageStackPanel);

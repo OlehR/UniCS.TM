@@ -339,7 +339,20 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                  Grid.Row="0" Grid.RowSpan="6"
                 Grid.Column="0" Grid.ColumnSpan="4"
                  Name="Revision" Visibility="Collapsed" Grid.ZIndex="3" 
-                CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center"  Width="1000" Height="850">
+                CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center" >
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Width" Value="1000"/>
+                                    <Setter Property="Height" Value="850"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                            <Setter Property="Width" Value="800" />
+                                            <Setter Property="Height" Value="580" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
                             <Border.Effect>
                                 <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
                             </Border.Effect>
@@ -348,21 +361,72 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="0.5*"></RowDefinition>
                                     <RowDefinition Height="3*"></RowDefinition>
-                                    <RowDefinition Height="100"></RowDefinition>
+                                    <RowDefinition >
+                                        <RowDefinition.Style>
+                                            <Style TargetType="RowDefinition">
+                                                <Setter Property="Height" Value="100" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                        <Setter Property="Height" Value="60" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </RowDefinition.Style>
+                                    </RowDefinition>
                                 </Grid.RowDefinitions>
                                 <TextBlock Grid.Row="0" HorizontalAlignment="Center" FontSize="28" Text="Деталі"/>
                                 <ScrollViewer Grid.Row="1" x:Name="RevisionScrollViewer">
-                                    <TextBlock x:Name="RevisionText" FontSize="28" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="RevisionText" HorizontalAlignment="Center">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="FontSize" Value="28" />
+                                                <Setter Property="FontFamily" Value="Source Sans Pro" />
+                                                <Setter Property="VerticalAlignment" Value="Center" />
+                                                <Setter Property="FontWeight" Value="DemiBold" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                        <Setter Property="FontSize" Value="18" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                 </ScrollViewer>
                                 <!--<TextBox x:Name="RevisionText" Grid.Row="1" FontSize="28" HorizontalAlignment="Center"/>-->
                                 <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <Button  Style="{StaticResource Default}"  FontSize="22" Click="Print" 
-                        Height="80" Width="300" Margin="10">
-                                        <TextBlock FontSize="28" Text="Друк"/>
+                                    <Button     Click="Print"  Margin="10">
+                                        <TextBlock FontSize="24" Text="Друк"/>
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource Default}">
+                                                <Setter Property="Height" Value="80" />
+                                                <Setter Property="Width" Value="300" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                        <Setter Property="Height" Value="40" />
+                                                        <Setter Property="Width" Value="150" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
                                     </Button>
-                                    <Button  Style="{StaticResource Default}"  FontSize="22" Click="Cancel" 
-                        Height="80" Width="300" Margin="10">
-                                        <TextBlock FontSize="28" Text="{DynamicResource cancel}"/>
+                                    <Button   Click="Cancel" Margin="10">
+                                        <TextBlock FontSize="24" Text="{DynamicResource cancel}"/>
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource Default}">
+                                                <Setter Property="Height" Value="80" />
+                                                <Setter Property="Width" Value="300" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                        <Setter Property="Height" Value="40" />
+                                                        <Setter Property="Width" Value="150" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
                                     </Button>
                                 </StackPanel>
 
@@ -626,15 +690,15 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                 <TabItem Name="TabHistory" Header="Історія">
                     <Grid >
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="80"></RowDefinition>
+                            <RowDefinition Height="60"></RowDefinition>
                             <RowDefinition Height="7*"></RowDefinition>
                             <RowDefinition Height="80"></RowDefinition>
                         </Grid.RowDefinitions>
                         <StackPanel Orientation="Horizontal">
                             <DatePicker Name="dataHistori" FontSize="30" IsTodayHighlighted="True" SelectedDate="{Binding DateSoSearch}"
                                     Width="220" Height="50" HorizontalAlignment="Left" Style="{StaticResource DatePickerStyle1}" ></DatePicker>
-                            <Button Width="300" Height="80" Margin="10,0,0,0" Style="{StaticResource Default}" Click="FindChecksByDate">
-                                Знайти/Оновити
+                            <Button Width="250" Height="60" Margin="10,0,0,0" Style="{StaticResource Default}" Click="FindChecksByDate" Content="Знайти/Оновити">
+                                
                             </Button>
                             <StackPanel Orientation="Horizontal" Margin="20,0,0,0">
                                 <TextBlock Text="Всі чеки: "/>
