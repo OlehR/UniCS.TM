@@ -155,7 +155,7 @@ namespace Front
                 }
                 ));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClientName"));
-                if (Client.BirthDay > new DateTime(1990, 1, 1))
+                if (Client.BirthDay > new DateTime(1900, 1, 1))
                     if (Client.BirthDay.AddYears(18).Date <= DateTime.Now.Date)
                         Bl.AddEventAge(curReceipt);
 
