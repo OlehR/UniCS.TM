@@ -282,7 +282,7 @@ namespace Front.Control
         private void WorkStart_Click(object sender, RoutedEventArgs e)
         {
             MW.AdminSSC = AdminUser;
-            if (Global.TypeWorkplace == eTypeWorkplace.СashRegister)
+            if (Global.TypeWorkplace == eTypeWorkplace.CashRegister)
                 MW.Access.СurUser = AdminUser;
             MW.DTAdminSSC = DateTime.Now;
             MW.Bl.db.SetConfig<DateTime>("DateAdminSSC", DateTime.Now);

@@ -977,7 +977,7 @@ namespace Front
             //PaymentWindow.UpdatePaymentWindow();
             //SetStateView(eStateMainWindows.ChoicePaymentMethod);
             //return;
-            if (Global.TypeWorkplace == eTypeWorkplace.СashRegister)
+            if (Global.TypeWorkplace == eTypeWorkplace.CashRegister)
             {
                 PaymentWindow.UpdatePaymentWindow();
                 SetStateView(eStateMainWindows.ChoicePaymentMethod);

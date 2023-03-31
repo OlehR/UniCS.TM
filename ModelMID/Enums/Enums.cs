@@ -9,7 +9,7 @@ namespace ModelMID
     {
         NotDefine = 0,
         SelfServicCheckout,
-        СashRegister
+        CashRegister
     }
 
     public enum ePeriod
