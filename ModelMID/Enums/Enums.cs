@@ -278,21 +278,7 @@ namespace ModelMID
         PrivatBank = 3,
         Oschadbank = 11
     }
-    /// <summary>
-    /// Тип робочого місця (КСО,Звичайна каса)
-    /// </summary>
-    public enum eTypeWorkPlace
-    {
-        /// <summary>
-        /// Каса самообслуги
-        /// </summary>
-        SelfServiceCheckout,
-        /// <summary>
-        /// Касове місце (Можливо є краща назва)
-        /// </summary>
-        CashPlace
-    }
-
+   
     /// <summary>
     /// Кастомні вікна
     /// </summary>

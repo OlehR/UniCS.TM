@@ -282,7 +282,7 @@ namespace Front
             _ = SocketS.StartSocketServer();
             CS = new ControlScale();
             s = Sound.GetSound(CS);
-
+            Volume = (Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout);
             var fc = new List<FlagColor>();
             Config.GetConfiguration().GetSection("MID:FlagColor").Bind(fc);
             foreach (var el in fc)
@@ -536,7 +536,7 @@ namespace Front
                         customWindow = (State == eStateMainWindows.WaitCustomWindows ? pCW : null);
 
                     if (State == eStateMainWindows.StartWindow)
-                        Volume = true;
+                        Volume = (Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout);
                     if (TypeAccessWait == eTypeAccess.FixWeight || !IsConfirmAdmin)
                         s.Play(State, TypeAccessWait, CS.StateScale, 0);
                     //if ((State == eStateMainWindows.WaitAdmin || State == eStateMainWindows.WaitAdminLogin) && TypeAccessWait == eTypeAccess.ExciseStamp)
@@ -921,7 +921,7 @@ namespace Front
 
         private void _ButtonHelp(object sender, RoutedEventArgs e)
         {
-            SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.AdminPanel);
+            SetStateView( Global.TypeWorkplace==eTypeWorkplace.SelfServicCheckout?eStateMainWindows.WaitAdmin : eStateMainWindows.AdminPanel, eTypeAccess.AdminPanel);
         }
 
         private void _OwnBag(object sender, RoutedEventArgs e)

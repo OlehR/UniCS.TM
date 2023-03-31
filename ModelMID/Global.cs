@@ -43,9 +43,7 @@ namespace ModelMID
         public static int StartCodeReceipt = 0;
 
         public static int DefaultCodeDealer { get; set; }
-        //{ get { switch (CodeWarehouse) { case 9: return 2; case 15: return 4; case 148: return 42; default: return 0; } } }//!!!!TMP
-
-        public eTypeWorkPlace TypeWorkPlace = eTypeWorkPlace.SelfServiceCheckout;
+        //{ get { switch (CodeWarehouse) { case 9: return 2; case 15: return 4; case 148: return 42; default: return 0; } } }//!!!!TMP      
 
         public static bool IsGenQrCoffe = true;
 
