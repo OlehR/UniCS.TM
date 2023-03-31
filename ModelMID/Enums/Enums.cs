@@ -323,6 +323,10 @@ namespace ModelMID
         /// </summary>
         Guardian = -12,
         /// <summary>
+        /// Адміністратор ТЗ
+        /// </summary>
+        AdminShop =-11, 
+        /// <summary>
         /// Адміністратор Дозвіл на всі операції
         /// </summary>
         Admin = 9
