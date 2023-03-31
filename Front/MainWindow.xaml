@@ -2294,6 +2294,7 @@
                         <TextBlock Foreground="White" >
                             <TextBlock.Style>
                                 <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="FontWeight" Value="Bold" />
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
