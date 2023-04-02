@@ -221,6 +221,8 @@ namespace ModelMID
 
     public enum eReceiptEventType
     {
+
+        TimeScanReceipt = -11,
         OwnBag = -10,
         ErrorQR = -9,
         AnswerQR = -2,

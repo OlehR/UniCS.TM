@@ -417,6 +417,7 @@ namespace Front
             //ChangeWaitAdminText();
         }
 
+        DateTime StartScan = DateTime.MinValue;
         public void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine, eTypeAccess pTypeAccess = eTypeAccess.NoDefine, ReceiptWares pRW = null, CustomWindow pCW = null, eSender pS = eSender.NotDefine)
         {
 
@@ -522,6 +523,20 @@ namespace Front
                     //Зупиняєм пищання сканера
                     if (State != eStateMainWindows.ProcessPay)
                         EF.StopMultipleTone();
+
+                    if(State == eStateMainWindows.WaitAdmin || State == eStateMainWindows.AdminPanel || State == eStateMainWindows.WaitAdminLogin ||
+                       State == eStateMainWindows.ChoicePaymentMethod || State == eStateMainWindows.ProcessPay)                    
+                    {
+                        if (StartScan != DateTime.MinValue)
+                            Bl.SaveReceiptEvents(new List<ReceiptEvent>() { new ReceiptEvent(curReceipt) { ResolvedAt = DateTime.Now, EventType=eReceiptEventType.TimeScanReceipt,EventName="Час сканування чека" } }, false);
+                        StartScan = DateTime.MinValue;
+                    }
+                    else
+                    {
+                        if (StartScan == DateTime.MinValue) StartScan = DateTime.Now;
+                    }
+
+
 
                     //Генеруємо з кастомні вікна
                     if (TypeAccessWait == eTypeAccess.FixWeight)
