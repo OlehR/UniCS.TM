@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Media;
 using System.Windows.Threading;
 using Utils;
 
@@ -53,6 +54,8 @@ namespace Front.Control
         public bool IsShowAllReceipts { get; set; }
         public bool IsShowAllJournal { get; set; }
         //BatchTotals LastReceipt = null;
+
+        public bool IsCashRegister { get { return Global.TypeWorkplace == eTypeWorkplace.CashRegister; } }
 
         public DateTime DateSoSearch { get; set; } = DateTime.Now.Date;
         public DateTime DateStartPeriodZ { get; set; } = DateTime.Now.Date;
@@ -420,23 +423,23 @@ namespace Front.Control
             else
             {
 
-            string AllLog = File.ReadAllText(FileLogger.GetFileNameDate(DateSoSearch));
-            string[] temp = AllLog.Split($"{Environment.NewLine}[");
-            LogsCollection = new ObservableCollection<ParsLog>();
-            foreach (string item in temp)
-            {
-                if (item.Contains("Error"))
-                    LogsCollection.Add(new ParsLog() { LineLog = "[" + item, TypeLog = eTypeLog.Error });
-                if (item.Contains("Expanded"))
-                    LogsCollection.Add(new ParsLog() { LineLog = "[" + item, TypeLog = eTypeLog.Expanded });
-                else
-                    LogsCollection.Add(new ParsLog() { LineLog = "[" + item, TypeLog = eTypeLog.Full });
-            }
-            //LogsCollection = new ObservableCollection<string>(AllLog.Split($"{Environment.NewLine}[").Select(a => "[" + a));
+                string AllLog = File.ReadAllText(FileLogger.GetFileNameDate(DateSoSearch));
+                string[] temp = AllLog.Split($"{Environment.NewLine}[");
+                LogsCollection = new ObservableCollection<ParsLog>();
+                foreach (string item in temp)
+                {
+                    if (item.Contains("Error"))
+                        LogsCollection.Add(new ParsLog() { LineLog = "[" + item, TypeLog = eTypeLog.Error });
+                    if (item.Contains("Expanded"))
+                        LogsCollection.Add(new ParsLog() { LineLog = "[" + item, TypeLog = eTypeLog.Expanded });
+                    else
+                        LogsCollection.Add(new ParsLog() { LineLog = "[" + item, TypeLog = eTypeLog.Full });
+                }
+                //LogsCollection = new ObservableCollection<string>(AllLog.Split($"{Environment.NewLine}[").Select(a => "[" + a));
 
-            ListLog.ItemsSource = LogsCollection.Reverse();
-            CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(ListLog.ItemsSource);
-            view.Filter = LogFilter;
+                ListLog.ItemsSource = LogsCollection.Reverse();
+                CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(ListLog.ItemsSource);
+                view.Filter = LogFilter;
             }
 
         }
@@ -923,6 +926,88 @@ namespace Front.Control
         private void RefreshLogButton(object sender, RoutedEventArgs e)
         {
             RefreshLog();
+        }
+
+        private void EKKA_Introduction_Click(object sender, RoutedEventArgs e)
+        {
+            MW.InputNumberPhone.Desciption = "Службове внесення";
+            MW.InputNumberPhone.ValidationMask = "";
+            MW.InputNumberPhone.Result = "";
+            MW.InputNumberPhone.IsEnableComma = true;
+            MW.InputNumberPhone.CallBackResult = IntroductionOfFunds;
+            MW.NumericPad.Visibility = Visibility.Visible;
+            BackgroundShift.Visibility = Visibility.Visible;
+
+        }
+
+        private void IntroductionOfFunds(string pRes)
+        {
+            if (pRes.Length != 0)
+            {
+                if (MessageBox.Show($"Внести {pRes}?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                {
+                    //внесення))
+
+                    var res = Decimal.TryParse(pRes, out decimal pSumIntroductionOfFunds);
+                    if (res)
+                    {
+                        var task = Task.Run(() =>
+                        {
+                            var r = EF.RroMoveMoney(pSumIntroductionOfFunds, new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
+                            if (r.CodeError == 0)
+                                MW.ShowErrorMessage("Успішно!");
+                            else
+                            {
+                                Thread.Sleep(100);
+                                MW.ShowErrorMessage($"Помилка внесення коштів:({r.CodeError}){Environment.NewLine}{r.Error}");
+                            }
+                        });
+                    }
+                    else MW.ShowErrorMessage("Введіть коректну суму!");
+                }
+            }
+            MW.NumericPad.Visibility = Visibility.Collapsed;
+            BackgroundShift.Visibility = Visibility.Collapsed;
+        }
+
+        private void EKKA_Withdrawal_Click(object sender, RoutedEventArgs e)
+        {
+            MW.InputNumberPhone.Desciption = "Службове вилучення";
+            MW.InputNumberPhone.ValidationMask = "";
+            MW.InputNumberPhone.Result = "";
+            MW.InputNumberPhone.IsEnableComma = true;
+            MW.InputNumberPhone.CallBackResult = WithdrawalOfFunds;
+            MW.NumericPad.Visibility = Visibility.Visible;
+            BackgroundShift.Visibility = Visibility.Visible;
+
+        }
+        private void WithdrawalOfFunds(string pRes)
+        {
+            if (pRes.Length != 0)
+            {
+                if (MessageBox.Show($"Вилучити {pRes}?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                {
+                    //вилучення))
+                    var res = Decimal.TryParse(pRes, out decimal pSumWithdrawalOfFunds);
+                    if (res)
+                    {
+                        var task = Task.Run(() =>
+                        {
+                            var r = EF.RroMoveMoney(pSumWithdrawalOfFunds, new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
+                            if (r.CodeError == 0)
+                                MW.ShowErrorMessage("Успішно!");
+                            else
+                            {
+                                Thread.Sleep(100);
+                                MW.ShowErrorMessage($"Помилка вилучення коштів:({r.CodeError}){Environment.NewLine}{r.Error}");
+                            }
+                        });
+                    }
+                    else MW.ShowErrorMessage("Введіть коректну суму!");
+                }
+            }
+            MW.NumericPad.Visibility = Visibility.Collapsed;
+            BackgroundShift.Visibility = Visibility.Collapsed;
         }
     }
 

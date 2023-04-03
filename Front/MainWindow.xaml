@@ -100,7 +100,7 @@
         <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
                  Grid.Column="0" Grid.ColumnSpan="6"
-                 Name="NumericPad" Visibility="Collapsed" Grid.ZIndex="4" 
+                 Name="NumericPad" Visibility="Collapsed" Grid.ZIndex="5" 
                 CornerRadius="10" VerticalAlignment="Center" HorizontalAlignment="Center">
             <Border.Effect>
                 <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
@@ -2410,7 +2410,7 @@
         <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
                 Grid.Column="1" Grid.ColumnSpan="4"
-                 Name="ErrorWindows" Visibility="Collapsed" Grid.ZIndex="2" 
+                 Name="ErrorWindows" Visibility="Collapsed" Grid.ZIndex="6" 
                 CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
             <Border.Effect>
                 <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>

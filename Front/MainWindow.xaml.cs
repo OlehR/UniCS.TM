@@ -129,9 +129,9 @@ namespace Front
             {
                 if (SystemParameters.PrimaryScreenWidth > SystemParameters.PrimaryScreenHeight && SystemParameters.PrimaryScreenWidth <= 1024)
                     return eTypeMonitor.HorisontalMonitorRegular;
-                else if (SystemParameters.PrimaryScreenWidth > SystemParameters.PrimaryScreenHeight && SystemParameters.PrimaryScreenWidth ==1920)
+                else if (SystemParameters.PrimaryScreenWidth > SystemParameters.PrimaryScreenHeight && SystemParameters.PrimaryScreenWidth == 1920)
                     return eTypeMonitor.HorisontalMonitorKSO;
-                else if(SystemParameters.PrimaryScreenWidth < SystemParameters.PrimaryScreenHeight)
+                else if (SystemParameters.PrimaryScreenWidth < SystemParameters.PrimaryScreenHeight)
                     return eTypeMonitor.VerticalMonitorKSO;
                 else
                     return eTypeMonitor.AnotherTypeMonitor;
@@ -157,7 +157,7 @@ namespace Front
             }
         }
         public WidthHeaderReceipt widthHeaderReceipt { get; set; }
-        public void calculateWidthHeaderReceipt (eTypeMonitor TypeMonitor) 
+        public void calculateWidthHeaderReceipt(eTypeMonitor TypeMonitor)
         {
             var coefWidth = WidthScreen / 100;
             switch (TypeMonitor)
@@ -171,8 +171,8 @@ namespace Front
                 case eTypeMonitor.HorisontalMonitorRegular:
                     widthHeaderReceipt = new WidthHeaderReceipt(465, 70, 200, 90, 80, 100);
                     break;
-                    default: 
-            widthHeaderReceipt = new WidthHeaderReceipt(40* coefWidth, 5* coefWidth, 15* coefWidth, 10* coefWidth, 10* coefWidth, 20* coefWidth);
+                default:
+                    widthHeaderReceipt = new WidthHeaderReceipt(40 * coefWidth, 5 * coefWidth, 15 * coefWidth, 10 * coefWidth, 10 * coefWidth, 20 * coefWidth);
                     break;
             }
         }
@@ -524,8 +524,8 @@ namespace Front
                     if (State != eStateMainWindows.ProcessPay)
                         EF.StopMultipleTone();
 
-                    if(( State == eStateMainWindows.WaitAdmin && !CS.IsProblem) || State == eStateMainWindows.AdminPanel || State == eStateMainWindows.WaitAdminLogin ||
-                       State == eStateMainWindows.ChoicePaymentMethod || State == eStateMainWindows.ProcessPay)                    
+                    if ((State == eStateMainWindows.WaitAdmin && !CS.IsProblem) || State == eStateMainWindows.AdminPanel || State == eStateMainWindows.WaitAdminLogin ||
+                       State == eStateMainWindows.ChoicePaymentMethod || State == eStateMainWindows.ProcessPay)
                     {
                         if (StartScan != DateTime.MinValue)
                         {
@@ -938,7 +938,7 @@ namespace Front
 
         private void _ButtonHelp(object sender, RoutedEventArgs e)
         {
-            SetStateView( Global.TypeWorkplace==eTypeWorkplace.SelfServicCheckout?eStateMainWindows.WaitAdmin : eStateMainWindows.AdminPanel, eTypeAccess.AdminPanel);
+            SetStateView(Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout ? eStateMainWindows.WaitAdmin : eStateMainWindows.AdminPanel, eTypeAccess.AdminPanel);
         }
 
         private void _OwnBag(object sender, RoutedEventArgs e)
@@ -1266,7 +1266,7 @@ namespace Front
                 Background.Visibility = Visibility.Collapsed;
                 BackgroundWares.Visibility = Visibility.Collapsed;
             }
-            
+
         }
 
         private void CustomWindowVerificationText(object sender, TextChangedEventArgs e)

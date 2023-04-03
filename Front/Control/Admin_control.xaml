@@ -274,17 +274,51 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                         </ScrollViewer>-->
                         <GroupBox Grid.Column="0" Grid.Row="1" Header="POS-термінал" Margin="20, 20 , 10 ,20">
                             <StackPanel>
-                                <Button x:Name="POS_X" Style="{StaticResource Default}" Content="X звіт" Width="280" Height="80"  Click="POS_X_Click"/>
-                                <Button x:Name="POS_Z" Style="{StaticResource Default}" Content="Z звіт" Width="280" Height="80" Click="POS_Z_Click"/>
-                                <Button x:Name="POS_X_Copy" Style="{StaticResource Default}" Content="X звіт(копія)" Width="280" Height="80" Click="POS_X_Copy_Click"/>
+                                <Button x:Name="POS_X" Style="{StaticResource Default}" Content="X звіт" Width="280" Height="60"  Click="POS_X_Click"/>
+                                <Button x:Name="POS_Z" Style="{StaticResource Default}" Content="Z звіт" Width="280" Height="60" Click="POS_Z_Click"/>
+                                <Button x:Name="POS_X_Copy" Style="{StaticResource Default}" Content="X звіт(копія)" Width="280" Height="60" Click="POS_X_Copy_Click"/>
                             </StackPanel>
                         </GroupBox>
                         <GroupBox Grid.Column="1" Grid.Row="1" Header="Фіскальний реєстратор" Margin="10, 20, 10, 20">
                             <StackPanel>
-                                <Button x:Name="EKKA_X" Style="{StaticResource Default}" Content="X звіт"      VerticalAlignment="Top"  Width="280" Height="80" Click="EKKA_X_Click"/>
-                                <Button x:Name="EKKA_Z" Style="{StaticResource Default}" Content="Z звіт"    Width="280" Height="80" Click="EKKA_Z_Click"/>
-                                <Button x:Name="EKKA_Z_Period" Style="{StaticResource Default}" Content="Z-звіт(Періодичний))"      Width="280" Height="80" Click="EKKA_Z_Period_Show"/>
-                                <Button x:Name="EKKA_Copy" Style="{StaticResource Default}" Content="Копія Квитанції"      VerticalAlignment="Top" Width="280" Height="80" Click="EKKA_Copy_Click"/>
+                                <Button x:Name="EKKA_X" Style="{StaticResource Default}" Content="X звіт"      VerticalAlignment="Top"  Width="280" Height="60" Click="EKKA_X_Click"/>
+                                <Button x:Name="EKKA_Z" Style="{StaticResource Default}" Content="Z звіт"    Width="280" Height="60" Click="EKKA_Z_Click"/>
+                                <Button x:Name="EKKA_Z_Period" Style="{StaticResource Default}" Content="Z-звіт(Періодичний))"      Width="280" Height="60" Click="EKKA_Z_Period_Show"/>
+                                <Button x:Name="EKKA_Copy" Style="{StaticResource Default}" Content="Копія Квитанції"      VerticalAlignment="Top" Width="280" Height="60" Click="EKKA_Copy_Click"/>
+
+                                <Button x:Name="EKKA_Introduction"  Content="Внесеня коштів"
+                                        VerticalAlignment="Top" Width="280" Height="60" Click="EKKA_Introduction_Click">
+                                    <Button.Style>
+                                        <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                            <Setter Property="IsEnabled" Value="True"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsCashRegister}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsCashRegister}" Value="False">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <Button x:Name="EKKA_Withdrawal"  Content="Вилучення"      
+                                        VerticalAlignment="Top" Width="280" Height="60" Click="EKKA_Withdrawal_Click">
+                                    <Button.Style>
+                                        <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                            <Setter Property="IsEnabled" Value="True"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsCashRegister}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsCashRegister}" Value="False">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+
                             </StackPanel>
 
 
@@ -311,7 +345,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                         </Style>
                                     </Button.Style>
                                 </Button>
-                                <Button x:Name="WorkFinish" Content="Завершити зміну"     Width="280" Height="80" Click="WorkFinish_Click" >
+                                <Button x:Name="WorkFinish" Content="Завершити зміну"     Width="280" Height="60" Click="WorkFinish_Click" >
                                     <Button.Style>
                                         <Style BasedOn="{StaticResource Default}" TargetType="Button">
                                             <Setter Property="IsEnabled" Value="True"/>
@@ -326,12 +360,12 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                         </Style>
                                     </Button.Style>
                                 </Button>
-                                <!--<Button x:Name="CloseDay" Style="{StaticResource Default}" Content="Закриття дня"    Width="280" Height="80" Click="CloseDay_Click" />-->
+                                <!--<Button x:Name="CloseDay" Style="{StaticResource Default}" Content="Закриття дня"    Width="280" Height="60" Click="CloseDay_Click" />-->
                                 <DatePicker Margin="5"  FontSize="30" 
                                             IsTodayHighlighted="True" SelectedDate="{Binding DateSoSearch}"
                                             Width="220" Height="50" HorizontalAlignment="Center" 
                                             Style="{StaticResource DatePickerStyle1}" />
-                                <Button x:Name="Check1C" Style="{StaticResource Default}" Content="Звірка з 1С"    Width="280" Height="80" Click="Check1C_Click" />
+                                <Button x:Name="Check1C" Style="{StaticResource Default}" Content="Звірка з 1С"    Width="280" Height="60" Click="Check1C_Click" />
                             </StackPanel>
                         </GroupBox>
                         <!--Інформація з пос-термінала-->
