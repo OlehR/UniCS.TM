@@ -940,14 +940,13 @@ namespace Front.Control
 
         }
 
+        //внесення))
         private void IntroductionOfFunds(string pRes)
         {
             if (pRes.Length != 0)
             {
                 if (MessageBox.Show($"Внести {pRes}?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                 {
-                    //внесення))
-
                     var res = Decimal.TryParse(pRes, out decimal pSumIntroductionOfFunds);
                     if (res)
                     {
@@ -981,13 +980,14 @@ namespace Front.Control
             BackgroundShift.Visibility = Visibility.Visible;
 
         }
+        //вилучення))
         private void WithdrawalOfFunds(string pRes)
         {
             if (pRes.Length != 0)
             {
                 if (MessageBox.Show($"Вилучити {pRes}?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                 {
-                    //вилучення))
+
                     var res = Decimal.TryParse(pRes, out decimal pSumWithdrawalOfFunds);
                     if (res)
                     {

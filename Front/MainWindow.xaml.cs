@@ -172,7 +172,7 @@ namespace Front
                     widthHeaderReceipt = new WidthHeaderReceipt(465, 70, 200, 90, 80, 100);
                     break;
                 default:
-                    widthHeaderReceipt = new WidthHeaderReceipt(40 * coefWidth, 5 * coefWidth, 15 * coefWidth, 10 * coefWidth, 10 * coefWidth, 20 * coefWidth);
+                    widthHeaderReceipt = new WidthHeaderReceipt(56 * coefWidth, 5 * coefWidth, 15 * coefWidth, 8 * coefWidth, 8 * coefWidth, 8 * coefWidth);
                     break;
             }
         }

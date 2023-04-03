@@ -45,11 +45,19 @@
             <RowDefinition  >
                 <RowDefinition.Style>
                     <Style TargetType="RowDefinition">
-                        <Setter Property="Height" Value="400" />
+                        <Setter Property="Height" Value="350" />
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
                                                                      Value="HorisontalMonitorRegular">
                                 <Setter Property="Height" Value="*" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
+                                                                     Value="VerticalMonitorKSO">
+                                <Setter Property="Height" Value="400" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
+                                                                     Value="HorisontalMonitorKSO">
+                                <Setter Property="Height" Value="400" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -75,6 +83,9 @@
                         <TextBlock  FontWeight="DemiBold" Text="{DynamicResource ReturnCheck}" >
                             <TextBlock.Style>
                                 <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="FontSize" Value="20" />
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
@@ -89,7 +100,6 @@
                                             <Setter Property="FontSize" Value="20" />
                                         </DataTrigger>
                                     </Style.Triggers>
-                                    <Setter Property="FontWeight" Value="SemiBold"/>
                                 </Style>
                             </TextBlock.Style>
                         </TextBlock>
@@ -159,6 +169,7 @@
                             <Image   Source="icons\backArrow.png">
                                 <Image.Style>
                                     <Style TargetType="{x:Type Image}">
+                                        <Setter Property="Width" Value="30" />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
@@ -179,6 +190,8 @@
                             <TextBlock  Text="Назад" Margin="5,0,5,0">
                                 <TextBlock.Style>
                                     <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="FontSize" Value="20" />
+                                        <Setter Property="FontWeight" Value="SemiBold"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
@@ -193,7 +206,7 @@
                                                 <Setter Property="FontSize" Value="20" />
                                             </DataTrigger>
                                         </Style.Triggers>
-                                        <Setter Property="FontWeight" Value="SemiBold"/>
+                                        
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
@@ -221,6 +234,8 @@
                     <TextBlock  Text="{DynamicResource buttonHelp}">
                         <TextBlock.Style>
                             <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="FontSize" Value="20" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
@@ -235,7 +250,7 @@
                                         <Setter Property="FontSize" Value="20" />
                                     </DataTrigger>
                                 </Style.Triggers>
-                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                
                             </Style>
                         </TextBlock.Style>
                     </TextBlock>
@@ -295,6 +310,7 @@
         <TextBlock Grid.Row="2" Grid.Column="0" Margin="10,0,0,0"  Text="Назва" >
             <TextBlock.Style>
                 <Style TargetType="TextBlock">
+                    <Setter Property="FontSize" Value="24" />
                     <Setter Property="FontWeight" Value="SemiBold"/>
                     <Setter Property="VerticalAlignment" Value="Center"/>
                     
@@ -322,6 +338,9 @@
                 <Style TargetType="TextBox">
                     <Setter Property="FontWeight" Value="SemiBold"/>
                     <Setter Property="VerticalAlignment" Value="Center"/>
+                    <Setter Property="FontSize" Value="24" />
+                    <Setter Property="Height" Value="35" />
+                    <Setter Property="Margin" Value="90,0,0,0" />
 
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 

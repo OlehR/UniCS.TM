@@ -53,7 +53,7 @@
             <RowDefinition >
                 <RowDefinition.Style>
                     <Style TargetType="RowDefinition">
-                        <Setter Property="Height" Value="80"/>
+                        <Setter Property="Height" Value="60"/>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
@@ -77,7 +77,7 @@
             <RowDefinition>
                 <RowDefinition.Style>
                     <Style TargetType="RowDefinition">
-                        <Setter Property="Height" Value="95"/>
+                        <Setter Property="Height" Value="60"/>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
@@ -205,6 +205,8 @@
                         <TextBlock TextWrapping="Wrap" Text="{DynamicResource buttonHelp}">
                             <TextBlock.Style>
                                 <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="FontSize" Value="20" />
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
@@ -216,16 +218,16 @@
                                         </DataTrigger>
                                         <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
-                                            <Setter Property="FontSize" Value="24" />
+                                            <Setter Property="FontSize" Value="20" />
                                         </DataTrigger>
                                     </Style.Triggers>
-                                    <Setter Property="FontWeight" Value="SemiBold"/>
                                 </Style>
                             </TextBlock.Style>
                         </TextBlock>
-                        <Image Width="35">
+                        <Image >
                             <Image.Style>
                                 <Style TargetType="{x:Type Image}">
+                                    <Setter Property="Width" Value="30" />
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding CS.IsProblem, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="True">
@@ -234,6 +236,10 @@
                                         <DataTrigger Binding="{Binding CS.IsProblem, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="False">
                                             <Setter Property="Source" Value="icons\help.png" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                            <Setter Property="Width" Value="30" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -431,20 +437,23 @@
                                             <Button.Style>
                                                 <Style BasedOn="{StaticResource WhiteButton}" TargetType="Button">
                                                     <Setter Property="IsEnabled" Value="False"/>
-                                                    <Setter Property="MaxHeight" Value="90" />
-                                                    <Setter Property="MaxWidth" Value="90" />
+                                                    <Setter Property="MaxWidth" Value="55" />
+                                                    <Setter Property="MaxHeight" Value="55" />
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
                                                                      Value="HorisontalMonitorRegular">
                                                             <Setter Property="MaxHeight" Value="55" />
+                                                            <Setter Property="MaxWidth" Value="55" />
                                                         </DataTrigger>
                                                         <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
                                                                      Value="VerticalMonitorKSO">
                                                             <Setter Property="MaxWidth" Value="70" />
+                                                            <Setter Property="MaxHeight" Value="70" />
                                                         </DataTrigger>
                                                         <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
-                                                                     Value="VerticalMonitorKSO">
-                                                            <Setter Property="MaxHeight" Value="70" />
+                                                                     Value="HorisontalMonitorKSO">
+                                                            <Setter Property="MaxWidth" Value="90" />
+                                                            <Setter Property="MaxHeight" Value="90" />
                                                         </DataTrigger>
                                                         <DataTrigger Binding="{Binding IsMinus}" Value="True">
                                                             <Setter Property="IsEnabled" Value="True"/>
@@ -462,25 +471,23 @@
                                             <Button.Style>
                                                 <Style BasedOn="{StaticResource WhiteNotBorderButton}" TargetType="Button">
                                                     <Setter Property="IsEnabled" Value="True"/>
-                                                    <Setter Property="Height" Value="90" />
-                                                    <Setter Property="Width" Value="90" />
-
+                                                    <Setter Property="Width" Value="55" />
+                                                    <Setter Property="Height" Value="55" />
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
-                                                                     Value="VerticalMonitorKSO">
-                                                            <Setter Property="Width" Value="70" />
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
-                                                                     Value="VerticalMonitorKSO">
-                                                            <Setter Property="Height" Value="70" />
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                                     Value="HorisontalMonitorRegular">
+                                                            <Setter Property="Height" Value="55" />
                                                             <Setter Property="Width" Value="55" />
                                                         </DataTrigger>
                                                         <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
-                                                                     Value="HorisontalMonitorRegular">
-                                                            <Setter Property="MaxHeight" Value="55" />
+                                                                     Value="VerticalMonitorKSO">
+                                                            <Setter Property="Width" Value="70" />
+                                                            <Setter Property="Height" Value="70" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
+                                                                     Value="HorisontalMonitorKSO">
+                                                            <Setter Property="Width" Value="90" />
+                                                            <Setter Property="Height" Value="90" />
                                                         </DataTrigger>
                                                         <DataTrigger Binding="{Binding IsPlus}" Value="True">
                                                             <Setter Property="IsEnabled" Value="True" />
@@ -526,20 +533,23 @@
                                             <Button.Style>
                                                 <Style BasedOn="{StaticResource WhiteButton}" TargetType="Button">
                                                     <Setter Property="IsEnabled" Value="False"/>
-                                                    <Setter Property="MaxHeight" Value="90" />
-                                                    <Setter Property="MaxWidth" Value="90" />
+                                                    <Setter Property="MaxWidth" Value="55" />
+                                                    <Setter Property="MaxHeight" Value="55" />
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
                                                                      Value="HorisontalMonitorRegular">
                                                             <Setter Property="MaxHeight" Value="55" />
+                                                            <Setter Property="MaxWidth" Value="55" />
                                                         </DataTrigger>
                                                         <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
                                                                      Value="VerticalMonitorKSO">
-                                                            <Setter Property="Width" Value="70" />
+                                                            <Setter Property="MaxWidth" Value="70" />
+                                                            <Setter Property="MaxHeight" Value="70" />
                                                         </DataTrigger>
                                                         <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
-                                                                     Value="VerticalMonitorKSO">
-                                                            <Setter Property="Height" Value="70" />
+                                                                     Value="HorisontalMonitorKSO">
+                                                            <Setter Property="MaxWidth" Value="90" />
+                                                            <Setter Property="MaxHeight" Value="90" />
                                                         </DataTrigger>
                                                         <DataTrigger Binding="{Binding IsPlus}" Value="True">
                                                             <Setter Property="IsEnabled" Value="True"/>
@@ -635,6 +645,7 @@
                                                 <Setter Property="HorizontalAlignment" Value="Center"/>
                                                 <Setter Property="VerticalAlignment" Value="Center"/>
                                                 <Setter Property="FontWeight" Value="DemiBold"/>
+                                                <Setter Property="FontSize" Value="18" />
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
@@ -664,6 +675,7 @@
                                         <TextBlock Grid.Column="5" Text="{Binding SumTotal, StringFormat=0.00}" FontWeight="Bold" >
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
+                                                    <Setter Property="FontSize" Value="20" />
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
@@ -685,6 +697,7 @@
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
                                                     <Setter Property="Text" Value="{Binding DiscountEKKA, StringFormat=-0.00}"/>
+                                                    <Setter Property="FontSize" Value="12" />
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding DiscountEKKA}" Value="0">
                                                             <Setter Property="Text" Value=""/>
@@ -1091,16 +1104,23 @@
                 CornerRadius="10"  Margin="10,0,10,0" >
                 <Border.Style>
                     <Style TargetType="Border">
-                        <Setter Property="Width" Value="700"/>
-                        <Setter Property="Height" Value="800"/>
+                        <Setter Property="Width" Value="800" />
+                        <Setter Property="Height" Value="600" />
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
                                 <Setter Property="Width" Value="800" />
+                                <Setter Property="Height" Value="600" />
                             </DataTrigger>
                             <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
-                                <Setter Property="Height" Value="600" />
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="VerticalMonitorKSO">
+                                <Setter Property="Width" Value="700"/>
+                                <Setter Property="Height" Value="800"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
+                                <Setter Property="Width" Value="700"/>
+                                <Setter Property="Height" Value="800"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -2232,6 +2252,8 @@
                                    Mode=FindAncestor, AncestorType=Window}}">
                     <TextBlock.Style>
                         <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="FontSize" Value="18" />
+                            <Setter Property="FontWeight" Value="SemiBold"/>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
@@ -2246,7 +2268,7 @@
                                     <Setter Property="FontSize" Value="18" />
                                 </DataTrigger>
                             </Style.Triggers>
-                            <Setter Property="FontWeight" Value="SemiBold"/>
+                            
                         </Style>
                     </TextBlock.Style>
                 </TextBlock>
@@ -2266,6 +2288,7 @@
                         <Image  Margin="0,0,5,0" >
                             <Image.Style>
                                 <Style TargetType="{x:Type Image}">
+                                    <Setter Property="Height" Value="25" />
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsAgeRestrict, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="True">
