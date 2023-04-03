@@ -991,6 +991,7 @@ namespace Front.Control
                     var res = Decimal.TryParse(pRes, out decimal pSumWithdrawalOfFunds);
                     if (res)
                     {
+                        pSumWithdrawalOfFunds = pSumWithdrawalOfFunds * (-1); // для вилучення відємне значення
                         var task = Task.Run(() =>
                         {
                             var r = EF.RroMoveMoney(pSumWithdrawalOfFunds, new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
