@@ -619,6 +619,7 @@ namespace Front
         {
             curReceipt = Bl.GetNewIdReceipt();
             s.NewReceipt(curReceipt.CodeReceipt);
+            if (StartScan != DateTime.MinValue) StartScan = DateTime.Now;
             Dispatcher.BeginInvoke(new ThreadStart(() => { ShowClientBonus.Visibility = Visibility.Collapsed; }));
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"{curReceipt.ToJSON()}");
         }

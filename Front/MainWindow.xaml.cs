@@ -524,12 +524,14 @@ namespace Front
                     if (State != eStateMainWindows.ProcessPay)
                         EF.StopMultipleTone();
 
-                    if(State == eStateMainWindows.WaitAdmin || State == eStateMainWindows.AdminPanel || State == eStateMainWindows.WaitAdminLogin ||
+                    if(( State == eStateMainWindows.WaitAdmin && !CS.IsProblem) || State == eStateMainWindows.AdminPanel || State == eStateMainWindows.WaitAdminLogin ||
                        State == eStateMainWindows.ChoicePaymentMethod || State == eStateMainWindows.ProcessPay)                    
                     {
                         if (StartScan != DateTime.MinValue)
-                            Bl.SaveReceiptEvents(new List<ReceiptEvent>() { new ReceiptEvent(curReceipt) { ResolvedAt = DateTime.Now, EventType=eReceiptEventType.TimeScanReceipt,EventName="Час сканування чека" } }, false);
-                        StartScan = DateTime.MinValue;
+                        {
+                            Bl.SaveReceiptEvents(new List<ReceiptEvent>() { new ReceiptEvent(curReceipt) { ResolvedAt = StartScan, EventType = eReceiptEventType.TimeScanReceipt, EventName = "Час сканування чека" } }, false);
+                            StartScan = DateTime.MinValue;
+                        }
                     }
                     else
                     {

@@ -33,8 +33,9 @@ namespace ModelMID
         /// Штрихкод касирів
         /// </summary>
         public string BarCodeCashier { get; set; }
-        public IEnumerable<ReceiptWares1C> Wares;
-
+        public IEnumerable<ReceiptWares1C> Wares { get; set; }
+        public IEnumerable<TimeScanReceipt> TimeScanReceipt { get; set; }
+    
         public int CodeBank { get; set; }
         public decimal SumWallet { get; set; }
         public Receipt1C() { }
@@ -69,7 +70,9 @@ namespace ModelMID
             var Cash = pR.Payment.Where(r => r.TypePay == eTypePay.Cash)?.FirstOrDefault();
             if (Cash != null) CodeBank = 1;
             else
-                CodeBank = (int) (Card?.CodeBank ?? (wp?.TypePOS??eBank.NotDefine));           
+                CodeBank = (int) (Card?.CodeBank ?? (wp?.TypePOS??eBank.NotDefine));
+
+            TimeScanReceipt = pR.ReceiptEvent?.Select(el=> new TimeScanReceipt() { Start= el.ResolvedAt, End= el.CreatedAt });
         }
 
         public string GetBase64()
@@ -146,5 +149,10 @@ namespace ModelMID
         public DateTime  DateCreate { get; set; }
         public decimal Quantity { get; set; }
         public decimal QuantityOld { get; set; }
+    }
+    public class TimeScanReceipt
+    {
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
     }
 }
