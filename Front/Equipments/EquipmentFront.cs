@@ -574,6 +574,36 @@ namespace Front
             return sum;
         }
 
+        public LogRRO RroMoveMoney(decimal pSum, IdReceipt pIdR)
+        {
+
+            var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
+            {
+                var RRO = GetRRO(pIdR.IdWorkplacePay);
+                LogRRO Res;
+                try
+                {
+                    Res = WaitRRO(pIdR, eTypeOperation.XReport);
+                    if (Res == null)
+                        Res = RRO?.MoveMoney(pSum,pIdR);
+                }
+                catch (Exception e)
+                {
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+                    SetStatus?.Invoke(new StatusEquipment(RRO.Model, eStateEquipment.Error, e.Message) { IsСritical = true });
+                    Res = new LogRRO(pIdR) { TypeOperation = pSum>0?eTypeOperation.MoneyIn:eTypeOperation.MoneyOut , TypeRRO = RRO.Model.ToString(), CodeError = -1, Error = e.Message };
+                }
+                finally
+                {
+                    curTypeOperation = eTypeOperation.NotDefine;
+                }
+                return Res;
+            }
+            )).Result;
+            GetLastReceipt(pIdR, r);
+            return r;
+        }
+
         /// <summary>
         /// Розрахунок суми готівкуою з врахуванням завкруглення фіскалки
         /// </summary>
