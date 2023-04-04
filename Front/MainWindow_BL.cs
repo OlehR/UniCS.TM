@@ -208,7 +208,7 @@ namespace Front
                         break;
                     case eStateScale.Stabilized:
                         if (State == eStateMainWindows.WaitWeight || State == eStateMainWindows.BlockWeight || State == eStateMainWindows.WaitAdmin ||
-                            State == eStateMainWindows.ProcessPrintReceipt || State == eStateMainWindows.ProcessPay)
+                            State == eStateMainWindows.ProcessPrintReceipt || State == eStateMainWindows.ProcessPay || State == eStateMainWindows.StartWindow)
                             SetStateView(eStateMainWindows.WaitInput, eTypeAccess.NoDefine, null, null, eSender.ControlScale);
                         if (pRW != null)
                             Bl.FixWeight(pRW);

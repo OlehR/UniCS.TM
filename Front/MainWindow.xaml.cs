@@ -280,7 +280,7 @@ namespace Front
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Ver={Version}", eTypeLog.Expanded);
             SocketServer SocketS = new SocketServer();
             _ = SocketS.StartSocketServer();
-            CS = new ControlScale();
+            CS = new ControlScale(10d,Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout);
             s = Sound.GetSound(CS);
             Volume = (Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout);
             var fc = new List<FlagColor>();

@@ -120,18 +120,21 @@ namespace ModelMID
             get { return IsOn? _StateScale: eStateScale.Stabilized; }
             set
             {
-                if(IsOn)
-                if (_StateScale != value)
+                if (IsOn)
                 {
-                    _StateScale = value;
-                    OnScalesLog("NewState", $"{_StateScale} Ext=({sb})");
-                    if (value != eStateScale.NotDefine)
-                        OnStateScale?.Invoke(_StateScale, RW, СurrentlyWeight);
-                    //new cStateScale() { StateScale = _StateScale, FixWeight = Convert.ToDecimal(MidlWeight.GetMidl), FixWeightQuantity = Convert.ToDecimal(Quantity) });
-                 
-                    if (_StateScale == eStateScale.StartStabilized)
-                        LastStabilized = DateTime.Now;
+                    if (_StateScale != value)
+                    {
+                        _StateScale = value;
+                        OnScalesLog("NewState", $"{_StateScale} Ext=({sb})");
+                        if (value != eStateScale.NotDefine)
+                            OnStateScale?.Invoke(_StateScale, RW, СurrentlyWeight);
+                        //new cStateScale() { StateScale = _StateScale, FixWeight = Convert.ToDecimal(MidlWeight.GetMidl), FixWeightQuantity = Convert.ToDecimal(Quantity) });
+
+                        if (_StateScale == eStateScale.StartStabilized)
+                            LastStabilized = DateTime.Now;
+                    }
                 }
+                
             }
         }
 
@@ -287,6 +290,11 @@ namespace ModelMID
         
         public void StartWeightNewGoogs(Receipt pR, ReceiptWares pDelRW = null)
         {
+            if(!IsOn)
+            {                
+                OnStateScale?.Invoke(eStateScale.Stabilized, RW, СurrentlyWeight);
+                return;
+            }
 
             DelRW = pDelRW;
             if (pR==null || pR.Wares == null || pR.Wares.Count() == 0 )

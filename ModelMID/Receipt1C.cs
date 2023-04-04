@@ -72,7 +72,7 @@ namespace ModelMID
             else
                 CodeBank = (int) (Card?.CodeBank ?? (wp?.TypePOS??eBank.NotDefine));
 
-            TimeScanReceipt = pR.ReceiptEvent?.Select(el=> new TimeScanReceipt() { Start= el.ResolvedAt, End= el.CreatedAt });
+            TimeScanReceipt = pR.ReceiptEvent?.Where(el=> el.EventType==eReceiptEventType.TimeScanReceipt)?.Select(el=> new TimeScanReceipt() { Start= el.ResolvedAt, End= el.CreatedAt });
         }
 
         public string GetBase64()
