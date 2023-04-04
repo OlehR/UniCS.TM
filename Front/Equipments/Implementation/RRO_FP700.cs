@@ -40,20 +40,20 @@ namespace Front.Equipments
         private const string ReportDateFormat = "ddMMyy";
 
         WDB_SQLite db = new WDB_SQLite();
+        
+        private string _port => Configuration[$"{KeyPrefix}Port"];
 
-        private string _port => _configuration["Devices:Fp700:Port"];
+        private int _baudRate => Configuration.GetValue<int>($"{KeyPrefix}BaudRate");
 
-        private int _baudRate => _configuration.GetValue<int>("Devices:Fp700:BaudRate");
-
-        private int _tillNumber => _configuration.GetValue<int>("Devices:Fp700:TillNumber");
+        private int _tillNumber => Configuration.GetValue<int>($"{KeyPrefix}TillNumber");
 
         private int _operatorCode => 1;
 
-        private string _operatorPassword => _configuration["Devices:Fp700:OperatorPassword"];
+        private string _operatorPassword => Configuration[$"{KeyPrefix}OperatorPassword"];
 
-        private string _adminPassword => _configuration["Devices:Fp700:AdminPassword"];
+        private string _adminPassword => Configuration[$"{KeyPrefix}AdminPassword"];
 
-        private int _maxItemLength => _configuration.GetValue<int>("Devices:Fp700:MaxItemLength");
+        private int _maxItemLength => Configuration.GetValue<int>($"{KeyPrefix}MaxItemLength");
 
         public bool IsZReportAlreadyDone { get; private set; }        
 
@@ -62,8 +62,7 @@ namespace Front.Equipments
             try
             {
                 ILogger<RRO_FP700> logger = pLoggerFactory?.CreateLogger<RRO_FP700>();
-
-                _configuration = pConfiguration;
+                
                 _logger = logger;
                 ActionStatus = pActionStatus;
 
