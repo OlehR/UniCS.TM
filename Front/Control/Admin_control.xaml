@@ -20,6 +20,12 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="FontSize" Value="20" />
             <Setter Property="FontWeight" Value="DemiBold" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                    <Setter Property="FontSize" Value="18" />
+                </DataTrigger>
+            </Style.Triggers>
         </Style>
 
         <LinearGradientBrush x:Key="CheckedBlue" StartPoint="0,0" EndPoint="0,1">
@@ -330,7 +336,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                     <TextBlock x:Name="TB_NameAdminUserOpenShift" Text="{Binding NameAdminUserOpenShift}"/>
                                     <TextBlock x:Name="TB_DataOpenShift" Text="{Binding DataOpenShift}"></TextBlock>
                                 </StackPanel>
-                                <Button x:Name="WorkStart"  Content="Почати зміну"      Width="280"  Height="80" Click="WorkStart_Click">
+                                <Button x:Name="WorkStart"  Content="Почати зміну"      Width="280"  Height="60" Click="WorkStart_Click">
                                     <Button.Style>
                                         <Style BasedOn="{StaticResource Default}" TargetType="Button">
                                             <Setter Property="IsEnabled" Value="True"/>
@@ -561,7 +567,19 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                     <Grid >
                         <Grid.RowDefinitions>
                             <RowDefinition Height="5*"></RowDefinition>
-                            <RowDefinition Height="80"></RowDefinition>
+                            <RowDefinition>
+                                <RowDefinition.Style>
+                                    <Style TargetType="RowDefinition">
+                                        <Setter Property="Height" Value="80"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                <Setter Property="Height" Value="65" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </RowDefinition.Style>
+                            </RowDefinition>
                         </Grid.RowDefinitions>
                         <Border Grid.Row="0" Height="45" VerticalAlignment="Top" Background="White"  BorderThickness="2" BorderBrush="#D7A900" CornerRadius="10">
 
@@ -686,35 +704,154 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                 </Grid.ColumnDefinitions>
 
                                 <StackPanel Orientation="Horizontal"  VerticalAlignment="Stretch" >
+
                                     <Button Name="CalibrationControlScale" Click="CalibrationControlScaleButton"
-                                Style="{StaticResource Default}" Content="Калібрування"   HorizontalAlignment="Left" Margin="5" Grid.Row="1"     />
+                                            HorizontalAlignment="Left" Margin="5" Grid.Row="1"  Style="{StaticResource Default}">
+                                        <TextBlock TextWrapping="Wrap" Text="Калібрування">
+                                            <TextBlock.Style>
+                                                <Style TargetType="{x:Type TextBlock}">
+                                                    <Setter Property="FontSize" Value="20" />
+                                                    <Setter Property="Margin" Value="5"/>
+                                                    <Setter Property="FontWeight" Value="DemiBold"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                            <Setter Property="FontSize" Value="16" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </Button>
+
                                     <Button Name="TarControlScale" Click="TarControlScaleButton"
-                                Style="{StaticResource Default}" Content="Тарування" HorizontalAlignment="Left" Margin="5" Grid.Row="1"     />
-                                    <TextBlock Name="ControlScaleWeightHaml"  Text="{Binding ControlScaleWeightDouble}"  FontSize="28" Margin="5" Grid.Row="1"    />
+                                Style="{StaticResource Default}"  HorizontalAlignment="Left" Margin="5" Grid.Row="1">
+                                        <TextBlock TextWrapping="Wrap" Text="Тарування">
+                                            <TextBlock.Style>
+                                                <Style TargetType="{x:Type TextBlock}">
+                                                    <Setter Property="FontSize" Value="20" />
+                                                    <Setter Property="Margin" Value="5"/>
+                                                    <Setter Property="FontWeight" Value="DemiBold"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                            <Setter Property="FontSize" Value="16" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </Button>
+                                    <TextBlock Name="ControlScaleWeightHaml"  Text="{Binding ControlScaleWeightDouble}"  Margin="5" Grid.Row="1" >
+                                        <TextBlock.Style>
+                                            <Style TargetType="{x:Type TextBlock}">
+                                                <Setter Property="FontSize" Value="28" />
+                                                <Setter Property="FontWeight" Value="DemiBold"/>
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                        <Setter Property="FontSize" Value="20" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                 </StackPanel  >
 
                                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" >
                                     <Button Name="OffLine" Style="{StaticResource Default}"  
-                                HorizontalAlignment="Left" Margin="5" Grid.Row="1" 
-                                    Click="OffLineClick" 
-                                Content="OffLine"/>
-                                    <Button Name="RefreshData" Style="{StaticResource Default}"  
-                                HorizontalAlignment="Left" Margin="5" Grid.Row="1" 
-                                    Click="RefreshDataButton" 
-                                Content="Оновити дані"/>
-                                    <Button Style="{StaticResource Default}"  
-                                HorizontalAlignment="Left" Margin="5" Grid.Row="1" 
-                                   Click="CloseApplicationButton" 
-                                Content="Вийти з програми"/>
-                                    <Button Name="PowerOffOn" Style="{StaticResource Default}"  
-                                HorizontalAlignment="Left" Margin="5" Grid.Row="1" 
-                                Width="60"    Click="PowerOff">
-                                        <Image Margin="5" Source="\icons\on-off.png"/>
+                                            HorizontalAlignment="Left" Margin="5" Grid.Row="1" Click="OffLineClick" >
+                                        <TextBlock TextWrapping="Wrap" Text="OffLine">
+                                            <TextBlock.Style>
+                                                <Style TargetType="{x:Type TextBlock}">
+                                                    <Setter Property="Margin" Value="5"/>
+                                                    <Setter Property="FontSize" Value="20" />
+                                                    <Setter Property="FontWeight" Value="DemiBold"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                            <Setter Property="FontSize" Value="16" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
                                     </Button>
-                                    <Button Name="Reboot" Style="{StaticResource Default}"  
-                                HorizontalAlignment="Left" Margin="5" Grid.Row="1" 
-                                Width="60"    Click="RebootPC">
+
+                                    <Button Name="RefreshData" Style="{StaticResource Default}"  
+                                            HorizontalAlignment="Left" Margin="5" Grid.Row="1"  Click="RefreshDataButton" >
+                                        <TextBlock TextWrapping="Wrap" Text="Оновити дані">
+                                            <TextBlock.Style>
+                                                <Style TargetType="{x:Type TextBlock}">
+                                                    <Setter Property="FontSize" Value="20" />
+                                                    <Setter Property="Margin" Value="5"/>
+                                                    <Setter Property="FontWeight" Value="DemiBold"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                            <Setter Property="FontSize" Value="16" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </Button>
+                                    <Button Style="{StaticResource Default}"  
+                                            HorizontalAlignment="Left" Margin="5" Grid.Row="1" Click="CloseApplicationButton">
+                                        <TextBlock TextWrapping="Wrap" Text="Вийти з програми">
+                                            <TextBlock.Style>
+                                                <Style TargetType="{x:Type TextBlock}">
+                                                    <Setter Property="Margin" Value="5"/>
+                                                    <Setter Property="FontSize" Value="20" />
+                                                    <Setter Property="FontWeight" Value="DemiBold"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                            <Setter Property="FontSize" Value="16" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </Button>
+                                    <Button Name="PowerOffOn"  HorizontalAlignment="Left" Margin="5" Grid.Row="1" 
+                                            Width="60"    Click="PowerOff">
+                                        <Image Margin="5" Source="\icons\on-off.png"/>
+
+                                        <Button.Style>
+                                            <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                                <Setter Property="IsEnabled" Value="True"/>
+                                                <Setter Property="Width" Value="60" />
+                                                <Setter Property="Height" Value="60" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
+                                                                     Value="HorisontalMonitorRegular">
+                                                        <Setter Property="Height" Value="55" />
+                                                        <Setter Property="Width" Value="55" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                    <Button Name="Reboot" HorizontalAlignment="Left" Margin="5" Grid.Row="1"  Click="RebootPC">
                                         <Image Margin="5" Source="\icons\reboot.png"/>
+
+                                        <Button.Style>
+                                            <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                                <Setter Property="IsEnabled" Value="True"/>
+                                                <Setter Property="Width" Value="60" />
+                                                <Setter Property="Height" Value="60" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
+                                                                     Value="HorisontalMonitorRegular">
+                                                        <Setter Property="Height" Value="55" />
+                                                        <Setter Property="Width" Value="55" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
                                     </Button>
                                 </StackPanel>
                             </Grid>
@@ -726,13 +863,25 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                         <Grid.RowDefinitions>
                             <RowDefinition Height="60"></RowDefinition>
                             <RowDefinition Height="7*"></RowDefinition>
-                            <RowDefinition Height="80"></RowDefinition>
+                            <RowDefinition >
+                                <RowDefinition.Style>
+                                    <Style TargetType="RowDefinition">
+                                        <Setter Property="Height" Value="80"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                <Setter Property="Height" Value="50" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </RowDefinition.Style>
+                            </RowDefinition>
                         </Grid.RowDefinitions>
                         <StackPanel Orientation="Horizontal">
                             <DatePicker Name="dataHistori" FontSize="30" IsTodayHighlighted="True" SelectedDate="{Binding DateSoSearch}"
                                     Width="220" Height="50" HorizontalAlignment="Left" Style="{StaticResource DatePickerStyle1}" ></DatePicker>
-                            <Button Width="250" Height="60" Margin="10,0,0,0" Style="{StaticResource Default}" Click="FindChecksByDate" Content="Знайти/Оновити">
-                                
+                            <Button Width="250"  Margin="10,0,0,0" Style="{StaticResource Default}" Click="FindChecksByDate" Content="Знайти/Оновити">
+
                             </Button>
                             <StackPanel Orientation="Horizontal" Margin="20,0,0,0">
                                 <TextBlock Text="Всі чеки: "/>
@@ -1071,7 +1220,21 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
 
                             <StackPanel Grid.Row="2" Orientation="Horizontal" >
                                 <Button  Grid.Column="2" FontSize="20" Click="FiscalizCheckButton"   >
-                                    <TextBlock FontSize="22" Text="Фіскалізувати" Margin="5"/>
+                                    <TextBlock  Text="Фіскалізувати" Margin="5">
+                                        <TextBlock.Style>
+                                            <Style TargetType="{x:Type TextBlock}">
+                                                <Setter Property="Margin" Value="5"/>
+                                                <Setter Property="FontSize" Value="22" />
+                                                <Setter Property="FontWeight" Value="DemiBold"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                                        Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                        <Setter Property="FontSize" Value="14" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                     <Button.Style>
                                         <Style BasedOn="{StaticResource Default}" TargetType="Button">
                                             <Setter Property="IsEnabled" Value="False"/>
@@ -1085,7 +1248,21 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                 </Button>
 
                                 <Button  Grid.Column="2" FontSize="20" Click="PaymentDetailsAdminPanelButton"   >
-                                    <TextBlock FontSize="22" Text="Ввести реквізити" Margin="5"/>
+                                    <TextBlock Text="Ввести реквізити" Margin="5">
+                                        <TextBlock.Style>
+                                            <Style TargetType="{x:Type TextBlock}">
+                                                <Setter Property="Margin" Value="5"/>
+                                                <Setter Property="FontSize" Value="22" />
+                                                <Setter Property="FontWeight" Value="DemiBold"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                                        Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                        <Setter Property="FontSize" Value="14" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                     <Button.Style>
                                         <Style BasedOn="{StaticResource Default}" TargetType="Button">
                                             <Setter Property="IsEnabled" Value="False"/>
@@ -1099,7 +1276,21 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                 </Button>
 
                                 <Button Grid.Column="2" FontSize="22" Click="Transfer1CButton"   >
-                                    <TextBlock FontSize="20" Text="Передати в 1С" Margin="5"/>
+                                    <TextBlock  Text="Передати в 1С" Margin="5">
+                                        <TextBlock.Style>
+                                            <Style TargetType="{x:Type TextBlock}">
+                                                <Setter Property="Margin" Value="5"/>
+                                                <Setter Property="FontSize" Value="20" />
+                                                <Setter Property="FontWeight" Value="DemiBold"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                                        Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                        <Setter Property="FontSize" Value="14" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                     <Button.Style>
                                         <Style BasedOn="{StaticResource Default}" TargetType="Button">
                                             <Setter Property="IsEnabled" Value="False"/>
@@ -1113,7 +1304,21 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                 </Button>
 
                                 <Button Grid.Column="2" FontSize="22" Click="ReturnCheckButton"   >
-                                    <TextBlock FontSize="20" Text="Повернути" Margin="5"/>
+                                    <TextBlock  Text="Повернути" Margin="5">
+                                        <TextBlock.Style>
+                                            <Style TargetType="{x:Type TextBlock}">
+                                                <Setter Property="Margin" Value="5"/>
+                                                <Setter Property="FontSize" Value="20" />
+                                                <Setter Property="FontWeight" Value="DemiBold"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                                        Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                        <Setter Property="FontSize" Value="14" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                     <Button.Style>
                                         <Style BasedOn="{StaticResource Default}" TargetType="Button">
                                             <Setter Property="IsEnabled" Value="False"/>
@@ -1126,7 +1331,21 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                     </Button.Style>
                                 </Button>
                                 <Button Grid.Column="2" FontSize="22" Click="ReturnAllCheckButton"   >
-                                    <TextBlock FontSize="20" Text="Повернути весь чек" Margin="5"/>
+                                    <TextBlock  Text="Повернути весь чек" Margin="5">
+                                        <TextBlock.Style>
+                                            <Style TargetType="{x:Type TextBlock}">
+                                                <Setter Property="Margin" Value="5"/>
+                                                <Setter Property="FontSize" Value="20" />
+                                                <Setter Property="FontWeight" Value="DemiBold"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                                        Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                        <Setter Property="FontSize" Value="14" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                     <Button.Style>
                                         <Style BasedOn="{StaticResource Default}" TargetType="Button">
                                             <Setter Property="IsEnabled" Value="False"/>
@@ -1139,7 +1358,21 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                     </Button.Style>
                                 </Button>
                                 <Button Grid.Column="2" FontSize="22" Click="CloneReceipt"   >
-                                    <TextBlock FontSize="20" Text="Дублювання чеку" Margin="5"/>
+                                    <TextBlock Text="Дублювання чеку" Margin="5">
+                                        <TextBlock.Style>
+                                            <Style TargetType="{x:Type TextBlock}">
+                                                <Setter Property="Margin" Value="5"/>
+                                                <Setter Property="FontSize" Value="20" />
+                                                <Setter Property="FontWeight" Value="DemiBold"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                                        Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                        <Setter Property="FontSize" Value="14" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                     <Button.Style>
                                         <Style BasedOn="{StaticResource Default}" TargetType="Button">
                                             <Setter Property="IsEnabled" Value="True"/>
@@ -1152,7 +1385,21 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                     </Button.Style>
                                 </Button>
                                 <Button Grid.Column="2" FontSize="22" Click="PrintCoffeeQR"   >
-                                    <TextBlock FontSize="20" Text="QR на каву" Margin="5"/>
+                                    <TextBlock Text="QR на каву" Margin="5">
+                                        <TextBlock.Style>
+                                            <Style TargetType="{x:Type TextBlock}">
+                                                <Setter Property="Margin" Value="5"/>
+                                                <Setter Property="FontSize" Value="20" />
+                                                <Setter Property="FontWeight" Value="DemiBold"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                                        Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                        <Setter Property="FontSize" Value="14" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                     <Button.Style>
                                         <Style BasedOn="{StaticResource Default}" TargetType="Button">
                                             <Setter Property="IsEnabled" Value="False"/>
@@ -1166,7 +1413,21 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                     </Button.Style>
                                 </Button>
                                 <Button Grid.Column="2" FontSize="22" Click="PrintSelectRecript"   >
-                                    <TextBlock FontSize="20" Text="Друк чеку" Margin="5"/>
+                                    <TextBlock  Text="Друк чеку" Margin="5">
+                                        <TextBlock.Style>
+                                            <Style TargetType="{x:Type TextBlock}">
+                                                <Setter Property="Margin" Value="5"/>
+                                                <Setter Property="FontSize" Value="20" />
+                                                <Setter Property="FontWeight" Value="DemiBold"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                                        Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                        <Setter Property="FontSize" Value="14" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                     <Button.Style>
                                         <Style BasedOn="{StaticResource Default}" TargetType="Button">
                                             <Setter Property="IsEnabled" Value="False"/>
@@ -1187,7 +1448,19 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                 <TabItem Name="TabPrintJournal" Header="Журнал">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="80"/>
+                            <RowDefinition >
+                                <RowDefinition.Style>
+                                    <Style TargetType="RowDefinition">
+                                        <Setter Property="Height" Value="80"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                <Setter Property="Height" Value="60" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </RowDefinition.Style>
+                            </RowDefinition>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
@@ -1197,7 +1470,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                         <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.ColumnSpan="2">
                             <DatePicker Name="DataJornal" FontSize="30" IsTodayHighlighted="True" SelectedDate="{Binding DateSoSearch}"
                                     Width="220" Height="50" HorizontalAlignment="Left" Style="{StaticResource DatePickerStyle1}" ></DatePicker>
-                            <Button Width="300" Height="80" Margin="10,0,0,0" Style="{StaticResource Default}" Click="FindJournalDate">
+                            <Button Width="250"  Margin="10,0,0,0" Style="{StaticResource Default}" Click="FindJournalDate">
                                 Знайти/Оновити
                             </Button>
                             <StackPanel Orientation="Horizontal" Margin="20,0,0,0">
@@ -1275,7 +1548,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                 <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
                             </Border.Effect>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                               
+
                                 <TextBlock Text="Пошук:"/>
                                 <TextBox FontSize="25"  VerticalAlignment="Center" Width="400" TextChanged="FindFogTextChanged"/>
                                 <Button  Margin="10,0,0,0" Style="{StaticResource Default}" Click="RefreshLogButton">
