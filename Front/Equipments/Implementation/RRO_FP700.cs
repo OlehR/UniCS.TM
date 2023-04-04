@@ -601,7 +601,7 @@ namespace Front.Equipments
         public bool MoneyMoving(decimal pSum)
         {
             bool res = false;
-            OnSynchronizeWaitCommandResult(eCommand.ServiceCashInOut, (pSum > 0 ? "+" : "-") + pSum.ToString((IFormatProvider)CultureInfo.InvariantCulture), (Action<string>)(response =>
+            OnSynchronizeWaitCommandResult(eCommand.ServiceCashInOut, (pSum > 0 ? "+" : "-") + Math.Abs(pSum).ToString((IFormatProvider)CultureInfo.InvariantCulture), (Action<string>)(response =>
             {
                 string[] strArray = response.Split(',');
                 if (strArray.Length < 4)

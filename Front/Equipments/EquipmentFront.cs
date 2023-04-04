@@ -583,7 +583,7 @@ namespace Front
                 LogRRO Res;
                 try
                 {
-                    Res = WaitRRO(pIdR, eTypeOperation.XReport);
+                    Res = WaitRRO(pIdR,pSum>0? eTypeOperation.MoneyIn:eTypeOperation.MoneyOut);
                     if (Res == null)
                         Res = RRO?.MoveMoney(pSum,pIdR);
                 }
