@@ -57,7 +57,7 @@ namespace Front.Equipments
 
         public bool IsZReportAlreadyDone { get; private set; }        
 
-        public RRO_FP700(Equipment pEquipment, IConfiguration pConfiguration, ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment, pConfiguration, eModelEquipment.FP700, pLoggerFactory, pActionStatus)
+        public RRO_FP700(Equipment pEquipment, IConfiguration pConfiguration, ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment, pConfiguration, eModelEquipment.RRO_FP700, pLoggerFactory, pActionStatus)
         {
             try
             {
@@ -242,20 +242,20 @@ namespace Front.Equipments
                 if (_serialDevice.PortName == null || _serialDevice.BaudRate == 0)
                     return eDeviceConnectionStatus.InitializationError;
                 _logger?.LogDebug("Fp700 init started");
-                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Init, "[FP700] - Start Initialization")
+                ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Init, "[FP700] - Start Initialization")
                 { Status = eStatusRRO.Init });
                 CloseIfOpened();
                 _serialDevice.Open();
-                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Init, "[FP700] - Get info about printer")
+                ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Init, "[FP700] - Get info about printer")
                 { Status = eStatusRRO.Init });
 
                 string infoSync = GetInfoSync();
-                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Init, $"[FP700] - Initialization result {infoSync}")
+                ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Init, $"[FP700] - Initialization result {infoSync}")
                 { Status = eStatusRRO.Init });
 
                 if (string.IsNullOrEmpty(infoSync))
                 {
-                    ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "Cannot read data from printer")
+                    ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Error, "Cannot read data from printer")
                     { Status = eStatusRRO.Error, IsСritical = true });
                     return eDeviceConnectionStatus.InitializationError;
                 }
@@ -268,14 +268,14 @@ namespace Front.Equipments
                         }
                 }
                 catch (Exception e) {
-                    ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Init,e.Message)
+                    ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Init,e.Message)
                     { Status = eStatusRRO.Init, IsСritical = false });
                 }
 
                 int num = IsZReportDone() ? 1 : 0;
                 if (num == 0)
                 {
-                    ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "[FP700] - Should end previous day and create Z-Report")
+                    ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Error, "[FP700] - Should end previous day and create Z-Report")
                     { Status = eStatusRRO.Error, IsСritical = true });
                 }
                 ClearDisplay();
@@ -284,7 +284,7 @@ namespace Front.Equipments
             catch (Exception ex)
             {
                 _logger?.LogError(ex, ex.Message);
-                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "Device not connected")
+                ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Error, "Device not connected")
                 { Status = eStatusRRO.Error, IsСritical = true });
                 return eDeviceConnectionStatus.NotConnected;
             }
@@ -306,7 +306,7 @@ namespace Front.Equipments
             {
                 _logger?.LogDebug("Fp700 getInfo error");
                 _logger?.LogError(ex, ex.Message);
-                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "Get info error" + _currentPrinterStatus.TextError)
+                ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Error, "Get info error" + _currentPrinterStatus.TextError)
                 { Status = eStatusRRO.Error, IsСritical = true });
                 return (string)null;
             }
@@ -332,7 +332,7 @@ namespace Front.Equipments
             {
                 _logger?.LogDebug("Fp700 open error");
                 _logger?.LogError(ex, ex.Message);
-                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, _currentPrinterStatus.TextError + ex.Message)
+                ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Error, _currentPrinterStatus.TextError + ex.Message)
                 { Status = eStatusRRO.Error, IsСritical = true });
 
                 return eDeviceConnectionStatus.NotConnected;
@@ -360,7 +360,7 @@ namespace Front.Equipments
             {
                 _logger?.LogDebug("Fp700 open error");
                 _logger?.LogError(ex, ex.Message);
-                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, ex.Message)
+                ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Error, ex.Message)
                 { Status = eStatusRRO.Error, IsСritical = true });
                 return eDeviceConnectionStatus.NotConnected;
             }
@@ -399,7 +399,7 @@ namespace Front.Equipments
             FillUpReceiptItems(pR.GetParserWaresReceipt());
             if (!PayReceipt(pR))
             {
-                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "Check was not printed")
+                ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Error, "Check was not printed")
                 { Status = eStatusRRO.Error, IsСritical = true });
             }
             CloseReceipt();
@@ -888,7 +888,7 @@ namespace Front.Equipments
                     {
                         if (res.Trim().ToUpper().Equals("F"))
                         {
-                            ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "Fp700 writing article FALSE: " + res)
+                            ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Error, "Fp700 writing article FALSE: " + res)
                             { Status = eStatusRRO.Error, IsСritical = true });
 
                             isSuccess = false;
@@ -1288,7 +1288,7 @@ namespace Front.Equipments
                                 bitDescriptionBg = "Крышка принтера открыта.";
                                 _hasCriticalError = true;
                                 _currentPrinterStatus.IsCoverOpen = true;
-                                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "[FP700] Cover is open")
+                                ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Error, "[FP700] Cover is open")
                                 { Status = eStatusRRO.Error, IsСritical = true });
                                 break;
                             case 6:
@@ -1304,13 +1304,13 @@ namespace Front.Equipments
                                 bitDescriptionBg = "# Бумага закончилась. Если этот статус возникнет при выполнении команды, связанной с печатью, то команда будет отклонена и состояние регистратора не изменится.";
                                 _hasCriticalError = true;
                                 _currentPrinterStatus.IsOutOffPaper = true;
-                                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "[FP700] Paper was ended")
+                                ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Error, "[FP700] Paper was ended")
                                 { Status = eStatusRRO.Error, IsСritical = true });
                                 break;
                             case 1:
                                 bitDescriptionBg = "Заканчивается бумага";
                                 _currentPrinterStatus.IsPaperNearEnd = true;
-                                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.On, "[FP700] Paper near end")
+                                ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.On, "[FP700] Paper near end")
                                 { Status = eStatusRRO.Warning, IsСritical = false });
 
                                 break;
@@ -1318,7 +1318,7 @@ namespace Front.Equipments
                                 bitDescriptionBg = "Носитель КЛЭФ заполнен (Осталось менее 1 МБ)";
                                 _currentPrinterStatus.IsKSEFMemoryFull = true;
                                 _hasCriticalError = true;
-                                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "[FP700] Fiscal memory is full")
+                                ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Error, "[FP700] Fiscal memory is full")
                                 { Status = eStatusRRO.Error, IsСritical = true });
                                 break;
                             case 3:
@@ -1370,7 +1370,7 @@ namespace Front.Equipments
                                 _hasCriticalError = true;
                                 bitDescriptionBg = "*В фискальной памяти присутствуют ошибки";
                                 _currentPrinterStatus.IsErrorOnWritingToFiscalMemory = true;
-                                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "[FP700] Fiscal Memory have error")
+                                ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Error, "[FP700] Fiscal Memory have error")
                                 { Status = eStatusRRO.Error, IsСritical = true });
 
                                 break;
@@ -1378,7 +1378,7 @@ namespace Front.Equipments
                                 _hasCriticalError = true;
                                 bitDescriptionBg = "Фискальная память неработоспособна";
                                 _currentPrinterStatus.IsCommonFiscalError = true;
-                                ActionStatus?.Invoke(new RroStatus(eModelEquipment.FP700, eStateEquipment.Error, "[FP700] Fiscal Memory not working")
+                                ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Error, "[FP700] Fiscal Memory not working")
                                 { Status = eStatusRRO.Error, IsСritical = true });
 
 

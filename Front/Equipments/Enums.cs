@@ -316,7 +316,7 @@ namespace Front.Equipments
         [Description("ФР Марія")]
         Maria,
         [Description("ФР FP700")]
-        FP700,
+        RRO_FP700,
         [Description("ФР WebCheck")]
         pRRo_WebCheck,
         [Description("пФР Vchasno")]
@@ -368,7 +368,7 @@ namespace Front.Equipments
                 case eModelEquipment.pRRo_WebCheck:
                 case eModelEquipment.Maria:
                 case eModelEquipment.VirtualRRO:
-                case eModelEquipment.FP700:
+                case eModelEquipment.RRO_FP700:
                 case eModelEquipment.pRRO_Vchasno:
                     return eTypeEquipment.RRO;
                 case eModelEquipment.Printer_Sam4sGcube102:

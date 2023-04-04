@@ -283,7 +283,7 @@ namespace Front
                             case eModelEquipment.VirtualRRO:
                                 RRO = new VirtualRRO(el, config, LF, pActionStatus);
                                 break;
-                            case eModelEquipment.FP700:
+                            case eModelEquipment.RRO_FP700:
                                 RRO = new RRO_FP700(el, config, LF, pActionStatus);
                                 break;
                             case eModelEquipment.pRRO_Vchasno:
@@ -439,7 +439,7 @@ namespace Front
                    var RRO = GetRRO(pIdR.IdWorkplacePay);
                    if (r.CodeError == 0)
                    {
-                       if (string.IsNullOrEmpty(r.TextReceipt) || RRO.Model == eModelEquipment.FP700)
+                       if (string.IsNullOrEmpty(r.TextReceipt) || RRO.Model == eModelEquipment.RRO_FP700)
                        {
                            LogRRO Res;
                            try
