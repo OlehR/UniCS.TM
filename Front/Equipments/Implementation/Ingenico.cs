@@ -691,10 +691,18 @@ TerminalId: {GetTerminalID}{Environment.NewLine}";
         {
             try
             {
+                byte MechantId = GetMechantIdByIdWorkPlace(pIdWorkPlace);
                 if (!this.StartBPOS())
                     return Task.FromResult<Payment>(new Payment() { IsSuccess = false });
                 CancelRequested = false;
-                BPOS.Purchase(Convert.ToUInt32(amount * 100d), Convert.ToUInt32(pCash*100d), GetMechantIdByIdWorkPlace(pIdWorkPlace));
+                if(pCash > 0)
+                {
+                    string ScenarioData = $"<ActionScenarioRequest><Action>CashBack</Action><Amount>{amount}</Amount><CashAmount>{pCash}</CashAmount><MerchantId>{MechantId}</MerchantId></ActionScenarioRequest>";
+                    BPOS.StartScenario( CodeBank==eBank.PrivatBank?2u:6u, ScenarioData);
+                }
+                else
+                 BPOS.Purchase(Convert.ToUInt32(amount * 100d), 0, MechantId);
+
                 OnStatus?.Invoke(new PosStatus() {  Status = eStatusPos.WaitingForCard });
                 Payment result = this.WaitPosRespone();                
                 if (Logger != null)
