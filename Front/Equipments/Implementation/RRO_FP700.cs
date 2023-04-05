@@ -485,7 +485,16 @@ namespace Front.Equipments
             Payment Pay = pR?.Payment?.Where(el=>el.TypePay==eTypePay.Card)?.FirstOrDefault();
             _logger?.LogDebug($"[FP700] PayReceipt {Pay?.TypePay}");
             if (Pay == null || Pay.TypePay == eTypePay.Cash)
-                stringBuilder.Append("P+" + pR.SumTotal.ToString("F2", (IFormatProvider)CultureInfo.InvariantCulture));
+            {
+                Pay = pR?.Payment?.Where(el => el.TypePay == eTypePay.Cash)?.FirstOrDefault();
+
+                decimal Sum = pR.SumTotal;
+                if (Pay != null)
+                    Sum = Pay.SumExt;
+                else
+                    Sum = Math.Round(Sum, 1);
+                stringBuilder.Append("P+" + Sum.ToString("F2", CultureInfo.InvariantCulture));
+            }
             else
 
                 if (Pay.TypePay == eTypePay.Card)
