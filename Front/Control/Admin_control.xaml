@@ -280,6 +280,29 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                         </ScrollViewer>-->
                         <GroupBox Grid.Column="0" Grid.Row="1" Header="POS-термінал" Margin="20, 20 , 10 ,20">
                             <StackPanel>
+                                <ScrollViewer >
+                                    <ItemsControl x:Name="TerminalList" >
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <WrapPanel />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Vertical">
+                                                    <RadioButton GroupName="radioTerminalList"  
+                                                         Style="{DynamicResource OrangeSwitchStyle}" IsChecked="{Binding IsSelected}"
+                                                         Checked="CheckTypeTerminal"
+                                                         >
+                                                        <TextBlock Text="{Binding Name}" FontSize="22"/>
+                                                    </RadioButton>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+
+                                    </ItemsControl>
+                                </ScrollViewer>
                                 <Button x:Name="POS_X" Style="{StaticResource Default}" Content="X звіт" Width="280" Height="60"  Click="POS_X_Click"/>
                                 <Button x:Name="POS_Z" Style="{StaticResource Default}" Content="Z звіт" Width="280" Height="60" Click="POS_Z_Click"/>
                                 <Button x:Name="POS_X_Copy" Style="{StaticResource Default}" Content="X звіт(копія)" Width="280" Height="60" Click="POS_X_Copy_Click"/>

@@ -39,6 +39,7 @@ namespace Front.Control
         ObservableCollection<Receipt> Receipts;
         ObservableCollection<ParsLog> LogsCollection;
         ObservableCollection<LogRRO> SourcesListJournal;
+        ObservableCollection<Equipment> AllEquipment = new ObservableCollection<Equipment>();
         public string TypeLog { get; set; } = "Error";
         BL Bl;
         public string ControlScaleWeightDouble { get; set; } = "0";
@@ -70,6 +71,9 @@ namespace Front.Control
         public IEnumerable<WorkPlace> WorkPlaces { get { return Global.GetIdWorkPlaces; } }
         WorkPlace _SelectedWorkPlace = null;
         public WorkPlace SelectedWorkPlace { get { return _SelectedWorkPlace != null ? _SelectedWorkPlace : WorkPlaces.First(); } set { _SelectedWorkPlace = value; } }
+        ObservableCollection<TerminalEquipment> ActiveTerminals = new ObservableCollection<TerminalEquipment>();
+        Equipment _SelectedTerminal = null;
+        public Equipment SelectedTerminal { get { return _SelectedTerminal != null ? _SelectedTerminal : AllEquipment.Where(x => x.Type == eTypeEquipment.BankTerminal).FirstOrDefault(); } set { _SelectedTerminal = value; } }
         IEnumerable<string> TextReceipt;
 
         public void ControlScale(double pWeight, bool pIsStable)
@@ -86,10 +90,15 @@ namespace Front.Control
             {
                 TypeMessageRadiobuton.Add(new APIRadiobuton() { ServerTypeMessage = item });
             }
+            Init(AdminUser);
+
             InitializeComponent();
             WorkPlacesList.ItemsSource = WorkPlaces;
             this.DataContext = this;
             ListRadioButtonAPI.ItemsSource = TypeMessageRadiobuton;
+
+
+
             RefreshJournal();
             //поточний час
             DispatcherTimer timer = new DispatcherTimer();
@@ -133,8 +142,8 @@ namespace Front.Control
                 {
                     if (EF != null && EF.GetListEquipment?.Count() > 0)
                     {
-                        ObservableCollection<Equipment> r = new ObservableCollection<Equipment>(EF.GetListEquipment);
-                        ListEquipment.ItemsSource = r;
+                        AllEquipment = new ObservableCollection<Equipment>(EF.GetListEquipment);
+                        ListEquipment.ItemsSource = AllEquipment;
                     }
                 }
                 catch (Exception e) { }
@@ -188,6 +197,7 @@ namespace Front.Control
 
         private void POS_X_Click(object sender, RoutedEventArgs e)
         {
+            var aa = SelectedTerminal;
             var task = Task.Run(() =>
             {
                 var LastReceipt = EF.PosPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace }, false);
@@ -370,6 +380,18 @@ namespace Front.Control
             switch (tabItem)
             {
                 case "Зміна":
+
+                    ActiveTerminals.Clear();
+                    bool isFirst = true;
+                    foreach (var item in AllEquipment)
+                    {
+                        if (item.Type == eTypeEquipment.BankTerminal)
+                        {
+                            ActiveTerminals.Add(new TerminalEquipment(item.Name, item.Model, item.DeviceConfigName, isFirst));
+                            isFirst = false;
+                        }
+                    }
+                    TerminalList.ItemsSource = ActiveTerminals;
                     break;
 
                 case "Пристрої":
@@ -984,6 +1006,30 @@ namespace Front.Control
             MW.NumericPad.Visibility = Visibility.Collapsed;
             BackgroundShift.Visibility = Visibility.Collapsed;
         }
+
+        private void CheckTypeTerminal(object sender, RoutedEventArgs e)
+        {
+            RadioButton ChBtn = sender as RadioButton;
+            if (ChBtn.DataContext is TerminalEquipment)
+            {
+                TerminalEquipment temp = ChBtn.DataContext as TerminalEquipment;
+                if (ChBtn.IsChecked == true)
+                {
+                    foreach (var Terminal in ActiveTerminals)
+                    {
+                        Terminal.IsSelected = Terminal.Name == temp.Name;
+                        foreach (var Equipment in AllEquipment)
+                        {
+                            if (Terminal.Name == Equipment.Name)
+                            {
+                                SelectedTerminal = Equipment;
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
     }
 
     public class APIRadiobuton
@@ -1002,6 +1048,18 @@ namespace Front.Control
         public eStateReceipt StateReceipt_ { get; set; }
         public string TranslateStateReceipt_ { get { return StateReceipt_.GetDescription(); } }
         public bool Selected { get; set; } = false;
+    }
+
+    public class TerminalEquipment : Equipment
+    {
+        public bool IsSelected { get; set; } = false;
+        public TerminalEquipment(string name, eModelEquipment model, string deviceConfigName, bool isSelected)
+        {
+            Name = name;
+            Model = model;
+            DeviceConfigName = deviceConfigName;
+            IsSelected = isSelected;
+        }
     }
 
 

@@ -1311,6 +1311,7 @@ namespace Front
 
         private void ShowClientDetails(object sender, RoutedEventArgs e)
         {
+            var aa = Client;
             ClientDetails.Visibility = Visibility.Visible;
             Background.Visibility = Visibility.Visible;
             BackgroundWares.Visibility = Visibility.Visible;

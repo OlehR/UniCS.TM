@@ -1399,7 +1399,7 @@
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
                 Grid.Column="0" Grid.ColumnSpan="10"
-                 Name="ClientDetails" Visibility="Visible" Grid.ZIndex="2" 
+                 Name="ClientDetails" Visibility="Collapsed" Grid.ZIndex="2" 
                 CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center"
                     MinHeight="500" MinWidth="700">
                 <Border.Effect>
@@ -1429,9 +1429,8 @@
                             <TextBlock Text="Номер телефону:" FontSize="24" FontWeight="Bold" Margin="2"/>
                             <TextBlock Text="Відсоток знижки:" FontSize="24" FontWeight="Bold" Margin="2"/>
                             <TextBlock Text="Відсоток перегахування:" FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="Штрихкод картки:" FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="Статус картки:" FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="Зазначена дата народження:" FontSize="24" FontWeight="Bold" Margin="2"/>
+                            <TextBlock Text="Штрих-код картки:" FontSize="24" FontWeight="Bold" Margin="2"/>
+                            <TextBlock Text="Дата народження:" FontSize="24" FontWeight="Bold" Margin="2"/>
                         </StackPanel>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                             <TextBlock Text="{Binding Client.NameClient, RelativeSource={RelativeSource 
@@ -1449,16 +1448,13 @@
                             <TextBlock Text="{Binding Client.MainPhone, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" 
                                        FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="{Binding Client.PersentDiscount, RelativeSource={RelativeSource 
+                            <TextBlock Text="{Binding Client.PersentDiscount, StringFormat={}{0}%, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" 
                                        FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="{Binding Client.PercentBonus, RelativeSource={RelativeSource 
+                            <TextBlock Text="{Binding Client.PercentBonus,StringFormat={}{0}%, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" 
                                        FontSize="24" FontWeight="Bold" Margin="2"/>
                             <TextBlock Text="{Binding Client.BarCode, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" 
-                                       FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="{Binding Client.StatusCard, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" 
                                        FontSize="24" FontWeight="Bold" Margin="2"/>
                             <TextBlock Text="{Binding Client.BirthDay, StringFormat='{}{0:dd/MM/yyyy}', RelativeSource={RelativeSource 
