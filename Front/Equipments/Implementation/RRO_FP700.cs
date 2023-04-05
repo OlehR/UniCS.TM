@@ -410,7 +410,7 @@ namespace Front.Equipments
 
             Payment Pay = pR?.Payment?.Where(el => el.TypePay == eTypePay.IssueOfCash)?.FirstOrDefault();
             if (Pay != null)
-                CashOut(Pay);
+                IssueOfCash(Pay);
 
             _logger?.LogDebug($"[ FP700 ] newLastReceipt = {result2} / lastReceipt = {result1}");
             string str = result2 > result1 ? result2.ToString() : (string)null;
@@ -487,12 +487,12 @@ namespace Front.Equipments
             if (Pay == null || Pay.TypePay == eTypePay.Cash)
             {
                 Pay = pR?.Payment?.Where(el => el.TypePay == eTypePay.Cash)?.FirstOrDefault();
-
-                decimal Sum = pR.SumTotal;
-                if (Pay != null)
+            
+            decimal Sum = pR.SumTotal;
+            if (Pay != null) 
                     Sum = Pay.SumExt;
-                else
-                    Sum = Math.Round(Sum, 1);
+            else 
+                    Sum= Math.Round(Sum, 1);
                 stringBuilder.Append("P+" + Sum.ToString("F2", CultureInfo.InvariantCulture));
             }
             else
@@ -558,12 +558,14 @@ namespace Front.Equipments
              (pPay.TypePay == eTypePay.IssueOfCash ? ",Видача" :(pTR==eTypeReceipt.Sale ? ",оплата" : ",повернення"))+        
         $",{pPay.NumberCard},{pPay.NumberSlip},0.00";
         }
+
+        
         /// <summary>
         /// Видача готівки
         /// </summary>
         /// <param name="pPay"></param>
         /// <returns></returns>
-        public bool CashOut(Payment pPay)
+        public bool IssueOfCash(Payment pPay)
         {
             bool res = false;
             string Command = (pPay.SumPay > 0 ? "+" : "-") + pPay.SumPay.ToString((IFormatProvider)CultureInfo.InvariantCulture) +
