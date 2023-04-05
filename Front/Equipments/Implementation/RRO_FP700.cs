@@ -388,6 +388,7 @@ namespace Front.Equipments
             ObliterateFiscalReceipt();
             string s = GetLastReceiptNumber();
 
+          
             _logger?.LogDebug("{START_PRINTING}");
             _logger?.LogDebug("{LAST_RECEIPTNUMBER}" + s);
             if (string.IsNullOrEmpty(s))
@@ -568,8 +569,7 @@ namespace Front.Equipments
         public bool IssueOfCash(Payment pPay)
         {
             bool res = false;
-            string Command = (pPay.SumPay > 0 ? "+" : "-") + pPay.SumPay.ToS() +
-                "&" + GetPayStr(pPay);
+            string Command = $"-{pPay.SumPay.ToS()}&{GetPayStr(pPay)}";
             OnSynchronizeWaitCommandResult(eCommand.ServiceCashInOut, Command, (Action<string>)(response =>
             {
                 string[] strArray = response.Split(',');
