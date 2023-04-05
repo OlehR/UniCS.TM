@@ -446,13 +446,13 @@ namespace Front.Equipments
                 string Price = string.Empty;
 
                 if (FiscalArticle.Price != receiptItem.Price)
-                    Price = "#" + receiptItem.Price.ToString((IFormatProvider)CultureInfo.InvariantCulture);
+                    Price = "#" + receiptItem.Price.ToS();
 
-                string Quantity = receiptItem.Quantity.ToString((IFormatProvider)CultureInfo.InvariantCulture);
+                // tring((IFormatProvider)CultureInfo.InvariantCulture);
 
-                string data = $"{FiscalArticle.PLU}*{Quantity}{Price}";
+                string data = $"{FiscalArticle.PLU}*{receiptItem.Quantity.ToS()}{Price}";
                 if (receiptItem.SumDiscount != 0M)
-                    data += ";" + (receiptItem.SumDiscount > 0M ? "-" : "+") + Math.Abs(receiptItem.SumDiscount).ToString((IFormatProvider)CultureInfo.InvariantCulture);
+                    data += ";" + (receiptItem.SumDiscount > 0M ? "-" : "+") + Math.Abs(receiptItem.SumDiscount).ToS();
 
                 if (!string.IsNullOrWhiteSpace(receiptItem.BarCode))
                     data = data + "&" + receiptItem.BarCode;
@@ -568,7 +568,7 @@ namespace Front.Equipments
         public bool IssueOfCash(Payment pPay)
         {
             bool res = false;
-            string Command = (pPay.SumPay > 0 ? "+" : "-") + pPay.SumPay.ToString((IFormatProvider)CultureInfo.InvariantCulture) +
+            string Command = (pPay.SumPay > 0 ? "+" : "-") + pPay.SumPay.ToS() +
                 "&" + GetPayStr(pPay);
             OnSynchronizeWaitCommandResult(eCommand.ServiceCashInOut, Command, (Action<string>)(response =>
             {
@@ -612,7 +612,7 @@ namespace Front.Equipments
         public bool MoneyMoving(decimal pSum)
         {
             bool res = false;
-            OnSynchronizeWaitCommandResult(eCommand.ServiceCashInOut, (pSum > 0 ? "+" : "-") + Math.Abs(pSum).ToString((IFormatProvider)CultureInfo.InvariantCulture), (Action<string>)(response =>
+            OnSynchronizeWaitCommandResult(eCommand.ServiceCashInOut, (pSum > 0 ? "+" : "-") + Math.Abs(pSum).ToS(), (Action<string>)(response =>
             {
                 string[] strArray = response.Split(',');
                 if (strArray.Length < 4)
@@ -967,7 +967,7 @@ namespace Front.Equipments
                     {
                         Model = strArray1[0],
                         SoftVersion = strArray2[0],
-                        SoftReleaseDate = DateTime.ParseExact(strArray2[1], "ddMMMyy", (IFormatProvider)CultureInfo.InvariantCulture),
+                        SoftReleaseDate = DateTime.ParseExact(strArray2[1], "ddMMMyy", CultureInfo.InvariantCulture),
                         Check = strArray1[2],
                         Switchers = strArray1[3],
                         CountryCode = strArray1[4],
