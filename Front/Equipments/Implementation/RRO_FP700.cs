@@ -482,7 +482,7 @@ namespace Front.Equipments
         public bool PayReceipt(Receipt pR)
         {
             StringBuilder stringBuilder = new StringBuilder();
-            Payment Pay = pR?.Payment?.Where(el=>el.TypePay==eTypePay.Card)?.First();
+            Payment Pay = pR?.Payment?.Where(el=>el.TypePay==eTypePay.Card)?.FirstOrDefault();
             _logger?.LogDebug($"[FP700] PayReceipt {Pay?.TypePay}");
             if (Pay == null || Pay.TypePay == eTypePay.Cash)
                 stringBuilder.Append("P+" + pR.SumTotal.ToString("F2", (IFormatProvider)CultureInfo.InvariantCulture));
