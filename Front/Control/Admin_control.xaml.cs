@@ -197,7 +197,6 @@ namespace Front.Control
 
         private void POS_X_Click(object sender, RoutedEventArgs e)
         {
-            var aa = SelectedTerminal;
             var task = Task.Run(() =>
             {
                 var LastReceipt = EF.PosPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace }, false);
