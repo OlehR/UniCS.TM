@@ -697,7 +697,7 @@ TerminalId: {GetTerminalID}{Environment.NewLine}";
                 CancelRequested = false;
                 if(pCash > 0)
                 {
-                    string ScenarioData = $"<ActionScenarioRequest><Action>CashBack</Action><Amount>{amount}</Amount><CashAmount>{pCash}</CashAmount><MerchantId>{MechantId}</MerchantId></ActionScenarioRequest>";
+                    string ScenarioData = $"<ActionScenarioRequest><Action>CashBack</Action><Amount>{amount.ToS()}</Amount><CashAmount>{pCash.ToS()}</CashAmount><MerchantId>{MechantId}</MerchantId></ActionScenarioRequest>";
                     BPOS.StartScenario( CodeBank==eBank.PrivatBank?2u:6u, ScenarioData);
                 }
                 else
