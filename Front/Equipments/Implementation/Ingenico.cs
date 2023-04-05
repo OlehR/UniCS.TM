@@ -178,7 +178,7 @@ namespace Front.Equipments
                 string terminalInfo = BPOS.TerminalInfo;
                 StopBPOS();
                 var a = terminalInfo.Split('/');
-                if (a.Length > 2)
+                if (a.Length > 3)
                     return eBank.PrivatBank;
                 else
                     return eBank.Oschadbank; //OSCHADBANK
