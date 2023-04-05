@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Utils;
@@ -928,79 +929,52 @@ namespace Front.Control
             RefreshLog();
         }
 
-        private void EKKA_Introduction_Click(object sender, RoutedEventArgs e)
+        private void EKKA_MoveMoney_Click(object sender, RoutedEventArgs e)
         {
-            MW.InputNumberPhone.Desciption = "Службове внесення";
-            MW.InputNumberPhone.ValidationMask = "";
-            MW.InputNumberPhone.Result = "";
-            MW.InputNumberPhone.IsEnableComma = true;
-            MW.InputNumberPhone.CallBackResult = IntroductionOfFunds;
-            MW.NumericPad.Visibility = Visibility.Visible;
-            BackgroundShift.Visibility = Visibility.Visible;
-
-        }
-
-        //внесення))
-        private void IntroductionOfFunds(string pRes)
-        {
-            if (pRes.Length != 0)
+            Button btn = sender as Button;
+            string DesciptionOparation;
+            bool IsRemoveMoney;
+            if (btn.Name == "EKKA_Introduction")
             {
-                if (MessageBox.Show($"Внести {pRes}?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                {
-                    var res = Decimal.TryParse(pRes, out decimal pSumIntroductionOfFunds);
-                    if (res)
-                    {
-                        var task = Task.Run(() =>
-                        {
-                            var r = EF.RroMoveMoney(pSumIntroductionOfFunds, new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
-                            if (r.CodeError == 0)
-                                MW.ShowErrorMessage("Успішно!");
-                            else
-                            {
-                                Thread.Sleep(100);
-                                MW.ShowErrorMessage($"Помилка внесення коштів:({r.CodeError}){Environment.NewLine}{r.Error}");
-                            }
-                        });
-                    }
-                    else MW.ShowErrorMessage("Введіть коректну суму!");
-                }
+                DesciptionOparation = "Службове внесення";
+                IsRemoveMoney = false;
             }
-            MW.NumericPad.Visibility = Visibility.Collapsed;
-            BackgroundShift.Visibility = Visibility.Collapsed;
-        }
+            else
+            {
+                DesciptionOparation = "Службове вилучення";
+                IsRemoveMoney = true;
+            }
 
-        private void EKKA_Withdrawal_Click(object sender, RoutedEventArgs e)
-        {
-            MW.InputNumberPhone.Desciption = "Службове вилучення";
+            MW.InputNumberPhone.Desciption = DesciptionOparation;
             MW.InputNumberPhone.ValidationMask = "";
             MW.InputNumberPhone.Result = "";
             MW.InputNumberPhone.IsEnableComma = true;
-            MW.InputNumberPhone.CallBackResult = WithdrawalOfFunds;
+            MW.InputNumberPhone.CallBackResult = (string res) => AddOrRemoveMoney(res, IsRemoveMoney, DesciptionOparation);
             MW.NumericPad.Visibility = Visibility.Visible;
             BackgroundShift.Visibility = Visibility.Visible;
 
         }
-        //вилучення))
-        private void WithdrawalOfFunds(string pRes)
+
+        private void AddOrRemoveMoney(string pRes, bool IsRemoveMoney, string pDesciption)
         {
             if (pRes.Length != 0)
             {
-                if (MessageBox.Show($"Вилучити {pRes}?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                if (MessageBox.Show($"{pDesciption} {pRes}?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                 {
-
-                    var res = Decimal.TryParse(pRes, out decimal pSumWithdrawalOfFunds);
+                    var res = Decimal.TryParse(pRes, out decimal pSumMoveMoney);
                     if (res)
                     {
-                        pSumWithdrawalOfFunds = pSumWithdrawalOfFunds * (-1); // для вилучення відємне значення
+                        if (IsRemoveMoney)
+                            pSumMoveMoney = pSumMoveMoney * (-1); // для вилучення відємне значення
                         var task = Task.Run(() =>
                         {
-                            var r = EF.RroMoveMoney(pSumWithdrawalOfFunds, new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
+                            var r = EF.RroMoveMoney(pSumMoveMoney, new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
                             if (r.CodeError == 0)
-                                MW.ShowErrorMessage("Успішно!");
+                                MessageBox.Show("Успішно!");
                             else
                             {
                                 Thread.Sleep(100);
-                                MW.ShowErrorMessage($"Помилка вилучення коштів:({r.CodeError}){Environment.NewLine}{r.Error}");
+                                MW.ShowErrorMessage($"Помилка: ({r.CodeError}){Environment.NewLine}{r.Error}");
                             }
                         });
                     }
