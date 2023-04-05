@@ -684,10 +684,10 @@ TerminalId: {GetTerminalID}{Environment.NewLine}";
 
         public override Payment Purchase(decimal pAmount, decimal pCash = 0, int IdWorkPlace = 0)
         {
-            return Purchase(Convert.ToDouble(pAmount), Convert.ToDouble(pCash), IdWorkPlace).Result;
+            return PurchaseAsync(pAmount, pCash, IdWorkPlace).Result;
         }
 
-        public Task<Payment> Purchase(double amount,double pCash, int pIdWorkPlace = 0)
+        public Task<Payment> PurchaseAsync(decimal amount,decimal pCash, int pIdWorkPlace = 0)
         {
             try
             {
@@ -701,7 +701,7 @@ TerminalId: {GetTerminalID}{Environment.NewLine}";
                     BPOS.StartScenario( CodeBank==eBank.PrivatBank?2u:6u, ScenarioData);
                 }
                 else
-                 BPOS.Purchase(Convert.ToUInt32(amount * 100d), 0, MechantId);
+                 BPOS.Purchase(Convert.ToUInt32(amount * 100m), 0, MechantId);
 
                 OnStatus?.Invoke(new PosStatus() {  Status = eStatusPos.WaitingForCard });
                 Payment result = this.WaitPosRespone();                
