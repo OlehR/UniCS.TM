@@ -357,7 +357,7 @@ namespace ModelMID
             if (SumWallet < 0)
             {
             }
-            var SumBonusPay = Payment?.Where(r => r.TypePay == eTypePay.Wallet).Sum(r => r.SumExt) ?? 0;
+            var SumBonusPay = Payment?.Where(r => r.TypePay == eTypePay.Bonus).Sum(r => r.SumExt) ?? 0;
 
             if (SumBonusPay > 0)
             {
