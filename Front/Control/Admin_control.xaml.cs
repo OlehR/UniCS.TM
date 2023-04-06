@@ -71,9 +71,7 @@ namespace Front.Control
         public IEnumerable<WorkPlace> WorkPlaces { get { return Global.GetIdWorkPlaces; } }
         WorkPlace _SelectedWorkPlace = null;
         public WorkPlace SelectedWorkPlace { get { return _SelectedWorkPlace != null ? _SelectedWorkPlace : WorkPlaces.First(); } set { _SelectedWorkPlace = value; } }
-        ObservableCollection<TerminalEquipment> ActiveTerminals = new ObservableCollection<TerminalEquipment>();
-        Equipment _SelectedTerminal = null;
-        public Equipment SelectedTerminal { get { return _SelectedTerminal != null ? _SelectedTerminal : AllEquipment.Where(x => x.Type == eTypeEquipment.BankTerminal).FirstOrDefault(); } set { _SelectedTerminal = value; } }
+        ObservableCollection<Equipment> ActiveTerminals = new ObservableCollection<Equipment>();
         IEnumerable<string> TextReceipt;
 
         public void ControlScale(double pWeight, bool pIsStable)
@@ -145,11 +143,31 @@ namespace Front.Control
                         AllEquipment = new ObservableCollection<Equipment>(EF.GetListEquipment);
                         ListEquipment.ItemsSource = AllEquipment;
                     }
+                    if (ActiveTerminals.Count == 0)
+                    {
+                        SearchTerminal();
+                    }
                 }
                 catch (Exception e) { }
 
             }));
 
+        }
+        private void SearchTerminal()
+        {
+            ActiveTerminals = new ObservableCollection<Equipment>();
+            bool isFirst = true;
+            foreach (var item in AllEquipment)
+            {
+                if (item.Type == eTypeEquipment.BankTerminal)
+                {
+                    item.IsSelected = isFirst;
+                    ActiveTerminals.Add(item);
+                    isFirst = false;
+                }
+            }
+            TerminalList.ItemsSource = ActiveTerminals;
+            MW?.EF.SetBankTerminal(ActiveTerminals.Where(x => x.IsSelected == true).FirstOrDefault() as BankTerminal);
         }
 
         private bool LogFilter(object item)
@@ -379,18 +397,6 @@ namespace Front.Control
             switch (tabItem)
             {
                 case "Зміна":
-
-                    ActiveTerminals.Clear();
-                    bool isFirst = true;
-                    foreach (var item in AllEquipment)
-                    {
-                        if (item.Type == eTypeEquipment.BankTerminal)
-                        {
-                            ActiveTerminals.Add(new TerminalEquipment(item.Name, item.Model, item.DeviceConfigName, isFirst));
-                            isFirst = false;
-                        }
-                    }
-                    TerminalList.ItemsSource = ActiveTerminals;
                     break;
 
                 case "Пристрої":
@@ -1009,23 +1015,12 @@ namespace Front.Control
         private void CheckTypeTerminal(object sender, RoutedEventArgs e)
         {
             RadioButton ChBtn = sender as RadioButton;
-            if (ChBtn.DataContext is TerminalEquipment)
+            if (ChBtn.DataContext is Equipment)
             {
-                TerminalEquipment temp = ChBtn.DataContext as TerminalEquipment;
+                Equipment temp = ChBtn.DataContext as Equipment;
                 if (ChBtn.IsChecked == true)
                 {
-                    foreach (var Terminal in ActiveTerminals)
-                    {
-                        Terminal.IsSelected = Terminal.Name == temp.Name;
-                        foreach (var Equipment in AllEquipment)
-                        {
-                            if (Terminal.Name == Equipment.Name)
-                            {
-                                SelectedTerminal = Equipment;
-                            }
-                        }
-                    }
-
+                    MW?.EF.SetBankTerminal(ActiveTerminals.Where(x => x.IsSelected == true).FirstOrDefault() as BankTerminal);
                 }
             }
         }
@@ -1049,17 +1044,6 @@ namespace Front.Control
         public bool Selected { get; set; } = false;
     }
 
-    public class TerminalEquipment : Equipment
-    {
-        public bool IsSelected { get; set; } = false;
-        public TerminalEquipment(string name, eModelEquipment model, string deviceConfigName, bool isSelected)
-        {
-            Name = name;
-            Model = model;
-            DeviceConfigName = deviceConfigName;
-            IsSelected = isSelected;
-        }
-    }
 
 
 

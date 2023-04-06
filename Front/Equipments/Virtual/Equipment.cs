@@ -17,6 +17,7 @@ namespace Front.Equipments
         public string Name { get; set; }
         public bool IsСritical { get; set; } = true;
         public bool IsReady { get; set; } = false;
+        public bool IsSelected { get; set; } = false;
         public eModelEquipment Model { get; set; } = eModelEquipment.NotDefine;
         public string TranslationModel { get { return Model.GetDescription(); } }
         public eTypeEquipment Type { get { return Model.GetTypeEquipment(); } }
