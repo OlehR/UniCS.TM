@@ -1,9 +1,7 @@
 ﻿using ModelMID.DB;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Utils;
 
 
@@ -124,7 +122,10 @@ namespace ModelMID
         public int CodePeriodRefund { get { return RefundId == null ? 0 : RefundId.CodePeriod; } set { if (RefundId == null) RefundId = new IdReceipt(); RefundId.CodePeriod = value; } }
         public int CodeReceiptRefund { get { return RefundId == null ? 0 : RefundId.CodeReceipt; } set { if (RefundId == null) RefundId = new IdReceipt(); RefundId.CodeReceipt = value; } }
         public IEnumerable<ReceiptWares> _Wares;
-        public IEnumerable<ReceiptWares> Wares { get {
+        public IEnumerable<ReceiptWares> Wares
+        {
+            get
+            {
                 IEnumerable<ReceiptWares> res = null;
                 if (IdWorkplacePay == 0 || _Wares == null)
                     res = _Wares;
@@ -143,7 +144,8 @@ namespace ModelMID
                 }
                 return res;
             }
-            set { _Wares = value; } }
+            set { _Wares = value.Where(el=>el.CodeWares!= Global.CodeWaresWallet); }
+        }
 
         IEnumerable<Payment> _Payment;
         public IEnumerable<Payment> Payment { get { return IdWorkplacePay == 0 || _Payment == null ? _Payment : _Payment.Where(el => el.IdWorkplacePay == IdWorkplacePay); } set { _Payment = value; } }
@@ -153,9 +155,9 @@ namespace ModelMID
         //public bool _IsLockChange = false;
         public bool IsLockChange { get { return /*_IsLockChange ||*/ StateReceipt != eStateReceipt.Prepare || SumBonus > 0m; } }
 
-        
+
         //public string FiscalQR { get { return Fiscal?.QR ; } }
-       
+
         /// <summary>
         /// Фіскальний номер апарата
         /// </summary>
@@ -185,10 +187,10 @@ namespace ModelMID
             }
         }
 
-       // public string FiscalsJSON { get { return Fiscals.ToJSON(); } }
-        public SortedList<int,Fiscal> Fiscals = new();
+        // public string FiscalsJSON { get { return Fiscals.ToJSON(); } }
+        public SortedList<int, Fiscal> Fiscals = new();
 
-        public Fiscal Fiscal { get { if(Fiscals.ContainsKey(IdWorkplacePay)) return Fiscals[IdWorkplacePay]; return null; } }
+        public Fiscal Fiscal { get { if (Fiscals.ContainsKey(IdWorkplacePay)) return Fiscals[IdWorkplacePay]; return null; } }
         /// <summary>
         ///  Чи є товар, який потребує підтвердження віку. (0 не потребує підтверження віку)
         /// </summary>

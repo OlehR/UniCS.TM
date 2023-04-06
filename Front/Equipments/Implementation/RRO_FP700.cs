@@ -452,8 +452,8 @@ namespace Front.Equipments
                 // tring((IFormatProvider)CultureInfo.InvariantCulture);
 
                 string data = $"{FiscalArticle.PLU}*{receiptItem.Quantity.ToS()}{Price}";
-                if (receiptItem.SumDiscount != 0M)
-                    data += ";" + (receiptItem.SumDiscount > 0M ? "-" : "+") + Math.Abs(receiptItem.SumDiscount).ToS();
+                if (receiptItem.SumDiscount + receiptItem.SumWallet != 0M)
+                    data += ";" + (receiptItem.SumDiscount + receiptItem.SumWallet > 0M ? "-" : "+") + Math.Abs(receiptItem.SumDiscount+ receiptItem.SumWallet).ToS();
 
                 if (!string.IsNullOrWhiteSpace(receiptItem.BarCode))
                     data = data + "&" + receiptItem.BarCode;
@@ -490,7 +490,7 @@ namespace Front.Equipments
                 Pay = pR?.Payment?.Where(el => el.TypePay == eTypePay.Cash)?.FirstOrDefault();
             
             decimal Sum = pR.SumTotal;
-            if (Pay != null) 
+            if (Pay != null && Pay.SumExt> pR.SumTotal) 
                     Sum = Pay.SumExt;
             else 
                     Sum= Math.Round(Sum, 1);

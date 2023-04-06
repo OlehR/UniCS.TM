@@ -92,6 +92,7 @@ namespace Front.Equipments
             SerialDevice = portStreamWrapper;
         }
 
+        //int CountZero = 0;
         private bool OnDataReceived(byte[] data)
         {
             string Str = Encoding.ASCII.GetString(data);
@@ -101,7 +102,18 @@ namespace Front.Equipments
                 char[] charArray = Str.ToCharArray();
                 Array.Reverse(charArray);
                 if (double.TryParse(charArray, out double Weight))
-                    OnScalesData?.Invoke(Weight , true);
+                {
+                    if (Weight == 0d)
+                    //{
+                       // if (CountZero < 3)
+                      //  {
+                       //     CountZero++;
+                            return true;
+                       // }
+                    //}
+                    //CountZero = 0;
+                    OnScalesData?.Invoke(Weight, true);
+                }
                 return true;
             }
             return true;
