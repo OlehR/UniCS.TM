@@ -39,6 +39,7 @@
                     <Setter Property="FontSize" Value="20" />
                 </DataTrigger>
             </Style.Triggers>
+            <Setter Property="FontSize" Value="20" />
             <Setter Property="FontFamily" Value="Source Sans Pro" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="FontWeight" Value="DemiBold" />
@@ -142,24 +143,30 @@
                     </ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
-                <StackPanel Grid.Column="0" Orientation="Horizontal" x:Name="ShowClientBonus" Visibility="Collapsed">
-                    <Border   BorderBrush="gray" BorderThickness="1"  CornerRadius="15">
-                        <StackPanel  Orientation="Horizontal" Margin="10,0,10,0"
+                <!--Бонуси клієнта-->
+                <Grid  Grid.Column="0" x:Name="ShowClientBonus" Visibility="Collapsed">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" >
+                        <Border   BorderBrush="gray" BorderThickness="1"  CornerRadius="15">
+                            <StackPanel  Orientation="Horizontal" Margin="10,0,10,0"
                             VerticalAlignment="Center" HorizontalAlignment="Right"  >
-                            <StackPanel >
-                                <TextBlock  FontSize="22" Text="Скарбничка: "/>
-                                <TextBlock  FontSize="22" Text="Сума бонусів: "/>
-                            </StackPanel>
-                            <StackPanel Margin="10,0,0,0" >
-                                <TextBlock  FontSize="22" Foreground="DarkGreen" FontWeight="Bold" Text="{Binding Client.Wallet, StringFormat=0.00₴, RelativeSource={RelativeSource 
+                                <StackPanel >
+                                    <TextBlock  FontSize="22" Text="Скарбничка: "/>
+                                    <TextBlock  FontSize="22" Text="Сума бонусів: "/>
+                                </StackPanel>
+                                <StackPanel Margin="10,0,0,0" >
+                                    <TextBlock  FontSize="22" Foreground="DarkGreen" FontWeight="Bold" Text="{Binding Client.Wallet, StringFormat=0.00₴, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}"/>
-                                <TextBlock  FontSize="22" Foreground="DarkGreen" FontWeight="Bold" Text="{Binding Client.SumBonus, StringFormat=0.00, RelativeSource={RelativeSource 
+                                    <TextBlock  FontSize="22" Foreground="DarkGreen" FontWeight="Bold" Text="{Binding Client.SumBonus, StringFormat=0.00, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}"/>
+                                </StackPanel>
                             </StackPanel>
-                        </StackPanel>
-                    </Border>
-                    <Image Source="icons\ClientBonus.png"/>
-                </StackPanel>
+                        </Border>
+                        <Image Source="icons\ClientBonus.png"/>
+                    </StackPanel>
+                    <Button Click="ShowClientDetails"  Opacity="0" />
+
+                </Grid>
+                
 
 
 
@@ -1388,7 +1395,84 @@
 
                 </Grid>
             </Border>
+            <!-- Інформація про клієнта   -->
+            <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="0" Grid.RowSpan="6"
+                Grid.Column="0" Grid.ColumnSpan="10"
+                 Name="ClientDetails" Visibility="Collapsed" Grid.ZIndex="2" 
+                CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    MinHeight="500" MinWidth="700">
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+                </Border.Effect>
 
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="4*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Інформація по картці"
+                               FontSize="28" HorizontalAlignment="Center" Foreground="Green"/>
+
+                    <Grid Grid.Row="1" >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="30,0,0,0">
+                            <TextBlock Text="Ім'я:" FontSize="24" FontWeight="Bold" Margin="2"/>
+                            <TextBlock Text="Сума на скарбничці:" FontSize="24" FontWeight="Bold" Margin="2"/>
+                            <TextBlock Text="Сума бонусів:" FontSize="24" FontWeight="Bold" Margin="2"/>
+                            <TextBlock Text="Сума бонусів в гривнях:" FontSize="24" FontWeight="Bold" Margin="2"/>
+                            <TextBlock Text="Номер телефону:" FontSize="24" FontWeight="Bold" Margin="2"/>
+                            <TextBlock Text="Відсоток знижки:" FontSize="24" FontWeight="Bold" Margin="2"/>
+                            <TextBlock Text="Відсоток перегахування:" FontSize="24" FontWeight="Bold" Margin="2"/>
+                            <TextBlock Text="Штрих-код картки:" FontSize="24" FontWeight="Bold" Margin="2"/>
+                            <TextBlock Text="Дата народження:" FontSize="24" FontWeight="Bold" Margin="2"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Client.NameClient, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" 
+                                       FontSize="24" FontWeight="Bold" Margin="2"/>
+                            <TextBlock Text="{Binding Client.Wallet,StringFormat=0.00₴, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" 
+                                       FontSize="24" FontWeight="Bold" Margin="2"/>
+                            <TextBlock Text="{Binding Client.SumBonus, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" 
+                                       FontSize="24" FontWeight="Bold" Margin="2"/>
+                            <TextBlock Text="{Binding Client.SumMoneyBonus, StringFormat=0.00₴, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" 
+                                       FontSize="24" FontWeight="Bold" Margin="2"/>
+                            <TextBlock Text="{Binding Client.MainPhone, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" 
+                                       FontSize="24" FontWeight="Bold" Margin="2"/>
+                            <TextBlock Text="{Binding Client.PersentDiscount, StringFormat={}{0}%, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" 
+                                       FontSize="24" FontWeight="Bold" Margin="2"/>
+                            <TextBlock Text="{Binding Client.PercentBonus,StringFormat={}{0}%, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" 
+                                       FontSize="24" FontWeight="Bold" Margin="2"/>
+                            <TextBlock Text="{Binding Client.BarCode, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" 
+                                       FontSize="24" FontWeight="Bold" Margin="2"/>
+                            <TextBlock Text="{Binding Client.BirthDay, StringFormat='{}{0:dd/MM/yyyy}', RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" 
+                                       FontSize="24" FontWeight="Bold" Margin="2"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <Button Grid.Row="2"
+                        FontSize="22" Click="_Cancel"  Style="{StaticResource Default}"
+                        Height="80" Width="300" VerticalAlignment="Center" Visibility="Visible">
+                    <StackPanel Orientation="Horizontal">
+                        <Image  Height="25" Width="25"  Source="icons\X.png"></Image>
+                        <TextBlock FontSize="30"  Text="{DynamicResource cancel}" Margin="5,0,5,0"/>
+                    </StackPanel>
+                </Button>
+                </Grid>
+            </Border>
             <!-- Очікування Адміністратора   -->
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"

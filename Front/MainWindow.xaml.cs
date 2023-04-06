@@ -593,6 +593,7 @@ namespace Front
                     ErrorBackground.Visibility = Visibility.Collapsed;
                     OwnBagWindows.Visibility = Visibility.Collapsed;
                     PaymentWindow.Visibility = Visibility.Collapsed;
+                    ClientDetails.Visibility = Visibility.Collapsed;
 
                     CaptionCustomWindows.Visibility = Visibility.Visible;
                     ImageCustomWindows.Visibility = Visibility.Visible;
@@ -1305,6 +1306,15 @@ namespace Front
 
         private void TextPasswordChanged(object sender, RoutedEventArgs e)
         {
+
+        }
+
+        private void ShowClientDetails(object sender, RoutedEventArgs e)
+        {
+            var aa = Client;
+            ClientDetails.Visibility = Visibility.Visible;
+            Background.Visibility = Visibility.Visible;
+            BackgroundWares.Visibility = Visibility.Visible;
 
         }
     }

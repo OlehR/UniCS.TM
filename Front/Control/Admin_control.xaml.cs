@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Utils;
@@ -38,6 +39,7 @@ namespace Front.Control
         ObservableCollection<Receipt> Receipts;
         ObservableCollection<ParsLog> LogsCollection;
         ObservableCollection<LogRRO> SourcesListJournal;
+        ObservableCollection<Equipment> AllEquipment = new ObservableCollection<Equipment>();
         public string TypeLog { get; set; } = "Error";
         BL Bl;
         public string ControlScaleWeightDouble { get; set; } = "0";
@@ -69,6 +71,7 @@ namespace Front.Control
         public IEnumerable<WorkPlace> WorkPlaces { get { return Global.GetIdWorkPlaces; } }
         WorkPlace _SelectedWorkPlace = null;
         public WorkPlace SelectedWorkPlace { get { return _SelectedWorkPlace != null ? _SelectedWorkPlace : WorkPlaces.First(); } set { _SelectedWorkPlace = value; } }
+        ObservableCollection<Equipment> ActiveTerminals = new ObservableCollection<Equipment>();
         IEnumerable<string> TextReceipt;
 
         public void ControlScale(double pWeight, bool pIsStable)
@@ -85,10 +88,15 @@ namespace Front.Control
             {
                 TypeMessageRadiobuton.Add(new APIRadiobuton() { ServerTypeMessage = item });
             }
+            Init(AdminUser);
+
             InitializeComponent();
             WorkPlacesList.ItemsSource = WorkPlaces;
             this.DataContext = this;
             ListRadioButtonAPI.ItemsSource = TypeMessageRadiobuton;
+
+
+
             RefreshJournal();
             //поточний час
             DispatcherTimer timer = new DispatcherTimer();
@@ -132,14 +140,34 @@ namespace Front.Control
                 {
                     if (EF != null && EF.GetListEquipment?.Count() > 0)
                     {
-                        ObservableCollection<Equipment> r = new ObservableCollection<Equipment>(EF.GetListEquipment);
-                        ListEquipment.ItemsSource = r;
+                        AllEquipment = new ObservableCollection<Equipment>(EF.GetListEquipment);
+                        ListEquipment.ItemsSource = AllEquipment;
+                    }
+                    if (ActiveTerminals.Count == 0)
+                    {
+                        SearchTerminal();
                     }
                 }
                 catch (Exception e) { }
 
             }));
 
+        }
+        private void SearchTerminal()
+        {
+            ActiveTerminals = new ObservableCollection<Equipment>();
+            bool isFirst = true;
+            foreach (var item in AllEquipment)
+            {
+                if (item.Type == eTypeEquipment.BankTerminal)
+                {
+                    item.IsSelected = isFirst;
+                    ActiveTerminals.Add(item);
+                    isFirst = false;
+                }
+            }
+            TerminalList.ItemsSource = ActiveTerminals;
+            MW?.EF.SetBankTerminal(ActiveTerminals.Where(x => x.IsSelected == true).FirstOrDefault() as BankTerminal);
         }
 
         private bool LogFilter(object item)
@@ -928,37 +956,52 @@ namespace Front.Control
             RefreshLog();
         }
 
-        private void EKKA_Introduction_Click(object sender, RoutedEventArgs e)
+        private void EKKA_MoveMoney_Click(object sender, RoutedEventArgs e)
         {
-            MW.InputNumberPhone.Desciption = "Службове внесення";
+            Button btn = sender as Button;
+            string DesciptionOparation;
+            bool IsRemoveMoney;
+            if (btn.Name == "EKKA_Introduction")
+            {
+                DesciptionOparation = "Службове внесення";
+                IsRemoveMoney = false;
+            }
+            else
+            {
+                DesciptionOparation = "Службове вилучення";
+                IsRemoveMoney = true;
+            }
+
+            MW.InputNumberPhone.Desciption = DesciptionOparation;
             MW.InputNumberPhone.ValidationMask = "";
             MW.InputNumberPhone.Result = "";
             MW.InputNumberPhone.IsEnableComma = true;
-            MW.InputNumberPhone.CallBackResult = IntroductionOfFunds;
+            MW.InputNumberPhone.CallBackResult = (string res) => AddOrRemoveMoney(res, IsRemoveMoney, DesciptionOparation);
             MW.NumericPad.Visibility = Visibility.Visible;
             BackgroundShift.Visibility = Visibility.Visible;
 
         }
 
-        //внесення))
-        private void IntroductionOfFunds(string pRes)
+        private void AddOrRemoveMoney(string pRes, bool IsRemoveMoney, string pDesciption)
         {
             if (pRes.Length != 0)
             {
-                if (MessageBox.Show($"Внести {pRes}?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                if (MessageBox.Show($"{pDesciption} {pRes}?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                 {
-                    var res = Decimal.TryParse(pRes, out decimal pSumIntroductionOfFunds);
+                    var res = Decimal.TryParse(pRes, out decimal pSumMoveMoney);
                     if (res)
                     {
+                        if (IsRemoveMoney)
+                            pSumMoveMoney = pSumMoveMoney * (-1); // для вилучення відємне значення
                         var task = Task.Run(() =>
                         {
-                            var r = EF.RroMoveMoney(pSumIntroductionOfFunds, new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
+                            var r = EF.RroMoveMoney(pSumMoveMoney, new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
                             if (r.CodeError == 0)
-                                MW.ShowErrorMessage("Успішно!");
+                                MessageBox.Show("Успішно!");
                             else
                             {
                                 Thread.Sleep(100);
-                                MW.ShowErrorMessage($"Помилка внесення коштів:({r.CodeError}){Environment.NewLine}{r.Error}");
+                                MW.ShowErrorMessage($"Помилка: ({r.CodeError}){Environment.NewLine}{r.Error}");
                             }
                         });
                     }
@@ -969,46 +1012,17 @@ namespace Front.Control
             BackgroundShift.Visibility = Visibility.Collapsed;
         }
 
-        private void EKKA_Withdrawal_Click(object sender, RoutedEventArgs e)
+        private void CheckTypeTerminal(object sender, RoutedEventArgs e)
         {
-            MW.InputNumberPhone.Desciption = "Службове вилучення";
-            MW.InputNumberPhone.ValidationMask = "";
-            MW.InputNumberPhone.Result = "";
-            MW.InputNumberPhone.IsEnableComma = true;
-            MW.InputNumberPhone.CallBackResult = WithdrawalOfFunds;
-            MW.NumericPad.Visibility = Visibility.Visible;
-            BackgroundShift.Visibility = Visibility.Visible;
-
-        }
-        //вилучення))
-        private void WithdrawalOfFunds(string pRes)
-        {
-            if (pRes.Length != 0)
+            RadioButton ChBtn = sender as RadioButton;
+            if (ChBtn.DataContext is Equipment)
             {
-                if (MessageBox.Show($"Вилучити {pRes}?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                Equipment temp = ChBtn.DataContext as Equipment;
+                if (ChBtn.IsChecked == true)
                 {
-
-                    var res = Decimal.TryParse(pRes, out decimal pSumWithdrawalOfFunds);
-                    if (res)
-                    {
-                        pSumWithdrawalOfFunds = pSumWithdrawalOfFunds * (-1); // для вилучення відємне значення
-                        var task = Task.Run(() =>
-                        {
-                            var r = EF.RroMoveMoney(pSumWithdrawalOfFunds, new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
-                            if (r.CodeError == 0)
-                                MW.ShowErrorMessage("Успішно!");
-                            else
-                            {
-                                Thread.Sleep(100);
-                                MW.ShowErrorMessage($"Помилка вилучення коштів:({r.CodeError}){Environment.NewLine}{r.Error}");
-                            }
-                        });
-                    }
-                    else MW.ShowErrorMessage("Введіть коректну суму!");
+                    MW?.EF.SetBankTerminal(ActiveTerminals.Where(x => x.IsSelected == true).FirstOrDefault() as BankTerminal);
                 }
             }
-            MW.NumericPad.Visibility = Visibility.Collapsed;
-            BackgroundShift.Visibility = Visibility.Collapsed;
         }
     }
 
@@ -1029,6 +1043,7 @@ namespace Front.Control
         public string TranslateStateReceipt_ { get { return StateReceipt_.GetDescription(); } }
         public bool Selected { get; set; } = false;
     }
+
 
 
 

@@ -180,11 +180,10 @@ namespace Front.Control
             var btn = sender as Button;
             var str = btn.Content as TextBlock;
             var r = MW?.EF.GetBankTerminal.Where(el => str.Text.Equals(el.Name));
-            decimal IssuingCash = MoneySumToRound;
             if (r.Count() == 1)
                 MW?.EF.SetBankTerminal(r.First() as BankTerminal);
 
-            var task = Task.Run(() => MW.PrintAndCloseReceipt(null, eTypePay.Card, 0, IssuingCash));
+            var task = Task.Run(() => MW.PrintAndCloseReceipt(null, eTypePay.Card, 0, SumCashDisbursement));
         }
 
         private void _ButtonPaymentCash(object sender, RoutedEventArgs e)

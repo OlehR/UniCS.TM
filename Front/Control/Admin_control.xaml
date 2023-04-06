@@ -280,6 +280,29 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                         </ScrollViewer>-->
                         <GroupBox Grid.Column="0" Grid.Row="1" Header="POS-термінал" Margin="20, 20 , 10 ,20">
                             <StackPanel>
+                                <ScrollViewer >
+                                    <ItemsControl x:Name="TerminalList" >
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <WrapPanel />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Vertical">
+                                                    <RadioButton GroupName="radioTerminalList"  
+                                                         Style="{DynamicResource OrangeSwitchStyle}" IsChecked="{Binding IsSelected}"
+                                                         Checked="CheckTypeTerminal"
+                                                         >
+                                                        <TextBlock Text="{Binding Name}" FontSize="22"/>
+                                                    </RadioButton>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+
+                                    </ItemsControl>
+                                </ScrollViewer>
                                 <Button x:Name="POS_X" Style="{StaticResource Default}" Content="X звіт" Width="280" Height="60"  Click="POS_X_Click"/>
                                 <Button x:Name="POS_Z" Style="{StaticResource Default}" Content="Z звіт" Width="280" Height="60" Click="POS_Z_Click"/>
                                 <Button x:Name="POS_X_Copy" Style="{StaticResource Default}" Content="X звіт(копія)" Width="280" Height="60" Click="POS_X_Copy_Click"/>
@@ -292,8 +315,8 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                 <Button x:Name="EKKA_Z_Period" Style="{StaticResource Default}" Content="Z-звіт(Періодичний))"      Width="280" Height="60" Click="EKKA_Z_Period_Show"/>
                                 <Button x:Name="EKKA_Copy" Style="{StaticResource Default}" Content="Копія Квитанції"      VerticalAlignment="Top" Width="280" Height="60" Click="EKKA_Copy_Click"/>
 
-                                <Button x:Name="EKKA_Introduction"  Content="Внесеня коштів"
-                                        VerticalAlignment="Top" Width="280" Height="60" Click="EKKA_Introduction_Click">
+                                <Button x:Name="EKKA_Introduction"  Content="Внесеня коштів" 
+                                        VerticalAlignment="Top" Width="280" Height="60" Click="EKKA_MoveMoney_Click">
                                     <Button.Style>
                                         <Style BasedOn="{StaticResource Default}" TargetType="Button">
                                             <Setter Property="IsEnabled" Value="True"/>
@@ -309,7 +332,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                     </Button.Style>
                                 </Button>
                                 <Button x:Name="EKKA_Withdrawal"  Content="Вилучення"      
-                                        VerticalAlignment="Top" Width="280" Height="60" Click="EKKA_Withdrawal_Click">
+                                        VerticalAlignment="Top" Width="280" Height="60" Click="EKKA_MoveMoney_Click">
                                     <Button.Style>
                                         <Style BasedOn="{StaticResource Default}" TargetType="Button">
                                             <Setter Property="IsEnabled" Value="True"/>

@@ -689,19 +689,22 @@ TerminalId: {GetTerminalID}{Environment.NewLine}";
 
         public Task<Payment> PurchaseAsync(decimal amount,decimal pCash, int pIdWorkPlace = 0)
         {
+            uint Sum = (uint)(amount * 100m), SumCash = (uint)(pCash * 100m);
             try
             {
                 byte MechantId = GetMechantIdByIdWorkPlace(pIdWorkPlace);
                 if (!this.StartBPOS())
                     return Task.FromResult<Payment>(new Payment() { IsSuccess = false });
                 CancelRequested = false;
-                if(pCash > 0)
+                if(SumCash > 0)
                 {
-                    string ScenarioData = $"<ActionScenarioRequest><Action>CashBack</Action><Amount>{amount.ToS()}</Amount><CashAmount>{pCash.ToS()}</CashAmount><MerchantId>{MechantId}</MerchantId></ActionScenarioRequest>";
+                    string ScenarioData = CodeBank == eBank.PrivatBank?
+                        $"<ActionScenarioRequest><Action>CashBack</Action><Amount>{Sum}</Amount><AddAmount>{SumCash}</AddAmount><MerchantIdx>{MechantId}</MerchantIdx></ActionScenarioRequest>":
+                        $"<ActionScenarioRequest><Action>CashBack</Action><Amount>{Sum}</Amount><CashAmount>{SumCash}</CashAmount><MerchantId>{MechantId}</MerchantId></ActionScenarioRequest>";
                     BPOS.StartScenario( CodeBank==eBank.PrivatBank?2u:6u, ScenarioData);
                 }
                 else
-                 BPOS.Purchase(Convert.ToUInt32(amount * 100m), 0, MechantId);
+                 BPOS.Purchase(Sum, 0, MechantId);
 
                 OnStatus?.Invoke(new PosStatus() {  Status = eStatusPos.WaitingForCard });
                 Payment result = this.WaitPosRespone();                
