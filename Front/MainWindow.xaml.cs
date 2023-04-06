@@ -389,6 +389,11 @@ namespace Front
                             scrollViewer.ScrollToBottom();
                         }
                     }));
+                    if (curReceipt.CodeClient > 0 && (Client == null || Client.CodeClient != curReceipt.CodeClient))
+                    {
+                        Client = new Client(curReceipt.CodeClient);
+                        Bl.GetClientByCode(curReceipt, curReceipt.CodeClient);
+                    }
                 }
             }
             catch (Exception e)
