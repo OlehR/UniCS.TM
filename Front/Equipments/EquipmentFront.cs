@@ -128,7 +128,7 @@ namespace Front
             //OnControlWeight += (pWeight, pIsStable) => { pSetControlWeight?.Invoke(pWeight, pIsStable); };                
 
             OnWeight += (pWeight, pIsStable) =>
-            { if (IsControlScale && ControlScale.Model == eModelEquipment.VirtualControlScale) OnControlWeight?.Invoke(pWeight, pIsStable); };
+            { if (IsControlScale && ControlScale?.Model == eModelEquipment.VirtualControlScale) OnControlWeight?.Invoke(pWeight, pIsStable); };
             Task.Run(() => Init(pSetBarCode, pActionStatus));
         }
         
@@ -188,6 +188,7 @@ namespace Front
                             break;
                         case eModelEquipment.ScaleCom:
                             Scale = new ScaleCom(ElEquipment, config, LF, OnWeight);
+                            Scale.StartWeight();
                             break;
                         default:
                             Scale = new Scale(ElEquipment, config);
