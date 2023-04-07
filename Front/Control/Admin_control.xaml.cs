@@ -528,7 +528,7 @@ namespace Front.Control
             {
                 var Res = terminalPaymentInfo.enteredDataFromTerminal;
                 Res.SetIdReceipt(curReceipt);
-                pPay.IdWorkplacePay = curReceipt.IdWorkplace;
+                Res.IdWorkplacePay = curReceipt.IdWorkplace;
                 SetManualPay(Res);
             }
         }
