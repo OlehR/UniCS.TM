@@ -389,6 +389,8 @@ namespace Front
         public LogRRO PrintReceipt(Receipt pReceipt)
         {
             string NameMetod = System.Reflection.MethodBase.GetCurrentMethod().Name;
+            if (pReceipt == null || pReceipt.Payment == null || !pReceipt.Payment.Any(el => el.TypePay == eTypePay.Card || el.TypePay == eTypePay.Cash))
+                return new LogRRO(pReceipt) { CodeError = -1, Error = $"Відсутня оплата по Робомому місцю ({pReceipt.IdWorkplacePay})" };
             var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
             {
                 var RRO = GetRRO(pReceipt.IdWorkplacePay);
@@ -724,7 +726,11 @@ namespace Front
             );
         }
         #endregion
-
+        /// <summary>
+        /// Друк чека на (термо)принтері
+        /// </summary>
+        /// <param name="pR"></param>
+        /// <returns></returns>
         public bool Print(Receipt pR)
         {
            return Printer?.PrintReceipt(pR)??true;

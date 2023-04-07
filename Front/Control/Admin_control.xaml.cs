@@ -495,8 +495,8 @@ namespace Front.Control
 
         private void FiscalizCheckButton(object sender, RoutedEventArgs e)
         {
-            MW.PrintAndCloseReceipt(curReceipt);
-
+            MW.curReceipt = curReceipt;
+            MW.PayAndPrint();
             //MessageBox.Show("Фiскалізовано");
         }
 
@@ -543,7 +543,7 @@ namespace Front.Control
             curReceipt.CodeCreditCard = pPay.NumberCard;
             curReceipt.NumberReceiptPOS = pPay.NumberReceipt;
             curReceipt.SumCreditCard = pPay.SumPay;
-            Bl.db.ReplaceReceipt(curReceipt);
+            Bl.db.ReplaceReceipt(curReceipt);           
             curReceipt.Payment = new List<Payment>() { pPay };
         }
 

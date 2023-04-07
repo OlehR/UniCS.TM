@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -416,6 +417,20 @@ namespace Front
                 {
                     IsPrises(pQuantity, pPrice);
                 }
+            }
+        }
+
+        public void PayAndPrint()
+        {
+            EquipmentStatusInPayment.Text = "";
+            if (Global.TypeWorkplace == eTypeWorkplace.CashRegister && (curReceipt.StateReceipt==eStateReceipt.Prepare || curReceipt.StateReceipt==eStateReceipt.StartPay))
+            {
+                PaymentWindow.UpdatePaymentWindow();
+                SetStateView(eStateMainWindows.ChoicePaymentMethod);
+            }
+            else
+            {
+                var task = Task.Run(() => PrintAndCloseReceipt());
             }
         }
 

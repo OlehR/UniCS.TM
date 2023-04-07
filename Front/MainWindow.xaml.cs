@@ -996,19 +996,7 @@ namespace Front
 
         private void _ButtonPayment(object sender, RoutedEventArgs e)
         {
-            EquipmentStatusInPayment.Text = "";
-            //PaymentWindow.UpdatePaymentWindow();
-            //SetStateView(eStateMainWindows.ChoicePaymentMethod);
-            //return;
-            if (Global.TypeWorkplace == eTypeWorkplace.CashRegister)
-            {
-                PaymentWindow.UpdatePaymentWindow();
-                SetStateView(eStateMainWindows.ChoicePaymentMethod);
-            }
-            else
-            {
-                var task = Task.Run(() => PrintAndCloseReceipt());
-            }
+            PayAndPrint();
         }
 
         public void ShowErrorMessage(string ErrorMessage)
