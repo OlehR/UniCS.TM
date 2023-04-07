@@ -528,6 +528,7 @@ namespace Front.Control
             {
                 var Res = terminalPaymentInfo.enteredDataFromTerminal;
                 Res.SetIdReceipt(curReceipt);
+                pPay.IdWorkplacePay = curReceipt.IdWorkplace;
                 SetManualPay(Res);
             }
         }
@@ -536,7 +537,7 @@ namespace Front.Control
         {
             pPay.SumPay = pPay.PosPaid = curReceipt.SumTotal;
             pPay.PosPaid = pPay.SumPay;
-            pPay.NumberTerminal = "Manual";
+            pPay.NumberTerminal = "Manual";           
             Bl.db.ReplacePayment(new List<Payment>() { pPay });
 
             curReceipt.StateReceipt = eStateReceipt.Pay;
