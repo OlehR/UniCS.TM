@@ -523,12 +523,12 @@ namespace Front.Control
         {
             //TMP!!!
             //MessageBox.Show("Реквізити на оплату");
-            TerminalPaymentInfo terminalPaymentInfo = new TerminalPaymentInfo(MW);
+            TerminalPaymentInfo terminalPaymentInfo = new TerminalPaymentInfo(MW, curReceipt, WorkPlaces);
             if (terminalPaymentInfo.ShowDialog() == true && curReceipt != null)
             {
                 var Res = terminalPaymentInfo.enteredDataFromTerminal;
                 Res.SetIdReceipt(curReceipt);
-                Res.IdWorkplacePay = curReceipt.IdWorkplace;
+                Res.DateCreate = DateTime.Now;
                 SetManualPay(Res);
             }
         }

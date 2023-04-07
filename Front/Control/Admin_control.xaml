@@ -919,7 +919,21 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                  Grid.Row="0" Grid.RowSpan="6"
                 Grid.Column="1" Grid.ColumnSpan="4"
                  Name="DetailsReceiptBorder" Visibility="Collapsed" Grid.ZIndex="3" 
-                CornerRadius="10" HorizontalAlignment="Center"  MinWidth="1000" Height="850">
+                CornerRadius="10" HorizontalAlignment="Center">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="MinWidth" Value="1000"/>
+                                    <Setter Property="Height" Value="850"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                            <Setter Property="MinWidth" Value="600" />
+                                            <Setter Property="Height" Value="580" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            
                             <Border.Effect>
                                 <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
                             </Border.Effect>
@@ -1155,7 +1169,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                     <GridViewColumn Header="Час" >
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
-                                                <TextBlock Text="{Binding Path=DateReceipt}" TextAlignment="Center" />
+                                                <TextBlock Text="{Binding Path=DateReceipt,StringFormat='{}{0:HH:mm tt}'}" TextAlignment="Center" />
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>

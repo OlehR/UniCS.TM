@@ -8,103 +8,238 @@
         Title="TerminalPaymentInfo" WindowStyle="None"
         WindowState="Normal" ShowInTaskbar="False"
         Height="768" Width="1024">
+
+    <Window.Resources>
+        <LinearGradientBrush x:Key="CheckedBlue" StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#FF285AB3" Offset="0" />
+            <GradientStop Color="#FF4184EC" Offset="0.5" />
+            <GradientStop Color="#FF558BED" Offset="0.5" />
+            <GradientStop Color="#FF7DACF0" Offset="1" />
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="CheckedOrange" StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#FFCA6A13" Offset="0" />
+            <GradientStop Color="#FFF67D0C" Offset="0.2" />
+            <GradientStop Color="#FFFE7F0C" Offset="0.2" />
+            <GradientStop Color="#FFFA8E12" Offset="0.5" />
+            <GradientStop Color="#FFFF981D" Offset="0.5" />
+            <GradientStop Color="#FFFCBC5A" Offset="1" />
+        </LinearGradientBrush>
+        <SolidColorBrush x:Key="CheckedOrangeBorder" Color="#FF8E4A1B" />
+        <SolidColorBrush x:Key="CheckedBlueBorder" Color="#FF143874" />
+        <Style x:Key="OrangeSwitchStyle" TargetType="{x:Type RadioButton}">
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" />
+            <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type RadioButton}">
+                        <ControlTemplate.Resources>
+                            <Storyboard x:Key="OnChecking">
+                                <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="slider" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)">
+                                    <SplineDoubleKeyFrame KeyTime="00:00:00.1000000" Value="53" />
+                                </DoubleAnimationUsingKeyFrames>
+                            </Storyboard>
+                            <Storyboard x:Key="OnUnchecking">
+                                <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="slider" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)">
+                                    <SplineDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0" />
+                                </DoubleAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </ControlTemplate.Resources>
+                        <DockPanel x:Name="dockPanel">
+                            <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" ContentTemplate="{TemplateBinding ContentTemplate}" RecognizesAccessKey="True" VerticalAlignment="Center" />
+                            <Grid>
+                                <Border x:Name="BackgroundBorder" BorderBrush="#FF939393" BorderThickness="1" CornerRadius="3" Height="27" Width="94">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                            <GradientStop Color="#FFB5B5B5" Offset="0" />
+                                            <GradientStop Color="#FFDEDEDE" Offset="0.1" />
+                                            <GradientStop Color="#FFEEEEEE" Offset="0.5" />
+                                            <GradientStop Color="#FFFAFAFA" Offset="0.5" />
+                                            <GradientStop Color="#FFFEFEFE" Offset="1" />
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+                                        <Ellipse x:Name="Off" Width="14" Height="14" Stroke="#FF7A7A7A" StrokeThickness="2" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        <Line x:Name="On" X1="0" Y1="0" X2="0" Y2="14" Stroke="#FF7A7A7A" StrokeThickness="2" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Grid>
+                                </Border>
+                                <Border BorderBrush="#FF939393" HorizontalAlignment="Left" x:Name="slider" Width="41" Height="27" BorderThickness="1" CornerRadius="3" RenderTransformOrigin="0.5,0.5" Margin="0">
+                                    <Border.RenderTransform>
+                                        <TransformGroup>
+                                            <ScaleTransform ScaleX="1" ScaleY="1" />
+                                            <SkewTransform AngleX="0" AngleY="0" />
+                                            <RotateTransform Angle="0" />
+                                            <TranslateTransform X="0" Y="0" />
+                                        </TransformGroup>
+                                    </Border.RenderTransform>
+                                    <Border.Background>
+                                        <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                                            <GradientStop Color="#FFF0F0F0" Offset="0" />
+                                            <GradientStop Color="#FFCDCDCD" Offset="0.1" />
+                                            <GradientStop Color="#FFFBFBFB" Offset="1" />
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                </Border>
+                            </Grid>
+                        </DockPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard Storyboard="{StaticResource OnUnchecking}" x:Name="OnUnchecking_BeginStoryboard" />
+                                </Trigger.ExitActions>
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard Storyboard="{StaticResource OnChecking}" x:Name="OnChecking_BeginStoryboard" />
+                                </Trigger.EnterActions>
+                                <Setter TargetName="On" Property="Stroke" Value="White" />
+                                <Setter TargetName="Off" Property="Stroke" Value="White" />
+                                <!-- Change Orange or Blue color here -->
+                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{StaticResource CheckedOrange}" />
+                                <Setter TargetName="BackgroundBorder" Property="BorderBrush" Value="{StaticResource CheckedOrangeBorder}" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <!-- ToDo: Add Style for Isenabled == False -->
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Window.Resources>
+
     <Grid x:Name="BasicGrid" >
         <Grid.RowDefinitions>
-            <RowDefinition Height="1*" />
-            <RowDefinition Height="0.6*" />
-            <RowDefinition Height="1.1*" />
-            <RowDefinition Height="0.6*" />
-            <RowDefinition Height="1.1*" />
-            <RowDefinition Height="0.6*" />
-            <RowDefinition Height="1.1*" />
+            <RowDefinition Height="50" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="70" />
             <RowDefinition Height="300" />
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0" Text="Введіть дані оплати!"
                    HorizontalAlignment="Center" 
                    FontSize="26"
                    FontWeight="Bold"/>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
         
-        <TextBlock Grid.Row="1" Text="Введіть 4 останні цифри картки:"
+        <StackPanel Grid.Row="1">
+            <StackPanel Grid.Row="2" VerticalAlignment="Center">
+                <TextBlock Grid.Row="1" Text="Введіть 4 останні цифри картки:"
                    HorizontalAlignment="Center" 
                    FontSize="18"/>
-        <StackPanel Grid.Row="2" VerticalAlignment="Center">
-            <TextBox  Width="600" Height="40" x:Name="NameCardNumber" FontSize="24"
+
+                <TextBox  Width="600" Height="40" x:Name="NameCardNumber" FontSize="24"
                  HorizontalAlignment="Center" TextChanged="ChangetWriteTextOne">
-            </TextBox>
-            <TextBlock Grid.Row="4" Foreground="Red" HorizontalAlignment="Center" FontSize="16"  VerticalAlignment="Top"
-                               Text="Коректно заповніть поле!(4 цифри)" Margin="0,10,0,0" x:Name="ExciseStampNotValid">
-                <TextBlock.Style>
-                    <Style TargetType="TextBlock">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding CorrectWriteTextOne, RelativeSource={RelativeSource 
+                </TextBox>
+                <TextBlock Grid.Row="4" Foreground="Red" HorizontalAlignment="Center" FontSize="16"  VerticalAlignment="Top"
+                               Text="Коректно заповніть поле!(4 цифри)"   x:Name="ExciseStampNotValid">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CorrectWriteTextOne, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding CorrectWriteTextOne, RelativeSource={RelativeSource 
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding CorrectWriteTextOne, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="False">
-                                <Setter Property="Visibility" Value="Visible" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBlock.Style>
-            </TextBlock>
-        </StackPanel>
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </StackPanel>
 
-        
-        <TextBlock Grid.Row="3" Text="Введіть код авторизації:"
+            <StackPanel Grid.Row="4" VerticalAlignment="Center">
+                <TextBlock Grid.Row="3" Text="Введіть код авторизації:"
                    HorizontalAlignment="Center" 
                    FontSize="18"/>
-        <StackPanel Grid.Row="4" VerticalAlignment="Center">
-            <TextBox  Width="600" Height="40"  TextChanged="ChangetWriteTextTwo" x:Name="NameAuthorizationCode"
-                 HorizontalAlignment="Center" FontSize="24"/>
-            <TextBlock Grid.Row="4" Foreground="Red" HorizontalAlignment="Center" FontSize="16"  VerticalAlignment="Top"
-                               Text="Коректно заповніть поле!(6 цифр)" Margin="0,10,0,0" >
-                <TextBlock.Style>
-                    <Style TargetType="TextBlock">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding CorrectWriteTextTwo, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding CorrectWriteTextTwo, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
-                                <Setter Property="Visibility" Value="Visible" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBlock.Style>
-            </TextBlock>
-        </StackPanel>
-        
 
-        <TextBlock Grid.Row="5" Text="Введіть RRN:"
+                <TextBox  Width="600" Height="40"  TextChanged="ChangetWriteTextTwo" x:Name="NameAuthorizationCode"
+                 HorizontalAlignment="Center" FontSize="24"/>
+                <TextBlock Grid.Row="4" Foreground="Red" HorizontalAlignment="Center" FontSize="16"  VerticalAlignment="Top"
+                               Text="Коректно заповніть поле!(6 цифр)" Margin="0,0,0,0" >
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CorrectWriteTextTwo, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding CorrectWriteTextTwo, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </StackPanel>
+
+                <StackPanel Grid.Row="6" VerticalAlignment="Center">
+                    <TextBlock Grid.Row="5" Text="Введіть RRN:"
                    HorizontalAlignment="Center" 
                    FontSize="18"/>
-        <StackPanel Grid.Row="6" VerticalAlignment="Center">
-            <TextBox Grid.Row="6" Width="600" Height="40"  TextChanged="ChangetWriteTextTree" x:Name="NameRRN"
+
+                    <TextBox Grid.Row="6" Width="600" Height="40"  TextChanged="ChangetWriteTextTree" x:Name="NameRRN"
                  HorizontalAlignment="Center" FontSize="24"/>
-            <TextBlock Grid.Row="4" Foreground="Red" HorizontalAlignment="Center" FontSize="16"  VerticalAlignment="Top"
-                               Text="Коректно заповніть поле!(12 цифр)" Margin="0,10,0,0" >
-                <TextBlock.Style>
-                    <Style TargetType="TextBlock">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding CorrectWriteTextThree, RelativeSource={RelativeSource 
+                    <TextBlock Grid.Row="4" Foreground="Red" HorizontalAlignment="Center" FontSize="16"  VerticalAlignment="Top"
+                               Text="Коректно заповніть поле!(12 цифр)"   >
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CorrectWriteTextThree, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding CorrectWriteTextThree, RelativeSource={RelativeSource 
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding CorrectWriteTextThree, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="False">
-                                <Setter Property="Visibility" Value="Visible" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBlock.Style>
-            </TextBlock>
-        </StackPanel>
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </StackPanel>
+            </StackPanel>
 
 
-        <Grid Grid.Row="7" Width="600">
+
+            <StackPanel Grid.Column="1">
+
+                <TextBlock Text="Оберіть робоче місце по якому відсутня оплата!" TextWrapping="Wrap" FontWeight="Bold" Foreground="Red"/>
+                <ItemsControl x:Name="WorkPlacesListPayInf" >
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <RadioButton GroupName="radioWorkPlaces"  
+                                                         Style="{DynamicResource OrangeSwitchStyle}" IsChecked="{Binding IsChoice}"
+                                                         Checked="CheckWorkPlaceId"
+                                                         >
+                                    <TextBlock Text="{Binding Name}" TextWrapping="Wrap" FontSize="22"/>
+                                </RadioButton>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+
+                </ItemsControl>
+            </StackPanel>
+            
+            
+        </Grid>
+    
+        <Grid Grid.Row="2" Width="600">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
@@ -139,8 +274,6 @@
             </Button>
 
         </Grid>
-
-
         <keyboard:OnScreenKeyboard Grid.Row="8"
 		                           Grid.Column="0"
 		                           Grid.ColumnSpan="4"
