@@ -18,15 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Exellio">
-      <HintPath>..\..\dll_exelio\Exellio.DLL</HintPath>
-    </Reference>
-    <Reference Include="ExellioFP_net">
-      <HintPath>..\DLL\ExellioFP_net.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -114,7 +114,7 @@ namespace ModelMID
             SumDiscount = parRW.SumDiscount+parRW.SumWallet;
             Sum = parRW.Sum - SumDiscount;            
             CodePS = ( parRW.TypePrice==eTypePrice.Promotion || parRW.TypePrice == eTypePrice.PromotionIndicative ? parRW.ParPrice1:0);            
-            SumBonus = 0; //TMP!!! ще не реалізовано.
+            SumBonus = parRW.SumBonus;
             BarCode2Category = parRW.BarCode2Category;
         }
 

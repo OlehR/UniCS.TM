@@ -527,8 +527,10 @@ namespace Front.Control
             if (terminalPaymentInfo.ShowDialog() == true && curReceipt != null)
             {
                 var Res = terminalPaymentInfo.enteredDataFromTerminal;
+                int Id = Res.IdWorkplacePay;
                 Res.SetIdReceipt(curReceipt);
                 Res.DateCreate = DateTime.Now;
+                Res.IdWorkplacePay = Id;
                 SetManualPay(Res);
             }
         }
