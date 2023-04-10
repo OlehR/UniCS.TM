@@ -907,10 +907,30 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
 
                             </Button>
                             <StackPanel Orientation="Horizontal" Margin="20,0,0,0">
-                                <TextBlock Text="Всі чеки: "/>
-                                <CheckBox Height="40" Grid.Column="6"  Style="{DynamicResource OrangeSwitchStyleCheckBox}"
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Всі чеки: "/>
+                                    <CheckBox Height="40" Grid.Column="6"  Style="{DynamicResource OrangeSwitchStyleCheckBox}"
                                       x:Name="AllReceiptsCheckBox" IsChecked="False" Checked="IsShowAllreceiptsChecked" Unchecked="IsShowAllreceiptsChecked"
                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Horizontal">
+                                    <StackPanel.Style>
+                                        <Style TargetType="{x:Type StackPanel}">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsCashRegister, RelativeSource={RelativeSource 
+                                                         Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </StackPanel.Style>
+                                    <TextBlock Text="Відкладені чеки: "/>
+                                    <CheckBox Height="40" Grid.Column="6"  Style="{DynamicResource OrangeSwitchStyleCheckBox}" 
+                                              Name="DeferredReceiptsCheckBox" IsChecked="False" Checked="IsShowAllreceiptsChecked" Unchecked="IsShowAllreceiptsChecked"
+                                              VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </StackPanel>
                             </StackPanel>
                         </StackPanel>
 
@@ -1266,7 +1286,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                                         Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
-                                                        <Setter Property="FontSize" Value="14" />
+                                                        <Setter Property="FontSize" Value="13" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -1294,7 +1314,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                                         Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
-                                                        <Setter Property="FontSize" Value="14" />
+                                                        <Setter Property="FontSize" Value="13" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -1322,7 +1342,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                                         Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
-                                                        <Setter Property="FontSize" Value="14" />
+                                                        <Setter Property="FontSize" Value="13" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -1350,7 +1370,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                                         Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
-                                                        <Setter Property="FontSize" Value="14" />
+                                                        <Setter Property="FontSize" Value="13" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -1377,7 +1397,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                                         Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
-                                                        <Setter Property="FontSize" Value="14" />
+                                                        <Setter Property="FontSize" Value="13" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -1404,7 +1424,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                                         Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
-                                                        <Setter Property="FontSize" Value="14" />
+                                                        <Setter Property="FontSize" Value="13" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -1431,7 +1451,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                                         Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
-                                                        <Setter Property="FontSize" Value="14" />
+                                                        <Setter Property="FontSize" Value="13" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -1459,7 +1479,7 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                                         Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
-                                                        <Setter Property="FontSize" Value="14" />
+                                                        <Setter Property="FontSize" Value="13" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -1471,6 +1491,38 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding IsСurReceipt, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" Value="True">
                                                     <Setter Property="IsEnabled" Value="True"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <Button Grid.Column="2" FontSize="22" Click="RestoreSelectRecript"   >
+                                    <TextBlock  Text="Відновити чек" Margin="5">
+                                        <TextBlock.Style>
+                                            <Style TargetType="{x:Type TextBlock}">
+                                                <Setter Property="Margin" Value="5"/>
+                                                <Setter Property="FontSize" Value="20" />
+                                                <Setter Property="FontWeight" Value="DemiBold"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                                        Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                        <Setter Property="FontSize" Value="13" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                    <Button.Style>
+                                        <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                            <Setter Property="IsEnabled" Value="False"/>
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsDeferredReceipt, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" Value="True">
+                                                    <Setter Property="IsEnabled" Value="True"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsCashRegister, RelativeSource={RelativeSource 
+                                                         Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible" />
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>

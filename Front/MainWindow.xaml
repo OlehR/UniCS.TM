@@ -166,11 +166,38 @@
                     <Button Click="ShowClientDetails"  Opacity="0" />
 
                 </Grid>
-                
 
 
+                <!--Відкладення чеку-->
+                <Button Grid.Column="1"  Click="PostponeCheck">
+                    <Button.Content>
+                        <TextBlock FontSize="24" Text="Відкласти чек" Margin="5,0,0,5"/>
+                    </Button.Content>
+                    <Button.Style>
+                        <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsCashRegister, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
 
-                <StackPanel Grid.Column="1"  Orientation="Horizontal" HorizontalAlignment="Center">
+                <!--Мовна панель-->
+                <StackPanel  x:Name="LanguagePanel" Grid.Column="1"  Orientation="Horizontal" HorizontalAlignment="Center" >
+                    <StackPanel.Style>
+                        <Style TargetType="{x:Type StackPanel}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsCashRegister, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
                     <Button x:Name="ua" Click="_ChangeLanguage" Grid.Column="1" Style="{StaticResource WhiteButton}"  Width="70">
                         <Image Margin="10" Source="icons\ua.png"/>
                     </Button>
@@ -1451,7 +1478,7 @@
                             <TextBlock Text="{Binding Client.PersentDiscount, StringFormat={}{0}%, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" 
                                        FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="{Binding Client.PercentBonus,StringFormat={}{0}%, RelativeSource={RelativeSource 
+                            <TextBlock Text="{Binding Client.PercentBonus,StringFormat={}{0}, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" 
                                        FontSize="24" FontWeight="Bold" Margin="2"/>
                             <TextBlock Text="{Binding Client.BarCode, RelativeSource={RelativeSource 

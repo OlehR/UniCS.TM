@@ -184,6 +184,7 @@ namespace Front
         public bool IsManyPayments { get; set; } = false;
         public string AmountManyPayments { get; set; } = "";
         public string SumTotalManyPayments { get; set; } = "Загальна сума: ";
+        public bool IsCashRegister { get { return (Global.TypeWorkplace == eTypeWorkplace.CashRegister); } }
 
 
         public System.Drawing.Color GetFlagColor(eStateMainWindows pStateMainWindows, eTypeAccess pTypeAccess, eStateScale pSS)
@@ -363,7 +364,7 @@ namespace Front
             Task.Run(() => Bl.ds.SyncDataAsync());
         }
 
-        void SetCurReceipt(Receipt pReceipt)
+        public void SetCurReceipt(Receipt pReceipt)
         {
             try
             {
@@ -1309,6 +1310,12 @@ namespace Front
             Background.Visibility = Visibility.Visible;
             BackgroundWares.Visibility = Visibility.Visible;
 
+        }
+
+        private void PostponeCheck(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("Ви дійсно хочете відкласти чек?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                NewReceipt();
         }
     }
 

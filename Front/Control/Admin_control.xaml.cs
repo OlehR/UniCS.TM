@@ -54,6 +54,7 @@ namespace Front.Control
         public string NameAdminUserOpenShift { get { return MW?.AdminSSC?.NameUser; } }
         public DateTime DataOpenShift { get { return MW.DTAdminSSC; } }
         public bool IsShowAllReceipts { get; set; }
+        public bool IsShowDeferredReceipts { get; set; }
         public bool IsShowAllJournal { get; set; }
         //BatchTotals LastReceipt = null;
 
@@ -68,6 +69,7 @@ namespace Front.Control
         public bool IsShortPeriodZ { get; set; } = true;
         public bool IsPrintCoffeQR { get; set; } = false;
         public bool IsСurReceipt { get; set; } = false;
+        public bool IsDeferredReceipt { get; set; } = false;
         public IEnumerable<WorkPlace> WorkPlaces { get { return Global.GetIdWorkPlaces; } }
         WorkPlace _SelectedWorkPlace = null;
         public WorkPlace SelectedWorkPlace { get { return _SelectedWorkPlace != null ? _SelectedWorkPlace : WorkPlaces.First(); } set { _SelectedWorkPlace = value; } }
@@ -163,14 +165,14 @@ namespace Front.Control
                 {
                     item.IsSelected = isFirst;
                     ActiveTerminals.Add(item);
-                    if(isFirst)
+                    if (isFirst)
                     {
                         MW?.EF.SetBankTerminal(item as BankTerminal);
                     }
                     isFirst = false;
                 }
             }
-            TerminalList.ItemsSource = ActiveTerminals;           
+            TerminalList.ItemsSource = ActiveTerminals;
         }
 
         private bool LogFilter(object item)
@@ -183,9 +185,13 @@ namespace Front.Control
 
         private bool ReceiptFilter(object item)
         {
-            if (IsShowAllReceipts)
+            if (IsShowAllReceipts && !IsShowDeferredReceipts)
             {
                 return true;
+            }
+            else if (IsShowDeferredReceipts)
+            {
+                return ((item as Receipt).StateReceipt == eStateReceipt.Prepare);
             }
             else return ((item as Receipt).SumReceipt > 0);
 
@@ -489,6 +495,7 @@ namespace Front.Control
                 IsCreateReturn = (curReceipt?.StateReceipt == eStateReceipt.Send || curReceipt?.StateReceipt == eStateReceipt.Print) && curReceipt?.TypeReceipt == eTypeReceipt.Sale;
                 IsPrintCoffeQR = (bool)curReceipt?.IsQR();
                 IsСurReceipt = true;
+                IsDeferredReceipt = curReceipt?.StateReceipt == eStateReceipt.Prepare;
             }
             else
             {
@@ -542,14 +549,14 @@ namespace Front.Control
         {
             pPay.SumPay = pPay.PosPaid = curReceipt.SumTotal;
             pPay.PosPaid = pPay.SumPay;
-            pPay.NumberTerminal = "Manual";           
+            pPay.NumberTerminal = "Manual";
             Bl.db.ReplacePayment(new List<Payment>() { pPay });
 
             curReceipt.StateReceipt = eStateReceipt.Pay;
             curReceipt.CodeCreditCard = pPay.NumberCard;
             curReceipt.NumberReceiptPOS = pPay.NumberReceipt;
             curReceipt.SumCreditCard = pPay.SumPay;
-            Bl.db.ReplaceReceipt(curReceipt);           
+            Bl.db.ReplaceReceipt(curReceipt);
             curReceipt.Payment = new List<Payment>() { pPay };
         }
 
@@ -717,6 +724,7 @@ namespace Front.Control
             if (Receipts != null)
             {
                 IsShowAllReceipts = (bool)AllReceiptsCheckBox.IsChecked;
+                IsShowDeferredReceipts = (bool)DeferredReceiptsCheckBox.IsChecked;
                 CollectionViewSource.GetDefaultView(ListReceipts.ItemsSource).Refresh();
             }
 
@@ -1024,11 +1032,17 @@ namespace Front.Control
             if (ChBtn.DataContext is Equipment)
             {
                 BankTerminal temp = ChBtn.DataContext as BankTerminal;
-                if (temp!=null)
+                if (temp != null)
                 {
                     MW?.EF.SetBankTerminal(temp);
                 }
             }
+        }
+
+        private void RestoreSelectRecript(object sender, RoutedEventArgs e)
+        {
+            MW.SetCurReceipt(Bl.GetReceiptHead(curReceipt, true));
+            MW.SetStateView(eStateMainWindows.WaitInput);
         }
     }
 
