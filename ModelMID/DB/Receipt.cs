@@ -381,7 +381,7 @@ namespace ModelMID
                     }
                 }
             }
-            return SumWallet > 0;
+            return SumWallet > 0 || SumBonus>0;
         }
 
     }

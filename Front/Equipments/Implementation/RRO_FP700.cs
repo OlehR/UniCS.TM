@@ -452,8 +452,8 @@ namespace Front.Equipments
                 // tring((IFormatProvider)CultureInfo.InvariantCulture);
 
                 string data = $"{FiscalArticle.PLU}*{receiptItem.Quantity.ToS()}{Price}";
-                if (receiptItem.SumDiscount + receiptItem.SumWallet != 0M)
-                    data += ";" + (receiptItem.SumDiscount + receiptItem.SumWallet > 0M ? "-" : "+") + Math.Abs(receiptItem.SumDiscount+ receiptItem.SumWallet).ToS();
+                if (receiptItem.SumTotalDiscount != 0M)
+                    data += ";" + (receiptItem.SumTotalDiscount > 0M ? "-" : "+") + Math.Abs(receiptItem.SumTotalDiscount).ToS();
 
                 if (!string.IsNullOrWhiteSpace(receiptItem.BarCode))
                     data = data + "&" + receiptItem.BarCode;

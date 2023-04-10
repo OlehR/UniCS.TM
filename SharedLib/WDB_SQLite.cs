@@ -795,7 +795,7 @@ Where ID_WORKPLACE = @IdWorkplace
    and CODE_PERIOD = @CodePeriod
    and CODE_RECEIPT = @CodeReceipt
    and TYPE_PAY in (5,6);
-Update WARES_RECEIPT set SUM_WALLET = 0
+Update WARES_RECEIPT set SUM_WALLET = 0, Sum_bonus = 0
 Where ID_WORKPLACE = @IdWorkplace
    and CODE_PERIOD = @CodePeriod
    and CODE_RECEIPT = @CodeReceipt;";

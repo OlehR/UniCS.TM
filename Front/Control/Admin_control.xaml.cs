@@ -163,11 +163,14 @@ namespace Front.Control
                 {
                     item.IsSelected = isFirst;
                     ActiveTerminals.Add(item);
+                    if(isFirst)
+                    {
+                        MW?.EF.SetBankTerminal(item as BankTerminal);
+                    }
                     isFirst = false;
                 }
             }
-            TerminalList.ItemsSource = ActiveTerminals;
-            MW?.EF.SetBankTerminal(ActiveTerminals.Where(x => x.IsSelected == true).FirstOrDefault() as BankTerminal);
+            TerminalList.ItemsSource = ActiveTerminals;           
         }
 
         private bool LogFilter(object item)
@@ -1020,10 +1023,10 @@ namespace Front.Control
             RadioButton ChBtn = sender as RadioButton;
             if (ChBtn.DataContext is Equipment)
             {
-                Equipment temp = ChBtn.DataContext as Equipment;
-                if (ChBtn.IsChecked == true)
+                BankTerminal temp = ChBtn.DataContext as BankTerminal;
+                if (temp!=null)
                 {
-                    MW?.EF.SetBankTerminal(ActiveTerminals.Where(x => x.IsSelected == true).FirstOrDefault() as BankTerminal);
+                    MW?.EF.SetBankTerminal(temp);
                 }
             }
         }

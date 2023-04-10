@@ -483,17 +483,25 @@ namespace Front
                             if(pSumWallet != 0)
                               Bl.db.ReplacePayment(new List<Payment>() { new Payment(R) {IdWorkplacePay=R.IdWorkplace, IsSuccess = true, TypePay = eTypePay.Wallet, SumPay = pSumWallet, SumExt = pSumWallet } });
                             if (pSumBonus != 0)
-                                Bl.db.ReplacePayment(new List<Payment>() { new Payment(R) { IdWorkplacePay = R.IdWorkplace, IsSuccess = true, TypePay = eTypePay.Wallet, SumExt = pSumBonus } });
-
-                            R.Payment = Bl.db.GetPayment(R);
+                                Bl.db.ReplacePayment(new List<Payment>() { new Payment(R) { IdWorkplacePay = R.IdWorkplace, IsSuccess = true, TypePay = eTypePay.Bonus,SumPay= R.SumTotal, SumExt = pSumBonus } });
 
                             if ((pSumWallet > 0 || pSumBonus>0) && R.ReCalc())
                             {
                                 foreach (var el in R.Wares.Where(el => el.TypeWares == eTypeWares.Ordinary))
-                                    Bl.db.ReplaceWaresReceipt(el);                                
+                                    Bl.db.ReplaceWaresReceipt(el);
+                                
+                                if (pSumBonus > 0)
+                                {
+                                    
+                                    Bl.db.ReplacePayment(new List<Payment>() {new Payment(R) { IdWorkplacePay = R.IdWorkplace, IsSuccess = true, TypePay = eTypePay.Cash,SumPay= Math.Round(R.SumTotal,1), SumExt =  Math.Round(R.SumTotal,1) }});
+                                    R.StateReceipt = eStateReceipt.Pay;
+                                    Bl.SetStateReceipt(R, R.StateReceipt);
+                                }
                             }
+                            R.Payment = Bl.db.GetPayment(R);
                             FillPays(R);
                         }
+                        
 
                         for (var i = 0; i < IdWorkplacePays.Length; i++)
                         {

@@ -390,7 +390,7 @@ namespace Front
         {
             string NameMetod = System.Reflection.MethodBase.GetCurrentMethod().Name;
             if (pReceipt == null || pReceipt.Payment == null || !pReceipt.Payment.Any(el => el.TypePay == eTypePay.Card || el.TypePay == eTypePay.Cash))
-                return new LogRRO(pReceipt) { CodeError = -1, Error = $"Відсутня оплата по Робомому місцю ({pReceipt.IdWorkplacePay})" };
+                return new LogRRO(pReceipt) { CodeError = -1, Error = $"Відсутня оплата по Робочому місцю № ({pReceipt.IdWorkplacePay})" };
             var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
             {
                 var RRO = GetRRO(pReceipt.IdWorkplacePay);

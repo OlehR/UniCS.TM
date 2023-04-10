@@ -107,6 +107,10 @@ namespace ModelMID
         public decimal SumDiscount { get; set; }
 
         public decimal SumTotal { get { return Sum - SumDiscount-SumWallet - SumBonus; } }
+        /// <summary>
+        /// Загальна знижка для РРО
+        /// </summary>
+        public decimal SumTotalDiscount { get { return SumDiscount + SumWallet + SumBonus; } }
 
         /// <summary>
         /// Назва акції для фіксованих цін. Тощо.
