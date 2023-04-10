@@ -201,7 +201,7 @@ Price as Price/*, wr.sum as Sum*/, Type_Price as TypePrice
  ,w.Code_Direction as CodeDirection
  ,w.Code_TM as CodeTM
  ,wr.Max_Refund_Quantity as MaxRefundQuantity
- ,wr.Sum_Bonus as Sum_Bonus
+ ,wr.Sum_Bonus as SumBonus
  ,wr.id_workplace_pay as IdWorkplacePay
  ,wr.sum_wallet as SumWallet
  ,case when max(SORT) over( PARTITION BY CODE_RECEIPT) = sort then  1 else 0 end as IsLast
