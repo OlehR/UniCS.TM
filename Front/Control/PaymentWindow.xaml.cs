@@ -328,7 +328,7 @@ namespace Front.Control
 
         private void _ButtonPaymentBonus(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Оплата бонусами!");
+          // MessageBox.Show("Оплата бонусами!");
             var task = Task.Run(() => MW.PrintAndCloseReceipt(null, eTypePay.Bonus, 0, 0,0, MW.Client?.SumMoneyBonus??0m));
         }
     }
