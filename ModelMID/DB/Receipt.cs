@@ -297,9 +297,10 @@ namespace ModelMID
                         Res.Add($"Бонуси:{Client.SumBonus}");
                     if (Client.Wallet > 0)
                         Res.Add($"Скарбничка:{Client.Wallet}");
+                    if(SumBonus>0)
+                        Res.Add($"Списані бонусні грн:{SumBonus}");
                 }
                 return Res;
-
             }
         }
 
