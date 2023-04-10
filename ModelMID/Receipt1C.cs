@@ -38,6 +38,7 @@ namespace ModelMID
     
         public int CodeBank { get; set; }
         public decimal SumWallet { get; set; }
+        public decimal  CashOutSum { get; set; }
         public Receipt1C() { }
         public Receipt1C(Receipt pR)
         {
@@ -66,6 +67,7 @@ namespace ModelMID
                 Description = "0000000";           
 
             SumWallet = pR.Payment.Where(r => r.TypePay == eTypePay.Wallet && r.SumPay>0)?.FirstOrDefault()?.SumPay ?? 0;
+            CashOutSum = pR.Payment.Where(r => r.TypePay == eTypePay.IssueOfCash && r.SumPay > 0)?.FirstOrDefault()?.SumPay ?? 0;
 
             var Cash = pR.Payment.Where(r => r.TypePay == eTypePay.Cash)?.FirstOrDefault();
             if (Cash != null) CodeBank = 1;

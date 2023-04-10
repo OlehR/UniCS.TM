@@ -369,7 +369,7 @@ namespace ModelMID
                     {
                         el.SumBonus = 0;
                         el.SumBonus = el.SumTotal - 0.01m;
-                        SumTotal = el.SumTotal;
+                        SumTotal += el.SumTotal;
                         SumBonus += el.SumBonus;
                     }
                     if (SumTotal < 0.06m)
