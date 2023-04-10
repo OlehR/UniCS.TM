@@ -1041,6 +1041,7 @@ namespace Front.Control
 
         private void RestoreSelectRecript(object sender, RoutedEventArgs e)
         {
+            MW.Client = null;
             MW.SetCurReceipt(Bl.GetReceiptHead(curReceipt, true));
             MW.SetStateView(eStateMainWindows.WaitInput);
         }
