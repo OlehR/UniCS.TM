@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using Front.Control;
 using Front.Equipments;
 using Front.Equipments.Virtual;
 using Front.Models;
@@ -220,7 +221,7 @@ namespace Front
         }
         #endregion
 
-        bool SetConfirm(User pUser, bool pIsFirst = false, bool pIsAccess = false)
+        public bool SetConfirm(User pUser, bool pIsFirst = false, bool pIsAccess = false)
         {
             if (pUser == null)
             {
@@ -259,7 +260,7 @@ namespace Front
             if (!Access.GetRight(pUser, TypeAccessWait) && !pIsAccess)
             {
                 if (!pIsFirst)
-                    ShowErrorMessage($"Не достатньо прав для операції {TypeAccessWait} в {pUser.NameUser}");
+                    ShowErrorMessage($"Не достатньо прав для операції {TypeAccessWait} {Environment.NewLine}в {pUser.NameUser} з правами {pUser.TypeUser}");
                 //                MessageBox.Show($"Не достатньо прав для операції {TypeAccessWait} в {pUser.NameUser}");
                 return false;
             }
@@ -278,10 +279,14 @@ namespace Front
                 case eTypeAccess.DelReciept:
                     Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
                     SetCurReceipt(null);
-
                     TypeAccessWait = eTypeAccess.NoDefine;
                     SetStateView(eStateMainWindows.StartWindow);
                     break;
+                case eTypeAccess.ReturnReceipt:                    
+                    Bl.CreateRefund(AdminControl.curReceipt);
+                    SetStateView(eStateMainWindows.WaitInputRefund);
+                    break;
+
                 case eTypeAccess.ConfirmAge:
                     Bl.AddEventAge(curReceipt);
                     TypeAccessWait = eTypeAccess.NoDefine;

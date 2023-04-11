@@ -223,6 +223,9 @@ namespace Front
                     case eTypeAccess.DelReciept:
                         tb.Inlines.Add("Видалити чек ");
                         break;
+                    case eTypeAccess.ReturnReceipt:
+                        tb.Inlines.Add("Створити чек повернення");
+                        break;
                     case eTypeAccess.StartFullUpdate:
                         tb.Inlines.Add(new Run("Повне оновлення БД") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red });
                         break;

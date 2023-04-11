@@ -34,6 +34,7 @@ namespace Front.Control
     /// </summary>
     public partial class Admin_control : UserControl, INotifyPropertyChanged
     {
+        public Access Access = Access.GetAccess();
         public event PropertyChangedEventHandler PropertyChanged;
         EquipmentFront EF;
         ObservableCollection<Receipt> Receipts;
@@ -44,7 +45,8 @@ namespace Front.Control
         BL Bl;
         public string ControlScaleWeightDouble { get; set; } = "0";
         MainWindow MW;
-        Receipt curReceipt = null;
+        public Receipt curReceipt = null;
+        public bool IsFullReturn = false;
         LogRRO SelectedListJournal = null;
         public bool IsSelectedListJournal { get { return SelectedListJournal != null; } }
         Receipt ChangeStateReceipt = null;
@@ -421,7 +423,7 @@ namespace Front.Control
                     RefreshLog();
                     break;
                 case "Вихід":
-                    MW.SetStateView(Models.eStateMainWindows.StartWindow);
+                    MW.SetStateView(eStateMainWindows.StartWindow);
                     TabAdmin.SelectedIndex = 0;
                     //this.WindowState = WindowState.Minimized;
                     break;
@@ -510,29 +512,8 @@ namespace Front.Control
             //MessageBox.Show("Фiскалізовано");
         }
 
-        /*private void PayAdminPanelButton(object sender, RoutedEventArgs e)
-        {
-            var R = Bl.GetReceiptHead(curReceipt, true);
-            if (R.StateReceipt == eStateReceipt.Prepare)
-            {
-                decimal sum = R.Wares.Sum(r => r.Sum); //TMP!!!Треба переробити
-
-                var pay = EF.PosPurchase(R, sum);
-                if (pay != null)
-                {
-                    pay.SetIdReceipt(R);
-                    Bl.db.ReplacePayment(new List<Payment>() { pay });
-                    Bl.SetStateReceipt(R, eStateReceipt.Pay);
-                    //curReceipt.StateReceipt = eStateReceipt.Pay;
-                }
-            }
-            //MessageBox.Show("Оплачено");
-        }*/
-
         private void PaymentDetailsAdminPanelButton(object sender, RoutedEventArgs e)
-        {
-            //TMP!!!
-            //MessageBox.Show("Реквізити на оплату");
+        {           
             TerminalPaymentInfo terminalPaymentInfo = new TerminalPaymentInfo(MW, curReceipt, WorkPlaces);
             if (terminalPaymentInfo.ShowDialog() == true && curReceipt != null)
             {
@@ -568,9 +549,16 @@ namespace Front.Control
 
         private void ReturnCheckButton(object sender, RoutedEventArgs e)
         {
+            CreateReturn();
+        }
 
-            Bl.CreateRefund(curReceipt);
-            MW.SetStateView(Models.eStateMainWindows.WaitInputRefund);
+        void CreateReturn(bool pIsFull = false)
+        {
+            IsFullReturn = pIsFull;
+            MW.TypeAccessWait = eTypeAccess.ReturnReceipt;
+
+            if (!MW.SetConfirm(AdminUser?? MW?.AdminSSC, true))
+                MW.SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ReturnReceipt, null);
         }
 
         //Якогось не працює через get як я хочу :) Тому пока реалізація через Ж.
@@ -582,10 +570,7 @@ namespace Front.Control
 
         private void ReturnAllCheckButton(object sender, RoutedEventArgs e)
         {
-            Bl.CreateRefund(curReceipt, true);
-            MW.SetStateView(Models.eStateMainWindows.WaitInputRefund);
-            //this.WindowState = WindowState.Minimized;
-            //MessageBox.Show("Повернути весь чек");
+            CreateReturn(true);
         }
 
         private void FindChecksByDate(object sender, RoutedEventArgs e)

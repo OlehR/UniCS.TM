@@ -24,14 +24,15 @@ namespace SharedLib
         
         public Access()
         {
-            Right.Add(eTypeAccess.DelWares, eTypeUser.AdminSSC);
-            Right.Add(eTypeAccess.DelReciept, eTypeUser.AdminSSC);
+            eTypeUser R =  (Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout ? eTypeUser.AdminSSC : eTypeUser.Guardian);//eTypeUser.AdminSSC;//
+            Right.Add(eTypeAccess.DelWares, R);
+            Right.Add(eTypeAccess.DelReciept, R);
+            Right.Add(eTypeAccess.ReturnReceipt, R);
             Right.Add(eTypeAccess.ChoicePrice, eTypeUser.Сashier);
             Right.Add(eTypeAccess.ConfirmAge, eTypeUser.Сashier);
             Right.Add(eTypeAccess.ExciseStamp, eTypeUser.Сashier);
             Right.Add(eTypeAccess.FixWeight, eTypeUser.AdminSSC);
-            Right.Add(eTypeAccess.AddNewWeight, eTypeUser.AdminSSC);
-            Right.Add(eTypeAccess.ReturnReceipt, eTypeUser.Сashier);
+            Right.Add(eTypeAccess.AddNewWeight, eTypeUser.AdminSSC);            
             Right.Add(eTypeAccess.AdminPanel, eTypeUser.AdminSSC); 
         }
 
