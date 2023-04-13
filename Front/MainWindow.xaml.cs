@@ -20,7 +20,6 @@ using Microsoft.Extensions.Configuration;
 using System.Windows.Media;
 using System.Windows.Documents;
 using System.Reflection;
-using Front.API;
 using System.IO;
 using System.Security.AccessControl;
 
@@ -66,6 +65,8 @@ namespace Front
         public bool IsExciseStamp { get; set; }
         public bool IsCheckReturn { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? true : false; } }
         public bool IsCheckPaid { get { return curReceipt?.StateReceipt == eStateReceipt.Pay ? true : false; } }
+
+        SocketServer SocketServer;
         /// <summary>
         /// Чи заброкована зміна
         /// </summary>
@@ -282,8 +283,13 @@ namespace Front
         public MainWindow()
         {
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Ver={Version}", eTypeLog.Expanded);
-            SocketServer SocketS = new SocketServer();
-            _ = SocketS.StartSocketServer();
+
+            if(Global.PortAPI>0)
+            {
+                SocketServer = new SocketServer(Global.PortAPI, CallBackApi);
+                _ = SocketServer.StartAsync();
+            }
+            
             CS = new ControlScale(10d,Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout);
             s = Sound.GetSound(CS);
             Volume = (Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout);

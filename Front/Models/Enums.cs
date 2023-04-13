@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -111,4 +112,74 @@ namespace Front.Models
         HorisontalMonitorRegular,
         AnotherTypeMonitor
     }
+
+    public enum eCommand 
+    {
+        NotDefine,
+        /// <summary>
+        /// Підтвердження дії
+        /// </summary>
+        Confirm,
+        /// <summary>
+        /// Отримати штрихкод
+        /// </summary>
+        BarCode,
+        /// <summary>
+        /// Отримати вагу
+        /// </summary>
+        Weight,
+        /// <summary>
+        /// Отримати значення для контрольної ваги
+        /// </summary>
+        ControlWeight,
+        /// <summary>
+        /// Добавити вагу 
+        /// </summary>
+        AddWeight,        
+        /// <summary>
+        /// Загальний стан програми.
+        /// </summary>
+        GeneralCondition,
+        /// <summary>
+        /// Відкрити зміну.
+        /// </summary>
+        OpenShift,
+        /// <summary>
+        /// Закритття зміни.
+        /// </summary>
+        CloseShift,
+        /// <summary>
+        /// Закрити програму
+        /// </summary>
+        Close,
+        /// <summary>
+        /// Перезапуск Компютера
+        /// </summary>
+        Restart,
+        /// <summary>
+        /// Виключенння компютера
+        /// </summary>
+        ShutDown,
+        XReport,
+        ZReport,
+        XReportPOS,
+        ZReportPOS,
+        /// <summary>
+        /// Звірка X
+        /// </summary>
+        VerifyX,
+        /// <summary>
+        /// Отримати чек 
+        /// </summary>
+        GetReceipt,
+        /// <summary>
+        /// Отримати текучий чек
+        /// </summary>
+        GetCurrentReceipt,
+        /// <summary>
+        /// Фіскалізувати чек
+        /// </summary>
+        FiscalReceipt,
+    }
 }
+

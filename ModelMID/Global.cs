@@ -72,11 +72,11 @@ namespace ModelMID
         /// </summary>
         public static string PathLog = @"c:\temp\";
         public static string PathPictures = @"D:\Pictures\";
-
-        /// <summary>
-        /// Шлях до MID.ini та Key.map
-        /// </summary>
-        public static string PathIni = @"D:\WORK\CS\UniCS.TM\SharedLib\";
+        public static int PortAPI=0;
+       /// <summary>
+       /// Шлях до MID.ini та Key.map
+       /// </summary>
+       public static string PathIni = @"D:\WORK\CS\UniCS.TM\SharedLib\";
 
         /// <summary>
         /// Максимальна кількість відкритих чеків касиром. Максимум 3.

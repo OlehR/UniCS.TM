@@ -1,6 +1,4 @@
-﻿using Front.API;
-using Front.Equipments;
-//using Front.Equipments.Ingenico;
+﻿using Front.Equipments;
 using Front.Models;
 using ModelMID;
 using ModelMID.DB;
@@ -10,20 +8,14 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Reflection;
-using System.Security.Policy;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Media;
 using System.Windows.Threading;
 using Utils;
 
@@ -65,7 +57,7 @@ namespace Front.Control
         public DateTime DateSoSearch { get; set; } = DateTime.Now.Date;
         public DateTime DateStartPeriodZ { get; set; } = DateTime.Now.Date;
         public DateTime DateEndPeriodZ { get; set; } = DateTime.Now.Date;
-        public eTypeMessage TypeAPIMessage { get; set; }
+        public eCommand TypeAPIMessage { get; set; }
         public string KasaNumber { get { return Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace).Name; } }
         public ObservableCollection<APIRadiobuton> TypeMessageRadiobuton { get; set; }
         public bool IsShortPeriodZ { get; set; } = true;
@@ -88,7 +80,7 @@ namespace Front.Control
         {
             Bl = BL.GetBL;
             TypeMessageRadiobuton = new ObservableCollection<APIRadiobuton>();
-            foreach (eTypeMessage item in Enum.GetValues(typeof(eTypeMessage)))
+            foreach (eCommand item in Enum.GetValues(typeof(eCommand)))
             {
                 TypeMessageRadiobuton.Add(new APIRadiobuton() { ServerTypeMessage = item });
             }
@@ -99,15 +91,12 @@ namespace Front.Control
             this.DataContext = this;
             ListRadioButtonAPI.ItemsSource = TypeMessageRadiobuton;
 
-
-
             RefreshJournal();
             //поточний час
             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += timer_Tick;
             timer.Start();
-
         }
 
         public void Init(MainWindow pMW)
@@ -766,10 +755,10 @@ namespace Front.Control
             }
         }
 
-        private void SetdAPIMessage(object sender, RoutedEventArgs e)
+        private async Task SetdAPIMessageAsync(object sender, RoutedEventArgs e)
         {
-            KasaSocketClient socketKasaClient = new KasaSocketClient();
-            string Response = socketKasaClient.SendMessage(APITextMessage.Text, TypeAPIMessage, "127.0.0.1", 8068);
+            SocketClient Client = new("",Global.PortAPI);
+            string Response = await Client.StartAsync(APITextMessage.Text);
             MessageBox.Show("Відповідь сервера: " + Response);
         }
 
@@ -1034,7 +1023,7 @@ namespace Front.Control
 
     public class APIRadiobuton
     {
-        public eTypeMessage ServerTypeMessage { get; set; }
+        public eCommand ServerTypeMessage { get; set; }
         public string TranslateServerTypeMessage { get { return ServerTypeMessage.GetDescription(); } }
     }
 

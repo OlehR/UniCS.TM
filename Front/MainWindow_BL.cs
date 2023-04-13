@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,6 +15,7 @@ using Front.Equipments.Virtual;
 using Front.Models;
 using ModelMID;
 using ModelMID.DB;
+using Newtonsoft.Json;
 using SharedLib;
 using Utils;
 
@@ -662,6 +664,30 @@ namespace Front
                 pR.WorkplacePays[i] = new WorkplacePay() { IdWorkplacePay = IdWorkplacePays[i], Sum = EF.SumReceiptFiscal(pR), SumCash = EF.SumCashReceiptFiscal(pR) };
             }
             pR.IdWorkplacePay = 0;
+        }
+
+        string CallBackApi(string pDataApi) 
+        {
+            string Res = null;
+            CommandAPI<dynamic> pC = JsonConvert.DeserializeObject<CommandAPI<dynamic>>(pDataApi);
+
+            switch(pC.Command)
+            {
+
+                case eCommand.GetCurrentReceipt:
+                    Res = curReceipt?.ToJSON();
+                    break;
+                case eCommand.GetReceipt:
+                    var Command = JsonConvert.DeserializeObject<CommandAPI<IdReceipt>>(pDataApi);
+                    Res=Bl.GetReceiptHead(Command.Data, true)?.ToJSON();
+                    break;
+                case eCommand.XReport:
+                    var CommandXReport = JsonConvert.DeserializeObject<CommandAPI<int>>(pDataApi);
+                    Res = EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = CommandXReport.Data })?.ToJSON();
+                    break;
+            }
+
+            return Res; 
         }
     }
 }

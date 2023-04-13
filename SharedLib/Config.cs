@@ -194,7 +194,16 @@ namespace SharedLib
             }
             catch
             { Global.CodeWaresWallet = 0; }
-            
+
+            try
+            {
+                Global.PortAPI = AppConfiguration.GetValue<int>("MID:PortAPI");
+            }
+            catch
+            { Global.PortAPI = 0; }
+           
+
+
         }
 
         public static IConfigurationRoot GetConfiguration()
