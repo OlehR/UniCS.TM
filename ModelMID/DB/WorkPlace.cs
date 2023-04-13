@@ -19,6 +19,8 @@ namespace ModelMID.DB
         public int CodeDealer { get; set; }
         public string Prefix { get; set; }
         public bool IsChoice { get; set; }
+        public string DNSName { get; set; }
+        public int TypeWorkplace { get; set; }
 
     }
 }
