@@ -33,6 +33,7 @@ namespace SharedLib
         {
             db = new WDB_SQLite(default(DateTime), null, pIsUseOldDB);
             db.BildWorkplace();
+            db.SerchdWorkplaces();
             ds = new DataSync(this);
             sBL = this;
             var WP= Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace);

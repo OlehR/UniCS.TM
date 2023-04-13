@@ -1672,13 +1672,14 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                     </Grid>
                 </TabItem>
                 <!--ВИДИМІСТЬ АПІ API Visibility="Collapsed" -->
-                <TabItem Header="API" Visibility="Collapsed">
+                <TabItem Header="Віддалене керування" Visibility="Visible">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
+                        <!--<ScrollViewer>
                         <StackPanel VerticalAlignment="Top">
                             <ItemsControl Grid.Row="0" Name="ListRadioButtonAPI">
                                 <ItemsControl.ItemTemplate>
@@ -1693,9 +1694,30 @@ xmlns:control="clr-namespace:Front.Control" d:DataContext="{d:DesignInstance Typ
                             </ItemsControl>
 
                             <TextBox  FontSize="28" Margin="15" FontWeight="SemiBold" Name="APITextMessage"/>
-                            <Button Content="Відправити" Style="{StaticResource Default}" Click="SetdAPIMessage"/>
+                            <Button Content="Відправити" Style="{StaticResource Default}" Click="SendAPIMessage"/>
                         </StackPanel>
+                        </ScrollViewer>-->
+
+
+                        <ScrollViewer>
+                            <StackPanel VerticalAlignment="Top">
+                                <ItemsControl Grid.Row="0" Name="ListActiveKSO">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <CheckBox   FontSize="20" 
+                                                     Style="{DynamicResource OrangeSwitchStyleCheckBox}"/>
+                                                <TextBlock Text="{Binding Name}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <Button Content="Відкрити зміни" Style="{StaticResource Default}" Click="OpenShiftButton"/>
+                            </StackPanel>
+                        </ScrollViewer>
+
                         <StackPanel Grid.Column="1" VerticalAlignment="Top">
+                            
 
                         </StackPanel>
                         <StackPanel Grid.Column="1" VerticalAlignment="Top">

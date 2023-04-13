@@ -69,6 +69,7 @@ namespace Front.Control
         public WorkPlace SelectedWorkPlace { get { return _SelectedWorkPlace != null ? _SelectedWorkPlace : WorkPlaces.First(); } set { _SelectedWorkPlace = value; } }
         ObservableCollection<Equipment> ActiveTerminals = new ObservableCollection<Equipment>();
         IEnumerable<string> TextReceipt;
+        public  List<WorkPlace> ActiveWorkPlaces { get; set; }
 
         public void ControlScale(double pWeight, bool pIsStable)
         {
@@ -89,7 +90,20 @@ namespace Front.Control
             InitializeComponent();
             WorkPlacesList.ItemsSource = WorkPlaces;
             this.DataContext = this;
-            ListRadioButtonAPI.ItemsSource = TypeMessageRadiobuton;
+            //Список команд для віддаленого керування
+            //ListRadioButtonAPI.ItemsSource = TypeMessageRadiobuton;
+
+            ActiveWorkPlaces = new();
+            foreach (var item in Global.AllWorkPlaces)
+            {
+                if (item.CodeWarehouse ==  Global.CodeWarehouse)
+                {
+                    ActiveWorkPlaces.Add(item);
+                }
+            }
+            
+
+            ListActiveKSO.ItemsSource = ActiveWorkPlaces;
 
             RefreshJournal();
             //поточний час
@@ -760,14 +774,15 @@ namespace Front.Control
             }
         }
 
-        private  void SetdAPIMessage(object sender, RoutedEventArgs e)
+        private  void SendAPIMessage(object sender, RoutedEventArgs e)
         {
-            Task.Run(async () =>
-            {
-                SocketClient Client = new("", Global.PortAPI);
-                string Response = await Client.StartAsync(APITextMessage.Text);
-                MessageBox.Show("Відповідь сервера: " + Response);
-            });
+            var aa = Global.AllWorkPlaces;
+            //Task.Run(async () =>
+            //{
+            //    SocketClient Client = new("", Global.PortAPI);
+            //    string Response = await Client.StartAsync(APITextMessage.Text);
+            //    MessageBox.Show("Відповідь сервера: " + Response);
+            //});
         }
 
         private void IsPeriodZClick(object sender, RoutedEventArgs e)
@@ -1026,6 +1041,11 @@ namespace Front.Control
             MW.Client = null;
             MW.SetCurReceipt(Bl.GetReceiptHead(curReceipt, true));
             MW.SetStateView(eStateMainWindows.WaitInput);
+        }
+
+        private void OpenShiftButton(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Зміни відкриті (але це не точно)"); 
         }
     }
 

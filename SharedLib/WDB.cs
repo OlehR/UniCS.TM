@@ -239,6 +239,16 @@ namespace SharedLib
             return true;
         }
 
+        public bool SerchdWorkplaces()
+        {
+            Global.AllWorkPlaces = new();
+            foreach (var el in GetWorkPlace())
+            {
+                Global.AllWorkPlaces.Add(el);
+            }
+            return true;
+        }
+
         public virtual bool SetConfig<T>(string parName, T parValue, SQL pDB = null)
         {
             if (pDB == null) pDB = db;
