@@ -311,8 +311,13 @@ namespace Front.Control
         }
 
         private void WorkStart_Click(object sender, RoutedEventArgs e)
+        {         
+            OpenShift(AdminUser);            
+        }
+
+        public void OpenShift(User pU)
         {
-            MW.AdminSSC = AdminUser;
+            MW.AdminSSC = pU;
             if (Global.TypeWorkplace == eTypeWorkplace.CashRegister)
                 MW.Access.СurUser = AdminUser;
             MW.DTAdminSSC = DateTime.Now;
@@ -755,11 +760,14 @@ namespace Front.Control
             }
         }
 
-        private async Task SetdAPIMessageAsync(object sender, RoutedEventArgs e)
+        private  void SetdAPIMessage(object sender, RoutedEventArgs e)
         {
-            SocketClient Client = new("",Global.PortAPI);
-            string Response = await Client.StartAsync(APITextMessage.Text);
-            MessageBox.Show("Відповідь сервера: " + Response);
+            Task.Run(async () =>
+            {
+                SocketClient Client = new("", Global.PortAPI);
+                string Response = await Client.StartAsync(APITextMessage.Text);
+                MessageBox.Show("Відповідь сервера: " + Response);
+            });
         }
 
         private void IsPeriodZClick(object sender, RoutedEventArgs e)

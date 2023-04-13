@@ -670,10 +670,11 @@ namespace Front
         {
             string Res = null;
             CommandAPI<dynamic> pC = JsonConvert.DeserializeObject<CommandAPI<dynamic>>(pDataApi);
+            CommandAPI<int> CommandInt;
+            CommandAPI<string> CommandString;
 
-            switch(pC.Command)
+            switch (pC.Command)
             {
-
                 case eCommand.GetCurrentReceipt:
                     Res = curReceipt?.ToJSON();
                     break;
@@ -682,11 +683,16 @@ namespace Front
                     Res=Bl.GetReceiptHead(Command.Data, true)?.ToJSON();
                     break;
                 case eCommand.XReport:
-                    var CommandXReport = JsonConvert.DeserializeObject<CommandAPI<int>>(pDataApi);
-                    Res = EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = CommandXReport.Data })?.ToJSON();
+                    CommandInt = JsonConvert.DeserializeObject<CommandAPI<int>>(pDataApi);
+                    Res = EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = CommandInt.Data })?.ToJSON();
+                    break;
+                case eCommand.OpenShift:
+                    CommandString = JsonConvert.DeserializeObject<CommandAPI<string>>(pDataApi);
+                    var u = Bl.GetUserByBarCode(CommandString.Data);
+                    if(u!=null)
+                        AdminControl.OpenShift(u);
                     break;
             }
-
             return Res; 
         }
     }
