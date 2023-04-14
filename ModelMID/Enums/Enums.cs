@@ -8,8 +8,9 @@ namespace ModelMID
     public enum eTypeWorkplace
     {
         NotDefine = 0,
-        SelfServicCheckout,
-        CashRegister
+        SelfServicCheckout =3,
+        CashRegister =1,
+
     }
 
     public enum ePeriod

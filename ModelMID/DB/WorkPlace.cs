@@ -20,7 +20,7 @@ namespace ModelMID.DB
         public string Prefix { get; set; }
         public bool IsChoice { get; set; }
         public string DNSName { get; set; }
-        public int TypeWorkplace { get; set; }
+        public eTypeWorkplace TypeWorkplace { get; set; }
 
     }
 }

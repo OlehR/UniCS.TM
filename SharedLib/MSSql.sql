@@ -507,7 +507,7 @@ SELECT CODE_GROUP_WARES AS CodeGroupWares, amount
 
 [SqlGetDimWorkplace]
   SELECT cd.code AS IdWorkplace, cd.[DESC] AS Name, CONVERT(UNIQUEIDENTIFIER,cd.CashDesk_RRef) AS TerminalGUID, Video_Camera_IP AS VideoCameraIP
-  ,cast(wh.code AS int) AS CodeWarehouse ,cast(tp.code AS int) AS CodeDealer, cd.prefix
+  ,cast(wh.code AS int) AS CodeWarehouse ,cast(tp.code AS int) AS CodeDealer, cd.prefix, cd.DNSName, cd.TypeWorkplace
   FROM  dbo.V1C_CashDesk cd
 LEFT JOIN dbo.V1C_dim_warehouse wh ON cd.warehouse_RRef=wh.warehouse_RRef
 LEFT JOIN dbo.V1C_dim_type_price tp ON wh.type_price_RRef= tp.type_price_RRef;
