@@ -227,6 +227,7 @@ namespace SharedLib
                 WorkplaceIdLockers[parIdWorkplace] = new object();
             return WorkplaceIdLockers[parIdWorkplace];
         }
+
         public bool BildWorkplace()
         {
             Global.WorkPlaceByTerminalId = new SortedList<Guid, WorkPlace>();
@@ -239,7 +240,7 @@ namespace SharedLib
             return true;
         }
 
-        public bool SerchdWorkplaces()
+        /*public bool SerchdWorkplaces()
         {
             Global.AllWorkPlaces = new();
             foreach (var el in GetWorkPlace())
@@ -247,7 +248,7 @@ namespace SharedLib
                 Global.AllWorkPlaces.Add(el);
             }
             return true;
-        }
+        }*/
 
         public virtual bool SetConfig<T>(string parName, T parValue, SQL pDB = null)
         {

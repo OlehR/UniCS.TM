@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ModelMID.DB
 {
@@ -9,8 +11,7 @@ namespace ModelMID.DB
         public int IdWorkplace { get; set; }
         public string Name { get; set; }
         public Guid TerminalGUID { get; set; }
-        public string  StrTerminalGUID { get { return TerminalGUID.ToString(); } set { TerminalGUID=Guid.Parse(value); } }
-
+        public string StrTerminalGUID { get { return TerminalGUID.ToString(); } set { TerminalGUID = Guid.Parse(value); } }
         public string VideoCameraIP { get; set; }
         public string VideoRecorderIP { get; set; }
         public eBank TypePOS { get; set; }
@@ -19,9 +20,23 @@ namespace ModelMID.DB
         public int CodeDealer { get; set; }
         public string Prefix { get; set; }
         public bool IsChoice { get; set; }
-        public string DNSName { get; set; }
-        public eTypeWorkplace TypeWorkplace { get; set; }
+        string _DNSName;
+        public string DNSName
+        {
+            get { return _DNSName; }
+            set
+            {
+                _DNSName = value; if (!string.IsNullOrEmpty(value)) Task.Run(async () =>
+            {
+                var el = await Dns.GetHostEntryAsync(DNSName);
+                if (el?.AddressList?.Length > 0) IP = el?.AddressList[0];
+            });
+            }
+        }
 
+        public eTypeWorkplace TypeWorkplace { get; set; }
+        public IPAddress IP { get; set; }
     }
+    
 }
 

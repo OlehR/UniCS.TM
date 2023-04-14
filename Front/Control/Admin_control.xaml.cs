@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,6 +27,7 @@ namespace Front.Control
     /// </summary>
     public partial class Admin_control : UserControl, INotifyPropertyChanged
     {
+        Action<eCommand,WorkPlace,string> OnSocket;
         public Access Access = Access.GetAccess();
         public event PropertyChangedEventHandler PropertyChanged;
         EquipmentFront EF;
@@ -69,7 +71,8 @@ namespace Front.Control
         public WorkPlace SelectedWorkPlace { get { return _SelectedWorkPlace != null ? _SelectedWorkPlace : WorkPlaces.First(); } set { _SelectedWorkPlace = value; } }
         ObservableCollection<Equipment> ActiveTerminals = new ObservableCollection<Equipment>();
         IEnumerable<string> TextReceipt;
-        public  List<WorkPlace> ActiveWorkPlaces { get; set; }
+        StringBuilder SB = new();
+        public IEnumerable<WorkPlace> ActiveWorkPlaces { get; set; }
 
         public void ControlScale(double pWeight, bool pIsStable)
         {
@@ -79,6 +82,9 @@ namespace Front.Control
 
         public Admin_control()
         {
+            OnSocket += (Command, WorkPlace, Ansver) => {
+                SB.AppendLine($"{Command} {WorkPlace.Name} {Ansver}");
+            };
             Bl = BL.GetBL;
             TypeMessageRadiobuton = new ObservableCollection<APIRadiobuton>();
             foreach (eCommand item in Enum.GetValues(typeof(eCommand)))
@@ -93,15 +99,7 @@ namespace Front.Control
             //Список команд для віддаленого керування
             //ListRadioButtonAPI.ItemsSource = TypeMessageRadiobuton;
 
-            ActiveWorkPlaces = new();
-            foreach (var item in Global.AllWorkPlaces)
-            {
-                if (item.CodeWarehouse ==  Global.CodeWarehouse)
-                {
-                    ActiveWorkPlaces.Add(item);
-                }
-            }
-            
+            ActiveWorkPlaces = Bl.db.GetWorkPlace().Where(el => el.CodeWarehouse == Global.CodeWarehouse);            
 
             ListActiveKSO.ItemsSource = ActiveWorkPlaces;
 
@@ -775,8 +773,9 @@ namespace Front.Control
         }
 
         private  void SendAPIMessage(object sender, RoutedEventArgs e)
-        {
-            var aa = Global.AllWorkPlaces;
+        {           
+           
+            //var aa = Global.AllWorkPlaces;
             //Task.Run(async () =>
             //{
             //    SocketClient Client = new("", Global.PortAPI);
@@ -1045,7 +1044,16 @@ namespace Front.Control
 
         private void OpenShiftButton(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Зміни відкриті (але це не точно)"); 
+            foreach (var el in ActiveWorkPlaces)
+            {
+
+                Task.Run(async () =>
+                {
+                    var r = new SocketClient(el.IP, Global.PortAPI);
+                    string Ansver = await r.StartAsync(new CommandAPI<string>() { Command = eCommand.OpenShift, Data = AdminUser.BarCode }.ToJSON());
+                    OnSocket?.Invoke(eCommand.OpenShift, el, Ansver);
+                });
+            }
         }
     }
 

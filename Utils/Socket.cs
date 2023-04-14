@@ -80,9 +80,9 @@ namespace Utils
         Socket client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Any, 3443);//(IPAddress.Parse(IP), IpPort);
 
-        public SocketClient(string pIP,int pPort)
+        public SocketClient(IPAddress pIP,int pPort)
         {    
-            ipEndPoint = new IPEndPoint(IPAddress.Parse(pIP), pPort);
+            ipEndPoint = new IPEndPoint(pIP, pPort);
         }
 
         public async Task<string> StartAsync(string pData)
