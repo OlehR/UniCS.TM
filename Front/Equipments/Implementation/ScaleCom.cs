@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using Front.Equipments.Utils;
 using Front.Equipments.Virtual;
+using Utils;
 
 namespace Front.Equipments
 {
@@ -23,9 +24,9 @@ namespace Front.Equipments
 
         public ScaleCom(Equipment pEquipment, IConfiguration pConfiguration, ILoggerFactory pLoggerFactory = null, Action<double, bool> pOnScalesData = null) : base(pEquipment, pConfiguration, eModelEquipment.ScaleCom, pLoggerFactory, pOnScalesData)
         {
-            
+
             Init();
-            Timer = new System.Timers.Timer(200.0);
+            Timer = new System.Timers.Timer(500.0);
             Timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
             Timer.AutoReset = true;
         }
@@ -48,7 +49,7 @@ namespace Front.Equipments
                 {
                     TextError = ex.Message;
                     State = eStateEquipment.Error;
-                    _logger?.LogError(ex, ex.Message);                  
+                    _logger?.LogError(ex, ex.Message);
 
                 }
                 finally
@@ -75,8 +76,12 @@ namespace Front.Equipments
         {
             Timer.Stop();
         }
-
-        private void OnTimedEvent(object sender, ElapsedEventArgs e) => SerialDevice?.Write(new byte[4] { 0, 0, 0, 3 });
+        bool IsRead = false;
+        private void OnTimedEvent(object sender, ElapsedEventArgs e) 
+        {
+            IsRead = true;
+            SerialDevice?.Write(new byte[4] { 0, 0, 0, 3 });
+        }
         //GetReadDataSync(new byte[4] {0,0,0,3},OnDataReceived2);
 
         private void CloseIfOpen()
@@ -96,9 +101,12 @@ namespace Front.Equipments
         private bool OnDataReceived(byte[] data)
         {
             string Str = Encoding.ASCII.GetString(data);
-            if (Str.Length >= 6)
+
+            FileLogger.WriteLogMessage("OnDataReceived=>" + Str);
+            if (IsRead && Str.Length >= 6)
             {
-                Str=Str.Substring(0, 6);
+                IsRead = false;
+                Str =Str.Substring(0, 6);
                 char[] charArray = Str.ToCharArray();
                 Array.Reverse(charArray);
                 if (double.TryParse(charArray, out double Weight))
@@ -109,12 +117,14 @@ namespace Front.Equipments
                       //  {
                        //     CountZero++;
                             return true;
-                       // }
+                    // }
                     //}
                     //CountZero = 0;
+                    FileLogger.WriteLogMessage($"OnDataReceived Weight=>{Weight}");
                     OnScalesData?.Invoke(Weight, true);
                 }
                 return true;
+               
             }
             return true;
         }
@@ -125,6 +135,7 @@ namespace Front.Equipments
             {
                 if (!IsReady || onDatAction == null) return;
                 SerialDevice.Write(command);
+                Thread.Sleep(30);
                 do; while (SerialDevice.ReadBufferSize < 1);
                 byte[] numArray = new byte[SerialDevice.ReadBufferSize];
                 SerialDevice.Read(numArray, 0, numArray.Length);
@@ -132,6 +143,31 @@ namespace Front.Equipments
             }
         }
 
+        private void OnDataReceived2(byte[] data)
+        {
+            string Str = Encoding.ASCII.GetString(data);
+            if (Str.Length >= 6)
+            {
+                Str = Str.Substring(0, 6);
+                char[] charArray = Str.ToCharArray();
+                Array.Reverse(charArray);
+                if (double.TryParse(charArray, out double Weight))
+                {
+                    if (Weight == 0d)
+                        //{
+                        // if (CountZero < 3)
+                        //  {
+                        //     CountZero++;
+                       // return true;
+                    // }
+                    //}
+                    //CountZero = 0;
+                    OnScalesData?.Invoke(Weight, true);
+                }
+                return ;
+            }
+            return ;
+        }
         public void Dispose()
         {
             OnScalesData = null;
