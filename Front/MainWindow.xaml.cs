@@ -954,7 +954,7 @@ namespace Front
 
         private void _ButtonHelp(object sender, RoutedEventArgs e)
         {
-            SetStateView(Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout ? eStateMainWindows.WaitAdmin : eStateMainWindows.AdminPanel, eTypeAccess.AdminPanel);
+            SetStateView(Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout || AdminSSC==null ? eStateMainWindows.WaitAdmin : eStateMainWindows.AdminPanel, eTypeAccess.AdminPanel);
         }
 
         private void _OwnBag(object sender, RoutedEventArgs e)
