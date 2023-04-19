@@ -75,6 +75,7 @@ namespace Front.Equipments
         public override void StopWeight()
         {
             Timer.Stop();
+            SerialDevice.Close();
         }
         bool IsRead = false;
         private void OnTimedEvent(object sender, ElapsedEventArgs e) 

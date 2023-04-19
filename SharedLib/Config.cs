@@ -201,9 +201,6 @@ namespace SharedLib
             }
             catch
             { Global.PortAPI = 0; }
-           
-
-
         }
 
         public static IConfigurationRoot GetConfiguration()
