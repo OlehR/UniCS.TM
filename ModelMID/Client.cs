@@ -59,6 +59,10 @@ namespace ModelMID
         /// </summary>
         public decimal PercentBonus { get; set; }
         /// <summary>
+        /// Відсоток перегахування.
+        /// </summary>
+        public int PercentBonusIntegers { get { return (int)(PercentBonus * 100); } }
+        /// <summary>
         /// Сума накопичених бонусів в грошовому еквіваленті
         /// </summary>
         public decimal SumMoneyBonus { get; set; }

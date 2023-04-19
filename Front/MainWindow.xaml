@@ -1478,7 +1478,7 @@
                             <TextBlock Text="{Binding Client.PersentDiscount, StringFormat={}{0}%, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" 
                                        FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="{Binding Client.PercentBonus,StringFormat={}{0}, RelativeSource={RelativeSource 
+                            <TextBlock Text="{Binding Client.PercentBonusIntegers,StringFormat={}{0}%, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" 
                                        FontSize="24" FontWeight="Bold" Margin="2"/>
                             <TextBlock Text="{Binding Client.BarCode, RelativeSource={RelativeSource 
