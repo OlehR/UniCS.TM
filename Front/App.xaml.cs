@@ -15,15 +15,25 @@ namespace Front
     /// </summary>
     public partial class App : Application
     {
+        static int mainThreadId;
+
+        // In Main method:
+       
         public App()
         {
             InitializeComponent();
+            mainThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
         }
 
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
             SetupExceptionHandling();
+        }
+
+        public static bool IsMainThread
+        {
+            get { return System.Threading.Thread.CurrentThread.ManagedThreadId == mainThreadId; }
         }
 
         private void Application_Startup(object sender, StartupEventArgs e)
@@ -119,9 +129,9 @@ namespace Front
             {
                 FileLogger.WriteLogMessage(this, message, exception);
             }
+            if(!source.Equals("TaskScheduler.UnobservedTaskException"))
             try
             {
-                //this.m
                 System.Diagnostics.Process.Start("explorer.exe");
                 Application.Current.Shutdown();
             }

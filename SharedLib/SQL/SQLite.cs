@@ -59,9 +59,15 @@ namespace SharedLib
 
         void WaitCollect(int pMs=150)
         {
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            Thread.Sleep(pMs);
+            try
+            {
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                Thread.Sleep(pMs);
+            }catch (Exception e ) 
+            {
+                var s = e.Message;
+            }
         }
 
         public override IEnumerable<T1> Execute<T,T1>(string query, T parameters )

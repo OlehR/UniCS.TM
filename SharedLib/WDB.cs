@@ -1119,8 +1119,7 @@ namespace SharedLib
         
         public virtual void Close(bool isWait = false)
         {
-            if (db != null)
-                db.Close(isWait);
+                  db?.Close(isWait);
         }
 
         

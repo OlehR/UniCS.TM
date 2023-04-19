@@ -286,9 +286,8 @@ namespace SharedLib
         }
 
         public override void Close(bool isWait = false)
-        {
-            if (db != null)
-                db.Close(isWait);
+        {     
+                db?.Close(isWait);
         }
 
         ///////////////////////////////////////////////////////////////////
@@ -901,7 +900,10 @@ Where ID_WORKPLACE = @IdWorkplace
                                     FileLogger.WriteLogMessage($"WDB_SQLite.Parse Exception =>( el=>{el},pCurVersion=>{pCurVersion}) => (){Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace}", eTypeLog.Error);
                                     throw new Exception(e.Message, e);
                                 }
-                            }                        
+                                else
+                                    if (NewVer <= Ver)
+                                    NewVer = Ver;
+                            }
                     }
                 }
             }
