@@ -195,7 +195,7 @@ namespace Front
                             Scale = new Scale(ElEquipment, config);
                             break;
                     }
-                    Scale.StartWeight();
+                    //Scale.StartWeight();
                     NewListEquipment.Add(Scale);
                 }
                 catch { };

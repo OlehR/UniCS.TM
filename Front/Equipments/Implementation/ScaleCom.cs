@@ -56,6 +56,7 @@ namespace Front.Equipments
                 {
                     SerialDevice.OnReceivedData = new Func<byte[], bool>(OnDataReceived);
                 }
+                StopWeight();
             }
         }
 
