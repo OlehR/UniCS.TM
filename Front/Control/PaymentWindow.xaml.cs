@@ -29,8 +29,9 @@ namespace Front.Control
         public decimal SumUseWallet { get { return _SumUseWallet; } set { _SumUseWallet = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SumUseWalletUp)));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SumUseWalletDown)));
-                RoundSum.Text = (Math.Round(SumUseWalletUp, 2)).ToString();
-                RoundSumDown.Text = (Math.Round(SumUseWalletDown, 2)).ToString();
+
+                //RoundSum.Text = (Math.Round(SumUseWalletUp, 2)).ToString();
+                //RoundSumDown.Text = (Math.Round(SumUseWalletDown, 2)).ToString();
             }
         } 
         public decimal SumUseWalletUp { get { return SumUseWallet>0? SumUseWallet : 0; } }
@@ -78,6 +79,7 @@ namespace Front.Control
         public void UpdatePaymentWindow()
         {
             MoneySum = MW.MoneySum;
+            ChangeSumPaymant = MoneySum.ToString();
             SumMaxWallet = (MW.curReceipt?.MaxSumWallet < MW.Client?.Wallet ? MW.curReceipt?.MaxSumWallet : MW.Client?.Wallet) ?? 0;
             IsPaymentBonuses = MW.Client != null && MW.Client?.SumMoneyBonus >= MoneySum;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsRounding"));
@@ -103,13 +105,14 @@ namespace Front.Control
             switch (btn.Content)
             {
                 case "C":
-                    if (ChangeSumPaymant.Length <= 1)// якщо видаляють всю суму тоді виводимо 0
-                    {
-                        ChangeSumPaymant = "0";
-                        break;
-                    }
-                    else
-                        ChangeSumPaymant = ChangeSumPaymant.Remove(ChangeSumPaymant.Length - 1);//видаляємо останній елемент
+                    ChangeSumPaymant = "0";
+                    //if (ChangeSumPaymant.Length <= 1)// якщо видаляють всю суму тоді виводимо 0
+                    //{
+                    //    ChangeSumPaymant = "0";
+                    //    break;
+                    //}
+                    //else
+                    //    ChangeSumPaymant = ChangeSumPaymant.Remove(ChangeSumPaymant.Length - 1);//видаляємо останній елемент
                     break;
 
                 case ",":
@@ -171,6 +174,7 @@ namespace Front.Control
         private void _Cancel(object sender, RoutedEventArgs e)
         {
             ChangeSumPaymant = "0";
+            CancelCashDisbursement();
             MW.SetStateView(Models.eStateMainWindows.WaitInput);
         }
 
@@ -192,7 +196,11 @@ namespace Front.Control
             var task = Task.Run(() => MW.PrintAndCloseReceipt(null, eTypePay.Cash, ChangeSumPaymantDecimal, 0, -SumUseWallet));
         }
 
-        private void CancelCashDisbursement(object sender, RoutedEventArgs e)
+        private void CancelCashDisbursementButton(object sender, RoutedEventArgs e)
+        {
+            CancelCashDisbursement();
+        }
+        private void CancelCashDisbursement()
         {
             SumCashDisbursement = 0;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCashPayment"));
@@ -287,21 +295,33 @@ namespace Front.Control
                     MW.InputNumberPhone.Desciption = $"Максимальна сума списання: {SumMaxWallet}";
                     MW.InputNumberPhone.ValidationMask = "";
                     MW.InputNumberPhone.Result = "";
+                    MW.InputNumberPhone.IsEnableComma = true;
                     MW.NumericPad.Visibility = Visibility.Visible;
                     BackgroundPayment.Visibility = Visibility.Visible;
                     MW.InputNumberPhone.CallBackResult = (string result) =>
                     {
                         tmp = string.IsNullOrEmpty(result) ? 0 : Convert.ToDecimal(result);
-                        if (tmp > MoneySum)
+                        //if (tmp > MoneySum)
+                        //{
+                        //    RoundingUpPrice(tmp, 1.0m);
+                        //}
+                        //else
+                        //{
+                        //    if (MoneySum - tmp > SumMaxWallet)
+                        //        tmp = MoneySum - SumMaxWallet;
+                        //    RoundingUpPrice(tmp, 1.0m);
+                        //}
+                        if (SumMaxWallet < tmp) 
                         {
-                            RoundingUpPrice(tmp, 1.0m);
+                            tmp = SumMaxWallet;
+                            MW.ShowErrorMessage("Вказана сума більша за максимально можливу");
                         }
-                        else
-                        {
-                            if (MoneySum - tmp > SumMaxWallet)
-                                tmp = MoneySum - SumMaxWallet;
-                            RoundingUpPrice(tmp, 1.0m);
-                        }
+                            
+
+                        MoneySumToRound = MoneySum - tmp;
+                        SumUseWallet = -tmp;
+                        ChangeSumPaymant = MoneySumToRound.ToString();
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ChangeSumPaymant"));
                         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MoneySumToRound"));
                         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCashPayment"));
                         CalculateReturn();
@@ -310,6 +330,7 @@ namespace Front.Control
                     break;
                 default:
                     MoneySumToRound = (decimal)MW.MoneySum;
+                    SumUseWallet = 0;
                     break;
             }
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MoneySumToRound"));
