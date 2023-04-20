@@ -141,6 +141,12 @@ namespace Front.Control
             //TB_DataOpenShift.Text= $"{DataOpenShift}";
             Dispatcher.BeginInvoke(new ThreadStart(() =>
             {
+                int i=0;
+                while(!EF.IsFinishInit &&  i++<200)
+                {
+                    Thread.Sleep(100);
+                }
+
                 try
                 {
                     if (EF != null && EF.GetListEquipment?.Count() > 0)
@@ -159,22 +165,17 @@ namespace Front.Control
 
         }
         private void SearchTerminal()
-        {
-            ActiveTerminals = new();
+        {           
             bool isFirst = true;
-            foreach (var item in EF.GetListEquipment)
+            foreach (BankTerminal item in EF.GetListEquipment.Where(el => el is BankTerminal)?.Select(el => el as BankTerminal))
             {
-                if (item.Type == eTypeEquipment.BankTerminal)
+                item.IsSelected = isFirst;
+                ActiveTerminals.Add(item);
+                if (isFirst)
                 {
-                    item.IsSelected = isFirst;
-                    BankTerminal It = item as BankTerminal;
-                    ActiveTerminals.Add(It);
-                    if (isFirst)
-                    {
-                        MW?.EF.SetBankTerminal(item as BankTerminal);
-                    }
-                    isFirst = false;
+                    MW?.EF.SetBankTerminal(item);
                 }
+                isFirst = false;
             }
             TerminalList.ItemsSource = ActiveTerminals;
         }

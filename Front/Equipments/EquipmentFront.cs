@@ -25,6 +25,7 @@ namespace Front
     public class EquipmentFront
     {
         #region Init
+        public bool IsFinishInit=false;
         public Action<double, bool> OnControlWeight { get; set; }
         public Action<double, bool> OnWeight { get; set; }
         private IEnumerable<Equipment> ListEquipment = new List<Equipment>();
@@ -332,6 +333,7 @@ namespace Front
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
                 //State = eStateEquipment.Error;
             }
+            finally { IsFinishInit = true; }
         }
         
         public IConfiguration GetConfig()
