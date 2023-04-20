@@ -69,7 +69,7 @@ namespace Front.Control
         public IEnumerable<WorkPlace> WorkPlaces { get { return Global.GetIdWorkPlaces; } }
         WorkPlace _SelectedWorkPlace = null;
         public WorkPlace SelectedWorkPlace { get { return _SelectedWorkPlace != null ? _SelectedWorkPlace : WorkPlaces.First(); } set { _SelectedWorkPlace = value; } }
-        ObservableCollection<Equipment> ActiveTerminals = new ObservableCollection<Equipment>();
+        ObservableCollection<BankTerminal> ActiveTerminals = new();
         IEnumerable<string> TextReceipt;
         StringBuilder SB = new();
         public IEnumerable<WorkPlace> ActiveWorkPlaces { get; set; }
@@ -160,14 +160,15 @@ namespace Front.Control
         }
         private void SearchTerminal()
         {
-            ActiveTerminals = new ObservableCollection<Equipment>();
+            ActiveTerminals = new();
             bool isFirst = true;
-            foreach (var item in AllEquipment)
+            foreach (var item in EF.GetListEquipment)
             {
                 if (item.Type == eTypeEquipment.BankTerminal)
                 {
                     item.IsSelected = isFirst;
-                    ActiveTerminals.Add(item);
+                    BankTerminal It = item as BankTerminal;
+                    ActiveTerminals.Add(It);
                     if (isFirst)
                     {
                         MW?.EF.SetBankTerminal(item as BankTerminal);
@@ -1025,6 +1026,7 @@ namespace Front.Control
         private void CheckTypeTerminal(object sender, RoutedEventArgs e)
         {
             RadioButton ChBtn = sender as RadioButton;
+            var aa = ChBtn.DataContext.GetType();
             if (ChBtn.DataContext is Equipment)
             {
                 BankTerminal temp = ChBtn.DataContext as BankTerminal;
