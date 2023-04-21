@@ -785,6 +785,7 @@ namespace Front
                             //IsIgnoreExciseStamp = false;
                             //IsAddNewWeight = false;
                             //IsFixWeight = false;
+                            WaresList.Focus(); //Для сканера через імітацію клавіатури
                             break;
                         case eStateMainWindows.WaitOwnBag:
                             StartShopping.Visibility = Visibility.Collapsed;
