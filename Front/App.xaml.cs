@@ -8,6 +8,8 @@ using System.Windows;
 using System.Globalization;
 using SharedLib;
 using Utils;
+using ModelMID;
+
 namespace Front
 {
     /// <summary>
@@ -18,7 +20,7 @@ namespace Front
         static int mainThreadId;
 
         // In Main method:
-       
+
         public App()
         {
             InitializeComponent();
@@ -129,18 +131,17 @@ namespace Front
             {
                 FileLogger.WriteLogMessage(this, message, exception);
             }
-            if(!source.Equals("TaskScheduler.UnobservedTaskException"))
-            try
-            {
-                System.Diagnostics.Process.Start("explorer.exe");
-                Application.Current.Shutdown();
-            }
-            catch (Exception ex)
-            {
-                FileLogger.WriteLogMessage(this, "Exception in LogUnhandledException", ex);
-
-            }
+            if (!source.Equals("TaskScheduler.UnobservedTaskException"))
+                try
+                {
+                    if (!Global.IsTest)
+                        System.Diagnostics.Process.Start("explorer.exe");
+                    Application.Current.Shutdown();
+                }
+                catch (Exception ex)
+                {
+                    FileLogger.WriteLogMessage(this, "Exception in LogUnhandledException", ex);
+                }
         }
-
     }
 }
