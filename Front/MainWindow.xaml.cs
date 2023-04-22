@@ -340,7 +340,11 @@ namespace Front
                 if (TimeAdminSSC.Date == DateTime.Now.Date)
                 {
                     if (!string.IsNullOrEmpty(BarCodeAdminSSC))
+                    {
                         AdminSSC = Bl.GetUserByBarCode(BarCodeAdminSSC);
+                        if (Global.TypeWorkplace == eTypeWorkplace.CashRegister)
+                            Access.СurUser = AdminSSC;
+                    }
                     DTAdminSSC = TimeAdminSSC;
                     Bl.StartWork(Global.IdWorkPlace, BarCodeAdminSSC);//!!!TMP треба штрихкод
                 }
@@ -494,7 +498,8 @@ namespace Front
                         {
                             if (curReceipt?.IsNeedExciseStamp == true) Res = eTypeAccess.ExciseStamp;
                             else
-                            if (IsChoicePrice) { pSMV = eStateMainWindows.WaitInputPrice; pRW = CurWares; }
+                            if (IsChoicePrice) 
+                            { pSMV = eStateMainWindows.WaitInputPrice; pRW = CurWares; }
                             else
                             if (CS.IsProblem)
                             {
@@ -951,6 +956,8 @@ namespace Front
                      if (CurWares.Prices.Count() == 1)
                      Bl.AddWaresCode(curReceipt, CurWares.CodeWares, CurWares.CodeUnit, pQuantity, CurWares.Prices.First().Price);*/
             }
+            if (CurWares.IsMultiplePrices && pPrice > 0m)
+                curReceipt = null;
         }
 
         private void _ButtonHelp(object sender, RoutedEventArgs e)

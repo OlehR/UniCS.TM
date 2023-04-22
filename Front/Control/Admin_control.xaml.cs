@@ -862,7 +862,7 @@ namespace Front.Control
         {
             StringBuilder Res = new();
             var MsSQL = new WDB_MsSql();
-            var Receipts = new ObservableCollection<Receipt>(Bl.GetReceipts(DateSoSearch, DateSoSearch, Global.IdWorkPlace));
+            var Receipts = Bl.GetReceipts(DateSoSearch, DateSoSearch, Global.IdWorkPlace);
             decimal Sum1CTotal = 0, Sum = 0;
             Res.Append($"Звіт за {DateSoSearch} {Environment.NewLine}");
             foreach (var IdWP in Global.GetIdWorkPlaces)
@@ -894,6 +894,11 @@ namespace Front.Control
                             }
                         }
                     }
+                }
+                foreach (var el in R1C)
+                {
+                    if(! Receipts.Any(e=>e.NumberReceipt1C.Equals(el.Key)))
+                        Res.Append($"{el.Key} Відсутній чек в базі на суму {el.Value:n2} {Environment.NewLine}");
                 }
             }
             Res.Append($"Всього 1С => {Sum1CTotal}{Environment.NewLine}");
