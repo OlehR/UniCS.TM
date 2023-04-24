@@ -27,7 +27,7 @@ namespace Front.Control
     /// </summary>
     public partial class Admin_control : UserControl, INotifyPropertyChanged
     {
-        Action<eCommand,WorkPlace,string> OnSocket;
+        Action<eCommand, WorkPlace, string> OnSocket;
         public Access Access = Access.GetAccess();
         public event PropertyChangedEventHandler PropertyChanged;
         EquipmentFront EF;
@@ -35,6 +35,20 @@ namespace Front.Control
         ObservableCollection<ParsLog> LogsCollection;
         ObservableCollection<LogRRO> SourcesListJournal;
         ObservableCollection<Equipment> AllEquipment = new ObservableCollection<Equipment>();
+        ObservableCollection<Banknote> Banknotes = new ObservableCollection<Banknote>();
+        public double TotalMoneyCounting
+        {
+            get
+            {
+                double sum = 0d;
+                foreach (var item in Banknotes)
+                {
+                    sum += item.MonetarySum;
+                }
+               return sum;
+            }
+        }
+        public Banknote SelectedBanknote { get; set; } = new();
         public string TypeLog { get; set; } = "Error";
         BL Bl;
         public string ControlScaleWeightDouble { get; set; } = "0";
@@ -82,7 +96,8 @@ namespace Front.Control
 
         public Admin_control()
         {
-            OnSocket += (Command, WorkPlace, Ansver) => {
+            OnSocket += (Command, WorkPlace, Ansver) =>
+            {
                 SB.AppendLine($"{Command} {WorkPlace.Name} {Ansver}");
             };
             Bl = BL.GetBL;
@@ -93,13 +108,16 @@ namespace Front.Control
             }
             Init(AdminUser);
 
+
+
             InitializeComponent();
+            CreateBanknote();
             WorkPlacesList.ItemsSource = WorkPlaces;
             this.DataContext = this;
             //Список команд для віддаленого керування
             //ListRadioButtonAPI.ItemsSource = TypeMessageRadiobuton;
 
-            ActiveWorkPlaces = Bl.db.GetWorkPlace().Where(el => el.CodeWarehouse == Global.CodeWarehouse);            
+            ActiveWorkPlaces = Bl.db.GetWorkPlace().Where(el => el.CodeWarehouse == Global.CodeWarehouse);
 
             ListActiveKSO.ItemsSource = ActiveWorkPlaces;
 
@@ -141,8 +159,8 @@ namespace Front.Control
             //TB_DataOpenShift.Text= $"{DataOpenShift}";
             Dispatcher.BeginInvoke(new ThreadStart(() =>
             {
-                int i=0;
-                while(!EF.IsFinishInit &&  i++<200)
+                int i = 0;
+                while (!EF.IsFinishInit && i++ < 200)
                 {
                     Thread.Sleep(100);
                 }
@@ -165,7 +183,7 @@ namespace Front.Control
 
         }
         private void SearchTerminal()
-        {           
+        {
             bool isFirst = true;
             foreach (BankTerminal item in EF.GetListEquipment.Where(el => el is BankTerminal)?.Select(el => el as BankTerminal))
             {
@@ -325,8 +343,8 @@ namespace Front.Control
         }
 
         private void WorkStart_Click(object sender, RoutedEventArgs e)
-        {         
-            OpenShift(AdminUser);            
+        {
+            OpenShift(AdminUser);
         }
 
         public void OpenShift(User pU)
@@ -521,7 +539,7 @@ namespace Front.Control
         }
 
         private void PaymentDetailsAdminPanelButton(object sender, RoutedEventArgs e)
-        {           
+        {
             TerminalPaymentInfo terminalPaymentInfo = new TerminalPaymentInfo(MW, curReceipt, WorkPlaces);
             if (terminalPaymentInfo.ShowDialog() == true && curReceipt != null)
             {
@@ -565,7 +583,7 @@ namespace Front.Control
             IsFullReturn = pIsFull;
             MW.TypeAccessWait = eTypeAccess.ReturnReceipt;
 
-            if (!MW.SetConfirm(AdminUser?? MW?.AdminSSC, true))
+            if (!MW.SetConfirm(AdminUser ?? MW?.AdminSSC, true))
                 MW.SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ReturnReceipt, null);
         }
 
@@ -774,9 +792,9 @@ namespace Front.Control
             }
         }
 
-        private  void SendAPIMessage(object sender, RoutedEventArgs e)
-        {           
-           
+        private void SendAPIMessage(object sender, RoutedEventArgs e)
+        {
+
             //var aa = Global.AllWorkPlaces;
             //Task.Run(async () =>
             //{
@@ -897,7 +915,7 @@ namespace Front.Control
                 }
                 foreach (var el in R1C)
                 {
-                    if(! Receipts.Any(e=>e.NumberReceipt1C.Equals(el.Key)))
+                    if (!Receipts.Any(e => e.NumberReceipt1C.Equals(el.Key)))
                         Res.Append($"{el.Key} Відсутній чек в базі на суму {el.Value:n2} {Environment.NewLine}");
                 }
             }
@@ -1063,12 +1081,93 @@ namespace Front.Control
                 });
             }
         }
+
+        private void MoneyCounting_Click(object sender, RoutedEventArgs e)
+        {
+            MoneyCounting.Visibility = Visibility.Visible;
+        }
+        private void CreateBanknote()
+        {
+            Banknotes = new ObservableCollection<Banknote> {
+            new Banknote() {MonetaryValue = 1000,MonetaryAmount = 0},
+            new Banknote() {MonetaryValue = 500, MonetaryAmount = 0 },
+            new Banknote() {MonetaryValue = 200,MonetaryAmount = 0},
+            new Banknote() {MonetaryValue = 100,MonetaryAmount = 0},
+            new Banknote() {MonetaryValue = 50,MonetaryAmount = 0},
+            new Banknote() {MonetaryValue = 20,MonetaryAmount = 0},
+            new Banknote() {MonetaryValue = 10,MonetaryAmount = 0},
+            new Banknote() {MonetaryValue = 5,MonetaryAmount = 0},
+            new Banknote() {MonetaryValue = 2,MonetaryAmount = 0},
+            new Banknote() {MonetaryValue = 1,MonetaryAmount = 0},
+            new Banknote() {MonetaryValue = 0.50,MonetaryAmount = 0},
+            new Banknote() {MonetaryValue = 0.10,MonetaryAmount = 0},
+            };
+            ListBanknotes.ItemsSource = Banknotes;
+        }
+
+        private void ChangeBanknoteAmountClick(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+        private void MoneyCountingCancel(object sender, RoutedEventArgs e)
+        {
+            MoneyCounting.Visibility = Visibility.Collapsed;
+        }
+
+        private void ClearMoneyCounting(object sender, RoutedEventArgs e)
+        {
+            foreach (var item in Banknotes)
+            {
+                item.MonetaryAmount = 0;
+            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("TotalMoneyCounting"));
+        }
+
+        private void MoneyCounting_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            SelectedBanknote = ListBanknotes.SelectedItem as Banknote;
+            NumericPadInputCountBanknote.Visibility = Visibility.Visible;
+            InputCountBanknote.Visibility = Visibility.Visible;
+
+            InputCountBanknote.Desciption = $"Введіть кількість {SelectedBanknote.MonetaryValue}₴";
+            InputCountBanknote.ValidationMask = "^[0-9]{1,4}$";
+            InputCountBanknote.Result = $"{SelectedBanknote.MonetaryAmount}";
+            InputCountBanknote.IsEnableComma = false;
+            InputCountBanknote.CallBackResult = (string res) =>
+            {
+                if (!string.IsNullOrEmpty(res))
+                {
+                    SelectedBanknote.MonetaryAmount = Convert.ToInt32(res);
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("TotalMoneyCounting"));
+                }
+                NumericPadInputCountBanknote.Visibility = Visibility.Visible;
+                InputCountBanknote.Visibility = Visibility.Visible;
+            };
+        }
     }
 
     public class APIRadiobuton
     {
         public eCommand ServerTypeMessage { get; set; }
         public string TranslateServerTypeMessage { get { return ServerTypeMessage.GetDescription(); } }
+    }
+
+    public class Banknote : INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+        public double MonetaryValue { get; set; }
+        private double _MonetaryAmount = 0;
+        public double MonetaryAmount
+        {
+            get { return _MonetaryAmount; }
+            set
+            {
+                _MonetaryAmount = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MonetarySum"));
+            }
+        }
+        public double MonetarySum { get { return MonetaryValue * MonetaryAmount; } }
     }
 
     public class ParsLog
