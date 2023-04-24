@@ -166,7 +166,11 @@ namespace Front
                         case eModelEquipment.ScanerKeyBoard:
                             ScanerKeyBoard Sc = new ScanerKeyBoard(ElEquipment, config, LF, pSetBarCode);
                             if (W != null)
+                            {
                                 W.KeyUp += Sc.Key_UP;
+                                //W.TextInput += Sc.TextInput;
+                                //((MainWindow)W).TBExciseStamp.TextInput += Sc.TextInput;
+                            }
                             Scaner = Sc;
                             break;
                         default:
