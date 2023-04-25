@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Front.Models
 {
-    public class CommandAPI<DataFormat>
+    public class CommandAPI<t>
     {
         public eCommand Command { get; set; }        
-        public DataFormat Data { get; set; }
+        public t Data { get; set; }
     }
 }

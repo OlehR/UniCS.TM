@@ -26,7 +26,15 @@ namespace ModelMID.DB
             get { return _DNSName; }
             set
             {
-                _DNSName = value; if (!string.IsNullOrEmpty(value)) Task.Run(async () =>
+                
+                _DNSName = value;
+                IPAddress ip;
+                if (IPAddress.TryParse(_DNSName,out ip))
+                    {
+                    IP=ip;
+                    return;
+                }
+                if (!string.IsNullOrEmpty(value)) Task.Run(async () =>
             {
                 var el = await Dns.GetHostEntryAsync(DNSName);
                 if (el?.AddressList?.Length > 0) IP = el?.AddressList[0];
