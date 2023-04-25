@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
@@ -665,33 +666,38 @@ namespace Front
             pR.IdWorkplacePay = 0;
         }
 
-        string CallBackApi(string pDataApi) 
+        string CallBackApi(string pDataApi)
         {
             string Res = null;
-            CommandAPI<dynamic> pC = JsonConvert.DeserializeObject<CommandAPI<dynamic>>(pDataApi);
-            CommandAPI<int> CommandInt;
-            CommandAPI<string> CommandString;
-
-            switch (pC.Command)
+            try
             {
-                case eCommand.GetCurrentReceipt:
-                    Res = curReceipt?.ToJSON();
-                    break;
-                case eCommand.GetReceipt:
-                    var Command = JsonConvert.DeserializeObject<CommandAPI<IdReceipt>>(pDataApi);
-                    Res=Bl.GetReceiptHead(Command.Data, true)?.ToJSON();
-                    break;
-                case eCommand.XReport:
-                    CommandInt = JsonConvert.DeserializeObject<CommandAPI<int>>(pDataApi);
-                    Res = EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = CommandInt.Data })?.ToJSON();
-                    break;
-                case eCommand.OpenShift:
-                    CommandString = JsonConvert.DeserializeObject<CommandAPI<string>>(pDataApi);
-                    var u = Bl.GetUserByBarCode(CommandString.Data);
-                    if(u!=null)
-                        AdminControl.OpenShift(u);
-                    break;
+               
+                CommandAPI<dynamic> pC = JsonConvert.DeserializeObject<CommandAPI<dynamic>>(pDataApi);
+                CommandAPI<int> CommandInt;
+                CommandAPI<string> CommandString;
+
+                switch (pC.Command)
+                {
+                    case eCommand.GetCurrentReceipt:
+                        Res = curReceipt?.ToJSON();
+                        break;
+                    case eCommand.GetReceipt:
+                        var Command = JsonConvert.DeserializeObject<CommandAPI<IdReceipt>>(pDataApi);
+                        Res = Bl.GetReceiptHead(Command.Data, true)?.ToJSON();
+                        break;
+                    case eCommand.XReport:
+                        CommandInt = JsonConvert.DeserializeObject<CommandAPI<int>>(pDataApi);
+                        Res = EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = CommandInt.Data })?.ToJSON();
+                        break;
+                    case eCommand.OpenShift:
+                        CommandString = JsonConvert.DeserializeObject<CommandAPI<string>>(pDataApi);
+                        var u = Bl.GetUserByBarCode(CommandString.Data);
+                        if (u != null)
+                            AdminControl.OpenShift(u);
+                        break;
+                }
             }
+            catch (Exception ex) { Res = $"{{\"Error\":\"{ex.Message}\"}}"; }
             return Res; 
         }
     }

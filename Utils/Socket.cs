@@ -35,32 +35,39 @@ namespace Utils
 
                 IsStart = true;
                 while (IsStart)
-                {                    
+                {
                     Socket handler = await listenSocket.AcceptAsync();
                     Console.WriteLine("Connect");
-                    // получаем сообщение
-                    StringBuilder builder = new StringBuilder();
-                    int bytes = 0; // количество полученных байтов
-                    byte[] data = new byte[1024]; // буфер для получаемых данных
-
-                    do
+                    try
                     {
-                        bytes = await handler.ReceiveAsync(data, SocketFlags.None);
-                        builder.Append(Encoding.UTF8.GetString(data, 0, bytes));
-                        Console.WriteLine(builder.ToString());
-                    }
-                    while (handler.Available > 0);
+                        // получаем сообщение
+                        StringBuilder builder = new StringBuilder();
+                        int bytes = 0; // количество полученных байтов
+                        byte[] data = new byte[1024]; // буфер для получаемых данных
 
-                    string res=Action(builder.ToString());
-                    //Console.WriteLine(DateTime.Now.ToShortTimeString() + ": " + builder.ToString());
-                    
-                    data = Encoding.UTF8.GetBytes(res);
-                   
-                    //Console.WriteLine("Відправляємо відповідь");
-                    await handler.SendAsync(data, SocketFlags.None);
-                    // закрываем сокет
-                    handler.Shutdown(SocketShutdown.Both);
-                    handler.Close();
+                        do
+                        {
+                            bytes = await handler.ReceiveAsync(data, SocketFlags.None);
+                            builder.Append(Encoding.UTF8.GetString(data, 0, bytes));
+                            Console.WriteLine(builder.ToString());
+                        }
+                        while (handler.Available > 0);
+
+                        string res = Action(builder.ToString());
+                        //Console.WriteLine(DateTime.Now.ToShortTimeString() + ": " + builder.ToString());
+
+                        data = Encoding.UTF8.GetBytes(res);
+
+                        //Console.WriteLine("Відправляємо відповідь");
+                        await handler.SendAsync(data, SocketFlags.None);
+                    }
+                    catch (Exception ex) { }
+                    finally
+                    {
+                        // закрываем сокет
+                        handler.Shutdown(SocketShutdown.Both);
+                        handler.Close();
+                    }
                 }
             }
             catch (Exception ex)

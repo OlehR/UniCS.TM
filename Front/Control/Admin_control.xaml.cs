@@ -351,16 +351,18 @@ namespace Front.Control
         {
             MW.AdminSSC = pU;
             if (Global.TypeWorkplace == eTypeWorkplace.CashRegister)
-                MW.Access.СurUser = AdminUser;
+                MW.Access.СurUser = pU;
             MW.DTAdminSSC = DateTime.Now;
             MW.Bl.db.SetConfig<DateTime>("DateAdminSSC", DateTime.Now);
-            MW.Bl.db.SetConfig<string>("CodeAdminSSC", AdminUser.BarCode);
-            MW.Bl.StartWork(Global.IdWorkPlace, AdminUser.BarCode);
+            MW.Bl.db.SetConfig<string>("CodeAdminSSC", pU.BarCode);
+            MW.Bl.StartWork(Global.IdWorkPlace, pU.BarCode);
             //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClosedShift"));
             //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("NameAdminUserOpenShift"));
             //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DataOpenShift"));
             OpenShiftShow.Visibility = Visibility.Visible;
             Init();
+            if (MW.State == eStateMainWindows.WaitAdmin)
+                MW.SetStateView(eStateMainWindows.StartWindow);
         }
 
         private void WorkFinish_Click(object sender, RoutedEventArgs e)
