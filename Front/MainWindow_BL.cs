@@ -693,7 +693,10 @@ namespace Front
                         CommandString = JsonConvert.DeserializeObject<CommandAPI<string>>(pDataApi);
                         var u = Bl.GetUserByBarCode(CommandString.Data);
                         if (u != null)
+                        {
                             AdminControl.OpenShift(u);
+                            Res= $"{{\"Data\":\"Зміна відкрита:{u.NameUser}\"}}";
+                        }
                         break;
                 }
             }
