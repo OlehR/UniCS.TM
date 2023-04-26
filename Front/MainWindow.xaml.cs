@@ -124,6 +124,7 @@ namespace Front
         public string NameSecondTerminal { get { return IsPresentSecondTerminal ? EF?.BankTerminal2.Name : null; } }
 
         public string GetBackgroundColor { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? "#ff9999" : "#FFFFFF"; } }
+        public double GiveRest { get; set; } = 0;
         public eTypeMonitor TypeMonitor
         {
             get

@@ -1697,15 +1697,11 @@
                 <TabItem Header="Віддалене керування" Visibility="Visible">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="3"/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="10"/>
-                            <RowDefinition Height="60"/>
-                        </Grid.RowDefinitions>
+
                         <!--<ScrollViewer>
                         <StackPanel VerticalAlignment="Top">
                             <ItemsControl Grid.Row="0" Name="ListRadioButtonAPI">
@@ -1751,14 +1747,19 @@
 
                         </StackPanel>
 
-                        <Border  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Top"
-                                 Background="Green" Height="2" Margin="50,0,50,0"/>
-                            <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" 
-                                       VerticalAlignment="Center" HorizontalAlignment="Center"
-                                       x:Name="APIErrorText" TextWrapping="Wrap" 
-                                       Text="{Binding SB, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"/>
+                        <Grid Grid.Column="1" Background="Green" Margin="0,50,0,50" />
+
+                        <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Disabled">
+                            <StackPanel>
+                             <TextBlock Foreground="Red" FontWeight="Bold" FontSize="24" HorizontalAlignment="Center" Text="API ERROR"/>
+                            <TextBlock  Margin="10,0,5,0"
+                                   VerticalAlignment="Top" 
+                                   x:Name="APIErrorText" TextWrapping="Wrap" 
+                                   Text="{Binding SB, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"/>
+                            </StackPanel>
+                        </ScrollViewer>
                         
-                        
+
                     </Grid>
                 </TabItem>
                 <TabItem Header="Вихід з програми"/>
@@ -1871,7 +1872,7 @@
                                     </Style>
                                 </Button.Style>
                             </Button>
-                            
+
                             <Button  Grid.Column="1"  Click="MoneyCountingCancel" Margin="10" >
                                 <TextBlock FontSize="24" Text="Закрти"/>
                                 <Button.Style>
@@ -1883,10 +1884,10 @@
                             </Button>
                         </StackPanel>
 
-                        
+
                     </Grid>
 
-                    
+
 
                 </Grid>
             </Border>

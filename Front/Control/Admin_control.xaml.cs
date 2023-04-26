@@ -109,7 +109,7 @@ namespace Front.Control
             }
             Init(AdminUser);
 
-            SB.AppendLine("API error text");
+            SB.AppendLine("API error text ");
 
             InitializeComponent();
             CreateBanknote();

@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using ModernExpo.SelfCheckout.Utils;
+using Front.Models;
 
 namespace Front.Control
 { 
@@ -25,6 +26,7 @@ namespace Front.Control
         public decimal SumCashDisbursement { get; set; } = 0;
         public decimal SumMaxWallet { get; set; } = 0;
         public bool IsPaymentBonuses { get; set; } = false;
+        public bool EnteringPriceManually { get; set; } = false;
         decimal _SumUseWallet = 0;        
         public decimal SumUseWallet { get { return _SumUseWallet; } set { _SumUseWallet = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SumUseWalletUp)));
@@ -97,11 +99,17 @@ namespace Front.Control
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MoneySumToRound"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCashPayment"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ChangeSumPaymant"));
+            EnteringPriceManually = false;
             CalculateReturn();
         }
         private void ChangeSumPaymentButton(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
+            if (!EnteringPriceManually)
+            {
+                ChangeSumPaymant = "0";
+                EnteringPriceManually = true;
+            }
             switch (btn.Content)
             {
                 case "C":
@@ -188,11 +196,13 @@ namespace Front.Control
                 MW?.EF.SetBankTerminal(r.First() as BankTerminal);
 
             var task = Task.Run(() => MW.PrintAndCloseReceipt(null, eTypePay.Card, 0, SumCashDisbursement));
+            MW.GiveRest = 0;
         }
 
         private void _ButtonPaymentCash(object sender, RoutedEventArgs e)
         {
             MW.EquipmentStatusInPayment.Text = "";
+            MW.GiveRest = (double)RestMoney;
             var task = Task.Run(() => MW.PrintAndCloseReceipt(null, eTypePay.Cash, ChangeSumPaymantDecimal, 0, -SumUseWallet));
         }
 
@@ -341,6 +351,7 @@ namespace Front.Control
         private void Round(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
+            EnteringPriceManually = false;
             Rounding(btn.Name);
             ChangeSumPaymant = MoneySumToRound.ToString();
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ChangeSumPaymant"));

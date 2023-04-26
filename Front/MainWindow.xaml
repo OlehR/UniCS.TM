@@ -2620,7 +2620,7 @@
             <Grid >
 
                 <Image x:Name="StartLogo"  Height="500"/>
-
+                <Button Style="{StaticResource TransparentButton}" Click="StartBuy" Panel.ZIndex="3"/>
                 <Button Margin="10,10,10,100"  Style="{StaticResource greenButton}"  FontSize="48" Click="StartBuy"  Grid.ZIndex="2"
                          Height="100" Width="500" VerticalAlignment="Bottom">
                     <StackPanel Orientation="Horizontal">
@@ -2628,8 +2628,23 @@
                         <TextBlock FontSize="50" Text="{DynamicResource startShopping}" FontFamily="Source Sans Pro" Foreground="White"  Margin="10,10,5,0"/>
                     </StackPanel>
                 </Button>
+                <StackPanel VerticalAlignment="Top" HorizontalAlignment="Center"  Orientation="Horizontal">
+                    <StackPanel.Style>
+                        <Style TargetType="{x:Type StackPanel}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsCashRegister, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <TextBlock Text="Решта: " HorizontalAlignment="Center" FontSize="50" FontWeight="DemiBold"/>
+                    <TextBlock Text="{Binding GiveRest, StringFormat=0.00₴, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}"  FontSize="50" FontWeight="DemiBold"/>
 
-
+                </StackPanel>
+                
 
 
 
