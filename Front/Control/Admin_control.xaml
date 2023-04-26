@@ -1701,6 +1701,11 @@
                             <ColumnDefinition/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="10"/>
+                            <RowDefinition Height="60"/>
+                        </Grid.RowDefinitions>
                         <!--<ScrollViewer>
                         <StackPanel VerticalAlignment="Top">
                             <ItemsControl Grid.Row="0" Name="ListRadioButtonAPI">
@@ -1723,7 +1728,7 @@
 
                         <ScrollViewer>
                             <StackPanel VerticalAlignment="Top">
-                                <ItemsControl Grid.Row="0" Name="ListActiveKSO">
+                                <!--<ItemsControl Grid.Row="0" Name="ListActiveKSO">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal">
@@ -1733,7 +1738,7 @@
                                             </StackPanel>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
-                                </ItemsControl>
+                                </ItemsControl>-->
                                 <Button Content="Відкрити зміни" Style="{StaticResource Default}" Click="OpenShiftButton"/>
                             </StackPanel>
                         </ScrollViewer>
@@ -1745,6 +1750,15 @@
                         <StackPanel Grid.Column="1" VerticalAlignment="Top">
 
                         </StackPanel>
+
+                        <Border  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Top"
+                                 Background="Green" Height="2" Margin="50,0,50,0"/>
+                            <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" 
+                                       VerticalAlignment="Center" HorizontalAlignment="Center"
+                                       x:Name="APIErrorText" TextWrapping="Wrap" 
+                                       Text="{Binding SB, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"/>
+                        
+                        
                     </Grid>
                 </TabItem>
                 <TabItem Header="Вихід з програми"/>

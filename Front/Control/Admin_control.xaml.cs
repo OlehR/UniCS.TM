@@ -85,7 +85,7 @@ namespace Front.Control
         public WorkPlace SelectedWorkPlace { get { return _SelectedWorkPlace != null ? _SelectedWorkPlace : WorkPlaces.First(); } set { _SelectedWorkPlace = value; } }
         ObservableCollection<BankTerminal> ActiveTerminals = new();
         IEnumerable<string> TextReceipt;
-        StringBuilder SB = new();
+        public StringBuilder SB { get; set; } = new();
         public IEnumerable<WorkPlace> ActiveWorkPlaces { get; set; }
 
         public void ControlScale(double pWeight, bool pIsStable)
@@ -99,6 +99,7 @@ namespace Front.Control
             OnSocket += (Command, WorkPlace, Ansver) =>
             {
                 SB.AppendLine($"{Command} {WorkPlace.Name} {Ansver}");
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SB"));
             };
             Bl = BL.GetBL;
             TypeMessageRadiobuton = new ObservableCollection<APIRadiobuton>();
@@ -108,7 +109,7 @@ namespace Front.Control
             }
             Init(AdminUser);
 
-
+            SB.AppendLine("API error text");
 
             InitializeComponent();
             CreateBanknote();
@@ -119,7 +120,7 @@ namespace Front.Control
 
             ActiveWorkPlaces = Bl.db.GetWorkPlace().Where(el => el.CodeWarehouse == Global.CodeWarehouse);
 
-            ListActiveKSO.ItemsSource = ActiveWorkPlaces;
+           // ListActiveKSO.ItemsSource = ActiveWorkPlaces;
 
             RefreshJournal();
             //поточний час
