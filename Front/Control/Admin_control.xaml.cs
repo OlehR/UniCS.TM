@@ -1077,7 +1077,7 @@ namespace Front.Control
                 if (el?.IP != null)
                     Task.Run(async () =>
                     {
-                        CommandAPI<string> Command = new() { Command = eCommand.OpenShift, Data = AdminUser?.BarCode??MW.AdminSSC.BarCode };                       
+                        CommandAPI<string> Command = new() { Command = eCommand.OpenShift, Data = AdminUser?.BarCode??MW.AdminSSC?.BarCode };                       
 
                         try
                         {
