@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ModelMID
 {
-    public class Status
+    public class StatusBD
     {
         //public Color color;
         public string StringColor;

@@ -951,7 +951,7 @@ namespace SharedLib
                 return strTDU;
         }
 
-        public virtual Status GetStatus()
+        public virtual StatusBD GetStatus()
         {
             var DTFirstErrorDiscountOnLine = Global.FirstErrorDiscountOnLine;
             var DTLastNotSendReceipt = GetLastNotSendReceipt();
@@ -964,7 +964,7 @@ namespace SharedLib
             if (ExchangeStatus1 > ExchangeStatus)
                 ExchangeStatus = ExchangeStatus1;
 
-            var res = new Status { Descriprion = $"DTFirstErrorDiscountOnLine=>{DTFirstErrorDiscountOnLine}, DTLastNotSendReceipt=>{DTLastNotSendReceipt},DTGetLastUpdateDirectory=>{DTGetLastUpdateDirectory}" };
+            var res = new StatusBD { Descriprion = $"DTFirstErrorDiscountOnLine=>{DTFirstErrorDiscountOnLine}, DTLastNotSendReceipt=>{DTLastNotSendReceipt},DTGetLastUpdateDirectory=>{DTGetLastUpdateDirectory}" };
             res.SetColor(ExchangeStatus);
             return res;
         }

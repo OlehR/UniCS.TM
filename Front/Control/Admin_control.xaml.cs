@@ -27,7 +27,7 @@ namespace Front.Control
     /// </summary>
     public partial class Admin_control : UserControl, INotifyPropertyChanged
     {
-        Action<eCommand, WorkPlace, string> OnSocket;
+        Action<eCommand, WorkPlace, Status> OnSocket;
         public Access Access = Access.GetAccess();
         public event PropertyChangedEventHandler PropertyChanged;
         EquipmentFront EF;
@@ -1078,17 +1078,17 @@ namespace Front.Control
                 if (el?.IP != null)
                     Task.Run(async () =>
                     {
-                        CommandAPI<string> Command = new() { Command = eCommand.OpenShift, Data = AdminUser?.BarCode??MW.AdminSSC?.BarCode };                       
-
+                        CommandAPI<string> Command = new() { Command = eCommand.OpenShift, Data = AdminUser?.BarCode??MW.AdminSSC?.BarCode }; 
                         try
                         {
                             var r = new SocketClient(el.IP, Global.PortAPI);
-                            string Ansver = await r.StartAsync(Command.ToJSON());
+                            var Ansver = await r.StartAsync(Command.ToJSON());
                             OnSocket?.Invoke(eCommand.OpenShift, el, Ansver);
                         }
                         catch (Exception ex)
                         {
                             FileLogger.WriteLogMessage(this, $"OpenShiftButton DNSName=>{el.DNSName} {Command} ", ex);
+                            OnSocket?.Invoke(eCommand.OpenShift, el, new Status(ex));
                         }
                     });
             }

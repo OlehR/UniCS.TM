@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Front.Models
+namespace Utils
 {
     /// <summary>
     /// Клас з статусом виконання
@@ -33,6 +33,11 @@ namespace Front.Models
         {
             State = pState;
             TextState = pTextState;
+        }
+        public Status(Exception e)
+        {
+            State = -1;
+            TextState = e.Message + "\n" + e.StackTrace;
         }
     }   
 

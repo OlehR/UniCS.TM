@@ -666,9 +666,9 @@ namespace Front
             pR.IdWorkplacePay = 0;
         }
 
-        string CallBackApi(string pDataApi)
+        Status CallBackApi(string pDataApi)
         {
-            string Res = null;
+            Status Res = null;
             try
             {
                
@@ -679,15 +679,15 @@ namespace Front
                 switch (pC.Command)
                 {
                     case eCommand.GetCurrentReceipt:
-                        Res = curReceipt?.ToJSON();
+                        Res = new Status(0, curReceipt?.ToJSON());
                         break;
                     case eCommand.GetReceipt:
                         var Command = JsonConvert.DeserializeObject<CommandAPI<IdReceipt>>(pDataApi);
-                        Res = Bl.GetReceiptHead(Command.Data, true)?.ToJSON();
+                        Res = new Status(0, Bl.GetReceiptHead(Command.Data, true)?.ToJSON());
                         break;
                     case eCommand.XReport:
                         CommandInt = JsonConvert.DeserializeObject<CommandAPI<int>>(pDataApi);
-                        Res = EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = CommandInt.Data })?.ToJSON();
+                        Res = new Status(0, EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = CommandInt.Data })?.ToJSON());
                         break;
                     case eCommand.OpenShift:
                         CommandString = JsonConvert.DeserializeObject<CommandAPI<string>>(pDataApi);
@@ -695,12 +695,12 @@ namespace Front
                         if (u != null)
                         {
                             AdminControl.OpenShift(u);
-                            Res= $"{{\"Data\":\"Зміна відкрита:{u.NameUser}\"}}";
+                            Res= new Status(0, $"Зміна відкрита:{u.NameUser}");
                         }
                         break;
                 }
             }
-            catch (Exception ex) { Res = $"{{\"Error\":\"{ex.Message}\"}}"; }
+            catch (Exception ex) { Res = new Status(ex); }
             return Res; 
         }
     }

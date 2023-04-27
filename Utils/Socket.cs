@@ -6,17 +6,18 @@ using System.Net;
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Threading;
+using Newtonsoft.Json;
 
 namespace Utils
 {
     public class SocketServer
     {
-        Func<string, string> Action;
+        Func< string, Status> Action;
         bool IsStart = false;
         Socket listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         IPEndPoint ipPoint = new IPEndPoint(IPAddress.Any, 3443);//(IPAddress.Parse(IP), IpPort);
          
-        public SocketServer( int pPort, Func<string, string> pS)
+        public SocketServer( int pPort, Func< string, Status> pS)
         {
             Action=pS; 
             ipPoint = new IPEndPoint(IPAddress.Any, pPort);
@@ -53,15 +54,24 @@ namespace Utils
                         }
                         while (handler.Available > 0);
 
-                        string res = Action(builder.ToString());
+                        var res = Action(builder.ToString());//
                         //Console.WriteLine(DateTime.Now.ToShortTimeString() + ": " + builder.ToString());
 
-                        data = Encoding.UTF8.GetBytes(res);
+                        data = Encoding.UTF8.GetBytes(res.ToJSON());
 
                         //Console.WriteLine("Відправляємо відповідь");
                         await handler.SendAsync(data, SocketFlags.None);
                     }
-                    catch (Exception ex) { }
+                    catch (Exception ex) {
+                        try
+                        {
+                            Status res= new Status(ex);
+                            var data = Encoding.UTF8.GetBytes(res.ToJSON());
+                            await handler.SendAsync(data, SocketFlags.None);
+                        }
+                        catch (Exception) { };
+                        FileLogger.WriteLogMessage(this, "StartAsync", ex);
+                    }
                     finally
                     {
                         // закрываем сокет
@@ -92,9 +102,9 @@ namespace Utils
             ipEndPoint = new IPEndPoint(pIP, pPort);
         }
 
-        public async Task<string> StartAsync(string pData)
+        public async Task<Status> StartAsync(string pData)
         {
-            string res=null;           
+            Status res =null;           
             try
             {
                 await client.ConnectAsync(ipEndPoint);
@@ -102,16 +112,21 @@ namespace Utils
                 var aa = await client.SendAsync(messageBytes, SocketFlags.None);                
 
                 // Receive ack.
-                var buffer = new byte[1_024];
+                var buffer = new byte[10000];
 
                 var received = client.ReceiveAsync(buffer, SocketFlags.None);
                 received.Wait(5000);
-                res =  received.IsCompleted?
-                     Encoding.UTF8.GetString(buffer, 0, received.Result) :  $"{{\"Error\":\"TimeOut\"}}";
+                if (received.IsCompleted)
+                {
+                    var r = Encoding.UTF8.GetString(buffer, 0, received.Result);
+                    res=JsonConvert.DeserializeObject<Status> (r);                   
+                }
+                else
+                { res = new(-1, "TimeOut"); }
             }
             catch (Exception ex)
             {
-               res=$"{{\"Error\":\"{ex.Message}\"}}";
+                res = new(ex);
             }
             finally
             {
