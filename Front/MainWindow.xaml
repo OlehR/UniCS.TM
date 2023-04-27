@@ -169,13 +169,14 @@
 
 
                 <!--Відкладення чеку-->
-                <Button Grid.Column="1"  Click="PostponeCheck">
-                    <Button.Content>
-                        <TextBlock FontSize="24" Text="Відкласти чек" Margin="5,0,0,5"/>
-                    </Button.Content>
-                    <Button.Style>
-                        <Style BasedOn="{StaticResource Default}" TargetType="Button">
-                            <Setter Property="Visibility" Value="Collapsed" />
+                <Grid  Grid.Column="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.Style>
+                        <Style TargetType="{x:Type Grid}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsCashRegister, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="True">
@@ -183,8 +184,21 @@
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
-                    </Button.Style>
-                </Button>
+                    </Grid.Style>
+
+                    <Button Grid.Column="0"  Click="IssueCardButton" Style="{StaticResource Default}">
+                        <Button.Content>
+                            <TextBlock FontSize="14" Text="Видача картки" Margin="5,0,0,5"/>
+                        </Button.Content>
+                    </Button>
+
+                    <Button Grid.Column="1"  Click="PostponeCheck" Style="{StaticResource Default}">
+                        <Button.Content>
+                            <TextBlock FontSize="14" Text="Відкласти чек" Margin="5,0,0,5"/>
+                        </Button.Content>
+                    </Button>
+                </Grid>
+
 
                 <!--Мовна панель-->
                 <StackPanel  x:Name="LanguagePanel" Grid.Column="1"  Orientation="Horizontal" HorizontalAlignment="Center" >
@@ -683,16 +697,16 @@
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
-                                                            <Setter Property="FontSize" Value="25" />
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                                        <Setter Property="FontSize" Value="25" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="VerticalMonitorKSO">
-                                                            <Setter Property="FontSize" Value="20" />
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                                        <Setter Property="FontSize" Value="20" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
-                                                            <Setter Property="FontSize" Value="18" />
-                                                        </DataTrigger>
+                                                        <Setter Property="FontSize" Value="18" />
+                                                    </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
                                         </TextBlock.Style>
@@ -1121,15 +1135,6 @@
                 </Grid>
             </Border>
 
-
-
-            <!--<Grid Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="0" Grid.RowSpan="5">
-                <WebBrowser Height="200" Name="myWebBrowser" ></WebBrowser>
-                
-            </Grid>-->
-
-
-
             <!-- Кастомне вікно    -->
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
@@ -1455,7 +1460,7 @@
                             <TextBlock Text="Сума бонусів в гривнях:" FontSize="24" FontWeight="Bold" Margin="2"/>
                             <TextBlock Text="Номер телефону:" FontSize="24" FontWeight="Bold" Margin="2"/>
                             <TextBlock Text="Відсоток знижки:" FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="Відсоток перегахування:" FontSize="24" FontWeight="Bold" Margin="2"/>
+                            <TextBlock Text="Відсоток перерахування:" FontSize="24" FontWeight="Bold" Margin="2"/>
                             <TextBlock Text="Штрих-код картки:" FontSize="24" FontWeight="Bold" Margin="2"/>
                             <TextBlock Text="Дата народження:" FontSize="24" FontWeight="Bold" Margin="2"/>
                         </StackPanel>
@@ -1493,11 +1498,11 @@
                     <Button Grid.Row="2"
                         FontSize="22" Click="_Cancel"  Style="{StaticResource Default}"
                         Height="80" Width="300" VerticalAlignment="Center" Visibility="Visible">
-                    <StackPanel Orientation="Horizontal">
-                        <Image  Height="25" Width="25"  Source="icons\X.png"></Image>
-                        <TextBlock FontSize="30"  Text="{DynamicResource cancel}" Margin="5,0,5,0"/>
-                    </StackPanel>
-                </Button>
+                        <StackPanel Orientation="Horizontal">
+                            <Image  Height="25" Width="25"  Source="icons\X.png"></Image>
+                            <TextBlock FontSize="30"  Text="{DynamicResource cancel}" Margin="5,0,5,0"/>
+                        </StackPanel>
+                    </Button>
                 </Grid>
             </Border>
             <!-- Очікування Адміністратора   -->
@@ -1683,9 +1688,7 @@
 
                 </Grid>
             </Border>
-            <!--<DockPanel Height="50">
-                <wv2:WebView2 x:Name = "WebView2"/>
-            </DockPanel>-->
+
             <!-- Автентифікація адміністратора   -->
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
@@ -1765,11 +1768,6 @@
                 </Border.Effect>
 
                 <Grid Name="GridWeightWares">
-                    <!--<Name="WeightWares"Border Background="WhiteSmoke" />
-            <Border Grid.Row="1" Background="WhiteSmoke" />
-            <Border Grid.Row="2" Background="WhiteSmoke" />
-            <Border Grid.Row="3" Background="WhiteSmoke" />
-            <Border Grid.Row="4" Background="WhiteSmoke" />-->
                     <Grid.RowDefinitions>
                         <RowDefinition  Height="1*"></RowDefinition>
                         <RowDefinition  Height="4*"></RowDefinition>
@@ -1777,15 +1775,10 @@
                         <RowDefinition  Height="1*"></RowDefinition>
                         <RowDefinition  Height="1*"></RowDefinition>
                     </Grid.RowDefinitions>
-                    <!--<Label 
-                                 Grid.ColumnSpan="1" Grid.Row="0" Grid.RowSpan="1" Margin="3,-2,0,-2" HorizontalAlignment="Center" VerticalAlignment="Stretch" 
-                                FontSize="12" Height="Auto" BorderThickness="3,0,0,0"
-                                Content="Покладіть товар на вагу" />-->
                     <TextBlock 
                                 x:Name="NameWares"  Grid.ColumnSpan="2" Grid.Row="2" Grid.RowSpan="1"  HorizontalAlignment="Center" VerticalAlignment="Center" 
                                 FontSize="35" TextWrapping="Wrap"
                                 Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=CurW.Name}" />
-                    <!--{Binding NameW, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}-->
                     <TextBlock Name="LWeight"
                                  Grid.ColumnSpan="1" Grid.Row="3" Grid.RowSpan="1" Margin="3,-2,0,-2" HorizontalAlignment="Center" VerticalAlignment="Center" 
                                 FontSize="35" Height="Auto" 
@@ -1965,8 +1958,6 @@
                         <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="28" x:Name="EquipmentStatusInPayment" 
                                 Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="3" TextWrapping="Wrap"
                                 />
-                        <!--Text="{Binding EquipmentInfo, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}"-->
                     </Grid>
 
                     <Button Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" 
@@ -1975,287 +1966,6 @@
                     </Button>
                 </Grid>
             </Border>
-
-            <!-- ОПЛАТА ЗВИЧАЙНА КАСА  -->
-            <!--
-            <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
-                 Grid.Row="0" Grid.RowSpan="6"
-                 Grid.Column="0" Grid.ColumnSpan="6"
-                 Name="WaitKashier" Visibility="Collapsed" Grid.ZIndex="2" 
-                CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Border.Effect>
-                    <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
-                </Border.Effect>
-
-                <Grid  Width="1000" Height="550">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="1*"></RowDefinition>
-                        <RowDefinition Height="0.4*"></RowDefinition>
-                        <RowDefinition Height="*"></RowDefinition>
-                        <RowDefinition Height="0.75*"></RowDefinition>
-                        <RowDefinition Height="1*"></RowDefinition>
-                        <RowDefinition Height="1*"></RowDefinition>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <Button x:Name="F5" Margin="5" Height="60" Style="{StaticResource Default}" VerticalAlignment="Top" Click="F5Button">F5</Button>
-                    <TextBlock Grid.Column="2" Grid.Row="0" VerticalAlignment="Top" FontSize="24">Всього (грн.):</TextBlock>
-                    <TextBlock Grid.Column="2" Grid.Row="0"  FontSize="24">Решта (грн.):</TextBlock>
-                    <TextBlock Grid.Column="3" Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="24"
-                               Text="{Binding MoneySumToRound, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" />
-                    <TextBlock Grid.Column="3" Grid.Row="0" HorizontalAlignment="Center"  FontSize="24" x:Name="ResMoney">0,00</TextBlock>
-                    <TextBlock Grid.Column="0" Grid.Row="1" FontWeight="Bold">Сума оплати:</TextBlock>
-                    <TextBox Grid.Column="1" Grid.Row="1" Margin="5" FontSize="24"  x:Name="MoneySumPayTextBox"
-                             TextChanged="MoneySumPayChange"
-                             Text="{Binding MoneySumToRound, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}"></TextBox>
-                    <Button Grid.Row="2" Grid.Column="0" Style="{StaticResource Default}"  FontSize="22" Margin="10" Click="_Cancel">
-                        <StackPanel Orientation="Horizontal">
-                            <Image  Height="15" Width="15"  Source="icons\X.png"></Image>
-                            <TextBlock FontSize="24" Text="{DynamicResource cancel}" Margin="5,0,5,0"/>
-                        </StackPanel>
-                    </Button>
-
-                    <Button  Grid.Column="1"  Grid.Row="2"  FontSize="22"
-                            Margin="10" Click="_ButtonPaymentBank">
-                        <Button.Content>
-                            <TextBlock FontSize="20" Text="{Binding NameFirstTerminal, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}"/>
-                        </Button.Content>
-                        <Button.Style>
-                            <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
-                                <Setter Property="IsEnabled" Value="True"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsPresentFirstTerminal, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                        <Setter Property="Visibility" Value="Visible" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding IsPresentFirstTerminal, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
-
-
-
-                    <Button Grid.Column="2"  Grid.Row="2"  FontSize="22"
-                            Margin="10" Click="_ButtonPaymentBank">
-                        <Button.Content>
-                            <TextBlock FontSize="20" Text="{Binding NameSecondTerminal, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}"/>
-                        </Button.Content>
-                        <Button.Style>
-                            <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
-                                <Setter Property="IsEnabled" Value="True"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsPresentSecondTerminal, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                        <Setter Property="Visibility" Value="Visible" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding IsPresentSecondTerminal, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
-
-
-
-
-
-                    <Button Style="{StaticResource yelowButton}" Grid.Column="3"  Grid.Row="2"  FontSize="22"
-                            Margin="10" Click="_ButtonPayment">
-                        <TextBlock FontSize="28" Text="Готівка"/>
-                    </Button>
-                    <Border Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="3" 
-                            Background="GhostWhite" BorderBrush="Gainsboro"
-                            CornerRadius="10" BorderThickness="1" Margin="10,0,10,0">
-                        <Border.Effect>
-                            <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
-                        </Border.Effect>
-                        <StackPanel Orientation="Horizontal" >
-                            <Button Style="{StaticResource Default}" Margin="10"
-                                    Width="120" Height="50" Click="CancelCashDisbursement"
-                                    >
-                                <TextBlock FontSize="14" TextWrapping="Wrap" Text="Вiдмінити  видачу готівки" Margin="5,0,0,5"/>
-                            </Button>
-                            <TextBlock> Сума видачі грошових коштів:</TextBlock>
-                            <TextBlock  Height="30" x:Name="CashDisbursementTextBox"
-                                     FontSize="20" TextWrapping="Wrap"
-                                        HorizontalAlignment="Center"
-                                     >0</TextBlock>
-                            <Button Style="{StaticResource yelowButton}" Margin="10"
-                                    Width="120" Height="50" Click="CashDisbursement"
-                                    >
-                                <TextBlock FontSize="14" TextWrapping="Wrap" Text="Ввести суму видачі готівки" Margin="5,0,0,5"/>
-                            </Button>
-                        </StackPanel>
-                    </Border>
-                    <Grid Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="2" Grid.RowSpan="4">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-
-                        <Button Content="7" Style="{StaticResource Default}" Margin="10" Click="ChangeSumPaymentButton"/>
-                        <Button Grid.Column="1" Grid.Row="0"
-                                Content="8" Style="{StaticResource Default}" Margin="10" Click="ChangeSumPaymentButton"/>
-                        <Button Grid.Column="2" Grid.Row="0"
-                                Content="9" Style="{StaticResource Default}" Margin="10" Click="ChangeSumPaymentButton"/>
-
-                        <Button Grid.Column="0" Grid.Row="1"
-                                Content="4" Style="{StaticResource Default}" Margin="10" Click="ChangeSumPaymentButton"/>
-                        <Button Grid.Column="1" Grid.Row="1"
-                                Content="5" Style="{StaticResource Default}" Margin="10" Click="ChangeSumPaymentButton"/>
-                        <Button Grid.Column="2" Grid.Row="1"
-                                Content="6" Style="{StaticResource Default}" Margin="10" Click="ChangeSumPaymentButton"/>
-
-                        <Button Grid.Column="0" Grid.Row="2"
-                                Content="1" Style="{StaticResource Default}" Margin="10" Click="ChangeSumPaymentButton"/>
-                        <Button Grid.Column="1" Grid.Row="2"
-                                Content="2" Style="{StaticResource Default}" Margin="10" Click="ChangeSumPaymentButton"/>
-                        <Button Grid.Column="2" Grid.Row="2"
-                                Content="3" Style="{StaticResource Default}" Margin="10" Click="ChangeSumPaymentButton"/>
-
-                        <Button Grid.Column="0" Grid.Row="3"
-                                Content="0" Style="{StaticResource Default}" Margin="10" Click="ChangeSumPaymentButton"/>
-                        <Button Grid.Column="1" Grid.Row="3"
-                                Content="," Style="{StaticResource Default}" Margin="10" Click="ChangeSumPaymentButton"/>
-                        <Button Grid.Column="2" Grid.Row="3"
-                                Content="C" Style="{StaticResource Default}" Margin="10" Click="ChangeSumPaymentButton"/>
-                    </Grid>
-                    <Border Grid.Column="0" Grid.ColumnSpan="6" Grid.Row="4" Grid.RowSpan="2" 
-                            Background="GhostWhite" BorderBrush="Gainsboro"
-                            CornerRadius="10" BorderThickness="1" Margin="10">
-                        <Border.Effect>
-                            <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
-                        </Border.Effect>
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <StackPanel Orientation="Vertical" Grid.Row="0" >
-                                <TextBlock> Сума відкласти:</TextBlock>
-                                <TextBlock Height="30"  x:Name="RoundSum" TextWrapping="Wrap"
-                                            HorizontalAlignment="Center" VerticalAlignment="Center"
-                                            FontSize="20"
-                                            Text="0"></TextBlock>
-                            </StackPanel>
-                            <Button Grid.Row="0" Grid.Column="1" Click="Round" x:Name="plus01"
-                                    Style="{StaticResource Default}" Margin="10"
-                                    >
-                                <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 10коп." Margin="5,0,0,5"/>
-                            </Button>
-                            <Button Grid.Row="0" Grid.Column="2" Click="Round" x:Name="plus05"
-                                    Style="{StaticResource Default}" Margin="10"
-                                    >
-                                <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 50коп." Margin="5,0,0,5"/>
-                            </Button>
-                            <Button Grid.Row="0" Grid.Column="3" Click="Round" x:Name="plus1"
-                                    Style="{StaticResource Default}" Margin="10"
-                                    >
-                                <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 1грн" Margin="5,0,0,5"/>
-                            </Button>
-                            <Button Grid.Row="0" Grid.Column="4" Click="Round" x:Name="plus2"
-                                    Style="{StaticResource Default}" Margin="10"
-                                    >
-                                <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 2грн" Margin="5,0,0,5"/>
-                            </Button>
-                            <Button Grid.Row="0" Grid.Column="5" Click="Round" x:Name="plus5"
-                                    Style="{StaticResource Default}" Margin="10"
-                                    >
-                                <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 5грн" Margin="5,0,0,5"/>
-                            </Button>
-                            <StackPanel Orientation="Vertical" Grid.Row="1">
-                                <TextBlock> Сума списати:</TextBlock>
-                                <TextBlock  Height="30"  TextWrapping="Wrap"
-                                            HorizontalAlignment="Center" VerticalAlignment="Center"
-                                            FontSize="20" x:Name="RoundSumDown"
-                                     >0</TextBlock>
-                            </StackPanel>
-                            <Button Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"
-                                    Style="{StaticResource Default}" Margin="10"
-                                    >
-                                <TextBlock FontSize="14" TextWrapping="Wrap" Text=" " Margin="5,0,0,5"/>
-                            </Button>
-                            <Button Grid.Row="1" Grid.Column="4" Click="Round" x:Name="minus1"
-                                    Style="{StaticResource Default}" Margin="10"
-                                    >
-                                <TextBlock FontSize="14" TextWrapping="Wrap" Text="Списати до 1грн" Margin="5,0,0,5"/>
-                            </Button>
-                            <Button Grid.Row="1" Grid.Column="5" Click="Round"
-                                    Style="{StaticResource Default}" Margin="10"
-                                    >
-                                <TextBlock FontSize="14" TextWrapping="Wrap" Text="Відміна заокруглень та списань" Margin="5,0,0,5"/>
-                            </Button>
-                        </Grid>
-
-                    </Border>
-                </Grid>
-            </Border>-->
-
-            <!-- Підтвердження віку ПОПЕРЕДЖЕННЯ  -->
-            <!--<Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
-                 Grid.Row="0" Grid.RowSpan="5"
-                 Grid.Column="1" Grid.ColumnSpan="4"
-                 Name="ConfirmAgeMessage" Visibility="Collapsed" Grid.ZIndex="2" 
-                CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Border.Effect>
-                    <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
-                </Border.Effect>
-
-                <Grid  Width="700" Height="500">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="3*"></RowDefinition>
-                        <RowDefinition Height="1*"></RowDefinition>
-                    </Grid.RowDefinitions>
-
-                    <StackPanel Grid.Row="0" VerticalAlignment="Center">
-                        <Image  Source="icons\18plus.png" Width="50" Margin="15"/>
-                        <TextBlock  HorizontalAlignment="Center" FontSize="28" Text="{DynamicResource ConfirmAge }"/>
-                        <TextBlock  HorizontalAlignment="Center" FontSize="28" Text="{DynamicResource WaitAdmin }"/>
-                    </StackPanel>
-                    <Button BorderBrush="Transparent" Background="Transparent" Width="50" Height="50" 
-                        HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10"
-                        Click="ButtonAdmin"/>
-                    <Button Grid.Row="1" Style="{StaticResource Default}"  FontSize="22" Click="_Cancel" 
-                        Height="80" Width="300" VerticalAlignment="Top">
-                        <StackPanel Orientation="Horizontal">
-                            <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
-                            <TextBlock FontSize="28" Text="{DynamicResource cancel}" Margin="5,0,0,5"/>
-                        </StackPanel>
-                    </Button>
-                </Grid>
-            </Border>-->
 
             <!-- Підтвердити вік ТАК/НІ   -->
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
@@ -2297,12 +2007,83 @@
                     </Button>
                 </Grid>
             </Border>
-            <!--кінець-->
+
+            <!--Вікно видачі картки-->
+            <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="0" Grid.RowSpan="4"
+                 Grid.Column="1" Grid.ColumnSpan="4"
+                 Name="IssueCard" Visibility="Visible" Grid.ZIndex="2" 
+                CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+                </Border.Effect>
+                <Grid Width="1000" Height="600">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1.5*"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="60"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="60"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
+                               HorizontalAlignment="Center" FontSize="24" FontWeight="Bold"
+                               Text="Видача картки покупцю"/>
+
+
+                    <Grid Grid.Row="1" Grid.Column="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="Штрихкод:" FontSize="24" Margin="5" Grid.Row="2"/>
+                        <TextBlock Text="Карта КНС:" FontSize="24" Margin="5" Grid.Row="3"/>
+                        <TextBlock Text="Номер телефону" FontSize="24" Margin="5" Grid.Row="4"/>
+
+                        <Button Style="{StaticResource WhiteButton}" Margin="5" Name="ButBarcodeIssueCard"
+                                Grid.Column="1" Grid.Row="2" Click="EnterBarcodeIssueCard"
+                                Content="{Binding BarcodeIssueCard, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}"/>
+                        <TextBlock Text="Назва картки" FontSize="24" Margin="5"
+                                Grid.Column="1" Grid.Row="3"/>
+                        <Button Style="{StaticResource WhiteButton}" Margin="5" Name="ButPhoneIssueCard"
+                                Grid.Column="1" Grid.Row="4" Click="EnterPhoneIssueCard"
+                                Content="{Binding PhoneIssueCard, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}"/>
+                    </Grid>
+
+                    <Border Grid.Row="1" Grid.Column="2" x:Name="BorderNumPadIssueCard">
+                    <uc:NumericPad x:Name="NumPadIssueCard"
+                                   
+                                   Width="400"  Height="480" />
+                    </Border>
+
+
+
+                    <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                            Style="{StaticResource Default}" Width="150"
+                            Content="Відмінити" Click="_Cancel" />
+
+                </Grid>
+            </Border>
+
         </Grid>
+        <!--кінець-->
 
-        <!--<StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right"/>-->
-
-
+        <!--Нижня панель кнопок-->
         <Grid Grid.Row="4" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0.5*"></ColumnDefinition>
@@ -2379,21 +2160,13 @@
                                     <Setter Property="FontSize" Value="18" />
                                 </DataTrigger>
                             </Style.Triggers>
-                            
+
                         </Style>
                     </TextBlock.Style>
                 </TextBlock>
-
-
             </Button>
-            <!--<Button Style="{StaticResource Default}" Grid.Column="2" FontSize="22" Click="_Cancel" Height="38" Margin="1,1,1,0" VerticalAlignment="Top">
-                <TextBlock FontSize="14" Text="{DynamicResource ownBag}"/>
-            </Button>
-            <Button  Style="{StaticResource yelowButton}" Grid.Column="2" Grid.Row="2" FontSize="22" Click="StartOwnBag">
-                <TextBlock FontSize="14" Text="{DynamicResource buyBag}"/>
-            </Button>-->
+
             <Button  Grid.Column="3"  Grid.Row="0" Grid.RowSpan="2" FontSize="22" Click="_ButtonPayment">
-
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">
                         <Image  Margin="0,0,5,0" >
@@ -2523,11 +2296,10 @@
                         </Style.Triggers>
                     </Style>
                 </Button.Style>
-
-
             </Button>
         </Grid>
 
+        <!--Фони для вікна-->
         <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="1" Grid.RowSpan="4"
                 Grid.Column="0" Grid.ColumnSpan="4"
@@ -2644,18 +2416,19 @@
                                    Mode=FindAncestor, AncestorType=Window}}"  FontSize="50" FontWeight="DemiBold"/>
 
                 </StackPanel>
-                
+
 
 
 
             </Grid>
         </Border>
-        <!-- Адмінка -->
 
+        <!-- Адмінка -->
         <uc:Admin_control Grid.Row="0" Grid.RowSpan="5" Visibility="Collapsed"
                               Grid.Column="0" Grid.ColumnSpan="4" 
                               x:Name="AdminControl" VerticalAlignment="Stretch" 
                               Grid.ZIndex="4" />
+        <!--Вікно оплати звичайна каса-->
         <uc:PaymentWindow Grid.Row="0" Grid.RowSpan="5" Visibility="Collapsed"
                               Grid.Column="0" Grid.ColumnSpan="4" 
                               x:Name="PaymentWindow" VerticalAlignment="Stretch" 

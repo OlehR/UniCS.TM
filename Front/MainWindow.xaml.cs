@@ -22,6 +22,7 @@ using System.Windows.Documents;
 using System.Reflection;
 using System.IO;
 using System.Security.AccessControl;
+using Front.Control;
 
 namespace Front
 {
@@ -125,6 +126,9 @@ namespace Front
 
         public string GetBackgroundColor { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? "#ff9999" : "#FFFFFF"; } }
         public double GiveRest { get; set; } = 0;
+        public string BarcodeIssueCard { get; set; } = string.Empty;
+        public string PhoneIssueCard { get; set; } = string.Empty;
+        
         public eTypeMonitor TypeMonitor
         {
             get
@@ -285,13 +289,13 @@ namespace Front
         {
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Ver={Version}", eTypeLog.Expanded);
 
-            if(Global.PortAPI>0)
+            if (Global.PortAPI > 0)
             {
                 SocketServer = new SocketServer(Global.PortAPI, CallBackApi);
                 _ = SocketServer.StartAsync();
             }
-            
-            CS = new ControlScale(10d,Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout);
+
+            CS = new ControlScale(10d, Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout);
             s = Sound.GetSound(CS);
             Volume = (Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout);
             var fc = new List<FlagColor>();
@@ -499,7 +503,7 @@ namespace Front
                         {
                             if (curReceipt?.IsNeedExciseStamp == true) Res = eTypeAccess.ExciseStamp;
                             else
-                            if (IsChoicePrice) 
+                            if (IsChoicePrice)
                             { pSMV = eStateMainWindows.WaitInputPrice; pRW = CurWares; }
                             else
                             if (CS.IsProblem)
@@ -629,7 +633,7 @@ namespace Front
                     ExciseStampButtons.Visibility = Visibility.Collapsed;
                     ExciseStampNameWares.Visibility = Visibility.Collapsed;
                     WaitAdminTitle.Visibility = Visibility.Visible;
-
+                    IssueCard.Visibility = Visibility.Collapsed;
                     AdminControl.Visibility = (State == eStateMainWindows.AdminPanel ? Visibility.Visible : Visibility.Collapsed);
 
                     //StartVideo.Stop();
@@ -920,7 +924,7 @@ namespace Front
             // Правильний блок.
             if (Access.GetRight(eTypeAccess.DelReciept) || curReceipt?.SumReceipt == 0 || curReceipt?.StateReceipt >= eStateReceipt.Print)
             {
-                if (curReceipt!=null && curReceipt.StateReceipt == eStateReceipt.Prepare)
+                if (curReceipt != null && curReceipt.StateReceipt == eStateReceipt.Prepare)
                     Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
 
                 SetCurReceipt(null);
@@ -963,7 +967,7 @@ namespace Front
 
         private void _ButtonHelp(object sender, RoutedEventArgs e)
         {
-            SetStateView(Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout || AdminSSC==null ? eStateMainWindows.WaitAdmin : eStateMainWindows.AdminPanel, eTypeAccess.AdminPanel);
+            SetStateView(Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout || AdminSSC == null ? eStateMainWindows.WaitAdmin : eStateMainWindows.AdminPanel, eTypeAccess.AdminPanel);
         }
 
         private void _OwnBag(object sender, RoutedEventArgs e)
@@ -1334,6 +1338,56 @@ namespace Front
         {
             if (MessageBox.Show("Ви дійсно хочете відкласти чек?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                 NewReceipt();
+        }
+
+        private void IssueCardButton(object sender, RoutedEventArgs e)
+        {
+            IssueCard.Visibility = Visibility.Visible;
+            EnterBarcodeIssueCard(null,null);
+        }
+
+        private void EnterBarcodeIssueCard(object sender, RoutedEventArgs e)
+        {
+            BorderNumPadIssueCard.Visibility = Visibility.Visible;
+            NumPadIssueCard.Visibility = Visibility.Visible;
+
+            NumPadIssueCard.Desciption = $"Введіть штрихкод";
+            NumPadIssueCard.ValidationMask = "^[0-9]{13,15}$";
+            NumPadIssueCard.Result = $"{BarcodeIssueCard}";
+            NumPadIssueCard.IsEnableComma = false;
+            NumPadIssueCard.CallBackResult = (string res) =>
+            {
+                if (!string.IsNullOrEmpty(res))
+                    BarcodeIssueCard = res;
+                else
+                    BarcodeIssueCard = string.Empty;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("BarcodeIssueCard"));
+
+                BorderNumPadIssueCard.Visibility = Visibility.Visible;
+                NumPadIssueCard.Visibility = Visibility.Visible;
+            };
+        }
+
+        private void EnterPhoneIssueCard(object sender, RoutedEventArgs e)
+        {
+            BorderNumPadIssueCard.Visibility = Visibility.Visible;
+            NumPadIssueCard.Visibility = Visibility.Visible;
+
+            NumPadIssueCard.Desciption = $"Введіть Номер телефону";
+            NumPadIssueCard.ValidationMask = "^[0-9]{10}$";
+            NumPadIssueCard.Result = $"{PhoneIssueCard}";
+            NumPadIssueCard.IsEnableComma = false;
+            NumPadIssueCard.CallBackResult = (string res) =>
+            {
+                if (!string.IsNullOrEmpty(res))
+                    PhoneIssueCard = res;
+                else
+                    PhoneIssueCard = string.Empty;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("PhoneIssueCard"));
+
+                BorderNumPadIssueCard.Visibility = Visibility.Visible;
+                NumPadIssueCard.Visibility = Visibility.Visible;
+            };
         }
     }
 
