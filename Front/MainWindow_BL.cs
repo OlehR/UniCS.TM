@@ -455,7 +455,7 @@ namespace Front
             var R = Bl.GetReceiptHead(pR ?? curReceipt, true);
             curReceipt = R;
             R.NameCashier = AdminSSC?.NameUser;
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"{curReceipt.ToJSON()}", eTypeLog.Expanded);
+            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"pTP=>{pTP} pSumCash=>{pSumCash} pIssuingCash=>{pIssuingCash} pSumWallet=>{pSumWallet} pSumBonus=>{pSumBonus} curReceipt=> {curReceipt.ToJSON()}", eTypeLog.Expanded);
 
             if (R.AgeRestrict > 0 && R.IsConfirmAgeRestrict == false)
             {
