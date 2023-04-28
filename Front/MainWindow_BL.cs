@@ -437,6 +437,12 @@ namespace Front
 
         public void PayAndPrint()
         {
+            if (curReceipt.AgeRestrict > 0 && curReceipt.IsConfirmAgeRestrict == false)
+            {
+                SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ConfirmAge);
+                return;
+            }
+
             EquipmentStatusInPayment.Text = "";
             if (Global.TypeWorkplace == eTypeWorkplace.CashRegister && (curReceipt.StateReceipt==eStateReceipt.Prepare || curReceipt.StateReceipt==eStateReceipt.StartPay))
             {
@@ -463,12 +469,6 @@ namespace Front
             curReceipt = R;
             R.NameCashier = AdminSSC?.NameUser;
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"pTP=>{pTP} pSumCash=>{pSumCash} pIssuingCash=>{pIssuingCash} pSumWallet=>{pSumWallet} pSumBonus=>{pSumBonus} curReceipt=> {curReceipt.ToJSON()}", eTypeLog.Expanded);
-
-            if (R.AgeRestrict > 0 && R.IsConfirmAgeRestrict == false)
-            {
-                SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ConfirmAge);
-                return true;
-            }
 
             int[] IdWorkplacePays = R.IdWorkplacePays;// Wares.Select(el => el.IdWorkplacePay).Distinct().OrderBy(el => el).ToArray();
             IsManyPayments = IdWorkplacePays.Length > 1;
