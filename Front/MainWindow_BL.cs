@@ -331,7 +331,14 @@ namespace Front
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"(pBarCode=>{pBarCode},  pTypeBarCode=>{pTypeBarCode})");
             if (State == eStateMainWindows.StartWindow)
                 SetStateView(eStateMainWindows.WaitInput);
-
+            if (State == eStateMainWindows.WaitInputIssueCard)
+            {
+                BarcodeIssueCard = pBarCode;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("BarcodeIssueCard"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsBarcodeIssueCard"));
+                
+                return;
+            }
             var u = Bl.GetUserByBarCode(pBarCode);
             if (u != null)
             { Bl.OnAdminBarCode?.Invoke(u); return; } 

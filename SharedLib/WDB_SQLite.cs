@@ -910,5 +910,14 @@ Where ID_WORKPLACE = @IdWorkplace
 
             return (NewVer, isReload);
         }
+        public  bool ReplaceClientNew(ClientNew pC)
+        {
+            string Sql = @" replace into  Client_New (ID_WORKPLACE, BARCODE_CLIENT, BARCODE_CASHIER,  PHONE) values  (@IdWorkplace, @BarcodeClient, @BarcodeCashier, @Phone);";
+            using (var DB = new SQLite(ReceiptFile))
+            {
+                return DB.ExecuteNonQuery<ClientNew>(Sql, pC) > 0;
+            }
+        }
+
     }
 }

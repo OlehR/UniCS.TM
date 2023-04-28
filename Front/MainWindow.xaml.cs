@@ -128,6 +128,7 @@ namespace Front
         public double GiveRest { get; set; } = 0;
         public string BarcodeIssueCard { get; set; } = string.Empty;
         public string PhoneIssueCard { get; set; } = string.Empty;
+        public bool IsBarcodeIssueCard { get { return !string.IsNullOrEmpty(BarcodeIssueCard); } }
         
         public eTypeMonitor TypeMonitor
         {
@@ -791,6 +792,10 @@ namespace Front
                             ///PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnabledPaymentButton"));
                             //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnabledFindButton"));
                             break;
+                        case eStateMainWindows.WaitInputIssueCard:
+                            IssueCard.Visibility = Visibility.Visible;
+                            EnterPhoneIssueCard(null, null);
+                            break;
                         case eStateMainWindows.WaitInput:
                             //IsIgnoreExciseStamp = false;
                             //IsAddNewWeight = false;
@@ -1342,30 +1347,31 @@ namespace Front
 
         private void IssueCardButton(object sender, RoutedEventArgs e)
         {
-            IssueCard.Visibility = Visibility.Visible;
-            EnterBarcodeIssueCard(null,null);
+            SetStateView(eStateMainWindows.WaitInputIssueCard);
+            //IssueCard.Visibility = Visibility.Visible;
+            //EnterBarcodeIssueCard(null,null);
         }
 
         private void EnterBarcodeIssueCard(object sender, RoutedEventArgs e)
         {
-            BorderNumPadIssueCard.Visibility = Visibility.Visible;
-            NumPadIssueCard.Visibility = Visibility.Visible;
+            //BorderNumPadIssueCard.Visibility = Visibility.Visible;
+            //NumPadIssueCard.Visibility = Visibility.Visible;
 
-            NumPadIssueCard.Desciption = $"Введіть штрихкод";
-            NumPadIssueCard.ValidationMask = "^[0-9]{13,15}$";
-            NumPadIssueCard.Result = $"{BarcodeIssueCard}";
-            NumPadIssueCard.IsEnableComma = false;
-            NumPadIssueCard.CallBackResult = (string res) =>
-            {
-                if (!string.IsNullOrEmpty(res))
-                    BarcodeIssueCard = res;
-                else
-                    BarcodeIssueCard = string.Empty;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("BarcodeIssueCard"));
+            //NumPadIssueCard.Desciption = $"Введіть штрихкод";
+            //NumPadIssueCard.ValidationMask = "^[0-9]{13,15}$";
+            //NumPadIssueCard.Result = $"{BarcodeIssueCard}";
+            //NumPadIssueCard.IsEnableComma = false;
+            //NumPadIssueCard.CallBackResult = (string res) =>
+            //{
+            //    if (!string.IsNullOrEmpty(res))
+            //        BarcodeIssueCard = res;
+            //    else
+            //        BarcodeIssueCard = string.Empty;
+            //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("BarcodeIssueCard"));
 
-                BorderNumPadIssueCard.Visibility = Visibility.Visible;
-                NumPadIssueCard.Visibility = Visibility.Visible;
-            };
+            //    BorderNumPadIssueCard.Visibility = Visibility.Visible;
+            //    NumPadIssueCard.Visibility = Visibility.Visible;
+            //};
         }
 
         private void EnterPhoneIssueCard(object sender, RoutedEventArgs e)
@@ -1382,12 +1388,29 @@ namespace Front
                 if (!string.IsNullOrEmpty(res))
                     PhoneIssueCard = res;
                 else
+                {
                     PhoneIssueCard = string.Empty;
+                    EnterPhoneIssueCard(sender, e);
+                }
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("PhoneIssueCard"));
 
-                BorderNumPadIssueCard.Visibility = Visibility.Visible;
-                NumPadIssueCard.Visibility = Visibility.Visible;
+                //BorderNumPadIssueCard.Visibility = Visibility.Visible;
+                //NumPadIssueCard.Visibility = Visibility.Visible;
             };
+        }
+
+        private void IssueNewCardButton(object sender, RoutedEventArgs e)
+        {
+            ClientNew clientNew = new ClientNew() { BarcodeCashier= AdminSSC?.BarCode,BarcodeClient= BarcodeIssueCard, IdWorkplace= Global.IdWorkPlace, Phone = PhoneIssueCard };
+            WDB_SQLite wDB_SQLite = new WDB_SQLite();
+            wDB_SQLite.ReplaceClientNew(clientNew);
+        }
+
+        private void CancelIssueCard(object sender, RoutedEventArgs e)
+        {
+            SetStateView(eStateMainWindows.WaitInput);
+            PhoneIssueCard = string.Empty;
+            BarcodeIssueCard = string.Empty;
         }
     }
 

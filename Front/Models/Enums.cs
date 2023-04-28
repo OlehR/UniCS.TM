@@ -84,7 +84,12 @@ namespace Front.Models
         /// <summary>
         /// Користувацьке вікно.
         /// </summary>
-        WaitCustomWindows,
+        WaitCustomWindows,        
+        
+        /// <summary>
+        /// Видача картки на касі
+        /// </summary>
+        WaitInputIssueCard,
         /// <summary>
         /// Знайти клієнта за номером телефону
         /// </summary>

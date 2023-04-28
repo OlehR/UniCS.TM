@@ -1621,6 +1621,10 @@
                                    Mode=FindAncestor, AncestorType=Window}}" Value="True">
                                                         <Setter Property="IsEnabled" Value="True" />
                                                     </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsCashRegister, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                                        <Setter Property="IsEnabled" Value="True" />
+                                                    </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
                                         </Button.Style>
@@ -2065,17 +2069,39 @@
                                    Mode=FindAncestor, AncestorType=Window}}"/>
                     </Grid>
 
-                    <Border Grid.Row="1" Grid.Column="2" x:Name="BorderNumPadIssueCard">
-                    <uc:NumericPad x:Name="NumPadIssueCard"
-                                   
-                                   Width="400"  Height="480" />
+                    <Border Grid.Row="1" Grid.Column="2" x:Name="BorderNumPadIssueCard" Visibility="Visible" Panel.ZIndex="2">
+                        <uc:NumericPad x:Name="NumPadIssueCard" Width="400"  Height="480" />
                     </Border>
+                    
+                    <Button Grid.Row="1" Grid.Column="2"
+                             Width="250" Height="80"
+                            Content="Видати картку" Click="IssueNewCardButton" >
+                        <Button.Style>
+                            <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
+                                <Setter Property="IsEnabled" Value="False"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsBarcodeIssueCard, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                        <Setter Property="IsEnabled" Value="True" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsBarcodeIssueCard, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                        <Setter Property="IsEnabled" Value="False" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
 
 
 
                     <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
                             Style="{StaticResource Default}" Width="150"
-                            Content="Відмінити" Click="_Cancel" />
+                            Content="Відмінити" Click="CancelIssueCard" />
+
+
+
+                    
 
                 </Grid>
             </Border>
