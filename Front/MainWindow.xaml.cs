@@ -1404,6 +1404,7 @@ namespace Front
             ClientNew clientNew = new ClientNew() { BarcodeCashier= AdminSSC?.BarCode,BarcodeClient= BarcodeIssueCard, IdWorkplace= Global.IdWorkPlace, Phone = PhoneIssueCard };
             WDB_SQLite wDB_SQLite = new WDB_SQLite();
             wDB_SQLite.ReplaceClientNew(clientNew);
+            CancelIssueCard(null, null);
         }
 
         private void CancelIssueCard(object sender, RoutedEventArgs e)
@@ -1411,6 +1412,8 @@ namespace Front
             SetStateView(eStateMainWindows.WaitInput);
             PhoneIssueCard = string.Empty;
             BarcodeIssueCard = string.Empty;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsBarcodeIssueCard"));
+
         }
     }
 
