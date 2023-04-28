@@ -824,6 +824,18 @@ CREATE TABLE Log_RRO (
 );
 CREATE INDEX id_RRO ON Log_RRO(CODE_RECEIPT,ID_WORKPLACE,CODE_PERIOD);
 
+CREATE TABLE Client_NEW (
+    ID_WORKPLACE      INTEGER  NOT NULL,  
+    STATE     INTEGER  NOT NULL DEFAULT 0, 
+    BARCODE_CLIENT TEXT NOT NULL, ,
+    BARCODE_CASHIER    TEXT,   
+    PHONE          TEXT,
+    DATE_CREATE       DATETIME NOT NULL DEFAULT (datetime('now','localtime'))  
+);
+CREATE INDEX id_Client_NEW ON Client_NEW(BARCODE_CLIENT);
+CREATE INDEX id_Client_NEW_S ON Client_NEW(STATE);
+
+
 [SqlGetAllPermissions]
 select ua.code_access as code_access,ua.type_access as type_access 
 from    users_access ua 
