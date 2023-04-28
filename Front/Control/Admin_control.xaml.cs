@@ -45,7 +45,7 @@ namespace Front.Control
                 {
                     sum += item.MonetarySum;
                 }
-               return sum;
+                return sum;
             }
         }
         public Banknote SelectedBanknote { get; set; } = new();
@@ -120,7 +120,7 @@ namespace Front.Control
 
             ActiveWorkPlaces = Bl.db.GetWorkPlace().Where(el => el.CodeWarehouse == Global.CodeWarehouse);
 
-           // ListActiveKSO.ItemsSource = ActiveWorkPlaces;
+            // ListActiveKSO.ItemsSource = ActiveWorkPlaces;
 
             RefreshJournal();
             //поточний час
@@ -1078,7 +1078,7 @@ namespace Front.Control
                 if (el?.IP != null)
                     Task.Run(async () =>
                     {
-                        CommandAPI<string> Command = new() { Command = eCommand.OpenShift, Data = AdminUser?.BarCode??MW.AdminSSC?.BarCode }; 
+                        CommandAPI<string> Command = new() { Command = eCommand.OpenShift, Data = AdminUser?.BarCode ?? MW.AdminSSC?.BarCode };
                         try
                         {
                             var r = new SocketClient(el.IP, Global.PortAPI);
@@ -1119,7 +1119,7 @@ namespace Front.Control
 
         private void ChangeBanknoteAmountClick(object sender, RoutedEventArgs e)
         {
-            
+
         }
 
         private void MoneyCountingCancel(object sender, RoutedEventArgs e)
@@ -1149,10 +1149,11 @@ namespace Front.Control
             InputCountBanknote.CallBackResult = (string res) =>
             {
                 if (!string.IsNullOrEmpty(res))
-                {
                     SelectedBanknote.MonetaryAmount = Convert.ToInt32(res);
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("TotalMoneyCounting"));
-                }
+                else
+                    SelectedBanknote.MonetaryAmount = 0;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("TotalMoneyCounting"));
+
                 NumericPadInputCountBanknote.Visibility = Visibility.Visible;
                 InputCountBanknote.Visibility = Visibility.Visible;
             };
