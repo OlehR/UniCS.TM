@@ -133,9 +133,9 @@ namespace Front.Equipments
                 Comments = pR.ReceiptComments.Select(r => new ReceiptText() { Text = r, RenderType = eRenderAs.Text }).ToList();
             if (pR.TypeReceipt == eTypeReceipt.Sale) (FiscalNumber, SumFiscal) = PrintReceipt(pR, Comments);
             else
-                FiscalNumber = ReturnReceipt(pR);
+                (FiscalNumber,SumFiscal) = ReturnReceipt(pR);
             pR.NumberReceipt = FiscalNumber;
-            return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, TypeRRO = Type.ToString(), FiscalNumber = FiscalNumber, SUM = pR.Sum/*pR.SumReceipt - pR.SumBonus,*/ };
+            return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, TypeRRO = Type.ToString(), FiscalNumber = FiscalNumber, SUM = SumFiscal /*pR.SumReceipt - pR.SumBonus,*/ };
         }
 
         public override bool PutToDisplay(string ptext) { return true; }
@@ -644,7 +644,7 @@ namespace Front.Equipments
 
         public void OpenReturnReceipt() => OnSynchronizeWaitCommandResult(eCommand.ReturnReceipt, string.Format("{0},{1},{2}", (object)_operatorCode, (object)_operatorPassword, (object)_tillNumber), (Action<string>)(res => _logger?.LogDebug("[ FP700 ] ReturnReceipt res = " + res)));
 
-        public string ReturnReceipt(Receipt pR)
+        public (string,decimal) ReturnReceipt(Receipt pR)
         {
             ObliterateFiscalReceipt();
             string s = GetLastRefundReceiptNumber();
@@ -658,9 +658,9 @@ namespace Front.Equipments
             OnSynchronizeWaitCommandResult(eCommand.CloseFiscalReceipt, onResponseCallback: ((Action<string>)(res => _logger?.LogDebug("[ FP700 ] CloseFiscalReceipt res = " + res))));
             int result2;
             if (!int.TryParse(GetLastRefundReceiptNumber(), out result2))
-                return (string)null;
+                return (null,Sum);
             _logger?.LogDebug(string.Format("[ FP700 ] newLastReceipt = {0} / lastReceipt = {1}", (object)result2, (object)result1));
-            return result2 <= result1 ? (string)null : result2.ToString();
+            return (result2 <= result1 ? (string)null : result2.ToString(),Sum);
         }
 
         public bool PrintSeviceReceipt(List<ReceiptText> texts)
