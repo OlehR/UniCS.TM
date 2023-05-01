@@ -127,14 +127,15 @@ namespace Front.Equipments
         public override LogRRO PrintReceipt(Receipt pR)
         {
             string FiscalNumber = null;
+            decimal SumFiscal = 0;
             List<ReceiptText> Comments = null;
             if (pR?.ReceiptComments?.Count() > 0)
                 Comments = pR.ReceiptComments.Select(r => new ReceiptText() { Text = r, RenderType = eRenderAs.Text }).ToList();
-            if (pR.TypeReceipt == eTypeReceipt.Sale) FiscalNumber = PrintReceipt(pR, Comments);
+            if (pR.TypeReceipt == eTypeReceipt.Sale) (FiscalNumber, SumFiscal) = PrintReceipt(pR, Comments);
             else
                 FiscalNumber = ReturnReceipt(pR);
             pR.NumberReceipt = FiscalNumber;
-            return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, TypeRRO = Type.ToString(), FiscalNumber = FiscalNumber, SUM = pR.SumReceipt - pR.SumBonus, };
+            return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, TypeRRO = Type.ToString(), FiscalNumber = FiscalNumber, SUM = pR.Sum/*pR.SumReceipt - pR.SumBonus,*/ };
         }
 
         public override bool PutToDisplay(string ptext) { return true; }
@@ -383,7 +384,7 @@ namespace Front.Equipments
 
         public Task<eDeviceConnectionStatus> TestDevice2() => Task.Run<eDeviceConnectionStatus>(new Func<eDeviceConnectionStatus>(TestDeviceSync));
 
-        public string PrintReceipt(ModelMID.Receipt pR, List<ReceiptText> Comments = null)
+        public (string,decimal) PrintReceipt(Receipt pR, List<ReceiptText> Comments = null)
         {
             ObliterateFiscalReceipt();
             string s = GetLastReceiptNumber();
@@ -398,8 +399,10 @@ namespace Front.Equipments
             if (Comments != null && Comments.Count() > 0)
                 PrintFiscalComments(Comments);
             FillUpReceiptItems(pR.GetParserWaresReceipt());
+            var Sum = SubTotal();
             if (!PayReceipt(pR))
             {
+         
                 ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Error, "Check was not printed")
                 { Status = eStatusRRO.Error, IsСritical = true });
             }
@@ -407,18 +410,18 @@ namespace Front.Equipments
             ClearDisplay();
             
             if (!int.TryParse(GetLastReceiptNumber(), out int result2))
-                return (string)null;
-
+                return (null, Sum);
+            
+            //Чек видачі готівки.
             Payment Pay = pR?.Payment?.Where(el => el.TypePay == eTypePay.IssueOfCash)?.FirstOrDefault();
             if (Pay != null)
                 IssueOfCash(Pay);
 
             _logger?.LogDebug($"[ FP700 ] newLastReceipt = {result2} / lastReceipt = {result1}");
-            string str = result2 > result1 ? result2.ToString() : (string)null;
-            if (str != null)
-                return str;
-            ObliterateFiscalReceipt();
-            return str;
+            string str = result2 > result1 ? result2.ToString() : null;
+            if (str == null)                
+                ObliterateFiscalReceipt();
+            return (str,Sum);
         }
 
         public bool OpenReceipt(string pCashier = null)
@@ -641,7 +644,7 @@ namespace Front.Equipments
 
         public void OpenReturnReceipt() => OnSynchronizeWaitCommandResult(eCommand.ReturnReceipt, string.Format("{0},{1},{2}", (object)_operatorCode, (object)_operatorPassword, (object)_tillNumber), (Action<string>)(res => _logger?.LogDebug("[ FP700 ] ReturnReceipt res = " + res)));
 
-        public string ReturnReceipt(ModelMID.Receipt pR)
+        public string ReturnReceipt(Receipt pR)
         {
             ObliterateFiscalReceipt();
             string s = GetLastRefundReceiptNumber();
@@ -650,7 +653,7 @@ namespace Front.Equipments
             int.TryParse(s, out result1);
             OpenReturnReceipt();
             FillUpReceiptItems(pR.GetParserWaresReceipt());
-
+            var Sum = SubTotal();
             PayReceipt(pR);
             OnSynchronizeWaitCommandResult(eCommand.CloseFiscalReceipt, onResponseCallback: ((Action<string>)(res => _logger?.LogDebug("[ FP700 ] CloseFiscalReceipt res = " + res))));
             int result2;
@@ -712,7 +715,7 @@ namespace Front.Equipments
             return true;
         }
 
-        public bool SetupReceipt(IFiscalReceiptConfiguration configuration)
+        public bool SetupReceipt(Fp700ReceiptConfiguration configuration)
         {
             if (!(configuration is Fp700ReceiptConfiguration receiptConfiguration))
                 return false;
@@ -749,6 +752,17 @@ namespace Front.Equipments
             OnSynchronizeWaitCommandResult(eCommand.EveryDayReport, _operatorPassword + ",0", ((Action<string>)(response => Res = response)));
             IsZReportAlreadyDone = true;
             DeleteAllArticles();
+            return Res;
+        }
+
+        public decimal  SubTotal()
+        {
+            decimal Res = 0;
+            string res = null;
+            OnSynchronizeWaitCommandResult(eCommand.SubTotal, onResponseCallback:((Action<string>)(response => res = response)));
+            var r = res?.Split(',');
+            if (r.Length > 1) 
+              decimal.TryParse(r[1], out Res);
             return Res;
         }
 

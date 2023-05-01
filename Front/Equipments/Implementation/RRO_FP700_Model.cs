@@ -24,6 +24,7 @@ namespace Front.Equipments.Implementation.FP700_Model
         PaperCut = 45, // 0x0000002D
         ShiftInfo = 46, // 0x0000002E
         OpenFiscalReceipt = 48, // 0x00000030
+        SubTotal = 51, // 0x00000033
         RegisterProductInReceiptWithDisplay = 52, // 0x00000034
         PayInfoFiscalReceipt = 53, // 0x00000035
         PrintFiscalComment = 54, // 0x00000036
@@ -198,97 +199,8 @@ namespace Front.Equipments.Implementation.FP700_Model
         public string Id_Sam { get; set; }
     }
 
-    /* public abstract class SqLiteDataController
-     {
-         private readonly IConfiguration _configuration;
-         private readonly string _tableName;
-         private string _dbFile;
 
-         protected SqLiteDataController(IConfiguration configuration, string tableName)
-         {
-             _configuration = configuration;
-             _tableName = tableName;
-             _dbFile = Path.Combine(configuration["MID:PathData"], "DB", _configuration.GetConnectionString("LocalDbConnection"));
-         }
-
-         protected SQLiteConnection GetConnection()
-         {
-             return new SQLiteConnection("Data Source=" + _dbFile);
-         }
-
-         protected async Task<bool> ExecuteNonQuery(string scriptBody, DynamicParameters obj = null, bool customName = false)
-         {
-             using SQLiteConnection connection = GetConnection();
-             return await connection.ExecuteAsync(scriptBody, obj) > 0;
-         }
-
-         protected Task<TModel> GetByParams<TModel>(string scriptBody, DynamicParameters obj = null, bool customName = false)
-         {
-             using SQLiteConnection cnn = GetConnection();
-             return cnn.QueryFirstOrDefaultAsync<TModel>(scriptBody, obj);
-         }
-
-     }
-
-     public class Fp700DataController : SqLiteDataController
-     {
-         public Fp700DataController(IConfiguration configuration)
-             : base(configuration, "FP700FiscalPrinterArticles")
-         {
-         }
-
-         public Task<int> CreateOrUpdateArticle(ReceiptWares pRW, int plu)
-         {
-             string sql = @"INSERT INTO FP700FiscalPrinterArticles (Barcode, PLU, ProductName, Price) VALUES (@Barcode, @ProductPLU, @ProductName, @Price)";
-             DynamicParameters dynamicParameters = new DynamicParameters();
-             dynamicParameters.Add("@Barcode", pRW.WaresId.ToString());
-             dynamicParameters.Add("@ProductPLU", plu);
-             dynamicParameters.Add("@ProductName", pRW.NameWares);
-             dynamicParameters.Add("@Price", pRW.Price);
-             return GetByParams<int>(sql, dynamicParameters);
-         }
-
-         public Task<bool> DeleteArticle(int plu)
-         {
-             string sql = @"DELETE FROM FP700FiscalPrinterArticles WHERE PLU = @PLU";
-             DynamicParameters dynamicParameters = new DynamicParameters();
-             dynamicParameters.Add("@PLU", plu);
-             return ExecuteNonQuery(sql, dynamicParameters);
-         }
-
-         public Task<bool> DeleteAllArticles()
-         {
-             string sql = @"DELETE FROM FP700FiscalPrinterArticles";
-             return ExecuteNonQuery(sql);
-         }
-
-         public Task<ProductArticle> GetArticleById(Guid id)
-         {
-             string sql = "SELECT * FROM FP700FiscalPrinterArticles WHERE Barcode = @Barcode";
-             DynamicParameters dynamicParameters = new DynamicParameters();
-             dynamicParameters.Add("@Barcode", id.ToString());
-             return GetByParams<ProductArticle>(sql, dynamicParameters);
-         }
-     }
-
-     public class ProductArticle
-     {
-         public int Id { get; set; }
-
-         public string ProductName { get; set; }
-
-         public double Price { get; set; }
-
-         public int PLU { get; set; }
-
-         public string Barcode { get; set; }
-     }      */
-
-    public interface IFiscalReceiptConfiguration
-    {
-    }
-
-    public class Fp700ReceiptConfiguration : IFiscalReceiptConfiguration
+    public class Fp700ReceiptConfiguration
     {
         public string HeaderLine1 { get; set; }
 
