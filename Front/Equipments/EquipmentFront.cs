@@ -163,6 +163,9 @@ namespace Front
                         case eModelEquipment.VirtualScaner:
                             Scaner = new VirtualScaner(ElEquipment, config, LF, pSetBarCode);
                             break;
+                        case eModelEquipment.ScanerCom:
+                            Scaner = new ScanerCom(ElEquipment, config, LF, pSetBarCode);
+                            break;
                         case eModelEquipment.ScanerKeyBoard:
                             ScanerKeyBoard Sc = new ScanerKeyBoard(ElEquipment, config, LF, pSetBarCode);
                             if (W != null)

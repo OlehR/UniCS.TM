@@ -94,17 +94,14 @@ namespace Front.Equipments
             string Str = Encoding.ASCII.GetString(data);
 
             FileLogger.WriteLogMessage("OnDataReceived=>" + Str);
-            if (IsRead && Str.Length >= 6)
-            {
-                IsRead = false;
-                Str = Str.Substring(0, 6);
+            Str = Str.Replace("\r", "");
 
-                OnBarCode?.Invoke(Str, null);
-            }
+            OnBarCode?.Invoke(Str, null);
+
             return true;
         }
 
-    
+
 
         public void GetReadDataSync(byte[] command, Action<byte[]> onDatAction)
         {
@@ -120,31 +117,11 @@ namespace Front.Equipments
             }
         }
 
-        private void OnDataReceived2(byte[] data)
-        {
-            string Str = Encoding.ASCII.GetString(data);
-            if (Str.Length >= 6)
-            {
-                Str = Str.Substring(0, 6);
-                char[] charArray = Str.ToCharArray();
-                Array.Reverse(charArray);
-                if (double.TryParse(charArray, out double Weight))
-                {
-                    if (Weight == 0d)
-                        //{
-                        // if (CountZero < 3)
-                        //  {
-                        //     CountZero++;
-                       // return true;
-                    // }
-                    //}
-                    //CountZero = 0;
-                    OnScalesData?.Invoke(Weight, true);
-                }
-                return ;
-            }
-            return ;
-        }
+        public override void ForceGoodReadTone() { }
+        public override void StartMultipleTone() { }
+        public override void StopMultipleTone() { }
+
+
         public void Dispose()
         {
             OnBarCode = null;
