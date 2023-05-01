@@ -131,9 +131,10 @@ namespace Front.Equipments
             List<ReceiptText> Comments = null;
             if (pR?.ReceiptComments?.Count() > 0)
                 Comments = pR.ReceiptComments.Select(r => new ReceiptText() { Text = r, RenderType = eRenderAs.Text }).ToList();
-            if (pR.TypeReceipt == eTypeReceipt.Sale) (FiscalNumber, SumFiscal) = PrintReceipt(pR, Comments);
-            else
-                (FiscalNumber,SumFiscal) = ReturnReceipt(pR);
+            /*if (pR.TypeReceipt == eTypeReceipt.Sale) */
+                    (FiscalNumber, SumFiscal) = PrintReceipt(pR, Comments);
+           /* else
+                (FiscalNumber,SumFiscal) = ReturnReceipt(pR);*/
             pR.NumberReceipt = FiscalNumber;
             return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, TypeRRO = Type.ToString(), FiscalNumber = FiscalNumber, SUM = SumFiscal /*pR.SumReceipt - pR.SumBonus,*/ };
         }
@@ -388,14 +389,15 @@ namespace Front.Equipments
         {
             ObliterateFiscalReceipt();
             string s = GetLastReceiptNumber();
-
           
             _logger?.LogDebug("{START_PRINTING}");
             _logger?.LogDebug("{LAST_RECEIPTNUMBER}" + s);
             if (string.IsNullOrEmpty(s))
                 s = "0";
             int.TryParse(s, out int result1);
-            OpenReceipt(pR?.NameCashier);
+            if(pR.TypeReceipt==eTypeReceipt.Sale) OpenReceipt(pR?.NameCashier);
+            else OpenReturnReceipt();
+
             if (Comments != null && Comments.Count() > 0)
                 PrintFiscalComments(Comments);
             FillUpReceiptItems(pR.GetParserWaresReceipt());
@@ -423,6 +425,25 @@ namespace Front.Equipments
                 ObliterateFiscalReceipt();
             return (str,Sum);
         }
+
+        /*public (string, decimal) ReturnReceipt(Receipt pR)
+        {
+            ObliterateFiscalReceipt();
+            string s = GetLastRefundReceiptNumber();
+            if (string.IsNullOrEmpty(s)) s = "0";
+            int result1;
+            int.TryParse(s, out result1);
+            OpenReturnReceipt();
+            FillUpReceiptItems(pR.GetParserWaresReceipt());
+            var Sum = SubTotal();
+            PayReceipt(pR);
+            OnSynchronizeWaitCommandResult(eCommand.CloseFiscalReceipt, onResponseCallback: ((Action<string>)(res => _logger?.LogDebug("[ FP700 ] CloseFiscalReceipt res = " + res))));
+            int result2;
+            if (!int.TryParse(GetLastRefundReceiptNumber(), out result2))
+                return (null, Sum);
+            _logger?.LogDebug(string.Format("[ FP700 ] newLastReceipt = {0} / lastReceipt = {1}", (object)result2, (object)result1));
+            return (result2 <= result1 ? (string)null : result2.ToString(), Sum);
+        }*/
 
         public bool OpenReceipt(string pCashier = null)
         {
@@ -643,26 +664,7 @@ namespace Front.Equipments
         }
 
         public void OpenReturnReceipt() => OnSynchronizeWaitCommandResult(eCommand.ReturnReceipt, string.Format("{0},{1},{2}", (object)_operatorCode, (object)_operatorPassword, (object)_tillNumber), (Action<string>)(res => _logger?.LogDebug("[ FP700 ] ReturnReceipt res = " + res)));
-
-        public (string,decimal) ReturnReceipt(Receipt pR)
-        {
-            ObliterateFiscalReceipt();
-            string s = GetLastRefundReceiptNumber();
-            if (string.IsNullOrEmpty(s)) s = "0";
-            int result1;
-            int.TryParse(s, out result1);
-            OpenReturnReceipt();
-            FillUpReceiptItems(pR.GetParserWaresReceipt());
-            var Sum = SubTotal();
-            PayReceipt(pR);
-            OnSynchronizeWaitCommandResult(eCommand.CloseFiscalReceipt, onResponseCallback: ((Action<string>)(res => _logger?.LogDebug("[ FP700 ] CloseFiscalReceipt res = " + res))));
-            int result2;
-            if (!int.TryParse(GetLastRefundReceiptNumber(), out result2))
-                return (null,Sum);
-            _logger?.LogDebug(string.Format("[ FP700 ] newLastReceipt = {0} / lastReceipt = {1}", (object)result2, (object)result1));
-            return (result2 <= result1 ? (string)null : result2.ToString(),Sum);
-        }
-
+            
         public bool PrintSeviceReceipt(List<ReceiptText> texts)
         {
             ObliterateFiscalReceipt();
