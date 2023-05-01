@@ -1039,27 +1039,31 @@ namespace Front.Equipments
                 try
                 {
                     _logger?.LogDebug(string.Format("[FP700] Response for command {0}", (object)command));
-                    Action<string> action = onResponseCallback;
-                    if (action != null)
-                        action(response);
+                    onResponseCallback?.Invoke(response);
+                    //Action<string> action = onResponseCallback;
+                    //if (action != null)
+                    //    action(response);
                     isResultGot = true;
                 }
                 catch (Exception ex)
                 {
-                    Action<Exception> action = onExceptionCallback;
-                    if (action == null)
-                        return;
-                    action(ex);
+                   // Action<Exception> action = onExceptionCallback;
+                   // if (onExceptionCallback == null)
+                    //    return;
+                    onExceptionCallback?.Invoke(ex);
                 }
                 finally
                 {
-                    _commandsCallbacks.Remove(command);
+                    _commandsCallbacks.Remove(command);                  
                 }
             }));
             try
             {
                 if (!SendPackage(command, data))
+                {
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $" RES=>{false} {command} {data} ");
                     return false;
+                }
                 StaticTimer.Wait((Func<bool>)(() => !isResultGot));
                 return isResultGot;
             }
@@ -1073,6 +1077,7 @@ namespace Front.Equipments
 
         public bool SendPackage(eCommand command, string data = "", int waitingTimeout = 10)
         {
+            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"{command} {data}");
             _logger?.LogDebug("SendPackage start");
             bool flag = command != eCommand.ClearDisplay && command != eCommand.ShiftInfo && command != eCommand.DiagnosticInfo && command != eCommand.EveryDayReport && command != eCommand.LastDocumentsNumbers && command != eCommand.ObliterateFiscalReceipt && command != eCommand.PaperCut && command != eCommand.GetDateTime && command != eCommand.PaperPulling && command != eCommand.LastZReportInfo && command != eCommand.PrintDiagnosticInformation;
             if (!IsZReportAlreadyDone & flag)

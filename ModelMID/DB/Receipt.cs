@@ -329,6 +329,7 @@ namespace ModelMID
                     res.AddRange(el.ParseByExcise());
                 Res = res;
             }
+            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"ReceiptWares=>{Res}");
             return Res;
         }
         public bool IsUseBonus { get { return Wares?.Where(el => el.TypeWares != eTypeWares.Ordinary).Any() == true; } }
