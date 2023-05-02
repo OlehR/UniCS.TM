@@ -91,7 +91,7 @@ namespace ModelMID
         /// <summary>
         /// Сума використаних бонусних грн.
         /// </summary>
-        public decimal SumBonus { get; set; }
+        public decimal SumBonus { get { return _Wares?.Sum(el => el.SumBonus) ?? 0m; } set { } }
 
         public string CodeCreditCard { get; set; }
         public string NumberSlip { get; set; }

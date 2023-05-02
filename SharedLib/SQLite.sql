@@ -245,7 +245,8 @@ update receipt
    set STATE_RECEIPT    = @StateReceipt,
        NUMBER_RECEIPT=@NumberReceipt,
 	   Date_receipt = datetime('now','localtime'), --max(@DateReceipt,Date_receipt), -- 
-       USER_CREATE = @UserCreate
+       USER_CREATE = @UserCreate,
+       Sum_Bonus =@SumBonus
  --      SUM_RECEIPT      = @SumReceipt,
  --      VAT_RECEIPT      = @VatReceipt,
  --      SUM_CASH         = @SumCash,
