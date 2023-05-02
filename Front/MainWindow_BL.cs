@@ -604,7 +604,13 @@ namespace Front
                             return true;
                         if (res.CodeError == 0)
                         {
-                            Bl.UpdateReceiptFiscalNumber(R, res.FiscalNumber, R.SumFiscal);
+
+                         
+                            R.NumberReceipt = res.FiscalNumber;
+                            R.StateReceipt = eStateReceipt.Print;
+                            R.UserCreate = Bl.GetUserIdbyWorkPlace(R.IdWorkplace);                            
+                            R.DateReceipt = DateTime.Now;
+                            Bl.UpdateReceiptFiscalNumber(R);
                             s.Play(eTypeSound.DoNotForgetProducts);
                             Bl.ds.SendReceiptTo1C(curReceipt);
                             SetCurReceipt(null);

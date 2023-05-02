@@ -88,10 +88,12 @@ namespace ModelMID
             get { return (Payment != null && Payment.Count() > 0 ? Payment.Sum(el => el.SumPay) : _SumCreditCard); }
             set { _SumCreditCard = value; }
         }
+
+        decimal _SumBonus = 0m;
         /// <summary>
         /// Сума використаних бонусних грн.
         /// </summary>
-        public decimal SumBonus { get { return _Wares?.Sum(el => el.SumBonus) ?? 0m; } set { } }
+        public decimal SumBonus { get { return _SumBonus>0 &&_Wares==null? _SumBonus : _Wares?.Sum(el => el.SumBonus) ?? 0m; } set { _SumBonus = value; } }
 
         public string CodeCreditCard { get; set; }
         public string NumberSlip { get; set; }

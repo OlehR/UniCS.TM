@@ -169,24 +169,13 @@ namespace SharedLib
             return db.GetLastReceipt(idReceip);
         }
 
-        public bool UpdateReceiptFiscalNumber(IdReceipt pIdR, string pFiscalNumber, decimal pSumFiscal = 0, DateTime pDateFiscal = default(DateTime))
+        public bool UpdateReceiptFiscalNumber(Receipt pR)
         {
-            if (pDateFiscal == default(DateTime))
-                pDateFiscal = DateTime.Now;
-            var receipt = new Receipt(pIdR);
-            receipt.NumberReceipt = pFiscalNumber;
-            receipt.StateReceipt = eStateReceipt.Print;
-            receipt.UserCreate = GetUserIdbyWorkPlace(pIdR.IdWorkplace);
-            receipt.SumFiscal = pSumFiscal;
-            receipt.DateReceipt = pDateFiscal;
-
-            DateTime Ldc = pIdR.DTPeriod;
-
-            WDB_SQLite ldb = DB(pIdR);
-
-            var Res = ldb.CloseReceipt(receipt);
-            var r = db.ViewReceipt(pIdR, true);
-            Global.OnReceiptCalculationComplete?.Invoke(r);
+            DateTime Ldc = pR.DTPeriod;
+            WDB_SQLite ldb = DB(pR);
+            var Res = ldb.CloseReceipt(pR);
+           // var r = db.ViewReceipt(pR, true);
+            Global.OnReceiptCalculationComplete?.Invoke(pR);
             return Res;
         }
 
