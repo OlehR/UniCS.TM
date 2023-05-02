@@ -462,7 +462,8 @@ namespace Front
                                if (Res == null)
                                {
                                    r.TextReceipt = RRO.GetTextLastReceipt();
-                                   r.SUM = RRO.GetSumFromTextReceipt(r.TextReceipt);
+                                   if (r.SUM==0)
+                                     r.SUM = RRO.GetSumFromTextReceipt(r.TextReceipt);
                                }
                            }
                            catch (Exception e)

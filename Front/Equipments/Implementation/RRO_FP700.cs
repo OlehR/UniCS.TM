@@ -765,7 +765,7 @@ namespace Front.Equipments
             var r = res?.Split(',');
             if (r.Length > 1) 
               decimal.TryParse(r[1], out Res);
-            return Res;
+            return Res/100M;
         }
 
         public bool ArticleReport() => OnSynchronizeWaitCommandResult(eCommand.ArticleReport, string.Format("{0},{1}", (object)_operatorPassword, (object)eArticleReportType.S));
