@@ -40,6 +40,7 @@ namespace Front
         public DateTime DTAdminSSC { get; set; }
 
         public Receipt curReceipt;//{ get; set; } = null;
+        Receipt ReceiptPostpone=null;
         public ReceiptWares CurWares { get; set; } = null;
         public Client Client { get; set; }
         public GW CurW { get; set; } = null;
@@ -263,10 +264,13 @@ namespace Front
                         WaitAdminTitle.Visibility = Visibility.Collapsed;
                         tb.Inlines.Add(new Run("Відскануйте акцизну марку!") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red, FontSize = 32 });
                         break;
+                    case eTypeAccess.UseBonus:
+                        WaitAdminTitle.Visibility = Visibility.Collapsed;
+                        tb.Inlines.Add(new Run("Використати бонуси?") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red, FontSize = 32 });
+                        break;
                 }
                 StackPanelWaitAdmin.Children.Clear();
                 StackPanelWaitAdmin.Children.Add(tb);
-
                 return null;
             }
         }
@@ -364,22 +368,52 @@ namespace Front
 
             SetCurReceipt(null);
             Receipt LastR = null;
-            try
+            if (Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout)
             {
-                LastR = Bl.GetLastReceipt();
+                try
+                {
+                    LastR = Bl.GetLastReceipt();
+                }
+                catch (Exception e)
+                {
+                    FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, e);
+                }
+                if (LastR != null && LastR.SumReceipt > 0 && LastR.StateReceipt != eStateReceipt.Canceled && LastR.StateReceipt != eStateReceipt.Print && LastR.StateReceipt != eStateReceipt.Send)
+                {
+                    //curReceipt = LastR;               
+                    SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, new CustomWindow(eWindows.RestoreLastRecipt, LastR.SumReceipt.ToString()));
+                    return;
+                }
+                
+                   
             }
-            catch (Exception e)
+            else //Касове місце
             {
-                FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, e);
+                var r=Bl.GetReceipts(DateTime.Now, DateTime.Now,Global.IdWorkPlace );
+                var rr=r.Where(el=> el.SumTotal>0 && el.StateReceipt != eStateReceipt.Canceled && el.StateReceipt!= eStateReceipt.Print && el.StateReceipt != eStateReceipt.Send).OrderByDescending(el=>el.CodeReceipt);
+                if (rr != null && rr.Any())
+                {
+                    if (rr.Count() <= 2)
+                    {
+                        if (rr.Count() ==2)
+                        {
+                            ReceiptPostpone = Bl.GetReceiptHead(rr.Last(), true);
+                        }                        
+                    }
+                    else //Повідомлення 
+                    { }
+                    SetStateView(eStateMainWindows.WaitInput);
+                    var Receipt = Bl.GetReceiptHead(rr.FirstOrDefault(), true);
+                    Global.OnReceiptCalculationComplete?.Invoke(Receipt);
+                }
+                else
+                {
+
+                }
+
             }
-            if (LastR != null && LastR.SumReceipt > 0 && LastR.StateReceipt != eStateReceipt.Canceled && LastR.StateReceipt != eStateReceipt.Print && LastR.StateReceipt != eStateReceipt.Send)
-            {
-                //curReceipt = LastR;               
-                SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, new CustomWindow(eWindows.RestoreLastRecipt, LastR.SumReceipt.ToString()));
-                return;
-            }
-            else
-                SetStateView(eStateMainWindows.StartWindow);
+            SetStateView(eStateMainWindows.StartWindow);
+
             Task.Run(() => Bl.ds.SyncDataAsync());
         }
 
@@ -1341,8 +1375,24 @@ namespace Front
 
         private void PostponeCheck(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show("Ви дійсно хочете відкласти чек?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                NewReceipt();
+            if (ReceiptPostpone == null)
+            {
+                if (MessageBox.Show("Ви дійсно хочете відкласти чек?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                {
+                    ReceiptPostpone = curReceipt;
+                    NewReceipt();
+                }
+            }else
+            {
+                if (curReceipt == null || !curReceipt.Wares.Any())
+                {
+                    Global.OnReceiptCalculationComplete?.Invoke(ReceiptPostpone);
+                    ReceiptPostpone = null;
+                }
+                else
+                    MessageBox.Show("Неможливо відновити чек не закривши текучий?", "Увага!", MessageBoxButton.OK, MessageBoxImage.Question);
+
+            }               
         }
 
         private void IssueCardButton(object sender, RoutedEventArgs e)
