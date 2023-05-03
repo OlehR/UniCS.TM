@@ -293,8 +293,7 @@ namespace Front
                 case eTypeAccess.ConfirmAge:
                     Bl.AddEventAge(curReceipt);
                     TypeAccessWait = eTypeAccess.NoDefine;
-                    PrintAndCloseReceipt();
-
+                    PayAndPrint();
                     break;
                 case eTypeAccess.ChoicePrice:
                     foreach (Models.Price el in Prices.ItemsSource)
@@ -443,7 +442,8 @@ namespace Front
                 return;
             }
 
-            EquipmentStatusInPayment.Text = "";
+            Dispatcher.BeginInvoke(new ThreadStart(() =>
+            { EquipmentStatusInPayment.Text = ""; }));
             if (Global.TypeWorkplace == eTypeWorkplace.CashRegister && (curReceipt.StateReceipt==eStateReceipt.Prepare || curReceipt.StateReceipt==eStateReceipt.StartPay))
             {
                 PaymentWindow.UpdatePaymentWindow();

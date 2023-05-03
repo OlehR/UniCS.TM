@@ -642,12 +642,14 @@ namespace SharedLib
 
         public bool InsertLogRRO(LogRRO pL) { return db.InsertLogRRO(pL); }
 
-        public void AddEventAge(IdReceipt pRecipt)
+        public void AddEventAge(Receipt pRecipt)
         {
-            List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(pRecipt) { EventType = eReceiptEventType.AgeRestrictedProduct, EventName = "Вік підтверджено", CreatedAt = DateTime.Now } };
-
-            db.InsertReceiptEvent(rr);
+            ReceiptEvent el = new ReceiptEvent(pRecipt) { EventType = eReceiptEventType.AgeRestrictedProduct, EventName = "Вік підтверджено", CreatedAt = DateTime.Now };
+            var l = new List<ReceiptEvent> { el };
+            db.InsertReceiptEvent(l);         
+            pRecipt.ReceiptEvent = pRecipt.ReceiptEvent == null? l: pRecipt.ReceiptEvent.Append<ReceiptEvent>(el);
         }
+
         /// <summary>
         /// Cстворення повернення на основі чека.
         /// </summary>

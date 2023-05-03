@@ -1233,7 +1233,7 @@ namespace Front
                         {
                             Bl.AddEventAge(curReceipt);
                             //Thread.Sleep(1000);
-                            PrintAndCloseReceipt();
+                            PayAndPrint();
                         }
                         ));
                     }
