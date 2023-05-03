@@ -40,7 +40,11 @@ namespace Front
         public DateTime DTAdminSSC { get; set; }
 
         public Receipt curReceipt;//{ get; set; } = null;
-        Receipt ReceiptPostpone=null;
+        Receipt ReceiptPostpone = null;
+        public bool IsReceiptPostpone { get { return ReceiptPostpone == null; } }
+        //public bool IsCurReceiptNotNull { get { return (curReceipt == null || !curReceipt.Wares.Any()) && !IsReceiptPostpone; } }
+
+
         public ReceiptWares CurWares { get; set; } = null;
         public Client Client { get; set; }
         public GW CurW { get; set; } = null;
@@ -130,7 +134,7 @@ namespace Front
         public string BarcodeIssueCard { get; set; } = string.Empty;
         public string PhoneIssueCard { get; set; } = string.Empty;
         public bool IsBarcodeIssueCard { get { return !string.IsNullOrEmpty(BarcodeIssueCard); } }
-        
+
         public eTypeMonitor TypeMonitor
         {
             get
@@ -384,24 +388,26 @@ namespace Front
                     SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, new CustomWindow(eWindows.RestoreLastRecipt, LastR.SumReceipt.ToString()));
                     return;
                 }
-                
-                   
+
+
             }
             else //Касове місце
             {
-                var r=Bl.GetReceipts(DateTime.Now, DateTime.Now,Global.IdWorkPlace );
-                var rr=r.Where(el=> el.SumTotal>0 && el.StateReceipt != eStateReceipt.Canceled && el.StateReceipt!= eStateReceipt.Print && el.StateReceipt != eStateReceipt.Send).OrderByDescending(el=>el.CodeReceipt);
+                var r = Bl.GetReceipts(DateTime.Now, DateTime.Now, Global.IdWorkPlace);
+                var rr = r.Where(el => el.SumTotal > 0 && el.StateReceipt != eStateReceipt.Canceled && el.StateReceipt != eStateReceipt.Print && el.StateReceipt != eStateReceipt.Send).OrderByDescending(el => el.CodeReceipt);
                 if (rr != null && rr.Any())
                 {
                     if (rr.Count() <= 2)
                     {
-                        if (rr.Count() ==2)
+                        if (rr.Count() == 2)
                         {
                             ReceiptPostpone = Bl.GetReceiptHead(rr.Last(), true);
-                        }                        
+                        }
                     }
                     else //Повідомлення 
-                    { }
+                    {
+                        MessageBox.Show($"Увас відкладено декілька чеків", "Увага!", MessageBoxButton.OK, MessageBoxImage.Question);
+                    }
                     SetStateView(eStateMainWindows.WaitInput);
                     var Receipt = Bl.GetReceiptHead(rr.FirstOrDefault(), true);
                     Global.OnReceiptCalculationComplete?.Invoke(Receipt);
@@ -473,6 +479,9 @@ namespace Front
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Client"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MoneySum"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WaresQuantity"));
+
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsReceiptPostpone"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCurReceiptNotNull"));
             //ChangeWaitAdminText();
         }
 
@@ -1382,7 +1391,8 @@ namespace Front
                     ReceiptPostpone = curReceipt;
                     NewReceipt();
                 }
-            }else
+            }
+            else
             {
                 if (curReceipt == null || !curReceipt.Wares.Any())
                 {
@@ -1390,9 +1400,12 @@ namespace Front
                     ReceiptPostpone = null;
                 }
                 else
-                    MessageBox.Show("Неможливо відновити чек не закривши текучий?", "Увага!", MessageBoxButton.OK, MessageBoxImage.Question);
+                    MessageBox.Show("Неможливо відновити чек не закривши текучий", "Увага!", MessageBoxButton.OK, MessageBoxImage.Question);
 
-            }               
+            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsReceiptPostpone"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCurReceiptNotNull"));
+
         }
 
         private void IssueCardButton(object sender, RoutedEventArgs e)
@@ -1451,7 +1464,7 @@ namespace Front
 
         private void IssueNewCardButton(object sender, RoutedEventArgs e)
         {
-            ClientNew clientNew = new ClientNew() { BarcodeCashier= AdminSSC?.BarCode,BarcodeClient= BarcodeIssueCard, IdWorkplace= Global.IdWorkPlace, Phone = PhoneIssueCard };
+            ClientNew clientNew = new ClientNew() { BarcodeCashier = AdminSSC?.BarCode, BarcodeClient = BarcodeIssueCard, IdWorkplace = Global.IdWorkPlace, Phone = PhoneIssueCard };
             WDB_SQLite wDB_SQLite = new WDB_SQLite();
             wDB_SQLite.ReplaceClientNew(clientNew);
             CancelIssueCard(null, null);

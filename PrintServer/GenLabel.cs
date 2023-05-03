@@ -120,7 +120,7 @@ namespace PrintServer
                 //printDocument.DefaultPageSettings.PaperSize = new PaperSize("54 x 30 mm", 230, 130);
 
                 //широкий  папір
-                printDocument.DefaultPageSettings.PaperSize = new PaperSize("70 x 30 mm", 280, 130);
+                printDocument.DefaultPageSettings.PaperSize = new PaperSize("70 x 36 mm", 280, 130);
             }
             else
             {
@@ -129,13 +129,13 @@ namespace PrintServer
                 {
                     printDocument.PrintPage += PrintPageHandler;
                     printDocument.DocumentName = $"{pNameDoc}_{price.Count()}";
-                    printDocument.DefaultPageSettings.PaperSize = new PaperSize("54 x 30 mm", 230, 130);
+                    printDocument.DefaultPageSettings.PaperSize = new PaperSize("54 x 36 mm", 230, 130);
                 }
                 else //цінник для опту
                 {
                     printDocument.PrintPage += PrintPageHandlerOpt;
                     printDocument.DocumentName = $"{pNameDoc}_{price.Count()}";
-                    printDocument.DefaultPageSettings.PaperSize = new PaperSize("80 x 30 mm", 340, 130);
+                    printDocument.DefaultPageSettings.PaperSize = new PaperSize("80 x 36 mm", 340, 130);
                 }
             }
 
@@ -462,131 +462,158 @@ namespace PrintServer
             {
 
 
-                int LengthName = 34;
-                string Name1, Name2 = "";
-                int leftIntentQR = 0;
-                int topIntentQR = 45;
-                if (parPrice.Name.Length < LengthName)
-                    Name1 = parPrice.Name;
-                else
-                {
-                    int pos = parPrice.Name.Substring(0, LengthName).LastIndexOf(" ");
-                    Name1 = parPrice.Name.Substring(0, pos);
-                    Name2 = parPrice.Name.Substring(pos);
-                }
-                //назви
-                e.Graphics.DrawString(" " + Name1, new Font("Arial", 11, FontStyle.Bold), Brushes.Black, 8, 5);
-                e.Graphics.DrawString(Name2, new Font("Arial", 11, FontStyle.Bold), Brushes.Black, 8, 23);
-
-
-
+                int LengthName = 24;
+                int leftIntentQR = 200;
+                int topIntentQR = 0;
+                //parPrice.Name = "назва1 назва3 назва4 назва5 назва6 назва7 назва8 назва9 назва10 назва11 назва12 назва назва назва назва назва назва назва назва назва назва назва назва назва"; //20 21 22 23 24 25 26 27 28 29 30
+                int leftIntendName = 8;
+                int topIntendName = -10;
+                Font FontForNames = new Font("Arial", 12, FontStyle.Bold);
+                string name = parPrice.Name;
+                string tmpVar = name;
+                int maxCharProdukts = LengthName;
+                int countLine = 0;
                 //QR
                 int strPrice = ((int)(parPrice.Price * 100M));
                 var qrCodeData = qrGenerator.CreateQrCode($"{parPrice.Code}-{strPrice}", QRCodeGenerator.ECCLevel.Q);
                 var qrCode = new QRCode(qrCodeData);
                 var imageQR = qrCode.GetGraphic(2);
-                e.Graphics.DrawImage(imageQR, leftIntentQR+=5, topIntentQR );
+                e.Graphics.DrawImage(imageQR, leftIntentQR += 5, topIntentQR);
 
-                e.Graphics.DrawLine(new Pen(Color.Black, 2), 0, topIntentQR, 300, topIntentQR);
+                while (name.Length > 0 && countLine<3)
+                {
+                    int pos = tmpVar.Length > maxCharProdukts ? tmpVar.Substring(0, maxCharProdukts).LastIndexOf(" ") +1: tmpVar.Length;
+                    name = tmpVar.Length > pos ? tmpVar.Substring(0, pos) : tmpVar;
+                    if (!string.IsNullOrEmpty(name))
+                        e.Graphics.DrawString(name, FontForNames, Brushes.Black, leftIntendName, topIntendName += 16);
+                    tmpVar = tmpVar.Length > pos ? tmpVar = tmpVar.Substring(pos) : "";
+                    name = tmpVar;
+                    countLine++;
+                }
+
+
+
+
+
+                FontFamily fontFamily = new FontFamily("Arial");
+                Font font = new Font(fontFamily, 6, FontStyle.Bold);
+                var aa = font.Height;
+                StringFormat stringFormat = new StringFormat();
+                SolidBrush solidBrush = new SolidBrush(Color.Black);
+
+                stringFormat.FormatFlags = StringFormatFlags.DirectionVertical;
                 //артикул
                 e.Graphics.DrawString(parPrice.Article.ToString(), new Font("Arial", 6, FontStyle.Bold), Brushes.Black, leftIntentQR += 7, topIntentQR += imageQR.Height-2);
-                //Час
-                e.Graphics.DrawString(DateTime.Now.ToString("dd/MM/yyyy H:mm"), new Font("Arial", 6, FontStyle.Bold), Brushes.Black, leftIntentQR, topIntentQR += 7);
                 //штрихкод
                 if (parPrice.BarCodes != null)
                 {
                     if (parPrice.BarCodes.Length > 13)
                         parPrice.BarCodes = parPrice.BarCodes.Substring(0, 13);
-                    e.Graphics.DrawString(parPrice.BarCodes, new Font("Arial", 6, FontStyle.Bold), Brushes.Black, leftIntentQR, topIntentQR += 7);
+
+                    PointF pointBarCodes = new PointF(leftIntentQR += 47, 5);
+                    e.Graphics.DrawString(parPrice.BarCodes, font, solidBrush, pointBarCodes, stringFormat);
+                    //e.Graphics.DrawString(parPrice.BarCodes, new Font("Arial", 6, FontStyle.Bold), Brushes.Black, leftIntentQR, topIntentQR += 7);
                 }
+                //Час
+                PointF pointDateTime = new PointF(leftIntentQR+=7, 5);
+                e.Graphics.DrawString(DateTime.Now.ToString("dd/MM/yyyy H:mm"), font, solidBrush, pointDateTime, stringFormat);
+                //e.Graphics.DrawString(DateTime.Now.ToString("dd/MM/yyyy H:mm"), new Font("Arial", 6, FontStyle.Bold), Brushes.Black, leftIntentQR, topIntentQR += 7);
+                
 
 
 
 
-
-                int leftIndentMainPrice = 0, topIndentMainPrice = 40, LeftCoinMain = 135;
-                int leftIndentSecondPrice = 0, topIndentSecondPrice = 60, LeftCoinSecond = 190;
+                int leftIndentMainPrice = 0, topIndentMainPrice = 50, LeftCoinMain = 135;
+                int leftIndentSecondPrice = 0, topIndentSecondPrice = 85, LeftCoinSecond = 190;
                 int intentLine = topIndentSecondPrice;
                 float coef = 1;
                 var price = parPrice.StrPrice.Split('.');
                 var priceNormal = parPrice.StrPriceNormal.Split('.');
-                //price[0] = "9123";
-                //priceNormal[0] = "9123";
+                //price[0] = "12345";
+                //priceNormal[0] = "22345";
                 switch (price[0].Count())
                 {
                     case 1:
                         leftIndentMainPrice = 100;
-                        LeftCoinMain = 140;
+                        LeftCoinMain = 95;
+                        coef = 0.65f;
                         break;
                     case 2:
-                        leftIndentMainPrice = 80;
-                        LeftCoinMain = 160;
+                        leftIndentMainPrice = 70;
+                        LeftCoinMain = 110;
+                        coef = 0.65f;
                         break;
                     case 3:
-                        leftIndentMainPrice = 55;
-                        LeftCoinMain = 170;
+                        leftIndentMainPrice = 40; //55;
+                        LeftCoinMain = 125; //170;
+                        coef = 0.65f;
+                        break;
+                    case 4:
+                        leftIndentMainPrice = 20; //90
+                        LeftCoinMain = 140; //170
+                        coef = 0.65f; //0.7
                         break;
                     default:
-                        leftIndentMainPrice = 90;
-                        LeftCoinMain = 170;
-                        coef = 0.70f;
+                        leftIndentMainPrice = 30; //90
+                        LeftCoinMain = 138; //170
+                        coef = 0.5f; //0.7
                         break;
                 }
                 switch (priceNormal[0].Count())
                 {
                     case 1:
-                        leftIndentSecondPrice = 230;
-                        LeftCoinSecond = 248;
+                        leftIndentSecondPrice = 210;
+                        LeftCoinSecond = 229;
                         break;
                     case 2:
-                        leftIndentSecondPrice = 223;
-                        LeftCoinSecond = 253;
+                        leftIndentSecondPrice = 205;
+                        LeftCoinSecond = 239;
                         break;
                     case 3:
-                        leftIndentSecondPrice = 215;
-                        LeftCoinSecond = 257;
-                        //coef = 0.7f;
+                        leftIndentSecondPrice = 195;
+                        LeftCoinSecond = 245;
+                        break;
+                    case 4:
+                        leftIndentSecondPrice = 185;
+                        LeftCoinSecond = 250;
                         break;
                     default:
-                        leftIndentSecondPrice = 205;
-                        LeftCoinSecond = 260;
+                        leftIndentSecondPrice = 175;
+                        LeftCoinSecond = 255;
                         break;
                 }
-                e.Graphics.FillRectangle(new SolidBrush(Color.Black), 205, 45, 75, 60);
+                e.Graphics.DrawRectangle(new Pen(Color.Black, 1), 0, 60, 180, 80);
 
-                //
-                //e.Graphics.DrawRectangle(new Pen(Color.Black, 1), 205, 45, 75, 60);
-                //
                 Graphics gr = e.Graphics;
                 GraphicsState state = gr.Save();
                 gr.ResetTransform();
                 gr.ScaleTransform(coef, 1.0f);
 
-                e.Graphics.DrawString(price[0], new Font("Arial Black", 40), Brushes.Black, leftIndentMainPrice, topIndentMainPrice);
+                e.Graphics.DrawString(price[0], new Font("Arial Black", 50), Brushes.Black, leftIndentMainPrice, topIndentMainPrice);
+
+               // if (parPrice.Price < parPrice.PriceNormal)
 
                 gr.Restore(state);
 
                 //e.Graphics.DrawString(price[0], new Font("Arial Black", 35), Brushes.Black, LeftBill, 35);
-                e.Graphics.DrawString(price[1], new Font("Arial Black", 16), Brushes.Black, LeftCoinMain, topIndentMainPrice += 13);
-                e.Graphics.DrawString("грн", new Font("Arial", 10, FontStyle.Bold), Brushes.Black, LeftCoinMain + 3, topIndentMainPrice += 23);
+                e.Graphics.DrawString(price[1], new Font("Arial Black", 16), Brushes.Black, LeftCoinMain, topIndentMainPrice += 20);
+                e.Graphics.DrawString("грн", new Font("Arial", 10, FontStyle.Bold), Brushes.Black, LeftCoinMain + 3, topIndentMainPrice += 25);
                 e.Graphics.DrawString(parPrice.StrUnit, new Font("Arial", 11), Brushes.Black, LeftCoinMain + 3, topIndentMainPrice += 13);
 
                 if (parPrice.Price < parPrice.PriceNormal)
                 {
-                    e.Graphics.DrawString(priceNormal[0], new Font("Arial Black", 14), Brushes.White, leftIndentSecondPrice, topIndentSecondPrice); //White
-                    e.Graphics.DrawString(priceNormal[1], new Font("Arial Black", 6), Brushes.White, LeftCoinSecond, topIndentSecondPrice += 4);//White
+                    e.Graphics.DrawString(priceNormal[0], new Font("Arial", 20, FontStyle.Bold), Brushes.Black, leftIndentSecondPrice , topIndentSecondPrice); //White
+
+                    e.Graphics.DrawString(priceNormal[1], new Font("Arial Black", 9), Brushes.Black, LeftCoinSecond, topIndentSecondPrice );//White
+                    e.Graphics.DrawString("грн", new Font("Arial", 9, FontStyle.Bold), Brushes.Black, LeftCoinSecond, topIndentSecondPrice += 10);//White
+                    e.Graphics.DrawString(parPrice.StrUnit, new Font("Arial", 9), Brushes.Black, LeftCoinSecond, topIndentSecondPrice += 10);//White
+
+                    e.Graphics.DrawLine(new Pen(Color.Black, 1), leftIndentSecondPrice, topIndentSecondPrice += 7, LeftCoinSecond + 20, intentLine + 4);//White
 
                 }
-                else
-                {
-                    e.Graphics.DrawString(price[0], new Font("Arial Black", 16), Brushes.White, leftIndentSecondPrice, topIndentSecondPrice);//White
-                    e.Graphics.DrawString(price[1], new Font("Arial Black", 6), Brushes.White, LeftCoinSecond, topIndentSecondPrice += 4);//White
-                }
 
-                e.Graphics.DrawString("грн", new Font("Arial", 6, FontStyle.Bold), Brushes.White, LeftCoinSecond, topIndentSecondPrice += 7);//White
-                e.Graphics.DrawString(parPrice.StrUnit, new Font("Arial", 6), Brushes.White, LeftCoinSecond, topIndentSecondPrice += 7);//White
 
-                e.Graphics.DrawLine(new Pen(Color.White, 1), leftIndentSecondPrice - 4, topIndentSecondPrice += 7, LeftCoinSecond + 20, intentLine + 4);//White
+                
             }
             else
             {
@@ -741,8 +768,8 @@ namespace PrintServer
 
 
             // Межі
-            //e.Graphics.DrawLine(new Pen(Color.Black, 2), 280, 0, 280, 130);
-            //e.Graphics.DrawLine(new Pen(Color.Black, 2), 0, 130, 280, 130);
+            e.Graphics.DrawLine(new Pen(Color.Black, 2), 280, 0, 280, 140);
+            e.Graphics.DrawLine(new Pen(Color.Black, 2), 0, 140, 280, 140);
 
 
 
