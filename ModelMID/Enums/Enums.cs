@@ -351,8 +351,16 @@ namespace ModelMID
         /// Дозвіл на Добавлення ваги в Базу
         /// </summary>
         AddNewWeight = 7,
+        /// <summary>
+        /// Права на створення чека повернення
+        /// </summary>
         ReturnReceipt = 8,
         AdminPanel = 9,
+        /// <summary>
+        /// Дозвіл списання Бонусів.
+        /// </summary>
+        UseBonus =10,
+
         LockSale = -1,
         StartFullUpdate = -2,
         ErrorFullUpdate = -3,

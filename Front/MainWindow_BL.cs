@@ -315,6 +315,9 @@ namespace Front
                     TypeAccessWait = eTypeAccess.NoDefine;
                     ShowAdmin(pUser);
                     break;
+                case eTypeAccess.UseBonus:
+                    var task = Task.Run(() => PrintAndCloseReceipt(null, eTypePay.Bonus, 0, 0, 0, Client?.SumMoneyBonus ?? 0m));
+                    break;
             }
             return true;
         }

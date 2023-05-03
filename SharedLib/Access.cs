@@ -33,7 +33,8 @@ namespace SharedLib
             Right.Add(eTypeAccess.ExciseStamp, eTypeUser.Сashier);
             Right.Add(eTypeAccess.FixWeight, eTypeUser.AdminSSC);
             Right.Add(eTypeAccess.AddNewWeight, eTypeUser.AdminSSC);            
-            Right.Add(eTypeAccess.AdminPanel, eTypeUser.AdminSSC); 
+            Right.Add(eTypeAccess.AdminPanel, Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout ? eTypeUser.AdminSSC : eTypeUser.Сashier); 
+            Right.Add(eTypeAccess.UseBonus, eTypeUser.Guardian);
         }
 
         public bool GetRight(eTypeUser pTypeUser, eTypeAccess pTypeRight)

@@ -581,6 +581,11 @@ namespace Front.Control
             CreateReturn();
         }
 
+        private void ReturnAllCheckButton(object sender, RoutedEventArgs e)
+        {
+            CreateReturn(true);
+        }
+
         void CreateReturn(bool pIsFull = false)
         {
             IsFullReturn = pIsFull;
@@ -597,10 +602,7 @@ namespace Front.Control
         public bool IsSendTo1C { get; set; } = false;// { get { return curReceipt?.StateReceipt == eStateReceipt.Print; } }
         public bool IsCreateReturn { get; set; } = false;// { get { return curReceipt?.StateReceipt == eStateReceipt.Send && curReceipt?.TypeReceipt == eTypeReceipt.Sale; } }
 
-        private void ReturnAllCheckButton(object sender, RoutedEventArgs e)
-        {
-            CreateReturn(true);
-        }
+        
 
         private void FindChecksByDate(object sender, RoutedEventArgs e)
         {
