@@ -41,8 +41,20 @@ namespace Front
 
         public Receipt curReceipt;//{ get; set; } = null;
         Receipt ReceiptPostpone = null;
-        public bool IsReceiptPostpone { get { return ReceiptPostpone == null; } }
-        //public bool IsCurReceiptNotNull { get { return (curReceipt == null || !curReceipt.Wares.Any()) && !IsReceiptPostpone; } }
+        public bool IsReceiptPostponeNotNull { get { return ReceiptPostpone == null; } }
+        public bool IsReceiptPostpone
+        {
+            get
+            {
+                if (ReceiptPostpone == null)
+                    return true;
+                else
+                    if (curReceipt == null || curReceipt.Wares==null || !curReceipt.Wares.Any())
+                        return true;
+                    else
+                        return false;
+            }
+        }
 
 
         public ReceiptWares CurWares { get; set; } = null;
@@ -481,7 +493,7 @@ namespace Front
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WaresQuantity"));
 
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsReceiptPostpone"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCurReceiptNotNull"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsReceiptPostponeNotNull"));
             //ChangeWaitAdminText();
         }
 
@@ -1404,7 +1416,7 @@ namespace Front
 
             }
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsReceiptPostpone"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCurReceiptNotNull"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsReceiptPostponeNotNull"));
 
         }
 
