@@ -406,7 +406,7 @@ namespace Front
                     }
                     else //Повідомлення 
                     {
-                        MessageBox.Show($"Увас відкладено декілька чеків", "Увага!", MessageBoxButton.OK, MessageBoxImage.Question);
+                        MessageBox.Show($"Увас відкладено {rr.Count()} чеків", "Увага!", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                     SetStateView(eStateMainWindows.WaitInput);
                     var Receipt = Bl.GetReceiptHead(rr.FirstOrDefault(), true);
