@@ -46,12 +46,7 @@ namespace Front.Control
             {
                 if (SumCashDisbursement > 0)  return false;
                 else
-                {
-                    //if (!decimal.IsNaN(ResMoney))
-                        return RestMoney >= 0 ? true : false;
-                    //else
-                     //   return false;
-                }
+                return RestMoney >= 0 ? true : false;
             }
         }
        
@@ -95,8 +90,9 @@ namespace Front.Control
         public void TransferAmounts(decimal moneySum)
         {
             MoneySumToRound = moneySum;
-            //MoneySumPayTextBox.Text = moneySum.ToString();
+            SumCashDisbursement = 0;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MoneySumToRound"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SumCashDisbursement"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCashPayment"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ChangeSumPaymant"));
             EnteringPriceManually = false;
