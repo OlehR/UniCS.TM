@@ -110,7 +110,7 @@ namespace ModelMID
         /// <summary>
         /// Загальна знижка для РРО
         /// </summary>
-        public decimal SumTotalDiscount { get { return SumDiscount + SumWallet + SumBonus; } }
+        public decimal SumTotalDiscount { get { return decimal.Round(SumDiscount + SumWallet + SumBonus,2); } }
 
         /// <summary>
         /// Назва акції для фіксованих цін. Тощо.

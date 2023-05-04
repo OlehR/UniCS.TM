@@ -300,6 +300,14 @@ namespace ModelMID
         /// </summary>
         Client = -100,
         /// <summary>
+        /// Працівник без Прав.
+        /// </summary>
+        Employee = -20,
+        /// <summary>
+        /// Працівник з доступом до ТЗД
+        /// </summary>
+        EmployeeDCT = -15,
+        /// <summary>
         /// Касир
         /// </summary>
         Сashier = -14,
@@ -318,7 +326,7 @@ namespace ModelMID
         /// <summary>
         /// Адміністратор Дозвіл на всі операції
         /// </summary>
-        Admin = 9
+        Admin = 0
     }
 
     /*  public enum eСonfirmationActions

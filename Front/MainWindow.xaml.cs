@@ -1406,7 +1406,7 @@ namespace Front
             }
             else
             {
-                if (curReceipt == null || !curReceipt.Wares.Any())
+                if (curReceipt == null || curReceipt.Wares!=null && !curReceipt.Wares.Any())
                 {
                     Global.OnReceiptCalculationComplete?.Invoke(ReceiptPostpone);
                     ReceiptPostpone = null;
