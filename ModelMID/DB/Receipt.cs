@@ -54,6 +54,11 @@ namespace ModelMID
         public string NumberReceipt { get; set; }
 
         /// <summary>
+        /// Номер замовлення якщо чек на основі замовлення.
+        /// </summary>
+        public string NumberOrder { get; set; }
+
+        /// <summary>
         /// Сума, яка фіскалізувалась на РРО
         /// </summary>
         public decimal SumFiscal { get; set; }
