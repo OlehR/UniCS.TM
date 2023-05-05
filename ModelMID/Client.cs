@@ -5,6 +5,15 @@ using System.Text;
 namespace ModelMID
 {
     /// <summary>
+    /// 0-Активна,1-Заблокована,2 - видалена.
+    /// </summary>
+    public enum eStatusCard
+    {
+        Active=0,
+        Block=1,
+        Delete=2
+    }
+    /// <summary>
     /// Зберігає інформацію про клієнта
     /// </summary>
     public class Client
@@ -40,7 +49,9 @@ namespace ModelMID
         /// Штрихкод карточки
         /// </summary>
         public string BarCode { get; set; }
-        public string  MainPhone { get; set; }
+        public string MainPhone { get; set; }
+
+        public string PhoneAdd { get; set; }
 
         /// <summary>
         /// Відсоток знижки / надбавки
@@ -81,7 +92,7 @@ namespace ModelMID
         /// <summary>
         /// 0-Активна,1-Заблокована,2 - видалена.
         /// </summary>
-        public int StatusCard { get; set; }
+        public eStatusCard StatusCard { get; set; }
         /// <summary>
         /// Код карточки який видно на дисконтній карточці.
         /// </summary>

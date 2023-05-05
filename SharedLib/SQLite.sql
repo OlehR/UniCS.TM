@@ -55,6 +55,7 @@ alter TABLE wares add PLU INTEGER;--Ver=>0
 alter TABLE wares add Code_Direction INTEGER;--Ver=>0;
 alter TABLE wares add Type_Wares INTEGER  NOT NULL DEFAULT 2; --Ver=>6;
 alter TABLE wares add Code_TM INTEGER NOT NULL DEFAULT 0; --Ver=>9;
+alter TABLE CLIENT add PHONE_ADD  TEXT; --Ver=>10;
 
 [SqlConfig]
 SELECT Data_Var  FROM CONFIG  WHERE UPPER(Name_Var) = UPPER(trim(@NameVar));
@@ -133,14 +134,15 @@ order by t.orders
 with 
 t$1 as 
 (
-select p.code_client,1 from client p where p.PHONE = @Phone
+select p.code_client,1 from client p where ( p.PHONE = @Phone or Phone_Add = @Phone)
 union 
  select code_client,1 from client p where code_client = @CodeClient
 union 
  select code_client,1 from client p where barcode= @BarCode
 )
 select p.code_client as CodeClient, p.name_client as NameClient, 0 as TypeDiscount, td.NAME as NameDiscount, p.percent_discount as PersentDiscount, 0 as CodeDealer, 
-	   0.00 as SumMoneyBonus, 0.00 as SumBonus,1 IsUseBonusFromRest, 1 IsUseBonusToRest,1 as IsUseBonusFromRest,barcode  as BarCode,phone as MainPhone, BIRTHDAY as BirthDay 
+	   0.00 as SumMoneyBonus, 0.00 as SumBonus,1 IsUseBonusFromRest, 1 IsUseBonusToRest,1 as IsUseBonusFromRest,barcode  as BarCode,
+       phone as MainPhone, Phone_Add as PhoneAdd, BIRTHDAY as BirthDay 
 
    from t$1 
    left join client p on (t$1.code_client=p.code_client)
@@ -969,6 +971,7 @@ CREATE TABLE CLIENT (
     NAME_CLIENT TEXT NOT NULL,
     TYPE_DISCOUNT INTEGER,
     PHONE            TEXT,
+    PHONE_ADD        TEXT,
     PERCENT_DISCOUNT NUMBER,
     BARCODE          TEXT NOT NULL,
     STATUS_CARD INTEGER DEFAULT(0),
@@ -1106,6 +1109,7 @@ CREATE UNIQUE INDEX TYPE_DISCOUNT_ID ON TYPE_DISCOUNT ( TYPE_DISCOUNT );
 CREATE UNIQUE INDEX CLIENT_ID ON CLIENT ( CODE_CLIENT );
 CREATE UNIQUE INDEX CLIENT_BC ON CLIENT ( BARCODE );
 CREATE INDEX CLIENT_PH ON CLIENT (PHONE);
+CREATE INDEX CLIENT_PHA ON CLIENT (Phone_Add);
 
 CREATE UNIQUE INDEX PRICE_ID ON PRICE ( CODE_DEALER, CODE_WARES );
 
@@ -1163,8 +1167,8 @@ replace into PRICE (CODE_DEALER, CODE_WARES, PRICE_DEALER) values (@CodeDealer,@
 [SqlReplaceTypeDiscount]
 replace into TYPE_DISCOUNT (TYPE_DISCOUNT,NAME,PERCENT_DISCOUNT) values (@CodeTypeDiscount,@Name,@PercentDiscount);
 [SqlReplaceClient]
-replace into CLIENT (CODE_CLIENT, NAME_CLIENT, TYPE_DISCOUNT,PHONE,      PERCENT_DISCOUNT,BARCODE,STATUS_CARD,view_code,BirthDay) 
-		     values (@CodeClient ,@NameClient ,@TypeDiscount,@MainPhone,@PersentDiscount,@BarCode,@StatusCard,@ViewCode,@BirthDay);
+replace into CLIENT (CODE_CLIENT, NAME_CLIENT, TYPE_DISCOUNT,PHONE     ,Phone_Add, PERCENT_DISCOUNT,BARCODE,STATUS_CARD,view_code,BirthDay) 
+		     values (@CodeClient ,@NameClient ,@TypeDiscount,@MainPhone,@PhoneAdd,@PersentDiscount,@BarCode,@StatusCard,@ViewCode,@BirthDay);
 
 [SqlReplaceFastGroup]
 replace into FAST_GROUP ( CODE_UP,Code_Fast_Group, Name) values (@CodeUp,@CodeFastGroup,@Name);

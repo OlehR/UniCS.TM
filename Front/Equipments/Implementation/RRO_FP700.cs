@@ -1255,6 +1255,8 @@ namespace Front.Equipments
                 }
             }
             string str1 = Encoding.UTF8.GetString(Encoding.Convert(Encoding.GetEncoding(1251), Encoding.UTF8, receivedData));
+            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, str1);
+
             if (!_commandsCallbacks.ContainsKey(cmdNumber))
                 return;
             Action<string> commandsCallback = _commandsCallbacks[cmdNumber];

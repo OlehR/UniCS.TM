@@ -470,9 +470,9 @@ namespace Front.Equipments.Implementation.ModelVchasno
             code_aa = pRW.GetExciseStamp;
             name = pRW.NameWares;
             cnt = pRW.Quantity;
-            price = pRW.Price;
+            price = pRW.PriceDealer;
             cost = Math.Round(pRW.Price * pRW.Quantity, 2) + discont;// - Math.Round(pRW.SumDiscount, 2);
-            disc = Math.Round(pRW.SumDiscount, 2) + Math.Round(pRW.SumWallet, 2) + discont;
+            disc =  pRW.SumTotalDiscount + discont; //Math.Round(pRW.SumDiscount, 2) + Math.Round(pRW.SumWallet, 2) 
             taxgrp = int.Parse(pRro.TaxGroup(pRW));
         }
         public string code { get; set; }

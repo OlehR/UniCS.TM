@@ -1,5 +1,4 @@
 ﻿[SqlBegin]
-/*
 
 [SqlGetMessageNo]
 SELECT MAX(MessageNo) as MessageNo FROM DW.dbo.config 
@@ -87,23 +86,10 @@ SELECT  Type_discount AS CodeTypeDiscount,Name AS Name,Percent_discount AS Perce
 
 [SqlGetDimClient]
 SELECT cl.CodeClient, cl.NameClient, cl.TypeDiscount, cl.PersentDiscount, cl.BarCode, cl.StatusCard, cl.ViewCode, cl.BirthDay,
-  ISNULL(cl.MainPhone,cl.Phone) AS MainPhone
+  ISNULL(cl.MainPhone,cl.Phone) AS MainPhone, Phone as PhoneAdd
   FROM client  cl WITH (NOLOCK)
   WHERE cl.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull=1
-  /*
-SELECT DC.code_card as CodeClient ,DC.name as NameClient ,TD.TYPE_DISCOUNT  AS TypeDiscount, CAST('' AS VARCHAR(10)) AS MainPhone, td.PERCENT_DISCOUNT as PersentDiscount,[bar_code] AS BarCode, DCC.CODE_STATUS_CARD  AS StatusCard,dc. view_code  as ViewCode--,dcc.*
-  ,CASE WHEN rop.value_t!=CONVERT(DATE,'28.09.3958',103) AND rop.value_t>CONVERT(DATE,'01.01.3900',103) THEN DATEADD(YEAR,-2000, rop.value_t) ELSE null END AS BirthDay
-  FROM  dbo.V1C_DIM_CARD DC
- LEFT  JOIN dbo.V1C_DIM_CARD_STATUS DCC ON DC.STATUS_CARD_RRef=DCC.STATUS_CARD_RRef
- LEFT JOIN DW.dbo.V1C_DIM_TYPE_DISCOUNT TD ON TD.TYPE_DISCOUNT_RRef =DC.TYPE_DISCOUNT_RRef
- left JOIN (SELECT  [bar_code] AS BarCode FROM  dbo.V1C_DIM_CARD DC  
-            JOIN dbo.V1C_DIM_CARD_STATUS DCC ON DC.STATUS_CARD_RRef=DCC.STATUS_CARD_RRef
-  WHERE   DCC.CODE_STATUS_CARD=0 
-  GROUP BY [bar_code] HAVING COUNT(*)>1) eb ON eb.BarCode=DC.bar_code
- LEFT JOIN DW.dbo.V1C_reg_object_property rop ON (rop.[object_Ref]=DC.[kard_owner_RRef] and property_Ref=0xB3F7001B78074DDF11E0E922F57E4871 )
-   WHERE  DCC.CODE_STATUS_CARD=0 AND [bar_code]<>''
-  AND eb.BarCode IS NULL
-  */
+  
 
 [SqlGetDimFastGroup]
 SELECT CONVERT(INT,wh.Code) AS CodeUp,CONVERT(INT,wh.Code)*1000+g.Order_Button AS CodeFastGroup,MAX(CONVERT(VARCHAR,g.Name_Button)) AS Name
@@ -513,4 +499,3 @@ LEFT JOIN dbo.V1C_dim_warehouse wh ON cd.warehouse_RRef=wh.warehouse_RRef
 LEFT JOIN dbo.V1C_dim_type_price tp ON wh.type_price_RRef= tp.type_price_RRef;
 
 [SqlEnd]
-*/
