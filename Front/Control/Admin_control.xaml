@@ -429,8 +429,8 @@
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
-                                            <Setter Property="Width" Value="800" />
-                                            <Setter Property="Height" Value="580" />
+                                            <Setter Property="Width" Value="700" />
+                                            <Setter Property="Height" Value="530" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -1085,7 +1085,20 @@
                  Grid.Row="0" Grid.RowSpan="6"
                 Grid.Column="1" Grid.ColumnSpan="4"
                  Name="WindowChangeReceiptStatus" Visibility="Collapsed" Grid.ZIndex="3" 
-                CornerRadius="10" HorizontalAlignment="Center"  Width="800" Height="600">
+                CornerRadius="10" HorizontalAlignment="Center">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Width" Value="800"/>
+                                    <Setter Property="Height" Value="600"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular" >
+                                            <Setter Property="Width" Value="700"/>
+                                            <Setter Property="Height" Value="530"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
                             <Border.Effect>
                                 <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
                             </Border.Effect>
@@ -1095,7 +1108,19 @@
                                     <RowDefinition Height="*"></RowDefinition>
                                     <RowDefinition Height="3*"></RowDefinition>
                                     <RowDefinition Height="3*"></RowDefinition>
-                                    <RowDefinition Height="100"></RowDefinition>
+                                    <RowDefinition >
+                                        <RowDefinition.Style>
+                                            <Style TargetType="RowDefinition">
+                                                <Setter Property="Height" Value="100"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                        <Setter Property="Height" Value="60" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </RowDefinition.Style>
+                                    </RowDefinition>
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -1143,14 +1168,41 @@
                                     </ItemsControl>
                                 </ScrollViewer>
 
-                                <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="6" HorizontalAlignment="Left"
-                                    Style="{StaticResource Default}"  FontSize="22" Click="ChangeReceiptStatus" 
-                        Height="80" Width="300" Margin="10">
+                                <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="6" HorizontalAlignment="Left"  FontSize="22" Click="ChangeReceiptStatus" 
+                                        Margin="10">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource Default}">
+                                            <Setter Property="Height" Value="80" />
+                                            <Setter Property="Width" Value="300" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                    <Setter Property="Height" Value="40" />
+                                                    <Setter Property="Width" Value="250" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
                                     <TextBlock FontSize="28" Text="Змінити стан"/>
                                 </Button>
+                                
+                                
                                 <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="6" HorizontalAlignment="Right"
-                                    Style="{StaticResource Default}"  FontSize="22" Click="CancelChangeReceiptStatus" 
-                        Height="80" Width="300" Margin="10">
+                                    FontSize="22" Click="CancelChangeReceiptStatus"  Margin="10">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource Default}">
+                                            <Setter Property="Height" Value="80" />
+                                            <Setter Property="Width" Value="300" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                    <Setter Property="Height" Value="40" />
+                                                    <Setter Property="Width" Value="150" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+
                                     <TextBlock FontSize="28" Text="{DynamicResource cancel}"/>
                                 </Button>
                             </Grid>
@@ -1751,7 +1803,7 @@
 
                         <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Disabled">
                             <StackPanel>
-                             <TextBlock Foreground="Red" FontWeight="Bold" FontSize="24" HorizontalAlignment="Center" Text="API ERROR"/>
+                             <TextBlock Foreground="Red" FontWeight="Bold" FontSize="24" HorizontalAlignment="Center" Text="Текст відповіді на запит"/>
                             <TextBlock  Margin="10,0,5,0"
                                    VerticalAlignment="Top" 
                                    x:Name="APIErrorText" TextWrapping="Wrap" 
