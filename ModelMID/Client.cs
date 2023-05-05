@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.ComponentModel;
+using Utils;
 
 namespace ModelMID
 {
@@ -9,9 +10,12 @@ namespace ModelMID
     /// </summary>
     public enum eStatusCard
     {
-        Active=0,
-        Block=1,
-        Delete=2
+        [Description("Активна")]
+        Active =0,
+        [Description("Заблокована")]
+        Block =1,
+        [Description("Видалена")]
+        Delete =2
     }
     /// <summary>
     /// Зберігає інформацію про клієнта
@@ -93,6 +97,7 @@ namespace ModelMID
         /// 0-Активна,1-Заблокована,2 - видалена.
         /// </summary>
         public eStatusCard StatusCard { get; set; }
+        public string TranslatedStatusCard { get { return StatusCard.GetDescription(); } }
         /// <summary>
         /// Код карточки який видно на дисконтній карточці.
         /// </summary>
