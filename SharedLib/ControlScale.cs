@@ -207,7 +207,7 @@ namespace ModelMID
         /// <summary>
         ///Допустима похибка ваги на вітер 
         /// </summary>
-        double Delta { get { return _Delta + (RW?.IsBag == true ? WaitWeight[0].Weight * Quantity : 0); } }
+        double Delta { get { return _Delta + (RW?.IsBag == true ? WaitWeight[0].Weight *(double) RW.Quantity : 0); } }
         /// <summary>
         /// Попередня "стабільна" вага
         /// </summary>
@@ -317,8 +317,16 @@ namespace ModelMID
                 OnScalesLog(System.Reflection.MethodBase.GetCurrentMethod().Name, "Не знайшли останній товар");
                 return;
             }
-
             var w = ww.First();
+            if (StateScale == eStateScale.Stabilized && RW?.IsBag == true  && !w.IsBag   && Math.Abs(СurrentlyWeight) > 0.02)
+            {
+                RW.FixWeight += (decimal)СurrentlyWeight;
+                var war = RW;
+                RW = null;
+                OnStateScale?.Invoke(_StateScale, war, СurrentlyWeight);                
+                return;
+            }
+           
             RW = w;
             if (w != null)
             {
@@ -330,13 +338,7 @@ namespace ModelMID
         public void StartWeightNewGoogs(double pBeforeWeight, WaitWeight[] pWeight, double pQuantity = 1d, double pOwnBag = 0d) //, bool pIsIncrease = true
         {
             OnScalesLog($"StartWeightNewGoogs", $"(pBeforeWeight=>{pBeforeWeight},WaitWeight=>{(pWeight != null ? string.Join(", ", pWeight?.ToList()) : "")},pQuantity={pQuantity}");
-            if(StateScale == eStateScale.Stabilized && RW?.IsBag==true && Math.Abs(СurrentlyWeight)>0.02 )
-            {
-                RW.FixWeight += (decimal) СurrentlyWeight;
-                OnStateScale?.Invoke(_StateScale, RW, СurrentlyWeight);
-                RW = null;
-                return;
-            }           
+                   
 
             BeforeWeight = pBeforeWeight;
             //IsIncrease = pIsIncrease;
@@ -433,7 +435,7 @@ namespace ModelMID
                         //StartTimer();
                     }*/
 
-                    if (RW.FixWeightQuantity != RW.Quantity && Math.Abs(СurrentlyWeight) <= Delta)
+                    if ((RW.FixWeightQuantity != RW.Quantity && Math.Abs(СurrentlyWeight) <= Delta) || RW?.IsBag == true)
                     {
                         if ((IsTooLight && СurrentlyWeight > Delta / 3) || RW?.IsBag == true)
                         {
