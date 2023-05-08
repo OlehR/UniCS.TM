@@ -155,7 +155,6 @@ namespace SharedLib
                             {
                                 parIsFull = true;
                                 Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Відсутні дані {varMidFile} parIsFull=>{parIsFull} ");
-
                             }
                         }
                         catch(Exception) { parIsFull = true; }
@@ -181,15 +180,30 @@ namespace SharedLib
                         db.SetConfig<DateTime>("Load_Full", DateTime.Now.Date.AddDays(-1));
                         db.SetConfig<DateTime>("Load_Update", DateTime.Now.Date.AddDays(-1));
                         db.Close(true);
-
+                        Exception Ex=null;
                         if (File.Exists(varMidFile))
                         {
                             Thread.Sleep(200);
                             Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Try Delete file {varMidFile}");
-                            File.Delete(varMidFile);
+                            try
+                            {
+                                File.Delete(varMidFile);
+                            }
+                            catch (Exception e) 
+                            {
+                                Ex = e;
+                                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+                            }
+                        }
+
+                        if (File.Exists(varMidFile))
+                        {
+                            Status = eSyncStatus.Error;
+                            Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = Ex, Status = eSyncStatus.Error, StatusDescription = $"SyncData Error=> Помилка видалення файла {Ex?.Message}" });
+                            return false;
                         }
                         Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Create New DB");
-                        Db = new WDB_SQLite(default(DateTime), varMidFile,false,true);
+                        Db = new WDB_SQLite(default, varMidFile,false,true);
                     }
 
                     var MsSQL = new WDB_MsSql();
@@ -214,25 +228,13 @@ namespace SharedLib
                 }
                 catch (Exception ex)
                 {
-                    db.Close(true);
-                    if (parIsFull && File.Exists(varMidFile))
-                    {
-                        try
-                        {
-                            Thread.Sleep(200);
-                            Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Catch Try Delete file {varMidFile}");
-                            File.Delete(varMidFile);
-                        }catch(Exception) { }
-                    }
-                    bl.db = new WDB_SQLite(default(DateTime), null, true);
+                    bl.db = new WDB_SQLite(default);
                     Status = parIsFull ? eSyncStatus.Error : eSyncStatus.NotDefine;
                     Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = (parIsFull ? eSyncStatus.Error : eSyncStatus.NoFatalError), StatusDescription = $"SyncData Error=>{ex.Message}" });
                     Global.OnStatusChanged?.Invoke(db.GetStatus());
                     FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name + Environment.NewLine + "Log=>" + Log.ToString(), ex);
-
                     return false;
                 }
-
             }
             return true;
         }

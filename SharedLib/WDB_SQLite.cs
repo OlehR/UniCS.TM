@@ -73,8 +73,8 @@ namespace SharedLib
                 db = null;
             }
 
-            if (!File.Exists(MidFile))
-            {
+            //if (!File.Exists(MidFile))
+            //{
                 if (pIsCreateMidFile)
                 {
                     var db = new SQLite(MidFile);
@@ -91,7 +91,7 @@ namespace SharedLib
                     if (!string.IsNullOrEmpty(vLastMidFile) && File.Exists(vLastMidFile))
                         this.LastMidFile = vLastMidFile;
                 }
-            }
+            //}
       
             db = new SQLite(ReceiptFile);
             if (File.Exists(MidFile))            

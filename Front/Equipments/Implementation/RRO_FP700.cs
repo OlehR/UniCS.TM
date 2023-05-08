@@ -402,9 +402,9 @@ namespace Front.Equipments
                 PrintFiscalComments(Comments);
             FillUpReceiptItems(pR.GetParserWaresReceipt());
             var Sum = SubTotal();
+            pR.SumFiscal = Sum;
             if (!PayReceipt(pR))
-            {
-         
+            {         
                 ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Error, "Check was not printed")
                 { Status = eStatusRRO.Error, IsСritical = true });
             }
@@ -464,25 +464,25 @@ namespace Front.Equipments
             //var RW = UngroupByExcise(pRW);
 
             //List<FiscalArticle> FiscalArticleList = receiptItems != null && receiptItems.Count != 0 ? SetupArticleTable(receiptItems) : throw new Exception("Cannot register clear receipt items");
-            foreach (ReceiptWares receiptItem in pRW) //(int index = 0; index < FiscalArticleList.Count; ++index)
+            foreach (ReceiptWares el in pRW) //(int index = 0; index < FiscalArticleList.Count; ++index)
             {
-                FiscalArticle FiscalArticle = SetupArticleTable(receiptItem);// FiscalArticleList[index];
+                FiscalArticle FiscalArticle = SetupArticleTable(el);// FiscalArticleList[index];
                 //ReceiptItem receiptItem = receiptItems[index];
                 string Price = string.Empty;
-
-                if (FiscalArticle.Price != receiptItem.Price)
-                    Price = "#" + receiptItem.Price.ToS();
+                decimal discont = el.Price < el.PriceDealer ? Math.Round((el.PriceDealer - el.Price) * el.Quantity, 2) : 0;
+                if (FiscalArticle.Price != el.PriceDealer)
+                    Price = "#" + el.PriceDealer.ToS();
 
                 // tring((IFormatProvider)CultureInfo.InvariantCulture);
 
-                string data = $"{FiscalArticle.PLU}*{receiptItem.Quantity.ToS()}{Price}";
-                if (receiptItem.SumTotalDiscount != 0M)
-                    data += ";" + (receiptItem.SumTotalDiscount > 0M ? "-" : "+") + Math.Abs(receiptItem.SumTotalDiscount).ToS();
+                string data = $"{FiscalArticle.PLU}*{el.Quantity.ToS()}{Price}";
+                if (el.SumTotalDiscount != 0M)
+                    data += ";" + (el.SumTotalDiscount + discont > 0M ? "-" : "+") + Math.Abs(el.SumTotalDiscount+ discont).ToS();
 
-                if (!string.IsNullOrWhiteSpace(receiptItem.BarCode))
-                    data = data + "&" + receiptItem.BarCode;
-                if (!string.IsNullOrEmpty(receiptItem.ExciseStamp))
-                    data += "!" + receiptItem.ExciseStamp;
+                if (!string.IsNullOrWhiteSpace(el.BarCode))
+                    data = data + "&" + el.BarCode;
+                if (!string.IsNullOrEmpty(el.ExciseStamp))
+                    data += "!" + el.ExciseStamp;
 
                 int num2 = OnSynchronizeWaitCommandResult(eCommand.RegisterProductInReceiptWithDisplay, data, (Action<string>)(res => { })) ? 1 : 0;
                 string errCode = string.Empty;
@@ -507,22 +507,26 @@ namespace Front.Equipments
         public bool PayReceipt(Receipt pR)
         {
             StringBuilder stringBuilder = new StringBuilder();
-            Payment Pay = pR?.Payment?.Where(el=>el.TypePay==eTypePay.Card)?.FirstOrDefault();
+            Payment Pay = pR?.Payment?.Where(el => el.TypePay == eTypePay.Card)?.FirstOrDefault();
             _logger?.LogDebug($"[FP700] PayReceipt {Pay?.TypePay}");
             if (Pay == null || Pay.TypePay == eTypePay.Cash)
             {
                 Pay = pR?.Payment?.Where(el => el.TypePay == eTypePay.Cash)?.FirstOrDefault();
-            
-            decimal Sum = pR.SumTotal;
-            if (Pay != null && Pay.SumExt> pR.SumTotal) 
-                    Sum = Pay.SumExt;
-            else 
-                    Sum= Math.Round(Sum, 1);
+
+                decimal Sum = pR.SumTotal;
+                if (Pay != null && Pay.SumPay > pR.SumTotal)
+                    Sum = Pay.SumPay;
+                else
+                    Sum = Math.Round(Sum, 1);
+
+                if(pR.SumFiscal>Sum && pR.SumFiscal- Sum<.2m)
+                    Sum= pR.SumFiscal;
+
                 stringBuilder.Append("P+" + Sum.ToString("F2", CultureInfo.InvariantCulture));
             }
             else
 
-                if (Pay.TypePay == eTypePay.Card)
+            if (Pay.TypePay == eTypePay.Card)
             {
                 Decimal totalAmount = 0M;
                 OnSynchronizeWaitCommandResult(eCommand.FiscalTransactionStatus, onResponseCallback: (Action<string>)(res =>
@@ -537,15 +541,7 @@ namespace Front.Equipments
                 else
                 {
                     stringBuilder.Append(string.Format((IFormatProvider)CultureInfo.InvariantCulture, "D+{0:0.00}", (object)totalAmount));
-                    stringBuilder.Append("," + GetPayStr(Pay, pR.TypeReceipt));
-                    /*stringBuilder.Append("," + Pay.CodeAuthorization);//
-                    stringBuilder.Append(",Магазин");
-                    stringBuilder.Append("," + Pay.NumberTerminal);//receipt.PaymentInfo.PosTerminalId
-                    stringBuilder.Append("," + (string.IsNullOrWhiteSpace(Pay.IssuerName) ? "картка" : Pay.IssuerName));
-                    stringBuilder.Append(string.IsNullOrEmpty(pR.NumberReceipt) ? ",оплата" : ",повернення");// receipt.FiscalNumber
-                    stringBuilder.Append("," + Pay.NumberCard);//receipt.PaymentInfo.CardPan
-                    stringBuilder.Append("," + Pay.NumberSlip);// receipt.PaymentInfo.PosAuthCode
-                    stringBuilder.Append(",0.00");*/
+                    stringBuilder.Append("," + GetPayStr(Pay, pR.TypeReceipt));                    
                 }
 
             }
