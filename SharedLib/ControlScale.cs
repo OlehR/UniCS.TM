@@ -330,6 +330,14 @@ namespace ModelMID
         public void StartWeightNewGoogs(double pBeforeWeight, WaitWeight[] pWeight, double pQuantity = 1d, double pOwnBag = 0d) //, bool pIsIncrease = true
         {
             OnScalesLog($"StartWeightNewGoogs", $"(pBeforeWeight=>{pBeforeWeight},WaitWeight=>{(pWeight != null ? string.Join(", ", pWeight?.ToList()) : "")},pQuantity={pQuantity}");
+            if(StateScale == eStateScale.Stabilized && RW?.IsBag==true && Math.Abs(СurrentlyWeight)>0.02 )
+            {
+                RW.FixWeight += (decimal) СurrentlyWeight;
+                OnStateScale?.Invoke(_StateScale, RW, СurrentlyWeight);
+                RW = null;
+                return;
+            }           
+
             BeforeWeight = pBeforeWeight;
             //IsIncrease = pIsIncrease;
             WaitWeight = pWeight;
