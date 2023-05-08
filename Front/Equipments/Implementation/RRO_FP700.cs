@@ -476,7 +476,7 @@ namespace Front.Equipments
                 // tring((IFormatProvider)CultureInfo.InvariantCulture);
 
                 string data = $"{FiscalArticle.PLU}*{el.Quantity.ToS()}{Price}";
-                if (el.SumTotalDiscount != 0M)
+                if (el.SumTotalDiscount + discont != 0M)
                     data += ";" + (el.SumTotalDiscount + discont > 0M ? "-" : "+") + Math.Abs(el.SumTotalDiscount+ discont).ToS();
 
                 if (!string.IsNullOrWhiteSpace(el.BarCode))
