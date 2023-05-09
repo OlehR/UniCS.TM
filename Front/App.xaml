@@ -1814,7 +1814,8 @@
                                                 <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                 Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
                                                     <!--Колір коли обрано-->
-                                                    <EasingColorKeyFrame KeyTime="0" Value="#e4f7da" />
+                                                    <EasingColorKeyFrame KeyTime="0" Value="#a5f27d" />
+                                                    <!--e4f7da  попередній колір-->
                                                 </ColorAnimationUsingKeyFrames>
                                             </Storyboard>
                                         </VisualState>
@@ -1823,7 +1824,7 @@
                                                 <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                 Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
                                                     <!--Колір коли втратило фокус-->
-                                                    <EasingColorKeyFrame KeyTime="0" Value="#e4f7da" />
+                                                    <EasingColorKeyFrame KeyTime="0" Value="#a5f27d" />
                                                 </ColorAnimationUsingKeyFrames>
                                             </Storyboard>
                                         </VisualState>

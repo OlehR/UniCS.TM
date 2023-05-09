@@ -87,6 +87,7 @@ namespace Front.Control
         IEnumerable<string> TextReceipt;
         public StringBuilder SB { get; set; } = new();
         public IEnumerable<WorkPlace> ActiveWorkPlaces { get; set; }
+        public bool IsControlScale { get { return AllEquipment.Where(x => x.Type == eTypeEquipment.ControlScale).Count() > 0; } }
 
         public void ControlScale(double pWeight, bool pIsStable)
         {
@@ -149,12 +150,13 @@ namespace Front.Control
         {
             if (pAdminUser != null)
                 AdminUser = pAdminUser;
-
             //adminastratorName.Text = AdminUser.NameUser;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClosedShift"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AdminUser"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("NameAdminUserOpenShift"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DataOpenShift"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsControlScale"));
+
             //TB_NameAdminUserOpenShift.Text = NameAdminUserOpenShift;
             //TB_DataOpenShift.Text= $"{DataOpenShift}";
             Dispatcher.BeginInvoke(new ThreadStart(() =>
@@ -312,19 +314,30 @@ namespace Front.Control
 
         private void EKKA_Z_Click(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show("Ви хочете зробити Z-звіт на фіскальному апараті?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            if ((MW.curReceipt == null || MW.curReceipt.Wares == null || !MW.curReceipt.Wares.Any()) && (MW.ReceiptPostpone == null || MW.ReceiptPostpone.Wares == null || !MW.ReceiptPostpone.Wares.Any()))
             {
-                var task = Task.Run(() =>
-            {
-                var r = EF.RroPrintZ(new IdReceipt() { IdWorkplace = SelectedWorkPlace.IdWorkplace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
-                if (r.CodeError == 0)
-                    ViewReceiptFiscal(r);
-                else
+
+
+                if (MessageBox.Show("Ви хочете зробити Z-звіт на фіскальному апараті?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                 {
-                    Thread.Sleep(100);
-                    MW.ShowErrorMessage($"Помилка друку звіта:({r.CodeError}){Environment.NewLine}{r.Error}");
+                    var task = Task.Run(() =>
+                {
+                    var r = EF.RroPrintZ(new IdReceipt() { IdWorkplace = SelectedWorkPlace.IdWorkplace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
+                    if (r.CodeError == 0)
+                        ViewReceiptFiscal(r);
+                    else
+                    {
+                        Thread.Sleep(100);
+                        MW.ShowErrorMessage($"Помилка друку звіта:({r.CodeError}){Environment.NewLine}{r.Error}");
+                    }
+                });
                 }
-            });
+            }
+            else
+            {
+                MW.SetStateView(eStateMainWindows.StartWindow);
+                TabAdmin.SelectedIndex = 0;
+                MW.ShowErrorMessage("Існує відкритий чек! Для закриття зміни потрібно закрити всі чеки!");
             }
         }
 

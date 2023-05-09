@@ -727,7 +727,7 @@
                                                     </Image>
                                                 </Button>
 
-                                                <Button Grid.Column="4" Height="60" Width="60" Style="{StaticResource Default}" Click="Test_Click">
+                                                <Button Grid.Column="4" Height="60" Width="60" Style="{StaticResource greenButton}" Click="Test_Click">
                                                     <Image Source="\icons\Ok.png"/>
                                                 </Button>
                                                 <Button Grid.Column="5" Height="60" Width="60" Style="{StaticResource Default}" Click="Info_Click">
@@ -751,7 +751,7 @@
                                 <StackPanel Orientation="Horizontal"  VerticalAlignment="Stretch" >
 
                                     <Button Name="CalibrationControlScale" Click="CalibrationControlScaleButton"
-                                            HorizontalAlignment="Left" Margin="5" Grid.Row="1"  Style="{StaticResource Default}">
+                                            HorizontalAlignment="Left" Margin="5" Grid.Row="1" >
                                         <TextBlock TextWrapping="Wrap" Text="Калібрування">
                                             <TextBlock.Style>
                                                 <Style TargetType="{x:Type TextBlock}">
@@ -767,10 +767,22 @@
                                                 </Style>
                                             </TextBlock.Style>
                                         </TextBlock>
+
+                                        <Button.Style>
+                                            <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsControlScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" 
+                                                                     Value="False">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
                                     </Button>
 
                                     <Button Name="TarControlScale" Click="TarControlScaleButton"
-                                Style="{StaticResource Default}"  HorizontalAlignment="Left" Margin="5" Grid.Row="1">
+                                  HorizontalAlignment="Left" Margin="5" Grid.Row="1">
                                         <TextBlock TextWrapping="Wrap" Text="Тарування">
                                             <TextBlock.Style>
                                                 <Style TargetType="{x:Type TextBlock}">
@@ -786,6 +798,17 @@
                                                 </Style>
                                             </TextBlock.Style>
                                         </TextBlock>
+                                        <Button.Style>
+                                            <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsControlScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" 
+                                                                     Value="False">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
                                     </Button>
                                     <TextBlock Name="ControlScaleWeightHaml"  Text="{Binding ControlScaleWeightDouble}"  Margin="5" Grid.Row="1" >
                                         <TextBlock.Style>
@@ -794,10 +817,15 @@
                                                 <Setter Property="FontWeight" Value="DemiBold"/>
                                                 <Setter Property="HorizontalAlignment" Value="Center"/>
                                                 <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="Visibility" Value="Visible" />
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
                                                         <Setter Property="FontSize" Value="20" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsControlScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" 
+                                                                     Value="False">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>

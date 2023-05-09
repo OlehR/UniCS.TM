@@ -44,7 +44,11 @@ namespace Front.Control
         {
             get
             {
-                if (SumCashDisbursement > 0)  return false;
+                if (SumCashDisbursement > 0)
+                {
+                    ChangeSumPaymant = MoneySumToRound.ToString();
+                    return false;
+                }
                 else
                 return RestMoney >= 0 ? true : false;
             }

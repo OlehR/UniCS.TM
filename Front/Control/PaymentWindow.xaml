@@ -64,7 +64,7 @@
                 Opacity="0.9"/>
 
 
-            <Button x:Name="F5" Margin="5" Height="60" Style="{StaticResource Default}" VerticalAlignment="Top" Click="F5Button">F5</Button>
+            <Button x:Name="F5" Margin="5" Height="60" Style="{StaticResource Default}" VerticalAlignment="Top" Click="F5Button" Visibility="Collapsed">F5</Button>
             <Button  Grid.Column="1"  Grid.Row="0"  FontSize="22" Height="60" VerticalAlignment="Top"
                             Margin="5" Click="_ButtonPaymentBonus">
                 <Button.Content>
@@ -195,10 +195,26 @@
                     </Button>
                     <TextBlock FontSize="20"> Сума видачі грошових коштів:</TextBlock>
                     <TextBlock  x:Name="CashDisbursementTextBox"
-                                FontSize="20" TextWrapping="Wrap"
-                                HorizontalAlignment="Center" VerticalAlignment="Center"
                                 Text="{Binding SumCashDisbursement, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=UserControl}}"/>
+                                   Mode=FindAncestor, AncestorType=UserControl}}">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="FontSize" Value="28" />
+                                <Setter Property="FontFamily" Value="Source Sans Pro" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                                <Setter Property="FontWeight" Value="Bold" />
+                                <Setter Property="Foreground" Value="Green" />
+                                
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SumCashDisbursement, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=UserControl}}" Value="0">
+                                        <Setter Property="Foreground" Value="Black" />
+                                        <Setter Property="FontWeight" Value="DemiBold" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
                     <Button Style="{StaticResource yelowButton}" Margin="10"
                                     Width="120" Height="50" Click="CashDisbursement"
                                     >
@@ -208,6 +224,18 @@
                 </StackPanel>
             </Border>
             <Grid Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="2" Grid.RowSpan="4">
+
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="IsEnabled" Value="False" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SumCashDisbursement, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=UserControl}}" Value="0">
+                                <Setter Property="IsEnabled" Value="True" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>

@@ -40,7 +40,7 @@ namespace Front
         public DateTime DTAdminSSC { get; set; }
 
         public Receipt curReceipt;//{ get; set; } = null;
-        Receipt ReceiptPostpone = null;
+        public Receipt ReceiptPostpone = null;
         public bool IsReceiptPostponeNotNull { get { return ReceiptPostpone == null; } }
         public bool IsReceiptPostpone
         {
