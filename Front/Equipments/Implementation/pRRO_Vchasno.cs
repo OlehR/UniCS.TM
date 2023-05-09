@@ -159,7 +159,7 @@ namespace Front.Equipments.Implementation
             string dd = d.ToJSON();
             var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");
             Responce<ResponceReport> Res = JsonConvert.DeserializeObject<Responce<ResponceReport>>(r);
-            return GetLogRRO(pIdR, Res, pSum > 0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyIn);
+            return GetLogRRO(pIdR, Res, pSum > 0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyIn,pSum);
         }
 
         override public StatusEquipment TestDevice()

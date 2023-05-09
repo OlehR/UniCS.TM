@@ -606,7 +606,7 @@ namespace Front
                 {
                     FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
                     SetStatus?.Invoke(new StatusEquipment(RRO.Model, eStateEquipment.Error, e.Message) { IsСritical = true });
-                    Res = new LogRRO(pIdR) { TypeOperation = pSum>0?eTypeOperation.MoneyIn:eTypeOperation.MoneyOut , TypeRRO = RRO.Model.ToString(), CodeError = -1, Error = e.Message };
+                    Res = new LogRRO(pIdR) { TypeOperation = pSum>0?eTypeOperation.MoneyIn:eTypeOperation.MoneyOut ,SUM= pSum, TypeRRO = RRO.Model.ToString(), CodeError = -1, Error = e.Message };
                 }
                 finally
                 {

@@ -116,7 +116,7 @@ namespace Front.Equipments
         public override LogRRO MoveMoney(decimal pSum, IdReceipt pIdR = null)
         {
             MoneyMoving(pSum);
-            return new LogRRO(pIdR) { TypeOperation = pSum > 0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyIn, TypeRRO = Type.ToString(), FiscalNumber = GetLastZReportNumber() };
+            return new LogRRO(pIdR) { TypeOperation = pSum > 0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyIn,SUM= pSum,TypeRRO = Type.ToString(), FiscalNumber = GetLastZReportNumber() };
         }
 
         /// <summary>
