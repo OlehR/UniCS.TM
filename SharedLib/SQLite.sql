@@ -189,7 +189,8 @@ where ID_WORKPLACE = @IdWorkplace
 
 [SqlViewReceiptWares]
 select wr.id_workplace as IdWorkplace, wr.code_period as CodePeriod, wr.code_receipt as CodeReceipt,wr.code_wares as CodeWares, w.Name_Wares as NameWares ,wr.quantity as Quantity, ud.abr_unit as AbrUnit, 
-Price as Price/*, wr.sum as Sum*/, Type_Price as TypePrice
+Price as Price --, wr.sum as Sum
+, Type_Price as TypePrice
 				,wr.code_unit as CodeUnit,w.Code_unit as CodeDefaultUnit, PAR_PRICE_1 as ParPrice1, PAR_PRICE_2 as ParPrice2,par_price_3 as ParPrice3,
                      au.COEFFICIENT as Coefficient,w.NAME_WARES_RECEIPT as  NameWaresReceipt,sort,
 					 ADDITION_N1 as AdditionN1,ADDITION_N2 as AdditionN2, ADDITION_N3 as AdditionN3,
@@ -211,11 +212,16 @@ Price as Price/*, wr.sum as Sum*/, Type_Price as TypePrice
  ,wr.id_workplace_pay as IdWorkplacePay
  ,wr.sum_wallet as SumWallet
  ,case when max(SORT) over( PARTITION BY CODE_RECEIPT) = sort then  1 else 0 end as IsLast
+ ,wrh.history as History
                      from wares_receipt wr
                      join wares w on (wr.code_wares =w.code_wares)
                      join ADDITION_UNIT au on w.code_wares = au.code_wares and wr.code_unit=au.code_unit
                      join unit_dimension ud on (wr.code_unit = ud.code_unit)
                      left join PROMOTION_SALE ps  on PAR_PRICE_1=ps.CODE_PS and type_price=9 
+                     left join (select code_wares,group_concat(wrh.quantity-wrh.QUANTITY_OLD,'; ') as history, count(*) from WARES_RECEIPT_HISTORY wrh
+                                       where  wrh.id_workplace=@IdWorkplace and  wrh.code_period =@CodePeriod and wrh.code_receipt=@CodeReceipt
+					                          and wrh.code_wares = case when @CodeWares=0 then wrh.code_wares else @CodeWares end
+                                       group by wrh.code_wares having count(*)>1) wrh on (wrh.Code_Wares=wr.Code_Wares) 
                      where wr.id_workplace=@IdWorkplace and  wr.code_period =@CodePeriod and wr.code_receipt=@CodeReceipt
 					 and wr.code_wares = case when @CodeWares=0 then wr.code_wares else @CodeWares end
                      order by sort

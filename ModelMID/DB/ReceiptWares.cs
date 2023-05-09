@@ -286,7 +286,8 @@ namespace ModelMID
         {
             get
             {
-                string Res = (string.IsNullOrEmpty(NameDiscount) ? "" : NameDiscount + Environment.NewLine);
+                string Res = (string.IsNullOrEmpty(History)   ||  CodeUnit != Global.WeightCodeUnit? "" : $"{History} кг{Environment.NewLine}")+
+                (string.IsNullOrEmpty(NameDiscount) ? "" : NameDiscount + Environment.NewLine);
                 try
                 {
                     if (ReceiptWaresPromotions != null)
@@ -366,6 +367,11 @@ namespace ModelMID
         /// Торгова марка (в 1С - Бренд) 
         /// </summary>
         public int CodeTM { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string History { get; set; }
 
         public string GetPrices { get { return Prices == null ? null : string.Join(";", Prices.Select(n => n.Price.ToString(CultureInfo.InvariantCulture)).ToArray()); } }
         public ReceiptWares()
