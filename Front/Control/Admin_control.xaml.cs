@@ -400,6 +400,7 @@ namespace Front.Control
                 {
                     var res = Eq.TestDevice();
                     MessageBox.Show($"{res.StateEquipment} {res.TextState}", res.ModelEquipment.ToString());
+                    Init(AdminUser);
                 }
             }
         }
@@ -601,7 +602,7 @@ namespace Front.Control
         public bool IsSendTo1C { get; set; } = false;// { get { return curReceipt?.StateReceipt == eStateReceipt.Print; } }
         public bool IsCreateReturn { get; set; } = false;// { get { return curReceipt?.StateReceipt == eStateReceipt.Send && curReceipt?.TypeReceipt == eTypeReceipt.Sale; } }
 
-        
+
 
         private void FindChecksByDate(object sender, RoutedEventArgs e)
         {
@@ -836,14 +837,16 @@ namespace Front.Control
                 foreach (eStateReceipt type in Enum.GetValues(typeof(eStateReceipt)))
                 {
                     bool select_ = false;
-                    if (type == ChangeStateReceipt.StateReceipt) select_ = true;
-                    ListStateReceiptRadiobuton.Add(new StateReceiptRadiobuton()
+                    if (type == eStateReceipt.Canceled || type == eStateReceipt.Pay || type == eStateReceipt.Prepare || type == eStateReceipt.Print)
                     {
-                        StateReceipt_ = type,
-                        Selected = select_
+                        if (type == ChangeStateReceipt.StateReceipt) select_ = true;
+                        ListStateReceiptRadiobuton.Add(new StateReceiptRadiobuton()
+                        {
+                            StateReceipt_ = type,
+                            Selected = select_
 
-                    });
-
+                        });
+                    }
                 }
                 ListReceiptState.ItemsSource = ListStateReceiptRadiobuton;
             }
@@ -863,6 +866,7 @@ namespace Front.Control
                 Bl.SetStateReceipt(ChangeStateReceipt, newStateReceipt);
                 WindowChangeReceiptStatus.Visibility = Visibility.Collapsed;
                 BackgroundReceipts.Visibility = Visibility.Collapsed;
+                FindChecksByDate(null, null);
             }
         }
 
