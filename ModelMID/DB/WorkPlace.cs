@@ -55,7 +55,9 @@ namespace ModelMID.DB
         public string SettingsEx
         {
             get { return _SettingsEx; }
-            set { _SettingsEx = value; if (!string.IsNullOrEmpty(value)) _Settings=JsonConvert.DeserializeObject<Settings>(value); 
+            set { _SettingsEx = value; 
+                if (!string.IsNullOrEmpty(value)) 
+                    try { _Settings = JsonConvert.DeserializeObject<Settings>(value); } catch (Exception) { }; 
             }
         }
         Settings _Settings;
