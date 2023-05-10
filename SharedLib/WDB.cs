@@ -236,10 +236,8 @@ namespace SharedLib
             {
                 Global.WorkPlaceByTerminalId.Add(el.TerminalGUID, el);
                 Global.WorkPlaceByWorkplaceId.Add(el.IdWorkplace, el);
-                if(el.IdWorkplace == Global.IdWorkPlace && el.Settings!=null)
-                {
-                    Global.Settings = el.Settings;
-                }
+                if(el.IdWorkplace == Global.IdWorkPlace && el.Settings!=null)                
+                    Global.Settings = el.Settings;                
             } 
             return true;
         }
