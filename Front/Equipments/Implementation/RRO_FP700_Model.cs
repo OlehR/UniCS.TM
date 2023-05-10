@@ -49,6 +49,7 @@ namespace Front.Equipments.Implementation.FP700_Model
         FullReportByPeriod = 94, // 0x0000005E
 
         SetOperatorName = 102, // 0x00000066
+        OpenMoneyBox = 106, // 0x0000006A
         ArticleProgramming = 107, // 0x0000006B
         FiscalReceiptCopy = 109, // 0x0000006D
         AditionalInfo = 110, // 0x0000006E

@@ -16,6 +16,7 @@ CREATE UNIQUE INDEX id_FiscalArticle ON FiscalArticle(CodeWares);--Ver=>10
 alter table WORKPLACE add  Prefix TEXT;--Ver=>12
 alter table WORKPLACE add  DNSName TEXT;--Ver=>13
 alter table WORKPLACE add  TypeWorkplace INTEGER  NOT NULL DEFAULT 0;--Ver=>13
+alter table WORKPLACE add  SettingsEx Text;--Ver=>14
 
 [SqlUpdateRC]
 alter TABLE WARES_RECEIPT            add Fix_Weight NUMBER NOT NULL DEFAULT 0;--Ver=>0
@@ -574,13 +575,13 @@ select * from FIELD_INFO
 insert into Weight ( BarCode,Weight,STATUS) values (@BarCode,@Weight,@Status);
 
 [SqlReplaceWorkplace]
- replace into WORKPLACE ( ID_WORKPLACE, NAME, Terminal_GUID, Video_Camera_IP, Video_Recorder_IP, Type_POS, Code_Warehouse,CODE_DEALER, Prefix, DNSName,TypeWorkplace) values 
-                         (@IdWorkplace, @Name, @StrTerminalGUID, @VideoCameraIP, @VideoRecorderIP,@TypePOS,@CodeWarehouse,@CodeDealer,@Prefix,@DNSName,@TypeWorkplace);
+ replace into WORKPLACE ( ID_WORKPLACE, NAME, Terminal_GUID, Video_Camera_IP, Video_Recorder_IP, Type_POS, Code_Warehouse,CODE_DEALER, Prefix, DNSName, TypeWorkplace, SettingsEx) values 
+                         (@IdWorkplace, @Name, @StrTerminalGUID, @VideoCameraIP, @VideoRecorderIP,@TypePOS,@CodeWarehouse,@CodeDealer,@Prefix,@DNSName,@TypeWorkplace,@SettingsEx);
 
 [SqlGetWorkplace]
 select ID_WORKPLACE as IdWorkplace, NAME as Name, Terminal_GUID as StrTerminalGUID, 
        Video_Camera_IP as VideoCameraIP, Video_Recorder_IP  as VideoRecorderIP , Type_POS as TypePOS,
-       Code_Warehouse as CodeWarehouse ,CODE_DEALER as CodeDealer,Prefix, DNSName,TypeWorkplace from WORKPLACE;
+       Code_Warehouse as CodeWarehouse ,CODE_DEALER as CodeDealer,Prefix, DNSName,TypeWorkplace ,SettingsEx from WORKPLACE;
 
 [SqlFillQuickGroup]
 WITH RECURSIVE
@@ -609,7 +610,9 @@ CREATE TABLE WORKPLACE (
     CODE_DEALER INTEGER  NOT NULL DEFAULT 0,
     Prefix TEXT,
     DNSName TEXT,
-    TypeWorkplace INTEGER  NOT NULL DEFAULT 0
+    TypeWorkplace INTEGER  NOT NULL DEFAULT 0,
+    SettingsEx TEXT
+
 	);
 	CREATE UNIQUE INDEX id_WORKPLACE ON WORKPLACE(ID_WORKPLACE);
 	CREATE UNIQUE INDEX WORKPLACE_TG ON WORKPLACE(Terminal_GUID);

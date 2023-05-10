@@ -1,8 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Runtime;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.VisualBasic;
+using ModelMID;
+using Newtonsoft.Json;
+using Utils;
 
 namespace ModelMID.DB
 {
@@ -44,6 +50,16 @@ namespace ModelMID.DB
 
         public eTypeWorkplace TypeWorkplace { get; set; }
         public IPAddress IP { get; set; }
+
+        string _SettingsEx;
+        public string SettingsEx
+        {
+            get { return _SettingsEx; }
+            set { _SettingsEx = value; if (!string.IsNullOrEmpty(value)) _Settings=JsonConvert.DeserializeObject<Settings>(value); 
+            }
+        }
+        Settings _Settings;
+        public Settings Settings { get { return _Settings; } }
     }
     
 }

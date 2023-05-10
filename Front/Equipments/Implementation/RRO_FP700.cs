@@ -628,6 +628,8 @@ namespace Front.Equipments
         public void PrintDividerLine(bool shouldPrintBeforeFiscalInfo) => OnSynchronizeWaitCommandResult(eCommand.PrintDividerLine);
 
         public bool CopyReceipt() => OnSynchronizeWaitCommandResult(eCommand.FiscalReceiptCopy, "1");
+        
+        override public bool OpenMoneyBox(int pTime=15) => OnSynchronizeWaitCommandResult(eCommand.OpenMoneyBox);
 
         public bool MoneyMoving(decimal pSum)
         {

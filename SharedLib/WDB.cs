@@ -236,7 +236,11 @@ namespace SharedLib
             {
                 Global.WorkPlaceByTerminalId.Add(el.TerminalGUID, el);
                 Global.WorkPlaceByWorkplaceId.Add(el.IdWorkplace, el);
-            }
+                if(el.IdWorkplace == Global.IdWorkPlace && el.Settings!=null)
+                {
+                    Global.Settings = el.Settings;
+                }
+            } 
             return true;
         }
 
@@ -1116,7 +1120,19 @@ namespace SharedLib
    and CODE_RECEIPT = @CodeReceipt";
             return db.ExecuteScalar<IdReceipt, eTypeReceipt>(Sql, pR);
         }
-        
+
+        public virtual decimal GetSumCash(IdReceipt pR)
+        {
+            string Sql = @"select  sum(sum) from
+(select sum(sum) as sum from LOG_RRO l
+where TYPE_OPERATION = 2 and error is null and ID_WORKPLACE_PAY = @IdWorkplacePay
+   and CODE_PERIOD = @CodePeriod
+union all
+select sum(sum_pay) as sum from payment p where TYPE_PAY = 2) d
+ Where ID_WORKPLACE_PAY = @IdWorkplacePay and CODE_PERIOD = @CodePeriod";
+            return db.ExecuteScalar<IdReceipt, decimal>(Sql, pR);
+        }
+
         public virtual void Close(bool isWait = false)
         {
                   db?.Close(isWait);

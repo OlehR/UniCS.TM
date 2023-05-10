@@ -619,6 +619,11 @@ namespace Front
             return r;
         }
 
+        public bool OpenMoneyBox(int pTime=15)
+        {
+            var RRO = GetRRO(Global.IdWorkPlace);
+            return RRO?.OpenMoneyBox(pTime)??false;
+        }
         /// <summary>
         /// Розрахунок суми готівкуою з врахуванням завкруглення фіскалки
         /// </summary>

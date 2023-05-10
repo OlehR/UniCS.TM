@@ -155,6 +155,7 @@ namespace Front.Equipments.Implementation
         override public LogRRO MoveMoney(decimal pSum, IdReceipt pIdR)
         {
             ApiRRO d = new(pSum > 0 ? eTask.MoneyIn : eTask.MoneyOut) { token = Token, device = Device };
+            d.fiscal.receipt = new();
             d.fiscal.receipt.cash = new Cash() { sum = pSum, type = eTypePayRRO.Cash };
             string dd = d.ToJSON();
             var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");

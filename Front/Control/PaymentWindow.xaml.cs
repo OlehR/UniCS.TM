@@ -218,6 +218,8 @@ namespace Front.Control
 
         private void CashDisbursement(object sender, RoutedEventArgs e)
         {
+
+            decimal SumCash = MW.Bl.db.GetSumCash(new IdReceipt() { CodePeriod = MW.curReceipt.CodePeriod, IdWorkplacePay = Global.IdWorkPlace });
             MW.InputNumberPhone.Desciption = "Введіть суму видачі";
             MW.InputNumberPhone.ValidationMask = "";
             MW.InputNumberPhone.Result = "";

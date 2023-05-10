@@ -26,6 +26,8 @@ namespace ModelMID
         public static SortedList<int, int> IdWorkPlacePayDirection = new();
         public static SortedList<int, int> IdWorkPlacePayTM = new();
 
+        public static Settings Settings { get; set; }
+
         public static List<WorkPlace> AllWorkPlaces = new();
 
         public static eTypeWorkplace TypeWorkplace = eTypeWorkplace.SelfServicCheckout;

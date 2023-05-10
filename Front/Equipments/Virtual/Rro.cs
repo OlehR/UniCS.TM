@@ -94,6 +94,7 @@ namespace Front.Equipments
             return null;//throw new NotImplementedException();
         }
 
+        virtual public bool OpenMoneyBox(int pTime = 15) { return false; }
         /// <summary>
         /// Друк чека
         /// </summary>
