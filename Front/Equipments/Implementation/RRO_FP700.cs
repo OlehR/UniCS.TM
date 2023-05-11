@@ -76,8 +76,8 @@ namespace Front.Equipments
                 _packageBufferTimer.Interval = 5000.0;
                 _packageBufferTimer.Enabled = true;
                 
-                Init();
-                State = IsReady ? eStateEquipment.On : eStateEquipment.Error;
+                var res=Init();
+                State = IsReady && res==eDeviceConnectionStatus.Enabled ? eStateEquipment.On : eStateEquipment.Error;
             }
             catch (Exception e)
             {
@@ -300,7 +300,9 @@ namespace Front.Equipments
             try
             {
                 DiagnosticInfo diagnosticInfo = GetDiagnosticInfo();
-                DocumentNumbers lastNumbers = GetLastNumbers();                
+                DocumentNumbers lastNumbers = null;                
+                if(diagnosticInfo != null)
+                    lastNumbers=GetLastNumbers();                
                 if (diagnosticInfo == null || lastNumbers == null)
                     throw new Exception("Fp700 getInfo error");
                 return _currentPrinterStatus.TextError + $"Model:{diagnosticInfo.Model}\nSoftVersion: {diagnosticInfo.SoftVersion}\nSoftReleaseDate: {diagnosticInfo.SoftReleaseDate}\n SerialNumber: {diagnosticInfo.SerialNumber}\n RegistrationNumber: {diagnosticInfo.FiscalNumber}\n" + 
