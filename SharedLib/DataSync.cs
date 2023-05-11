@@ -52,6 +52,7 @@ namespace SharedLib
                 }
                 if (parIsFull)
                     _ = SendRWDeleteAsync();
+                Send1CClientAsync();
                 FileLogger.WriteLogMessage($"BL.SyncDataAsync({parIsFull}) => {res} Finish");
             }
             catch (Exception e)
