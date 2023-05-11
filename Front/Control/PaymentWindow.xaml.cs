@@ -15,28 +15,33 @@ using ModernExpo.SelfCheckout.Utils;
 using Front.Models;
 
 namespace Front.Control
-{ 
+{
     public partial class PaymentWindow : UserControl, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public string ChangeSumPaymant { get; set; } = "";
-        public decimal ChangeSumPaymantDecimal { get { decimal res=0; decimal.TryParse(ChangeSumPaymant, out res);  return res; } }
+        public decimal ChangeSumPaymantDecimal { get { decimal res = 0; decimal.TryParse(ChangeSumPaymant, out res); return res; } }
 
         decimal MoneySum;
         public decimal SumCashDisbursement { get; set; } = 0;
         public decimal SumMaxWallet { get; set; } = 0;
         public bool IsPaymentBonuses { get; set; } = false;
         public bool EnteringPriceManually { get; set; } = false;
-        decimal _SumUseWallet = 0;        
-        public decimal SumUseWallet { get { return _SumUseWallet; } set { _SumUseWallet = value;
+        decimal _SumUseWallet = 0;
+        public decimal SumUseWallet
+        {
+            get { return _SumUseWallet; }
+            set
+            {
+                _SumUseWallet = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SumUseWalletUp)));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SumUseWalletDown)));
 
                 //RoundSum.Text = (Math.Round(SumUseWalletUp, 2)).ToString();
                 //RoundSumDown.Text = (Math.Round(SumUseWalletDown, 2)).ToString();
             }
-        } 
-        public decimal SumUseWalletUp { get { return SumUseWallet>0? SumUseWallet : 0; } }
+        }
+        public decimal SumUseWalletUp { get { return SumUseWallet > 0 ? SumUseWallet : 0; } }
         public decimal SumUseWalletDown { get { return SumUseWallet < 0 ? -SumUseWallet : 0; } }
         public Receipt curReceipt { get { return MW?.curReceipt; } }
         public decimal RestMoney { get; set; }
@@ -50,14 +55,14 @@ namespace Front.Control
                     return false;
                 }
                 else
-                return RestMoney >= 0 ? true : false;
+                    return RestMoney >= 0 ? true : false;
             }
         }
-       
-        public decimal MoneySumToRound { get; set; }    
-        
-        MainWindow MW;        
-        
+
+        public decimal MoneySumToRound { get; set; }
+
+        MainWindow MW;
+
         public bool IsRounding
         {
             get
@@ -73,8 +78,8 @@ namespace Front.Control
         }
 
         public PaymentWindow()
-        {           
-            InitializeComponent();            
+        {
+            InitializeComponent();
         }
 
         public void UpdatePaymentWindow()
@@ -220,12 +225,21 @@ namespace Front.Control
         {
 
             decimal SumCash = MW.Bl.db.GetSumCash(new IdReceipt() { CodePeriod = MW.curReceipt.CodePeriod, IdWorkplacePay = Global.IdWorkPlace });
-            MW.InputNumberPhone.Desciption = "Введіть суму видачі";
+            MW.InputNumberPhone.Desciption = $"Введіть суму видачі. В касі {SumCash}₴";
             MW.InputNumberPhone.ValidationMask = "";
             MW.InputNumberPhone.Result = "";
             MW.InputNumberPhone.CallBackResult = (string result) =>
             {
-                SumCashDisbursement = string.IsNullOrEmpty(result) ? 0 : Convert.ToDecimal(result);
+
+                if (!string.IsNullOrEmpty(result))
+                {
+                    var res = Convert.ToDecimal(result);
+                    if (res >= Global.Settings.SumDisbursementMin && res <= Global.Settings.SumDisbursementMax)
+                        SumCashDisbursement = res;
+                    else
+                        MW.ShowErrorMessage($"Сума видачі готівки повинна бути більша за {Global.Settings.SumDisbursementMin}₴ і меньше за {Global.Settings.SumDisbursementMax}₴");
+                   
+                }
                 BackgroundPayment.Visibility = Visibility.Collapsed;
             };
             BackgroundPayment.Visibility = Visibility.Visible;
@@ -238,7 +252,7 @@ namespace Front.Control
         public decimal RoundingUpPrice(decimal price, decimal precision)
         {
             price = Convert.ToInt32(Math.Round(price * 100, 3));
-            precision = Math.Round(precision, 2);            
+            precision = Math.Round(precision, 2);
             MoneySumToRound = Math.Round(Math.Ceiling(Math.Ceiling(price / precision / 100)) * precision, 2);
             SumUseWallet = MoneySumToRound - MoneySum;
             return MoneySumToRound;
@@ -249,9 +263,9 @@ namespace Front.Control
             price = Convert.ToInt32(Math.Round(price * 100, 3));
             precision = Math.Round(precision, 2);
             MoneySumToRound = Math.Round(Math.Floor(Math.Floor(price / precision / 100)) * precision, 2);
-            
+
             if (MoneySum - MoneySumToRound > SumMaxWallet)
-                MoneySumToRound = RoundingUpPrice(MoneySum - SumMaxWallet, 1.0m);            
+                MoneySumToRound = RoundingUpPrice(MoneySum - SumMaxWallet, 1.0m);
 
             SumUseWallet = MoneySumToRound - MoneySum;
             return MoneySumToRound;
@@ -263,36 +277,36 @@ namespace Front.Control
         }
 
         private void CalculateReturn()
-        {              
-                if (ChangeSumPaymantDecimal>0)
-                    RestMoney = Math.Round((ChangeSumPaymantDecimal - Convert.ToDecimal(MoneySumToRound)), 2);
-                else
-                    RestMoney = 0;
+        {
+            if (ChangeSumPaymantDecimal > 0)
+                RestMoney = Math.Round((ChangeSumPaymantDecimal - Convert.ToDecimal(MoneySumToRound)), 2);
+            else
+                RestMoney = 0;
         }
 
         private void Rounding(string Name = "")
         {
-              decimal tmp = 0;
+            decimal tmp = 0;
             switch (Name)
             {
                 case "plus05":
-                     RoundingUpPrice(MoneySum, 0.5m);                   
+                    RoundingUpPrice(MoneySum, 0.5m);
                     break;
                 case "plus1":
-                     RoundingUpPrice(MoneySum, 1.0m);
+                    RoundingUpPrice(MoneySum, 1.0m);
                     break;
                 case "plus2":
-                    RoundingUpPrice(MoneySum, 2.0m);                   
+                    RoundingUpPrice(MoneySum, 2.0m);
                     break;
                 case "plus5":
                     RoundingUpPrice(MoneySum, 5.0m);
-                    
+
                     break;
                 case "plus10":
-                     RoundingUpPrice(MoneySum, 10.0m);
+                    RoundingUpPrice(MoneySum, 10.0m);
                     break;
                 case "minus1":
-                    RoundingDownPrice(MoneySum,1);
+                    RoundingDownPrice(MoneySum, 1);
                     break;
                 case "minus2":
                     RoundingDownPrice(MoneySum, 2);
@@ -323,12 +337,12 @@ namespace Front.Control
                         //        tmp = MoneySum - SumMaxWallet;
                         //    RoundingUpPrice(tmp, 1.0m);
                         //}
-                        if (SumMaxWallet < tmp) 
+                        if (SumMaxWallet < tmp)
                         {
                             tmp = SumMaxWallet;
                             MW.ShowErrorMessage("Вказана сума більша за максимально можливу");
                         }
-                            
+
 
                         MoneySumToRound = MoneySum - tmp;
                         SumUseWallet = -tmp;
