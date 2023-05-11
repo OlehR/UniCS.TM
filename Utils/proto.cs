@@ -43,7 +43,8 @@ namespace Utils
         public static decimal ToDecimal(this string s, decimal pDefault = 0)
         {
             decimal res;
-            if (!Decimal.TryParse(s, out res))
+            s=s.Replace(',', '.');
+            if (!Decimal.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out res))
                 res = pDefault;
             return res;
         }

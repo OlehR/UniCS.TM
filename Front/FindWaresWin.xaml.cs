@@ -14,6 +14,7 @@ using System.Windows.Media;
 using Front.Models;
 using System.Threading.Tasks;
 using static Front.MainWindow;
+using Utils;
 
 namespace Front
 {
@@ -276,12 +277,21 @@ namespace Front
                 }
                 else
                 {
-                    if (Gw.CodeUnit == Global.WeightCodeUnit)
+                    decimal Quantity = 0m;
+                    if(WaresName.Text.IndexOf('*')>0)
                     {
-                        Close(Gw.Code, Gw.CodeUnit, 0, Gw);
-                    }
-                    else
-                        Close(Gw.Code, Gw.CodeUnit, 1m);
+                        var s = WaresName.Text.Split('*');
+                        Quantity = s[0].ToDecimal() * (Gw.CodeUnit== Global.WeightCodeUnit? 1000:1);
+                        if(Gw.CodeUnit == Global.WeightCodeUnit)
+                            Quantity=Math.Round(Quantity, 0);
+
+                    }                   
+
+                    if (Gw.CodeUnit == Global.WeightCodeUnit && Quantity==0)                    
+                        Close(Gw.Code, Gw.CodeUnit, 0, Gw);                    
+                    else                    
+                        Close(Gw.Code, Gw.CodeUnit, Quantity>0? Quantity: 1m);                    
+                       
                 }
         }
 

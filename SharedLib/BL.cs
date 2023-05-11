@@ -422,13 +422,12 @@ namespace SharedLib
                 }
                 else
                 {
-                    Reg = new Regex(@"^[0-9]{1,5}[*]{1}[0-9]{1,8}[*]{0,1}$");
-                    if (Reg.IsMatch(pName))
+                    //Reg = new Regex(@"^[0-9]{1,5}[,.]{0-1}[0-9]{1,5}[*]{1}[0-9]{1,8}[*]{0,1}$");
+                    if ( pName?.IndexOf('*')>0 )//Reg.IsMatch(pName))
                     {
                         var s = pName.Split('*');
                         Article = s[1];
-                        if (pName.EndsWith("*"))
-                            Quantity = Convert.ToDecimal(s[0]);
+                        //if (pName.EndsWith("*"))  Quantity = Convert.ToDecimal(s[0]);
                         pName = null;
                     }
                 }
