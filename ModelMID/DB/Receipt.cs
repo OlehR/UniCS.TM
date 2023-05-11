@@ -151,7 +151,7 @@ namespace ModelMID
                 }
                 return res;
             }
-            set { _Wares = value.Where(el=>el.CodeWares!= Global.CodeWaresWallet); }
+            set { _Wares = value?.Where(el=>el.CodeWares!= Global.CodeWaresWallet); }
         }
 
         IEnumerable<Payment> _Payment;

@@ -1123,11 +1123,9 @@ namespace SharedLib
         {
             string Sql = @"select  sum(sum) from
 (select sum(sum) as sum from LOG_RRO l
-where TYPE_OPERATION = 2 and error is null and ID_WORKPLACE_PAY = @IdWorkplacePay
-   and CODE_PERIOD = @CodePeriod
+where TYPE_OPERATION = 2 and not (length (error) > 0) and ID_WORKPLACE_PAY = @IdWorkplacePay  and CODE_PERIOD = @CodePeriod
 union all
-select sum(sum_pay) as sum from payment p where TYPE_PAY = 2) d
- Where ID_WORKPLACE_PAY = @IdWorkplacePay and CODE_PERIOD = @CodePeriod";
+select sum( sum_pay* case when TYPE_PAY in (4) then -1 else 1 end) as sum from payment p where TYPE_PAY in (2,4) and ID_WORKPLACE_PAY = @IdWorkplacePay and CODE_PERIOD = @CodePeriod) d";
             return db.ExecuteScalar<IdReceipt, decimal>(Sql, pR);
         }
 

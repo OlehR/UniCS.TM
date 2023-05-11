@@ -72,7 +72,7 @@ namespace Front.Equipments.Implementation
                 Res = JsonConvert.DeserializeObject<Responce<ResponceReceipt>>(r);
                 GetFiscalInfo(pR, Res);
             }
-            if (c != null && c.Any())
+            if (c?.Any()==true)
             {
                 pR.Payment = c;
                 pR.Wares = null;
