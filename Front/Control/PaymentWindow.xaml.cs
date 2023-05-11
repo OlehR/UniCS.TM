@@ -367,5 +367,10 @@ namespace Front.Control
             if (!MW.SetConfirm(MW?.AdminSSC, true))
                 MW.SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.UseBonus, null);
         }
+
+        private void OpenMoneyBoxButton(object sender, RoutedEventArgs e)
+        {
+            MW.StartOpenMoneyBox();
+        }
     }
 }

@@ -1171,7 +1171,10 @@ namespace Front
                 return pBarCode;
             return null;
         }
-
+        public void StartOpenMoneyBox()
+        {
+            EF.OpenMoneyBox();
+        }
         private void AddExciseStamp(object sender, RoutedEventArgs e)
         {
             AddExciseStamp(TBExciseStamp.Text);

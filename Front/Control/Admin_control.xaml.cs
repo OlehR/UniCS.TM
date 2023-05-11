@@ -1176,6 +1176,11 @@ namespace Front.Control
                 InputCountBanknote.Visibility = Visibility.Visible;
             };
         }
+
+        private void OpenMoneyBoxButton(object sender, RoutedEventArgs e)
+        {
+            MW.StartOpenMoneyBox();
+        }
     }
 
     public class APIRadiobuton
