@@ -161,14 +161,17 @@ namespace Front.Equipments
             try
             {
                 res = TestDeviceSync();
-                State = eStateEquipment.On;
+                if(res==eDeviceConnectionStatus.Enabled)
+                  State = eStateEquipment.On;
+                else
+                    State = eStateEquipment.Error;
             }
             catch (Exception e)
             {
                 State = eStateEquipment.Error;
                 return new StatusEquipment() { State = -1, TextState = e.Message };
             }
-            return new StatusEquipment() { TextState = res.ToString() };
+            return new StatusEquipment() { TextState = res.ToString(), State= (State == eStateEquipment.On ? 0:-1) };
         }
 
         public override string GetDeviceInfo()
