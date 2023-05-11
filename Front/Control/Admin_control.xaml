@@ -402,11 +402,8 @@
                                 <Button  Content="Підрахунок грошей"    Width="280" Height="60" Click="MoneyCounting_Click" >
                                     <Button.Style>
                                         <Style BasedOn="{StaticResource Default}" TargetType="Button">
-                                            <Setter Property="IsEnabled" Value="True"/>
+                                            <Setter Property="Visibility" Value="Visible" />
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsCashRegister}" Value="True">
-                                                    <Setter Property="Visibility" Value="Visible" />
-                                                </DataTrigger>
                                                 <DataTrigger Binding="{Binding IsCashRegister}" Value="False">
                                                     <Setter Property="Visibility" Value="Collapsed" />
                                                 </DataTrigger>
@@ -414,7 +411,18 @@
                                         </Style>
                                     </Button.Style>
                                 </Button>
-                                <Button Style="{StaticResource Default}" Content="Відкрити скриньку"  Width="280" Height="60" Click="OpenMoneyBoxButton"/>
+                                <Button Content="Відкрити скриньку"  Width="280" Height="60" Click="OpenMoneyBoxButton" >
+                                    <Button.Style>
+                                        <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsCashRegister}" Value="False">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
                             </StackPanel>
                         </GroupBox>
                         <!--Інформація з пос-термінала-->
