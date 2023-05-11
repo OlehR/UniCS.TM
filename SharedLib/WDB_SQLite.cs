@@ -919,5 +919,13 @@ Where ID_WORKPLACE = @IdWorkplace
             }
         }
 
+        public bool SetConfirmClientNew(ClientNew pC)
+        {
+            string Sql = @"update Client_New set STATE=0 where Barcode_Client = @BarcodeClient and Phone=@Phone";
+            using (var DB = new SQLite(ReceiptFile))
+            {
+                return DB.ExecuteNonQuery<ClientNew>(Sql, pC) > 0;
+            }
+        }
     }
 }

@@ -606,6 +606,82 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                 return false;
             }
         }
+
+        public async Task<bool> Send1CClientAsync(ClientNew pC)
+        {
+            if (pC == null)
+                return true;
+            try
+            {  
+                var body = soapTo1C.GenBody("IssuanceOfCards", new Parameters[] 
+                { 
+                    new Parameters("CardId", pC.BarcodeClient),
+                    new Parameters("User",pC.BarcodeCashier),
+                    new Parameters("ShopId",Global.CodeWarehouse.ToString()),
+                    new Parameters("DateOper",pC.DateCreate.ToString("yyyy-MM-dd HH:mm:ss")),
+                    new Parameters("NumTel",pC.Phone),
+                    new Parameters("CheckoutId",Global.IdWorkPlace.ToString()),
+                    new Parameters("TypeOfOperation","0")
+                });
+
+                var res = await soapTo1C.RequestAsync(Global.Server1C, body, 5000, "application/json");
+
+                if (!string.IsNullOrEmpty(res) && res.Equals("0"))
+                    return true;
+
+                return false;
+            }
+            catch (Exception ex)
+            {                
+               // Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(el.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "Send1CReceiptWaresDeletedAsync=>" + el.CodePeriod.ToString() + " " + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
+                return false;
+            }
+        }
+
+
+        public async Task Send1CClientAsync()
+        {
+            DateTime Ldc, Today = DateTime.Now.Date;
+             
+            try
+            {
+                Ldc = db.GetConfig<DateTime>("LastDaySendClient");
+            }
+            catch { Ldc = Today.AddDays(-10); }
+                       
+            try
+            {
+                if (Ldc == default(DateTime))
+                    Ldc = Today.AddDays(-10);
+                Ldc = Ldc.AddDays(1);
+                while (Ldc < Today)
+                {
+                    var ldb = new WDB_SQLite(Ldc);
+                    IEnumerable<ClientNew> Cl = ldb.GetClientNewNotSend();
+                    bool Res = true;
+                    foreach (var el in Cl)
+                    {
+                        bool res = await Send1CClientAsync(el);
+                        if (res)
+                            ldb.SetConfirmClientNew(el);
+                        else
+                            Res = false;
+                    }
+
+                    if (Res)
+                        db.SetConfig<DateTime>("LastDaySendClient", Ldc);
+                    else
+                        break;
+                    Ldc = Ldc.AddDays(1);
+                }
+            }
+            catch (Exception ex)
+            {
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "SendRWDeleteAsync=>" + Ldc.ToString() + " " + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
+            }
+
+        }
+
     }
 
     public class WeightReceipt

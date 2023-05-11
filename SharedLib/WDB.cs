@@ -1129,6 +1129,14 @@ select sum( sum_pay* case when TYPE_PAY in (4) then -1 else 1 end) as sum from p
             return db.ExecuteScalar<IdReceipt, decimal>(Sql, pR);
         }
 
+
+
+        public virtual IEnumerable<ClientNew> GetClientNewNotSend()
+        {
+            string Sql = @"select Id_Workplace as IdWorkplace,State,Barcode_Client as BarcodeClient,Barcode_Cashier as BarcodeCashier,Phone,Date_Create as DateCreate from Client_New where state=0";
+            return db.Execute<ClientNew>(Sql);
+        }
+
         public virtual void Close(bool isWait = false)
         {
                   db?.Close(isWait);

@@ -1479,9 +1479,14 @@ namespace Front
 
         private void IssueNewCardButton(object sender, RoutedEventArgs e)
         {
-            ClientNew clientNew = new ClientNew() { BarcodeCashier = AdminSSC?.BarCode, BarcodeClient = BarcodeIssueCard, IdWorkplace = Global.IdWorkPlace, Phone = PhoneIssueCard };
-            WDB_SQLite wDB_SQLite = new WDB_SQLite();
-            wDB_SQLite.ReplaceClientNew(clientNew);
+            ClientNew clientNew = new ClientNew() { BarcodeCashier = AdminSSC?.BarCode, BarcodeClient = BarcodeIssueCard, IdWorkplace = Global.IdWorkPlace, Phone = PhoneIssueCard,DateCreate=DateTime.Now };
+            Task.Run(async () => {
+                bool r = await Bl.ds.Send1CClientAsync(clientNew);
+                if (r)
+                    clientNew.State = 1;
+                Bl.db.ReplaceClientNew(clientNew);
+            });
+            
             CancelIssueCard(null, null);
         }
 
