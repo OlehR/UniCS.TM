@@ -226,7 +226,7 @@
             <TextBlock Grid.Row="0" Name="ProgramVersion" FontSize="24" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="15,0,0,0"/>
             <Label Grid.Row="0"  Content="Error" Name="lblTime" FontSize="48" HorizontalAlignment="Right" VerticalAlignment="Top" />
             <TextBlock Grid.Row="0"  Text="{Binding AdminUser.NameUser}" Name="adminastratorName" FontSize="20" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
-            <TabControl Grid.Row="1" Name="TabAdmin" Margin="20" SelectionChanged="TabControl_SelectionChanged" >
+            <TabControl Grid.Row="1" Name="TabAdmin"  SelectionChanged="TabControl_SelectionChanged" >
                 <TabItem Header="Зміна" >
                     <Grid >
                         <Grid.ColumnDefinitions>
@@ -414,6 +414,7 @@
                                         </Style>
                                     </Button.Style>
                                 </Button>
+                                <Button Style="{StaticResource Default}" Content="Відкрити скриньку"  Width="280" Height="60" Click="OpenMoneyBoxButton"/>
                             </StackPanel>
                         </GroupBox>
                         <!--Інформація з пос-термінала-->
