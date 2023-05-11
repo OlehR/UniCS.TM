@@ -282,7 +282,7 @@ namespace Front
                     {
                         var s = WaresName.Text.Split('*');
                         Quantity = s[0].ToDecimal() * (Gw.CodeUnit== Global.WeightCodeUnit? 1000:1);
-                        if(Gw.CodeUnit == Global.WeightCodeUnit)
+                        if(Gw.CodeUnit != Global.WeightCodeUnit)
                             Quantity=Math.Round(Quantity, 0);
 
                     }                   
