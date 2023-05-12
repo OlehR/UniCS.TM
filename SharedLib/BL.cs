@@ -426,9 +426,15 @@ namespace SharedLib
                     if ( pName?.IndexOf('*')>0 )//Reg.IsMatch(pName))
                     {
                         var s = pName.Split('*');
-                        Article = s[1];
+                        int.TryParse(s[1], out int res);
+                        if (res != 0)
+                        {
+                            Article = s[1];
+                            pName = null;
+                        }
+
                         //if (pName.EndsWith("*"))  Quantity = Convert.ToDecimal(s[0]);
-                        pName = null;
+                        else pName = s[1];
                     }
                 }
             }
