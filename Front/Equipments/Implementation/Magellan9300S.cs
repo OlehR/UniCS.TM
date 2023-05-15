@@ -272,7 +272,7 @@ namespace Front.Equipments
                     this._serialDevice.Open();
                     this._serialDevice.OnReceivedData = (Func<byte[], bool>)null;
                     this._serialDevice.Write(this.GetCommand("3p<"));
-                    Thread.Sleep(100);
+                    Thread.Sleep(200);
                     int num1 = 0;
                     string result = "";
                     byte[] numArray;
@@ -288,7 +288,7 @@ namespace Front.Equipments
                             else
                                 Array.Copy((Array)buffer, 0, (Array)numArray, 0, buffer.Length);
                         }
-                        Thread.Sleep(100);
+                        Thread.Sleep(200);
                     }
                     List<byte> byteList = new List<byte>();
                     for (int index = 3; index < numArray.Length - 1; ++index)
