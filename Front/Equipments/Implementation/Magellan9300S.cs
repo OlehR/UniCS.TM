@@ -117,7 +117,7 @@ namespace Front.Equipments
                         onDeviceWarning2((DeviceLog)barcodeScannerLog);
                     }
                     for (int index = 0; this._serialDevice.ReadBufferSize < 1 && index < 10; ++index)
-                        Thread.Sleep(100);
+                        Thread.Sleep(200);
                     byte[] numArray = new byte[this._serialDevice.ReadBufferSize];
                     this._serialDevice.Read(numArray, 0, numArray.Length);
                     string str = Encoding.ASCII.GetString(numArray);
