@@ -407,11 +407,37 @@
                                    Mode=FindAncestor, AncestorType=Window}}"></Border>
 
         <Grid Grid.Row="2" Grid.RowSpan="2" Panel.ZIndex="2">
-
-            <ListView Name="WaresList" Background="{Binding GetBackgroundColor, RelativeSource={RelativeSource 
-                     Mode=FindAncestor, AncestorType=Window}}" 
+            <!--Background="{Binding GetBackgroundColor, RelativeSource={RelativeSource 
+                     Mode=FindAncestor, AncestorType=Window}}"-->
+            <ListView Name="WaresList"  
                      HorizontalContentAlignment="Stretch"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListView.Style>
+                    <Style TargetType="ListView">
+                        <Setter Property="Foreground" Value="Black"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListView">
+                                    <Border Name="Border">
+                                        <!--Фон товарів-->
+                                        <Border.Background>
+                                            <SolidColorBrush Color="{Binding GetBackgroundColor, RelativeSource={RelativeSource 
+                     Mode=FindAncestor, AncestorType=Window}}" />
+                                        </Border.Background>
+                                        <Border.BorderBrush>
+                                            <SolidColorBrush Color="{Binding GetBackgroundColor, RelativeSource={RelativeSource 
+                     Mode=FindAncestor, AncestorType=Window}}" />
+                                        </Border.BorderBrush>
+                                        <ScrollViewer Style="{DynamicResource {x:Static GridView.GridViewScrollViewerStyleKey}}">
+                                            <ItemsPresenter />
+                                        </ScrollViewer>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListView.Style>
+
                 <ListView.View>
                     <GridView>
                         <GridViewColumn  Header="{DynamicResource markWareName}" Width="{Binding widthHeaderReceipt.WidthName, RelativeSource={RelativeSource 
@@ -438,6 +464,7 @@
                                                 <Style TargetType="{x:Type TextBlock}">
                                                     <Setter Property="FontSize" Value="35"/>
                                                     <Setter Property="FontWeight" Value="SemiBold"/>
+
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
                                                                      Value="HorisontalMonitorRegular">
@@ -1513,7 +1540,7 @@
                             <TextBlock Text="{Binding Client.PhoneAdd, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" 
                                        FontSize="24" FontWeight="Bold" Margin="2"/>
-                            
+
                             <TextBlock Text="{Binding Client.PersentDiscount, StringFormat={}{0}%, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" 
                                        FontSize="24" FontWeight="Bold" Margin="2"/>
@@ -1527,7 +1554,7 @@
                             <TextBlock Text="{Binding Client.TranslatedStatusCard, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" 
                                        FontSize="24" FontWeight="Bold" Margin="2"/>
-                            
+
                             <TextBlock Text="{Binding Client.BirthDay, StringFormat='{}{0:dd/MM/yyyy}', RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" 
                                        FontSize="24" FontWeight="Bold" Margin="2"/>
