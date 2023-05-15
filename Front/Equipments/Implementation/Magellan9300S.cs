@@ -368,10 +368,8 @@ namespace Front.Equipments
                 }
                 catch (Exception ex)
                 {
-                    ILogger<Magellan9300S> logger = this._logger;
-                    if (logger != null)
-                        logger.LogError(ex, ex.Message);
-                    return (Task<string>)null;
+                   _logger?.LogError(ex, ex.Message);
+                    return null;
                 }
                 finally
                 {
