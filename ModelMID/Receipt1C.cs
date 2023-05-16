@@ -57,7 +57,7 @@ namespace ModelMID
                 NumberReceipt = nr;
 
             if (pR.Wares!=null && pR.StateReceipt>0) 
-              Wares = pR.Wares.Select(r => new ReceiptWares1C(r));
+              Wares = pR.GetParserWaresReceipt(true,true,true)?.Select(r => new ReceiptWares1C(r));
 
             var Card=pR.Payment.Where(r => r.TypePay == eTypePay.Card)?.FirstOrDefault();
 

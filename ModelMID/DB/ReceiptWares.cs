@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using Utils;
 
 namespace ModelMID
 {
@@ -12,7 +13,7 @@ namespace ModelMID
 
     public class ReceiptWares : IdReceiptWares, ICloneable
     {
-        public int IdWorkplacePay { get { if (_IdWorkplacePay == 0) _IdWorkplacePay = Global.GetIdWorkPlacePay(CodeDirection,CodeTM); return _IdWorkplacePay; } set { _IdWorkplacePay = value; } }
+        public int IdWorkplacePay { get { if (_IdWorkplacePay == 0) _IdWorkplacePay = Global.GetIdWorkPlacePay(CodeDirection, CodeTM); return _IdWorkplacePay; } set { _IdWorkplacePay = value; } }
         int _IdWorkplacePay;
 
         /// <summary>
@@ -46,7 +47,7 @@ namespace ModelMID
         /// <summary>
         /// Ставка з РРО (Буква)
         /// </summary>         
-        public string VatChar { get; set; } 
+        public string VatChar { get; set; }
 
         /// <summary>
         /// Код одиниці виміру позамовчуванню
@@ -106,11 +107,11 @@ namespace ModelMID
         /// </summary>
         public decimal SumDiscount { get; set; }
 
-        public decimal SumTotal { get { return Sum - SumDiscount-SumWallet - SumBonus; } }
+        public decimal SumTotal { get { return Sum - SumDiscount - SumWallet - SumBonus; } }
         /// <summary>
         /// Загальна знижка для РРО
         /// </summary>
-        public decimal SumTotalDiscount { get { return decimal.Round(SumDiscount + SumWallet + SumBonus,2); } }
+        public decimal SumTotalDiscount { get { return decimal.Round(SumDiscount + SumWallet + SumBonus, 2); } }
 
         /// <summary>
         /// Назва акції для фіксованих цін. Тощо.
@@ -286,7 +287,7 @@ namespace ModelMID
         {
             get
             {
-                string Res = (string.IsNullOrEmpty(History)   ||  CodeUnit != Global.WeightCodeUnit? "" : $"{History} кг{Environment.NewLine}")+
+                string Res = (string.IsNullOrEmpty(History) || CodeUnit != Global.WeightCodeUnit ? "" : $"{History} кг{Environment.NewLine}") +
                 (string.IsNullOrEmpty(NameDiscount) ? "" : NameDiscount + Environment.NewLine);
                 try
                 {
@@ -372,6 +373,18 @@ namespace ModelMID
         /// 
         /// </summary>
         public string History { get; set; }
+        List<decimal> HistoryQuantity { get {
+                List<decimal> Res = new();
+                if(!string.IsNullOrEmpty(History))
+                {
+                    var res = History.Split(',');
+                    foreach (var item in res)
+                        Res.Add(item.ToDecimal());
+                }
+                return Res;
+            } }
+
+        public string Currency { get; set; }
 
         public string GetPrices { get { return Prices == null ? null : string.Join(";", Prices.Select(n => n.Price.ToString(CultureInfo.InvariantCulture)).ToArray()); } }
         public ReceiptWares()
@@ -413,7 +426,7 @@ namespace ModelMID
             Quantity = 0;
             IsSave = false;
         }
-        
+
         public void RecalcTobacco()
         {
             if (TypeWares == eTypeWares.Tobacco && Prices != null && Prices.Count() == 1)
@@ -512,7 +525,7 @@ namespace ModelMID
             ReceiptWares el = this.Clone() as ReceiptWares;
 
             el.Quantity = Math.Round(el.Quantity, 3, MidpointRounding.AwayFromZero);
-            
+
             var ExciseStamp = el.GetExciseStamp.Where(el => !el.Equals("None")).ToArray();
             decimal Quantity = el.Quantity;
 
@@ -520,7 +533,7 @@ namespace ModelMID
             {
                 for (int index = 0; index < Math.Min(ExciseStamp.Count(), Quantity); ++index)
                 {
-                    ReceiptWares NewEl =el.Clone() as ReceiptWares;
+                    ReceiptWares NewEl = el.Clone() as ReceiptWares;
                     NewEl.Quantity = 1M;
                     NewEl.ExciseStamp = ExciseStamp[index];
                     el.Quantity--;
@@ -538,5 +551,27 @@ namespace ModelMID
             }
             return Res;
         }
+
+        public List<ReceiptWares> ParseByWeight()
+        {
+            List<ReceiptWares> Res = new();
+            if (IsWeight && !string.IsNullOrEmpty(History) && Math.Abs(HistoryQuantity.Sum() - Sum) < 0.01m)
+            {
+                foreach(var el in HistoryQuantity)
+                {
+                    ReceiptWares NewEl = this.Clone() as ReceiptWares;
+                    NewEl.Quantity = el;
+                    NewEl.SumDiscount = Math.Round(NewEl.Quantity * SumDiscount / Quantity, 2, MidpointRounding.AwayFromZero);
+                    Res.Add(NewEl);
+                }
+            }
+            else
+                Res.Add(this);
+
+            return Res;
+
+        }
+
+
     }
 }

@@ -316,7 +316,7 @@ namespace ModelMID
             return Wares?.Where(r => !string.IsNullOrEmpty(r.QR)).Any() ?? false;
         }
 
-        public IEnumerable<ReceiptWares> GetParserWaresReceipt(bool pIsPrice = true, bool pIsExcise = true)
+        public IEnumerable<ReceiptWares> GetParserWaresReceipt(bool pIsPrice = true, bool pIsExcise = true,bool pIsWeight = false)
         {
             if ((!pIsPrice && !pIsExcise) || Wares == null)
                 return Wares;
@@ -336,6 +336,15 @@ namespace ModelMID
                     res.AddRange(el.ParseByExcise());
                 Res = res;
             }
+
+            if (pIsWeight)
+            {
+                var res = new List<ReceiptWares>();
+                foreach (var el in Res)
+                    res.AddRange(el.ParseByWeight());
+                Res = res;
+            }
+
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"ReceiptWares=>{Res}");
             return Res;
         }

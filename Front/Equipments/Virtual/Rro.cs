@@ -1,11 +1,9 @@
-﻿using Front.Equipments.Implementation;
+﻿
 using Front.Equipments.Virtual;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ModelMID;
 using ModelMID.DB;
-using ModernExpo.SelfCheckout.Utils;
-using SharedLib;
 using System;
 using System.Collections.Generic;
 using System.Data;
