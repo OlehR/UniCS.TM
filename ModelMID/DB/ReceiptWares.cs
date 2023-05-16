@@ -377,7 +377,7 @@ namespace ModelMID
                 List<decimal> Res = new();
                 if(!string.IsNullOrEmpty(History))
                 {
-                    var res = History.Split(',');
+                    var res = History.Split(';');
                     foreach (var item in res)
                         Res.Add(item.ToDecimal());
                 }
@@ -555,7 +555,7 @@ namespace ModelMID
         public List<ReceiptWares> ParseByWeight()
         {
             List<ReceiptWares> Res = new();
-            if (IsWeight && !string.IsNullOrEmpty(History) && Math.Abs(HistoryQuantity.Sum() - Sum) < 0.01m)
+            if (IsWeight && !string.IsNullOrEmpty(History) && Math.Abs(HistoryQuantity.Sum() - Quantity) < 0.001m)
             {
                 foreach(var el in HistoryQuantity)
                 {
