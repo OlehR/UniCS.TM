@@ -39,6 +39,12 @@ namespace Utils
             State = -1;
             TextState = e.Message + "\n" + e.StackTrace;
         }
+        public Status()
+        {
+            State = 1;
+            TextState ="Ok";
+        }
+
     }   
 
 }
