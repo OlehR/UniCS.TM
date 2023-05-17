@@ -42,6 +42,7 @@ namespace Front
         public Receipt curReceipt;//{ get; set; } = null;
         public Receipt ReceiptPostpone = null;
         public bool IsReceiptPostponeNotNull { get { return ReceiptPostpone == null; } }
+        public bool IsFullReturn = false;
         public bool IsReceiptPostpone
         {
             get

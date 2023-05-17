@@ -286,7 +286,7 @@ namespace Front
                     SetStateView(eStateMainWindows.StartWindow);
                     break;
                 case eTypeAccess.ReturnReceipt:                    
-                    Bl.CreateRefund(AdminControl.curReceipt);
+                    Bl.CreateRefund(AdminControl.curReceipt,IsFullReturn);
                     SetStateView(eStateMainWindows.WaitInputRefund);
                     break;
 

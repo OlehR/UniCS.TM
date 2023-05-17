@@ -50,11 +50,12 @@ namespace Front.Control
         }
         public Banknote SelectedBanknote { get; set; } = new();
         public string TypeLog { get; set; } = "Error";
+        public string OrderNumber { get; set; } = "0";
         BL Bl;
         public string ControlScaleWeightDouble { get; set; } = "0";
         MainWindow MW;
         public Receipt curReceipt = null;
-        public bool IsFullReturn = false;
+        
         LogRRO SelectedListJournal = null;
         public bool IsSelectedListJournal { get { return SelectedListJournal != null; } }
         Receipt ChangeStateReceipt = null;
@@ -242,9 +243,8 @@ namespace Front.Control
 
         private void Exit_Click(object sender, RoutedEventArgs e)
         {
-            MW.SetStateView(Models.eStateMainWindows.StartWindow);
-            //this.WindowState = WindowState.Minimized;
-            // this.NavigationService.GoBack();
+            MW.SetStateView(eStateMainWindows.StartWindow);
+            TabAdmin.SelectedIndex = 0;
         }
 
         private void POS_X_Click(object sender, RoutedEventArgs e)
@@ -465,17 +465,10 @@ namespace Front.Control
                     RefreshLog();
                     break;
                 case "Вихід":
-                    MW.SetStateView(eStateMainWindows.StartWindow);
-                    TabAdmin.SelectedIndex = 0;
-                    //this.WindowState = WindowState.Minimized;
+                    Exit_Click(null, null);
                     break;
                 case "Вихід з програми":
-                    if (MessageBox.Show("Завершити роботу програми?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                    {
-                        System.Diagnostics.Process.Start("explorer.exe");
-                        Application.Current.Shutdown();
-                    }
-                    else TabAdmin.SelectedIndex = 0;
+                    Exit_Program_Click(null, null);
                     break;
                 default:
 
@@ -601,7 +594,7 @@ namespace Front.Control
 
         void CreateReturn(bool pIsFull = false)
         {
-            IsFullReturn = pIsFull;
+            MW.IsFullReturn = pIsFull;
             MW.TypeAccessWait = eTypeAccess.ReturnReceipt;
 
             if (!MW.SetConfirm(AdminUser ?? MW?.AdminSSC, true))
@@ -1180,6 +1173,54 @@ namespace Front.Control
         private void OpenMoneyBoxButton(object sender, RoutedEventArgs e)
         {
             MW.StartOpenMoneyBox();
+        }
+
+        private void Exit_Program_Click(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("Завершити роботу програми?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            {
+                System.Diagnostics.Process.Start("explorer.exe");
+                Application.Current.Shutdown();
+            }
+            else TabAdmin.SelectedIndex = 0;
+        }
+
+        private void ChangeOrderNumber(object sender, RoutedEventArgs e)
+        {
+            MW.InputNumberPhone.Desciption = "Номер замовлення";
+            MW.InputNumberPhone.ValidationMask = "";
+            MW.InputNumberPhone.Result = "";
+            MW.InputNumberPhone.IsEnableComma = false;
+            MW.InputNumberPhone.CallBackResult = (string res) => 
+            {
+                OrderNumber = res;
+                MW.NumericPad.Visibility = Visibility.Collapsed;
+                BackgroundOtherFunction.Visibility = Visibility.Collapsed;
+            };
+            MW.NumericPad.Visibility = Visibility.Visible;
+            BackgroundOtherFunction.Visibility = Visibility.Visible;
+        }
+
+        private void ImportClientOrder(object sender, RoutedEventArgs e)
+        {
+            if (MW.curReceipt == null || MW.curReceipt.Wares == null || !MW.curReceipt.Wares.Any())
+            {
+                if (OrderNumber.Length > 0)
+                {
+                    Bl.ds.GetClientOrder1C(OrderNumber);
+                    MW.SetStateView(eStateMainWindows.StartWindow);
+                    TabAdmin.SelectedIndex = 0;
+                    //MW.ShowErrorMessage("Ви втягнули замовлення! Вітаю");
+                }
+                else MW.ShowErrorMessage("Введіть коректний номер замовлення!");
+
+            }
+            else
+            {
+                MW.SetStateView(eStateMainWindows.StartWindow);
+                TabAdmin.SelectedIndex = 0;
+                MW.ShowErrorMessage("Існує відкритий чек! Для отримання замовлення закрийте або видаліть текучий чек!");
+            }
         }
     }
 

@@ -224,8 +224,19 @@
             <TextBlock Grid.Row="0"  Text="{Binding KasaNumber}" 
                    Name="kasaNumberTextBlock" FontSize="24" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,15,0,0"/>
             <TextBlock Grid.Row="0" Name="ProgramVersion" FontSize="24" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="15,0,0,0"/>
-            <Label Grid.Row="0"  Content="Error" Name="lblTime" FontSize="48" HorizontalAlignment="Right" VerticalAlignment="Top" />
-            <TextBlock Grid.Row="0"  Text="{Binding AdminUser.NameUser}" Name="adminastratorName" FontSize="20" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+            <StackPanel HorizontalAlignment="Right">
+                <StackPanel Orientation="Horizontal">
+                    <Label Grid.Row="0"  Content="Error" Name="lblTime" FontSize="48" HorizontalAlignment="Right" VerticalAlignment="Top"  Padding="0"/>
+                    <Button Style="{DynamicResource yelowButton}" Click="Exit_Program_Click">
+                        <Image Source="\icons\X.png" Width="50" Margin="5"/>
+                    </Button>
+                    <Button Content="Вихід" Style="{DynamicResource Default}" Click="Exit_Click"/>
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Right">
+                    <TextBlock Grid.Row="0"  Text="{Binding AdminUser.NameUser}" Name="adminastratorName" FontSize="20"
+                               HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+                </StackPanel>
+            </StackPanel>
             <TabControl Grid.Row="1" Name="TabAdmin"  SelectionChanged="TabControl_SelectionChanged" >
                 <TabItem Header="Зміна" >
                     <Grid >
@@ -1783,12 +1794,12 @@
                     </Grid>
                 </TabItem>
                 <!--ВИДИМІСТЬ АПІ API Visibility="Collapsed" -->
-                <TabItem Header="Віддалене керування" Visibility="Visible">
+                <TabItem Header="Додаткові функції" Visibility="Visible">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="2*"/>
                             <ColumnDefinition Width="3"/>
-                            <ColumnDefinition/>
+                            <ColumnDefinition />
                         </Grid.ColumnDefinitions>
 
                         <!--<ScrollViewer>
@@ -1824,7 +1835,12 @@
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>-->
-                                <Button Content="Відкрити зміни" Style="{StaticResource Default}" Click="OpenShiftButton"/>
+                                <GroupBox Grid.Column="1" Grid.Row="1" Header="Втягнення замовлення">
+                                    <StackPanel Orientation="Vertical">
+                                        <Button Content="{Binding OrderNumber, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" Style="{DynamicResource WhiteButton}" Click="ChangeOrderNumber"/>
+                                        <Button Style="{DynamicResource Default}" Content="Втягнути" Click="ImportClientOrder"/>
+                                    </StackPanel>
+                                </GroupBox>
                             </StackPanel>
                         </ScrollViewer>
 
@@ -1840,19 +1856,26 @@
 
                         <ScrollViewer Grid.Column="2" HorizontalScrollBarVisibility="Disabled">
                             <StackPanel>
-                             <TextBlock Foreground="Red" FontWeight="Bold" FontSize="24" HorizontalAlignment="Center" Text="Текст відповіді на запит"/>
+                                <Button Content="Відкрити зміни" Style="{StaticResource Default}" Click="OpenShiftButton"/>
+                                <TextBlock Foreground="Red" FontWeight="Bold" FontSize="24" HorizontalAlignment="Center" Text="Текст відповіді на запит"/>
                             <TextBlock  Margin="10,0,5,0"
                                    VerticalAlignment="Top" 
                                    x:Name="APIErrorText" TextWrapping="Wrap" 
                                    Text="{Binding SB, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"/>
                             </StackPanel>
                         </ScrollViewer>
-                        
 
+                        <!--ФОН-->
+                        <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="0" Grid.RowSpan="6"
+                Grid.Column="0" Grid.ColumnSpan="6"
+                 Name="BackgroundOtherFunction" Visibility="Collapsed" Grid.ZIndex="2" 
+                Opacity="0.9"/>
                     </Grid>
+                    
                 </TabItem>
-                <TabItem Header="Вихід з програми"/>
-                <TabItem Header="Вихід"/>
+                <TabItem Header="Вихід з програми" Visibility="Collapsed"/>
+                <TabItem Header="Вихід" Visibility="Collapsed"/>
 
             </TabControl>
 
