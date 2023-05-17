@@ -1408,6 +1408,7 @@ namespace Front
                 {
                     ReceiptPostpone = curReceipt;
                     NewReceipt();
+                    WaresList.Focus();
                 }
             }
             else
@@ -1416,6 +1417,7 @@ namespace Front
                 {
                     Global.OnReceiptCalculationComplete?.Invoke(ReceiptPostpone);
                     ReceiptPostpone = null;
+                    WaresList.Focus();
                 }
                 else
                     MessageBox.Show("Неможливо відновити чек не закривши текучий", "Увага!", MessageBoxButton.OK, MessageBoxImage.Question);
