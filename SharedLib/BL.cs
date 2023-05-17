@@ -150,9 +150,9 @@ namespace SharedLib
 
         public IEnumerable<QR> GetQR(IdReceipt pIdR) { return db.GetQR(pIdR); }
 
-        public bool AddReceipt(IdReceipt pReceipt) { return AddReceipt(new Receipt(pReceipt)); }
+        //public bool AddReceipt(IdReceipt pReceipt) { return AddReceipt(new Receipt(pReceipt)); }
 
-        public bool AddReceipt(Receipt pReceipt) { return db.AddReceipt(pReceipt); }
+        //public bool AddReceipt(Receipt pReceipt) { return db.AddReceipt(pReceipt); }
 
         public Receipt GetNewIdReceipt(int pIdWorkplace = 0, int pCodePeriod = 0)
         {

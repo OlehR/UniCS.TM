@@ -690,15 +690,20 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                 try
                 {
                     string s = "ПСЮ00000000";
-                    pNumberOrder= pNumberOrder.Trim();
+                    pNumberOrder = pNumberOrder.Trim();
                     pNumberOrder = s.Substring(0, 11 - pNumberOrder.Length) + pNumberOrder;
-                    WDB_MsSql db = new WDB_MsSql();
-                    var Order = db.GetClientOrder(pNumberOrder);
-                    var curReceipt = bl.GetNewIdReceipt();
-
-                    foreach (var el in Order)
+                    WDB_MsSql Msdb = new WDB_MsSql();
+                    var Order = Msdb.GetClientOrder(pNumberOrder);
+                    if (Order == null && Order.Any())
                     {
-                        bl.AddWaresCode(curReceipt, el.CodeWares, el.CodeUnit, el.Quantity, el.Price,true);
+                        var curReceipt = bl.GetNewIdReceipt();
+                        curReceipt.NumberOrder = pNumberOrder;
+                        db.ReplaceReceipt(curReceipt);
+
+                        foreach (var el in Order)
+                        {
+                            bl.AddWaresCode(curReceipt, el.CodeWares, el.CodeUnit, el.Quantity, el.Price, true);
+                        }
                     }
                 }
                 catch (Exception ex)
