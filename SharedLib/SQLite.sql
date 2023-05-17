@@ -166,7 +166,7 @@ sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_
 Code_Period_Refund as CodePeriodRefund,
 Code_Receipt_Refund as CodeReceiptRefund,
 USER_CREATE as UserCreate,
-Number_Order as Number_Order
+Number_Order as NumberOrder
 
  from receipt
  where ID_WORKPLACE = @IdWorkplace

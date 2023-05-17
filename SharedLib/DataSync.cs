@@ -694,12 +694,13 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     pNumberOrder = s.Substring(0, 11 - pNumberOrder.Length) + pNumberOrder;
                     WDB_MsSql Msdb = new WDB_MsSql();
                     var Order = Msdb.GetClientOrder(pNumberOrder);
-                    if (Order == null && Order.Any())
+                    if (Order != null && Order.Any())
                     {
                         var curReceipt = bl.GetNewIdReceipt();
                         curReceipt.NumberOrder = pNumberOrder;
+                        curReceipt.TypeReceipt = eTypeReceipt.Sale;
                         db.ReplaceReceipt(curReceipt);
-
+                        Thread.Sleep(100);
                         foreach (var el in Order)
                         {
                             bl.AddWaresCode(curReceipt, el.CodeWares, el.CodeUnit, el.Quantity, el.Price, true);
