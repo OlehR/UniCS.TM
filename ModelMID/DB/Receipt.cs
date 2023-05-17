@@ -140,7 +140,7 @@ namespace ModelMID
                     res = _Wares.Where(el => el.IdWorkplacePay == IdWorkplacePay && el.Quantity != 0m);
                 if (IdWorkplacePay == IdWorkplace)
                 {
-                    decimal SumWallet = Payment?.Where(r => r.TypePay == eTypePay.Wallet).Sum(r => r.SumPay) ?? 0;
+                    decimal SumWallet = Math.Round( Payment?.Where(r => r.TypePay == eTypePay.Wallet).Sum(r => r.SumPay) ?? 0,2);
                     if (SumWallet < 0)
                     {
                         var r = res.ToList();
