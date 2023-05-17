@@ -9,12 +9,14 @@ namespace ModelMID
         public bool IsSuccess { get; set; }
         public eTypePay TypePay { get; set; } = eTypePay.Card;
         public eBank CodeBank { get; set; } = eBank.NotDefine;
-        public decimal SumPay  { get; set;}
+        decimal _SumPay;
+        public decimal SumPay  { get { return Math.Round(_SumPay, 2); } set { _SumPay = value; } }
         /// <summary>
         /// Здача(для готівкових операцій)
         /// </summary>
         public decimal Rest { get; set;}
-        public decimal SumExt { get; set; }
+        decimal _SumExt;
+        public decimal SumExt { get { return Math.Round(_SumExt, 2); }  set { _SumExt = value; } }
         public string NumberTerminal { get; set; }
         /// <summary>
         /// Номер чека
