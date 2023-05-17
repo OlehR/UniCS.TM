@@ -405,6 +405,7 @@ namespace Front
             }
             else //Касове місце
             {
+
                 var r = Bl.GetReceipts(DateTime.Now, DateTime.Now, Global.IdWorkPlace);
                 var rr = r.Where(el => el.SumTotal > 0 && el.StateReceipt != eStateReceipt.Canceled && el.StateReceipt != eStateReceipt.Print && el.StateReceipt != eStateReceipt.Send).OrderByDescending(el => el.CodeReceipt);
                 if (rr != null && rr.Any())
@@ -428,8 +429,9 @@ namespace Front
                 {
 
                 }
-
             }
+
+
             SetStateView(eStateMainWindows.StartWindow);
 
             Task.Run(() => Bl.ds.SyncDataAsync());

@@ -256,7 +256,7 @@ namespace SharedLib
             return AddReceiptWares(W);
         }
 
-        public ReceiptWares AddWaresCode(IdReceipt pIdReceipt, int pCodeWares, int pCodeUnit, decimal pQuantity = 0, decimal pPrice = 0)
+        public ReceiptWares AddWaresCode(IdReceipt pIdReceipt, int pCodeWares, int pCodeUnit, decimal pQuantity = 0, decimal pPrice = 0,bool IsFixPrice=false)
         {
             var State = GetStateReceipt(pIdReceipt);
             if (State != eStateReceipt.Prepare)
@@ -275,14 +275,17 @@ namespace SharedLib
                 if (pPrice > 0 || !W.IsMultiplePrices)
                 {
                     W.Quantity = (W.CodeUnit == Global.WeightCodeUnit ? pQuantity / 1000m : pQuantity);//Хак для вагового товару Який приходить в грамах.
+                    if (W.PriceDealer==0 && IsFixPrice)
+                        W.PriceDealer = pPrice;
                     var res = AddReceiptWares(W, false);
-                    if (pPrice > 0 && W.IsMultiplePrices)
+                    if (pPrice > 0 && (W.IsMultiplePrices || IsFixPrice))
                     {
                         WaresReceiptPromotion[] r = new WaresReceiptPromotion[1] { new WaresReceiptPromotion(W)
                             {CodeWares=W.CodeWares, Price=Math.Round(pPrice*(W.TypeWares==eTypeWares.Tobacco?1.05M:1M),2), TypeDiscount=eTypeDiscount.Price,Quantity=pQuantity,CodePS=999999 }
                             };
                         db.ReplaceWaresReceiptPromotion(r);
                         db.RecalcHeadReceipt(pIdReceipt);
+
                     }
                     if (Global.RecalcPriceOnLine)
                         db.RecalcPriceAsync(W);

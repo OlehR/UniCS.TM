@@ -232,6 +232,15 @@ namespace SharedLib
             return Res;
         }
 
+        public IEnumerable<ReceiptWares> GetClientOrder(string pNumberOrder)
+        {
+            string SQL = "SELECT oc.CodeWares,oc.CodeUnit, oc.Quantity, oc.Price, oc.Sum FROM dbo.V1C_doc_Order_Client oc WHERE oc.NumberOrder = @NumberOrder";// 'ПСЮ00006865'
+
+            return db.Execute<object,ReceiptWares > (SQL, new { NumberOrder = pNumberOrder });
+
+        }
+
+
     }
     class Res
     {

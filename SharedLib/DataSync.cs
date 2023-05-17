@@ -683,6 +683,30 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
 
         }
 
+        public bool GetClientOrder1C(string pNumberOrder)
+        {
+            Task.Run(() =>
+            {
+                try
+                {
+                    string s = "ПСЮ00000000";
+                    pNumberOrder= pNumberOrder.Trim();
+                    pNumberOrder = s.Substring(0, 11 - pNumberOrder.Length) + pNumberOrder;
+                    WDB_MsSql db = new WDB_MsSql();
+                    var Order = db.GetClientOrder(pNumberOrder);
+                    var curReceipt = bl.GetNewIdReceipt();
+
+                    foreach (var el in Order)
+                    {
+                        bl.AddWaresCode(curReceipt, el.CodeWares, el.CodeUnit, el.Quantity, el.Price,true);
+                    }
+                }
+                catch (Exception ex)
+                { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex); }
+            });
+            return true;
+        }
+
     }
 
     public class WeightReceipt
