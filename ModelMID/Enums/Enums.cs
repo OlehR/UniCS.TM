@@ -226,6 +226,7 @@ namespace ModelMID
         TimeScanReceipt = -11,
         OwnBag = -10,
         ErrorQR = -9,
+        PackagesBag = -8,
         AnswerQR = -2,
         AskQR = -1,
         IncorrectWeight = 1,

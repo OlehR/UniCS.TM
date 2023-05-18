@@ -227,7 +227,7 @@
             <StackPanel HorizontalAlignment="Right">
                 <StackPanel Orientation="Horizontal">
                     <Label Grid.Row="0"  Content="Error" Name="lblTime" FontSize="48" HorizontalAlignment="Right" VerticalAlignment="Top"  Padding="0"/>
-                    <Button Style="{DynamicResource yelowButton}" Click="Exit_Program_Click">
+                    <Button Style="{DynamicResource Default}" Click="Exit_Program_Click">
                         <Image Source="\icons\X.png" Width="50" Margin="5"/>
                     </Button>
                     <Button Content="Вихід" Style="{DynamicResource Default}" Click="Exit_Click"/>

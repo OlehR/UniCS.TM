@@ -197,6 +197,29 @@ namespace ModelMID
         // public string FiscalsJSON { get { return Fiscals.ToJSON(); } }
         public SortedList<int, Fiscal> Fiscals = new();
 
+        public int CountWeightGoods { get
+            {
+                int Res = 0;
+                if (Wares != null && Wares.Count() > 0)
+                {
+                    Res = Wares.Where(x => x.IsWeight).Count();
+                }
+                return Res;
+            } }
+
+        public bool IsPakagesAded
+        {
+            get
+            {
+                bool Res = false;
+                if (ReceiptEvent != null)
+                {
+                    var res = ReceiptEvent.Where(e => e.EventType == eReceiptEventType.PackagesBag);
+                    Res = res.Any();
+                }
+                return Res;
+            }
+        }
         public Fiscal Fiscal { get { if (Fiscals.ContainsKey(IdWorkplacePay)) return Fiscals[IdWorkplacePay]; return null; } }
         /// <summary>
         ///  Чи є товар, який потребує підтвердження віку. (0 не потребує підтверження віку)

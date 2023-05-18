@@ -439,11 +439,32 @@ namespace Front
 
         public void PayAndPrint()
         {
+            if (curReceipt.CountWeightGoods > 0 && curReceipt.Wares.Where(x=> x.CodeWares == Global.Settings.CodePackagesBag).Any() && !curReceipt.IsPakagesAded)
+            {
+                AddMissingPackage.CountPackeges = curReceipt.CountWeightGoods;
+                AddMissingPackage.CallBackResult = (int res) =>
+                {
+                    Bl.AddEvent(curReceipt, eReceiptEventType.PackagesBag, res != 0 ? "Додавання пакетів в чек" : "Відміна додавання пакетів");
+                    Bl.AddWaresCode(curReceipt, Global.Settings.CodePackagesBag, 19, res);
+                    AddMissingPackage.Visibility = Visibility.Collapsed;
+                    Background.Visibility = Visibility.Collapsed;
+                    BackgroundWares.Visibility = Visibility.Collapsed;
+                    Thread.Sleep(200);
+
+                    PayAndPrint();
+                };
+                AddMissingPackage.Visibility = Visibility.Visible;
+                Background.Visibility = Visibility.Visible;
+                BackgroundWares.Visibility = Visibility.Visible;
+                return;
+            }
+
             if (curReceipt.AgeRestrict > 0 && curReceipt.IsConfirmAgeRestrict == false)
             {
                 SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ConfirmAge);
                 return;
             }
+
 
             Dispatcher.BeginInvoke(new ThreadStart(() =>
             { EquipmentStatusInPayment.Text = ""; }));

@@ -694,6 +694,7 @@ namespace Front
                     WaitAdminTitle.Visibility = Visibility.Visible;
                     IssueCard.Visibility = Visibility.Collapsed;
                     AdminControl.Visibility = (State == eStateMainWindows.AdminPanel ? Visibility.Visible : Visibility.Collapsed);
+                    AddMissingPackage.Visibility = Visibility.Collapsed;
 
                     //StartVideo.Stop();
 

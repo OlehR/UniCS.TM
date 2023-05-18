@@ -37,6 +37,7 @@
     <None Remove="icons\no_volume.png" />
     <None Remove="icons\Ok.png" />
     <None Remove="icons\on-off.png" />
+    <None Remove="icons\PackagesBag.png" />
     <None Remove="icons\paymentTerminal.png" />
     <None Remove="icons\pln.png" />
     <None Remove="icons\plus.png" />
@@ -100,6 +101,9 @@
     <Resource Include="icons\no_volume.png" />
     <Resource Include="icons\Ok.png" />
     <Resource Include="icons\on-off.png" />
+    <Resource Include="icons\PackagesBag.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="icons\paymentTerminal.png" />
     <Resource Include="icons\plusWhite.png" />
     <Resource Include="icons\reboot.png" />

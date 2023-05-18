@@ -2078,6 +2078,8 @@
                 </Grid>
             </Border>
 
+            
+            
             <!--Вікно видачі картки-->
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="4"
@@ -2524,6 +2526,12 @@
         <uc:PaymentWindow Grid.Row="0" Grid.RowSpan="5" Visibility="Collapsed"
                               Grid.Column="0" Grid.ColumnSpan="4" 
                               x:Name="PaymentWindow" VerticalAlignment="Stretch" 
+                              Grid.ZIndex="2" />
+
+        <!--Додати пакети-->
+        <uc:AddPackagesBag Grid.Row="0" Grid.RowSpan="5" Visibility="Collapsed"
+                              Grid.Column="0" Grid.ColumnSpan="4" 
+                              x:Name="AddMissingPackage" VerticalAlignment="Stretch" 
                               Grid.ZIndex="2" />
 
 

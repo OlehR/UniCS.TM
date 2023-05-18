@@ -657,6 +657,13 @@ namespace SharedLib
             db.InsertReceiptEvent(l);         
             pRecipt.ReceiptEvent = pRecipt.ReceiptEvent == null? l: pRecipt.ReceiptEvent.Append<ReceiptEvent>(el);
         }
+        public void AddEvent(Receipt pRecipt, eReceiptEventType pE, string text=null )
+        {
+            ReceiptEvent el = new ReceiptEvent(pRecipt) { EventType = pE, EventName = text?? pE.ToString(), CreatedAt = DateTime.Now };
+            var l = new List<ReceiptEvent> { el };
+            db.InsertReceiptEvent(l);
+            pRecipt.ReceiptEvent = pRecipt.ReceiptEvent == null ? l : pRecipt.ReceiptEvent.Append<ReceiptEvent>(el);
+        }
 
         /// <summary>
         /// Cстворення повернення на основі чека.
