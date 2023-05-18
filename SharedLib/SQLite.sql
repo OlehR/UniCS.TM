@@ -257,7 +257,8 @@ update receipt
        NUMBER_RECEIPT=@NumberReceipt,
 	   Date_receipt = datetime('now','localtime'), --max(@DateReceipt,Date_receipt), -- 
        USER_CREATE = @UserCreate,
-       Sum_Bonus =@SumBonus
+       Sum_Bonus =@SumBonus,
+       Sum_Fiscal = @SumFiscal
  --      SUM_RECEIPT      = @SumReceipt,
  --      VAT_RECEIPT      = @VatReceipt,
  --      SUM_CASH         = @SumCash,
