@@ -407,7 +407,7 @@ namespace Front.Equipments
                 PrintFiscalComments(Comments);
             FillUpReceiptItems(pR.GetParserWaresReceipt());
             var Sum = SubTotal();
-            pR.SumFiscal = Sum;
+            //pR.SumFiscal = Sum;
             if (!PayReceipt(pR))
             {         
                 ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Error, "Check was not printed")

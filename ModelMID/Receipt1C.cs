@@ -39,6 +39,8 @@ namespace ModelMID
         public int CodeBank { get; set; }
         public decimal SumWallet { get; set; }
         public decimal  CashOutSum { get; set; }
+        public decimal SumRound { get; set; }
+        public string NumberOrder { get; set; }
         public Receipt1C() { }
         public Receipt1C(Receipt pR)
         {
@@ -75,6 +77,8 @@ namespace ModelMID
                 CodeBank = (int) (Card?.CodeBank ?? (wp?.TypePOS??eBank.NotDefine));
 
             TimeScanReceipt = pR.ReceiptEvent?.Where(el=> el.EventType==eReceiptEventType.TimeScanReceipt)?.Select(el=> new TimeScanReceipt() { Start= el.ResolvedAt, End= el.CreatedAt });
+            SumRound = pR.SumFiscal > 0 ? pR.SumTotal - pR.SumFiscal:0;
+            NumberOrder = pR.NumberOrder;
         }
 
         public string GetBase64()
