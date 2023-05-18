@@ -474,9 +474,11 @@ namespace Front.Equipments
                 FiscalArticle FiscalArticle = SetupArticleTable(el);// FiscalArticleList[index];
                 //ReceiptItem receiptItem = receiptItems[index];
                 string Price = string.Empty;
-                decimal discont = el.Price < el.PriceDealer ? Math.Round((el.PriceDealer - el.Price) * el.Quantity, 2) : 0;
-                if (FiscalArticle.Price != el.PriceDealer)
-                    Price = "#" + el.PriceDealer.ToS();
+                decimal BasePrice = el.Price < el.PriceDealer ? el.PriceDealer : el.Price;
+                decimal discont = el.Price < el.PriceDealer ? Math.Round((el.PriceDealer - el.Price) * el.Quantity, 2) : 0;                              
+
+                if (FiscalArticle.Price != BasePrice)
+                    Price = "#" + BasePrice.ToS();
 
                 // tring((IFormatProvider)CultureInfo.InvariantCulture);
 
