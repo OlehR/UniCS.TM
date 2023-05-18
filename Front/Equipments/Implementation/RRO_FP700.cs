@@ -529,6 +529,9 @@ namespace Front.Equipments
                 if(pR.SumFiscal>Sum && pR.SumFiscal- Sum<.2m)
                     Sum= pR.SumFiscal;
 
+                if (Sum < Pay.SumExt)
+                    Sum = Pay.SumExt;
+
                 stringBuilder.Append("P+" + Sum.ToString("F2", CultureInfo.InvariantCulture));
             }
             else
