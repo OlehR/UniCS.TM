@@ -893,6 +893,8 @@ namespace Front.Control
         private void Check1C_Click(object sender, RoutedEventArgs e)
         {
             StringBuilder Res = new();
+            
+
             var MsSQL = new WDB_MsSql();
             var Receipts = Bl.GetReceipts(DateSoSearch, DateSoSearch, Global.IdWorkPlace);
             decimal Sum1CTotal = 0, Sum = 0;
@@ -939,6 +941,25 @@ namespace Front.Control
             Sum = Receipts.Where(el => el.StateReceipt >= eStateReceipt.Pay && el.StateReceipt < eStateReceipt.Send).Sum(el => el.SumTotal);
             Res.Append($"Всього в проміжних станах => {Sum}{Environment.NewLine}");
 
+            string SQL = @"select ""№""||Pay.code_receipt ||"" Delta=>""||round(Pay.sum-R.Sum,2)|| "" SumPay=>""|| Pay.sum ||"" SumR=>""||R.Sum as res from 
+--(select  code_receipt,json_extract(json,'$.SumPay') as sum from LOG_RRO where TYPE_OPERATION=20100) as Pay
+(select CODE_RECEIPT,sum_pay as sum from payment where TYPE_PAY in(1,2) )  as Pay
+left join 
+(
+
+select code_receipt,TEXT_RECEIPT, replace( replace( substring(TEXT_RECEIPT,instr(TEXT_RECEIPT,'С У М А        ')+8,24),' ',''),',','.')+0.0  as sum from LOG_RRO where TYPE_OPERATION=0 and instr(TEXT_RECEIPT,'С У М А        ')>0) R
+on pay.code_receipt=R.code_receipt
+where round(Pay.sum-R.Sum,2) >0
+order by Pay.code_receipt";
+
+            var db = new WDB_SQLite(DateSoSearch);
+            var ss = db.db.Execute<string>(SQL);
+            if (ss.Any())
+            {
+                Res.AppendLine("Чеки з розбіжностями в олаті");
+                foreach (var el in ss)
+                    Res.AppendLine(el);
+            }
             MessageBox.Show(Res.ToString());
         }
 
