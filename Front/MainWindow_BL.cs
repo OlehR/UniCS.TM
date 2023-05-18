@@ -439,7 +439,7 @@ namespace Front
 
         public void PayAndPrint()
         {
-            if (curReceipt.CountWeightGoods > 0 && curReceipt.Wares.Where(x=> x.CodeWares == Global.Settings.CodePackagesBag).Any() && !curReceipt.IsPakagesAded)
+            if (curReceipt.CountWeightGoods > 0 && !curReceipt.Wares.Where(x=> x.CodeWares == Global.Settings.CodePackagesBag).Any() && !curReceipt.IsPakagesAded)
             {
                 AddMissingPackage.CountPackeges = curReceipt.CountWeightGoods;
                 AddMissingPackage.CallBackResult = (int res) =>
