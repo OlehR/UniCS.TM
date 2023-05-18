@@ -373,7 +373,7 @@ namespace ModelMID
         /// 
         /// </summary>
         public string History { get; set; }
-        List<decimal> HistoryQuantity { get {
+        public List<decimal> HistoryQuantity { get {
                 List<decimal> Res = new();
                 if(!string.IsNullOrEmpty(History))
                 {

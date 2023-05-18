@@ -200,9 +200,9 @@ namespace ModelMID
         public int CountWeightGoods { get
             {
                 int Res = 0;
-                if (Wares != null && Wares.Count() > 0)
+                if (Wares != null && Wares.Any(el=>el.IsWeight))
                 {
-                    Res = Wares.Where(x => x.IsWeight).Count();
+                    Res = Wares.Where(x => x.IsWeight).Sum(el=> el.HistoryQuantity.Count()>0? el.HistoryQuantity.Count() : 1);
                 }
                 return Res;
             } }
