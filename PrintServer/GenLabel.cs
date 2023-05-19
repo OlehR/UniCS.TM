@@ -936,5 +936,7 @@ namespace PrintServer
         public bool IsOnlyCard { get; set; }
         public decimal PriceNormal { get; set; }
         public string StrPriceNormal { get { return (Is100g && Unit.ToLower().Equals("кг") ? PriceNormal / 10m : PriceNormal).ToString("F", (IFormatProvider)CultureInfo.GetCultureInfo("en-US")); } }
+        public string PromotionBegin { get; set; }
+        public string PromotionEnd { get; set; }
     }
 }
