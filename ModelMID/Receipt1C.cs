@@ -77,7 +77,7 @@ namespace ModelMID
                 CodeBank = (int) (Card?.CodeBank ?? (wp?.TypePOS??eBank.NotDefine));
 
             TimeScanReceipt = pR.ReceiptEvent?.Where(el=> el.EventType==eReceiptEventType.TimeScanReceipt)?.Select(el=> new TimeScanReceipt() { Start= el.ResolvedAt, End= el.CreatedAt });
-            SumRound = pR.SumFiscal > 0 && Card != null ? pR.SumTotal - pR.SumFiscal:0;
+            SumRound = pR.SumFiscal > 0 && Card != null ? pR.SumFiscal-pR.SumTotal :0;
             NumberOrder = pR.NumberOrder;
         }
 
