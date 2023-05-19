@@ -13,6 +13,7 @@ using ModernExpo.SelfCheckout.Utils;
 using System.CodeDom.Compiler;
 using System.Diagnostics.Metrics;
 using Front.Equipments.Utils;
+using System.Globalization;
 
 namespace Front.Equipments.Implementation
 {
@@ -164,10 +165,17 @@ namespace Front.Equipments.Implementation
                         topPosition = PrintLine(e, CodeUKTZED, topPosition, maxChar, MainFont);
                     }
                     if (item.ExciseStamp != null)
-                        topPosition = PrintLine(e, $"Акцизна марка: {item.ExciseStamp}", topPosition, maxChar, MainFont);
+                    {
+                        var ExciseStamp = item.ExciseStamp.Split(',');
+                        for (int j = 0; j < ExciseStamp.Length; j++)
+                        {
+                            topPosition = PrintLine(e, $"Акцизна марка: {ExciseStamp[j]}", topPosition, maxChar, MainFont);
+                        }
+                    }
+                       
 
                     string Quantity_x_Price = $"{item.Quantity} x {item.PriceEKKA}";
-                    string Price_VatChar = $"{item.PriceEKKA * item.Quantity} {item.VatChar}";
+                    string Price_VatChar = (item.PriceEKKA * item.Quantity).ToString("F2") + item.VatChar;
                     if (item.Quantity == 1)
                     {
                         topPosition = PrintTwoColum(e, item.NameWares, Price_VatChar, topPosition, maxChar - 16);
@@ -203,7 +211,7 @@ namespace Front.Equipments.Implementation
                 Rectangle rectTotalSum = new Rectangle(leftPosition, topPosition + TopIndent, WIDTHPAGE - 10, TopIndent + 2);
 
                 e.Graphics.DrawString("Сума", FontTotalSum, Brushes.Black, rectTotalSum, stringFormatSum);
-                e.Graphics.DrawString(Receipt.SumCreditCard.ToString("C2"), FontTotalSum, Brushes.Black, rectTotalSum, stringFormatTotalPrice);
+                e.Graphics.DrawString(Receipt.SumCreditCard.ToString("F2"), FontTotalSum, Brushes.Black, rectTotalSum, stringFormatTotalPrice);
                 if (Receipt.Fiscal?.Taxes?.Count() > 0)
                 {
                     int intentTaxes = FONTSIZE + 2;
