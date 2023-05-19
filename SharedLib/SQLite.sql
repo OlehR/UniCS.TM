@@ -166,7 +166,8 @@ sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_
 Code_Period_Refund as CodePeriodRefund,
 Code_Receipt_Refund as CodeReceiptRefund,
 USER_CREATE as UserCreate,
-Number_Order as NumberOrder
+Number_Order as NumberOrder,
+Sum_Fiscal as SumFiscal
 
  from receipt
  where ID_WORKPLACE = @IdWorkplace
@@ -235,7 +236,7 @@ sum_receipt, vat_receipt, code_pattern, state_receipt, code_client,
  code_credit_card, number_slip,Number_Receipt_POS, number_tax_income,USER_CREATE,
  ADDITION_N1,ADDITION_N2,ADDITION_N3,
  ADDITION_C1,ADDITION_D1,Type_Receipt, 
- Id_Workplace_Refund,Code_Period_Refund,Code_Receipt_Refund,Number_Order
+ Id_Workplace_Refund,Code_Period_Refund,Code_Receipt_Refund,Number_Order,Sum_Fiscal
  ) values 
  (@IdWorkplace, @CodePeriod, @CodeReceipt,  @DateReceipt, @ReceiptId,
  @SumReceipt, @VatReceipt, @CodePattern, @StateReceipt, @CodeClient,
@@ -244,7 +245,7 @@ sum_receipt, vat_receipt, code_pattern, state_receipt, code_client,
  @CodeCreditCard, @NumberSlip,@NumberReceiptPOS, 0,@UserCreate,
  @AdditionN1,@AdditionN2,@AdditionN3,
  @AdditionC1,@AdditionD1,@TypeReceipt,
- @IdWorkplaceRefund,@CodePeriodRefund, @CodeReceiptRefund,@NumberOrder
+ @IdWorkplaceRefund,@CodePeriodRefund, @CodeReceiptRefund,@NumberOrder,@SumFiscal
  )
  
 [SqlUpdateClient]
@@ -1259,7 +1260,7 @@ sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_
  code_bonus as CodeBonus, sum_bonus as SumBonus, sum_cash as SumCash, sum_credit_card as SumCreditCard, code_outcome as CodeOutcome, 
  code_credit_card as CodeCreditCard, number_slip as NumberSlip,Number_Receipt_POS as NumberReceiptPOS, number_tax_income as NumberTaxIncome,USER_CREATE as UseCreate,
  ADDITION_N1 as AdditionN1,ADDITION_N2 as AdditionN2, ADDITION_N3 as AdditionN3,
- ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1,Number_Order as NumberOrder
+ ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1,Number_Order as NumberOrder,Sum_Fiscal as SumFiscal
   from RECEIPT r where 
     r.CODE_RECEIPT=(select CODE_RECEIPT from GEN_WORKPLACE where ID_WORKPLACE=@IdWorkplace and CODE_PERIOD=@CodePeriod)
     and r.ID_WORKPLACE=@IdWorkplace and r.CODE_PERIOD=@CodePeriod
@@ -1271,7 +1272,7 @@ sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_
  code_bonus as CodeBonus, sum_bonus as SumBonus, sum_cash as SumCash, sum_credit_card as SumCreditCard, code_outcome as CodeOutcome, 
  code_credit_card as CodeCreditCard, number_slip as NumberSlip,Number_Receipt_POS as NumberReceiptPOS, number_tax_income as NumberTaxIncome,USER_CREATE as UseCreate, Date_Create as DateCreate,
  ADDITION_N1 as AdditionN1,ADDITION_N2 as AdditionN2, ADDITION_N3 as AdditionN3,
- ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1,Number_Order as NumberOrder
+ ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1,Number_Order as NumberOrder,Sum_Fiscal as SumFiscal
  from receipt
  where ID_WORKPLACE = case when @IdWorkplace =0 then ID_WORKPLACE else @IdWorkplace end
  and DateReceipt between @StartDate and @FinishDate;   
