@@ -946,8 +946,9 @@ namespace Front.Control
 (select CODE_RECEIPT,sum_pay as sum from payment where TYPE_PAY in(1,2) )  as Pay
 left join 
 (
-
-select code_receipt,TEXT_RECEIPT, replace( replace( substring(TEXT_RECEIPT,instr(TEXT_RECEIPT,'С У М А        ')+8,24),' ',''),',','.')+0.0  as sum from LOG_RRO where TYPE_OPERATION=0 and instr(TEXT_RECEIPT,'С У М А        ')>0) R
+select code_receipt,TEXT_RECEIPT, 
+0.00+replace( replace( substring(TEXT_RECEIPT,instr(TEXT_RECEIPT,'С У М А        ')+8,24),' ',''),',','.')+replace( replace( substring(TEXT_RECEIPT,instr(TEXT_RECEIPT,'ЗАОКРУГЛЕННЯ  ')+12,24),' ',''),',','.')  as sum  
+from LOG_RRO where TYPE_OPERATION=0 and instr(TEXT_RECEIPT,'С У М А        ')>0) R
 on pay.code_receipt=R.code_receipt
 where round(Pay.sum-R.Sum,2) >0
 order by Pay.code_receipt";

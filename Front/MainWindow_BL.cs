@@ -555,7 +555,7 @@ namespace Front
                             if (pTP == eTypePay.Cash)
                             {
                                 var SumCash = R.WorkplacePays[i].SumCash;
-                                pay = new Payment(R) { IsSuccess = true, TypePay = eTypePay.Cash, SumPay = SumCash, SumExt = (i == IdWorkplacePays.Length - 1 ? pSumCash : SumCash) };
+                                pay = new Payment(R) { IsSuccess = true, TypePay = eTypePay.Cash, SumPay = SumCash, SumExt = (i == IdWorkplacePays.Length - 1 ? Math.Round( pSumCash,1) : Math.Round( SumCash,1)) };
                                 pSumCash -= SumCash;
                                 if (pSumCash < 0) pSumCash = 0;
                                 Bl.db.ReplacePayment(new List<Payment>() {pay});                                
