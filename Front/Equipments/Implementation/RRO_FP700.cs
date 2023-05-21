@@ -406,9 +406,10 @@ namespace Front.Equipments
             if (Comments != null && Comments.Count() > 0)
                 PrintFiscalComments(Comments);
             FillUpReceiptItems(pR.GetParserWaresReceipt());
-            var Sum = SubTotal();
+            decimal Total=0, TotalRnd=0;
+            (Total,TotalRnd) = SubTotal();
             //pR.SumFiscal = Sum;
-            if (!PayReceipt(pR,Sum))
+            if (!PayReceipt(pR, TotalRnd))
             {         
                 ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Error, "Check was not printed")
                 { Status = eStatusRRO.Error, IsСritical = true });
@@ -417,7 +418,7 @@ namespace Front.Equipments
             ClearDisplay();
             
             if (!int.TryParse(GetLastReceiptNumber(), out int result2))
-                return (null, Sum);
+                return (null, TotalRnd);
             
             //Чек видачі готівки.
             Payment Pay = pR?.Payment?.Where(el => el.TypePay == eTypePay.IssueOfCash)?.FirstOrDefault();
@@ -428,7 +429,7 @@ namespace Front.Equipments
             string str = result2 > result1 ? result2.ToString() : null;
             if (str == null)                
                 ObliterateFiscalReceipt();
-            return (str,Sum);
+            return (str, TotalRnd);
         }
 
         /*public (string, decimal) ReturnReceipt(Receipt pR)
@@ -758,15 +759,18 @@ namespace Front.Equipments
             return Res;
         }
 
-        public decimal  SubTotal()
+        public (decimal, decimal) SubTotal()
         {
-            decimal Res = 0;
+            decimal Total=0, TotalRnd = 0;
             string res = null;
             OnSynchronizeWaitCommandResult(eCommand.SubTotal, onResponseCallback:((Action<string>)(response => res = response)));
             var r = res?.Split(',');
-            if (r.Length > 1) 
-              decimal.TryParse(r[1], out Res);
-            return Res/100M;
+            if (r.Length > 1)
+            {
+                decimal.TryParse(r[1], out Total);
+                decimal.TryParse(r[1], out TotalRnd);
+            }
+            return (Total / 100M, TotalRnd/100M);
         }
 
         public bool ArticleReport() => OnSynchronizeWaitCommandResult(eCommand.ArticleReport, string.Format("{0},{1}", (object)_operatorPassword, (object)eArticleReportType.S));
