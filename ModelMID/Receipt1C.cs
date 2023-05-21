@@ -66,7 +66,7 @@ namespace ModelMID
             if (Card!=null)
                 Description = Card.CodeAuthorization;
             else
-                Description = "0000000";           
+                Description = "";           
 
             SumWallet = pR.Payment.Where(r => r.TypePay == eTypePay.Wallet && r.SumPay>0)?.FirstOrDefault()?.SumPay ?? 0;
             CashOutSum = pR.Payment.Where(r => r.TypePay == eTypePay.IssueOfCash && r.SumPay > 0)?.FirstOrDefault()?.SumPay ?? 0;
@@ -77,7 +77,7 @@ namespace ModelMID
                 CodeBank = (int) (Card?.CodeBank ?? (wp?.TypePOS??eBank.NotDefine));
 
             TimeScanReceipt = pR.ReceiptEvent?.Where(el=> el.EventType==eReceiptEventType.TimeScanReceipt)?.Select(el=> new TimeScanReceipt() { Start= el.ResolvedAt, End= el.CreatedAt });
-            SumRound = pR.SumFiscal > 0 && Card != null ? pR.SumFiscal-pR.SumTotal :0;
+            SumRound = pR.SumFiscal > 0 && Cash!=null ? pR.SumFiscal-pR.SumTotal :0;
             NumberOrder = pR.NumberOrder;
         }
 
