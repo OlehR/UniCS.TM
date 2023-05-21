@@ -315,14 +315,14 @@ replace into wares_receipt (id_workplace, code_period, code_receipt,id_workplace
 
 [SqlRecalcHeadReceipt]
 update WARES_RECEIPT 
-set SUM_DISCOUNT = ifnull( ( select case when wrp.QUANTITY is null then 0 when wr.sum-(wrp.QUANTITY*wr.price-wrp.sum)>0 then  wrp.QUANTITY*wr.price-wrp.sum  else wr.sum-0.1 end
+set SUM_DISCOUNT = round(ifnull( ( select case when wrp.QUANTITY is null then 0 when wr.sum-(wrp.QUANTITY*wr.price-wrp.sum)>0 then  wrp.QUANTITY*wr.price-wrp.sum  else wr.sum-0.1 end
 from 
 (select sum( QUANTITY) as QUANTITY, sum(sum) as sum from WARES_RECEIPT_PROMOTION wrp
 where wrp.id_workplace=@IdWorkplace and  wrp.code_period =@CodePeriod and  wrp.code_receipt=@CodeReceipt and  wrp.code_wares=WARES_RECEIPT.code_wares) as wrp
 join 
  WARES_RECEIPT wr
     on  ( wr.id_workplace=@IdWorkplace and  wr.code_period =@CodePeriod and  wr.code_receipt=@CodeReceipt and wr.code_wares=WARES_RECEIPT.code_wares )
-),0)
+),0) ,2)
 where WARES_RECEIPT.id_workplace=@IdWorkplace and  WARES_RECEIPT.code_period =@CodePeriod and  WARES_RECEIPT.code_receipt=@CodeReceipt; 
 
 update receipt 

@@ -58,10 +58,11 @@ namespace ModelMID
         /// </summary>
         //public int CoefficientDefaultUnit { get; set; }
 
+        decimal _Price;
         /// <summary>
         /// ціна за текучу одиницю.
         /// </summary>
-        public decimal Price { get; set; }
+        public decimal Price { get { return _Price; } set { _Price = Math.Round(value, 2); } }
         // Дилерська категорія.                                       
         //public int CodeDealer { get; set; }
 
