@@ -408,7 +408,7 @@ namespace Front.Equipments
             FillUpReceiptItems(pR.GetParserWaresReceipt());
             var Sum = SubTotal();
             //pR.SumFiscal = Sum;
-            if (!PayReceipt(pR))
+            if (!PayReceipt(pR,Sum))
             {         
                 ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Error, "Check was not printed")
                 { Status = eStatusRRO.Error, IsСritical = true });
@@ -511,7 +511,7 @@ namespace Front.Equipments
             return true;
         }
 
-        public bool PayReceipt(Receipt pR)
+        public bool PayReceipt(Receipt pR,decimal pRealSum)
         {
             StringBuilder stringBuilder = new StringBuilder();
             Payment Pay = pR?.Payment?.Where(el => el.TypePay == eTypePay.Card)?.FirstOrDefault();
@@ -520,17 +520,10 @@ namespace Front.Equipments
             {
                 Pay = pR?.Payment?.Where(el => el.TypePay == eTypePay.Cash)?.FirstOrDefault();
 
-                decimal Sum = pR.SumTotal;
-                if (Pay != null && Pay.SumPay > pR.SumTotal)
-                    Sum = Pay.SumPay;
-                else
-                    Sum = Math.Round(Sum, 1);
-
-                if(pR.SumFiscal>Sum && pR.SumFiscal- Sum<.2m)
-                    Sum= pR.SumFiscal;
-
-                if (Sum < Math.Round(Pay.SumExt, 1))
-                    Sum = Math.Round(Pay.SumExt, 1);
+                decimal Sum = pRealSum;
+                
+                if (Pay != null &&   Pay.SumExt > Sum)
+                    Sum = Pay.SumExt;                     
 
                 stringBuilder.Append("P+" + Sum.ToString("F2", CultureInfo.InvariantCulture));
             }
