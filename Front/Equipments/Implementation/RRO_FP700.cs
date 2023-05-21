@@ -416,9 +416,9 @@ namespace Front.Equipments
                 pR.Payment= pR.Payment==null? new List<Payment>() { pay } :  pR.Payment.Append<Payment>(pay);
                 db.ReplacePayment(pay,true);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                FileLogger.WriteLogMessage(this,);
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name,e);
             }
 
             //pR.SumFiscal = Sum;
