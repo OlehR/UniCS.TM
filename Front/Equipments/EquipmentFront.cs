@@ -785,7 +785,7 @@ namespace Front
                         LP.Add(C);
                     }
 
-                    Bl.db.ReplacePayment(LP);
+                    Bl.db.ReplacePayments(LP);
 
                     Task.Run(() =>
                     {

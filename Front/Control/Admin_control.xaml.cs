@@ -566,7 +566,7 @@ namespace Front.Control
             pPay.SumPay = pPay.PosPaid = curReceipt.SumTotal;
             pPay.PosPaid = pPay.SumPay;
             pPay.NumberTerminal = "Manual";
-            Bl.db.ReplacePayment(new List<Payment>() { pPay });
+            Bl.db.ReplacePayment(pPay);
 
             curReceipt.StateReceipt = eStateReceipt.Pay;
             curReceipt.CodeCreditCard = pPay.NumberCard;

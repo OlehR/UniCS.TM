@@ -19,6 +19,7 @@ using Timer = System.Timers.Timer;
 using SharedLib;
 using System.Windows.Forms;
 using System.Data;
+//using ModernExpo.SelfCheckout.Utils;
 
 namespace Front.Equipments
 {
@@ -408,6 +409,18 @@ namespace Front.Equipments
             FillUpReceiptItems(pR.GetParserWaresReceipt());
             decimal Total=0, TotalRnd=0;
             (Total,TotalRnd) = SubTotal();
+            if(Total > 0|| TotalRnd>0)
+            try
+            {
+                var pay = new Payment(pR) { IsSuccess = true, TypePay = eTypePay.FiscalInfo, SumPay = Total, SumExt = TotalRnd - Total };
+                pR.Payment= pR.Payment==null? new List<Payment>() { pay } :  pR.Payment.Append<Payment>(pay);
+                db.ReplacePayment(pay,true);
+            }
+            catch (Exception)
+            {
+                FileLogger.WriteLogMessage(this,);
+            }
+
             //pR.SumFiscal = Sum;
             if (!PayReceipt(pR, TotalRnd))
             {         

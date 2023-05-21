@@ -77,7 +77,10 @@ namespace ModelMID
                 CodeBank = (int) (Card?.CodeBank ?? (wp?.TypePOS??eBank.NotDefine));
 
             TimeScanReceipt = pR.ReceiptEvent?.Where(el=> el.EventType==eReceiptEventType.TimeScanReceipt)?.Select(el=> new TimeScanReceipt() { Start= el.ResolvedAt, End= el.CreatedAt });
-            SumRound = pR.SumFiscal > 0 && Cash!=null ? pR.SumFiscal-pR.SumTotal :0;
+
+            var Fiscal = pR.Payment.Where(r => r.TypePay == eTypePay.FiscalInfo)?.FirstOrDefault();
+            if (Fiscal != null)
+                SumRound = Fiscal.SumExt;//pR.SumFiscal > 0 && Cash!=null ? pR.SumFiscal-pR.SumTotal :0;
             NumberOrder = pR.NumberOrder;
         }
 

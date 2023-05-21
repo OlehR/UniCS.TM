@@ -488,14 +488,29 @@ and @TypeDiscount=11; ";
             }
             return true;
         }
-        public override bool ReplacePayment(IEnumerable<Payment> parData)
+
+        public bool ReplacePayment(Payment pData,bool pIsDel=false)
+        {
+            using (var DB = new SQLite(ReceiptFile))
+            {
+                if (pIsDel)
+                {
+                    string Sql = @"delete from payment where  id_workplace=@IdWorkplace and id_workplace_pay = @IdWorkplacePay and  code_period =@CodePeriod and  code_receipt=@CodeReceipt and Type_Pay=@TypePay";
+                    DB.ExecuteNonQuery<Payment>(Sql, pData);
+                }
+                DB.ExecuteNonQuery<Payment>(SqlReplacePayment, pData);                   
+            }
+            return true;
+        }
+
+        public override bool ReplacePayments(IEnumerable<Payment> parData)
         {
             using (var DB = new SQLite(ReceiptFile))
             {
                 if (parData != null && parData.Count() > 0)
                 {
                     if (parData.Count() == 1)//Костиль через проблеми з мультипоточністю BD
-                        DB.ExecuteNonQuery<Payment>(SqlReplacePayment, parData.First());
+                        ReplacePayment(parData.First());
                     else
                         DB.BulkExecuteNonQuery<Payment>(SqlReplacePayment, parData);
                 }

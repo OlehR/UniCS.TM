@@ -174,7 +174,7 @@ namespace Front.Control
         public void SetManualPay(Payment pPay)
         {
             pPay.SumPay = pPay.PosPaid = curReceipt.SumTotal;
-            MW?.Bl.db.ReplacePayment(new List<Payment>() { pPay });
+            MW?.Bl.db.ReplacePayment(pPay);
 
             curReceipt.StateReceipt = eStateReceipt.Pay;
             curReceipt.CodeCreditCard = pPay.NumberCard;

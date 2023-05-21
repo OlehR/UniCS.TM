@@ -520,9 +520,9 @@ namespace Front
                         {
                             Bl.db.DelPayWalletBonus(R);
                             if(pSumWallet != 0)
-                              Bl.db.ReplacePayment(new List<Payment>() { new Payment(R) {IdWorkplacePay=R.IdWorkplace, IsSuccess = true, TypePay = eTypePay.Wallet, SumPay = pSumWallet, SumExt = pSumWallet } });
+                              Bl.db.ReplacePayment(  new Payment(R) {IdWorkplacePay=R.IdWorkplace, IsSuccess = true, TypePay = eTypePay.Wallet, SumPay = pSumWallet, SumExt = pSumWallet } );
                             if (pSumBonus != 0)
-                                Bl.db.ReplacePayment(new List<Payment>() { new Payment(R) { IdWorkplacePay = R.IdWorkplace, IsSuccess = true, TypePay = eTypePay.Bonus,SumPay= R.SumTotal, SumExt = pSumBonus } });
+                                Bl.db.ReplacePayment(new Payment(R) { IdWorkplacePay = R.IdWorkplace, IsSuccess = true, TypePay = eTypePay.Bonus, SumPay = R.SumTotal, SumExt = pSumBonus });
                             R.Payment = Bl.db.GetPayment(R);
                             if ((pSumWallet > 0 || pSumBonus>0) && R.ReCalc())
                             {
@@ -531,7 +531,7 @@ namespace Front
                                 
                                 if (pSumBonus > 0)
                                 {                                    
-                                    Bl.db.ReplacePayment(new List<Payment>() {new Payment(R) { IdWorkplacePay = R.IdWorkplace, IsSuccess = true, TypePay = eTypePay.Cash,SumPay= Math.Round(R.SumTotal,1), SumExt =  Math.Round(R.SumTotal,1) }});
+                                    Bl.db.ReplacePayment(new Payment(R) { IdWorkplacePay = R.IdWorkplace, IsSuccess = true, TypePay = eTypePay.Cash, SumPay = Math.Round(R.SumTotal, 1), SumExt = Math.Round(R.SumTotal, 1) });
                                     R.StateReceipt = eStateReceipt.Pay;
                                     Bl.SetStateReceipt(R, R.StateReceipt);
                                     R.Payment = Bl.db.GetPayment(R);
@@ -558,7 +558,7 @@ namespace Front
                                 pay = new Payment(R) { IsSuccess = true, TypePay = eTypePay.Cash, SumPay = SumCash, SumExt = (i == IdWorkplacePays.Length - 1 ? Math.Round( pSumCash,1) : Math.Round( SumCash,1)) };
                                 pSumCash -= SumCash;
                                 if (pSumCash < 0) pSumCash = 0;
-                                Bl.db.ReplacePayment(new List<Payment>() {pay});                                
+                                Bl.db.ReplacePayment(pay,true);                                
                             }
                             else
                             {

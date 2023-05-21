@@ -874,7 +874,7 @@ namespace SharedLib
             db.ExecuteNonQuery<ParamMoveReceipt>(SqlMoveReceipt, parMoveReceipt);
             return true;
         }
-        public virtual bool ReplacePayment(IEnumerable<Payment> parData)
+        public virtual bool ReplacePayments(IEnumerable<Payment> parData)
         {
             if (parData != null && parData.Count() > 0)
             {

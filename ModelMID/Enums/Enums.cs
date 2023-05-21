@@ -37,7 +37,11 @@ namespace ModelMID
         /// <summary>
         /// Розрахунок бонусами.
         /// </summary>
-        Bonus = 6
+        Bonus = 6,
+        /// <summary>
+        /// Інформація з фіскального апарата.(Сума + Завкруглення)
+        /// </summary>
+        FiscalInfo =7
     }
 
     public enum eTypeBonus

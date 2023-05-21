@@ -62,8 +62,8 @@ namespace ModelMID
 
         //public Payment(Guid parReceipt) : base(parReceipt) { }
         public Payment(IdReceipt parIdReceipt) : base(parIdReceipt) { }
-        public Payment(IdReceiptWares parIdReceiptWares) : base(parIdReceiptWares) { }
-        public Payment() { }
+        public Payment(IdReceiptWares parIdReceiptWares) : base(parIdReceiptWares) { DateCreate = DateTime.Now;  }
+        public Payment() { DateCreate = DateTime.Now; }
         public object Clone()
         {
             return this.MemberwiseClone();

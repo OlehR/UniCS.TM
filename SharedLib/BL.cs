@@ -538,7 +538,7 @@ namespace SharedLib
 
             var dbR = DB(pReceipt);
             dbR.ReplaceReceipt(pReceipt);
-            dbR.ReplacePayment(pReceipt.Payment);
+            dbR.ReplacePayments(pReceipt.Payment);
 
             var dbr = pReceipt.CodePeriod == pReceipt.CodePeriodRefund ? db : new WDB_SQLite(IdR.DTPeriod);
             foreach (var el in pReceipt.Wares)
