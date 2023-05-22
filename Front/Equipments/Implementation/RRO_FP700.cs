@@ -19,6 +19,7 @@ using Timer = System.Timers.Timer;
 using SharedLib;
 using System.Windows.Forms;
 using System.Data;
+using System.Threading;
 //using ModernExpo.SelfCheckout.Utils;
 
 namespace Front.Equipments
@@ -161,6 +162,7 @@ namespace Front.Equipments
             eDeviceConnectionStatus res;
             try
             {
+                var s=SetRoundCash();
                 res = TestDeviceSync();
                 if(res==eDeviceConnectionStatus.Enabled)
                   State = eStateEquipment.On;
@@ -1025,11 +1027,24 @@ namespace Front.Equipments
         private string GetRoundCash()
         {
             string Res=null;
-            OnSynchronizeWaitCommandResult(eCommand.DiagnosticInfo, "IR", onResponseCallback: (Action<string>)(res =>
+            OnSynchronizeWaitCommandResult(eCommand.ReceiptDetailsPrintSetupAdditionalSettings, "IR", onResponseCallback: (Action<string>)(res =>
             {
                 Res = res;
             }));
             return Res;
+        }
+
+        public string SetRoundCash(string pMoney="10")
+        {
+            var s = GetRoundCash();
+            if (!s.Equals(pMoney))
+            {
+                string Res = null;
+                OnSynchronizeWaitCommandResult(eCommand.ReceiptDetailsPrintSetupAdditionalSettings, $"R{pMoney}");
+                OnSynchronizeWaitCommandResult(eCommand.SaveSettingInMemory);
+                Thread.Sleep(200);
+            } 
+            return s = GetRoundCash();
         }
 
         public bool CanOpenReceipt() => CheckModemStatus() && IsZReportDone();
