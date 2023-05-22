@@ -703,7 +703,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                         Thread.Sleep(100);
                         foreach (var el in Order)
                         {
-                            bl.AddWaresCode(curReceipt, el.CodeWares, el.CodeUnit, el.Quantity, el.Price, true);
+                            bl.AddWaresCode(curReceipt, el.CodeWares, el.CodeUnit, (el.CodeUnit==Global.WeightCodeUnit? 1000:1) *  el.Quantity, el.Price, true);
                         }
                     }
                 }
