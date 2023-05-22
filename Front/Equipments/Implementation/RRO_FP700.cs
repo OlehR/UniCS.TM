@@ -1041,6 +1041,7 @@ namespace Front.Equipments
             {
                 string Res = null;
                 OnSynchronizeWaitCommandResult(eCommand.ReceiptDetailsPrintSetupAdditionalSettings, $"R{pMoney}");
+                Thread.Sleep(200);
                 OnSynchronizeWaitCommandResult(eCommand.SaveSettingInMemory);
                 Thread.Sleep(200);
             } 
