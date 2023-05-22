@@ -780,7 +780,7 @@ namespace Front.Equipments
             var r = res?.Split(',');
             if (r.Length > 1)
             {
-                decimal.TryParse(r[1], out Total);
+                decimal.TryParse(r[0], out Total);
                 decimal.TryParse(r[1], out TotalRnd);
             }
             return (Total / 100M, TotalRnd/100M);
