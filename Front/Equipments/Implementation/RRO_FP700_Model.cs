@@ -18,6 +18,7 @@ namespace Front.Equipments.Implementation.FP700_Model
         ClearDisplay = 33, // 0x00000021
         OpenNonFiscalReceipt = 38, // 0x00000026
         CloseNonFiscalReceipt = 39, // 0x00000027
+        SaveSettingInMemory =41,// 0x00000029
         PrintNonFiscalComment = 42, // 0x0000002A
         ReceiptDetailsPrintSetupAdditionalSettings = 43, // 0x0000002B
         PaperPulling = 44, // 0x0000002C

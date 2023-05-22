@@ -301,14 +301,17 @@ namespace Front.Equipments
             try
             {
                 DiagnosticInfo diagnosticInfo = GetDiagnosticInfo();
-                DocumentNumbers lastNumbers = null;                
-                if(diagnosticInfo != null)
+                DocumentNumbers lastNumbers = null;
+                var RoundCash = GetRoundCash();
+                if (diagnosticInfo != null)
                     lastNumbers=GetLastNumbers();                
                 if (diagnosticInfo == null || lastNumbers == null)
                     throw new Exception("Fp700 getInfo error");
                 return _currentPrinterStatus.TextError + $"Model:{diagnosticInfo.Model}\nSoftVersion: {diagnosticInfo.SoftVersion}\nSoftReleaseDate: {diagnosticInfo.SoftReleaseDate}\n SerialNumber: {diagnosticInfo.SerialNumber}\n RegistrationNumber: {diagnosticInfo.FiscalNumber}\n" + 
                     $"BaudRate: {_serialDevice.BaudRate}\nComPort:{_serialDevice.PortName}\n"+
-                    $"LastDocumentNumber: {lastNumbers.LastDocumentNumber}\nLastReceiptNumber: {lastNumbers.LastFiscalDocumentNumber}\nLastZReportNumber: {GetLastZReportNumber()}\nIsZReportDone: {IsZReportDone()}\nCurentTime: {GetCurrentFiscalPrinterDate() ?? DateTime.MinValue}\n";
+                    $"LastDocumentNumber: {lastNumbers.LastDocumentNumber}\nLastReceiptNumber: {lastNumbers.LastFiscalDocumentNumber}\nLastZReportNumber: {GetLastZReportNumber()}\nIsZReportDone: {IsZReportDone()}\nCurentTime: {GetCurrentFiscalPrinterDate() ?? DateTime.MinValue}\n"+
+                    $"RoundCash: {RoundCash}"
+                    ;
             }
             catch (Exception ex)
             {
@@ -1018,6 +1021,15 @@ namespace Front.Equipments
                 }
             })));
             return diagnosticInfo;
+        }
+        private string GetRoundCash()
+        {
+            string Res=null;
+            OnSynchronizeWaitCommandResult(eCommand.DiagnosticInfo, "IR", onResponseCallback: (Action<string>)(res =>
+            {
+                Res = res;
+            }));
+            return Res;
         }
 
         public bool CanOpenReceipt() => CheckModemStatus() && IsZReportDone();
