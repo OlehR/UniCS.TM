@@ -578,7 +578,7 @@ namespace ModelMID
                 // Коригування кінцевої суми.
                 if (SumTotal != Sum)
                 {
-                    Res.First().Delta +=  Sum- SumTotal;
+                    Res.First().Delta +=  -Sum+ SumTotal;
                 }
                
             }
