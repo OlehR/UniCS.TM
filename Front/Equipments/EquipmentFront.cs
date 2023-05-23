@@ -646,7 +646,7 @@ namespace Front
                 {
                     pR.IdWorkplacePay = IdWorkplacePays[i];
                     var RRO = GetRRO(pR.IdWorkplacePay);
-                    Sum += RRO.SumCashReceiptFiscal(pR);
+                    Sum += RRO?.SumCashReceiptFiscal(pR)??0;
                 }
             }
             pR.IdWorkplacePay = Id;

@@ -79,10 +79,12 @@ namespace ModelMID
         /// Оплачено Готівкою
         /// </summary>
         public decimal SumCash { get; set; }
+
+        decimal _SumWallet=0;
         /// <summary>
         /// Списані/нараховані гроші скарбничка
         /// </summary>
-        public decimal SumWallet { get; set; }
+        public decimal SumWallet { get {  return Payment?.Any()==true? Payment.Where(el => el.TypePay == eTypePay.Wallet)?.Sum(el => el.SumPay) ?? 0 : _SumWallet; } set { _SumWallet = value; } }
 
         decimal _SumCreditCard;
         /// <summary>

@@ -897,38 +897,50 @@ namespace Front.Control
 
             var MsSQL = new WDB_MsSql();
             var Receipts = Bl.GetReceipts(DateSoSearch, DateSoSearch, Global.IdWorkPlace);
+           
             decimal Sum1CTotal = 0, Sum = 0;
             Res.Append($"Звіт за {DateSoSearch} {Environment.NewLine}");
+
+            decimal Total = 0;// Receipts.Where(el => el.StateReceipt >= eStateReceipt.Pay).Sum(el => el.SumTotal);
+           
+
+
             foreach (var IdWP in Global.GetIdWorkPlaces)
             {
+                Total = 0;
                 var R1C = MsSQL.GetReceipt1C(DateSoSearch, IdWP.IdWorkplace);
                 Sum = R1C.Sum(el => el.Value);
                 Sum1CTotal += Sum;
                 Res.Append($"Всього 1С => {IdWP.Name}-{Sum}{Environment.NewLine}");
 
-                foreach (var el in Receipts)
+                foreach (var el in Receipts.Where(el => el.StateReceipt >= eStateReceipt.Pay))
                 {
+                    var r = Bl.GetReceiptHead(el, true);
+                    Total += r.SumTotal;
+                    MW.FillPays(r);
                     decimal SumPr = 0, Sum1c = 0;
-                    SumPr = el.WorkplacePays?.Where(e => e.IdWorkplacePay == IdWP.IdWorkplace)?.Sum(e => e.Sum) ?? 0m;
+                    SumPr = r.WorkplacePays?.Where(e => e.IdWorkplacePay == IdWP.IdWorkplace)?.Sum(e => e.Sum) ?? 0m;
                     if (SumPr > 0)
                     {
-                        if (R1C.ContainsKey(el.NumberReceipt1C))
+                        if (R1C.ContainsKey(r.NumberReceipt1C))
                         {
+                            try { Sum1c = R1C[r.NumberReceipt1C]; } catch (Exception ex) { Res.Append($"{r.NumberReceipt1C} {ex.Message}"); }
 
-                            try { Sum1c = R1C[el.NumberReceipt1C]; } catch (Exception) { }
-                            SumPr = el.WorkplacePays?.Where(e => e.IdWorkplacePay == IdWP.IdWorkplace)?.Sum(e => e.Sum) ?? 0m;
-                            if (SumPr > 0 && Math.Abs(SumPr - Sum1c) > 0.01m)
-                                Res.Append($"{el.NumberReceipt1C} Сума чека:{SumPr} В 1с:{Sum1c}{Environment.NewLine}");
+                            SumPr = r.WorkplacePays?.Where(e => e.IdWorkplacePay == IdWP.IdWorkplace)?.Sum(e => e.Sum) ?? 0m;
+                            if (SumPr > 0 && Math.Abs(SumPr - Sum1c) > 0.00m)
+                                Res.Append($"{r.NumberReceipt1C} Сума чека:{SumPr} В 1с:{Sum1c}{Environment.NewLine}");
                         }
                         else
                         {
-                            if (el.StateReceipt >= eStateReceipt.Pay)
+                            if (r.StateReceipt >= eStateReceipt.Pay)
                             {
-                                Res.Append($"{el.NumberReceipt1C} Відсутній чек в 1С на суму {el.SumTotal:n2} {el.StateReceipt}{Environment.NewLine}");
+                                Res.Append($"{r.NumberReceipt1C} Відсутній чек в 1С на суму {r.SumTotal:n2} {r.StateReceipt}{Environment.NewLine}");
                             }
                         }
                     }
                 }
+                Res.Append($"Програма {IdWP.CodeWarehouse} Total={Total}{Environment.NewLine}");
+
                 foreach (var el in R1C)
                 {
                     if (!Receipts.Any(e => e.NumberReceipt1C.Equals(el.Key)))
@@ -936,6 +948,7 @@ namespace Front.Control
                 }
             }
             Res.Append($"Всього 1С => {Sum1CTotal}{Environment.NewLine}");
+           
             Sum = Receipts.Where(el => el.StateReceipt >= eStateReceipt.Pay).Sum(el => el.SumTotal);
             Res.Append($"Всього Програма => {Sum}{Environment.NewLine}");
             Sum = Receipts.Where(el => el.StateReceipt >= eStateReceipt.Pay && el.StateReceipt < eStateReceipt.Send).Sum(el => el.SumTotal);

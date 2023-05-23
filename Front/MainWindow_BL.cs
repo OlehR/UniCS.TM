@@ -698,7 +698,8 @@ namespace Front
             for (var i = 0; i < IdWorkplacePays.Length; i++)
             {
                 pR.IdWorkplacePay = IdWorkplacePays[i];
-                pR.WorkplacePays[i] = new WorkplacePay() { IdWorkplacePay = IdWorkplacePays[i], Sum = EF.SumReceiptFiscal(pR), SumCash = EF.SumCashReceiptFiscal(pR) };
+                var r= new WorkplacePay() { IdWorkplacePay = IdWorkplacePays[i], Sum = EF.SumReceiptFiscal(pR), SumCash = EF.SumCashReceiptFiscal(pR) };
+                pR.WorkplacePays[i] = r;
             }
             pR.IdWorkplacePay = 0;
         }
