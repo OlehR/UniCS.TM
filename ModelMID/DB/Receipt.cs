@@ -74,7 +74,7 @@ namespace ModelMID
         /// Сума округлення фіскалки
         /// </summary>
         public decimal SumRest { get; set; }
-        public decimal SumTotal { get { return SumReceipt - SumDiscount - SumBonus; } }
+        public decimal SumTotal { get { return SumReceipt - SumDiscount - SumBonus - SumWallet; } }
         /// <summary>
         /// Оплачено Готівкою
         /// </summary>
