@@ -126,7 +126,7 @@ namespace ModelMID
 
         public decimal Sum
         {
-            get { return Math.Round(Quantity * Price, 2); }
+            get { return Math.Round(Quantity * Price, 2, MidpointRounding.AwayFromZero); }
             set { Price = (Quantity > 0 ? value / Quantity : 0); }
         }
 
