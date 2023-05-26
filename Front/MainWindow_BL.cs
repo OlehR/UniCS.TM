@@ -439,7 +439,7 @@ namespace Front
 
         public void PayAndPrint()
         {
-            if (curReceipt.CountWeightGoods > 0 && !curReceipt.Wares.Any(x => x.CodeWares == Global.Settings.CodePackagesBag) && !curReceipt.IsPakagesAded)
+            if (curReceipt.StateReceipt<eStateReceipt.Pay && curReceipt.CountWeightGoods > 0 && !curReceipt.Wares.Any(x => x.CodeWares == Global.Settings.CodePackagesBag) && !curReceipt.IsPakagesAded)
             {
                 AddMissingPackage.CountPackeges = curReceipt.CountWeightGoods;
                 AddMissingPackage.CallBackResult = (int res) =>
@@ -459,7 +459,7 @@ namespace Front
                 return;
             }
 
-            if (curReceipt.AgeRestrict > 0 && curReceipt.IsConfirmAgeRestrict == false)
+            if (curReceipt.StateReceipt < eStateReceipt.Pay &&  curReceipt.AgeRestrict > 0 && curReceipt.IsConfirmAgeRestrict == false)
             {
                 SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ConfirmAge);
                 return;
