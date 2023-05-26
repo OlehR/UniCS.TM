@@ -495,7 +495,7 @@ namespace Front.Equipments
                 //ReceiptItem receiptItem = receiptItems[index];
                 string Price = string.Empty;
                 decimal BasePrice = el.Price < el.PriceDealer ? el.PriceDealer : el.Price;
-                decimal discont = el.Price < BasePrice ?  Math.Round(BasePrice * el.Quantity, 2) - Math.Round(el.Sum, 2) : 0;                              
+                decimal discont = el.Price < BasePrice ?  Math.Round(BasePrice * el.Quantity, 2,MidpointRounding.AwayFromZero) - Math.Round(el.Sum, 2, MidpointRounding.AwayFromZero) : 0;                              
 
                 if (FiscalArticle.Price != BasePrice)
                     Price = "#" + BasePrice.ToS();

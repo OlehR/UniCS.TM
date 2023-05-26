@@ -974,7 +974,23 @@ order by Pay.code_receipt";
                 foreach (var el in ss)
                     Res.AppendLine(el);
             }
+         
+            SQL = @"select '№'||p.code_RECEIPT || ' Фіскальний=>'||p.sum_pay||'  Програма=>'|| round(  r.SUM_RECEIPt-r.SUM_DISCOUNT-r.sum_bonus-coalesce(pr.SUM_PAY,0),2) as sum_r--,r.SUM_RECEIPT,r.SUM_BONUS,r.SUM_DISCOUNT
+from RECEIPT r
+ left join PAYMENT p on r.code_receipt=p.code_receipt and p.type_pay=7
+  left join PAYMENT pr on r.code_receipt=pr.code_receipt and pr.type_pay=5
+ where  round( p.sum_pay,2)<>round(  r.SUM_RECEIPt-r.SUM_DISCOUNT-r.sum_bonus-coalesce(pr.SUM_PAY,0),2)
+ and r.state_receipt=9";
+            ss = db.db.Execute<string>(SQL);
+            if (ss.Any())
+            {
+                Res.AppendLine("Чеки з розбіжностями фіскалки і програми");
+                foreach (var el in ss)
+                    Res.AppendLine(el);
+            }
+
             MessageBox.Show(Res.ToString());
+
         }
 
         private void CheckWorkPlaceId(object sender, RoutedEventArgs e)
