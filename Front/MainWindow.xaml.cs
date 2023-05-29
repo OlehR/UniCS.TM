@@ -41,6 +41,10 @@ namespace Front
 
         public Receipt curReceipt;//{ get; set; } = null;
         public Receipt ReceiptPostpone = null;
+        /// <summary>
+        /// Можливість правки кількості для замовлень
+        /// </summary>
+        public bool IsOrderReceipt { get { return !string.IsNullOrEmpty(curReceipt?.NumberOrder); } }
         public bool IsReceiptPostponeNotNull { get { return ReceiptPostpone == null; } }
         public bool IsFullReturn = false;
         public bool IsReceiptPostpone
@@ -497,6 +501,8 @@ namespace Front
 
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsReceiptPostpone"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsReceiptPostponeNotNull"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsOrderReceipt"));
+            
             //ChangeWaitAdminText();
         }
 

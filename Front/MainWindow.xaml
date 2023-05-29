@@ -601,6 +601,10 @@
                                    Mode=FindAncestor, AncestorType=Window}}" Value="True">
                                                             <Setter Property="IsEnabled" Value="True" />
                                                         </DataTrigger>
+                                                        <DataTrigger Binding="{Binding IsOrderReceipt, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                                            <Setter Property="IsEnabled" Value="True" />
+                                                        </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
                                             </Button.Style>
@@ -615,12 +619,12 @@
                                                         <Setter Property="VerticalAlignment" Value="Center"></Setter>
                                                         <Setter Property="Text" Value="{Binding Quantity}"/>
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding IsWeight}" Value="True">
-                                                                <Setter Property="Text" Value="1"/>
-                                                            </DataTrigger>
                                                             <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
                                                                      Value="HorisontalMonitorRegular">
                                                                 <Setter Property="FontSize" Value="24" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding IsWeight}" Value="True">
+                                                                <Setter Property="Text" Value="1"/>
                                                             </DataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
