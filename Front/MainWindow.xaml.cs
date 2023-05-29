@@ -931,7 +931,7 @@ namespace Front
                     decimal tempQuantity;
                     if (result != "" && result != "0")
                     {
-                        result.Replace(",", ".");
+                        result = result.Replace(",", ".");
                         tempQuantity = Convert.ToDecimal(result);
 
                         temp.Quantity = tempQuantity;
