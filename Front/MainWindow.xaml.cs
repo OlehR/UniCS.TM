@@ -931,8 +931,8 @@ namespace Front
                     decimal tempQuantity;
                     if (result != "" && result != "0")
                     {
-                        result.Replace(",", ".");
-                        tempQuantity = Convert.ToDecimal(result);
+                        //result.Replace(",", ".");
+                        tempQuantity = result.ToDecimal();//Convert.ToDecimal(result);
 
                         temp.Quantity = tempQuantity;
                         if (curReceipt?.TypeReceipt == eTypeReceipt.Refund && tempQuantity > temp.MaxRefundQuantity)
