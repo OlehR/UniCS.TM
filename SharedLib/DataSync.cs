@@ -139,7 +139,7 @@ namespace SharedLib
             {
                 StringBuilder Log = new StringBuilder();
                 Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} parIsFull=>{parIsFull}");
-                string varMidFile = db.GetCurrentMIDFile;
+                string varMidFile = db.GetMIDFile();
                 try
                 {
                     if (!parIsFull && !File.Exists(varMidFile)) //Якщо відсутній файл
@@ -178,9 +178,9 @@ namespace SharedLib
                     var Db = db;
                     if (parIsFull)
                     {
-                        db.SetConfig<DateTime>("Load_Full", DateTime.Now.Date.AddDays(-1));
-                        db.SetConfig<DateTime>("Load_Update", DateTime.Now.Date.AddDays(-1));
-                        db.Close(true);
+                        db.SetConfig<DateTime>("Load_Full", DateTime.Now.Date.AddDays(-1).Date);
+                        db.SetConfig<DateTime>("Load_Update", DateTime.Now.Date.AddDays(-1).Date);
+                        //b.Close(true);
                         Exception Ex=null;
                         if (File.Exists(varMidFile))
                         {
@@ -210,17 +210,26 @@ namespace SharedLib
                     var MsSQL = new WDB_MsSql();
                     var varMessageNMax = MsSQL.LoadData(Db, parIsFull, Log);
 
-                    if (parIsFull)
+                    if (parIsFull)                       
                     {
-                        Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Create MIDIndex");
-                        Db.CreateMIDIndex();
-                        Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Set config");
-                        Db.SetConfig<string>("Last_MID", varMidFile);
-                        bl.db = Db;
+                        int CW = Db.db.ExecuteScalar<int>("select count(*) from wares");
+                        if (CW > 1000)
+                        {
+                            Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Create MIDIndex");
+                            Db.CreateMIDIndex();
+                            Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Set config");
+                            Db.SetConfig<string>("Last_MID", varMidFile);
+                            bl.db = Db;
+                        }
+                        else
+                        {
+                            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Wares=>{CW} Log=>" + Log.ToString());
+                            return false;
+                        }
                     }
                     
                     db.SetConfig<int>("MessageNo", varMessageNMax);
-                    db.SetConfig<DateTime>("Load_" + (parIsFull ? "Full" : "Update"), DateTime.Now /*String.Format("{0:u}", DateTime.Now)*/);
+                    db.SetConfig<DateTime>("Load_" + (parIsFull ? "Full" : "Update"), DateTime.Now );
 
                     Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} End");
                     Status = parIsFull ? eSyncStatus.SyncFinishedSuccess : eSyncStatus.NotDefine;

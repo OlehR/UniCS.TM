@@ -642,9 +642,13 @@ namespace SharedLib
 
         public User GetUserByLogin(string pLogin, string pPassWord)
         {
-            var u = db.GetUser(new User() { Login = pLogin, PassWord = pPassWord });
-            if (u.Count() > 0)
-                return u.First();
+            try
+            {
+                var u = db?.GetUser(new User() { Login = pLogin, PassWord = pPassWord });
+                if (u?.Count() > 0)
+                    return u.First();
+            }
+            catch (Exception) { }
             return null;
         }
 

@@ -25,19 +25,16 @@ namespace SharedLib
         private string Connect = null;
         private string ConfigFile { get { return Path.Combine(ModelMID.Global.PathDB, "config.db"); } }
         private string LastMidFile = null;
-        private string MidFile { get { return string.IsNullOrEmpty(Connect) ? (string.IsNullOrEmpty(LastMidFile) ? GetCurrentMIDFile : LastMidFile) : Connect; } }
+        private string MidFile { get { return string.IsNullOrEmpty(Connect) ? (string.IsNullOrEmpty(LastMidFile) ? GetMIDFile() : LastMidFile) : Connect; } }
 
         private string GetReceiptFile(DateTime pDT) { return Path.Combine(ModelMID.Global.PathDB, $"{pDT:yyyyMM}", $"Rc_{ModelMID.Global.IdWorkPlace}_{pDT:yyyyMMdd}.db"); }
 
         private string ReceiptFile { get { return GetReceiptFile(DT); } }
 
-        public string GetCurrentMIDFile
+        public string GetMIDFile(DateTime pD = default,bool pTmp=false)
         {
-            get
-            {
-                DateTime varD = DateTime.Today;
-                return Path.Combine(Global.PathDB, $"{varD:yyyyMM}", $"MID_{varD:yyyyMMdd}.db");
-            }
+            DateTime Date = pD == default ? DateTime.Today : pD;
+            return Path.Combine(Global.PathDB, $"{Date:yyyyMM}", $"MID_{Date:yyyyMMdd}{(pTmp?"_tmp":"")}.db");
         }
 
         public WDB_SQLite(DateTime parD = default(DateTime), string pConnect = null, bool pIsUseOldDB = true, bool pIsCreateMidFile=false ) : base(Path.Combine(Global.PathIni, "SQLite.sql"))
@@ -46,13 +43,31 @@ namespace SharedLib
             Version = "SQLite.0.0.1";
             DT = parD != default(DateTime) ? parD.Date : DateTime.Today.Date;
             InitSQL();
-
-            if (IsFirstStart && !UpdateDB(ref pIsUseOldDB))
+            if (IsFirstStart)
+            {
+                if (!UpdateDB(ref pIsUseOldDB))
                 {
-                DBStatus = eDBStatus.ErrorUpdateDB;
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status =  eSyncStatus.Error, StatusDescription = $"DB={DBStatus}" });
-                return;
+                    DBStatus = eDBStatus.ErrorUpdateDB;
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.Error, StatusDescription = $"DB={DBStatus}" });
+                    return;
                 };
+
+                //видалення старих баз
+                var d = DateTime.Now.Date.AddDays(-40);
+                while (d < DateTime.Now.Date.AddDays(-14))
+                {
+                    try
+                    {
+                        string file = GetMIDFile(d);
+                        if (File.Exists(file))
+                            File.Delete(file);
+                    }
+                    catch { }
+                    d = d.AddDays(1);
+                }
+
+            }
+                
 
             if (!File.Exists(ConfigFile))
             {
@@ -75,22 +90,30 @@ namespace SharedLib
 
             //if (!File.Exists(MidFile))
             //{
-                if (pIsCreateMidFile)
+            if (pIsCreateMidFile)
+            {
+                var db = new SQLite(MidFile);
+                db.ExecuteNonQuery(SqlCreateMIDTable);
+                db.Close();
+                db = null;
+            }
+            else
+            if (pIsUseOldDB)
+            {
+                db = new SQLite(ConfigFile);
+                var LFDB = GetConfig<DateTime>("Load_Full").Date;
+                if (LFDB < DateTime.Now.AddDays(-10))
+                    LFDB = DateTime.Now.Date;              
+                
+                db = null;
+                do
                 {
-                    var db = new SQLite(MidFile);
-                    db.ExecuteNonQuery(SqlCreateMIDTable);
-                    db.Close();
-                    db = null;
-                }
-                else
-                if (pIsUseOldDB)
-                {
-                    db = new SQLite(ConfigFile);
-                    var vLastMidFile = GetConfig<string>("Last_MID");
-                    db = null;
+                    var vLastMidFile = GetMIDFile(LFDB);
                     if (!string.IsNullOrEmpty(vLastMidFile) && File.Exists(vLastMidFile))
-                        this.LastMidFile = vLastMidFile;
-                }
+                        LastMidFile = vLastMidFile;
+                    LFDB=LFDB.AddDays(-1);
+                } while (LastMidFile==null && LFDB > DateTime.Now.AddDays(-10));
+            }
             //}
       
             db = new SQLite(ReceiptFile);
@@ -850,6 +873,7 @@ Where ID_WORKPLACE = @IdWorkplace
                     Lines = SqlUpdateMID.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
                     (Ver, IsReload) = Parse(Lines, CurVerMid, dbMID);
                     dbMID.Close(true);
+                    dbMID = null;
                     if (IsReload)
                     {
                         if (File.Exists(MidFile)) File.Delete(MidFile);

@@ -121,11 +121,12 @@ namespace Front
             Global.OnSyncInfoCollected += (SyncInfo) =>
             {
                 //Почалось повне оновлення.
-                if (SyncInfo.Status == eSyncStatus.StartedFullSync)
+                if (SyncInfo.Status == eSyncStatus.StartedFullSync && !Bl.ds.IsUseOldDB)
                     SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.StartFullUpdate);
                 //Помилка оновлення.
-                if (SyncInfo.Status == eSyncStatus.Error)
+                if (SyncInfo.Status == eSyncStatus.Error && !Bl.ds.IsUseOldDB)
                     SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ErrorFullUpdate);
+                
                 if (SyncInfo.Status == eSyncStatus.ErrorDB)
                     SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ErrorDB);
 
