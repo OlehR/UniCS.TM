@@ -29,7 +29,7 @@ namespace ModelMID
         /// <summary>
         /// Назва для чека.
         /// </summary>
-        public string NameWaresReceipt { get; set; }
+        public string NameWaresReceipt { get { return NameWares.Replace((char)9, ' ').Replace((char)10, ' ').Replace((char)13, ' '); } }
 
         public int Articl { get; set; }
         public int CodeBrand { get; set; }
@@ -415,7 +415,7 @@ namespace ModelMID
         {
             CodeWares = 0;
             NameWares = "";
-            NameWaresReceipt = "";
+            //NameWaresReceipt = "";
             PercentVat = 0;
             TypeVat = 0;
             CodeDefaultUnit = 0;

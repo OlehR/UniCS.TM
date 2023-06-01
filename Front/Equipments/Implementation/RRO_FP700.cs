@@ -933,7 +933,7 @@ namespace Front.Equipments
                     string str = string.Empty;
                     if (!string.IsNullOrWhiteSpace(pRW.CodeUKTZED))
                         str = "^" + pRW.CodeUKTZED + ",";
-                    string data = string.Format("P{0}{1},1,{2}{3},{4},", (object)TaxGroup(pRW), (object)number, (object)str, (object)pRW.Price.ToString("F2", (IFormatProvider)CultureInfo.InvariantCulture), (object)_operatorPassword) + pRW.NameWares.LimitCharactersForTwoLines(_maxItemLength, '\t');
+                    string data = string.Format("P{0}{1},1,{2}{3},{4},", (object)TaxGroup(pRW), (object)number, (object)str, (object)pRW.Price.ToString("F2", (IFormatProvider)CultureInfo.InvariantCulture), (object)_operatorPassword) + pRW.NameWaresReceipt.LimitCharactersForTwoLines(_maxItemLength, '\t');
                     _logger?.LogDebug("[FP700] SetupArticleTable " + data);
                     OnSynchronizeWaitCommandResult(eCommand.ArticleProgramming, data, (Action<string>)(res =>
                     {
@@ -943,12 +943,12 @@ namespace Front.Equipments
                             { Status = eStatusRRO.Error, IsСritical = true });
 
                             isSuccess = false;
-                            _logger?.LogDebug($"Fp700 writing article FALSE: {res}  Name :{pRW.NameWares}, PLU={number},  Price={pRW.Price}");
+                            _logger?.LogDebug($"Fp700 writing article FALSE: {res}  Name :{pRW.NameWaresReceipt}, PLU={number},  Price={pRW.Price}");
                         }
                         else
                         {
                             if (!res.Trim().ToUpper().Equals("P")) return;
-                            article = new FiscalArticle() { CodeWares = pRW.CodeWares, Price = pRW.Price, NameWares = pRW.NameWares, PLU = number };
+                            article = new FiscalArticle() { CodeWares = pRW.CodeWares, Price = pRW.Price, NameWares = pRW.NameWaresReceipt, PLU = number };
                             db.AddFiscalArticle(article);
                             _logger?.LogDebug($"Fp700 writing article TRUE: {res} PLU {number}" + res);
                         }
