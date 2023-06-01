@@ -81,6 +81,7 @@ namespace Front.Control
         public bool IsPrintCoffeQR { get; set; } = false;
         public bool IsСurReceipt { get; set; } = false;
         public bool IsDeferredReceipt { get; set; } = false;
+        public bool IsUseOldDB { get; set; } = false;
         public IEnumerable<WorkPlace> WorkPlaces { get { return Global.GetIdWorkPlaces; } }
         WorkPlace _SelectedWorkPlace = null;
         public WorkPlace SelectedWorkPlace { get { return _SelectedWorkPlace != null ? _SelectedWorkPlace : WorkPlaces.First(); } set { _SelectedWorkPlace = value; } }
@@ -270,6 +271,9 @@ namespace Front.Control
         private void OffLineClick(object sender, RoutedEventArgs e)
         {
             MW.Bl.ds.IsUseOldDB = !MW.Bl.ds.IsUseOldDB;
+            IsUseOldDB = MW.Bl.ds.IsUseOldDB;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsUseOldDB"));
+
         }
 
         void ViewReceipt(IEnumerable<string> pText)
