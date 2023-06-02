@@ -29,7 +29,7 @@ namespace ModelMID
         /// <summary>
         /// Назва для чека.
         /// </summary>
-        public string NameWaresReceipt { get { return NameWares.Replace((char)9, ' ').Replace((char)10, ' ').Replace((char)13, ' '); } }
+        public string NameWaresReceipt { get {return NameWares.Replace((char)9,' ').Replace((char)10,' ').Replace((char)13,' '); } }
 
         public int Articl { get; set; }
         public int CodeBrand { get; set; }
@@ -444,9 +444,9 @@ namespace ModelMID
             }
         }
 
-        public bool IsPlus { get { return (Parent?.IsLockChange != true && !IsWeight && (MaxRefundQuantity == null || Quantity < MaxRefundQuantity) && IsLast) && TypeWares != eTypeWares.Tobacco; } } // { get; set; } = false;//
+        public bool IsPlus { get { return (Parent?.IsLockChange != true && !IsWeight && TypeWares != eTypeWares.Tobacco && (MaxRefundQuantity == null || Quantity < MaxRefundQuantity) && (IsLast || !IsConfirmDel)); } } // { get; set; } = false;//
 
-        public bool IsMinus { get { return Parent?.IsLockChange != true && !IsWeight && Quantity > 1 && IsLast && TypeWares != eTypeWares.Tobacco && TypeWares != eTypeWares.Alcohol; } } //{ get; set; } = false;//
+        public bool IsMinus { get { return Parent?.IsLockChange != true && !IsWeight && Quantity > 1 && TypeWares != eTypeWares.Tobacco && TypeWares != eTypeWares.Alcohol && (IsLast || !IsConfirmDel); } } //{ get; set; } = false;//
 
         public bool IsDel { get { return Parent?.IsLockChange != true; } }
 
