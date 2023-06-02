@@ -815,6 +815,12 @@ namespace Front
                             break;
 
                         case eStateMainWindows.ChoicePaymentMethod:
+                            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsPresentSecondTerminal)));
+                            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsPresentFirstTerminal)));
+
+                            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NameSecondTerminal)));
+                            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NameFirstTerminal)));
+
                             PaymentWindow.TransferAmounts(MoneySum);
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;

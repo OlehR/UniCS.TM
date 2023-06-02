@@ -104,6 +104,7 @@ namespace Front.Control
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SumCashDisbursement"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCashPayment"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ChangeSumPaymant"));
+            
             EnteringPriceManually = false;
             CalculateReturn();
         }

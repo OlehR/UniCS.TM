@@ -291,22 +291,28 @@ TerminalId: {GetTerminalID}{Environment.NewLine}";
                     LoggerExtensions.LogDebug(Logger, "[Ingenico] WaitPosRespone 5", Array.Empty<object>());
                 switch (BPOS.LastErrorCode)
                 {
+                    
                     case 1:
                         OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.ErrorOpeningCOMPort});
-                        OnDeviceWarning?.Invoke( new PosDeviceLog() { Category = TerminalLogCategory.Warning, Message = "[Ingenico] Error open connection" });                           
+                        OnDeviceWarning?.Invoke( new PosDeviceLog() { Category = TerminalLogCategory.Warning, Message = "[Ingenico] Error open connection" });
+                        State = eStateEquipment.Error;
                         break;
                     case 2:
                         OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.NeedToOpenCOMPort });
                         OnDeviceWarning?.Invoke(new PosDeviceLog() { Category = TerminalLogCategory.Warning, Message = "[Ingenico] Error open connection" });
+                        State = eStateEquipment.Error;
                         break;
                     case 3:
                         OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.ErrorConnectingWithTerminal });
                         OnDeviceWarning?.Invoke(new PosDeviceLog() { Category = TerminalLogCategory.Warning, Message = "[Ingenico] Error open connection" });
+                        State = eStateEquipment.Error;
                         break;
                     case 4:
                         this.InvokeResponseCode(BPOS.ResponseCode);
                         break;
                 }
+                
+                    
             }
             if (Logger != null)
                 LoggerExtensions.LogDebug((ILogger)Logger, "[Ingenico] WaitPosRespone 6", Array.Empty<object>());
