@@ -48,7 +48,7 @@ namespace Front
         /// Для віртуальної ваги куди йде подія.
         /// </summary>
         public bool IsControlScale = true;
-        public IEnumerable<Equipment> GetBankTerminal { get { return ListEquipment.Where(e => e.Type == eTypeEquipment.BankTerminal); } }
+        public IEnumerable<Equipment> GetBankTerminal { get { return ListEquipment.Where(e => e.Type == eTypeEquipment.BankTerminal && e.State==eStateEquipment.On); } }
         public void SetBankTerminal(BankTerminal pBT) { Terminal = pBT; }
         public int CountTerminal { get { return GetBankTerminal.Count(); } }
         public Equipment BankTerminal1 { get { return GetBankTerminal?.First(); } }
@@ -250,7 +250,7 @@ namespace Front
                 //Bank Pos Terminal
                 try
                 {
-                    foreach (var el in GetBankTerminal)
+                    foreach (var el in ListEquipment.Where(e => e.Type == eTypeEquipment.BankTerminal))
                     {
                         ElEquipment = el;
 
