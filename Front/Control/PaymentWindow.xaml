@@ -131,6 +131,14 @@
                                    Mode=FindAncestor, AncestorType=Window}}" Value="False">
                                 <Setter Property="Visibility" Value="Collapsed" />
                             </DataTrigger>
+                            <DataTrigger Binding="{Binding IsCheckReturn, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                <Setter Property="IsEnabled" Value="False" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding TypeReturn, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=UserControl}}" Value="FirstTerminal">
+                                <Setter Property="IsEnabled" Value="True" />
+                            </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </Button.Style>
@@ -156,6 +164,14 @@
                                    Mode=FindAncestor, AncestorType=Window}}" Value="False">
                                 <Setter Property="Visibility" Value="Collapsed" />
                             </DataTrigger>
+                            <DataTrigger Binding="{Binding IsCheckReturn, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                <Setter Property="IsEnabled" Value="False" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding TypeReturn, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=UserControl}}" Value="SecondTerminal">
+                                <Setter Property="IsEnabled" Value="True" />
+                            </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </Button.Style>
@@ -179,6 +195,14 @@
                             <DataTrigger Binding="{Binding IsCashPayment, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=UserControl}}" Value="False">
                                 <Setter Property="IsEnabled" Value="False" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsCheckReturn, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                <Setter Property="IsEnabled" Value="False" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding TypeReturn, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=UserControl}}" Value="Cash">
+                                <Setter Property="IsEnabled" Value="True" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>

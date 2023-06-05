@@ -13,6 +13,7 @@ using System.Windows;
 using System.Windows.Controls;
 using ModernExpo.SelfCheckout.Utils;
 using Front.Models;
+using ModernExpo.SelfCheckout.Entities.Models.Terminal;
 
 namespace Front.Control
 {
@@ -28,6 +29,7 @@ namespace Front.Control
         public bool IsPaymentBonuses { get; set; } = false;
         public bool EnteringPriceManually { get; set; } = false;
         decimal _SumUseWallet = 0;
+        public string TypeReturn { get; set; }
         public decimal SumUseWallet
         {
             get { return _SumUseWallet; }
@@ -84,6 +86,12 @@ namespace Front.Control
 
         public void UpdatePaymentWindow()
         {
+            if (MW.curReceipt?.RefundId != null)
+                MW.curReceipt.Payment = MW.Bl.db.GetPayment(MW.curReceipt.RefundId);
+            if (MW.curReceipt.Payment.Count() > 0)
+                RefreshTypePayment();
+
+
             MoneySum = MW.MoneySum;
             ChangeSumPaymant = MoneySum.ToString();
             SumMaxWallet = (MW.curReceipt?.MaxSumWallet < MW.Client?.Wallet ? MW.curReceipt?.MaxSumWallet : MW.Client?.Wallet) ?? 0;
@@ -93,7 +101,32 @@ namespace Front.Control
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsPaymentBonuses"));
             Rounding();
         }
+        void RefreshTypePayment()
+        {
+            TypeReturn = "";
+            if (MW.curReceipt.Payment.First().TypePay == eTypePay.Cash)
+            {
+                TypeReturn = eTypePay.Cash.ToString();
+            }
+            else
+            {
+                BankTerminal bank1, bank2;
+                bank1 = MW.EF?.BankTerminal1 as BankTerminal;
 
+                if (MW.curReceipt.Payment.First().CodeBank == bank1.CodeBank)
+                    TypeReturn = "FirstTerminal";
+                if (MW.EF?.BankTerminal2 != null)
+                {
+                    bank2 = MW.EF?.BankTerminal2 as BankTerminal;
+                    if (MW.curReceipt.Payment.First().CodeBank == bank2.CodeBank)
+                        TypeReturn = "SecondTerminal";
+                }
+
+
+            }
+
+
+        }
         public void Init(MainWindow pMW) { MW = pMW; }
 
         public void TransferAmounts(decimal moneySum)
@@ -104,7 +137,7 @@ namespace Front.Control
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SumCashDisbursement"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCashPayment"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ChangeSumPaymant"));
-            
+
             EnteringPriceManually = false;
             CalculateReturn();
         }
@@ -239,7 +272,7 @@ namespace Front.Control
                         SumCashDisbursement = res;
                     else
                         MW.ShowErrorMessage($"Сума видачі готівки повинна бути більша за {Global.Settings.SumDisbursementMin}₴ і меньше за {Global.Settings.SumDisbursementMax}₴");
-                   
+
                 }
                 BackgroundPayment.Visibility = Visibility.Collapsed;
             };
