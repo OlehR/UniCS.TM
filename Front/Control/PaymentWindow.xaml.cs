@@ -104,7 +104,7 @@ namespace Front.Control
         void RefreshTypePayment()
         {
             TypeReturn = "";
-            if (MW.curReceipt.Payment.First().TypePay == eTypePay.Cash)
+            if (MW.curReceipt.Payment.Any(x=> x.TypePay == eTypePay.Cash))
             {
                 TypeReturn = eTypePay.Cash.ToString();
             }
