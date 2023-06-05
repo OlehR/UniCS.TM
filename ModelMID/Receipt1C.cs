@@ -79,7 +79,7 @@ namespace ModelMID
             TimeScanReceipt = pR.ReceiptEvent?.Where(el=> el.EventType==eReceiptEventType.TimeScanReceipt)?.Select(el=> new TimeScanReceipt() { Start= el.ResolvedAt, End= el.CreatedAt });
 
             var Fiscal = pR.Payment.Where(r => r.TypePay == eTypePay.FiscalInfo)?.FirstOrDefault();
-            if (Fiscal != null && Fiscal.SumExt!=0)
+            if (Cash != null && Fiscal != null && Fiscal.SumExt!=0)
                 SumRound = Fiscal.SumExt;//pR.SumFiscal > 0 && Cash!=null ? pR.SumFiscal-pR.SumTotal :0;
             NumberOrder = pR.NumberOrder;
         }
