@@ -164,8 +164,11 @@ namespace Front.Equipments
             {
                 var s=SetRoundCash();
                 res = TestDeviceSync();
-                if(res==eDeviceConnectionStatus.Enabled)
-                  State = eStateEquipment.On;
+                if (res == eDeviceConnectionStatus.Enabled)
+                {
+                    State = eStateEquipment.On;
+                    DeleteAllArticles();
+                }
                 else
                     State = eStateEquipment.Error;
             }
@@ -288,6 +291,7 @@ namespace Front.Equipments
                     { Status = eStatusRRO.Error, IsСritical = true });
                 }
                 ClearDisplay();
+                DeleteAllArticles();
                 return (num & (OnSynchronizeWaitCommandResult(eCommand.PaperCut) ? 1 : 0)) != 0 ? eDeviceConnectionStatus.Enabled : eDeviceConnectionStatus.InitializationError;
             }
             catch (Exception ex)
@@ -926,14 +930,13 @@ namespace Front.Equipments
             {
                 if (!(pRW.Price == 0M))
                 {
-                    int firstFreeArticle = FindFirstFreeArticle();
-                    _logger?.LogDebug("{firstPluNumber} " + firstFreeArticle.ToString());
-                    bool isSuccess = true;
-                    int number = firstFreeArticle;
+                    int FirstFreeArticle = FindFirstFreeArticle();
+                    _logger?.LogDebug("{firstPluNumber} " + FirstFreeArticle.ToString());
+                    bool isSuccess = true;                    
                     string str = string.Empty;
                     if (!string.IsNullOrWhiteSpace(pRW.CodeUKTZED))
                         str = "^" + pRW.CodeUKTZED + ",";
-                    string data = string.Format("P{0}{1},1,{2}{3},{4},", (object)TaxGroup(pRW), (object)number, (object)str, (object)pRW.Price.ToString("F2", (IFormatProvider)CultureInfo.InvariantCulture), (object)_operatorPassword) + pRW.NameWaresReceipt.LimitCharactersForTwoLines(_maxItemLength, '\t');
+                    string data = string.Format("P{0}{1},1,{2}{3},{4},", (object)TaxGroup(pRW), (object)FirstFreeArticle, (object)str, (object)pRW.Price.ToString("F2", (IFormatProvider)CultureInfo.InvariantCulture), (object)_operatorPassword) + pRW.NameWaresReceipt.LimitCharactersForTwoLines(_maxItemLength, '\t');
                     _logger?.LogDebug("[FP700] SetupArticleTable " + data);
                     OnSynchronizeWaitCommandResult(eCommand.ArticleProgramming, data, (Action<string>)(res =>
                     {
@@ -943,14 +946,14 @@ namespace Front.Equipments
                             { Status = eStatusRRO.Error, IsСritical = true });
 
                             isSuccess = false;
-                            _logger?.LogDebug($"Fp700 writing article FALSE: {res}  Name :{pRW.NameWaresReceipt}, PLU={number},  Price={pRW.Price}");
+                            _logger?.LogDebug($"Fp700 writing article FALSE: {res}  Name :{pRW.NameWaresReceipt}, PLU={FirstFreeArticle},  Price={pRW.Price}");
                         }
                         else
                         {
                             if (!res.Trim().ToUpper().Equals("P")) return;
-                            article = new FiscalArticle() { CodeWares = pRW.CodeWares, Price = pRW.Price, NameWares = pRW.NameWaresReceipt, PLU = number };
+                            article = new FiscalArticle() { CodeWares = pRW.CodeWares, Price = pRW.Price, NameWares = pRW.NameWaresReceipt, PLU = FirstFreeArticle };
                             db.AddFiscalArticle(article);
-                            _logger?.LogDebug($"Fp700 writing article TRUE: {res} PLU {number}" + res);
+                            _logger?.LogDebug($"Fp700 writing article TRUE: {res} PLU {FirstFreeArticle}" + res);
                         }
                     }));
                     if (!isSuccess)
@@ -1103,6 +1106,7 @@ namespace Front.Equipments
                 {
                     _logger?.LogDebug(string.Format("[FP700] Response for command {0}", (object)command));
                     onResponseCallback?.Invoke(response);
+                    FileLogger.WriteLogMessage(this, "OnSynchronizeWaitCommandResult", $"{command} {data} Res=>{response}");
                     //Action<string> action = onResponseCallback;
                     //if (action != null)
                     //    action(response);

@@ -1039,7 +1039,7 @@ namespace Front
                      Bl.AddWaresCode(curReceipt, CurWares.CodeWares, CurWares.CodeUnit, pQuantity, CurWares.Prices.First().Price);*/
             }
             if (CurWares.IsMultiplePrices && pPrice > 0m)
-                curReceipt = null;
+                CurWares = null;
         }
 
         private void _ButtonHelp(object sender, RoutedEventArgs e)
