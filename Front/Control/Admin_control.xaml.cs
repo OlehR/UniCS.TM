@@ -1220,7 +1220,7 @@ from RECEIPT r
                     SelectedBanknote.MonetaryAmount = 0;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("TotalMoneyCounting"));
 
-                if (ListBanknotes.Items.Count > 0 && ListBanknotes.SelectedIndex == ListBanknotes.Items.Count - 1)
+                if (ListBanknotes.Items.Count > 0 && ListBanknotes.SelectedIndex != ListBanknotes.Items.Count - 1)
                     ListBanknotes.SelectedIndex++;
                 NumericPadInputCountBanknote.Visibility = Visibility.Visible;
                 InputCountBanknote.Visibility = Visibility.Visible;
