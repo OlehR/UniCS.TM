@@ -515,7 +515,7 @@ namespace Front
                             Bl.GenQRAsync(R.Wares);
                         //var Pays = new List<Payment>();
 
-                        IEnumerable<Payment> PayRefaund =( R.TypeReceipt== eTypeReceipt.Refund? Bl.db.GetPayment(R.RefundId):null);
+                        IEnumerable<Payment> PayRefaund =( R.TypeReceipt== eTypeReceipt.Refund? Bl.GetPayment(R.RefundId):null);
                         string rrn = R.AdditionC1;
                         if (pSumWallet != 0 || pSumBonus!=0)
                         {
@@ -524,7 +524,7 @@ namespace Front
                               Bl.db.ReplacePayment(  new Payment(R) {IdWorkplacePay=R.IdWorkplace, IsSuccess = true, TypePay = eTypePay.Wallet, SumPay = pSumWallet, SumExt = pSumWallet } );
                             if (pSumBonus != 0)
                                 Bl.db.ReplacePayment(new Payment(R) { IdWorkplacePay = R.IdWorkplace, IsSuccess = true, TypePay = eTypePay.Bonus, SumPay = R.SumTotal, SumExt = pSumBonus });
-                            R.Payment = Bl.db.GetPayment(R);
+                            R.Payment = Bl.GetPayment(R);
                             if ((pSumWallet > 0 || pSumBonus>0) && R.ReCalc())
                             {
                                 foreach (var el in R.Wares.Where(el => el.TypeWares == eTypeWares.Ordinary))
@@ -535,7 +535,7 @@ namespace Front
                                     Bl.db.ReplacePayment(new Payment(R) { IdWorkplacePay = R.IdWorkplace, IsSuccess = true, TypePay = eTypePay.Cash, SumPay = Math.Round(R.SumTotal, 1), SumExt = Math.Round(R.SumTotal, 1) });
                                     R.StateReceipt = eStateReceipt.Pay;
                                     Bl.SetStateReceipt(R, R.StateReceipt);
-                                    R.Payment = Bl.db.GetPayment(R);
+                                    R.Payment = Bl.GetPayment(R);
                                 }
                             }                            
                             FillPays(R);
@@ -579,7 +579,7 @@ namespace Front
                                 //R.Client = null;
                                 R.SumCreditCard = pay.SumPay;
                                 Bl.db.ReplaceReceipt(R);
-                                R.Payment = Bl.db.GetPayment(R);
+                                R.Payment = Bl.GetPayment(R);
                                 
                             }
                             else
