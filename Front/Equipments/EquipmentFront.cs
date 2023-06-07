@@ -740,6 +740,24 @@ namespace Front
             }            
             );
         }
+
+        public decimal GetSumInCash(IdReceipt pIdR)
+        {
+            var RRO = GetRRO(pIdR.IdWorkplacePay);
+            LogRRO Res;
+            decimal Sum = -1;
+            try
+            {
+                Res = WaitRRO(pIdR, eTypeOperation.SumInCash);
+                if (Res == null)
+                    Sum=RRO?.GetSumInCash()??-1;
+            }
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+            }
+            return Sum;
+        }
         #endregion
         /// <summary>
         /// Друк чека на (термо)принтері

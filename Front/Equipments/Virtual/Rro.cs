@@ -177,8 +177,8 @@ namespace Front.Equipments
                 return Tax[Key];
             return DefaultTax;
         }
-            
-        
+
+        public  decimal GetSumInCash() { throw new NotImplementedException(); }
 
     }
 }

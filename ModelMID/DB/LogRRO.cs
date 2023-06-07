@@ -19,6 +19,8 @@ namespace ModelMID.DB
         MoneyIn = 2,
         [Description("MoneyOut")]
         MoneyOut = 4,
+        [Description("Отримання сми готівки")]
+        SumInCash = 5,
         [Description("Не фіскальний")]
         NoFiscalReceipt = 100,
         [Description("Анульований чек")]
@@ -31,6 +33,7 @@ namespace ModelMID.DB
         ProgramingArticle=152,
         [Description("Отримання тексту останнього чека")]
         LastReceipt =153,
+
         [Description("Z звіт")]
         ZReport = 1000,
         [Description("Х звіт")]

@@ -1576,6 +1576,22 @@ namespace Front.Equipments
                 bb.Append(Environment.NewLine);
             }
         }
+
+        public override decimal GetSumInCash()
+        {
+            decimal Sum = -1;
+            OnSynchronizeWaitCommandResult(eCommand.LastDocumentsNumbers, onResponseCallback: ((Action<string>)(res =>
+            {
+                _logger?.LogDebug("FP700 [GetLastNumbers] " + res);
+                if (string.IsNullOrEmpty(res))
+                    return ;
+                string[] strArray = res.Split(',');
+                if (strArray.Length < 1)
+                    return ;
+                 Sum= strArray[0].ToDecimal();
+            })));
+            return Sum;
+        }
     }
 
 }

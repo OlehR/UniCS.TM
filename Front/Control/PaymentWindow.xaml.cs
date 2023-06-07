@@ -257,8 +257,8 @@ namespace Front.Control
 
         private void CashDisbursement(object sender, RoutedEventArgs e)
         {
-
-            decimal SumCash = MW.Bl.db.GetSumCash(new IdReceipt() { CodePeriod = MW.curReceipt.CodePeriod, IdWorkplacePay = Global.IdWorkPlace });
+            IdReceipt IdR = new() { CodePeriod = MW.curReceipt.CodePeriod, IdWorkplacePay = Global.IdWorkPlace };
+            decimal SumCash = MW.EF.GetSumInCash(IdR);// Bl.db.GetSumCash(IdR);
             MW.InputNumberPhone.Desciption = $"Введіть суму видачі. В касі {SumCash}₴";
             MW.InputNumberPhone.ValidationMask = "";
             MW.InputNumberPhone.Result = "";
