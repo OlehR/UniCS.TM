@@ -567,13 +567,16 @@ namespace ModelMID
 
                 foreach (var el in HistoryQuantity)
                 {
-                    ReceiptWares NewEl = this.Clone() as ReceiptWares;
-                    NewEl.Quantity = el;
-                    NewEl.SumDiscount = Math.Round(NewEl.Quantity * SumDiscount / Quantity, 2, MidpointRounding.AwayFromZero);
-                    NewEl.SumBonus = Math.Round(NewEl.Quantity * SumBonus / Quantity, 2, MidpointRounding.AwayFromZero);
-                    NewEl.SumWallet = Math.Round(NewEl.Quantity * SumWallet / Quantity, 2, MidpointRounding.AwayFromZero);
-                    Res.Add(NewEl);
-                    Sum += NewEl.SumTotal;
+                    if (el > 0)
+                    {
+                        ReceiptWares NewEl = this.Clone() as ReceiptWares;
+                        NewEl.Quantity = el;
+                        NewEl.SumDiscount = Math.Round(NewEl.Quantity * SumDiscount / Quantity, 2, MidpointRounding.AwayFromZero);
+                        NewEl.SumBonus = Math.Round(NewEl.Quantity * SumBonus / Quantity, 2, MidpointRounding.AwayFromZero);
+                        NewEl.SumWallet = Math.Round(NewEl.Quantity * SumWallet / Quantity, 2, MidpointRounding.AwayFromZero);
+                        Res.Add(NewEl);
+                        Sum += NewEl.SumTotal;
+                    }
                 }
                 // Коригування кінцевої суми.
                 if (SumTotal != Sum)
