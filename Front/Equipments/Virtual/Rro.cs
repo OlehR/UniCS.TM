@@ -178,7 +178,7 @@ namespace Front.Equipments
             return DefaultTax;
         }
 
-        public  decimal GetSumInCash() { throw new NotImplementedException(); }
+        public virtual decimal GetSumInCash() { throw new NotImplementedException(); }
 
     }
 }
