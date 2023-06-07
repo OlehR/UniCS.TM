@@ -12,6 +12,7 @@ using ModelMID;
 using Front.Equipments.Virtual;
 using Utils;
 using Front.Equipments.Utils;
+using Front.Equipments.Implementation.ModelVchasno;
 
 namespace Front.Equipments
 {    
@@ -224,12 +225,10 @@ TerminalId: {GetTerminalID}{Environment.NewLine}";
 
         //public Task<string> GetInfoAsync() => Task.Run<string>((Func<string>)(() => this.GetInfoSync()));
         public Payment WaitPosRespone()
-        {            
-            if (Logger != null)
-                LoggerExtensions.LogDebug((ILogger)Logger, "[Ingenico] WaitPosRespone 1");
+        {   
             int num = 0;
             while (BPOS.LastResult == (byte)2 && num < 120)
-            {             
+            {
                 LoggerExtensions.LogDebug((ILogger)Logger, "[Ingenico] WaitPosRespone *");
                 if (CancelRequested)
                 {
@@ -240,29 +239,25 @@ TerminalId: {GetTerminalID}{Environment.NewLine}";
                     return new Payment() { IsSuccess = false };
                 }
                 Thread.Sleep(1000);
-                ++num;
-                ILogger<Ingenico> logger3 = this.Logger;
-                if (logger3 != null)
-                    LoggerExtensions.LogDebug((ILogger)logger3, string.Format("[Ingenico] LastStatMsgCode = {0}\n", (object)BPOS.LastStatMsgCode) + "[Ingenico] Description = " + this.GetString(BPOS.LastStatMsgDescription) + "\n[Ingenico] LastErrorDescription = " + this.GetString(BPOS.LastErrorDescription) + "\n" + string.Format("[Ingenico] LastResult = {0}\n", (object)BPOS.LastResult) + string.Format("[Ingenico] LastErrorCode = {0}", (object)BPOS.LastErrorCode), Array.Empty<object>());
+                ++num;               
+                if (Logger != null)
+                    LoggerExtensions.LogDebug((ILogger)Logger, string.Format("[Ingenico] LastStatMsgCode = {0}\n", (object)BPOS.LastStatMsgCode) + "[Ingenico] Description = " + this.GetString(BPOS.LastStatMsgDescription) + "\n[Ingenico] LastErrorDescription = " + this.GetString(BPOS.LastErrorDescription) + "\n" + string.Format("[Ingenico] LastResult = {0}\n", (object)BPOS.LastResult) + string.Format("[Ingenico] LastErrorCode = {0}", (object)BPOS.LastErrorCode), Array.Empty<object>());
                 if (BPOS == null)
                 {
-                        OnStatus?.Invoke(new PosStatus(){ Status = eStatusPos.TransactionCanceledByUser});
-                    return new Payment(){ IsSuccess = false};
+                    OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.TransactionCanceledByUser });
+                    return new Payment() { IsSuccess = false };
                 }
                 InvokeLastStatusMsg(BPOS.LastStatMsgCode);
             }
 
             if (Logger != null)
-            {
-                LoggerExtensions.LogDebug((ILogger)Logger, "[Ingenico] WaitPosRespone 2", Array.Empty<object>());
+            {              
                 LoggerExtensions.LogDebug((ILogger)Logger, string.Format("[Ingenico] LastStatMsgCode = {0}\n", (object)BPOS.LastStatMsgCode) + "[Ingenico] Description = " + this.GetString(BPOS.LastStatMsgDescription) + "\n[Ingenico] LastErrorDescription = " + this.GetString(BPOS.LastErrorDescription) + "\n" + string.Format("[Ingenico] LastResult = {0}\n", (object)BPOS.LastResult) + string.Format("[Ingenico] LastErrorCode = {0}", (object)BPOS.LastErrorCode), Array.Empty<object>());
             }
             if (BPOS.LastResult == (byte)0 && BPOS.LastErrorCode == (byte)0)
-            {
-                if (Logger != null)
-                    LoggerExtensions.LogDebug((ILogger)Logger, "[Ingenico] WaitPosRespone 3", Array.Empty<object>());
+            {             
                 OnStatus?.Invoke(new PosStatus(){ Status = eStatusPos.SuccessfullyFulfilled});
-                // GetLastReceipt(false);
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"RRN=>{BPOS.RRN} TerminalID=>{BPOS.TerminalID} InvoiceNum={BPOS.InvoiceNum} Amount=>{BPOS.Amount} AddAmount=>{BPOS.AddAmount} ", eTypeLog.Full);
                 return new Payment()
                 {
                     IsSuccess = true,
@@ -283,12 +278,9 @@ TerminalId: {GetTerminalID}{Environment.NewLine}";
                     //Receipt= this.ParseReceipt(BPOS.Receipt)
                 };
             }
-            if (Logger != null)
-                LoggerExtensions.LogDebug(Logger, "[Ingenico] WaitPosRespone 4", Array.Empty<object>());
+            
             if (BPOS.LastResult == (byte)1)
-            {
-                if (Logger != null)
-                    LoggerExtensions.LogDebug(Logger, "[Ingenico] WaitPosRespone 5", Array.Empty<object>());
+            {  
                 switch (BPOS.LastErrorCode)
                 {
                     
@@ -311,11 +303,8 @@ TerminalId: {GetTerminalID}{Environment.NewLine}";
                         this.InvokeResponseCode(BPOS.ResponseCode);
                         break;
                 }
-                
-                    
-            }
-            if (Logger != null)
-                LoggerExtensions.LogDebug((ILogger)Logger, "[Ingenico] WaitPosRespone 6", Array.Empty<object>());
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"LastResult=>{BPOS.LastResult} LastErrorCode={BPOS.LastErrorCode} ResponseCode=>{BPOS.ResponseCode}", eTypeLog.Full);
+            }            
             return new Payment() { IsSuccess = false };
         }
 
@@ -773,8 +762,7 @@ TerminalId: {GetTerminalID}{Environment.NewLine}";
         }
 
         private bool StartBPOS()
-        {
-           
+        {           
             int num = 120;
             while (BPOS != null)
             {
@@ -804,7 +792,7 @@ TerminalId: {GetTerminalID}{Environment.NewLine}";
         }
     }
 
-    public enum ReturnCodes
+    /*public enum ReturnCodes
     {
         ECRC_OK,
         ECRC_FAIL,
@@ -824,7 +812,7 @@ TerminalId: {GetTerminalID}{Environment.NewLine}";
         ECRC_READ_FILE,
         ECRC_UNKNOWNERROR,
         ECRC_CHECKTERM_TO,
-    }
+    }*/
 
     public class BatchTotals
     {
@@ -864,4 +852,3 @@ TerminalId: {GetTerminalID}{Environment.NewLine}";
     }
 
 }
-
