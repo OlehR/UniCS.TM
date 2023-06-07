@@ -750,11 +750,15 @@ namespace Front
             {
                 Res = WaitRRO(pIdR, eTypeOperation.SumInCash);
                 if (Res == null)
-                    Sum=RRO?.GetSumInCash()??-1;
+                    Sum = RRO?.GetSumInCash()??-1;
             }
             catch (Exception e)
             {
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+            }
+            finally
+            {
+                curTypeOperation = eTypeOperation.NotDefine;
             }
             return Sum;
         }

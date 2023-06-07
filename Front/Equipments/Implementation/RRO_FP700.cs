@@ -661,7 +661,7 @@ namespace Front.Equipments
         public bool MoneyMoving(decimal pSum)
         {
             bool res = false;
-            OnSynchronizeWaitCommandResult(eCommand.ServiceCashInOut, (pSum > 0 ? "+" : "-") + Math.Abs(pSum).ToS(), (Action<string>)(response =>
+            OnSynchronizeWaitCommandResult(eCommand.ServiceCashInOut,pSum==0?"": (pSum > 0 ? "+" : "-") + Math.Abs(pSum).ToS(), (Action<string>)(response =>
             {
                 string[] strArray = response.Split(',');
                 if (strArray.Length < 4)
@@ -1580,16 +1580,30 @@ namespace Front.Equipments
         public override decimal GetSumInCash()
         {
             decimal Sum = -1;
-            OnSynchronizeWaitCommandResult(eCommand.LastDocumentsNumbers, onResponseCallback: ((Action<string>)(res =>
+            OnSynchronizeWaitCommandResult(eCommand.ServiceCashInOut, "" , (Action<string>)(response =>
             {
-                _logger?.LogDebug("FP700 [GetLastNumbers] " + res);
-                if (string.IsNullOrEmpty(res))
-                    return ;
-                string[] strArray = res.Split(',');
-                if (strArray.Length < 1)
-                    return ;
-                 Sum= strArray[0].ToDecimal();
-            })));
+                string[] strArray = response.Split(',');
+                if (strArray.Length < 3)
+                    return;
+                if (strArray[0].Equals("P") && strArray.Length>=2)
+                {
+                    Sum = strArray[1].ToDecimal()/100m;
+                }
+                else
+                {
+                    if (!strArray[0].Equals("F"))
+                        return;
+                }
+            }));
+            /* OnSynchronizeWaitCommandResult(eCommand.AditionalInfo, onResponseCallback: ((Action<string>)(res =>
+             {                
+                 if (string.IsNullOrEmpty(res))
+                     return ;
+                 string[] strArray = res.Split(',');
+                 if (strArray.Length < 1)
+                     return ;
+                  Sum= strArray[0].ToDecimal();
+             })));*/
             return Sum;
         }
     }
