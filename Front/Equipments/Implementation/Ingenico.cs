@@ -303,7 +303,7 @@ TerminalId: {GetTerminalID}{Environment.NewLine}";
                         this.InvokeResponseCode(BPOS.ResponseCode);
                         break;
                 }
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"LastResult=>{BPOS.LastResult} LastErrorCode={BPOS.LastErrorCode} ResponseCode=>{BPOS.ResponseCode}", eTypeLog.Full);
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"LastResult=>{BPOS.LastResult} LastErrorCode={BPOS.LastErrorCode} ResponseCode=>{BPOS.ResponseCode}", eTypeLog.Error);
             }            
             return new Payment() { IsSuccess = false };
         }
