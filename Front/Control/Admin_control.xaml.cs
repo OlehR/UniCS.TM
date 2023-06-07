@@ -1210,7 +1210,7 @@ from RECEIPT r
 
             InputCountBanknote.Desciption = $"Введіть кількість {SelectedBanknote.MonetaryValue}₴";
             InputCountBanknote.ValidationMask = "^[0-9]{1,4}$";
-            InputCountBanknote.Result = $"{SelectedBanknote.MonetaryAmount}";
+            InputCountBanknote.Result = $"";
             InputCountBanknote.IsEnableComma = false;
             InputCountBanknote.CallBackResult = (string res) =>
             {
