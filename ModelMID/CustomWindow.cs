@@ -24,11 +24,11 @@ namespace ModelMID
     }
 
     public class CustomWindow
-    { 
-    /// <summary>
-    /// Id вікна. Буде в відповіді
-    /// </summary>
-    public eWindows Id { get; set; } = eWindows.NoDefinition;
+    {
+        /// <summary>
+        /// Id вікна. Буде в відповіді
+        /// </summary>
+        public eWindows Id { get; set; } = eWindows.NoDefinition;
         /// <summary>
         /// Назва вікна
         /// </summary>
@@ -96,12 +96,18 @@ namespace ModelMID
                     Caption = "Назва товару";
                     AnswerRequired = true;
                     ValidationMask = @"^\w{4}[0-9]{6}?$";
-                    Buttons = new ObservableCollection<CustomButton>() 
-                    {
-                       // new CustomButton() {CustomWindow = this,  Id = 31, Text = "Ok", IsNeedAdmin = false},
-                        new CustomButton() {CustomWindow = this,  Id = 32, Text = "Акцизний код відсутній", IsNeedAdmin = false },
-                        new CustomButton() {CustomWindow = this,  Id = 33, Text = "Підтвердження акцизу", IsNeedAdmin = true }
-                    };
+                    if (pObject is bool IsCashRegister == true)
+                        Buttons = new ObservableCollection<CustomButton>()
+                        {
+                            new CustomButton() {CustomWindow = this,  Id = 33, Text = "Підтвердження акцизу", IsNeedAdmin = true }
+                        };
+                    else
+                        Buttons = new ObservableCollection<CustomButton>()
+                        {
+                            new CustomButton() {CustomWindow = this,  Id = 32, Text = "Акцизний код відсутній", IsNeedAdmin = false },
+                            new CustomButton() {CustomWindow = this,  Id = 33, Text = "Підтвердження акцизу", IsNeedAdmin = true }
+                        };
+
                     break;
                 case eWindows.PhoneClient:
                     Text = "Введіть ваш номер!";
@@ -110,23 +116,35 @@ namespace ModelMID
                     ValidationMask = @"^[+]{0,1}[0-9]{10,13}$";
                     // Buttons = new List<CustomButton>() {new CustomButton() { Id = 666, Text = "Пошук картки" } }                    
                     break;
-                
+
                 case eWindows.ChoiceClient:
                     Text = "Зробіть вибір";
                     Caption = "Вибір карточки клієнта";
                     AnswerRequired = true;
                     IEnumerable<Client> d = pObject as IEnumerable<Client>;
-                    Buttons = new ObservableCollection<CustomButton>(d.Select(el => new CustomButton() { CustomWindow = this, Id = el.CodeClient, Text =el.NameDiscount+' '+ el.NameClient }));
+                    Buttons = new ObservableCollection<CustomButton>(d.Select(el => new CustomButton() { CustomWindow = this, Id = el.CodeClient, Text = el.NameDiscount + ' ' + el.NameClient }));
                     break;
 
                 case eWindows.ConfirmAge:
                     Text = "Зробіть вибір";
                     Caption = "Мені є 18";
                     AnswerRequired = true;
+                    string textButton1, textButton2;
+                    if (pObject is bool IsCashRegister2 == true)
+                    {
+                        textButton1 = "Так, клієнту є 18 років";
+                        textButton2 = "Ні, клієнту менше 18 років";
+
+                    }
+                    else
+                    {
+                        textButton1 = "Так, мені є 18 років";
+                        textButton2 = "Ні, мені менше 18 років";
+                    }
                     Buttons = new ObservableCollection<CustomButton>() {
-                        new CustomButton() { CustomWindow = this, Id = 1, Text = "Так, мені є 18 років", IsNeedAdmin = false },
-                        new CustomButton() { CustomWindow = this, Id = 0, Text = "Ні, мені менше 18 років", IsNeedAdmin = false }
-                         };                                                                    
+                        new CustomButton() { CustomWindow = this, Id = 1, Text = textButton1, IsNeedAdmin = false },
+                        new CustomButton() { CustomWindow = this, Id = 0, Text = textButton2, IsNeedAdmin = false }
+                         };
                     break;
                 case eWindows.Info:
                     Caption = "Увага";
@@ -146,7 +164,7 @@ namespace ModelMID
 
         }
 
-        public CustomWindow(eStateScale pST, bool IsViewAddWeight = false,bool IsDelReceipt=false)
+        public CustomWindow(eStateScale pST, bool IsViewAddWeight = false, bool IsDelReceipt = false)
         {
             Id = eWindows.ConfirmWeight;
             IsCancelButton = false;
@@ -156,8 +174,8 @@ namespace ModelMID
                     Buttons = new ObservableCollection<CustomButton>()
                     { new CustomButton() { CustomWindow=this, Id = 4, Text = "Тарувати", IsNeedAdmin = true } ,
                       new CustomButton() {CustomWindow=this, Id = 5, Text = "Вхід в адмінку", IsNeedAdmin = true } };
-                    if(IsDelReceipt)
-                    Buttons.Add(new CustomButton() { CustomWindow = this, Id = 6, Text = "Видалити чек", IsNeedAdmin = true });
+                    if (IsDelReceipt)
+                        Buttons.Add(new CustomButton() { CustomWindow = this, Id = 6, Text = "Видалити чек", IsNeedAdmin = true });
                     break;
                 case eStateScale.BadWeight:
                     Buttons = new ObservableCollection<CustomButton>();
@@ -191,7 +209,7 @@ namespace ModelMID
         /// <summary>
         /// Доступна лише в режимі адміністратора.
         /// </summary>
-        public bool IsNeedAdmin { get { return _IsAdmin; } set { _IsAdmin = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("GetBackgroundColor")); } } 
+        public bool IsNeedAdmin { get { return _IsAdmin; } set { _IsAdmin = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("GetBackgroundColor")); } }
 
         /// <summary>
         /// Id >0 кнопки. Буде в відповіді 

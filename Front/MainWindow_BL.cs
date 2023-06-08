@@ -154,10 +154,8 @@ namespace Front
                     NumericPad.Visibility = Visibility.Collapsed;
                     Background.Visibility = Visibility.Collapsed;
                     BackgroundWares.Visibility = Visibility.Collapsed;
-                    if (Client?.Wallet != 0 || Client?.SumMoneyBonus != 0 || Client?.SumBonus != 0)
-                    {
+                    if (Client != null)
                         ShowClientBonus.Visibility = Visibility.Visible;
-                    }
                 }
                 ));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClientName"));

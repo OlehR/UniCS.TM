@@ -242,6 +242,8 @@ namespace Front
                 tb.FontSize = 24;
                 tb.Margin = new Thickness(10);
                 WaitAdminImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/clock.png"));
+                if (IsCashRegister)
+                    WaitAdminTitle.Text = "Будь ласка очікуйте охорону!";
                 // WaitAdminTitle.Visibility = Visibility.Visible;
                 switch (TypeAccessWait)
                 {
@@ -279,7 +281,7 @@ namespace Front
                     case eTypeAccess.ConfirmAge:
                         WaitAdminTitle.Visibility = Visibility.Collapsed;
                         WaitAdminImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/18PlusRed.png"));
-                        tb.Inlines.Add(new Run("Вам виповнилось 18 років?") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red, FontSize = 32 });
+                        tb.Inlines.Add(new Run(IsCashRegister? "Клієнту виповнилось 18?":"Вам виповнилось 18 років?") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red, FontSize = 32 });
                         break;
                     case eTypeAccess.ExciseStamp:
                         WaitAdminTitle.Visibility = Visibility.Collapsed;
@@ -287,7 +289,7 @@ namespace Front
                         break;
                     case eTypeAccess.UseBonus:
                         WaitAdminTitle.Visibility = Visibility.Collapsed;
-                        tb.Inlines.Add(new Run("Використати бонуси?") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red, FontSize = 32 });
+                        tb.Inlines.Add(new Run("Для списання бонусів потрібно підтвердження охорони!") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red, FontSize = 32 });
                         break;
                 }
                 StackPanelWaitAdmin.Children.Clear();
@@ -635,10 +637,10 @@ namespace Front
                         customWindow = new CustomWindow(CS.StateScale, CS.RW?.Quantity == 1 && CS.RW?.FixWeightQuantity == 0, CS.StateScale == eStateScale.WaitClear && (curReceipt?.OwnBag ?? 0) > 0);
                     else
                     if (TypeAccessWait == eTypeAccess.ConfirmAge)
-                        customWindow = new CustomWindow(eWindows.ConfirmAge);
+                        customWindow = new CustomWindow(eWindows.ConfirmAge, IsCashRegister);
                     else
                         if (TypeAccessWait == eTypeAccess.ExciseStamp)
-                        customWindow = new CustomWindow(eWindows.ExciseStamp);
+                        customWindow = new CustomWindow(eWindows.ExciseStamp, IsCashRegister);
                     else
                         customWindow = (State == eStateMainWindows.WaitCustomWindows ? pCW : null);
 
@@ -1429,6 +1431,8 @@ namespace Front
             {
                 if (curReceipt == null || curReceipt.Wares!=null && !curReceipt.Wares.Any())
                 {
+                    if (Client != null)
+                        ShowClientBonus.Visibility = Visibility.Visible;
                     Global.OnReceiptCalculationComplete?.Invoke(ReceiptPostpone);
                     ReceiptPostpone = null;
                     WaresList.Focus();

@@ -337,7 +337,7 @@ namespace Front.Control
                 });
                 }
             }
-            else
+            else   
             {
                 MW.SetStateView(eStateMainWindows.StartWindow);
                 TabAdmin.SelectedIndex = 0;
@@ -384,14 +384,23 @@ namespace Front.Control
 
         private void WorkFinish_Click(object sender, RoutedEventArgs e)
         {
-            MW.AdminSSC = null;
-            MW.Bl.db.SetConfig<string>("CodeAdminSSC", string.Empty);
-            MW.Bl.StoptWork(Global.IdWorkPlace);
-            //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClosedShift"));
-            //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("NameAdminUserOpenShift"));
-            //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DataOpenShift"));
-            OpenShiftShow.Visibility = Visibility.Collapsed;
-            Init();
+            if ((MW.curReceipt == null || MW.curReceipt.Wares == null || !MW.curReceipt.Wares.Any()) && (MW.ReceiptPostpone == null || MW.ReceiptPostpone.Wares == null || !MW.ReceiptPostpone.Wares.Any()))
+            {
+                MW.AdminSSC = null;
+                MW.Bl.db.SetConfig<string>("CodeAdminSSC", string.Empty);
+                MW.Bl.StoptWork(Global.IdWorkPlace);
+                //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClosedShift"));
+                //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("NameAdminUserOpenShift"));
+                //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DataOpenShift"));
+                OpenShiftShow.Visibility = Visibility.Collapsed;
+                Init();
+            }
+            else
+            {
+                MW.SetStateView(eStateMainWindows.StartWindow);
+                TabAdmin.SelectedIndex = 0;
+                MW.ShowErrorMessage("Існує відкритий чек! Для закриття зміни потрібно закрити всі чеки!");
+            }
         }
 
         private void CloseDay_Click(object sender, RoutedEventArgs e)
@@ -1267,6 +1276,7 @@ from RECEIPT r
                     Bl.ds.GetClientOrder1C(OrderNumber);
                     MW.SetStateView(eStateMainWindows.StartWindow);
                     TabAdmin.SelectedIndex = 0;
+                    OrderNumber = "0";
                     //MW.ShowErrorMessage("Ви втягнули замовлення! Вітаю");
                 }
                 else MW.ShowErrorMessage("Введіть коректний номер замовлення!");

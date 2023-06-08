@@ -1623,7 +1623,7 @@
                             <Button Grid.Row="2" HorizontalAlignment="Center" 
                                 Click="AddExciseStamp"  Height="70" Width="150" Margin="5,0,0,5">
                                 <Button.Content>
-                                    <TextBlock FontSize="30" Text="{DynamicResource ok}" Margin="5,0,5,0"/>
+                                    <TextBlock FontSize="30" Foreground="White" Text="{DynamicResource ok}" Margin="5,0,5,0"/>
                                 </Button.Content>
                                 <Button.Style>
                                     <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
