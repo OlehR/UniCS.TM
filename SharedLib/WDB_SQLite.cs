@@ -1001,7 +1001,8 @@ select p.code_client as CodeClient, p.name_client as NameClient, 0 as TypeDiscou
    from t
    join client p on (t.CodeClient=p.code_client)
    left join TYPE_DISCOUNT td on td.TYPE_DISCOUNT=p.TYPE_DISCOUNT;";
-            return db.Execute<object, Client>(Sql, new { CodeClient = parCodeClient, Phone = parPhone, BarCode = parBarCode, Name = (parName == null ? null : "%" + parName + "%") });
+            var Res= db.Execute<object, Client>(Sql, new { CodeClient = parCodeClient, Phone = parPhone, BarCode = parBarCode, Name = (parName == null ? null : "%" + parName + "%") });
+            return Res != null && Res.Any(el => el.StatusCard == eStatusCard.Active)?Res.Where(el => el.StatusCard == eStatusCard.Active) : Res ;
         }
     }
 }
