@@ -272,6 +272,7 @@ namespace Front
                             tb.Inlines.Add(new Run(LastErrorEquipment) { FontWeight = FontWeights.Bold, Foreground = Brushes.Red });
                         break;
                     case eTypeAccess.LockSale:
+                        WaitAdminTitle.Visibility = Visibility.Collapsed;
                         tb.Inlines.Add("Зміна заблокована");
                         break;
                     case eTypeAccess.FixWeight:

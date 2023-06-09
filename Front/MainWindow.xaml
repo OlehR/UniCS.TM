@@ -146,22 +146,84 @@
                 <!--Бонуси клієнта-->
                 <Grid  Grid.Column="0" x:Name="ShowClientBonus" Visibility="Collapsed">
                     <StackPanel Grid.Column="0" Orientation="Horizontal" >
-                        <Border   BorderBrush="gray" BorderThickness="1"  CornerRadius="15">
+                        <Border   BorderBrush="gray" BorderThickness="1"  CornerRadius="15" >
                             <StackPanel  Orientation="Horizontal" Margin="10,0,10,0"
                             VerticalAlignment="Center" HorizontalAlignment="Right"  >
                                 <StackPanel >
-                                    <TextBlock  FontSize="22" Text="Скарбничка: "/>
-                                    <TextBlock  FontSize="22" Text="Сума бонусів: "/>
+                                    <TextBlock  FontSize="22" Text="Скарбничка: ">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="Gray"/>
+                                                <Setter Property="FontWeight" Value="DemiBold"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Client.StatusCard, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="Active">
+                                                        <Setter Property="Foreground" Value="Black" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                    <TextBlock  FontSize="22" Text="Сума бонусів: ">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="Gray"/>
+                                                <Setter Property="FontWeight" Value="DemiBold"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Client.StatusCard, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="Active">
+                                                        <Setter Property="Foreground" Value="Black" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                 </StackPanel>
                                 <StackPanel Margin="10,0,0,0" >
-                                    <TextBlock  FontSize="22" Foreground="DarkGreen" FontWeight="Bold" Text="{Binding Client.Wallet, StringFormat=0.00₴, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}"/>
-                                    <TextBlock  FontSize="22" Foreground="DarkGreen" FontWeight="Bold" Text="{Binding Client.SumMoneyBonus, StringFormat=0.00₴, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}"/>
+                                    <TextBlock  FontSize="22"  FontWeight="Bold" Text="{Binding Client.Wallet, StringFormat=0.00₴, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="Gray"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Client.StatusCard, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="Active">
+                                                        <Setter Property="Foreground" Value="DarkGreen" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                    <TextBlock  FontSize="22"  FontWeight="Bold" Text="{Binding Client.SumMoneyBonus, StringFormat=0.00₴, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="Gray"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Client.StatusCard, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="Active">
+                                                        <Setter Property="Foreground" Value="DarkGreen" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                 </StackPanel>
                             </StackPanel>
                         </Border>
-                        <Image Source="icons\ClientBonus.png"/>
+                        <Image HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Setter Property="Source" Value="icons\ClientBonusGray.png"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Client.StatusCard, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="Active">
+                                            <Setter Property="Source" Value="icons\ClientBonus.png" /> 
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
                     </StackPanel>
                     <Button Click="ShowClientDetails"  Opacity="0" />
 
@@ -2082,8 +2144,8 @@
                 </Grid>
             </Border>
 
-            
-            
+
+
             <!--Вікно видачі картки-->
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="4"
@@ -2244,7 +2306,12 @@
                         <Style TargetType="{x:Type TextBlock}">
                             <Setter Property="FontSize" Value="18" />
                             <Setter Property="FontWeight" Value="SemiBold"/>
+                            <Setter Property="Foreground" Value="Gray"/>
                             <Style.Triggers>
+                                <DataTrigger Binding="{Binding Client.StatusCard, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="Active">
+                                    <Setter Property="Foreground" Value="Black" />
+                                </DataTrigger>
                                 <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
                                     <Setter Property="FontSize" Value="35" />

@@ -23,6 +23,7 @@
     <None Remove="icons\backArrow.png" />
     <None Remove="icons\BankTerminal.png" />
     <None Remove="icons\ClientBonus.png" />
+    <None Remove="icons\ClientBonusGray.png" />
     <None Remove="icons\clock.png" />
     <None Remove="icons\Close.png" />
     <None Remove="icons\ControlScale.png" />
@@ -83,6 +84,9 @@
     <Resource Include="icons\backArrow.png" />
     <Resource Include="icons\BankTerminal.png" />
     <Resource Include="icons\ClientBonus.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="icons\ClientBonusGray.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="icons\clock.png">
