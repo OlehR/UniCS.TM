@@ -42,7 +42,7 @@ namespace SharedLib
         {
             return true;
         }
-        public int LoadData(WDB pDB, bool parIsFull, StringBuilder Log)
+        public int LoadData(WDB_SQLite pDB, bool parIsFull, StringBuilder Log)
         {
             string SQL;
             Log.Append($"\n{ DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} Start LoadData {parIsFull}");
@@ -56,13 +56,19 @@ namespace SharedLib
             var oWarehouse = new pWarehouse() { CodeWarehouse = Global.CodeWarehouse };
             var oMessage = new pMessage() { IsFull = parIsFull ? 1 : 0, MessageNoMin = varMessageNoMin, MessageNoMax = varMessageNoMax, CodeWarehouse = Global.CodeWarehouse };
 
+            Debug.WriteLine("SqlGetClientData");
+            SQL = @"SELECT * FROM ClientData  cl WITH (NOLOCK) WHERE cl.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull=1";
+            var CD = db.Execute<pMessage,ClientData>(SQL, oMessage);
+            pDB.ReplaceClientData(CD);
+            Log.Append($"\n{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetClientData => {CD.Count()}");
+            CD = null;
+
             Debug.WriteLine("SqlGetDimWorkplace");
             SQL = GetSQL("SqlGetDimWorkplace");
             var DW = db.Execute<WorkPlace>(SQL);
             pDB.ReplaceWorkPlace(DW);
             Log.Append($"\n{DateTime.Now:yyyy-MM-dd h:mm:ss.fffffff} SqlGetDimWorkplace => {DW.Count()}");
-            DW = null;
-            
+            DW = null;            
 
             Debug.WriteLine("SqlGetDimPrice");
             SQL = GetSQL("SqlGetDimPrice");

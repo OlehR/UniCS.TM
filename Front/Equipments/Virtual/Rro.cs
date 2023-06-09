@@ -1,5 +1,4 @@
-﻿
-using Front.Equipments.Virtual;
+﻿using Front.Equipments.Virtual;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ModelMID;
@@ -80,7 +79,6 @@ namespace Front.Equipments
         {
             return null;//throw new NotImplementedException();
         }
-
 
         /// <summary>
         /// Внесення/Винесення коштів коштів. pSum>0 - внесення
@@ -167,8 +165,7 @@ namespace Front.Equipments
         public virtual void GetFiscalInfo(Receipt pR,object pRes)
         {
 
-        }
-        
+        }        
 
         public string TaxGroup(ReceiptWares pRW) 
         {

@@ -1,14 +1,5 @@
-﻿using Dapper;
-using Microsoft.Extensions.Configuration;
-using ModelMID;
-using ModernExpo.SelfCheckout.Entities.Enums;
-using System;
-using System.Collections.Generic;
-using System.Data.SQLite;
-using System.IO;
-using System.Linq;
+﻿using System;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Front.Equipments.Implementation.FP700_Model
 {
@@ -145,21 +136,19 @@ namespace Front.Equipments.Implementation.FP700_Model
             {
                 StringBuilder er = new();
                 if (IsOutOffPaper)
-                    er.Append("Папір закінчився!" + Environment.NewLine);
+                    er.AppendLine("Папір закінчився!");
                 if (IsCoverOpen)
-                    er.Append("Кришка принтера відкрита." + Environment.NewLine);
+                    er.AppendLine("Кришка принтера відкрита." );
                 if (IsKSEFMemoryFull)
-                    er.Append("КЛЕФ память Заповненна" + Environment.NewLine);
+                    er.AppendLine("КЛЕФ память Заповненна");
                 if (IsErrorOnWritingToFiscalMemory)
-                    er.Append("Фіскальна пам'ять має помилки" + Environment.NewLine);
+                    er.AppendLine("Фіскальна пам'ять має помилки");
                 if (IsCommonFiscalError)
-                    er.Append("Фіскальна пам'ять непрацездатна" + Environment.NewLine);
+                    er.AppendLine("Фіскальна пам'ять непрацездатна");
                 if (IsCommonFiscalError)
-                    er.Append("Фіскальна пам'ять непрацездатна" + Environment.NewLine);
+                    er.AppendLine("Фіскальна пам'ять непрацездатна");
                 if (IsCommonFiscalError)
-                    er.Append("Фіскальна пам'ять непрацездатна" + Environment.NewLine);
-
-
+                    er.AppendLine("Фіскальна пам'ять непрацездатна");
                 return er.ToString();
             }
         }

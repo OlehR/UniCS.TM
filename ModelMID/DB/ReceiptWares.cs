@@ -561,7 +561,7 @@ namespace ModelMID
         public List<ReceiptWares> ParseByWeight()
         {
             List<ReceiptWares> Res = new();
-            if (IsWeight && !string.IsNullOrEmpty(History) && Math.Abs(HistoryQuantity.Sum() - Quantity) < 0.001m)
+            if (SumBonus==0 && IsWeight && !string.IsNullOrEmpty(History) && Math.Abs(HistoryQuantity.Sum() - Quantity) < 0.001m)
             {
                 decimal Sum = 0m;
 
@@ -582,16 +582,12 @@ namespace ModelMID
                 if (SumTotal != Sum)
                 {
                     Res.First().Delta +=  -Sum+ SumTotal;
-                }
-               
+                }               
             }
             else
                 Res.Add(this);
 
             return Res;
-
         }
-
-
     }
 }

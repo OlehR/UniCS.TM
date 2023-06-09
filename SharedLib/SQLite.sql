@@ -57,7 +57,7 @@ alter TABLE wares add Code_Direction INTEGER;--Ver=>0;
 alter TABLE wares add Type_Wares INTEGER  NOT NULL DEFAULT 2; --Ver=>6;
 alter TABLE wares add Code_TM INTEGER NOT NULL DEFAULT 0; --Ver=>9;
 alter TABLE CLIENT add PHONE_ADD  TEXT; --Ver=>10;
-
+--Ver=>11;Reload;
 [SqlConfig]
 SELECT Data_Var  FROM CONFIG  WHERE UPPER(Name_Var) = UPPER(trim(@NameVar));
 
@@ -453,7 +453,10 @@ select PSF.CODE_PS
   from wares w 
   join PROMOTION_SALE_GROUP_WARES PSGW on PSGW.CODE_GROUP_WARES=w.CODE_GROUP
   join PROMOTION_SALE_FILTER PSF on ( PSF.TYPE_GROUP_FILTER=15 and PSF.RULE_GROUP_FILTER=-1 and   PSF.CODE_DATA=PSGW.CODE_GROUP_WARES_PS)
-  where w.CODE_WARES=@CodeWares  
+  where w.CODE_WARES=@CodeWares   
+  union  --Виключення по товару по кількості  
+select PSF.CODE_PS
+ from PROMOTION_SALE_FILTER PSF where  PSF.TYPE_GROUP_FILTER=12 and PSF.RULE_GROUP_FILTER=1 and  PSF.CODE_DATA=@CodeWares and PSF.CODE_DATA_END<@Quantity
 ),
 PSEW as 
 (select psfe.CODE_PS from 
@@ -494,7 +497,13 @@ union all --акції для всіх товарів.
  select PSEW.CODE_PS,0 as priority , PSD.TYPE_DISCOUNT as Type_discont, PSD.DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice
   from PSEW
   join PROMOTION_SALE_DATA PSD on (PSD.CODE_PS=PSEW.CODE_PS )
-  where PSD.TYPE_DISCOUNT<=20
+  where PSD.TYPE_DISCOUNT<=20 and PSD.TYPE_DISCOUNT!=14
+union all 
+select PSEW.CODE_PS,0 as priority , PSD.TYPE_DISCOUNT as Type_discont, p.PRICE_DEALER as DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice
+  from PSEW 
+  join PROMOTION_SALE_DATA PSD on (PSD.CODE_PS=PSEW.CODE_PS )
+  Join price p on  p.CODE_DEALER= PSD.DATA and psd.code_wares=p.code_wares
+  where PSD.TYPE_DISCOUNT=14
 
 [SqlGetPricePromotionSale2Category]
 select CODE_PS from PROMOTION_SALE_2_CATEGORY where CODE_WARES=@CodeWares
@@ -1104,6 +1113,12 @@ CREATE TABLE SALES_BAN (
      Amount INTEGER  NOT NULL
 );
 
+CREATE TABLE ClientData (
+  TypeData INTEGER NOT NULL
+ ,CodeClient INTEGER NOT NULL
+ ,Data   TEXT  NULL
+) ;
+
 [SqlCreateMIDIndex]
 
 CREATE UNIQUE INDEX UNIT_DIMENSION_ID ON UNIT_DIMENSION ( CODE_UNIT );
@@ -1154,7 +1169,7 @@ CREATE INDEX Sales_Ban_ID  on Sales_Ban (CODE_GROUP_WARES);
 
 CREATE UNIQUE INDEX USER_ID  on USER (CODE_USER);
 
-
+CREATE INDEX ClientData_ID ON ClientData ( Data,TypeData);
 
 [SqlReplaceUnitDimension]
 replace into UNIT_DIMENSION ( CODE_UNIT, NAME_UNIT, ABR_UNIT) values (@CodeUnit, @NameUnit,@AbrUnit);

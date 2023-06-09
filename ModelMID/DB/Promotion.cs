@@ -62,7 +62,7 @@ namespace ModelMID
         public Int64 CodePS { get; set; }
         public int CodeGroupFilter { get; set; }
         /// <summary>
-        /// Тип (10- товари 20-Час,30-клієнт,4-Номер чека, 50-склади, 60-Форма оплати, ) ( select t.*, t.rowid from C.DATA_NAME t where t.data_level=53)
+        /// Тип (10- товари,11- по товару, 12-Товари від кількості, 15-по групі, 20-Час,30-клієнт,4-Номер чека, 50-склади, 60-Форма оплати, ) ( select t.*, t.rowid from C.DATA_NAME t where t.data_level=53)
         /// </summary>
         public int TypeGroupFilter { get; set; }
         /// <summary>
@@ -111,9 +111,6 @@ namespace ModelMID
         public int Priority { get; set; }
         public DateTime DateCreate { get; set; }
         public int UserCreate { get; set; }
-        
-        
-
     }
 
 
@@ -137,8 +134,12 @@ namespace ModelMID
         public DateTime BirthDay { get; set; }
         public int CodeWares { get; set; }
         public int CodeDealer { get; set; }
-
+        /// <summary>
+        /// Кількість товару
+        /// </summary>
+        public decimal Quantity { get; set; }
     }
+
     public class PricePromotion
     {
         public Int64 CodePs { get; set; }
@@ -149,11 +150,11 @@ namespace ModelMID
         public int IsIgnoreMinPrice { get; set; }
         public decimal CalcPrice(decimal parPrice,bool IsUsePrice=true)
         {
-
             //decimal curPrice = 0;
             switch (TypeDiscont)
             {
                 case eTypeDiscount.Price:
+                case eTypeDiscount.ReplacePriceDealer:
                     return ( (Data > 0 && (Data < parPrice || !IsUsePrice)) ? Data : parPrice);
                 case eTypeDiscount.PriceDiscount:
                     return parPrice - Data;
@@ -162,9 +163,7 @@ namespace ModelMID
                 default:
                     return parPrice;
             }
-        }
-
-            
+        }            
     }
 
     public class PromotionWaresKit

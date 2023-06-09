@@ -470,13 +470,13 @@ namespace SharedLib
                     strLine = iniFile.ReadLine();
                     while (strLine != null)
                     {
-                        strLine = strLine.Trim().ToUpper();
+                        strLine = strLine.Trim();
                         if (strLine != "")
                         {
                             if (strLine.StartsWith("[") && strLine.EndsWith("]"))
                             {
                                 if (currentRoot.Length > 0 && value.Length > 0)
-                                    keySQL.Add(currentRoot, value);
+                                    keySQL.Add(currentRoot.ToUpper(), value);
                                 currentRoot = strLine.Substring(1, strLine.Length - 2).ToUpper();
                                 value = "";
                             }
@@ -539,7 +539,7 @@ namespace SharedLib
             SqlViewReceiptWares = GetSQL("SqlViewReceiptWares");
             SqlAddReceipt = GetSQL("SqlAddReceipt");
             if (SqlAddReceipt != null)
-                SqlReplaceReceipt = SqlAddReceipt.Replace("INSERT ", "replace ");
+                SqlReplaceReceipt = SqlAddReceipt.Replace("insert ", "replace ");
             SqlUpdateClient = GetSQL("SqlUpdateClient");
             SqlCloseReceipt = GetSQL("SqlCloseReceipt");
 
@@ -658,8 +658,6 @@ namespace SharedLib
             SqlGetQuantitySalesBan = GetSQL("SqlGetQuantitySalesBan");
             SqlGetLogRRO = GetSQL("SqlGetLogRRO");
             SqlGetStateReceipt = GetSQL("SqlGetStateReceipt");
-
-
             return true;
         }
 
@@ -811,10 +809,8 @@ namespace SharedLib
             {
                 if ((el.CalcPrice(PriceDealer) < Res.Price && Res.Priority<=el.Priority) || Res.Priority < el.Priority)
                 {
-
                     var IsUsePrice = (Res.Priority == el.Priority);
-                    Res = el;                
-
+                    Res = el;         
                     Res.Price = el.CalcPrice(PriceDealer, IsUsePrice);
                 }
             }

@@ -193,6 +193,7 @@ namespace SharedLib
                     {
                         var MPI = GetMinPriceIndicative((IdReceiptWares)RW);
                         par.CodeWares = RW.CodeWares;
+                        par.Quantity =RW.Quantity;
                         var Res = GetPrice(par);
 
                         if (Res != null && RW.ParPrice1 != 999999 && (Res.Priority > 0 || string.IsNullOrEmpty(RW.BarCode2Category)))//Не перераховуємо для  Сигарет s для 2 категорії окрім пріоритет 1
@@ -914,8 +915,8 @@ Where ID_WORKPLACE = @IdWorkplace
             bool isReload = false;
 
             foreach (var el in pLines)
-            {
-                var i = el.IndexOf("VER=>");
+            {                
+                var i = el.ToUpper().IndexOf("VER=>");
                 if (i >= 0)
                 {
                     string str = el.Substring(i + 5);
@@ -927,7 +928,7 @@ Where ID_WORKPLACE = @IdWorkplace
                             {
                                 FileLogger.WriteLogMessage($"WDB_SQLite.Parse ( el=>{el},pCurVersion=>{pCurVersion}) => (Ver=>{Ver}){Environment.NewLine}");
                                 pDB.ExecuteNonQuery(el);
-                                if (All.Length > 1 && All[1].Equals("Reload".ToUpper()))
+                                if (All.Length > 1 && All[1].ToUpper().Equals("Reload".ToUpper()))
                                     isReload = true;
                                 if (NewVer <= Ver)
                                     NewVer = Ver;
@@ -951,7 +952,7 @@ Where ID_WORKPLACE = @IdWorkplace
         }
         public  bool ReplaceClientNew(ClientNew pC)
         {
-            string Sql = @" replace into  Client_New (ID_WORKPLACE, BARCODE_CLIENT, BARCODE_CASHIER,  PHONE) values  (@IdWorkplace, @BarcodeClient, @BarcodeCashier, @Phone);";
+            string Sql = @"replace into  Client_New (ID_WORKPLACE, BARCODE_CLIENT, BARCODE_CASHIER,  PHONE) values  (@IdWorkplace, @BarcodeClient, @BarcodeCashier, @Phone);";
             using (var DB = new SQLite(ReceiptFile))
             {
                 return DB.ExecuteNonQuery<ClientNew>(Sql, pC) > 0;
@@ -965,6 +966,42 @@ Where ID_WORKPLACE = @IdWorkplace
             {
                 return DB.ExecuteNonQuery<ClientNew>(Sql, pC) > 0;
             }
+        }
+
+        public bool ReplaceClientData(IEnumerable<ClientData> pCD)
+        {
+            string Sql = @"replace into ClientData (TypeData,CodeClient,Data) values (@TypeData,@CodeClient,@Data)";
+            using (var DB = new SQLite(MidFile))
+            {
+                return DB.BulkExecuteNonQuery<ClientData>(Sql, pCD) > 0;
+            }
+        }
+        /// <summary>
+        /// Повертає знайденого клієнта(клієнтів)
+        /// </summary>
+        /// <param name="parCodeWares">Код товару</param>
+        /// <returns>
+        ///Повертає  IEnumerable<Client> з клієнтами
+        ///</returns>
+        public override IEnumerable<Client> FindClient(string parBarCode = null, string parPhone = null, string parName = null, int parCodeClient = 0)
+        {
+            string Sql = @"with 
+t as 
+(
+select p.Codeclient,1 from ClientData p where ( p.Data = @Phone and TypeData=2)
+union 
+select code_client,1 from client p where code_client = @CodeClient
+union 
+ select CodeClient,1 from clientData p where ( p.Data = @BarCode and TypeData=1) 
+)
+
+select p.code_client as CodeClient, p.name_client as NameClient, 0 as TypeDiscount, td.NAME as NameDiscount, p.percent_discount as PersentDiscount, 0 as CodeDealer, 
+	   0.00 as SumMoneyBonus, 0.00 as SumBonus,1 IsUseBonusFromRest, 1 IsUseBonusToRest,1 as IsUseBonusFromRest,barcode  as BarCode,
+       phone as MainPhone, Phone_Add as PhoneAdd, BIRTHDAY as BirthDay 
+   from t
+   join client p on (t.CodeClient=p.code_client)
+   left join TYPE_DISCOUNT td on td.TYPE_DISCOUNT=p.TYPE_DISCOUNT;";
+            return db.Execute<object, Client>(Sql, new { CodeClient = parCodeClient, Phone = parPhone, BarCode = parBarCode, Name = (parName == null ? null : "%" + parName + "%") });
         }
     }
 }

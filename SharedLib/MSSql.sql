@@ -41,7 +41,7 @@ SELECT code_wares AS CodeWares,code_unit AS CodeUnit, coef AS Coefficient, weigh
        (
            p.DEALER_RRef in ( 0xA8D3001E67079A7C11E1907E920EFE12 /*Акція жовті цінники*/, 0x81660050569E814D11EB28B4A16E4599 /*Акція буклет Вопак*/,0x99999999999999999999999999999999 /*індикатив*/)
                 or 
-            (@CodeWarehouse=9   and  DEALER_RRef in ( 0xB7A3001517DE370411DF7DD82E29EFF6 /*Роздрібні Новий*/,  0xA481001E67079A7C11E18A1966EECFE6 /*Акція Новий*/,0x88888888888888888888888888888888 /*Мін. ціна*/ ))
+            (@CodeWarehouse=9   and  DEALER_RRef in ( 0xB7A3001517DE370411DF7DD82E29EFF6 /*Роздрібні Новий*/, 0x86AF005056883C0611EDBCBACA9F4AD9/*Гуртові Новий*/, 0xA481001E67079A7C11E18A1966EECFE6 /*Акція Новий*/,0x88888888888888888888888888888888 /*Мін. ціна*/ ))
                 or 
             (@CodeWarehouse=15  and  DEALER_RRef in ( 0xA90F001517DE370411E03FABEDFCE454 /*Акція Білочка*/, 0xB7A3001517DE370411DF835234FF0C73 /*Роздрібні Білочка*/))
                 or 
