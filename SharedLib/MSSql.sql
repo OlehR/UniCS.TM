@@ -47,7 +47,13 @@ SELECT code_wares AS CodeWares,code_unit AS CodeUnit, coef AS Coefficient, weigh
                 or 
             (@CodeWarehouse=148  and  DEALER_RRef in (0x81660050569E814D11EB28B4A16E459A /*Акція буклет Spar*/,0x8686005056883C0611ECDC1781734E92 /*Акція Собранецька Ера*/, 0x8686005056883C0611ECDC17038670BF /*Роздрібні Собранецька Ера*/))
         )
-
+/*
+SELECT p.CODE_DEALER AS CodeDealer, p.code_wares AS CodeWares, p.price AS PriceDealer 
+    FROM dbo.price p
+    JOIN [UTPPSU].dbo._Reference133_VT20300 d ON p.DEALER_RRef=d._Fld20302RRef
+    JOIN [utppsu].dbo._Reference133 AS Wh ON Wh._IDRRef= d._Reference133_IDRRef
+    WHERE (p.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull=1) AND
+   convert(int, wh._code)=@CodeWarehouse'*/
 [SqlGetDimPriceOld]
 SELECT tp.code AS CodeDealer, w.code_wares AS CodeWares, pd.price_dealer AS PriceDealer FROM 
   ( 

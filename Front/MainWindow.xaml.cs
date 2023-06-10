@@ -350,7 +350,16 @@ namespace Front
 
             if (PathVideo != null && PathVideo.Length != 0)
             {
-                VideoPlayer.Source = new Uri(PathVideo[0]); // TMP ПЕРЕРОБИТИ
+
+                
+                //VideoPlayer.Source = new Uri(PathVideo[0]); // TMP ПЕРЕРОБИТИ
+                StartVideo.Source= new Uri(PathVideo[0]);
+                StartVideo.Play();
+                StartVideo.MediaEnded += (object sender, RoutedEventArgs e) =>
+                {
+                    StartVideo.Position = new TimeSpan(0, 0,0,0,1);
+                    StartVideo.Play();
+                };
             }
             else
             {
@@ -408,12 +417,9 @@ namespace Front
                     SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, new CustomWindow(eWindows.RestoreLastRecipt, LastR.SumReceipt.ToString()));
                     return;
                 }
-
-
             }
             else //Касове місце
             {
-
                 var r = Bl.GetReceipts(DateTime.Now, DateTime.Now, Global.IdWorkPlace);
                 var rr = r.Where(el => el.SumTotal > 0 && el.StateReceipt != eStateReceipt.Canceled && el.StateReceipt != eStateReceipt.Print && el.StateReceipt != eStateReceipt.Send).OrderByDescending(el => el.CodeReceipt);
                 if (rr != null && rr.Any())
@@ -599,6 +605,11 @@ namespace Front
                     {
                         TypeAccessWait = pTypeAccess;
                     }
+
+                    if(pSMV != eStateMainWindows.StartWindow && State== eStateMainWindows.StartWindow)
+                        StartVideo.Pause();
+                    if (pSMV == eStateMainWindows.StartWindow && State != eStateMainWindows.StartWindow)
+                        StartVideo.Play();
 
                     //Якщо 
                     if (pSMV == eStateMainWindows.NotDefine)
