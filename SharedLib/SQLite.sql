@@ -1170,6 +1170,7 @@ CREATE INDEX Sales_Ban_ID  on Sales_Ban (CODE_GROUP_WARES);
 CREATE UNIQUE INDEX USER_ID  on USER (CODE_USER);
 
 CREATE INDEX ClientData_ID ON ClientData ( Data,TypeData);
+CREATE UNIQUE INDEX ClientData_D_TD ON ClientData (CodeClient, Data,TypeData);
 
 [SqlReplaceUnitDimension]
 replace into UNIT_DIMENSION ( CODE_UNIT, NAME_UNIT, ABR_UNIT) values (@CodeUnit, @NameUnit,@AbrUnit);
