@@ -69,7 +69,7 @@ namespace Front.Equipments
         }
         public virtual void Init() { }
         public virtual StatusEquipment TestDevice() { throw new NotImplementedException(); }
-        public virtual string GetDeviceInfo() { return $"pModelEquipment={Model} State={State}{Environment.NewLine}{InfoConnect}"; }
+        public virtual string GetDeviceInfo() { return $"Model={Model} State={State}{Environment.NewLine}{InfoConnect}"; }
         public virtual void Enable() { State = eStateEquipment.On; }
         public virtual void Disable() { State = eStateEquipment.Off; }
     }

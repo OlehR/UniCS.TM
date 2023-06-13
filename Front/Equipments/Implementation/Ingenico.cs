@@ -196,7 +196,7 @@ namespace Front.Equipments
                 BPOS.POSGetInfo();
                 Thread.Sleep(1000);
                 string terminalInfo = BPOS.TerminalInfo;
-                string str = @$"Model: Ingenico {Environment.NewLine}TerminalId: {GetTerminalID}{Environment.NewLine}Bank: {CodeBank}{Environment.NewLine}{base.GetDeviceInfo()}";
+                string str = @$"Model: Ingenico {Environment.NewLine}TerminalId: {GetTerminalID}{Environment.NewLine}Bank: {CodeBank}{Environment.NewLine}{base.GetDeviceInfo()}{Environment.NewLine}";
 
                 StopBPOS();
 
