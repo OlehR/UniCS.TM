@@ -195,29 +195,26 @@ namespace Front.Equipments
                     return string.Empty;
                 BPOS.POSGetInfo();
                 Thread.Sleep(1000);
-                string terminalInfo = BPOS.TerminalInfo;                
-                string str = @$"Model: Ingenico
-Bank: {CodeBank}
-COM port: COM{port}
-Baud rate: {BaudRate}
-TerminalId: {GetTerminalID}{Environment.NewLine}";
+                string terminalInfo = BPOS.TerminalInfo;
+                string str = @$"Model: Ingenico {Environment.NewLine}TerminalId: {GetTerminalID}{Environment.NewLine}Bank: {CodeBank}{Environment.NewLine}{base.GetDeviceInfo()}";
+
                 StopBPOS();
 
                 if (!string.IsNullOrEmpty(terminalInfo))
                 {
-                    str = str + "Software version: " + new string(terminalInfo.TakeWhile<char>((Func<char, bool>)(x => x != ' ')).ToArray<char>()) + 
+                    str = str + "Software version: " + new string(terminalInfo.TakeWhile<char>((Func<char, bool>)(x => x != ' ')).ToArray<char>()) +
                         $"{Environment.NewLine}Terminal profile ID: " + new string(terminalInfo.Substring(terminalInfo.IndexOf(" ", StringComparison.Ordinal)).Take<char>(8).ToArray<char>());
                     var a = terminalInfo.Split('/');
-                    if(a.Length > 2) 
-                        str+= $"{Environment.NewLine}TerminalId: {a[1]}{Environment.NewLine}";
+                    if (a.Length > 2)
+                        str += $"{Environment.NewLine}TerminalId: {a[1]}{Environment.NewLine}";
                     str += $"{Environment.NewLine}TerminalInfo: {terminalInfo}";
                 }
                 return str;
             }
             catch (Exception ex)
             {
-                LoggerExtensions.LogError(Logger, ex, ex.Message, Array.Empty<object>());                
-                OnDeviceWarning?.Invoke( new PosDeviceLog() { Category = TerminalLogCategory.Warning, Message = "Cannot get information during error - " + ex.Message });
+                LoggerExtensions.LogError(Logger, ex, ex.Message, Array.Empty<object>());
+                OnDeviceWarning?.Invoke(new PosDeviceLog() { Category = TerminalLogCategory.Warning, Message = "Cannot get information during error - " + ex.Message });
                 return (string)null;
             }
         }
