@@ -39,9 +39,8 @@ namespace Front.Equipments
             {
                 State = eStateEquipment.Init;
                 Logger = LoggerFactory?.CreateLogger<Ingenico>();
-             
-                port = Convert.ToByte(Configuration[$"{KeyPrefix}Port"]);
-                BaudRate = Convert.ToInt32(Configuration[$"{KeyPrefix}BaudRate"]);
+
+                byte.TryParse(SerialPort, out port);
                 MerchantId = Convert.ToByte(Configuration[$"{KeyPrefix}MerchanId"]);
 
                 OnStatus += pActionStatus;
@@ -774,7 +773,10 @@ TerminalId: {GetTerminalID}{Environment.NewLine}";
             BPOS = new BPOS1LibClass();
             BPOS.SetErrorLang((byte)1);
             BPOS.useLogging((byte)1, "ingenico.log");
-            BPOS.CommOpen(port, BaudRate);
+            if (string.IsNullOrEmpty(IP) || IpPort == 0)
+                BPOS.CommOpen(port, BaudRate);
+            else
+                BPOS.CommOpenTCP(IP, IpPort.ToString());
             return true;
         }
 

@@ -76,12 +76,6 @@ namespace Front.Equipments
             }
             return new StatusEquipment(Model,State,Error);
         }
-
-        public override string GetDeviceInfo() 
-        { 
-            return  $"State={State} Port={SerialPort} BaudRate={BaudRate}"; 
-        }
-
-        
+               
     }
 }

@@ -67,9 +67,6 @@ namespace Front.Equipments.Implementation
         {
             return new StatusEquipment(Model, State, "Ok");
         }
-        public override string GetDeviceInfo()
-        {
-            return $"pModelEquipment={Model} State={State} Port={SerialPort} BaudRate={BaudRate}{Environment.NewLine}";
-        }
+        
     }
 }

@@ -90,11 +90,7 @@ namespace Front.Equipments.Implementation
         {
             return new StatusEquipment(Model,State,"Ok");
         }
-        public override string GetDeviceInfo()
-        {
-            return $"pModelEquipment={Model} State={State} Port={SerialPort} BaudRate={BaudRate}{Environment.NewLine}";
-        }
-
+        
         public override IEnumerable<string> GetLastReceipt() 
         {
             return new List<string>() { "Тестовий Чек", $"Сума: {LastSum}", $"CodeAuthorization{AuthCode}", "Тестова Оплата" };

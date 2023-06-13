@@ -61,12 +61,7 @@ namespace Front.Equipments
 
         public override StatusEquipment TestDevice() { Init(); return new StatusEquipment() { State = (int)State, TextState = State.ToString(), ModelEquipment = Model, StateEquipment = State }; }
 
-        public override string GetDeviceInfo()
-        {
-            return $"pModelEquipment={Model} State={State} Port={SerialPort} BaudRate={BaudRate}{Environment.NewLine}";
-        }
-
-
+        
         bool IsRead = false;
         private void OnTimedEvent(object sender, ElapsedEventArgs e)
         {

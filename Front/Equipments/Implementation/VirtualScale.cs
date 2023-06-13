@@ -14,8 +14,8 @@ namespace Front.Equipments.Implementation
     {
         public VirtualScale(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<double, bool> pOnScalesData=null) : base(pEquipment, pConfiguration, eModelEquipment.VirtualScale, pLoggerFactory, pOnScalesData)
         {
-            IpPort = Convert.ToInt32(Configuration["Devices:VirtualScaner:Port"]);
-            IP = Configuration["Devices:VirtualScaner:IP"];
+            //IpPort = Convert.ToInt32(Configuration["Devices:VirtualScaner:Port"]);
+            //IP = Configuration["Devices:VirtualScaner:IP"];
             _ = Work();
             State = eStateEquipment.On;
         }
@@ -82,10 +82,7 @@ namespace Front.Equipments.Implementation
         {
             return new StatusEquipment(Model, State, "Ok");
         }
-        public override string GetDeviceInfo()
-        {
-            return $"pModelEquipment={Model} State={State} Port={SerialPort} BaudRate={BaudRate}{Environment.NewLine}";
-        }
+        
 
     };
 

@@ -53,12 +53,7 @@ namespace Front.Equipments
         public override Color GetCurrentColor() { throw new NotImplementedException();}
 
         public override void Enable() { lamp.Enable(); base.Enable(); }
-        public override void Disable() { lamp.Disable(); base.Disable(); }
-
-        public override string GetDeviceInfo()
-        {
-            return $"pModelEquipment={Model} State={State} Port={SerialPort} BaudRate={BaudRate}{Environment.NewLine}";
-        }
+        public override void Disable() { lamp.Disable(); base.Disable(); }        
 
         public override StatusEquipment TestDevice()
         {

@@ -8,8 +8,8 @@
     <ApplicationIcon />
     <Win32Resource />
     <NeutralLanguage>uk-UA</NeutralLanguage>
-    <AssemblyVersion>2.0.1.159</AssemblyVersion>
-    <FileVersion>2.0.1.159</FileVersion>
+    <AssemblyVersion>2.0.1.160</AssemblyVersion>
+    <FileVersion>2.0.1.160</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -150,9 +150,6 @@
     </Reference>
     <Reference Include="ModernExpo.SelfCheckout.Devices.CustomFlagLamp">
       <HintPath>..\SharedLib\dll\ModernExpo.SelfCheckout.Devices.CustomFlagLamp.dll</HintPath>
-    </Reference>
-    <Reference Include="ModernExpo.SelfCheckout.Devices.FP700">
-      <HintPath>..\SharedLib\dll\ModernExpo.SelfCheckout.Devices.FP700.dll</HintPath>
     </Reference>
     <Reference Include="ModernExpo.SelfCheckout.Entities">
       <HintPath>..\SharedLib\dll\ModernExpo.SelfCheckout.Entities.dll</HintPath>

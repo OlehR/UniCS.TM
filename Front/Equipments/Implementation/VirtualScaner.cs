@@ -14,8 +14,8 @@ namespace Front.Equipments.Implementation
     {
         public VirtualScaner(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory, Action<string, string> pOnBarCode) : base(pEquipment, pConfiguration, eModelEquipment.VirtualScaner, pLoggerFactory, pOnBarCode)
         {
-            IpPort = Convert.ToInt32( Configuration["Devices:VirtualScaner:Port"]);
-            IP = Configuration["Devices:VirtualScaner:IP"];
+            //IpPort = Convert.ToInt32( Configuration["Devices:VirtualScaner:Port"]);
+            //IP = Configuration["Devices:VirtualScaner:IP"];
             _ = Work();
             State = eStateEquipment.On;
         }
@@ -82,11 +82,7 @@ namespace Front.Equipments.Implementation
             return new StatusEquipment(Model, State, "Ok");
         }
         public override void StopMultipleTone() { }
-        public override void StartMultipleTone() { }
-        public override string GetDeviceInfo()
-        {
-            return $"pModelEquipment={Model} State={State} Port={SerialPort} BaudRate={BaudRate}{Environment.NewLine}";
-        }
+        public override void StartMultipleTone() { }        
 
     }
 }

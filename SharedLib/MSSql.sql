@@ -269,6 +269,22 @@ SELECT DISTINCT
   JOIN  dbo.V1C_dim_warehouse wh ON wh.subdivision_RRef=pg.subdivision_RRef
   where pg.date_end>GETDATE()  
 AND wh.code = @CodeWarehouse;
+union all
+SELECT 
+  8000000000+@CodeWarehouse AS CodePS
+ ,'Оптові продажі '+convert(NVARCHAR,@CodeWarehouse) as NamePS
+ ,1 AS CodePattern
+ ,9 AS State
+ ,CONVERT(date,'20230101',112) AS DateBegin
+ ,CONVERT(date,'20990101',112)  AS DateEnd
+  ,1 AS Type
+  ,0 AS TypeData
+  ,1 AS Priority
+  , 0.00 AS SumOrder
+  ,0 AS TypeWorkCoupon
+  ,NULL AS BarCodeCoupon
+  where @CodeWarehouse=9
+  ;
 
 
 [SqlGetPromotionSaleFilter]

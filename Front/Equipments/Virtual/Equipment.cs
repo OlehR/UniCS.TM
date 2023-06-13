@@ -64,10 +64,12 @@ namespace Front.Equipments
             }
             SerialPort = Configuration?.GetValue<string>($"{KeyPrefix}Port");
             BaudRate = Configuration?.GetValue<int>($"{KeyPrefix}BaudRate")??9600;
+            IP = Configuration?.GetValue<string>($"{KeyPrefix}IP");
+            IpPort = Configuration?.GetValue<int>($"{KeyPrefix}IpPort") ??0;
         }
         public virtual void Init() { }
         public virtual StatusEquipment TestDevice() { throw new NotImplementedException(); }
-        public virtual string GetDeviceInfo() { throw new NotImplementedException(); }
+        public virtual string GetDeviceInfo() { return $"pModelEquipment={Model} State={State} {InfoConnect}"; }
         public virtual void Enable() { State = eStateEquipment.On; }
         public virtual void Disable() { State = eStateEquipment.Off; }
     }

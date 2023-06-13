@@ -102,10 +102,7 @@ namespace Front.Equipments
             }
             return new StatusEquipment(Model, State,$"{Error} { Environment.NewLine } {Res}" );
         }
-        public override string GetDeviceInfo()
-        {
-            return $"pModelEquipment={Model} State={State} Port={SerialPort} BaudRate={BaudRate}{Environment.NewLine}";
-        }
+        
         public override void ForceGoodReadTone()
         {
             Magellan9300?.ForceGoodReadTone();

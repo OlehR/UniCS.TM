@@ -23,11 +23,7 @@ namespace Front.Equipments
         {
             State = eStateEquipment.Init;
             try
-            {
-                SerialPort = Configuration["Devices:ExellioFP:SerialPort"];
-                BaudRate = Convert.ToInt32(Configuration["Devices:ExellioFP:BaudRate"]);
-                IP = Configuration["Devices:ExellioFP:IP"];
-                IpPort = Convert.ToInt32(Configuration["Devices:ExellioFP:IpPort"]);
+            {                
                 //TMP!!! 
                 //FP = new FiscalPrinterClass();                
                 State = eStateEquipment.On;
