@@ -709,7 +709,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                         curReceipt.NumberOrder = pNumberOrder;
                         curReceipt.TypeReceipt = eTypeReceipt.Sale;
                         db.ReplaceReceipt(curReceipt);
-                        Thread.Sleep(100);
+                        Thread.Sleep(300);
                         foreach (var el in Order)
                         {
                             bl.AddWaresCode(curReceipt, el.CodeWares, el.CodeUnit, (el.CodeUnit==Global.WeightCodeUnit? 1000:1) *  el.Quantity, el.Price, true);

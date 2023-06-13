@@ -1274,6 +1274,8 @@ from RECEIPT r
                 if (OrderNumber.Length > 0)
                 {
                     Bl.ds.GetClientOrder1C(OrderNumber);
+                    Thread.Sleep(5000);
+                    MW.CurWares = MW.curReceipt.GetLastWares;
                     MW.SetStateView(eStateMainWindows.StartWindow);
                     TabAdmin.SelectedIndex = 0;
                     OrderNumber = "0";

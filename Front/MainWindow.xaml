@@ -2511,7 +2511,7 @@
 
 
         <!--Початок покупки - стартове вікно ВІДЕО-->
-        <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
+        <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="0"
                  Grid.Row="0" Grid.RowSpan="5"
                 Grid.Column="0" Grid.ColumnSpan="4"
                  Name="StartShopping" Visibility="Collapsed" Grid.ZIndex="2" >
