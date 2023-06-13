@@ -268,7 +268,7 @@ SELECT DISTINCT
   JOIN  dbo.V1C_doc_promotion_gal dpg ON pg.doc_RRef = dpg.doc_RRef
   JOIN  dbo.V1C_dim_warehouse wh ON wh.subdivision_RRef=pg.subdivision_RRef
   where pg.date_end>GETDATE()  
-AND wh.code = @CodeWarehouse;
+AND wh.code = @CodeWarehouse
 union all
 SELECT 
   8000000000+@CodeWarehouse AS CodePS
@@ -463,7 +463,6 @@ SELECT -- Товари  набору (Основні)
   LEFT JOIN wh_ex ON (wh_ex.doc_promotion_RRef=dp._IDRRef) 
   WHERE dp.d_end>getdate() AND pk.is_main=1
   AND wh_ex.doc_promotion_RRef IS null
-
 
 
 [SqlGetPromotionSaleGroupWares]
