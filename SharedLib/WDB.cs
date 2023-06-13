@@ -27,7 +27,6 @@ namespace SharedLib
         /// </summary>
         private Dictionary<int, object> WorkplaceIdLockers = new Dictionary<int, object>();
 
-
         /*public delegate void CallWriteLogSQL(string parQvery, ParametersCollection parParameters = null);
         /// <summary>
         /// Функція для запису SQL запитів в локальну LOG базу 

@@ -283,8 +283,7 @@ SELECT
   , 0.00 AS SumOrder
   ,0 AS TypeWorkCoupon
   ,NULL AS BarCodeCoupon
-  where @CodeWarehouse=9
-  ;
+  where @CodeWarehouse=9;
 
 
 [SqlGetPromotionSaleFilter]
