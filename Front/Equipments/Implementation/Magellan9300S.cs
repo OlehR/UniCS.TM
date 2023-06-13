@@ -45,6 +45,7 @@ namespace Front.Equipments
         private int _attempt;
         private double _currentWeight;
         private eDeviceConnectionStatus _currentStatus = eDeviceConnectionStatus.InitializationError;
+        private int InitDeley = 300;
 
         private string _port => this._configuration["Devices:Magellan9300S:Port"];
 
@@ -117,7 +118,7 @@ namespace Front.Equipments
                         onDeviceWarning2((DeviceLog)barcodeScannerLog);
                     }
                     for (int index = 0; this._serialDevice.ReadBufferSize < 1 && index < 10; ++index)
-                        Thread.Sleep(200);
+                        Thread.Sleep(InitDeley);
                     byte[] numArray = new byte[this._serialDevice.ReadBufferSize];
                     this._serialDevice.Read(numArray, 0, numArray.Length);
                     string str = Encoding.ASCII.GetString(numArray);
@@ -272,7 +273,7 @@ namespace Front.Equipments
                     this._serialDevice.Open();
                     this._serialDevice.OnReceivedData = (Func<byte[], bool>)null;
                     this._serialDevice.Write(this.GetCommand("3p<"));
-                    Thread.Sleep(200);
+                    Thread.Sleep(InitDeley);
                     int num1 = 0;
                     string result = "";
                     byte[] numArray;
@@ -288,7 +289,7 @@ namespace Front.Equipments
                             else
                                 Array.Copy((Array)buffer, 0, (Array)numArray, 0, buffer.Length);
                         }
-                        Thread.Sleep(200);
+                        Thread.Sleep(InitDeley);
                     }
                     List<byte> byteList = new List<byte>();
                     for (int index = 3; index < numArray.Length - 1; ++index)
