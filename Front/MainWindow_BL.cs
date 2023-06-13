@@ -671,7 +671,7 @@ namespace Front
 
         void AddExciseStamp(string pES)
         {
-            if (CurWares.AddExciseStamp(pES))
+            if (CurWares?.AddExciseStamp(pES)==true)
             {                 //Додання акцизноії марки до алкоголю
                 Bl.UpdateExciseStamp(new List<ReceiptWares>() { CurWares });
                 TypeAccessWait = eTypeAccess.NoDefine;
