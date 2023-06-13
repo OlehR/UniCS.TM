@@ -22,6 +22,9 @@ namespace Front.Equipments
         protected string StrError;
         public int IdWorkplacePay;
 
+        public DateTime LockDT { get; set; }
+        public eTypeOperation TypeOperation { get; set; } = eTypeOperation.NotDefine;
+
         string DefaultTax=null;
         SortedList<int, string> Tax = new SortedList<int, string>();
         /// <summary>
