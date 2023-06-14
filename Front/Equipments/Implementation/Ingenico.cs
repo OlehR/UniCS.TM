@@ -13,6 +13,7 @@ using Front.Equipments.Virtual;
 using Utils;
 using Front.Equipments.Utils;
 using Front.Equipments.Implementation.ModelVchasno;
+using System.Diagnostics.Eventing.Reader;
 
 namespace Front.Equipments
 {    
@@ -139,11 +140,8 @@ namespace Front.Equipments
                 OnDeviceWarning?.Invoke(new PosDeviceLog() { Category = TerminalLogCategory.Critical, Message = "Device not connected" });
                 return connectionStatus;
             }
-            BPOS.Ping();
-           
-            if (Logger != null)
-                LoggerExtensions.LogDebug((ILogger)Logger, "[Ingenico] Get Device Connection Status");
-           
+            BPOS.Ping();           
+            
             if (BPOS.LastResult == (byte)2)
             {
                 int lastResult = (int)BPOS.LastResult;
@@ -283,23 +281,33 @@ namespace Front.Equipments
                     case 1:
                         OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.ErrorOpeningCOMPort});
                         OnDeviceWarning?.Invoke( new PosDeviceLog() { Category = TerminalLogCategory.Warning, Message = "[Ingenico] Error open connection" });
-                        State = eStateEquipment.Error;
+                        //State = eStateEquipment.Error;
                         break;
                     case 2:
                         OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.NeedToOpenCOMPort });
                         OnDeviceWarning?.Invoke(new PosDeviceLog() { Category = TerminalLogCategory.Warning, Message = "[Ingenico] Error open connection" });
-                        State = eStateEquipment.Error;
+                        //State = eStateEquipment.Error;
                         break;
                     case 3:
                         OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.ErrorConnectingWithTerminal });
                         OnDeviceWarning?.Invoke(new PosDeviceLog() { Category = TerminalLogCategory.Warning, Message = "[Ingenico] Error open connection" });
-                        State = eStateEquipment.Error;
+                        //State = eStateEquipment.Error;
                         break;
                     case 4:
                         this.InvokeResponseCode(BPOS.ResponseCode);
                         break;
                 }
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"LastResult=>{BPOS.LastResult} LastErrorCode={BPOS.LastErrorCode} ResponseCode=>{BPOS.ResponseCode}", eTypeLog.Error);
+                if(BPOS.LastErrorCode > 0 && BPOS.LastErrorCode<4)
+                {
+                    //OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.ErrorCommunication });
+                    StopBPOS();
+                    Thread.Sleep(1000);
+                    OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.TestDevice });
+                    var r=TestDeviceSync();
+                    if (r != eDeviceConnectionStatus.Enabled)
+                     State = eStateEquipment.Error;
+                }
             }            
             return new Payment() { IsSuccess = false };
         }
@@ -698,17 +706,20 @@ namespace Front.Equipments
                  BPOS.Purchase(Sum, 0, MechantId);
 
                 OnStatus?.Invoke(new PosStatus() {  Status = eStatusPos.WaitingForCard });
-                Payment result = this.WaitPosRespone();                
+                Payment result = WaitPosRespone();                
                 if (Logger != null)
                     LoggerExtensions.LogDebug(Logger, "[Ingenico] Purches " + JsonConvert.SerializeObject(result));
                 if (result.IsSuccess)
                 {
                     BPOS.Confirm();
-                    WaitResponse();
+                    WaitResponse();                   
                 }              
                 
                 if (OnResponse != null) OnResponse((IPosResponse)new PayPosResponse() { Response = result });
-                result.Receipt = GetLastReceipt(false);
+
+               //if (result.IsSuccess)
+                 //   result.Receipt = GetLastReceipt(false);
+
                 StopBPOS();
                 return Task.FromResult<Payment>(result);
             }

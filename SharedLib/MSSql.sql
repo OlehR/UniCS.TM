@@ -198,14 +198,15 @@ SELECT -- Кількість товари  набору (Основні)
   AND pk.is_main=0x01
   AND wh_ex.doc_promotion_RRef IS null
   GROUP BY CONVERT( INT,YEAR(dp.year_doc)*10000+dp.number),pk.number_kit
-  SELECT
+  UNION ALL
+  SELECT -- Оптові продажі.
      8000000000+@CodeWarehouse AS CodePS 
     ,1 AS NumberGroup
     ,0 AS CodeWares
     ,1 AS UseIndicative
     ,14 AS TypeDiscount--%
     ,0 AS AdditionalCondition
-    ,52 AS Data
+    ,51 AS Data
     ,1 AS DataAdditionalCondition 
     where @CodeWarehouse=9
 
@@ -472,7 +473,7 @@ SELECT -- Товари  набору (Основні)
   LEFT JOIN wh_ex ON (wh_ex.doc_promotion_RRef=dp._IDRRef) 
   WHERE dp.d_end>getdate() AND pk.is_main=1
   AND wh_ex.doc_promotion_RRef IS null
-  /*union all 
+  union all 
   SELECT -- оптовий склад
    8000000000+@CodeWarehouse AS CodePS 
     ,1 AS CodeGroupFilter
@@ -485,16 +486,19 @@ SELECT -- Товари  набору (Основні)
     where @CodeWarehouse=9
 
      union all 
-  SELECT -- оптовий склад товари і кількості 
+SELECT -- оптовий склад товари і кількості 
    8000000000+@CodeWarehouse AS CodePS 
     ,1 AS CodeGroupFilter
     ,12 AS TypeGroupFilter 
     ,1 AS RuleGroupFilter
     ,0 AS CodeProporty
     ,0 AS CodeChoice 
-    ,CodeWarehouse as CodeData --AS CodeWarehouse
-    ,quantity AS CodeDataEnd
-    where @CodeWarehouse=9*/
+    , try_convert(int,w.code_wares)  as CodeData --AS CodeWarehouse
+    ,ow.quantity AS CodeDataEnd
+ 
+ FROM dbo.V1C_DIM_OPTION_WPC_opt_wares ow
+JOIN Wares w  ON w._IDRRef=ow.NomenRref
+   where @CodeWarehouse=9;
 
 
 [SqlGetPromotionSaleGroupWares]

@@ -184,7 +184,11 @@ namespace Front.Equipments
         [Description("Загальна несправність системи")]
         GeneralSystemMalfunction = 83,
         [Description("Неможливо надіслати зашифроване повідомлення")]
-        UnableToSendEncryptedMessage = 84
+        UnableToSendEncryptedMessage = 84,
+        [Description("Проблема зв'язку з терміналом")]
+        ErrorCommunication =100,
+        [Description("Спроба Відновлення зв'язку")]
+        TestDevice =102
     }
 
     public enum eStatusRRO

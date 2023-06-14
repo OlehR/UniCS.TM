@@ -454,9 +454,7 @@ select PSF.CODE_PS
   join PROMOTION_SALE_GROUP_WARES PSGW on PSGW.CODE_GROUP_WARES=w.CODE_GROUP
   join PROMOTION_SALE_FILTER PSF on ( PSF.TYPE_GROUP_FILTER=15 and PSF.RULE_GROUP_FILTER=-1 and   PSF.CODE_DATA=PSGW.CODE_GROUP_WARES_PS)
   where w.CODE_WARES=@CodeWares   
-  union  --Виключення по товару по кількості  
-select PSF.CODE_PS
- from PROMOTION_SALE_FILTER PSF where  PSF.TYPE_GROUP_FILTER=12 and PSF.RULE_GROUP_FILTER=1 and  PSF.CODE_DATA=@CodeWares and PSF.CODE_DATA_END<@Quantity
+ 
 ),
 PSEW as 
 (select psfe.CODE_PS from 
@@ -499,11 +497,15 @@ union all --акції для всіх товарів.
   join PROMOTION_SALE_DATA PSD on (PSD.CODE_PS=PSEW.CODE_PS )
   where PSD.TYPE_DISCOUNT<=20 and PSD.TYPE_DISCOUNT!=14
 union all 
-select PSEW.CODE_PS,0 as priority , PSD.TYPE_DISCOUNT as Type_discont, p.PRICE_DEALER as DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice
-  from PSEW 
-  join PROMOTION_SALE_DATA PSD on (PSD.CODE_PS=PSEW.CODE_PS )
+select PSf.CODE_PS,0 as priority , PSD.TYPE_DISCOUNT as Type_discont, p.PRICE_DEALER as DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice
+  from PROMOTION_SALE_FILTER PSF  
+  left join ExeptionPS EPS on  (PSF.CODE_PS=EPS.CODE_PS) 
+  join PROMOTION_SALE_DATA PSD on (PSD.CODE_PS=PSF.CODE_PS )
   Join price p on  p.CODE_DEALER=PSD.DATA and p.code_wares=@CodeWares
-  where PSD.TYPE_DISCOUNT=14
+  where PSF.TYPE_GROUP_FILTER=12 and  PSF.CODE_DATA_END<=@Quantity 
+  and PSF.CODE_DATA=@CodeWares 
+  and PSD.TYPE_DISCOUNT=14
+  and EPS.CODE_PS is null
 
 [SqlGetPricePromotionSale2Category]
 select CODE_PS from PROMOTION_SALE_2_CATEGORY where CODE_WARES=@CodeWares
