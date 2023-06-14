@@ -690,7 +690,7 @@ namespace Front.Equipments
                 if(SumCash > 0)
                 {
                     string ScenarioData = CodeBank == eBank.PrivatBank?
-                        $"<ActionScenarioRequest><Action>CashBack</Action><Amount>{Sum}</Amount><AddAmount>{SumCash}</AddAmount><MerchantIdx>{MechantId}</MerchantIdx></ActionScenarioRequest>":
+                        $"<ActionScenarioRequest><Action>CashBack</Action><Amount>{Sum}</Amount><AddAmount>{SumCash}</AddAmount><MerchIdx>{MechantId}</MerchIdx></ActionScenarioRequest>" :
                         $"<ActionScenarioRequest><Action>CashBack</Action><Amount>{Sum}</Amount><CashAmount>{SumCash}</CashAmount><MerchantId>{MechantId}</MerchantId></ActionScenarioRequest>";
                     BPOS.StartScenario( CodeBank==eBank.PrivatBank?2u:6u, ScenarioData);
                 }
