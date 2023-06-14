@@ -502,7 +502,7 @@ union all
 select PSEW.CODE_PS,0 as priority , PSD.TYPE_DISCOUNT as Type_discont, p.PRICE_DEALER as DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice
   from PSEW 
   join PROMOTION_SALE_DATA PSD on (PSD.CODE_PS=PSEW.CODE_PS )
-  Join price p on  p.CODE_DEALER= PSD.DATA and psd.code_wares=p.code_wares
+  Join price p on  p.CODE_DEALER=PSD.DATA and p.code_wares=@CodeWares
   where PSD.TYPE_DISCOUNT=14
 
 [SqlGetPricePromotionSale2Category]
