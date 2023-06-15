@@ -297,6 +297,8 @@ namespace Front.Equipments.Implementation
                 });
             };
         }
+
+        override public bool PutToDisplay(string ptext, int pLine) { return true;}
     }
 }
 

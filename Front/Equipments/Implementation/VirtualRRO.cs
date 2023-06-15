@@ -54,7 +54,7 @@ namespace Front.Equipments.Implementation
             return new LogRRO(pR) {TypeOperation= eTypeOperation.Sale,FiscalNumber="V0001111",SUM=pR.SumReceipt,CodeError=0,Error="Проблема з лентою" }; 
         }
 
-        override public bool PutToDisplay(string ptext)
+        override public bool PutToDisplay(string ptext, int pLine)
         {
             return true;
         }
