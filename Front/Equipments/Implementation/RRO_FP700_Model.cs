@@ -7,6 +7,7 @@ namespace Front.Equipments.Implementation.FP700_Model
     {
         GetLastError = 32, // 0x00000020
         ClearDisplay = 33, // 0x00000021
+        LastLineDisplay = 35, // 0x00000023
         OpenNonFiscalReceipt = 38, // 0x00000026
         CloseNonFiscalReceipt = 39, // 0x00000027
         SaveSettingInMemory =41,// 0x00000029
@@ -15,6 +16,7 @@ namespace Front.Equipments.Implementation.FP700_Model
         PaperPulling = 44, // 0x0000002C
         PaperCut = 45, // 0x0000002D
         ShiftInfo = 46, // 0x0000002E
+        FirstLineDisplay = 47, // 0x0000002F
         OpenFiscalReceipt = 48, // 0x00000030
         SubTotal = 51, // 0x00000033
         RegisterProductInReceiptWithDisplay = 52, // 0x00000034

@@ -94,6 +94,7 @@ namespace Front.Equipments
         }
 
         virtual public bool OpenMoneyBox(int pTime = 15) { return false; }
+
         /// <summary>
         /// Друк чека
         /// </summary>
@@ -114,7 +115,7 @@ namespace Front.Equipments
             return null; //throw new NotImplementedException();
         }
 
-        virtual public bool PutToDisplay(string ptext)
+        virtual public bool PutToDisplay(string ptext,int pLine=0)
         {
             throw new NotImplementedException();
         }

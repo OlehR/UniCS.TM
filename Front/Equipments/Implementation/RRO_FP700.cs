@@ -200,7 +200,11 @@ namespace Front.Equipments
         override public bool ProgramingArticle(ReceiptWares pRW)
         {
             if (pRW != null)
-                SetupArticleTable(pRW);            
+            {
+                SetupArticleTable(pRW);
+                FirstLineDisplay(pRW.NameWaresReceipt);
+                LastLineDisplay($"{pRW.Quantity}x{pRW.Price}={pRW.SumTotal}");
+            }
             return true;
         }
 
@@ -958,6 +962,8 @@ namespace Front.Equipments
                     }));
                     if (!isSuccess)
                         throw new Exception("Fp700 writing article FALSE");
+                   
+
                 }
             }
 
@@ -1606,7 +1612,28 @@ namespace Front.Equipments
              })));*/
             return Sum;
         }
-    }
+
+        public bool FirstLineDisplay(string pText)
+        {
+            if (!string.IsNullOrWhiteSpace(pText))
+                OnSynchronizeWaitCommandResult(eCommand.FirstLineDisplay, pText.Substring(0, 20));
+            return true;
+        }
+
+        public bool LastLineDisplay(string pText)
+        {
+            if (!string.IsNullOrWhiteSpace(pText))
+                OnSynchronizeWaitCommandResult(eCommand.LastLineDisplay, pText.Substring(0, 20));
+            return true;
+        }
+
+        override public bool PutToDisplay(string ptext, int pLine = 0)
+        {
+            if (pLine == 0) FirstLineDisplay(ptext);
+            else LastLineDisplay(ptext);
+
+            return true;
+        }
 
 }
 
