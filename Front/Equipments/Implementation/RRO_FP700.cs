@@ -202,8 +202,8 @@ namespace Front.Equipments
             if (pRW != null)
             {
                 SetupArticleTable(pRW);
-                FirstLineDisplay(pRW.NameWaresReceipt);
-                LastLineDisplay($"{pRW.Quantity}x{pRW.Price}={pRW.SumTotal}");
+                PutToDisplay(pRW.NameWaresReceipt);
+                PutToDisplay($"{pRW.Quantity}x{pRW.Price}={pRW.SumTotal}",2);
             }
             return true;
         }
@@ -1614,38 +1614,19 @@ namespace Front.Equipments
             return Sum;
         }
 
-        public bool FirstLineDisplay(string pText)
+        
+        override public bool PutToDisplay(string pText, int pLine = 1)
         {
-            ClearDisplay();
+            if(pLine== 1) ClearDisplay();
             if (!string.IsNullOrEmpty(pText))
             {
                 if (pText?.Length > 20)
                     pText = pText[..20];
                 if (!string.IsNullOrWhiteSpace(pText))
-                    OnSynchronizeWaitCommandResult(eCommand.FirstLineDisplay, pText);
+                    OnSynchronizeWaitCommandResult(pLine==1? eCommand.FirstLineDisplay: eCommand.LastLineDisplay, pText);
             }
             return true;
         }
-
-        public bool LastLineDisplay(string pText)
-        {
-            if (!string.IsNullOrEmpty(pText))
-            {
-                if (pText?.Length > 20)
-                    pText = pText.Substring(0, 20);
-                if (!string.IsNullOrWhiteSpace(pText))
-                    OnSynchronizeWaitCommandResult(eCommand.LastLineDisplay, pText);
-            }
-            return true;
-        }
-
-        override public bool PutToDisplay(string ptext, int pLine = 0)
-        {
-            if (pLine == 0) FirstLineDisplay(ptext);
-            else LastLineDisplay(ptext);
-            return true;
-        }
-
     }
 }
 

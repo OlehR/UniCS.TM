@@ -115,7 +115,7 @@ namespace Front.Equipments
             return null; //throw new NotImplementedException();
         }
 
-        virtual public bool PutToDisplay(string ptext,int pLine=0)
+        virtual public bool PutToDisplay(string ptext,int pLine=1)
         {
             throw new NotImplementedException();
         }
