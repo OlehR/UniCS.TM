@@ -1616,15 +1616,26 @@ namespace Front.Equipments
 
         public bool FirstLineDisplay(string pText)
         {
-            if (!string.IsNullOrWhiteSpace(pText))
-                OnSynchronizeWaitCommandResult(eCommand.FirstLineDisplay, pText.Substring(0, 20));
+            ClearDisplay();
+            if (!string.IsNullOrEmpty(pText))
+            {
+                if (pText?.Length > 20)
+                    pText = pText[..20];
+                if (!string.IsNullOrWhiteSpace(pText))
+                    OnSynchronizeWaitCommandResult(eCommand.FirstLineDisplay, pText);
+            }
             return true;
         }
 
         public bool LastLineDisplay(string pText)
         {
-            if (!string.IsNullOrWhiteSpace(pText))
-                OnSynchronizeWaitCommandResult(eCommand.LastLineDisplay, pText.Substring(0, 20));
+            if (!string.IsNullOrEmpty(pText))
+            {
+                if (pText?.Length > 20)
+                    pText = pText.Substring(0, 20);
+                if (!string.IsNullOrWhiteSpace(pText))
+                    OnSynchronizeWaitCommandResult(eCommand.LastLineDisplay, pText);
+            }
             return true;
         }
 
