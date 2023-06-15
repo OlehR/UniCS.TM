@@ -14,12 +14,12 @@ using Utils;
 
 namespace Front.Equipments
 {
-    public class ExellioFP : Rro
+    public class RRO_ExellioFP : Rro
     {
         //FiscalPrinterClass 
            dynamic FP=null;
         
-        public ExellioFP(Equipment pEquipment, IConfiguration pConfiguration, ILoggerFactory pLoggerFactory = null) : base(pEquipment, pConfiguration,eModelEquipment.ExellioFP, pLoggerFactory)
+        public RRO_ExellioFP(Equipment pEquipment, IConfiguration pConfiguration, ILoggerFactory pLoggerFactory = null) : base(pEquipment, pConfiguration,eModelEquipment.ExellioFP, pLoggerFactory)
         {
             State = eStateEquipment.Init;
             try

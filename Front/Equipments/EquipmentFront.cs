@@ -258,7 +258,7 @@ namespace Front
                         switch (ElEquipment.Model)
                         {
                             case eModelEquipment.Ingenico:
-                                Terminal = new Ingenico(el, config, LF, PosStatus);
+                                Terminal = new BT_Ingenico(el, config, LF, PosStatus);
                                 break;
                             case eModelEquipment.VirtualBankPOS:
                                 Terminal = new VirtualBankPOS(el, config, LF, PosStatus);
@@ -281,7 +281,7 @@ namespace Front
                         switch (el.Model)
                         {
                             case eModelEquipment.ExellioFP:
-                                RRO = new Equipments.ExellioFP(el, config, LF);
+                                RRO = new Equipments.RRO_ExellioFP(el, config, LF);
                                 break;
                             case eModelEquipment.pRRO_SG:
                                 RRO = new Front.Equipments.pRRO_SG.pRRO_SG(el, config, LF, pActionStatus);

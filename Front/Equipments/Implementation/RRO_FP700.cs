@@ -34,7 +34,7 @@ namespace Front.Equipments
         private volatile bool _isError;
         private volatile bool _hasCriticalError;
         private int _sequenceNumber = 90;
-        private readonly ILogger<RRO_FP700> _logger;        
+        private readonly ILogger<RRO_FP700> _logger;
         private string DateFormat = "dd-MM-yy HH:mm:ss";
         private Dictionary<eCommand, Action<string>> _commandsCallbacks;
         private readonly List<byte> _packageBuffer = new List<byte>();
@@ -42,7 +42,7 @@ namespace Front.Equipments
         private const string ReportDateFormat = "ddMMyy";
 
         WDB_SQLite db = new WDB_SQLite();
-        
+
         private string _port => Configuration[$"{KeyPrefix}Port"];
 
         private int _baudRate => Configuration.GetValue<int>($"{KeyPrefix}BaudRate");
@@ -57,14 +57,14 @@ namespace Front.Equipments
 
         private int _maxItemLength => Configuration.GetValue<int>($"{KeyPrefix}MaxItemLength");
 
-        public bool IsZReportAlreadyDone { get; private set; }        
+        public bool IsZReportAlreadyDone { get; private set; }
 
         public RRO_FP700(Equipment pEquipment, IConfiguration pConfiguration, ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment, pConfiguration, eModelEquipment.RRO_FP700, pLoggerFactory, pActionStatus)
         {
             try
             {
                 ILogger<RRO_FP700> logger = pLoggerFactory?.CreateLogger<RRO_FP700>();
-                
+
                 _logger = logger;
                 ActionStatus = pActionStatus;
 
@@ -77,9 +77,9 @@ namespace Front.Equipments
                 _packageBufferTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
                 _packageBufferTimer.Interval = 5000.0;
                 _packageBufferTimer.Enabled = true;
-                
-                var res=Init();
-                State = IsReady && res==eDeviceConnectionStatus.Enabled ? eStateEquipment.On : eStateEquipment.Error;
+
+                var res = Init();
+                State = IsReady && res == eDeviceConnectionStatus.Enabled ? eStateEquipment.On : eStateEquipment.Error;
             }
             catch (Exception e)
             {
@@ -118,7 +118,7 @@ namespace Front.Equipments
         public override LogRRO MoveMoney(decimal pSum, IdReceipt pIdR = null)
         {
             MoneyMoving(pSum);
-            return new LogRRO(pIdR) { TypeOperation = pSum > 0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyIn,SUM= pSum,TypeRRO = Type.ToString(), FiscalNumber = GetLastZReportNumber() };
+            return new LogRRO(pIdR) { TypeOperation = pSum > 0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyIn, SUM = pSum, TypeRRO = Type.ToString(), FiscalNumber = GetLastZReportNumber() };
         }
 
         /// <summary>
@@ -134,14 +134,14 @@ namespace Front.Equipments
             if (pR?.ReceiptComments?.Count() > 0)
                 Comments = pR.ReceiptComments.Select(r => new ReceiptText() { Text = r, RenderType = eRenderAs.Text }).ToList();
             /*if (pR.TypeReceipt == eTypeReceipt.Sale) */
-                    (FiscalNumber, SumFiscal) = PrintReceipt(pR, Comments);
-           /* else
-                (FiscalNumber,SumFiscal) = ReturnReceipt(pR);*/
+            (FiscalNumber, SumFiscal) = PrintReceipt(pR, Comments);
+            /* else
+                 (FiscalNumber,SumFiscal) = ReturnReceipt(pR);*/
             pR.NumberReceipt = FiscalNumber;
             return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, TypeRRO = Type.ToString(), FiscalNumber = FiscalNumber, SUM = SumFiscal /*pR.SumReceipt - pR.SumBonus,*/ };
         }
 
-        public override bool PutToDisplay(string ptext) { return true; }
+       
 
         public override bool PeriodZReport(DateTime pBegin, DateTime pEnd, bool IsFull = true)
         {
@@ -162,7 +162,7 @@ namespace Front.Equipments
             eDeviceConnectionStatus res;
             try
             {
-                var s=SetRoundCash();
+                var s = SetRoundCash();
                 res = TestDeviceSync();
                 if (res == eDeviceConnectionStatus.Enabled)
                 {
@@ -177,7 +177,7 @@ namespace Front.Equipments
                 State = eStateEquipment.Error;
                 return new StatusEquipment() { State = -1, TextState = e.Message };
             }
-            return new StatusEquipment() { TextState = res.ToString(), State= (State == eStateEquipment.On ? 0:-1) };
+            return new StatusEquipment() { TextState = res.ToString(), State = (State == eStateEquipment.On ? 0 : -1) };
         }
 
         public override string GetDeviceInfo()
@@ -216,7 +216,7 @@ namespace Front.Equipments
             return res;
         }
 
-        public override void Stop() {  IsStop = true; } 
+        public override void Stop() { IsStop = true; }
 
         public virtual decimal GetSumFromTextReceipt(string pTextReceipt)
         {
@@ -231,7 +231,7 @@ namespace Front.Equipments
             catch { }
             return Res;
         }
-   
+
         public bool IsReady
         {
             get
@@ -241,7 +241,7 @@ namespace Front.Equipments
             }
         }
 
-        Action<StatusEquipment> ActionStatus { get; set; }        
+        Action<StatusEquipment> ActionStatus { get; set; }
 
         private void OnTimedEvent(object sender, ElapsedEventArgs e)
         {
@@ -283,8 +283,9 @@ namespace Front.Equipments
                             SetupTime(DateTime.Now);//Змінюємо час на фіскалці
                         }
                 }
-                catch (Exception e) {
-                    ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Init,e.Message)
+                catch (Exception e)
+                {
+                    ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Init, e.Message)
                     { Status = eStatusRRO.Init, IsСritical = false });
                 }
 
@@ -315,12 +316,12 @@ namespace Front.Equipments
                 DocumentNumbers lastNumbers = null;
                 var RoundCash = GetRoundCash();
                 if (diagnosticInfo != null)
-                    lastNumbers=GetLastNumbers();                
+                    lastNumbers = GetLastNumbers();
                 if (diagnosticInfo == null || lastNumbers == null)
                     throw new Exception("Fp700 getInfo error");
-                return _currentPrinterStatus.TextError + $"Model:{diagnosticInfo.Model}\nSoftVersion: {diagnosticInfo.SoftVersion}\nSoftReleaseDate: {diagnosticInfo.SoftReleaseDate}\n SerialNumber: {diagnosticInfo.SerialNumber}\n RegistrationNumber: {diagnosticInfo.FiscalNumber}\n" + 
-                    $"BaudRate: {_serialDevice.BaudRate}\nComPort:{_serialDevice.PortName}\n"+
-                    $"LastDocumentNumber: {lastNumbers.LastDocumentNumber}\nLastReceiptNumber: {lastNumbers.LastFiscalDocumentNumber}\nLastZReportNumber: {GetLastZReportNumber()}\nIsZReportDone: {IsZReportDone()}\nCurentTime: {GetCurrentFiscalPrinterDate() ?? DateTime.MinValue}\n"+
+                return _currentPrinterStatus.TextError + $"Model:{diagnosticInfo.Model}\nSoftVersion: {diagnosticInfo.SoftVersion}\nSoftReleaseDate: {diagnosticInfo.SoftReleaseDate}\n SerialNumber: {diagnosticInfo.SerialNumber}\n RegistrationNumber: {diagnosticInfo.FiscalNumber}\n" +
+                    $"BaudRate: {_serialDevice.BaudRate}\nComPort:{_serialDevice.PortName}\n" +
+                    $"LastDocumentNumber: {lastNumbers.LastDocumentNumber}\nLastReceiptNumber: {lastNumbers.LastFiscalDocumentNumber}\nLastZReportNumber: {GetLastZReportNumber()}\nIsZReportDone: {IsZReportDone()}\nCurentTime: {GetCurrentFiscalPrinterDate() ?? DateTime.MinValue}\n" +
                     $"RoundCash: {RoundCash}"
                     ;
             }
@@ -405,48 +406,48 @@ namespace Front.Equipments
 
         public Task<eDeviceConnectionStatus> TestDevice2() => Task.Run<eDeviceConnectionStatus>(new Func<eDeviceConnectionStatus>(TestDeviceSync));
 
-        public (string,decimal) PrintReceipt(Receipt pR, List<ReceiptText> Comments = null)
+        public (string, decimal) PrintReceipt(Receipt pR, List<ReceiptText> Comments = null)
         {
             ObliterateFiscalReceipt();
             string s = GetLastReceiptNumber();
-          
+
             _logger?.LogDebug("{START_PRINTING}");
             _logger?.LogDebug("{LAST_RECEIPTNUMBER}" + s);
             if (string.IsNullOrEmpty(s))
                 s = "0";
             int.TryParse(s, out int result1);
-            if(pR.TypeReceipt==eTypeReceipt.Sale) OpenReceipt(pR?.NameCashier);
+            if (pR.TypeReceipt == eTypeReceipt.Sale) OpenReceipt(pR?.NameCashier);
             else OpenReturnReceipt();
 
             if (Comments != null && Comments.Count() > 0)
                 PrintFiscalComments(Comments);
             FillUpReceiptItems(pR.GetParserWaresReceipt());
-            decimal Total=0, TotalRnd=0;
-            (Total,TotalRnd) = SubTotal();
-            if(Total > 0|| TotalRnd>0)
-            try
-            {
-                var pay = new Payment(pR) { IsSuccess = true, TypePay = eTypePay.FiscalInfo, SumPay = Total, SumExt = TotalRnd - Total };
-                pR.Payment= pR.Payment==null? new List<Payment>() { pay } :  pR.Payment.Append<Payment>(pay);
-                db.ReplacePayment(pay,true);
-            }
-            catch (Exception e)
-            {
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name,e);
-            }
+            decimal Total = 0, TotalRnd = 0;
+            (Total, TotalRnd) = SubTotal();
+            if (Total > 0 || TotalRnd > 0)
+                try
+                {
+                    var pay = new Payment(pR) { IsSuccess = true, TypePay = eTypePay.FiscalInfo, SumPay = Total, SumExt = TotalRnd - Total };
+                    pR.Payment = pR.Payment == null ? new List<Payment>() { pay } : pR.Payment.Append<Payment>(pay);
+                    db.ReplacePayment(pay, true);
+                }
+                catch (Exception e)
+                {
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+                }
 
             //pR.SumFiscal = Sum;
             if (!PayReceipt(pR, TotalRnd))
-            {         
+            {
                 ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Error, "Check was not printed")
                 { Status = eStatusRRO.Error, IsСritical = true });
             }
             CloseReceipt();
             ClearDisplay();
-            
+
             if (!int.TryParse(GetLastReceiptNumber(), out int result2))
                 return (null, TotalRnd);
-            
+
             //Чек видачі готівки.
             Payment Pay = pR?.Payment?.Where(el => el.TypePay == eTypePay.IssueOfCash)?.FirstOrDefault();
             if (Pay != null)
@@ -454,7 +455,7 @@ namespace Front.Equipments
 
             _logger?.LogDebug($"[ FP700 ] newLastReceipt = {result2} / lastReceipt = {result1}");
             string str = result2 > result1 ? result2.ToString() : null;
-            if (str == null)                
+            if (str == null)
                 ObliterateFiscalReceipt();
             return (str, TotalRnd);
         }
@@ -503,7 +504,7 @@ namespace Front.Equipments
                 //ReceiptItem receiptItem = receiptItems[index];
                 string Price = string.Empty;
                 decimal BasePrice = el.Price < el.PriceDealer ? el.PriceDealer : el.Price;
-                decimal discont = el.Price < BasePrice ?  Math.Round(BasePrice * el.Quantity, 2,MidpointRounding.AwayFromZero) - Math.Round(el.Sum, 2, MidpointRounding.AwayFromZero) : 0;                              
+                decimal discont = el.Price < BasePrice ? Math.Round(BasePrice * el.Quantity, 2, MidpointRounding.AwayFromZero) - Math.Round(el.Sum, 2, MidpointRounding.AwayFromZero) : 0;
 
                 if (FiscalArticle.Price != BasePrice)
                     Price = "#" + BasePrice.ToS();
@@ -512,7 +513,7 @@ namespace Front.Equipments
 
                 string data = $"{FiscalArticle.PLU}*{el.Quantity.ToS()}{Price}";
                 if (el.SumTotalDiscount + discont != 0M)
-                    data += ";" + (el.SumTotalDiscount + discont > 0M ? "-" : "+") + Math.Abs(el.SumTotalDiscount+ discont).ToS();
+                    data += ";" + (el.SumTotalDiscount + discont > 0M ? "-" : "+") + Math.Abs(el.SumTotalDiscount + discont).ToS();
 
                 if (!string.IsNullOrWhiteSpace(el.BarCode))
                     data = data + "&" + el.BarCode;
@@ -539,7 +540,7 @@ namespace Front.Equipments
             return true;
         }
 
-        public bool PayReceipt(Receipt pR,decimal pRealSum)
+        public bool PayReceipt(Receipt pR, decimal pRealSum)
         {
             StringBuilder stringBuilder = new StringBuilder();
             Payment Pay = pR?.Payment?.Where(el => el.TypePay == eTypePay.Card)?.FirstOrDefault();
@@ -549,9 +550,9 @@ namespace Front.Equipments
                 Pay = pR?.Payment?.Where(el => el.TypePay == eTypePay.Cash)?.FirstOrDefault();
 
                 decimal Sum = pRealSum;
-                
-                if (Pay != null &&   Pay.SumExt > Sum)
-                    Sum = Pay.SumExt;                     
+
+                if (Pay != null && Pay.SumExt > Sum)
+                    Sum = Pay.SumExt;
 
                 stringBuilder.Append("P+" + Sum.ToString("F2", CultureInfo.InvariantCulture));
             }
@@ -572,7 +573,7 @@ namespace Front.Equipments
                 else
                 {
                     stringBuilder.Append(string.Format((IFormatProvider)CultureInfo.InvariantCulture, "D+{0:0.00}", (object)totalAmount));
-                    stringBuilder.Append("," + GetPayStr(Pay, pR.TypeReceipt));                    
+                    stringBuilder.Append("," + GetPayStr(Pay, pR.TypeReceipt));
                 }
 
             }
@@ -603,15 +604,15 @@ namespace Front.Equipments
             }
             return paySuccess;
         }
-        string GetPayStr(Payment pPay,eTypeReceipt pTR=eTypeReceipt.Sale)
+        string GetPayStr(Payment pPay, eTypeReceipt pTR = eTypeReceipt.Sale)
         {
             return $"{pPay.CodeAuthorization},Магазин,{pPay.NumberTerminal}," +
-            (string.IsNullOrWhiteSpace(pPay.IssuerName) ? "картка" : pPay.IssuerName)+
-             (pPay.TypePay == eTypePay.IssueOfCash ? ",Видача" :(pTR==eTypeReceipt.Sale ? ",оплата" : ",повернення"))+        
+            (string.IsNullOrWhiteSpace(pPay.IssuerName) ? "картка" : pPay.IssuerName) +
+             (pPay.TypePay == eTypePay.IssueOfCash ? ",Видача" : (pTR == eTypeReceipt.Sale ? ",оплата" : ",повернення")) +
         $",{pPay.NumberCard},{pPay.NumberSlip},0.00";
         }
 
-        
+
         /// <summary>
         /// Видача готівки
         /// </summary>
@@ -659,13 +660,13 @@ namespace Front.Equipments
         public void PrintDividerLine(bool shouldPrintBeforeFiscalInfo) => OnSynchronizeWaitCommandResult(eCommand.PrintDividerLine);
 
         public bool CopyReceipt() => OnSynchronizeWaitCommandResult(eCommand.FiscalReceiptCopy, "1");
-        
-        override public bool OpenMoneyBox(int pTime=15) => OnSynchronizeWaitCommandResult(eCommand.OpenMoneyBox);
+
+        override public bool OpenMoneyBox(int pTime = 15) => OnSynchronizeWaitCommandResult(eCommand.OpenMoneyBox);
 
         public bool MoneyMoving(decimal pSum)
         {
             bool res = false;
-            OnSynchronizeWaitCommandResult(eCommand.ServiceCashInOut,pSum==0?"": (pSum > 0 ? "+" : "-") + Math.Abs(pSum).ToS(), (Action<string>)(response =>
+            OnSynchronizeWaitCommandResult(eCommand.ServiceCashInOut, pSum == 0 ? "" : (pSum > 0 ? "+" : "-") + Math.Abs(pSum).ToS(), (Action<string>)(response =>
             {
                 string[] strArray = response.Split(',');
                 if (strArray.Length < 4)
@@ -693,7 +694,7 @@ namespace Front.Equipments
         }
 
         public void OpenReturnReceipt() => OnSynchronizeWaitCommandResult(eCommand.ReturnReceipt, string.Format("{0},{1},{2}", (object)_operatorCode, (object)_operatorPassword, (object)_tillNumber), (Action<string>)(res => _logger?.LogDebug("[ FP700 ] ReturnReceipt res = " + res)));
-            
+
         public bool PrintSeviceReceipt(List<ReceiptText> texts)
         {
             ObliterateFiscalReceipt();
@@ -788,16 +789,16 @@ namespace Front.Equipments
 
         public (decimal, decimal) SubTotal()
         {
-            decimal Total=0, TotalRnd = 0;
+            decimal Total = 0, TotalRnd = 0;
             string res = null;
-            OnSynchronizeWaitCommandResult(eCommand.SubTotal, onResponseCallback:((Action<string>)(response => res = response)));
+            OnSynchronizeWaitCommandResult(eCommand.SubTotal, onResponseCallback: ((Action<string>)(response => res = response)));
             var r = res?.Split(',');
             if (r.Length > 1)
             {
                 decimal.TryParse(r[0], out Total);
                 decimal.TryParse(r[1], out TotalRnd);
             }
-            return (Total / 100M, TotalRnd/100M);
+            return (Total / 100M, TotalRnd / 100M);
         }
 
         public bool ArticleReport() => OnSynchronizeWaitCommandResult(eCommand.ArticleReport, string.Format("{0},{1}", (object)_operatorPassword, (object)eArticleReportType.S));
@@ -881,7 +882,7 @@ namespace Front.Equipments
                 else
                 if (res[0] == 'Z')
                     Time = 0;
-            })));           
+            })));
             return TimeSpan.FromMinutes(Time);
         }
 
@@ -936,7 +937,7 @@ namespace Front.Equipments
                 {
                     int FirstFreeArticle = FindFirstFreeArticle();
                     _logger?.LogDebug("{firstPluNumber} " + FirstFreeArticle.ToString());
-                    bool isSuccess = true;                    
+                    bool isSuccess = true;
                     string str = string.Empty;
                     if (!string.IsNullOrWhiteSpace(pRW.CodeUKTZED))
                         str = "^" + pRW.CodeUKTZED + ",";
@@ -962,7 +963,7 @@ namespace Front.Equipments
                     }));
                     if (!isSuccess)
                         throw new Exception("Fp700 writing article FALSE");
-                   
+
 
                 }
             }
@@ -1036,7 +1037,7 @@ namespace Front.Equipments
         }
         private string GetRoundCash()
         {
-            string Res=null;
+            string Res = null;
             OnSynchronizeWaitCommandResult(eCommand.ReceiptDetailsPrintSetupAdditionalSettings, "IR", onResponseCallback: (Action<string>)(res =>
             {
                 Res = res;
@@ -1044,7 +1045,7 @@ namespace Front.Equipments
             return Res;
         }
 
-        public string SetRoundCash(string pMoney="10")
+        public string SetRoundCash(string pMoney = "10")
         {
             var s = GetRoundCash();
             if (!s.Equals(pMoney))
@@ -1054,7 +1055,7 @@ namespace Front.Equipments
                 Thread.Sleep(200);
                 OnSynchronizeWaitCommandResult(eCommand.SaveSettingInMemory);
                 Thread.Sleep(200);
-            } 
+            }
             return s = GetRoundCash();
         }
 
@@ -1120,14 +1121,14 @@ namespace Front.Equipments
                 }
                 catch (Exception ex)
                 {
-                   // Action<Exception> action = onExceptionCallback;
-                   // if (onExceptionCallback == null)
+                    // Action<Exception> action = onExceptionCallback;
+                    // if (onExceptionCallback == null)
                     //    return;
                     onExceptionCallback?.Invoke(ex);
                 }
                 finally
                 {
-                    _commandsCallbacks.Remove(command);                  
+                    _commandsCallbacks.Remove(command);
                 }
             }));
             try
@@ -1550,7 +1551,7 @@ namespace Front.Equipments
             CloseIfOpened();
             ((Stream)_serialDevice).Dispose();
         }
-        
+
         bool IsStop = false;
         bool IsFinish;
         StringBuilder bb;
@@ -1586,14 +1587,14 @@ namespace Front.Equipments
         public override decimal GetSumInCash()
         {
             decimal Sum = -1;
-            OnSynchronizeWaitCommandResult(eCommand.ServiceCashInOut, "" , (Action<string>)(response =>
+            OnSynchronizeWaitCommandResult(eCommand.ServiceCashInOut, "", (Action<string>)(response =>
             {
                 string[] strArray = response.Split(',');
                 if (strArray.Length < 3)
                     return;
-                if (strArray[0].Equals("P") && strArray.Length>=2)
+                if (strArray[0].Equals("P") && strArray.Length >= 2)
                 {
-                    Sum = strArray[1].ToDecimal()/100m;
+                    Sum = strArray[1].ToDecimal() / 100m;
                 }
                 else
                 {
@@ -1631,9 +1632,9 @@ namespace Front.Equipments
         {
             if (pLine == 0) FirstLineDisplay(ptext);
             else LastLineDisplay(ptext);
-
             return true;
         }
 
+    }
 }
 

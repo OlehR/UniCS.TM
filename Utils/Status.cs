@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Utils.Status;
 
 namespace Utils
 {
@@ -44,7 +45,13 @@ namespace Utils
             State = 1;
             TextState ="Ok";
         }
-
-    }   
+    }
+    public class StatusD<D> : Status
+    {
+        public D Data { get; set; }
+        public StatusD() : base() { }
+        public StatusD(int pState = 0, string pTextState = "Ok"):base(pState ,  pTextState) { }
+        public StatusD(Exception e) : base(e) { }
+    }
 
 }

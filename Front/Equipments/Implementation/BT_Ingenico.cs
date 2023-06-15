@@ -17,13 +17,13 @@ using System.Diagnostics.Eventing.Reader;
 
 namespace Front.Equipments
 {    
-    public class Ingenico :BankTerminal, IDisposable
+    public class BT_Ingenico :BankTerminal, IDisposable
     {        
         private static BPOS1LibClass BPOS;
         private static bool CancelRequested;
         private byte port;        
         
-        private readonly ILogger<Ingenico> Logger;
+        private readonly ILogger<BT_Ingenico> Logger;
         private readonly Encoding Encoding1251 = Encoding.GetEncoding(1251);
         private readonly Encoding Encoding1252 = Encoding.GetEncoding(1252);
 
@@ -33,13 +33,13 @@ namespace Front.Equipments
 
         public Action<DeviceLog> OnDeviceWarning { get; set; }        
 
-        public Ingenico(Equipment pEquipment, IConfiguration pConfiguration, ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null, string pKeyPrefix = null) : 
+        public BT_Ingenico(Equipment pEquipment, IConfiguration pConfiguration, ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null, string pKeyPrefix = null) : 
                                 base(pEquipment, pConfiguration, eModelEquipment.Ingenico, pLoggerFactory)
         {            
             try
             {
                 State = eStateEquipment.Init;
-                Logger = LoggerFactory?.CreateLogger<Ingenico>();
+                Logger = LoggerFactory?.CreateLogger<BT_Ingenico>();
 
                 byte.TryParse(SerialPort, out port);
                 MerchantId = Convert.ToByte(Configuration[$"{KeyPrefix}MerchanId"]);
@@ -113,7 +113,7 @@ namespace Front.Equipments
             }
             catch (Exception ex)
             {
-                ILogger<Ingenico> logger = this.Logger;
+                ILogger<BT_Ingenico> logger = this.Logger;
                 if (logger != null)
                     LoggerExtensions.LogError((ILogger)logger, ex, ex.Message, Array.Empty<object>());
                 OnDeviceWarning?.Invoke(new PosDeviceLog() { Category = TerminalLogCategory.Critical, Message = "Device not connected" });                

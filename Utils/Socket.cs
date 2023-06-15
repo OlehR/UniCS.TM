@@ -133,6 +133,75 @@ namespace Utils
                 client.Shutdown(SocketShutdown.Both);
             }
             return res;
-        }        
+        }
+
+        public async Task<StatusD<D>> StartAsync<D>(string pData, bool IsResultStatus =true)
+        {
+            StatusD<D> res = null;
+            try
+            {
+                await client.ConnectAsync(ipEndPoint);
+                var messageBytes = Encoding.UTF8.GetBytes(pData);
+                var aa = await client.SendAsync(messageBytes, SocketFlags.None);
+
+                // Receive ack.
+                var buffer = new byte[10000];
+
+                var received = client.ReceiveAsync(buffer, SocketFlags.None);
+                //received.Wait(5000);
+                if (received.IsCompleted)
+                {
+                    var r = Encoding.UTF8.GetString(buffer, 0, received.Result);
+                    if (IsResultStatus)
+                        res = JsonConvert.DeserializeObject<StatusD<D>>(r);
+                    else
+                        res = new() { Data = JsonConvert.DeserializeObject<D>(r) };                
+                }
+                else
+                { res = new(-1, "TimeOut"); }
+            }
+            catch (Exception ex)
+            {
+                res = new(ex);
+            }
+            finally
+            {
+                client.Shutdown(SocketShutdown.Both);
+            }
+            return res;
+        }
+
+        public async Task<(Status, byte[])> StartAsyn(byte[] pData)
+        {
+            Status res = null;
+            // Receive ack.
+            var buffer = new byte[10000];
+            try
+            {
+                await client.ConnectAsync(ipEndPoint);
+                //var messageBytes = Encoding.UTF8.GetBytes(pData);
+                var aa = await client.SendAsync(pData, SocketFlags.None);               
+
+                var received = client.ReceiveAsync(buffer, SocketFlags.None);
+               
+                if (received.IsCompleted)
+                {
+                    var r = Encoding.UTF8.GetString(buffer, 0, received.Result);
+                    res = JsonConvert.DeserializeObject<Status>(r);
+                }
+                else
+                { res = new(-1, "TimeOut"); }
+            }
+            catch (Exception ex)
+            {
+                res = new(ex);
+            }
+            finally
+            {
+                client.Shutdown(SocketShutdown.Both);
+            }
+            return (res,buffer);
+        }
+
     }
 }

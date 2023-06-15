@@ -31,8 +31,7 @@ namespace ModelMID.DB
         {
             get { return _DNSName; }
             set
-            {
-                
+            {                
                 _DNSName = value;
                 IPAddress ip;
                 if (IPAddress.TryParse(_DNSName,out ip))
