@@ -856,6 +856,7 @@ namespace Front
                     var LP = new List<Payment>() { r };
                     if (pIssuingCash > 0)
                     {
+                        r.SumPay -= pIssuingCash;
                         Payment C = (Payment)r.Clone();
                         C.TypePay = eTypePay.IssueOfCash;
                         C.SumPay = pIssuingCash;
