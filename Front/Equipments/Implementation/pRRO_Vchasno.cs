@@ -62,10 +62,10 @@ namespace Front.Equipments.Implementation
             if (!IsOpenWorkDay) return new LogRRO(pR) { CodeError = -1, Error = "Не вдалось відкрити зміну" };
 
             var c = pR.Payment?.Where(el => el.TypePay == eTypePay.IssueOfCash);
-
-            if (pR.Payment?.Where(el => el.TypePay != eTypePay.IssueOfCash)?.Any() == true)
+            var RealPay = pR.Payment?.Where(el => el.TypePay == eTypePay.Card || el.TypePay == eTypePay.Cash || el.TypePay == eTypePay.Wallet);
+            if (RealPay?.Any() == true)
             {
-                pR.Payment = pR.Payment?.Where(el => el.TypePay != eTypePay.IssueOfCash);
+                pR.Payment = RealPay;
                 ApiRRO d = new(pR, this) { token = Token, device = Device, tag = pR.NumberReceiptRRO };
                 string dd = d.ToJSON();
                 var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");
@@ -279,8 +279,12 @@ namespace Front.Equipments.Implementation
 
                 foreach (var el in Res.info.printinfo.goods)
                 {
-                    var ww = pR._Wares.Where(w => w.NameWares.Equals(el.name))?.First();
-                    if (ww != null) ww.VatChar = el.taxlit;
+                    try
+                    {
+                        var ww = pR._Wares.Where(w => w.NameWares.Equals(el.name))?.First();
+                        if (ww != null) ww.VatChar = el.taxlit;
+                    }
+                    catch (Exception) { };
                 }
                 var DT=Res.info.printinfo.dt.ToDateTime("d-M-yyyy HH:mm:ss");
                 pR.Fiscals.Add(pR.IdWorkplacePay, new Fiscal()
