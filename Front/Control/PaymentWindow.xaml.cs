@@ -104,7 +104,7 @@ namespace Front.Control
         void RefreshTypePayment()
         {
             TypeReturn = "";
-            if (MW.curReceipt.Payment.Any(x=> x.TypePay == eTypePay.Cash))
+            if (MW.curReceipt.Payment.Any(x => x.TypePay == eTypePay.Cash))
             {
                 TypeReturn = eTypePay.Cash.ToString();
             }
@@ -269,7 +269,11 @@ namespace Front.Control
                 {
                     var res = Convert.ToDecimal(result);
                     if (res >= Global.Settings.SumDisbursementMin && res <= Global.Settings.SumDisbursementMax)
-                        SumCashDisbursement = res;
+                        if (SumCash >= res)
+                            SumCashDisbursement = res;
+                        else
+                            MW.ShowErrorMessage($"Недостатня кількість готівки в касі! Максимальна сума видачі {SumCash}₴");
+
                     else
                         MW.ShowErrorMessage($"Сума видачі готівки повинна бути більша за {Global.Settings.SumDisbursementMin}₴ і меньше за {Global.Settings.SumDisbursementMax}₴");
 
