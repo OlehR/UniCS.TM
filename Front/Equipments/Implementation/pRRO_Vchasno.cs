@@ -439,7 +439,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
                 rows = pR.GetParserWaresReceipt(true, false)?.Select(el => new WaresRRO(el, pRro));
                 pays = pR.Payment?.Where(el => el.TypePay != eTypePay.IssueOfCash && el.TypePay != eTypePay.Wallet).Select(el => new PaysRRO(el));
                 comment_up = String.Join('\n', pR.ReceiptComments);
-                sum = pR.Wares?.Sum(el => Math.Round(el.Price * el.Quantity, 2) - Math.Round(el.SumDiscount + el.SumWallet, 2)) ?? 0m; //pR.SumTotal;
+                sum = pR.Wares?.Sum(el => Math.Round(el.Price * el.Quantity, 2) - el.SumTotalDiscount) ?? 0m; ;
             }
         }
         public decimal sum { get; set; }

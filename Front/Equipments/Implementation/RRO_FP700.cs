@@ -201,9 +201,7 @@ namespace Front.Equipments
         {
             if (pRW != null)
             {
-                SetupArticleTable(pRW);
-                PutToDisplay(pRW.NameWaresReceipt);
-                PutToDisplay($"{pRW.Quantity}x{pRW.Price}={pRW.SumTotal}",2);
+                SetupArticleTable(pRW);               
             }
             return true;
         }

@@ -371,6 +371,8 @@ namespace Front
                 var RRO = GetRRO(pReceipt.IdWorkplacePay);
                 try
                 {
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Start pRRO=> {pRRO.GetHashCode()} TypeOperation=>{pTypeOperation} pMilisecond={pMilisecond}");
+
                     if (pIsStop)
                         RRO?.Stop();
                     while (pMilisecond > 0 && pRRO.TypeOperation != eTypeOperation.NotDefine)
@@ -382,11 +384,11 @@ namespace Front
                     {
                         pRRO.TypeOperation = pTypeOperation;
                         pRRO.LockDT = DateTime.Now;
-                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"TypeOperation=>{pTypeOperation}");
+                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Finish pRRO=> {pRRO.GetHashCode()} TypeOperation=>{pTypeOperation} pMilisecond={pMilisecond}");
                     }
                     else
                     {
-                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"LastTypeOperation=>{pRRO.TypeOperation} LockDT=> {RRO.LockDT} TryTypeOperation=>{pTypeOperation}", eTypeLog.Error);
+                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"pRRO=> {pRRO.GetHashCode()} LastTypeOperation=>{pRRO.TypeOperation} LockDT=> {RRO.LockDT} TryTypeOperation=>{pTypeOperation} pMilisecond={pMilisecond}", eTypeLog.Error);
                         Res = new LogRRO(pReceipt) { TypeOperation = pTypeOperation, TypeRRO = RRO.Model.ToString(), CodeError = -1, Error = $"Не вдалось виконати текучу операцію {pTypeOperation} на RRO{Environment.NewLine}Оскільки не виконалась попередня: LastTypeOperation=>{pRRO.TypeOperation} LockDT=> {RRO.LockDT}" };
                     }
                 }
@@ -761,7 +763,12 @@ namespace Front
             }
             );
         }
-
+        
+        /// <summary>
+        /// Сума готівки з РРО
+        /// </summary>
+        /// <param name="pIdR"></param>
+        /// <returns></returns>
         public decimal GetSumInCash(IdReceipt pIdR)
         {
             var RRO = GetRRO(pIdR.IdWorkplacePay);
@@ -794,6 +801,32 @@ namespace Front
         public bool Print(Receipt pR)
         {
             return Printer?.PrintReceipt(pR) ?? true;
+        }
+
+        public void PutToDisplay(IdReceipt pIdR,string pText, int pLine = 1)
+        {
+            Task.Run(() =>
+            {
+
+                var RRO = GetRRO(pIdR.IdWorkplacePay);
+                LogRRO Res;
+                decimal Sum = -1;
+                try
+                {
+                    Res = WaitRRO(RRO, pIdR, eTypeOperation.PutToDisplay);
+                    if (Res == null)
+                        RRO?.PutToDisplay(pText, pLine);
+                }
+                catch (Exception e)
+                {
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+                }
+                finally
+                {
+                    if (RRO != null)
+                        RRO.TypeOperation = eTypeOperation.NotDefine;
+                }
+            });
         }
         #region POS        
 

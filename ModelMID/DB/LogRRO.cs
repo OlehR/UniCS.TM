@@ -19,8 +19,10 @@ namespace ModelMID.DB
         MoneyIn = 2,
         [Description("MoneyOut")]
         MoneyOut = 4,
-        [Description("Отримання сми готівки")]
+        [Description("Отримання суми готівки")]
         SumInCash = 5,
+        [Description("Вивід на табло")]
+        PutToDisplay =6,
         [Description("Не фіскальний")]
         NoFiscalReceipt = 100,
         [Description("Анульований чек")]
