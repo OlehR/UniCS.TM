@@ -101,7 +101,7 @@ namespace Front.Equipments
         {
             string Str = Encoding.ASCII.GetString(data);
 
-            FileLogger.WriteLogMessage("OnDataReceived=>" + Str);
+            //FileLogger.WriteLogMessage("OnDataReceived=>" + Str);
             if (IsRead && Str.Length >= 6)
             {
                 IsRead = false;
@@ -119,7 +119,7 @@ namespace Front.Equipments
                     // }
                     //}
                     //CountZero = 0;
-                    FileLogger.WriteLogMessage($"OnDataReceived Weight=>{Weight}");
+                    //FileLogger.WriteLogMessage($"OnDataReceived Weight=>{Weight}");
                     OnScalesData?.Invoke(Weight, true);
                 }
                 return true;
