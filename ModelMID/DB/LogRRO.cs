@@ -23,6 +23,8 @@ namespace ModelMID.DB
         SumInCash = 5,
         [Description("Вивід на табло")]
         PutToDisplay =6,
+        [Description("Видача готівки")]
+        IssuingCash =7,
         [Description("Не фіскальний")]
         NoFiscalReceipt = 100,
         [Description("Анульований чек")]
