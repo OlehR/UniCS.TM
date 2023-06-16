@@ -188,6 +188,12 @@ namespace Front.Equipments.Implementation
             return $"IdWorkplacePay=>{IdWorkplacePay}{Environment.NewLine}Url=>{Url}{Environment.NewLine}{r}";
         }
 
+        public override decimal GetSumInCash() 
+        {
+            var r= GetDeviceInfo2();
+            return r.info?.safe??-1m;
+        }
+
         LogRRO GetLogRRO<Ob>(IdReceipt pIdR, Responce<Ob> pR, eTypeOperation pTypeOperation, decimal pSum = 0m, decimal pRefund = 0m)
         {
             var aa = pR.info as ResponseInfo;

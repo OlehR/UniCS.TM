@@ -166,7 +166,7 @@ namespace Front
                     if (Client.BirthDay.AddYears(18).Date <= DateTime.Now.Date)
                         Bl.AddEventAge(curReceipt);
 
-                FileLogger.WriteLogMessage($"MainWindow.OnClientChanged(Client.Wallet=> {pClient.Wallet} SumBonus=>{pClient.SumBonus})", eTypeLog.Full);
+                FileLogger.WriteLogMessage($"MainWindow.OnClientChanged(CodeReceipt=>{curReceipt?.CodeReceipt} Client.CodeClient=>{Client.CodeClient} Client.Wallet=> {pClient.Wallet} SumBonus=>{pClient.SumBonus})", eTypeLog.Full);
             };
 
             Bl.OnAdminBarCode += (pUser) =>

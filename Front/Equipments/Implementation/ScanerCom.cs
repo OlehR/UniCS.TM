@@ -88,7 +88,7 @@ namespace Front.Equipments
         {
             string Str = Encoding.ASCII.GetString(data);
 
-            FileLogger.WriteLogMessage("OnDataReceived=>" + Str);
+            //FileLogger.WriteLogMessage("OnDataReceived=>" + Str);
             Str = Str.Replace("\r", "");
 
             OnBarCode?.Invoke(Str, null);
