@@ -256,7 +256,7 @@ namespace Front.Equipments.Implementation
             decimal sum = 0;
             if (pR != null && pR.Wares != null && pR.Wares.Any())
                 sum = pR.Wares.Where(el => el.IdWorkplacePay == pR.IdWorkplacePay || pR.IdWorkplacePay == 0).
-                        Sum(el => Math.Round(el.Price * el.Quantity, 2) - Math.Round(el.SumDiscount + el.SumWallet, 2));
+                        Sum(el => Math.Round(el.Price * el.Quantity, 2) - el.SumTotalDiscount );
             return sum;
         }
 
