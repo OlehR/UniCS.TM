@@ -41,6 +41,7 @@ namespace ModelMID
         public decimal  CashOutSum { get; set; }
         public decimal SumRound { get; set; }
         public string NumberOrder { get; set; }
+        public decimal Bonus { get; set; }
         public Receipt1C() { }
         public Receipt1C(Receipt pR)
         {
@@ -82,6 +83,9 @@ namespace ModelMID
             if (Cash != null && Fiscal != null && Fiscal.SumExt!=0)
                 SumRound = Fiscal.SumExt;//pR.SumFiscal > 0 && Cash!=null ? pR.SumFiscal-pR.SumTotal :0;
             NumberOrder = pR.NumberOrder;
+            var BonusPay = pR.Payment.Where(r => r.TypePay == eTypePay.Bonus)?.FirstOrDefault();
+            if(BonusPay!=null && BonusPay.PosAddAmount>0)
+            Bonus = Math.Round(pR.SumBonus / BonusPay.PosAddAmount, 2);
         }
 
         public string GetBase64()
@@ -106,7 +110,7 @@ namespace ModelMID
         public bool IsPromotion { get {return  (CodePS > 1000000); } }
         private Int64 CodePS { get; set; }
             
-        public decimal SumBonus { get; set; }
+        public decimal SumBonus { get; set; }        
         public string BarCode2Category { get; set; }
         public int YearPS { get { return CodePS>20000000 ? Convert.ToInt32(CodePS.ToString().Substring((CodePS > 100000000 ? 1 : 0), 4)):0; } }
         public int NumberPS { get { return CodePS > 20000000 ? Convert.ToInt32(CodePS.ToString().Substring((CodePS > 100000000 ? 1 : 0)+4)):0; } }

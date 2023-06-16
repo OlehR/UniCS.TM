@@ -524,7 +524,7 @@ namespace Front
                             if(pSumWallet != 0)
                               Bl.db.ReplacePayment(  new Payment(R) {IdWorkplacePay=R.IdWorkplace, IsSuccess = true, TypePay = eTypePay.Wallet, SumPay = pSumWallet, SumExt = pSumWallet } );
                             if (pSumBonus != 0)
-                                Bl.db.ReplacePayment(new Payment(R) { IdWorkplacePay = R.IdWorkplace, IsSuccess = true, TypePay = eTypePay.Bonus, SumPay = R.SumTotal, SumExt = pSumBonus });
+                                Bl.db.ReplacePayment(new Payment(R) { IdWorkplacePay = R.IdWorkplace, IsSuccess = true, TypePay = eTypePay.Bonus, SumPay = R.SumTotal, SumExt = pSumBonus, PosAddAmount=R.Client?.PercentBonus??Client?.PercentBonus??0m });
                             R.Payment = Bl.GetPayment(R);
                             if ((pSumWallet > 0 || pSumBonus>0) && R.ReCalc())
                             {
