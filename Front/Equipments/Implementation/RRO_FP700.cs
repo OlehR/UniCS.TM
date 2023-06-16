@@ -1615,6 +1615,15 @@ namespace Front.Equipments
         
         override public bool PutToDisplay(string pText, int pLine = 1)
         {
+            if (string.IsNullOrEmpty(pText))
+                return false;
+            if(pLine==0)
+            {
+                var R=pText.Split(Environment.NewLine);
+                if (R.Length >= 1) PutToDisplay(R[0], 1);
+                if (R.Length >= 1) PutToDisplay(R[1], 2);
+            }
+            else
             if(pLine== 1) ClearDisplay();
             if (!string.IsNullOrEmpty(pText))
             {
