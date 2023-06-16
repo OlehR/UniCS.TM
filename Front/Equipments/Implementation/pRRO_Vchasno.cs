@@ -443,7 +443,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
             }
         }
         public decimal sum { get; set; }
-        public decimal round { get { return -sum + pays?.Sum(r => r.sum) ?? 0m; } }
+        public decimal round { get { return Math.Abs(-sum + (pays?.Sum(r => r.sum)??0m)) <0.1m ? - sum + pays?.Sum(r => r.sum) ?? 0m:0m; } }
         public string comment_up { get; set; }
         public string comment_down { get; set; }
         public IEnumerable<WaresRRO> rows { get; set; }
