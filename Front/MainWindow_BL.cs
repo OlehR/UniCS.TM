@@ -105,7 +105,8 @@ namespace Front
                             ReceiptWares cl = (ReceiptWares)pReceipt.GetLastWares.Clone();
                             EF.ProgramingArticleAsync( cl);
                         }
-                        EF.PutToDisplay(pReceipt,$"{CurWares.NameWaresReceipt}{Environment.NewLine}{CurWares.Quantity}x{CurWares.Price}={CurWares.SumTotal}", 0);
+                        else
+                         EF.PutToDisplay(pReceipt,$"{CurWares.NameWaresReceipt}{Environment.NewLine}{CurWares.Quantity}x{CurWares.Price}={CurWares.SumTotal}", 0);
                     }
                     // if (curReceipt?.Wares?.Count() == 0 && curReceipt.OwnBag==0d) CS.WaitClear();
 

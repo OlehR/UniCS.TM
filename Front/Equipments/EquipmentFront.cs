@@ -739,13 +739,17 @@ namespace Front
             {
 
                 var RRO = GetRRO(pRW.IdWorkplacePay);
+                if (RRO == null)
+                    return false;
                 LogRRO Res;
-
                 try
                 {
                     Res = WaitRRO(RRO, pRW, eTypeOperation.ProgramingArticle);
                     if (Res == null)
-                        RRO?.ProgramingArticle(pRW);
+                    {
+                        RRO.ProgramingArticle(pRW);
+                        RRO.PutToDisplay( $"{pRW.NameWaresReceipt}{Environment.NewLine}{pRW.Quantity}x{pRW.Price}={pRW.SumTotal}", 0);
+                    }                
                 }
                 catch (Exception e)
                 {
@@ -805,6 +809,7 @@ namespace Front
 
         public void PutToDisplay(IdReceipt pIdR,string pText, int pLine = 1)
         {
+            return;//!!!!TMP  Треба придумати щось щоб не було проблем
             Task.Run(() =>
             {
 

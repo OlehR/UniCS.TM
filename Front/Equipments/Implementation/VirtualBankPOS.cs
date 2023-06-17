@@ -63,7 +63,7 @@ namespace Front.Equipments.Implementation
             Thread.Sleep(Interval);
             SetStatus(eStatusPos.TransactionIsAlreadyComplete);
             Thread.Sleep(Interval);
-            return GetPaymentResultModel(pAmount);
+            return GetPaymentResultModel(pAmount+ pCash);
         }
 
         public override Payment Refund(decimal pAmount, string pRRN, int IdWorkPlace = 0)

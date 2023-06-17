@@ -921,6 +921,7 @@ namespace Front.Equipments
             {
                 if (!res.Trim().ToUpper().StartsWith("P"))
                     return;
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Start {res}");
                 db.DelAllFiscalArticle();
             }
         }));
