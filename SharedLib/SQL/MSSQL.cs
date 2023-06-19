@@ -5,6 +5,7 @@ using System.Text;
 using System.Data.SqlClient;
 using Dapper;
 using ModelMID;
+using Utils;
 
 namespace SharedLib
 {
@@ -16,10 +17,16 @@ namespace SharedLib
 
         //public TypeCommit TypeCommit { get; set; }
         public MSSQL(String varConectionString= @"Server=10.1.0.22;Database=DW;Uid=dwreader;Pwd=DW_Reader;Connect Timeout=30;"/* "Server=SQLSRV1;Database=DW;Trusted_Connection=True;"*/) :base(varConectionString)
-        {            
-            connection = new SqlConnection(varConectionString);
-            connection.Open();
-            TypeCommit = eTypeCommit.Auto;
+        {
+            try
+            {
+                connection = new SqlConnection(varConectionString);
+                connection.Open();
+                TypeCommit = eTypeCommit.Auto;
+            } catch(Exception e) 
+            { 
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name,e);
+            }
         }
 
 

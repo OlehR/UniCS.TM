@@ -445,7 +445,6 @@ namespace Front
                 }
             }
 
-
             SetStateView(eStateMainWindows.StartWindow);
 
             Task.Run(() => Bl.ds.SyncDataAsync());
@@ -493,25 +492,23 @@ namespace Front
 
         void SetPropertyChanged()
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("GetBackgroundColor"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnabledPaymentButton"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCheckReturn"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCheckPaid"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClientName"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsAgeRestrict"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnabledFindButton"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsLockSale"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsAddNewWares"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WaitAdminText"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CS"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Client"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MoneySum"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WaresQuantity"));
-
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsReceiptPostpone"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsReceiptPostponeNotNull"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsOrderReceipt"));
-            
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(GetBackgroundColor)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsEnabledPaymentButton)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsCheckReturn)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsCheckPaid)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ClientName)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsAgeRestrict)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsEnabledFindButton)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsLockSale)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsAddNewWares)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(WaitAdminText)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CS)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Client)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MoneySum)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(WaresQuantity)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsReceiptPostpone)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsReceiptPostponeNotNull)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsOrderReceipt)));            
             //ChangeWaitAdminText();
         }
 
@@ -896,9 +893,9 @@ namespace Front
                         default:
                             break;
                     }
+                    SetPropertyChanged();
                 }));
-                r.Wait(new TimeSpan(0, 0, 0, 100));
-                SetPropertyChanged();
+                r.Wait(new TimeSpan(0, 0, 0, 100));                
             }
         }
 
