@@ -199,11 +199,19 @@ namespace Front.Equipments
 
         override public bool ProgramingArticle(ReceiptWares pRW)
         {
+            FiscalArticle Res = null;
             if (pRW != null)
             {
-                SetupArticleTable(pRW);               
+                try
+                {
+                    Res = SetupArticleTable(pRW);
+                }
+                catch (Exception e)
+                {
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+                }
             }
-            return true;
+            return Res != null;
         }
 
         override public string GetTextLastReceipt()
@@ -921,9 +929,10 @@ namespace Front.Equipments
             {
                 if (!res.Trim().ToUpper().StartsWith("P"))
                     return;
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Start {res}");
-                db.DelAllFiscalArticle();
+                
+                db.DelAllFiscalArticle();               
             }
+            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"End {res}");
         }));
 
         public FiscalArticle SetupArticleTable(ReceiptWares pRW)
@@ -935,35 +944,30 @@ namespace Front.Equipments
                 if (!(pRW.Price == 0M))
                 {
                     int FirstFreeArticle = FindFirstFreeArticle();
-                    _logger?.LogDebug("{firstPluNumber} " + FirstFreeArticle.ToString());
+                    if (FirstFreeArticle == -1)
+                        throw new Exception("Fp700 FindFirstFreeArticle return -1");                   
                     bool isSuccess = true;
                     string str = string.Empty;
                     if (!string.IsNullOrWhiteSpace(pRW.CodeUKTZED))
                         str = "^" + pRW.CodeUKTZED + ",";
                     string data = string.Format("P{0}{1},1,{2}{3},{4},", (object)TaxGroup(pRW), (object)FirstFreeArticle, (object)str, (object)pRW.Price.ToString("F2", (IFormatProvider)CultureInfo.InvariantCulture), (object)_operatorPassword) + pRW.NameWaresReceipt.LimitCharactersForTwoLines(_maxItemLength, '\t');
-                    _logger?.LogDebug("[FP700] SetupArticleTable " + data);
-                    OnSynchronizeWaitCommandResult(eCommand.ArticleProgramming, data, (Action<string>)(res =>
+                     OnSynchronizeWaitCommandResult(eCommand.ArticleProgramming, data, (Action<string>)(res =>
                     {
                         if (res.Trim().ToUpper().Equals("F"))
                         {
                             ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Error, "Fp700 writing article FALSE: " + res)
                             { Status = eStatusRRO.Error, IsСritical = true });
-
                             isSuccess = false;
-                            _logger?.LogDebug($"Fp700 writing article FALSE: {res}  Name :{pRW.NameWaresReceipt}, PLU={FirstFreeArticle},  Price={pRW.Price}");
-                        }
+                         }
                         else
                         {
                             if (!res.Trim().ToUpper().Equals("P")) return;
                             article = new FiscalArticle() { CodeWares = pRW.CodeWares, Price = pRW.Price, NameWares = pRW.NameWaresReceipt, PLU = FirstFreeArticle };
-                            db.AddFiscalArticle(article);
-                            _logger?.LogDebug($"Fp700 writing article TRUE: {res} PLU {FirstFreeArticle}" + res);
+                            db.AddFiscalArticle(article);                            
                         }
                     }));
                     if (!isSuccess)
                         throw new Exception("Fp700 writing article FALSE");
-
-
                 }
             }
 
@@ -972,14 +976,12 @@ namespace Front.Equipments
 
         private void ClearDisplay()
         {
-            _logger?.LogDebug("Fp700 clear display start");
-            OnSynchronizeWaitCommandResult(eCommand.ClearDisplay);
-            _logger?.LogDebug("Fp700 clear display finish");
+            OnSynchronizeWaitCommandResult(eCommand.ClearDisplay);                
         }
 
         private int FindFirstFreeArticle()
         {
-            int firstPluNumber = 1;
+            int firstPluNumber = -1;
             OnSynchronizeWaitCommandResult(eCommand.ArticleProgramming, "X", (Action<string>)(response =>
             {
                 int startIndex = -1;
@@ -1110,19 +1112,12 @@ namespace Front.Equipments
             {
                 try
                 {
-                    _logger?.LogDebug(string.Format("[FP700] Response for command {0}", (object)command));
-                    onResponseCallback?.Invoke(response);
-                    FileLogger.WriteLogMessage(this, "OnSynchronizeWaitCommandResult", $"{command} {data} Res=>{response}");
-                    //Action<string> action = onResponseCallback;
-                    //if (action != null)
-                    //    action(response);
+                    FileLogger.WriteLogMessage(this, "OnSynchronizeWaitCommandResult", $"CallBackResult {command} Data=>{data} Res=>{response}");
+                    onResponseCallback?.Invoke(response);                    
                     isResultGot = true;
                 }
                 catch (Exception ex)
-                {
-                    // Action<Exception> action = onExceptionCallback;
-                    // if (onExceptionCallback == null)
-                    //    return;
+                {                    
                     onExceptionCallback?.Invoke(ex);
                 }
                 finally
@@ -1132,9 +1127,9 @@ namespace Front.Equipments
             }));
             try
             {
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Send {command} Data=>{data} _commandsCallbacks.Count=>{_commandsCallbacks.Count()}");
                 if (!SendPackage(command, data))
-                {
-                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $" RES=>{false} {command} {data} ");
+                {                   
                     return false;
                 }
                 StaticTimer.Wait((Func<bool>)(() => !isResultGot));
@@ -1150,8 +1145,8 @@ namespace Front.Equipments
 
         public bool SendPackage(eCommand command, string data = "", int waitingTimeout = 10)
         {
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"{command} {data}");
-            _logger?.LogDebug("SendPackage start");
+           // FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"{command} {data}");
+            
             bool flag = command != eCommand.ClearDisplay && command != eCommand.ShiftInfo && command != eCommand.DiagnosticInfo && command != eCommand.EveryDayReport && command != eCommand.LastDocumentsNumbers && command != eCommand.ObliterateFiscalReceipt && command != eCommand.PaperCut && command != eCommand.GetDateTime && command != eCommand.PaperPulling && command != eCommand.LastZReportInfo && command != eCommand.PrintDiagnosticInformation;
             if (!IsZReportAlreadyDone & flag)
                 return false;
@@ -1161,20 +1156,15 @@ namespace Front.Equipments
                 return false;
             if (!_isReady)
             {
-                _logger?.LogDebug("SendPackage printer not ready. Start waiting");
                 _isReady = WaitForReady(waitingTimeout);
-                _logger?.LogDebug("SendPackage printer not ready. Waiting complete");
             }
             if (!_isReady)
             {
-                _logger?.LogDebug("SendPackage printer not ready. Exiting");
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Not Ready {command}",eTypeLog.Error);
                 return false;
             }
-            _logger?.LogDebug(string.Format("SendPackage executing command start : {0}", (object)command));
-            _logger?.LogDebug("SendPackage command  data: " + data);
             byte[] bytes = Encoding.Convert(Encoding.UTF8, Encoding.GetEncoding(1251), Encoding.UTF8.GetBytes(data));
-            _logger?.LogDebug("SendPackage command  data converted : " + Encoding.GetEncoding(1251).GetString(bytes));
-            _logger?.LogDebug("--------------------------------------------------------------------------------");
+            
             byte[] buffer = new byte[218];
             int num1 = 0;
             int length = bytes.Length;
@@ -1234,11 +1224,12 @@ namespace Front.Equipments
             int index12 = num17;
             int count = index12 + 1;
             numArray10[index12] = (byte)3;
+            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Sended {command} Buffer=>{Encoding.GetEncoding(1251).GetString(buffer)}");
+
             ((Stream)_serialDevice).Write(buffer, 0, count);
             ((Stream)_serialDevice).Flush();
             _isReady = false;
-            _logger?.LogDebug("SendPackage executing command complete");
-            return true;
+          return true;
         }
 
         private bool OnDataReceived(byte[] data)
@@ -1316,10 +1307,7 @@ namespace Front.Equipments
 
             if (!_commandsCallbacks.ContainsKey(cmdNumber))
                 return;
-            Action<string> commandsCallback = _commandsCallbacks[cmdNumber];
-            if (commandsCallback == null)
-                return;
-            commandsCallback(str1);
+           _commandsCallbacks[cmdNumber]?.Invoke(str1);           
         }
 
         private string GetStatusBitDescriptionBg(int byteIndex, int bitIndex)
@@ -1601,15 +1589,7 @@ namespace Front.Equipments
                         return;
                 }
             }));
-            /* OnSynchronizeWaitCommandResult(eCommand.AditionalInfo, onResponseCallback: ((Action<string>)(res =>
-             {                
-                 if (string.IsNullOrEmpty(res))
-                     return ;
-                 string[] strArray = res.Split(',');
-                 if (strArray.Length < 1)
-                     return ;
-                  Sum= strArray[0].ToDecimal();
-             })));*/
+            
             return Sum;
         }
 
@@ -1622,9 +1602,10 @@ namespace Front.Equipments
             {
                 var R=pText.Split(Environment.NewLine);
                 if (R.Length >= 1) PutToDisplay(R[0], 1);
-                if (R.Length >= 1) PutToDisplay(R[1], 2);
+                if (R.Length >= 2) PutToDisplay(R[1], 2);
+                return true;
             }
-            else
+            
             if(pLine== 1) ClearDisplay();
             if (!string.IsNullOrEmpty(pText))
             {

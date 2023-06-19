@@ -748,7 +748,7 @@ namespace Front
                     if (Res == null)
                     {
                         RRO.ProgramingArticle(pRW);
-                        RRO.PutToDisplay( $"{pRW.NameWaresReceipt}{Environment.NewLine}{pRW.Quantity}x{pRW.Price}={pRW.SumTotal}", 0);
+                        //RRO.PutToDisplay( $"{pRW.NameWaresReceipt}{Environment.NewLine}{pRW.Quantity}x{pRW.Price}={pRW.SumTotal}", 0);
                     }                
                 }
                 catch (Exception e)
@@ -796,20 +796,10 @@ namespace Front
             }
             return Sum;
         }
-        #endregion
-        /// <summary>
-        /// Друк чека на (термо)принтері
-        /// </summary>
-        /// <param name="pR"></param>
-        /// <returns></returns>
-        public bool Print(Receipt pR)
-        {
-            return Printer?.PrintReceipt(pR) ?? true;
-        }
 
-        public void PutToDisplay(IdReceipt pIdR,string pText, int pLine = 1)
+        public void PutToDisplay(IdReceipt pIdR, string pText, int pLine = 1)
         {
-            return;//!!!!TMP  Треба придумати щось щоб не було проблем
+            //return;//!!!!TMP  Треба придумати щось щоб не було проблем
             Task.Run(() =>
             {
 
@@ -833,6 +823,17 @@ namespace Front
                 }
             });
         }
+        #endregion
+        /// <summary>
+        /// Друк чека на (термо)принтері
+        /// </summary>
+        /// <param name="pR"></param>
+        /// <returns></returns>
+        public bool Print(Receipt pR)
+        {
+            return Printer?.PrintReceipt(pR) ?? true;
+        }
+       
         #region POS        
 
         /// <summary>
