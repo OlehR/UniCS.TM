@@ -756,7 +756,7 @@ namespace Front
                     if (RRO != null)
                         RRO.State = eStateEquipment.Error;
                     FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
-                    SetStatus?.Invoke(new StatusEquipment(RRO.Model, eStateEquipment.Error, e.Message) { IsСritical = true });
+                    //SetStatus?.Invoke(new StatusEquipment(RRO.Model, eStateEquipment.Error, e.Message) { IsСritical = true });
                 }
                 finally
                 {
@@ -808,7 +808,7 @@ namespace Front
                 decimal Sum = -1;
                 try
                 {
-                    Res = WaitRRO(RRO, pIdR, eTypeOperation.PutToDisplay);
+                    Res = WaitRRO(RRO, pIdR, eTypeOperation.PutToDisplay,0,false);
                     if (Res == null)
                         RRO?.PutToDisplay(pText, pLine);
                 }
