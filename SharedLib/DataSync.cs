@@ -738,7 +738,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                 try
                 {
                     string parUrl = "http://api.spar.uz.ua/SMS";
-                    var a = new { Phone = pPhone, Company = "2" };
+                    var a = new { Phone = pPhone, Company = Global.Settings.CodeTM==56?"1":"2" };
                     string pBody = a.ToJSON();
                     int parWait = 2000;
                     string parContex = "application/json";

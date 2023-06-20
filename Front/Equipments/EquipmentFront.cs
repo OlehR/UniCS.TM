@@ -797,12 +797,11 @@ namespace Front
             return Sum;
         }
 
-        public void PutToDisplay(IdReceipt pIdR, string pText, int pLine = 1)
+        public void PutToDisplay(IdReceipt pIdR, string pText=null, int pLine = 1)
         {
             //return;//!!!!TMP  Треба придумати щось щоб не було проблем
             Task.Run(() =>
             {
-
                 var RRO = GetRRO(pIdR.IdWorkplacePay);
                 LogRRO Res;
                 decimal Sum = -1;

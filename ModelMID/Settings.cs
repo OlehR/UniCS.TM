@@ -14,6 +14,10 @@ namespace ModelMID
         /// </summary>
         public int CodeWarehouse { get; set; }
         /// <summary>
+        /// 55-Вопак,56-Spar
+        /// </summary>
+        public int CodeTM { get; set; }
+        /// <summary>
         /// Мінімальна сума видачі готівки через касу
         /// </summary>
         public decimal SumDisbursementMin { get; set; }

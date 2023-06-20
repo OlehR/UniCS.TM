@@ -659,7 +659,7 @@ namespace Front.Equipments
                     return;
                 res = strArray[3];
             })));
-            ClearDisplay();
+            //ClearDisplay();
             return res;
         }
 
@@ -1594,7 +1594,7 @@ namespace Front.Equipments
         }
 
         
-        override public bool PutToDisplay(string pText, int pLine = 1)
+        override public bool PutToDisplay(string pText=null, int pLine = 1)
         {
             if (string.IsNullOrEmpty(pText))
                 return false;
