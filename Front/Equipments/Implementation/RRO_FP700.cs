@@ -302,7 +302,7 @@ namespace Front.Equipments
                     { Status = eStatusRRO.Error, IsСritical = true });
                 }
                 ClearDisplay();
-                DeleteAllArticles();
+                //DeleteAllArticles();
                 return (num & (OnSynchronizeWaitCommandResult(eCommand.PaperCut) ? 1 : 0)) != 0 ? eDeviceConnectionStatus.Enabled : eDeviceConnectionStatus.InitializationError;
             }
             catch (Exception ex)
@@ -527,9 +527,9 @@ namespace Front.Equipments
                     data += "!" + el.ExciseStamp;
 
                 int num2 = OnSynchronizeWaitCommandResult(eCommand.RegisterProductInReceiptWithDisplay, data, (Action<string>)(res => { })) ? 1 : 0;
-                string errCode = string.Empty;
-                OnSynchronizeWaitCommandResult(eCommand.GetLastError, onResponseCallback: ((Action<string>)(res => errCode = res)));
-                _logger?.LogDebug("[ FP700 ] FillUpItemLastCode: " + errCode);
+                //string errCode = string.Empty;
+                //OnSynchronizeWaitCommandResult(eCommand.GetLastError, onResponseCallback: ((Action<string>)(res => errCode = res)));
+                //_logger?.LogDebug("[ FP700 ] FillUpItemLastCode: " + errCode);
                 if (num2 == 0)
                     throw new Exception("Registed product in receipt");
             }
@@ -943,6 +943,7 @@ namespace Front.Equipments
             {
                 if (!(pRW.Price == 0M))
                 {
+                    Thread.Sleep(5);
                     int FirstFreeArticle = FindFirstFreeArticle();
                     if (FirstFreeArticle == -1)
                         throw new Exception("Fp700 FindFirstFreeArticle return -1");                   
@@ -1112,8 +1113,8 @@ namespace Front.Equipments
             {
                 try
                 {
+                   onResponseCallback?.Invoke(response);
                     FileLogger.WriteLogMessage(this, "OnSynchronizeWaitCommandResult", $"CallBackResult {command} Data=>{data} Res=>{response}");
-                    onResponseCallback?.Invoke(response);                    
                     isResultGot = true;
                 }
                 catch (Exception ex)
@@ -1132,7 +1133,7 @@ namespace Front.Equipments
                 {                   
                     return false;
                 }
-                StaticTimer.Wait((Func<bool>)(() => !isResultGot));
+                StaticTimer.Wait((Func<bool>)(() => !isResultGot),3);
                 return isResultGot;
             }
             catch (Exception ex)
