@@ -748,7 +748,7 @@ namespace Front
                     if (Res == null)
                     {
                         RRO.ProgramingArticle(pRW);
-                        //RRO.PutToDisplay( $"{pRW.NameWaresReceipt}{Environment.NewLine}{pRW.Quantity}x{pRW.Price}={pRW.SumTotal}", 0);
+                        RRO.PutToDisplay( $"{pRW.NameWaresReceipt}{Environment.NewLine}{pRW.Quantity}x{pRW.Price}={pRW.SumTotal}", 0);
                     }                
                 }
                 catch (Exception e)

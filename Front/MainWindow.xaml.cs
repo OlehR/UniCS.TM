@@ -1543,16 +1543,17 @@ namespace Front
                 r = await Bl.ds.Send1CClientAsync(clientNew);
             }).Wait();
 
-            if (r != eReturnClient.Ok)
-            {
-                MessageBox.Show(r.GetDescription(), "Помилка! Карточка не збереглась на сервері!!!");
-            }
-            else
-            {
+            //if (r != eReturnClient.Ok)
+            //{
+                MessageBox.Show(r.GetDescription(), r != eReturnClient.Ok?"Помилка! Карточка не збереглась на сервері!!!":"Карточка успішно збережена.");
+           // }
+            //else
+           // {
                 clientNew.State = r == eReturnClient.Ok ? 1 : 0;
                 Bl.db.ReplaceClientNew(clientNew);
+            if (r == eReturnClient.Ok)
                 CancelIssueCard(null, null);
-            }
+            //}
 
         }
 
