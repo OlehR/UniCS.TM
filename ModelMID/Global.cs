@@ -16,9 +16,9 @@ namespace ModelMID
         public static Action<StatusBD> OnStatusChanged { get; set; }
         //public static Action<eStateScale> OnChangedStatusScale { get; set; }
         public static Action<Client, int> OnClientChanged { get; set; }
-        public static Action<Receipt> OnReceiptChanged { get; set; }        
+        public static Action<Receipt> OnReceiptChanged { get; set; }
 
-        public static Action<int, eTypeWindows,string> OnClientWindows { get; set; }
+        public static Action<int, eTypeWindows, string> OnClientWindows { get; set; }
 
         public static SortedList<Guid, WorkPlace> WorkPlaceByTerminalId;
         public static SortedList<int, WorkPlace> WorkPlaceByWorkplaceId;
@@ -38,7 +38,7 @@ namespace ModelMID
 
         public static int IdWorkPlaceIssuingCash;
 
-        public static int CodeWarehouse = 9;
+        public static int CodeWarehouse { get { return Settings?.CodeWarehouse??0; } }
 
         public static bool IsTest = false;
         /// <summary>

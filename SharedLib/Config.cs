@@ -94,13 +94,13 @@ namespace SharedLib
             { Global.IsGenQrCoffe = false; }
 
 
-            try
+            /*try
             {
                 Global.CodeWarehouse = 9;
                 Global.CodeWarehouse = Convert.ToInt32(AppConfiguration["MID:CodeWarehouse"]);
             }
             catch
-            { Global.CodeWarehouse = 9; }
+            { Global.CodeWarehouse = 9; }*/
 
             try
             {

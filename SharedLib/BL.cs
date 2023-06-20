@@ -39,7 +39,7 @@ namespace SharedLib
             var WP= Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace);
             if (WP != null)
             {
-                Global.CodeWarehouse = WP.CodeWarehouse;
+                //Global.CodeWarehouse = WP.CodeWarehouse;
                 Global.DefaultCodeDealer = WP.CodeDealer;
             }
 
