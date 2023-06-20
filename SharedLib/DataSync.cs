@@ -617,10 +617,11 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             }
         }
 
-        public async Task<bool> Send1CClientAsync(ClientNew pC)
+        public async Task<eReturnClient> Send1CClientAsync(ClientNew pC)
         {
+            eReturnClient Res = eReturnClient.ErrorConnect;
             if (pC == null)
-                return true;
+                return eReturnClient.Error;
             try
             {  
                 var body = soapTo1C.GenBody("IssuanceOfCards", new Parameters[] 
@@ -636,16 +637,23 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
 
                 var res = await soapTo1C.RequestAsync(Global.Server1C, body, 5000, "application/json");
 
-                if (!string.IsNullOrEmpty(res) && res.Equals("0"))
-                    return true;
-
-                return false;
+                if (!string.IsNullOrEmpty(res))
+                {
+                    int r = 0;
+                    if (int.TryParse(res, out r))
+                    {
+                        Res = (eReturnClient)r;
+                    }
+                    else
+                        Res = eReturnClient.Error;
+                }
             }
             catch (Exception ex)
             {                
                // Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(el.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "Send1CReceiptWaresDeletedAsync=>" + el.CodePeriod.ToString() + " " + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
-                return false;
+               // return false;
             }
+            return Res;
         }
 
 
@@ -671,8 +679,8 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     bool Res = true;
                     foreach (var el in Cl)
                     {
-                        bool res = await Send1CClientAsync(el);
-                        if (res)
+                        eReturnClient res = await Send1CClientAsync(el);
+                        if (res==eReturnClient.Ok || res== eReturnClient.ErrorCardIsUse || res==eReturnClient.ErrorCardIsAlreadyPresent)
                             ldb.SetConfirmClientNew(el);
                         else
                             Res = false;
@@ -722,6 +730,42 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             return true;
         }
 
+        public StatusD<string> GetVerifySMS(string pPhone)
+        {
+            StatusD<string>  Res = new();
+             Task.Run(async () =>
+            {
+                try
+                {
+                    string parUrl = "http://api.spar.uz.ua/SMS";
+                    var a = new { Phone = pPhone, Company = "2" };
+                    string pBody = a.ToJSON();
+                    int parWait = 2000;
+                    string parContex = "application/json";
+                    string res = null;
+                    HttpClient client = new HttpClient();
+                    client.Timeout = TimeSpan.FromMilliseconds(parWait);
+
+                    HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, parUrl);
+
+                    if (!string.IsNullOrEmpty(pBody))
+                        requestMessage.Content = new StringContent(pBody, Encoding.UTF8, parContex);
+                    var response = await client.SendAsync(requestMessage);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        res = await response.Content.ReadAsStringAsync();
+                        Res = JsonConvert.DeserializeObject<StatusD<string>>(res);
+                        return ;
+                    }
+                }
+                catch (Exception e) { new StatusD<string>(e); return;  }
+
+                Res= new StatusD<string>(-1, "Не отримано код");
+            }).Wait();
+            return Res;
+        }
+
     }
 
     public class WeightReceipt
@@ -733,5 +777,6 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
         public int IdWorkplace { get; set; }
         public int CodeReceipt { get; set; }
         public decimal Quantity { get; set; }
-    }
+    }   
+
 }

@@ -420,4 +420,23 @@ namespace ModelMID
         NotDefine = 0,
         Ok = 1
     }
+
+    public enum eReturnClient
+    {
+
+        [Description("Помилка")]
+        Error = -9999999,
+        [Description("Не вдале з'єднання з 1С")]
+        ErrorConnect = -99,
+        [Description("Помилка збереження в 1С спробуйте пізніше")]
+        ErrorWriteDB = -3,
+        [Description("Дана картка вже видана. Операція реєстрації не виконана!")]
+        ErrorCardIsAlreadyPresent = -2,
+        [Description("По даній картці вже є обороти в системі. Операція реєстрації не виконана!")]   
+        ErrorCardIsUse = -1,
+        [Description("Скасовано")]
+        ErrorInputData = -0,
+        [Description("Карточка успішно зареєстрована")]
+        Ok = 1
+    }
 }

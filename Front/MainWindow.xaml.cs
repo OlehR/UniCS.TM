@@ -384,7 +384,11 @@ namespace Front
                 {
                     if (!string.IsNullOrEmpty(BarCodeAdminSSC))
                     {
-                        AdminSSC = Bl.GetUserByBarCode(BarCodeAdminSSC);
+                        try
+                        {
+                            AdminSSC = Bl.GetUserByBarCode(BarCodeAdminSSC);
+                        }
+                        catch (Exception e) { };
                         if (Global.TypeWorkplace == eTypeWorkplace.CashRegister)
                             Access.СurUser = AdminSSC;
                     }
@@ -1511,15 +1515,24 @@ namespace Front
 
         private void IssueNewCardButton(object sender, RoutedEventArgs e)
         {
-            ClientNew clientNew = new ClientNew() { BarcodeCashier = AdminSSC?.BarCode, BarcodeClient = BarcodeIssueCard, IdWorkplace = Global.IdWorkPlace, Phone = PhoneIssueCard,DateCreate=DateTime.Now };
-            Task.Run(async () => {
-                bool r = await Bl.ds.Send1CClientAsync(clientNew);
-                if (r)
-                    clientNew.State = 1;
+            ClientNew clientNew = new ClientNew() { BarcodeCashier = AdminSSC?.BarCode, BarcodeClient = BarcodeIssueCard, IdWorkplace = Global.IdWorkPlace, Phone = PhoneIssueCard, DateCreate = DateTime.Now };
+            eReturnClient r = eReturnClient.Error;
+            Task.Run(async () =>
+            {
+                r = await Bl.ds.Send1CClientAsync(clientNew);
+            }).Wait();
+
+            if (r != eReturnClient.Ok )
+            {
+                MessageBox.Show(r.GetDescription(), "Помилка! Карточка не збереглась на сервері!!!");
+            }
+            else
+            {
+                clientNew.State = r == eReturnClient.Ok ? 1 : 0;
                 Bl.db.ReplaceClientNew(clientNew);
-            });
+                CancelIssueCard(null, null);
+            }
             
-            CancelIssueCard(null, null);
         }
 
         private void CancelIssueCard(object sender, RoutedEventArgs e)
