@@ -54,10 +54,10 @@ namespace Front
                 if (ReceiptPostpone == null)
                     return true;
                 else
-                    if (curReceipt == null || curReceipt.Wares==null || !curReceipt.Wares.Any())
-                        return true;
-                    else
-                        return false;
+                    if (curReceipt == null || curReceipt.Wares == null || !curReceipt.Wares.Any())
+                    return true;
+                else
+                    return false;
             }
         }
 
@@ -150,7 +150,10 @@ namespace Front
         public double GiveRest { get; set; } = 0;
         public string BarcodeIssueCard { get; set; } = string.Empty;
         public string PhoneIssueCard { get; set; } = string.Empty;
+        public string VerifyCode { get; set; } = string.Empty;
+        private StatusD<string> LastVerifyCode = new();
         public bool IsBarcodeIssueCard { get { return !string.IsNullOrEmpty(BarcodeIssueCard); } }
+        public bool IsGetCard { get; set; } = false;
 
         public eTypeMonitor TypeMonitor
         {
@@ -282,7 +285,7 @@ namespace Front
                     case eTypeAccess.ConfirmAge:
                         WaitAdminTitle.Visibility = Visibility.Collapsed;
                         WaitAdminImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/18PlusRed.png"));
-                        tb.Inlines.Add(new Run(IsCashRegister? "Клієнту виповнилось 18?":"Вам виповнилось 18 років?") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red, FontSize = 32 });
+                        tb.Inlines.Add(new Run(IsCashRegister ? "Клієнту виповнилось 18?" : "Вам виповнилось 18 років?") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red, FontSize = 32 });
                         break;
                     case eTypeAccess.ExciseStamp:
                         WaitAdminTitle.Visibility = Visibility.Collapsed;
@@ -351,13 +354,13 @@ namespace Front
             if (PathVideo != null && PathVideo.Length != 0)
             {
 
-                
+
                 //VideoPlayer.Source = new Uri(PathVideo[0]); // TMP ПЕРЕРОБИТИ
-                StartVideo.Source= new Uri(PathVideo[0]);
+                StartVideo.Source = new Uri(PathVideo[0]);
                 StartVideo.Play();
                 StartVideo.MediaEnded += (object sender, RoutedEventArgs e) =>
                 {
-                    StartVideo.Position = new TimeSpan(0, 0,0,0,1);
+                    StartVideo.Position = new TimeSpan(0, 0, 0, 0, 1);
                     StartVideo.Play();
                 };
             }
@@ -512,7 +515,7 @@ namespace Front
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(WaresQuantity)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsReceiptPostpone)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsReceiptPostponeNotNull)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsOrderReceipt)));            
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsOrderReceipt)));
             //ChangeWaitAdminText();
         }
 
@@ -607,7 +610,7 @@ namespace Front
                         TypeAccessWait = pTypeAccess;
                     }
 
-                    if(pSMV != eStateMainWindows.StartWindow && State== eStateMainWindows.StartWindow)
+                    if (pSMV != eStateMainWindows.StartWindow && State == eStateMainWindows.StartWindow)
                         StartVideo.Pause();
                     if (pSMV == eStateMainWindows.StartWindow && State != eStateMainWindows.StartWindow)
                         StartVideo.Play();
@@ -899,7 +902,7 @@ namespace Front
                     }
                     SetPropertyChanged();
                 }));
-                r.Wait(new TimeSpan(0, 0, 0, 100));                
+                r.Wait(new TimeSpan(0, 0, 0, 100));
             }
         }
 
@@ -1442,7 +1445,7 @@ namespace Front
             }
             else
             {
-                if (curReceipt == null || curReceipt.Wares!=null && !curReceipt.Wares.Any())
+                if (curReceipt == null || curReceipt.Wares != null && !curReceipt.Wares.Any())
                 {
                     if (Client != null)
                         ShowClientBonus.Visibility = Visibility.Visible;
@@ -1490,6 +1493,7 @@ namespace Front
 
         private void EnterPhoneIssueCard(object sender, RoutedEventArgs e)
         {
+            bool status = true;
             BorderNumPadIssueCard.Visibility = Visibility.Visible;
             NumPadIssueCard.Visibility = Visibility.Visible;
 
@@ -1500,7 +1504,7 @@ namespace Front
             NumPadIssueCard.CallBackResult = (string res) =>
             {
                 if (!string.IsNullOrEmpty(res))
-                    PhoneIssueCard = res;
+                    (PhoneIssueCard, status) = PhoneCorrection(res);
                 else
                 {
                     PhoneIssueCard = string.Empty;
@@ -1508,11 +1512,28 @@ namespace Front
                 }
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("PhoneIssueCard"));
 
-                //BorderNumPadIssueCard.Visibility = Visibility.Visible;
-                //NumPadIssueCard.Visibility = Visibility.Visible;
+                if (!status)
+                {
+                    BorderNumPadIssueCard.Visibility = Visibility.Visible;
+                    NumPadIssueCard.Visibility = Visibility.Visible;
+                }
+
             };
         }
+        private (string, bool) PhoneCorrection(string phoneNumber)
+        {
+            if (string.IsNullOrEmpty(phoneNumber)) return (phoneNumber, false);
+            if (phoneNumber.IndexOf("38") == 0 && phoneNumber.Length == 12)
+            {
+                return (phoneNumber, true);
+            }
+            else
+            {
+                return ($"38{phoneNumber}", true);
+            }
 
+
+        }
         private void IssueNewCardButton(object sender, RoutedEventArgs e)
         {
             ClientNew clientNew = new ClientNew() { BarcodeCashier = AdminSSC?.BarCode, BarcodeClient = BarcodeIssueCard, IdWorkplace = Global.IdWorkPlace, Phone = PhoneIssueCard, DateCreate = DateTime.Now };
@@ -1522,7 +1543,7 @@ namespace Front
                 r = await Bl.ds.Send1CClientAsync(clientNew);
             }).Wait();
 
-            if (r != eReturnClient.Ok )
+            if (r != eReturnClient.Ok)
             {
                 MessageBox.Show(r.GetDescription(), "Помилка! Карточка не збереглась на сервері!!!");
             }
@@ -1532,7 +1553,7 @@ namespace Front
                 Bl.db.ReplaceClientNew(clientNew);
                 CancelIssueCard(null, null);
             }
-            
+
         }
 
         private void CancelIssueCard(object sender, RoutedEventArgs e)
@@ -1540,8 +1561,48 @@ namespace Front
             SetStateView(eStateMainWindows.WaitInput);
             PhoneIssueCard = string.Empty;
             BarcodeIssueCard = string.Empty;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsBarcodeIssueCard"));
+            VerifyCode = string.Empty;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsBarcodeIssueCard)));
 
+        }
+
+        private void EnterVerifyCode(object sender, RoutedEventArgs e)
+        {
+            BorderNumPadIssueCard.Visibility = Visibility.Visible;
+            NumPadIssueCard.Visibility = Visibility.Visible;
+
+            NumPadIssueCard.Desciption = $"Введіть код підтвердження";
+            NumPadIssueCard.ValidationMask = "";
+            NumPadIssueCard.Result = $"";
+            NumPadIssueCard.IsEnableComma = false;
+            NumPadIssueCard.CallBackResult = (string res) =>
+            {
+                if (!string.IsNullOrEmpty(res))
+                    VerifyCode = res;
+                else
+                {
+                    VerifyCode = string.Empty;
+                    EnterVerifyCode(sender, e);
+                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VerifyCode)));
+                if (LastVerifyCode.Data == VerifyCode)
+                    IsGetCard = true;
+                else
+                {
+                    IsGetCard = false;
+                    MessageBox.Show($"Введений код не вірний!", "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsGetCard)));
+            };
+        }
+
+        private void ButSendVerifyCode(object sender, RoutedEventArgs e)
+        {
+
+            LastVerifyCode = Bl.ds.GetVerifySMS(PhoneIssueCard);
+            //LastVerifyCode = new StatusD<string> { Data = "123456", State = 0, TextState = "OK" };
+            MessageBox.Show($"Код підтвердження надіслано за номером {PhoneIssueCard}", "Увага!", MessageBoxButton.OK, MessageBoxImage.Information);
+            EnterVerifyCode(null, null);
         }
     }
 
