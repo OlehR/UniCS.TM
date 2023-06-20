@@ -1582,7 +1582,7 @@ namespace Front
                 else
                 {
                     VerifyCode = string.Empty;
-                    EnterVerifyCode(sender, e);
+                    //EnterVerifyCode(sender, e);
                 }
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VerifyCode)));
                 if (LastVerifyCode.Data == VerifyCode)
@@ -1590,7 +1590,8 @@ namespace Front
                 else
                 {
                     IsGetCard = false;
-                    MessageBox.Show($"Введений код не вірний!", "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
+                    if (!string.IsNullOrEmpty(VerifyCode))
+                        MessageBox.Show($"Введений код не вірний!", "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsGetCard)));
             };
