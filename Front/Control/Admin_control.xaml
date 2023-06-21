@@ -226,6 +226,28 @@
             <TextBlock Grid.Row="0" Name="ProgramVersion" FontSize="24" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="15,0,0,0"/>
             <StackPanel HorizontalAlignment="Right">
                 <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel.Style>
+                            <Style TargetType="{x:Type StackPanel}">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsCashRegister, RelativeSource={RelativeSource 
+                                                         Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
+
+
+                        <TextBlock Grid.Row="0"  Text="Швидкість сканування: "  FontSize="20"
+                               HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="Black"/>
+                        <TextBlock Grid.Row="0"  Text="{Binding SpeedScan}"  FontSize="20"
+                               HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="Black"/>
+                        <TextBlock Grid.Row="0"  Text=" | "  FontSize="20"
+                               HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="Black"/>
+                    </StackPanel>
+
                     <TextBlock Grid.Row="0"  Text="{Binding AdminUser.NameUser}" Name="adminastratorName" FontSize="20"
                                HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="DarkGreen"/>
                     <Label Grid.Row="0"  Content="Error" Name="lblTime" FontSize="48" HorizontalAlignment="Right" VerticalAlignment="Top"  Padding="0"/>
@@ -874,7 +896,7 @@
                                                             <Setter Property="Text" Value="Офлайн" />
                                                             <Setter Property="Background" Value="Red" />
                                                             <Setter Property="Foreground" Value="White" />
-                                                            
+
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
@@ -1365,7 +1387,7 @@
                                     <GridViewColumn Header="Стан">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
-                                                <Button  Click="ChoiceReceiptStatus" Style="{StaticResource WhiteButton}"> 
+                                                <Button  Click="ChoiceReceiptStatus" Style="{StaticResource WhiteButton}">
                                                     <TextBlock Text="{Binding Path=TranslationStateReceipt}" >
                                                         <TextBlock.Style>
                                                             <Style  TargetType="TextBlock">
@@ -1420,7 +1442,7 @@
                                                                 <Style.Triggers>
                                                                     <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
                                                                         <Setter Property="FontSize" Value="14" />
-                                                                        
+
                                                                     </DataTrigger>
                                                                 </Style.Triggers>
                                                             </Style>
@@ -1509,7 +1531,7 @@
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
-                                   
+
                                 </GridView>
                                 <!--<StackPanel Margin="5" Orientation="Horizontal">
                                     <TextBlock FontSize="16" Text="{Binding Path=CodeReceipt}" HorizontalAlignment="Center" Width="40" />

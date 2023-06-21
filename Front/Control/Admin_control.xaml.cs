@@ -62,6 +62,7 @@ namespace Front.Control
         public eStateReceipt newStateReceipt;
         public bool ClosedShift { get { return MW.IsLockSale; } }
         public User AdminUser { get; set; }
+        public int SpeedScan { get { return Bl.db.SpeedScan(); } }
         public string NameAdminUserOpenShift { get { return $"{MW?.AdminSSC?.NameUser} ({MW?.AdminSSC?.TypeUser})"; } }
         public DateTime DataOpenShift { get { return MW.DTAdminSSC; } }
         public bool IsShowAllReceipts { get; set; }
@@ -158,6 +159,7 @@ namespace Front.Control
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("NameAdminUserOpenShift"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DataOpenShift"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsControlScale"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SpeedScan)));
 
             //TB_NameAdminUserOpenShift.Text = NameAdminUserOpenShift;
             //TB_DataOpenShift.Text= $"{DataOpenShift}";
