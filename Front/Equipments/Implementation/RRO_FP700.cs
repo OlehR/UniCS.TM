@@ -17,11 +17,9 @@ using Front.Equipments.Utils;
 using Front.Equipments.Implementation.FP700_Model;
 using Timer = System.Timers.Timer;
 using SharedLib;
-using System.Windows.Forms;
 using System.Data;
 using System.Threading;
 using System.Diagnostics;
-//using ModernExpo.SelfCheckout.Utils;
 
 namespace Front.Equipments
 {
@@ -43,10 +41,6 @@ namespace Front.Equipments
         private const string ReportDateFormat = "ddMMyy";
 
         WDB_SQLite db = new WDB_SQLite();
-
-        private string _port => Configuration[$"{KeyPrefix}Port"];
-
-        private int _baudRate => Configuration.GetValue<int>($"{KeyPrefix}BaudRate");
 
         private int _tillNumber => Configuration.GetValue<int>($"{KeyPrefix}TillNumber");
 
@@ -71,7 +65,7 @@ namespace Front.Equipments
 
                 _commandsCallbacks = new Dictionary<eCommand, Action<string>>();
                 _currentPrinterStatus = new PrinterStatus();
-                SerialPortStreamWrapper portStreamWrapper = new SerialPortStreamWrapper(_port, _baudRate, onReceivedData: new Func<byte[], bool>(OnDataReceived));
+                SerialPortStreamWrapper portStreamWrapper = new SerialPortStreamWrapper(SerialPort, BaudRate, onReceivedData: new Func<byte[], bool>(OnDataReceived));
                 portStreamWrapper.Encoding = Encoding.GetEncoding(1251);
                 _serialDevice = portStreamWrapper;
                 _packageBufferTimer = new Timer();
@@ -140,9 +134,7 @@ namespace Front.Equipments
                  (FiscalNumber,SumFiscal) = ReturnReceipt(pR);*/
             pR.NumberReceipt = FiscalNumber;
             return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, TypeRRO = Type.ToString(), FiscalNumber = FiscalNumber, SUM = SumFiscal /*pR.SumReceipt - pR.SumBonus,*/ };
-        }
-
-       
+        }       
 
         public override bool PeriodZReport(DateTime pBegin, DateTime pEnd, bool IsFull = true)
         {
@@ -397,11 +389,8 @@ namespace Front.Equipments
         }
 
         private bool ReopenPort()
-        {
-            _logger?.LogDebug("Fp700 init started");
-            CloseIfOpened();
-            _logger?.LogDebug("Fp700 PORT " + _serialDevice.PortName);
-            _logger?.LogDebug(string.Format("Fp700 BAUD {0}", (object)_serialDevice.BaudRate));
+        {            
+            CloseIfOpened();            
             if (_serialDevice.PortName == null || _serialDevice.BaudRate == 0)
                 return false;
             _serialDevice.Open();
@@ -417,9 +406,7 @@ namespace Front.Equipments
         {
             ObliterateFiscalReceipt();
             string s = GetLastReceiptNumber();
-
-            _logger?.LogDebug("{START_PRINTING}");
-            _logger?.LogDebug("{LAST_RECEIPTNUMBER}" + s);
+            
             if (string.IsNullOrEmpty(s))
                 s = "0";
             int.TryParse(s, out int result1);
@@ -465,26 +452,7 @@ namespace Front.Equipments
             if (str == null)
                 ObliterateFiscalReceipt();
             return (str, TotalRnd);
-        }
-
-        /*public (string, decimal) ReturnReceipt(Receipt pR)
-        {
-            ObliterateFiscalReceipt();
-            string s = GetLastRefundReceiptNumber();
-            if (string.IsNullOrEmpty(s)) s = "0";
-            int result1;
-            int.TryParse(s, out result1);
-            OpenReturnReceipt();
-            FillUpReceiptItems(pR.GetParserWaresReceipt());
-            var Sum = SubTotal();
-            PayReceipt(pR);
-            OnSynchronizeWaitCommandResult(eCommand.CloseFiscalReceipt, onResponseCallback: ((Action<string>)(res => _logger?.LogDebug("[ FP700 ] CloseFiscalReceipt res = " + res))));
-            int result2;
-            if (!int.TryParse(GetLastRefundReceiptNumber(), out result2))
-                return (null, Sum);
-            _logger?.LogDebug(string.Format("[ FP700 ] newLastReceipt = {0} / lastReceipt = {1}", (object)result2, (object)result1));
-            return (result2 <= result1 ? (string)null : result2.ToString(), Sum);
-        }*/
+        }        
 
         public bool OpenReceipt(string pCashier = null)
         {
@@ -1101,11 +1069,7 @@ namespace Front.Equipments
             return result;
         }
 
-        private bool OnSynchronizeWaitCommandResult(
-          eCommand command,
-          string data = "",
-          Action<string> onResponseCallback = null,
-          Action<Exception> onExceptionCallback = null)
+        private bool OnSynchronizeWaitCommandResult( eCommand command, string data = "",  Action<string> onResponseCallback = null, Action<Exception> onExceptionCallback = null)
         {
             bool isResultGot = false;
             Stopwatch timer =  Stopwatch.StartNew();
@@ -1241,13 +1205,13 @@ namespace Front.Equipments
             _isError = false;
             if (data.Length == 1)
             {
-                if (data[0] == (byte)21)
+                if (data[0] == 21)
                 {
                     FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Printer error occured");
                     _isError = true;
                     return false;
                 }
-                if (data[0] == (byte)22)
+                if (data[0] == 22)
                 {
                     _isReady = false;
                     FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Printer is waiting for a command");
@@ -1532,9 +1496,9 @@ namespace Front.Equipments
         private void CloseIfOpened()
         {
             _serialDevice.Close();
-            if (!_serialDevice.PortName.Equals(_port))
-                _serialDevice.PortName = _port;
-            _serialDevice.BaudRate = _baudRate;
+            if (!_serialDevice.PortName.Equals(SerialPort))
+                _serialDevice.PortName = SerialPort;
+            _serialDevice.BaudRate = BaudRate;
         }
 
         public void Dispose()
@@ -1543,7 +1507,7 @@ namespace Front.Equipments
             ((Stream)_serialDevice).Dispose();
         }
 
-        bool IsStop = false;
+        volatile bool IsStop = false;
         bool IsFinish;
         StringBuilder bb;
         public string KSEFGetReceipt(string pCodeReceipt)
@@ -1592,11 +1556,9 @@ namespace Front.Equipments
                     if (!strArray[0].Equals("F"))
                         return;
                 }
-            }));
-            
+            }));            
             return Sum;
         }
-
         
         override public bool PutToDisplay(string pText=null, int pLine = 1)
         {
@@ -1622,4 +1584,3 @@ namespace Front.Equipments
         }
     }
 }
-
