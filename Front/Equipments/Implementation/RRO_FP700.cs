@@ -20,6 +20,7 @@ using SharedLib;
 using System.Windows.Forms;
 using System.Data;
 using System.Threading;
+using System.Diagnostics;
 //using ModernExpo.SelfCheckout.Utils;
 
 namespace Front.Equipments
@@ -1107,6 +1108,8 @@ namespace Front.Equipments
           Action<Exception> onExceptionCallback = null)
         {
             bool isResultGot = false;
+            Stopwatch timer =  Stopwatch.StartNew();
+           
             if (!StaticTimer.Wait((Func<bool>)(() => _commandsCallbacks.ContainsKey(command)), 2))
                 _commandsCallbacks.Remove(command);
             _commandsCallbacks.Add(command, (Action<string>)(response =>
@@ -1114,8 +1117,8 @@ namespace Front.Equipments
                 try
                 {
                    onResponseCallback?.Invoke(response);
-                    FileLogger.WriteLogMessage(this, "OnSynchronizeWaitCommandResult", $"CallBackResult {command} Data=>{data} Res=>{response}");
-                    isResultGot = true;
+                   FileLogger.WriteLogMessage(this, "OnSynchronizeWaitCommandResult", $"CallBackResult {command} Time=>{timer.Elapsed} Data=>{data} Res=>{response}");
+                   isResultGot = true;
                 }
                 catch (Exception ex)
                 {                    
