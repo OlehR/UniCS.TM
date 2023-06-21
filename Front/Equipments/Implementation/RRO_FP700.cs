@@ -1243,14 +1243,14 @@ namespace Front.Equipments
             {
                 if (data[0] == (byte)21)
                 {
-                    _logger?.LogDebug("OnDataReceived: Printer error occured");
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Printer error occured");
                     _isError = true;
                     return false;
                 }
                 if (data[0] == (byte)22)
                 {
                     _isReady = false;
-                    _logger?.LogDebug("OnDataReceived: Printer is waiting for a command");
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Printer is waiting for a command");
                     return false;
                 }
             }
@@ -1264,7 +1264,7 @@ namespace Front.Equipments
                 _packageBuffer.AddRange((IEnumerable<byte>)data);
                 if (!_packageBuffer.Contains((byte)3))
                 {
-                    _logger?.LogDebug("OnDataReceived: Printer received part of package. Waiting more...");
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Printer received part of package. Waiting more...");
                     _packageBufferTimer.Start();
                     return false;
                 }
@@ -1274,11 +1274,11 @@ namespace Front.Equipments
                 num1 = Array.IndexOf<byte>(data, (byte)1);
                 num2 = Array.IndexOf<byte>(data, (byte)4);
                 num3 = Array.IndexOf<byte>(data, (byte)5);
-                int num5 = Array.IndexOf<byte>(data, (byte)3);
-                if (num1 < 0 || num2 < 0 || num3 < 0 || num5 < 0)
+                num4 = Array.IndexOf<byte>(data, (byte)3);
+                if (num1 < 0 || num2 < 0 || num3 < 0 || num4 < 0)
                 {
                     _packageBufferTimer.Start();
-                    _logger?.LogDebug("OnDataReceived: Printer received invalid package.");
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Printer received invalid package.");
                     return false;
                 }
             }
@@ -1307,7 +1307,7 @@ namespace Front.Equipments
                 }
             }
             string str1 = Encoding.UTF8.GetString(Encoding.Convert(Encoding.GetEncoding(1251), Encoding.UTF8, receivedData));
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, str1);
+            //FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, str1);
 
             if (!_commandsCallbacks.ContainsKey(cmdNumber))
                 return;
