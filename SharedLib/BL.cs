@@ -801,7 +801,7 @@ namespace SharedLib
         {
             var ldb = DB(idReceipt);
             return ldb?.GetPayment(idReceipt);
-        }
+        }  
 
         public IEnumerable<LogRRO> GetLogRRO(IdReceipt pR) { return DB(pR).GetLogRRO(pR);}
 
