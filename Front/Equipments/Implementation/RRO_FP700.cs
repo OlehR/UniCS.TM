@@ -1288,8 +1288,8 @@ namespace Front.Equipments
             Buffer.BlockCopy((Array)data, num1 + 4, (Array)numArray1, 0, count);
             byte[] numArray2 = new byte[6];
             Buffer.BlockCopy((Array)data, num2 + 1, (Array)numArray2, 0, 6);
-            byte[] dst = new byte[4];
-            Buffer.BlockCopy((Array)data, num3 + 1, (Array)dst, 0, 4);
+           //byte[] dst = new byte[4];
+            //Buffer.BlockCopy((Array)data, num3 + 1, (Array)dst, 0, 4);
             _currentPrinterStatus = new();
             ShowStatus(cmdNumber, numArray1, (IReadOnlyList<byte>)numArray2);
             return true;
