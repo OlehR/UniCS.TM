@@ -381,7 +381,7 @@ namespace Front
 
                 if (curReceipt != null)
                 {
-                    var c = Bl.GetClientByBarCode(curReceipt, pBarCode);
+                    var c = Bl.GetClientByBarCode(curReceipt, pBarCode.ToLower());
                     if (c != null) return;
                 }
             }
