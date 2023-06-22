@@ -1654,6 +1654,17 @@
                         <RowDefinition Height="*"></RowDefinition>
                     </Grid.RowDefinitions>
 
+                    <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5" Grid.RowSpan="5" x:Name="BorderNumPadUseBonus" Visibility="Collapsed" Panel.ZIndex="2">
+                        <uc:NumericPad x:Name="NumPadUseBonus" Width="400"  Height="500" />
+                    </Border>
+                    <!--ФОН-->
+                    <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="0" Grid.RowSpan="6"
+                Grid.Column="0" Grid.ColumnSpan="6"
+                 Name="BackgroundWaitAdmin" Visibility="Collapsed" Grid.ZIndex="1" 
+                Opacity="0.9"/>
+
+
                     <StackPanel Grid.Row="0" VerticalAlignment="Center"  HorizontalAlignment="Center">
                         <Image  Source="icons\clock.png" Width="50" Margin="15"
                                 x:Name="WaitAdminImage"/>
@@ -1668,7 +1679,7 @@
                         <StackPanel x:Name="StackPanelWaitAdmin" HorizontalAlignment="Center">
                             <TextBlock HorizontalAlignment="Center"  Margin="0,10,0,10" Name="WaitAdminTextProblem" 
                                    Text="{Binding WaitAdminText, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" FontSize="24" TextWrapping="Wrap" ></TextBlock>
+                                   Mode=FindAncestor, AncestorType=Window}}" FontSize="24" TextWrapping="Wrap" />
                         </StackPanel>
                     </StackPanel>
                     <Button BorderBrush="Transparent" Background="Transparent" Width="50" Height="50" 
@@ -1679,7 +1690,9 @@
                         <TextBox TabIndex="1" Name="TBExciseStamp" Margin="10" Visibility="Visible"
                                  TextChanged="ChangedExciseStamp" Height="50"
                                  FontSize="35"  VerticalAlignment="Center" />
-
+                        <TextBlock HorizontalAlignment="Center"  Margin="0,10,0,10" Name="WaitAdminAdditionalText" 
+                                    FontSize="24" TextWrapping="Wrap" />
+                        
 
                         <Grid x:Name="ExciseStampButtons" Visibility="Collapsed">
                             <Button Grid.Row="2" HorizontalAlignment="Center" 
@@ -1787,7 +1800,9 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
 
-
+                        <Button TabIndex="1" Name="CodeSMS" Content="Введіть код підтвердження" Margin="10" Visibility="Collapsed"
+                                 Style="{StaticResource WhiteButton}" Height="60" Click="CodeSMSUseBonusBtn"
+                                 FontSize="35"  VerticalAlignment="Center" />
 
                         <Button   FontSize="22" Click="_Cancel" x:Name="WaitAdminCancel"
                         Height="80" Width="300" VerticalAlignment="Center" Visibility="Visible">
