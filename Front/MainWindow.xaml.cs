@@ -154,6 +154,7 @@ namespace Front
         private StatusD<string> LastVerifyCode = new();
         public bool IsBarcodeIssueCard { get { return !string.IsNullOrEmpty(BarcodeIssueCard); } }
         public bool IsGetCard { get; set; } = false;
+        public List<string> ClientPhoneNumvers = new List<string>();
 
         public eTypeMonitor TypeMonitor
         {
@@ -658,6 +659,19 @@ namespace Front
                         if (TypeAccessWait == eTypeAccess.ExciseStamp)
                         customWindow = new CustomWindow(eWindows.ExciseStamp, IsCashRegister);
                     else
+                    if (TypeAccessWait == eTypeAccess.UseBonus)
+                    {
+                        ClientPhoneNumvers = new List<string>();
+                        (string phone1, bool res1) = PhoneCorrection(Client.MainPhone);
+                        (string phone2, bool res2) = PhoneCorrection(Client.PhoneAdd);
+                        if (res1)
+                            ClientPhoneNumvers.Add(phone1);
+                        if (res2)
+                            ClientPhoneNumvers.Add(phone2);
+                        customWindow = new CustomWindow(eWindows.UseBonus, ClientPhoneNumvers);
+                    }
+
+                    else
                         customWindow = (State == eStateMainWindows.WaitCustomWindows ? pCW : null);
 
                     if (State == eStateMainWindows.StartWindow)
@@ -716,6 +730,9 @@ namespace Front
                     ExciseStampButtons.Visibility = Visibility.Collapsed;
                     ExciseStampNameWares.Visibility = Visibility.Collapsed;
                     WaitAdminTitle.Visibility = Visibility.Visible;
+                    CodeSMS.Visibility = Visibility.Collapsed;
+                    WaitAdminWeightButtons.Visibility = Visibility.Visible;
+                    WaitAdminAdditionalText.Visibility = Visibility.Collapsed;
                     IssueCard.Visibility = Visibility.Collapsed;
                     AdminControl.Visibility = (State == eStateMainWindows.AdminPanel ? Visibility.Visible : Visibility.Collapsed);
                     AddMissingPackage.Visibility = Visibility.Collapsed;
@@ -766,6 +783,7 @@ namespace Front
                             WaitAdmin.Visibility = Visibility.Visible;
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;
+                            TBExciseStamp.IsReadOnly = false;
                             if (customWindow?.Buttons != null && customWindow.Buttons.Count > 0)
                             {
                                 WaitAdminCancel.Visibility = Visibility.Collapsed;
@@ -795,7 +813,30 @@ namespace Front
                                     ExciseStampButtons.Visibility = Visibility.Visible;
                                     ExciseStampNameWares.Visibility = Visibility.Visible;
                                     WaitAdminTitle.Visibility = Visibility.Collapsed;
+                                    CodeSMS.Visibility = Visibility.Collapsed;
                                     // CustomButtonsWaitAdmin.ItemsSource = customWindow.Buttons;
+
+                                    break;
+                                case eTypeAccess.UseBonus:
+                                    if (customWindow?.Buttons != null && customWindow.Buttons.Count > 0)
+                                    {
+                                        WaitAdminAdditionalText.Text = "Можливе підтвердження списання за номером телефону!";
+                                        TBExciseStamp.Text = "";
+                                        WaitAdminImage.Visibility = Visibility.Visible;
+                                        WaitAdminCancel.Visibility = Visibility.Visible;
+                                        TBExciseStamp.Visibility = Visibility.Collapsed;
+                                        KBAdmin.Visibility = Visibility.Collapsed;
+                                        ExciseStampButtons.Visibility = Visibility.Collapsed;
+                                        ExciseStampNameWares.Visibility = Visibility.Collapsed;
+                                        WaitAdminTitle.Visibility = Visibility.Collapsed;
+                                        CodeSMS.Visibility = Visibility.Visible;
+                                        WaitAdminAdditionalText.Visibility = Visibility.Visible;
+                                    }
+                                    else
+                                    {
+                                        WaitAdminCancel.Visibility = Visibility.Visible;
+                                        WaitAdminWeightButtons.Visibility = Visibility.Collapsed;
+                                    }
 
                                     break;
                                 default:
@@ -1332,6 +1373,14 @@ namespace Front
                     }
                     return;
                 }
+                if (res.CustomWindow?.Id == eWindows.UseBonus)
+                {
+                    //LastVerifyCode = new StatusD<string> { Data = "1234", State = 0, TextState = "OK" };
+                    LastVerifyCode = Bl.ds.GetVerifySMS(ClientPhoneNumvers[res.Id]);
+                    MessageBox.Show($"Код підтвердження надіслано за номером {ClientPhoneNumvers[res.Id]}", "Увага!", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    return;
+                }
 
                 var r = new CustomWindowAnswer()
                 {
@@ -1545,12 +1594,12 @@ namespace Front
 
             //if (r != eReturnClient.Ok)
             //{
-                MessageBox.Show(r.GetDescription(), r != eReturnClient.Ok?"Помилка! Карточка не збереглась на сервері!!!":"Карточка успішно збережена.");
-           // }
+            MessageBox.Show(r.GetDescription(), r != eReturnClient.Ok ? "Помилка! Карточка не збереглась на сервері!!!" : "Карточка успішно збережена.");
+            // }
             //else
-           // {
-                clientNew.State = r == eReturnClient.Ok ? 1 : 0;
-                Bl.db.ReplaceClientNew(clientNew);
+            // {
+            clientNew.State = r == eReturnClient.Ok ? 1 : 0;
+            Bl.db.ReplaceClientNew(clientNew);
             if (r == eReturnClient.Ok)
                 CancelIssueCard(null, null);
             //}
@@ -1605,6 +1654,36 @@ namespace Front
             //LastVerifyCode = new StatusD<string> { Data = "123456", State = 0, TextState = "OK" };
             MessageBox.Show($"Код підтвердження надіслано за номером {PhoneIssueCard}", "Увага!", MessageBoxButton.OK, MessageBoxImage.Information);
             EnterVerifyCode(null, null);
+        }
+
+        private void CodeSMSUseBonusBtn(object sender, RoutedEventArgs e)
+        {
+            BorderNumPadUseBonus.Visibility = Visibility.Visible;
+            NumPadUseBonus.Visibility = Visibility.Visible;
+            BackgroundWaitAdmin.Visibility = Visibility.Visible;
+
+            NumPadUseBonus.Desciption = $"Введіть код підтвердження";
+            NumPadUseBonus.ValidationMask = "";
+            NumPadUseBonus.Result = $"";
+            NumPadUseBonus.IsEnableComma = false;
+            NumPadUseBonus.CallBackResult = (string res) =>
+                          {
+                              if (!string.IsNullOrEmpty(res))
+                                  VerifyCode = res;
+                              else
+                              {
+                                  VerifyCode = string.Empty;
+                              }
+                              PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VerifyCode)));
+                              if (LastVerifyCode.Data == VerifyCode)
+                                  SetConfirm(AdminSSC, false, true);
+
+                              else
+                              {
+                                  MessageBox.Show($"Введений код не вірний!", "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
+                              }
+                              BackgroundWaitAdmin.Visibility = Visibility.Collapsed;
+                          };
         }
     }
 

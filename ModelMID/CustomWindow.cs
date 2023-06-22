@@ -19,7 +19,8 @@ namespace ModelMID
         LimitSales,
         ConfirmAge,
         Info,
-        BlockSale
+        BlockSale,
+        UseBonus
 
     }
 
@@ -80,6 +81,17 @@ namespace ModelMID
                     Buttons = new ObservableCollection<CustomButton>() {
                         new CustomButton() {CustomWindow = this, Id=1,  Text="Відновити"},
                         new CustomButton() {CustomWindow = this, Id=2,  Text="Скасувати"} };
+                    break;
+                case eWindows.UseBonus:
+                    Text = "Зробіть вибір";
+                    Caption = "Зазначені номери клієнта";
+                    AnswerRequired = true;
+                    List<string> phones = pObject as List<string>;
+                    Buttons = new ObservableCollection<CustomButton>();
+                    for (int i = 0; i < phones.Count(); i++)
+                    {
+                        Buttons.Add(new CustomButton() { CustomWindow = this, Id = i, Text = phones[i] });
+                    }
                     break;
                 case eWindows.NoPrice:
                     Text = pObject as string;
