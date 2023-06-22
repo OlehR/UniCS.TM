@@ -20,22 +20,26 @@ using SharedLib;
 using System.Data;
 using System.Threading;
 using System.Diagnostics;
+using Front.Equipments.Implementation.ModelVchasno;
+using System.Windows.Forms;
+using System.Windows.Markup;
 
 namespace Front.Equipments
 {
     public class RRO_FP700 : Rro
     {
         private readonly IConfiguration _configuration;
-        private readonly SerialPortStreamWrapper _serialDevice;
+        private readonly SerialPortStreamWrapper SerialDevice;
         private PrinterStatus _currentPrinterStatus;
-        private volatile bool _isReady = true;
+       //private volatile bool _isReady = true;
         private volatile bool _isWaiting = true;
         private volatile bool _isError;
         private volatile bool _hasCriticalError;
         private int _sequenceNumber = 90;
         private readonly ILogger<RRO_FP700> _logger;
         private string DateFormat = "dd-MM-yy HH:mm:ss";
-        private Dictionary<eCommand, Action<string>> _commandsCallbacks;
+        //private Dictionary<eCommand, Action<string>> _commandsCallbacks;
+        Action<string> CommandsCallbacks;
         private readonly List<byte> _packageBuffer = new List<byte>();
         private readonly Timer _packageBufferTimer;
         private const string ReportDateFormat = "ddMMyy";
@@ -63,11 +67,11 @@ namespace Front.Equipments
                 _logger = logger;
                 ActionStatus = pActionStatus;
 
-                _commandsCallbacks = new Dictionary<eCommand, Action<string>>();
+                //_commandsCallbacks = new Dictionary<eCommand, Action<string>>();
                 _currentPrinterStatus = new PrinterStatus();
                 SerialPortStreamWrapper portStreamWrapper = new SerialPortStreamWrapper(SerialPort, BaudRate, onReceivedData: new Func<byte[], bool>(OnDataReceived));
                 portStreamWrapper.Encoding = Encoding.GetEncoding(1251);
-                _serialDevice = portStreamWrapper;
+                SerialDevice = portStreamWrapper;
                 _packageBufferTimer = new Timer();
                 _packageBufferTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
                 _packageBufferTimer.Interval = 5000.0;
@@ -132,7 +136,7 @@ namespace Front.Equipments
             (FiscalNumber, SumFiscal) = PrintReceipt(pR, Comments);
             /* else
                  (FiscalNumber,SumFiscal) = ReturnReceipt(pR);*/
-            pR.NumberReceipt = FiscalNumber;
+            pR.NumberReceipt = FiscalNumber;         
             return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, TypeRRO = Type.ToString(), FiscalNumber = FiscalNumber, SUM = SumFiscal /*pR.SumReceipt - pR.SumBonus,*/ };
         }       
 
@@ -235,7 +239,7 @@ namespace Front.Equipments
         {
             get
             {
-                SerialPortStreamWrapper serialDevice = _serialDevice;
+                SerialPortStreamWrapper serialDevice = SerialDevice;
                 return serialDevice != null && serialDevice.IsOpen;
             }
         }
@@ -253,13 +257,9 @@ namespace Front.Equipments
         {
             try
             {
-                if (_serialDevice.PortName == null || _serialDevice.BaudRate == 0)
-                    return eDeviceConnectionStatus.InitializationError;
-                _logger?.LogDebug("Fp700 init started");
-                ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Init, "[FP700] - Start Initialization")
-                { Status = eStatusRRO.Init });
-                CloseIfOpened();
-                _serialDevice.Open();
+                if(!ReopenPort())                
+                    return eDeviceConnectionStatus.InitializationError;                
+
                 ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Init, "[FP700] - Get info about printer")
                 { Status = eStatusRRO.Init });
 
@@ -319,7 +319,7 @@ namespace Front.Equipments
                 if (diagnosticInfo == null || lastNumbers == null)
                     throw new Exception("Fp700 getInfo error");
                 return _currentPrinterStatus.TextError + $"Model:{diagnosticInfo.Model}\nSoftVersion: {diagnosticInfo.SoftVersion}\nSoftReleaseDate: {diagnosticInfo.SoftReleaseDate}\n SerialNumber: {diagnosticInfo.SerialNumber}\n RegistrationNumber: {diagnosticInfo.FiscalNumber}\n" +
-                    $"BaudRate: {_serialDevice.BaudRate}\nComPort:{_serialDevice.PortName}\n" +
+                    $"BaudRate: {SerialDevice.BaudRate}\nComPort:{SerialDevice.PortName}\n" +
                     $"LastDocumentNumber: {lastNumbers.LastDocumentNumber}\nLastReceiptNumber: {lastNumbers.LastFiscalDocumentNumber}\nLastZReportNumber: {GetLastZReportNumber()}\nIsZReportDone: {IsZReportDone()}\nCurentTime: {GetCurrentFiscalPrinterDate() ?? DateTime.MinValue}\n" +
                     $"RoundCash: {RoundCash}"
                     ;
@@ -340,23 +340,14 @@ namespace Front.Equipments
         {
             try
             {
-                _logger?.LogDebug("Fp700 init started");
-                CloseIfOpened();
-                _logger?.LogDebug("Fp700 PORT " + _serialDevice.PortName);
-                _logger?.LogDebug(string.Format("Fp700 BAUD {0}", (object)_serialDevice.BaudRate));
-                if (_serialDevice.PortName == null || _serialDevice.BaudRate == 0)
-                    return eDeviceConnectionStatus.InitializationError;
-                _serialDevice.Open();
-                _logger?.LogDebug("Fp700 after open");
+                if(!ReopenPort())
+                    return eDeviceConnectionStatus.InitializationError;                
                 return GetDiagnosticInfo() == null ? eDeviceConnectionStatus.NotConnected : eDeviceConnectionStatus.Enabled;
             }
             catch (Exception ex)
-            {
-                _logger?.LogDebug("Fp700 open error");
-                _logger?.LogError(ex, ex.Message);
+            {                
                 ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Error, _currentPrinterStatus.TextError + ex.Message)
                 { Status = eStatusRRO.Error, IsСritical = true });
-
                 return eDeviceConnectionStatus.NotConnected;
             }
         }
@@ -376,7 +367,7 @@ namespace Front.Equipments
                 IsZReportDone();
                 if (SendPackage(eCommand.PrintDiagnosticInformation))
                     return eDeviceConnectionStatus.Enabled;
-                return _serialDevice.IsOpen ? eDeviceConnectionStatus.InitializationError : eDeviceConnectionStatus.NotConnected;
+                return SerialDevice.IsOpen ? eDeviceConnectionStatus.InitializationError : eDeviceConnectionStatus.NotConnected;
             }
             catch (Exception ex)
             {
@@ -391,10 +382,10 @@ namespace Front.Equipments
         private bool ReopenPort()
         {            
             CloseIfOpened();            
-            if (_serialDevice.PortName == null || _serialDevice.BaudRate == 0)
+            if (SerialDevice.PortName == null || SerialDevice.BaudRate == 0)
                 return false;
-            _serialDevice.Open();
-            _isReady = true;
+            SerialDevice.Open();
+            //_isReady = true;
             _isError = false;
             _isWaiting = false;
             return true;
@@ -1006,6 +997,7 @@ namespace Front.Equipments
             })));
             return diagnosticInfo;
         }
+
         private string GetRoundCash()
         {
             string Res = null;
@@ -1069,6 +1061,201 @@ namespace Front.Equipments
             return result;
         }
 
+       bool isResultGot = false;
+       object Lock = new();
+        Stopwatch Timer = new Stopwatch();
+       private bool OnSynchronizeWaitCommandResult( eCommand pCommand, string pData = "",  Action<string> onResponseCallback = null, Action<Exception> onExceptionCallback = null)
+       {
+            if (!SerialDevice.IsOpen)
+                if(!ReopenPort())
+                {
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Not OpenPort");
+                    return false;
+                }
+
+            Timer.Restart(); //= Stopwatch.StartNew();
+            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Send {pCommand} Data=>{pData}");
+            lock (Lock)
+            {
+                if(Timer.ElapsedMilliseconds>20)
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Long Lock Time => { Timer.Elapsed}");
+                isResultGot = false;
+                CommandsCallbacks = onResponseCallback;
+
+                try
+                {
+                    if (!SendPackage(pCommand, pData))
+                    {
+                        return false;
+                    }
+                    StaticTimer.Wait((Func<bool>)(() => !isResultGot), 2);
+                }
+                catch (Exception ex)
+                {
+                    if (ex.Message.StartsWith("FP 700 has critical error"))
+                        throw;
+                }
+            }           
+            return isResultGot;
+        }
+        public bool SendPackage(eCommand command, string data = "", int waitingTimeout = 10)
+        {
+            // FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"{command} {data}");
+
+           bool flag = command != eCommand.ClearDisplay && command != eCommand.ShiftInfo && command != eCommand.DiagnosticInfo && command != eCommand.EveryDayReport && command != eCommand.LastDocumentsNumbers && command != eCommand.ObliterateFiscalReceipt && command != eCommand.PaperCut && command != eCommand.GetDateTime && command != eCommand.PaperPulling && command != eCommand.LastZReportInfo && command != eCommand.PrintDiagnosticInformation;
+           if (!IsZReportAlreadyDone & flag)
+               return false;
+           if (_hasCriticalError & flag)
+               throw new Exception(Environment.NewLine + "Проблема з фіскальним реєстратором FP700: " + Environment.NewLine + _currentPrinterStatus.TextError);
+           if (!SerialDevice.IsOpen)
+               return false;
+           
+           byte[] bytes = Encoding.Convert(Encoding.UTF8, Encoding.GetEncoding(1251), Encoding.UTF8.GetBytes(data));
+
+           byte[] buffer = new byte[218];
+           int num1 = 0;
+           int length = bytes.Length;
+           int num2 = 0;
+           if (length > 218)
+               return false;
+           byte[] numArray1 = buffer;
+           int index1 = num1;
+           int num3 = index1 + 1;
+           numArray1[index1] = (byte)1;
+           byte[] numArray2 = buffer;
+           int index2 = num3;
+           int num4 = index2 + 1;
+           int num5 = (int)(byte)(36 + length);
+           numArray2[index2] = (byte)num5;
+           byte[] numArray3 = buffer;
+           int index3 = num4;
+           int num6 = index3 + 1;
+           int num7 = (int)(byte)_sequenceNumber++;
+           numArray3[index3] = (byte)num7;
+           byte[] numArray4 = buffer;
+           int index4 = num6;
+           int num8 = index4 + 1;
+           int num9 = (int)(byte)command;
+           numArray4[index4] = (byte)num9;
+           if (_sequenceNumber == 100)
+               _sequenceNumber = 90;
+           for (int index5 = 0; index5 < length; ++index5)
+               buffer[num8++] = bytes[index5];
+           byte[] numArray5 = buffer;
+           int index6 = num8;
+           int num10 = index6 + 1;
+           numArray5[index6] = (byte)5;
+           for (int index7 = 1; index7 < num10; ++index7)
+               num2 += (int)buffer[index7] & (int)byte.MaxValue;
+           byte[] numArray6 = buffer;
+           int index8 = num10;
+           int num11 = index8 + 1;
+           int num12 = (int)(byte)((num2 >> 12 & 15) + 48);
+           numArray6[index8] = (byte)num12;
+           byte[] numArray7 = buffer;
+           int index9 = num11;
+           int num13 = index9 + 1;
+           int num14 = (int)(byte)((num2 >> 8 & 15) + 48);
+           numArray7[index9] = (byte)num14;
+           byte[] numArray8 = buffer;
+           int index10 = num13;
+           int num15 = index10 + 1;
+           int num16 = (int)(byte)((num2 >> 4 & 15) + 48);
+           numArray8[index10] = (byte)num16;
+           byte[] numArray9 = buffer;
+           int index11 = num15;
+           int num17 = index11 + 1;
+           int num18 = (int)(byte)((num2 & 15) + 48);
+           numArray9[index11] = (byte)num18;
+           byte[] numArray10 = buffer;
+           int index12 = num17;
+           int count = index12 + 1;
+           numArray10[index12] = (byte)3;
+           FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Sended {command} Buffer=>{Encoding.GetEncoding(1251).GetString(buffer)}");
+
+           ((Stream)SerialDevice).Write(buffer, 0, count);
+           ((Stream)SerialDevice).Flush();
+           
+         return true;
+       }
+
+       private bool OnDataReceived(byte[] data)
+        {
+            _isError = false;
+            if (data.Length == 1)
+            {
+                if (data[0] == 21)
+                {
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Printer error occured");
+                    _isError = true;
+                    return false;
+                }
+                if (data[0] == 22)
+                {               
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Printer is waiting for a command");
+                    return false;
+                }
+            }
+           
+            int num1 = Array.IndexOf<byte>(data, (byte)1);
+            int num2 = Array.IndexOf<byte>(data, (byte)4);
+            int num3 = Array.IndexOf<byte>(data, (byte)5);
+            int num4 = Array.IndexOf<byte>(data, (byte)3);
+            if (num1 < 0 || num2 < 0 || num3 < 0 || num4 < 0)
+            {
+                _packageBuffer.AddRange((IEnumerable<byte>)data);
+                if (!_packageBuffer.Contains((byte)3))
+                {
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Printer received part of package. Waiting more...");
+                    _packageBufferTimer.Start();
+                    return false;
+                }
+                _packageBufferTimer.Stop();
+                data = _packageBuffer.ToArray();
+                _packageBuffer.Clear();
+                num1 = Array.IndexOf<byte>(data, (byte)1);
+                num2 = Array.IndexOf<byte>(data, (byte)4);
+                num3 = Array.IndexOf<byte>(data, (byte)5);
+                num4 = Array.IndexOf<byte>(data, (byte)3);
+                if (num1 < 0 || num2 < 0 || num3 < 0 || num4 < 0)
+                {
+                    _packageBufferTimer.Start();
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Printer received invalid package.");
+                    return false;
+                }
+            }
+            eCommand Command = (eCommand)int.Parse(BitConverter.ToString(data, num1 + 3, 1), NumberStyles.HexNumber);
+            int count = num2 - num1 - 4;
+            byte[] ReceivedData = new byte[count];
+            Buffer.BlockCopy((Array)data, num1 + 4, (Array)ReceivedData, 0, count);
+            byte[] numArray2 = new byte[6];
+            Buffer.BlockCopy((Array)data, num2 + 1, (Array)numArray2, 0, 6);
+            //byte[] dst = new byte[4];
+            //Buffer.BlockCopy((Array)data, num3 + 1, (Array)dst, 0, 4);
+            _currentPrinterStatus = new();
+            ShowStatus( (IReadOnlyList<byte>)numArray2);
+
+            string Res = Encoding.UTF8.GetString(Encoding.Convert(Encoding.GetEncoding(1251), Encoding.UTF8, ReceivedData));
+            CommandsCallbacks?.Invoke(Res);
+            isResultGot=true;
+            FileLogger.WriteLogMessage(this, "OnSynchronizeWaitCommandResult", $"CallBackResult {Command} Time=>{Timer.Elapsed} Res=>{Res}");
+            return true;
+        }
+
+       private void ShowStatus( IReadOnlyList<byte> status)
+       {
+           for (int index1 = 0; index1 < 6; ++index1)
+           {
+               string str = Convert.ToString(status[index1], 2);
+               for (int index2 = str.Length - 1; index2 >= 0; --index2)
+               {
+                   if (int.Parse(str[index2].ToString()) == 1)
+                       GetStatusBitDescriptionBg(index1, str.Length - 1 - index2);
+               }
+           }           
+       }       
+
+        /*
         private bool OnSynchronizeWaitCommandResult( eCommand command, string data = "",  Action<string> onResponseCallback = null, Action<Exception> onExceptionCallback = null)
         {
             bool isResultGot = false;
@@ -1120,7 +1307,7 @@ namespace Front.Equipments
                 return false;
             if (_hasCriticalError & flag)
                 throw new Exception(Environment.NewLine + "Проблема з фіскальним реєстратором FP700: " + Environment.NewLine + _currentPrinterStatus.TextError);
-            if (!_serialDevice.IsOpen)
+            if (!SerialDevice.IsOpen)
                 return false;
             if (!_isReady)
             {
@@ -1194,8 +1381,8 @@ namespace Front.Equipments
             numArray10[index12] = (byte)3;
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Sended {command} Buffer=>{Encoding.GetEncoding(1251).GetString(buffer)}");
 
-            ((Stream)_serialDevice).Write(buffer, 0, count);
-            ((Stream)_serialDevice).Flush();
+            ((Stream)SerialDevice).Write(buffer, 0, count);
+            ((Stream)SerialDevice).Flush();
             _isReady = false;
           return true;
         }
@@ -1277,6 +1464,7 @@ namespace Front.Equipments
                 return;
            _commandsCallbacks[cmdNumber]?.Invoke(str1);           
         }
+        */
 
         private string GetStatusBitDescriptionBg(int byteIndex, int bitIndex)
         {
@@ -1487,24 +1675,25 @@ namespace Front.Equipments
             return bitDescriptionBg;
         }
 
-        private bool WaitForReady(int waitingTimeOut = 5)
+        /*private bool WaitForReady(int waitingTimeOut = 5)
         {
             StaticTimer.Wait((Func<bool>)(() => !_isReady), waitingTimeOut);
             return _isReady;
-        }
+        }*/
 
         private void CloseIfOpened()
         {
-            _serialDevice.Close();
-            if (!_serialDevice.PortName.Equals(SerialPort))
-                _serialDevice.PortName = SerialPort;
-            _serialDevice.BaudRate = BaudRate;
+            SerialDevice.Close();
+            if (!SerialDevice.PortName.Equals(SerialPort))
+                SerialDevice.PortName = SerialPort;
+            if(SerialDevice.BaudRate!=BaudRate)
+                SerialDevice.BaudRate = BaudRate;
         }
 
         public void Dispose()
         {
             CloseIfOpened();
-            ((Stream)_serialDevice).Dispose();
+            ((Stream)SerialDevice).Dispose();
         }
 
         volatile bool IsStop = false;
@@ -1520,6 +1709,8 @@ namespace Front.Equipments
             {
                 OnSynchronizeWaitCommandResult(eCommand.KSEF, $"N", ResKSEF);
             }
+            if(!IsStop)
+                CloseIfOpened();
             IsStop = false;
             return bb.ToString();
         }

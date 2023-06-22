@@ -147,13 +147,13 @@ namespace ModelMID
                     {
                         var r = res.ToList();
                         r.Add(new ReceiptWares(this)
-                        { CodeWares = Global.CodeWaresWallet, Quantity = 1, CodeUnit = 19, CodeDefaultUnit = 19, Sum = -SumWallet,PriceDealer= -SumWallet, NameWares = "Скарбничка", TypeVat = 2, PercentVat = 20 });
+                        { CodeWares = Global.Settings.CodeWaresWallet, Quantity = 1, CodeUnit = 19, CodeDefaultUnit = 19, Sum = -SumWallet,PriceDealer= -SumWallet, NameWares = "Скарбничка", TypeVat = 2, PercentVat = 20 });
                         res = r;
                     }
                 }
                 return res;
             }
-            set { _Wares = value?.Where(el=>el.CodeWares!= Global.CodeWaresWallet); }
+            set { _Wares = value?.Where(el=>el.CodeWares!= Global.Settings.CodeWaresWallet); }
         }
 
         IEnumerable<Payment> _Payment;

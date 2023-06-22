@@ -188,12 +188,12 @@ namespace SharedLib
             catch
             { Global.IsTest = false; }
 
-            try
+            /*try
             {
                 Global.CodeWaresWallet = Convert.ToInt32(AppConfiguration["MID:CodeWaresWallet"]);
             }
             catch
-            { Global.CodeWaresWallet = 0; }
+            { Global.CodeWaresWallet = 0; }*/
 
             try
             {
