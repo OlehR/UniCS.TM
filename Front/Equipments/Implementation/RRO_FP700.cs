@@ -1086,6 +1086,7 @@ namespace Front.Equipments
                 {
                     if (!SendPackage(pCommand, pData))
                     {
+                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"SendPackage=>False Time => {Timer.Elapsed}",eTypeLog.Error);
                         return false;
                     }
                     StaticTimer.Wait((Func<bool>)(() => !isResultGot), 2);
@@ -1171,7 +1172,7 @@ namespace Front.Equipments
            int index12 = num17;
            int count = index12 + 1;
            numArray10[index12] = (byte)3;
-           FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Sended {command} Buffer=>{Encoding.GetEncoding(1251).GetString(buffer)}");
+           //FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Sended {command} Buffer=>{Encoding.GetEncoding(1251).GetString(buffer)}");
 
            ((Stream)SerialDevice).Write(buffer, 0, count);
            ((Stream)SerialDevice).Flush();
@@ -1238,7 +1239,7 @@ namespace Front.Equipments
             string Res = Encoding.UTF8.GetString(Encoding.Convert(Encoding.GetEncoding(1251), Encoding.UTF8, ReceivedData));
             CommandsCallbacks?.Invoke(Res);
             isResultGot=true;
-            FileLogger.WriteLogMessage(this, "OnSynchronizeWaitCommandResult", $"CallBackResult {Command} Time=>{Timer.Elapsed} Res=>{Res}");
+            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"CallBackResult {Command} Time=>{Timer.Elapsed} Res=>{Res}");
             return true;
         }
 
@@ -1722,11 +1723,13 @@ namespace Front.Equipments
                 IsFinish = true;
             }
             else
-            {
-                var b = response[0];
-                IsFinish = (b == 'F');
-                bb.Append(response.Substring(2));
-                bb.Append(Environment.NewLine);
+            {                
+                IsFinish = (response[0] == 'F');
+                if (response.Length > 1)
+                {
+                    bb.Append(response.Substring(2));
+                    bb.Append(Environment.NewLine);
+                }
             }
         }
 
