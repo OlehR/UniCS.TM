@@ -2253,9 +2253,9 @@
                         </Button>
                         <Button Grid.Column="1"
                              Width="250" Height="70"
-                            Content="Видати картку" Click="IssueNewCardButton" >
+                            Content="Видати без SMS" Click="IssueNewCardButton" >
                             <Button.Style>
-                                <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
+                                <Style BasedOn="{StaticResource Default}" TargetType="Button">
                                     <Setter Property="IsEnabled" Value="False"/>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsBarcodeIssueCard, RelativeSource={RelativeSource 
