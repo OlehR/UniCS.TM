@@ -2251,7 +2251,25 @@
                                 </Style>
                             </Button.Style>
                         </Button>
-                       
+                        <Button Grid.Column="1"
+                             Width="250" Height="70"
+                            Content="Видати картку" Click="IssueNewCardButton" >
+                            <Button.Style>
+                                <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsBarcodeIssueCard, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                            <Setter Property="IsEnabled" Value="True" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsBarcodeIssueCard, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                            <Setter Property="IsEnabled" Value="False" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
                     </StackPanel>
 
 
