@@ -261,14 +261,27 @@ namespace Front.Control
 
         private void POS_Z_Click(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show("Ви хочете зробити Z-звіт на банківському терміналі?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            MW.CustomMessage.Show("Ви хочете зробити Z-звіт на банківському терміналі?", "Увага!", eTypeMessage.Question);
+            MW.CustomMessage.Result = (bool res) =>
             {
-                var task = Task.Run(() =>
-            {
-                var LastReceipt = EF.PosPrintZ(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
-                ViewReceipt(LastReceipt.Receipt);
-            });
-            }
+                if (res)
+                {
+                    var task = Task.Run(() =>
+                    {
+                        var LastReceipt = EF.PosPrintZ(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
+                        ViewReceipt(LastReceipt.Receipt);
+                    });
+                }
+            };
+
+            //if (MessageBox.Show("Ви хочете зробити Z-звіт на банківському терміналі?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            //{
+            //    var task = Task.Run(() =>
+            //    {
+            //    var LastReceipt = EF.PosPrintZ(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
+            //    ViewReceipt(LastReceipt.Receipt);
+            //    });
+            //}
         }
         private void OffLineClick(object sender, RoutedEventArgs e)
         {
@@ -313,7 +326,8 @@ namespace Front.Control
                 else
                 {
                     Thread.Sleep(100);
-                    MW.ShowErrorMessage($"Помилка друку звіта:({r.CodeError}){Environment.NewLine}{r.Error}");
+                    MW.CustomMessage.Show($"Помилка друку звіта:({r.CodeError}){Environment.NewLine}{r.Error}", "Помилка!", eTypeMessage.Error);
+                    //MW.ShowErrorMessage($"Помилка друку звіта:({r.CodeError}){Environment.NewLine}{r.Error}");
                 }
             });
         }
@@ -324,26 +338,46 @@ namespace Front.Control
             {
 
 
-                if (MessageBox.Show("Ви хочете зробити Z-звіт на фіскальному апараті?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                MW.CustomMessage.Show("Ви хочете зробити Z - звіт на фіскальному апараті ? ", "Увага!", eTypeMessage.Question);
+                MW.CustomMessage.Result = (bool res) =>
                 {
-                    var task = Task.Run(() =>
-                {
-                    var r = EF.RroPrintZ(new IdReceipt() { IdWorkplace = SelectedWorkPlace.IdWorkplace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
-                    if (r.CodeError == 0)
-                        ViewReceiptFiscal(r);
-                    else
+                    if (res)
                     {
-                        Thread.Sleep(100);
-                        MW.ShowErrorMessage($"Помилка друку звіта:({r.CodeError}){Environment.NewLine}{r.Error}");
+                        var task = Task.Run(() =>
+                        {
+                            var r = EF.RroPrintZ(new IdReceipt() { IdWorkplace = SelectedWorkPlace.IdWorkplace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
+                            if (r.CodeError == 0)
+                                ViewReceiptFiscal(r);
+                            else
+                            {
+                                Thread.Sleep(100);
+                                MW.CustomMessage.Show($"Помилка друку звіта:({r.CodeError}){Environment.NewLine}{r.Error}", "Помилка!", eTypeMessage.Error);
+                                //MW.ShowErrorMessage($"Помилка друку звіта:({r.CodeError}){Environment.NewLine}{r.Error}");
+                            }
+                        });
                     }
-                });
-                }
+                };
+                //if (MessageBox.Show("Ви хочете зробити Z-звіт на фіскальному апараті?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                //{
+                //    var task = Task.Run(() =>
+                //{
+                //    var r = EF.RroPrintZ(new IdReceipt() { IdWorkplace = SelectedWorkPlace.IdWorkplace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
+                //    if (r.CodeError == 0)
+                //        ViewReceiptFiscal(r);
+                //    else
+                //    {
+                //        Thread.Sleep(100);
+                //        MW.ShowErrorMessage($"Помилка друку звіта:({r.CodeError}){Environment.NewLine}{r.Error}");
+                //    }
+                //});
+                //}
             }
             else   
             {
                 MW.SetStateView(eStateMainWindows.StartWindow);
                 TabAdmin.SelectedIndex = 0;
-                MW.ShowErrorMessage("Існує відкритий чек! Для закриття зміни потрібно закрити всі чеки!");
+                MW.CustomMessage.Show("Існує відкритий чек! Для закриття зміни потрібно закрити всі чеки!", "Увага!", eTypeMessage.Warning);
+                //MW.ShowErrorMessage("Існує відкритий чек! Для закриття зміни потрібно закрити всі чеки!");
             }
         }
 
@@ -401,7 +435,8 @@ namespace Front.Control
             {
                 MW.SetStateView(eStateMainWindows.StartWindow);
                 TabAdmin.SelectedIndex = 0;
-                MW.ShowErrorMessage("Існує відкритий чек! Для закриття зміни потрібно закрити всі чеки!");
+                MW.CustomMessage.Show("Існує відкритий чек! Для закриття зміни потрібно закрити всі чеки!", "Увага!", eTypeMessage.Warning);
+                //MW.ShowErrorMessage("Існує відкритий чек! Для закриття зміни потрібно закрити всі чеки!");
             }
         }
 
@@ -427,7 +462,8 @@ namespace Front.Control
                 if (Eq != null)
                 {
                     var res = Eq.TestDevice();
-                    MessageBox.Show($"{res.StateEquipment} {res.TextState}", res.ModelEquipment.ToString());
+                    MW.CustomMessage.Show($"{res.StateEquipment} {res.TextState}", res.ModelEquipment.ToString(), eTypeMessage.Information);
+                   // MessageBox.Show($"{res.StateEquipment} {res.TextState}", res.ModelEquipment.ToString());
                     Init(AdminUser);
                 }
             }
@@ -443,7 +479,8 @@ namespace Front.Control
                 if (Eq != null)
                 {
                     var res = Eq.GetDeviceInfo();
-                    MessageBox.Show(res, Eq.Model.ToString());
+                    MW.CustomMessage.Show(res, Eq.Model.ToString(), eTypeMessage.Information);
+                    //MessageBox.Show(res, Eq.Model.ToString());
                 }
             }
         }
@@ -506,7 +543,8 @@ namespace Front.Control
             var PathToFileLog = FileLogger.GetFileNameDate(DateSoSearch);
             if (!File.Exists(PathToFileLog))
             {
-                MessageBox.Show($"За обраною датою: {DateSoSearch.ToString("dd/MM/yyyy")} лог відсутній");
+                MW.CustomMessage.Show($"За обраною датою: {DateSoSearch.ToString("dd/MM/yyyy")} лог відсутній", "Увага!", eTypeMessage.Warning);
+                //MessageBox.Show($"За обраною датою: {DateSoSearch.ToString("dd/MM/yyyy")} лог відсутній");
                 ListLog.ItemsSource = null; ListLog.Items.Clear();
             }
             else
@@ -642,18 +680,32 @@ namespace Front.Control
 
         private void PowerOff(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show("Вимкнути касу?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            MW.CustomMessage.Show("Вимкнути касу?", "Увага!", eTypeMessage.Question);
+            MW.CustomMessage.Result = (bool res) =>
             {
-                System.Diagnostics.Process.Start("shutdown.exe", "-s -t 0");
-            }
+                if (res)
+                    System.Diagnostics.Process.Start("shutdown.exe", "-s -t 0");
+                
+            };
+            //if (MessageBox.Show("Вимкнути касу?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            //{
+            //    System.Diagnostics.Process.Start("shutdown.exe", "-s -t 0");
+            //}
         }
 
         private void RebootPC(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show("Перезавантажити касу?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            MW.CustomMessage.Show("Перезавантажити касу?", "Увага!", eTypeMessage.Question);
+            MW.CustomMessage.Result = (bool res) =>
             {
-                System.Diagnostics.Process.Start("shutdown.exe", "-r -t 0");
-            }
+                if (res)
+                    System.Diagnostics.Process.Start("shutdown.exe", "-r -t 0");
+
+            };
+            //if (MessageBox.Show("Перезавантажити касу?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            //{
+            //    System.Diagnostics.Process.Start("shutdown.exe", "-r -t 0");
+            //}
         }
 
         async private void RefreshDataButton(object sender, RoutedEventArgs e)
@@ -702,11 +754,21 @@ namespace Front.Control
 
         private void CloseApplicationButton(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show("Завершити роботу програми?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            MW.CustomMessage.Show("Завершити роботу програми?", "Увага!", eTypeMessage.Question);
+            MW.CustomMessage.Result = (bool res) =>
             {
-                System.Diagnostics.Process.Start("explorer.exe");
-                Application.Current.Shutdown();
-            }
+                if (res)
+                {
+                    System.Diagnostics.Process.Start("explorer.exe");
+                    Application.Current.Shutdown();
+                }
+
+            };
+            //if (MessageBox.Show("Завершити роботу програми?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            //{
+            //    System.Diagnostics.Process.Start("explorer.exe");
+            //    Application.Current.Shutdown();
+            //}
         }
 
         private void CloneReceipt(object sender, RoutedEventArgs e)
@@ -881,14 +943,26 @@ namespace Front.Control
 
         private void ChangeReceiptStatus(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show($"Змінити стан чека з \"{ChangeStateReceipt.StateReceipt.GetDescription()}\" на \"{newStateReceipt.GetDescription()}\"?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            MW.CustomMessage.Show($"Змінити стан чека з \"{ChangeStateReceipt.StateReceipt.GetDescription()}\" на \"{newStateReceipt.GetDescription()}\"?", "Увага!", eTypeMessage.Question);
+            MW.CustomMessage.Result = (bool res) =>
             {
-                //ChangeStateReceipt.StateReceipt = newStateReceipt;
-                Bl.SetStateReceipt(ChangeStateReceipt, newStateReceipt);
-                WindowChangeReceiptStatus.Visibility = Visibility.Collapsed;
-                BackgroundReceipts.Visibility = Visibility.Collapsed;
-                FindChecksByDate(null, null);
-            }
+                if (res)
+                {
+                    Bl.SetStateReceipt(ChangeStateReceipt, newStateReceipt);
+                    WindowChangeReceiptStatus.Visibility = Visibility.Collapsed;
+                    BackgroundReceipts.Visibility = Visibility.Collapsed;
+                    FindChecksByDate(null, null);
+                }
+
+            };
+            //if (MessageBox.Show($"Змінити стан чека з \"{ChangeStateReceipt.StateReceipt.GetDescription()}\" на \"{newStateReceipt.GetDescription()}\"?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            //{
+            //    //ChangeStateReceipt.StateReceipt = newStateReceipt;
+            //    Bl.SetStateReceipt(ChangeStateReceipt, newStateReceipt);
+            //    WindowChangeReceiptStatus.Visibility = Visibility.Collapsed;
+            //    BackgroundReceipts.Visibility = Visibility.Collapsed;
+            //    FindChecksByDate(null, null);
+            //}
         }
 
         private void CheckReceiptState(object sender, RoutedEventArgs e)
@@ -1004,7 +1078,8 @@ from RECEIPT r
                     Res.AppendLine(el);
             }
 
-            MessageBox.Show(Res.ToString());
+            MW.CustomMessage.Show(Res.ToString(), "Звірка з 1С", eTypeMessage.Information);
+            //MessageBox.Show(Res.ToString());
 
         }
 
@@ -1101,27 +1176,57 @@ from RECEIPT r
         {
             if (pRes.Length != 0)
             {
-                if (MessageBox.Show($"{pDesciption} {pRes}?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                MW.CustomMessage.Show($"{pDesciption} {pRes}?", "Увага!", eTypeMessage.Question);
+                MW.CustomMessage.Result = (bool resMes) =>
                 {
-                    var res = Decimal.TryParse(pRes, out decimal pSumMoveMoney);
-                    if (res)
+                    if (resMes)
                     {
-                        if (IsRemoveMoney)
-                            pSumMoveMoney = pSumMoveMoney * (-1); // для вилучення відємне значення
-                        var task = Task.Run(() =>
+                        var res = Decimal.TryParse(pRes, out decimal pSumMoveMoney);
+                        if (res)
                         {
-                            var r = EF.RroMoveMoney(pSumMoveMoney, new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
-                            if (r.CodeError == 0)
-                                MessageBox.Show("Успішно!");
-                            else
+                            if (IsRemoveMoney)
+                                pSumMoveMoney = pSumMoveMoney * (-1); // для вилучення відємне значення
+                            var task = Task.Run(() =>
                             {
-                                Thread.Sleep(100);
-                                MW.ShowErrorMessage($"Помилка: ({r.CodeError}){Environment.NewLine}{r.Error}");
-                            }
-                        });
+                                var r = EF.RroMoveMoney(pSumMoveMoney, new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
+                                if (r.CodeError == 0)
+                                    MW.CustomMessage.Show("Успішно!", "Операції з готівкою", eTypeMessage.Information);
+                                //MessageBox.Show("Успішно!");
+                                else
+                                {
+                                    Thread.Sleep(100);
+                                    MW.CustomMessage.Show($"Помилка: ({r.CodeError}){Environment.NewLine}{r.Error}", "Помилка!", eTypeMessage.Error);
+
+                                    //MW.ShowErrorMessage($"Помилка: ({r.CodeError}){Environment.NewLine}{r.Error}");
+                                }
+                            });
+                        }
+                        else MW.CustomMessage.Show($"Введіть коректну суму!", "Помилка!", eTypeMessage.Error);
+                        //MW.ShowErrorMessage("Введіть коректну суму!");
                     }
-                    else MW.ShowErrorMessage("Введіть коректну суму!");
-                }
+
+                };
+                //if (MessageBox.Show($"{pDesciption} {pRes}?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                //{
+                //    var res = Decimal.TryParse(pRes, out decimal pSumMoveMoney);
+                //    if (res)
+                //    {
+                //        if (IsRemoveMoney)
+                //            pSumMoveMoney = pSumMoveMoney * (-1); // для вилучення відємне значення
+                //        var task = Task.Run(() =>
+                //        {
+                //            var r = EF.RroMoveMoney(pSumMoveMoney, new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
+                //            if (r.CodeError == 0)
+                //                MessageBox.Show("Успішно!");
+                //            else
+                //            {
+                //                Thread.Sleep(100);
+                //                MW.ShowErrorMessage($"Помилка: ({r.CodeError}){Environment.NewLine}{r.Error}");
+                //            }
+                //        });
+                //    }
+                //    else MW.ShowErrorMessage("Введіть коректну суму!");
+                //}
             }
             MW.NumericPad.Visibility = Visibility.Collapsed;
             BackgroundShift.Visibility = Visibility.Collapsed;
@@ -1245,12 +1350,23 @@ from RECEIPT r
 
         private void Exit_Program_Click(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show("Завершити роботу програми?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            MW.CustomMessage.Show("Завершити роботу програми?", "Увага!", eTypeMessage.Question);
+            MW.CustomMessage.Result = (bool resMes) =>
             {
-                System.Diagnostics.Process.Start("explorer.exe");
-                Application.Current.Shutdown();
-            }
-            else TabAdmin.SelectedIndex = 0;
+                if (resMes)
+                {
+                    System.Diagnostics.Process.Start("explorer.exe");
+                    Application.Current.Shutdown();
+                }
+                else TabAdmin.SelectedIndex = 0;
+
+            };
+            //if (MessageBox.Show("Завершити роботу програми?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            //{
+            //    System.Diagnostics.Process.Start("explorer.exe");
+            //    Application.Current.Shutdown();
+            //}
+            //else TabAdmin.SelectedIndex = 0;
         }
 
         private void ChangeOrderNumber(object sender, RoutedEventArgs e)
@@ -1283,14 +1399,16 @@ from RECEIPT r
                     OrderNumber = "0";
                     //MW.ShowErrorMessage("Ви втягнули замовлення! Вітаю");
                 }
-                else MW.ShowErrorMessage("Введіть коректний номер замовлення!");
+                else MW.CustomMessage.Show("Введіть коректний номер замовлення!", "Увага!", eTypeMessage.Warning);
+                //MW.ShowErrorMessage("Введіть коректний номер замовлення!");
 
             }
             else
             {
                 MW.SetStateView(eStateMainWindows.StartWindow);
                 TabAdmin.SelectedIndex = 0;
-                MW.ShowErrorMessage("Існує відкритий чек! Для отримання замовлення закрийте або видаліть текучий чек!");
+                MW.CustomMessage.Show("Існує відкритий чек! Для отримання замовлення закрийте або видаліть текучий чек!", "Увага!", eTypeMessage.Warning);
+                //MW.ShowErrorMessage("Існує відкритий чек! Для отримання замовлення закрийте або видаліть текучий чек!");
             }
         }
     }

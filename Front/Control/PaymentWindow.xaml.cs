@@ -272,10 +272,12 @@ namespace Front.Control
                         if (SumCash >= res)
                             SumCashDisbursement = res;
                         else
-                            MW.ShowErrorMessage($"Недостатня кількість готівки в касі! Максимальна сума видачі {SumCash}₴");
+                            MW.CustomMessage.Show($"Недостатня кількість готівки в касі! Максимальна сума видачі {SumCash}₴", "Помилка!", eTypeMessage.Error);
+                            //MW.ShowErrorMessage($"Недостатня кількість готівки в касі! Максимальна сума видачі {SumCash}₴");
 
                     else
-                        MW.ShowErrorMessage($"Сума видачі готівки повинна бути більша за {Global.Settings.SumDisbursementMin}₴ і меньше за {Global.Settings.SumDisbursementMax}₴");
+                        MW.CustomMessage.Show($"Сума видачі готівки повинна бути більша за {Global.Settings.SumDisbursementMin}₴ і меньше за {Global.Settings.SumDisbursementMax}₴", "Помилка!", eTypeMessage.Error);
+                    //MW.ShowErrorMessage($"Сума видачі готівки повинна бути більша за {Global.Settings.SumDisbursementMin}₴ і меньше за {Global.Settings.SumDisbursementMax}₴");
 
                 }
                 BackgroundPayment.Visibility = Visibility.Collapsed;
@@ -378,7 +380,8 @@ namespace Front.Control
                         if (SumMaxWallet < tmp)
                         {
                             tmp = SumMaxWallet;
-                            MW.ShowErrorMessage("Вказана сума більша за максимально можливу");
+                            MW.CustomMessage.Show($"Вказана сума більша за максимально можлив", "Помилка!", eTypeMessage.Error);
+                            //MW.ShowErrorMessage("Вказана сума більша за максимально можливу");
                         }
 
 

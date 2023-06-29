@@ -1,0 +1,57 @@
+﻿<UserControl x:Class="Front.Control.ShowMessage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Front.Control"
+             mc:Ignorable="d" 
+             MinHeight="400" Width="700">
+    <UserControl.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Source Sans Pro" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="FontWeight" Value="DemiBold" />
+        </Style>
+    </UserControl.Resources>
+    <Border Background="White" BorderBrush="White" BorderThickness="1">
+        <Border.Effect>
+            <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Image x:Name="ImageTypeMessage" Source="\icons\warning.png"
+                   Width="80" Height="80"/>
+
+            <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="30"
+                       Text="{Binding TextTypeMessage, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=UserControl}}" TextWrapping="Wrap">
+            </TextBlock>
+            <TextBlock Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="15,0,15,0"
+                       Text="{Binding TextMessage, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=UserControl}}"  TextWrapping="Wrap">
+            </TextBlock>
+
+            <Grid Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button  Style="{StaticResource greenButton}" Grid.Column="0" Visibility="Collapsed"
+                        x:Name="YesButton" Content="Так" Width="150" Height="80" Click="YesOrNoButtonClik"/>
+                <Button Style="{StaticResource Default}"  Grid.Column="1" Visibility="Collapsed"
+                        x:Name="NoButton" Content="Ні" Width="150" Height="80" Click="YesOrNoButtonClik"/>
+
+                <Button Style="{StaticResource WhiteButton}"  Grid.Column="0" Grid.ColumnSpan="2" Visibility="Collapsed"
+                        x:Name="OkButton" Content="Ок" Width="150" Height="80" Click="OkButtonClik"/>
+            </Grid>
+        </Grid>
+    </Border>
+</UserControl>

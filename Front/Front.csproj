@@ -8,8 +8,8 @@
     <ApplicationIcon />
     <Win32Resource />
     <NeutralLanguage>uk-UA</NeutralLanguage>
-    <AssemblyVersion>2.0.1.183</AssemblyVersion>
-    <FileVersion>2.0.1.183</FileVersion>
+    <AssemblyVersion>2.0.1.184</AssemblyVersion>
+    <FileVersion>2.0.1.184</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -28,9 +28,11 @@
     <None Remove="icons\Close.png" />
     <None Remove="icons\ControlScale.png" />
     <None Remove="icons\delete.png" />
+    <None Remove="icons\Error.png" />
     <None Remove="icons\help.png" />
     <None Remove="icons\hu.png" />
     <None Remove="icons\Inform.png" />
+    <None Remove="icons\information.png" />
     <None Remove="icons\MasterCard.png" />
     <None Remove="icons\minus.png" />
     <None Remove="icons\newPaymentTerminal.png" />
@@ -43,6 +45,7 @@
     <None Remove="icons\pln.png" />
     <None Remove="icons\plus.png" />
     <None Remove="icons\plusWhite.png" />
+    <None Remove="icons\question.png" />
     <None Remove="icons\reboot.png" />
     <None Remove="icons\receipt.png" />
     <None Remove="icons\right.png" />
@@ -94,8 +97,16 @@
     </Resource>
     <Resource Include="icons\Close.png" />
     <Resource Include="icons\ControlScale.png" />
+    <Resource Include="icons\Error.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="icons\help.png" />
-    <Resource Include="icons\Inform.png" />
+    <Resource Include="icons\Inform.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="icons\information.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="icons\MasterCard.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
@@ -110,6 +121,9 @@
     </Resource>
     <Resource Include="icons\paymentTerminal.png" />
     <Resource Include="icons\plusWhite.png" />
+    <Resource Include="icons\question.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="icons\reboot.png" />
     <Resource Include="icons\receipt.png" />
     <Resource Include="icons\right.png" />
@@ -186,7 +200,9 @@
     <Resource Include="icons\newReceipt.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="icons\warning.png" />
+    <Resource Include="icons\warning.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="icons\weight.png" />
     <Resource Include="icons\X.png" />
   </ItemGroup>
