@@ -378,6 +378,7 @@ namespace Front
 
             AdminControl.Init(this);
             PaymentWindow.Init(this);
+            CustomMessage.Init(this);
 
             //Провіряємо чи зміна відкрита.
             string BarCodeAdminSSC = Bl.db.GetConfig<string>("CodeAdminSSC");
@@ -441,7 +442,8 @@ namespace Front
                     }
                     else //Повідомлення 
                     {
-                        MessageBox.Show($"Увас відкладено {rr.Count()} чеків", "Увага!", MessageBoxButton.OK, MessageBoxImage.Error);
+                        CustomMessage.Show($"Увас відкладено {rr.Count()} чеків!", "Увага!", eTypeMessage.Error);
+                        //MessageBox.Show($"Увас відкладено {rr.Count()} чеків", "Увага!", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                     SetStateView(eStateMainWindows.WaitInput);
                     var Receipt = Bl.GetReceiptHead(rr.FirstOrDefault(), true);
@@ -1219,7 +1221,8 @@ namespace Front
             var U = Bl.GetUserByLogin(LoginTextBlock.Text, PasswordTextBlock.Password);
             if (U == null)
             {
-                ShowErrorMessage("Не вірний логін чи пароль");
+                CustomMessage.Show("Не вірний логін чи пароль", "Увага!", eTypeMessage.Warning);
+                //ShowErrorMessage("Не вірний логін чи пароль");
                 return;
             }
             //SetStateView(eStateMainWindows.WaitAdmin);
@@ -1377,7 +1380,8 @@ namespace Front
                 {
                     //LastVerifyCode = new StatusD<string> { Data = "1234", State = 0, TextState = "OK" };
                     LastVerifyCode = Bl.ds.GetVerifySMS(ClientPhoneNumvers[res.Id]);
-                    MessageBox.Show($"Код підтвердження надіслано за номером {ClientPhoneNumvers[res.Id]}", "Увага!", MessageBoxButton.OK, MessageBoxImage.Information);
+                    CustomMessage.Show($"Код підтвердження надіслано за номером {ClientPhoneNumvers[res.Id]}", "Увага!", eTypeMessage.Information);
+                    //MessageBox.Show($"Код підтвердження надіслано за номером {ClientPhoneNumvers[res.Id]}", "Увага!", MessageBoxButton.OK, MessageBoxImage.Information);
 
                     return;
                 }
@@ -1485,12 +1489,24 @@ namespace Front
         {
             if (ReceiptPostpone == null)
             {
-                if (MessageBox.Show("Ви дійсно хочете відкласти чек?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                CustomMessage.Show("Ви дійсно хочете відкласти чек?", "Відкладення чеку", eTypeMessage.Question);
+                CustomMessage.Result = (bool res) =>
                 {
-                    ReceiptPostpone = curReceipt;
-                    NewReceipt();
-                    WaresList.Focus();
-                }
+                    if (res)
+                    {
+                        ReceiptPostpone = curReceipt;
+                        NewReceipt();
+                        WaresList.Focus();
+                    }
+
+                };
+
+                //if (MessageBox.Show("Ви дійсно хочете відкласти чек?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                //{
+                //    ReceiptPostpone = curReceipt;
+                //    NewReceipt();
+                //    WaresList.Focus();
+                //}
             }
             else
             {
@@ -1503,7 +1519,8 @@ namespace Front
                     WaresList.Focus();
                 }
                 else
-                    MessageBox.Show("Неможливо відновити чек не закривши текучий", "Увага!", MessageBoxButton.OK, MessageBoxImage.Question);
+                    CustomMessage.Show("Неможливо відновити чек не закривши текучий", "Увага!", eTypeMessage.Information);
+                //MessageBox.Show("Неможливо відновити чек не закривши текучий", "Увага!", MessageBoxButton.OK, MessageBoxImage.Question);
 
             }
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsReceiptPostpone"));
@@ -1594,7 +1611,9 @@ namespace Front
 
             //if (r != eReturnClient.Ok)
             //{
-            MessageBox.Show(r.GetDescription(), r != eReturnClient.Ok ? "Помилка! Карточка не збереглась на сервері!!!" : "Карточка успішно збережена.");
+            CustomMessage.Show(r.GetDescription(), r != eReturnClient.Ok ? "Помилка! Карточка не збереглась на сервері!!!" : "Карточка успішно збережена.", eTypeMessage.Information);
+
+           // MessageBox.Show(r.GetDescription(), r != eReturnClient.Ok ? "Помилка! Карточка не збереглась на сервері!!!" : "Карточка успішно збережена.");
             // }
             //else
             // {
@@ -1641,7 +1660,8 @@ namespace Front
                 {
                     IsGetCard = false;
                     if (!string.IsNullOrEmpty(VerifyCode))
-                        MessageBox.Show($"Введений код не вірний!", "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
+                        CustomMessage.Show($"Введений код не вірний!", "Помилка!", eTypeMessage.Error);
+                   // MessageBox.Show($"Введений код не вірний!", "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsGetCard)));
             };
@@ -1652,7 +1672,8 @@ namespace Front
 
             LastVerifyCode = Bl.ds.GetVerifySMS(PhoneIssueCard);
             //LastVerifyCode = new StatusD<string> { Data = "123456", State = 0, TextState = "OK" };
-            MessageBox.Show($"Код підтвердження надіслано за номером {PhoneIssueCard}", "Увага!", MessageBoxButton.OK, MessageBoxImage.Information);
+            CustomMessage.Show($"Код підтвердження надіслано за номером {PhoneIssueCard}", "Успішно!", eTypeMessage.Information);
+            //MessageBox.Show($"Код підтвердження надіслано за номером {PhoneIssueCard}", "Увага!", MessageBoxButton.OK, MessageBoxImage.Information);
             EnterVerifyCode(null, null);
         }
 
@@ -1680,7 +1701,8 @@ namespace Front
 
                               else
                               {
-                                  MessageBox.Show($"Введений код не вірний!", "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
+                                  CustomMessage.Show($"Введений код не вірний!", "Помилка!", eTypeMessage.Error);
+                                  //MessageBox.Show($"Введений код не вірний!", "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
                               }
                               BackgroundWaitAdmin.Visibility = Visibility.Collapsed;
                           };

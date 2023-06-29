@@ -2251,7 +2251,25 @@
                                 </Style>
                             </Button.Style>
                         </Button>
-                       
+                        <Button Grid.Column="1"
+                             Width="250" Height="70"
+                            Content="Видати без SMS" Click="IssueNewCardButton" >
+                            <Button.Style>
+                                <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsBarcodeIssueCard, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                            <Setter Property="IsEnabled" Value="True" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsBarcodeIssueCard, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                            <Setter Property="IsEnabled" Value="False" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
                     </StackPanel>
 
 
@@ -2647,6 +2665,16 @@
                               x:Name="AddMissingPackage" VerticalAlignment="Stretch" 
                               Grid.ZIndex="2" />
 
+        <!--Повідомлення-->
+        <uc:ShowMessage Grid.Row="0" Grid.RowSpan="5" Visibility="Collapsed"
+                              Grid.Column="0" Grid.ColumnSpan="4" 
+                              x:Name="CustomMessage" VerticalAlignment="Center" HorizontalAlignment="Center" 
+                              Grid.ZIndex="8" />
+        <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="0" Grid.RowSpan="10"
+                Grid.Column="0" Grid.ColumnSpan="10"
+                 Name="TotalBackground" Visibility="Collapsed" Grid.ZIndex="7" 
+                Opacity="0.9"/>
 
     </Grid>
 
