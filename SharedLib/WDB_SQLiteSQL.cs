@@ -1,16 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-//using DB_SQLite;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Dapper;
-using ModelMID;
-using ModelMID.DB;
-using Utils;
-
-namespace SharedLib
+﻿namespace SharedLib
 {
     public partial class WDB_SQLite : WDB
     {
@@ -26,6 +14,10 @@ select  sum( ROUND((JULIANDAY(Created_At) - JULIANDAY(Resolved_At)) * 86400)) AS
 from RECEIPT_Event e 
 join receipt r on r.code_receipt=e.code_receipt
 where  Event_Type=-11 and r.STATE_RECEIPT=9)) as LineHoure";
+
+        readonly string SqlLineReceipt = @"select  count(*) as Rows,count(distinct r.code_receipt) as Receipts from receipt r
+join WARES_RECEIPT wr on r.code_receipt=wr.code_receipt
+where r.state_receipt>=8";
 
         readonly string SqlFindClient = @"with t as 
 (

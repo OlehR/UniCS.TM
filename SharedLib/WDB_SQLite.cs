@@ -990,9 +990,23 @@ Where ID_WORKPLACE = @IdWorkplace
             return Res != null && Res.Any(el => el.StatusCard == eStatusCard.Active)?Res.Where(el => el.StatusCard == eStatusCard.Active) : Res ;
         }
 
-        public int SpeedScan()
+  
+        public SpeedScan SpeedScan()
         {
-            return db.ExecuteScalar<int>(SqlSpeedScan);
+            
+                SpeedScan Res = new SpeedScan();
+            try
+            {
+                var res = db.Execute<SpeedScan>(SqlLineReceipt);
+                if (res != null)
+                    Res = res.FirstOrDefault();
+
+                Res.Speed = db.ExecuteScalar<int>(SqlSpeedScan);
+            } catch (Exception ex) 
+            { 
+                var r = ex.Message; 
+            }
+            return Res;
         }
 
 

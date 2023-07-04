@@ -62,7 +62,7 @@ namespace Front.Control
         public eStateReceipt newStateReceipt;
         public bool ClosedShift { get { return MW.IsLockSale; } }
         public User AdminUser { get; set; }
-        public int SpeedScan { get { return Bl.db.SpeedScan(); } }
+        public string SpeedScan { get { return Bl.db.SpeedScan().ToJSON(); } }
         public string NameAdminUserOpenShift { get { return $"{MW?.AdminSSC?.NameUser} ({MW?.AdminSSC?.TypeUser})"; } }
         public DateTime DataOpenShift { get { return MW.DTAdminSSC; } }
         public bool IsShowAllReceipts { get; set; }
