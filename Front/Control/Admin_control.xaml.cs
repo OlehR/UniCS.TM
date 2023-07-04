@@ -62,7 +62,7 @@ namespace Front.Control
         public eStateReceipt newStateReceipt;
         public bool ClosedShift { get { return MW.IsLockSale; } }
         public User AdminUser { get; set; }
-        public string SpeedScan { get { return Bl.db.SpeedScan().ToJSON(); } }
+        public SpeedScan SpeedScan { get { return Bl.db.SpeedScan(); } }
         public string NameAdminUserOpenShift { get { return $"{MW?.AdminSSC?.NameUser} ({MW?.AdminSSC?.TypeUser})"; } }
         public DateTime DataOpenShift { get { return MW.DTAdminSSC; } }
         public bool IsShowAllReceipts { get; set; }
@@ -159,7 +159,7 @@ namespace Front.Control
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("NameAdminUserOpenShift"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DataOpenShift"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsControlScale"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SpeedScan)));
+            
 
             //TB_NameAdminUserOpenShift.Text = NameAdminUserOpenShift;
             //TB_DataOpenShift.Text= $"{DataOpenShift}";
@@ -521,6 +521,9 @@ namespace Front.Control
                     break;
                 case "Вихід з програми":
                     Exit_Program_Click(null, null);
+                    break;
+                case "Додаткові функції":
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SpeedScan)));
                     break;
                 default:
 

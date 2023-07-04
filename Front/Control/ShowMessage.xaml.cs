@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -32,42 +33,46 @@ namespace Front.Control
         {
             InitializeComponent();
         }
-        
+
         public void Show(string textMessage, string textTypeMessage = "Увага!", eTypeMessage typeMessage = eTypeMessage.Information)
         {
-            ShowWindow();
-            TextMessage = textMessage;
-            TextTypeMessage = textTypeMessage;
-            TypeMessage = typeMessage;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TextMessage)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TextTypeMessage)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TypeMessage)));
-            YesButton.Visibility= Visibility.Collapsed;
-            NoButton.Visibility= Visibility.Collapsed;
-            OkButton.Visibility= Visibility.Collapsed;
-            switch (TypeMessage)
+            var r = Dispatcher.BeginInvoke(new ThreadStart(() =>
             {
-                case eTypeMessage.Warning:
-                    ImageTypeMessage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/warning.png"));
-                    OkButton.Visibility = Visibility.Visible;
-                    break;
-                case eTypeMessage.Error:
-                    ImageTypeMessage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/Error.png"));
-                    OkButton.Visibility = Visibility.Visible;
-                    break;
-                case eTypeMessage.Information:
-                    ImageTypeMessage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/information.png"));
-                    OkButton.Visibility = Visibility.Visible;
-                    break;
-                case eTypeMessage.Question:
-                    ImageTypeMessage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/question.png"));
-                    YesButton.Visibility = Visibility.Visible;
-                    NoButton.Visibility = Visibility.Visible;
-                    break;
-                default:
-                    break;
-            }
 
+                ShowWindow();
+                TextMessage = textMessage;
+                TextTypeMessage = textTypeMessage;
+                TypeMessage = typeMessage;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TextMessage)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TextTypeMessage)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TypeMessage)));
+                YesButton.Visibility = Visibility.Collapsed;
+                NoButton.Visibility = Visibility.Collapsed;
+                OkButton.Visibility = Visibility.Collapsed;
+                switch (TypeMessage)
+                {
+                    case eTypeMessage.Warning:
+                        ImageTypeMessage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/warning.png"));
+                        OkButton.Visibility = Visibility.Visible;
+                        break;
+                    case eTypeMessage.Error:
+                        ImageTypeMessage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/Error.png"));
+                        OkButton.Visibility = Visibility.Visible;
+                        break;
+                    case eTypeMessage.Information:
+                        ImageTypeMessage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/information.png"));
+                        OkButton.Visibility = Visibility.Visible;
+                        break;
+                    case eTypeMessage.Question:
+                        ImageTypeMessage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/question.png"));
+                        YesButton.Visibility = Visibility.Visible;
+                        NoButton.Visibility = Visibility.Visible;
+                        break;
+                    default:
+                        break;
+                }
+
+            }));
         }
 
         private void YesOrNoButtonClik(object sender, RoutedEventArgs e)
@@ -98,7 +103,7 @@ namespace Front.Control
                 MW.CustomMessage.Visibility = Visibility.Collapsed;
                 MW.TotalBackground.Visibility = Visibility.Collapsed;
             }
-            
+
         }
         private void OkButtonClik(object sender, RoutedEventArgs e)
         {

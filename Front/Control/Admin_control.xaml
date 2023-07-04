@@ -240,12 +240,6 @@
                         </StackPanel.Style>
 
 
-                        <TextBlock Grid.Row="0"  Text="Швидкість сканування: "  FontSize="20"
-                               HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="Black"/>
-                        <TextBlock Grid.Row="0"  Text="{Binding SpeedScan}"  FontSize="20"
-                               HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="Black"/>
-                        <TextBlock Grid.Row="0"  Text=" | "  FontSize="20"
-                               HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="Black"/>
                     </StackPanel>
 
                     <TextBlock Grid.Row="0"  Text="{Binding AdminUser.NameUser}" Name="adminastratorName" FontSize="20"
@@ -2001,6 +1995,22 @@
                                     <StackPanel Orientation="Vertical">
                                         <Button Content="{Binding OrderNumber, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" Style="{DynamicResource WhiteButton}" Click="ChangeOrderNumber"/>
                                         <Button Style="{DynamicResource Default}" Content="Втягнути" Click="ImportClientOrder"/>
+                                    </StackPanel>
+                                </GroupBox>
+                                <GroupBox Grid.Column="1" Grid.Row="1" Header="Швидкість роботи касира">
+                                    <StackPanel Orientation="Vertical" >
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="Швидкість сканування: " />
+                                            <TextBlock x:Name="ScanningSpeed" Text="{Binding SpeedScan.Speed}" />
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="Кількість чеків: " />
+                                            <TextBlock x:Name="CountReceipt" Text="{Binding SpeedScan.Receipts}" />
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="Кількість строк: " />
+                                            <TextBlock x:Name="CountReceiptsRows" Text="{Binding SpeedScan.Rows}" />
+                                        </StackPanel>
                                     </StackPanel>
                                 </GroupBox>
                             </StackPanel>
