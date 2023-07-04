@@ -109,14 +109,10 @@ SELECT TypePrice_RRef, nomen_RRef, price_dealer, ROW_NUMBER ( ) OVER (PARTITION 
   FROM DW.dbo.V1C_DIM_OPTION_WPC O
   JOIN dw.dbo.WAREHOUSES wh ON o.Warehouse_RRef= wh._IDRRef
   JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_GROUP G ON o._IDRRef= G._Reference18850_IDRRef
-    JOIN DW.dbo.V1C_DIM_OPTION_WPC_CASH_place CP ON o._IDRRef= cp._Reference18850_IDRRef
-  --JOIN DW.dbo.V1C_DIM_OPTION_WPC_FACT_WARES W ON G._Reference18850_IDRRef = W._Reference18850_IDRRef AND G. Order_Button = W.Order_Button
-    WHERE wh.Code= @CodeWarehouse AND  (g.Order_Button<>2 or wh.Code<>9 ) -- хак для групи Овочі 1
-   AND cp.CashPlaceRRef= CASE
-        WHEN @CodeWarehouse= 9 THEN 0x81380050569E814D11E9E4D62A0CF9ED -- 14 касановий
-        WHEN @CodeWarehouse= 15 THEN 0x817E0050569E814D11EC0030B1FA9530 -- 6(Каса ККМ СО Білочка №10)
-        when @CodeWarehouse = 148 then 0x8689005056883C0611ECEBD71B1AE559 -- Каса ККМ СО Ера №3
-        end
+  JOIN DW.dbo.V1C_DIM_OPTION_WPC_CASH_place CP ON o._IDRRef= cp._Reference18850_IDRRef
+  JOIN dw.dbo.V1C_CashDesk CD ON CD.CashDesk_RRef=cp.CashPlaceRRef
+    WHERE (g.Order_Button<>2 or wh.Code<>9 ) -- хак для групи Овочі 1
+         and CD.code=@IdWorkPlace 
   GROUP BY wh.Code, g.Order_Button;";
 
         /* Це правильний запит
@@ -128,20 +124,15 @@ SELECT TypePrice_RRef, nomen_RRef, price_dealer, ROW_NUMBER ( ) OVER (PARTITION 
           WHERE wh.Code=9*/
 
         string SqlGetDimFastWares = @"SELECT CONVERT(INT, wh.Code)*1000+CASE WHEN g.Order_Button=2 and @CodeWarehouse = 9 THEN 1 ELSE g.Order_Button END CodeFastGroup, -- хак для групи Овочі 1
-
             w1.code_wares AS CodeWares, max(w.OrderWares) as OrderWares
           FROM DW.dbo.V1C_DIM_OPTION_WPC O        
           JOIN dw.dbo.WAREHOUSES wh ON o.Warehouse_RRef= wh._IDRRef        
           JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_GROUP G ON o._IDRRef= G._Reference18850_IDRRef        
           JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_WARES W ON o._IDRRef = W._Reference18850_IDRRef AND G.Order_Button_wares = W.Order_Button        
           JOIN dw.dbo.Wares w1 ON w.Wares_RRef= w1._IDRRef        
-          JOIN DW.dbo.V1C_DIM_OPTION_WPC_CASH_place CP ON o._IDRRef= cp._Reference18850_IDRRef        
-            WHERE wh.Code = @CodeWarehouse        
-         AND cp.CashPlaceRRef= CASE        
-                WHEN @CodeWarehouse = 9 THEN 0x81380050569E814D11E9E4D62A0CF9ED -- 14 касановий
-                WHEN @CodeWarehouse= 15 THEN 0x817E0050569E814D11EC0030B1FA9530 -- 6(Каса ККМ СО Білочка №10)
-        when @CodeWarehouse = 148 then 0x8689005056883C0611ECEBD71B1AE559 -- Каса ККМ СО Ера №3
-        end
+          JOIN DW.dbo.V1C_DIM_OPTION_WPC_CASH_place CP ON o._IDRRef= cp._Reference18850_IDRRef      
+          JOIN dw.dbo.V1C_CashDesk CD ON CD.CashDesk_RRef=cp.CashPlaceRRef  
+            WHERE  CD.code=@IdWorkPlace 
         group by wh.Code, g.Order_Button, w1.code_wares;";
 
         string SqlGetPromotionSaleData = @"WITH wh_ex AS
@@ -549,7 +540,7 @@ GROUP BY pw.doc_promotion_RRef
         string SqlGetUser = @"SELECT e.CodeUser, NameUser, BarCode, Login, PassWord, CodeProfile AS TypeUser FROM dbo.V1C_employee e where e.IsWork= 1;";
 
         string SqlGetDimWorkplace = @"SELECT cd.code AS IdWorkplace, cd.[DESC] AS Name, CONVERT(UNIQUEIDENTIFIER,cd.CashDesk_RRef) AS TerminalGUID, Video_Camera_IP AS VideoCameraIP
-  ,cast(wh.code AS int) AS CodeWarehouse ,cast(tp.code AS int) AS CodeDealer, cd.prefix, cd.DNSName, cd.TypeWorkplace,cd.SettingsEx
+  ,COALESCE(cast(wh.code AS int),9) AS CodeWarehouse ,COALESCE(cast(tp.code AS int),2) AS CodeDealer, cd.prefix, cd.DNSName, cd.TypeWorkplace,cd.SettingsEx
   FROM  dbo.V1C_CashDesk cd
 LEFT JOIN dbo.V1C_dim_warehouse wh ON cd.warehouse_RRef=wh.warehouse_RRef
 LEFT JOIN dbo.V1C_dim_type_price tp ON wh.type_price_RRef= tp.type_price_RRef;";
@@ -565,5 +556,6 @@ LEFT JOIN dbo.V1C_dim_type_price tp ON wh.type_price_RRef= tp.type_price_RRef;";
         public int IsFull { get; set; }
         public int MessageNoMin { get; set; }
         public int MessageNoMax { get; set; }
+        public int IdWorkPlace { get; set; }
     }
 }

@@ -28,7 +28,7 @@ namespace SharedLib
             Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} LoadData varMessageNoMin={varMessageNoMin} varMessageNoMax={varMessageNoMax}");
 
             var oWarehouse = new pWarehouse() { CodeWarehouse = Global.CodeWarehouse };
-            var oMessage = new pMessage() { IsFull = parIsFull ? 1 : 0, MessageNoMin = varMessageNoMin, MessageNoMax = varMessageNoMax, CodeWarehouse = Global.CodeWarehouse };
+            var oMessage = new pMessage() { IsFull = parIsFull ? 1 : 0, MessageNoMin = varMessageNoMin, MessageNoMax = varMessageNoMax, CodeWarehouse = Global.CodeWarehouse, IdWorkPlace = Global.IdWorkPlace};
 
             Debug.WriteLine("SqlGetClientData");            
             var CD = db.Execute<pMessage, ClientData>(SqlGetClientData, oMessage);
@@ -174,14 +174,14 @@ namespace SharedLib
             TD = null;
 
             Debug.WriteLine("SqlGetDimFastGroup");
-            var FG = db.Execute<pWarehouse, FastGroup>(SqlGetDimFastGroup, oWarehouse);
+            var FG = db.Execute<pWarehouse, FastGroup>(SqlGetDimFastGroup, oMessage);
             Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Read SqlGetDimFastGroup => {FG.Count()}");
             pDB.ReplaceFastGroup(FG);
             Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Write SqlGetDimFastGroup => {FG.Count()}");
             FG = null;
 
             Debug.WriteLine("SqlGetDimFastWares");
-            var FW = db.Execute<pWarehouse, FastWares>(SqlGetDimFastWares, oWarehouse);
+            var FW = db.Execute<pWarehouse, FastWares>(SqlGetDimFastWares, oMessage);
             Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Read SqlGetDimFastWares => {FW.Count()}");
             pDB.ReplaceFastWares(FW);
             Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Write SqlGetDimFastWares => {FW.Count()}");
