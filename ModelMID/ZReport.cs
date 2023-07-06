@@ -1,4 +1,7 @@
-﻿namespace ModelMID
+﻿using System.Collections;
+using System.Collections.Generic;
+
+namespace ModelMID
 {
 
     internal class ZReport : IdReceipt
@@ -34,9 +37,7 @@
         /// <summary>
         /// Всього поверненя
         /// </summary>
-
         public decimal RefaundTotal { get; set; }
-
         /// <summary>
         /// Ставка 20%
         /// </summary>
@@ -73,5 +74,13 @@
         /// Текст звіта з ПОС термінала.
         /// </summary>
         public string ZPos { get; set; }
+        public decimal CashReal { get; set; }
+        public IEnumerable<BillCoin> BillCoins { get; set; }
+
+    }
+    public class BillCoin
+    {
+        public decimal Denomination { get; set;}
+        public decimal Quantity { get; set;}
     }
 }
