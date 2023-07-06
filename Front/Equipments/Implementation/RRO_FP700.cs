@@ -897,7 +897,7 @@ namespace Front.Equipments
 
         public FiscalArticle SetupArticleTable(ReceiptWares pRW)
         {
-            FiscalArticle article = db.GetFiscalArticle(pRW.CodeWares);
+            FiscalArticle article = db.GetFiscalArticle(pRW);
 
             if (article == null || article.CodeWares != pRW.CodeWares)
             {
