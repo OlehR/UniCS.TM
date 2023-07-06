@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using Front.Equipments.Utils;
+using System.Configuration;
 //using SerialPortStreamWrapper = Front.Equipments.Utils.SerialPortStreamWrapper;
 //using StaticTimer = Front.Equipments.Utils.StaticTimer;
 
@@ -51,6 +52,8 @@ namespace Front.Equipments
 
         private int _baudRate => int.Parse(this._configuration["Devices:Magellan9300S:BaudRate"] ?? "9600");
 
+        private bool IsUsePrefix = true;
+
         public Action<DeviceLog> OnDeviceWarning { get; set; }
 
         public Action<double> OnWeightChanged { get; set; }
@@ -80,6 +83,9 @@ namespace Front.Equipments
             this._timer = new System.Timers.Timer(250.0);
             this._timer.Elapsed += new ElapsedEventHandler(this.OnTimedEvent);
             this._timer.AutoReset = true;
+
+            string v = _configuration["Devices:Magellan9300S:IsUsePrefix"];
+            if (!string.IsNullOrEmpty(v)) { IsUsePrefix = bool.Parse(v); }
         }
 
         public eDeviceConnectionStatus Init()
@@ -467,13 +473,13 @@ namespace Front.Equipments
             ILogger<Magellan9300S> logger = this._logger;
             if (logger != null)
                 logger.LogDebug("[M9300S] Scanned code - " + barcode);
-            PrefixOfCodes prefixByString = PrefixOfCodes.GetPrefixByString(barcode);
-            if (prefixByString != null)
-                barcode = barcode.TrimStart(((string)prefixByString).ToCharArray());
-            Action<string> barcodeScannerChange = this.OnBarcodeScannerChange;
-            if (barcodeScannerChange == null)
-                return;
-            barcodeScannerChange(barcode.Trim());
+            if (IsUsePrefix)
+            {
+                PrefixOfCodes prefixByString = PrefixOfCodes.GetPrefixByString(barcode);
+                if (prefixByString != null)
+                    barcode = barcode.TrimStart(((string)prefixByString).ToCharArray());
+            }
+            OnBarcodeScannerChange?.Invoke(barcode.Trim());
         }
 
         private bool IsSystemResponse(byte[] data) => data.Length <= 2;

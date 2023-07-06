@@ -798,14 +798,12 @@ and @TypeDiscount=11; ";
         }
 
         public bool AddFiscalArticle(FiscalArticle pFiscalArticle)
-        {
-            
-            var SQL = "replace into FiscalArticle (CodeWares,NameWares ,PLU ,Price) values (@CodeWares,@NameWares ,@PLU ,@Price)";
+        {            
+            var SQL = "replace into FiscalArticle (IdWorkplacePay,CodeWares,NameWares ,PLU ,Price) values (@IdWorkplacePay,@CodeWares,@NameWares ,@PLU ,@Price)";
             using (var DB = new SQLite(ConfigFile))
             {
                 return DB.ExecuteNonQuery<FiscalArticle>(SQL,pFiscalArticle) > 0;
             }
-
         }
 
         public bool DelAllFiscalArticle()
@@ -819,7 +817,7 @@ and @TypeDiscount=11; ";
 
         public FiscalArticle GetFiscalArticle(int pCodeWares)
         {
-            var SQL = "select * from FiscalArticle where CodeWares=@CodeWares";
+            var SQL = "select * from FiscalArticle where CodeWares=@CodeWares and IdWorkplacePay=@IdWorkplacePay";
             using (var DB = new SQLite(ConfigFile))
             {
                 return DB.connection.QueryFirstOrDefault<FiscalArticle>(SQL,new FiscalArticle() { CodeWares=pCodeWares} );

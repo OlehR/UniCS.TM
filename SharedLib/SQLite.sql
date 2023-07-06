@@ -8,6 +8,7 @@ alter table WORKPLACE add  Type_POS NUMBER   NOT NULL DEFAULT 0;--Ver=>0
 alter table WORKPLACE add  Code_Warehouse INTEGER  NOT NULL DEFAULT 0;--Ver=>0
 alter table WORKPLACE add  CODE_DEALER INTEGER  NOT NULL DEFAULT 0;--Ver=>0
 
+
 --CREATE TABLE GEN_WORKPLACE ( ID_WORKPLACE INTEGER NOT NULL, CODE_PERIOD  INTEGER NOT NULL, CODE_RECEIPT INTEGER NOT NULL);--Ver=>9
 --CREATE UNIQUE INDEX id_GEN_WORKPLACE ON GEN_WORKPLACE(ID_WORKPLACE,CODE_PERIOD); --Ver=>9
 
@@ -17,6 +18,10 @@ alter table WORKPLACE add  Prefix TEXT;--Ver=>12
 alter table WORKPLACE add  DNSName TEXT;--Ver=>13
 alter table WORKPLACE add  TypeWorkplace INTEGER  NOT NULL DEFAULT 0;--Ver=>13
 alter table WORKPLACE add  SettingsEx Text;--Ver=>14
+alter table FiscalArticle add IdWorkplacePay  NOT NULL DEFAULT 0;--Ver=>15
+DROP INDEX IF exists id_FiscalArticle;--Ver=>15
+CREATE UNIQUE INDEX id_FiscalArticle ON FiscalArticle(IdWorkplacePay,CodeWares);--Ver=>15
+
 
 [SqlUpdateRC]
 alter TABLE WARES_RECEIPT            add Fix_Weight NUMBER NOT NULL DEFAULT 0;--Ver=>0
@@ -648,12 +653,13 @@ CREATE TABLE GEN_WORKPLACE (
  CREATE UNIQUE INDEX id_GEN_WORKPLACE ON GEN_WORKPLACE(ID_WORKPLACE,CODE_PERIOD);
 
  CREATE TABLE FiscalArticle (
+    IdWorkplacePay  NOT NULL DEFAULT 0,
     CodeWares        INTEGER NOT NULL,   
     NameWares         TEXT    NOT NULL,
     PLU         INTEGER NOT NULL,   
     Price       REAL    NOT NULL
 );
-CREATE UNIQUE INDEX id_FiscalArticle ON FiscalArticle(CodeWares);
+CREATE UNIQUE INDEX id_FiscalArticle ON FiscalArticle(IdWorkplacePay,CodeWares);
 
 
 [SqlCreateReceiptTable]

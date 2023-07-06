@@ -906,27 +906,26 @@ namespace Front.Equipments
                     Thread.Sleep(5);
                     int FirstFreeArticle = FindFirstFreeArticle();
                     if (FirstFreeArticle == -1)
-                        throw new Exception("Fp700 FindFirstFreeArticle return -1");                   
-                    bool isSuccess = true;
+                        throw new Exception("Fp700 FindFirstFreeArticle return -1");
+                    bool isSuccess = false;
                     string str = string.Empty;
                     if (!string.IsNullOrWhiteSpace(pRW.CodeUKTZED))
                         str = "^" + pRW.CodeUKTZED + ",";
                     string data = string.Format("P{0}{1},1,{2}{3},{4},", (object)TaxGroup(pRW), (object)FirstFreeArticle, (object)str, (object)pRW.Price.ToString("F2", (IFormatProvider)CultureInfo.InvariantCulture), (object)_operatorPassword) + pRW.NameWaresReceipt.LimitCharactersForTwoLines(_maxItemLength, '\t');
-                     OnSynchronizeWaitCommandResult(eCommand.ArticleProgramming, data, (Action<string>)(res =>
-                    {
-                        if (res.Trim().ToUpper().Equals("F"))
-                        {
-                            ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Error, "Fp700 writing article FALSE: " + res)
-                            { Status = eStatusRRO.Error, IsСritical = true });
-                            isSuccess = false;
-                         }
-                        else
-                        {
-                            if (!res.Trim().ToUpper().Equals("P")) return;
-                            article = new FiscalArticle() { CodeWares = pRW.CodeWares, Price = pRW.Price, NameWares = pRW.NameWaresReceipt, PLU = FirstFreeArticle };
-                            db.AddFiscalArticle(article);                            
-                        }
-                    }));
+                    OnSynchronizeWaitCommandResult(eCommand.ArticleProgramming, data, (Action<string>)(res =>
+                   {
+                       if (res.Trim().ToUpper().Equals("P"))
+                       { 
+                           article = new FiscalArticle() { CodeWares = pRW.CodeWares, Price = pRW.Price, NameWares = pRW.NameWaresReceipt, PLU = FirstFreeArticle, IdWorkplacePay = pRW.IdWorkplacePay };
+                           db.AddFiscalArticle(article);
+                           isSuccess = true;
+                       }
+                       else
+                       {
+                           ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Error, "Fp700 writing article FALSE: " + res)
+                           { Status = eStatusRRO.Error, IsСritical = true });                          
+                       }
+                   }));
                     if (!isSuccess)
                         throw new Exception("Fp700 writing article FALSE");
                 }
