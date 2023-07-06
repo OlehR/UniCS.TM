@@ -452,7 +452,7 @@ namespace Front
             return r;
         }
 
-        void GetLastReceipt(IdReceipt pIdR, LogRRO r)
+        void GetLastReceipt(IdReceipt pIdR, LogRRO r,bool IsZReport=false)
         {
             Task.Run(() =>
            {
@@ -555,7 +555,7 @@ namespace Front
                 return Res;
             }
             )).Result;
-            GetLastReceipt(pIdR, r);
+            GetLastReceipt(pIdR, r,true);
             return r;
         }
 

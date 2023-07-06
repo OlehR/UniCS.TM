@@ -136,7 +136,7 @@ namespace Front.Equipments
         }
 
 
-        public virtual string GetTextLastReceipt()
+        public virtual string GetTextLastReceipt(bool IsZReport = false)
         {
             return null;
         }

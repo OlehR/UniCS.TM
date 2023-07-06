@@ -211,10 +211,10 @@ namespace Front.Equipments
             return Res != null;
         }
 
-        override public string GetTextLastReceipt()
+        override public string GetTextLastReceipt(bool IsZReport = false)
         {
             string res = null;
-            var r = GetLastReceiptNumber();
+            var r = IsZReport? GetLastZReportNumber() : GetLastReceiptNumber();
             res = KSEFGetReceipt(r);
             return res;
         }
