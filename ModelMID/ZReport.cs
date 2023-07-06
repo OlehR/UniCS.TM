@@ -1,7 +1,7 @@
 ﻿namespace ModelMID
 {
-    
-    internal class ZReport:IdReceipt
+
+    internal class ZReport : IdReceipt
     {
         /// <summary>
         /// Оборот Готівка
@@ -15,6 +15,28 @@
         /// Оборот Картка
         /// </summary>
         public decimal Card { get; set; }
+        /// <summary>
+        /// Обіг Загальний
+        /// </summary>
+        public decimal Total { get; set; }
+        /// <summary>
+        /// Оборот Повернення Готівка
+        /// </summary>
+        public decimal RefaundCash { get; set; }
+        /// <summary>
+        /// Сума повернення з Термінала.
+        /// </summary>
+        public decimal RefaundBank { get; set; }
+        /// <summary>
+        /// Оборот повернення Картка
+        /// </summary>
+        public decimal RefaundCard { get; set; }
+        /// <summary>
+        /// Всього поверненя
+        /// </summary>
+
+        public decimal RefaundTotal { get; set; }
+
         /// <summary>
         /// Ставка 20%
         /// </summary>
@@ -35,7 +57,10 @@
         /// Продаж Акцизу
         /// </summary>
         public decimal TaxExcise { get; set; }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        public decimal TotalTax { get; set; }
         /// <summary>
         /// Готівка в касі.
         /// </summary>
