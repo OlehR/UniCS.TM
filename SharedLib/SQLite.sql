@@ -21,6 +21,7 @@ alter table WORKPLACE add  SettingsEx Text;--Ver=>14
 alter table FiscalArticle add IdWorkplacePay  NOT NULL DEFAULT 0;--Ver=>15
 DROP INDEX IF exists id_FiscalArticle;--Ver=>15
 CREATE UNIQUE INDEX id_FiscalArticle ON FiscalArticle(IdWorkplacePay,CodeWares);--Ver=>15
+CREATE UNIQUE INDEX id_FiscalArticle_PLU ON FiscalArticle(IdWorkplacePay,PLU);--Ver=>16
 
 
 [SqlUpdateRC]
@@ -660,6 +661,8 @@ CREATE TABLE GEN_WORKPLACE (
     Price       REAL    NOT NULL
 );
 CREATE UNIQUE INDEX id_FiscalArticle ON FiscalArticle(IdWorkplacePay,CodeWares);
+CREATE UNIQUE INDEX id_FiscalArticle_PLU ON FiscalArticle(IdWorkplacePay,PLU);
+
 
 
 [SqlCreateReceiptTable]
