@@ -462,7 +462,7 @@ namespace PrintServer
             {
 
 
-                int LengthName = 24;
+                int LengthName = 20;
                 int leftIntentQR = 200;
                 int topIntentQR = 0;
                 //parPrice.Name = "назва1 назва3 назва4 назва5 назва6 назва7 назва8 назва9 назва10 назва11 назва12 назва назва назва назва назва назва назва назва назва назва назва назва назва"; //20 21 22 23 24 25 26 27 28 29 30

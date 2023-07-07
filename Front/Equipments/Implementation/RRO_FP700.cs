@@ -97,7 +97,7 @@ namespace Front.Equipments
 
         public override LogRRO PrintZ(IdReceipt pIdR)
         {
-            string res;
+            string res="";
             res = ZReport();
             return new LogRRO(pIdR) { TypeOperation = eTypeOperation.ZReport, TypeRRO = Type.ToString(), FiscalNumber = GetLastZReportNumber(), TextReceipt = res };
         }
@@ -214,7 +214,13 @@ namespace Front.Equipments
         override public string GetTextLastReceipt(bool IsZReport = false)
         {
             string res = null;
-            var r = IsZReport? GetLastZReportNumber() : GetLastReceiptNumber();
+            var r = GetLastReceiptNumber();
+            if(IsZReport)
+            {
+                int rr;
+                if (int.TryParse(r, out rr)) //!!!TMP Костиль, бо автоматично формує пакет
+                    r = (rr - 1).ToString();  
+            }
             res = KSEFGetReceipt(r);
             return res;
         }
@@ -749,7 +755,7 @@ namespace Front.Equipments
             ObliterateFiscalReceipt();
             OnSynchronizeWaitCommandResult(eCommand.EveryDayReport, _operatorPassword + ",0", ((Action<string>)(response => Res = response)));
             IsZReportAlreadyDone = true;
-            DeleteAllArticles();
+            DeleteAllArticles();            
             return Res;
         }
 

@@ -470,7 +470,7 @@ namespace Front
                                Res = WaitRRO(RRO, pIdR, eTypeOperation.LastReceipt, 500, false);
                                if (Res == null)
                                {
-                                   r.TextReceipt = RRO.GetTextLastReceipt();
+                                   r.TextReceipt = RRO.GetTextLastReceipt(IsZReport);
                                    if (r.SUM == 0)
                                        r.SUM = RRO.GetSumFromTextReceipt(r.TextReceipt);
                                }
