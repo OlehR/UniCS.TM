@@ -448,7 +448,7 @@ namespace Front
             })).Result;
             if (r.CodeError == 0 && pReceipt.TypeReceipt == eTypeReceipt.Sale && pReceipt.IdWorkplacePay == Global.IdWorkPlace)
                 PrintQR(pReceipt);
-            GetLastReceipt(pReceipt, r);
+            GetLastReceipt(new(pReceipt), r);
             return r;
         }
 
