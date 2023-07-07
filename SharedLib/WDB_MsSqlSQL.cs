@@ -43,58 +43,13 @@ namespace SharedLib
    and MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull = 1";
 
 
-        string SqlGetDimPrice = @"SELECT p.CODE_DEALER AS CodeDealer, p.code_wares AS CodeWares, p.price AS PriceDealer
+        string SqlGetDimPrice = @"SELECT p.CODE_DEALER AS CodeDealer, p.code_wares AS CodeWares, p.price AS PriceDealer 
             FROM dbo.price p
-        
-            WHERE (p.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull = 1) and
-               (
-                   p.DEALER_RRef in ( 0xA8D3001E67079A7C11E1907E920EFE12 /*Акція жовті цінники*/, 0x81660050569E814D11EB28B4A16E4599 /*Акція буклет Вопак*/,0x99999999999999999999999999999999 /*індикатив*/)
-                or
-            (@CodeWarehouse= 9   and DEALER_RRef in ( 0xB7A3001517DE370411DF7DD82E29EFF6 /*Роздрібні Новий*/, 0x86AF005056883C0611EDBCBACA9F4AD9/*Гуртові Новий*/, 0xA481001E67079A7C11E18A1966EECFE6 /*Акція Новий*/,0x88888888888888888888888888888888 /*Мін. ціна*/ ))
-                or
-            (@CodeWarehouse= 15  and DEALER_RRef in ( 0xA90F001517DE370411E03FABEDFCE454 /*Акція Білочка*/, 0xB7A3001517DE370411DF835234FF0C73 /*Роздрібні Білочка*/))
-                or
-            (@CodeWarehouse= 148  and DEALER_RRef in (0x81660050569E814D11EB28B4A16E459A /*Акція буклет Spar*/,0x8686005056883C0611ECDC1781734E92 /*Акція Собранецька Ера*/, 0x8686005056883C0611ECDC17038670BF /*Роздрібні Собранецька Ера*/))
-        )";
-        /*
-        SELECT p.CODE_DEALER AS CodeDealer, p.code_wares AS CodeWares, p.price AS PriceDealer 
-            FROM dbo.price p
-            JOIN string UTPPSU = @".dbo._Reference133_VT20300 d ON p.DEALER_RRef=d._Fld20302RRef
-            JOIN string utppsu = @".dbo._Reference133 AS Wh ON Wh._IDRRef= d._Reference133_IDRRef
-            WHERE (p.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull=1) AND
-           convert(int, wh._code)=@CodeWarehouse'*/
-        string SqlGetDimPriceOld = @"
-        SELECT tp.code AS CodeDealer, w.code_wares AS CodeWares, pd.price_dealer AS PriceDealer FROM
-  (
-SELECT TypePrice_RRef, nomen_RRef, price_dealer, ROW_NUMBER ( ) OVER (PARTITION BY TypePrice_RRef, nomen_RRef ORDER BY _Period DESC) AS nn
-  FROM dbo.V1C_REG_PRICE_DEALER
-  WHERE TypePrice_RRef in (0xB7A3001517DE370411DF7DD82E29EFF6,0xA481001E67079A7C11E18A1966EECFE6,0xA8D3001E67079A7C11E1907E920EFE12)
-  --WHERE nomen_characteristic_RRef = 0x0
-  )pd
-  JOIN dbo.wares w ON pd.nomen_RRef= w._IDRRef
-  JOIN DW.dbo.V1C_dim_type_price tp ON pd.TypePrice_RRef= tp.type_price_RRef
-  WHERE nn = 1
-   union all --Індикатив(Алкоголь)
-  SELECT -999999 AS CodeDealer, CONVERT(INT, dn.code) AS CodeWares, MAX(ip.min_price) AS PriceDealer
-    FROM dbo.V1C_dim_nomen dn
-     JOIN dbo.V1C_dim_addition_unit au ON au.nomen_RRef= dn.IDRRef AND uom_RRef_class_base = au.Unit_dimention_RRef
-     JOIN dbo.V1C_reg_obj_cat oc ON au.nomen_RRef= oc.doc_RRRef
-     JOIN dbo.V1C_reg_indicative_price ip ON ip.cat_RRef= oc.obj_cat_RRef AND au.capacity= ip.capacity
-    --WHERE dn.IDRRef= 0x8F91000C29A0FC3111E5D6E02050D8C5
-    GROUP BY dn.code
-
- union all -- Довго !!! треба оптимізувати
- SELECT -888888 AS CodeDealer, CONVERT(INT, w.code_wares) AS CodeWares, price_dealer*(1+dbo.GetMinPercent(0xB7A3001517DE370411DF7DD82E29EFF6, nomen_RRef)/100.00) AS PriceDealer
-  FROM
-(SELECT TypePrice_RRef, nomen_RRef, price_dealer    , ROW_NUMBER ( ) OVER (PARTITION BY TypePrice_RRef, nomen_RRef ORDER BY _Period DESC) AS nn
-  FROM dbo.V1C_REG_PRICE_DEALER
-  WHERE TypePrice_RRef = 0x9570001B78074DDF11E0F3315C137FE9
-) pd
-  JOIN dbo.wares w ON pd.nomen_RRef= w._IDRRef
-  --JOIN DW.dbo.V1C_dim_type_price tp ON pd.TypePrice_RRef= tp.type_price_RRef
-  WHERE @IsFull = 1 and nn = 1";
-
-
+            JOIN UTPPSU.dbo._Reference133_VT20300 d ON p.DEALER_RRef=d._Fld20302RRef
+            JOIN utppsu.dbo._Reference133 AS Wh ON Wh._IDRRef= d._Reference133_IDRRef
+            WHERE ((p.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull=1) AND
+           convert(int, wh._code)=@CodeWarehouse)
+           OR p.CODE_DEALER<0";
 
         string SqlGetDimTypeDiscount = @"SELECT Type_discount AS CodeTypeDiscount, Name AS Name, Percent_discount AS PercentDiscount FROM DW.dbo.V1C_DIM_TYPE_DISCOUNT";
 
