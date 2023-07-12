@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace Front.Equipments.Implementation
 {
     public class RRO_Maria:Rro
@@ -16,14 +17,30 @@ namespace Front.Equipments.Implementation
         bool IsInit=false;
         bool IsError = false;
 
-        M304ManagerApplication M304;
-        public RRO_Maria(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment, pConfiguration,eModelEquipment.Maria, pLoggerFactory, pActionStatus)
+        M304ManagerApplication M304_;
+        dynamic M304;
+        public RRO_Maria(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment, pConfiguration,eModelEquipment.RRO_Maria, pLoggerFactory, pActionStatus)
         {
-            M304 = new M304ManagerApplication();
-            SerialPort = Configuration["Devices:Maria:Port"];
-            OperatorName = this.Configuration["Devices:Maria:OperatorName"];
-            OperatorPass =this.Configuration["Devices:Maria:OperatorPass"];            
-            M304.Open();
+            try
+            {
+                OperatorName = Configuration?.GetValue<string>($"{KeyPrefix}OperatorName");
+                OperatorPass = Configuration?.GetValue<string>($"{KeyPrefix}OperatorPass");
+
+                Type t = System.Type.GetTypeFromProgID("M304Manager.Application");
+                M304 = Activator.CreateInstance(t);
+                Init();
+                
+                //CST.XReport();
+                //M304.OpenTextDocument();
+                //M304.PrintQR("12346");
+                //M304.FreeTextLine(0,0,3,"hello");//, doubleWidth: true, doubleHeight: true);
+                //M304.CloseTextDocument();
+                
+               // M304_ = new M304ManagerApplication();                
+                
+            }
+            catch(Exception e) 
+            { var m=e.Message; }
         }
 
         bool Init()
@@ -80,20 +97,24 @@ namespace Front.Equipments.Implementation
             return null;
         }
 
-        /*
-       override public async Task<LogRRO> PrintZAsync(IdReceipt pIdR)
-       {
-           Init();
-           SetError(M304.ZReportAsync() != 1);
-           Done();
-           return new LogRRO(pIdR) { CodeError = CodeError, Error = StrError, SUM = 0, TypeRRO = "Maria304", TypeOperation = eTypeOperation.ZReport};
-       }
 
-       override public async Task<LogRRO> PrintXAsync(IdReceipt pIdR)
-       {
-           Init();
-           SetError(M304.XReportAsync() != 1);
-           Done();
+        override public LogRRO PrintZ(IdReceipt pIdR)
+        {
+            if (Init())
+            {
+                SetError(M304.ZReportAsync() != 1);
+                Done();
+            }
+            return new LogRRO(pIdR) { CodeError = CodeError, Error = StrError, SUM = 0, TypeRRO = "Maria304", TypeOperation = eTypeOperation.ZReport };
+        }
+
+       override public LogRRO PrintX(IdReceipt pIdR)
+        {
+            if (Init())
+            {
+                SetError(M304.XReportAsync() != 1);
+                Done();
+            }
            return new LogRRO(pIdR) { CodeError = CodeError, Error = StrError, SUM = 0, TypeRRO = "Maria304", TypeOperation = eTypeOperation.XReport };
        }
 
@@ -102,8 +123,8 @@ namespace Front.Equipments.Implementation
        /// </summary>
        /// <param name="pSum"> pSum>0 - внесення</param>
        /// <returns></returns>
-      override public async Task<LogRRO> MoveMoneyAsync(decimal pSum, IdReceipt pIdR=null)
-       {
+      override public LogRRO MoveMoney(decimal pSum, IdReceipt pIdR = null)
+        {
            SetError(M304.MoveCash((pSum > 0 ? 1 : 0), Convert.ToInt32(Math.Abs(pSum) * 100m)) != 1);
            return new LogRRO(pIdR) {CodeError=CodeError,Error=StrError,SUM= pSum,TypeRRO= "Maria304" , TypeOperation = pSum > 0?eTypeOperation.MoneyIn:eTypeOperation.MoneyOut};
        }
@@ -113,8 +134,8 @@ namespace Front.Equipments.Implementation
        /// </summary>
        /// <param name="pR"></param>
        /// <returns></returns>
-       override public async Task<LogRRO> PrintReceiptAsync(Receipt pR)
-       {
+       override public LogRRO PrintReceipt(Receipt pR)
+        {
            if (Init())
            {
 
@@ -124,11 +145,11 @@ namespace Front.Equipments.Implementation
                    // M304.NextZNumber;
                    foreach (var el in pR.Wares)
                    {
-                       var TaxGroup = Global.GetTaxGroup(el.TypeVat, (int)el.TypeWares);
+                       var taxGroup = TaxGroup(el);
                        int TG1 = 0, TG2 = 0;
-                       int.TryParse(TaxGroup.Substring(0, 1), out TG1);
-                       if (TaxGroup.Length > 1)
-                           int.TryParse(TaxGroup.Substring(1, 1), out TG2);
+                       int.TryParse(taxGroup[0..0], out TG1);
+                       if (taxGroup.Length > 1)
+                           int.TryParse(taxGroup[1..1], out TG2);
                        var Name = (el.IsUseCodeUKTZED && !string.IsNullOrEmpty(el.CodeUKTZED) ? el.CodeUKTZED.Substring(0, 10) + "#" : "") + el.NameWares;
                        if (!String.IsNullOrEmpty(el.ExciseStamp))
                            if (SetError((M304.AddExciseStamps(el.ExciseStamp?.Split(',')) != OperationResult.Success)))
@@ -140,7 +161,7 @@ namespace Front.Equipments.Implementation
 
                    pR.SumFiscal = M304.CheckSum / 100M;
 
-                   if (pR.Payment != null && pR.Payment.Count() > 0)
+                   if (pR.Payment?.Any(el=>el.TypePay==eTypePay.Card)==true)
                    {
                        foreach (var el in pR.Payment)
                        {
@@ -189,12 +210,12 @@ namespace Front.Equipments.Implementation
             АннулироватьЧек(Объект);
         Иначе
             Объект.Драйвер.Done();
-        КонецЕсли;* /
+        КонецЕсли;*/
 
                }
                if (!IsError)
                {
-                   SetError(M304.CloseCheckEx(/*СуммаНал * 100* /0, Convert.ToInt32(pR.SumFiscal * 100M)) != 1);
+                   SetError(M304.CloseCheckEx(/*СуммаНал * 100*/0, Convert.ToInt32(pR.SumFiscal * 100M)) != 1);
                    M304.PutToDisplay(pR.SumFiscal.ToString());
                }             
            }
@@ -205,7 +226,7 @@ namespace Front.Equipments.Implementation
                string sum = M304.GetCheckResultXML();
             /*   if (!string.IsNullOrEmpty(sum))
                    decimal.TryParse(sum, out Sum);
-               pR.SumFiscal = Sum / 100m;* /
+               pR.SumFiscal = Sum / 100m;*/
 
                M304.GetDocumentsInfoXML(); // Отримати фіскальні та інші номера чека.
            }
@@ -220,14 +241,15 @@ namespace Front.Equipments.Implementation
 
        }
 
-       override public bool PutToDisplay(string pText)
-       {
+       override public bool PutToDisplay(string pText, int pLine = 1)
+        {
            if (!IsInit)
                Init();
+            pText = pText.Replace(Environment.NewLine, " ");
            if (IsInit)
-             return M304.PutToExternalDisplay(pText, true) == OperationResult.Success;
+             return M304.PutToExternalDisplay(pText) == 1;
            return false;
-       }     */
+       }     
 
     }
 }

@@ -23,12 +23,12 @@ namespace ModelMID
         public static SortedList<Guid, WorkPlace> WorkPlaceByTerminalId;
         public static SortedList<int, WorkPlace> WorkPlaceByWorkplaceId;
 
-        public static SortedList<int, int> IdWorkPlacePayDirection = new();
-        public static SortedList<int, int> IdWorkPlacePayTM = new();
+        public static SortedList<int, int> IdWorkPlacePayDirection = new SortedList<int, int>();
+        public static SortedList<int, int> IdWorkPlacePayTM = new SortedList<int, int>();
 
         public static Settings Settings { get; set; }
 
-        public static List<WorkPlace> AllWorkPlaces = new();
+        public static List<WorkPlace> AllWorkPlaces = new List<WorkPlace>();
 
         public static eTypeWorkplace TypeWorkplace = eTypeWorkplace.SelfServicCheckout;
         /// <summary>

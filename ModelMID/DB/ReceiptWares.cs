@@ -380,7 +380,7 @@ namespace ModelMID
         /// </summary>
         public string History { get; set; }
         public List<decimal> HistoryQuantity { get {
-                List<decimal> Res = new();
+                List<decimal> Res = new List<decimal>();
                 if(!string.IsNullOrEmpty(History))
                 {
                     var res = History.Split(';');
@@ -527,12 +527,12 @@ namespace ModelMID
 
         public List<ReceiptWares> ParseByExcise()
         {
-            List<ReceiptWares> Res = new();
+            List<ReceiptWares> Res = new List<ReceiptWares>();
             ReceiptWares el = this.Clone() as ReceiptWares;
 
             el.Quantity = Math.Round(el.Quantity, 3, MidpointRounding.AwayFromZero);
 
-            var ExciseStamp = el.GetExciseStamp.Where(el => !el.Equals("None")).ToArray();
+            var ExciseStamp = el.GetExciseStamp.Where(e => !e.Equals("None")).ToArray();
             decimal Quantity = el.Quantity;
 
             if (ExciseStamp.Count() > 1)
@@ -560,7 +560,7 @@ namespace ModelMID
 
         public List<ReceiptWares> ParseByWeight()
         {
-            List<ReceiptWares> Res = new();
+            List<ReceiptWares> Res = new List<ReceiptWares>();
             if (SumBonus==0 && IsWeight && !string.IsNullOrEmpty(History) && Math.Abs(HistoryQuantity.Sum() - Quantity) < 0.001m)
             {
                 decimal Sum = 0m;

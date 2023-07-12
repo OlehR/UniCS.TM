@@ -16,6 +16,7 @@ using ModelMID;
 using ModelMID.DB;
 using SharedLib;
 using Utils;
+using UtilNetwork;
 using Microsoft.Extensions.Configuration;
 using System.Windows.Media;
 using System.Windows.Documents;
@@ -429,6 +430,7 @@ namespace Front
             }
             else //Касове місце
             {
+                try { 
                 var r = Bl.GetReceipts(DateTime.Now, DateTime.Now, Global.IdWorkPlace);
                 var rr = r.Where(el => el.SumTotal > 0 && el.StateReceipt != eStateReceipt.Canceled && el.StateReceipt != eStateReceipt.Print && el.StateReceipt != eStateReceipt.Send).OrderByDescending(el => el.CodeReceipt);
                 if (rr != null && rr.Any())
@@ -453,6 +455,11 @@ namespace Front
                 {
 
                 }
+            }catch(Exception ex) 
+                {
+                    var ms = ex.Message;
+                }
+
             }
 
             SetStateView(eStateMainWindows.StartWindow);

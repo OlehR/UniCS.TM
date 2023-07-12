@@ -17,7 +17,6 @@ using Microsoft.Extensions.Logging;
 using SharedLib;
 using System.Threading;
 using System.Collections;
-using ModernExpo.SelfCheckout.Entities.Models.Terminal;
 using System.Windows;
 
 namespace Front
@@ -290,7 +289,7 @@ namespace Front
                                 RRO = new pRRO_WebCheck(el, config, LF, pActionStatus);
                                 RRO.Init();
                                 break;
-                            case eModelEquipment.Maria:
+                            case eModelEquipment.RRO_Maria:
                                 RRO = new RRO_Maria(el, config, LF, pActionStatus);
                                 break;
                             case eModelEquipment.VirtualRRO:

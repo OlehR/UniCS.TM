@@ -7,7 +7,8 @@ namespace ModelMID
     public class PromotionSale
     {
         public Int64 CodePS { get; set; }
-        public string NamePS { get; set; }
+        string _NamePS;
+        public string NamePS { get { return string.IsNullOrEmpty(_NamePS) ? CodePS.ToString() : _NamePS.Trim(); } set { _NamePS = value; } }
         public int CodePattern { get; set; }
         public eStatePromotionSale State { get; set; }
         public DateTime DateBegin { get; set; }

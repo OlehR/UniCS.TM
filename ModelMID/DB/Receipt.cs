@@ -197,7 +197,7 @@ namespace ModelMID
         }
 
         // public string FiscalsJSON { get { return Fiscals.ToJSON(); } }
-        public SortedList<int, Fiscal> Fiscals = new();
+        public SortedList<int, Fiscal> Fiscals = new SortedList<int, Fiscal>();
 
         public int CountWeightGoods { get
             {

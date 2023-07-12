@@ -140,7 +140,7 @@ namespace SharedLib
 
         protected string SqlReplaceFastGroup = "";
         protected string SqlReplaceFastWares = "";
-        protected string SqlReplacePromotionSale = "";
+        
         protected string SqlReplacePromotionSaleData = "";
         protected string SqlReplacePromotionSaleFilter = "";
         protected string SqlReplacePromotionSaleDealer = "";
@@ -591,8 +591,7 @@ namespace SharedLib
             SqlGetFastGroup = GetSQL("SqlGetFastGroup");
 
             SqlReplaceFastGroup = GetSQL("SqlReplaceFastGroup");
-            SqlReplaceFastWares = GetSQL("SqlReplaceFastWares");
-            SqlReplacePromotionSale = GetSQL("SqlReplacePromotionSale");
+            SqlReplaceFastWares = GetSQL("SqlReplaceFastWares");            
             SqlReplacePromotionSaleData = GetSQL("SqlReplacePromotionSaleData");
             SqlReplacePromotionSaleFilter = GetSQL("SqlReplacePromotionSaleFilter");
             SqlReplacePromotionSaleDealer = GetSQL("SqlReplacePromotionSaleDealer");
@@ -744,12 +743,7 @@ namespace SharedLib
             return true;
         }
 
-        public virtual bool ReplacePromotionSale(IEnumerable<PromotionSale> parData)
-        {
-            db.BulkExecuteNonQuery<PromotionSale>(SqlReplacePromotionSale, parData);
-            return true;
-        }
-
+        
         public virtual bool ReplacePromotionSaleData(IEnumerable<PromotionSaleData> parData)
         {
             db.BulkExecuteNonQuery<PromotionSaleData>(SqlReplacePromotionSaleData, parData);

@@ -321,7 +321,7 @@ namespace Front.Equipments
         //Exellio,
         pRRO_SG,
         [Description("ФР Марія")]
-        Maria,
+        RRO_Maria,
         [Description("ФР FP700")]
         RRO_FP700,
         [Description("ФР WebCheck")]
@@ -374,7 +374,7 @@ namespace Front.Equipments
                 //case eModelEquipment.Exellio:
                 case eModelEquipment.pRRO_SG:
                 case eModelEquipment.pRRo_WebCheck:
-                case eModelEquipment.Maria:
+                case eModelEquipment.RRO_Maria:
                 case eModelEquipment.VirtualRRO:
                 case eModelEquipment.RRO_FP700:
                 case eModelEquipment.pRRO_Vchasno:

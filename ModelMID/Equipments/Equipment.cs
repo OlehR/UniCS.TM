@@ -1,8 +1,5 @@
-﻿using Front.Equipments.Implementation;
-using Front.Equipments.Virtual;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using ModelMID;
 using System;
 using Utils;
 

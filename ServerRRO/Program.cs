@@ -64,7 +64,7 @@ namespace PrintServer
             };
 
             _serviceHost =
-                new ServiceHost(typeof(WebServerRRO), new Uri(Url)) 
+                new ServiceHost(typeof(WebServerRROMaria), new Uri(Url)) 
                 {
                     OpenTimeout = TimeSpan.FromMinutes(4),
                     CloseTimeout = TimeSpan.FromMinutes(4)

@@ -1214,14 +1214,10 @@ replace into FAST_GROUP ( CODE_UP,Code_Fast_Group, Name) values (@CodeUp,@CodeFa
 [SqlReplaceFastWares]
 replace into FAST_WARES ( Code_Fast_Group, Code_wares,Order_Wares) values (@CodeFastGroup,@CodeWares,@OrderWares);
 
-
-[SqlReplacePromotionSale]
-replace into PROMOTION_SALE (CODE_PS, NAME_PS, CODE_PATTERN, STATE, DATE_BEGIN, DATE_END, TYPE, TYPE_DATA, PRIORITY, SUM_ORDER, TYPE_WORK_COUPON, BAR_CODE_COUPON, DATE_CREATE, USER_CREATE) values 
-							(@CodePS, @NamePs, @CodePattern,@State, @DateBegin, @DateEnd,@Type, @TypeData,@Priority, @SumOrder, @TypeWorkCoupon,  @BarCodeCoupon,  @DateCreate, @UserCreate);
-
 [SqlReplacePromotionSaleData]
 replace into PROMOTION_SALE_DATA (CODE_PS, NUMBER_GROUP, CODE_WARES, USE_INDICATIVE, TYPE_DISCOUNT,  ADDITIONAL_CONDITION, DATA , DATA_ADDITIONAL_CONDITION) 
                           values (@CodePS, @NumberGroup, @CodeWares, @UseIndicative, @TypeDiscount,  @AdditionalCondition, @Data ,@DataAdditionalCondition)
+
 
 [SqlReplacePromotionSaleFilter]
 replace into PROMOTION_SALE_FILTER (CODE_PS, CODE_GROUP_FILTER, TYPE_GROUP_FILTER, RULE_GROUP_FILTER, CODE_CHOICE, CODE_DATA, CODE_DATA_END)
@@ -1454,7 +1450,7 @@ where r.STATE_RECEIPT=-1
                      and code_wares=@CodeWares;
 [SqlGetUser]
  select CODE_USER as CodeUser, NAME_USER  as NameUser,  BAR_CODE as BarCode, Type_User as TypeUser, LOGIN, PASSWORD from USER
-    where (Login=@Login and Password=@Password) or BAR_CODE=@BarCode;
+    where (Login=@Login and Password=@PassWord) or BAR_CODE=@BarCode;
 
 [SqlInsertLogRRO]
 insert into Log_RRO  (ID_WORKPLACE,ID_WORKPLACE_PAY,CODE_PERIOD,CODE_RECEIPT,FiscalNumber, Number_Operation,Type_Operation, SUM ,Type_RRO,JSON, Text_Receipt,Error, USER_CREATE) VALUES

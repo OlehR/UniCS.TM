@@ -3,10 +3,7 @@
 //using Front.Equipments.Ingenico;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using ModelMID;
-using Front.Equipments.Implementation;
-using Front.Equipments.Virtual;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 
@@ -55,5 +52,23 @@ namespace Front.Equipments
     {
         public int IdWorkplace { get; set; }
         public byte MerchantId { get; set; }
-    }    
+    }
+    public class BatchTotals
+    {
+        public uint DebitCount { get; set; }
+
+        public uint DebitSum { get; set; }
+
+        public uint CreditCount { get; set; }
+
+        public uint CreditSum { get; set; }
+
+        public uint CencelledCount { get; set; }
+
+        public uint CencelledSum { get; set; }
+        /// <summary>
+        /// Чек построчно.
+        /// </summary>
+        public IEnumerable<string> Receipt { get; set; }
+    }
 }

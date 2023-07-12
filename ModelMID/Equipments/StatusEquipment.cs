@@ -1,12 +1,6 @@
-﻿using Front.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Utils;
+﻿using Utils;
 
-namespace Front.Equipments.Virtual
+namespace Front.Equipments
 {
     public class StatusEquipment : Status
     {

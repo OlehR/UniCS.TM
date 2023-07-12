@@ -1,5 +1,4 @@
-﻿using Front.Equipments.Virtual;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ModelMID;
 using ModelMID.DB;
@@ -55,7 +54,7 @@ namespace Front.Equipments
                 Configuration.GetSection("MID:VAT").Bind(LTax);
             foreach (var el in LTax)
                     if (!Tax.ContainsKey(el.Code))
-                        Tax.TryAdd(el.Code, el.CodeEKKA);                    
+                        Tax.Add(el.Code, el.CodeEKKA);                    
         }
 
         public virtual void SetOperatorName(string pOperatorName)

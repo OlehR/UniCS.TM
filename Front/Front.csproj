@@ -8,8 +8,8 @@
     <ApplicationIcon />
     <Win32Resource />
     <NeutralLanguage>uk-UA</NeutralLanguage>
-    <AssemblyVersion>2.0.1.191</AssemblyVersion>
-    <FileVersion>2.0.1.191</FileVersion>
+    <AssemblyVersion>2.0.2.1</AssemblyVersion>
+    <FileVersion>2.0.2.1</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -153,6 +153,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ModelMID\ModelMID.csproj" />
     <ProjectReference Include="..\SharedLib\SharedLib.csproj" />
+    <ProjectReference Include="..\UtilNetwork\UtilNetwork.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -175,7 +176,7 @@
       <HintPath>..\SharedLib\dll\ModernExpo.SelfCheckout.Utils.dll</HintPath>
     </Reference>
     <Reference Include="Resonance.OLEManager">
-      <HintPath>..\DLL\Resonance.OLEManager.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\Resonance JSC\OLEManager\Resonance.OLEManager.dll</HintPath>
     </Reference>
   </ItemGroup>
 

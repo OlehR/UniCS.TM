@@ -694,7 +694,7 @@ and @TypeDiscount=11; ";
             return true;
         }
 
-        public override bool ReplacePromotionSale(IEnumerable<PromotionSale> parData)
+        public  bool ReplacePromotionSale(IEnumerable<PromotionSale> parData)
         {
             using (var DB = new SQLite(MidFile))
             {

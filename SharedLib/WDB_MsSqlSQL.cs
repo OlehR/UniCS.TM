@@ -181,7 +181,7 @@ SELECT -- Кількість товари  набору (Основні)
 --,dp.version
 --  ,dp.year_doc
   CONVERT(INT, YEAR(dp.year_doc)*10000+dp.number) AS CodePS
-  , dp.comment AS NamePS
+  , coalesce(dp.comment,'№') AS NamePS
   ,1 AS CodePattern
   ,9 AS State
 --, dp.user_id 
@@ -208,7 +208,7 @@ SELECT -- Кількість товари  набору (Основні)
   , NULL AS BarCodeCoupon
     FROM DW.dbo.V1C_doc_promotion dp
   LEFT JOIN (SELECT pw.doc_promotion_RRef,
-    SUM(CASE WHEN CONVERT(INT, dw.code) = @CodeWarehouse THEN 1 ELSE 0 END) AS Wh, COUNT(*) AS all_wh
+    SUM(CASE WHEN try_CONVERT(INT, dw.code) = @CodeWarehouse THEN 1 ELSE 0 END) AS Wh, COUNT(*) AS all_wh
     FROM DW.dbo.V1C_doc_promotion_warehouse pw
     JOIN DW.dbo.V1C_dim_warehouse dw ON dw.warehouse_RRef= pw.warehouse_RRef
 GROUP BY pw.doc_promotion_RRef
@@ -217,7 +217,7 @@ GROUP BY pw.doc_promotion_RRef
 UNION ALL
 SELECT DISTINCT 
   9000000000+CONVERT(INT, YEAR(dpg.date_time)*100000+dpg.number) AS CodePS
- , dpg.comment AS NamePS
+ , coalesce(dpg.comment,'№') AS NamePS
  ,1 AS CodePattern
  ,9 AS State
  , pg.date_beg AS DateBegin
@@ -232,7 +232,7 @@ SELECT DISTINCT
   JOIN  dbo.V1C_doc_promotion_gal dpg ON pg.doc_RRef = dpg.doc_RRef
   JOIN dbo.V1C_dim_warehouse wh ON wh.subdivision_RRef= pg.subdivision_RRef
   where pg.date_end>GETDATE()
-AND wh.code = @CodeWarehouse
+AND try_convert(int,wh.code) = @CodeWarehouse
 union all
 SELECT
   8000000000+@CodeWarehouse AS CodePS

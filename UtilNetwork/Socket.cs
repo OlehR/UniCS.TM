@@ -7,8 +7,9 @@ using System.Drawing;
 using System.Threading.Tasks;
 using System.Threading;
 using Newtonsoft.Json;
+using Utils;
 
-namespace Utils
+namespace UtilNetwork
 {
     public class SocketServer
     {

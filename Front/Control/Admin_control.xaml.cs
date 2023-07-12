@@ -18,6 +18,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Threading;
+using UtilNetwork;
 using Utils;
 
 namespace Front.Control
