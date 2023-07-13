@@ -12,6 +12,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using ModelMID.DB;
 using Utils;
+using SharedLib;
 
 namespace Front.Equipments.Implementation
 {
@@ -19,6 +20,7 @@ namespace Front.Equipments.Implementation
     {
         int TimeOut = 45000;
         Encoding win1251 = Encoding.GetEncoding("windows-1251");
+        WDB_SQLite db = new WDB_SQLite();
         string Url, Token, Device = "Test";
         public pRRO_Vchasno(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) :
                 base(pEquipment, pConfiguration, eModelEquipment.pRRO_Vchasno, pLoggerFactory, pActionStatus)
@@ -72,6 +74,21 @@ namespace Front.Equipments.Implementation
                 Res = JsonConvert.DeserializeObject<Responce<ResponceReceipt>>(r);
                 GetFiscalInfo(pR, Res);
             }
+            
+            
+            if (Res?.info?.printinfo?.sum_receipt!=0 || Res?.info?.printinfo?.round!=0)
+                try
+                {
+                    var pay = new Payment(pR) { IsSuccess = true, TypePay = eTypePay.FiscalInfo, SumPay = Res.info.printinfo.sum_receipt, SumExt = Res.info.printinfo.round };
+                    pR.Payment = pR.Payment == null ? new List<Payment>() { pay } : pR.Payment.Append<Payment>(pay);
+                    db.ReplacePayment(pay, true);
+                }
+                catch (Exception e)
+                {
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+                }
+
+            //Якщо є видача готівки
             if ( c?.Any()==true && Res!=null && Res.res==0 )
             {
                 pR.Payment = c;
