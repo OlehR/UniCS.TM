@@ -1711,7 +1711,8 @@ namespace Front.Equipments
             bb = new();
             string res = null;
             OnSynchronizeWaitCommandResult(eCommand.KSEF, $"R,{pCodeReceipt}", ResKSEF);
-            while (!IsFinish && !IsStop)
+            int i = 500;
+            while (!IsFinish && !IsStop && --i>0)
             {
                 OnSynchronizeWaitCommandResult(eCommand.KSEF, $"N", ResKSEF);
             }
@@ -1729,10 +1730,10 @@ namespace Front.Equipments
             }
             else
             {                
-                IsFinish = (response[0] == 'F');
+                IsFinish = (response[0] != 'P');
                 if (response.Length > 1)
                 {
-                    bb.Append(response.Substring(2));
+                    bb.Append(response[2..]);
                     bb.Append(Environment.NewLine);
                 }
             }
