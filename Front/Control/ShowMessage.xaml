@@ -34,10 +34,13 @@
                        Text="{Binding TextTypeMessage, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=UserControl}}" TextWrapping="Wrap">
             </TextBlock>
-            <TextBlock Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="15,0,15,0"
+            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <TextBlock Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="15,0,15,0"
                        Text="{Binding TextMessage, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=UserControl}}"  TextWrapping="Wrap">
-            </TextBlock>
+                </TextBlock>
+            </ScrollViewer>
+            
 
             <Grid Grid.Row="3">
                 <Grid.ColumnDefinitions>

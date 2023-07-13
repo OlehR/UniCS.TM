@@ -10,7 +10,7 @@ namespace Front.Equipments.Implementation.FP700_Model
         LastLineDisplay = 35, // 0x00000023
         OpenNonFiscalReceipt = 38, // 0x00000026
         CloseNonFiscalReceipt = 39, // 0x00000027
-        SaveSettingInMemory =41,// 0x00000029
+        SaveSettingInMemory = 41,// 0x00000029
         PrintNonFiscalComment = 42, // 0x0000002A
         ReceiptDetailsPrintSetupAdditionalSettings = 43, // 0x0000002B
         PaperPulling = 44, // 0x0000002C
@@ -140,7 +140,7 @@ namespace Front.Equipments.Implementation.FP700_Model
                 if (IsOutOffPaper)
                     er.AppendLine("Папір закінчився!");
                 if (IsCoverOpen)
-                    er.AppendLine("Кришка принтера відкрита." );
+                    er.AppendLine("Кришка принтера відкрита.");
                 if (IsKSEFMemoryFull)
                     er.AppendLine("КЛЕФ память Заповненна");
                 if (IsErrorOnWritingToFiscalMemory)
@@ -217,7 +217,7 @@ namespace Front.Equipments.Implementation.FP700_Model
 
         public bool ShouldAutoCutPaper { get; set; }
     }
-      
+
     public class ReceiptText //: IReceiptText
     {
         public string Text { get; set; }
@@ -225,5 +225,11 @@ namespace Front.Equipments.Implementation.FP700_Model
         public int Font { get; set; }
 
         public eRenderAs RenderType { get; set; }
-    }    
+        public string GetText(int pLen)
+        {
+            if(Text.Length>pLen)
+                return Text[..pLen];
+            else return Text;
+        }
+    }
 }

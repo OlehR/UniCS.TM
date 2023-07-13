@@ -79,7 +79,7 @@ namespace ModelMID
         /// <summary>
         /// Знижка для Касового апарата та для Модерна
         /// </summary>
-        public decimal DiscountEKKA { get { return SumBonus + SumDiscount + (Priority == 1 ? 0 : (PriceDealer > Price ? (PriceDealer * Quantity - Sum) : 0)); } }
+        public decimal DiscountEKKA { get { return SumBonus + SumDiscount + SumWallet+ (Priority == 1 ? 0 : (PriceDealer > Price ? (PriceDealer * Quantity - Sum) : 0)); } }
 
         /// <summary>
         /// Приоритет спрацьованої акції

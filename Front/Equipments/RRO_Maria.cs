@@ -1,25 +1,30 @@
-﻿using Front.Equipments.Virtual;
+﻿using Front.Equipments.Implementation.FP700_Model;
+using Front.Equipments.Utils;
+using Front.Equipments.Virtual;
 using Microsoft.Extensions.Configuration;
 using ModelMID;
 using ModelMID.DB;
+using ModernExpo.SelfCheckout.Entities.Models.Terminal;
 using Resonance;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Windows.Documents;
+using System.Xml.Linq;
+using Utils;
 
 namespace Front.Equipments.Implementation
 {
-    public class RRO_Maria:Rro
+    public class RRO_Maria : Rro
     {
-        bool IsInit=false;
+        bool IsInit = false;
         bool IsError = false;
 
         M304ManagerApplication M304_;
         dynamic M304;
-        public RRO_Maria(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment, pConfiguration,eModelEquipment.RRO_Maria, pLoggerFactory, pActionStatus)
+        public RRO_Maria(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment, pConfiguration, eModelEquipment.RRO_Maria, pLoggerFactory, pActionStatus)
         {
             try
             {
@@ -29,18 +34,32 @@ namespace Front.Equipments.Implementation
                 Type t = System.Type.GetTypeFromProgID("M304Manager.Application");
                 M304 = Activator.CreateInstance(t);
                 Init();
-                
+                try
+                {
+                    string dt = M304.GetPrinterTime();
+                    DateTime? FiscalDateTime = dt.ToDateTime("yyyyMMddHHmmss");
+                    if (Math.Abs(((FiscalDateTime ?? DateTime.Now) - DateTime.Now).Seconds) > 30) //Якщо час фіскалки відрізняється більше ніж на 30 секунд.
+                        if (M304.GetBusinessDayState() == 1) // і немає відкритої зміни
+                        {
+                            M304.SetInternalTime(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);//Змінюємо час на фіскалці
+                        }
+                }
+                catch (Exception e)
+                {
+                    ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_Maria, eStateEquipment.Init, e.Message)
+                    { Status = eStatusRRO.Init, IsСritical = false });
+                }
                 //CST.XReport();
                 //M304.OpenTextDocument();
                 //M304.PrintQR("12346");
                 //M304.FreeTextLine(0,0,3,"hello");//, doubleWidth: true, doubleHeight: true);
                 //M304.CloseTextDocument();
-                
-               // M304_ = new M304ManagerApplication();                
-                
+
+                // M304_ = new M304ManagerApplication();                
+
             }
-            catch(Exception e) 
-            { var m=e.Message; }
+            catch (Exception e)
+            { var m = e.Message; }
         }
 
         bool Init()
@@ -50,26 +69,26 @@ namespace Front.Equipments.Implementation
                 Done();
                 IsInit = false;
             }
-            
+
             if (!SetError(M304.Init(SerialPort, OperatorName, OperatorPass, false) != 1))
             {
-                if( string.IsNullOrEmpty (M304.GetDocumentsInfoXML()))
+                if (string.IsNullOrEmpty(M304.GetDocumentsInfoXML()))
                     Done();
-                var dt = M304.GetPrinterTime();//!!! 20130606110200 треба звірити час.
                 IsInit = true;
             }
-              
+            State = IsInit ? eStateEquipment.On : eStateEquipment.Error;
             return IsInit;
         }
 
-        void Done() 
+        void Done()
         {
-            if(M304!=null)
+            if (M304 != null)
             {
                 M304.Done();
+                IsInit = false;
             }
         }
-        
+
         bool SetError(bool pIsError)
         {
             IsError = pIsError;
@@ -102,154 +121,259 @@ namespace Front.Equipments.Implementation
         {
             if (Init())
             {
-                SetError(M304.ZReportAsync() != 1);
+                SetError(M304.ZReport() != 1);
                 Done();
             }
             return new LogRRO(pIdR) { CodeError = CodeError, Error = StrError, SUM = 0, TypeRRO = "Maria304", TypeOperation = eTypeOperation.ZReport };
         }
 
-       override public LogRRO PrintX(IdReceipt pIdR)
+        override public LogRRO PrintX(IdReceipt pIdR)
         {
             if (Init())
             {
-                SetError(M304.XReportAsync() != 1);
+                SetError(M304.XReport() != 1);
                 Done();
             }
-           return new LogRRO(pIdR) { CodeError = CodeError, Error = StrError, SUM = 0, TypeRRO = "Maria304", TypeOperation = eTypeOperation.XReport };
-       }
+            return new LogRRO(pIdR) { CodeError = CodeError, Error = StrError, SUM = 0, TypeRRO = "Maria304", TypeOperation = eTypeOperation.XReport };
+        }
 
-       /// <summary>
-       /// Внесення/Винесення коштів коштів.
-       /// </summary>
-       /// <param name="pSum"> pSum>0 - внесення</param>
-       /// <returns></returns>
-      override public LogRRO MoveMoney(decimal pSum, IdReceipt pIdR = null)
+        /// <summary>
+        /// Внесення/Винесення коштів коштів.
+        /// </summary>
+        /// <param name="pSum"> pSum>0 - внесення</param>
+        /// <returns></returns>
+        override public LogRRO MoveMoney(decimal pSum, IdReceipt pIdR = null)
         {
-           SetError(M304.MoveCash((pSum > 0 ? 1 : 0), Convert.ToInt32(Math.Abs(pSum) * 100m)) != 1);
-           return new LogRRO(pIdR) {CodeError=CodeError,Error=StrError,SUM= pSum,TypeRRO= "Maria304" , TypeOperation = pSum > 0?eTypeOperation.MoneyIn:eTypeOperation.MoneyOut};
-       }
+            Init();
+            SetError(M304.MoveCash((pSum > 0 ? 1 : 0), Convert.ToInt32(Math.Abs(pSum) * 100m)) != 1);
+            Done();
+            return new LogRRO(pIdR) { CodeError = CodeError, Error = StrError, SUM = pSum, TypeRRO = "Maria304", TypeOperation = pSum > 0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyOut };
+        }
 
-       /// <summary>
-       /// Друк чека
-       /// </summary>
-       /// <param name="pR"></param>
-       /// <returns></returns>
-       override public LogRRO PrintReceipt(Receipt pR)
+        /// <summary>
+        /// Друк чека
+        /// </summary>
+        /// <param name="pR"></param>
+        /// <returns></returns>
+        override public LogRRO PrintReceipt(Receipt pR)
         {
-           if (Init())
-           {
+            if (Init())
+            {
+                int SumCashPay = 0;
+                int SumCardPay = 0;
+                string RRN = "";
+                List<ReceiptText> Comments = null;
+                if (!SetError((pR.TypeReceipt == eTypeReceipt.Sale ? M304.OpenCheck() : M304.OpenReturnCheck()) != 1))
+                {
+                    if (pR?.ReceiptComments?.Any() == true)
+                        Comments = pR.ReceiptComments.Select(r => new ReceiptText() { Text = r, RenderType = eRenderAs.Text }).ToList();
+                    foreach (ReceiptText comment in Comments)
+                    {
+                        if (!string.IsNullOrWhiteSpace(comment.Text))
+                            M304.FreeTextLine(1, 1, 0, comment.GetText(43));
+                    }
+                    foreach (var el in pR.Wares)
+                    {
+                        var taxGroup = TaxGroup(el);
+                        int TG1 = 0, TG2 = 0;
+                        int.TryParse(taxGroup[..1], out TG1);
+                        if (taxGroup.Length > 1)
+                            int.TryParse(taxGroup[1..2], out TG2);
+                        var Name = (el.IsUseCodeUKTZED && !string.IsNullOrEmpty(el.CodeUKTZED) ? el.CodeUKTZED.Substring(0, 10) + "#" : "") + el.NameWares;
+                        if (!String.IsNullOrEmpty(el.ExciseStamp))
+                            if (SetError((M304.AddExciseStamps(el.ExciseStamp?.Split(',')) != OperationResult.Success)))
+                                break;
+                        if (SetError(M304.FiscalLineEx(Name, Convert.ToInt32((el.CodeUnit == Global.WeightCodeUnit ? 1000 : 1) * el.Quantity), Convert.ToInt32(el.PriceEKKA * 100), el.CodeUnit == Global.WeightCodeUnit ? 1 : 0, TG1, TG2, el.CodeWares, (el.DiscountEKKA > 0 ? 0 : -1), null, Convert.ToInt32(el.DiscountEKKA * 100m), null) != 1))
+                            break;
+                    }
 
-               if (!SetError((pR.TypeReceipt == eTypeReceipt.Sale ? M304.OpenCheck() : M304.OpenReturnCheck()) != 1))
-               {
-                   //M304.LastCheckNumber;
-                   // M304.NextZNumber;
-                   foreach (var el in pR.Wares)
-                   {
-                       var taxGroup = TaxGroup(el);
-                       int TG1 = 0, TG2 = 0;
-                       int.TryParse(taxGroup[0..0], out TG1);
-                       if (taxGroup.Length > 1)
-                           int.TryParse(taxGroup[1..1], out TG2);
-                       var Name = (el.IsUseCodeUKTZED && !string.IsNullOrEmpty(el.CodeUKTZED) ? el.CodeUKTZED.Substring(0, 10) + "#" : "") + el.NameWares;
-                       if (!String.IsNullOrEmpty(el.ExciseStamp))
-                           if (SetError((M304.AddExciseStamps(el.ExciseStamp?.Split(',')) != OperationResult.Success)))
-                               break;
+                    pR.SumFiscal = M304.CheckSum / 100M;
 
-                       if (SetError(M304.FiscalLineEx(Name, Convert.ToInt32((el.CodeUnit == Global.WeightCodeUnit ? 1000 : 1) * el.Quantity), Convert.ToInt32(el.Price * 100), el.CodeUnit == Global.WeightCodeUnit ? 1 : 0, TG1, TG2, el.CodeWares, (el.DiscountEKKA > 0 ? 0 : -1), null, Convert.ToInt32(el.DiscountEKKA), null) != 1))
-                           break;
-                   }
+                    if (pR.Payment?.Any() == true)
+                    {
+                        foreach (var el in pR.Payment)
+                        {
+                            if (el.TypePay == eTypePay.Card)
+                            {
+                                SumCardPay = Decimal.ToInt32(el.SumPay * 100m);
+                                RRN = el.CodeAuthorization;
+                                if (el.NumberTerminal.Length > 8)
+                                {
+                                    el.NumberTerminal = el.NumberTerminal[..8];
+                                }
+                                if (SetError(M304.AddSlip(2, "0", el.NumberTerminal, pR.TypeReceipt.ToString(), el.NumberCard, el.CodeAuthorization, el.CardHolder, el.CodeReceipt.ToString()) != 1))
+                                    break;
+                            }
+                            if (el.TypePay == eTypePay.Cash)
+                            {
+                                SumCashPay = Decimal.ToInt32(el.SumPay * 100m);
+                                SetError(SumCashPay <= 0);
+                            }
 
-                   pR.SumFiscal = M304.CheckSum / 100M;
+                        }
+                    }
 
-                   if (pR.Payment?.Any(el=>el.TypePay==eTypePay.Card)==true)
-                   {
-                       foreach (var el in pR.Payment)
-                       {
-                           if (SetError(M304.AddSlip(2, "0", el.NumberTerminal, el.Bank, el.NumberSlip, el.CodeAuthorization, "paymentSystem", el.CodeAuthorization) != OperationResult.Success))
-                               break;
-                       }
-                   }
+                }
+                if (!IsError)
+                {
+                    //M304.AbortCheck();
+                    M304.CloseCheckEx(SumCashPay, SumCardPay, 0, 0, RRN);
+                    M304.PutToDisplay(pR.SumFiscal.ToString());
+                }
+                if (!IsError)
+                {
+                    //Чек видачі готівки.
+                    Payment Pay = pR?.Payment?.Where(el => el.TypePay == eTypePay.IssueOfCash)?.FirstOrDefault();
+                    if (Pay != null)
+                    {
+                        if (Pay.NumberTerminal.Length > 8)
+                            Pay.NumberTerminal = Pay.NumberTerminal[..8];
+                        SetError(M304.CashWithdrawal(Decimal.ToInt32(Pay.SumPay * 100m), 0, "0", Pay.NumberTerminal, Pay.NumberCard, Pay.CardHolder, Pay.CodeAuthorization, Pay.CodeReceipt.ToString()) != 1);
+                    }
+                }
+            }
 
-                   /*
-                    Параметры
-   paymentFormIndex: номер безналичной формы оплаты (1..19)
-   merchantID: задаёт параметр "ID еквайра,торгівця" (1..32 символов)
-   terminalID: задаёт параметр "ID пристрою" (1..8 символов)
-   operationType: задаёт параметр "Вид операції" (1..16 символов)
-   PAN: задаёт параметр "ЕПЗ" (0..32 символов)
-   approvalCode: задаёт параметр "Код авторизації" (0..6 символов)
-   paymentSystem: задаёт параметр "Платіжна система" (1..16 символов)
-   transactionCode: задаёт параметр "Код транзакції" (0..12 символов)
-   fee: задаёт параметр "Сума комісії" (необязательный параметр)
-   printCashierSignaturePlaceholder: печатать место для подписи кассира (необязательный
-   параметр)
-   printCardholderSignaturePlaceholder: печатать место для подписи держателя карты
+            pR.NumberReceipt = M304.LastCheckNumber.ToString();
 
+            Done();
 
-                  AddSlip(paymentFormIndex,
-                                        merchantID,
-                                        terminalID,
-                                        payTypeName,
-                                        ePayType,
-                                        approvalCode,
-                                        paymentSystem,
-                                        transactionCode,
-                                        fee,
-                                        printCashierSignaturePlaceholder,
-                                        printCardholderSignaturePlaceholder);
+            return new LogRRO(pR)
+            {
+                CodeError = CodeError,
+                Error = StrError,
+                SUM = pR.SumFiscal,
+                TypeRRO = "Maria304",
+                TypeOperation = (pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund),
+                JSON = M304.GetCheckResultXML()
+            };
 
+        }
 
-
-        Если Рез/100 > 0 и СуммаНал > 0 Тогда //если оплата наличкой
-            СуммаНал = Окр(Рез/100,1);
-        КонецЕсли;	
-
-        Если Рез = 0 Тогда   
-            Объект.ОписаниеОшибки = Объект.Драйвер.LastErrorMessage;
-            Результат = мОшибкаНеизвестно;
-            АннулироватьЧек(Объект);
-        Иначе
-            Объект.Драйвер.Done();
-        КонецЕсли;*/
-
-               }
-               if (!IsError)
-               {
-                   SetError(M304.CloseCheckEx(/*СуммаНал * 100*/0, Convert.ToInt32(pR.SumFiscal * 100M)) != 1);
-                   M304.PutToDisplay(pR.SumFiscal.ToString());
-               }             
-           }
-
-           if (!IsError)
-           {
-               decimal Sum = 0m;
-               string sum = M304.GetCheckResultXML();
-            /*   if (!string.IsNullOrEmpty(sum))
-                   decimal.TryParse(sum, out Sum);
-               pR.SumFiscal = Sum / 100m;*/
-
-               M304.GetDocumentsInfoXML(); // Отримати фіскальні та інші номера чека.
-           }
-           pR.NumberReceipt = M304.LastCheckNumber.ToString();
-
-           Done();
-
-           return new LogRRO(pR) { CodeError = CodeError, Error = StrError, SUM = pR.SumFiscal, TypeRRO = "Maria304", 
-               TypeOperation = (pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund),
-               JSON= M304.GetCheckResultXML()
-       };
-
-       }
-
-       override public bool PutToDisplay(string pText, int pLine = 1)
+        override public bool PutToDisplay(string pText, int pLine = 1)
         {
-           if (!IsInit)
-               Init();
+            if (string.IsNullOrEmpty(pText))
+                pText = "Вітаємо Вас в нашому магазині!";
+
+            if (!IsInit)
+                Init();
             pText = pText.Replace(Environment.NewLine, " ");
-           if (IsInit)
-             return M304.PutToExternalDisplay(pText) == 1;
-           return false;
-       }     
+            if (IsInit)
+                return M304.PutToExternalDisplay(pText, true) == 1;
+
+            return false;
+        }
+        public override StatusEquipment TestDevice()
+        {
+            Init();
+            eDeviceConnectionStatus res;
+            int timeToLock = -1;
+            try
+            {
+                timeToLock = M304.GetTimeToPendingLock();
+                res = timeToLock > 0 ? eDeviceConnectionStatus.Enabled : eDeviceConnectionStatus.Disabled;
+                if (res == eDeviceConnectionStatus.Enabled)
+                {
+                    State = eStateEquipment.On;
+                }
+                else
+                    State = eStateEquipment.Error;
+            }
+            catch (Exception e)
+            {
+                State = eStateEquipment.Error;
+                return new StatusEquipment() { State = -1, TextState = e.Message };
+            }
+            var ts = TimeSpan.FromSeconds(timeToLock);
+            Done();
+            return new StatusEquipment() { TextState = $"{res}. Час до блокування: {ts.Hours + ts.Days * 24}год {ts.Minutes}хв ", State = (State == eStateEquipment.On ? 0 : -1) };
+        }
+        public override string GetDeviceInfo()
+        {
+            Init();
+            string res = null;
+            {
+                try
+                {
+                    string Shift = M304.GetBusinessDayState == 2 ? "Відкрита." : "Закрита";
+                    int timeToLock = M304.GetTimeToPendingLock();
+                    var ts = TimeSpan.FromSeconds(timeToLock);
+                    res = $"Фіскальна зміна: {Shift}{Environment.NewLine}" +
+                        $"Серійний номер: {M304.GetPrinterSerialNumber}{Environment.NewLine}" +
+                        $"Час до блокування: {ts.Hours + ts.Days * 24}год {ts.Minutes}хв{Environment.NewLine}" +
+                        $"{M304.GetPrinterConfigXML()}";
+                }
+                catch (Exception e)
+                {
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+                    res = e.Message;
+                }
+            }
+            Done();
+            return res;
+        }
+        public override bool OpenMoneyBox(int pTime = 15)
+        {
+            if (!IsInit)
+                Init();
+            if (IsInit)
+                return M304.OpenCashBox() == 1;
+
+            return false;
+        }
+        override public LogRRO PrintNoFiscalReceipt(IEnumerable<string> pR)
+        {
+            List<ReceiptText> d = pR.Select(el => new ReceiptText() { Text = el.StartsWith("QR=>") ? el.SubString(4) : el, RenderType = el.StartsWith("QR=>") ? eRenderAs.QR : eRenderAs.Text }).ToList();
+            PrintSeviceReceipt(d);
+            return new LogRRO(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace }) { TypeOperation = eTypeOperation.NoFiscalReceipt, TypeRRO = Type.ToString(), JSON = pR.ToJSON() };
+        }
+        public bool PrintSeviceReceipt(List<ReceiptText> texts)
+        {
+            //M304.OpenTextDocument();
+            //M304.PrintQR("12346");
+            //M304.FreeTextLine(0,0,3,"hello");//, doubleWidth: true, doubleHeight: true);
+            //M304.CloseTextDocument();
+            Init();
+            M304.PutToExternalDisplay("", true);
+            M304.OpenTextDocument();
+            foreach (ReceiptText text in texts)
+            {
+                switch (text.RenderType)
+                {
+                    case eRenderAs.Text:
+                        M304.FreeTextLine(0, 0, 3, text.Text);
+                        continue;
+                    case eRenderAs.QR:
+                        M304.PrintQR(text.Text);
+                        continue;
+                    default:
+                        continue;
+                }
+            }
+            M304.CloseTextDocument();
+            Done();
+            return true;
+        }
+        public override decimal GetSumInCash()
+        {
+            string res;
+            decimal Sum = 0;
+            if (!IsInit)
+                Init();
+            if (IsInit)
+                res = M304.GetCashInfoXML();
+
+            //<?xml version="1.0"?><m301_cash_info><cash_info rest="187910" income="0" outcome="0" sales="20" return="20" total="187910" check_income="12" check_outcome="12" /></m301_cash_info>
+
+
+            return 5000m;
+        }
+        public decimal GetSumInCash_Maria(string xmlRes, string strPars = "total")
+        {
+            int pos = xmlRes.IndexOf(strPars);
+
+            return 50;
+        }
 
     }
+
 }
