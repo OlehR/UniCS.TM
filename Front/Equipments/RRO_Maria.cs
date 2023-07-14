@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Documents;
+using System.Xml;
 using System.Xml.Linq;
 using Utils;
 
@@ -161,6 +162,7 @@ namespace Front.Equipments.Implementation
             {
                 int SumCashPay = 0;
                 int SumCardPay = 0;
+                int SumFiscal = 0;
                 string RRN = "";
                 List<ReceiptText> Comments = null;
                 if (!SetError((pR.TypeReceipt == eTypeReceipt.Sale ? M304.OpenCheck() : M304.OpenReturnCheck()) != 1))
@@ -186,8 +188,7 @@ namespace Front.Equipments.Implementation
                         if (SetError(M304.FiscalLineEx(Name, Convert.ToInt32((el.CodeUnit == Global.WeightCodeUnit ? 1000 : 1) * el.Quantity), Convert.ToInt32(el.PriceEKKA * 100), el.CodeUnit == Global.WeightCodeUnit ? 1 : 0, TG1, TG2, el.CodeWares, (el.DiscountEKKA > 0 ? 0 : -1), null, Convert.ToInt32(el.DiscountEKKA * 100m), null) != 1))
                             break;
                     }
-
-                    pR.SumFiscal = M304.CheckSum / 100M;
+                    
 
                     if (pR.Payment?.Any() == true)
                     {
@@ -198,20 +199,27 @@ namespace Front.Equipments.Implementation
                                 SumCardPay = Decimal.ToInt32(el.SumPay * 100m);
                                 RRN = el.CodeAuthorization;
                                 if (el.NumberTerminal.Length > 8)
-                                {
                                     el.NumberTerminal = el.NumberTerminal[..8];
-                                }
+                                if (string.IsNullOrEmpty(el.CardHolder))
+                                    el.CardHolder = " ";
+
                                 if (SetError(M304.AddSlip(2, "0", el.NumberTerminal, pR.TypeReceipt.ToString(), el.NumberCard, el.CodeAuthorization, el.CardHolder, el.CodeReceipt.ToString()) != 1))
                                     break;
                             }
                             if (el.TypePay == eTypePay.Cash)
                             {
-                                SumCashPay = Decimal.ToInt32(el.SumPay * 100m);
+                                SumCashPay = Decimal.ToInt32(el.SumExt * 100m);
                                 SetError(SumCashPay <= 0);
                             }
 
                         }
                     }
+                    SumFiscal = M304.CheckSum;
+                    pR.SumFiscal = SumFiscal / 100M;
+                    if (SumCashPay ==0 && Math.Abs(SumCardPay - SumFiscal) < 10)
+                        SumCardPay = SumFiscal;
+                    if (SumCardPay == 0 && SumCashPay - SumFiscal < 0)
+                        SumCashPay = SumFiscal;
 
                 }
                 if (!IsError)
@@ -228,6 +236,8 @@ namespace Front.Equipments.Implementation
                     {
                         if (Pay.NumberTerminal.Length > 8)
                             Pay.NumberTerminal = Pay.NumberTerminal[..8];
+                        if (string.IsNullOrEmpty(Pay.CardHolder))
+                            Pay.CardHolder = " ";
                         SetError(M304.CashWithdrawal(Decimal.ToInt32(Pay.SumPay * 100m), 0, "0", Pay.NumberTerminal, Pay.NumberCard, Pay.CardHolder, Pay.CodeAuthorization, Pay.CodeReceipt.ToString()) != 1);
                     }
                 }
@@ -355,8 +365,8 @@ namespace Front.Equipments.Implementation
         }
         public override decimal GetSumInCash()
         {
-            string res;
-            decimal Sum = 0;
+            string res = "";
+            CashInfo MoneyInfo = new();
             if (!IsInit)
                 Init();
             if (IsInit)
@@ -364,8 +374,9 @@ namespace Front.Equipments.Implementation
 
             //<?xml version="1.0"?><m301_cash_info><cash_info rest="187910" income="0" outcome="0" sales="20" return="20" total="187910" check_income="12" check_outcome="12" /></m301_cash_info>
 
+            MoneyInfo = ParseXml(res);
 
-            return 5000m;
+            return MoneyInfo.Total;
         }
         public decimal GetSumInCash_Maria(string xmlRes, string strPars = "total")
         {
@@ -373,7 +384,68 @@ namespace Front.Equipments.Implementation
 
             return 50;
         }
+        public CashInfo ParseXml(string xmlString)
+        {
 
+
+            string rest = "";
+            string income = "";
+            string outcome = "";
+            string sales = "";
+            string returnVal = "";
+            string total = "";
+            string checkIncome = "";
+            string checkOutcome = "";
+
+            try
+            {
+                // Створення об'єкту XmlReader на основі XML-строки
+                using (XmlReader reader = XmlReader.Create(new System.IO.StringReader(xmlString)))
+                {
+                    while (reader.Read())
+                    {
+                        // Перевірка, чи поточна позиція є елементом
+                        if (reader.NodeType == XmlNodeType.Element)
+                        {
+                            // Перевірка, чи поточний елемент є <cash_info>
+                            if (reader.Name == "cash_info")
+                            {
+                                // Отримання значення атрибутів
+                                rest = reader.GetAttribute("rest");
+                                income = reader.GetAttribute("income");
+                                outcome = reader.GetAttribute("outcome");
+                                sales = reader.GetAttribute("sales");
+                                returnVal = reader.GetAttribute("return");
+                                total = reader.GetAttribute("total");
+                                checkIncome = reader.GetAttribute("check_income");
+                                checkOutcome = reader.GetAttribute("check_outcome");
+                            }
+                        }
+                    }
+
+                }
+                return new CashInfo {Rest = Convert.ToDecimal(rest) /100, Income = Convert.ToDecimal(income) / 100, Outcome = Convert.ToDecimal(outcome) / 100, Sales = Convert.ToDecimal(sales) / 100,
+                    ReturnVal = Convert.ToDecimal(returnVal) / 100, Total = Convert.ToDecimal(total) / 100, CheckIncome = Convert.ToDecimal(checkIncome) / 100, CheckOutcome  = Convert.ToDecimal(checkOutcome) / 100 };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Помилка при парсингу XML: " + ex.Message);
+                return new CashInfo {  Rest =-1m, Income = -1m,Outcome = -1m,CheckOutcome = -1m, CheckIncome = -1m, ReturnVal = -1m, Sales = -1m, Total = -1m };
+            }
+
+        }
+
+    }
+    public class CashInfo
+    {
+        public decimal Rest { get; set; }
+        public decimal Income { get; set; }
+        public decimal Outcome { get; set; }
+        public decimal Sales { get; set; }
+        public decimal ReturnVal { get; set; }
+        public decimal Total { get; set; }
+        public decimal CheckIncome { get; set; }
+        public decimal CheckOutcome { get; set; }
     }
 
 }
