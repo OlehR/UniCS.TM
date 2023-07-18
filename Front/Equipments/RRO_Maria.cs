@@ -183,7 +183,7 @@ namespace Front.Equipments.Implementation
                             int.TryParse(taxGroup[1..2], out TG2);
                         var Name = (el.IsUseCodeUKTZED && !string.IsNullOrEmpty(el.CodeUKTZED) ? el.CodeUKTZED.Substring(0, 10) + "#" : "") + el.NameWares;
                         if (!String.IsNullOrEmpty(el.ExciseStamp))
-                            if (SetError((M304.AddExciseStamps(el.ExciseStamp?.Split(',')) != OperationResult.Success)))
+                            if (SetError((M304.AddExciseStamps(el.ExciseStamp) != 1)))
                                 break;
                         if (SetError(M304.FiscalLineEx(Name, Convert.ToInt32((el.CodeUnit == Global.WeightCodeUnit ? 1000 : 1) * el.Quantity), Convert.ToInt32(el.PriceEKKA * 100), el.CodeUnit == Global.WeightCodeUnit ? 1 : 0, TG1, TG2, el.CodeWares, (el.DiscountEKKA > 0 ? 0 : -1), null, Convert.ToInt32(el.DiscountEKKA * 100m), null) == 0))
                             break;
