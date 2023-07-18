@@ -185,7 +185,7 @@ namespace Front.Equipments.Implementation
                         if (!String.IsNullOrEmpty(el.ExciseStamp))
                             if (SetError((M304.AddExciseStamps(el.ExciseStamp?.Split(',')) != OperationResult.Success)))
                                 break;
-                        if (SetError(M304.FiscalLineEx(Name, Convert.ToInt32((el.CodeUnit == Global.WeightCodeUnit ? 1000 : 1) * el.Quantity), Convert.ToInt32(el.PriceEKKA * 100), el.CodeUnit == Global.WeightCodeUnit ? 1 : 0, TG1, TG2, el.CodeWares, (el.DiscountEKKA > 0 ? 0 : -1), null, Convert.ToInt32(el.DiscountEKKA * 100m), null) != 1))
+                        if (SetError(M304.FiscalLineEx(Name, Convert.ToInt32((el.CodeUnit == Global.WeightCodeUnit ? 1000 : 1) * el.Quantity), Convert.ToInt32(el.PriceEKKA * 100), el.CodeUnit == Global.WeightCodeUnit ? 1 : 0, TG1, TG2, el.CodeWares, (el.DiscountEKKA > 0 ? 0 : -1), null, Convert.ToInt32(el.DiscountEKKA * 100m), null) == 0))
                             break;
                     }
                     
