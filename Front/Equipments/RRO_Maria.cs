@@ -244,7 +244,7 @@ namespace Front.Equipments.Implementation
             }
 
             pR.NumberReceipt = M304.LastCheckNumber.ToString();
-
+            string XMLCheckResult = M304.GetCheckResultXML();
             Done();
 
             return new LogRRO(pR)
@@ -254,7 +254,7 @@ namespace Front.Equipments.Implementation
                 SUM = pR.SumFiscal,
                 TypeRRO = "Maria304",
                 TypeOperation = (pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund),
-                JSON = M304.GetCheckResultXML()
+                JSON = XMLCheckResult
             };
 
         }
