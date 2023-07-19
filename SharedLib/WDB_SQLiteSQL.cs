@@ -15,9 +15,15 @@ from RECEIPT_Event e
 join receipt r on r.code_receipt=e.code_receipt
 where  Event_Type=-11 and r.STATE_RECEIPT=9)) as LineHoure";
 
-        readonly string SqlLineReceipt = @"select  count(*) as Rows,count(distinct r.code_receipt) as Receipts from receipt r
+        readonly string SqlLineReceipt = @"select sum(Rows) as Rows, sum(Receipts) as Receipts from (
+select  count(*) as Rows,count(distinct r.code_receipt) as Receipts from receipt r
 join WARES_RECEIPT wr on r.code_receipt=wr.code_receipt
-where r.state_receipt>=8";
+where r.state_receipt>=8
+union all
+select count(*),0 from payment p where p.TYPE_PAY=5 and sum_pay<0
+union all
+select count(*)-Count(DISTINCT Code_receipt),0 from WARES_RECEIPT_PROMOTION where TYPE_DISCOUNT=11
+)";
 
         readonly string SqlFindClient = @"with t as 
 (

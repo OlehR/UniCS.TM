@@ -177,7 +177,7 @@ namespace Front.Equipments.Implementation
                         if (!string.IsNullOrWhiteSpace(comment.Text))
                             M304.FreeTextLine(1, 1, 0, comment.GetText(43));
                     }
-                    foreach (var el in pR.Wares)
+                    foreach (var el in pR.GetParserWaresReceipt(true, false))
                     {
                         var taxGroup = TaxGroup(el);
                         int TG1 = 0, TG2 = 0;
