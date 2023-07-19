@@ -121,9 +121,10 @@ namespace Front.Control
                     if (MW.curReceipt.Payment.First().CodeBank == bank2.CodeBank)
                         TypeReturn = "SecondTerminal";
                 }
-
-
             }
+            if (string.IsNullOrEmpty(TypeReturn))
+                TypeReturn = "AllPayments";
+            
 
 
         }
