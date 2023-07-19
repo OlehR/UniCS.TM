@@ -1,11 +1,13 @@
 ﻿using Front.Equipments.Implementation.FP700_Model;
 using Front.Equipments.Utils;
 using Front.Equipments.Virtual;
+using Front.Models;
 using Microsoft.Extensions.Configuration;
 using ModelMID;
 using ModelMID.DB;
 using ModernExpo.SelfCheckout.Entities.Models.Terminal;
 using Resonance;
+using SharedLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +24,7 @@ namespace Front.Equipments.Implementation
     {
         bool IsInit = false;
         bool IsError = false;
+        WDB_SQLite db = new WDB_SQLite();
 
         M304ManagerApplication M304_;
         dynamic M304;
@@ -188,7 +191,7 @@ namespace Front.Equipments.Implementation
                         if (SetError(M304.FiscalLineEx(Name, Convert.ToInt32((el.CodeUnit == Global.WeightCodeUnit ? 1000 : 1) * el.Quantity), Convert.ToInt32(el.PriceEKKA * 100), el.CodeUnit == Global.WeightCodeUnit ? 1 : 0, TG1, TG2, el.CodeWares, (el.DiscountEKKA > 0 ? 0 : -1), null, Convert.ToInt32(el.DiscountEKKA * 100m), null) == 0))
                             break;
                     }
-                    
+
 
                     if (pR.Payment?.Any() == true)
                     {
@@ -216,11 +219,29 @@ namespace Front.Equipments.Implementation
                     }
                     SumFiscal = M304.CheckSum;
                     pR.SumFiscal = SumFiscal / 100M;
-                    if (SumCashPay ==0 && Math.Abs(SumCardPay - SumFiscal) < 10)
+                    if (SumCashPay == 0 && Math.Abs(SumCardPay - SumFiscal) < 10)
                         SumCardPay = SumFiscal;
                     if (SumCardPay == 0 && SumCashPay - SumFiscal < 0)
                         SumCashPay = SumFiscal;
 
+                }
+                decimal roundFiscal = 0;
+                if (SumFiscal > 0)
+                    roundFiscal = (Math.Round(SumFiscal / 1000m, 2, MidpointRounding.AwayFromZero) * 10m) - SumFiscal / 100m;
+
+
+                if (!IsError && roundFiscal != 0)
+                {
+                    try
+                    {
+                        var pay = new Payment(pR) { IsSuccess = true, TypePay = eTypePay.FiscalInfo, SumPay = SumFiscal / 100m, SumExt = roundFiscal };
+                        pR.Payment = pR.Payment == null ? new List<Payment>() { pay } : pR.Payment.Append<Payment>(pay);
+                        db.ReplacePayment(pay, true);
+                    }
+                    catch (Exception e)
+                    {
+                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+                    }
                 }
                 if (!IsError)
                 {
@@ -228,6 +249,7 @@ namespace Front.Equipments.Implementation
                     M304.CloseCheckEx(SumCashPay, SumCardPay, 0, 0, RRN);
                     M304.PutToDisplay(pR.SumFiscal.ToString());
                 }
+
                 if (!IsError)
                 {
                     //Чек видачі готівки.
@@ -424,13 +446,22 @@ namespace Front.Equipments.Implementation
                     }
 
                 }
-                return new CashInfo {Rest = Convert.ToDecimal(rest) /100, Income = Convert.ToDecimal(income) / 100, Outcome = Convert.ToDecimal(outcome) / 100, Sales = Convert.ToDecimal(sales) / 100,
-                    ReturnVal = Convert.ToDecimal(returnVal) / 100, Total = Convert.ToDecimal(total) / 100, CheckIncome = Convert.ToDecimal(checkIncome) / 100, CheckOutcome  = Convert.ToDecimal(checkOutcome) / 100 };
+                return new CashInfo
+                {
+                    Rest = Convert.ToDecimal(rest) / 100,
+                    Income = Convert.ToDecimal(income) / 100,
+                    Outcome = Convert.ToDecimal(outcome) / 100,
+                    Sales = Convert.ToDecimal(sales) / 100,
+                    ReturnVal = Convert.ToDecimal(returnVal) / 100,
+                    Total = Convert.ToDecimal(total) / 100,
+                    CheckIncome = Convert.ToDecimal(checkIncome) / 100,
+                    CheckOutcome = Convert.ToDecimal(checkOutcome) / 100
+                };
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Помилка при парсингу XML: " + ex.Message);
-                return new CashInfo {  Rest =-1m, Income = -1m,Outcome = -1m,CheckOutcome = -1m, CheckIncome = -1m, ReturnVal = -1m, Sales = -1m, Total = -1m };
+                return new CashInfo { Rest = -1m, Income = -1m, Outcome = -1m, CheckOutcome = -1m, CheckIncome = -1m, ReturnVal = -1m, Sales = -1m, Total = -1m };
             }
 
         }
