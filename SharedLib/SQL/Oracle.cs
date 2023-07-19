@@ -63,7 +63,7 @@ namespace SharedLib
             return connection.ExecuteScalar<T1>(query, parameters);            
         }
 
-        public override int BulkExecuteNonQuery<T>(string parQuery, IEnumerable<T> Parameters)
+        public override int BulkExecuteNonQuery<T>(string parQuery, IEnumerable<T> Parameters, bool IsRepeat = false)
         {
             BeginTransaction();
             try

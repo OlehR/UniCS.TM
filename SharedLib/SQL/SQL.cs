@@ -104,7 +104,7 @@ namespace SharedLib
         {
             throw new NotImplementedException();
         }
-        public virtual int BulkExecuteNonQuery<T>(string parQuery, IEnumerable<T> Parameters)
+        public virtual int BulkExecuteNonQuery<T>(string parQuery, IEnumerable<T> Parameters, bool IsRepeatNotBulk = false)
         {
             throw new NotImplementedException();
         }

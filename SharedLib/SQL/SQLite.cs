@@ -201,26 +201,34 @@ namespace SharedLib
             return connection.Execute(parQuery, Parameters, transaction);
         }
 
-        public override int BulkExecuteNonQuery<T>(string parQuery, IEnumerable<T> Parameters)
+        public override int BulkExecuteNonQuery<T>(string pQuery, IEnumerable<T> pData, bool IsRepeatNotBulk = false)
         {
             if (IsLock) ExceptionIsLock();
             transaction = connection.BeginTransaction(IsolationLevel.Serializable);
-          // FileLogger.ExtLogForClass(transaction.GetType(), transaction.GetHashCode(), "Begin transaction");
+            // FileLogger.ExtLogForClass(transaction.GetType(), transaction.GetHashCode(), "Begin transaction");
             try
             {
-                foreach (var el in Parameters)
-                    ExecuteNonQuery(parQuery, el, transaction);
+                foreach (var el in pData)
+                    ExecuteNonQuery(pQuery, el, transaction);
                 transaction.Commit();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 transaction.Rollback();
-                throw new Exception("BulkExecuteNonQuery =>"+ex.Message, ex);
-                return -1;
+                if (IsRepeatNotBulk)
+                    try
+                    {
+                        foreach (var el in pData)
+                            ExecuteNonQuery(pQuery, el);
+                    }
+                    catch (Exception e)
+                    { throw new Exception("BulkExecuteNonQuery =>" + ex.Message, ex); }
+                else
+                    throw new Exception("BulkExecuteNonQuery =>" + ex.Message, ex);
             }
-           
+
             //FileLogger.ExtLogForClass(transaction.GetType(), transaction.GetHashCode(), "End transaction");
-            return Parameters.Count();
+            return pData.Count();
         }
 
         protected virtual void Dispose(bool disposing)

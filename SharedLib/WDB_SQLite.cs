@@ -778,7 +778,7 @@ and @TypeDiscount=11; ";
         {
             using (var DB = new SQLite(MidFile))
             {
-                return DB.BulkExecuteNonQuery<User>(SqlReplaceUser, pUser) > 0;
+                return DB.BulkExecuteNonQuery<User>(SqlReplaceUser, pUser,true) > 0;
             }
         }
         public override bool ReplaceSalesBan(IEnumerable<SalesBan> pSB)
