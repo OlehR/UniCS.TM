@@ -21,7 +21,7 @@ namespace Front.Equipments
         private SerialPortStreamWrapper SerialDevice;
 
         public bool IsReady { get { return SerialDevice != null; } }
-        public ScanerCom(Equipment pEquipment, IConfiguration pConfiguration, ILoggerFactory pLoggerFactory, Action<string, string> pOnBarCode) : base(pEquipment, pConfiguration, eModelEquipment.VirtualScaner, pLoggerFactory, pOnBarCode)
+        public ScanerCom(Equipment pEquipment, IConfiguration pConfiguration, ILoggerFactory pLoggerFactory, Action<string, string> pOnBarCode) : base(pEquipment, pConfiguration, eModelEquipment.ScanerCom, pLoggerFactory, pOnBarCode)
         {
 
             Init();

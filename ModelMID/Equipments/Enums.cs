@@ -302,8 +302,7 @@ namespace Front.Equipments
         MagellanScale,
         [Description("Сканер з емуляцією клавіатури")]
         ScanerKeyBoard,
-        [Description("Сканерч через СОМ")]
-
+        [Description("Сканер через СОМ")]
         ScanerCom,
         [Description("Вага через COM")]
         ScaleCom,

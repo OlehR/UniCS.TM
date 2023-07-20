@@ -154,7 +154,7 @@ namespace Front
                 try
                 {                    
                     Scaner Sc;
-                    foreach (var el in ListEquipment.Where(e => e.Type == eTypeEquipment.BankTerminal))
+                    foreach (var el in ListEquipment.Where(e => e.Type == eTypeEquipment.Scaner))
                     {
                         switch (el.Model)
                         {
