@@ -90,6 +90,7 @@ namespace Front.Equipments
 
             FileLogger.WriteLogMessage("OnDataReceived=>" + Str);
             Str = Str.Replace("\r", "");
+            Str = Str.Replace("\n", "");
 
             OnBarCode?.Invoke(Str, null);
 
