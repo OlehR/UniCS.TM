@@ -1066,7 +1066,7 @@ namespace Front.Equipments
             return result;
         }
 
-       bool isResultGot = false;
+       volatile bool isResultGot = false;
        object Lock = new();
         Stopwatch Timer = new Stopwatch();
        private bool OnSynchronizeWaitCommandResult( eCommand pCommand, string pData = "",  Action<string> onResponseCallback = null, Action<Exception> onExceptionCallback = null)
