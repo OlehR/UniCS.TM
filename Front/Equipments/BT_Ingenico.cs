@@ -45,14 +45,22 @@ namespace Front.Equipments
                 MerchantId = Convert.ToByte(Configuration[$"{KeyPrefix}MerchanId"]);
 
                 OnStatus += pActionStatus;
-                CodeBank = GetBank();
-                State = eStateEquipment.On;                
+                SetCodeBank();
             }
             catch (Exception e)
             {
                 State = eStateEquipment.Error;
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
             }
+        }
+
+        void SetCodeBank()
+        {
+            CodeBank = GetBank();
+            if (CodeBank == eBank.NotDefine)
+                State = eStateEquipment.Error;
+            else
+                State = eStateEquipment.On;
         }
 
         public string GetTerminalID { get { return BPOS.TerminalID; } }
@@ -129,6 +137,8 @@ namespace Front.Equipments
         {
             var r = TestDeviceSync();
             State = r == eDeviceConnectionStatus.Enabled ? eStateEquipment.On : eStateEquipment.Error;
+            if(State == eStateEquipment.On)
+                SetCodeBank();
             return new StatusEquipment(eModelEquipment.Ingenico, State, r.ToString());
         }
 
