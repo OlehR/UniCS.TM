@@ -22,7 +22,9 @@ where r.state_receipt>=8
 union all
 select count(*),0 from payment p where p.TYPE_PAY=5 and sum_pay<0
 union all
-select count(*)-Count(DISTINCT Code_receipt),0 from WARES_RECEIPT_PROMOTION where TYPE_DISCOUNT=11
+select count(*)-Count(DISTINCT wpm.Code_receipt),0 from WARES_RECEIPT_PROMOTION  wpm 
+    join RECEIPT r on wpm.Code_receipt= r.Code_receipt and state_receipt>=8
+    where TYPE_DISCOUNT=11
 )";
 
         readonly string SqlFindClient = @"with t as 
