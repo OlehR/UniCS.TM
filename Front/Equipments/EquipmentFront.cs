@@ -30,7 +30,7 @@ namespace Front
         private IEnumerable<Equipment> ListEquipment = new List<Equipment>();
         //eStateEquipment _State = eStateEquipment.Off;
         readonly BL Bl = BL.GetBL;
-        //Scaner Scaner;
+        Scaner Scaner;
         Scale Scale;
         Printer Printer;
         public Scale ControlScale;
@@ -153,35 +153,36 @@ namespace Front
                 //Scaner
                 try
                 {                    
-                    Scaner Scaner;
+                    Scaner Sc;
                     foreach (var el in ListEquipment.Where(e => e.Type == eTypeEquipment.BankTerminal))
                     {
                         switch (el.Model)
                         {
                             case eModelEquipment.MagellanScaner:
-                                Scaner = new MagellanScaner(el, config, LF, pSetBarCode);
+                                Sc = new MagellanScaner(el, config, LF, pSetBarCode);
+                                Scaner = Sc;
                                 break;
                             case eModelEquipment.VirtualScaner:
-                                Scaner = new VirtualScaner(el, config, LF, pSetBarCode);
+                                Sc = new VirtualScaner(el, config, LF, pSetBarCode);
                                 break;
                             case eModelEquipment.ScanerCom:
-                                Scaner = new ScanerCom(el, config, LF, pSetBarCode);
+                                Sc = new ScanerCom(el, config, LF, pSetBarCode);
                                 break;
                             case eModelEquipment.ScanerKeyBoard:
-                                ScanerKeyBoard Sc = new ScanerKeyBoard(el, config, LF, pSetBarCode);
+                                ScanerKeyBoard SKB = new ScanerKeyBoard(el, config, LF, pSetBarCode);
                                 if (W != null)
                                 {
-                                    W.KeyUp += Sc.Key_UP;
+                                    W.KeyUp += SKB.Key_UP;
                                     //W.TextInput += Sc.TextInput;
                                     //((MainWindow)W).TBExciseStamp.TextInput += Sc.TextInput;
                                 }
-                                Scaner = Sc;
+                                Sc = SKB;
                                 break;
                             default:
-                                Scaner = new Scaner(el, config);
+                                Sc = new Scaner(el, config);
                                 break;
                         }
-                        NewListEquipment.Add(Scaner);
+                        NewListEquipment.Add(Sc);
                     }
                 }
                 catch { };
