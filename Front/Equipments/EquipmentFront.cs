@@ -467,7 +467,6 @@ namespace Front
                        if (string.IsNullOrEmpty(r.TextReceipt) )  //|| RRO.Model == eModelEquipment.RRO_FP700)
                        {
                            LogRRO Res;
-
                            try
                            {
                                Res = WaitRRO(RRO, pIdR, eTypeOperation.LastReceipt, 500, false);
