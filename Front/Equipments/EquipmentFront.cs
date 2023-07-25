@@ -464,7 +464,7 @@ namespace Front
                    var RRO = GetRRO(pIdR.IdWorkplacePay);
                    if (r.CodeError == 0)
                    {
-                       if (string.IsNullOrEmpty(r.TextReceipt) || RRO.Model == eModelEquipment.RRO_FP700)
+                       if (string.IsNullOrEmpty(r.TextReceipt) )  //|| RRO.Model == eModelEquipment.RRO_FP700)
                        {
                            LogRRO Res;
 

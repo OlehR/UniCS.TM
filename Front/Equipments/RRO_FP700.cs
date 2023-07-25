@@ -55,6 +55,8 @@ namespace Front.Equipments
         private string _adminPassword => Configuration[$"{KeyPrefix}AdminPassword"];
 
         private int _maxItemLength => Configuration.GetValue<int>($"{KeyPrefix}MaxItemLength");
+        
+        private bool NoLoadReceipt => Configuration.GetValue<bool>($"{KeyPrefix}NoLoadReceipt");
 
         public bool IsZReportAlreadyDone { get; private set; }
 
@@ -99,14 +101,14 @@ namespace Front.Equipments
         {
             string res="";
             res = ZReport();
-            return new LogRRO(pIdR) { TypeOperation = eTypeOperation.ZReport, TypeRRO = Type.ToString(), FiscalNumber = GetLastZReportNumber(), TextReceipt = res };
+            return new LogRRO(pIdR) { TypeOperation = eTypeOperation.ZReport, TypeRRO = Type.ToString(), FiscalNumber = GetLastZReportNumber() }//, TextReceipt = res };
         }
 
         public override LogRRO PrintX(IdReceipt pIdR)
         {
             string res = null;
             res = XReport();
-            return new LogRRO(pIdR) { TypeOperation = eTypeOperation.XReport, TypeRRO = Type.ToString(), FiscalNumber = GetLastZReportNumber(), TextReceipt = res };
+            return new LogRRO(pIdR) { TypeOperation = eTypeOperation.XReport, TypeRRO = Type.ToString(), FiscalNumber = GetLastZReportNumber() };//, TextReceipt = res };
         }
 
         /// <summary>
@@ -137,7 +139,9 @@ namespace Front.Equipments
             /* else
                  (FiscalNumber,SumFiscal) = ReturnReceipt(pR);*/
             pR.NumberReceipt = FiscalNumber;         
-            return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, TypeRRO = Type.ToString(), FiscalNumber = FiscalNumber, SUM = SumFiscal /*pR.SumReceipt - pR.SumBonus,*/ };
+            return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, TypeRRO = Type.ToString(), FiscalNumber = FiscalNumber, SUM = SumFiscal /*pR.SumReceipt - pR.SumBonus,*/ 
+            ,TextReceipt = (NoLoadReceipt?$"NoLoadReceipt=>{NoLoadReceipt}":null)
+            };
         }       
 
         public override bool PeriodZReport(DateTime pBegin, DateTime pEnd, bool IsFull = true)
