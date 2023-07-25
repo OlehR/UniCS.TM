@@ -101,7 +101,7 @@ namespace Front.Equipments
         {
             string res="";
             res = ZReport();
-            return new LogRRO(pIdR) { TypeOperation = eTypeOperation.ZReport, TypeRRO = Type.ToString(), FiscalNumber = GetLastZReportNumber() }//, TextReceipt = res };
+            return new LogRRO(pIdR) { TypeOperation = eTypeOperation.ZReport, TypeRRO = Type.ToString(), FiscalNumber = GetLastZReportNumber() };//, TextReceipt = res };
         }
 
         public override LogRRO PrintX(IdReceipt pIdR)

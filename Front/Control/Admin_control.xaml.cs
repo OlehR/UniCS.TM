@@ -309,7 +309,8 @@ namespace Front.Control
 
         void ViewReceiptFiscal(LogRRO pLastReceipt)
         {
-            ViewReceipt(pLastReceipt.TextReceipt.Split(Environment.NewLine));
+            if (pLastReceipt.TextReceipt != null)
+                ViewReceipt(pLastReceipt.TextReceipt.Split(Environment.NewLine));
         }
 
         private void POS_X_Copy_Click(object sender, RoutedEventArgs e)
