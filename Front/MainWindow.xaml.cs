@@ -24,6 +24,7 @@ using System.Reflection;
 using System.IO;
 using System.Security.AccessControl;
 using Front.Control;
+using System.Windows.Threading;
 
 namespace Front
 {
@@ -952,7 +953,10 @@ namespace Front
                     }
                     SetPropertyChanged();
                 }));
-                r.Wait(new TimeSpan(0, 0, 0, 100));
+                var res=r.Wait(new TimeSpan(0, 0, 0, 150));
+                if(res!= DispatcherOperationStatus.Completed)
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"res=>{res} pSMV={pSMV}/{State}, pTypeAccess={pTypeAccess}/{TypeAccessWait}, pRW ={pRW} , pCW={pCW},  pS={pS}", eTypeLog.Error);
+
             }
         }
 
