@@ -508,12 +508,18 @@ namespace Front.Equipments
 
         public bool PrintFiscalComments(List<ReceiptText> comments)
         {
+            bool res= false;
             foreach (ReceiptText comment in comments)
             {
                 if (!string.IsNullOrWhiteSpace(comment.Text))
-                    OnSynchronizeWaitCommandResult(eCommand.PrintFiscalComment, comment.Text);
+                    res = OnSynchronizeWaitCommandResult(eCommand.PrintFiscalComment, comment.Text);
+                if(!res)
+                {
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"res=>{res}",eTypeLog.Error);
+                    return res;
+                }
             }
-            return true;
+            return res;
         }
 
         public bool PayReceipt(Receipt pR, decimal pRealSum)
@@ -1095,17 +1101,25 @@ namespace Front.Equipments
                 {
                     if (!SendPackage(pCommand, pData))
                     {
-                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"SendPackage=>False Time => {Timer.Elapsed}",eTypeLog.Error);
+                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"SendPackage=>False Time => {Timer.Elapsed} SerialDevice.IsOpen={SerialDevice.IsOpen} IsZReportAlreadyDone=>{IsZReportAlreadyDone} ",eTypeLog.Error);
                         return false;
                     }
-                    StaticTimer.Wait((Func<bool>)(() => !isResultGot), 2);
+                    //StaticTimer.Wait((Func<bool>)(() => !isResultGot), 2);
+                    int c=0;
+                    while(!isResultGot && c++ <2*1000)
+                        Thread.Sleep(1);
+                    
+                    if (!isResultGot)
+                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"isResultGot=>{isResultGot} SerialDevice.IsOpen={SerialDevice.IsOpen} IsZReportAlreadyDone=>{IsZReportAlreadyDone}  {pCommand} Data=>{pData}", eTypeLog.Error);
                 }
                 catch (Exception ex)
                 {
-                    if (ex.Message.StartsWith("FP 700 has critical error"))
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex);
+                    //if (ex.Message.StartsWith("FP 700 has critical error"))
                         throw;
                 }
-            }           
+            } 
+  
             return isResultGot;
         }
         public bool SendPackage(eCommand command, string data = "", int waitingTimeout = 10)
@@ -1265,218 +1279,7 @@ namespace Front.Equipments
            }           
        }       
 
-        /*
-        private bool OnSynchronizeWaitCommandResult( eCommand command, string data = "",  Action<string> onResponseCallback = null, Action<Exception> onExceptionCallback = null)
-        {
-            bool isResultGot = false;
-            Stopwatch timer =  Stopwatch.StartNew();
-           
-            if (!StaticTimer.Wait((Func<bool>)(() => _commandsCallbacks.ContainsKey(command)), 2))
-                _commandsCallbacks.Remove(command);
-            _commandsCallbacks.Add(command, (Action<string>)(response =>
-            {
-                try
-                {
-                   onResponseCallback?.Invoke(response);
-                   FileLogger.WriteLogMessage(this, "OnSynchronizeWaitCommandResult", $"CallBackResult {command} Time=>{timer.Elapsed} Data=>{data} Res=>{response}");
-                   isResultGot = true;
-                }
-                catch (Exception ex)
-                {                    
-                    onExceptionCallback?.Invoke(ex);
-                }
-                finally
-                {
-                    _commandsCallbacks.Remove(command);
-                }
-            }));
-            try
-            {
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Send {command} Data=>{data} _commandsCallbacks.Count=>{_commandsCallbacks.Count()}");
-                if (!SendPackage(command, data))
-                {                   
-                    return false;
-                }
-                StaticTimer.Wait((Func<bool>)(() => !isResultGot),3);
-                return isResultGot;
-            }
-            catch (Exception ex)
-            {
-                if (ex.Message.StartsWith("FP 700 has critical error"))
-                    _commandsCallbacks.Remove(command);
-                throw;
-            }
-        }
-
-        public bool SendPackage(eCommand command, string data = "", int waitingTimeout = 10)
-        {
-           // FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"{command} {data}");
-            
-            bool flag = command != eCommand.ClearDisplay && command != eCommand.ShiftInfo && command != eCommand.DiagnosticInfo && command != eCommand.EveryDayReport && command != eCommand.LastDocumentsNumbers && command != eCommand.ObliterateFiscalReceipt && command != eCommand.PaperCut && command != eCommand.GetDateTime && command != eCommand.PaperPulling && command != eCommand.LastZReportInfo && command != eCommand.PrintDiagnosticInformation;
-            if (!IsZReportAlreadyDone & flag)
-                return false;
-            if (_hasCriticalError & flag)
-                throw new Exception(Environment.NewLine + "Проблема з фіскальним реєстратором FP700: " + Environment.NewLine + _currentPrinterStatus.TextError);
-            if (!SerialDevice.IsOpen)
-                return false;
-            if (!_isReady)
-            {
-                _isReady = WaitForReady(waitingTimeout);
-            }
-            if (!_isReady)
-            {
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Not Ready {command}",eTypeLog.Error);
-                return false;
-            }
-            byte[] bytes = Encoding.Convert(Encoding.UTF8, Encoding.GetEncoding(1251), Encoding.UTF8.GetBytes(data));
-            
-            byte[] buffer = new byte[218];
-            int num1 = 0;
-            int length = bytes.Length;
-            int num2 = 0;
-            if (length > 218)
-                return false;
-            byte[] numArray1 = buffer;
-            int index1 = num1;
-            int num3 = index1 + 1;
-            numArray1[index1] = (byte)1;
-            byte[] numArray2 = buffer;
-            int index2 = num3;
-            int num4 = index2 + 1;
-            int num5 = (int)(byte)(36 + length);
-            numArray2[index2] = (byte)num5;
-            byte[] numArray3 = buffer;
-            int index3 = num4;
-            int num6 = index3 + 1;
-            int num7 = (int)(byte)_sequenceNumber++;
-            numArray3[index3] = (byte)num7;
-            byte[] numArray4 = buffer;
-            int index4 = num6;
-            int num8 = index4 + 1;
-            int num9 = (int)(byte)command;
-            numArray4[index4] = (byte)num9;
-            if (_sequenceNumber == 100)
-                _sequenceNumber = 90;
-            for (int index5 = 0; index5 < length; ++index5)
-                buffer[num8++] = bytes[index5];
-            byte[] numArray5 = buffer;
-            int index6 = num8;
-            int num10 = index6 + 1;
-            numArray5[index6] = (byte)5;
-            for (int index7 = 1; index7 < num10; ++index7)
-                num2 += (int)buffer[index7] & (int)byte.MaxValue;
-            byte[] numArray6 = buffer;
-            int index8 = num10;
-            int num11 = index8 + 1;
-            int num12 = (int)(byte)((num2 >> 12 & 15) + 48);
-            numArray6[index8] = (byte)num12;
-            byte[] numArray7 = buffer;
-            int index9 = num11;
-            int num13 = index9 + 1;
-            int num14 = (int)(byte)((num2 >> 8 & 15) + 48);
-            numArray7[index9] = (byte)num14;
-            byte[] numArray8 = buffer;
-            int index10 = num13;
-            int num15 = index10 + 1;
-            int num16 = (int)(byte)((num2 >> 4 & 15) + 48);
-            numArray8[index10] = (byte)num16;
-            byte[] numArray9 = buffer;
-            int index11 = num15;
-            int num17 = index11 + 1;
-            int num18 = (int)(byte)((num2 & 15) + 48);
-            numArray9[index11] = (byte)num18;
-            byte[] numArray10 = buffer;
-            int index12 = num17;
-            int count = index12 + 1;
-            numArray10[index12] = (byte)3;
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Sended {command} Buffer=>{Encoding.GetEncoding(1251).GetString(buffer)}");
-
-            ((Stream)SerialDevice).Write(buffer, 0, count);
-            ((Stream)SerialDevice).Flush();
-            _isReady = false;
-          return true;
-        }
-
-        private bool OnDataReceived(byte[] data)
-        {
-            _isError = false;
-            if (data.Length == 1)
-            {
-                if (data[0] == 21)
-                {
-                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Printer error occured");
-                    _isError = true;
-                    return false;
-                }
-                if (data[0] == 22)
-                {
-                    _isReady = false;
-                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Printer is waiting for a command");
-                    return false;
-                }
-            }
-            _isReady = true;
-            int num1 = Array.IndexOf<byte>(data, (byte)1);
-            int num2 = Array.IndexOf<byte>(data, (byte)4);
-            int num3 = Array.IndexOf<byte>(data, (byte)5);
-            int num4 = Array.IndexOf<byte>(data, (byte)3);
-            if (num1 < 0 || num2 < 0 || num3 < 0 || num4 < 0)
-            {
-                _packageBuffer.AddRange((IEnumerable<byte>)data);
-                if (!_packageBuffer.Contains((byte)3))
-                {
-                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Printer received part of package. Waiting more...");
-                    _packageBufferTimer.Start();
-                    return false;
-                }
-                _packageBufferTimer.Stop();
-                data = _packageBuffer.ToArray();
-                _packageBuffer.Clear();
-                num1 = Array.IndexOf<byte>(data, (byte)1);
-                num2 = Array.IndexOf<byte>(data, (byte)4);
-                num3 = Array.IndexOf<byte>(data, (byte)5);
-                num4 = Array.IndexOf<byte>(data, (byte)3);
-                if (num1 < 0 || num2 < 0 || num3 < 0 || num4 < 0)
-                {
-                    _packageBufferTimer.Start();
-                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Printer received invalid package.");
-                    return false;
-                }
-            }
-            eCommand cmdNumber = (eCommand)int.Parse(BitConverter.ToString(data, num1 + 3, 1), NumberStyles.HexNumber);
-            int count = num2 - num1 - 4;
-            byte[] numArray1 = new byte[count];
-            Buffer.BlockCopy((Array)data, num1 + 4, (Array)numArray1, 0, count);
-            byte[] numArray2 = new byte[6];
-            Buffer.BlockCopy((Array)data, num2 + 1, (Array)numArray2, 0, 6);
-           //byte[] dst = new byte[4];
-            //Buffer.BlockCopy((Array)data, num3 + 1, (Array)dst, 0, 4);
-            _currentPrinterStatus = new();
-            ShowStatus(cmdNumber, numArray1, (IReadOnlyList<byte>)numArray2);
-            return true;
-        }
-
-        private void ShowStatus(eCommand cmdNumber, byte[] receivedData, IReadOnlyList<byte> status)
-        {
-            for (int index1 = 0; index1 < 6; ++index1)
-            {
-                string str = Convert.ToString(status[index1], 2);
-                for (int index2 = str.Length - 1; index2 >= 0; --index2)
-                {
-                    if (int.Parse(str[index2].ToString()) == 1)
-                        GetStatusBitDescriptionBg(index1, str.Length - 1 - index2);
-                }
-            }
-            string str1 = Encoding.UTF8.GetString(Encoding.Convert(Encoding.GetEncoding(1251), Encoding.UTF8, receivedData));
-            //FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, str1);
-
-            if (!_commandsCallbacks.ContainsKey(cmdNumber))
-                return;
-           _commandsCallbacks[cmdNumber]?.Invoke(str1);           
-        }
-        */
-
-        private string GetStatusBitDescriptionBg(int byteIndex, int bitIndex)
+       private string GetStatusBitDescriptionBg(int byteIndex, int bitIndex)
         {
             string bitDescriptionBg = "";
             try
@@ -1531,10 +1334,10 @@ namespace Front.Equipments
                                 break;
                             case 5:
                                 bitDescriptionBg = "Крышка принтера открыта.";
-                                _hasCriticalError = true;
+                                //_hasCriticalError = true;
                                 _currentPrinterStatus.IsCoverOpen = true;
-                                ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Error, "[FP700] Cover is open")
-                                { Status = eStatusRRO.Error, IsСritical = true });
+                                ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.On, "[FP700] Cover is open")
+                                { Status = eStatusRRO.Warning, IsСritical = false });
                                 break;
                             case 6:
                                 bitDescriptionBg = "Регистратор персонализирован";

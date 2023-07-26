@@ -392,7 +392,7 @@ namespace ModelMID
                 decimal SumW = OrdinaryWares.Sum(el => el.SumWallet);
                 if (SumW != SumWallet)
                 {
-                    var Wr = OrdinaryWares.First();
+                    var Wr = OrdinaryWares.FirstOrDefault(el=>el.SumWallet>=SumW- SumWallet) ?? OrdinaryWares.First();
                     Wr.SumWallet += (SumWallet - SumW);
                 }
             }
