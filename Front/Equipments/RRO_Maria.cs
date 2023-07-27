@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Documents;
 using System.Xml;
@@ -256,6 +257,7 @@ namespace Front.Equipments.Implementation
                 if (!IsError)
                 {
                     //Чек видачі готівки.
+                    Thread.Sleep(2000);
                     Payment Pay = pR?.Payment?.Where(el => el.TypePay == eTypePay.IssueOfCash)?.FirstOrDefault();
                     if (Pay != null)
                     {
