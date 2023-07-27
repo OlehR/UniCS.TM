@@ -249,6 +249,8 @@ namespace Front.Equipments.Implementation
                     M304.CloseCheckEx(SumCashPay, SumCardPay, 0, 0, RRN);
                     M304.PutToDisplay(pR.SumFiscal.ToString());
                 }
+                pR.NumberReceipt = M304.LastCheckNumber.ToString();
+                string XMLCheckResult = M304.GetCheckResultXML();
 
                 if (!IsError)
                 {
@@ -265,8 +267,7 @@ namespace Front.Equipments.Implementation
                 }
             }
 
-            pR.NumberReceipt = M304.LastCheckNumber.ToString();
-            string XMLCheckResult = M304.GetCheckResultXML();
+            
             Done();
 
             return new LogRRO(pR)
