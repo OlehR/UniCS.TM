@@ -161,6 +161,7 @@ namespace Front.Equipments.Implementation
         /// <returns></returns>
         override public LogRRO PrintReceipt(Receipt pR)
         {
+            string XMLCheckResult = "";
             if (Init())
             {
                 int SumCashPay = 0;
@@ -250,7 +251,7 @@ namespace Front.Equipments.Implementation
                     M304.PutToDisplay(pR.SumFiscal.ToString());
                 }
                 pR.NumberReceipt = M304.LastCheckNumber.ToString();
-                string XMLCheckResult = M304.GetCheckResultXML();
+                XMLCheckResult = M304.GetCheckResultXML();
 
                 if (!IsError)
                 {
