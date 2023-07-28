@@ -191,7 +191,11 @@ namespace Front.Equipments.Implementation
                             if (SetError((M304.AddExciseStamps(el.ExciseStamp) != 1)))
                                 break;
                         if (SetError(M304.FiscalLineEx(Name, Convert.ToInt32((el.CodeUnit == Global.WeightCodeUnit ? 1000 : 1) * el.Quantity), Convert.ToInt32(el.PriceEKKA * 100), el.CodeUnit == Global.WeightCodeUnit ? 1 : 0, TG1, TG2, el.CodeWares, (el.DiscountEKKA > 0 ? 0 : -1), null, Convert.ToInt32(el.DiscountEKKA * 100m), null) == 0))
-                            break;
+                        {
+                            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка програмування товару: {StrError}");
+                            throw new Exception(Environment.NewLine + "Помилка програмування товару!" + Environment.NewLine + StrError);
+                        }
+                            
                     }
 
 
@@ -209,7 +213,10 @@ namespace Front.Equipments.Implementation
                                     el.CardHolder = " ";
 
                                 if (SetError(M304.AddSlip(2, "0", el.NumberTerminal, pR.TypeReceipt.ToString(), el.NumberCard, el.CodeAuthorization, el.CardHolder, el.CodeReceipt.ToString()) != 1))
-                                    break;
+                                {
+                                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка AddSlip:  {StrError}");
+                                    throw new Exception(Environment.NewLine + "Помилка програмування товару!" + Environment.NewLine + StrError);
+                                }    
                             }
                             if (el.TypePay == eTypePay.Cash)
                             {
@@ -248,7 +255,10 @@ namespace Front.Equipments.Implementation
                 if (!IsError)
                 {
                     //M304.AbortCheck();
-                    M304.CloseCheckEx(SumCashPay, SumCardPay, 0, 0, RRN);
+                    if (SetError(M304.CloseCheckEx(SumCashPay, SumCardPay, 0, 0, RRN) == 0)){
+                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка закриття чеку: {StrError}");
+                        throw new Exception(Environment.NewLine + "Помилка закриття чеку!" + Environment.NewLine + StrError);
+                    }
                     M304.PutToDisplay(pR.SumFiscal.ToString());
                 }
                 pR.NumberReceipt = M304.LastCheckNumber.ToString();
@@ -266,6 +276,10 @@ namespace Front.Equipments.Implementation
                         if (string.IsNullOrEmpty(Pay.CardHolder))
                             Pay.CardHolder = " ";
                         SetError(M304.CashWithdrawal(Decimal.ToInt32(Pay.SumPay * 100m), 0, "0", Pay.NumberTerminal, Pay.NumberCard, Pay.CardHolder, Pay.CodeAuthorization, Pay.CodeReceipt.ToString()) != 1);
+                        {
+                            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка видачі готівки: {StrError}");
+                            //throw new Exception(Environment.NewLine + "Помилка видачі готівки" + Environment.NewLine + StrError);
+                        }
                     }
                 }
             }
