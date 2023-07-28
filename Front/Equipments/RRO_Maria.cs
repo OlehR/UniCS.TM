@@ -221,7 +221,11 @@ namespace Front.Equipments.Implementation
                             if (el.TypePay == eTypePay.Cash)
                             {
                                 SumCashPay = Decimal.ToInt32(el.SumExt * 100m);
-                                SetError(SumCashPay <= 0);
+                                if (SetError(SumCashPay <= 0))
+                                {
+                                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Сума оплати меньша за суму чека: {StrError}");
+                                    throw new Exception(Environment.NewLine + "Сума оплати меньша за суму чека!" + Environment.NewLine + StrError);
+                                }
                             }
 
                         }
