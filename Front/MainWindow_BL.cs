@@ -440,7 +440,7 @@ namespace Front
 
         public void PayAndPrint()
         {
-            if (curReceipt.StateReceipt<eStateReceipt.Pay && curReceipt.CountWeightGoods > 0 && !curReceipt.Wares.Any(x => x.CodeWares == Global.Settings.CodePackagesBag) && !curReceipt.IsPakagesAded)
+            if (curReceipt.StateReceipt < eStateReceipt.Pay && curReceipt.CountWeightGoods > 0 && !curReceipt.Wares.Any(x => x.CodeWares == Global.Settings.CodePackagesBag) && !curReceipt.IsPakagesAded && curReceipt.TypeReceipt == eTypeReceipt.Sale)
             {
                 AddMissingPackage.CountPackeges = curReceipt.CountWeightGoods;
                 AddMissingPackage.CallBackResult = (int res) =>
