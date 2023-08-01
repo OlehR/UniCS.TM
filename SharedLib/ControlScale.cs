@@ -184,7 +184,7 @@ namespace ModelMID
                 switch (StateScale)
                 {
                     case eStateScale.WaitClear:
-                        res = $"Текуча вага = {curFullWeight / 1000:N3} кг";
+                        res = $"Поточна вага = {curFullWeight / 1000:N3} кг";
                         if (OwnBag > 0)
                             res += $"{Environment.NewLine}Власна сумка = {OwnBag / 1000:N3} кг";
                         break;

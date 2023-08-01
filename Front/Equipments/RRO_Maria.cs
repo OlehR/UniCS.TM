@@ -141,6 +141,16 @@ namespace Front.Equipments.Implementation
             }
             return new LogRRO(pIdR) { CodeError = CodeError, Error = StrError, SUM = 0, TypeRRO = "Maria304", TypeOperation = eTypeOperation.XReport };
         }
+        public override bool PeriodZReport(DateTime pBegin, DateTime pEnd, bool IsFull = true)
+        {
+            bool res = false;
+            if (Init())
+            {
+                res = SetError(M304.PeriodicalFiscalReportDateEx(pBegin, pEnd, IsFull) == 1) ? true : false;
+                Done();
+            }
+            return res;
+        }
 
         /// <summary>
         /// Внесення/Винесення коштів коштів.
@@ -195,7 +205,7 @@ namespace Front.Equipments.Implementation
                             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка програмування товару: {StrError}");
                             throw new Exception(Environment.NewLine + "Помилка програмування товару!" + Environment.NewLine + StrError);
                         }
-                            
+
                     }
 
 
@@ -216,7 +226,7 @@ namespace Front.Equipments.Implementation
                                 {
                                     FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка AddSlip:  {StrError}");
                                     throw new Exception(Environment.NewLine + "Помилка програмування товару!" + Environment.NewLine + StrError);
-                                }    
+                                }
                             }
                             if (el.TypePay == eTypePay.Cash)
                             {
@@ -259,7 +269,8 @@ namespace Front.Equipments.Implementation
                 if (!IsError)
                 {
                     //M304.AbortCheck();
-                    if (SetError(M304.CloseCheckEx(SumCashPay, SumCardPay, 0, 0, RRN) == 0)){
+                    if (SetError(M304.CloseCheckEx(SumCashPay, SumCardPay, 0, 0, RRN) == 0))
+                    {
                         FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка закриття чеку: {StrError}");
                         throw new Exception(Environment.NewLine + "Помилка закриття чеку!" + Environment.NewLine + StrError);
                     }
@@ -288,7 +299,7 @@ namespace Front.Equipments.Implementation
                 }
             }
 
-            
+
             Done();
 
             return new LogRRO(pR)
@@ -316,6 +327,7 @@ namespace Front.Equipments.Implementation
 
             return false;
         }
+
         public override StatusEquipment TestDevice()
         {
             Init();
