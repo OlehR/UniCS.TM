@@ -451,10 +451,13 @@ namespace Front
             })).Result;
             if (r.CodeError == 0 && pReceipt.TypeReceipt == eTypeReceipt.Sale && pReceipt.IdWorkplacePay == Global.IdWorkPlace)
                 PrintQR(pReceipt);
+            
+
             GetLastReceipt(new(pReceipt), r);
             return r;
         }
 
+        
         void GetLastReceipt(IdReceipt pIdR, LogRRO r,bool IsZReport=false)
         {
             Task.Run(() =>
@@ -637,6 +640,48 @@ namespace Front
             }
             )).Result;
             GetLastReceipt(pIdR, r);
+            return r;
+        }
+
+
+        public LogRRO IssueOfCash(Receipt pReceipt)
+        {
+            string NameMetod = System.Reflection.MethodBase.GetCurrentMethod().Name;
+
+            var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
+            {
+                var RRO = GetRRO(pReceipt.IdWorkplacePay);
+                LogRRO Res;
+
+                try
+                {
+                    Res = WaitRRO(RRO, pReceipt, eTypeOperation.Sale);
+                    if (Res == null)
+                    {
+                        
+                        var res = RRO?.IssueOfCash(pReceipt);
+                        var Log = pReceipt.LogRROs?.ToList() ?? new List<LogRRO>();
+                        Log.Add(res);
+                        pReceipt.LogRROs = Log;                        
+                    }
+                }
+                catch (Exception e)
+                {
+                    FileLogger.WriteLogMessage(this, NameMetod, e);
+                    if (RRO != null) RRO.State = eStateEquipment.Error;
+                    SetStatus?.Invoke(new StatusEquipment(RRO.Model, eStateEquipment.Error, e.Message) { IsСritical = true });
+                    Res = new LogRRO(pReceipt) { TypeOperation = eTypeOperation.IssueOfCash, TypeRRO = RRO.Model.ToString(), CodeError = -1, Error = e.Message };
+                }
+                finally
+                {
+                    if (RRO != null)
+                        RRO.TypeOperation = eTypeOperation.NotDefine;
+                }
+                Res.IdWorkplacePay = pReceipt.IdWorkplacePay;
+                return Res;
+            })).Result;
+
+            GetLastReceipt(new(pReceipt), r);
             return r;
         }
 

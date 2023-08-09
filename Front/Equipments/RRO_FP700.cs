@@ -23,6 +23,7 @@ using System.Diagnostics;
 using Front.Equipments.Implementation.ModelVchasno;
 using System.Windows.Forms;
 using System.Windows.Markup;
+using ModernExpo.SelfCheckout.Entities.CommandServer;
 
 namespace Front.Equipments
 {
@@ -31,7 +32,7 @@ namespace Front.Equipments
         private readonly IConfiguration _configuration;
         private readonly SerialPortStreamWrapper SerialDevice;
         private PrinterStatus _currentPrinterStatus;
-       //private volatile bool _isReady = true;
+        //private volatile bool _isReady = true;
         private volatile bool _isWaiting = true;
         private volatile bool _isError;
         private volatile bool _hasCriticalError;
@@ -55,7 +56,7 @@ namespace Front.Equipments
         private string _adminPassword => Configuration[$"{KeyPrefix}AdminPassword"];
 
         private int _maxItemLength => Configuration.GetValue<int>($"{KeyPrefix}MaxItemLength");
-        
+
         private bool NoLoadReceipt => Configuration.GetValue<bool>($"{KeyPrefix}NoLoadReceipt");
 
         public bool IsZReportAlreadyDone { get; private set; }
@@ -99,7 +100,7 @@ namespace Front.Equipments
 
         public override LogRRO PrintZ(IdReceipt pIdR)
         {
-            string res="";
+            string res = "";
             res = ZReport();
             return new LogRRO(pIdR) { TypeOperation = eTypeOperation.ZReport, TypeRRO = Type.ToString(), FiscalNumber = GetLastZReportNumber() };//, TextReceipt = res };
         }
@@ -129,6 +130,7 @@ namespace Front.Equipments
         /// <returns></returns>
         public override LogRRO PrintReceipt(Receipt pR)
         {
+
             string FiscalNumber = null;
             decimal SumFiscal = 0;
             List<ReceiptText> Comments = null;
@@ -138,11 +140,11 @@ namespace Front.Equipments
             (FiscalNumber, SumFiscal) = PrintReceipt(pR, Comments);
             /* else
                  (FiscalNumber,SumFiscal) = ReturnReceipt(pR);*/
-            pR.NumberReceipt = FiscalNumber;         
-            return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, TypeRRO = Type.ToString(), FiscalNumber = FiscalNumber, SUM = SumFiscal /*pR.SumReceipt - pR.SumBonus,*/ 
-            ,TextReceipt = (NoLoadReceipt?$"NoLoadReceipt=>{NoLoadReceipt}":null)
-            };
-        }       
+            pR.NumberReceipt = FiscalNumber;
+            return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, TypeRRO = Type.ToString(), FiscalNumber = FiscalNumber, SUM = SumFiscal /*pR.SumReceipt - pR.SumBonus,*/
+            , TextReceipt = (NoLoadReceipt ? $"NoLoadReceipt=>{NoLoadReceipt}" : null) };
+
+        }
 
         public override bool PeriodZReport(DateTime pBegin, DateTime pEnd, bool IsFull = true)
         {
@@ -219,11 +221,11 @@ namespace Front.Equipments
         {
             string res = null;
             var r = GetLastReceiptNumber();
-            if(IsZReport)
+            if (IsZReport)
             {
                 int rr;
                 if (int.TryParse(r, out rr)) //!!!TMP Костиль, бо автоматично формує пакет
-                    r = (rr - 1).ToString();  
+                    r = (rr - 1).ToString();
             }
             res = KSEFGetReceipt(r);
             return res;
@@ -244,6 +246,29 @@ namespace Front.Equipments
             catch { }
             return Res;
         }
+
+        //Чек видачі готівки. 
+        public override LogRRO IssueOfCash(Receipt pR)
+        {
+
+            if (pR.IsPrintIssueOfCash)
+            {
+                Payment Pay = pR.IssueOfCash;
+                bool r = IssueOfCash(Pay);
+                var NumberReceipt = GetLastReceiptNumber();
+                return new LogRRO(pR)
+                {
+                    TypeOperation = eTypeOperation.IssueOfCash,
+                    SUM = Pay.SumPay,
+                    CodeError = r ? 0 : -1,
+                    FiscalNumber = NumberReceipt,
+                    TextReceipt = (NoLoadReceipt ? $"NoLoadReceipt=>{NoLoadReceipt}" : null)
+                };
+
+            };
+            return new LogRRO(pR) { TypeOperation = eTypeOperation.IssueOfCash,CodeError=-1,Error="Відсутня потреба друку Чека видачі готівки." };
+        }
+
 
         public bool IsReady
         {
@@ -443,17 +468,13 @@ namespace Front.Equipments
             if (!int.TryParse(GetLastReceiptNumber(), out int result2))
                 return (null, TotalRnd);
 
-            //Чек видачі готівки.
-            Payment Pay = pR?.Payment?.Where(el => el.TypePay == eTypePay.IssueOfCash)?.FirstOrDefault();
-            if (Pay != null)
-                IssueOfCash(Pay);
-
             _logger?.LogDebug($"[ FP700 ] newLastReceipt = {result2} / lastReceipt = {result1}");
             string str = result2 > result1 ? result2.ToString() : null;
             if (str == null)
                 ObliterateFiscalReceipt();
             return (str, TotalRnd);
-        }        
+        }
+
 
         public bool OpenReceipt(string pCashier = null)
         {

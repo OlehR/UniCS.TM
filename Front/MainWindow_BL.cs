@@ -611,26 +611,30 @@ namespace Front
                     try
                     {
                         SetStateView(eStateMainWindows.ProcessPrintReceipt);
-                        var Log= Bl.GetLogRRO(R).Where(el=> el.TypeOperation == (R.TypeReceipt== eTypeReceipt.Sale?eTypeOperation.Sale:eTypeOperation.Refund)).
-                            Select(el=>el.IdWorkplacePay);
-                        for (var i=0;i< IdWorkplacePays.Length;i++)
+                        R.LogRROs = Bl.GetLogRRO(R);
+
+                        for (var i = 0; i < IdWorkplacePays.Length; i++)
                         {
-                            if(Log!=null && Log.Any() && Log.Where(el => el == IdWorkplacePays[i]).Any())
-                                continue;
-                            R.IdWorkplacePay= IdWorkplacePays[i];
-                            res = EF.PrintReceipt(R);
-                            if (res.CodeError == 0)
+                            R.IdWorkplacePay = IdWorkplacePays[i];
+
+                            if (!R.LogRROs.Any(el => el.TypeOperation == (R.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund) && el.IdWorkplacePay == IdWorkplacePays[i]))
                             {
-                                R.SumFiscal += res.SUM;
-                                R.StateReceipt = (i== IdWorkplacePays.Length-1? eStateReceipt.Print: eStateReceipt.PartialPrint);                               
+                                res = EF.PrintReceipt(R);
+                                if (res.CodeError == 0)
+                                {
+                                    R.SumFiscal += res.SUM;
+                                    R.StateReceipt = (i == IdWorkplacePays.Length - 1 ? eStateReceipt.Print : eStateReceipt.PartialPrint);
+                                }
+                            }
+                            if(R.IsPrintIssueOfCash)
+                            {
+                                res = EF.IssueOfCash(R);
                             }
                         }                       
                         if (res == null)
                             return true;
                         if (res.CodeError == 0)
-                        {
-
-                         
+                        {                         
                             R.NumberReceipt = res.FiscalNumber;
                             R.StateReceipt = eStateReceipt.Print;
                             R.UserCreate = Bl.GetUserIdbyWorkPlace(R.IdWorkplace);                            

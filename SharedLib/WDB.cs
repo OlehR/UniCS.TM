@@ -193,10 +193,10 @@ namespace SharedLib
         protected string SqlUpdateMID = "";
         protected string SqlReplaceUser = "";
         protected string SqlGetUser = "";
-        protected string SqlInsertLogRRO = "";
+        //protected string SqlInsertLogRRO = "";
         protected string SqlReplaceSalesBan = "";
         protected string SqlGetQuantitySalesBan = "";
-        protected string SqlGetLogRRO = "";
+        //protected string SqlGetLogRRO = "";
         protected string SqlGetStateReceipt = "";
 
         public WDB(string pFileSQL,SQL pDB=null)
@@ -378,27 +378,7 @@ namespace SharedLib
         {
             return this.db.ExecuteNonQuery<IdReceiptWares>(SqlDeleteReceiptWares, parIdReceiptWares) > 0 /*&& RecalcHeadReceipt(parParameters)*/;
         }
-        public virtual Receipt ViewReceipt(IdReceipt parIdReceipt, bool parWithDetail = false)
-        {
-            var res = this.db.Execute<IdReceipt, Receipt>(SqlViewReceipt, parIdReceipt);
-            if (res.Count() == 1)
-            {
-                var r = res.FirstOrDefault();
-                if (parWithDetail)
-                {
-                    r.Wares = ViewReceiptWares(r,true);
-                    foreach (var el in r.Wares)
-                        el.AdditionalWeights = db.Execute<object, decimal>(SqlAdditionalWeightsWares, new { CodeWares = el.CodeWares });
- 
-                    r.Payment = GetPayment(parIdReceipt);
-                    r.ReceiptEvent = GetReceiptEvent(parIdReceipt);
-                    r.LogRROs = GetLogRRO(parIdReceipt);
-                }
-                return r;
-            }
-            return null;
-        }
-
+      
         /// <summary>
         /// Показує інформацю про товари в чеку 
         /// </summary>
@@ -650,11 +630,11 @@ namespace SharedLib
             SqlUpdateMID = GetSQL("SqlUpdateMID");
             SqlReplaceUser = GetSQL("SqlReplaceUser");
             SqlGetUser = GetSQL("SqlGetUser");
-            SqlInsertLogRRO = GetSQL("SqlInsertLogRRO");
+            //SqlInsertLogRRO = GetSQL("SqlInsertLogRRO");
             SqlReplaceSalesBan = GetSQL("SqlReplaceSalesBan");
 
             SqlGetQuantitySalesBan = GetSQL("SqlGetQuantitySalesBan");
-            SqlGetLogRRO = GetSQL("SqlGetLogRRO");
+            //SqlGetLogRRO = GetSQL("SqlGetLogRRO");
             SqlGetStateReceipt = GetSQL("SqlGetStateReceipt");
             return true;
         }
@@ -1066,12 +1046,6 @@ namespace SharedLib
             return true;
         }
 
-
-        public virtual bool InsertLogRRO(LogRRO pLog)
-        {
-            return db.ExecuteNonQuery<LogRRO>(SqlInsertLogRRO, pLog) > 0;
-        }
-
         public virtual bool ReplaceSalesBan(IEnumerable<SalesBan> pSB)
         {
             return db.BulkExecuteNonQuery<SalesBan>(SqlReplaceSalesBan, pSB) > 0;
@@ -1086,11 +1060,6 @@ namespace SharedLib
         public virtual IEnumerable<User> GetUser(User pUser)
         {
             return db.Execute<User,User>(SqlGetUser, pUser);            
-        }
-
-        public virtual IEnumerable<LogRRO> GetLogRRO(IdReceipt pR)
-        {
-            return db.Execute<IdReceipt, LogRRO>(SqlGetLogRRO, pR);
         }
 
         public virtual eStateReceipt GetStateReceipt(IdReceipt pR)

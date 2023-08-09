@@ -13,6 +13,7 @@ using System.Net.Http.Headers;
 using ModelMID.DB;
 using Utils;
 using SharedLib;
+using ModernExpo.SelfCheckout.Utils;
 
 namespace Front.Equipments.Implementation
 {
@@ -59,11 +60,12 @@ namespace Front.Equipments.Implementation
 
         override public LogRRO PrintReceipt(Receipt pR)
         {
+            List<LogRRO> res = null;
             Responce<ResponceReceipt> Res = null;
             if (!IsOpenWorkDay) OpenWorkDay();
-            if (!IsOpenWorkDay) return new LogRRO(pR) { CodeError = -1, Error = "Не вдалось відкрити зміну" };
+            if (!IsOpenWorkDay) return new LogRRO(pR) { CodeError = -1, Error = "Не вдалось відкрити зміну" } ;
 
-            var c = pR.Payment?.Where(el => el.TypePay == eTypePay.IssueOfCash);
+            //var c = pR.Payment?.Where(el => el.TypePay == eTypePay.IssueOfCash);
             var RealPay = pR.Payment?.Where(el => el.TypePay == eTypePay.Card || el.TypePay == eTypePay.Cash || el.TypePay == eTypePay.Wallet);
             if (RealPay?.Any() == true)
             {
@@ -74,9 +76,8 @@ namespace Front.Equipments.Implementation
                 Res = JsonConvert.DeserializeObject<Responce<ResponceReceipt>>(r);
                 GetFiscalInfo(pR, Res);
             }
-            
-            
-            if (Res?.info?.printinfo?.sum_receipt!=0 || Res?.info?.printinfo?.round!=0)
+
+            if (Res?.info?.printinfo?.sum_receipt != 0 || Res?.info?.printinfo?.round != 0)
                 try
                 {
                     var pay = new Payment(pR) { IsSuccess = true, TypePay = eTypePay.FiscalInfo, SumPay = Res.info.printinfo.sum_receipt, SumExt = Res.info.printinfo.round };
@@ -88,12 +89,17 @@ namespace Front.Equipments.Implementation
                     FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
                 }
 
-            //Якщо є видача готівки
-            if ( c?.Any()==true && Res!=null && Res.res==0 )
+            return  GetLogRRO(pR, Res, pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, Res?.info?.printinfo?.sum_topay ?? 0m);
+            
+        }
+
+        public override LogRRO IssueOfCash(Receipt pR)
+        {
+            Responce<ResponceReceipt> Res = null;
+            if (pR.IssueOfCash!=null) //&& Res!=null && Res.res==0
             {
-                pR.Payment = c;
                 pR.Wares = null;
-                ApiRRO d = new(pR, this) { token = Token, device = Device, tag = pR.NumberReceiptRRO + "_IC" };
+                ApiRRO d = new(pR, this, true) { token = Token, device = Device, tag = pR.NumberReceiptRRO + "_IC" };
                 string dd = d.ToJSON();
                 var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");
                 Res = JsonConvert.DeserializeObject<Responce<ResponceReceipt>>(r);
@@ -401,11 +407,11 @@ namespace Front.Equipments.Implementation.ModelVchasno
             fiscal = new FiscalRRO(pTask);
         }
 
-        public ApiRRO(Receipt pR, Rro pRro)
+        public ApiRRO(Receipt pR, Rro pRro, bool pIsIssueOfCash = false)
         {
             if (pR != null)
             {
-                fiscal = new FiscalRRO(pR, pRro);
+                fiscal = new FiscalRRO(pR, pRro, pIsIssueOfCash);
             }
         }
         public int ver { get { return 6; } }
@@ -425,7 +431,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
     {
         public FiscalRRO() { }
         public FiscalRRO(eTask pT) { task = pT; }
-        public FiscalRRO(Receipt pR, Rro pRro)
+        public FiscalRRO(Receipt pR, Rro pRro,bool pIsIssueOfCash=false)
         {
             if (pR != null)
             {
@@ -435,7 +441,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
                 if (c?.Count() == 1)
                 {
                     task = eTask.IssueOfCash;
-                    cash = c.Select(el => new CashPay(el)).First();
+                    cash = new CashPay(pR.IssueOfCash);
                 }
                 else
                     receipt = new ReciptRRO(pR, pRro);

@@ -165,10 +165,7 @@ namespace Front.Equipments
        /// <returns></returns>
         public virtual decimal GetSumFromTextReceipt(string pTextReceipt) { return 0; }
 
-        public virtual void GetFiscalInfo(Receipt pR,object pRes)
-        {
-
-        }        
+        public virtual void GetFiscalInfo(Receipt pR,object pRes) { }
 
         public string TaxGroup(ReceiptWares pRW) 
         {
@@ -178,7 +175,21 @@ namespace Front.Equipments
             return DefaultTax;
         }
 
+        /// <summary>
+        /// Сума гоівки в касі
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
         public virtual decimal GetSumInCash() { throw new NotImplementedException(); }
+
+
+        /// <summary>
+        /// Видача готівки з картки
+        /// </summary>
+        /// <param name="pP"></param>
+        /// <returns></returns>
+        public virtual LogRRO IssueOfCash(Receipt pR) { throw new NotImplementedException(); }
+
 
     }
 }

@@ -789,11 +789,14 @@ and @TypeDiscount=11; ";
             }
         }
 
-        public override bool InsertLogRRO(LogRRO pLog)
+        public bool InsertLogRRO(IEnumerable<LogRRO> pLog)
         {
+            string SQL = @"insert into Log_RRO  (ID_WORKPLACE,ID_WORKPLACE_PAY,CODE_PERIOD,CODE_RECEIPT,FiscalNumber, Number_Operation,Type_Operation, SUM ,Type_RRO,JSON, Text_Receipt,Error, USER_CREATE) VALUES
+                     (@IdWorkplace, @IdWorkplacePay,@CodePeriod,@CodeReceipt,@FiscalNumber,@NumberOperation,@TypeOperation,@SUM,@TypeRRO,@JSON,@TextReceipt,@Error,@UserCreate)
+";
             using (var DB = new SQLite(ReceiptFile))
             {
-                return DB.ExecuteNonQuery<LogRRO>(SqlInsertLogRRO, pLog) > 0;
+                return DB.BulkExecuteNonQuery<LogRRO>(SQL, pLog) > 0;
             }
         }
 
@@ -948,6 +951,7 @@ Where ID_WORKPLACE = @IdWorkplace
 
             return (NewVer, isReload);
         }
+
         public  bool ReplaceClientNew(ClientNew pC)
         {
             string Sql = @"replace into  Client_New (ID_WORKPLACE, BARCODE_CLIENT, BARCODE_CASHIER,  PHONE) values  (@IdWorkplace, @BarcodeClient, @BarcodeCashier, @Phone);";
@@ -988,11 +992,9 @@ Where ID_WORKPLACE = @IdWorkplace
             return Res != null && Res.Any(el => el.StatusCard == eStatusCard.Active)?Res.Where(el => el.StatusCard == eStatusCard.Active) : Res ;
         }
 
-  
         public SpeedScan SpeedScan()
         {
-            
-                SpeedScan Res = new SpeedScan();
+            SpeedScan Res = new SpeedScan();
             try
             {
                 var res = db.Execute<SpeedScan>(SqlLineReceipt);
@@ -1000,11 +1002,38 @@ Where ID_WORKPLACE = @IdWorkplace
                     Res = res.FirstOrDefault();
 
                 Res.Speed = db.ExecuteScalar<int>(SqlSpeedScan);
-            } catch (Exception ex) 
-            { 
-                var r = ex.Message; 
+            }
+            catch (Exception ex)
+            {
+                var r = ex.Message;
             }
             return Res;
+        }
+
+        public virtual IEnumerable<LogRRO> GetLogRRO(IdReceipt pR)
+        {
+            return db.Execute<IdReceipt, LogRRO>(SqlGetLogRRO, pR);
+        }
+
+        public virtual Receipt ViewReceipt(IdReceipt parIdReceipt, bool parWithDetail = false)
+        {
+            var res = this.db.Execute<IdReceipt, Receipt>(SqlViewReceipt, parIdReceipt);
+            if (res.Count() == 1)
+            {
+                var r = res.FirstOrDefault();
+                if (parWithDetail)
+                {
+                    r.Wares = ViewReceiptWares(r, true);
+                    foreach (var el in r.Wares)
+                        el.AdditionalWeights = db.Execute<object, decimal>(SqlAdditionalWeightsWares, new { CodeWares = el.CodeWares });
+
+                    r.Payment = GetPayment(parIdReceipt);
+                    r.ReceiptEvent = GetReceiptEvent(parIdReceipt);
+                    r.LogRROs = GetLogRRO(parIdReceipt);
+                }
+                return r;
+            }
+            return null;
         }
 
 

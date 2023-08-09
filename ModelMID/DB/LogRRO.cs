@@ -24,7 +24,7 @@ namespace ModelMID.DB
         [Description("Вивід на табло")]
         PutToDisplay =6,
         [Description("Видача готівки")]
-        IssuingCash =7,
+        IssueOfCash =7,
         [Description("Не фіскальний")]
         NoFiscalReceipt = 100,
         [Description("Анульований чек")]

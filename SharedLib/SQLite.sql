@@ -51,6 +51,7 @@ alter TABLE payment    add CODE_WARES        INTEGER  NOT NULL DEFAULT 0;--Ver=>
 alter TABLE WARES_RECEIPT add Sum_Wallet NUMBER   NOT NULL DEFAULT 0;--Ver=>18
 alter TABLE payment    add Code_Bank    INTEGER  NOT NULL DEFAULT 0;--Ver=>19
 alter TABLE RECEIPT    add  Number_Order      TEXT;--Ver=>20
+alter TABLE LOG_RRO add CodeError         INTEGER  NOT NULL DEFAULT 0;--Ver=>21
 
 
 [SqlUpdateMID]
@@ -855,6 +856,7 @@ CREATE TABLE Log_RRO (
     Type_RRO          TEXT,
     JSON              TEXT,
     Text_Receipt      TEXT,
+    CodeError         INTEGER  NOT NULL DEFAULT 0,
     Error             TEXT,
     DATE_CREATE       DATETIME NOT NULL DEFAULT (datetime('now','localtime')),
     USER_CREATE       INTEGER  NOT NULL DEFAULT 0
@@ -1452,16 +1454,6 @@ where r.STATE_RECEIPT=-1
  select CODE_USER as CodeUser, NAME_USER  as NameUser,  BAR_CODE as BarCode, Type_User as TypeUser, LOGIN, PASSWORD from USER
     where (Login=@Login and Password=@PassWord) or BAR_CODE=@BarCode;
 
-[SqlInsertLogRRO]
-insert into Log_RRO  (ID_WORKPLACE,ID_WORKPLACE_PAY,CODE_PERIOD,CODE_RECEIPT,FiscalNumber, Number_Operation,Type_Operation, SUM ,Type_RRO,JSON, Text_Receipt,Error, USER_CREATE) VALUES
-                     (@IdWorkplace, @IdWorkplacePay,@CodePeriod,@CodeReceipt,@FiscalNumber,@NumberOperation,@TypeOperation,@SUM,@TypeRRO,@JSON,@TextReceipt,@Error,@UserCreate)
-
-[SqlGetLogRRO]
-Select ID_WORKPLACE as IdWorkplace,CODE_PERIOD as CodePeriod,CODE_RECEIPT as CodeReceipt,ID_WORKPLACE_PAY as IdWorkplacePay,
-      FiscalNumber as FiscalNumber, Number_Operation as NumberOperation,Type_Operation as TypeOperation, SUM as SUM,
-      Type_RRO as TypeRRO,JSON as JSON, Text_Receipt as TextReceipt,Error as Error, USER_CREATE as UserCreate
-        from Log_RRO where ID_WORKPLACE = @IdWorkplace and CODE_PERIOD = @CodePeriod
-        and CODE_RECEIPT = case when @CodeReceipt=0 then CODE_RECEIPT else @CodeReceipt end
 
 [SqlGetStateReceipt]
 select max(STATE_RECEIPT) StateReceipt

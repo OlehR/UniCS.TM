@@ -652,7 +652,8 @@ namespace SharedLib
             return null;
         }
 
-        public bool InsertLogRRO(LogRRO pL) { return db.InsertLogRRO(pL); }
+        public bool InsertLogRRO(LogRRO pL) { return db.InsertLogRRO(new List<LogRRO>(){pL}); }
+        public bool InsertLogRRO(IEnumerable<LogRRO> pL) { return db.InsertLogRRO( pL ); }
 
         public void AddEventAge(Receipt pRecipt)
         {

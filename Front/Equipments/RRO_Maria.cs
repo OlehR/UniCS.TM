@@ -278,25 +278,7 @@ namespace Front.Equipments.Implementation
                 }
                 pR.NumberReceipt = M304.LastCheckNumber.ToString();
                 XMLCheckResult = M304.GetCheckResultXML();
-
-                if (!IsError)
-                {
-                    //Чек видачі готівки.
-                    Thread.Sleep(2000);
-                    Payment Pay = pR?.Payment?.Where(el => el.TypePay == eTypePay.IssueOfCash)?.FirstOrDefault();
-                    if (Pay != null)
-                    {
-                        if (Pay.NumberTerminal.Length > 8)
-                            Pay.NumberTerminal = Pay.NumberTerminal[..8];
-                        if (string.IsNullOrEmpty(Pay.CardHolder))
-                            Pay.CardHolder = " ";
-                        SetError(M304.CashWithdrawal(Decimal.ToInt32(Pay.SumPay * 100m), 0, "0", Pay.NumberTerminal, Pay.NumberCard, Pay.CardHolder, Pay.CodeAuthorization, Pay.CodeReceipt.ToString()) != 1);
-                        {
-                            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка видачі готівки: {StrError}");
-                            //throw new Exception(Environment.NewLine + "Помилка видачі готівки" + Environment.NewLine + StrError);
-                        }
-                    }
-                }
+                
             }
 
 
@@ -498,6 +480,32 @@ namespace Front.Equipments.Implementation
                 return new CashInfo { Rest = -1m, Income = -1m, Outcome = -1m, CheckOutcome = -1m, CheckIncome = -1m, ReturnVal = -1m, Sales = -1m, Total = -1m };
             }
 
+        }
+
+        public override LogRRO IssueOfCash(Receipt pR) 
+        {
+            Thread.Sleep(500);
+            Payment Pay = pR?.IssueOfCash;
+            if (Init())
+            {
+                //Чек видачі готівки.
+               
+                if (Pay != null)
+                {
+                    if (Pay.NumberTerminal.Length > 8)
+                        Pay.NumberTerminal = Pay.NumberTerminal[..8];
+                    if (string.IsNullOrEmpty(Pay.CardHolder))
+                        Pay.CardHolder = " ";
+                    SetError(M304.CashWithdrawal(Decimal.ToInt32(Pay.SumPay * 100m), 0, "0", Pay.NumberTerminal, Pay.NumberCard, Pay.CardHolder, Pay.CodeAuthorization, Pay.CodeReceipt.ToString()) != 1);
+                    {
+                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка видачі готівки: {StrError}");
+                        //throw new Exception(Environment.NewLine + "Помилка видачі готівки" + Environment.NewLine + StrError);
+                        return new LogRRO(pR) { TypeOperation = eTypeOperation.IssueOfCash, SUM = Pay.SumPay, CodeError = -1, Error = StrError };
+                    }
+                }
+                Done();
+            }
+            return new LogRRO(pR) { TypeOperation = eTypeOperation.IssueOfCash, SUM = Pay?.SumPay ?? 0, CodeError = this.CodeError, Error = this.StrError };
         }
 
     }
