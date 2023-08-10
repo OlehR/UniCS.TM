@@ -1,4 +1,5 @@
 ﻿using ModelMID.DB;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -427,9 +428,10 @@ namespace ModelMID
             return SumWallet > 0 || SumBonus>0;
         }
 
-        public bool IsPrintIssueOfCash { get { return Payment.Any(el => el.TypePay == eTypePay.IssueOfCash) && !LogRROs.Any(el => el.TypeOperation == eTypeOperation.IssueOfCash); } }
-
-        public Payment IssueOfCash { get { return Payment.Where(el=> el.TypePay== eTypePay.IssueOfCash).FirstOrDefault(); } }
+        [JsonIgnore]
+        public bool IsPrintIssueOfCash { get { return (Payment!=null && Payment.Any(el => el.TypePay == eTypePay.IssueOfCash)) && (LogRROs==null || !LogRROs.Any(el => el.TypeOperation == eTypeOperation.IssueOfCash)); } }
+        [JsonIgnore]
+        public Payment IssueOfCash { get { return Payment?.Where(el=> el.TypePay== eTypePay.IssueOfCash).FirstOrDefault(); } }
     }
     public class WorkplacePay
     {
