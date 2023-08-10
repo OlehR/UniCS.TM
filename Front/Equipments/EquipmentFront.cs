@@ -659,9 +659,9 @@ namespace Front
                     if (Res == null)
                     {
                         
-                        var res = RRO?.IssueOfCash(pReceipt);
+                        Res = RRO?.IssueOfCash(pReceipt);
                         var Log = pReceipt.LogRROs?.ToList() ?? new List<LogRRO>();
-                        Log.Add(res);
+                        Log.Add(Res);
                         pReceipt.LogRROs = Log;                        
                     }
                 }

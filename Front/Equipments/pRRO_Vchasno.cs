@@ -69,7 +69,7 @@ namespace Front.Equipments.Implementation
             var RealPay = pR.Payment?.Where(el => el.TypePay == eTypePay.Card || el.TypePay == eTypePay.Cash || el.TypePay == eTypePay.Wallet);
             if (RealPay?.Any() == true)
             {
-                pR.Payment = RealPay;
+                //pR.Payment = RealPay;
                 ApiRRO d = new(pR, this) { token = Token, device = Device, tag = pR.NumberReceiptRRO };
                 string dd = d.ToJSON();
                 var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");
@@ -104,7 +104,7 @@ namespace Front.Equipments.Implementation
                 var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");
                 Res = JsonConvert.DeserializeObject<Responce<ResponceReceipt>>(r);
             }
-            return GetLogRRO(pR, Res, pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, Res?.info?.printinfo?.sum_topay ?? 0m);
+            return GetLogRRO(pR, Res,  eTypeOperation.IssueOfCash, Res?.info?.printinfo?.sum_topay ?? 0m);
         }
 
         public override LogRRO PrintCopyReceipt(int parNCopy = 1)
@@ -435,10 +435,8 @@ namespace Front.Equipments.Implementation.ModelVchasno
         {
             if (pR != null)
             {
-                task = pR.TypeReceipt == eTypeReceipt.Sale ? eTask.Sale : eTask.Refund;
-
-                var c = pR.Payment?.Where(el => el.TypePay == eTypePay.IssueOfCash);
-                if (c?.Count() == 1)
+                task = pR.TypeReceipt == eTypeReceipt.Sale ? eTask.Sale : eTask.Refund;                
+                if (pIsIssueOfCash)
                 {
                     task = eTask.IssueOfCash;
                     cash = new CashPay(pR.IssueOfCash);
