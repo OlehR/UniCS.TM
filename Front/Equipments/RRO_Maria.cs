@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using ModelMID;
 using ModelMID.DB;
 using ModernExpo.SelfCheckout.Entities.Models.Terminal;
-using Resonance;
+//using Resonance;
 using SharedLib;
 using System;
 using System.Collections.Generic;
@@ -27,7 +27,7 @@ namespace Front.Equipments.Implementation
         bool IsError = false;
         WDB_SQLite db = new WDB_SQLite();
 
-        M304ManagerApplication M304_;
+        //M304ManagerApplication M304_;
         dynamic M304;
         public RRO_Maria(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment, pConfiguration, eModelEquipment.RRO_Maria, pLoggerFactory, pActionStatus)
         {
