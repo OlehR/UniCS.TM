@@ -348,6 +348,7 @@ namespace Front.Equipments.Implementation
                     res = $"Фіскальна зміна: {Shift}{Environment.NewLine}" +
                         $"Серійний номер: {M304.GetPrinterSerialNumber}{Environment.NewLine}" +
                         $"Час до блокування: {ts.Hours + ts.Days * 24}год {ts.Minutes}хв{Environment.NewLine}" +
+                        $"Version Resonance.OLEManager.dll=>{M304.Version}{Environment.NewLine}" +
                         $"{M304.GetPrinterConfigXML()}";
                 }
                 catch (Exception e)
