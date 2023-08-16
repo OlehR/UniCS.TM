@@ -231,7 +231,7 @@ namespace Front.Equipments
             return res;
         }
 
-        public override void Stop() { IsStop = true; }
+        //public override void Stop() { IsStop = true; }
 
         public virtual decimal GetSumFromTextReceipt(string pTextReceipt)
         {
@@ -1529,8 +1529,7 @@ namespace Front.Equipments
             CloseIfOpened();
             ((Stream)SerialDevice).Dispose();
         }
-
-        volatile bool IsStop = false;
+                
         bool IsFinish;
         StringBuilder bb;
         public string KSEFGetReceipt(string pCodeReceipt)

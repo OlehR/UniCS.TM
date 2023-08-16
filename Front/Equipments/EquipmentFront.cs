@@ -375,11 +375,11 @@ namespace Front
                 try
                 {
                     FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Start pRRO=> {pRRO.GetHashCode()} TypeOperation=>{pTypeOperation} pMilisecond={pMilisecond}");
-
-                    if (pIsStop)
-                        RRO?.Stop();
+                                        
                     while (pMilisecond > 0 && pRRO.TypeOperation != eTypeOperation.NotDefine)
                     {
+                        if (pIsStop)
+                            RRO?.Stop();
                         Thread.Sleep(50);
                         pMilisecond -= 50;
                     }

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Utils;
 
 namespace Front.Equipments
 {
@@ -66,11 +67,12 @@ namespace Front.Equipments
             try
             {
                 Magellan.Init();
-                Error= Magellan.GetInfo().Result;                
+                Error= Magellan.GetInfo();                
                 State = eStateEquipment.On;
             }
             catch (Exception e)
             {
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
                 Error = e.Message;
                 State = eStateEquipment.Error;
             }

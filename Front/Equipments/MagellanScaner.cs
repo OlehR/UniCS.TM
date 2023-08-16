@@ -92,11 +92,12 @@ namespace Front.Equipments
             {
                 Magellan9300.Init();
 
-                Res = Magellan9300.GetInfo().Result;
+                Res = Magellan9300.GetInfo();
                 State = string.IsNullOrEmpty(Res) ? eStateEquipment.Error: eStateEquipment.On;
             }
             catch (Exception e)
             {
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
                 Error = e.Message;
                 State = eStateEquipment.Error;
             }

@@ -1,7 +1,5 @@
-﻿
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-//using ModernExpo.SelfCheckout.Utils;
 using RJCP.IO.Ports;
 using System;
 using System.Collections.Generic;
@@ -14,8 +12,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using Front.Equipments.Utils;
 using System.Configuration;
-//using SerialPortStreamWrapper = Front.Equipments.Utils.SerialPortStreamWrapper;
-//using StaticTimer = Front.Equipments.Utils.StaticTimer;
+using Utils;
 
 namespace Front.Equipments
 {
@@ -46,7 +43,7 @@ namespace Front.Equipments
         private int _attempt;
         private double _currentWeight;
         private eDeviceConnectionStatus _currentStatus = eDeviceConnectionStatus.InitializationError;
-        private int InitDeley = 300;
+        private int InitDeley = 500;
 
         private string _port => this._configuration["Devices:Magellan9300S:Port"];
 
@@ -98,13 +95,8 @@ namespace Front.Equipments
                     if (this._currentStatus == eDeviceConnectionStatus.Enabled)
                         return eDeviceConnectionStatus.Enabled;
                     Action<DeviceLog> onDeviceWarning1 = this.OnDeviceWarning;
-                    if (onDeviceWarning1 != null)
-                    {
-                        BarcodeScannerLog barcodeScannerLog = new BarcodeScannerLog();
-                        barcodeScannerLog.Category = TerminalLogCategory.All;
-                        barcodeScannerLog.Message = "[Magellan9300S] - Start Initialization";
-                        onDeviceWarning1((DeviceLog)barcodeScannerLog);
-                    }
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "[Magellan9300S] - Start Initialization");
+                    
                     this.CloseIfOpen();
                     this._serialDevice.OnReceivedData = (Func<byte[], bool>)null;
                     this._serialDevice.Open();
@@ -115,58 +107,28 @@ namespace Front.Equipments
                     this._serialDevice.DiscardInBuffer();
                     this._serialDevice.DiscardOutBuffer();
                     this._serialDevice.Write(this.GetCommand("3p="));
-                    Action<DeviceLog> onDeviceWarning2 = this.OnDeviceWarning;
-                    if (onDeviceWarning2 != null)
-                    {
-                        BarcodeScannerLog barcodeScannerLog = new BarcodeScannerLog();
-                        barcodeScannerLog.Category = TerminalLogCategory.All;
-                        barcodeScannerLog.Message = "[Magellan9300S] - Get info about scanner";
-                        onDeviceWarning2((DeviceLog)barcodeScannerLog);
-                    }
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "[Magellan9300S] - Get info about scanner");
+                    
                     for (int index = 0; this._serialDevice.ReadBufferSize < 1 && index < 10; ++index)
                         Thread.Sleep(InitDeley);
                     byte[] numArray = new byte[this._serialDevice.ReadBufferSize];
                     this._serialDevice.Read(numArray, 0, numArray.Length);
                     string str = Encoding.ASCII.GetString(numArray);
-                    if(_logger!=null)
-                        _logger.LogDebug("[Magellan9300S] - Initialization message - " + str);
+                     
                     bool flag = str.ContainsIgnoreCase("OK");
-                    Action<DeviceLog> onDeviceWarning3 = this.OnDeviceWarning;
-                    if (onDeviceWarning3 != null)
-                    {
-                        BarcodeScannerLog barcodeScannerLog = new BarcodeScannerLog();
-                        barcodeScannerLog.Category = TerminalLogCategory.All;
-                        barcodeScannerLog.Message = string.Format("[Magellan9300S] - Initialization result {0}", (object)flag);
-                        onDeviceWarning3((DeviceLog)barcodeScannerLog);
-                    }
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"[Magellan9300S] - Initialization message - {str} flag=>{flag}");
+         
                     this._currentStatus = flag ? eDeviceConnectionStatus.Enabled : eDeviceConnectionStatus.InitializationError;
                     return this._currentStatus;
                 }
                 catch (Exception ex)
                 {
-                    ILogger<Magellan9300S> logger = this._logger;
-                    if (logger != null)
-                        logger.LogError(ex, ex.Message);
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex);
                     if (ex.Message.ContainsIgnoreCase("port"))
-                    {
-                        Action<DeviceLog> onDeviceWarning = this.OnDeviceWarning;
-                        if (onDeviceWarning != null)
-                        {
-                            BarcodeScannerLog barcodeScannerLog = new BarcodeScannerLog();
-                            barcodeScannerLog.Category = TerminalLogCategory.Critical;
-                            barcodeScannerLog.Message = "Device not connected";
-                            onDeviceWarning((DeviceLog)barcodeScannerLog);
-                        }
+                    {                        
                         return eDeviceConnectionStatus.NotConnected;
                     }
-                    Action<DeviceLog> onDeviceWarning1 = this.OnDeviceWarning;
-                    if (onDeviceWarning1 != null)
-                    {
-                        BarcodeScannerLog barcodeScannerLog = new BarcodeScannerLog();
-                        barcodeScannerLog.Category = TerminalLogCategory.Critical;
-                        barcodeScannerLog.Message = "Initialization error";
-                        onDeviceWarning1((DeviceLog)barcodeScannerLog);
-                    }
+                    
                     return eDeviceConnectionStatus.InitializationError;
                 }
                 finally
@@ -175,8 +137,6 @@ namespace Front.Equipments
                 }
             }
         }
-
-        public Task<eDeviceConnectionStatus> GetDeviceStatus() => this.TestDevice();
 
         public void GetReadDataSync(string command, Action<string> onDatAction)
         {
@@ -191,7 +151,7 @@ namespace Front.Equipments
             onDatAction(Encoding.ASCII.GetString(numArray));
         }
 
-        public Task<eDeviceConnectionStatus> TestDevice()
+        public eDeviceConnectionStatus TestDevice()
         {
             lock (this._locker)
             {
@@ -215,7 +175,7 @@ namespace Front.Equipments
                     }));
                     StaticTimer.Wait((Func<bool>)(() => result == eDeviceConnectionStatus.InitializationError), 2);
                     if (result == eDeviceConnectionStatus.InitializationError)
-                        return Task.FromResult<eDeviceConnectionStatus>(result);
+                        return result;
                     result = eDeviceConnectionStatus.InitializationError;
                     this.GetReadDataSync("14", (Action<string>)(res =>
                     {
@@ -233,34 +193,18 @@ namespace Front.Equipments
                         }
                     }));
                     StaticTimer.Wait((Func<bool>)(() => result == eDeviceConnectionStatus.InitializationError), 2);
-                    return Task.FromResult<eDeviceConnectionStatus>(result);
+                    return result;
                 }
                 catch (Exception ex)
                 {
-                    ILogger<Magellan9300S> logger = this._logger;
-                    if (logger != null)
-                        logger.LogError(ex, ex.Message);
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex);
+                    
                     if (ex.Message.ContainsIgnoreCase("port"))
-                    {
-                        Action<DeviceLog> onDeviceWarning = this.OnDeviceWarning;
-                        if (onDeviceWarning != null)
-                        {
-                            BarcodeScannerLog barcodeScannerLog = new BarcodeScannerLog();
-                            barcodeScannerLog.Category = TerminalLogCategory.Critical;
-                            barcodeScannerLog.Message = "Device not connected";
-                            onDeviceWarning((DeviceLog)barcodeScannerLog);
-                        }
-                        return Task.FromResult<eDeviceConnectionStatus>(eDeviceConnectionStatus.NotConnected);
+                    {                        
+                        return eDeviceConnectionStatus.NotConnected;
                     }
-                    Action<DeviceLog> onDeviceWarning1 = this.OnDeviceWarning;
-                    if (onDeviceWarning1 != null)
-                    {
-                        BarcodeScannerLog barcodeScannerLog = new BarcodeScannerLog();
-                        barcodeScannerLog.Category = TerminalLogCategory.Critical;
-                        barcodeScannerLog.Message = "Initialization error";
-                        onDeviceWarning1((DeviceLog)barcodeScannerLog);
-                    }
-                    return Task.FromResult<eDeviceConnectionStatus>(eDeviceConnectionStatus.InitializationError);
+                    
+                    return eDeviceConnectionStatus.InitializationError;
                 }
                 finally
                 {
@@ -269,7 +213,7 @@ namespace Front.Equipments
             }
         }
 
-        public Task<string> GetInfo()
+        public string GetInfo()
         {
             lock (this._locker)
             {
@@ -371,11 +315,11 @@ namespace Front.Equipments
                             }
                         }
                     }
-                    return Task.FromResult<string>(result);
+                    return result;
                 }
                 catch (Exception ex)
                 {
-                   _logger?.LogError(ex, ex.Message);
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex);
                     return null;
                 }
                 finally
@@ -409,9 +353,7 @@ namespace Front.Equipments
             }
             catch (Exception ex)
             {
-                ILogger<Magellan9300S> logger = this._logger;
-                if (logger != null)
-                    logger.LogError(ex, ex.Message);
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex);
                 Action<DeviceLog> onDeviceWarning = this.OnDeviceWarning;
                 if (onDeviceWarning == null)
                     return;

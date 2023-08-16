@@ -20,6 +20,7 @@ namespace Front.Equipments
         protected int CodeError = -1;
         protected string StrError;
         public int IdWorkplacePay;
+        protected volatile bool IsStop = false;
 
         public DateTime LockDT { get; set; }
         public eTypeOperation TypeOperation { get; set; } = eTypeOperation.NotDefine;
@@ -157,7 +158,7 @@ namespace Front.Equipments
         /// <summary>
         /// Зупиняє останню довготривалу операцію. Наприклад Отримання текста чеку на фізичних фіскалках. 
         /// </summary>
-        virtual public void Stop() { }
+        virtual public void Stop() { IsStop = true;  }
 
        /// <summary>
        /// Отримуємо Суму з текста чека.
