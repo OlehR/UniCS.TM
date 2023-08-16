@@ -505,7 +505,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
             name = pRW.NameWares;
             cnt = pRW.Quantity;
             price = pRW.PriceDealer;
-            cost = Math.Round(pRW.Price * pRW.Quantity, 2) + discont;// - Math.Round(pRW.SumDiscount, 2);
+            cost = Math.Round(pRW.Price * pRW.Quantity, 2, MidpointRounding.AwayFromZero) + discont;// - Math.Round(pRW.SumDiscount, 2);
             disc =  pRW.SumTotalDiscount + discont; //Math.Round(pRW.SumDiscount, 2) + Math.Round(pRW.SumWallet, 2) 
             taxgrp = int.Parse(pRro.TaxGroup(pRW));
         }

@@ -116,7 +116,7 @@ namespace Front.Equipments
                     string str = Encoding.ASCII.GetString(numArray);
                      
                     bool flag = str.ContainsIgnoreCase("OK");
-                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"[Magellan9300S] - Initialization message - {str} flag=>{flag}");
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"[Magellan9300S] - Flag=>{flag}");
          
                     this._currentStatus = flag ? eDeviceConnectionStatus.Enabled : eDeviceConnectionStatus.InitializationError;
                     return this._currentStatus;
