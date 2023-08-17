@@ -285,7 +285,7 @@ namespace Front.Equipments.Implementation
             decimal sum = 0;
             if (pR != null && pR.Wares != null && pR.Wares.Any())
                 sum = pR.Wares.Where(el => el.IdWorkplacePay == pR.IdWorkplacePay || pR.IdWorkplacePay == 0).
-                        Sum(el => Math.Round(el.Price * el.Quantity, 2) - el.SumTotalDiscount );
+                        Sum(el => Math.Round(el.Price * el.Quantity, 2,MidpointRounding.AwayFromZero) - el.SumTotalDiscount );
             return sum;
         }
 
@@ -470,7 +470,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
                 rows = pR.GetParserWaresReceipt(true, false)?.Select(el => new WaresRRO(el, pRro));
                 pays = pR.Payment?.Where(el => el.TypePay != eTypePay.IssueOfCash && el.TypePay != eTypePay.Wallet).Select(el => new PaysRRO(el));
                 comment_up = String.Join('\n', pR.ReceiptComments);
-                sum = pR.Wares?.Sum(el => Math.Round(el.Price * el.Quantity, 2) - el.SumTotalDiscount) ?? 0m; ;
+                sum = pR.Wares?.Sum(el => Math.Round(el.Price * el.Quantity, 2,MidpointRounding.AwayFromZero) - el.SumTotalDiscount) ?? 0m; ;
             }
         }
         public decimal sum { get; set; }
