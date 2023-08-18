@@ -497,7 +497,7 @@ namespace Front.Equipments.Implementation
                         Pay.NumberTerminal = Pay.NumberTerminal[..8];
                     if (string.IsNullOrEmpty(Pay.CardHolder))
                         Pay.CardHolder = " ";
-                    SetError(M304.CashWithdrawal(Decimal.ToInt32(Pay.SumPay * 100m), 0, "0", Pay.NumberTerminal, Pay.NumberCard, Pay.CardHolder, Pay.CodeAuthorization, Pay.CodeReceipt.ToString()) != 1);
+                    if(SetError(M304.CashWithdrawal(Decimal.ToInt32(Pay.SumPay * 100m), 0, "0", Pay.NumberTerminal, Pay.NumberCard, Pay.CardHolder, Pay.CodeAuthorization, Pay.CodeReceipt.ToString()) != 1))
                     {
                         FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка видачі готівки: {StrError}");
                         //throw new Exception(Environment.NewLine + "Помилка видачі готівки" + Environment.NewLine + StrError);
