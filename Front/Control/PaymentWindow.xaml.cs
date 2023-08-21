@@ -314,6 +314,10 @@ namespace Front.Control
 
         private void MoneySumPayChange(object sender, TextChangedEventArgs e)
         {
+            TextBox sum = sender as TextBox;
+            ChangeSumPaymant = sum.Text;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCashPayment"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ChangeSumPaymant"));
             CalculateReturn();
         }
 

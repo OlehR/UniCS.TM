@@ -706,7 +706,6 @@ namespace Front
                         State = eStateMainWindows.StartWindow;
                     }
 
-                    ErrorWindows.Visibility = Visibility.Collapsed;
                     ExciseStamp.Visibility = Visibility.Collapsed;
                     ChoicePrice.Visibility = Visibility.Collapsed;
                     Background.Visibility = Visibility.Collapsed;
@@ -1171,15 +1170,6 @@ namespace Front
             PayAndPrint();
         }
 
-        public void ShowErrorMessage(string ErrorMessage)
-        {
-            Dispatcher.BeginInvoke(new ThreadStart(() =>
-            {
-                ErrorBackground.Visibility = Visibility.Visible;
-                ErrorWindows.Visibility = Visibility.Visible;
-                ErrorText.Text = ErrorMessage;
-            }));
-        }
         /// <summary>
         /// Добавляєм товар(сигарери) з списку цін
         /// </summary>
@@ -1459,11 +1449,7 @@ namespace Front
             }
         }
 
-        private void ButtonOkErrorWin(object sender, RoutedEventArgs e)
-        {
-            ErrorBackground.Visibility = Visibility.Collapsed;
-            ErrorWindows.Visibility = Visibility.Collapsed;
-        }
+
 
         private void PlusOrMinusCigarettes(object sender, RoutedEventArgs e)
         {

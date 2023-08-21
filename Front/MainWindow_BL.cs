@@ -179,7 +179,7 @@ namespace Front
                 if (Access.GetRight(pUser, eTypeAccess.AdminPanel))
                     ShowAdmin(pUser);
                 else
-                    ShowErrorMessage($"Не достатньо прав на вхід в адмін панель для  {pUser.NameUser}");
+                    CustomMessage.Show($"Не достатньо прав на вхід в адмін панель для  {pUser.NameUser}", "Увага", eTypeMessage.Error);
             };
 
             Bl.OnCustomWindow += (pCW) =>
@@ -264,8 +264,7 @@ namespace Front
             if (!Access.GetRight(pUser, TypeAccessWait) && !pIsAccess)
             {
                 if (!pIsFirst)
-                    ShowErrorMessage($"Не достатньо прав для операції {TypeAccessWait} {Environment.NewLine}в {pUser.NameUser} з правами {pUser.TypeUser}");
-                //                MessageBox.Show($"Не достатньо прав для операції {TypeAccessWait} в {pUser.NameUser}");
+                    CustomMessage.Show($"Не достатньо прав для операції {TypeAccessWait} {Environment.NewLine}в {pUser.NameUser} з правами {pUser.TypeUser}", "Увага", eTypeMessage.Error);
                 return false;
             }
 
@@ -669,7 +668,7 @@ namespace Front
                 if (TextError != null)
                 {
                     Thread.Sleep(100);
-                    ShowErrorMessage(TextError);
+                    CustomMessage.Show(TextError, "Увага!", eTypeMessage.Error);
                 }
                 return Res;
             }
@@ -684,7 +683,7 @@ namespace Front
                 SetStateView(eStateMainWindows.WaitInput);
             }
             else
-                ShowErrorMessage($"Дана акцизна марка вже використана");
+                CustomMessage.Show("Дана акцизна марка вже використана!", "Увага", eTypeMessage.Error);
         }
 
         void NewReceipt()

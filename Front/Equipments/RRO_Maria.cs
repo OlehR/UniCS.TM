@@ -230,28 +230,29 @@ namespace Front.Equipments.Implementation
                             }
                             if (el.TypePay == eTypePay.Cash)
                             {
-                                SumCashPay = Decimal.ToInt32(el.SumExt * 100m);
-                                if (SetError(SumCashPay <= 0))
-                                {
-                                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Сума оплати меньша за суму чека: {StrError}");
-                                    throw new Exception(Environment.NewLine + "Сума оплати меньша за суму чека!" + Environment.NewLine + StrError);
-                                }
+                                SumCashPay = Decimal.ToInt32(el.SumExt * 100m); // сума яку дає покупець
                             }
 
                         }
                     }
-                    SumFiscal = M304.CheckSum;
-                    pR.SumFiscal = SumFiscal / 100M;
-                    if (SumCashPay == 0 && Math.Abs(SumCardPay - SumFiscal) < 10)
-                        SumCardPay = SumFiscal;
-                    if (SumCardPay == 0 && SumCashPay - SumFiscal < 0)
-                        SumCashPay = SumFiscal;
+
 
                 }
+                else
+                {
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка відкриття чеку:  {StrError}");
+                    throw new Exception(Environment.NewLine + "Помилка відкриття чеку!" + Environment.NewLine + StrError);
+                }
+                SumFiscal = M304.CheckSum; // сума чеку яка розрахувала фіскалка
                 decimal roundFiscal = 0;
                 if (SumFiscal > 0)
-                    roundFiscal = (Math.Round(SumFiscal / 1000m, 2, MidpointRounding.AwayFromZero) * 10m) - SumFiscal / 100m;
+                    roundFiscal = (Math.Round(SumFiscal / 1000m, 2, MidpointRounding.AwayFromZero) * 10m) - SumFiscal / 100m; //  сума заокруглення для 1С
 
+                pR.SumFiscal = SumFiscal / 100M;
+                if (SumCashPay == 0 && Math.Abs(SumCardPay - SumFiscal) < 10)
+                    SumCardPay = SumFiscal;
+                if (SumCardPay == 0 && SumCashPay - SumFiscal < 0)
+                    SumCashPay = SumFiscal + Convert.ToInt32(roundFiscal * 100);
 
                 if (!IsError && roundFiscal != 0)
                 {
@@ -268,17 +269,17 @@ namespace Front.Equipments.Implementation
                 }
                 if (!IsError)
                 {
-                    //M304.AbortCheck();
-                    if (SetError(M304.CloseCheckEx(SumCashPay, SumCardPay, 0, 0, RRN) == 0))
-                    {
-                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка закриття чеку: {StrError}");
-                        throw new Exception(Environment.NewLine + "Помилка закриття чеку!" + Environment.NewLine + StrError);
-                    }
+                    M304.AbortCheck();
+                    //if (SetError(M304.CloseCheckEx(SumCashPay, SumCardPay, 0, 0, RRN) == 0))
+                    //{
+                    //    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка закриття чеку: {StrError}");
+                    //    throw new Exception(Environment.NewLine + "Помилка закриття чеку!" + Environment.NewLine + StrError);
+                    //}
                     M304.PutToDisplay(pR.SumFiscal.ToString());
                 }
                 pR.NumberReceipt = M304.LastCheckNumber.ToString();
                 XMLCheckResult = M304.GetCheckResultXML();
-                
+
             }
 
 
@@ -483,21 +484,21 @@ namespace Front.Equipments.Implementation
 
         }
 
-        public override LogRRO IssueOfCash(Receipt pR) 
+        public override LogRRO IssueOfCash(Receipt pR)
         {
             Thread.Sleep(500);
             Payment Pay = pR?.IssueOfCash;
             if (Init())
             {
                 //Чек видачі готівки.
-               
+
                 if (Pay != null)
                 {
                     if (Pay.NumberTerminal.Length > 8)
                         Pay.NumberTerminal = Pay.NumberTerminal[..8];
                     if (string.IsNullOrEmpty(Pay.CardHolder))
                         Pay.CardHolder = " ";
-                    if(SetError(M304.CashWithdrawal(Decimal.ToInt32(Pay.SumPay * 100m), 0, "0", Pay.NumberTerminal, Pay.NumberCard, Pay.CardHolder, Pay.CodeAuthorization, Pay.CodeReceipt.ToString()) != 1))
+                    if (SetError(M304.CashWithdrawal(Decimal.ToInt32(Pay.SumPay * 100m), 0, "0", Pay.NumberTerminal, Pay.NumberCard, Pay.CardHolder, Pay.CodeAuthorization, Pay.CodeReceipt.ToString()) != 1))
                     {
                         FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка видачі готівки: {StrError}");
                         //throw new Exception(Environment.NewLine + "Помилка видачі готівки" + Environment.NewLine + StrError);
