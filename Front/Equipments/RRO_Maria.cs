@@ -390,7 +390,7 @@ namespace Front.Equipments.Implementation
                 switch (text.RenderType)
                 {
                     case eRenderAs.Text:
-                        M304.FreeTextLine(0, 0, 3, text.Text);
+                        M304.FreeTextLine(0, 0, 0, text.Text);
                         continue;
                     case eRenderAs.QR:
                         M304.PrintQR(text.Text);
