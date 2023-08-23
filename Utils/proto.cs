@@ -1,12 +1,9 @@
-﻿    using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
-    using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-    using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Threading;
 
@@ -22,11 +19,20 @@ namespace Utils
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore
         }; //, Culture = MyCulture 
 
-        public static string ToJSON(this object s)
+        public static string ToJSON(this object s,string  pDateFormatString = null)
         {
-            var res = JsonConvert.SerializeObject(s, JsonSettings);
+            JsonSerializerSettings Setting = pDateFormatString == null ? JsonSettings :
+                new JsonSerializerSettings()
+                {
+                    DateFormatString = pDateFormatString,
+                    FloatParseHandling = FloatParseHandling.Decimal,
+                    NullValueHandling = NullValueHandling.Ignore,
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                };
+            var res = JsonConvert.SerializeObject(s, Setting);
             return res;
         }
+
         public static string ToXMLString(this string s)
         {
             return s.Replace("&", "&amp;").Replace("\"", "&quot;").Replace("'", "&apos;").Replace("<", "&lt;").Replace(">", "&gt;");//.Replace(".", "&period;");
