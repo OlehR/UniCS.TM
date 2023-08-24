@@ -244,7 +244,8 @@
 
                     <TextBlock Grid.Row="0"  Text="{Binding AdminUser.NameUser}" Name="adminastratorName" FontSize="20"
                                HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="DarkGreen"/>
-                    <Label Grid.Row="0"  Content="Error" Name="lblTime" FontSize="48" HorizontalAlignment="Right" VerticalAlignment="Top"  Padding="0"/>
+                    <Label Grid.Row="0"  Content="{Binding Clock, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" FontSize="48" HorizontalAlignment="Right" VerticalAlignment="Top"  Padding="0"/>
                     <Button Style="{DynamicResource Default}" Click="Exit_Program_Click">
                         <Image Source="\icons\X.png" Width="50" Margin="5"/>
                     </Button>
@@ -1021,10 +1022,11 @@
                                             </Style.Triggers>
                                         </Style>
                                     </StackPanel.Style>
-                                    <TextBlock Text="Відкладені чеки: "/>
-                                    <CheckBox Height="40" Grid.Column="6"  Style="{DynamicResource OrangeSwitchStyleCheckBox}" 
-                                              Name="DeferredReceiptsCheckBox" IsChecked="False" Checked="IsShowAllreceiptsChecked" Unchecked="IsShowAllreceiptsChecked"
-                                              VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    <TextBlock Margin="10,0,0,0" Text="№ чека:"/>
+                                    <Button Width="100"  Margin="10,0,0,0" Style="{StaticResource WhiteButton}" Click="FindChecksByNumber" Content="{Binding FindReceiptByNumber, RelativeSource={RelativeSource 
+                                                         Mode=FindAncestor, AncestorType=UserControl}}">
+
+                                    </Button>
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>

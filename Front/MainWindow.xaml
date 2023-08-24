@@ -2583,9 +2583,11 @@
         <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="5"
                 Grid.Column="0" Grid.ColumnSpan="4"
-                 Name="StartShoppingLogo" Visibility="Collapsed" Grid.ZIndex="2" >
+                 Name="StartShoppingLogo" Visibility="Visible" Grid.ZIndex="2" >
             <Grid >
 
+                <Label Grid.Row="0"  Content="{Binding Clock, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" FontSize="48" HorizontalAlignment="Right" VerticalAlignment="Top"  Padding="0"/>
                 <Image x:Name="StartLogo"  Height="500"/>
                 <Button Style="{StaticResource TransparentButton}" Click="StartBuy" Panel.ZIndex="3"/>
                 <Button Margin="10,10,10,100"  Style="{StaticResource greenButton}"  FontSize="48" Click="StartBuy"  Grid.ZIndex="2"

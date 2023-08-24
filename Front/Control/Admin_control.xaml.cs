@@ -37,6 +37,7 @@ namespace Front.Control
         ObservableCollection<LogRRO> SourcesListJournal;
         ObservableCollection<Equipment> AllEquipment = new ObservableCollection<Equipment>();
         ObservableCollection<Banknote> Banknotes = new ObservableCollection<Banknote>();
+        
         public double TotalMoneyCounting
         {
             get
@@ -67,7 +68,7 @@ namespace Front.Control
         public string NameAdminUserOpenShift { get { return $"{MW?.AdminSSC?.NameUser} ({MW?.AdminSSC?.TypeUser})"; } }
         public DateTime DataOpenShift { get { return MW.DTAdminSSC; } }
         public bool IsShowAllReceipts { get; set; }
-        public bool IsShowDeferredReceipts { get; set; }
+        public int FindReceiptByNumber { get; set; } = 0;
         public bool IsShowAllJournal { get; set; }
         //BatchTotals LastReceipt = null;
 
@@ -127,11 +128,7 @@ namespace Front.Control
             // ListActiveKSO.ItemsSource = ActiveWorkPlaces;
 
             RefreshJournal();
-            //поточний час
-            DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(1);
-            timer.Tick += timer_Tick;
-            timer.Start();
+
         }
 
         public void Init(MainWindow pMW)
@@ -215,13 +212,13 @@ namespace Front.Control
 
         private bool ReceiptFilter(object item)
         {
-            if (IsShowAllReceipts && !IsShowDeferredReceipts)
+            if (IsShowAllReceipts && FindReceiptByNumber == 0)
             {
                 return true;
             }
-            else if (IsShowDeferredReceipts)
+            else if (FindReceiptByNumber>0)
             {
-                return ((item as Receipt).StateReceipt == eStateReceipt.Prepare);
+                return ((item as Receipt).CodeReceipt == FindReceiptByNumber);
             }
             else return ((item as Receipt).SumReceipt > 0);
 
@@ -240,10 +237,7 @@ namespace Front.Control
 
         }
 
-        void timer_Tick(object sender, EventArgs e)
-        {
-            lblTime.Content = DateTime.Now.ToShortTimeString();
-        }
+
 
         private void Exit_Click(object sender, RoutedEventArgs e)
         {
@@ -828,7 +822,6 @@ namespace Front.Control
             if (Receipts != null)
             {
                 IsShowAllReceipts = (bool)AllReceiptsCheckBox.IsChecked;
-                IsShowDeferredReceipts = (bool)DeferredReceiptsCheckBox.IsChecked;
                 CollectionViewSource.GetDefaultView(ListReceipts.ItemsSource).Refresh();
             }
 
@@ -1415,6 +1408,26 @@ from RECEIPT r
                 MW.CustomMessage.Show("Існує відкритий чек! Для отримання замовлення закрийте або видаліть текучий чек!", "Увага!", eTypeMessage.Warning);
                 //MW.ShowErrorMessage("Існує відкритий чек! Для отримання замовлення закрийте або видаліть текучий чек!");
             }
+        }
+
+        private void FindChecksByNumber(object sender, RoutedEventArgs e)
+        {
+            MW.InputNumberPhone.Desciption = "№ чека який шукаєте";
+            MW.InputNumberPhone.ValidationMask = "";
+            MW.InputNumberPhone.Result = "";
+            MW.InputNumberPhone.IsEnableComma = false;
+            MW.InputNumberPhone.CallBackResult = (string res) =>
+            {
+                if (!string.IsNullOrEmpty(res))
+                    FindReceiptByNumber = Convert.ToInt32(res);
+                else
+                    FindReceiptByNumber = 0;
+                CollectionViewSource.GetDefaultView(ListReceipts.ItemsSource).Refresh();
+                MW.NumericPad.Visibility = Visibility.Collapsed;
+                BackgroundReceipts.Visibility = Visibility.Collapsed;
+            };
+            MW.NumericPad.Visibility = Visibility.Visible;
+            BackgroundReceipts.Visibility = Visibility.Visible;
         }
     }
 

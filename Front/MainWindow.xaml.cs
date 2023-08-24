@@ -38,6 +38,7 @@ namespace Front
         public ControlScale CS { get; set; }
 
         Sound s;
+        public string Clock { get; set; } = DateTime.Now.ToShortDateString();
         public User AdminSSC { get; set; } = null;
         public DateTime DTAdminSSC { get; set; }
 
@@ -349,6 +350,12 @@ namespace Front
 
             InitializeComponent();
 
+            //поточний час
+            DispatcherTimer timer = new DispatcherTimer();
+            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.Tick += timer_Tick;
+            timer.Start();
+
             string DirName = Path.Combine(Global.PathPictures, "Video");
 
             if (Directory.Exists(DirName))
@@ -467,7 +474,11 @@ namespace Front
 
             Task.Run(() => Bl.ds.SyncDataAsync());
         }
-
+        void timer_Tick(object sender, EventArgs e)
+        {
+            Clock = DateTime.Now.ToShortTimeString();
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Clock)));
+        }
         public void SetCurReceipt(Receipt pReceipt)
         {
             try
