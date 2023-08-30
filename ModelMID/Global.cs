@@ -28,7 +28,7 @@ namespace ModelMID
 
         public static Settings Settings { get; set; }
 
-        public static List<WorkPlace> AllWorkPlaces = new List<WorkPlace>();
+        //public static List<WorkPlace> AllWorkPlaces = new List<WorkPlace>();
 
         public static eTypeWorkplace TypeWorkplace = eTypeWorkplace.SelfServicCheckout;
         /// <summary>

@@ -123,29 +123,6 @@ namespace Front.Equipments
             return new LogRRO(pIdR) { TypeOperation = pSum > 0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyIn, SUM = pSum, TypeRRO = Type.ToString(), FiscalNumber = GetLastZReportNumber() };
         }
 
-        /// <summary>
-        /// Друк чека
-        /// </summary>
-        /// <param name="pR"></param>
-        /// <returns></returns>
-        public override LogRRO PrintReceipt(Receipt pR)
-        {
-
-            string FiscalNumber = null;
-            decimal SumFiscal = 0;
-            List<ReceiptText> Comments = null;
-            if (pR?.ReceiptComments?.Count() > 0)
-                Comments = pR.ReceiptComments.Select(r => new ReceiptText() { Text = r, RenderType = eRenderAs.Text }).ToList();
-            /*if (pR.TypeReceipt == eTypeReceipt.Sale) */
-            (FiscalNumber, SumFiscal) = PrintReceipt(pR, Comments);
-            /* else
-                 (FiscalNumber,SumFiscal) = ReturnReceipt(pR);*/
-            pR.NumberReceipt = FiscalNumber;
-            return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, TypeRRO = Type.ToString(), FiscalNumber = FiscalNumber, SUM = SumFiscal /*pR.SumReceipt - pR.SumBonus,*/
-            , TextReceipt = (NoLoadReceipt ? $"NoLoadReceipt=>{NoLoadReceipt}" : null) };
-
-        }
-
         public override bool PeriodZReport(DateTime pBegin, DateTime pEnd, bool IsFull = true)
         {
             bool res = false;
@@ -427,8 +404,13 @@ namespace Front.Equipments
         }
 
         public Task<eDeviceConnectionStatus> TestDevice2() => Task.Run<eDeviceConnectionStatus>(new Func<eDeviceConnectionStatus>(TestDeviceSync));
-
-        public (string, decimal) PrintReceipt(Receipt pR, List<ReceiptText> Comments = null)
+        
+        /// <summary>
+        /// Друк чека
+        /// </summary>
+        /// <param name="pR"></param>
+        /// <returns></returns>
+        public override LogRRO PrintReceipt(Receipt pR)
         {
             ObliterateFiscalReceipt();
             string s = GetLastReceiptNumber();
@@ -439,8 +421,13 @@ namespace Front.Equipments
             if (pR.TypeReceipt == eTypeReceipt.Sale) OpenReceipt(pR?.NameCashier);
             else OpenReturnReceipt();
 
-            if (Comments != null && Comments.Count() > 0)
+            IEnumerable<ReceiptText> Comments = null;
+            if (pR?.ReceiptComments?.Count() > 0)
+            {
+                Comments = pR.ReceiptComments.Select(r => new ReceiptText() { Text = r, RenderType = eRenderAs.Text });
                 PrintFiscalComments(Comments);
+            }
+
             FillUpReceiptItems(pR.GetParserWaresReceipt());
             decimal Total = 0, TotalRnd = 0;
             (Total, TotalRnd) = SubTotal();
@@ -462,17 +449,39 @@ namespace Front.Equipments
                 ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Error, "Check was not printed")
                 { Status = eStatusRRO.Error, IsСritical = true });
             }
+            if (pR?.Footer?.Count() > 0)
+            {
+                Comments = pR.Footer.Select(r => new ReceiptText() { Text = r, RenderType = eRenderAs.Text });
+                PrintFiscalComments(Comments);
+            }
+
             CloseReceipt();
             ClearDisplay();
 
             if (!int.TryParse(GetLastReceiptNumber(), out int result2))
-                return (null, TotalRnd);
+                return new LogRRO(pR)
+                {
+                    TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund,
+                    TypeRRO = Type.ToString(),
+                    FiscalNumber = null,
+                    SUM = TotalRnd,
+                    TextReceipt = (NoLoadReceipt ? $"NoLoadReceipt=>{NoLoadReceipt}" : null)
+                };
 
             _logger?.LogDebug($"[ FP700 ] newLastReceipt = {result2} / lastReceipt = {result1}");
-            string str = result2 > result1 ? result2.ToString() : null;
-            if (str == null)
+            string FiscalNumber = result2 > result1 ? result2.ToString() : null;
+            if (FiscalNumber == null)
                 ObliterateFiscalReceipt();
-            return (str, TotalRnd);
+           
+            pR.NumberReceipt = FiscalNumber;            
+            return new LogRRO(pR)
+            {
+                TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund,
+                TypeRRO = Type.ToString(),
+                FiscalNumber = FiscalNumber,
+                SUM = TotalRnd,
+                TextReceipt = (NoLoadReceipt ? $"NoLoadReceipt=>{NoLoadReceipt}" : null)
+            };
         }
 
 
@@ -527,7 +536,7 @@ namespace Front.Equipments
             return true;
         }
 
-        public bool PrintFiscalComments(List<ReceiptText> comments)
+        public bool PrintFiscalComments(IEnumerable<ReceiptText> comments)
         {
             bool res= false;
             foreach (ReceiptText comment in comments)

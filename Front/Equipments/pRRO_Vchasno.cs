@@ -470,6 +470,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
                 rows = pR.GetParserWaresReceipt(true, false)?.Select(el => new WaresRRO(el, pRro));
                 pays = pR.Payment?.Where(el => el.TypePay == eTypePay.Cash || el.TypePay == eTypePay.Card  ).Select(el => new PaysRRO(el));
                 comment_up = String.Join('\n', pR.ReceiptComments);
+                comment_down = String.Join('\n', pR.Footer);
                 sum = pR.Wares?.Sum(el => Math.Round(el.Price * el.Quantity, 2,MidpointRounding.AwayFromZero) - el.SumTotalDiscount) ?? 0m; ;
             }
         }

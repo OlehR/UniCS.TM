@@ -337,6 +337,8 @@ namespace ModelMID
             }
         }
 
+        public IEnumerable<string> Footer { get { return Global.GetWorkPlaceByIdWorkplace(IdWorkplacePay > 0? IdWorkplacePay : IdWorkplace)?.Settings?.Footer; } }
+
         public bool IsQR()
         {
             return Wares?.Where(r => !string.IsNullOrEmpty(r.QR)).Any() ?? false;

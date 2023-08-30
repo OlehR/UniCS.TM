@@ -25,7 +25,7 @@ namespace ModelMID.DB
         public string StrCodeWarehouse { get { return $"{CodeWarehouse:D9}"; } }
         public int CodeDealer { get; set; }
         public string Prefix { get; set; }
-        public bool IsChoice { get; set; }
+        public bool IsChoice { get; set; }        
         string _DNSName;
         public string DNSName
         {
