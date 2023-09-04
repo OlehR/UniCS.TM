@@ -40,7 +40,7 @@ select p.code_client as CodeClient, p.name_client as NameClient, 0 as TypeDiscou
 	   0.00 as SumMoneyBonus, 0.00 as SumBonus,1 IsUseBonusFromRest, 1 IsUseBonusToRest,1 as IsUseBonusFromRest,
      (select group_concat(ph.data) from ClientData ph where  p.Code_Client = ph.CodeClient and TypeData=1)   as BarCode,
        (select group_concat(ph.data) from ClientData ph where  p.Code_Client = ph.CodeClient and TypeData=2) as MainPhone,
-        Phone_Add as PhoneAdd, BIRTHDAY as BirthDay 
+        Phone_Add as PhoneAdd, BIRTHDAY as BirthDay, Status_Card as StatusCard 
    from t
      join client p on (t.CodeClient=p.code_client)
    left join TYPE_DISCOUNT td on td.TYPE_DISCOUNT=p.TYPE_DISCOUNT;;";
