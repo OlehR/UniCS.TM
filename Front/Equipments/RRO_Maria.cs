@@ -277,7 +277,7 @@ namespace Front.Equipments.Implementation
                         foreach (ReceiptText comment in Comments)
                         {
                             if (!string.IsNullOrWhiteSpace(comment.Text))
-                                M304.FreeTextLine(1, 1, 0, comment.GetText(43));
+                                M304.FreeTextLine(0, 1, 0, comment.GetText(43));
                         }
                     }
                     //M304.AbortCheck();
