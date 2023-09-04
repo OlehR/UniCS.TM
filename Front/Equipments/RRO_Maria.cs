@@ -183,11 +183,13 @@ namespace Front.Equipments.Implementation
                 if (!SetError((pR.TypeReceipt == eTypeReceipt.Sale ? M304.OpenCheck() : M304.OpenReturnCheck()) != 1))
                 {
                     if (pR?.ReceiptComments?.Any() == true)
-                        Comments = pR.ReceiptComments.Select(r => new ReceiptText() { Text = r, RenderType = eRenderAs.Text }).ToList();
-                    foreach (ReceiptText comment in Comments)
                     {
-                        if (!string.IsNullOrWhiteSpace(comment.Text))
-                            M304.FreeTextLine(1, 1, 0, comment.GetText(43));
+                        Comments = pR.ReceiptComments.Select(r => new ReceiptText() { Text = r, RenderType = eRenderAs.Text }).ToList();
+                        foreach (ReceiptText comment in Comments)
+                        {
+                            if (!string.IsNullOrWhiteSpace(comment.Text))
+                                M304.FreeTextLine(1, 1, 0, comment.GetText(43));
+                        }
                     }
                     foreach (var el in pR.GetParserWaresReceipt(true, false))
                     {
@@ -225,7 +227,7 @@ namespace Front.Equipments.Implementation
                                 if (SetError(M304.AddSlip(2, "0", el.NumberTerminal, pR.TypeReceipt.ToString(), el.NumberCard, el.CodeAuthorization, el.CardHolder, el.CodeReceipt.ToString()) != 1))
                                 {
                                     FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка AddSlip:  {StrError}");
-                                    throw new Exception(Environment.NewLine + "Помилка програмування товару!" + Environment.NewLine + StrError);
+                                    throw new Exception(Environment.NewLine + "Помилка AddSlip:" + Environment.NewLine + StrError);
                                 }
                             }
                             if (el.TypePay == eTypePay.Cash)
@@ -269,6 +271,15 @@ namespace Front.Equipments.Implementation
                 }
                 if (!IsError)
                 {
+                    if (pR?.Footer?.Any() == true)
+                    {
+                        Comments = pR.Footer.Select(r => new ReceiptText() { Text = r, RenderType = eRenderAs.Text }).ToList();
+                        foreach (ReceiptText comment in Comments)
+                        {
+                            if (!string.IsNullOrWhiteSpace(comment.Text))
+                                M304.FreeTextLine(1, 1, 0, comment.GetText(43));
+                        }
+                    }
                     //M304.AbortCheck();
                     if (SetError(M304.CloseCheckEx(SumCashPay, SumCardPay, 0, 0, RRN) == 0))
                     {
