@@ -88,6 +88,11 @@ namespace ModelMID
         // (PriceEKKA < Math.Round(PriceDealer, 2, MidpointRounding.AwayFromZero) ? (Math.Round(PriceDealer, 2, MidpointRounding.AwayFromZero)-PriceEKKA) : 0); 
 
         /// <summary>
+        /// Знижка для інтерфейсу
+        /// </summary>
+        public decimal Discount { get { return SumBonus + SumDiscount + SumWallet +  (PriceDealer > Price ? (PriceDealer * Quantity - Sum) : 0); } }
+
+        /// <summary>
         /// Приоритет спрацьованої акції
         /// </summary>
         public int Priority { get; set; }

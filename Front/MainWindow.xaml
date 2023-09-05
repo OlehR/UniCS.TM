@@ -864,10 +864,10 @@
                                         <TextBlock    FontWeight="DemiBold" Foreground="Red">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
-                                                    <Setter Property="Text" Value="{Binding DiscountEKKA, StringFormat=-0.00}"/>
+                                                    <Setter Property="Text" Value="{Binding Discount, StringFormat=-0.00}"/>
                                                     <Setter Property="FontSize" Value="12" />
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding DiscountEKKA}" Value="0">
+                                                        <DataTrigger Binding="{Binding Discount}" Value="0">
                                                             <Setter Property="Text" Value=""/>
                                                         </DataTrigger>
                                                         <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
@@ -2583,7 +2583,7 @@
         <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="5"
                 Grid.Column="0" Grid.ColumnSpan="4"
-                 Name="StartShoppingLogo" Visibility="Visible" Grid.ZIndex="2" >
+                 Name="StartShoppingLogo" Visibility="Collapsed" Grid.ZIndex="2" >
             <Grid >
 
                 <Label Grid.Row="0"  Content="{Binding Clock, RelativeSource={RelativeSource 
