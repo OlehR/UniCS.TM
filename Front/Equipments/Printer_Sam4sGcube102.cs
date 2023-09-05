@@ -188,9 +188,9 @@ namespace Front.Equipments.Implementation
 
 
 
-                    if (item.DiscountEKKA > 0)
+                    if (item.SumDiscountEKKA > 0)
                     {
-                        topPosition = PrintTwoColum(e, "Знижка", item.DiscountEKKA.ToString("f2"), topPosition, maxChar - 8);
+                        topPosition = PrintTwoColum(e, "Знижка", item.SumDiscountEKKA.ToString("f2"), topPosition, maxChar - 8);
                     }
 
                 }

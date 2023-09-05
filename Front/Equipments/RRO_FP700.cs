@@ -508,23 +508,21 @@ namespace Front.Equipments
             {
                 FiscalArticle FiscalArticle = SetupArticleTable(el);// FiscalArticleList[index];
                 //ReceiptItem receiptItem = receiptItems[index];
-                string Price = string.Empty;
-                decimal BasePrice = el.Price < el.PriceDealer ? el.PriceDealer : el.Price;
-                decimal discont = el.Price < BasePrice ? Math.Round(BasePrice * el.Quantity, 2, MidpointRounding.AwayFromZero) - Math.Round(el.Sum, 2, MidpointRounding.AwayFromZero) : 0;
+                //string Price = string.Empty;
+                //decimal BasePrice = el.Price < el.PriceDealer ? el.PriceDealer : el.Price;
+                //decimal discont = el.Price < BasePrice ? Math.Round(BasePrice * el.Quantity, 2, MidpointRounding.AwayFromZero) - Math.Round(el.Sum, 2, MidpointRounding.AwayFromZero) : 0;
 
                 //if (FiscalArticle.Price != BasePrice)
-                    Price = "#" + BasePrice.ToS();
+                 //   Price = "#" + BasePrice.ToS();
 
                 // tring((IFormatProvider)CultureInfo.InvariantCulture);
 
-                string data = $"{FiscalArticle.PLU}*{el.Quantity.ToS()}{Price}";
-                if (el.SumTotalDiscount + discont != 0M)
-                    data += ";" + (el.SumTotalDiscount + discont > 0M ? "-" : "+") + Math.Abs(el.SumTotalDiscount + discont).ToS();
+                string data = $"{FiscalArticle.PLU}*{el.Quantity.ToS()}#{el.PriceEKKA}";
+                if (el.SumDiscountEKKA != 0M)
+                    data += ";" + (el.SumDiscountEKKA > 0M ? "-" : "+") + Math.Abs(el.SumDiscountEKKA).ToS();
 
-                if (!string.IsNullOrWhiteSpace(el.BarCode))
-                    data = data + "&" + el.BarCode;
-                if (!string.IsNullOrEmpty(el.ExciseStamp))
-                    data += "!" + el.ExciseStamp;
+                if (!string.IsNullOrWhiteSpace(el.BarCode))  data += "&" + el.BarCode;
+                if (!string.IsNullOrEmpty(el.ExciseStamp))   data += "!" + el.ExciseStamp;
 
                 int num2 = OnSynchronizeWaitCommandResult(eCommand.RegisterProductInReceiptWithDisplay, data, (Action<string>)(res => { })) ? 1 : 0;
                 //string errCode = string.Empty;

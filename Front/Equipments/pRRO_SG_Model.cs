@@ -70,7 +70,7 @@ namespace Front.Equipments.pRRO_SG
             name = pRW.NameWares;
             price = pRW.PriceEKKA;
             quantity = pRW.Quantity;
-            discountSum = pRW.DiscountEKKA;
+            discountSum = pRW.SumDiscountEKKA;
             amount = pRW.Sum ;
             //vatGroup = GetTaxGroup(pRW);
             codeUnit = pRW.CodeUnit;

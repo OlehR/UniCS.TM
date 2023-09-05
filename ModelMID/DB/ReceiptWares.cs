@@ -77,11 +77,15 @@ namespace ModelMID
         /// </summary>
         public decimal PriceEKKA { get { return Math.Round((long)eTypeDiscount.PercentDiscount != ParPrice2 && Price < PriceDealer ? Price : PriceDealer,2, MidpointRounding.AwayFromZero); } }
 
+
+        public decimal SumEKKA { get { return Math.Round(Quantity* PriceEKKA , 2, MidpointRounding.AwayFromZero); } }
+
+
         /// <summary>
         /// Знижка для Касового апарата та для Модерна
         /// </summary>
-        public decimal DiscountEKKA { get {
-                return SumTotalDiscount + Math.Round(PriceEKKA * Quantity, 2, MidpointRounding.AwayFromZero) - Sum ;
+        public decimal SumDiscountEKKA { get {
+                return SumTotalDiscount + SumEKKA - Sum ;
             }
         }
         //SumBonus + SumDiscount + SumWallet + 
