@@ -136,7 +136,7 @@ namespace ModelMID
         /// </summary>
         PercentDiscount = 13,
         /// <summary>
-        /// Заміна ДК (Не використовується)
+        /// Заміна ДК
         /// </summary>
         ReplacePriceDealer = 14,
         /// <summary>

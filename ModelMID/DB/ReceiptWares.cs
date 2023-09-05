@@ -71,15 +71,21 @@ namespace ModelMID
         /// </summary>
         public decimal PriceDealer { get; set; }
 
+  
         /// <summary>
-        /// Ціна для Касового апарата та для Модерна
+        /// Ціна для Касового апарата
         /// </summary>
-        public decimal PriceEKKA { get { return (Priority == 1 ? Price : (Price > PriceDealer ? Price : PriceDealer)); } }
+        public decimal PriceEKKA { get { return Math.Round((long)eTypeDiscount.PercentDiscount != ParPrice2 && Price < PriceDealer ? Price : PriceDealer,2, MidpointRounding.AwayFromZero); } }
 
         /// <summary>
         /// Знижка для Касового апарата та для Модерна
         /// </summary>
-        public decimal DiscountEKKA { get { return SumBonus + SumDiscount + SumWallet+ (Priority == 1 ? 0 : (PriceDealer > Price ? (PriceDealer * Quantity - Sum) : 0)); } }
+        public decimal DiscountEKKA { get {
+                return SumTotalDiscount + Math.Round(PriceEKKA * Quantity, 2, MidpointRounding.AwayFromZero) - Sum ;
+            }
+        }
+        //SumBonus + SumDiscount + SumWallet + 
+        // (PriceEKKA < Math.Round(PriceDealer, 2, MidpointRounding.AwayFromZero) ? (Math.Round(PriceDealer, 2, MidpointRounding.AwayFromZero)-PriceEKKA) : 0); 
 
         /// <summary>
         /// Приоритет спрацьованої акції
