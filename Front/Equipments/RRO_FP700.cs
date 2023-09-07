@@ -517,7 +517,7 @@ namespace Front.Equipments
 
                 // tring((IFormatProvider)CultureInfo.InvariantCulture);
 
-                string data = $"{FiscalArticle.PLU}*{el.Quantity.ToS()}#{el.PriceEKKA}";
+                string data = $"{FiscalArticle.PLU}*{el.Quantity.ToS()}#{el.PriceEKKA.ToS()}";
                 if (el.SumDiscountEKKA != 0M)
                     data += ";" + (el.SumDiscountEKKA > 0M ? "-" : "+") + Math.Abs(el.SumDiscountEKKA).ToS();
 

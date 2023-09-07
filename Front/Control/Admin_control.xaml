@@ -1111,9 +1111,9 @@
                                                         <TextBlock   FontSize="20" FontWeight="DemiBold" Foreground="Red">
                                                             <TextBlock.Style>
                                                                 <Style TargetType="TextBlock">
-                                                                    <Setter Property="Text" Value="{Binding DiscountEKKA, StringFormat=-0.00}"/>
+                                                                    <Setter Property="Text" Value="{Binding Discount, StringFormat=-0.00}"/>
                                                                     <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding DiscountEKKA}" Value="0">
+                                                                        <DataTrigger Binding="{Binding Discount}" Value="0">
                                                                             <Setter Property="Text" Value=""/>
                                                                         </DataTrigger>
                                                                     </Style.Triggers>
