@@ -185,7 +185,10 @@ namespace Front.Equipments
                 Thread.Sleep(1000);
                 string terminalInfo = BPOS.TerminalInfo;
                 StopBPOS();
+                if(string.IsNullOrEmpty(terminalInfo))
+                    return eBank.NotDefine;
                 var a = terminalInfo.Split('/');
+
                 if (a.Length > 3)
                     return eBank.PrivatBank;
                 else
