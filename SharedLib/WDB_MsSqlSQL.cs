@@ -161,9 +161,9 @@ SELECT -- Кількість товари  набору (Основні)
     ,1 AS UseIndicative
     ,14 AS TypeDiscount--%
     ,0 AS AdditionalCondition
-    ,51 AS Data
+    ,case when @CodeWarehouse = 89 then 29 else 51 end  AS Data
     ,1 AS DataAdditionalCondition
-    where @CodeWarehouse = 9";
+    where @CodeWarehouse in (9,89)";
 
         string SqlGetPromotionSaleDealer = @"SELECT 9000000000+CONVERT(INT, YEAR(dpg.date_time)*100000+dpg.number) AS CodePS, CONVERT(INT, dn.code) AS CodeWares, pg.date_beg AS DateBegin,pg.date_end AS DateEnd,CONVERT(INT, tp.code) AS CodeDealer
     , isnull(pp.Priority, 0) AS Priority
@@ -247,7 +247,7 @@ SELECT
   , 0.00 AS SumOrder
   ,0 AS TypeWorkCoupon
   , NULL AS BarCodeCoupon
-  where @CodeWarehouse = 9;";
+  where @CodeWarehouse in (9,89);";
 
 
         string SqlGetPromotionSaleFilter = @"WITH wh_ex AS
@@ -435,7 +435,7 @@ SELECT -- Товари набору (Основні)
     ,0 AS CodeChoice
     , @CodeWarehouse as CodeData --AS CodeWarehouse
     , CONVERT(NUMERIC, NULL) AS CodeDataEnd
-    where @CodeWarehouse= 9
+    where @CodeWarehouse in (9,89)
 
      union all
 SELECT -- оптовий склад товари і кількості
@@ -450,7 +450,23 @@ SELECT -- оптовий склад товари і кількості
 
  FROM dbo.V1C_DIM_OPTION_WPC_opt_wares ow
 JOIN Wares w ON w._IDRRef= ow.NomenRref
-   where @CodeWarehouse = 9;";
+   where @CodeWarehouse = 9
+     union all
+SELECT -- оптовий склад товари і кількості
+   8000000000+CodeWarehouse AS CodePS
+    ,1 AS CodeGroupFilter
+    ,12 AS TypeGroupFilter
+    ,1 AS RuleGroupFilter
+    ,0 AS CodeProporty
+    ,0 AS CodeChoice
+    , codewares  as CodeData --AS CodeWarehouse
+    , quantity AS CodeDataEnd
+
+ FROM dbo.QuantityOpt 
+   WHERE quantity>0
+   AND CodeWarehouse= @CodeWarehouse
+    AND @CodeWarehouse = 89
+;";
 
 
         string SqlGetPromotionSaleGroupWares = @"SELECT CODE_GROUP_WARES_PS as CodeGroupWaresPS, CODE_GROUP_WARES as CodeGroupWares FROM dbo.GetPromotionSaleGW()";
