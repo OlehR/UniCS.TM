@@ -1100,7 +1100,7 @@ namespace Front
 
         void IsPrises(decimal pQuantity = 0m, decimal pPrice = 0m)
         {
-            if (CurWares.TypeWares == eTypeWares.Alcohol)
+            if (CurWares.TypeWares == eTypeWares.Alcohol && pPrice > 0m)
             {
                 SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ExciseStamp, CurWares);
                 return;
