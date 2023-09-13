@@ -616,7 +616,7 @@ namespace Front
                         {
                             R.IdWorkplacePay = IdWorkplacePays[i];
 
-                            if (!R.LogRROs.Any(el => el.TypeOperation == (R.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund) && el.IdWorkplacePay == IdWorkplacePays[i]))
+                            if (!R.LogRROs.Any(el => el.TypeOperation == (R.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund) && el.IdWorkplacePay == IdWorkplacePays[i] && el.CodeError==0 ) )
                             {
                                 res = EF.PrintReceipt(R);
                                 if (res.CodeError == 0)

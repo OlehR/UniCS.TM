@@ -1040,7 +1040,7 @@ namespace Front
             try
             {
                 IsControlScale = true;
-                if (ControlScale.Model != eModelEquipment.VirtualControlScale)
+                if (ControlScale?.Model != eModelEquipment.VirtualControlScale)
                     Scale?.StopWeight();
             }
             catch (Exception e)
