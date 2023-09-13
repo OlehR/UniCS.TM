@@ -75,7 +75,7 @@ namespace ModelMID
         /// <summary>
         /// Ціна для Касового апарата
         /// </summary>
-        public decimal PriceEKKA { get { return Math.Round((long)eTypeDiscount.PercentDiscount != ParPrice2 && Price < PriceDealer ? Price : PriceDealer,2, MidpointRounding.AwayFromZero); } }
+        public decimal PriceEKKA { get { return Math.Round((long)eTypeDiscount.PercentDiscount != ParPrice2 && Price < PriceDealer ? Price :Math.Max(PriceDealer, Price),2, MidpointRounding.AwayFromZero); } }
 
 
         public decimal SumEKKA { get { return Math.Round(Quantity* PriceEKKA , 2, MidpointRounding.AwayFromZero); } }
