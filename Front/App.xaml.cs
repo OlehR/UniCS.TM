@@ -41,7 +41,11 @@ namespace Front
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             var FileConfig = e.Args.Length == 1 ? e.Args[0] : "appsettings.json";
-            var c = new Config(FileConfig);// Конфігурація Програми(Шляхів до БД тощо)            
+            var c = new Config(FileConfig);// Конфігурація Програми(Шляхів до БД тощо)
+            //перевірка на вільний простір диска та видалення старих логів
+            CheckSystem checkSystem = new CheckSystem();
+            checkSystem.CheckDisk();
+            Task task = checkSystem.DeleteOldLogFilesAsync();
         }
         //Евент для оповещения всех окон приложения
         public static event EventHandler LanguageChanged;
