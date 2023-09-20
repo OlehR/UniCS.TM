@@ -221,6 +221,7 @@ namespace Front.Equipments.Implementation
                         intentTaxes = 0;
                     }
                 }
+                else topPosition += 4;
 
 
                 //розділювач
@@ -253,7 +254,7 @@ namespace Front.Equipments.Implementation
 
                 topPosition = PrintLine(e, $"ФН чеку {Receipt.Fiscal?.Number}", topPosition, maxChar, MainFont);
                 topPosition = PrintLine(e, $"ФН ПРРО {Receipt.Fiscal?.Id}", topPosition, maxChar, MainFont);
-                topPosition = PrintLine(e, Receipt.Fiscal.DT.ToString("dd/MM/yyyy H:mm"), topPosition, maxChar, MainFont);
+                topPosition = PrintLine(e, $"{Receipt.Fiscal.DT.ToString("dd/MM/yyyy H:mm")}", topPosition, maxChar, MainFont);
                 string QRInfo = string.IsNullOrEmpty(Receipt.Fiscal?.QR) ? "no data available" : Receipt.Fiscal?.QR;
                 var qrCodeData = qrGenerator.CreateQrCode(QRInfo, QRCodeGenerator.ECCLevel.Q);
                 var qrCode = new QRCode(qrCodeData);
@@ -274,7 +275,7 @@ namespace Front.Equipments.Implementation
         }
         public int PrintCenter(PrintPageEventArgs e, string str, int topPosition, int maxChar, Font font)
         {
-            if (str == string.Empty) return topPosition;
+            if (string.IsNullOrEmpty(str)) return topPosition;
             int leftPosition = 0;
             string tmpVar = str;
             int pos = 0;
@@ -308,7 +309,7 @@ namespace Front.Equipments.Implementation
         }
         public int PrintLine(PrintPageEventArgs e, string str, int topPosition, int maxChar, Font font)
         {
-            if (str == string.Empty) return topPosition;
+            if (string.IsNullOrEmpty(str)) return topPosition;
             string tmpVar = str;
             int maxCharProdukts = maxChar;
 
