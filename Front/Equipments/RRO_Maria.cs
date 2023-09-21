@@ -288,7 +288,7 @@ namespace Front.Equipments.Implementation
                                 M304.FreeTextLine(0, 1, 0, comment.GetText(43));
                         }
                     }
-                    M304.AbortCheck();
+                    //M304.AbortCheck();
                     if (SetError(M304.CloseCheckEx(SumCashPay, SumCardPay, 0, 0, RRN) == 0))
                     {
                         FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка закриття чеку: {StrError}");
@@ -306,7 +306,7 @@ namespace Front.Equipments.Implementation
 
             return new LogRRO(pR)
             {
-                CodeError = -1,// !string.IsNullOrEmpty(StrError) && CodeError == 0?-1 : CodeError, ///Бог зна чи поможе. Повноцінно змоделювати ситуацію не вийшло
+                CodeError = !string.IsNullOrEmpty(StrError) && CodeError == 0?-1 : CodeError, ///Бог зна чи поможе. Повноцінно змоделювати ситуацію не вийшло
                 Error = StrError,
                 SUM = pR.SumFiscal,
                 TypeRRO = "Maria304",
