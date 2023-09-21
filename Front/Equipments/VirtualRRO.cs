@@ -15,14 +15,21 @@ using System.Threading.Tasks;
 using Utils;
 using Front.Equipments.Implementation.FP700_Model;
 using Front.Equipments.Utils;
+using SharedLib;
 
 namespace Front.Equipments.Implementation
 {
     public class VirtualRRO : Rro
     {
+        public EquipmentFront EF = new EquipmentFront(null, null, null);
+        BL Bl = new();
+        string HeadReceipt= "ТОВ";
+        string FiscalNumber = "657513548";
         public VirtualRRO(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) :
                        base(pEquipment, pConfiguration, eModelEquipment.VirtualRRO, pLoggerFactory, pActionStatus)
         {
+            HeadReceipt = Configuration[$"{KeyPrefix}Head"];
+            FiscalNumber = Configuration[$"{KeyPrefix}FiscalNumber"];
             State = eStateEquipment.On;
         }
 
@@ -38,6 +45,12 @@ namespace Front.Equipments.Implementation
 
         override public LogRRO PrintX(IdReceipt pIdR)
         {
+            List<string> str = new ();
+            str.Add("Print X");
+            EF.PrintNoFiscalReceipt(pIdR, str);
+            
+            var TMPvalue = Bl.GetLogRRO(pIdR);
+
             return new LogRRO(pIdR) { TypeOperation = eTypeOperation.XReport, FiscalNumber = "V0001111" };
         }
 
@@ -49,7 +62,8 @@ namespace Front.Equipments.Implementation
         /// <returns></returns>
         override public LogRRO MoveMoney(decimal pSum, IdReceipt pIdR = null)
         {
-            return new LogRRO(pIdR) { TypeOperation = eTypeOperation.MoneyIn, FiscalNumber = "V0001111", SUM = 1230m };
+            eTypeOperation typeOperation = pSum > 0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyOut;
+            return new LogRRO(pIdR) { TypeOperation = typeOperation, FiscalNumber = typeOperation.GetDescription(), SUM = pSum, TypeRRO = "VirtualRRO", JSON = pIdR.ToJSON() };
         }
 
         /// <summary>
@@ -60,13 +74,13 @@ namespace Front.Equipments.Implementation
         override public LogRRO PrintReceipt(Receipt pR)
         {
             GetFiscalInfo(pR, null);
-            return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, FiscalNumber = pR.Fiscal.Number, SUM = pR.SumReceipt, CodeError = 0, Error = "", TypeRRO = "VirtualRRO", JSON = pR.ToJSON() };
+            return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, FiscalNumber = pR.Fiscal.Number, SUM = pR.SumReceipt, CodeError = 0,  TypeRRO = "VirtualRRO", JSON = pR.ToJSON() };
             }
         public override void GetFiscalInfo(Receipt pR, object pRes)
         {
             var DT = DateTime.Now;
             Random rnd = new Random();
-            string FiscalNumber = rnd.Next(100000000, 999999999).ToString();
+            string NumberReceipt = rnd.Next(100000000, 999999999).ToString();
             string QR = $"{Guid.NewGuid()}{Environment.NewLine}{pR.SumReceipt}{Environment.NewLine}{DT.ToString("dd/MM/yyyy H:mm")}";
             
 
@@ -77,9 +91,9 @@ namespace Front.Equipments.Implementation
                 QR = QR,
                 Sum = pR.SumFiscal,
                 SumRest = pR.SumRest,
-                Id = "IdFiscal", // номер фіскалки - кудись винести
-                Number = rnd.Next(100000000,999999999).ToString(),
-                Head = $"ТОВ Ужгород ПСЮ", // шапка чеку - також винечти кудись
+                Id = FiscalNumber,
+                Number = NumberReceipt,
+                Head = HeadReceipt, 
                 //Taxes = Res.info.printinfo.taxes?.Select(el => new TaxResult() { Name = el.tax_fname, Sum = el.tax_sum, IdWorkplacePay = pR.IdWorkplacePay }),
                 DT = DT
             });
