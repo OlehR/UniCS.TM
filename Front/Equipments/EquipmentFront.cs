@@ -151,10 +151,10 @@ namespace Front
             try
             {
                 //Scaner
-                try
-                {                    
-                    Scaner Sc;
-                    foreach (var el in ListEquipment.Where(e => e.Type == eTypeEquipment.Scaner))
+                Scaner Sc;
+                foreach (var el in ListEquipment.Where(e => e.Type == eTypeEquipment.Scaner))
+                {
+                    try
                     {
                         switch (el.Model)
                         {
@@ -183,9 +183,14 @@ namespace Front
                                 break;
                         }
                         NewListEquipment.Add(Sc);
+
+                    }
+                    catch (Exception e)
+                    {
+                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name + "\\ControlScale", e);
                     }
                 }
-                catch { };
+
                 //Scale
                 try
                 {
@@ -235,7 +240,11 @@ namespace Front
                         NewListEquipment.Add(ControlScale);
                     }
                 }
-                catch { }
+                catch (Exception e)
+                {
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name + "\\ControlScale", e);
+                }
+
                 //Flag
                 try
                 {
@@ -250,11 +259,15 @@ namespace Front
                         NewListEquipment.Add(Signal);
                     }
                 }
-                catch { }
-                //Bank Pos Terminal
-                try
+                catch (Exception e)
                 {
-                    foreach (var el in ListEquipment.Where(e => e.Type == eTypeEquipment.BankTerminal))
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name + "\\Flag", e);
+                }
+
+                //Bank Pos Terminal
+                foreach (var el in ListEquipment.Where(e => e.Type == eTypeEquipment.BankTerminal))
+                {
+                    try
                     {
                         ElEquipment = el;
 
@@ -272,13 +285,16 @@ namespace Front
                         }
                         NewListEquipment.Add(Terminal);
                     }
+                    catch (Exception e)
+                    {
+                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name + "\\BankPos", e);
+                    }
                 }
-                catch { }
 
-                //RRO
-                try
+                //RRO               
+                foreach (var el in ListEquipment.Where(e => e.Type == eTypeEquipment.RRO))
                 {
-                    foreach (var el in ListEquipment.Where(e => e.Type == eTypeEquipment.RRO))
+                    try
                     {
                         Rro RRO;
                         switch (el.Model)
@@ -312,9 +328,11 @@ namespace Front
                         NewListEquipment.Add(RRO);
                         RROs.Add(RRO.IdWorkplacePay, RRO);
                     }
-
+                    catch (Exception e)
+                    {
+                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name + "\\RRO", e);
+                    }
                 }
-                catch { }
 
                 //Принтер
                 try
@@ -330,8 +348,12 @@ namespace Front
                             break;
                     }
                 }
-                catch { }
+                catch (Exception e)
+                {
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name + "\\Принтер", e);
+                }
                 ListEquipment = NewListEquipment;
+
                 //Передаємо зміни станусів наверх.
                 foreach (var el in NewListEquipment)
                 {

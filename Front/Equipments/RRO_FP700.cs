@@ -142,7 +142,7 @@ namespace Front.Equipments
             eDeviceConnectionStatus res;
             try
             {
-                var s = SetRoundCash();
+                //var s = SetRoundCash();
                 res = TestDeviceSync();
                 if (res == eDeviceConnectionStatus.Enabled)
                 {
@@ -154,6 +154,7 @@ namespace Front.Equipments
             }
             catch (Exception e)
             {
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
                 State = eStateEquipment.Error;
                 return new StatusEquipment() { State = -1, TextState = e.Message };
             }
@@ -374,7 +375,7 @@ namespace Front.Equipments
                 ObliterateFiscalReceipt();
                 if (!ReopenPort())
                     return eDeviceConnectionStatus.InitializationError;
-                _logger?.LogDebug("Fp700 after open");
+                
                 ClearDisplay();
                 IsZReportDone();
                 if (SendPackage(eCommand.PrintDiagnosticInformation))
@@ -383,8 +384,7 @@ namespace Front.Equipments
             }
             catch (Exception ex)
             {
-                _logger?.LogDebug("Fp700 open error");
-                _logger?.LogError(ex, ex.Message);
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex);
                 ActionStatus?.Invoke(new RroStatus(eModelEquipment.RRO_FP700, eStateEquipment.Error, ex.Message)
                 { Status = eStatusRRO.Error, IsСritical = true });
                 return eDeviceConnectionStatus.NotConnected;
@@ -925,17 +925,11 @@ namespace Front.Equipments
 
         private void DeleteAllArticles() => OnSynchronizeWaitCommandResult(eCommand.ArticleProgramming, "DA," + _operatorPassword, (Action<string>)(res =>
         {
-            if (res.Trim().ToUpper().StartsWith("F"))
+            if (res?.Trim().ToUpper().StartsWith("P") ==true)
             {
-                _logger?.LogDebug("[Fp700] Error during articles deleting");
-            }
-            else
-            {
-                if (!res.Trim().ToUpper().StartsWith("P"))
-                    return;
-                
-                db.DelAllFiscalArticle();               
-            }
+                db.DelAllFiscalArticle();
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"End {res}");                
+            }            
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"End {res}");
         }));
 
@@ -1138,7 +1132,7 @@ namespace Front.Equipments
                         Thread.Sleep(1);
                     
                     if (!isResultGot)
-                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"isResultGot=>{isResultGot} SerialDevice.IsOpen={SerialDevice.IsOpen} IsZReportAlreadyDone=>{IsZReportAlreadyDone}  {pCommand} Data=>{pData}", eTypeLog.Error);
+                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"isResultGot=>{isResultGot} n=>{c} SerialDevice.IsOpen={SerialDevice.IsOpen} IsZReportAlreadyDone=>{IsZReportAlreadyDone}  {pCommand} Data=>{pData}", eTypeLog.Error);
                 }
                 catch (Exception ex)
                 {
