@@ -511,9 +511,9 @@ namespace Front
                                if (RRO != null)
                                    RRO.TypeOperation = eTypeOperation.NotDefine;
                            }
-                       }
-                       Bl.InsertLogRRO(r);
+                       }                       
                    }
+                   Bl.InsertLogRRO(r);
                }
                catch (Exception e)
                {
