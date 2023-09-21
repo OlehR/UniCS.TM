@@ -178,6 +178,7 @@ namespace Front.Equipments.Implementation
                 int SumCashPay = 0;
                 int SumCardPay = 0;
                 int SumFiscal = 0;
+                int TypeDiscount = -1; // -1/0/1 – нет_скидки/скидка/надбавка
                 string RRN = "";
                 List<ReceiptText> Comments = null;
                 if (!SetError((pR.TypeReceipt == eTypeReceipt.Sale ? M304.OpenCheck() : M304.OpenReturnCheck()) != 1))
@@ -202,7 +203,14 @@ namespace Front.Equipments.Implementation
                         if (!String.IsNullOrEmpty(el.ExciseStamp))
                             if (SetError((M304.AddExciseStamps(el.ExciseStamp) != 1)))
                                 break;
-                        if (SetError(M304.FiscalLineEx(Name, Convert.ToInt32((el.CodeUnit == Global.WeightCodeUnit ? 1000 : 1) * el.Quantity), Convert.ToInt32(el.PriceEKKA * 100), el.CodeUnit == Global.WeightCodeUnit ? 1 : 0, TG1, TG2, el.CodeWares, (el.SumDiscountEKKA > 0 ? 0 : -1), null, Convert.ToInt32(el.SumDiscountEKKA * 100m), null) == 0))
+                        if (el.SumDiscountEKKA == 0)
+                            TypeDiscount = -1;//без знижок
+                        if (el.SumDiscountEKKA > 0)
+                            TypeDiscount = 0;//знижка
+                        else TypeDiscount = 1; // надбавка
+
+
+                        if (SetError(M304.FiscalLineEx(Name, Convert.ToInt32((el.CodeUnit == Global.WeightCodeUnit ? 1000 : 1) * el.Quantity), Convert.ToInt32(el.PriceEKKA * 100), el.CodeUnit == Global.WeightCodeUnit ? 1 : 0, TG1, TG2, el.CodeWares, TypeDiscount, null, Math.Abs(Convert.ToInt32(el.SumDiscountEKKA * 100m)), null) == 0))
                         {
                             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка програмування товару: {StrError}");
                             throw new Exception(Environment.NewLine + "Помилка програмування товару!" + Environment.NewLine + StrError);
