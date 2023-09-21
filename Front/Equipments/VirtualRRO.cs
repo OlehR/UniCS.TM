@@ -21,10 +21,17 @@ namespace Front.Equipments.Implementation
 {
     public class VirtualRRO : Rro
     {
-        public EquipmentFront EF = new EquipmentFront(null, null, null);
-        BL Bl = new();
+        Printer Printer;
+        //public EquipmentFront EF = new EquipmentFront(null, null, null);
+        BL Bl = BL.GetBL;
         string HeadReceipt= "ТОВ";
         string FiscalNumber = "657513548";
+        
+        public VirtualRRO(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null, Printer pR = null) : this(pEquipment, pConfiguration,  pLoggerFactory, pActionStatus)
+       {
+            Printer= pR;
+        }
+
         public VirtualRRO(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) :
                        base(pEquipment, pConfiguration, eModelEquipment.VirtualRRO, pLoggerFactory, pActionStatus)
         {
@@ -47,7 +54,9 @@ namespace Front.Equipments.Implementation
         {
             List<string> str = new ();
             str.Add("Print X");
-            EF.PrintNoFiscalReceipt(pIdR, str);
+            if(Printer!=null)
+                Printer.Print(str);
+            
             
             var TMPvalue = Bl.GetLogRRO(pIdR);
 
@@ -74,6 +83,10 @@ namespace Front.Equipments.Implementation
         override public LogRRO PrintReceipt(Receipt pR)
         {
             GetFiscalInfo(pR, null);
+            if (Printer != null)
+            {
+                Printer.PrintReceipt(pR);
+            }
             return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, FiscalNumber = pR.Fiscal.Number, SUM = pR.SumReceipt, CodeError = 0,  TypeRRO = "VirtualRRO", JSON = pR.ToJSON() };
             }
         public override void GetFiscalInfo(Receipt pR, object pRes)

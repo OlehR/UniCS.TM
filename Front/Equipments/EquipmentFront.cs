@@ -290,6 +290,24 @@ namespace Front
                         FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name + "\\BankPos", e);
                     }
                 }
+                //Принтер
+                try
+                {
+                    ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Printer)?.First();
+                    switch (ElEquipment.Model)
+                    {
+                        case eModelEquipment.Printer_Sam4sGcube102:
+                            Printer = new Printer_Sam4sGcube102(ElEquipment, config, LF);
+                            break;
+                        default:
+                            Printer = new Printer(ElEquipment, config);
+                            break;
+                    }
+                }
+                catch (Exception e)
+                {
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name + "\\Принтер", e);
+                }
 
                 //RRO               
                 foreach (var el in ListEquipment.Where(e => e.Type == eTypeEquipment.RRO))
@@ -313,7 +331,7 @@ namespace Front
                                 RRO = new RRO_Maria(el, config, LF, pActionStatus);
                                 break;
                             case eModelEquipment.VirtualRRO:
-                                RRO = new VirtualRRO(el, config, LF, pActionStatus);
+                                RRO = new VirtualRRO(el, config, LF, pActionStatus,Printer);
                                 break;
                             case eModelEquipment.RRO_FP700:
                                 RRO = new RRO_FP700(el, config, LF, pActionStatus);
@@ -333,25 +351,7 @@ namespace Front
                         FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name + "\\RRO", e);
                     }
                 }
-
-                //Принтер
-                try
-                {
-                    ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Printer)?.First();
-                    switch (ElEquipment.Model)
-                    {
-                        case eModelEquipment.Printer_Sam4sGcube102:
-                            Printer = new Printer_Sam4sGcube102(ElEquipment, config, LF);
-                            break;
-                        default:
-                            Printer = new Printer(ElEquipment, config);
-                            break;
-                    }
-                }
-                catch (Exception e)
-                {
-                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name + "\\Принтер", e);
-                }
+                
                 ListEquipment = NewListEquipment;
 
                 //Передаємо зміни станусів наверх.
