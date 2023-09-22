@@ -676,14 +676,15 @@ namespace Front
 
         void AddExciseStamp(string pES)
         {
-            if (CurWares?.AddExciseStamp(pES)==true)
-            {                 //Додання акцизноії марки до алкоголю
-                Bl.UpdateExciseStamp(new List<ReceiptWares>() { CurWares });
-                TypeAccessWait = eTypeAccess.NoDefine;
-                SetStateView(eStateMainWindows.WaitInput);
-            }
-            else
-                CustomMessage.Show("Дана акцизна марка вже використана!", "Увага", eTypeMessage.Error);
+            if (CurWares != null)
+                if (CurWares.AddExciseStamp(pES) == true)
+                {                 //Додання акцизноії марки до алкоголю
+                    Bl.UpdateExciseStamp(new List<ReceiptWares>() { CurWares });
+                    TypeAccessWait = eTypeAccess.NoDefine;
+                    SetStateView(eStateMainWindows.WaitInput);
+                }
+                else
+                    CustomMessage.Show("Дана акцизна марка вже використана!", "Увага", eTypeMessage.Error);
         }
 
         void NewReceipt()
