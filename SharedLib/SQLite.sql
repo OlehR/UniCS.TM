@@ -52,6 +52,7 @@ alter TABLE WARES_RECEIPT add Sum_Wallet NUMBER   NOT NULL DEFAULT 0;--Ver=>18
 alter TABLE payment    add Code_Bank    INTEGER  NOT NULL DEFAULT 0;--Ver=>19
 alter TABLE RECEIPT    add  Number_Order      TEXT;--Ver=>20
 alter TABLE LOG_RRO add CodeError         INTEGER  NOT NULL DEFAULT 0;--Ver=>21
+alter TABLE LOG_RRO add TypePay           INTEGER  NOT NULL DEFAULT 0;--Ver=>22
 
 
 [SqlUpdateMID]
@@ -847,6 +848,7 @@ CREATE INDEX id_RECEIPT_Event ON RECEIPT_Event (CODE_RECEIPT,CODE_WARES,ID_WORKP
 CREATE TABLE Log_RRO (
     ID_WORKPLACE      INTEGER  NOT NULL,
     ID_WORKPLACE_PAY  INTEGER  NOT NULL DEFAULT 0,
+    TypePay           INTEGER  NOT NULL DEFAULT 0,
     CODE_PERIOD       INTEGER  NOT NULL,
     CODE_RECEIPT      INTEGER  NOT NULL,
     FiscalNumber      TEXT,

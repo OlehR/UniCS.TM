@@ -791,8 +791,8 @@ and @TypeDiscount=11; ";
 
         public bool InsertLogRRO(IEnumerable<LogRRO> pLog)
         {
-            string SQL = @"insert into Log_RRO  (ID_WORKPLACE,ID_WORKPLACE_PAY,CODE_PERIOD,CODE_RECEIPT,FiscalNumber, Number_Operation,Type_Operation, SUM ,Type_RRO,JSON, Text_Receipt,Error,CodeError, USER_CREATE) VALUES
-                     (@IdWorkplace, @IdWorkplacePay,@CodePeriod,@CodeReceipt,@FiscalNumber,@NumberOperation,@TypeOperation,@SUM,@TypeRRO,@JSON,@TextReceipt,@Error,@CodeError,@UserCreate)
+            string SQL = @"insert into Log_RRO  (ID_WORKPLACE,ID_WORKPLACE_PAY,TypePay,CODE_PERIOD,CODE_RECEIPT,FiscalNumber, Number_Operation,Type_Operation, SUM ,Type_RRO,JSON, Text_Receipt,Error,CodeError, USER_CREATE) VALUES
+                     (@IdWorkplace, @IdWorkplacePay,@TypePay,@CodePeriod,@CodeReceipt,@FiscalNumber,@NumberOperation,@TypeOperation,@SUM,@TypeRRO,@JSON,@TextReceipt,@Error,@CodeError,@UserCreate)
 ";
             using (var DB = new SQLite(ReceiptFile))
             {

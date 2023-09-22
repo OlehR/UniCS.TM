@@ -51,7 +51,7 @@ values
 
         readonly string SqlGetLogRRO = @"Select ID_WORKPLACE as IdWorkplace,CODE_PERIOD as CodePeriod,CODE_RECEIPT as CodeReceipt,ID_WORKPLACE_PAY as IdWorkplacePay,
       FiscalNumber as FiscalNumber, Number_Operation as NumberOperation,Type_Operation as TypeOperation, SUM as SUM,
-      Type_RRO as TypeRRO,JSON as JSON, Text_Receipt as TextReceipt, CodeError as CodeError, Error as Error, USER_CREATE as UserCreate
+      Type_RRO as TypeRRO,JSON as JSON, Text_Receipt as TextReceipt, CodeError as CodeError, Error as Error, USER_CREATE as UserCreate,TypePay
         from Log_RRO where ID_WORKPLACE = @IdWorkplace and CODE_PERIOD = @CodePeriod
         and CODE_RECEIPT = case when @CodeReceipt=0 then CODE_RECEIPT else @CodeReceipt end";
     }

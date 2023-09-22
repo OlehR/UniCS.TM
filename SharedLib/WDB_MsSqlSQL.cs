@@ -508,7 +508,11 @@ GROUP BY pw.doc_promotion_RRef
         WHEN @CodeWarehouse= 15 THEN 0x817E0050569E814D11EC0030B1FA9530 -- 6(Каса ККМ СО Білочка №10)
         when @CodeWarehouse = 148 then 0x8689005056883C0611ECEBD71B1AE559 -- Каса ККМ СО Ера №3
         end) ;";
-        string SqlGetUser = @"SELECT e.CodeUser, NameUser, BarCode, Login, PassWord, CodeProfile AS TypeUser FROM dbo.V1C_employee e where e.IsWork= 1;";
+        string SqlGetUser = @"SELECT e.CodeUser, NameUser, BarCode, Login, PassWord, CodeProfile AS TypeUser 
+FROM dbo.V1C_employee e
+WHERE e.IsWork= 1 and  e.CodeUser NOT IN 
+(SELECT e.CodeUser FROM  dbo.V1C_employee e where e.IsWork= 1 GROUP by CodeUser HAVING count(*)>1)
+";
 
         string SqlGetDimWorkplace = @"SELECT cd.code AS IdWorkplace, cd.[DESC] AS Name, CONVERT(UNIQUEIDENTIFIER,cd.CashDesk_RRef) AS TerminalGUID, Video_Camera_IP AS VideoCameraIP
   ,COALESCE(cast(wh.code AS int),9) AS CodeWarehouse ,COALESCE(cast(tp.code AS int),2) AS CodeDealer, cd.prefix, cd.DNSName, cd.TypeWorkplace,cd.SettingsEx
