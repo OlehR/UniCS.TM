@@ -1179,6 +1179,7 @@ from RECEIPT r
                 {
                     if (resMes)
                     {
+                        pRes = pRes.Replace(",", ".");
                         var res = Decimal.TryParse(pRes, out decimal pSumMoveMoney);
                         if (res)
                         {

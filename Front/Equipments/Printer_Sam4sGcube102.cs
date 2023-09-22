@@ -134,7 +134,7 @@ namespace Front.Equipments.Implementation
                 Receipt.IdWorkplacePay = IdWorkplacePays[i];
 
                 string pointOfSale = Receipt.Fiscal?.Head; //$"ТОВ \"Ужгород П.С.Ю.\"{Environment.NewLine}СУПЕРМАРКЕТ ВОПАК ЗАКАРПАТСЬКА ОБЛ, М. УЖГОРОД, ВУЛИЦЯ БЕСТУЖЕВА, БУД. 9{Environment.NewLine} ПН 32953730";            
-                                     
+
                 string nameCashier = $"Касир: {Receipt.NameCashier}";
                 //Друк шапки
 
@@ -172,7 +172,7 @@ namespace Front.Equipments.Implementation
                             topPosition = PrintLine(e, $"Акцизна марка: {ExciseStamp[j]}", topPosition, maxChar, MainFont);
                         }
                     }
-                       
+
 
                     string Quantity_x_Price = $"{item.Quantity} x {item.PriceEKKA}";
                     string Price_VatChar = (item.PriceEKKA * item.Quantity).ToString("F2") + item.VatChar;
@@ -326,7 +326,7 @@ namespace Front.Equipments.Implementation
 
         public int PrintTwoColum(PrintPageEventArgs e, string str, string str2, int topPosition, int maxChar)
         {
-            if (str == string.Empty && str2 == string.Empty) return topPosition;
+            if (string.IsNullOrEmpty(str) && string.IsNullOrEmpty(str2)) return topPosition;
             StringFormat stringFormatFirst = new StringFormat();
             stringFormatFirst.Alignment = StringAlignment.Near;
             stringFormatFirst.LineAlignment = StringAlignment.Center;

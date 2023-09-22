@@ -874,7 +874,7 @@ namespace Front
             {
                 Res = WaitRRO(RRO, pIdR, eTypeOperation.SumInCash);
                 if (Res == null)
-                    Sum = RRO?.GetSumInCash() ?? -1;
+                    Sum = RRO?.GetSumInCash(pIdR) ?? -1;
             }
             catch (Exception e)
             {
