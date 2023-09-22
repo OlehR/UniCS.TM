@@ -38,7 +38,30 @@ namespace Front
         BankTerminal Terminal;
         //Rro RRO;
         SortedList<int, Rro> RROs = new();
-        Rro GetRRO(int pIdWorkplace) { return RROs?.ContainsKey(pIdWorkplace) == true ? RROs[pIdWorkplace] : (pIdWorkplace == 0 && RROs?.ContainsKey(Global.IdWorkPlace) == true ? RROs[Global.IdWorkPlace] : null); }
+        IEnumerable<Rro> GetRROs(int pIdWorkplace)
+        {
+            return RROs.Where(el=> el.Key>=pIdWorkplace*100 && el.Key < pIdWorkplace * 100+99).Select(el=>el.Value);
+        }
+        Rro GetRRO(Receipt pR) { return GetRRO(pR.IdWorkplacePay, pR.TypePay); }
+        Rro GetRRO(int pIdWorkplace, eTypePay pTypePay = eTypePay.None)
+        {
+            if (RROs == null)
+                return null;
+            Rro Res = null;
+            int Key = pIdWorkplace * 100 + (int)pTypePay;
+            if (RROs.ContainsKey(Key))
+                Res = RROs[Key];
+            else
+            {
+                if (pTypePay != eTypePay.None)
+                {
+                    Key = pIdWorkplace * 100 ;
+                    if (RROs.ContainsKey(Key))
+                        Res = RROs[Key];
+                }
+            }
+            return Res;
+        }
         /// <summary>
         /// Текуча операція РРО для блокування операцій.
         /// </summary>
@@ -344,7 +367,7 @@ namespace Front
                                 break;
                         }
                         NewListEquipment.Add(RRO);
-                        RROs.Add(RRO.IdWorkplacePay, RRO);
+                        RROs.Add(RRO.IdWorkplacePay*100+(int)RRO.TypePay, RRO);
                     }
                     catch (Exception e)
                     {
@@ -393,7 +416,7 @@ namespace Front
             
             lock (pRRO)
             {
-                var RRO = GetRRO(pReceipt.IdWorkplacePay);
+                //var RRO = GetRRO(pReceipt.IdWorkplacePay);
                 try
                 {
                     FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Start pRRO=> {pRRO.GetHashCode()} TypeOperation=>{pTypeOperation} pMilisecond={pMilisecond}");
@@ -401,7 +424,7 @@ namespace Front
                     while (pMilisecond > 0 && pRRO.TypeOperation != eTypeOperation.NotDefine)
                     {
                         if (pIsStop)
-                            RRO?.Stop();
+                            pRRO?.Stop();
                         Thread.Sleep(50);
                         pMilisecond -= 50;
                     }
@@ -413,8 +436,8 @@ namespace Front
                     }
                     else
                     {
-                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"pRRO=> {pRRO.GetHashCode()} LastTypeOperation=>{pRRO.TypeOperation} LockDT=> {RRO.LockDT} TryTypeOperation=>{pTypeOperation} pMilisecond={pMilisecond}", eTypeLog.Error);
-                        Res = new LogRRO(pReceipt) { TypeOperation = pTypeOperation, TypeRRO = RRO.Model.ToString(), CodeError = -1, Error = $"Не вдалось виконати текучу операцію {pTypeOperation} на RRO{Environment.NewLine}Оскільки не виконалась попередня: LastTypeOperation=>{pRRO.TypeOperation} LockDT=> {RRO.LockDT}" };
+                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"pRRO=> {pRRO.GetHashCode()} LastTypeOperation=>{pRRO.TypeOperation} LockDT=> {pRRO.LockDT} TryTypeOperation=>{pTypeOperation} pMilisecond={pMilisecond}", eTypeLog.Error);
+                        Res = new LogRRO(pReceipt) { TypeOperation = pTypeOperation, TypeRRO = pRRO.Model.ToString(), CodeError = -1, Error = $"Не вдалось виконати текучу операцію {pTypeOperation} на RRO{Environment.NewLine}Оскільки не виконалась попередня: LastTypeOperation=>{pRRO.TypeOperation} LockDT=> {pRRO.LockDT}" };
                     }
                 }
                 catch (Exception e)
@@ -434,10 +457,9 @@ namespace Front
             if (pReceipt == null || pReceipt.Payment == null || !pReceipt.Payment.Any(el => el.TypePay == eTypePay.Card || el.TypePay == eTypePay.Cash))
                 return new LogRRO(pReceipt) { CodeError = -1, Error = $"Відсутня оплата по Робочому місцю № ({pReceipt.IdWorkplacePay})" };
             var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
-            {
-                var RRO = GetRRO(pReceipt.IdWorkplacePay);
+            {                
+                var RRO = GetRRO(pReceipt);
                 LogRRO Res;
-
                 try
                 {
                     Res = WaitRRO(RRO, pReceipt, eTypeOperation.Sale);
@@ -627,7 +649,7 @@ namespace Front
         public decimal SumReceiptFiscal(Receipt pR)
         {
             if (pR == null || pR.Wares == null || !pR.Wares.Any()) return 0;
-            var RRO = GetRRO(pR.IdWorkplacePay);
+            var RRO = GetRRO(pR);
             decimal sum = 0;
             sum = RRO != null ? RRO.SumReceiptFiscal(pR) : pR.Wares.Sum(r => (r.SumTotal));
             return sum;
@@ -672,7 +694,7 @@ namespace Front
 
             var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
             {
-                var RRO = GetRRO(pReceipt.IdWorkplacePay);
+                var RRO = GetRRO(pReceipt);
                 LogRRO Res;
 
                 try
@@ -733,7 +755,7 @@ namespace Front
                 if (IdWorkplacePays[i] == pR.IdWorkplacePay || pR.IdWorkplacePay > 0)
                 {
                     pR.IdWorkplacePay = IdWorkplacePays[i];
-                    var RRO = GetRRO(pR.IdWorkplacePay);
+                    var RRO = GetRRO(pR);
                     Sum += RRO?.SumCashReceiptFiscal(pR) ?? 0;
                 }
             }

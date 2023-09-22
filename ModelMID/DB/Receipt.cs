@@ -434,6 +434,8 @@ namespace ModelMID
         public bool IsPrintIssueOfCash { get { return (Payment!=null && Payment.Any(el => el.TypePay == eTypePay.IssueOfCash)) && (LogRROs==null || !LogRROs.Any(el => el.TypeOperation == eTypeOperation.IssueOfCash)); } }
         [JsonIgnore]
         public Payment IssueOfCash { get { return Payment?.Where(el=> el.TypePay== eTypePay.IssueOfCash).FirstOrDefault(); } }
+
+        public eTypePay TypePay { get { return Payment != null && Payment.Any(el => el.TypePay == eTypePay.Card || el.TypePay == eTypePay.Cash) ? Payment.FirstOrDefault(el => el.TypePay == eTypePay.Card || el.TypePay == eTypePay.Cash).TypePay : eTypePay.None; } }
     }
     public class WorkplacePay
     {

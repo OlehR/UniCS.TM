@@ -27,6 +27,8 @@ namespace Front.Equipments
 
         string DefaultTax=null;
         SortedList<int, string> Tax = new SortedList<int, string>();
+
+        public eTypePay TypePay { get;set; }
         /// <summary>
         /// Чи відкрита зміна.
         /// </summary>
@@ -55,7 +57,8 @@ namespace Front.Equipments
                 Configuration.GetSection("MID:VAT").Bind(LTax);
             foreach (var el in LTax)
                     if (!Tax.ContainsKey(el.Code))
-                        Tax.Add(el.Code, el.CodeEKKA);                    
+                        Tax.Add(el.Code, el.CodeEKKA);
+            TypePay = Configuration.GetValue<eTypePay>($"{KeyPrefix}TypePay",eTypePay.None);
         }
 
         public virtual void SetOperatorName(string pOperatorName)
