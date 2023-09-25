@@ -266,48 +266,27 @@
                         </Grid.RowDefinitions>
 
 
+                        <ComboBox Grid.Row="0" Grid.Column="0" Margin="5" Loaded="ComboBoxWorkPlaces_Loaded"
+                                  x:Name="ComboBoxWorkPlaces" SelectionChanged="WorkPlacesComboBox_SelectionChanged" >
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <DockPanel LastChildFill="True">
+                                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="2"/>
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <ComboBox Grid.Row="0" Grid.Column="1" Margin="5"
+                                  x:Name="ComboBoxCashRegisters" SelectionChanged="CashRegistersComboBox_SelectionChanged" >
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <DockPanel LastChildFill="True">
+                                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="2"/>
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
 
-                        <ScrollViewer Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
-                            <ItemsControl x:Name="WorkPlacesList" >
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <WrapPanel />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal">
-                                            <RadioButton GroupName="radioWorkPlacesList"  
-                                                         Style="{DynamicResource OrangeSwitchStyle}" IsChecked="{Binding IsChoice}"
-                                                         Checked="CheckWorkPlaceId"
-                                                         >
-                                                <TextBlock Text="{Binding Name}" FontSize="22"/>
-                                            </RadioButton>
-                                            <TextBlock Text="   |   "/>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-
-                            </ItemsControl>
-                        </ScrollViewer>
-                        <!--<ScrollViewer Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
-                VerticalScrollBarVisibility="Auto" >
-                            <ItemsControl  Name="WorkPlacesList">
-                                
-                                <ItemsControl.ItemTemplate>
-                                    
-                                    <DataTemplate>
-
-                                        <Grid Margin="10,0,0,0">
-                                            <StackPanel Orientation="Horizontal">
-                                                <RadioButton GroupName="radioWorkPlacesList" FontSize="18" Content="{Binding Name}" Checked="CheckWorkPlaceId"/>
-                                            </StackPanel>
-                                        </Grid>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </ScrollViewer>-->
                         <GroupBox Grid.Column="0" Grid.Row="1" Header="POS-термінал" Margin="20, 20 , 10 ,20">
                             <StackPanel>
                                 <ScrollViewer >

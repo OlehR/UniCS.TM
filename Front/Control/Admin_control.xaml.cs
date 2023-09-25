@@ -37,7 +37,7 @@ namespace Front.Control
         ObservableCollection<LogRRO> SourcesListJournal;
         ObservableCollection<Equipment> AllEquipment = new ObservableCollection<Equipment>();
         ObservableCollection<Banknote> Banknotes = new ObservableCollection<Banknote>();
-        
+
         public double TotalMoneyCounting
         {
             get
@@ -57,7 +57,7 @@ namespace Front.Control
         public string ControlScaleWeightDouble { get; set; } = "0";
         MainWindow MW;
         public Receipt curReceipt = null;
-        
+
         LogRRO SelectedListJournal = null;
         public bool IsSelectedListJournal { get { return SelectedListJournal != null; } }
         Receipt ChangeStateReceipt = null;
@@ -88,6 +88,7 @@ namespace Front.Control
         public IEnumerable<WorkPlace> WorkPlaces { get { return Global.GetIdWorkPlaces; } }
         WorkPlace _SelectedWorkPlace = null;
         public WorkPlace SelectedWorkPlace { get { return _SelectedWorkPlace != null ? _SelectedWorkPlace : WorkPlaces.First(); } set { _SelectedWorkPlace = value; } }
+        public Rro SelectedCashRegister { get; set; }
         ObservableCollection<BankTerminal> ActiveTerminals = new();
         IEnumerable<string> TextReceipt;
         public StringBuilder SB { get; set; } = new();
@@ -118,7 +119,8 @@ namespace Front.Control
 
             InitializeComponent();
             CreateBanknote();
-            WorkPlacesList.ItemsSource = WorkPlaces;
+            ComboBoxWorkPlaces.ItemsSource = WorkPlaces;
+            
             this.DataContext = this;
             //Список команд для віддаленого керування
             //ListRadioButtonAPI.ItemsSource = TypeMessageRadiobuton;
@@ -157,7 +159,7 @@ namespace Front.Control
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("NameAdminUserOpenShift"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DataOpenShift"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsControlScale"));
-            
+
 
             //TB_NameAdminUserOpenShift.Text = NameAdminUserOpenShift;
             //TB_DataOpenShift.Text= $"{DataOpenShift}";
@@ -175,6 +177,14 @@ namespace Front.Control
                     {
                         AllEquipment = new ObservableCollection<Equipment>(EF.GetListEquipment);
                         ListEquipment.ItemsSource = AllEquipment;
+                        var RROs = AllEquipment.Where(x => x.Type == eTypeEquipment.RRO);
+                        ComboBoxCashRegisters.ItemsSource = RROs;
+                        if (RROs.Count()>0)
+                        {
+                            SelectedCashRegister = RROs.First() as Rro;
+                            ComboBoxCashRegisters.SelectedItem = SelectedCashRegister;
+                        }
+                        
                     }
                     if (ActiveTerminals.Count == 0)
                     {
@@ -216,7 +226,7 @@ namespace Front.Control
             {
                 return true;
             }
-            else if (FindReceiptByNumber>0)
+            else if (FindReceiptByNumber > 0)
             {
                 return ((item as Receipt).CodeReceipt == FindReceiptByNumber);
             }
@@ -368,7 +378,7 @@ namespace Front.Control
                 //});
                 //}
             }
-            else   
+            else
             {
                 MW.SetStateView(eStateMainWindows.StartWindow);
                 TabAdmin.SelectedIndex = 0;
@@ -459,7 +469,7 @@ namespace Front.Control
                 {
                     var res = Eq.TestDevice();
                     MW.CustomMessage.Show($"{res.StateEquipment} {res.TextState}", res.ModelEquipment.ToString(), eTypeMessage.Information);
-                   // MessageBox.Show($"{res.StateEquipment} {res.TextState}", res.ModelEquipment.ToString());
+                    // MessageBox.Show($"{res.StateEquipment} {res.TextState}", res.ModelEquipment.ToString());
                     Init(AdminUser);
                 }
             }
@@ -493,7 +503,8 @@ namespace Front.Control
                 view.Filter = ReceiptFilter;
 
             }
-            string tabItem = ((sender as TabControl).SelectedItem as TabItem).Header as string;
+            var tabControl = (sender as TabControl).SelectedItem;
+            string tabItem = tabControl.IsNotNull()? (tabControl as TabItem).Header as string: "Зміна";
 
             switch (tabItem)
             {
@@ -684,7 +695,7 @@ namespace Front.Control
             {
                 if (res)
                     System.Diagnostics.Process.Start("shutdown.exe", "-s -t 0");
-                
+
             };
             //if (MessageBox.Show("Вимкнути касу?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             //{
@@ -980,16 +991,16 @@ namespace Front.Control
         private void Check1C_Click(object sender, RoutedEventArgs e)
         {
             StringBuilder Res = new();
-            
+
 
             var MsSQL = new WDB_MsSql();
             var Receipts = Bl.GetReceipts(DateSoSearch, DateSoSearch, Global.IdWorkPlace);
-           
+
             decimal Sum1CTotal = 0, Sum = 0;
             Res.Append($"Звіт за {DateSoSearch} {Environment.NewLine}");
 
             decimal Total = 0;// Receipts.Where(el => el.StateReceipt >= eStateReceipt.Pay).Sum(el => el.SumTotal);
-           
+
 
 
             foreach (var IdWP in Global.GetIdWorkPlaces)
@@ -1035,7 +1046,7 @@ namespace Front.Control
                 }
             }
             Res.Append($"Всього 1С => {Sum1CTotal}{Environment.NewLine}");
-           
+
             Sum = Receipts.Where(el => el.StateReceipt >= eStateReceipt.Pay).Sum(el => el.SumTotal);
             Res.Append($"Всього Програма => {Sum}{Environment.NewLine}");
             Sum = Receipts.Where(el => el.StateReceipt >= eStateReceipt.Pay && el.StateReceipt < eStateReceipt.Send).Sum(el => el.SumTotal);
@@ -1061,7 +1072,7 @@ order by Pay.code_receipt";
                 foreach (var el in ss)
                     Res.AppendLine(el);
             }
-         
+
             SQL = @"select '№'||p.code_RECEIPT || ' Фіскальний=>'||p.sum_pay||'  Програма=>'|| round(  r.SUM_RECEIPt-r.SUM_DISCOUNT-r.sum_bonus-coalesce(pr.SUM_PAY,0),2) as sum_r--,r.SUM_RECEIPT,r.SUM_BONUS,r.SUM_DISCOUNT
 from RECEIPT r
  left join PAYMENT p on r.code_receipt=p.code_receipt and p.type_pay=7
@@ -1081,22 +1092,6 @@ from RECEIPT r
 
         }
 
-        private void CheckWorkPlaceId(object sender, RoutedEventArgs e)
-        {
-            RadioButton ChBtn = sender as RadioButton;
-            if (ChBtn.DataContext is WorkPlace)
-            {
-                WorkPlace temp = ChBtn.DataContext as WorkPlace;
-                if (ChBtn.IsChecked == true)
-                {
-                    SelectedWorkPlace = temp;
-                    foreach (var workPlace in WorkPlaces)
-                        workPlace.IsChoice = workPlace.IdWorkplace == temp.IdWorkplace;
-
-                }
-
-            }
-        }
 
         private void PrintSelectRecript(object sender, RoutedEventArgs e)
         {
@@ -1374,7 +1369,7 @@ from RECEIPT r
             MW.InputNumberPhone.ValidationMask = "";
             MW.InputNumberPhone.Result = "";
             MW.InputNumberPhone.IsEnableComma = false;
-            MW.InputNumberPhone.CallBackResult = (string res) => 
+            MW.InputNumberPhone.CallBackResult = (string res) =>
             {
                 OrderNumber = res;
                 MW.NumericPad.Visibility = Visibility.Collapsed;
@@ -1429,6 +1424,36 @@ from RECEIPT r
             };
             MW.NumericPad.Visibility = Visibility.Visible;
             BackgroundReceipts.Visibility = Visibility.Visible;
+        }
+
+        private void WorkPlacesComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ComboBoxWorkPlaces.SelectedItem is WorkPlace SelWorkPlace)
+            {
+                SelectedWorkPlace = SelWorkPlace;
+                foreach (var workPlace in WorkPlaces)
+                    workPlace.IsChoice = workPlace.IdWorkplace == SelWorkPlace.IdWorkplace;
+
+            }
+        }
+
+        private void ComboBoxWorkPlaces_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Знайти елемент з полем IsChoice == true
+            var selectedWorkPlace = WorkPlaces.FirstOrDefault(wp => wp.IsChoice);
+
+            if (selectedWorkPlace != null)
+            {
+                // Встановити вибраним елементом елемент з полем IsChoice == true
+                ComboBoxWorkPlaces.SelectedItem = selectedWorkPlace;
+            }
+        }
+
+
+        private void CashRegistersComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ComboBoxCashRegisters.SelectedItem is Rro SelCashRegister)
+                SelectedCashRegister = SelCashRegister;
         }
     }
 
