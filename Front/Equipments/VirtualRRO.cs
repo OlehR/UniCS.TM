@@ -49,7 +49,8 @@ namespace Front.Equipments.Implementation
             var logRRO = Bl.GetLogRRO(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() });
             if (Printer != null)
                 Printer.Print(logRRO.LastOrDefault().TextReceipt.Split(Environment.NewLine).ToList());
-            return new LogRRO(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() }) { TypeOperation = eTypeOperation.CopyReceipt, TextReceipt = logRRO.LastOrDefault().TextReceipt, TypeRRO = "VirtualRRO", JSON = logRRO.LastOrDefault().ToJSON(), FiscalNumber = $"{FiscalNumber}_{eTypeOperation.CopyReceipt}" };
+            return new LogRRO(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() }) 
+                { TypeOperation = eTypeOperation.CopyReceipt, TextReceipt = logRRO.LastOrDefault().TextReceipt, TypeRRO = "VirtualRRO", JSON = logRRO.LastOrDefault().ToJSON(), FiscalNumber = $"{FiscalNumber}_{eTypeOperation.CopyReceipt}",TypePay=TypePay };
         }
 
         override public LogRRO PrintZ(IdReceipt pIdR)
@@ -114,7 +115,7 @@ namespace Front.Equipments.Implementation
             TextReport.Add($"ФН РРО {FiscalNumber}");
             if (Printer != null)
                 Printer.Print(TextReport);
-            return new LogRRO(pIdR) { TypeOperation = eTypeOperation.XReport, FiscalNumber = $"{FiscalNumber}_{typeOperation}", JSON = pIdR.ToJSON(), TextReceipt = string.Join(Environment.NewLine, TextReport), TypeRRO = "VirtualRRO" };
+            return new LogRRO(pIdR) { TypeOperation = eTypeOperation.XReport, FiscalNumber = $"{FiscalNumber}_{typeOperation}", JSON = pIdR.ToJSON(), TextReceipt = string.Join(Environment.NewLine, TextReport), TypeRRO = "VirtualRRO", TypePay = TypePay };
         }
         private string PrintCenter(string text)
         {
@@ -228,7 +229,7 @@ namespace Front.Equipments.Implementation
         override public LogRRO MoveMoney(decimal pSum, IdReceipt pIdR = null)
         {
             eTypeOperation typeOperation = pSum > 0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyOut;
-            return new LogRRO(pIdR) { TypeOperation = typeOperation, FiscalNumber = typeOperation.GetDescription(), SUM = pSum, TypeRRO = "VirtualRRO", JSON = pIdR.ToJSON() };
+            return new LogRRO(pIdR) { TypeOperation = typeOperation, FiscalNumber = typeOperation.GetDescription(), SUM = pSum, TypeRRO = "VirtualRRO", JSON = pIdR.ToJSON(), TypePay = TypePay };
         }
 
         /// <summary>
@@ -331,7 +332,7 @@ namespace Front.Equipments.Implementation
             //if (Printer != null)
             //    Printer.Print(TextReport);
 
-            return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, SUM = pR.SumCreditCard, CodeError = 0, TypeRRO = "VirtualRRO", JSON = pR.ToJSON(), FiscalNumber = pR.Fiscal.Number, TextReceipt = string.Join(Environment.NewLine, TextReport) };
+            return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, SUM = pR.SumCreditCard, CodeError = 0, TypeRRO = "VirtualRRO", JSON = pR.ToJSON(), FiscalNumber = pR.Fiscal.Number, TextReceipt = string.Join(Environment.NewLine, TextReport), TypePay = TypePay };
         }
         public override void GetFiscalInfo(Receipt pR, object pRes)
         {
@@ -360,7 +361,7 @@ namespace Front.Equipments.Implementation
         {
             List<ReceiptText> d = pR.Select(el => new ReceiptText() { Text = el.StartsWith("QR=>") ? el.SubString(4) : el, RenderType = el.StartsWith("QR=>") ? eRenderAs.QR : eRenderAs.Text }).ToList();
             //PrintSeviceReceipt(d);
-            return new LogRRO(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace }) { TypeOperation = eTypeOperation.NoFiscalReceipt, TypeRRO = Type.ToString(), JSON = pR.ToJSON() };
+            return new LogRRO(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace }) { TypeOperation = eTypeOperation.NoFiscalReceipt, TypeRRO = Type.ToString(), JSON = pR.ToJSON(), TypePay = TypePay };
 
         }
 

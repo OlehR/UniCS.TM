@@ -638,7 +638,7 @@ namespace Front
             return r;
         }
 
-        public LogRRO RroPrintCopyReceipt(int pIdWorkplacePay,Rro pRRO=0)
+        public LogRRO RroPrintCopyReceipt(int pIdWorkplacePay,Rro pRRO=null)
         {
             var RRO = pRRO??GetRRO(pIdWorkplacePay);
             var r = RRO?.PrintCopyReceipt();

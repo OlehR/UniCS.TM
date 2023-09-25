@@ -1182,7 +1182,7 @@ from RECEIPT r
                                 pSumMoveMoney = pSumMoveMoney * (-1); // для вилучення відємне значення
                             var task = Task.Run(() =>
                             {
-                                var r = EF.RroMoveMoney(pSumMoveMoney, new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
+                                var r = EF.RroMoveMoney(pSumMoveMoney, new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace },SelectedCashRegister);
                                 if (r.CodeError == 0)
                                     MW.CustomMessage.Show("Успішно!", "Операції з готівкою", eTypeMessage.Information);
                                 //MessageBox.Show("Успішно!");
