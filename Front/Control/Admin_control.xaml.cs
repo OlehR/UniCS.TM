@@ -326,7 +326,7 @@ namespace Front.Control
         {
             var task = Task.Run(() =>
             {
-                var r = EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
+                var r = EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace }, SelectedCashRegister);
                 if (r.CodeError == 0)
                     ViewReceiptFiscal(r);
                 else
@@ -351,7 +351,7 @@ namespace Front.Control
                     {
                         var task = Task.Run(() =>
                         {
-                            var r = EF.RroPrintZ(new IdReceipt() { IdWorkplace = SelectedWorkPlace.IdWorkplace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
+                            var r = EF.RroPrintZ(new IdReceipt() { IdWorkplace = SelectedWorkPlace.IdWorkplace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace }, SelectedCashRegister);
                             if (r.CodeError == 0)
                                 ViewReceiptFiscal(r);
                             else
@@ -392,13 +392,13 @@ namespace Front.Control
             var task = Task.Run(() =>
             {
                 var tmpReceipt = new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace };
-                var r = EF.RroPeriodZReport(tmpReceipt, DateStartPeriodZ, DateEndPeriodZ, !IsShortPeriodZ);
+                var r = EF.RroPeriodZReport(tmpReceipt, DateStartPeriodZ, DateEndPeriodZ, !IsShortPeriodZ, SelectedCashRegister);
             });
         }
 
         private void EKKA_Copy_Click(object sender, RoutedEventArgs e)
         {
-            EF.RroPrintCopyReceipt(SelectedWorkPlace.IdWorkplace);
+            EF.RroPrintCopyReceipt(SelectedWorkPlace.IdWorkplace, SelectedCashRegister);
         }
 
         private void WorkStart_Click(object sender, RoutedEventArgs e)

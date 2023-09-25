@@ -544,12 +544,12 @@ namespace Front
            });
         }
 
-        public LogRRO RroPrintX(IdReceipt pIdR)
+        public LogRRO RroPrintX(IdReceipt pIdR,Rro pRRO=null)
         {
 
             var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
             {
-                var RRO = GetRRO(pIdR.IdWorkplacePay);
+                var RRO = pRRO?? GetRRO(pIdR.IdWorkplacePay);
                 LogRRO Res;
 
 
@@ -577,11 +577,11 @@ namespace Front
             return r;
         }
 
-        public LogRRO RroPrintZ(IdReceipt pIdR)
+        public LogRRO RroPrintZ(IdReceipt pIdR, Rro pRRO = null)
         {
             var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
             {
-                var RRO = GetRRO(pIdR.IdWorkplacePay);
+                var RRO = pRRO??GetRRO(pIdR.IdWorkplacePay);
                 LogRRO Res;
 
                 try
@@ -608,11 +608,11 @@ namespace Front
             return r;
         }
 
-        public LogRRO RroPeriodZReport(IdReceipt pIdR, DateTime pBegin, DateTime pEnd, bool IsFull = true)
+        public LogRRO RroPeriodZReport(IdReceipt pIdR, DateTime pBegin, DateTime pEnd, bool IsFull = true,Rro pRRO = null)
         {
             var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
             {
-                var RRO = GetRRO(pIdR.IdWorkplacePay);
+                var RRO = pRRO ?? GetRRO(pIdR.IdWorkplacePay);
                 LogRRO Res;
 
                 try
@@ -638,9 +638,9 @@ namespace Front
             return r;
         }
 
-        public LogRRO RroPrintCopyReceipt(int pIdWorkplacePay)
+        public LogRRO RroPrintCopyReceipt(int pIdWorkplacePay,Rro pRRO=0)
         {
-            var RRO = GetRRO(pIdWorkplacePay);
+            var RRO = pRRO??GetRRO(pIdWorkplacePay);
             var r = RRO?.PrintCopyReceipt();
             Bl.InsertLogRRO(r);
             return r;
@@ -655,12 +655,12 @@ namespace Front
             return sum;
         }
 
-        public LogRRO RroMoveMoney(decimal pSum, IdReceipt pIdR)
+        public LogRRO RroMoveMoney(decimal pSum, IdReceipt pIdR,Rro pRRO=null)
         {
 
             var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
             {
-                var RRO = GetRRO(pIdR.IdWorkplacePay);
+                var RRO = pRRO ?? GetRRO(pIdR.IdWorkplacePay);
                 LogRRO Res;
 
                 try
@@ -866,7 +866,7 @@ namespace Front
         /// <returns></returns>
         public decimal GetSumInCash(IdReceipt pIdR)
         {
-            var RRO = GetRRO(pIdR.IdWorkplacePay);
+            var RRO = GetRRO(pIdR.IdWorkplacePay,eTypePay.Cash);
             LogRRO Res;
 
             decimal Sum = -1;
