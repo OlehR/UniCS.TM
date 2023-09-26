@@ -220,7 +220,7 @@ namespace Front
         public bool IsManyPayments { get; set; } = false;
         public string AmountManyPayments { get; set; } = "";
         public string SumTotalManyPayments { get; set; } = "Загальна сума: ";
-        public bool IsCashRegister { get { return (Global.TypeWorkplace == eTypeWorkplace.CashRegister); } }
+        public bool IsCashRegister { get { return (Global.TypeWorkplaceCurrent == eTypeWorkplace.CashRegister); } }
 
 
         public System.Drawing.Color GetFlagColor(eStateMainWindows pStateMainWindows, eTypeAccess pTypeAccess, eStateScale pSS)
@@ -331,9 +331,9 @@ namespace Front
                 _ = SocketServer.StartAsync();
             }
 
-            CS = new ControlScale(10d, Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout);
+            CS = new ControlScale(10d, Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout);
             s = Sound.GetSound(CS);
-            Volume = (Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout);
+            Volume = (Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout);
             var fc = new List<FlagColor>();
             Config.GetConfiguration().GetSection("MID:FlagColor").Bind(fc);
             foreach (var el in fc)
@@ -403,7 +403,7 @@ namespace Front
                             AdminSSC = Bl.GetUserByBarCode(BarCodeAdminSSC);
                         }
                         catch (Exception e) { };
-                        if (Global.TypeWorkplace == eTypeWorkplace.CashRegister)
+                        if (Global.TypeWorkplaceCurrent == eTypeWorkplace.CashRegister)
                             Access.СurUser = AdminSSC;
                     }
                     DTAdminSSC = TimeAdminSSC;
@@ -419,7 +419,7 @@ namespace Front
 
             SetCurReceipt(null);
             Receipt LastR = null;
-            if (Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout)
+            if (Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout)
             {
                 try
                 {
@@ -474,11 +474,19 @@ namespace Front
 
             Task.Run(() => Bl.ds.SyncDataAsync());
         }
+
+        public void SetWorkPlace()
+        {
+            CS.SetOnOff(Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout);
+            Volume = (Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout);
+        }
+
         void timer_Tick(object sender, EventArgs e)
         {
             Clock = DateTime.Now.ToShortTimeString();
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Clock)));
         }
+
         public void SetCurReceipt(Receipt pReceipt)
         {
             try
@@ -696,7 +704,7 @@ namespace Front
                         customWindow = (State == eStateMainWindows.WaitCustomWindows ? pCW : null);
 
                     if (State == eStateMainWindows.StartWindow)
-                        Volume = (Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout);
+                        Volume = (Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout);
                     if (TypeAccessWait == eTypeAccess.FixWeight || !IsConfirmAdmin)
                         s.Play(State, TypeAccessWait, CS.StateScale, 0);
                     //if ((State == eStateMainWindows.WaitAdmin || State == eStateMainWindows.WaitAdminLogin) && TypeAccessWait == eTypeAccess.ExciseStamp)
@@ -1126,7 +1134,7 @@ namespace Front
 
         private void _ButtonHelp(object sender, RoutedEventArgs e)
         {
-            SetStateView(Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout || AdminSSC == null ? eStateMainWindows.WaitAdmin : eStateMainWindows.AdminPanel, eTypeAccess.AdminPanel);
+            SetStateView(Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout || AdminSSC == null ? eStateMainWindows.WaitAdmin : eStateMainWindows.AdminPanel, eTypeAccess.AdminPanel);
         }
 
         private void _OwnBag(object sender, RoutedEventArgs e)

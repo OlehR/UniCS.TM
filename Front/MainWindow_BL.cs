@@ -468,7 +468,7 @@ namespace Front
 
             Dispatcher.BeginInvoke(new ThreadStart(() =>
             { EquipmentStatusInPayment.Text = ""; }));
-            if (Global.TypeWorkplace == eTypeWorkplace.CashRegister && (curReceipt.StateReceipt==eStateReceipt.Prepare || curReceipt.StateReceipt==eStateReceipt.StartPay))
+            if (Global.TypeWorkplaceCurrent == eTypeWorkplace.CashRegister && (curReceipt.StateReceipt==eStateReceipt.Prepare || curReceipt.StateReceipt==eStateReceipt.StartPay))
             {
                 PaymentWindow.UpdatePaymentWindow();
                 SetStateView(eStateMainWindows.ChoicePaymentMethod);

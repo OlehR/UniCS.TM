@@ -140,7 +140,10 @@ namespace SharedLib
             catch
             { Global.TypeWorkplace = eTypeWorkplace.SelfServicCheckout; }
 
-
+            if (Global.TypeWorkplaceCurrent == eTypeWorkplace.Both)
+                Global.TypeWorkplaceCurrent = eTypeWorkplace.SelfServicCheckout;
+            else
+                Global.TypeWorkplaceCurrent = Global.TypeWorkplace;
 
             try
             {

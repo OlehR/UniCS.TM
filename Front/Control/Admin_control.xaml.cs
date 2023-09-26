@@ -72,7 +72,7 @@ namespace Front.Control
         public bool IsShowAllJournal { get; set; }
         //BatchTotals LastReceipt = null;
 
-        public bool IsCashRegister { get { return Global.TypeWorkplace == eTypeWorkplace.CashRegister; } }
+        public bool IsCashRegister { get { return Global.TypeWorkplaceCurrent == eTypeWorkplace.CashRegister; } }
 
         public DateTime DateSoSearch { get; set; } = DateTime.Now.Date;
         public DateTime DateStartPeriodZ { get; set; } = DateTime.Now.Date;
@@ -409,7 +409,7 @@ namespace Front.Control
         public void OpenShift(User pU)
         {
             MW.AdminSSC = pU;
-            if (Global.TypeWorkplace == eTypeWorkplace.CashRegister)
+            if (Global.TypeWorkplaceCurrent == eTypeWorkplace.CashRegister)
                 MW.Access.СurUser = pU;
             MW.DTAdminSSC = DateTime.Now;
             MW.Bl.db.SetConfig<DateTime>("DateAdminSSC", DateTime.Now);

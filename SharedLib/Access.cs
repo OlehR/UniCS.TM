@@ -24,7 +24,13 @@ namespace SharedLib
         
         public Access()
         {
-            eTypeUser R =  (Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout ? eTypeUser.AdminSSC : eTypeUser.Guardian);//eTypeUser.AdminSSC;//
+            Init();            
+        }
+
+        public void Init() 
+        {
+            Right.Clear();
+            eTypeUser R = (Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout ? eTypeUser.AdminSSC : eTypeUser.Guardian);//eTypeUser.AdminSSC;//
             Right.Add(eTypeAccess.DelWares, R);
             Right.Add(eTypeAccess.DelReciept, R);
             Right.Add(eTypeAccess.ReturnReceipt, R);
@@ -32,8 +38,8 @@ namespace SharedLib
             Right.Add(eTypeAccess.ConfirmAge, eTypeUser.Сashier);
             Right.Add(eTypeAccess.ExciseStamp, eTypeUser.Сashier);
             Right.Add(eTypeAccess.FixWeight, eTypeUser.AdminSSC);
-            Right.Add(eTypeAccess.AddNewWeight, eTypeUser.AdminSSC);            
-            Right.Add(eTypeAccess.AdminPanel, Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout ? eTypeUser.AdminSSC : eTypeUser.Сashier); 
+            Right.Add(eTypeAccess.AddNewWeight, eTypeUser.AdminSSC);
+            Right.Add(eTypeAccess.AdminPanel, Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout ? eTypeUser.AdminSSC : eTypeUser.Сashier);
             Right.Add(eTypeAccess.UseBonus, eTypeUser.Guardian);
         }
 

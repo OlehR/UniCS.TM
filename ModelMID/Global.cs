@@ -30,6 +30,9 @@ namespace ModelMID
 
         //public static List<WorkPlace> AllWorkPlaces = new List<WorkPlace>();
 
+        // Тип Робочого місця
+        public static eTypeWorkplace TypeWorkplaceCurrent = eTypeWorkplace.SelfServicCheckout;
+        //Тип Робочого місця з конфігураційного файлу
         public static eTypeWorkplace TypeWorkplace = eTypeWorkplace.SelfServicCheckout;
         /// <summary>
         /// Id робочого місця

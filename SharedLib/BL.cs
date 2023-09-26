@@ -382,7 +382,7 @@ namespace SharedLib
                 UpdateClientInReceipt(pIdReceipt, client);
                 return client;
             }
-            if (Global.TypeWorkplace != eTypeWorkplace.NotDefine && r.Count() > 1)//Якщо не модерн і є кілька клієнтів.
+            if (Global.TypeWorkplaceCurrent != eTypeWorkplace.NotDefine && r.Count() > 1)//Якщо не модерн і є кілька клієнтів.
             {
                 // Створюємо  користувацьке вікно
                 var CW = new CustomWindow(eWindows.ChoiceClient, r);

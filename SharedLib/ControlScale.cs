@@ -263,6 +263,7 @@ namespace ModelMID
             MidlWeight = new MidlWeight(3);
             IsOn = pIsOn;
         }
+        public void SetOnOff(bool pIsOn) { IsOn = pIsOn; }
 
         bool IsTooLight { get { return WaitWeight.Length > 0 && WaitWeight.Count(e => e.Weight * Quantity < Delta) > 0; } }
         bool IsRightWeight(double pWeight)
