@@ -42,20 +42,25 @@ namespace Front
         {
             return RROs.Where(el=> el.Key>=pIdWorkplace*100 && el.Key < pIdWorkplace * 100+99).Select(el=>el.Value);
         }
-        Rro GetRRO(Receipt pR) { return GetRRO(pR.IdWorkplacePay, pR.TypePay); }
-        Rro GetRRO(int pIdWorkplace, eTypePay pTypePay = eTypePay.None)
+        Rro GetRRO(Receipt pR) { return GetRRO(pR, null,pR.TypePay); }
+        Rro GetRRO(IdReceipt pIdR, Rro pRRO=null, eTypePay pTypePay = eTypePay.None)
         {
+            if (pRRO != null)
+            {
+                pIdR.IdWorkplacePay = pRRO.IdWorkplacePay;
+                return pRRO;
+            }
             if (RROs == null)
                 return null;
             Rro Res = null;
-            int Key = pIdWorkplace * 100 + (int)pTypePay;
+            int Key = pIdR.IdWorkplacePay * 100 + (int)pTypePay;
             if (RROs.ContainsKey(Key))
                 Res = RROs[Key];
             else
             {
                 if (pTypePay != eTypePay.None)
                 {
-                    Key = pIdWorkplace * 100 ;
+                    Key = pIdR.IdWorkplacePay * 100 ;
                     if (RROs.ContainsKey(Key))
                         Res = RROs[Key];
                 }
@@ -508,7 +513,7 @@ namespace Front
            {
                try
                {
-                   var RRO = GetRRO(pIdR.IdWorkplacePay);
+                   var RRO = GetRRO(pIdR);
                    if (r.CodeError == 0)
                    {
                        if (string.IsNullOrEmpty(r.TextReceipt) )//|| RRO.Model == eModelEquipment.RRO_FP700)
@@ -544,12 +549,14 @@ namespace Front
            });
         }
 
+        
+
         public LogRRO RroPrintX(IdReceipt pIdR,Rro pRRO=null)
         {
 
             var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
             {
-                var RRO = pRRO?? GetRRO(pIdR.IdWorkplacePay);
+                var RRO =  GetRRO(pIdR, pRRO);
                 LogRRO Res;
 
 
@@ -581,7 +588,7 @@ namespace Front
         {
             var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
             {
-                var RRO = pRRO??GetRRO(pIdR.IdWorkplacePay);
+                var RRO = GetRRO(pIdR, pRRO);
                 LogRRO Res;
 
                 try
@@ -612,7 +619,7 @@ namespace Front
         {
             var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
             {
-                var RRO = pRRO ?? GetRRO(pIdR.IdWorkplacePay);
+                var RRO = GetRRO(pIdR, pRRO);
                 LogRRO Res;
 
                 try
@@ -638,10 +645,9 @@ namespace Front
             return r;
         }
 
-        public LogRRO RroPrintCopyReceipt(int pIdWorkplacePay,Rro pRRO=null)
-        {
-            var RRO = pRRO??GetRRO(pIdWorkplacePay);
-            var r = RRO?.PrintCopyReceipt();
+        public LogRRO RroPrintCopyReceipt(Rro pRRO=null)
+        {            
+            var r = pRRO?.PrintCopyReceipt();
             Bl.InsertLogRRO(r);
             return r;
         }
@@ -660,7 +666,7 @@ namespace Front
 
             var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
             {
-                var RRO = pRRO ?? GetRRO(pIdR.IdWorkplacePay);
+                var RRO = GetRRO(pIdR,pRRO);
                 LogRRO Res;
 
                 try
@@ -731,7 +737,7 @@ namespace Front
 
         public bool OpenMoneyBox(int pTime = 15)
         {
-            var RRO = GetRRO(Global.IdWorkPlace);
+            var RRO = GetRRO( new IdReceipt() { IdWorkplacePay = Global.IdWorkPlace });
             return RRO?.OpenMoneyBox(pTime) ?? false;
         }
         /// <summary>
@@ -778,7 +784,7 @@ namespace Front
                     }
                     else
                     {
-                        var RRO = GetRRO(pReceipt.IdWorkplacePay);
+                        var RRO = GetRRO(pReceipt);
 
                         try
                         {
@@ -829,7 +835,7 @@ namespace Front
             Task.Run(() =>
             {
 
-                var RRO = GetRRO(pRW.IdWorkplacePay);
+                var RRO = GetRRO(pRW);
                 if (RRO == null)
                     return false;
                 LogRRO Res;
@@ -866,7 +872,7 @@ namespace Front
         /// <returns></returns>
         public decimal GetSumInCash(IdReceipt pIdR)
         {
-            var RRO = GetRRO(pIdR.IdWorkplacePay,eTypePay.Cash);
+            var RRO = GetRRO(pIdR,null,eTypePay.Cash);
             LogRRO Res;
 
             decimal Sum = -1;
@@ -893,7 +899,7 @@ namespace Front
             //return;//!!!!TMP  Треба придумати щось щоб не було проблем
             Task.Run(() =>
             {
-                var RRO = GetRRO(pIdR.IdWorkplacePay);
+                var RRO = GetRRO(pIdR);
                 LogRRO Res;
                 decimal Sum = -1;
                 try
