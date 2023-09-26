@@ -72,7 +72,7 @@ namespace Front.Control
         public bool IsShowAllJournal { get; set; }
         //BatchTotals LastReceipt = null;
 
-        public bool IsCashRegister { get { return Global.TypeWorkplace == eTypeWorkplace.CashRegister; } }
+        public bool IsCashRegister { get { return Global.TypeWorkplaceCurrent == eTypeWorkplace.CashRegister; } }
 
         public DateTime DateSoSearch { get; set; } = DateTime.Now.Date;
         public DateTime DateStartPeriodZ { get; set; } = DateTime.Now.Date;
@@ -1478,6 +1478,7 @@ from RECEIPT r
             {
                 Global.TypeWorkplaceCurrent = SelTypeCheckout.TypeWorkplace_;
                 MW.SetWorkPlace();
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsCashRegister)));
             }
         }
     }
