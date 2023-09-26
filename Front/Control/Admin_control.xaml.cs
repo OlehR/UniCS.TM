@@ -1478,6 +1478,7 @@ from RECEIPT r
             {
                 Global.TypeWorkplaceCurrent = SelTypeCheckout.TypeWorkplace_;
                 MW.SetWorkPlace();
+                Access.Init();
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsCashRegister)));
             }
         }

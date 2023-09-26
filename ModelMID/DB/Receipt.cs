@@ -76,12 +76,17 @@ namespace ModelMID
         /// </summary>
         public decimal SumRest { get; set; }
         public decimal SumTotal { get { return SumReceipt - SumDiscount - SumBonus - SumWallet; } }
+        decimal _SumCash;
         /// <summary>
         /// Оплачено Готівкою
         /// </summary>
-        public decimal SumCash { get; set; }
+        public decimal SumCash
+        {
+            get { return (Payment != null && Payment.Any(el => el.TypePay == eTypePay.Cash) ? Payment.Where(el => el.TypePay == eTypePay.Cash).Sum(el => el.SumPay) : _SumCash); }
+            set { _SumCash = value; }
+        }
 
-        decimal _SumWallet=0;
+decimal _SumWallet=0;
         /// <summary>
         /// Списані/нараховані гроші скарбничка
         /// </summary>
@@ -93,7 +98,7 @@ namespace ModelMID
         /// </summary>
         public decimal SumCreditCard
         {
-            get { return (Payment != null && Payment.Count() > 0 ? Payment.Sum(el => el.SumPay) : _SumCreditCard); }
+            get { return (Payment != null && Payment.Any(el => el.TypePay == eTypePay.Card)  ? Payment.Where(el=>el.TypePay==eTypePay.Card).Sum(el => el.SumPay) : _SumCreditCard); }
             set { _SumCreditCard = value; }
         }
 
