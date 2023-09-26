@@ -321,16 +321,17 @@ namespace Front
                 //Принтер
                 try
                 {
-                    ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Printer)?.First();
-                    switch (ElEquipment.Model)
-                    {
-                        case eModelEquipment.Printer_Sam4sGcube102:
-                            Printer = new Printer_Sam4sGcube102(ElEquipment, config, LF);
-                            break;
-                        default:
-                            Printer = new Printer(ElEquipment, config);
-                            break;
-                    }
+                    ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.Printer)?.FirstOrDefault();
+                    if (ElEquipment != null)
+                        switch (ElEquipment.Model)
+                        {
+                            case eModelEquipment.Printer_Sam4sGcube102:
+                                Printer = new Printer_Sam4sGcube102(ElEquipment, config, LF);
+                                break;
+                            default:
+                                Printer = new Printer(ElEquipment, config);
+                                break;
+                        }
                 }
                 catch (Exception e)
                 {
