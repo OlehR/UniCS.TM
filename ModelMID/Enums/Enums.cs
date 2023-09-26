@@ -7,9 +7,13 @@ namespace ModelMID
 {
     public enum eTypeWorkplace
     {
+        [Description("Не визначено")]
         NotDefine = 0,
+        [Description("Каса самообслуговування")]
         SelfServicCheckout =3,
+        [Description("Звичайна каса")]
         CashRegister =1,
+        [Description("Вибір типу каси")]
         Both = 2
 
     }

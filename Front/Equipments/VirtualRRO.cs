@@ -69,23 +69,23 @@ namespace Front.Equipments.Implementation
 
             var logRRO = Bl.GetLogRRO(pIdR);
             //кількість продажних чеків
-            int CountSaleReceipt = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.Sale).Count();
+            int CountSaleReceipt = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.Sale && x.TypePay == eTypePay.Cash).Count();
             //Загальна сума продажів
-            decimal TotalSaleSum = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.Sale).Select(x => x.SUM).Sum();
+            decimal TotalSaleSum = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.Sale && x.TypePay == eTypePay.Cash).Select(x => x.SUM).Sum();
             //Кількість чеків на повернення
-            int CountRefunddReceipt = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.Refund).Count();
+            int CountRefunddReceipt = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.Refund && x.TypePay == eTypePay.Cash).Count();
             //Сума чеків на повернення
-            decimal TotalRefundSum = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.Refund).Select(x => x.SUM).Sum();
+            decimal TotalRefundSum = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.Refund && x.TypePay == eTypePay.Cash).Select(x => x.SUM).Sum();
             //кількість чеків внесення
-            int CountMoneyInReceipt = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.MoneyIn).Count();
+            int CountMoneyInReceipt = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.MoneyIn && x.TypePay == eTypePay.Cash).Count();
             //Сума внесень
-            decimal TotalMoneyInSum = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.MoneyIn).Select(x => x.SUM).Sum();
+            decimal TotalMoneyInSum = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.MoneyIn && x.TypePay == eTypePay.Cash).Select(x => x.SUM).Sum();
             //Кількість чеків вилучення
-            int CountMoneyOutReceipt = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.MoneyOut).Count();
+            int CountMoneyOutReceipt = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.MoneyOut && x.TypePay == eTypePay.Cash).Count();
             //сума вилучень
-            decimal TotalMoneyOutSum = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.MoneyOut).Select(x => x.SUM).Sum();
+            decimal TotalMoneyOutSum = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.MoneyOut && x.TypePay == eTypePay.Cash).Select(x => x.SUM).Sum();
             //Готівки в касі
-            decimal TotalSum = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation != eTypeOperation.Refund).Select(x => x.SUM).Sum() - TotalRefundSum;
+            decimal TotalSum = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation != eTypeOperation.Refund && x.TypePay == eTypePay.Cash).Select(x => x.SUM).Sum() - TotalRefundSum;
 
 
             TextReport.Add(PrintCenter(HeadReceipt));

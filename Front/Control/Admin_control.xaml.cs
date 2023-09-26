@@ -94,6 +94,9 @@ namespace Front.Control
         public StringBuilder SB { get; set; } = new();
         public IEnumerable<WorkPlace> ActiveWorkPlaces { get; set; }
         public bool IsControlScale { get { return AllEquipment.Where(x => x.Type == eTypeEquipment.ControlScale).Count() > 0; } }
+        public eTypeWorkplace eTypeWorkplaceForXaml { get; set; } = Global.TypeWorkplaceCurrent;
+        ObservableCollection<CurentTypeWorkplace> ListTypeWorkplace = new ObservableCollection<CurentTypeWorkplace>();
+        eTypeWorkplace curWorkplace = Global.TypeWorkplaceCurrent == eTypeWorkplace.Both ? eTypeWorkplace.SelfServicCheckout : Global.TypeWorkplaceCurrent;
 
         public void ControlScale(double pWeight, bool pIsStable)
         {
@@ -127,7 +130,20 @@ namespace Front.Control
 
             ActiveWorkPlaces = Bl.db.GetWorkPlace().Where(el => el.CodeWarehouse == Global.CodeWarehouse);
 
-            // ListActiveKSO.ItemsSource = ActiveWorkPlaces;
+            
+            foreach (eTypeWorkplace type in Enum.GetValues(typeof(eTypeWorkplace)))
+            {
+                if (type != eTypeWorkplace.NotDefine && type != eTypeWorkplace.Both)
+                {
+                    ListTypeWorkplace.Add(new CurentTypeWorkplace()
+                    {
+                        TypeWorkplace_ = type,
+
+                    });
+                }
+            }
+            ComboBoxChooseTypeCheckout.ItemsSource = ListTypeWorkplace;
+            
 
             RefreshJournal();
 
@@ -161,8 +177,7 @@ namespace Front.Control
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsControlScale"));
 
 
-            //TB_NameAdminUserOpenShift.Text = NameAdminUserOpenShift;
-            //TB_DataOpenShift.Text= $"{DataOpenShift}";
+            
             Dispatcher.BeginInvoke(new ThreadStart(() =>
             {
                 int i = 0;
@@ -173,6 +188,7 @@ namespace Front.Control
 
                 try
                 {
+                    ComboBoxChooseTypeCheckout.SelectedItem = ListTypeWorkplace.First(x => x.TypeWorkplace_ == curWorkplace);
                     if (EF != null && EF.GetListEquipment?.Count() > 0)
                     {
                         AllEquipment = new ObservableCollection<Equipment>(EF.GetListEquipment);
@@ -409,7 +425,7 @@ namespace Front.Control
         public void OpenShift(User pU)
         {
             MW.AdminSSC = pU;
-            if (Global.TypeWorkplaceCurrent == eTypeWorkplace.CashRegister)
+            if (Global.TypeWorkplace == eTypeWorkplace.CashRegister)
                 MW.Access.СurUser = pU;
             MW.DTAdminSSC = DateTime.Now;
             MW.Bl.db.SetConfig<DateTime>("DateAdminSSC", DateTime.Now);
@@ -1455,6 +1471,16 @@ from RECEIPT r
             if (ComboBoxCashRegisters.SelectedItem is Rro SelCashRegister)
                 SelectedCashRegister = SelCashRegister;
         }
+
+        private void ChooseTypeCheckoutComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(ComboBoxChooseTypeCheckout.SelectedItem is CurentTypeWorkplace SelTypeCheckout)
+            {
+                Global.TypeWorkplaceCurrent = SelTypeCheckout.TypeWorkplace_;
+                MW.SetWorkPlace();
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsCashRegister)));
+            }
+        }
     }
 
     public class APIRadiobuton
@@ -1490,6 +1516,11 @@ from RECEIPT r
         public eStateReceipt StateReceipt_ { get; set; }
         public string TranslateStateReceipt_ { get { return StateReceipt_.GetDescription(); } }
         public bool Selected { get; set; } = false;
+    }
+    public class CurentTypeWorkplace
+    {
+        public eTypeWorkplace TypeWorkplace_ { get; set; }
+        public string TranslateTypeWorkplace_ { get { return TypeWorkplace_.GetDescription(); } }
     }
 
 
