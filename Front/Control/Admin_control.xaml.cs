@@ -414,7 +414,7 @@ namespace Front.Control
 
         private void EKKA_Copy_Click(object sender, RoutedEventArgs e)
         {
-            EF.RroPrintCopyReceipt(SelectedWorkPlace.IdWorkplace, SelectedCashRegister);
+            EF.RroPrintCopyReceipt( SelectedCashRegister);
         }
 
         private void WorkStart_Click(object sender, RoutedEventArgs e)
