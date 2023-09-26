@@ -10,6 +10,7 @@ namespace ModelMID
         NotDefine = 0,
         SelfServicCheckout =3,
         CashRegister =1,
+        Both = 2
 
     }
 
