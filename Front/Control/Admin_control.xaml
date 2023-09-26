@@ -1994,6 +1994,31 @@
                                         </StackPanel>
                                     </StackPanel>
                                 </GroupBox>
+                                <GroupBox Grid.Column="1" Grid.Row="1" Header="Вибір типу каси">
+                                    <GroupBox.Style>
+                                        <Style TargetType="GroupBox">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding eTypeWorkplaceForXaml, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=UserControl}}" Value="Both">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </GroupBox.Style>
+                                    <StackPanel Orientation="Vertical" >
+                                        <ComboBox Grid.Row="0" Grid.Column="1" Margin="5"
+                                  x:Name="ComboBoxChooseTypeCheckout" SelectionChanged="ChooseTypeCheckoutComboBox_SelectionChanged" >
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <DockPanel LastChildFill="True">
+                                                        <TextBlock Text="{Binding TranslateTypeWorkplace_}" VerticalAlignment="Center" Margin="2"/>
+                                                    </DockPanel>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </StackPanel>
+                                </GroupBox>
                             </StackPanel>
                         </ScrollViewer>
 

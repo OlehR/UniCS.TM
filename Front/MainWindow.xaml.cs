@@ -374,16 +374,15 @@ namespace Front
                     StartVideo.Play();
                 };
             }
-            else
+
+            DirName = Path.Combine(Global.PathPictures, "Logo");
+            if (Directory.Exists(DirName))
             {
-                DirName = Path.Combine(Global.PathPictures, "Logo");
-                if (Directory.Exists(DirName))
-                {
-                    var PathLogo = Directory.GetFiles(DirName, "*.png");
-                    if (PathLogo != null && PathLogo.Any())
-                        StartLogo.Source = new BitmapImage(new Uri(PathLogo[0]));
-                }
+                var PathLogo = Directory.GetFiles(DirName, "*.png");
+                if (PathLogo != null && PathLogo.Any())
+                    StartLogo.Source = new BitmapImage(new Uri(PathLogo[0]));
             }
+
 
             AdminControl.Init(this);
             PaymentWindow.Init(this);
@@ -438,32 +437,34 @@ namespace Front
             }
             else //Касове місце
             {
-                try { 
-                var r = Bl.GetReceipts(DateTime.Now, DateTime.Now, Global.IdWorkPlace);
-                var rr = r.Where(el => el.SumTotal > 0 && el.StateReceipt != eStateReceipt.Canceled && el.StateReceipt != eStateReceipt.Print && el.StateReceipt != eStateReceipt.Send).OrderByDescending(el => el.CodeReceipt);
-                if (rr != null && rr.Any())
+                try
                 {
-                    if (rr.Count() <= 2)
+                    var r = Bl.GetReceipts(DateTime.Now, DateTime.Now, Global.IdWorkPlace);
+                    var rr = r.Where(el => el.SumTotal > 0 && el.StateReceipt != eStateReceipt.Canceled && el.StateReceipt != eStateReceipt.Print && el.StateReceipt != eStateReceipt.Send).OrderByDescending(el => el.CodeReceipt);
+                    if (rr != null && rr.Any())
                     {
-                        if (rr.Count() == 2)
+                        if (rr.Count() <= 2)
                         {
-                            ReceiptPostpone = Bl.GetReceiptHead(rr.Last(), true);
+                            if (rr.Count() == 2)
+                            {
+                                ReceiptPostpone = Bl.GetReceiptHead(rr.Last(), true);
+                            }
                         }
+                        else //Повідомлення 
+                        {
+                            CustomMessage.Show($"Увас відкладено {rr.Count()} чеків!", "Увага!", eTypeMessage.Error);
+                            //MessageBox.Show($"Увас відкладено {rr.Count()} чеків", "Увага!", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                        SetStateView(eStateMainWindows.WaitInput);
+                        var Receipt = Bl.GetReceiptHead(rr.FirstOrDefault(), true);
+                        Global.OnReceiptCalculationComplete?.Invoke(Receipt);
                     }
-                    else //Повідомлення 
+                    else
                     {
-                        CustomMessage.Show($"Увас відкладено {rr.Count()} чеків!", "Увага!", eTypeMessage.Error);
-                        //MessageBox.Show($"Увас відкладено {rr.Count()} чеків", "Увага!", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                    SetStateView(eStateMainWindows.WaitInput);
-                    var Receipt = Bl.GetReceiptHead(rr.FirstOrDefault(), true);
-                    Global.OnReceiptCalculationComplete?.Invoke(Receipt);
-                }
-                else
-                {
 
+                    }
                 }
-            }catch(Exception ex) 
+                catch (Exception ex)
                 {
                     var ms = ex.Message;
                 }
@@ -479,6 +480,8 @@ namespace Front
         {
             CS.SetOnOff(Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout);
             Volume = (Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout);
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsCashRegister)));
+
         }
 
         void timer_Tick(object sender, EventArgs e)
@@ -642,7 +645,7 @@ namespace Front
 
                     if (pSMV != eStateMainWindows.StartWindow && State == eStateMainWindows.StartWindow)
                         StartVideo.Pause();
-                    if (pSMV == eStateMainWindows.StartWindow && State != eStateMainWindows.StartWindow)
+                    if (pSMV == eStateMainWindows.StartWindow && State != eStateMainWindows.StartWindow && IsCashRegister == false)
                         StartVideo.Play();
 
                     //Якщо 
@@ -770,7 +773,7 @@ namespace Front
                     switch (State)
                     {
                         case eStateMainWindows.StartWindow:
-                            if (PathVideo != null && PathVideo.Length != 0)
+                            if (PathVideo != null && PathVideo.Length != 0 && IsCashRegister == false)
                             {
                                 StartShopping.Visibility = Visibility.Visible;
                             }
@@ -971,8 +974,8 @@ namespace Front
                     }
                     SetPropertyChanged();
                 }));
-                var res=r.Wait(new TimeSpan(0, 0, 0, 150));
-                if(res!= DispatcherOperationStatus.Completed)
+                var res = r.Wait(new TimeSpan(0, 0, 0, 150));
+                if (res != DispatcherOperationStatus.Completed)
                     FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"res=>{res} pSMV={pSMV}/{State}, pTypeAccess={pTypeAccess}/{TypeAccessWait}, pRW ={pRW} , pCW={pCW},  pS={pS}", eTypeLog.Error);
 
             }
@@ -1629,7 +1632,7 @@ namespace Front
             //{
             CustomMessage.Show(r.GetDescription(), r != eReturnClient.Ok ? "Помилка! Карточка не збереглась на сервері!!!" : "Карточка успішно збережена.", eTypeMessage.Information);
 
-           // MessageBox.Show(r.GetDescription(), r != eReturnClient.Ok ? "Помилка! Карточка не збереглась на сервері!!!" : "Карточка успішно збережена.");
+            // MessageBox.Show(r.GetDescription(), r != eReturnClient.Ok ? "Помилка! Карточка не збереглась на сервері!!!" : "Карточка успішно збережена.");
             // }
             //else
             // {
@@ -1677,7 +1680,7 @@ namespace Front
                     IsGetCard = false;
                     if (!string.IsNullOrEmpty(VerifyCode))
                         CustomMessage.Show($"Введений код не вірний!", "Помилка!", eTypeMessage.Error);
-                   // MessageBox.Show($"Введений код не вірний!", "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
+                    // MessageBox.Show($"Введений код не вірний!", "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsGetCard)));
             };
