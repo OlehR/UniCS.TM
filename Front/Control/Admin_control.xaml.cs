@@ -1190,9 +1190,10 @@ from RECEIPT r
                 {
                     if (resMes)
                     {
-                        pRes = pRes.Replace(",", ".");
-                        var res = Decimal.TryParse(pRes, out decimal pSumMoveMoney);
-                        if (res)
+                        decimal pSumMoveMoney = pRes.ToDecimal();
+                        //pRes = pRes.Replace(",", ".");
+                        //var res = Decimal.TryParse(pRes, out decimal pSumMoveMoney);
+                        if (pSumMoveMoney>0)
                         {
                             if (IsRemoveMoney)
                                 pSumMoveMoney = pSumMoveMoney * (-1); // для вилучення відємне значення
