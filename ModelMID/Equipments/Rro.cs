@@ -184,7 +184,7 @@ namespace Front.Equipments
         /// </summary>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public virtual decimal GetSumInCash() { throw new NotImplementedException(); }
+        //public virtual decimal GetSumInCash() { throw new NotImplementedException(); }
         /// <summary>
         /// Сума гоівки в касі віртуальне РРО
         /// </summary>

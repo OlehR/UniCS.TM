@@ -1567,7 +1567,7 @@ namespace Front.Equipments
             }
         }
 
-        public override decimal GetSumInCash()
+        public override decimal GetSumInCash(IdReceipt pIdR)
         {
             decimal Sum = -1;
             OnSynchronizeWaitCommandResult(eCommand.ServiceCashInOut, "", (Action<string>)(response =>

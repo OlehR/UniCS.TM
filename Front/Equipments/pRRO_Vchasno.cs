@@ -211,7 +211,7 @@ namespace Front.Equipments.Implementation
             return $"IdWorkplacePay=>{IdWorkplacePay}{Environment.NewLine}Url=>{Url}{Environment.NewLine}{r}";
         }
 
-        public override decimal GetSumInCash() 
+        public override decimal GetSumInCash(IdReceipt pIdR) 
         {
             var r= GetDeviceInfo2();
             return r.info?.safe??-1m;

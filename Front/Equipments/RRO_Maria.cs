@@ -422,7 +422,7 @@ namespace Front.Equipments.Implementation
             Done();
             return true;
         }
-        public override decimal GetSumInCash()
+        public override decimal GetSumInCash(IdReceipt pIdR)
         {
             string res = "";
             CashInfo MoneyInfo = new();
