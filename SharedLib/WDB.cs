@@ -229,7 +229,7 @@ namespace SharedLib
 
         public bool BildWorkplace(IEnumerable<WorkPlace> pWP = null)
         {
-            var WP =  GetWorkPlace();
+            var WP = pWP ?? GetWorkPlace();
             var WorkPlaceByTerminalId = new SortedList<Guid, WorkPlace>();
             var WorkPlaceByWorkplaceId = new SortedList<int, WorkPlace>();
             foreach (var el in WP)
