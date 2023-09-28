@@ -227,17 +227,22 @@ namespace SharedLib
             return WorkplaceIdLockers[parIdWorkplace];
         }
 
-        public bool BildWorkplace()
+        public bool BildWorkplace(IEnumerable<WorkPlace> pWP = null)
         {
-            Global.WorkPlaceByTerminalId = new SortedList<Guid, WorkPlace>();
-            Global.WorkPlaceByWorkplaceId = new SortedList<int, WorkPlace>();
-            foreach (var el in GetWorkPlace())
+            var WP =  GetWorkPlace();
+            var WorkPlaceByTerminalId = new SortedList<Guid, WorkPlace>();
+            var WorkPlaceByWorkplaceId = new SortedList<int, WorkPlace>();
+            foreach (var el in WP)
             {
-                Global.WorkPlaceByTerminalId.Add(el.TerminalGUID, el);
-                Global.WorkPlaceByWorkplaceId.Add(el.IdWorkplace, el);
+                WorkPlaceByTerminalId.Add(el.TerminalGUID, el);
+                WorkPlaceByWorkplaceId.Add(el.IdWorkplace, el);
                 if(el.IdWorkplace == Global.IdWorkPlace && el.Settings!=null)                
                     Global.Settings = el.Settings;                
-            } 
+            }
+
+            Global.WorkPlaceByTerminalId = WorkPlaceByTerminalId;
+            Global.WorkPlaceByWorkplaceId = WorkPlaceByWorkplaceId;
+
             return true;
         }
 

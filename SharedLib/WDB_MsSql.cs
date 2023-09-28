@@ -42,7 +42,9 @@ namespace SharedLib
             Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Read SqlGetDimWorkplace => {DW.Count()}");
             pDB.ReplaceWorkPlace(DW);
             Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Write SqlGetDimWorkplace => {DW.Count()}");
+            pDB.BildWorkplace(DW);
             DW = null;
+           
 
             Debug.WriteLine("SqlGetDimPrice");            
             var PD = db.Execute<pMessage, Price>(SqlGetDimPrice, oMessage);
