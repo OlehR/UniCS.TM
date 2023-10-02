@@ -294,7 +294,7 @@ namespace Front.Equipments.Implementation
             }
             TextReport.Add(PrintCenter($"------------------------"));
 
-            TextReport.Add(PrintTwoColums("Сума", pR.SumCreditCard.ToString("F2")));
+            TextReport.Add(PrintTwoColums("Сума", pR.SumCash.ToString("F2")));
 
             if (pR.Fiscal?.Taxes?.Count() > 0)
             {
