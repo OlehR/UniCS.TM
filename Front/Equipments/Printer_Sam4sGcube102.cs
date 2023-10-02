@@ -251,6 +251,15 @@ namespace Front.Equipments.Implementation
                     }
                 }
 
+                if (Receipt.Footer.Any())
+                {
+                    foreach (var item in Receipt.Footer)
+                    {
+                        topPosition = PrintLine(e, item, topPosition, maxChar, MainFont);
+                    }
+                    //розділювач
+                    e.Graphics.DrawString("------------------------------------", MainFont, Brushes.Black, 0, topPosition += TopIndent);
+                }
 
                 topPosition = PrintLine(e, $"ФН чеку {Receipt.Fiscal?.Number}", topPosition, maxChar, MainFont);
                 topPosition = PrintLine(e, $"ФН ПРРО {Receipt.Fiscal?.Id}", topPosition, maxChar, MainFont);

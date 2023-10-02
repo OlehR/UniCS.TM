@@ -360,7 +360,7 @@ namespace Front
                                 RRO = new RRO_Maria(el, config, LF, pActionStatus);
                                 break;
                             case eModelEquipment.VirtualRRO:
-                                RRO = new VirtualRRO(el, config, LF, pActionStatus,Printer);
+                                RRO = new VirtualRRO(el, config, LF, pActionStatus,Printer, this);
                                 break;
                             case eModelEquipment.RRO_FP700:
                                 RRO = new RRO_FP700(el, config, LF, pActionStatus);
