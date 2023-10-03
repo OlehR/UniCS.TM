@@ -462,12 +462,7 @@ namespace SharedLib
 
         public bool UpdateWorkPlace(IEnumerable<WorkPlace> parData) { return db.ReplaceWorkPlace(parData); }
 
-        public bool MoveReceipt(IdReceipt pIdReceipt, IdReceipt pIdReceiptTo)
-        {
-            var param = new ParamMoveReceipt(pIdReceipt) { NewCodePeriod = pIdReceiptTo.CodePeriod, NewCodeReceipt = pIdReceiptTo.CodePeriod, NewIdWorkplace = pIdReceiptTo.IdWorkplace };
-            return db.MoveReceipt(param);
-        }
-
+        
         public bool SetStateReceipt(IdReceipt pIdReceipt, eStateReceipt pStateReceipt)
         {
             if (pIdReceipt == null)

@@ -242,9 +242,12 @@ namespace ModelMID
                 foreach (var el in IdWorkPlaces.Distinct())
                 {
                     var xx = GetWorkPlaceByIdWorkplace(el);
-                    xx.IsChoice= isFirst;
-                    res.Add(xx);
-                    isFirst = false;
+                    if (xx != null)
+                    {
+                        xx.IsChoice = isFirst;
+                        res.Add(xx);
+                        isFirst = false;
+                    }
                 }
                 return res; 
             }

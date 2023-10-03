@@ -8,6 +8,14 @@
     <FileVersion>1.0.3.1</FileVersion>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="WDB.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="WDB.cs" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.0.123" />
@@ -27,11 +35,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="MSSql.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="SQLite.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
