@@ -306,7 +306,7 @@ namespace Front.Equipments.Implementation
 
             return new LogRRO(pR)
             {
-                CodeError = !string.IsNullOrEmpty(StrError) && CodeError == 0?-1 : CodeError, ///Бог зна чи поможе. Повноцінно змоделювати ситуацію не вийшло
+                CodeError = !string.IsNullOrEmpty(StrError) && CodeError == 0 ? -1 : CodeError, ///Бог зна чи поможе. Повноцінно змоделювати ситуацію не вийшло
                 Error = StrError,
                 SUM = pR.SumFiscal,
                 TypeRRO = "Maria304",
@@ -412,7 +412,7 @@ namespace Front.Equipments.Implementation
                         M304.FreeTextLine(0, 0, 0, text.Text);
                         continue;
                     case eRenderAs.QR:
-                        M304.PrintQR(text.Text);
+                        M304.PrintQR(text.Text, 40);
                         continue;
                     default:
                         continue;

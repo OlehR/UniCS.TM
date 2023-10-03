@@ -211,7 +211,14 @@ namespace Front.Equipments.Implementation
                 Rectangle rectTotalSum = new Rectangle(leftPosition, topPosition + TopIndent, WIDTHPAGE - 10, TopIndent + 2);
 
                 e.Graphics.DrawString("Сума", FontTotalSum, Brushes.Black, rectTotalSum, stringFormatSum);
-                e.Graphics.DrawString(Receipt.SumCreditCard.ToString("F2"), FontTotalSum, Brushes.Black, rectTotalSum, stringFormatTotalPrice);
+
+                string TotalSum = "";
+                if (Receipt.TypePay == eTypePay.Cash)
+                    TotalSum = Receipt.SumCash.ToString("F2");
+                else if (Receipt.TypePay == eTypePay.Card)
+                    TotalSum = Receipt.SumCreditCard.ToString("F2");
+                else TotalSum = Receipt.SumFiscal.ToString("F2");
+                e.Graphics.DrawString(TotalSum, FontTotalSum, Brushes.Black, rectTotalSum, stringFormatTotalPrice);
                 if (Receipt.Fiscal?.Taxes?.Count() > 0)
                 {
                     int intentTaxes = FONTSIZE + 2;
@@ -251,6 +258,15 @@ namespace Front.Equipments.Implementation
                     }
                 }
 
+                if (Receipt.Footer.Any())
+                {
+                    foreach (var item in Receipt.Footer)
+                    {
+                        topPosition = PrintLine(e, item, topPosition, maxChar, MainFont);
+                    }
+                    //розділювач
+                    e.Graphics.DrawString("------------------------------------", MainFont, Brushes.Black, 0, topPosition += TopIndent);
+                }
 
                 topPosition = PrintLine(e, $"ФН чеку {Receipt.Fiscal?.Number}", topPosition, maxChar, MainFont);
                 topPosition = PrintLine(e, $"ФН ПРРО {Receipt.Fiscal?.Id}", topPosition, maxChar, MainFont);
