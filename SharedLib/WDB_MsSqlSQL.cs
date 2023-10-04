@@ -499,7 +499,11 @@ GROUP BY pw.doc_promotion_RRef
   AND pk.is_main=0
   AND wh_ex.doc_promotion_RRef IS null";
 
-        string SqlGetMRC = @"SELECT code_wares as CodeWares, Price, Type_Wares as TypeWares FROM dbo.V1C_MRC where Code_Warehouse = @CodeWarehouse;";
+        string SqlGetMRC = @"SELECT code_wares as CodeWares, Price, Type_Wares as TypeWares FROM dbo.V1C_MRC where Code_Warehouse = @CodeWarehouse
+UNION  
+SELECT code_wares as CodeWares, Price, Type_Wares as TypeWares FROM dbo.V1C_MRC mrc 
+JOIN WAREHOUSES wh ON mrc.Code_Warehouse = wh.Code  
+where wh.CodeWarehouse2 = @CodeWarehouse;";
 
         string SqlSalesBan = @"
         SELECT CODE_GROUP_WARES AS CodeGroupWares, amount
