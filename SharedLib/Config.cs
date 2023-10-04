@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.Extensions.Configuration;
 using ModelMID;
 using ModelMID.DB;
@@ -37,16 +38,8 @@ namespace SharedLib
             if (string.IsNullOrWhiteSpace(Global.PathIni))
                 Global.PathIni = CurDir;
 
-
             Global.MethodExecutionLogging = AppConfiguration.GetValue<eMethodExecutionLoggingType>("MethodExecutionLogging:Type");
             Global.LimitMethodExecutionTimeInMillis = AppConfiguration.GetValue<long>("MethodExecutionLogging:LimitMethodExecutionTimeInMillis");
-
-            //var el=AppConfiguration["MID:WorkPlaces"];
-           /* var Vat = new List<TAX>();
-            AppConfiguration.GetSection("MID:VAT").Bind(Vat);
-            foreach (var el in Vat)
-                if (!Global.Tax.ContainsKey(el.Code))
-                    Global.Tax.TryAdd(el.Code, el.CodeEKKA);*/
 
             var DeltaWeight = new List<DeltaWeight>();
             AppConfiguration.GetSection("MID:DeltaWeight").Bind(DeltaWeight);
@@ -93,14 +86,6 @@ namespace SharedLib
             catch
             { Global.IsGenQrCoffe = false; }
 
-
-            /*try
-            {
-                Global.CodeWarehouse = 9;
-                Global.CodeWarehouse = Convert.ToInt32(AppConfiguration["MID:CodeWarehouse"]);
-            }
-            catch
-            { Global.CodeWarehouse = 9; }*/
 
             try
             {
@@ -168,8 +153,10 @@ namespace SharedLib
 
 
             var IdWorkPlaces = new List<IdWorkPlaces>();
-            var _IdWorkPlaces = new List<int>();
-            _IdWorkPlaces.Add(Global.IdWorkPlace);
+            var _IdWorkPlaces = new List<int>() { Global.IdWorkPlace }; 
+            if(Global.Settings?.IdWorkPlaceLink>0)
+                _IdWorkPlaces.Add(Global.Settings.IdWorkPlaceLink);
+        
             AppConfiguration.GetSection("MID:IdWorkPlaces").Bind(IdWorkPlaces);
             
             foreach (var el in IdWorkPlaces)
@@ -183,20 +170,13 @@ namespace SharedLib
                  foreach (var TM in el.CodeTM)
                     Global.IdWorkPlacePayTM.Add(TM, el.IdWorkPlace);
             }
-            Global.IdWorkPlaces= _IdWorkPlaces;
+            Global.IdWorkPlaces = _IdWorkPlaces.Distinct();
             try
             {
                 Global.IsTest = Convert.ToBoolean(AppConfiguration["MID:IsTest"]);
             }
             catch
             { Global.IsTest = false; }
-
-            /*try
-            {
-                Global.CodeWaresWallet = Convert.ToInt32(AppConfiguration["MID:CodeWaresWallet"]);
-            }
-            catch
-            { Global.CodeWaresWallet = 0; }*/
 
             try
             {
@@ -211,7 +191,6 @@ namespace SharedLib
             return AppConfiguration;
         }
     }
-
 
     class IdWorkPlaces
     {
