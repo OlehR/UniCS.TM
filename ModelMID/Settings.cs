@@ -45,5 +45,13 @@ namespace ModelMID
         /// Текст в кінці чека
         /// </summary>
         public IEnumerable<string> Footer { get; set; }
+        /// <summary>
+        /// Склад Підприємець(Компанія)
+        /// </summary>
+        public int CodeWarehouseLink { get; set; }
+        /// <summary>
+        /// Робоче місце(каса) Підприємець(Компанія)
+        /// </summary>
+        public int IdWorkPlaceLink { get; set;}
     }
 }

@@ -21,6 +21,9 @@ namespace SharedLib
         
         public int LoadData(WDB_SQLite pDB, bool parIsFull, StringBuilder Log)
         {
+
+
+
             Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Start LoadData {parIsFull}");
             Debug.WriteLine("Start LoadData " + parIsFull.ToString());
             int varMessageNoMax = db.ExecuteScalar<int>(SqlGetMessageNo);
@@ -29,6 +32,14 @@ namespace SharedLib
 
             var oWarehouse = new pWarehouse() { CodeWarehouse = Global.CodeWarehouse };
             var oMessage = new pMessage() { IsFull = parIsFull ? 1 : 0, MessageNoMin = varMessageNoMin, MessageNoMax = varMessageNoMax, CodeWarehouse = Global.CodeWarehouse, IdWorkPlace = Global.IdWorkPlace};
+
+            Debug.WriteLine("SqlGetWaresWarehous");
+            var WWh = db.Execute<pWarehouse, WaresWarehouse>(SqlGetWaresWarehous, oMessage);
+            Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Read ReplaceWaresWarehouse => {WWh.Count()}");
+            //pDB.ReplaceWaresWarehouse(WWh);
+            Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Write ReplaceWaresWarehouse => {WWh.Count()}");
+            WWh = null;
+
 
             Debug.WriteLine("SqlGetClientData");            
             var CD = db.Execute<pMessage, ClientData>(SqlGetClientData, oMessage);

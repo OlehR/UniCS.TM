@@ -33,16 +33,16 @@ namespace SharedLib
 
         private string ReceiptFile { get { return GetReceiptFile(DT); } }
 
-        public string GetMIDFile(DateTime pD = default,bool pTmp=false)
+        public string GetMIDFile(DateTime pD = default, bool pTmp = false)
         {
             DateTime Date = pD == default ? DateTime.Today : pD;
-            return Path.Combine(Global.PathDB, $"{Date:yyyyMM}", $"MID_{Date:yyyyMMdd}{(pTmp?"_tmp":"")}.db");
+            return Path.Combine(Global.PathDB, $"{Date:yyyyMM}", $"MID_{Date:yyyyMMdd}{(pTmp ? "_tmp" : "")}.db");
         }
 
-        public WDB_SQLite(DateTime parD = default(DateTime), string pConnect = null, bool pIsUseOldDB = true, bool pIsCreateMidFile=false )
+        public WDB_SQLite(DateTime parD = default(DateTime), string pConnect = null, bool pIsUseOldDB = true, bool pIsCreateMidFile = false)
         {
             Connect = pConnect;
-            
+
             DT = parD != default(DateTime) ? parD.Date : DateTime.Today.Date;
             InitSQL();
             if (IsFirstStart)
@@ -69,14 +69,14 @@ namespace SharedLib
                 }
 
             }
-                
+
 
             if (!File.Exists(ConfigFile))
             {
                 db = new SQLite(ConfigFile);
                 db.ExecuteNonQuery(SqlCreateConfigTable);
                 db.Close();
-            }            
+            }
 
             if (!File.Exists(ReceiptFile))
             {
@@ -105,21 +105,21 @@ namespace SharedLib
                 db = new SQLite(ConfigFile);
                 var LFDB = GetConfig<DateTime>("Load_Full").Date;
                 if (LFDB < DateTime.Now.AddDays(-10))
-                    LFDB = DateTime.Now.Date;              
-                
+                    LFDB = DateTime.Now.Date;
+
                 db = null;
                 do
                 {
                     var vLastMidFile = GetMIDFile(LFDB);
                     if (!string.IsNullOrEmpty(vLastMidFile) && File.Exists(vLastMidFile))
                         LastMidFile = vLastMidFile;
-                    LFDB=LFDB.AddDays(-1);
-                } while (LastMidFile==null && LFDB > DateTime.Now.AddDays(-10));
+                    LFDB = LFDB.AddDays(-1);
+                } while (LastMidFile == null && LFDB > DateTime.Now.AddDays(-10));
             }
             //}
-      
+
             db = new SQLite(ReceiptFile);
-            if (File.Exists(MidFile))            
+            if (File.Exists(MidFile))
                 db.ExecuteNonQuery("ATTACH '" + MidFile + "' AS mid");
             db.ExecuteNonQuery("ATTACH '" + ConfigFile + "' AS con");
 
@@ -165,10 +165,10 @@ namespace SharedLib
 
 
         private new bool InitSQL()
-        {           
-             return true;
+        {
+            return true;
         }
-        
+
         public T GetConfig<T>(string pStr, SQL pDB = null)
         {
             string SqlConfig = "SELECT Data_Var  FROM CONFIG  WHERE UPPER(Name_Var) = UPPER(trim(@NameVar));";
@@ -219,14 +219,14 @@ namespace SharedLib
             });
         }
 
-        public  bool RecalcPrice(IdReceiptWares pIdReceiptWares)
+        public bool RecalcPrice(IdReceiptWares pIdReceiptWares)
         {
             var startTime = System.Diagnostics.Stopwatch.StartNew();
             var State = GetStateReceipt(pIdReceiptWares);
             if (State != eStateReceipt.Prepare)
                 return true;
             var Type = GetTypeReceipt(pIdReceiptWares);
-            if (Type==eTypeReceipt.Refund)
+            if (Type == eTypeReceipt.Refund)
                 return true;
             lock (GetObjectForLockByIdWorkplace(pIdReceiptWares.IdWorkplace))
             {
@@ -251,7 +251,7 @@ namespace SharedLib
                     {
                         var MPI = GetMinPriceIndicative((IdReceiptWares)RW);
                         par.CodeWares = RW.CodeWares;
-                        par.Quantity =RW.Quantity;
+                        par.Quantity = RW.Quantity;
                         var Res = GetPrice(par);
 
                         if (Res != null && RW.ParPrice1 != 999999 && (Res.Priority > 0 || string.IsNullOrEmpty(RW.BarCode2Category)))//Не перераховуємо для  Сигарет s для 2 категорії окрім пріоритет 1
@@ -349,7 +349,7 @@ namespace SharedLib
 
         }
 
-        public  bool CopyWaresReturnReceipt(IdReceipt parIdReceipt, bool parIsCurrentDay = true)
+        public bool CopyWaresReturnReceipt(IdReceipt parIdReceipt, bool parIsCurrentDay = true)
         {
             string SqlCopyWaresReturnReceipt = (parIsCurrentDay ? this.SqlCopyWaresReturnReceipt.Replace("RRC.", "RC.") : this.SqlCopyWaresReturnReceipt);
             return (this.db.ExecuteNonQuery(SqlCopyWaresReturnReceipt, parIdReceipt) > 0);
@@ -357,29 +357,29 @@ namespace SharedLib
 
 
 
-        public  IEnumerable<ReceiptWares> GetWaresFromFastGroup(int parCodeFastGroup)
+        public IEnumerable<ReceiptWares> GetWaresFromFastGroup(int parCodeFastGroup)
         {
             return FindWares(null, null, 0, 0, parCodeFastGroup);
         }
 
-        public  IEnumerable<ReceiptWares> GetBags()
+        public IEnumerable<ReceiptWares> GetBags()
         {
             return FindWares(null, null, 0, 0, Global.CodeFastGroupBag);
         }
 
-        public  void Close(bool isWait = false)
-        {     
-                db?.Close(isWait);
+        public void Close(bool isWait = false)
+        {
+            db?.Close(isWait);
         }
 
         ///////////////////////////////////////////////////////////////////
         /// Переробляю через відкриття закриття конекта.
         ///////////////////////////////////////////////////////////////////
-        public  bool SetConfig<T>(string parName, T parValue, SQL pDB = null)
+        public bool SetConfig<T>(string parName, T parValue, SQL pDB = null)
         {
             using (var DB = new SQLite(ConfigFile))
             {
-                string  SqlReplaceConfig = "replace into CONFIG  (Name_Var,Data_Var,Type_Var) values (@NameVar,@DataVar,@TypeVar);";
+                string SqlReplaceConfig = "replace into CONFIG  (Name_Var,Data_Var,Type_Var) values (@NameVar,@DataVar,@TypeVar);";
 
                 if (pDB == null)
                     DB.ExecuteNonQuery<object>(SqlReplaceConfig, new { NameVar = parName, DataVar = parValue, @TypeVar = parValue.GetType().ToString() });
@@ -389,7 +389,7 @@ namespace SharedLib
             return true;
         }
 
-        public  bool ReplaceWorkPlace(IEnumerable<WorkPlace> parData)
+        public bool ReplaceWorkPlace(IEnumerable<WorkPlace> parData)
         {
             string SqlReplaceWorkPlace = @"replace into WORKPLACE(ID_WORKPLACE, NAME, Terminal_GUID, Video_Camera_IP, Video_Recorder_IP, Type_POS, Code_Warehouse, CODE_DEALER, Prefix, DNSName, TypeWorkplace, SettingsEx) values
             (@IdWorkplace, @Name, @StrTerminalGUID, @VideoCameraIP, @VideoRecorderIP, @TypePOS, @CodeWarehouse, @CodeDealer, @Prefix, @DNSName, @TypeWorkplace, @SettingsEx);";
@@ -419,7 +419,7 @@ namespace SharedLib
 
 
 
-        public  bool InsertWeight(Object parWeight)
+        public bool InsertWeight(Object parWeight)
         {
             string SqlInsertWeight = "insert into Weight(BarCode, Weight, STATUS) values(@BarCode, @Weight, @Status);";
             using (var DB = new SQLite(ConfigFile))
@@ -461,7 +461,7 @@ INSERT OR ignore into GEN_WORKPLACE(ID_WORKPLACE, CODE_PERIOD, CODE_RECEIPT) val
                     if (pIdReceipt.CodePeriod == 0)
                         pIdReceipt.CodePeriod = Global.GetCodePeriod();
                     pIdReceipt.CodeReceipt = DB.ExecuteScalar<IdReceipt, int>(SqlGetNewReceipt, pIdReceipt);
-                    
+
                     using (var DB_R = new SQLite(ReceiptFile))
                     {
                         DB_R.ExecuteNonQuery<IdReceipt>(SqlGetNewReceipt2, pIdReceipt);
@@ -477,7 +477,7 @@ INSERT OR ignore into GEN_WORKPLACE(ID_WORKPLACE, CODE_PERIOD, CODE_RECEIPT) val
             {
                 return DB.ExecuteNonQuery<Receipt>(SqlReplaceReceipt, parReceipt) > 0;
             }
-        }        
+        }
 
         public bool CloseReceipt(Receipt parReceipt)
         {
@@ -495,7 +495,7 @@ INSERT OR ignore into GEN_WORKPLACE(ID_WORKPLACE, CODE_PERIOD, CODE_RECEIPT) val
         /// </summary>
         /// <param name="parParameters"></param>
         /// <returns></returns>
-        public  bool AddWares(ReceiptWares parReceiptWares)
+        public bool AddWares(ReceiptWares parReceiptWares)
         {
             using (var DB = new SQLite(ReceiptFile))
             {
@@ -503,7 +503,7 @@ INSERT OR ignore into GEN_WORKPLACE(ID_WORKPLACE, CODE_PERIOD, CODE_RECEIPT) val
             }
         }
 
-        public  bool ReplaceWaresReceipt(ReceiptWares parReceiptWares)
+        public bool ReplaceWaresReceipt(ReceiptWares parReceiptWares)
         {
             using (var DB = new SQLite(ReceiptFile))
             {
@@ -542,7 +542,7 @@ INSERT OR ignore into GEN_WORKPLACE(ID_WORKPLACE, CODE_PERIOD, CODE_RECEIPT) val
         {
             string SqlDeleteWaresReceiptPromotion = @"delete from  WARES_RECEIPT_PROMOTION 
    where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt and CODE_PS<>999999 and (BARCODE_2_CATEGORY is null or length(BARCODE_2_CATEGORY)=0 );";
-            
+
             using (var DB = new SQLite(ReceiptFile))
             {
                 DB.ExecuteNonQuery<IdReceipt>(SqlDeleteWaresReceiptPromotion, parIdReceipt);
@@ -550,7 +550,7 @@ INSERT OR ignore into GEN_WORKPLACE(ID_WORKPLACE, CODE_PERIOD, CODE_RECEIPT) val
             return true;
         }
 
-        public  bool ReplaceWaresReceiptPromotion(IEnumerable<WaresReceiptPromotion> parData)
+        public bool ReplaceWaresReceiptPromotion(IEnumerable<WaresReceiptPromotion> parData)
         {
             var Sql = @" update WARES_RECEIPT 
 set price = ifnull( (select  max( (0.000+wrp.sum)/wrp.QUANTITY)
@@ -577,9 +577,9 @@ and @TypeDiscount=11; ";
             }
             return true;
         }
-       
 
-        public bool ReplacePayment(Payment pData,bool pIsDel=false)
+
+        public bool ReplacePayment(Payment pData, bool pIsDel = false)
         {
             using (var DB = new SQLite(ReceiptFile))
             {
@@ -588,12 +588,12 @@ and @TypeDiscount=11; ";
                     string Sql = @"delete from payment where  id_workplace=@IdWorkplace and id_workplace_pay = @IdWorkplacePay and  code_period =@CodePeriod and  code_receipt=@CodeReceipt and Type_Pay=@TypePay";
                     DB.ExecuteNonQuery<Payment>(Sql, pData);
                 }
-                DB.ExecuteNonQuery<Payment>(SqlReplacePayment, pData);                   
+                DB.ExecuteNonQuery<Payment>(SqlReplacePayment, pData);
             }
             return true;
         }
 
-        public  bool ReplacePayments(IEnumerable<Payment> parData)
+        public bool ReplacePayments(IEnumerable<Payment> parData)
         {
             using (var DB = new SQLite(ReceiptFile))
             {
@@ -681,7 +681,7 @@ insert into RECEIPT_Event(
             }
         }
 
-        public  bool DeleteReceiptEvent(IdReceipt parIdReceipt)
+        public bool DeleteReceiptEvent(IdReceipt parIdReceipt)
         {
             string SqlDeleteReceiptEvent = @"delete from RECEIPT_Event where id_workplace = @IdWorkplace and code_period = @CodePeriod and code_receipt = @CodeReceipt; --and EVENT_TYPE > 0;";
 
@@ -719,7 +719,7 @@ insert into RECEIPT_Event(
             return true;
         }
 
-        public  bool ReplaceUnitDimension(IEnumerable<UnitDimension> parData)
+        public bool ReplaceUnitDimension(IEnumerable<UnitDimension> parData)
         {
             string SqlReplaceUnitDimension = "replace into UNIT_DIMENSION(CODE_UNIT, NAME_UNIT, ABR_UNIT) values(@CodeUnit, @NameUnit, @AbrUnit);";
             using (var DB = new SQLite(MidFile))
@@ -740,7 +740,7 @@ insert into RECEIPT_Event(
             return true;
         }
 
-        public  bool ReplaceWares(IEnumerable<Wares> parData)
+        public bool ReplaceWares(IEnumerable<Wares> parData)
         {
             using (var DB = new SQLite(MidFile))
             {
@@ -749,7 +749,7 @@ insert into RECEIPT_Event(
             return true;
         }
 
-        public  bool ReplaceAdditionUnit(IEnumerable<AdditionUnit> parData)
+        public bool ReplaceAdditionUnit(IEnumerable<AdditionUnit> parData)
         {
             string SqlReplaceAdditionUnit = @"replace into  Addition_Unit(CODE_WARES, CODE_UNIT, COEFFICIENT, DEFAULT_UNIT, WEIGHT, WEIGHT_NET)
               values(@CodeWares, @CodeUnit, @Coefficient, @DefaultUnit, @Weight, @WeightNet);";
@@ -800,7 +800,7 @@ insert into RECEIPT_Event(
             return true;
         }
 
-        public  bool ReplaceFastGroup(IEnumerable<FastGroup> parData)
+        public bool ReplaceFastGroup(IEnumerable<FastGroup> parData)
         {
             string SqlReplaceFastGroup = @"replace into FAST_GROUP(CODE_UP, Code_Fast_Group, Name) values(@CodeUp, @CodeFastGroup, @Name);";
             using (var DB = new SQLite(MidFile))
@@ -819,7 +819,7 @@ insert into RECEIPT_Event(
             return true;
         }
 
-        public  bool ReplacePromotionSale(IEnumerable<PromotionSale> parData)
+        public bool ReplacePromotionSale(IEnumerable<PromotionSale> parData)
         {
             using (var DB = new SQLite(MidFile))
             {
@@ -874,8 +874,7 @@ replace into PROMOTION_SALE_FILTER(CODE_PS, CODE_GROUP_FILTER, TYPE_GROUP_FILTER
 
         public bool ReplacePromotionSaleGift(IEnumerable<PromotionSaleGift> parData)
         {
-            string SqlReplacePromotionSaleGift = @"
-replace into PROMOTION_SALE_GIFT(CODE_PS, NUMBER_GROUP, CODE_WARES, TYPE_DISCOUNT, DATA, QUANTITY, DATE_CREATE, USER_CREATE)
+            string SqlReplacePromotionSaleGift = @"replace into PROMOTION_SALE_GIFT(CODE_PS, NUMBER_GROUP, CODE_WARES, TYPE_DISCOUNT, DATA, QUANTITY, DATE_CREATE, USER_CREATE)
                           values(@CodePS, @NumberGroup, @CodeWares, @TypeDiscount, @Data, @Quantity, @DateCreate, @UserCreate);";
             using (var DB = new SQLite(MidFile))
             {
@@ -928,7 +927,7 @@ replace into PROMOTION_SALE_GIFT(CODE_PS, NUMBER_GROUP, CODE_WARES, TYPE_DISCOUN
             string SqlReplaceUser = "replace into User(CODE_USER, NAME_USER, BAR_CODE, Type_User, LOGIN, PASSWORD) values(@CodeUser, @NameUser, @BarCode, @TypeUser, @Login, @PassWord);";
             using (var DB = new SQLite(MidFile))
             {
-                return DB.BulkExecuteNonQuery<User>(SqlReplaceUser, pUser,true) > 0;
+                return DB.BulkExecuteNonQuery<User>(SqlReplaceUser, pUser, true) > 0;
             }
         }
         public bool ReplaceSalesBan(IEnumerable<SalesBan> pSB)
@@ -952,11 +951,11 @@ replace into PROMOTION_SALE_GIFT(CODE_PS, NUMBER_GROUP, CODE_WARES, TYPE_DISCOUN
         }
 
         public bool AddFiscalArticle(FiscalArticle pFiscalArticle)
-        {            
+        {
             var SQL = "replace into FiscalArticle (IdWorkplacePay,CodeWares,NameWares ,PLU ,Price) values (@IdWorkplacePay,@CodeWares,@NameWares ,@PLU ,@Price)";
             using (var DB = new SQLite(ConfigFile))
             {
-                return DB.ExecuteNonQuery<FiscalArticle>(SQL,pFiscalArticle) > 0;
+                return DB.ExecuteNonQuery<FiscalArticle>(SQL, pFiscalArticle) > 0;
             }
         }
 
@@ -974,7 +973,7 @@ replace into PROMOTION_SALE_GIFT(CODE_PS, NUMBER_GROUP, CODE_WARES, TYPE_DISCOUN
             var SQL = "select * from FiscalArticle where CodeWares=@CodeWares and IdWorkplacePay=@IdWorkplacePay";
             using (var DB = new SQLite(ConfigFile))
             {
-                return DB.connection.QueryFirstOrDefault<FiscalArticle>(SQL,new FiscalArticle() { CodeWares=pRW.CodeWares,IdWorkplacePay=pRW.IdWorkplacePay} );
+                return DB.connection.QueryFirstOrDefault<FiscalArticle>(SQL, new FiscalArticle() { CodeWares = pRW.CodeWares, IdWorkplacePay = pRW.IdWorkplacePay });
             }
         }
 
@@ -998,7 +997,7 @@ Where ID_WORKPLACE = @IdWorkplace
         /// <summary>
         /// Оновлення структури бази даних
         /// </summary>       
-        protected  bool UpdateDB(ref bool pIsUseOld)
+        protected bool UpdateDB(ref bool pIsUseOld)
         {
             try
             {
@@ -1085,7 +1084,7 @@ Where ID_WORKPLACE = @IdWorkplace
             bool isReload = false;
 
             foreach (var el in pLines)
-            {                
+            {
                 var i = el.ToUpper().IndexOf("VER=>");
                 if (i >= 0)
                 {
@@ -1121,7 +1120,7 @@ Where ID_WORKPLACE = @IdWorkplace
             return (NewVer, isReload);
         }
 
-        public  bool ReplaceClientNew(ClientNew pC)
+        public bool ReplaceClientNew(ClientNew pC)
         {
             string Sql = @"replace into  Client_New (ID_WORKPLACE, BARCODE_CLIENT, BARCODE_CASHIER,  PHONE) values  (@IdWorkplace, @BarcodeClient, @BarcodeCashier, @Phone);";
             using (var DB = new SQLite(ReceiptFile))
@@ -1155,9 +1154,9 @@ Where ID_WORKPLACE = @IdWorkplace
         ///Повертає  IEnumerable<Client> з клієнтами
         ///</returns>
         public IEnumerable<Client> FindClient(string parBarCode = null, string parPhone = null, string parName = null, int parCodeClient = 0)
-        {           
-            var Res= db.Execute<object, Client>(SqlFindClient, new { CodeClient = parCodeClient, Phone = parPhone, BarCode = parBarCode, Name = (parName == null ? null : "%" + parName + "%") });
-            return Res != null && Res.Any(el => el.StatusCard == eStatusCard.Active)?Res.Where(el => el.StatusCard == eStatusCard.Active) : Res ;
+        {
+            var Res = db.Execute<object, Client>(SqlFindClient, new { CodeClient = parCodeClient, Phone = parPhone, BarCode = parBarCode, Name = (parName == null ? null : "%" + parName + "%") });
+            return Res != null && Res.Any(el => el.StatusCard == eStatusCard.Active) ? Res.Where(el => el.StatusCard == eStatusCard.Active) : Res;
         }
 
         public SpeedScan SpeedScan()
@@ -1233,7 +1232,7 @@ Where ID_WORKPLACE = @IdWorkplace
 
         public virtual IEnumerable<IdReceipt> GetIdReceiptbyState(eStateReceipt parState = eStateReceipt.Print)
         {
-            string SqlGetIdReceiptbyState="select ID_WORKPLACE as IdWorkplace,CODE_PERIOD as CodePeriod, CODE_RECEIPT as CodeReceipt from receipt where STATE_RECEIPT = @StateReceipt";
+            string SqlGetIdReceiptbyState = "select ID_WORKPLACE as IdWorkplace,CODE_PERIOD as CodePeriod, CODE_RECEIPT as CodeReceipt from receipt where STATE_RECEIPT = @StateReceipt";
             return db.Execute<object, IdReceipt>(SqlGetIdReceiptbyState, new { StateReceipt = parState });
         }
 
@@ -1334,12 +1333,12 @@ select id_workplace as IdWorkplace, id_workplace_pay as IdWorkplacePay,code_peri
             return db.Execute<IdReceipt, Payment>(SqlGetPayment, parIdReceipt);
         }
 
-        public  IEnumerable<WaresReceiptPromotion> CheckLastWares2Cat(IdReceipt parIdReceipt)
+        public IEnumerable<WaresReceiptPromotion> CheckLastWares2Cat(IdReceipt parIdReceipt)
         {
             return db.Execute<IdReceipt, WaresReceiptPromotion>(SqlCheckLastWares2Cat, parIdReceipt);
         }
 
-        public  Receipt GetLastReceipt(IdReceipt parIdReceipt)
+        public Receipt GetLastReceipt(IdReceipt parIdReceipt)
         {
             var r = this.db.Execute<IdReceipt, Receipt>(SqlGetLastReceipt, parIdReceipt);
             if (r != null && r.Count() == 1)
@@ -1410,14 +1409,14 @@ SELECT QUANTITY - QUANTITY_OLD as QUANTITY, ROW_NUMBER()   OVER(ORDER BY  DATE_C
             return db.ExecuteScalar<IdReceipt, eStateReceipt>(SqlGetStateReceipt, pR);
         }
 
-        public  eTypeReceipt GetTypeReceipt(IdReceipt pR)
+        public eTypeReceipt GetTypeReceipt(IdReceipt pR)
         {
             string Sql = @"select max(Type_Receipt) Type_Receipt FROM RECEIPT
     Where ID_WORKPLACE = @IdWorkplace and CODE_PERIOD = @CodePeriod and CODE_RECEIPT = @CodeReceipt";
             return db.ExecuteScalar<IdReceipt, eTypeReceipt>(Sql, pR);
         }
 
-        public  decimal GetSumCash(IdReceipt pR)
+        public decimal GetSumCash(IdReceipt pR)
         {
             string Sql = @"select  sum(sum) from
 (select sum(sum) as sum from LOG_RRO l
@@ -1427,7 +1426,7 @@ select sum( sum_pay* case when TYPE_PAY in (4) then -1 else 1 end) as sum from p
             return db.ExecuteScalar<IdReceipt, decimal>(Sql, pR);
         }
 
-        public  IEnumerable<ClientNew> GetClientNewNotSend()
+        public IEnumerable<ClientNew> GetClientNewNotSend()
         {
             string Sql = @"select Id_Workplace as IdWorkplace,State,Barcode_Client as BarcodeClient,Barcode_Cashier as BarcodeCashier,Phone,Date_Create as DateCreate from Client_New where state=0";
             return db.Execute<ClientNew>(Sql);
@@ -1438,16 +1437,52 @@ select sum( sum_pay* case when TYPE_PAY in (4) then -1 else 1 end) as sum from p
         /// </summary>
         /// <param name="parParameters"> </param>
         /// <returns></returns>
-     	public  IEnumerable<ReceiptWares> ViewReceiptWares(IdReceipt parIdReceipt, bool pIsReceiptWaresPromotion = false)
+     	public IEnumerable<ReceiptWares> ViewReceiptWares(IdReceipt parIdReceipt, bool pIsReceiptWaresPromotion = false)
         {
             return ViewReceiptWares(new IdReceiptWares(parIdReceipt), pIsReceiptWaresPromotion); //this.db.Execute<IdReceipt, ReceiptWares>(SqlViewReceiptWares, parIdReceipt);
         }
 
-        public  bool IsWaresInPromotionKit(int parCodeWares)
+        public bool IsWaresInPromotionKit(int parCodeWares)
         {
-            return this.db.ExecuteScalar<object, int>(SqlIsWaresInPromotionKit, new { CodeWares = parCodeWares }) > 0;
+            return db.ExecuteScalar<object, int>(SqlIsWaresInPromotionKit, new { CodeWares = parCodeWares }) > 0;
         }
 
+        public IEnumerable<WaresWarehouse> GetWaresWarehouse()
+        {
+            return db.Execute<WaresWarehouse>("Select * from WaresWarehouse");
+        }
+
+        public bool ReplaceWaresWarehouse(IEnumerable<WaresWarehouse> pWW)
+        {
+            if (pWW?.Any() == true)
+            {
+                string SQL = "replace into WaresWarehouse (CodeWarehouse,TypeData,Data) values (@CodeWarehouse,@TypeData,@Data)";
+                if (db.BulkExecuteNonQuery<WaresWarehouse>(SQL, pWW) > 0)
+                {
+                    BildWaresWarehouse(pWW);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public void BildWaresWarehouse(IEnumerable<WaresWarehouse> pWW)
+        {
+            if (pWW == null)
+                pWW = GetWaresWarehouse();
+
+            if (Global.Settings.IdWorkPlaceLink > 0 && Global.Settings.CodeWarehouseLink > 0)
+            {
+                foreach (var el in pWW.Where(el => el.CodeWarehouse == Global.Settings.CodeWarehouseLink))
+                {
+                    if (el.TypeData == eTypeData.Directions && !Global.IdWorkPlacePayDirection.ContainsKey(el.Data))
+                        Global.IdWorkPlacePayDirection.Add(el.Data, Global.Settings.IdWorkPlaceLink);
+
+                    if (el.TypeData == eTypeData.Brand && !Global.IdWorkPlacePayTM.ContainsKey(el.Data))
+                        Global.IdWorkPlacePayTM.Add(el.Data, Global.Settings.IdWorkPlaceLink);
+                }
+            }
+        }
 
     }
 }

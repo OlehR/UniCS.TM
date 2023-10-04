@@ -61,11 +61,11 @@ namespace SharedLib
         string SqlGetClientData = @"SELECT * FROM ClientData  cl WITH (NOLOCK) WHERE cl.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull=1";
 
         string SqlGetDimFastGroup = @"SELECT CONVERT(INT, wh.Code) AS CodeUp, CONVERT(INT, wh.Code)*1000+g.Order_Button AS CodeFastGroup, MAX(CONVERT(VARCHAR, g.Name_Button)) AS Name
-  FROM DW.dbo.V1C_DIM_OPTION_WPC O
-  JOIN dw.dbo.WAREHOUSES wh ON o.Warehouse_RRef= wh._IDRRef
+  FROM DW.dbo.V1C_DIM_OPTION_WPC O  
   JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_GROUP G ON o._IDRRef= G._Reference18850_IDRRef
   JOIN DW.dbo.V1C_DIM_OPTION_WPC_CASH_place CP ON o._IDRRef= cp._Reference18850_IDRRef
   JOIN dw.dbo.V1C_CashDesk CD ON CD.CashDesk_RRef=cp.CashPlaceRRef
+  JOIN dw.dbo.WAREHOUSES wh ON cd.Warehouse_RRef= wh._IDRRef
     WHERE (g.Order_Button<>2 or wh.Code<>9 ) -- хак для групи Овочі 1
          and CD.code=@IdWorkPlace 
   GROUP BY wh.Code, g.Order_Button;";
@@ -78,15 +78,15 @@ namespace SharedLib
         --JOIN DW.dbo.V1C_DIM_OPTION_WPC_FACT_WARES W ON G._Reference18850_IDRRef = W._Reference18850_IDRRef AND G. Order_Button = W.Order_Button
           WHERE wh.Code=9*/
 
-        string SqlGetDimFastWares = @"SELECT CONVERT(INT, wh.Code)*1000+CASE WHEN g.Order_Button=2 and @CodeWarehouse = 9 THEN 1 ELSE g.Order_Button END CodeFastGroup, -- хак для групи Овочі 1
+        string SqlGetDimFastWares = @"SELECT CONVERT(INT, wh.Code)*1000+CASE WHEN g.Order_Button=2 and wh.Code = 9 THEN 1 ELSE g.Order_Button END CodeFastGroup, -- хак для групи Овочі 1
             w1.code_wares AS CodeWares, max(w.OrderWares) as OrderWares
-          FROM DW.dbo.V1C_DIM_OPTION_WPC O        
-          JOIN dw.dbo.WAREHOUSES wh ON o.Warehouse_RRef= wh._IDRRef        
+          FROM DW.dbo.V1C_DIM_OPTION_WPC O       
           JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_GROUP G ON o._IDRRef= G._Reference18850_IDRRef        
           JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_WARES W ON o._IDRRef = W._Reference18850_IDRRef AND G.Order_Button_wares = W.Order_Button        
           JOIN dw.dbo.Wares w1 ON w.Wares_RRef= w1._IDRRef        
           JOIN DW.dbo.V1C_DIM_OPTION_WPC_CASH_place CP ON o._IDRRef= cp._Reference18850_IDRRef      
-          JOIN dw.dbo.V1C_CashDesk CD ON CD.CashDesk_RRef=cp.CashPlaceRRef  
+          JOIN dw.dbo.V1C_CashDesk CD ON CD.CashDesk_RRef=cp.CashPlaceRRef 
+          JOIN dw.dbo.WAREHOUSES wh ON cd.Warehouse_RRef= wh._IDRRef 
             WHERE  CD.code=@IdWorkPlace 
         group by wh.Code, g.Order_Button, w1.code_wares;";
 
@@ -478,7 +478,7 @@ SELECT -- оптовий склад товари і кількості
   WHERE dp.d_end>getdate()";
 
         string SqlGetPromotionSaleGift = @"
-SELECT -- Товари набору (Основні)
+SELECT distinct -- Товари набору (Основні)
    CONVERT(INT, YEAR(dp.year_doc)*10000+dp.number) AS CodePS
     , pk.number_kit AS NumberGroup
     ,CONVERT(INT, dn.code) as CodeWares
@@ -508,6 +508,7 @@ GROUP BY pw.doc_promotion_RRef
         WHEN @CodeWarehouse= 15 THEN 0x817E0050569E814D11EC0030B1FA9530 -- 6(Каса ККМ СО Білочка №10)
         when @CodeWarehouse = 148 then 0x8689005056883C0611ECEBD71B1AE559 -- Каса ККМ СО Ера №3
         end) ;";
+
         string SqlGetUser = @"SELECT e.CodeUser, NameUser, BarCode, Login, PassWord, CodeProfile AS TypeUser 
 FROM dbo.V1C_employee e
 WHERE e.IsWork= 1 and  e.CodeUser NOT IN 
@@ -519,6 +520,10 @@ WHERE e.IsWork= 1 and  e.CodeUser NOT IN
   FROM  dbo.V1C_CashDesk cd
 LEFT JOIN dbo.V1C_dim_warehouse wh ON cd.warehouse_RRef=wh.warehouse_RRef
 LEFT JOIN dbo.V1C_dim_type_price tp ON wh.type_price_RRef= tp.type_price_RRef;";
+
+        string SqlGetWaresWarehous = @"SELECT ww.* FROM  dbo.WaresWarehouse ww 
+  JOIN dbo.WAREHOUSES Wh ON ww.CodeWarehouse=wh.CodeWarehouse2
+  WHERE Wh.Code=195";
     }
     class Res
     {

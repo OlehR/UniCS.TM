@@ -1132,7 +1132,6 @@ ps.NAME_PS as NamePS, Number_Group as NumberGroup, BarCode_2_Category as  BarCod
      where id_workplace= @IdWorkplace and code_period = @CodePeriod and code_receipt = @CodeReceipt
      and code_wares = case when @CodeWares = 0 then code_wares else @CodeWares end;";
 
-
         readonly string SqlGetReceiptWaresDeleted = @"
 select wrh.id_workplace IdWorkplace, wrh.code_period CodePeriod, wrh.code_receipt CodeReceipt, r.date_receipt Date, wrh.id_workplace NumberCashDesk, r.USER_CREATE as BarCodeCashier,
 --Sort as Order,
