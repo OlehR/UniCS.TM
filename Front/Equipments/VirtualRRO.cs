@@ -51,6 +51,8 @@ namespace Front.Equipments.Implementation
             var logRRO = Bl.GetLogRRO(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() });
             if (Printer != null)
                 Printer.Print(logRRO.LastOrDefault().TextReceipt.Split(Environment.NewLine).ToList());
+            else
+                EF.PrintNoFiscalReceipt(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = Global.IdWorkPlace }, logRRO.LastOrDefault().TextReceipt.Split(Environment.NewLine).ToList());
             return new LogRRO(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() })
             { TypeOperation = eTypeOperation.CopyReceipt, TextReceipt = logRRO.LastOrDefault().TextReceipt, TypeRRO = "VirtualRRO", JSON = logRRO.LastOrDefault().ToJSON(), FiscalNumber = $"{FiscalNumber}_{eTypeOperation.CopyReceipt}", TypePay = TypePay };
         }
@@ -117,6 +119,10 @@ namespace Front.Equipments.Implementation
             TextReport.Add($"ФН РРО {FiscalNumber}");
             if (Printer != null)
                 Printer.Print(TextReport);
+            else
+                EF.PrintNoFiscalReceipt(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = Global.IdWorkPlace }, TextReport);
+
+
             return new LogRRO(pIdR) { TypeOperation = eTypeOperation.XReport, FiscalNumber = $"{FiscalNumber}_{typeOperation}", JSON = pIdR.ToJSON(), TextReceipt = string.Join(Environment.NewLine, TextReport), TypeRRO = "VirtualRRO", TypePay = TypePay };
         }
         private string PrintCenter(string text)
@@ -146,17 +152,11 @@ namespace Front.Equipments.Implementation
                 }
                 else
                 {
-                    // Якщо поточний рядок вже перевищує максимальну довжину,
-                    // то вирівнюємо його по центру і переносимо на новий рядок
-                    formattedText += AlignCenter(currentLine) + Environment.NewLine;
+                    TextReport.Add(AlignCenter(currentLine));
                     currentLine = word;
                 }
             }
-
-            // Додаємо останній рядок до відформатованого тексту
-            formattedText += AlignCenter(currentLine);
-
-            return formattedText;
+            return AlignCenter(currentLine);
         }
 
         private string AlignCenter(string text)
@@ -232,7 +232,37 @@ namespace Front.Equipments.Implementation
         override public LogRRO MoveMoney(decimal pSum, IdReceipt pIdR = null)
         {
             eTypeOperation typeOperation = pSum > 0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyOut;
-            return new LogRRO(pIdR) { TypeOperation = typeOperation, FiscalNumber = typeOperation.GetDescription(), SUM = pSum, TypeRRO = "VirtualRRO", JSON = pIdR.ToJSON(), TypePay = TypePay };
+            if (pIdR != null)
+            {
+                var logRRO = Bl.GetLogRRO(pIdR);
+                //Сума чеків на повернення
+                decimal TotalRefundSum = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.Refund && x.TypePay == eTypePay.Cash).Select(x => x.SUM).Sum();
+                //Готівки в касі
+                decimal TotalSum = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation != eTypeOperation.Refund && x.TypePay == eTypePay.Cash).Select(x => x.SUM).Sum() - TotalRefundSum;
+                if (typeOperation == eTypeOperation.MoneyOut && TotalSum < Math.Abs( pSum))
+                {
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Сума видачі меньша за суму готівки в касі!");
+                    throw new Exception(Environment.NewLine + "Сума видачі меньша за суму готівки в касі!" + Environment.NewLine + StrError);
+                }
+            }
+
+
+            
+            string strTypeOperation = typeOperation == eTypeOperation.MoneyIn ? "СЛУЖБОВЕ ВНЕСЕННЯ" : "СЛУЖБОВА ВИДАЧА";
+            TextReport.Clear();
+            TextReport.Add(PrintCenter(HeadReceipt));
+            TextReport.Add(PrintCenter("----------------------"));
+            TextReport.Add(PrintCenter(strTypeOperation));
+            TextReport.Add(PrintTwoColums("ГОТІВКА", pSum.ToString("F2")));
+            TextReport.Add(PrintCenter("----------------------"));
+            TextReport.Add(DateTime.Now.ToString());
+            TextReport.Add($"ФН РРО {FiscalNumber}");
+            if (Printer != null)
+                Printer.Print(TextReport);
+            else
+                EF.PrintNoFiscalReceipt(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = Global.IdWorkPlace }, TextReport);
+
+            return new LogRRO(pIdR) { TypeOperation = typeOperation, FiscalNumber = typeOperation.GetDescription(), SUM = pSum, TypeRRO = "VirtualRRO", JSON = pIdR.ToJSON(), TypePay = TypePay, TextReceipt = string.Join(Environment.NewLine, TextReport) };
         }
 
         /// <summary>
@@ -333,7 +363,7 @@ namespace Front.Equipments.Implementation
                 TextReport.AddRange(pR.Footer);
                 TextReport.Add(PrintCenter($"------------------------"));
             }
-            
+
             if (Printer != null) // якщо друк на фіскалку тоді не друкувати
             {
                 TextReport.Add($"ФН чеку {pR.Fiscal?.Number}");
@@ -342,9 +372,9 @@ namespace Front.Equipments.Implementation
 
                 if (pR.TypeReceipt == eTypeReceipt.Sale)
                     TextReport.Add(PrintCenter("Фіскальний чек"));
-                else
-                    TextReport.Add(PrintCenter("Видатковий чек"));
             }
+            if (pR.TypeReceipt == eTypeReceipt.Refund)
+                TextReport.Add(PrintCenter("Видатковий чек"));
             else
             {
                 TextReport.Add($"QR=>{pR.Fiscal.QR}");
@@ -353,7 +383,7 @@ namespace Front.Equipments.Implementation
             {
                 EF.PrintNoFiscalReceipt(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = Global.IdWorkPlace }, TextReport);
             }
-            
+
 
 
             return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, SUM = pR.SumCreditCard, CodeError = 0, TypeRRO = "VirtualRRO", JSON = pR.ToJSON(), FiscalNumber = pR.Fiscal.Number, TextReceipt = string.Join(Environment.NewLine, TextReport), TypePay = TypePay };
@@ -383,8 +413,10 @@ namespace Front.Equipments.Implementation
         }
         override public LogRRO PrintNoFiscalReceipt(IEnumerable<string> pR)
         {
-            List<ReceiptText> d = pR.Select(el => new ReceiptText() { Text = el.StartsWith("QR=>") ? el.SubString(4) : el, RenderType = el.StartsWith("QR=>") ? eRenderAs.QR : eRenderAs.Text }).ToList();
-            //PrintSeviceReceipt(d);
+            if (Printer != null)
+                Printer.Print(pR);
+            else
+                EF.PrintNoFiscalReceipt(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = Global.IdWorkPlace }, pR);
             return new LogRRO(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace }) { TypeOperation = eTypeOperation.NoFiscalReceipt, TypeRRO = Type.ToString(), JSON = pR.ToJSON(), TypePay = TypePay };
 
         }
