@@ -29,8 +29,11 @@ namespace SharedLib
                 return IsUseOldDB || ( Status != eSyncStatus.StartedFullSync && Status != eSyncStatus.Error && Status != eSyncStatus.ErrorDB); } }
         public DataSync(BL pBL)
         {
-            bl = pBL; ///!!!TMP Трохи костиль 
-            StartSyncData();
+            if (pBL != null)
+            {
+                bl = pBL; ///!!!TMP Трохи костиль 
+                StartSyncData();
+            }
         }
 
         public async Task<bool> SyncDataAsync(bool parIsFull = false)
@@ -101,13 +104,12 @@ namespace SharedLib
                     var r = new Receipt1C(pReceipt);
                     var body = soapTo1C.GenBody("JSONCheck", new Parameters[] { new Parameters("JSONSting", r.GetBase64()) });
                     var res = Global.IsTest ? "0" : await soapTo1C.RequestAsync(Global.Server1C, body, 240000, "application/json");
-
                     if (string.IsNullOrEmpty(res) || !res.Equals("0"))
                         return false;
                 }
-
                 pReceipt.StateReceipt = eStateReceipt.Send;
-                parDB.SetStateReceipt(pReceipt);//Змінюєм стан чека на відправлено.
+                if (parDB != null)
+                    parDB.SetStateReceipt(pReceipt);//Змінюєм стан чека на відправлено.
                 return true;
             }
             catch (Exception ex)
