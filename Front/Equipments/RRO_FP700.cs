@@ -123,7 +123,7 @@ namespace Front.Equipments
             return new LogRRO(pIdR) { TypeOperation = pSum > 0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyIn, SUM = pSum, TypeRRO = Type.ToString(), FiscalNumber = GetLastZReportNumber() };
         }
 
-        public override bool PeriodZReport(DateTime pBegin, DateTime pEnd, bool IsFull = true)
+        public override bool PeriodZReport(IdReceipt pIdR, DateTime pBegin, DateTime pEnd, bool IsFull = true)
         {
             bool res = false;
             res = FullReportByDate(pBegin, pEnd, IsFull);

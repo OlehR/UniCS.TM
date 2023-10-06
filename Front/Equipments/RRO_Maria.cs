@@ -141,7 +141,7 @@ namespace Front.Equipments.Implementation
             }
             return new LogRRO(pIdR) { CodeError = CodeError, Error = StrError, SUM = 0, TypeRRO = "Maria304", TypeOperation = eTypeOperation.XReport };
         }
-        public override bool PeriodZReport(DateTime pBegin, DateTime pEnd, bool IsFull = true)
+        public override bool PeriodZReport(IdReceipt pIdR, DateTime pBegin, DateTime pEnd, bool IsFull = true)
         {
             bool res = false;
             if (Init())

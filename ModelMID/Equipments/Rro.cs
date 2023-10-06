@@ -123,7 +123,7 @@ namespace Front.Equipments
             throw new NotImplementedException();
         }
 
-        virtual public bool PeriodZReport(DateTime pBegin, DateTime pEnd, bool IsFull = true)
+        virtual public bool PeriodZReport(IdReceipt pIdR, DateTime pBegin, DateTime pEnd, bool IsFull = true)
         {
             throw new NotImplementedException();
         }

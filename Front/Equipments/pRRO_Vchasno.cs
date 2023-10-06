@@ -159,7 +159,7 @@ namespace Front.Equipments.Implementation
             return GetLogRRO<ResponceReport>(pIdR, Res, IsZ ? eTypeOperation.ZReport : eTypeOperation.XReport, Sum, SumRefund);
         }
 
-        override public bool PeriodZReport(DateTime pBegin, DateTime pEnd, bool IsFull = true)
+        override public bool PeriodZReport(IdReceipt pIdR, DateTime pBegin, DateTime pEnd, bool IsFull = true)
         {
             ApiRRO d = new(eTask.PeriodZReport) { token = Token, device = Device };
             d.fiscal.dt_from = pBegin.Date.ToString("yyyyMMddHHmmss");

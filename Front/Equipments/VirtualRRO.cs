@@ -59,19 +59,21 @@ namespace Front.Equipments.Implementation
 
         override public LogRRO PrintZ(IdReceipt pIdR)
         {
-            return PrintReport(pIdR, eTypeOperation.ZReport);
+            var logRRO = Bl.GetLogRRO(pIdR);
+            return PrintReport(pIdR, eTypeOperation.ZReport, logRRO);
         }
 
         override public LogRRO PrintX(IdReceipt pIdR)
         {
-            return PrintReport(pIdR, eTypeOperation.XReport);
+            var logRRO = Bl.GetLogRRO(pIdR);
+            return PrintReport(pIdR, eTypeOperation.XReport, logRRO);
         }
 
-        private LogRRO PrintReport(IdReceipt pIdR, eTypeOperation typeOperation)
+        private LogRRO PrintReport(IdReceipt pIdR, eTypeOperation typeOperation, IEnumerable<LogRRO> logRRO, DateTime pBegin = new DateTime(), DateTime pEnd = new DateTime())
         {
             TextReport.Clear();
 
-            var logRRO = Bl.GetLogRRO(pIdR);
+            
             //кількість продажних чеків
             int CountSaleReceipt = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.Sale && x.TypePay == eTypePay.Cash).Count();
             //Загальна сума продажів
@@ -94,6 +96,8 @@ namespace Front.Equipments.Implementation
 
             TextReport.Add(PrintCenter(HeadReceipt));
             TextReport.Add(PrintCenter(typeOperation.GetDescription()));
+            if (typeOperation == eTypeOperation.PeriodZReport)
+                TextReport.Add(PrintCenter($"{pBegin.ToString("dd/MM/yyyy")}-{pEnd.ToString("dd/MM/yyyy")}"));
             TextReport.Add(PrintCenter("Продажі"));
             TextReport.Add(PrintTwoColums("Чеків", CountSaleReceipt.ToString()));
             TextReport.Add(PrintTwoColums("Загальна сума:", TotalSaleSum.ToString("0.00")));
@@ -113,10 +117,14 @@ namespace Front.Equipments.Implementation
                 TextReport.Add(PrintTwoColums("Кількість вилучень:", CountMoneyOutReceipt.ToString()));
                 TextReport.Add(PrintTwoColums("Сума вилучень:", TotalMoneyOutSum.ToString("0.00")));
             }
-            TextReport.Add(PrintTwoColums("Готівки в касі:", TotalSum.ToString("0.00")));
+            if (typeOperation != eTypeOperation.PeriodZReport)
+                TextReport.Add(PrintTwoColums("Готівки в касі:", TotalSum.ToString("0.00")));
             TextReport.Add(PrintCenter("----------------------"));
             TextReport.Add(DateTime.Now.ToString());
             TextReport.Add($"ФН РРО {FiscalNumber}");
+            if (Global.GetCodePeriod() != pIdR.CodePeriod)
+                TextReport.Add(PrintCenter($"Копія звіту за {pIdR.CodePeriod}")); ;
+            
             if (Printer != null)
                 Printer.Print(TextReport);
             else
@@ -426,8 +434,17 @@ namespace Front.Equipments.Implementation
             return true;
         }
 
-        override public bool PeriodZReport(DateTime pBegin, DateTime pEnd, bool IsFull = true)
+        override public bool PeriodZReport(IdReceipt pIdR, DateTime pBegin, DateTime pEnd, bool IsFull = true)
         {
+            var serchDate = pBegin;
+            pIdR.CodePeriod = Global.GetCodePeriod(pBegin);
+            List<LogRRO> logRRO = Bl.GetLogRRO(pIdR).ToList();
+            while (serchDate < pEnd) {
+                serchDate = serchDate.AddDays(1);
+                pIdR.CodePeriod=Global.GetCodePeriod(serchDate);
+                logRRO.AddRange(Bl.GetLogRRO(pIdR).ToList());
+            }
+            PrintReport(pIdR, eTypeOperation.PeriodZReport, logRRO, pBegin, pEnd);
             return true;
         }
         public override StatusEquipment TestDevice()

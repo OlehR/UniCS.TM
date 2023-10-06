@@ -342,7 +342,7 @@ namespace Front.Control
         {
             var task = Task.Run(() =>
             {
-                var r = EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace }, SelectedCashRegister);
+                var r = EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(DateSoSearch), IdWorkplacePay = SelectedWorkPlace.IdWorkplace }, SelectedCashRegister);
                 if (r.CodeError == 0)
                     ViewReceiptFiscal(r);
                 else
@@ -367,7 +367,7 @@ namespace Front.Control
                     {
                         var task = Task.Run(() =>
                         {
-                            var r = EF.RroPrintZ(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace }, SelectedCashRegister);
+                            var r = EF.RroPrintZ(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(DateSoSearch), IdWorkplacePay = SelectedWorkPlace.IdWorkplace }, SelectedCashRegister);
                             if (r.CodeError == 0)
                                 ViewReceiptFiscal(r);
                             else
@@ -603,6 +603,7 @@ namespace Front.Control
             if (curReceipt != null)
             {
                 curReceipt.Wares = Bl.GetWaresReceipt(curReceipt);
+                curReceipt.IdWorkplacePay = Global.IdWorkPlace;
                 //Якогось не працює через get як я хочу :) Тому пока реалізація через Ж.
                 IsPrintReceipt = curReceipt?.StateReceipt != eStateReceipt.Print && curReceipt?.StateReceipt != eStateReceipt.Send;
                 IsPayReceipt = curReceipt?.StateReceipt == eStateReceipt.Prepare || curReceipt?.StateReceipt == eStateReceipt.StartPay;

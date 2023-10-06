@@ -40,10 +40,10 @@ namespace Front
         SortedList<int, Rro> RROs = new();
         IEnumerable<Rro> GetRROs(int pIdWorkplace)
         {
-            return RROs.Where(el=> el.Key>=pIdWorkplace*100 && el.Key < pIdWorkplace * 100+99).Select(el=>el.Value);
+            return RROs.Where(el => el.Key >= pIdWorkplace * 100 && el.Key < pIdWorkplace * 100 + 99).Select(el => el.Value);
         }
-        Rro GetRRO(Receipt pR) { return GetRRO(pR, null,pR.TypePay); }
-        Rro GetRRO(IdReceipt pIdR, Rro pRRO=null, eTypePay pTypePay = eTypePay.None)
+        Rro GetRRO(Receipt pR) { return GetRRO(pR, null, pR.TypePay); }
+        Rro GetRRO(IdReceipt pIdR, Rro pRRO = null, eTypePay pTypePay = eTypePay.None)
         {
             if (pRRO != null)
             {
@@ -60,7 +60,7 @@ namespace Front
             {
                 if (pTypePay != eTypePay.None)
                 {
-                    Key = pIdR.IdWorkplacePay * 100 ;
+                    Key = pIdR.IdWorkplacePay * 100;
                     if (RROs.ContainsKey(Key))
                         Res = RROs[Key];
                 }
@@ -360,7 +360,7 @@ namespace Front
                                 RRO = new RRO_Maria(el, config, LF, pActionStatus);
                                 break;
                             case eModelEquipment.VirtualRRO:
-                                RRO = new VirtualRRO(el, config, LF, pActionStatus,Printer, this);
+                                RRO = new VirtualRRO(el, config, LF, pActionStatus, Printer, this);
                                 break;
                             case eModelEquipment.RRO_FP700:
                                 RRO = new RRO_FP700(el, config, LF, pActionStatus);
@@ -373,14 +373,14 @@ namespace Front
                                 break;
                         }
                         NewListEquipment.Add(RRO);
-                        RROs.Add(RRO.IdWorkplacePay*100+(int)RRO.TypePay, RRO);
+                        RROs.Add(RRO.IdWorkplacePay * 100 + (int)RRO.TypePay, RRO);
                     }
                     catch (Exception e)
                     {
                         FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name + "\\RRO", e);
                     }
                 }
-                
+
                 ListEquipment = NewListEquipment;
 
                 //Передаємо зміни станусів наверх.
@@ -416,17 +416,17 @@ namespace Front
         LogRRO WaitRRO(Rro pRRO, IdReceipt pReceipt, eTypeOperation pTypeOperation, int pMilisecond = 500, bool pIsStop = true)
         {
             if (pRRO == null)
-                return  new LogRRO(pReceipt) { TypeOperation = pTypeOperation, CodeError = -1, Error = $"Не знайдено RRO для IdWorkplacePay={pReceipt?.IdWorkplacePay}" };
-            
+                return new LogRRO(pReceipt) { TypeOperation = pTypeOperation, CodeError = -1, Error = $"Не знайдено RRO для IdWorkplacePay={pReceipt?.IdWorkplacePay}" };
+
             LogRRO Res = null;
-            
+
             lock (pRRO)
             {
                 //var RRO = GetRRO(pReceipt.IdWorkplacePay);
                 try
                 {
                     FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Start pRRO=> {pRRO.GetHashCode()} TypeOperation=>{pTypeOperation} pMilisecond={pMilisecond}");
-                                        
+
                     while (pMilisecond > 0 && pRRO.TypeOperation != eTypeOperation.NotDefine)
                     {
                         if (pIsStop)
@@ -463,7 +463,7 @@ namespace Front
             if (pReceipt == null || pReceipt.Payment == null || !pReceipt.Payment.Any(el => el.TypePay == eTypePay.Card || el.TypePay == eTypePay.Cash))
                 return new LogRRO(pReceipt) { CodeError = -1, Error = $"Відсутня оплата по Робочому місцю № ({pReceipt.IdWorkplacePay})" };
             var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
-            {                
+            {
                 var RRO = GetRRO(pReceipt);
                 LogRRO Res;
                 try
@@ -501,14 +501,14 @@ namespace Front
             })).Result;
             if (r.CodeError == 0 && pReceipt.TypeReceipt == eTypeReceipt.Sale && pReceipt.IdWorkplacePay == Global.IdWorkPlace)
                 PrintQR(pReceipt);
-            
+
 
             GetLastReceipt(new(pReceipt), r);
             return r;
         }
 
-        
-        void GetLastReceipt(IdReceipt pIdR, LogRRO r,bool IsZReport=false)
+
+        void GetLastReceipt(IdReceipt pIdR, LogRRO r, bool IsZReport = false)
         {
             Task.Run(() =>
            {
@@ -517,7 +517,7 @@ namespace Front
                    var RRO = GetRRO(pIdR);
                    if (r.CodeError == 0)
                    {
-                       if (string.IsNullOrEmpty(r.TextReceipt) )//|| RRO.Model == eModelEquipment.RRO_FP700)
+                       if (string.IsNullOrEmpty(r.TextReceipt))//|| RRO.Model == eModelEquipment.RRO_FP700)
                        {
                            LogRRO Res;
                            try
@@ -539,7 +539,7 @@ namespace Front
                                if (RRO != null)
                                    RRO.TypeOperation = eTypeOperation.NotDefine;
                            }
-                       }                       
+                       }
                    }
                    Bl.InsertLogRRO(r);
                }
@@ -550,14 +550,14 @@ namespace Front
            });
         }
 
-        
 
-        public LogRRO RroPrintX(IdReceipt pIdR,Rro pRRO=null)
+
+        public LogRRO RroPrintX(IdReceipt pIdR, Rro pRRO = null)
         {
 
             var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
             {
-                var RRO =  GetRRO(pIdR, pRRO);
+                var RRO = GetRRO(pIdR, pRRO);
                 LogRRO Res;
 
 
@@ -612,11 +612,11 @@ namespace Front
                 return Res;
             }
             )).Result;
-            GetLastReceipt(pIdR, r,true);
+            GetLastReceipt(pIdR, r, true);
             return r;
         }
 
-        public LogRRO RroPeriodZReport(IdReceipt pIdR, DateTime pBegin, DateTime pEnd, bool IsFull = true,Rro pRRO = null)
+        public LogRRO RroPeriodZReport(IdReceipt pIdR, DateTime pBegin, DateTime pEnd, bool IsFull = true, Rro pRRO = null)
         {
             var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
             {
@@ -627,7 +627,7 @@ namespace Front
                 {
                     Res = WaitRRO(RRO, pIdR, eTypeOperation.PeriodZReport);
                     if (Res == null)
-                        RRO?.PeriodZReport(pBegin, pEnd, IsFull);
+                        RRO?.PeriodZReport(pIdR, pBegin, pEnd, IsFull);
                     Res = new LogRRO(pIdR) { TypeOperation = eTypeOperation.PeriodZReport, TypeRRO = RRO.Model.ToString(), TextReceipt = $"{pBegin} {pEnd} {IsFull}" };
                 }
                 catch (Exception e)
@@ -646,8 +646,8 @@ namespace Front
             return r;
         }
 
-        public LogRRO RroPrintCopyReceipt(Rro pRRO=null)
-        {            
+        public LogRRO RroPrintCopyReceipt(Rro pRRO = null)
+        {
             var r = pRRO?.PrintCopyReceipt();
             Bl.InsertLogRRO(r);
             return r;
@@ -662,12 +662,12 @@ namespace Front
             return sum;
         }
 
-        public LogRRO RroMoveMoney(decimal pSum, IdReceipt pIdR,Rro pRRO=null)
+        public LogRRO RroMoveMoney(decimal pSum, IdReceipt pIdR, Rro pRRO = null)
         {
 
             var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
             {
-                var RRO = GetRRO(pIdR,pRRO);
+                var RRO = GetRRO(pIdR, pRRO);
                 LogRRO Res;
 
                 try
@@ -709,11 +709,11 @@ namespace Front
                     Res = WaitRRO(RRO, pReceipt, eTypeOperation.Sale);
                     if (Res == null)
                     {
-                        
+
                         Res = RRO?.IssueOfCash(pReceipt);
                         var Log = pReceipt.LogRROs?.ToList() ?? new List<LogRRO>();
                         Log.Add(Res);
-                        pReceipt.LogRROs = Log;                        
+                        pReceipt.LogRROs = Log;
                     }
                 }
                 catch (Exception e)
@@ -738,7 +738,7 @@ namespace Front
 
         public bool OpenMoneyBox(int pTime = 15)
         {
-            var RRO = GetRRO( new IdReceipt() { IdWorkplacePay = Global.IdWorkPlace });
+            var RRO = GetRRO(new IdReceipt() { IdWorkplacePay = Global.IdWorkPlace });
             return RRO?.OpenMoneyBox(pTime) ?? false;
         }
         /// <summary>
@@ -846,8 +846,8 @@ namespace Front
                     if (Res == null)
                     {
                         RRO.ProgramingArticle(pRW);
-                        RRO.PutToDisplay( $"{pRW.NameWaresReceipt}{Environment.NewLine}{pRW.Quantity}x{pRW.Price}={pRW.SumTotal}", 0);
-                    }                
+                        RRO.PutToDisplay($"{pRW.NameWaresReceipt}{Environment.NewLine}{pRW.Quantity}x{pRW.Price}={pRW.SumTotal}", 0);
+                    }
                 }
                 catch (Exception e)
                 {
@@ -865,7 +865,7 @@ namespace Front
             }
             );
         }
-        
+
         /// <summary>
         /// Сума готівки з РРО
         /// </summary>
@@ -873,7 +873,7 @@ namespace Front
         /// <returns></returns>
         public decimal GetSumInCash(IdReceipt pIdR)
         {
-            var RRO = GetRRO(pIdR,null,eTypePay.Cash);
+            var RRO = GetRRO(pIdR, null, eTypePay.Cash);
             LogRRO Res;
 
             decimal Sum = -1;
@@ -895,7 +895,7 @@ namespace Front
             return Sum;
         }
 
-        public void PutToDisplay(IdReceipt pIdR, string pText=null, int pLine = 1)
+        public void PutToDisplay(IdReceipt pIdR, string pText = null, int pLine = 1)
         {
             //return;//!!!!TMP  Треба придумати щось щоб не було проблем
             Task.Run(() =>
@@ -905,7 +905,7 @@ namespace Front
                 decimal Sum = -1;
                 try
                 {
-                    Res = WaitRRO(RRO, pIdR, eTypeOperation.PutToDisplay,0,false);
+                    Res = WaitRRO(RRO, pIdR, eTypeOperation.PutToDisplay, 0, false);
                     if (Res == null)
                         RRO?.PutToDisplay(pText, pLine);
                 }
@@ -930,7 +930,7 @@ namespace Front
         {
             return Printer?.PrintReceipt(pR) ?? true;
         }
-       
+
         #region POS        
 
         /// <summary>
