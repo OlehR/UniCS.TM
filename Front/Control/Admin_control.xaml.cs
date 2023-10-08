@@ -106,46 +106,48 @@ namespace Front.Control
 
         public Admin_control()
         {
-            OnSocket += (Command, WorkPlace, Ansver) =>
+            try
             {
-                SB.AppendLine($"{Command} {WorkPlace.Name} {Ansver.TextState}");
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SB"));
-            };
-            Bl = BL.GetBL;
-            TypeMessageRadiobuton = new ObservableCollection<APIRadiobuton>();
-            foreach (eCommand item in Enum.GetValues(typeof(eCommand)))
-            {
-                TypeMessageRadiobuton.Add(new APIRadiobuton() { ServerTypeMessage = item });
-            }
-            Init(AdminUser);
-
-
-            InitializeComponent();
-            CreateBanknote();
-            ComboBoxWorkPlaces.ItemsSource = WorkPlaces;
-            
-            this.DataContext = this;
-            //Список команд для віддаленого керування
-            //ListRadioButtonAPI.ItemsSource = TypeMessageRadiobuton;
-
-            ActiveWorkPlaces = Bl.db.GetWorkPlace().Where(el => el.CodeWarehouse == Global.CodeWarehouse);
-
-            
-            foreach (eTypeWorkplace type in Enum.GetValues(typeof(eTypeWorkplace)))
-            {
-                if (type != eTypeWorkplace.NotDefine && type != eTypeWorkplace.Both)
+                OnSocket += (Command, WorkPlace, Ansver) =>
                 {
-                    ListTypeWorkplace.Add(new CurentTypeWorkplace()
-                    {
-                        TypeWorkplace_ = type,
-
-                    });
+                    SB.AppendLine($"{Command} {WorkPlace.Name} {Ansver.TextState}");
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SB"));
+                };
+                Bl = BL.GetBL;
+                TypeMessageRadiobuton = new ObservableCollection<APIRadiobuton>();
+                foreach (eCommand item in Enum.GetValues(typeof(eCommand)))
+                {
+                    TypeMessageRadiobuton.Add(new APIRadiobuton() { ServerTypeMessage = item });
                 }
-            }
-            ComboBoxChooseTypeCheckout.ItemsSource = ListTypeWorkplace;
-            
+                Init(AdminUser);
 
-            RefreshJournal();
+
+                InitializeComponent();
+                CreateBanknote();
+                ComboBoxWorkPlaces.ItemsSource = WorkPlaces;
+
+                this.DataContext = this;
+                //Список команд для віддаленого керування
+                //ListRadioButtonAPI.ItemsSource = TypeMessageRadiobuton;
+
+                ActiveWorkPlaces = Bl.db.GetWorkPlace().Where(el => el.CodeWarehouse == Global.CodeWarehouse);
+
+
+                foreach (eTypeWorkplace type in Enum.GetValues(typeof(eTypeWorkplace)))
+                {
+                    if (type != eTypeWorkplace.NotDefine && type != eTypeWorkplace.Both)
+                    {
+                        ListTypeWorkplace.Add(new CurentTypeWorkplace()
+                        {
+                            TypeWorkplace_ = type,
+
+                        });
+                    }
+                }
+                ComboBoxChooseTypeCheckout.ItemsSource = ListTypeWorkplace;
+                RefreshJournal();
+            }
+            catch (Exception ex) { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex); }
 
         }
 
@@ -556,12 +558,14 @@ namespace Front.Control
 
         private void RefreshJournal()
         {
-
-            var TMPIdRecipt = new IdReceipt { CodePeriod = Global.GetCodePeriod(DateSoSearch), CodeReceipt = 0, IdWorkplace = Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace).IdWorkplace };
-            SourcesListJournal = new ObservableCollection<LogRRO>(Bl.GetLogRRO(TMPIdRecipt));
-            ListJournal.ItemsSource = SourcesListJournal.Reverse();
-            CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(ListJournal.ItemsSource);
-            view.Filter = JournalFilter;
+            try
+            {
+                var TMPIdRecipt = new IdReceipt { CodePeriod = Global.GetCodePeriod(DateSoSearch), CodeReceipt = 0, IdWorkplace = Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace).IdWorkplace };
+                SourcesListJournal = new ObservableCollection<LogRRO>(Bl.GetLogRRO(TMPIdRecipt));
+                ListJournal.ItemsSource = SourcesListJournal.Reverse();
+                CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(ListJournal.ItemsSource);
+                view.Filter = JournalFilter;
+            }catch(Exception ex) { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name,ex); }
         }
 
         private void RefreshLog()
