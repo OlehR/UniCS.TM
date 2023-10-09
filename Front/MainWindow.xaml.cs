@@ -665,21 +665,7 @@ namespace Front
                     if (State != eStateMainWindows.ProcessPay)
                         EF.StopMultipleTone();
 
-                    if ((State == eStateMainWindows.WaitAdmin && !CS.IsProblem) || State == eStateMainWindows.AdminPanel || State == eStateMainWindows.WaitAdminLogin ||
-                       State == eStateMainWindows.ChoicePaymentMethod || State == eStateMainWindows.ProcessPay)
-                    {
-                        if (StartScan != DateTime.MinValue)
-                        {
-                            Bl.SaveReceiptEvents(new List<ReceiptEvent>() { new ReceiptEvent(curReceipt) { ResolvedAt = StartScan, EventType = eReceiptEventType.TimeScanReceipt, EventName = "Час сканування чека" } }, false);
-                            StartScan = DateTime.MinValue;
-                        }
-                    }
-                    else
-                    {
-                        if (StartScan == DateTime.MinValue) StartScan = DateTime.Now;
-                    }
-
-
+                    TimeScan();
 
                     //Генеруємо з кастомні вікна
                     if (TypeAccessWait == eTypeAccess.FixWeight)
@@ -978,6 +964,25 @@ namespace Front
                 if (res != DispatcherOperationStatus.Completed)
                     FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"res=>{res} pSMV={pSMV}/{State}, pTypeAccess={pTypeAccess}/{TypeAccessWait}, pRW ={pRW} , pCW={pCW},  pS={pS}", eTypeLog.Error);
 
+            }
+        }
+
+        void TimeScan(bool? pIsSave = null)
+        {
+            if ((State == eStateMainWindows.WaitAdmin && !CS.IsProblem) || State == eStateMainWindows.AdminPanel || State == eStateMainWindows.WaitAdminLogin ||
+                       State == eStateMainWindows.ChoicePaymentMethod || State == eStateMainWindows.ProcessPay || State == eStateMainWindows.StartWindow || pIsSave==true)
+            {
+                if (StartScan != DateTime.MinValue)
+                {
+                    Bl.SaveReceiptEvents(new List<ReceiptEvent>() { new ReceiptEvent(curReceipt) { ResolvedAt = StartScan, EventType = eReceiptEventType.TimeScanReceipt, EventName = "Час сканування чека" } }, false);
+                    StartScan = DateTime.MinValue;
+                }
+            }
+            else
+            {
+                if (pIsSave == false || (StartScan == DateTime.MinValue && (
+                        State == eStateMainWindows.WaitInput || State == eStateMainWindows.WaitFindWares || State == eStateMainWindows.WaitInputPrice || State == eStateMainWindows.WaitInputIssueCard)))
+                    StartScan = DateTime.Now;
             }
         }
 
@@ -1513,19 +1518,12 @@ namespace Front
                 {
                     if (res)
                     {
+                        TimeScan(true);
                         ReceiptPostpone = curReceipt;
                         NewReceipt();
                         WaresList.Focus();
                     }
-
-                };
-
-                //if (MessageBox.Show("Ви дійсно хочете відкласти чек?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                //{
-                //    ReceiptPostpone = curReceipt;
-                //    NewReceipt();
-                //    WaresList.Focus();
-                //}
+                };                
             }
             else
             {
@@ -1533,14 +1531,13 @@ namespace Front
                 {
                     if (Client != null)
                         ShowClientBonus.Visibility = Visibility.Visible;
-                    Global.OnReceiptCalculationComplete?.Invoke(ReceiptPostpone);
+                    TimeScan(false);
+                    Global.OnReceiptCalculationComplete?.Invoke(ReceiptPostpone);                    
                     ReceiptPostpone = null;
                     WaresList.Focus();
                 }
                 else
-                    CustomMessage.Show("Неможливо відновити чек не закривши текучий", "Увага!", eTypeMessage.Information);
-                //MessageBox.Show("Неможливо відновити чек не закривши текучий", "Увага!", MessageBoxButton.OK, MessageBoxImage.Question);
-
+                    CustomMessage.Show("Неможливо відновити чек не закривши текучий", "Увага!", eTypeMessage.Information); 
             }
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsReceiptPostpone"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsReceiptPostponeNotNull"));
