@@ -288,12 +288,20 @@ namespace Front.Equipments.Implementation
                                 M304.FreeTextLine(0, 1, 0, comment.GetText(43));
                         }
                     }
-                    //M304.AbortCheck();
-                    if (SetError(M304.CloseCheckEx(SumCashPay, SumCardPay, 0, 0, RRN) == 0))
+
+                    if (Global.IsTest)
                     {
-                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка закриття чеку: {StrError}");
-                        throw new Exception(Environment.NewLine + "Помилка закриття чеку!" + Environment.NewLine + StrError);
+                        M304.AbortCheck();
                     }
+                    else
+                    {
+                        if (SetError(M304.CloseCheckEx(SumCashPay, SumCardPay, 0, 0, RRN) == 0))
+                        {
+                            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка закриття чеку: {StrError}");
+                            throw new Exception(Environment.NewLine + "Помилка закриття чеку!" + Environment.NewLine + StrError);
+                        }
+                    }
+
                     M304.PutToDisplay(pR.SumFiscal.ToString());
                 }
                 pR.NumberReceipt = M304.LastCheckNumber.ToString();

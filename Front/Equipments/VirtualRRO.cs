@@ -30,6 +30,7 @@ namespace Front.Equipments.Implementation
         string FiscalNumber = "657513548";
         int MaxCountCharacters = 34;//23;//34;
         List<string> TextReport = new();
+        WDB_SQLite db = new WDB_SQLite();
 
 
         public VirtualRRO(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null, Printer pR = null, EquipmentFront eF = null) : this(pEquipment, pConfiguration, pLoggerFactory, pActionStatus)
@@ -73,7 +74,7 @@ namespace Front.Equipments.Implementation
         {
             TextReport.Clear();
 
-            
+
             //кількість продажних чеків
             int CountSaleReceipt = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.Sale && x.TypePay == eTypePay.Cash).Count();
             //Загальна сума продажів
@@ -124,7 +125,7 @@ namespace Front.Equipments.Implementation
             TextReport.Add($"ФН РРО {FiscalNumber}");
             if (Global.GetCodePeriod() != pIdR.CodePeriod)
                 TextReport.Add(PrintCenter($"Копія звіту за {pIdR.CodePeriod}")); ;
-            
+
             if (Printer != null)
                 Printer.Print(TextReport);
             else
@@ -247,7 +248,7 @@ namespace Front.Equipments.Implementation
                 decimal TotalRefundSum = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.Refund && x.TypePay == eTypePay.Cash).Select(x => x.SUM).Sum();
                 //Готівки в касі
                 decimal TotalSum = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation != eTypeOperation.Refund && x.TypePay == eTypePay.Cash).Select(x => x.SUM).Sum() - TotalRefundSum;
-                if (typeOperation == eTypeOperation.MoneyOut && TotalSum < Math.Abs( pSum))
+                if (typeOperation == eTypeOperation.MoneyOut && TotalSum < Math.Abs(pSum))
                 {
                     FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Сума видачі меньша за суму готівки в касі!");
                     throw new Exception(Environment.NewLine + "Сума видачі меньша за суму готівки в касі!" + Environment.NewLine + StrError);
@@ -255,7 +256,7 @@ namespace Front.Equipments.Implementation
             }
 
 
-            
+
             string strTypeOperation = typeOperation == eTypeOperation.MoneyIn ? "СЛУЖБОВЕ ВНЕСЕННЯ" : "СЛУЖБОВА ВИДАЧА";
             TextReport.Clear();
             TextReport.Add(PrintCenter(HeadReceipt));
@@ -332,8 +333,11 @@ namespace Front.Equipments.Implementation
             }
             TextReport.Add(PrintCenter($"------------------------"));
 
-            TextReport.Add(PrintTwoColums("Сума", pR.SumCash.ToString("F2")));
 
+            TextReport.Add(PrintTwoColums("Сума", pR.SumCash.ToString("F2")));
+            decimal roundFiscal = pR.SumCash - pR.SumReceipt;
+            if (roundFiscal != 0)
+                TextReport.Add(PrintTwoColums("Заокруглення", roundFiscal.ToString("F2")));
             if (pR.Fiscal?.Taxes?.Count() > 0)
             {
                 foreach (var item in (pR.Fiscal.Taxes))
@@ -392,9 +396,21 @@ namespace Front.Equipments.Implementation
                 EF.PrintNoFiscalReceipt(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = Global.IdWorkPlace }, TextReport);
             }
 
+            if (roundFiscal != 0)
+            {
+                try
+                {
+                    var pay = new Payment(pR) { IsSuccess = true, TypePay = eTypePay.FiscalInfo, SumPay = pR.SumReceipt, SumExt = roundFiscal };
+                    pR.Payment = pR.Payment == null ? new List<Payment>() { pay } : pR.Payment.Append<Payment>(pay);
+                    db.ReplacePayment(pay, true);
+                }
+                catch (Exception e)
+                {
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+                }
+            }
 
-
-            return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, SUM = pR.SumCreditCard, CodeError = 0, TypeRRO = "VirtualRRO", JSON = pR.ToJSON(), FiscalNumber = pR.Fiscal.Number, TextReceipt = string.Join(Environment.NewLine, TextReport), TypePay = TypePay };
+            return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, SUM = pR.SumCash, CodeError = 0, TypeRRO = "VirtualRRO", JSON = pR.ToJSON(), FiscalNumber = pR.Fiscal.Number, TextReceipt = string.Join(Environment.NewLine, TextReport), TypePay = TypePay };
         }
         public override void GetFiscalInfo(Receipt pR, object pRes)
         {
@@ -439,9 +455,10 @@ namespace Front.Equipments.Implementation
             var serchDate = pBegin;
             pIdR.CodePeriod = Global.GetCodePeriod(pBegin);
             List<LogRRO> logRRO = Bl.GetLogRRO(pIdR).ToList();
-            while (serchDate < pEnd) {
+            while (serchDate < pEnd)
+            {
                 serchDate = serchDate.AddDays(1);
-                pIdR.CodePeriod=Global.GetCodePeriod(serchDate);
+                pIdR.CodePeriod = Global.GetCodePeriod(serchDate);
                 logRRO.AddRange(Bl.GetLogRRO(pIdR).ToList());
             }
             PrintReport(pIdR, eTypeOperation.PeriodZReport, logRRO, pBegin, pEnd);
