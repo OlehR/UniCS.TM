@@ -813,7 +813,7 @@ namespace Front.Equipments
 
         public bool ArticleReport() => OnSynchronizeWaitCommandResult(eCommand.ArticleReport, string.Format("{0},{1}", (object)_operatorPassword, (object)eArticleReportType.S));
 
-        public void DeleteAllProgrammingArticles() => db.DelAllFiscalArticle();
+        //public void DeleteAllProgrammingArticles() => db.DelAllFiscalArticle();
 
         public bool ObliterateFiscalReceipt()
         {

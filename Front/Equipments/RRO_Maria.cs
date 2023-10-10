@@ -126,6 +126,7 @@ namespace Front.Equipments.Implementation
         {
             if (Init())
             {
+                db.DelAllFiscalArticle();
                 SetError(M304.ZReport() != 1);
                 Done();
             }
@@ -209,15 +210,19 @@ namespace Front.Equipments.Implementation
                             TypeDiscount = 0;//знижка
                         else TypeDiscount = 1; // надбавка
 
+                        FiscalArticle article = db.GetFiscalArticle(el);
+                        if (article == null)
+                        {
+                            article = new() { IdWorkplacePay = el.IdWorkplacePay, CodeWares = el.CodeWares, NameWares = Name, PLU = el.CodeWares, Price = el.PriceDealer };
+                            db.AddFiscalArticle(article);
+                        }
 
-                        if (SetError(M304.FiscalLineEx(Name, Convert.ToInt32((el.CodeUnit == Global.WeightCodeUnit ? 1000 : 1) * el.Quantity), Convert.ToInt32(el.PriceEKKA * 100), el.CodeUnit == Global.WeightCodeUnit ? 1 : 0, TG1, TG2, el.CodeWares, TypeDiscount, null, Math.Abs(Convert.ToInt32(el.SumDiscountEKKA * 100m)), null) == 0))
+                        if (SetError(M304.FiscalLineEx(article.NameWares, Convert.ToInt32((el.CodeUnit == Global.WeightCodeUnit ? 1000 : 1) * el.Quantity), Convert.ToInt32(el.PriceEKKA * 100), el.CodeUnit == Global.WeightCodeUnit ? 1 : 0, TG1, TG2, el.CodeWares, TypeDiscount, null, Math.Abs(Convert.ToInt32(el.SumDiscountEKKA * 100m)), null) == 0))
                         {
                             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка програмування товару: {StrError}");
                             throw new Exception(Environment.NewLine + "Помилка програмування товару!" + Environment.NewLine + StrError);
                         }
-
                     }
-
 
                     if (pR.Payment?.Any() == true)
                     {
@@ -242,11 +247,8 @@ namespace Front.Equipments.Implementation
                             {
                                 SumCashPay = Decimal.ToInt32(el.SumExt * 100m); // сума яку дає покупець
                             }
-
                         }
                     }
-
-
                 }
                 else
                 {
