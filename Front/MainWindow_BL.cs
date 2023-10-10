@@ -687,7 +687,7 @@ namespace Front
                     CustomMessage.Show("Дана акцизна марка вже використана!", "Увага", eTypeMessage.Error);
         }
 
-        void NewReceipt()
+       public void NewReceipt()
         {
             curReceipt = Bl.GetNewIdReceipt();
             s.NewReceipt(curReceipt.CodeReceipt);

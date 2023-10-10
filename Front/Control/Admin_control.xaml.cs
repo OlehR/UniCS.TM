@@ -179,7 +179,7 @@ namespace Front.Control
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsControlScale"));
 
 
-            
+
             Dispatcher.BeginInvoke(new ThreadStart(() =>
             {
                 int i = 0;
@@ -197,12 +197,12 @@ namespace Front.Control
                         ListEquipment.ItemsSource = AllEquipment;
                         var RROs = AllEquipment.Where(x => x.Type == eTypeEquipment.RRO);
                         ComboBoxCashRegisters.ItemsSource = RROs;
-                        if (RROs.Count()>0)
+                        if (RROs.Count() > 0)
                         {
                             SelectedCashRegister = RROs.First() as Rro;
                             ComboBoxCashRegisters.SelectedItem = SelectedCashRegister;
                         }
-                        
+
                     }
                     if (ActiveTerminals.Count == 0)
                     {
@@ -416,7 +416,7 @@ namespace Front.Control
 
         private void EKKA_Copy_Click(object sender, RoutedEventArgs e)
         {
-            EF.RroPrintCopyReceipt( SelectedCashRegister);
+            EF.RroPrintCopyReceipt(SelectedCashRegister);
         }
 
         private void WorkStart_Click(object sender, RoutedEventArgs e)
@@ -522,7 +522,7 @@ namespace Front.Control
 
             }
             var tabControl = (sender as TabControl).SelectedItem;
-            string tabItem = tabControl.IsNotNull()? (tabControl as TabItem).Header as string: "Зміна";
+            string tabItem = tabControl.IsNotNull() ? (tabControl as TabItem).Header as string : "Зміна";
 
             switch (tabItem)
             {
@@ -565,7 +565,8 @@ namespace Front.Control
                 ListJournal.ItemsSource = SourcesListJournal.Reverse();
                 CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(ListJournal.ItemsSource);
                 view.Filter = JournalFilter;
-            }catch(Exception ex) { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name,ex); }
+            }
+            catch (Exception ex) { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex); }
         }
 
         private void RefreshLog()
@@ -982,6 +983,13 @@ namespace Front.Control
                     WindowChangeReceiptStatus.Visibility = Visibility.Collapsed;
                     BackgroundReceipts.Visibility = Visibility.Collapsed;
                     FindChecksByDate(null, null);
+                    var R = Bl.GetReceiptHead(MW.curReceipt, true);
+                    if (R.StateReceipt == eStateReceipt.Canceled)
+                        MW.NewReceipt();
+                    else
+                        Global.OnReceiptCalculationComplete?.Invoke(R);
+
+                    MW.SetPropertyChanged();
                 }
 
             };
@@ -1198,13 +1206,13 @@ from RECEIPT r
                         decimal pSumMoveMoney = pRes.ToDecimal();
                         //pRes = pRes.Replace(",", ".");
                         //var res = Decimal.TryParse(pRes, out decimal pSumMoveMoney);
-                        if (pSumMoveMoney>0)
+                        if (pSumMoveMoney > 0)
                         {
                             if (IsRemoveMoney)
                                 pSumMoveMoney = pSumMoveMoney * (-1); // для вилучення відємне значення
                             var task = Task.Run(() =>
                             {
-                                var r = EF.RroMoveMoney(pSumMoveMoney, new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace },SelectedCashRegister);
+                                var r = EF.RroMoveMoney(pSumMoveMoney, new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace }, SelectedCashRegister);
                                 if (r.CodeError == 0)
                                     MW.CustomMessage.Show("Успішно!", "Операції з готівкою", eTypeMessage.Information);
                                 //MessageBox.Show("Успішно!");
@@ -1480,7 +1488,7 @@ from RECEIPT r
 
         private void ChooseTypeCheckoutComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if(ComboBoxChooseTypeCheckout.SelectedItem is CurentTypeWorkplace SelTypeCheckout)
+            if (ComboBoxChooseTypeCheckout.SelectedItem is CurentTypeWorkplace SelTypeCheckout)
             {
                 Global.TypeWorkplaceCurrent = SelTypeCheckout.TypeWorkplace_;
                 MW.SetWorkPlace();

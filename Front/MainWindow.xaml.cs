@@ -117,7 +117,7 @@ namespace Front
             get
             {
                 return (MoneySum >= 0 && WaresQuantity != "0" && IsAddNewWares)
-                                                           || curReceipt?.TypeReceipt == eTypeReceipt.Refund || curReceipt?.StateReceipt == eStateReceipt.Pay;
+                                                           || (curReceipt?.TypeReceipt == eTypeReceipt.Refund && MoneySum > 0) || curReceipt?.StateReceipt == eStateReceipt.Pay;
             }
         }
         // set { _IsEnabledPaymentButton = value; } }
@@ -530,7 +530,7 @@ namespace Front
             SetPropertyChanged();
         }
 
-        void SetPropertyChanged()
+        public void SetPropertyChanged()
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(GetBackgroundColor)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsEnabledPaymentButton)));
