@@ -19,16 +19,16 @@ namespace Front.Equipments
         private readonly System.Timers.Timer Timer;
         private readonly object Lock = new object();
         private SerialPortStreamWrapper SerialDevice;
-
+        private eScaleCom ModelScale = eScaleCom.ICS15;
         public bool IsReady { get { return SerialDevice != null; } }
 
         public ScaleCom(Equipment pEquipment, IConfiguration pConfiguration, ILoggerFactory pLoggerFactory = null, Action<double, bool> pOnScalesData = null) : base(pEquipment, pConfiguration, eModelEquipment.ScaleCom, pLoggerFactory, pOnScalesData)
         {
-
             Init();
             Timer = new System.Timers.Timer(500.0);
             Timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
             Timer.AutoReset = true;
+            ModelScale =  Configuration.GetValue<eScaleCom>($"{KeyPrefix}ModelScale", eScaleCom.ICS15);
         }
 
         public override void Init()
@@ -62,7 +62,7 @@ namespace Front.Equipments
 
         public override StatusEquipment TestDevice() { Init(); return new StatusEquipment() { State = (int)State, TextState = State.ToString(), ModelEquipment = Model, StateEquipment = State }; }
 
-        
+
         public override void StartWeight()
         {
             if (!SerialDevice.IsOpen)
@@ -76,10 +76,10 @@ namespace Front.Equipments
             SerialDevice?.Close();
         }
         bool IsRead = false;
-        private void OnTimedEvent(object sender, ElapsedEventArgs e) 
+        private void OnTimedEvent(object sender, ElapsedEventArgs e)
         {
             IsRead = true;
-            SerialDevice?.Write(new byte[4] { 0, 0, 0, 3 });
+            SerialDevice?.Write( ModelScale==eScaleCom.ICS15? new byte[4] { 0, 0, 0, 3 }: new byte[1] { 0 });
         }
         //GetReadDataSync(new byte[4] {0,0,0,3},OnDataReceived2);
 
@@ -100,30 +100,43 @@ namespace Front.Equipments
         private bool OnDataReceived(byte[] data)
         {
             string Str = Encoding.ASCII.GetString(data);
-
-            //FileLogger.WriteLogMessage("OnDataReceived=>" + Str);
-            if (IsRead && Str.Length >= 6)
+            FileLogger.WriteLogMessage(this,"OnDataReceived=>", Str);
+            if (ModelScale == eScaleCom.ICS15)
             {
-                IsRead = false;
-                Str =Str.Substring(0, 6);
-                char[] charArray = Str.ToCharArray();
-                Array.Reverse(charArray);
-                if (double.TryParse(charArray, out double Weight))
+                if (IsRead && Str.Length >= 6)
                 {
-                    if (Weight == 0d)
-                    //{
-                       // if (CountZero < 3)
-                      //  {
-                       //     CountZero++;
+                    IsRead = false;
+                    Str = Str.Substring(0, 6);
+                    char[] charArray = Str.ToCharArray();
+                    Array.Reverse(charArray);
+                    if (double.TryParse(charArray, out double Weight))
+                    {
+                        if (Weight == 0d)
+                            //{
+                            // if (CountZero < 3)
+                            //  {
+                            //     CountZero++;
                             return true;
-                    // }
-                    //}
-                    //CountZero = 0;
-                    //FileLogger.WriteLogMessage($"OnDataReceived Weight=>{Weight}");
-                    OnScalesData?.Invoke(Weight, true);
+                        // }
+                        //}
+                        //CountZero = 0;
+                        //FileLogger.WriteLogMessage($"OnDataReceived Weight=>{Weight}");
+                        OnScalesData?.Invoke(Weight, true);
+                    }
+                    return true;
+                }                
+            }
+            else //eScaleCom.CASPDC15
+            {
+                if (Str.Length >= 22)
+                {
+                    if (Str.IndexOf("ST") > 0 && Str.IndexOf(".") > 0)
+                    {
+                        Str = Str.Replace("g", "").Replace("kg", "").Replace("\r", "").Replace("\n", "");
+                        if (int.TryParse(Str, out int Weight))
+                            OnScalesData?.Invoke(Weight, true);
+                    }
                 }
-                return true;
-               
             }
             return true;
         }
@@ -141,32 +154,7 @@ namespace Front.Equipments
                 onDatAction?.Invoke(numArray);
             }
         }
-
-        private void OnDataReceived2(byte[] data)
-        {
-            string Str = Encoding.ASCII.GetString(data);
-            if (Str.Length >= 6)
-            {
-                Str = Str.Substring(0, 6);
-                char[] charArray = Str.ToCharArray();
-                Array.Reverse(charArray);
-                if (double.TryParse(charArray, out double Weight))
-                {
-                    if (Weight == 0d)
-                        //{
-                        // if (CountZero < 3)
-                        //  {
-                        //     CountZero++;
-                       // return true;
-                    // }
-                    //}
-                    //CountZero = 0;
-                    OnScalesData?.Invoke(Weight, true);
-                }
-                return ;
-            }
-            return ;
-        }
+       
         public void Dispose()
         {
             OnScalesData = null;
@@ -174,4 +162,9 @@ namespace Front.Equipments
             SerialDevice?.Dispose();
         }
     }
+    public enum eScaleCom
+        {
+         ICS15,
+         CASPDC15
+        }
 }
