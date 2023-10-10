@@ -108,14 +108,15 @@ namespace SharedLib
         }
 
 
-        public override IEnumerable<T1> Execute<T, T1>(string query, T parameters)
+        public override IEnumerable<T1> Execute<T, T1>(string pQuery, T parameters)
         {
+            IsDapper(parameters, pQuery);
             try {
                 if (IsLock) ExceptionIsLock();
-                return connection.Query<T1>(query, parameters);
+                return connection.Query<T1>(pQuery, parameters);
             } catch (Exception e)
             {
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name + Environment.NewLine + query, e);
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name + Environment.NewLine + pQuery, e);
                 throw;
             }
         }
@@ -137,6 +138,7 @@ namespace SharedLib
 
         public override int ExecuteNonQuery<T>(string pQuery, T Parameters, int CountTry = 3)
         {
+            IsDapper(Parameters, pQuery);
             if (IsLock) ExceptionIsLock();
             try
             {
@@ -199,22 +201,24 @@ namespace SharedLib
             }
         }
 
-        public override T1 ExecuteScalar<T,T1>(string query,T parameters)
+        public override T1 ExecuteScalar<T,T1>(string pQuery,T parameters)
         {
+            IsDapper(parameters, pQuery);
             try
             {
                 if (IsLock) ExceptionIsLock();
-                return connection.ExecuteScalar<T1>(query, parameters);
+                return connection.ExecuteScalar<T1>(pQuery, parameters);
             }
             catch (Exception e)
             {
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name + Environment.NewLine + query, e);
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name + Environment.NewLine + pQuery, e);
                 throw;
             }
     }
 
         public  int ExecuteNonQuery<T>(string pQuery, T Parameters, SQLiteTransaction transaction)
         {
+            IsDapper(Parameters, pQuery);
             try
             {
                 if (IsLock) ExceptionIsLock();
@@ -257,6 +261,25 @@ namespace SharedLib
             return pData.Count();
         }
 
+        void IsDapper(object pO,string pSql)
+        {
+            return;
+            char[] delimiterChars = { ' ', ',', '.', ':','(',')', '\t', '\n','\r','=',';' };
+            var Par = pSql.Split(delimiterChars).Where(el => el.StartsWith("@")).Select(el => el.Substring(1)).Distinct();
+
+            var pr = pO.GetType().GetProperties().Select(el => el.Name);
+            
+            foreach (var el in Par)
+            {
+                if(!pr.Any(e=>e.Equals(el)))
+                {
+                    var res = pr.Where(e => e.ToUpper().Equals(el.ToUpper()));
+                    if (res.Count() > 0)
+                        FileLogger.WriteLogMessage(this, "IsDapper", $"{el}=>{res.FirstOrDefault()} SQL=>{pSql}");
+                }
+
+            }
+        }
        
         /*
 

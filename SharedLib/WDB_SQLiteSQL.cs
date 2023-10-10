@@ -835,7 +835,7 @@ update receipt
   @TypePrice, @Quantity, @Price,@PriceDealer, @Sum, @SumVat,
   @Priority,@ParPrice1,@ParPrice2,@ParPrice3, round(@SumDiscount,2), @TypeVat, (select COALESCE(max(sort),0)+1 from wares_receipt  where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt), @ExciseStamp,@UserCreate,
  @AdditionN1,@AdditionN2,@AdditionN3,
- @AdditionC1,@AdditionD1,@BARCODE2Category,@DESCRIPTION,@RefundedQuantity,@MaxRefundQuantity,@SumBonus,@SumWallet);
+ @AdditionC1,@AdditionD1,@BarCode2Category,@Description,@RefundedQuantity,@MaxRefundQuantity,@SumBonus,@SumWallet);
  ;
 insert into  WARES_RECEIPT_HISTORY ( ID_WORKPLACE,  CODE_PERIOD, CODE_RECEIPT, CODE_WARES, CODE_UNIT, QUANTITY, QUANTITY_OLD, CODE_OPERATION)     
 values ( @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit, @Quantity,@QuantityOld, 0);";
@@ -851,7 +851,7 @@ replace into wares_receipt(id_workplace, code_period, code_receipt, id_workplace
   @TypePrice, @Quantity, @Price, @PriceDealer, @Sum, @SumVat,
   @Priority, @ParPrice1, @ParPrice2, @ParPrice3, @SumDiscount, @TypeVat, @Sort, @ExciseStamp, @UserCreate,
  @AdditionN1, @AdditionN2, @AdditionN3,
- @AdditionC1, @AdditionD1, @BARCODE2Category, @DESCRIPTION, @RefundedQuantity, @FixWeight, @FixWeightQuantity, @QR, @MaxRefundQuantity, @SumBonus, @SumWallet)";
+ @AdditionC1, @AdditionD1, @BarCode2Category, @Description, @RefundedQuantity, @FixWeight, @FixWeightQuantity, @QR, @MaxRefundQuantity, @SumBonus, @SumWallet)";
 
         readonly string SqlRecalcHeadReceipt = @"
 update WARES_RECEIPT
@@ -941,7 +941,7 @@ select CODE_PS --,32--,count(*),sum(case when CODE_DATA = 13  then 1 else 0 end)
     from PROMOTION_SALE_FILTER
     where TYPE_GROUP_FILTER=32
     group by CODE_PS
-    having SUM(CASE WHEN (CODE_DATA= @TYPECARD and RULE_GROUP_FILTER = 1) or(CODE_DATA<> @TYPECARD and RULE_GROUP_FILTER = -1) THEN 1 ELSE 0 END)=0
+    having SUM(CASE WHEN (CODE_DATA= @TypeCard and RULE_GROUP_FILTER = 1) or(CODE_DATA<> @TypeCard and RULE_GROUP_FILTER = -1) THEN 1 ELSE 0 END)=0
 union --
 select CODE_PS --,22 --*, strftime('%H%M', datetime('now', 'localtime')) 
     from PROMOTION_SALE_FILTER PSF where

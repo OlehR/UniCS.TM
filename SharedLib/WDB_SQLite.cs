@@ -660,7 +660,7 @@ insert into RECEIPT_Event(
     Total_Amount
     ) VALUES
     (@IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit,
-    @IDGUID,
+    @IdGUID,
     @MobileDeviceIdGUID,
     @ProductName,
     @EventType,
@@ -1357,7 +1357,7 @@ sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_
  from receipt
  where ID_WORKPLACE = case when @IdWorkplace = 0 then ID_WORKPLACE else @IdWorkplace end
  and DateReceipt between @StartDate and @FinishDate;";
-            return db.Execute<object, Receipt>(SqlGetReceipts, new { StartDate = parStartDate, FinishDate = parFinishDate, IdWorkPlace = parIdWorkPlace });
+            return db.Execute<object, Receipt>(SqlGetReceipts, new { StartDate = parStartDate, FinishDate = parFinishDate, IdWorkplace = parIdWorkPlace });
         }
 
         public IEnumerable<Receipt> GetReceiptByFiscalNumber(int pIdWorkPlace, string pFiscalNumber, DateTime pStartDate = default(DateTime), DateTime pFinishDate = default(DateTime))
