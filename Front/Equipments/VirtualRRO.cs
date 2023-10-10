@@ -335,7 +335,8 @@ namespace Front.Equipments.Implementation
 
 
             TextReport.Add(PrintTwoColums("Сума", pR.SumCash.ToString("F2")));
-            decimal roundFiscal = pR.SumCash - pR.SumReceipt;
+            decimal roundFiscal = pR.SumCash - SumReceiptFiscal(pR);
+            
             if (roundFiscal != 0)
                 TextReport.Add(PrintTwoColums("Заокруглення", roundFiscal.ToString("F2")));
             if (pR.Fiscal?.Taxes?.Count() > 0)
