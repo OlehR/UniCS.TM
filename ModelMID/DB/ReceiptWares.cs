@@ -467,7 +467,7 @@ namespace ModelMID
 
         public bool IsConfirmDel { get { return WeightFact != -1; } }
 
-        public bool IsNeedExciseStamp { get { return TypeWares == eTypeWares.Alcohol && GetExciseStamp.Length < Quantity && GetExciseStamp.Last()?.Equals("None")==false; } }
+        public bool IsNeedExciseStamp { get { return TypeWares == eTypeWares.Alcohol && GetExciseStamp.Length < Quantity && !(GetExciseStamp.LastOrDefault()?.Equals("None") == true); } }
 
         public bool IsBag { get { return Global.Bags.Any(el => el == CodeWares); } }
 
