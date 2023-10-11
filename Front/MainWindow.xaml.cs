@@ -521,6 +521,10 @@ namespace Front
                         Client = new Client(curReceipt.CodeClient);
                         Bl.GetClientByCode(curReceipt, curReceipt.CodeClient);
                     }
+                    if(curReceipt?.IsNeedExciseStamp == true)
+                    {
+                        SetStateView(eStateMainWindows.WaitInput);
+                    }
                 }
             }
             catch (Exception e)
