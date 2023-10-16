@@ -21,9 +21,6 @@ namespace SharedLib
         
         public int LoadData(WDB_SQLite pDB, bool parIsFull, StringBuilder Log)
         {
-
-
-
             Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Start LoadData {parIsFull}");
             Debug.WriteLine("Start LoadData " + parIsFull.ToString());
             int varMessageNoMax = db.ExecuteScalar<int>(SqlGetMessageNo);

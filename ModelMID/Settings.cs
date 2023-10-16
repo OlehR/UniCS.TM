@@ -53,5 +53,9 @@ namespace ModelMID
         /// Робоче місце(каса) Підприємець(Компанія)
         /// </summary>
         public int IdWorkPlaceLink { get; set;}
+        /// <summary>
+        /// посилання на основний сервер.(куда скидати повідомлення)
+        /// </summary>
+        public int IdWorkPlaceMain { get; set; }
     }
 }
