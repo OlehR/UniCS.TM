@@ -36,7 +36,7 @@ namespace SharedLib
             Debug.WriteLine("SqlGetWaresWarehous");
             var WWh = db.Execute<pWarehouse, WaresWarehouse>(SqlGetWaresWarehous, oMessage);
             Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Read ReplaceWaresWarehouse => {WWh.Count()}");
-            //pDB.ReplaceWaresWarehouse(WWh);
+            pDB.ReplaceWaresWarehouse(WWh);
             Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Write ReplaceWaresWarehouse => {WWh.Count()}");
             WWh = null;
 

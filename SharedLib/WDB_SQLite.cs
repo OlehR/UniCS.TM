@@ -396,7 +396,7 @@ namespace SharedLib
 
             using (var DB = new SQLite(ConfigFile))
             {
-                DB.BulkExecuteNonQuery<WorkPlace>(SqlReplaceWorkPlace, parData);
+                DB.BulkExecuteNonQuery<WorkPlace>(SqlReplaceWorkPlace, parData, true);
             }
             return true;
         }
@@ -724,7 +724,7 @@ insert into RECEIPT_Event(
             string SqlReplaceUnitDimension = "replace into UNIT_DIMENSION(CODE_UNIT, NAME_UNIT, ABR_UNIT) values(@CodeUnit, @NameUnit, @AbrUnit);";
             using (var DB = new SQLite(MidFile))
             {
-                DB.BulkExecuteNonQuery<UnitDimension>(SqlReplaceUnitDimension, parData);
+                DB.BulkExecuteNonQuery<UnitDimension>(SqlReplaceUnitDimension, parData, true);
             }
             return true;
         }
@@ -735,7 +735,7 @@ insert into RECEIPT_Event(
 
             using (var DB = new SQLite(MidFile))
             {
-                DB.BulkExecuteNonQuery<GroupWares>(SqlReplaceGroupWares, parData);
+                DB.BulkExecuteNonQuery<GroupWares>(SqlReplaceGroupWares, parData,true);
             }
             return true;
         }
@@ -744,7 +744,7 @@ insert into RECEIPT_Event(
         {
             using (var DB = new SQLite(MidFile))
             {
-                DB.BulkExecuteNonQuery<Wares>(SqlReplaceWares, parData);
+                DB.BulkExecuteNonQuery<Wares>(SqlReplaceWares, parData, true);
             }
             return true;
         }
@@ -755,7 +755,7 @@ insert into RECEIPT_Event(
               values(@CodeWares, @CodeUnit, @Coefficient, @DefaultUnit, @Weight, @WeightNet);";
             using (var DB = new SQLite(MidFile))
             {
-                DB.BulkExecuteNonQuery<AdditionUnit>(SqlReplaceAdditionUnit, parData);
+                DB.BulkExecuteNonQuery<AdditionUnit>(SqlReplaceAdditionUnit, parData, true);
             }
             return true;
         }
@@ -765,7 +765,7 @@ insert into RECEIPT_Event(
             string SqlReplaceBarCode = "replace into  Bar_Code(CODE_WARES, CODE_UNIT, BAR_CODE) values(@CodeWares, @CodeUnit, @BarCode);";
             using (var DB = new SQLite(MidFile))
             {
-                DB.BulkExecuteNonQuery<Barcode>(SqlReplaceBarCode, parData);
+                DB.BulkExecuteNonQuery<Barcode>(SqlReplaceBarCode, parData,true);
             }
             return true;
         }
@@ -774,7 +774,7 @@ insert into RECEIPT_Event(
             string SqlReplacePrice = "replace into PRICE(CODE_DEALER, CODE_WARES, PRICE_DEALER) values(@CodeDealer, @CodeWares, @PriceDealer);";
             using (var DB = new SQLite(MidFile))
             {
-                DB.BulkExecuteNonQuery<Price>(SqlReplacePrice, parData);
+                DB.BulkExecuteNonQuery<Price>(SqlReplacePrice, parData, true);
             }
             return true;
         }
@@ -784,7 +784,7 @@ insert into RECEIPT_Event(
             string SqlReplaceTypeDiscount = @"replace into TYPE_DISCOUNT(TYPE_DISCOUNT, NAME, PERCENT_DISCOUNT) values(@CodeTypeDiscount, @Name, @PercentDiscount);";
             using (var DB = new SQLite(MidFile))
             {
-                DB.BulkExecuteNonQuery<TypeDiscount>(SqlReplaceTypeDiscount, parData);
+                DB.BulkExecuteNonQuery<TypeDiscount>(SqlReplaceTypeDiscount, parData, true);
             }
             return true;
         }
@@ -795,7 +795,7 @@ insert into RECEIPT_Event(
              values(@CodeClient, @NameClient, @TypeDiscount, @MainPhone, @PhoneAdd, @PersentDiscount, @BarCode, @StatusCard, @ViewCode, @BirthDay)";
             using (var DB = new SQLite(MidFile))
             {
-                DB.BulkExecuteNonQuery<Client>(SqlReplaceClient, parData);
+                DB.BulkExecuteNonQuery<Client>(SqlReplaceClient, parData, true);
             }
             return true;
         }
@@ -805,7 +805,7 @@ insert into RECEIPT_Event(
             string SqlReplaceFastGroup = @"replace into FAST_GROUP(CODE_UP, Code_Fast_Group, Name) values(@CodeUp, @CodeFastGroup, @Name);";
             using (var DB = new SQLite(MidFile))
             {
-                DB.BulkExecuteNonQuery<FastGroup>(SqlReplaceFastGroup, parData);
+                DB.BulkExecuteNonQuery<FastGroup>(SqlReplaceFastGroup, parData,true);
             }
             return true;
         }
@@ -814,7 +814,7 @@ insert into RECEIPT_Event(
             string SqlReplaceFastWares = "replace into FAST_WARES(Code_Fast_Group, Code_wares, Order_Wares) values(@CodeFastGroup, @CodeWares, @OrderWares);";
             using (var DB = new SQLite(MidFile))
             {
-                DB.BulkExecuteNonQuery<FastWares>(SqlReplaceFastWares, parData);
+                DB.BulkExecuteNonQuery<FastWares>(SqlReplaceFastWares, parData, true);
             }
             return true;
         }
@@ -823,7 +823,7 @@ insert into RECEIPT_Event(
         {
             using (var DB = new SQLite(MidFile))
             {
-                DB.BulkExecuteNonQuery<PromotionSale>(SqlReplacePromotionSale, parData);
+                DB.BulkExecuteNonQuery<PromotionSale>(SqlReplacePromotionSale, parData, true);
             }
             return true;
         }
@@ -835,7 +835,7 @@ replace into PROMOTION_SALE_DATA(CODE_PS, NUMBER_GROUP, CODE_WARES, USE_INDICATI
                           values(@CodePS, @NumberGroup, @CodeWares, @UseIndicative, @TypeDiscount, @AdditionalCondition, @Data, @DataAdditionalCondition)";
             using (var DB = new SQLite(MidFile))
             {
-                DB.BulkExecuteNonQuery<PromotionSaleData>(SqlReplacePromotionSaleData, parData);
+                DB.BulkExecuteNonQuery<PromotionSaleData>(SqlReplacePromotionSaleData, parData, true);
             }
             return true;
         }
@@ -847,7 +847,7 @@ replace into PROMOTION_SALE_FILTER(CODE_PS, CODE_GROUP_FILTER, TYPE_GROUP_FILTER
                           values(@CodePS, @CodeGroupFilter, @TypeGroupFilter, @RuleGroupFilter, @CodeChoice, @CodeData, @CodeDataEnd)";
             using (var DB = new SQLite(MidFile))
             {
-                DB.BulkExecuteNonQuery<PromotionSaleFilter>(SqlReplacePromotionSaleFilter, parData);
+                DB.BulkExecuteNonQuery<PromotionSaleFilter>(SqlReplacePromotionSaleFilter, parData, true);
             }
             return true;
         }
@@ -857,7 +857,7 @@ replace into PROMOTION_SALE_FILTER(CODE_PS, CODE_GROUP_FILTER, TYPE_GROUP_FILTER
             string SqlReplacePromotionSaleDealer = @"replace into PROMOTION_SALE_DEALER(CODE_PS, Code_Wares, DATE_BEGIN, DATE_END, Code_Dealer, Priority) values(@CodePS, @CodeWares, @DateBegin, @DateEnd, @CodeDealer, @Priority); --@CodePS,@CodeWares,@DateBegin,@DateEnd,@CodeDealer";
             using (var DB = new SQLite(MidFile))
             {
-                DB.BulkExecuteNonQuery<PromotionSaleDealer>(SqlReplacePromotionSaleDealer, parData);
+                DB.BulkExecuteNonQuery<PromotionSaleDealer>(SqlReplacePromotionSaleDealer, parData, true);
             }
             return true;
         }
@@ -867,7 +867,7 @@ replace into PROMOTION_SALE_FILTER(CODE_PS, CODE_GROUP_FILTER, TYPE_GROUP_FILTER
             string SqlReplacePromotionSaleGroupWares = @"replace into PROMOTION_SALE_GROUP_WARES(CODE_GROUP_WARES_PS, CODE_GROUP_WARES) values(@CodeGroupWaresPS, @CodeGroupWares)";
             using (var DB = new SQLite(MidFile))
             {
-                DB.BulkExecuteNonQuery<PromotionSaleGroupWares>(SqlReplacePromotionSaleGroupWares, parData);
+                DB.BulkExecuteNonQuery<PromotionSaleGroupWares>(SqlReplacePromotionSaleGroupWares, parData, true);
             }
             return true;
         }
@@ -878,7 +878,7 @@ replace into PROMOTION_SALE_FILTER(CODE_PS, CODE_GROUP_FILTER, TYPE_GROUP_FILTER
                           values(@CodePS, @NumberGroup, @CodeWares, @TypeDiscount, @Data, @Quantity, @DateCreate, @UserCreate);";
             using (var DB = new SQLite(MidFile))
             {
-                DB.BulkExecuteNonQuery<PromotionSaleGift>(SqlReplacePromotionSaleGift, parData);
+                DB.BulkExecuteNonQuery<PromotionSaleGift>(SqlReplacePromotionSaleGift, parData, true);
             }
             return true;
         }
@@ -888,7 +888,7 @@ replace into PROMOTION_SALE_FILTER(CODE_PS, CODE_GROUP_FILTER, TYPE_GROUP_FILTER
             string SqlReplacePromotionSale2Category = "replace into PROMOTION_SALE_2_category(CODE_PS, CODE_WARES) values(@CodePS, @CodeWares)";
             using (var DB = new SQLite(MidFile))
             {
-                DB.BulkExecuteNonQuery<PromotionSale2Category>(SqlReplacePromotionSale2Category, parData);
+                DB.BulkExecuteNonQuery<PromotionSale2Category>(SqlReplacePromotionSale2Category, parData, true);
             }
             return true;
         }
@@ -935,7 +935,7 @@ replace into PROMOTION_SALE_FILTER(CODE_PS, CODE_GROUP_FILTER, TYPE_GROUP_FILTER
             string SqlReplaceSalesBan = "replace into  Sales_Ban(CODE_GROUP_WARES, Amount) values(@CodeGroupWares, @Amount);";
             using (var DB = new SQLite(MidFile))
             {
-                return DB.BulkExecuteNonQuery<SalesBan>(SqlReplaceSalesBan, pSB) > 0;
+                return DB.BulkExecuteNonQuery<SalesBan>(SqlReplaceSalesBan, pSB, true) > 0;
             }
         }
 
@@ -1143,7 +1143,7 @@ Where ID_WORKPLACE = @IdWorkplace
             string Sql = @"replace into ClientData (TypeData,CodeClient,Data) values (@TypeData,@CodeClient,@Data)";
             using (var DB = new SQLite(MidFile))
             {
-                return DB.BulkExecuteNonQuery<ClientData>(Sql, pCD) > 0;
+                return DB.BulkExecuteNonQuery<ClientData>(Sql, pCD,true) > 0;
             }
         }
         /// <summary>
@@ -1316,7 +1316,7 @@ Select min(case when CODE_DEALER = -888888  then PRICE_DEALER else null end) as 
         {
             string SqlReplaceMRC = " replace into  MRC(Code_Wares, Price, Type_Wares) values(@CodeWares, @Price, @TypeWares);";
 
-            db.BulkExecuteNonQuery<MRC>(SqlReplaceMRC, parData);
+            db.BulkExecuteNonQuery<MRC>(SqlReplaceMRC, parData, true);
             return true;
         }
 
@@ -1457,7 +1457,7 @@ select sum( sum_pay* case when TYPE_PAY in (4) then -1 else 1 end) as sum from p
             if (pWW?.Any() == true)
             {
                 string SQL = "replace into WaresWarehouse (CodeWarehouse,TypeData,Data) values (@CodeWarehouse,@TypeData,@Data)";
-                if (db.BulkExecuteNonQuery<WaresWarehouse>(SQL, pWW) > 0)
+                if (db.BulkExecuteNonQuery<WaresWarehouse>(SQL, pWW,true) > 0)
                 {
                     BildWaresWarehouse(pWW);
                     return true;

@@ -69,7 +69,7 @@ alter TABLE wares add PLU INTEGER;--Ver=>0
 alter TABLE wares add Code_Direction INTEGER;--Ver=>0;
 alter TABLE wares add Type_Wares INTEGER  NOT NULL DEFAULT 2; --Ver=>6;
 alter TABLE wares add Code_TM INTEGER NOT NULL DEFAULT 0; --Ver=>9;
-alter TABLE CLIENT add PHONE_ADD  TEXT; --Ver=>10;
+alter TABLE CLIENT add PHONE_ADD TEXT; --Ver=>10;
 --Ver=>11;Reload;";
 
         readonly string SqlCreateConfigTable = @"

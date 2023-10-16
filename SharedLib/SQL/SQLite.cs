@@ -248,6 +248,7 @@ namespace SharedLib
                 if (IsRepeatNotBulk)
                     try
                     {
+                        FileLogger.WriteLogMessage(this, $"BulkExecuteNonQuery=>{pQuery}", ex);
                         foreach (var el in pData)
                             ExecuteNonQuery(pQuery, el);
                     }
