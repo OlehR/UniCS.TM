@@ -31,6 +31,9 @@ namespace SharedLib
             connection = new SQLiteConnection(connectionString);
             connection.Open();
             TypeCommit = eTypeCommit.Auto;
+            ExecuteNonQuery("PRAGMA synchronous = EXTRA;");
+            ExecuteNonQuery("PRAGMA journal_mode = DELETE;");
+            ExecuteNonQuery("PRAGMA wal_autocheckpoint = 5;");
         }
 
         ~SQLite()
@@ -281,50 +284,9 @@ namespace SharedLib
 
             }
         }
-       
-        /*
 
-          public override  Task<IEnumerable<T1>> ExecuteAsync<T, T1>(string query, T parameters)
-   {
-       if (IsLock) ExceptionIsLock();
-       return  connection.QueryAsync<T1>(query, parameters);
-   }
+        public int GetVersion => ExecuteScalar<int>("PRAGMA user_version");
 
-   public override Task<IEnumerable<T1>> ExecuteAsync<T1>(string query)
-   {
-       if (IsLock) ExceptionIsLock();
-       return connection.QueryAsync<T1>(query);
-   }
-
-     public override Task<int> ExecuteNonQueryAsync<T>(string parQuery, T Parameters)
-    {
-        if (IsLock) ExceptionIsLock();
-        if (TypeCommit == eTypeCommit.Auto)
-            return connection.ExecuteAsync(parQuery, Parameters);
-        else
-            return connection.ExecuteAsync(parQuery, Parameters, transaction);
-    }
-    public override Task<int> ExecuteNonQueryAsync(string parQuery)
-    {
-        if (IsLock) ExceptionIsLock();
-        if (TypeCommit == eTypeCommit.Auto)
-            return connection.ExecuteAsync(parQuery);
-        else
-            return connection.ExecuteAsync(parQuery, null, transaction);
-    }
-
-    public override Task<T1> ExecuteScalarAsync<T1>(string query)
-    {
-        if (IsLock) ExceptionIsLock();
-        return connection.ExecuteScalarAsync<T1>(query);
-    }
-
-   public override Task<T1> ExecuteScalarAsync<T, T1>(string query, T parameters)
-   {
-       if (IsLock) ExceptionIsLock();
-       return connection.ExecuteScalarAsync<T1>(query, parameters);
-   }
-    */
-
+        public bool SetVersion(int pVer) => ExecuteNonQuery($"PRAGMA user_versio={pVer}") > 0;
     }
 }

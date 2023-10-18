@@ -123,9 +123,9 @@ namespace SharedLib
                 db.ExecuteNonQuery("ATTACH '" + MidFile + "' AS mid");
             db.ExecuteNonQuery("ATTACH '" + ConfigFile + "' AS con");
 
-            db.ExecuteNonQuery("PRAGMA synchronous = EXTRA;");
-            db.ExecuteNonQuery("PRAGMA journal_mode = DELETE;");
-            db.ExecuteNonQuery("PRAGMA wal_autocheckpoint = 5;");
+            //db.ExecuteNonQuery("PRAGMA synchronous = EXTRA;");
+            //db.ExecuteNonQuery("PRAGMA journal_mode = DELETE;");
+            //db.ExecuteNonQuery("PRAGMA wal_autocheckpoint = 5;");
             DBStatus = eDBStatus.Ok;
         }
         ~WDB_SQLite()
@@ -393,11 +393,8 @@ namespace SharedLib
         {
             string SqlReplaceWorkPlace = @"replace into WORKPLACE(ID_WORKPLACE, NAME, Terminal_GUID, Video_Camera_IP, Video_Recorder_IP, Type_POS, Code_Warehouse, CODE_DEALER, Prefix, DNSName, TypeWorkplace, SettingsEx) values
             (@IdWorkplace, @Name, @StrTerminalGUID, @VideoCameraIP, @VideoRecorderIP, @TypePOS, @CodeWarehouse, @CodeDealer, @Prefix, @DNSName, @TypeWorkplace, @SettingsEx);";
-
-            using (var DB = new SQLite(ConfigFile))
-            {
-                DB.BulkExecuteNonQuery<WorkPlace>(SqlReplaceWorkPlace, parData, true);
-            }
+            using var DB = new SQLite(ConfigFile);
+            DB.BulkExecuteNonQuery<WorkPlace>(SqlReplaceWorkPlace, parData, true);
             return true;
         }
 
@@ -710,187 +707,117 @@ insert into RECEIPT_Event(
             }
             return true;
         }
-        public bool CreateMIDIndex()
-        {
-            using (var DB = new SQLite(MidFile))
-            {
-                DB.ExecuteNonQuery(SqlCreateMIDIndex);
-            }
-            return true;
-        }
+        public bool CreateMIDIndex(SQLite pDB) { return pDB.ExecuteNonQuery(SqlCreateMIDIndex)>0; }
 
-        public bool ReplaceUnitDimension(IEnumerable<UnitDimension> parData)
+        public bool ReplaceUnitDimension(IEnumerable<UnitDimension> parData, SQLite pDB)
         {
             string SqlReplaceUnitDimension = "replace into UNIT_DIMENSION(CODE_UNIT, NAME_UNIT, ABR_UNIT) values(@CodeUnit, @NameUnit, @AbrUnit);";
-            using (var DB = new SQLite(MidFile))
-            {
-                DB.BulkExecuteNonQuery<UnitDimension>(SqlReplaceUnitDimension, parData, true);
-            }
-            return true;
+            return pDB.BulkExecuteNonQuery<UnitDimension>(SqlReplaceUnitDimension, parData, true) > 0;
         }
 
-        public bool ReplaceGroupWares(IEnumerable<GroupWares> parData)
+        public bool ReplaceGroupWares(IEnumerable<GroupWares> parData, SQLite pDB)
         {
             string SqlReplaceGroupWares = @" replace into  GROUP_WARES(CODE_GROUP_WARES, CODE_PARENT_GROUP_WARES, NAME) values (@CodeGroupWares, @CodeParentGroupWares, @Name);";
-
-            using (var DB = new SQLite(MidFile))
-            {
-                DB.BulkExecuteNonQuery<GroupWares>(SqlReplaceGroupWares, parData,true);
-            }
-            return true;
+            return pDB.BulkExecuteNonQuery<GroupWares>(SqlReplaceGroupWares, parData, true) > 0;
         }
 
-        public bool ReplaceWares(IEnumerable<Wares> parData)
-        {
-            using (var DB = new SQLite(MidFile))
-            {
-                DB.BulkExecuteNonQuery<Wares>(SqlReplaceWares, parData, true);
-            }
-            return true;
+        public bool ReplaceWares(IEnumerable<Wares> parData, SQLite pDB)
+        {          
+            return pDB.BulkExecuteNonQuery<Wares>(SqlReplaceWares, parData, true)>0;           
         }
 
-        public bool ReplaceAdditionUnit(IEnumerable<AdditionUnit> parData)
+        public bool ReplaceAdditionUnit(IEnumerable<AdditionUnit> parData, SQLite pDB)
         {
             string SqlReplaceAdditionUnit = @"replace into  Addition_Unit(CODE_WARES, CODE_UNIT, COEFFICIENT, DEFAULT_UNIT, WEIGHT, WEIGHT_NET)
               values(@CodeWares, @CodeUnit, @Coefficient, @DefaultUnit, @Weight, @WeightNet);";
-            using (var DB = new SQLite(MidFile))
-            {
-                DB.BulkExecuteNonQuery<AdditionUnit>(SqlReplaceAdditionUnit, parData, true);
-            }
-            return true;
+            return pDB.BulkExecuteNonQuery<AdditionUnit>(SqlReplaceAdditionUnit, parData, true) > 0;            
         }
 
-        public bool ReplaceBarCode(IEnumerable<Barcode> parData)
+        public bool ReplaceBarCode(IEnumerable<Barcode> parData, SQLite pDB)
         {
             string SqlReplaceBarCode = "replace into  Bar_Code(CODE_WARES, CODE_UNIT, BAR_CODE) values(@CodeWares, @CodeUnit, @BarCode);";
-            using (var DB = new SQLite(MidFile))
-            {
-                DB.BulkExecuteNonQuery<Barcode>(SqlReplaceBarCode, parData,true);
-            }
+            pDB.BulkExecuteNonQuery<Barcode>(SqlReplaceBarCode, parData, true);
             return true;
         }
-        public bool ReplacePrice(IEnumerable<Price> parData)
+        public bool ReplacePrice(IEnumerable<Price> parData, SQLite pDB)
         {
-            string SqlReplacePrice = "replace into PRICE(CODE_DEALER, CODE_WARES, PRICE_DEALER) values(@CodeDealer, @CodeWares, @PriceDealer);";
-            using (var DB = new SQLite(MidFile))
-            {
-                DB.BulkExecuteNonQuery<Price>(SqlReplacePrice, parData, true);
-            }
-            return true;
+            string SqlReplacePrice = "replace into PRICE(CODE_DEALER, CODE_WARES, PRICE_DEALER) values(@CodeDealer, @CodeWares, @PriceDealer);";            
+            return pDB.BulkExecuteNonQuery<Price>(SqlReplacePrice, parData, true)>0;            
         }
 
-        public bool ReplaceTypeDiscount(IEnumerable<TypeDiscount> parData)
+        public bool ReplaceTypeDiscount(IEnumerable<TypeDiscount> parData, SQLite pDB)
         {
             string SqlReplaceTypeDiscount = @"replace into TYPE_DISCOUNT(TYPE_DISCOUNT, NAME, PERCENT_DISCOUNT) values(@CodeTypeDiscount, @Name, @PercentDiscount);";
-            using (var DB = new SQLite(MidFile))
-            {
-                DB.BulkExecuteNonQuery<TypeDiscount>(SqlReplaceTypeDiscount, parData, true);
-            }
+            pDB.BulkExecuteNonQuery<TypeDiscount>(SqlReplaceTypeDiscount, parData, true);
             return true;
         }
 
-        public bool ReplaceClient(IEnumerable<Client> parData)
+        public bool ReplaceClient(IEnumerable<Client> parData, SQLite pDB)
         {
             string SqlReplaceClient = @"replace into CLIENT(CODE_CLIENT, NAME_CLIENT, TYPE_DISCOUNT, PHONE, Phone_Add, PERCENT_DISCOUNT, BARCODE, STATUS_CARD, view_code, BirthDay)
              values(@CodeClient, @NameClient, @TypeDiscount, @MainPhone, @PhoneAdd, @PersentDiscount, @BarCode, @StatusCard, @ViewCode, @BirthDay)";
-            using (var DB = new SQLite(MidFile))
-            {
-                DB.BulkExecuteNonQuery<Client>(SqlReplaceClient, parData, true);
-            }
+            pDB.BulkExecuteNonQuery<Client>(SqlReplaceClient, parData, true);
             return true;
         }
 
-        public bool ReplaceFastGroup(IEnumerable<FastGroup> parData)
+        public bool ReplaceFastGroup(IEnumerable<FastGroup> parData, SQLite pDB)
         {
             string SqlReplaceFastGroup = @"replace into FAST_GROUP(CODE_UP, Code_Fast_Group, Name) values(@CodeUp, @CodeFastGroup, @Name);";
-            using (var DB = new SQLite(MidFile))
-            {
-                DB.BulkExecuteNonQuery<FastGroup>(SqlReplaceFastGroup, parData,true);
-            }
+            pDB.BulkExecuteNonQuery<FastGroup>(SqlReplaceFastGroup, parData, true);
             return true;
         }
-        public bool ReplaceFastWares(IEnumerable<FastWares> parData)
+        public bool ReplaceFastWares(IEnumerable<FastWares> parData, SQLite pDB)
         {
             string SqlReplaceFastWares = "replace into FAST_WARES(Code_Fast_Group, Code_wares, Order_Wares) values(@CodeFastGroup, @CodeWares, @OrderWares);";
-            using (var DB = new SQLite(MidFile))
-            {
-                DB.BulkExecuteNonQuery<FastWares>(SqlReplaceFastWares, parData, true);
-            }
+            pDB.BulkExecuteNonQuery<FastWares>(SqlReplaceFastWares, parData, true);
             return true;
         }
 
-        public bool ReplacePromotionSale(IEnumerable<PromotionSale> parData)
+        public bool ReplacePromotionSale(IEnumerable<PromotionSale> parData, SQLite pDB=null)
         {
-            using (var DB = new SQLite(MidFile))
-            {
-                DB.BulkExecuteNonQuery<PromotionSale>(SqlReplacePromotionSale, parData, true);
-            }
-            return true;
+                return pDB.BulkExecuteNonQuery<PromotionSale>(SqlReplacePromotionSale, parData, true)>0;
+            
         }
 
-        public bool ReplacePromotionSaleData(IEnumerable<PromotionSaleData> parData)
+        public bool ReplacePromotionSaleData(IEnumerable<PromotionSaleData> parData, SQLite pDB)
         {
             string SqlReplacePromotionSaleData = @"
 replace into PROMOTION_SALE_DATA(CODE_PS, NUMBER_GROUP, CODE_WARES, USE_INDICATIVE, TYPE_DISCOUNT, ADDITIONAL_CONDITION, DATA, DATA_ADDITIONAL_CONDITION)
                           values(@CodePS, @NumberGroup, @CodeWares, @UseIndicative, @TypeDiscount, @AdditionalCondition, @Data, @DataAdditionalCondition)";
-            using (var DB = new SQLite(MidFile))
-            {
-                DB.BulkExecuteNonQuery<PromotionSaleData>(SqlReplacePromotionSaleData, parData, true);
-            }
-            return true;
+            return pDB.BulkExecuteNonQuery<PromotionSaleData>(SqlReplacePromotionSaleData, parData, true) > 0;            
         }
 
-        public bool ReplacePromotionSaleFilter(IEnumerable<PromotionSaleFilter> parData)
+        public bool ReplacePromotionSaleFilter(IEnumerable<PromotionSaleFilter> parData, SQLite pDB)
         {
             string SqlReplacePromotionSaleFilter = @"
 replace into PROMOTION_SALE_FILTER(CODE_PS, CODE_GROUP_FILTER, TYPE_GROUP_FILTER, RULE_GROUP_FILTER, CODE_CHOICE, CODE_DATA, CODE_DATA_END)
-                          values(@CodePS, @CodeGroupFilter, @TypeGroupFilter, @RuleGroupFilter, @CodeChoice, @CodeData, @CodeDataEnd)";
-            using (var DB = new SQLite(MidFile))
-            {
-                DB.BulkExecuteNonQuery<PromotionSaleFilter>(SqlReplacePromotionSaleFilter, parData, true);
-            }
-            return true;
+                          values(@CodePS, @CodeGroupFilter, @TypeGroupFilter, @RuleGroupFilter, @CodeChoice, @CodeData, @CodeDataEnd)";            
+                return pDB.BulkExecuteNonQuery<PromotionSaleFilter>(SqlReplacePromotionSaleFilter, parData, true) > 0;            
         }
 
-        public bool ReplacePromotionSaleDealer(IEnumerable<PromotionSaleDealer> parData)
+        public bool ReplacePromotionSaleDealer(IEnumerable<PromotionSaleDealer> parData, SQLite pDB)
         {
             string SqlReplacePromotionSaleDealer = @"replace into PROMOTION_SALE_DEALER(CODE_PS, Code_Wares, DATE_BEGIN, DATE_END, Code_Dealer, Priority) values(@CodePS, @CodeWares, @DateBegin, @DateEnd, @CodeDealer, @Priority); --@CodePS,@CodeWares,@DateBegin,@DateEnd,@CodeDealer";
-            using (var DB = new SQLite(MidFile))
-            {
-                DB.BulkExecuteNonQuery<PromotionSaleDealer>(SqlReplacePromotionSaleDealer, parData, true);
-            }
-            return true;
+            return pDB.BulkExecuteNonQuery<PromotionSaleDealer>(SqlReplacePromotionSaleDealer, parData, true) > 0;
         }
 
-        public bool ReplacePromotionSaleGroupWares(IEnumerable<PromotionSaleGroupWares> parData)
+        public bool ReplacePromotionSaleGroupWares(IEnumerable<PromotionSaleGroupWares> parData, SQLite pDB)
         {
             string SqlReplacePromotionSaleGroupWares = @"replace into PROMOTION_SALE_GROUP_WARES(CODE_GROUP_WARES_PS, CODE_GROUP_WARES) values(@CodeGroupWaresPS, @CodeGroupWares)";
-            using (var DB = new SQLite(MidFile))
-            {
-                DB.BulkExecuteNonQuery<PromotionSaleGroupWares>(SqlReplacePromotionSaleGroupWares, parData, true);
-            }
-            return true;
+            return pDB.BulkExecuteNonQuery<PromotionSaleGroupWares>(SqlReplacePromotionSaleGroupWares, parData, true) > 0;
         }
 
-        public bool ReplacePromotionSaleGift(IEnumerable<PromotionSaleGift> parData)
+        public bool ReplacePromotionSaleGift(IEnumerable<PromotionSaleGift> parData, SQLite pDB)
         {
             string SqlReplacePromotionSaleGift = @"replace into PROMOTION_SALE_GIFT(CODE_PS, NUMBER_GROUP, CODE_WARES, TYPE_DISCOUNT, DATA, QUANTITY, DATE_CREATE, USER_CREATE)
                           values(@CodePS, @NumberGroup, @CodeWares, @TypeDiscount, @Data, @Quantity, @DateCreate, @UserCreate);";
-            using (var DB = new SQLite(MidFile))
-            {
-                DB.BulkExecuteNonQuery<PromotionSaleGift>(SqlReplacePromotionSaleGift, parData, true);
-            }
-            return true;
+            return pDB.BulkExecuteNonQuery<PromotionSaleGift>(SqlReplacePromotionSaleGift, parData, true) > 0;
         }
 
-        public bool ReplacePromotionSale2Category(IEnumerable<PromotionSale2Category> parData)
+        public bool ReplacePromotionSale2Category(IEnumerable<PromotionSale2Category> parData, SQLite pDB)
         {
             string SqlReplacePromotionSale2Category = "replace into PROMOTION_SALE_2_category(CODE_PS, CODE_WARES) values(@CodePS, @CodeWares)";
-            using (var DB = new SQLite(MidFile))
-            {
-                DB.BulkExecuteNonQuery<PromotionSale2Category>(SqlReplacePromotionSale2Category, parData, true);
-            }
-            return true;
+            return pDB.BulkExecuteNonQuery<PromotionSale2Category>(SqlReplacePromotionSale2Category, parData, true) > 0;
         }
 
         public bool UpdateQR(ReceiptWares pRW)
@@ -922,21 +849,17 @@ replace into PROMOTION_SALE_FILTER(CODE_PS, CODE_GROUP_FILTER, TYPE_GROUP_FILTER
             return db.Execute<IdReceipt, QR>(SqlGetQR, pR);
         }
 
-        public bool ReplaceUser(IEnumerable<User> pUser)
+        public bool ReplaceUser(IEnumerable<User> pUser,SQLite pDB=null)
         {
             string SqlReplaceUser = "replace into User(CODE_USER, NAME_USER, BAR_CODE, Type_User, LOGIN, PASSWORD) values(@CodeUser, @NameUser, @BarCode, @TypeUser, @Login, @PassWord);";
-            using (var DB = new SQLite(MidFile))
-            {
-                return DB.BulkExecuteNonQuery<User>(SqlReplaceUser, pUser, true) > 0;
-            }
+            
+                return pDB.BulkExecuteNonQuery<User>(SqlReplaceUser, pUser, true) > 0;
+            
         }
-        public bool ReplaceSalesBan(IEnumerable<SalesBan> pSB)
+        public bool ReplaceSalesBan(IEnumerable<SalesBan> pSB, SQLite pDB)
         {
             string SqlReplaceSalesBan = "replace into  Sales_Ban(CODE_GROUP_WARES, Amount) values(@CodeGroupWares, @Amount);";
-            using (var DB = new SQLite(MidFile))
-            {
-                return DB.BulkExecuteNonQuery<SalesBan>(SqlReplaceSalesBan, pSB, true) > 0;
-            }
+            return pDB.BulkExecuteNonQuery<SalesBan>(SqlReplaceSalesBan, pSB, true) > 0;
         }
 
         public bool InsertLogRRO(IEnumerable<LogRRO> pLog)
@@ -1015,8 +938,11 @@ Where ID_WORKPLACE = @IdWorkplace
                 //Config
                 var (Ver, IsReload) = Parse(Lines, CurVerConfig, dbC);
                 if (Ver != CurVerConfig)
+                {
                     wDB.SetConfig<int>("VerConfig", Ver);
-
+                    dbC.SetVersion(Ver);
+                }
+                dbC = null;
                 //Mid
                 if (File.Exists(MidFile))
                 {
@@ -1024,16 +950,17 @@ Where ID_WORKPLACE = @IdWorkplace
                     CurVerMid = wDB.GetConfig<int>("VerMID");
                     Lines = SqlUpdateMID.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
                     (Ver, IsReload) = Parse(Lines, CurVerMid, dbMID);
+                    dbMID.SetVersion(Ver);
                     dbMID.Close(true);
                     dbMID = null;
                     if (IsReload)
                     {
                         if (File.Exists(MidFile)) File.Delete(MidFile);
                         pIsUseOld = false;
-
                     }
-                    if (Ver != CurVerMid)
-                        wDB.SetConfig<int>("VerMID", Ver);
+                    if (Ver != CurVerMid)                    
+                        wDB.SetConfig<int>("VerMID", Ver);                      
+                    
                 }
                 //RC
                 CurVerRC = wDB.GetConfig<int>("VerRC");
@@ -1046,6 +973,7 @@ Where ID_WORKPLACE = @IdWorkplace
                         var dbRC = new SQLite(GetReceiptFile(cDT));
                         Lines = SqlUpdateRC.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
                         (Ver, IsReload) = Parse(Lines, CurVerRC, dbRC);
+                        dbRC.SetVersion(Ver);
                     }
                     cDT = cDT.AddDays(1);
                 }
@@ -1138,13 +1066,10 @@ Where ID_WORKPLACE = @IdWorkplace
             }
         }
 
-        public bool ReplaceClientData(IEnumerable<ClientData> pCD)
+        public bool ReplaceClientData(IEnumerable<ClientData> pCD,SQLite pDB=null)
         {
-            string Sql = @"replace into ClientData (TypeData,CodeClient,Data) values (@TypeData,@CodeClient,@Data)";
-            using (var DB = new SQLite(MidFile))
-            {
-                return DB.BulkExecuteNonQuery<ClientData>(Sql, pCD,true) > 0;
-            }
+            string Sql = @"replace into ClientData (TypeData,CodeClient,Data) values (@TypeData,@CodeClient,@Data)";            
+            return pDB.BulkExecuteNonQuery<ClientData>(Sql, pCD, true) > 0;
         }
         /// <summary>
         /// Повертає знайденого клієнта(клієнтів)
@@ -1312,12 +1237,12 @@ Select min(case when CODE_DEALER = -888888  then PRICE_DEALER else null end) as 
             return null;
         }
 
-        public bool ReplaceMRC(IEnumerable<MRC> parData)
+        public bool ReplaceMRC(IEnumerable<MRC> parData, SQLite pDB)
         {
             string SqlReplaceMRC = " replace into  MRC(Code_Wares, Price, Type_Wares) values(@CodeWares, @Price, @TypeWares);";
-
-            db.BulkExecuteNonQuery<MRC>(SqlReplaceMRC, parData, true);
-            return true;
+            
+                return pDB.BulkExecuteNonQuery<MRC>(SqlReplaceMRC, parData, true) > 0;
+            
         }
 
         public IEnumerable<Payment> GetPayment(IdReceipt parIdReceipt)
@@ -1452,18 +1377,18 @@ select sum( sum_pay* case when TYPE_PAY in (4) then -1 else 1 end) as sum from p
             return db.Execute<WaresWarehouse>("Select * from WaresWarehouse");
         }
 
-        public bool ReplaceWaresWarehouse(IEnumerable<WaresWarehouse> pWW)
+        public bool ReplaceWaresWarehouse(IEnumerable<WaresWarehouse> pWW, SQLite pDB)
         {
+            bool Res = false;
             if (pWW?.Any() == true)
             {
                 string SQL = "replace into WaresWarehouse (CodeWarehouse,TypeData,Data) values (@CodeWarehouse,@TypeData,@Data)";
-                if (db.BulkExecuteNonQuery<WaresWarehouse>(SQL, pWW,true) > 0)
-                {
+                
+                Res = pDB.BulkExecuteNonQuery<WaresWarehouse>(SQL, pWW, true) > 0;
+                if (Res)
                     BildWaresWarehouse(pWW);
-                    return true;
-                }
             }
-            return false;
+            return Res;
         }
 
         public void BildWaresWarehouse(IEnumerable<WaresWarehouse> pWW)
@@ -1482,7 +1407,7 @@ select sum( sum_pay* case when TYPE_PAY in (4) then -1 else 1 end) as sum from p
                         Global.IdWorkPlacePayTM.Add(el.Data, Global.Settings.IdWorkPlaceLink);
                 }
             }
-        }
+        }       
 
     }
 }

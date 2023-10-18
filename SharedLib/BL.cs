@@ -460,7 +460,7 @@ namespace SharedLib
                 return null;
         }
 
-        public bool UpdateWorkPlace(IEnumerable<WorkPlace> parData) { return db.ReplaceWorkPlace(parData); }
+        //public bool UpdateWorkPlace(IEnumerable<WorkPlace> parData) { return db.ReplaceWorkPlace(parData); }
 
         
         public bool SetStateReceipt(IdReceipt pIdReceipt, eStateReceipt pStateReceipt)
