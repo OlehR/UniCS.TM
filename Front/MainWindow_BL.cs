@@ -122,6 +122,8 @@ namespace Front
 
             Global.OnSyncInfoCollected += (SyncInfo) =>
             {
+                DatabaseUpdateStatus = SyncInfo.Status;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DatabaseUpdateStatus)));
                 //Почалось повне оновлення.
                 if (SyncInfo.Status == eSyncStatus.StartedFullSync && !Bl.ds.IsUseOldDB)
                     SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.StartFullUpdate);

@@ -158,6 +158,7 @@ namespace Front
         public bool IsBarcodeIssueCard { get { return !string.IsNullOrEmpty(BarcodeIssueCard); } }
         public bool IsGetCard { get; set; } = false;
         public List<string> ClientPhoneNumvers = new List<string>();
+        public eSyncStatus DatabaseUpdateStatus { get; set; } = eSyncStatus.SyncFinishedSuccess;
 
         public eTypeMonitor TypeMonitor
         {

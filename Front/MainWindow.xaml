@@ -43,7 +43,13 @@
             <Setter Property="FontFamily" Value="Source Sans Pro" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="FontWeight" Value="DemiBold" />
-
+        </Style>
+        <Style TargetType="Button" x:Key="RoundButton">
+            <Style.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="10" />
+                </Style>
+            </Style.Resources>
         </Style>
     </Window.Resources>
 
@@ -335,77 +341,142 @@
                         </Image>
                     </Button>
                 </StackPanel>
+                <Grid Grid.Column="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-                <Button Grid.Column="2" FontSize="30" Click="_ButtonHelp" >
-                    <Button.Style>
-                        <Style BasedOn="{StaticResource Default}" TargetType="Button">
-                            <Setter Property="Width" Value="auto" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsCashRegister, RelativeSource={RelativeSource 
-            Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                    <Setter Property="Width" Value="80" />
-                                    <Setter Property="HorizontalAlignment" Value="Right" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock TextWrapping="Wrap">
-                            <TextBlock.Style>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="FontSize" Value="20" />
-                                    <Setter Property="Text" Value="{DynamicResource buttonHelp}" />
-                                    <Setter Property="FontWeight" Value="SemiBold"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
-                                            <Setter Property="FontSize" Value="35" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="VerticalMonitorKSO">
-                                            <Setter Property="FontSize" Value="24" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
-                                            <Setter Property="FontSize" Value="20" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding IsCashRegister, RelativeSource={RelativeSource 
-                                    Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                            <Setter Property="Text" Value="" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                        <Image >
+                    <Button Grid.Column="1" BorderBrush="Transparent" IsHitTestVisible="False">
+                        <Button.Style>
+                            <Style BasedOn="{StaticResource RoundButton}" TargetType="Button">
+                                <Setter Property="Background" Value="Orange"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding DatabaseUpdateStatus, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="NotDefine">
+                                        <Setter Property="Background" Value="Orange" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding DatabaseUpdateStatus, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="StartedFullSync">
+                                        <Setter Property="Background" Value="Yellow" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding DatabaseUpdateStatus, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="ErrorDB">
+                                        <Setter Property="Background" Value="Red" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding DatabaseUpdateStatus, RelativeSource={RelativeSource 
+                                    Mode=FindAncestor, AncestorType=Window}}" Value="Error">
+                                        <Setter Property="Background" Value="Red" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding DatabaseUpdateStatus, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="SyncFinishedError">
+                                        <Setter Property="Background" Value="Purple" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding DatabaseUpdateStatus, RelativeSource={RelativeSource 
+                                    Mode=FindAncestor, AncestorType=Window}}" Value="SyncFinishedSuccess">
+                                        <Setter Property="Background" Value="#419e08" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <Image>
                             <Image.Style>
                                 <Style TargetType="{x:Type Image}">
-                                    <Setter Property="Width" Value="30" />
+                                    <Setter Property="Source" Value="\icons\Ok.png" />
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding CS.IsProblem, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                            <Setter Property="Source" Value="icons\Scale.png" />
+                                        <DataTrigger Binding="{Binding DatabaseUpdateStatus, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="StartedFullSync">
+                                            <Setter Property="Source" Value="\icons\DatabaseUpdate.png" />
                                         </DataTrigger>
-                                        <DataTrigger Binding="{Binding CS.IsProblem, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
-                                            <Setter Property="Source" Value="icons\help.png" />
+                                        <DataTrigger Binding="{Binding DatabaseUpdateStatus, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="Error">
+                                            <Setter Property="Source" Value="\icons\Error.png" />
                                         </DataTrigger>
-                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
-                                            <Setter Property="Width" Value="30" />
+                                        <DataTrigger Binding="{Binding DatabaseUpdateStatus, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="ErrorDB">
+                                            <Setter Property="Source" Value="\icons\Error.png" />
                                         </DataTrigger>
-                                        <DataTrigger Binding="{Binding IsCashRegister, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                            <Setter Property="Source" Value="icons\AdminPanel.png" />
+                                        <DataTrigger Binding="{Binding DatabaseUpdateStatus, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="SyncFinishedSuccess">
+                                            <Setter Property="Source" Value="\icons\Ok.png" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </Image.Style>
                         </Image>
+                    </Button>
 
-                    </StackPanel>
-                </Button>
+                    <Button  FontSize="30" Click="_ButtonHelp" >
+                        <Button.Style>
+                            <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                <Setter Property="Width" Value="auto" />
+                                <Setter Property="Grid.ColumnSpan" Value="3" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsCashRegister, RelativeSource={RelativeSource 
+            Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                        <Setter Property="Grid.Column" Value="2" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock TextWrapping="Wrap">
+                                <TextBlock.Style>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="FontSize" Value="20" />
+                                        <Setter Property="Text" Value="{DynamicResource buttonHelp}" />
+                                        <Setter Property="FontWeight" Value="SemiBold"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
+                                                <Setter Property="FontSize" Value="35" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="VerticalMonitorKSO">
+                                                <Setter Property="FontSize" Value="24" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                <Setter Property="FontSize" Value="20" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsCashRegister, RelativeSource={RelativeSource 
+                                    Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                                <Setter Property="Text" Value="" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <Image >
+                                <Image.Style>
+                                    <Style TargetType="{x:Type Image}">
+                                        <Setter Property="Width" Value="30" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding CS.IsProblem, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                                <Setter Property="Source" Value="icons\Scale.png" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding CS.IsProblem, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                                <Setter Property="Source" Value="icons\help.png" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                <Setter Property="Width" Value="30" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsCashRegister, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                                <Setter Property="Source" Value="icons\AdminPanel.png" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Image.Style>
+                            </Image>
 
+                        </StackPanel>
+                    </Button>
+                </Grid>
 
 
 
@@ -1712,7 +1783,7 @@
                                  FontSize="35"  VerticalAlignment="Center" />
                         <TextBlock HorizontalAlignment="Center"  Margin="0,10,0,10" Name="WaitAdminAdditionalText" 
                                     FontSize="24" TextWrapping="Wrap" />
-                        
+
 
                         <Grid x:Name="ExciseStampButtons" Visibility="Collapsed">
                             <Button Grid.Row="2" HorizontalAlignment="Center" 
@@ -2300,7 +2371,7 @@
                             <ColumnDefinition/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        
+
                         <Button Grid.Column="0" Style="{StaticResource Default}" Width="150" Height="70"
                             Content="Відмінити" Click="CancelIssueCard" />
                         <Button Grid.Column="1"
@@ -2323,7 +2394,7 @@
                             </Button.Style>
                         </Button>
                     </Grid>
-                    
+
 
 
 

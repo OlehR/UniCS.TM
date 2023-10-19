@@ -8,8 +8,8 @@
     <ApplicationIcon />
     <Win32Resource />
     <NeutralLanguage>uk-UA</NeutralLanguage>
-    <AssemblyVersion>2.1.0.60</AssemblyVersion>
-    <FileVersion>2.1.0.60</FileVersion>
+    <AssemblyVersion>2.1.0.61</AssemblyVersion>
+    <FileVersion>2.1.0.61</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -28,6 +28,7 @@
     <None Remove="icons\clock.png" />
     <None Remove="icons\Close.png" />
     <None Remove="icons\ControlScale.png" />
+    <None Remove="icons\DatabaseUpdate.png" />
     <None Remove="icons\delete.png" />
     <None Remove="icons\Error.png" />
     <None Remove="icons\help.png" />
@@ -101,6 +102,9 @@
     </Resource>
     <Resource Include="icons\Close.png" />
     <Resource Include="icons\ControlScale.png" />
+    <Resource Include="icons\DatabaseUpdate.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="icons\Error.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
