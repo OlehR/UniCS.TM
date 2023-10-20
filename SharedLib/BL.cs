@@ -29,24 +29,17 @@ namespace SharedLib
 
         public static SortedList<int, long> UserIdbyWorkPlace = new SortedList<int, long>();
 
-        public BL(bool pIsUseOldDB = true)
+        public BL()
         {
-            db = new WDB_SQLite(default(DateTime), null, pIsUseOldDB);
-            db.BildWorkplace();
-            //db.SerchdWorkplaces();
+            db = WDB_SQLite.GetInstance;
+            db.BildWorkplace();            
             ds = new DataSync(this);
             sBL = this;
             var WP= Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace);
             if (WP != null)
-            {
-                //Global.CodeWarehouse = WP.CodeWarehouse;
+            {                
                 Global.DefaultCodeDealer = WP.CodeDealer;
-            }
-
-            /*Global.OnReceiptCalculationComplete += (pWares, pIdReceipt) =>
-            {
-                Global.OnReceiptChanged?.Invoke(GetReceiptHead(pIdReceipt));
-            };*/
+            }            
         }
 
         public static BL GetBL { get { return sBL ?? new BL(); } }
@@ -497,12 +490,10 @@ namespace SharedLib
                 var Ldc = parStartDate.Date;
                 while (Ldc <= parFinishDate.Date)
                 {
-                    using (var ldb = new WDB_SQLite(Ldc))
-                    {
-                        var l = ldb.GetReceipts(Ldc.Date, DateTime.Now.Date.AddDays(1)/*Ldc.Date.AddDays(1)*/, IdWorkPlace);
-                        res.AddRange(l);
-                        Ldc = Ldc.AddDays(1);
-                    }
+                    using var ldb = new WDB_SQLite(Ldc);
+                    var l = ldb.GetReceipts(Ldc.Date, DateTime.Now.Date.AddDays(1)/*Ldc.Date.AddDays(1)*/, IdWorkPlace);
+                    res.AddRange(l);
+                    Ldc = Ldc.AddDays(1);
                 }
             }
             return res;
@@ -518,7 +509,7 @@ namespace SharedLib
             var Ldc = pStartDate.Date;
             while (Ldc <= pFinishDate.Date)
             {
-                var ldb = new WDB_SQLite(Ldc);
+                using var ldb = new WDB_SQLite(Ldc);
                 var l = ldb.GetReceiptByFiscalNumber(IdWorkplace, pFiscalNumber, pStartDate, pFinishDate);
                 if (l != null && l.Count() >= 1)
                     return l.First();

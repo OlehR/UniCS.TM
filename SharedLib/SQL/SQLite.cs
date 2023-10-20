@@ -11,25 +11,25 @@ using Utils;
 using System.Linq;
 using System.Collections;
 using System.Xml.Linq;
-
 namespace SharedLib
 {
     public class SQLite : SQL, IDisposable
     {
-        public SQLiteConnection connection = null;
-        SQLiteTransaction transaction = null;
+        public SQLiteConnection Connection = null;
+        public SQLiteTransaction Transaction = null;
         private bool disposedValue;
+
+         
 
         public SQLite(String varConectionString) : base(varConectionString)
         {
-
             var connectionString = new SQLiteConnectionStringBuilder("Data Source=" + varConectionString + ";Version=3;")
             {
                 DefaultIsolationLevel = IsolationLevel.Serializable
             }.ToString();
 
-            connection = new SQLiteConnection(connectionString);
-            connection.Open();
+            Connection = new SQLiteConnection(connectionString);
+            Connection.Open();
             TypeCommit = eTypeCommit.Auto;
             ExecuteNonQuery("PRAGMA synchronous = EXTRA;");
             ExecuteNonQuery("PRAGMA journal_mode = DELETE;");
@@ -40,6 +40,12 @@ namespace SharedLib
         {
             //Close();
         }
+
+        public SQLiteTransaction GetTransaction() => Connection.BeginTransaction(IsolationLevel.Serializable);
+        public override void BeginTransaction() => Transaction = Connection.BeginTransaction(IsolationLevel.Serializable);
+        public override void CommitTransaction() { Transaction?.Commit(); Transaction = null; }
+        public  void RollbackTransaction() { Transaction.Rollback(); Transaction = null; }
+
         public override void Close(bool isWait = false)
         {
             //          $"[{GetType()} -{ GetHashCode()}] close connection".WriteLogMessage();
@@ -50,10 +56,10 @@ namespace SharedLib
                 SetLock(true);
                 Thread.Sleep(250);
             }
-            if (connection != null)
+            if (Connection != null)
             {
-                connection.Close();
-                connection = null;
+                Connection.Close();
+                Connection = null;
             }
             if (isWait)
             {
@@ -75,27 +81,17 @@ namespace SharedLib
             }
         }
 
-        public override void BeginTransaction()
-        {
-            transaction = connection.BeginTransaction();
-        }
-
-        public override void CommitTransaction()
-        {
-            transaction.Commit();
-        }
-
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
             {
                 if (disposing)
                 {
-                    if (connection != null)
+                    if (Connection != null)
                     {
-                        connection.Close();
-                        connection.Dispose();
-                        connection = null;
+                        Connection.Close();
+                        Connection.Dispose();
+                        Connection = null;
                     }
                 }
                 disposedValue = true;
@@ -116,7 +112,7 @@ namespace SharedLib
             IsDapper(parameters, pQuery);
             try {
                 if (IsLock) ExceptionIsLock();
-                return connection.Query<T1>(pQuery, parameters);
+                return Connection.Query<T1>(pQuery, parameters);
             } catch (Exception e)
             {
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name + Environment.NewLine + pQuery, e);
@@ -129,7 +125,7 @@ namespace SharedLib
         {
             try { 
             if (IsLock) ExceptionIsLock();
-            return connection.Query<T1>(query);
+            return Connection.Query<T1>(query);
             }
             catch (Exception e)
             {
@@ -137,7 +133,6 @@ namespace SharedLib
                 throw;
             }
         }
-
 
         public override int ExecuteNonQuery<T>(string pQuery, T Parameters, int CountTry = 3)
         {
@@ -147,12 +142,12 @@ namespace SharedLib
             {
                 if (TypeCommit == eTypeCommit.Auto)
                 {
-                    int i= connection.Execute(pQuery, Parameters);
+                    int i= Connection.Execute(pQuery, Parameters);
                     //FileLogger.WriteLogMessage($"ExecuteNonQuery<T> CountTry=>{CountTry} SQL=>{pQuery} res=>{i}",eTypeLog.Full);
                     return i;
                 }
                 else
-                    return connection.Execute(pQuery, Parameters, transaction);
+                    return Connection.Execute(pQuery, Parameters, Transaction);
             }
             catch(Exception e) 
             {
@@ -173,9 +168,9 @@ namespace SharedLib
             try
             {
                 if (TypeCommit == eTypeCommit.Auto)
-                return connection.Execute(pQuery);
+                return Connection.Execute(pQuery);
             else
-                return connection.Execute(pQuery,null,transaction);
+                return Connection.Execute(pQuery,null,Transaction);
             }
             catch (Exception e)
             {
@@ -195,7 +190,7 @@ namespace SharedLib
             try
             {
                 if (IsLock) ExceptionIsLock();
-                return connection.ExecuteScalar<T1>(query);
+                return Connection.ExecuteScalar<T1>(query);
             }
             catch (Exception e)
             {
@@ -210,7 +205,7 @@ namespace SharedLib
             try
             {
                 if (IsLock) ExceptionIsLock();
-                return connection.ExecuteScalar<T1>(pQuery, parameters);
+                return Connection.ExecuteScalar<T1>(pQuery, parameters);
             }
             catch (Exception e)
             {
@@ -219,13 +214,13 @@ namespace SharedLib
             }
     }
 
-        public  int ExecuteNonQuery<T>(string pQuery, T Parameters, SQLiteTransaction transaction)
+        public  int ExecuteNonQuery<T>(string pQuery, T Parameters, SQLiteTransaction pTransaction)
         {
             IsDapper(Parameters, pQuery);
             try
             {
                 if (IsLock) ExceptionIsLock();
-                return connection.Execute(pQuery, Parameters, transaction);
+                return Connection.Execute(pQuery, Parameters, pTransaction);
             }
             catch (Exception e)
             {
@@ -237,17 +232,20 @@ namespace SharedLib
         public override int BulkExecuteNonQuery<T>(string pQuery, IEnumerable<T> pData, bool IsRepeatNotBulk = false)
         {
             if (IsLock) ExceptionIsLock();
-            transaction = connection.BeginTransaction(IsolationLevel.Serializable);
+
+            SQLiteTransaction transaction = null;
+            if(Transaction==null) transaction=GetTransaction();
+            
             // FileLogger.ExtLogForClass(transaction.GetType(), transaction.GetHashCode(), "Begin transaction");
             try
             {
                 foreach (var el in pData)
-                    ExecuteNonQuery(pQuery, el, transaction);
-                transaction.Commit();
+                    ExecuteNonQuery(pQuery, el, Transaction??transaction);
+                transaction?.Commit();
             }
             catch (Exception ex)
             {
-                transaction.Rollback();
+                transaction?.Rollback();
                 if (IsRepeatNotBulk)
                     try
                     {
@@ -260,8 +258,19 @@ namespace SharedLib
                 else
                     throw new Exception("BulkExecuteNonQuery =>" + ex.Message, ex);
             }
-
             //FileLogger.ExtLogForClass(transaction.GetType(), transaction.GetHashCode(), "End transaction");
+            return pData.Count();
+        }
+
+        public int BulkExecuteNonQuery<T>(string pQuery, IEnumerable<T> pData, SQLiteTransaction pTr)
+        {
+            if (IsLock) ExceptionIsLock();         
+            try
+            {
+                foreach (var el in pData)
+                    ExecuteNonQuery(pQuery, el, pTr);                
+            }
+            catch (Exception ex) {throw new Exception("BulkExecuteNonQuery =>" + ex.Message, ex); }            
             return pData.Count();
         }
 

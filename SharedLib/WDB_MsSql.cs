@@ -75,57 +75,74 @@ namespace SharedLib
             Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Write SqlSalesBan => {SB.Count()}");
             SB = null;
 
+
             Debug.WriteLine("SqlGetPromotionSaleGift");
             var PSGf = db.Execute<pWarehouse, PromotionSaleGift>(SqlGetPromotionSaleGift, oWarehouse);
-            Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Read SqlGetPromotionSaleGift => {PSGf.Count()}");
-            pDB.ReplacePromotionSaleGift(PSGf, pD);
-            Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Write SqlGetPromotionSaleGift => {PSGf.Count()}");
-            PSGf = null;
+            Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Read SqlGetPromotionSaleGift => {PSGf.Count()}");           
 
             Debug.WriteLine("SqlGetPromotionSaleGroupWares");
             var PSGW = db.Execute<pWarehouse, PromotionSaleGroupWares>(SqlGetPromotionSaleGroupWares, oWarehouse);
-            Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Read SqlGetPromotionSaleGroupWares => {PSGW.Count()}");
-            if (PSGW != null)
-            {
-                pDB.ReplacePromotionSaleGroupWares(PSGW, pD);
-                Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Write SqlGetPromotionSaleGroupWares => {PSGW.Count()}");
-                PSGW = null;
-            }
+            Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Read SqlGetPromotionSaleGroupWares => {PSGW.Count()}");            
 
             Debug.WriteLine("SqlGetPromotionSale");
             var PS = db.Execute<pWarehouse, PromotionSale>(SqlGetPromotionSale, oWarehouse);
-            Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Read SqlGetPromotionSale => {PS.Count()}");
-            pDB.ReplacePromotionSale(PS, pD);
-            Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Write SqlGetPromotionSale => {PS.Count()}");
-            PS = null;
+            Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Read SqlGetPromotionSale => {PS.Count()}");            
 
             Debug.WriteLine("SqlGetPromotionSaleFilter");
             var PSF = db.Execute<pWarehouse, PromotionSaleFilter>(SqlGetPromotionSaleFilter, oWarehouse);
-            Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Read SqlGetPromotionSaleFilter => {PSF.Count()}");
-            pDB.ReplacePromotionSaleFilter(PSF, pD);
-            Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Write SqlGetPromotionSaleFilter => {PSF.Count()}");
-            PSF = null;
+            Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Read SqlGetPromotionSaleFilter => {PSF.Count()}");            
 
             Debug.WriteLine("SqlGetPromotionSaleData");
             var PSD = db.Execute<pWarehouse, PromotionSaleData>(SqlGetPromotionSaleData, oWarehouse);
             Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Read SqlGetPromotionSaleData => {PSD.Count()}");
-            pDB.ReplacePromotionSaleData(PSD, pD);
-            Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} SqlGetPromotionSaleData => {PSD.Count()}");
-            PSD = null;
-
+            
             Debug.WriteLine("SqlGetPromotionSaleDealer");
             var PSP = db.Execute<pWarehouse, PromotionSaleDealer>(SqlGetPromotionSaleDealer, oWarehouse);
             Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Read SqlGetPromotionSaleDealer =>{PSP.Count()}");
-            pDB.ReplacePromotionSaleDealer(PSP, pD);
-            Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Write SqlGetPromotionSaleDealer =>{PSP.Count()}");
-            PSP = null;
-
+            
             Debug.WriteLine("SqlGetPromotionSale2Category");
             var PS2c = db.Execute<pWarehouse, PromotionSale2Category>(SqlGetPromotionSale2Category, oWarehouse);
             Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} SqlGetPromotionSale2Category => {PS2c.Count()}");
-            pDB.ReplacePromotionSale2Category(PS2c, pD);
-            Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} SqlGetPromotionSale2Category => {PS2c.Count()}");
-            PS2c = null;
+            try
+            {
+                pD.BeginTransaction();
+                pDB.ReplacePromotionSaleGift(PSGf, pD);
+                Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Write SqlGetPromotionSaleGift => {PSGf.Count()}");
+                PSGf = null;
+
+                if (PSGW != null)
+                {
+                    pDB.ReplacePromotionSaleGroupWares(PSGW, pD);
+                    Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Write SqlGetPromotionSaleGroupWares => {PSGW.Count()}");
+                    PSGW = null;
+                }
+
+                pDB.ReplacePromotionSale(PS, pD);
+                Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Write SqlGetPromotionSale => {PS.Count()}");
+                PS = null;
+
+                pDB.ReplacePromotionSaleFilter(PSF, pD);
+                Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Write SqlGetPromotionSaleFilter => {PSF.Count()}");
+                PSF = null;
+
+                pDB.ReplacePromotionSaleData(PSD, pD);
+                Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} SqlGetPromotionSaleData => {PSD.Count()}");
+                PSD = null;
+
+                pDB.ReplacePromotionSaleDealer(PSP, pD);
+                Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Write SqlGetPromotionSaleDealer =>{PSP.Count()}");
+                PSP = null;
+
+                pDB.ReplacePromotionSale2Category(PS2c, pD);
+                Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} SqlGetPromotionSale2Category => {PS2c.Count()}");
+                PS2c = null;
+                pD.CommitTransaction();
+            }catch(Exception e)
+            {
+                pD.RollbackTransaction();
+                throw;
+            }
+            ///!!!!!!!!!!!!!!!!!!!!!!!!!!
 
             Debug.WriteLine("SqlGetMRC");
             var MRC = db.Execute<pWarehouse, MRC>(SqlGetMRC, oWarehouse);

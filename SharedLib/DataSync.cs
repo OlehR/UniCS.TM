@@ -86,7 +86,7 @@ namespace SharedLib
 
         public bool SendReceiptTo1C(IdReceipt parIdReceipt)
         {
-            var ldb = new WDB_SQLite(parIdReceipt.DTPeriod);
+            using var ldb = new WDB_SQLite(parIdReceipt.DTPeriod);
             var r = ldb.ViewReceipt(parIdReceipt, true);
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
@@ -242,7 +242,8 @@ namespace SharedLib
                                 File.Move(NameDB, varMidFile);
                                 Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Set config");
                                 db.SetConfig<string>("Last_MID", varMidFile);
-                                bl.db = new WDB_SQLite();
+                                bl.db.LastMidFile=varMidFile;
+                                bl.db.db = bl.db.GetDB();
                             }
                             catch(Exception e) 
                             {
@@ -316,7 +317,7 @@ namespace SharedLib
 
             while (Ldc < today)
             {
-                var ldb = new WDB_SQLite(Ldc);
+                using var ldb = new WDB_SQLite(Ldc);
                 var t = SendAllReceipt(ldb);
                 t.Wait();
                 var res = ldb.GetIdReceiptbyState(eStateReceipt.Print);
@@ -517,7 +518,7 @@ where nn=1 ";
         {
             try
             {
-                var ldb = new WDB_SQLite(parDT);
+                using var ldb = new WDB_SQLite(parDT);
                 string SQLUpdate = @"insert into  DW.dbo.Weight_Receipt  (Type_Source,code_wares, weight,Date,ID_WORKPLACE, CODE_RECEIPT,QUANTITY) values (@TypeSource, @CodeWares,@Weight,@Date,@IdWorkplace,@CodeReceipt,@Quantity)";
                 var dbMs = new MSSQL();
 
@@ -601,7 +602,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                 Ldc = Ldc.AddDays(1);
                 while (Ldc < today)
                 {
-                    var ldb = new WDB_SQLite(Ldc);
+                    using var ldb = new WDB_SQLite(Ldc);
                     var t = ldb.GetReceiptWaresDeleted();
                     var res = await Send1CReceiptWaresDeletedAsync(t);
 
@@ -703,7 +704,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                 Ldc = Ldc.AddDays(1);
                 while (Ldc < Today)
                 {
-                    var ldb = new WDB_SQLite(Ldc);
+                    using var ldb = new WDB_SQLite(Ldc);
                     IEnumerable<ClientNew> Cl = ldb.GetClientNewNotSend();
                     bool Res = true;
                     foreach (var el in Cl)

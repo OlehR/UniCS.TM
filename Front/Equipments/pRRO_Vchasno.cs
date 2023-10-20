@@ -21,7 +21,7 @@ namespace Front.Equipments.Implementation
     {
         int TimeOut = 45000;
         Encoding win1251 = Encoding.GetEncoding("windows-1251");
-        WDB_SQLite db = new WDB_SQLite();
+        WDB_SQLite db = WDB_SQLite.GetInstance;
         string Url, Token, Device = "Test";
         public pRRO_Vchasno(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) :
                 base(pEquipment, pConfiguration, eModelEquipment.pRRO_Vchasno, pLoggerFactory, pActionStatus)

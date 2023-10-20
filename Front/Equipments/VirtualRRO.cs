@@ -30,7 +30,7 @@ namespace Front.Equipments.Implementation
         string FiscalNumber = "657513548";
         int MaxCountCharacters = 34;//23;//34;
         List<string> TextReport = new();
-        WDB_SQLite db = new WDB_SQLite();
+        WDB_SQLite db = WDB_SQLite.GetInstance;
 
 
         public VirtualRRO(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null, Printer pR = null, EquipmentFront eF = null) : this(pEquipment, pConfiguration, pLoggerFactory, pActionStatus)

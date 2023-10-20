@@ -25,7 +25,7 @@ namespace Front.Equipments.Implementation
     {
         bool IsInit = false;
         bool IsError = false;
-        WDB_SQLite db = new WDB_SQLite();
+        WDB_SQLite db = WDB_SQLite.GetInstance;
 
         //M304ManagerApplication M304_;
         dynamic M304;

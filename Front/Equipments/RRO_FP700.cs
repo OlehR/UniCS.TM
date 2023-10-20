@@ -45,7 +45,7 @@ namespace Front.Equipments
         private readonly Timer _packageBufferTimer;
         private const string ReportDateFormat = "ddMMyy";
 
-        WDB_SQLite db = new WDB_SQLite();
+        WDB_SQLite db = WDB_SQLite.GetInstance;
 
         private int _tillNumber => Configuration.GetValue<int>($"{KeyPrefix}TillNumber");
 
