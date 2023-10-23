@@ -348,7 +348,7 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <Button Grid.Column="1" BorderBrush="Transparent" IsHitTestVisible="False">
+                    <Button Grid.Column="1" BorderBrush="Transparent"  Click="UpdateDB">
                         <Button.Style>
                             <Style BasedOn="{StaticResource RoundButton}" TargetType="Button">
                                 <Setter Property="Background" Value="Orange"/>

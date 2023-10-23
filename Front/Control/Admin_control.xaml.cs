@@ -742,7 +742,15 @@ namespace Front.Control
 
         private void RefreshDataButton(object sender, RoutedEventArgs e)
         {
-            Task.Run(() => Bl.ds.SyncDataAsync(true));
+            MW.CustomMessage.Show("Запустити оновлення бази даних?", "Оновлення бази даних", eTypeMessage.Question);
+            MW.CustomMessage.Result = (bool res) =>
+            {
+                if (res)
+                {
+                    Task.Run(() => Bl.ds.SyncDataAsync(true));
+                }
+            };
+            
         }
 
         private void CheckTypeLog(object sender, RoutedEventArgs e)

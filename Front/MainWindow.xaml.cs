@@ -1728,6 +1728,18 @@ namespace Front
                               BackgroundWaitAdmin.Visibility = Visibility.Collapsed;
                           };
         }
+
+        private void UpdateDB(object sender, RoutedEventArgs e)
+        {
+            CustomMessage.Show("Запустити оновлення бази даних?", "Оновлення бази даних", eTypeMessage.Question);
+            CustomMessage.Result = (bool res) =>
+            {
+                if (res)
+                {
+                    Task.Run(() => Bl.ds.SyncDataAsync());
+                }
+            };
+        }
     }
 
 }
