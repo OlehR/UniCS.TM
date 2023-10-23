@@ -740,9 +740,9 @@ namespace Front.Control
             //}
         }
 
-        async private void RefreshDataButton(object sender, RoutedEventArgs e)
+        private void RefreshDataButton(object sender, RoutedEventArgs e)
         {
-            await Bl.ds.SyncDataAsync(true);
+            Task.Run(() => Bl.ds.SyncDataAsync(true));
         }
 
         private void CheckTypeLog(object sender, RoutedEventArgs e)
