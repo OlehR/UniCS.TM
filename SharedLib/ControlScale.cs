@@ -8,10 +8,8 @@ namespace ModelMID
 {
     class WeightTime
     {
-        public WeightTime(double pWeight = 0d, bool IsInit = false)
-        {
-            Set(pWeight, IsInit);
-        }
+        public WeightTime(double pWeight = 0d, bool IsInit = false) => Set(pWeight, IsInit);
+        
 
         public void Set(double pWeight = 0d, bool IsInit = false)
         {

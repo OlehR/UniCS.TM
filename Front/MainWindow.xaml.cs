@@ -473,13 +473,13 @@ namespace Front
             }
 
             SetStateView(eStateMainWindows.StartWindow);
-
+            SetWorkPlace();
             Task.Run(() => Bl.ds.SyncDataAsync());
         }
 
         public void SetWorkPlace()
         {
-            CS.SetOnOff(Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout);
+            CS.SetOnOff(Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout && EF.ControlScale!=null);
             Volume = (Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsCashRegister)));
 
