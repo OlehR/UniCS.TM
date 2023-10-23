@@ -799,15 +799,12 @@ namespace Front.Control
             {
                 if (res)
                 {
-                    System.Diagnostics.Process.Start("explorer.exe");
+                    if (!Global.IsTest)
+                        System.Diagnostics.Process.Start("explorer.exe");
                     Application.Current.Shutdown();
                 }
             };
-            //if (MessageBox.Show("Завершити роботу програми?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-            //{
-            //    System.Diagnostics.Process.Start("explorer.exe");
-            //    Application.Current.Shutdown();
-            //}
+            
         }
 
         private void CloneReceipt(object sender, RoutedEventArgs e)
@@ -1386,18 +1383,12 @@ from RECEIPT r
             {
                 if (resMes)
                 {
-                    System.Diagnostics.Process.Start("explorer.exe");
+                    if (!Global.IsTest)
+                        System.Diagnostics.Process.Start("explorer.exe");
                     Application.Current.Shutdown();
                 }
                 else TabAdmin.SelectedIndex = 0;
-
-            };
-            //if (MessageBox.Show("Завершити роботу програми?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-            //{
-            //    System.Diagnostics.Process.Start("explorer.exe");
-            //    Application.Current.Shutdown();
-            //}
-            //else TabAdmin.SelectedIndex = 0;
+            };            
         }
 
         private void ChangeOrderNumber(object sender, RoutedEventArgs e)

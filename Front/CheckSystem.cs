@@ -46,7 +46,8 @@ namespace Front
 
         private void ExitProgram()
         {
-            System.Diagnostics.Process.Start("explorer.exe");
+            if (!Global.IsTest)
+                System.Diagnostics.Process.Start("explorer.exe");
             System.Windows.Application.Current.Shutdown();
         }
 
