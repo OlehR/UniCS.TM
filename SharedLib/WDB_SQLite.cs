@@ -98,44 +98,42 @@ namespace SharedLib
                 using var dbMid = new SQLite(MidFile);
                 dbMid.ExecuteNonQuery(SqlCreateMIDTable);
                 dbMid.Close();
-                
-            }
-            else
-            if (pIsUseOldDB)
-            {
-                //var db = new SQLite(ConfigFile);
-                var LFDB = GetConfig<DateTime>("Load_Full",dbConfig).Date;
-                if (LFDB < DateTime.Now.AddDays(-10))
-                    LFDB = DateTime.Now.Date;
-                do
-                {
-                    var vLastMidFile = GetMIDFile(LFDB);
-                    if (!string.IsNullOrEmpty(vLastMidFile) && File.Exists(vLastMidFile))
-                        LastMidFile = vLastMidFile;
-                    LFDB = LFDB.AddDays(-1);
-                } while (LastMidFile == null && LFDB > DateTime.Now.AddDays(-10));
-            }
-            
 
-            db = GetDB();
-
+            }
+            GetDB();
             DBStatus = eDBStatus.Ok;
         }
         ~WDB_SQLite()
         {
             //Close();
         }
-        public SQLite GetDB()
-        {         
-            var db= new SQLite(ConfigFile);
+
+        void FindLastMid()
+        {
+            //var db = new SQLite(ConfigFile);
+            var LFDB = GetConfig<DateTime>("Load_Full", dbConfig).Date;
+            if (LFDB < DateTime.Now.AddDays(-10))
+                LFDB = DateTime.Now.Date;
+            do
+            {
+                var vLastMidFile = GetMIDFile(LFDB);
+                if (!string.IsNullOrEmpty(vLastMidFile) && File.Exists(vLastMidFile))
+                    LastMidFile = vLastMidFile;
+                LFDB = LFDB.AddDays(-1);
+            } while (LastMidFile == null && LFDB > DateTime.Now.AddDays(-10));
+        }
+        public void GetDB()
+        {
+            FindLastMid();
+            var DB= new SQLite(ConfigFile);
             if (File.Exists(MidFile))
-                db.ExecuteNonQuery("ATTACH '" + MidFile + "' AS mid");
-            db.ExecuteNonQuery("ATTACH '" + ReceiptFile + "' AS con");
+                DB.ExecuteNonQuery("ATTACH '" + MidFile + "' AS mid");
+            DB.ExecuteNonQuery("ATTACH '" + ReceiptFile + "' AS con");
             //dbConfig = new SQLite(ConfigFile);
             dbMid = new SQLite(MidFile);
             dbRC = new SQLite(ReceiptFile);
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"ConfigFile=>{ConfigFile} MidFile={MidFile} ReceiptFile={ReceiptFile}");
-            return db;
+            db = DB;
         }
 
         public void Dispose()
@@ -493,6 +491,9 @@ namespace SharedLib
 
         public void Close(bool isWait = false)
         {
+            //dbConfig?.Close(isWait);
+            dbMid?.Close(isWait);
+            dbRC?.Close(isWait);
             db?.Close(isWait);
         }
 
@@ -572,14 +573,20 @@ INSERT OR ignore into GEN_WORKPLACE(ID_WORKPLACE, CODE_PERIOD, CODE_RECEIPT) val
                 return pIdReceipt;            
         }
 
-        public bool ReplaceReceipt(Receipt parReceipt) => dbRC.ExecuteNonQuery<Receipt>(SqlReplaceReceipt, parReceipt) > 0;                   
+        public bool ReplaceReceipt(Receipt parReceipt) => dbRC.ExecuteNonQuery<Receipt>(SqlReplaceReceipt, parReceipt) > 0;
 
-        public bool CloseReceipt(Receipt parReceipt)
+        public bool CloseReceipt(Receipt pR)
         {
-                lock (GetObjectForLockByIdWorkplace(parReceipt.IdWorkplace))
+            lock (GetObjectForLockByIdWorkplace(pR.IdWorkplace))
+            {
+                if (DT == pR.DTPeriod)
+                    return dbRC.ExecuteNonQuery<Receipt>(SqlCloseReceipt, pR) > 0;
+                else
                 {
-                    return dbRC.ExecuteNonQuery<Receipt>(SqlCloseReceipt, parReceipt) > 0;
+                    using var dbRCD = new SQLite(GetReceiptFile(pR.DTPeriod));
+                    return dbRCD.ExecuteNonQuery<Receipt>(SqlCloseReceipt, pR) > 0;
                 }
+            }
         }
 
         /// <summary>
@@ -984,7 +991,13 @@ Where ID_WORKPLACE = @IdWorkplace
 
         public virtual IEnumerable<LogRRO> GetLogRRO(IdReceipt pR)
         {
-            return db.Execute<IdReceipt, LogRRO>(SqlGetLogRRO, pR);
+            if (DT == pR.DTPeriod)
+                return dbRC.Execute<IdReceipt, LogRRO>(SqlGetLogRRO, pR);  
+            else
+            {
+                using var dbRCD = new SQLite(GetReceiptFile(pR.DTPeriod));
+                return dbRCD.Execute<IdReceipt, LogRRO>(SqlGetLogRRO, pR);
+            }
         }
 
         public virtual Receipt ViewReceipt(IdReceipt parIdReceipt, bool parWithDetail = false)
@@ -1125,7 +1138,7 @@ Select min(case when CODE_DEALER = -888888  then PRICE_DEALER else null end) as 
             
         }
 
-        public IEnumerable<Payment> GetPayment(IdReceipt parIdReceipt)
+        public IEnumerable<Payment> GetPayment(IdReceipt pIdR)
         {
             string SqlGetPayment = @"
 select id_workplace as IdWorkplace, id_workplace_pay as IdWorkplacePay,code_period as CodePeriod, code_receipt as CodeReceipt, 
@@ -1135,7 +1148,13 @@ select id_workplace as IdWorkplace, id_workplace_pay as IdWorkplacePay,code_peri
     Card_Holder as CardHolder ,Issuer_Name as IssuerName, Bank,TransactionId
    from payment
   where   id_workplace = @IdWorkplace and code_period = @CodePeriod and code_receipt = @CodeReceipt";
-            return db.Execute<IdReceipt, Payment>(SqlGetPayment, parIdReceipt);
+            if (DT == pIdR.DTPeriod)
+                return db.Execute<IdReceipt, Payment>(SqlGetPayment, pIdR);
+            else
+            {
+                using var dbRCD = new SQLite(GetReceiptFile(pIdR.DTPeriod));
+                return dbRCD.Execute<IdReceipt, Payment>(SqlGetPayment, pIdR);
+            }
         }
 
         public IEnumerable<WaresReceiptPromotion> CheckLastWares2Cat(IdReceipt parIdReceipt)
@@ -1211,7 +1230,13 @@ SELECT QUANTITY - QUANTITY_OLD as QUANTITY, ROW_NUMBER()   OVER(ORDER BY  DATE_C
         {
             string SqlGetStateReceipt = @"select max(STATE_RECEIPT) StateReceipt   FROM RECEIPT
  Where ID_WORKPLACE = @IdWorkplace and CODE_PERIOD = @CodePeriod and CODE_RECEIPT = @CodeReceipt";
-            return db.ExecuteScalar<IdReceipt, eStateReceipt>(SqlGetStateReceipt, pR);
+            if (DT == pR.DTPeriod)
+                return db.ExecuteScalar<IdReceipt, eStateReceipt>(SqlGetStateReceipt, pR);
+            else
+            {
+                using var dbRCD = new SQLite(GetReceiptFile(pR.DTPeriod));
+                return dbRCD.ExecuteScalar<IdReceipt, eStateReceipt>(SqlGetStateReceipt, pR);
+            }            
         }
 
         public eTypeReceipt GetTypeReceipt(IdReceipt pR)

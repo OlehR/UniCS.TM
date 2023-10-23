@@ -164,9 +164,7 @@ namespace SharedLib
 
         public bool UpdateReceiptFiscalNumber(Receipt pR)
         {
-            DateTime Ldc = pR.DTPeriod;
-            WDB_SQLite ldb = DB(pR);
-            var Res = ldb.CloseReceipt(pR);
+            var Res = db.CloseReceipt(pR);
            // var r = db.ViewReceipt(pR, true);
             Global.OnReceiptCalculationComplete?.Invoke(pR);
             return Res;
@@ -341,10 +339,12 @@ namespace SharedLib
             return res;
         }
 
-        public Receipt GetReceiptHead(IdReceipt idReceipt, bool parWithDetail = false)
+        public Receipt GetReceiptHead(IdReceipt pIdR, bool parWithDetail = false)
         {
-            var ldb = DB(idReceipt);
-            return ldb.ViewReceipt(idReceipt, parWithDetail);
+            if(pIdR.CodePeriod == Global.GetCodePeriod())            
+                return db.ViewReceipt(pIdR, parWithDetail);
+            using var dbT= new WDB_SQLite(pIdR.DTPeriod);
+            return dbT.ViewReceipt(pIdR, parWithDetail);
         }
 
         public Client GetClientByCode(IdReceipt pIdReceipt, int pCode)
@@ -455,14 +455,13 @@ namespace SharedLib
 
         //public bool UpdateWorkPlace(IEnumerable<WorkPlace> parData) { return db.ReplaceWorkPlace(parData); }
 
-        
+
         public bool SetStateReceipt(IdReceipt pIdReceipt, eStateReceipt pStateReceipt)
         {
             if (pIdReceipt == null)
                 return false;
             var receipt = new Receipt(pIdReceipt) { StateReceipt = pStateReceipt, DateReceipt = DateTime.Now, UserCreate = GetUserIdbyWorkPlace(pIdReceipt.IdWorkplace) };
-            WDB_SQLite ldb = DB(pIdReceipt);
-            return ldb.CloseReceipt(receipt);
+            return db.CloseReceipt(receipt);
         }
 
         public bool InsertWeight(string pBarCode, int parWeight, Guid parWares, TypeSaveWeight parTypeSaveWeight)
@@ -476,11 +475,13 @@ namespace SharedLib
             return db.InsertWeight(new { BarCode = (parTypeSaveWeight == TypeSaveWeight.Add || pBarCode == null ? CodeWares.ToString() : pBarCode), Weight = (decimal)parWeight / 1000m, Status = parTypeSaveWeight });
         }
 
-        public IEnumerable<ReceiptWares> GetWaresReceipt(IdReceipt pIdReceipt = null)
+        public IEnumerable<ReceiptWares> GetWaresReceipt(IdReceipt pIdR )
         {
-            var ldb = DB(pIdReceipt);
-            return ldb.ViewReceiptWares(pIdReceipt);
+            if (pIdR.CodePeriod == Global.GetCodePeriod()) return db.ViewReceiptWares(pIdR);         
+            using var dbT = new WDB_SQLite(pIdR.DTPeriod);
+            return dbT.ViewReceiptWares(pIdR);
         }
+    
 
         public IEnumerable<Receipt> GetReceipts(DateTime parStartDate, DateTime parFinishDate, int IdWorkPlace)
         {
@@ -518,7 +519,7 @@ namespace SharedLib
             return null;
         }
 
-        public bool SaveReceipt(Receipt pReceipt, bool isRefund = true)
+        /*public bool SaveReceipt(Receipt pReceipt, bool isRefund = true)
         {
             var IdR = isRefund ? pReceipt.RefundId : pReceipt;
 
@@ -538,7 +539,7 @@ namespace SharedLib
                 }
             }
             return true;
-        }
+        }*/
 
         public bool SaveReceiptEvents(IEnumerable<ReceiptEvent> pRE, bool pIsReplace = true)
         {
@@ -779,19 +780,10 @@ namespace SharedLib
             Global.OnReceiptCalculationComplete?.Invoke(r);
         }
 
-        public  eStateReceipt GetStateReceipt(IdReceipt pR)
-        {
-            return DB(pR).GetStateReceipt(pR);
-        }
+        public  eStateReceipt GetStateReceipt(IdReceipt pR)=> db.GetStateReceipt(pR);        
 
-        public IEnumerable<Payment> GetPayment(IdReceipt idReceipt)
-        {
-            var ldb = DB(idReceipt);
-            return ldb?.GetPayment(idReceipt);
-        }  
+        public IEnumerable<Payment> GetPayment(IdReceipt idReceipt)=> db.GetPayment(idReceipt);        
 
-        public IEnumerable<LogRRO> GetLogRRO(IdReceipt pR) { return DB(pR).GetLogRRO(pR);}
-
-        WDB_SQLite DB(IdReceipt pR){ return (pR.CodePeriod == Global.GetCodePeriod() ? db : new WDB_SQLite(pR.DTPeriod)); }
+        public IEnumerable<LogRRO> GetLogRRO(IdReceipt pR) => db.GetLogRRO(pR);
     }
 }

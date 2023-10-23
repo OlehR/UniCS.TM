@@ -26,6 +26,7 @@ namespace SharedLib
             } catch(Exception e) 
             { 
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name,e);
+                throw;
             }
         }
 

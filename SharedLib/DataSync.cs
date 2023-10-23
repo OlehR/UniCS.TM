@@ -125,7 +125,7 @@ namespace SharedLib
 
         public async Task<bool> SendAllReceipt(WDB_SQLite parDB = null)
         {
-            var varDB = (parDB == null ? db : parDB);
+            var varDB = (parDB ?? db);
             var varReceipts = varDB.GetIdReceiptbyState(eStateReceipt.Print);
             foreach (var el in varReceipts)
                 await SendReceiptTo1CAsync(varDB.ViewReceipt(el, true), varDB);
@@ -182,7 +182,8 @@ namespace SharedLib
                     {
                         db.SetConfig<DateTime>("Load_Full", DateTime.Now.Date.AddDays(-1).Date);
                         db.SetConfig<DateTime>("Load_Update", DateTime.Now.Date.AddDays(-1).Date);
-                        //b.Close(true);
+                        db.Close(true);
+                        db.GetDB();
                         Exception Ex=null;
                         if (File.Exists(varMidFile))
                         {
@@ -242,8 +243,8 @@ namespace SharedLib
                                 File.Move(NameDB, varMidFile);
                                 Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Set config");
                                 db.SetConfig<string>("Last_MID", varMidFile);
-                                bl.db.LastMidFile=varMidFile;
-                                bl.db.db = bl.db.GetDB();
+                                db.LastMidFile=varMidFile;
+                                db.GetDB();
                             }
                             catch(Exception e) 
                             {

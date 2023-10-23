@@ -1093,7 +1093,7 @@ on pay.code_receipt=R.code_receipt
 where round(Pay.sum-R.Sum,2) >0
 order by Pay.code_receipt";
 
-            var db = new WDB_SQLite(DateSoSearch);
+            using var db = new WDB_SQLite(DateSoSearch);
             var ss = db.db.Execute<string>(SQL);
             if (ss.Any())
             {
