@@ -742,7 +742,7 @@ namespace Front.Control
 
         private void RefreshDataButton(object sender, RoutedEventArgs e)
         {
-            MW.CustomMessage.Show("Запустити оновлення бази даних?", "Оновлення бази даних", eTypeMessage.Question);
+            MW.CustomMessage.Show("Запустити повнен оновлення бази даних?", "Оновлення бази даних", eTypeMessage.Question);
             MW.CustomMessage.Result = (bool res) =>
             {
                 if (res)
@@ -802,7 +802,6 @@ namespace Front.Control
                     System.Diagnostics.Process.Start("explorer.exe");
                     Application.Current.Shutdown();
                 }
-
             };
             //if (MessageBox.Show("Завершити роботу програми?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             //{
