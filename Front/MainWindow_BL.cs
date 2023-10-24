@@ -47,11 +47,11 @@ namespace Front
 
             EF.SetStatus += (info) =>
             {
-                if(info.IsСritical==true)
+                if (info.IsСritical == true)
                 {
-                    LastErrorEquipment= info.TextState;
+                    LastErrorEquipment = info.TextState;
                     FileLogger.WriteLogMessage(this, $"EF.SetStatus {info.ModelEquipment}", $"{info.TextState}", eTypeLog.Error);
-                    SetStateView(eStateMainWindows.WaitAdmin,eTypeAccess.ErrorEquipment);
+                    SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ErrorEquipment);
                     return;
                 }
                 var r = Dispatcher.BeginInvoke(new ThreadStart(() =>
@@ -99,14 +99,14 @@ namespace Front
                             IsDel = true;
                         }
 
-                        if (pReceipt.GetLastWares != null && LastCodeWares!= pReceipt.GetLastWares.CodeWares)
+                        if (pReceipt.GetLastWares != null && LastCodeWares != pReceipt.GetLastWares.CodeWares)
                         {
                             LastCodeWares = pReceipt.GetLastWares.CodeWares;
                             ReceiptWares cl = (ReceiptWares)pReceipt.GetLastWares.Clone();
-                            EF.ProgramingArticleAsync( cl);
+                            EF.ProgramingArticleAsync(cl);
                         }
                         else
-                         EF.PutToDisplay(pReceipt,$"{CurWares.NameWaresReceipt}{Environment.NewLine}{CurWares.Quantity}x{CurWares.Price}={CurWares.SumTotal}", 0);
+                            EF.PutToDisplay(pReceipt, $"{CurWares.NameWaresReceipt}{Environment.NewLine}{CurWares.Quantity}x{CurWares.Price}={CurWares.SumTotal}", 0);
                     }
                     // if (curReceipt?.Wares?.Count() == 0 && curReceipt.OwnBag==0d) CS.WaitClear();
 
@@ -130,7 +130,7 @@ namespace Front
                 //Помилка оновлення.
                 if (SyncInfo.Status == eSyncStatus.Error && !Bl.ds.IsUseOldDB)
                     SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ErrorFullUpdate);
-                
+
                 if (SyncInfo.Status == eSyncStatus.ErrorDB)
                     SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ErrorDB);
 
@@ -287,8 +287,8 @@ namespace Front
                     TypeAccessWait = eTypeAccess.NoDefine;
                     SetStateView(eStateMainWindows.StartWindow);
                     break;
-                case eTypeAccess.ReturnReceipt:                    
-                    Bl.CreateRefund(AdminControl.curReceipt,IsFullReturn);
+                case eTypeAccess.ReturnReceipt:
+                    Bl.CreateRefund(AdminControl.curReceipt, IsFullReturn);
                     SetStateView(eStateMainWindows.WaitInputRefund);
                     break;
 
@@ -327,7 +327,7 @@ namespace Front
         void ShowAdmin(User pUser)
         {
             AdminControl.Init(pUser);
-            SetStateView(eStateMainWindows.AdminPanel);            
+            SetStateView(eStateMainWindows.AdminPanel);
         }
 
         public void GetBarCode(string pBarCode, string pTypeBarCode)
@@ -340,12 +340,12 @@ namespace Front
                 BarcodeIssueCard = pBarCode;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("BarcodeIssueCard"));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsBarcodeIssueCard"));
-                
+
                 return;
             }
             var u = Bl.GetUserByBarCode(pBarCode);
             if (u != null)
-            { Bl.OnAdminBarCode?.Invoke(u); return; } 
+            { Bl.OnAdminBarCode?.Invoke(u); return; }
 
             if (TypeAccessWait == eTypeAccess.ExciseStamp)
             {
@@ -386,7 +386,7 @@ namespace Front
                     if (c != null) return;
                 }
             }
-           
+
             if ((State != eStateMainWindows.WaitInput && State != eStateMainWindows.StartWindow) || curReceipt?.IsLockChange == true || !IsAddNewWares)
                 if (State != eStateMainWindows.ProcessPay && State != eStateMainWindows.ProcessPrintReceipt && State != eStateMainWindows.WaitCustomWindows)
                     SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.AdminPanel);
@@ -461,7 +461,7 @@ namespace Front
                 return;
             }
 
-            if (curReceipt.StateReceipt < eStateReceipt.Pay &&  curReceipt.AgeRestrict > 0 && curReceipt.IsConfirmAgeRestrict == false)
+            if (curReceipt.StateReceipt < eStateReceipt.Pay && curReceipt.AgeRestrict > 0 && curReceipt.IsConfirmAgeRestrict == false)
             {
                 SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ConfirmAge);
                 return;
@@ -470,7 +470,7 @@ namespace Front
 
             Dispatcher.BeginInvoke(new ThreadStart(() =>
             { EquipmentStatusInPayment.Text = ""; }));
-            if (Global.TypeWorkplaceCurrent == eTypeWorkplace.CashRegister && (curReceipt.StateReceipt==eStateReceipt.Prepare || curReceipt.StateReceipt==eStateReceipt.StartPay))
+            if (Global.TypeWorkplaceCurrent == eTypeWorkplace.CashRegister && (curReceipt.StateReceipt == eStateReceipt.Prepare || curReceipt.StateReceipt == eStateReceipt.StartPay))
             {
                 PaymentWindow.UpdatePaymentWindow();
                 SetStateView(eStateMainWindows.ChoicePaymentMethod);
@@ -486,7 +486,7 @@ namespace Front
         /// Оплата і Друк чека.
         /// </summary>
         /// <returns></returns>
-        public bool PrintAndCloseReceipt(Receipt pR = null, eTypePay pTP = eTypePay.Card, decimal pSumCash=0m, decimal pIssuingCash=0, decimal pSumWallet=0,decimal pSumBonus =0)
+        public bool PrintAndCloseReceipt(Receipt pR = null, eTypePay pTP = eTypePay.Card, decimal pSumCash = 0m, decimal pIssuingCash = 0, decimal pSumWallet = 0, decimal pSumBonus = 0)
         {
             bool Res = false;
             string TextError = null;
@@ -516,36 +516,36 @@ namespace Front
                             Bl.GenQRAsync(R.Wares);
                         //var Pays = new List<Payment>();
 
-                        IEnumerable<Payment> PayRefaund =( R.TypeReceipt== eTypeReceipt.Refund? Bl.GetPayment(R.RefundId):null);
+                        IEnumerable<Payment> PayRefaund = (R.TypeReceipt == eTypeReceipt.Refund ? Bl.GetPayment(R.RefundId) : null);
                         string rrn = R.AdditionC1;
-                        if (pSumWallet != 0 || pSumBonus!=0)
+                        if (pSumWallet != 0 || pSumBonus != 0)
                         {
                             Bl.db.DelPayWalletBonus(R);
-                            if(pSumWallet != 0)
-                              Bl.db.ReplacePayment(  new Payment(R) {IdWorkplacePay=R.IdWorkplace, IsSuccess = true, TypePay = eTypePay.Wallet, SumPay = pSumWallet, SumExt = pSumWallet } );
+                            if (pSumWallet != 0)
+                                Bl.db.ReplacePayment(new Payment(R) { IdWorkplacePay = R.IdWorkplace, IsSuccess = true, TypePay = eTypePay.Wallet, SumPay = pSumWallet, SumExt = pSumWallet });
                             if (pSumBonus != 0)
-                                Bl.db.ReplacePayment(new Payment(R) { IdWorkplacePay = R.IdWorkplace, IsSuccess = true, TypePay = eTypePay.Bonus, SumPay = R.SumTotal, SumExt = pSumBonus, PosAddAmount=R.Client?.PercentBonus??Client?.PercentBonus??0m });
+                                Bl.db.ReplacePayment(new Payment(R) { IdWorkplacePay = R.IdWorkplace, IsSuccess = true, TypePay = eTypePay.Bonus, SumPay = R.SumTotal, SumExt = pSumBonus, PosAddAmount = R.Client?.PercentBonus ?? Client?.PercentBonus ?? 0m });
                             R.Payment = Bl.GetPayment(R);
-                            if ((pSumWallet > 0 || pSumBonus>0) && R.ReCalc())
+                            if ((pSumWallet > 0 || pSumBonus > 0) && R.ReCalc())
                             {
                                 foreach (var el in R.Wares.Where(el => el.TypeWares == eTypeWares.Ordinary))
                                     Bl.db.ReplaceWaresReceipt(el);
-                                
+
                                 if (pSumBonus > 0)
-                                {                                    
+                                {
                                     Bl.db.ReplacePayment(new Payment(R) { IdWorkplacePay = R.IdWorkplace, IsSuccess = true, TypePay = eTypePay.Cash, SumPay = Math.Round(R.SumTotal, 1), SumExt = Math.Round(R.SumTotal, 1) });
                                     R.StateReceipt = eStateReceipt.Pay;
                                     Bl.SetStateReceipt(R, R.StateReceipt);
                                     R.Payment = Bl.GetPayment(R);
                                 }
-                            }                            
+                            }
                             FillPays(R);
                         }
-                        
+
 
                         for (var i = 0; i < IdWorkplacePays.Length; i++)
                         {
-                            if (R.Payment != null && R.Payment.Any(el => el.IdWorkplacePay == IdWorkplacePays[i] && el.TypePay!=eTypePay.Wallet ))
+                            if (R.Payment != null && R.Payment.Any(el => el.IdWorkplacePay == IdWorkplacePays[i] && el.TypePay != eTypePay.Wallet))
                                 continue;
                             R.StateReceipt = eStateReceipt.StartPay;
                             R.IdWorkplacePay = IdWorkplacePays[i];
@@ -557,10 +557,10 @@ namespace Front
                             if (pTP == eTypePay.Cash)
                             {
                                 var SumCash = R.WorkplacePays[i].SumCash;
-                                pay = new Payment(R) { IsSuccess = true, TypePay = eTypePay.Cash, SumPay = SumCash, SumExt = (i == IdWorkplacePays.Length - 1 ? Math.Round( pSumCash,1) : Math.Round( SumCash,1)) };
+                                pay = new Payment(R) { IsSuccess = true, TypePay = eTypePay.Cash, SumPay = SumCash, SumExt = (i == IdWorkplacePays.Length - 1 ? Math.Round(pSumCash, 1) : Math.Round(SumCash, 1)) };
                                 pSumCash -= SumCash;
                                 if (pSumCash < 0) pSumCash = 0;
-                                Bl.db.ReplacePayment(pay,true);                                
+                                Bl.db.ReplacePayment(pay, true);
                             }
                             else
                             {
@@ -574,14 +574,14 @@ namespace Front
                             }
                             if (pay != null && pay.IsSuccess)
                             {
-                                R.StateReceipt = ( i ==IdWorkplacePays.Length-1? eStateReceipt.Pay: eStateReceipt.PartialPay);
+                                R.StateReceipt = (i == IdWorkplacePays.Length - 1 ? eStateReceipt.Pay : eStateReceipt.PartialPay);
                                 R.CodeCreditCard = pay.NumberCard;
                                 R.NumberReceiptPOS = pay.NumberReceipt;
                                 //R.Client = null;
                                 R.SumCreditCard = pay.SumPay;
                                 Bl.db.ReplaceReceipt(R);
                                 R.Payment = Bl.GetPayment(R);
-                                
+
                             }
                             else
                             {
@@ -601,8 +601,8 @@ namespace Front
                     finally { R.IdWorkplacePay = 0; }
                 }
                 R.StateReceipt = Bl.GetStateReceipt(R);
-                if (R.StateReceipt == eStateReceipt.Pay || R.StateReceipt == eStateReceipt.PartialPrint || R.StateReceipt==eStateReceipt.StartPrint )
-                { 
+                if (R.StateReceipt == eStateReceipt.Pay || R.StateReceipt == eStateReceipt.PartialPrint || R.StateReceipt == eStateReceipt.StartPrint)
+                {
                     LogRRO res = null;
                     //Відключаємо контроль контрольної ваги тимчасово до наступної зміни товарного складу.
                     CS.IsControl = false;
@@ -618,7 +618,7 @@ namespace Front
                         {
                             R.IdWorkplacePay = IdWorkplacePays[i];
 
-                            if (!R.LogRROs.Any(el => el.TypeOperation == (R.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund) && el.IdWorkplacePay == IdWorkplacePays[i] && el.CodeError==0 ) )
+                            if (!R.LogRROs.Any(el => el.TypeOperation == (R.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund) && el.IdWorkplacePay == IdWorkplacePays[i] && el.CodeError == 0))
                             {
                                 res = EF.PrintReceipt(R);
                                 if (res.CodeError == 0)
@@ -627,18 +627,18 @@ namespace Front
                                     R.StateReceipt = (i == IdWorkplacePays.Length - 1 ? eStateReceipt.Print : eStateReceipt.PartialPrint);
                                 }
                             }
-                            if(R.IsPrintIssueOfCash)
+                            if (R.IsPrintIssueOfCash)
                             {
                                 res = EF.IssueOfCash(R);
                             }
-                        }                       
+                        }
                         if (res == null)
                             return true;
                         if (res.CodeError == 0)
-                        {                         
+                        {
                             R.NumberReceipt = res.FiscalNumber;
                             R.StateReceipt = eStateReceipt.Print;
-                            R.UserCreate = Bl.GetUserIdbyWorkPlace(R.IdWorkplace);                            
+                            R.UserCreate = Bl.GetUserIdbyWorkPlace(R.IdWorkplace);
                             R.DateReceipt = DateTime.Now;
                             Bl.UpdateReceiptFiscalNumber(R);
                             s.Play(eTypeSound.DoNotForgetProducts);
@@ -648,7 +648,7 @@ namespace Front
                         }
                         else
                         {
-                            Bl.SetStateReceipt(curReceipt, R.StateReceipt == eStateReceipt.StartPrint? eStateReceipt.Pay: eStateReceipt.StartPrint);
+                            Bl.SetStateReceipt(curReceipt, R.StateReceipt == eStateReceipt.StartPrint ? eStateReceipt.Pay : eStateReceipt.StartPrint);
                             TextError = $"Помилка друку чеків:({res?.CodeError}){Environment.NewLine}{res.Error}";
                             //MessageBox.Show(res.Error, "Помилка друку чеків");
                             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Помилка друку чеків" + res.Error, eTypeLog.Error);
@@ -660,10 +660,10 @@ namespace Front
                         FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
                     }
                     finally
-                    { R.IdWorkplacePay = 0; }                    
+                    { R.IdWorkplacePay = 0; }
                 }
                 if (R.StateReceipt == eStateReceipt.Print || R.StateReceipt == eStateReceipt.Send)
-                {                    
+                {
                     EF.Print(R);
                 }
                 SetStateView(eStateMainWindows.WaitInput);
@@ -689,7 +689,7 @@ namespace Front
                     CustomMessage.Show("Дана акцизна марка вже використана!", "Увага", eTypeMessage.Error);
         }
 
-       public void NewReceipt()
+        public void NewReceipt()
         {
             curReceipt = Bl.GetNewIdReceipt();
             s.NewReceipt(curReceipt.CodeReceipt);
@@ -706,7 +706,7 @@ namespace Front
             for (var i = 0; i < IdWorkplacePays.Length; i++)
             {
                 pR.IdWorkplacePay = IdWorkplacePays[i];
-                var r= new WorkplacePay() { IdWorkplacePay = IdWorkplacePays[i], Sum = EF.SumReceiptFiscal(pR), SumCash = EF.SumCashReceiptFiscal(pR) };
+                var r = new WorkplacePay() { IdWorkplacePay = IdWorkplacePays[i], Sum = EF.SumReceiptFiscal(pR), SumCash = EF.SumCashReceiptFiscal(pR) };
                 pR.WorkplacePays[i] = r;
             }
             pR.IdWorkplacePay = 0;
@@ -717,7 +717,7 @@ namespace Front
             Status Res = null;
             try
             {
-               
+
                 CommandAPI<dynamic> pC = JsonConvert.DeserializeObject<CommandAPI<dynamic>>(pDataApi);
                 CommandAPI<int> CommandInt;
                 CommandAPI<string> CommandString;
@@ -741,13 +741,36 @@ namespace Front
                         if (u != null)
                         {
                             AdminControl.OpenShift(u);
-                            Res= new Status(0, $"Зміна відкрита:{u.NameUser}");
+                            Res = new Status(0, $"Зміна відкрита:{u.NameUser}");
                         }
+                        break;
+                    case eCommand.GeneralCondition:
+                        CommandString = JsonConvert.DeserializeObject<CommandAPI<string>>(pDataApi);
+                        var r = Bl.GetUserByBarCode(CommandString.Data);
+                        RemoteStateMainWindows = CommandString.StateMainWindows;
+                        RemoteWorkplace = Bl.db.GetWorkPlace().FirstOrDefault(el => el.IdWorkplace == CommandString.RemoteIdWorkPlace);
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RemoteStateMainWindows)));
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RemoteWorkplace)));
+                        Res = new Status(0, $"Я працюю! {r.NameUser}");
+                        break;
+                    case eCommand.Confirm:
+                        CS.RW.FixWeightQuantity = CS.RW.Quantity;
+                        CS.RW.FixWeight += Convert.ToDecimal(CS.СurrentlyWeight);
+                        CS.StateScale = eStateScale.Stabilized;
+                        Res = new Status(0, $"Я працюю!");
+                        break;
+                    case eCommand.DeleteReceipt:
+                        if (curReceipt != null && curReceipt.StateReceipt == eStateReceipt.Prepare)
+                            Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
+
+                        SetCurReceipt(null);
+                        SetStateView(eStateMainWindows.StartWindow);
+                        Res = new Status(0, $"Чек видалено!");
                         break;
                 }
             }
             catch (Exception ex) { Res = new Status(ex); }
-            return Res; 
+            return Res;
         }
     }
 }

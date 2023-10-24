@@ -8,8 +8,8 @@
     <ApplicationIcon />
     <Win32Resource />
     <NeutralLanguage>uk-UA</NeutralLanguage>
-    <AssemblyVersion>2.1.0.62</AssemblyVersion>
-    <FileVersion>2.1.0.62</FileVersion>
+    <AssemblyVersion>2.1.0.63</AssemblyVersion>
+    <FileVersion>2.1.0.63</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -23,6 +23,7 @@
     <None Remove="icons\back.png" />
     <None Remove="icons\backArrow.png" />
     <None Remove="icons\BankTerminal.png" />
+    <None Remove="icons\checkout.png" />
     <None Remove="icons\ClientBonus.png" />
     <None Remove="icons\ClientBonusGray.png" />
     <None Remove="icons\clock.png" />
@@ -41,6 +42,7 @@
     <None Remove="icons\newReceipt.png" />
     <None Remove="icons\no_volume.png" />
     <None Remove="icons\Ok.png" />
+    <None Remove="icons\OkColor.png" />
     <None Remove="icons\on-off.png" />
     <None Remove="icons\PackagesBag.png" />
     <None Remove="icons\paymentTerminal.png" />
@@ -91,6 +93,9 @@
     </Resource>
     <Resource Include="icons\backArrow.png" />
     <Resource Include="icons\BankTerminal.png" />
+    <Resource Include="icons\checkout.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="icons\ClientBonus.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
@@ -123,6 +128,9 @@
     </Resource>
     <Resource Include="icons\no_volume.png" />
     <Resource Include="icons\Ok.png" />
+    <Resource Include="icons\OkColor.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="icons\on-off.png" />
     <Resource Include="icons\PackagesBag.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

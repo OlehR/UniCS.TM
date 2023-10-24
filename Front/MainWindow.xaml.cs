@@ -25,6 +25,8 @@ using System.IO;
 using System.Security.AccessControl;
 using Front.Control;
 using System.Windows.Threading;
+using System.Net.Sockets;
+using System.Net;
 
 namespace Front
 {
@@ -36,6 +38,10 @@ namespace Front
         public BL Bl;
         public EquipmentFront EF;
         public ControlScale CS { get; set; }
+        Action<eCommand, WorkPlace, Status> SocketAnsver;
+        public eStateMainWindows RemoteStateMainWindows { get; set; } = eStateMainWindows.NotDefine;
+        WorkPlace MainWorkplace = new();
+        public WorkPlace RemoteWorkplace { get; set; } = new();
 
         Sound s;
         public string Clock { get; set; } = DateTime.Now.ToShortDateString();
@@ -331,7 +337,11 @@ namespace Front
                 SocketServer = new SocketServer(Global.PortAPI, CallBackApi);
                 _ = SocketServer.StartAsync();
             }
-
+            SocketAnsver += (Command, WorkPlace, Ansver) =>
+            {
+                FileLogger.WriteLogMessage($"SocketAnsver: {Environment.NewLine}Command: {Command} {Environment.NewLine}WorkPlaceName: {WorkPlace.Name}{Environment.NewLine}IdWorkPlace: {WorkPlace.IdWorkplace}{Environment.NewLine}Ansver: {Ansver.TextState}", eTypeLog.Full);
+                //CustomMessage.Show($"{Command} {WorkPlace.Name} {Ansver.TextState}", "Увага!", eTypeMessage.Information);
+            };
             CS = new ControlScale(10d, Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout);
             s = Sound.GetSound(CS);
             Volume = (Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout);
@@ -350,6 +360,7 @@ namespace Front
             calculateWidthHeaderReceipt(TypeMonitor);
 
             InitializeComponent();
+            MainWorkplace = Bl.db.GetWorkPlace().FirstOrDefault(el => el.CodeWarehouse == Global.CodeWarehouse && el.IdWorkplace == Global.Settings.IdWorkPlaceMain);
 
             //поточний час
             DispatcherTimer timer = new DispatcherTimer();
@@ -479,7 +490,7 @@ namespace Front
 
         public void SetWorkPlace()
         {
-            CS.SetOnOff(Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout && EF.ControlScale!=null);
+            CS.SetOnOff(Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout && EF.ControlScale != null);
             Volume = (Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsCashRegister)));
 
@@ -522,7 +533,7 @@ namespace Front
                         Client = new Client(curReceipt.CodeClient);
                         Bl.GetClientByCode(curReceipt, curReceipt.CodeClient);
                     }
-                    if(curReceipt?.IsNeedExciseStamp == true)
+                    if (curReceipt?.IsNeedExciseStamp == true)
                     {
                         SetStateView(eStateMainWindows.WaitInput);
                     }
@@ -719,6 +730,26 @@ namespace Front
                         State = eStateMainWindows.StartWindow;
                     }
 
+
+                    if (MainWorkplace != null)
+                        Task.Run(async () =>
+                        {
+                            CommandAPI<string> Command = new() { Command = eCommand.GeneralCondition, Data = AdminSSC?.BarCode, StateMainWindows = pSMV };
+
+                            try
+                            {
+                                var r = new SocketClient(MainWorkplace.IP, Global.PortAPI);
+                                var Ansver = await r.StartAsync(Command.ToJSON());
+                                SocketAnsver?.Invoke(eCommand.GeneralCondition, MainWorkplace, Ansver);
+                            }
+                            catch (Exception ex)
+                            {
+                                FileLogger.WriteLogMessage(this, $"GeneralCondition DNSName=>{MainWorkplace.DNSName} {Command} ", ex);
+                                SocketAnsver?.Invoke(eCommand.GeneralCondition, MainWorkplace, new Status(ex));
+                            }
+                        });
+
+
                     ExciseStamp.Visibility = Visibility.Collapsed;
                     ChoicePrice.Visibility = Visibility.Collapsed;
                     Background.Visibility = Visibility.Collapsed;
@@ -738,6 +769,7 @@ namespace Front
                     OwnBagWindows.Visibility = Visibility.Collapsed;
                     PaymentWindow.Visibility = Visibility.Collapsed;
                     ClientDetails.Visibility = Visibility.Collapsed;
+                    RemoteCashRegister.Visibility = Visibility.Collapsed;
 
                     CaptionCustomWindows.Visibility = Visibility.Visible;
                     ImageCustomWindows.Visibility = Visibility.Visible;
@@ -975,7 +1007,7 @@ namespace Front
         void TimeScan(bool? pIsSave = null)
         {
             if ((State == eStateMainWindows.WaitAdmin && !CS.IsProblem) || State == eStateMainWindows.AdminPanel || State == eStateMainWindows.WaitAdminLogin ||
-                       State == eStateMainWindows.ChoicePaymentMethod || State == eStateMainWindows.ProcessPay || State == eStateMainWindows.StartWindow || pIsSave==true)
+                       State == eStateMainWindows.ChoicePaymentMethod || State == eStateMainWindows.ProcessPay || State == eStateMainWindows.StartWindow || pIsSave == true)
             {
                 if (StartScan != DateTime.MinValue)
                 {
@@ -1528,7 +1560,7 @@ namespace Front
                         NewReceipt();
                         WaresList.Focus();
                     }
-                };                
+                };
             }
             else
             {
@@ -1537,12 +1569,12 @@ namespace Front
                     if (Client != null)
                         ShowClientBonus.Visibility = Visibility.Visible;
                     TimeScan(false);
-                    Global.OnReceiptCalculationComplete?.Invoke(ReceiptPostpone);                    
+                    Global.OnReceiptCalculationComplete?.Invoke(ReceiptPostpone);
                     ReceiptPostpone = null;
                     WaresList.Focus();
                 }
                 else
-                    CustomMessage.Show("Неможливо відновити чек не закривши текучий", "Увага!", eTypeMessage.Information); 
+                    CustomMessage.Show("Неможливо відновити чек не закривши текучий", "Увага!", eTypeMessage.Information);
             }
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsReceiptPostpone"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsReceiptPostponeNotNull"));
@@ -1739,6 +1771,37 @@ namespace Front
                     Task.Run(() => Bl.ds.SyncDataAsync());
                 }
             };
+        }
+
+        private void ShowRemoteState(object sender, RoutedEventArgs e)
+        {
+            RemoteCashRegister.Visibility = Visibility.Visible;
+            Background.Visibility = Visibility.Visible;
+            BackgroundWares.Visibility = Visibility.Visible;
+        }
+
+        private void ChangeStateRemoteCashRegister(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            eCommand comand = btn.Name == "DeleteRemoteReceipt" ? eCommand.DeleteReceipt : eCommand.Confirm;
+            if (RemoteWorkplace != null)
+                Task.Run(async () =>
+                {
+                    
+                    CommandAPI<string> Command = new() { Command = comand, Data = AdminSSC?.BarCode};
+
+                    try
+                    {
+                        var r = new SocketClient(RemoteWorkplace.IP, Global.PortAPI);
+                        var Ansver = await r.StartAsync(Command.ToJSON());
+                        SocketAnsver?.Invoke(comand, MainWorkplace, Ansver);
+                    }
+                    catch (Exception ex)
+                    {
+                        FileLogger.WriteLogMessage(this, $"Confirm DNSName=>{RemoteWorkplace.DNSName} {Command} ", ex);
+                        SocketAnsver?.Invoke(comand, RemoteWorkplace, new Status(ex));
+                    }
+                });
         }
     }
 

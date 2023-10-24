@@ -111,7 +111,7 @@ namespace Front.Control
                 OnSocket += (Command, WorkPlace, Ansver) =>
                 {
                     SB.AppendLine($"{Command} {WorkPlace.Name} {Ansver.TextState}");
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SB"));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SB)));
                 };
                 Bl = BL.GetBL;
                 TypeMessageRadiobuton = new ObservableCollection<APIRadiobuton>();

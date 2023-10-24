@@ -185,6 +185,10 @@ namespace Front.Models
         /// Фіскалізувати чек
         /// </summary>
         FiscalReceipt,
+        /// <summary>
+        /// Видалити чек
+        /// </summary>
+        DeleteReceipt,
     }
 }
 

@@ -11,5 +11,7 @@ namespace Front.Models
     {
         public eCommand Command { get; set; }        
         public t Data { get; set; }
+        public eStateMainWindows StateMainWindows { get; set; } = eStateMainWindows.NotDefine;
+        public int RemoteIdWorkPlace { get; set; } = Global.IdWorkPlace;
     }
 }

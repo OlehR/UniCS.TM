@@ -25,18 +25,18 @@ namespace ModelMID.DB
         public string StrCodeWarehouse { get { return $"{CodeWarehouse:D9}"; } }
         public int CodeDealer { get; set; }
         public string Prefix { get; set; }
-        public bool IsChoice { get; set; }        
+        public bool IsChoice { get; set; }
         string _DNSName;
         public string DNSName
         {
             get { return _DNSName; }
             set
-            {                
+            {
                 _DNSName = value;
                 IPAddress ip;
-                if (IPAddress.TryParse(_DNSName,out ip))
-                    {
-                    IP=ip;
+                if (IPAddress.TryParse(_DNSName, out ip))
+                {
+                    IP = ip;
                     return;
                 }
                 if (!string.IsNullOrEmpty(value)) Task.Run(async () =>
@@ -54,14 +54,16 @@ namespace ModelMID.DB
         public string SettingsEx
         {
             get { return _SettingsEx; }
-            set { _SettingsEx = value; 
-                if (!string.IsNullOrEmpty(value)) 
-                    try { _Settings = JsonConvert.DeserializeObject<Settings>(value); } catch (Exception) { }; 
+            set
+            {
+                _SettingsEx = value;
+                if (!string.IsNullOrEmpty(value))
+                    try { _Settings = JsonConvert.DeserializeObject<Settings>(value); } catch (Exception) { };
             }
         }
         Settings _Settings;
         public Settings Settings { get { return _Settings; } }
     }
-    
+
 }
 
