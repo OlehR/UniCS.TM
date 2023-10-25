@@ -501,6 +501,10 @@
                                     <Style TargetType="{x:Type Image}">
                                         <Setter Property="Margin" Value="5" />
                                         <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsCashRegister, RelativeSource={RelativeSource 
+                                    Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                                <Setter Property="Width" Value="30" />
+                                            </DataTrigger>
                                             <DataTrigger Binding="{Binding CS.IsProblem, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="True">
                                                 <Setter Property="Source" Value="icons\Scale.png" />
