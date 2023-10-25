@@ -749,7 +749,7 @@ namespace Front
                             ObservableCollection<Models.Price> prices = new();
                             if (CurWares != null && CurWares.Prices != null && CurWares.Prices.Count() > 0)
                             {
-                                prices = new ObservableCollection<Models.Price>(CurWares.Prices.OrderByDescending(r => r.Price).Select(r => new Models.Price(r.Price, Access.GetRight(TypeAccessWait), r.TypeWares)));
+                                prices = new ObservableCollection<Models.Price>(CurWares.Prices.OrderByDescending(r => r.Price).Select(r => new Models.Price(r.Price, true, r.TypeWares)));
                                 // rrr.First().IsEnable = true;
                             }
                             InfoRemoteCheckout remoteInfo = new() { StateMainWindows = pSMV, TypeAccess = TypeAccessWait, TextInfo = $"{CS.Info} {CS.InfoEx}", UserBarcode = AdminSSC?.BarCode, RemoteCigarettesPrices = prices };
