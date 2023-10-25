@@ -1805,7 +1805,17 @@ namespace Front
             Button btn = sender as Button;
             eCommand comand = btn.Name == "DeleteRemoteReceipt" ? eCommand.DeleteReceipt : eCommand.Confirm;
             InfoRemoteCheckout remoteInfo = new() { StateMainWindows = RemoteCheckout.StateMainWindows, TypeAccess = RemoteCheckout.TypeAccess, UserBarcode = AdminSSC?.BarCode };
-            SendRemoteComand(comand, remoteInfo, btn.Name == "DeleteRemoteReceipt" ? "DeleteReceipt" : "Confirm");
+            if (comand == eCommand.DeleteReceipt)
+            {
+                CustomMessage.Show("Ви дійсно видалити чек?", "Видалення чеку", eTypeMessage.Question);
+                CustomMessage.Result = (bool res) =>
+                {
+                    if (res)
+                        SendRemoteComand(comand, remoteInfo,  "DeleteReceipt");
+                };
+            }
+            else
+                SendRemoteComand(comand, remoteInfo, "Confirm");
 
         }
 

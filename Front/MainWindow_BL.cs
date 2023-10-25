@@ -760,7 +760,8 @@ namespace Front
                         break;
                     case eCommand.Confirm:
                         CommandRemoteInfo = JsonConvert.DeserializeObject<CommandAPI<InfoRemoteCheckout>>(pDataApi);
-                        if (CommandRemoteInfo.Data.StateMainWindows == eStateMainWindows.BlockWeight || CommandRemoteInfo.Data.StateMainWindows == eStateMainWindows.ProblemWeight)
+                        if (CommandRemoteInfo.Data.StateMainWindows == eStateMainWindows.BlockWeight || CommandRemoteInfo.Data.StateMainWindows == eStateMainWindows.ProblemWeight
+                            || CommandRemoteInfo.Data.TypeAccess == eTypeAccess.FixWeight)
                         {
                             CS.RW.FixWeightQuantity = CS.RW.Quantity;
                             CS.RW.FixWeight += Convert.ToDecimal(CS.СurrentlyWeight);
