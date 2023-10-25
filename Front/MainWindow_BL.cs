@@ -19,6 +19,7 @@ using ModelMID.DB;
 using Newtonsoft.Json;
 using SharedLib;
 using Utils;
+using static Front.MainWindow;
 
 namespace Front
 {
@@ -721,6 +722,8 @@ namespace Front
                 CommandAPI<dynamic> pC = JsonConvert.DeserializeObject<CommandAPI<dynamic>>(pDataApi);
                 CommandAPI<int> CommandInt;
                 CommandAPI<string> CommandString;
+                CommandAPI<InfoRemoteCheckout> CommandRemoteInfo;
+
 
                 switch (pC.Command)
                 {
@@ -745,19 +748,33 @@ namespace Front
                         }
                         break;
                     case eCommand.GeneralCondition:
-                        CommandString = JsonConvert.DeserializeObject<CommandAPI<string>>(pDataApi);
-                        var r = Bl.GetUserByBarCode(CommandString.Data);
-                        RemoteStateMainWindows = CommandString.StateMainWindows;
-                        RemoteWorkplace = Bl.db.GetWorkPlace().FirstOrDefault(el => el.IdWorkplace == CommandString.RemoteIdWorkPlace);
-                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RemoteStateMainWindows)));
+                        CommandRemoteInfo = JsonConvert.DeserializeObject<CommandAPI<InfoRemoteCheckout>>(pDataApi);
+                        var r = Bl.GetUserByBarCode(CommandRemoteInfo.Data.UserBarcode);
+                        RemoteCheckout = CommandRemoteInfo.Data;
+                        RemoteWorkplace = Bl.db.GetWorkPlace().FirstOrDefault(el => el.IdWorkplace == RemoteCheckout.RemoteIdWorkPlace);
+                        if (RemoteCheckout.RemoteCigarettesPrices.Count > 1)
+                            RemotePrices.ItemsSource = RemoteCheckout.RemoteCigarettesPrices;
                         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RemoteWorkplace)));
-                        Res = new Status(0, $"Я працюю! {r.NameUser}");
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RemoteCheckout)));
+                        Res = new Status(0, $"Загальний стан каси: {RemoteWorkplace.Name}");
                         break;
                     case eCommand.Confirm:
-                        CS.RW.FixWeightQuantity = CS.RW.Quantity;
-                        CS.RW.FixWeight += Convert.ToDecimal(CS.СurrentlyWeight);
-                        CS.StateScale = eStateScale.Stabilized;
-                        Res = new Status(0, $"Я працюю!");
+                        CommandRemoteInfo = JsonConvert.DeserializeObject<CommandAPI<InfoRemoteCheckout>>(pDataApi);
+                        if (CommandRemoteInfo.Data.StateMainWindows == eStateMainWindows.BlockWeight || CommandRemoteInfo.Data.StateMainWindows == eStateMainWindows.ProblemWeight)
+                        {
+                            CS.RW.FixWeightQuantity = CS.RW.Quantity;
+                            CS.RW.FixWeight += Convert.ToDecimal(CS.СurrentlyWeight);
+                            CS.StateScale = eStateScale.Stabilized;
+                            SetStateView(eStateMainWindows.WaitInput);
+                        }
+                        if (RemoteCheckout.StateMainWindows == eStateMainWindows.WaitInputPrice)
+                        {
+                            Bl.AddEventAge(curReceipt);
+                            AddWares(CurWares.CodeWares, CurWares.CodeUnit, CommandRemoteInfo.Data.QuantityCigarettes, CommandRemoteInfo.Data.SelectRemoteCigarettesPrice.price);
+                            QuantityCigarettes = 1;
+                            SetStateView(eStateMainWindows.WaitInput);
+                        }
+                        Res = new Status(0, $"{CommandRemoteInfo.Data.StateMainWindows} {CommandRemoteInfo.Data.TypeAccess}");
                         break;
                     case eCommand.DeleteReceipt:
                         if (curReceipt != null && curReceipt.StateReceipt == eStateReceipt.Prepare)

@@ -361,27 +361,27 @@
                                     Mode=FindAncestor, AncestorType=Window}}" Value="0">
                                         <Setter Property="Visibility" Value="Collapsed" />
                                     </DataTrigger>
-                                    <DataTrigger Binding="{Binding RemoteStateMainWindows, RelativeSource={RelativeSource 
+                                    <DataTrigger Binding="{Binding RemoteCheckout.StateMainWindows, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="BlockWeight">
                                         <Setter Property="Background" Value="Orange" />
                                     </DataTrigger>
-                                    <DataTrigger Binding="{Binding RemoteStateMainWindows, RelativeSource={RelativeSource 
+                                    <DataTrigger Binding="{Binding RemoteCheckout.StateMainWindows, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="WaitWeight">
                                         <Setter Property="Background" Value="Yellow" />
                                     </DataTrigger>
-                                    <DataTrigger Binding="{Binding RemoteStateMainWindows, RelativeSource={RelativeSource 
+                                    <DataTrigger Binding="{Binding RemoteCheckout.StateMainWindows, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="ProblemWeight">
                                         <Setter Property="Background" Value="Red" />
                                     </DataTrigger>
-                                    <DataTrigger Binding="{Binding RemoteStateMainWindows, RelativeSource={RelativeSource 
+                                    <DataTrigger Binding="{Binding RemoteCheckout.StateMainWindows, RelativeSource={RelativeSource 
                                     Mode=FindAncestor, AncestorType=Window}}" Value="WaitAdmin">
                                         <Setter Property="Background" Value="Red" />
                                     </DataTrigger>
-                                    <DataTrigger Binding="{Binding RemoteStateMainWindows, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="WaitFindWares">
+                                    <DataTrigger Binding="{Binding RemoteCheckout.StateMainWindows, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="WaitInputPrice">
                                         <Setter Property="Background" Value="Purple" />
                                     </DataTrigger>
-                                    <DataTrigger Binding="{Binding RemoteStateMainWindows, RelativeSource={RelativeSource 
+                                    <DataTrigger Binding="{Binding RemoteCheckout.StateMainWindows, RelativeSource={RelativeSource 
                                     Mode=FindAncestor, AncestorType=Window}}" Value="SyncFinishedSuccess">
                                         <Setter Property="Background" Value="#419e08" />
                                     </DataTrigger>
@@ -1784,85 +1784,169 @@
 
             <!-- Інформація про підлеглу касу   -->
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
-      Grid.Row="0" Grid.RowSpan="6"
-     Grid.Column="0" Grid.ColumnSpan="10"
-      Name="RemoteCashRegister" Visibility="Collapsed" Grid.ZIndex="2" 
-     CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center"
-         MinHeight="500" MinWidth="700">
+                    Grid.Row="0" Grid.RowSpan="6"
+                    Grid.Column="0" Grid.ColumnSpan="10"
+                    Name="RemoteCashRegister" Visibility="Collapsed" Grid.ZIndex="2" 
+                    CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    MinHeight="500" MinWidth="700">
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
                 </Border.Effect>
 
                 <Grid>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="50"></RowDefinition>
                         <RowDefinition Height="*"></RowDefinition>
-                        <RowDefinition Height="*"></RowDefinition>
-                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="auto"></RowDefinition>
                     </Grid.RowDefinitions>
                     <TextBlock Text="Стан віддаленої каси"
                     FontSize="28" HorizontalAlignment="Center" Foreground="Green"/>
 
-                    <Grid Grid.Row="1" >
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Row="1">
+                        <!--Інформація про віддалену касу-->
+                        <Grid Grid.Row="1"  Visibility="Visible">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
 
-                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="30,0,0,0">
-                            <TextBlock Text="Каса:" FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="Стан каси:" FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <!--<TextBlock Text="Сума бонусів:" FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="Сума бонусів в гривнях:" FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="Номер телефону:" FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="Другий номер телефону:" FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="Відсоток знижки:" FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="Відсоток перерахування:" FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="Штрих-код картки:" FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="Статус картки:" FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="Дата народження:" FontSize="24" FontWeight="Bold" Margin="2"/>-->
-                        </StackPanel>
-                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock Text="{Binding RemoteWorkplace.Name, RelativeSource={RelativeSource 
+                            <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="30,0,0,0">
+                                <TextBlock Text="Каса:" FontSize="24" FontWeight="Bold" Margin="2"/>
+                                <TextBlock Text="Стан каси:" FontSize="24" FontWeight="Bold" Margin="2"/>
+                                <TextBlock Text="Інформація по вазі:" FontSize="24" FontWeight="Bold" Margin="2">
+                                    <TextBlock.Style>
+                                        <Style TargetType="{x:Type TextBlock}">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding RemoteCheckout.StateMainWindows, RelativeSource={RelativeSource 
+                                                Mode=FindAncestor, AncestorType=Window}}" Value="BlockWeight">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding RemoteWorkplace.Name, RelativeSource={RelativeSource 
                         Mode=FindAncestor, AncestorType=Window}}" 
                             FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="{Binding RemoteStateMainWindows, RelativeSource={RelativeSource 
+                                <TextBlock Text="{Binding RemoteCheckout.TransleteStateMainWindows, RelativeSource={RelativeSource 
                         Mode=FindAncestor, AncestorType=Window}}" 
                             FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <!--<TextBlock Text="{Binding RemoteWorkplace.SumBonus, RelativeSource={RelativeSource 
+                                <TextBlock Text="{Binding RemoteCheckout.TextInfo, RelativeSource={RelativeSource 
                         Mode=FindAncestor, AncestorType=Window}}" 
-                            FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="{Binding RemoteWorkplace.SumMoneyBonus, StringFormat=0.00₴, RelativeSource={RelativeSource 
-                        Mode=FindAncestor, AncestorType=Window}}" 
-                            FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="{Binding RemoteWorkplace.MainPhone, RelativeSource={RelativeSource 
-                        Mode=FindAncestor, AncestorType=Window}}" 
-                            FontSize="24" FontWeight="Bold" Margin="2"/>
+                            FontSize="24" FontWeight="Bold" Margin="2" TextWrapping="Wrap">
+                                    <TextBlock.Style>
+                                        <Style TargetType="{x:Type TextBlock}">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding RemoteCheckout.StateMainWindows, RelativeSource={RelativeSource 
+                                                Mode=FindAncestor, AncestorType=Window}}" Value="BlockWeight">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </StackPanel>
+                        </Grid>
 
-                            <TextBlock Text="{Binding RemoteWorkplace.PhoneAdd, RelativeSource={RelativeSource 
-                        Mode=FindAncestor, AncestorType=Window}}" 
-                            FontSize="24" FontWeight="Bold" Margin="2"/>
+                        <!--Вибір цін на сигарети на віддаленій касі-->
+                        <Grid  Grid.Row="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="0.5*"></RowDefinition>
+                                <RowDefinition Height="3*"></RowDefinition>
+                                <RowDefinition Height="2*"></RowDefinition>
+                            </Grid.RowDefinitions>
 
-                            <TextBlock Text="{Binding RemoteWorkplace.PersentDiscount, StringFormat={}{0}%, RelativeSource={RelativeSource 
-                        Mode=FindAncestor, AncestorType=Window}}" 
-                            FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="{Binding RemoteWorkplace.PercentBonusIntegers,StringFormat={}{0}%, RelativeSource={RelativeSource 
-                        Mode=FindAncestor, AncestorType=Window}}" 
-                            FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="{Binding RemoteWorkplace.BarCode, RelativeSource={RelativeSource 
-                        Mode=FindAncestor, AncestorType=Window}}" 
-                            FontSize="24" FontWeight="Bold" Margin="2"/>
+                            <Grid.Style>
+                                <Style TargetType="{x:Type Grid}">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RemoteCheckout.TypeAccess, RelativeSource={RelativeSource 
+                                            Mode=FindAncestor, AncestorType=Window}}" Value="ChoicePrice">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Grid.Style>
 
-                            <TextBlock Text="{Binding RemoteWorkplace.TranslatedStatusCard, RelativeSource={RelativeSource 
-                        Mode=FindAncestor, AncestorType=Window}}" 
-                            FontSize="24" FontWeight="Bold" Margin="2"/>
 
-                            <TextBlock Text="{Binding RemoteWorkplace.BirthDay, StringFormat='{}{0:dd/MM/yyyy}', RelativeSource={RelativeSource 
-                        Mode=FindAncestor, AncestorType=Window}}" 
-                            FontSize="24" FontWeight="Bold" Margin="2"/>-->
-                        </StackPanel>
-                    </Grid>
+                            <TextBlock Grid.Row="0" HorizontalAlignment="Center" FontSize="28" Text="{DynamicResource ChoicePriceTobacco }"/>
+
+                            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"   Background='GhostWhite' MaxHeight="400">
+                                <ItemsControl  Name="RemotePrices">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Button Click="AddPriceRemoteWares"  Height="80"  Width="450" Margin="2" Style="{StaticResource WhiteButton}"
+                                                    Background="{Binding BackGroundColor}" IsEnabled="{Binding IsEnable}">
+                                                <TextBlock FontSize="28" Text="{Binding StrPrice}" Tag="{Binding}" />
+                                                <Button.Resources>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="CornerRadius" Value="7" />
+                                                    </Style>
+                                                </Button.Resources>
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+
+
+                            <StackPanel Grid.Row="2" Margin="10">
+
+
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Button x:Name="RemoteMinusCigarettesButton" Height="80" Width="80" Margin="5" Click="PlusOrMinusCigarettes">
+                                        <Button.Content>
+                                            <Image Margin="15" Source="icons\minus.png"></Image>
+                                        </Button.Content>
+                                        <Button.Style>
+                                            <Style BasedOn="{StaticResource WhiteButton}" TargetType="Button">
+                                                <Setter Property="IsEnabled" Value="True"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding QuantityCigarettes, RelativeSource={RelativeSource 
+                                                        Mode=FindAncestor, AncestorType=Window}}" Value="1">
+                                                        <Setter Property="IsEnabled" Value="False"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+
+                                    <Button Height="80" Width="80" Margin="5" Style="{StaticResource WhiteNotBorderButton}"  IsEnabled="False">
+                                        <TextBlock FontSize="34" Text="{Binding QuantityCigarettes, RelativeSource={RelativeSource 
+                                            Mode=FindAncestor, AncestorType=Window}}" />
+
+                                    </Button>
+                                    <Button x:Name="RemotePlusCigarettesButton" Click="PlusOrMinusCigarettes"
+                                            Height="80" Width="80" Margin="5" Style="{StaticResource WhiteButton}">
+                                        <Button.Content>
+                                            <Image Margin="15" Source="icons\plus.png"></Image>
+                                        </Button.Content>
+                                    </Button>
+                                </StackPanel>
+
+                            </StackPanel>
+
+                        </Grid>
+                    </StackPanel>
+
+                    <!--Кнопки-->
                     <StackPanel Grid.Row="2">
-                        <StackPanel  Orientation="Horizontal" HorizontalAlignment="Center">
+                        <StackPanel  Orientation="Horizontal" HorizontalAlignment="Center" >
+                            <StackPanel.Style>
+                                <Style TargetType="{x:Type StackPanel}">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RemoteCheckout.TypeAccess, RelativeSource={RelativeSource 
+                                            Mode=FindAncestor, AncestorType=Window}}" Value="ChoicePrice">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
                             <Button 
                             FontSize="22" Click="ChangeStateRemoteCashRegister"  Style="{StaticResource Default}" x:Name="DeleteRemoteReceipt"
                             Height="80" Width="300" VerticalAlignment="Center" Visibility="Visible">
@@ -1871,18 +1955,27 @@
                                     <TextBlock FontSize="30"  Text="Видалити чек" Margin="5,0,5,0"/>
                                 </StackPanel>
                             </Button>
-                            <Button 
-                             FontSize="22" Click="ChangeStateRemoteCashRegister"  Style="{StaticResource greenButton}" x:Name="ChangeStateRemoteCR"
-                             Height="80" Width="300" VerticalAlignment="Center" Visibility="Visible">
+                            <Button FontSize="22" Click="ChangeStateRemoteCashRegister"  x:Name="ChangeStateRemoteCR"
+                                Height="80" Width="300" VerticalAlignment="Center" Visibility="Visible">
+                                <Button.Style>
+                                    <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding RemoteCheckout.TypeAccess, RelativeSource={RelativeSource 
+                                                                     Mode=FindAncestor, AncestorType=Window}}" Value="FixWeight">
+                                                <Setter Property="IsEnabled" Value="True" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
                                 <StackPanel Orientation="Horizontal">
                                     <Image  Height="35" Source="icons\Ok.png"></Image>
-                                    <TextBlock FontSize="30"  Text="Підтвердити стан" Foreground="White"  Margin="5,0,5,0"/>
+                                    <TextBlock FontSize="30"  Text="Підтвердити вагу" Foreground="White"  Margin="5,0,5,0"/>
                                 </StackPanel>
                             </Button>
                         </StackPanel>
-                        <Button 
-    FontSize="22" Click="_Cancel"  Style="{StaticResource Default}"
-    Height="80" Width="300" VerticalAlignment="Center" Visibility="Visible">
+                        <Button FontSize="22" Click="_Cancel"  Style="{StaticResource Default}"
+                                Height="80" Width="300" VerticalAlignment="Center" Visibility="Visible">
                             <StackPanel Orientation="Horizontal">
                                 <Image  Height="25" Width="25"  Source="icons\X.png"></Image>
                                 <TextBlock FontSize="30"  Text="Закрити" Margin="5,0,5,0"/>

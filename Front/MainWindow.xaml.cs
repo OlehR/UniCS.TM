@@ -39,8 +39,7 @@ namespace Front
         public EquipmentFront EF;
         public ControlScale CS { get; set; }
         Action<eCommand, WorkPlace, Status> SocketAnsver;
-        public eStateMainWindows RemoteStateMainWindows { get; set; } = eStateMainWindows.NotDefine;
-        WorkPlace MainWorkplace = new();
+        public WorkPlace MainWorkplace { get; set; } = new();
         public WorkPlace RemoteWorkplace { get; set; } = new();
 
         Sound s;
@@ -198,6 +197,19 @@ namespace Front
                 WidthPrice = widthPrice;
                 WidthTotalPrise = widthTotalPrise;
             }
+        }
+        public InfoRemoteCheckout RemoteCheckout { get; set; } = new();
+        public class InfoRemoteCheckout
+        {
+            public eStateMainWindows StateMainWindows { get; set; } = eStateMainWindows.NotDefine;
+            public string TransleteStateMainWindows { get { return StateMainWindows.GetDescription(); } }
+            public int RemoteIdWorkPlace { get; set; } = Global.IdWorkPlace;
+            public eTypeAccess TypeAccess { get; set; } = eTypeAccess.NoDefine;
+            public string TextInfo { get; set; } = string.Empty;
+            public string UserBarcode { get; set; } = string.Empty;
+            public ObservableCollection<Models.Price> RemoteCigarettesPrices { get; set; } = new();
+            public Models.Price SelectRemoteCigarettesPrice { get; set; } = null;
+            public int QuantityCigarettes { get; set; } = 1;
         }
         public WidthHeaderReceipt widthHeaderReceipt { get; set; }
         public void calculateWidthHeaderReceipt(eTypeMonitor TypeMonitor)
@@ -734,7 +746,14 @@ namespace Front
                     if (MainWorkplace != null)
                         Task.Run(async () =>
                         {
-                            CommandAPI<string> Command = new() { Command = eCommand.GeneralCondition, Data = AdminSSC?.BarCode, StateMainWindows = pSMV };
+                            ObservableCollection<Models.Price> prices = new();
+                            if (CurWares != null && CurWares.Prices != null && CurWares.Prices.Count() > 0)
+                            {
+                                prices = new ObservableCollection<Models.Price>(CurWares.Prices.OrderByDescending(r => r.Price).Select(r => new Models.Price(r.Price, Access.GetRight(TypeAccessWait), r.TypeWares)));
+                                // rrr.First().IsEnable = true;
+                            }
+                            InfoRemoteCheckout remoteInfo = new() { StateMainWindows = pSMV, TypeAccess = TypeAccessWait, TextInfo = $"{CS.Info} {CS.InfoEx}", UserBarcode = AdminSSC?.BarCode, RemoteCigarettesPrices = prices };
+                            CommandAPI<InfoRemoteCheckout> Command = new() { Command = eCommand.GeneralCondition, Data = remoteInfo };
 
                             try
                             {
@@ -1202,6 +1221,7 @@ namespace Front
 
         private void _Cancel(object sender, RoutedEventArgs e)
         {
+            QuantityCigarettes = 1;
             SetStateView(eStateMainWindows.WaitInput);
         }
 
@@ -1518,7 +1538,7 @@ namespace Front
         private void PlusOrMinusCigarettes(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
-            QuantityCigarettes = btn.Name.Equals("PlusCigarettesButton") ? QuantityCigarettes + 1 : QuantityCigarettes - 1;
+            QuantityCigarettes = btn.Name.Equals("PlusCigarettesButton") || btn.Name.Equals("RemotePlusCigarettesButton") ? QuantityCigarettes + 1 : QuantityCigarettes - 1;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("QuantityCigarettes"));
         }
 
@@ -1784,11 +1804,35 @@ namespace Front
         {
             Button btn = sender as Button;
             eCommand comand = btn.Name == "DeleteRemoteReceipt" ? eCommand.DeleteReceipt : eCommand.Confirm;
+            InfoRemoteCheckout remoteInfo = new() { StateMainWindows = RemoteCheckout.StateMainWindows, TypeAccess = RemoteCheckout.TypeAccess, UserBarcode = AdminSSC?.BarCode };
+            SendRemoteComand(comand, remoteInfo, btn.Name == "DeleteRemoteReceipt" ? "DeleteReceipt" : "Confirm");
+
+        }
+
+        private void AddPriceRemoteWares(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            if (btn != null)
+            {
+                var price = btn.DataContext as Models.Price;
+
+                InfoRemoteCheckout remoteInfo = new()
+                {
+                    StateMainWindows = eStateMainWindows.WaitAdmin,
+                    TypeAccess = eTypeAccess.ChoicePrice,
+                    UserBarcode = AdminSSC?.BarCode,
+                    SelectRemoteCigarettesPrice = price,
+                    QuantityCigarettes = QuantityCigarettes
+                };
+                SendRemoteComand(eCommand.Confirm, remoteInfo, RemoteCheckout.TypeAccess.GetDescription());
+            }
+        }
+        public void SendRemoteComand(eCommand comand, InfoRemoteCheckout remoteInfo, string LogText = "Confirm")
+        {
             if (RemoteWorkplace != null)
                 Task.Run(async () =>
                 {
-                    
-                    CommandAPI<string> Command = new() { Command = comand, Data = AdminSSC?.BarCode};
+                    CommandAPI<InfoRemoteCheckout> Command = new() { Command = comand, Data = remoteInfo };
 
                     try
                     {
@@ -1798,8 +1842,8 @@ namespace Front
                     }
                     catch (Exception ex)
                     {
-                        FileLogger.WriteLogMessage(this, $"Confirm DNSName=>{RemoteWorkplace.DNSName} {Command} ", ex);
-                        SocketAnsver?.Invoke(comand, RemoteWorkplace, new Status(ex));
+                        FileLogger.WriteLogMessage(this, $"{LogText} DNSName=>{RemoteWorkplace.DNSName} {Command} ", ex);
+                        SocketAnsver?.Invoke(comand, MainWorkplace, new Status(ex));
                     }
                 });
         }
