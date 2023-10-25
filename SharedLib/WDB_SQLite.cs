@@ -454,7 +454,7 @@ namespace SharedLib
                         if (el.TypeDiscount == eTypeDiscount.PercentDiscount)
                         {
                             var Price = RW.Where(e => e.CodeWares == el.CodeWares).Sum(e => e.Price);
-                            vPrice = Price * el.DataDiscount / 100m;
+                            vPrice = Price * (100-el.DataDiscount) / 100m;
                         }
 
                         var RWP = new WaresReceiptPromotion(parIdReceipt) { CodeWares = el.CodeWares, Quantity = AddQuantity, Price = vPrice, CodePS = el.CodePS, NumberGroup = el.NumberGroup };
