@@ -1813,19 +1813,7 @@
                             <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="30,0,0,0">
                                 <TextBlock Text="Каса:" FontSize="24" FontWeight="Bold" Margin="2"/>
                                 <TextBlock Text="Стан каси:" FontSize="24" FontWeight="Bold" Margin="2"/>
-                                <TextBlock Text="Інформація по вазі:" FontSize="24" FontWeight="Bold" Margin="2">
-                                    <TextBlock.Style>
-                                        <Style TargetType="{x:Type TextBlock}">
-                                            <Setter Property="Visibility" Value="Collapsed" />
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding RemoteCheckout.StateMainWindows, RelativeSource={RelativeSource 
-                                                Mode=FindAncestor, AncestorType=Window}}" Value="BlockWeight">
-                                                    <Setter Property="Visibility" Value="Visible" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBlock.Style>
-                                </TextBlock>
+
                             </StackPanel>
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                 <TextBlock Text="{Binding RemoteWorkplace.Name, RelativeSource={RelativeSource 
@@ -1834,23 +1822,44 @@
                                 <TextBlock Text="{Binding RemoteCheckout.TransleteStateMainWindows, RelativeSource={RelativeSource 
                         Mode=FindAncestor, AncestorType=Window}}" 
                             FontSize="24" FontWeight="Bold" Margin="2"/>
-                                <TextBlock Text="{Binding RemoteCheckout.TextInfo, RelativeSource={RelativeSource 
-                        Mode=FindAncestor, AncestorType=Window}}" 
-                            FontSize="24" FontWeight="Bold" Margin="2" TextWrapping="Wrap">
-                                    <TextBlock.Style>
-                                        <Style TargetType="{x:Type TextBlock}">
-                                            <Setter Property="Visibility" Value="Collapsed" />
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding RemoteCheckout.StateMainWindows, RelativeSource={RelativeSource 
-                                                Mode=FindAncestor, AncestorType=Window}}" Value="BlockWeight">
-                                                    <Setter Property="Visibility" Value="Visible" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBlock.Style>
-                                </TextBlock>
+
                             </StackPanel>
                         </Grid>
+
+
+                        <TextBlock Text="Інформація по вазі:" FontSize="24" FontWeight="Bold" Margin="2" HorizontalAlignment="Center">
+                            <TextBlock.Style>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RemoteCheckout.StateMainWindows, RelativeSource={RelativeSource 
+                Mode=FindAncestor, AncestorType=Window}}" Value="BlockWeight">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        
+                        <TextBlock Text="{Binding RemoteCheckout.TextInfo, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
+                                   FontSize="24" FontWeight="Bold" Margin="2" TextWrapping="Wrap"
+                                   HorizontalAlignment="Center">
+                            <TextBlock.Style>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RemoteCheckout.StateMainWindows, RelativeSource={RelativeSource 
+                                            Mode=FindAncestor, AncestorType=Window}}" Value="BlockWeight">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding RemoteCheckout.TypeAccess, RelativeSource={RelativeSource 
+                                            Mode=FindAncestor, AncestorType=Window}}" Value="FixWeight">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
 
                         <!--Вибір цін на сигарети на віддаленій касі-->
                         <Grid  Grid.Row="1">
@@ -1961,6 +1970,10 @@
                                     <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
                                         <Setter Property="IsEnabled" Value="False"/>
                                         <Style.Triggers>
+                                            <DataTrigger Binding="{Binding RemoteCheckout.StateMainWindows, RelativeSource={RelativeSource 
+                                            Mode=FindAncestor, AncestorType=Window}}" Value="BlockWeight">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
                                             <DataTrigger Binding="{Binding RemoteCheckout.TypeAccess, RelativeSource={RelativeSource 
                                                                      Mode=FindAncestor, AncestorType=Window}}" Value="FixWeight">
                                                 <Setter Property="IsEnabled" Value="True" />

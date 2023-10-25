@@ -752,7 +752,7 @@ namespace Front
                                 prices = new ObservableCollection<Models.Price>(CurWares.Prices.OrderByDescending(r => r.Price).Select(r => new Models.Price(r.Price, true, r.TypeWares)));
                                 // rrr.First().IsEnable = true;
                             }
-                            InfoRemoteCheckout remoteInfo = new() { StateMainWindows = pSMV, TypeAccess = TypeAccessWait, TextInfo = $"{CS.Info} {CS.InfoEx}", UserBarcode = AdminSSC?.BarCode, RemoteCigarettesPrices = prices };
+                            InfoRemoteCheckout remoteInfo = new() { StateMainWindows = pSMV, TypeAccess = TypeAccessWait, TextInfo = $"{CS.InfoEx}", UserBarcode = AdminSSC?.BarCode, RemoteCigarettesPrices = prices };
                             CommandAPI<InfoRemoteCheckout> Command = new() { Command = eCommand.GeneralCondition, Data = remoteInfo };
 
                             try

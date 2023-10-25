@@ -767,7 +767,7 @@ namespace Front
                             CS.StateScale = eStateScale.Stabilized;
                             SetStateView(eStateMainWindows.WaitInput);
                         }
-                        if (RemoteCheckout.StateMainWindows == eStateMainWindows.WaitInputPrice)
+                        if (CommandRemoteInfo.Data.StateMainWindows == eStateMainWindows.WaitAdmin && CommandRemoteInfo.Data.TypeAccess == eTypeAccess.ChoicePrice)
                         {
                             Bl.AddEventAge(curReceipt);
                             AddWares(CurWares.CodeWares, CurWares.CodeUnit, CommandRemoteInfo.Data.QuantityCigarettes, CommandRemoteInfo.Data.SelectRemoteCigarettesPrice.price);
