@@ -1972,7 +1972,7 @@
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding RemoteCheckout.StateMainWindows, RelativeSource={RelativeSource 
                                             Mode=FindAncestor, AncestorType=Window}}" Value="BlockWeight">
-                                                <Setter Property="Visibility" Value="Visible" />
+                                                <Setter Property="IsEnabled" Value="True" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding RemoteCheckout.TypeAccess, RelativeSource={RelativeSource 
                                                                      Mode=FindAncestor, AncestorType=Window}}" Value="FixWeight">
