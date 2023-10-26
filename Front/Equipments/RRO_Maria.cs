@@ -202,8 +202,16 @@ namespace Front.Equipments.Implementation
                             int.TryParse(taxGroup[1..2], out TG2);
                         var Name = (el.IsUseCodeUKTZED && !string.IsNullOrEmpty(el.CodeUKTZED) ? el.CodeUKTZED.Substring(0, 10) + "#" : "") + el.NameWares;
                         if (!String.IsNullOrEmpty(el.ExciseStamp))
-                            if (SetError((M304.AddExciseStamps(el.ExciseStamp) != 1)))
-                                break;
+                        {
+                            string[] ExciseStamps = el.ExciseStamp.Split(",");
+                            foreach (var item in ExciseStamps)
+                            {
+                                if (SetError((M304.AddExciseStamps(item) != 1)))
+                                    break;
+                            }
+                            
+                        }
+                            
                         if (el.SumDiscountEKKA == 0)
                             TypeDiscount = -1;//без знижок
                         if (el.SumDiscountEKKA > 0)
