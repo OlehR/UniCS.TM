@@ -43,7 +43,7 @@ namespace Front.Equipments.Implementation
                 {
                     string dt = M304.GetPrinterTime();
                     DateTime? FiscalDateTime = dt.ToDateTime("yyyyMMddHHmmss");
-                    if (Math.Abs(((FiscalDateTime ?? DateTime.Now) - DateTime.Now).Seconds) > 30) //Якщо час фіскалки відрізняється більше ніж на 30 секунд.
+                    if (Math.Abs(((FiscalDateTime ?? DateTime.Now) - DateTime.Now).TotalSeconds) > 30) //Якщо час фіскалки відрізняється більше ніж на 30 секунд.
                         if (M304.GetBusinessDayState() == 1) // і немає відкритої зміни
                         {
                             M304.SetInternalTime(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);//Змінюємо час на фіскалці

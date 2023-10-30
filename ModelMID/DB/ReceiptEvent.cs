@@ -20,14 +20,19 @@ namespace ModelMID.DB
 
         public Guid Id { get; set; }
 
-        public string IdGUID { get { return Id.ToString(); }set { Id = Guid.Parse(value); } }
+        public string IdGUID { get { return Id.ToString(); }set { if(value!=null)Id = Guid.Parse(value); } }
         /// <summary>
         /// Gets or sets the mobile device identifier.
         /// </summary>
         /// <value>The mobile device identifier.</value>
         public Guid? MobileDeviceId { get; set; }
         
-        public string MobileDeviceIdGUID { get { return MobileDeviceId?.ToString(); } set { MobileDeviceId = Guid.Parse(value); } }
+        public string MobileDeviceIdGUID { get {
+                return MobileDeviceId?.ToString();
+            } 
+            set {
+                if(value!=null) MobileDeviceId = Guid.Parse(value); } 
+        }
 
         
         /// <summary>
@@ -78,7 +83,7 @@ namespace ModelMID.DB
         /// <value>The user identifier.</value>
         public Guid? UserId { get; set; }
 
-        public string UserIdGUID { get { return UserId?.ToString(); } set { UserId = Guid.Parse(value); } }
+        public string UserIdGUID { get { return UserId?.ToString(); } set { if(value!=null) UserId = Guid.Parse(value); } }
 
         /// <summary>
         /// Gets or sets the user name.

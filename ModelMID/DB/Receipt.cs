@@ -34,7 +34,7 @@ namespace ModelMID
         public int CodeClient { get { return Client?.CodeClient ?? _CodeClient; } set { _CodeClient = value; } }
         public Client Client { get; set; }
         public int CodePattern { get; set; }
-        public ulong NumberCashier { get; set; }
+        public long NumberCashier { get; set; }
         /// <summary>
         /// Назва касира необхідно для друку на чеку.
         /// </summary>
@@ -159,7 +159,7 @@ decimal _SumWallet=0;
                 }
                 return res;
             }
-            set { _Wares = value?.Where(el=>el.CodeWares!= Global.Settings.CodeWaresWallet); }
+            set { _Wares = value?.Where(el=>el.CodeWares!= Global.Settings?.CodeWaresWallet).ToList(); }
         }
 
         IEnumerable<Payment> _Payment;

@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
-using System.Text.Json.Nodes;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -20,6 +20,8 @@ using Newtonsoft.Json;
 using SharedLib;
 using Utils;
 using static Front.MainWindow;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Front
 {
@@ -646,6 +648,14 @@ namespace Front
                             Bl.ds.SendReceiptTo1C(curReceipt);
                             SetCurReceipt(null);
                             Res = true;
+
+                         /*   JsonSerializerOptions options = new()
+                            {
+                                ReferenceHandler = ReferenceHandler.IgnoreCycles//, WriteIndented = true
+                                ,DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+                            };
+                            File.WriteAllText($"D:/{R.CodeReceipt}.json", System.Text.Json.JsonSerializer.Serialize(R, options)); //R.ToJSON("yyyy-MM-ddTHH:mm:ss.fffZ"));
+*/
                         }
                         else
                         {

@@ -289,7 +289,7 @@ namespace Front.Equipments
                 try
                 {
                     SetRoundCash();
-                    if (Math.Abs(((GetCurrentFiscalPrinterDate() ?? DateTime.Now) - DateTime.Now).Seconds) > 30) //Якщо час фіскалки відрізняється більше ніж на 30 секунд.
+                    if (Math.Abs(((GetCurrentFiscalPrinterDate() ?? DateTime.Now) - DateTime.Now).TotalSeconds) > 30) //Якщо час фіскалки відрізняється більше ніж на 30 секунд.
                         if (MinuteLastZReport().TotalMinutes == 0) // і немає відкритої зміни
                         {
                             SetupTime(DateTime.Now);//Змінюємо час на фіскалці
