@@ -205,14 +205,14 @@ namespace ModelMID
 
         public static WorkPlace GetWorkPlaceByIdWorkplace(int parIdWorkPlace)
         {
-            if (WorkPlaceByWorkplaceId.ContainsKey(parIdWorkPlace))
+            if (WorkPlaceByWorkplaceId!=null && WorkPlaceByWorkplaceId.ContainsKey(parIdWorkPlace))
                 return WorkPlaceByWorkplaceId[parIdWorkPlace];
             return null;
         }
 
         public static string GetNumberCashDeskByIdWorkplace(int parIdWorkPlace)
         {
-            if (WorkPlaceByWorkplaceId.ContainsKey(parIdWorkPlace))
+            if (WorkPlaceByWorkplaceId!=null && WorkPlaceByWorkplaceId.ContainsKey(parIdWorkPlace))
                 return WorkPlaceByWorkplaceId[parIdWorkPlace].Name.Right(2).Replace(' ', '0').Replace('№', '0');            
             return "00";
         }
@@ -274,12 +274,13 @@ namespace ModelMID
         public static decimal GetCoefDeltaWeight(decimal parWeight)
         {
             var res = 0.5m;
-            for (int i = 0; i < DeltaWeight.Length; i++)
-            {
-                if (DeltaWeight[i].Weight > parWeight)
-                    break;
-                res = DeltaWeight[i].Coef;
-            }
+            if (DeltaWeight != null)
+                for (int i = 0; i < DeltaWeight.Length; i++)
+                {
+                    if (DeltaWeight[i].Weight > parWeight)
+                        break;
+                    res = DeltaWeight[i].Coef;
+                }
             return res;
         }
 

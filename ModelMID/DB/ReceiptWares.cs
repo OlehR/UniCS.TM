@@ -469,7 +469,7 @@ namespace ModelMID
 
         public bool IsNeedExciseStamp { get { return TypeWares == eTypeWares.Alcohol && GetExciseStamp.Length < Quantity && !(GetExciseStamp.LastOrDefault()?.Equals("None") == true); } }
 
-        public bool IsBag { get { return Global.Bags.Any(el => el == CodeWares); } }
+        public bool IsBag { get { return Global.Bags==null?false: Global.Bags.Any(el => el == CodeWares); } }
 
         public object Clone()
         {
