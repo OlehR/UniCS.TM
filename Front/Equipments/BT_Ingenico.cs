@@ -14,6 +14,7 @@ using Utils;
 using Front.Equipments.Utils;
 using Front.Equipments.Implementation.ModelVchasno;
 using System.Diagnostics.Eventing.Reader;
+using ModernExpo.SelfCheckout.Entities.CommandServer;
 
 namespace Front.Equipments
 {    
@@ -81,14 +82,16 @@ namespace Front.Equipments
                     };
                 CancelRequested = false;
                 BPOS.Refund(Convert.ToUInt32(amount * 100.0), 0U, GetMechantIdByIdWorkPlace(pIdWorkPlace), bsRRN);
-                Payment paymentResultModel = WaitPosRespone();
-                if (paymentResultModel.IsSuccess)
+                Payment result = WaitPosRespone();
+                if (result.IsSuccess)
                 {
                     BPOS.Confirm();
-                    WaitResponse();                    
+                    Payment Res = WaitPosRespone(20);
+                    if (!Res.IsSuccess)
+                        result = Res;
                 }
                 StopBPOS();
-                return paymentResultModel;
+                return result;
             }
             catch (Exception ex)
             {
@@ -231,10 +234,10 @@ namespace Front.Equipments
         }
 
         //public Task<string> GetInfoAsync() => Task.Run<string>((Func<string>)(() => this.GetInfoSync()));
-        public Payment WaitPosRespone()
+        public Payment WaitPosRespone(int pTime=120)
         {   
-            int num = 0;
-            while (BPOS.LastResult == (byte)2 && num < 120)
+            
+            while (BPOS.LastResult == (byte)2 &&  pTime>0)
             {
                 LoggerExtensions.LogDebug((ILogger)Logger, "[Ingenico] WaitPosRespone *");
                 if (CancelRequested)
@@ -246,7 +249,7 @@ namespace Front.Equipments
                     return new Payment() { IsSuccess = false };
                 }
                 Thread.Sleep(1000);
-                ++num;               
+                pTime--;               
                 if (Logger != null)
                     LoggerExtensions.LogDebug((ILogger)Logger, string.Format("[Ingenico] LastStatMsgCode = {0}\n", (object)BPOS.LastStatMsgCode) + "[Ingenico] Description = " + this.GetString(BPOS.LastStatMsgDescription) + "\n[Ingenico] LastErrorDescription = " + this.GetString(BPOS.LastErrorDescription) + "\n" + string.Format("[Ingenico] LastResult = {0}\n", (object)BPOS.LastResult) + string.Format("[Ingenico] LastErrorCode = {0}", (object)BPOS.LastErrorCode), Array.Empty<object>());
                 if (BPOS == null)
@@ -651,12 +654,13 @@ namespace Front.Equipments
             StopBPOS();
         }
 
-        private void WaitResponse()
+        private bool WaitResponse(int pTime=90)
         {
             if (BPOS == null)
-                return;
-            for (int index = 0; BPOS.LastResult == (byte)2 && index < 120; ++index)
+                return false;
+            for (int index = 0; BPOS.LastResult == (byte)2 && index < pTime; ++index)
                 Thread.Sleep(1000);
+            return BPOS.LastResult == 0;
         }
 
         public async Task<BatchTotals> GetBatchTotals(byte pMerchantId=0)
@@ -725,7 +729,9 @@ namespace Front.Equipments
                 if (result.IsSuccess)
                 {
                     BPOS.Confirm();
-                    WaitResponse();                   
+                    Payment Res = WaitPosRespone(20);
+                    if (!Res.IsSuccess)
+                        result = Res;
                 }              
                 
                 if (OnResponse != null) OnResponse((IPosResponse)new PayPosResponse() { Response = result });
