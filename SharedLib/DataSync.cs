@@ -242,7 +242,7 @@ namespace SharedLib
                             {
                                 File.Move(NameDB, varMidFile);
                                 Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Set config");
-                                db.SetConfig<string>("Last_MID", varMidFile);
+                                //db.SetConfig<string>("Last_MID", varMidFile);
                                 db.LastMidFile=varMidFile;
                                 db.GetDB();
                             }

@@ -296,6 +296,6 @@ namespace SharedLib
 
         public int GetVersion => ExecuteScalar<int>("PRAGMA user_version");
 
-        public bool SetVersion(int pVer) => ExecuteNonQuery($"PRAGMA user_versio={pVer}") > 0;
+        public bool SetVersion(int pVer) => ExecuteNonQuery($"PRAGMA user_version={pVer}") > 0;
     }
 }

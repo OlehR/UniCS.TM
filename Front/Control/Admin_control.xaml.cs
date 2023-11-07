@@ -742,7 +742,7 @@ namespace Front.Control
 
         private void RefreshDataButton(object sender, RoutedEventArgs e)
         {
-            MW.CustomMessage.Show("Запустити повнен оновлення бази даних?", "Оновлення бази даних", eTypeMessage.Question);
+            MW.CustomMessage.Show($"Запустити повне оновлення бази даних?{Environment.NewLine}{Bl.db.LastMidFile} {Bl.db.GetConfig<DateTime>("Load_Full")}", "Оновлення бази даних", eTypeMessage.Question);
             MW.CustomMessage.Result = (bool res) =>
             {
                 if (res)

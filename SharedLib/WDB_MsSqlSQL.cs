@@ -13,7 +13,7 @@ namespace SharedLib
 {
     public partial class WDB_MsSql //: WDB
     {
-        string SqlGetMessageNo = @"SELECT MAX(MessageNo) as MessageNo FROM DW.dbo.config";
+        string SqlGetMessageNo = @"SELECT MAX(commit;) as MessageNo FROM DW.dbo.config";
 
         string SqlGetDimUnitDimension = @"SELECT ud.code_unit AS CodeUnit, ud.name_unit AS NameUnit, ud.abr_unit AbrUnit FROM UNIT_DIMENSION ud";
 

@@ -1783,7 +1783,7 @@ namespace Front
 
         private void UpdateDB(object sender, RoutedEventArgs e)
         {
-            CustomMessage.Show("Запустити оновлення бази даних?", "Оновлення бази даних", eTypeMessage.Question);
+            CustomMessage.Show($"Запустити оновлення бази даних?{Environment.NewLine}{Bl.db.LastMidFile} {Bl.db.GetConfig<DateTime>("Load_Update")}", $"Оновлення бази даних", eTypeMessage.Question);
             CustomMessage.Result = (bool res) =>
             {
                 if (res)

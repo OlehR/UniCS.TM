@@ -122,6 +122,7 @@ namespace SharedLib
                 LFDB = LFDB.AddDays(-1);
             } while (LastMidFile == null && LFDB > DateTime.Now.AddDays(-10));
         }
+
         public void GetDB()
         {
             FindLastMid();
