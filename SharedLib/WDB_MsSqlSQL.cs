@@ -13,7 +13,7 @@ namespace SharedLib
 {
     public partial class WDB_MsSql //: WDB
     {
-        string SqlGetMessageNo = @"SELECT MAX(commit;) as MessageNo FROM DW.dbo.config";
+        string SqlGetMessageNo = @"SELECT MAX(MessageNo) as MessageNo FROM DW.dbo.config";
 
         string SqlGetDimUnitDimension = @"SELECT ud.code_unit AS CodeUnit, ud.name_unit AS NameUnit, ud.abr_unit AbrUnit FROM UNIT_DIMENSION ud";
 
@@ -60,7 +60,7 @@ namespace SharedLib
 
         string SqlGetClientData = @"SELECT * FROM ClientData  cl WITH (NOLOCK) WHERE cl.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull=1";
 
-        string SqlGetDimFastGroup = @"SELECT CONVERT(INT, wh.Code) AS CodeUp, CONVERT(INT, wh.Code)*1000+g.Order_Button AS CodeFastGroup, MAX(CONVERT(VARCHAR, g.Name_Button)) AS Name
+        string SqlGetDimFastGroup = @"SELECT CONVERT(INT, wh.Code) AS CodeUp, CONVERT(INT, wh.Code)*1000+g.Order_Button AS CodeFastGroup, MAX(CONVERT(VARCHAR, g.Name_Button)) AS Name,G.Image
   FROM DW.dbo.V1C_DIM_OPTION_WPC O  
   JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_GROUP G ON o._IDRRef= G._Reference18850_IDRRef
   JOIN DW.dbo.V1C_DIM_OPTION_WPC_CASH_place CP ON o._IDRRef= cp._Reference18850_IDRRef

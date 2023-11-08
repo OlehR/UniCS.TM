@@ -803,7 +803,7 @@ insert into RECEIPT_Event(
 
         public bool ReplaceFastGroup(IEnumerable<FastGroup> parData, SQLite pDB)
         {
-            string SqlReplaceFastGroup = @"replace into FAST_GROUP(CODE_UP, Code_Fast_Group, Name) values(@CodeUp, @CodeFastGroup, @Name);";
+            string SqlReplaceFastGroup = @"replace into FAST_GROUP(CODE_UP, Code_Fast_Group, Name,Image) values(@CodeUp, @CodeFastGroup, @Name,@Image);";
             pDB.BulkExecuteNonQuery<FastGroup>(SqlReplaceFastGroup, parData, true);
             return true;
         }

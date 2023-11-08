@@ -10,6 +10,7 @@ namespace ModelMID.DB
         public int CodeFastGroup { get; set; }
         public int CodeUp { get; set; }
         public string Name { get; set; }
+        public string Image { get; set; }
 
         public Guid FastGroupId
         {

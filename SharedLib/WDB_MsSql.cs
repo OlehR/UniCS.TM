@@ -24,7 +24,7 @@ namespace SharedLib
             Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Start LoadData {parIsFull}");
             Debug.WriteLine("Start LoadData " + parIsFull.ToString());
             int varMessageNoMax = db.ExecuteScalar<int>(SqlGetMessageNo);
-            int varMessageNoMin = pDB.GetConfig<int>("MessageNo");
+            int varMessageNoMin = pDB.GetConfig<int>("MessageNo")+1;
             Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} LoadData varMessageNoMin={varMessageNoMin} varMessageNoMax={varMessageNoMax}");
 
             var oWarehouse = new pWarehouse() { CodeWarehouse = Global.CodeWarehouse };

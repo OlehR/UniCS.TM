@@ -73,6 +73,7 @@ alter TABLE wares add Code_Direction INTEGER;--Ver=>0;
 alter TABLE wares add Type_Wares INTEGER  NOT NULL DEFAULT 2; --Ver=>6;
 alter TABLE wares add Code_TM INTEGER NOT NULL DEFAULT 0; --Ver=>9;
 alter TABLE CLIENT add PHONE_ADD TEXT; --Ver=>10;
+alter TABLE FAST_GROUP add Image TEXT; --Ver=>11;
 --Ver=>11;Reload;";       
 
         readonly string SqlCreateConfigTable = @"
@@ -435,7 +436,8 @@ CREATE TABLE FAST_GROUP
 (
  CODE_UP INTEGER  NOT NULL,
  Code_Fast_Group INTEGER  NOT NULL,
- Name TEXT
+ Name TEXT,
+ Image TEXT
 );
 
         CREATE TABLE FAST_WARES
