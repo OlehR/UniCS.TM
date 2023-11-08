@@ -68,7 +68,7 @@ namespace SharedLib
   JOIN dw.dbo.WAREHOUSES wh ON cd.Warehouse_RRef= wh._IDRRef
     WHERE (g.Order_Button<>2 or wh.Code<>9 ) -- хак для групи Овочі 1
          and CD.code=@IdWorkPlace 
-  GROUP BY wh.Code, g.Order_Button;";
+  GROUP BY wh.Code, g.Order_Button,G.Image";
 
         /* Це правильний запит
         SELECT CONVERT(INT,wh.Code) AS CodeUp,CONVERT(INT,wh.Code)*1000+g.Order_Button AS CodeFastGroup,g.Name_Button AS Name
