@@ -19,6 +19,7 @@ namespace SharedLib
     {
         public WDB_SQLite db { get { return bl?.db; } }
         public BL bl;
+        WDB_MsSql MsSQL = new WDB_MsSql();
         private readonly object _locker = new object();
         public SoapTo1C soapTo1C = new SoapTo1C();
         public bool IsUseOldDB = true;
@@ -39,6 +40,11 @@ namespace SharedLib
         public async Task<bool> SyncDataAsync(bool parIsFull = false)
         {
             bool res = false;
+            if(!MsSQL.IsSync(Global.CodeWarehouse))
+            {
+                FileLogger.WriteLogMessage(this, "SyncDataAsync", $"Обмін заблоковано",eTypeLog.Expanded);
+                return res;
+            }
             FileLogger.WriteLogMessage($"BL.SyncDataAsync({parIsFull}) Start");
             try
             {
@@ -84,10 +90,15 @@ namespace SharedLib
             await SyncDataAsync();
         }
 
-        public bool SendReceiptTo1C(IdReceipt parIdReceipt)
+        public bool SendReceiptTo1C(IdReceipt pIdR)
         {
-            using var ldb = new WDB_SQLite(parIdReceipt.DTPeriod);
-            var r = ldb.ViewReceipt(parIdReceipt, true);
+            using var ldb = new WDB_SQLite(pIdR.DTPeriod);
+            var r = ldb.ViewReceipt(pIdR, true);
+            if (!MsSQL.IsSync(Global.CodeWarehouse))
+            {
+                FileLogger.WriteLogMessage(this, "SendReceiptTo1C", $"Обмін заблоковано CodeReceipt=>{pIdR.CodeReceipt}", eTypeLog.Expanded);
+                return false;
+            }
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             _ = SendReceiptTo1CAsync(r, ldb);

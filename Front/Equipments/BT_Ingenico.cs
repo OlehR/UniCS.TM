@@ -235,8 +235,8 @@ namespace Front.Equipments
 
         //public Task<string> GetInfoAsync() => Task.Run<string>((Func<string>)(() => this.GetInfoSync()));
         public Payment WaitPosRespone(int pTime=120)
-        {   
-            
+        {
+            pTime *= 2;
             while (BPOS.LastResult == (byte)2 &&  pTime>0)
             {
                 LoggerExtensions.LogDebug((ILogger)Logger, "[Ingenico] WaitPosRespone *");
@@ -248,7 +248,7 @@ namespace Front.Equipments
                     OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.TransactionCanceledByUser });
                     return new Payment() { IsSuccess = false };
                 }
-                Thread.Sleep(1000);
+                Thread.Sleep(500);
                 pTime--;               
                 if (Logger != null)
                     LoggerExtensions.LogDebug((ILogger)Logger, string.Format("[Ingenico] LastStatMsgCode = {0}\n", (object)BPOS.LastStatMsgCode) + "[Ingenico] Description = " + this.GetString(BPOS.LastStatMsgDescription) + "\n[Ingenico] LastErrorDescription = " + this.GetString(BPOS.LastErrorDescription) + "\n" + string.Format("[Ingenico] LastResult = {0}\n", (object)BPOS.LastResult) + string.Format("[Ingenico] LastErrorCode = {0}", (object)BPOS.LastErrorCode), Array.Empty<object>());
@@ -292,8 +292,7 @@ namespace Front.Equipments
             if (BPOS.LastResult == (byte)1)
             {  
                 switch (BPOS.LastErrorCode)
-                {
-                    
+                {                    
                     case 1:
                         OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.ErrorOpeningCOMPort});
                         OnDeviceWarning?.Invoke( new PosDeviceLog() { Category = TerminalLogCategory.Warning, Message = "[Ingenico] Error open connection" });
