@@ -649,13 +649,6 @@ namespace Front
                             SetCurReceipt(null);
                             Res = true;
 
-                         /*   JsonSerializerOptions options = new()
-                            {
-                                ReferenceHandler = ReferenceHandler.IgnoreCycles//, WriteIndented = true
-                                ,DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-                            };
-                            File.WriteAllText($"D:/{R.CodeReceipt}.json", System.Text.Json.JsonSerializer.Serialize(R, options)); //R.ToJSON("yyyy-MM-ddTHH:mm:ss.fffZ"));
-*/
                         }
                         else
                         {

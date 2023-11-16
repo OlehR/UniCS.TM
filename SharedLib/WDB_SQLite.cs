@@ -46,7 +46,6 @@ namespace SharedLib
         public WDB_SQLite(DateTime parD = default(DateTime), string pConnect = null, bool pIsUseOldDB = true, bool pIsCreateMidFile = false)
         {
             Connect = pConnect;
-
             DT = parD != default(DateTime) ? parD.Date : DateTime.Today.Date;
 
             if (!File.Exists(ConfigFile))
@@ -142,6 +141,7 @@ namespace SharedLib
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
         protected virtual void Dispose(bool disposing)
         {
             if (isDisposed) return;

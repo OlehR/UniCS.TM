@@ -13,10 +13,14 @@ namespace SharedLib
         public ReceiptWares varWares = new ReceiptWares();
         MSSQL db;
         public string Version { get { return "WDB_MsSql.0.0.1"; } }
-
+        bool IsReady =false;
         public WDB_MsSql()
         {
-            db = new MSSQL();
+            try
+            {
+                db = new MSSQL();
+                IsReady = true;
+            } catch { }
         }
 
         public int LoadData(WDB_SQLite pDB, bool parIsFull, StringBuilder Log, SQLite pD)
@@ -247,7 +251,12 @@ namespace SharedLib
 
         public bool IsSync(int pCodeWarehouse)
         {
-            return db.ExecuteScalar<int>($"SELECT dbo.GetSync({pCodeWarehouse})") > 0;
+            if(!IsReady)
+            {
+                db = new MSSQL();
+                IsReady = true;
+            }
+            return IsReady && db.ExecuteScalar<int>($"SELECT dbo.GetSync({pCodeWarehouse})") > 0;
         }
     }
 }

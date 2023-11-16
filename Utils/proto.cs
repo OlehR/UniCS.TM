@@ -6,6 +6,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Utils
 {
@@ -33,7 +35,18 @@ namespace Utils
             return res;
         }
 
-        public static string ToXMLString(this string s)
+        static JsonSerializerOptions options = new JsonSerializerOptions()
+                            {
+                                ReferenceHandler = ReferenceHandler.IgnoreCycles//, WriteIndented = true
+                                ,DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+    };
+
+        public static string ToJson(this object s)
+        {
+            return System.Text.Json.JsonSerializer.Serialize(s, options);
+        }
+
+    public static string ToXMLString(this string s)
         {
             return s.Replace("&", "&amp;").Replace("\"", "&quot;").Replace("'", "&apos;").Replace("<", "&lt;").Replace(">", "&gt;");//.Replace(".", "&period;");
         }

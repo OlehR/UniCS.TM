@@ -19,7 +19,7 @@ namespace SharedLib
     {
         public WDB_SQLite db { get { return bl?.db; } }
         public BL bl;
-        WDB_MsSql MsSQL = new WDB_MsSql();
+        WDB_MsSql MsSQL;
         private readonly object _locker = new object();
         public SoapTo1C soapTo1C = new SoapTo1C();
         public bool IsUseOldDB = true;
@@ -30,6 +30,11 @@ namespace SharedLib
                 return IsUseOldDB || ( Status != eSyncStatus.StartedFullSync && Status != eSyncStatus.Error && Status != eSyncStatus.ErrorDB); } }
         public DataSync(BL pBL)
         {
+            try
+            {
+                MsSQL = new WDB_MsSql();
+            } catch { } 
+
             if (pBL != null)
             {
                 bl = pBL; ///!!!TMP Трохи костиль 
@@ -252,9 +257,11 @@ namespace SharedLib
                             try
                             {
                                 File.Move(NameDB, varMidFile);
-                                Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Set config");
-                                //db.SetConfig<string>("Last_MID", varMidFile);
-                                db.LastMidFile=varMidFile;
+                                db.LastMidFile = varMidFile;
+                                Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Set config LastMidFile=> {db.LastMidFile}");
+                                db.SetConfig<DateTime>("Load_Full", DateTime.Now);
+                                db.SetConfig<DateTime>("Load_Update", DateTime.Now);
+                                
                                 db.GetDB();
                             }
                             catch(Exception e) 
