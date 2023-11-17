@@ -669,10 +669,19 @@ and @TypeDiscount=11; ";
             return true;
         }
 
-        public bool SetStateReceipt(Receipt parReceipt)
+        public bool SetStateReceipt(Receipt pR)
         {
             string SqlSetStateReceipt = @"update receipt  set STATE_RECEIPT = @StateReceipt where ID_WORKPLACE = @IdWorkplace and CODE_PERIOD = @CodePeriod and CODE_RECEIPT = @CodeReceipt";
-            return dbRC.ExecuteNonQuery<Receipt>(SqlSetStateReceipt, parReceipt)>0;
+            if (DT == pR.DTPeriod)
+                return dbRC.Execute<IdReceipt, LogRRO>(SqlGetLogRRO, pR);
+            else
+            {
+                using var dbRCD = new SQLite(GetReceiptFile(pR.DTPeriod));
+                return dbRCD.Execute<IdReceipt, LogRRO>(SqlGetLogRRO, pR);
+            }
+
+
+            return dbRC.ExecuteNonQuery<Receipt>(SqlSetStateReceipt, pR)>0;
         }
 
         public bool InsertBarCode2Cat(WaresReceiptPromotion parWRP)

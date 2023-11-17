@@ -98,19 +98,20 @@ namespace SharedLib
         public bool SendReceiptTo1C(IdReceipt pIdR)
         {
             using var ldb = new WDB_SQLite(pIdR.DTPeriod);
-            var r = ldb.ViewReceipt(pIdR, true);
             if (!MsSQL.IsSync(Global.CodeWarehouse))
-            {
+            {           
                 FileLogger.WriteLogMessage(this, "SendReceiptTo1C", $"Обмін заблоковано CodeReceipt=>{pIdR.CodeReceipt}", eTypeLog.Expanded);
                 return false;
             }
+            var r = ldb.ViewReceipt(pIdR, true);
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            _ = SendReceiptTo1CAsync(r, ldb);
+            _ = SendReceiptTo1CAsync(r);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             return true;
         }
-        public async Task<bool> SendReceiptTo1CAsync(Receipt pReceipt, WDB_SQLite parDB)
+
+        public async Task<bool> SendReceiptTo1CAsync(Receipt pReceipt)
         {
             try
             {
@@ -124,8 +125,7 @@ namespace SharedLib
                         return false;
                 }
                 pReceipt.StateReceipt = eStateReceipt.Send;
-                if (parDB != null)
-                    parDB.SetStateReceipt(pReceipt);//Змінюєм стан чека на відправлено.
+                db.SetStateReceipt(pReceipt);//Змінюєм стан чека на відправлено.
                 return true;
             }
             catch (Exception ex)
@@ -144,7 +144,7 @@ namespace SharedLib
             var varDB = (parDB ?? db);
             var varReceipts = varDB.GetIdReceiptbyState(eStateReceipt.Print);
             foreach (var el in varReceipts)
-                await SendReceiptTo1CAsync(varDB.ViewReceipt(el, true), varDB);
+                await SendReceiptTo1CAsync(varDB.ViewReceipt(el, true));
             if (parDB == null)
                 SendOldReceipt();
             Global.OnStatusChanged?.Invoke(db.GetStatus());
