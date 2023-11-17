@@ -242,7 +242,7 @@ namespace SharedLib
                     if (pIsFull)
                         pD.ExecuteNonQuery(db.SqlCreateMIDTable);
 
-                    var MsSQL = new WDB_MsSql();
+                    if (MsSQL.IsSync(Global.CodeWarehouse)) return false;
                     
                     var varMessageNMax = MsSQL.LoadData(db, pIsFull, Log,pD);
 
@@ -465,6 +465,7 @@ namespace SharedLib
 
         public void LoadWeightKasa(DateTime parDT = default(DateTime))
         {
+            if (!MsSQL.IsSync(Global.CodeWarehouse)) return;
             try
             {
                 if (parDT == default(DateTime))
@@ -486,7 +487,7 @@ namespace SharedLib
    end
 -- commit tran";
 
-                var dbMs = new MSSQL();
+                
                 //var path = Path.Combine(ModelMID.Global.PathDB, "config.db");
                 // var dbSqlite = new SQLite(path);
                 var SqlSelect = @"select [barcode] as BarCode, weight as Weight, DATE_CREATE as Date,STATUS
@@ -495,7 +496,7 @@ where nn=1 ";
                 Console.WriteLine("Start LoadWeightKasa");
                 var r = db.db.Execute<object, BarCodeOut>(SqlSelect, new { parDT = parDT });
                 Console.WriteLine(r.Count().ToString());
-                dbMs.BulkExecuteNonQuery<BarCodeOut>(SQLUpdate, r);
+                MsSQL.db.BulkExecuteNonQuery<BarCodeOut>(SQLUpdate, r);
                 Console.WriteLine("Finish LoadWeightKasa");
             }
             catch (Exception ex)
@@ -535,6 +536,7 @@ where nn=1 ";
 
         public void LoadWeightKasa2(DateTime parDT, int TypeSource = 0)
         {
+            if (!MsSQL.IsSync(Global.CodeWarehouse)) return;
             try
             {
                 using var ldb = new WDB_SQLite(parDT);
@@ -758,8 +760,9 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     string s = "ПСЮ00000000";
                     pNumberOrder = pNumberOrder.Trim();
                     pNumberOrder = s.Substring(0, 11 - pNumberOrder.Length) + pNumberOrder;
-                    WDB_MsSql Msdb = new WDB_MsSql();
-                    var Order = Msdb.GetClientOrder(pNumberOrder);
+                    if (MsSQL.IsSync(Global.CodeWarehouse)) return ;
+
+                    var Order = MsSQL.GetClientOrder(pNumberOrder);
                     if (Order != null && Order.Any())
                     {
                         var curReceipt = bl.GetNewIdReceipt();

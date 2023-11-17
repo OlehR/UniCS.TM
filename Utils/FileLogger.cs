@@ -87,7 +87,7 @@ namespace Utils
 
         public static void WriteLogMessage(object pO, string pMetodName, Exception pE)
         {
-            WriteLogMessage($"{pO?.GetType().FullName}.{pMetodName} {pE.Message}{Environment.NewLine}{pE.StackTrace}", eTypeLog.Error);
+            WriteLogMessage($"({pO?.GetHashCode()}){pO?.GetType().FullName}.{pMetodName} {pE.Message}{Environment.NewLine}{pE.StackTrace}", eTypeLog.Error);
         }
 
         public static void WriteLogMessage( string message, eTypeLog pTypeLog = eTypeLog.Full)

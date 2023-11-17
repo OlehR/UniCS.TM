@@ -11,7 +11,7 @@ namespace SharedLib
     public partial class WDB_MsSql
     {
         public ReceiptWares varWares = new ReceiptWares();
-        MSSQL db;
+        public MSSQL db;
         public string Version { get { return "WDB_MsSql.0.0.1"; } }
         bool IsReady =false;
         public WDB_MsSql()
@@ -251,12 +251,29 @@ namespace SharedLib
 
         public bool IsSync(int pCodeWarehouse)
         {
-            if(!IsReady)
+            if(IsReady)
             {
-                db = new MSSQL();
-                IsReady = true;
+                try
+                {
+                    return db.ExecuteScalar<int>($"SELECT dbo.GetSync({pCodeWarehouse})") > 0;
+                }
+                catch (Exception e)
+                {
+                    IsReady = false;
+                }
             }
-            return IsReady && db.ExecuteScalar<int>($"SELECT dbo.GetSync({pCodeWarehouse})") > 0;
+
+            if (!IsReady)
+            {
+                try
+                {
+                    db = new MSSQL();
+                    IsReady = true;
+                    return db.ExecuteScalar<int>($"SELECT dbo.GetSync({pCodeWarehouse})") > 0;
+                }
+                catch { return false; }
+            }
+            return IsReady; 
         }
     }
 }
