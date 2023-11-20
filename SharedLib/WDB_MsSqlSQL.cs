@@ -527,7 +527,7 @@ LEFT JOIN dbo.V1C_dim_type_price tp ON wh.type_price_RRef= tp.type_price_RRef;";
 
         string SqlGetWaresWarehous = @"SELECT ww.* FROM  dbo.WaresWarehouse ww 
   JOIN dbo.WAREHOUSES Wh ON ww.CodeWarehouse=wh.CodeWarehouse2
-  WHERE Wh.Code=195";
+  WHERE Wh.Code=@CodeWarehouse";
     }
     class Res
     {

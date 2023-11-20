@@ -242,7 +242,7 @@ namespace SharedLib
                     if (pIsFull)
                         pD.ExecuteNonQuery(db.SqlCreateMIDTable);
 
-                    if (MsSQL.IsSync(Global.CodeWarehouse)) return false;
+                    if (!MsSQL.IsSync(Global.CodeWarehouse)) return false;
                     
                     var varMessageNMax = MsSQL.LoadData(db, pIsFull, Log,pD);
 
