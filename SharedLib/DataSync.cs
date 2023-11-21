@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Policy;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -818,6 +819,39 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             return Res;
         }
 
+        public async Task<ExciseStamp> CheckExciseStampAsync(ExciseStamp pES,int pWait = 1000)
+        {
+            try
+            {
+                HttpClient client = new HttpClient();
+                client.Timeout = TimeSpan.FromMilliseconds(pWait);
+
+                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, "http://apitest.spar.uz.ua/CheckExciseStamp");
+                requestMessage.Content = new StringContent(pES.ToJson(), Encoding.UTF8, "application/json");
+                var response = await client.SendAsync(requestMessage);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var res = await response.Content.ReadAsStringAsync();
+                    if (!string.IsNullOrEmpty(res))
+                    {
+                        var Res = JsonConvert.DeserializeObject<StatusD<ExciseStamp>>(res);
+                        return Res.Data;
+                    }
+                }
+                else
+                {
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = null, Status = eSyncStatus.NoFatalError, StatusDescription = "RequestAsync=>" + response.RequestMessage });
+                }
+            }catch(Exception e)
+            { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e); }
+            return null;
+        }
+
+        ExciseStamp CheckExciseStamp(ExciseStamp pES, int pWait = 1000)
+        {
+            return Task<ExciseStamp>.Run(() => { return CheckExciseStampAsync(pES, pWait); }).Result;
+        }
     }
 
     public class WeightReceipt
