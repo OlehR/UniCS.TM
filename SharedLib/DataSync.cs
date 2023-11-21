@@ -761,7 +761,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     string s = "ПСЮ00000000";
                     pNumberOrder = pNumberOrder.Trim();
                     pNumberOrder = s.Substring(0, 11 - pNumberOrder.Length) + pNumberOrder;
-                    if (MsSQL.IsSync(Global.CodeWarehouse)) return ;
+                    if (!MsSQL.IsSync(Global.CodeWarehouse)) return ;
 
                     var Order = MsSQL.GetClientOrder(pNumberOrder);
                     if (Order != null && Order.Any())
@@ -848,7 +848,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             return null;
         }
 
-        ExciseStamp CheckExciseStamp(ExciseStamp pES, int pWait = 1000)
+        public ExciseStamp CheckExciseStamp(ExciseStamp pES, int pWait = 1000)
         {
             return Task<ExciseStamp>.Run(() => { return CheckExciseStampAsync(pES, pWait); }).Result;
         }
@@ -863,6 +863,5 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
         public int IdWorkplace { get; set; }
         public int CodeReceipt { get; set; }
         public decimal Quantity { get; set; }
-    }   
-
+    } 
 }

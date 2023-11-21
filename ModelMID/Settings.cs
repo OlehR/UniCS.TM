@@ -57,5 +57,9 @@ namespace ModelMID
         /// посилання на основний сервер.(куда скидати повідомлення)
         /// </summary>
         public int IdWorkPlaceMain { get; set; }
+        /// <summary>
+        /// Чи здійснювати контроль Акцизної марки на сервері.
+        /// </summary>
+        public bool IsCheckExciseStamp { get; set; }
     }
 }

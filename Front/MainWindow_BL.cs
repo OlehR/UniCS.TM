@@ -683,7 +683,17 @@ namespace Front
         void AddExciseStamp(string pES)
         {
             if (CurWares != null)
-                if (CurWares.AddExciseStamp(pES) == true)
+            {
+                if (Global.Settings.IsCheckExciseStamp)
+                {
+                    var res = Bl.ds.CheckExciseStamp(new ExciseStamp(CurWares, pES));
+                    if (res != null)
+                    {
+                        if(!res.Equals(CurWares))
+                            CustomMessage.Show($"Дана акцизна марка вже використана {res.CodePeriod} {res.IdWorkplace} Чек=>{res.CodeReceipt} CodeWares=>{res.CodeWares}!", "Увага", eTypeMessage.Error);
+                    }                    
+                }
+                if (CurWares.AddExciseStamp(pES))
                 {                 //Додання акцизноії марки до алкоголю
                     Bl.UpdateExciseStamp(new List<ReceiptWares>() { CurWares });
                     TypeAccessWait = eTypeAccess.NoDefine;
@@ -691,6 +701,7 @@ namespace Front
                 }
                 else
                     CustomMessage.Show("Дана акцизна марка вже використана!", "Увага", eTypeMessage.Error);
+            }
         }
 
         public void NewReceipt()
