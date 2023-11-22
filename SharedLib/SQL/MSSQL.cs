@@ -16,7 +16,7 @@ namespace SharedLib
         IDbTransaction transaction = null;
 
         //public TypeCommit TypeCommit { get; set; }
-        public MSSQL(String varConectionString= @"Server=10.1.0.22;Database=DW;Uid=dwreader;Pwd=DW_Reader;Connect Timeout=20;") :base(varConectionString)
+        public MSSQL(String varConectionString= @"Server=10.1.0.22;Database=DW;Uid=dwreader;Pwd=DW_Reader;Connect Timeout=30;") :base(varConectionString)
         {
             try
             {

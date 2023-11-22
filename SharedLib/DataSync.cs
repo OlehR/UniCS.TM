@@ -107,7 +107,8 @@ namespace SharedLib
             var r = ldb.ViewReceipt(pIdR, true);
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            _ = SendReceiptTo1CAsync(r);
+            _ = SendReceiptTo1CAsync(r);            
+            _= SendReceipt(r); // В сховище чеків
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             return true;
         }
@@ -826,8 +827,9 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                 HttpClient client = new HttpClient();
                 client.Timeout = TimeSpan.FromMilliseconds(pWait);
 
-                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, "http://apitest.spar.uz.ua/CheckExciseStamp");
-                requestMessage.Content = new StringContent(pES.ToJson(), Encoding.UTF8, "application/json");
+                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, "http://apitest.spar.uz.ua/"+"CheckExciseStamp");
+                string data = pES.ToJson();
+                requestMessage.Content = new StringContent(data, Encoding.UTF8, "application/json");
                 var response = await client.SendAsync(requestMessage);
 
                 if (response.IsSuccessStatusCode)
@@ -852,6 +854,38 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
         {
             return Task<ExciseStamp>.Run(() => { return CheckExciseStampAsync(pES, pWait); }).Result;
         }
+
+        public async Task<Status> SendReceipt(Receipt pR)
+        {
+            try
+            {
+                HttpClient client = new HttpClient();
+                client.Timeout = TimeSpan.FromMilliseconds(20000);
+
+                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, "http://apitest.spar.uz.ua/"+"Receipt");
+                string data = pR.ToJson();
+                requestMessage.Content = new StringContent(data, Encoding.UTF8, "application/json");
+                var response = await client.SendAsync(requestMessage);
+                if (response.IsSuccessStatusCode)
+                {
+                    var res = await response.Content.ReadAsStringAsync();
+                    if (!string.IsNullOrEmpty(res))
+                    {
+                        var Res = JsonConvert.DeserializeObject<Status>(res);
+                        return Res;
+                    }
+                }
+                /*else
+                {
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = null, Status = eSyncStatus.NoFatalError, StatusDescription = "RequestAsync=>" + response.RequestMessage });
+                }*/
+            }
+            catch (Exception e)
+            { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e); }
+            return null;
+        }
+
+
     }
 
     public class WeightReceipt

@@ -42,7 +42,7 @@ namespace Utils
         }
         public Status()
         {
-            State = 1;
+            State = 0;
             TextState ="Ok";
         }
     }

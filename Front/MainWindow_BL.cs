@@ -689,8 +689,11 @@ namespace Front
                     var res = Bl.ds.CheckExciseStamp(new ExciseStamp(CurWares, pES));
                     if (res != null)
                     {
-                        if(!res.Equals(CurWares))
+                        if (!res.Equals(CurWares))
+                        {
                             CustomMessage.Show($"Дана акцизна марка вже використана {res.CodePeriod} {res.IdWorkplace} Чек=>{res.CodeReceipt} CodeWares=>{res.CodeWares}!", "Увага", eTypeMessage.Error);
+                            return;
+                        }
                     }                    
                 }
                 if (CurWares.AddExciseStamp(pES))
