@@ -1134,7 +1134,7 @@ from RECEIPT r
                 var TMPvalue = Bl.GetLogRRO(curReceipt);
                 foreach (var elem in TMPvalue)
                 {
-                    if (elem.TypeOperation == (curReceipt.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund))
+                    if (elem.TypeOperation == (curReceipt.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund) && !string.IsNullOrEmpty(elem.TextReceipt))
                     {
                         ArrayFiscalLine = elem.TextReceipt.Split(Environment.NewLine);
                     }

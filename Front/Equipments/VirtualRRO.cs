@@ -396,6 +396,8 @@ namespace Front.Equipments.Implementation
             {
                 EF.PrintNoFiscalReceipt(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = Global.IdWorkPlace }, TextReport);
             }
+            else
+                Printer.Print(TextReport);
 
             if (roundFiscal != 0)
             {

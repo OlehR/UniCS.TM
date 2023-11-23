@@ -28,6 +28,7 @@ namespace Front.Equipments.Implementation
         const int WIDTHPAGE = 200;//e.PageBounds.Width; // ширина паперу принтера
         public Font MainFont = new("Courier", FONTSIZE, FontStyle.Bold, GraphicsUnit.Point);
         public Font SecondFont = new("Courier", SECONDFONTSIZE, FontStyle.Bold, GraphicsUnit.Point);
+        public bool IsPrintReceipt = false;
 
         public int TopIndent;
         QRCodeGenerator qrGenerator = new();
@@ -36,18 +37,22 @@ namespace Front.Equipments.Implementation
                          base(pEquipment, pConfiguration, eModelEquipment.pRRO_SG, pLoggerFactory)
         {
             NamePrinter = Configuration?.GetValue<string>($"{KeyPrefix}NamePrinter");
+            IsPrintReceipt = Convert.ToBoolean(Configuration?[$"{KeyPrefix}IsPrintReceipt"]);
         }
 
         override public bool PrintReceipt(Receipt R)
         {
-            Receipt = R;
-            PrintDocument printDocument = new PrintDocument();
-            printDocument.PrintPage += PrintPageReceipt;
-            printDocument.DocumentName = "Receipt";
-            PrintDialog printDialog = new();
-            printDialog.Document = printDocument;
-            printDialog.PrinterSettings.PrinterName = NamePrinter;
-            printDialog.Document.Print(); // печатаем
+            if (IsPrintReceipt)
+            {
+                Receipt = R;
+                PrintDocument printDocument = new PrintDocument();
+                printDocument.PrintPage += PrintPageReceipt;
+                printDocument.DocumentName = "Receipt";
+                PrintDialog printDialog = new();
+                printDialog.Document = printDocument;
+                printDialog.PrinterSettings.PrinterName = NamePrinter;
+                printDialog.Document.Print(); // печатаем
+            }
             return true;
         }
 
