@@ -13,13 +13,17 @@ namespace ModelMID
 
     public class ReceiptWares : IdReceiptWares, ICloneable
     {
-        public int IdWorkplacePay { get { if (_IdWorkplacePay == 0) _IdWorkplacePay = Global.GetIdWorkPlacePay(CodeDirection, CodeTM); return _IdWorkplacePay; } set { _IdWorkplacePay = value; } }
+        public int IdWorkplacePay { get { if (_IdWorkplacePay == 0) _IdWorkplacePay = Global.GetIdWorkPlacePay(CodeDirection, CodeTM, new int[]{ CodeGroup,CodeGroupUp,CodeDirection}); return _IdWorkplacePay; } set { _IdWorkplacePay = value; } }
         int _IdWorkplacePay;
 
         /// <summary>
         /// Код групи товару
         /// </summary>
         public int CodeGroup { get; set; }
+        /// <summary>
+        /// Код групи товару 2 рівня(передостанній)
+        /// </summary>
+        public int CodeGroupUp { get; set; }
 
         /// <summary>
         /// Назва товару

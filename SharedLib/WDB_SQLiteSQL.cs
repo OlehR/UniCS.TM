@@ -74,6 +74,7 @@ alter TABLE wares add Type_Wares INTEGER  NOT NULL DEFAULT 2; --Ver=>6;
 alter TABLE wares add Code_TM INTEGER NOT NULL DEFAULT 0; --Ver=>9;
 alter TABLE CLIENT add PHONE_ADD TEXT; --Ver=>10;
 alter TABLE FAST_GROUP add Image TEXT; --Ver=>11;
+alter TABLE wares add CodeGroupUp INTEGER  DEFAULT 0; --Ver=>12;
 --Ver=>11;Reload;";       
 
         readonly string SqlCreateConfigTable = @"
@@ -353,6 +354,7 @@ CREATE INDEX id_Client_NEW ON Client_NEW(BARCODE_CLIENT);
         CREATE TABLE WARES(
             CODE_WARES INTEGER  NOT NULL,-- PRIMARY KEY,
             CODE_GROUP INTEGER  NOT NULL,
+            CodeGroupUp INTEGER NOT NULL DEFAULT 0,
             NAME_WARES TEXT     NOT NULL,
             NAME_WARES_UPPER TEXT     NOT NULL,
             NAME_WARES_RECEIPT TEXT,
@@ -721,6 +723,8 @@ select t.code_wares as CodeWares,w.name_wares NameWares,w.name_wares_receipt  as
         ,w.Code_Direction as CodeDirection
         ,w.Code_TM as CodeTM
         ,(select max(AMOUNT)  as AMOUNT from SALES_BAN sb where sb.CODE_GROUP_WARES=w.CODE_GROUP) as AmountSalesBan
+,w.Code_Group as CodeGroup
+,w.CodeGroupUp
 from t$1 t
 left join wares w on t.code_wares=w.code_wares
 left join price pd on ( pd.code_wares=t.code_wares and pd.code_dealer= @CodeDealer)
@@ -785,6 +789,8 @@ Price as Price --, wr.sum as Sum
  ,wr.sum_wallet as SumWallet
  ,case when max(SORT) over(PARTITION BY CODE_RECEIPT) = sort then  1 else 0 end as IsLast
  ,wrh.history as History
+,w.Code_Group as CodeGroup
+,w.CodeGroupUp
                      from wares_receipt wr
                      join wares w on(wr.code_wares = w.code_wares)
                      join ADDITION_UNIT au on w.code_wares = au.code_wares and wr.code_unit=au.code_unit
@@ -1060,10 +1066,10 @@ from wares_receipt wr where wr.id_workplace=@IdWorkplace and wr.code_period=@Cod
 update receipt set CODE_PATTERN = 2  where id_workplace = @IdWorkplaceReturn and code_period = @CodePeriodReturn  and code_receipt = @CodeReceiptReturn;";
 
         readonly string SqlReplaceWares = @"
-replace into Wares(CODE_WARES, CODE_GROUP, NAME_WARES, Name_Wares_Upper, ARTICL, CODE_BRAND, CODE_UNIT,
+replace into Wares(CODE_WARES, CODE_GROUP, CodeGroupUp, NAME_WARES, Name_Wares_Upper, ARTICL, CODE_BRAND, CODE_UNIT,
                      Percent_Vat, Type_VAT, NAME_WARES_RECEIPT, DESCRIPTION, Type_Wares, Weight_brutto,
                      Weight_Fact, Weight_Delta, CODE_UKTZED, Limit_Age, PLU, Code_Direction, Code_TM)
-             values(@CodeWares, @CodeGroup, @NameWares, @NameWaresUpper, @Articl, @CodeBrand, @CodeUnit,
+             values(@CodeWares, @CodeGroup,@CodeGroupUp, @NameWares, @NameWaresUpper, @Articl, @CodeBrand, @CodeUnit,
                      @PercentVat, @TypeVat, @NameWaresReceipt, @Description, @TypeWares, @WeightBrutto,
                      @WeightFact, @WeightDelta, @CodeUKTZED, @LimitAge, @PLU, @CodeDirection, @CodeTM);";
 

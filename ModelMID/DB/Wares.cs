@@ -15,6 +15,8 @@ namespace ModelMID
         /// Код Групи
         /// </summary>
         public int CodeGroup { get; set; }
+
+        public int CodeGroupUp { get; set; }        
         /// <summary>
         /// Назва товару
         /// </summary>

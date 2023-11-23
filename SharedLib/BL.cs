@@ -32,7 +32,8 @@ namespace SharedLib
         public BL()
         {
             db = WDB_SQLite.GetInstance;
-            db.BildWorkplace();            
+            db.BildWorkplace();
+            db.BildWaresWarehouse();
             ds = new DataSync(this);
             sBL = this;
             var WP= Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace);

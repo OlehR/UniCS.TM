@@ -1104,16 +1104,20 @@ Where ID_WORKPLACE = @IdWorkplace
             var WP = pWP ?? GetWorkPlace();
             var WorkPlaceByTerminalId = new SortedList<Guid, WorkPlace>();
             var WorkPlaceByWorkplaceId = new SortedList<int, WorkPlace>();
-            foreach (var el in WP)
+            if (WP?.Any() == true)
             {
-                WorkPlaceByTerminalId.Add(el.TerminalGUID, el);
-                WorkPlaceByWorkplaceId.Add(el.IdWorkplace, el);
-                if (el.IdWorkplace == Global.IdWorkPlace && el.Settings != null)
-                    Global.Settings = el.Settings;
-            }
+                foreach (var el in WP)
+                {
+                    WorkPlaceByTerminalId.Add(el.TerminalGUID, el);
+                    WorkPlaceByWorkplaceId.Add(el.IdWorkplace, el);
+                    if (el.IdWorkplace == Global.IdWorkPlace && el.Settings != null)
+                        Global.Settings = el.Settings;
+                }
 
-            Global.WorkPlaceByTerminalId = WorkPlaceByTerminalId;
-            Global.WorkPlaceByWorkplaceId = WorkPlaceByWorkplaceId;
+                Global.WorkPlaceByTerminalId = WorkPlaceByTerminalId;
+                Global.WorkPlaceByWorkplaceId = WorkPlaceByWorkplaceId;
+            }
+            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Записів=>{WP?.Count()}");
 
             return true;
         }
@@ -1302,7 +1306,7 @@ select sum( sum_pay* case when TYPE_PAY in (4) then -1 else 1 end) as sum from p
             return Res;
         }
 
-        public void BildWaresWarehouse(IEnumerable<WaresWarehouse> pWW)
+        public void BildWaresWarehouse(IEnumerable<WaresWarehouse> pWW=null)
         {
             if (pWW == null)
                 pWW = GetWaresWarehouse();
@@ -1316,6 +1320,9 @@ select sum( sum_pay* case when TYPE_PAY in (4) then -1 else 1 end) as sum from p
 
                     if (el.TypeData == eTypeData.Brand && !Global.IdWorkPlacePayTM.ContainsKey(el.Data))
                         Global.IdWorkPlacePayTM.Add(el.Data, Global.Settings.IdWorkPlaceLink);
+
+                    if (el.TypeData == eTypeData.Group && !Global.IdWorkPlacePayGroup.ContainsKey(el.Data))
+                        Global.IdWorkPlacePayGroup.Add(el.Data, Global.Settings.IdWorkPlaceLink);
                 }
             }
         }       

@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Utils.Status;
 
 namespace Utils
 {
@@ -53,5 +48,4 @@ namespace Utils
         public StatusD(int pState = 0, string pTextState = "Ok"):base(pState ,  pTextState) { }
         public StatusD(Exception e) : base(e) { }
     }
-
 }

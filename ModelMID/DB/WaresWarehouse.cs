@@ -7,7 +7,8 @@ namespace ModelMID.DB
     public enum eTypeData
     {
         Directions = 1,
-        Brand = 2
+        Brand = 2,
+        Group =3
     }
 
     public class WaresWarehouse

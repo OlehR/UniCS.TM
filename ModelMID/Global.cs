@@ -25,6 +25,7 @@ namespace ModelMID
 
         public static SortedList<int, int> IdWorkPlacePayDirection = new SortedList<int, int>();
         public static SortedList<int, int> IdWorkPlacePayTM = new SortedList<int, int>();
+        public static SortedList<int, int> IdWorkPlacePayGroup = new SortedList<int, int>();
 
         public static Settings Settings { get; set; }
 
@@ -224,12 +225,16 @@ namespace ModelMID
             return null;
         }
 
-        public static int GetIdWorkPlacePay(int pCodeDirection,int pCodeTM)
+        public static int GetIdWorkPlacePay(int pCodeDirection, int pCodeTM, int[] pCodeGroup = null)
         {
             if (IdWorkPlacePayDirection.ContainsKey(pCodeDirection))
                 return IdWorkPlacePayDirection[pCodeDirection];
             if (IdWorkPlacePayTM.ContainsKey(pCodeTM))
                 return IdWorkPlacePayTM[pCodeTM];
+            if (pCodeGroup?.Any() == true)
+                foreach (int el in pCodeGroup)
+                    if (el != 0 && IdWorkPlacePayGroup.ContainsKey(el))
+                        return IdWorkPlacePayGroup[el];
             return IdWorkPlace;
         }
         public static IEnumerable<int> IdWorkPlaces;
