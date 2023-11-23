@@ -37,7 +37,7 @@ namespace Front.Equipments.Implementation
                          base(pEquipment, pConfiguration, eModelEquipment.pRRO_SG, pLoggerFactory)
         {
             NamePrinter = Configuration?.GetValue<string>($"{KeyPrefix}NamePrinter");
-            IsPrintReceipt = Convert.ToBoolean(Configuration?[$"{KeyPrefix}IsPrintReceipt"]);
+            IsPrintReceipt = Configuration?.GetValue<bool>($"{KeyPrefix}IsPrintReceipt") ?? true;
         }
 
         override public bool PrintReceipt(Receipt R)
