@@ -415,7 +415,11 @@ namespace ModelMID
         /// <summary>
         /// Пиво (Ще не використавується)
         /// </summary>
-        Beer = 4
+        Beer = 4,
+        /// <summary>
+        /// Слабоалкогольні напої без акцизної марки
+        /// </summary>
+        LowAlcohol =5
     }
 
     public enum eDBStatus

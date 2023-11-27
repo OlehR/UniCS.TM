@@ -171,10 +171,14 @@ namespace Front.Equipments
 
         public virtual void GetFiscalInfo(Receipt pR,object pRes) { }
 
-        public string TaxGroup(ReceiptWares pRW) 
+        public string TaxGroup(ReceiptWares pRW)
         {
-            int Key = (int)pRW.TypeWares * 10 + pRW.TypeVat;
-            if (Tax.ContainsKey(Key))            
+            int Key;
+            if (pRW.TypeWares == eTypeWares.LowAlcohol)
+                Key = (int)eTypeWares.Alcohol * 10 + pRW.TypeVat;
+            else
+                Key = (int)pRW.TypeWares * 10 + pRW.TypeVat;
+            if (Tax.ContainsKey(Key))
                 return Tax[Key];
             return DefaultTax;
         }
