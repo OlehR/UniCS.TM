@@ -1840,7 +1840,7 @@
                                 </Style>
                             </TextBlock.Style>
                         </TextBlock>
-                        
+
                         <TextBlock Text="{Binding RemoteCheckout.TextInfo, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
                                    FontSize="24" FontWeight="Bold" Margin="2" TextWrapping="Wrap"
                                    HorizontalAlignment="Center">
@@ -2011,7 +2011,19 @@
 
                 <Grid  >
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition>
+                            <RowDefinition.Style>
+                                <Style TargetType="RowDefinition">
+                                    <Setter Property="Height" Value="*"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding TypeAccessWait, RelativeSource={RelativeSource 
+                   Mode=FindAncestor, AncestorType=Window}}" Value="ExciseStamp">
+                                            <Setter Property="Height" Value="0.4*" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </RowDefinition.Style>
+                        </RowDefinition>
                         <RowDefinition Height="*"></RowDefinition>
                     </Grid.RowDefinitions>
 
@@ -2055,118 +2067,97 @@
                                     FontSize="24" TextWrapping="Wrap" />
 
 
-                        <Grid x:Name="ExciseStampButtons" Visibility="Collapsed">
-                            <Button Grid.Row="2" HorizontalAlignment="Center" 
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Grid x:Name="ExciseStampButtons" Visibility="Collapsed">
+                                <Button Grid.Row="2" HorizontalAlignment="Center" 
                                 Click="AddExciseStamp"  Height="70" Width="150" Margin="5,0,0,5">
-                                <Button.Content>
-                                    <TextBlock FontSize="30" Foreground="White" Text="{DynamicResource ok}" Margin="5,0,5,0"/>
-                                </Button.Content>
-                                <Button.Style>
-                                    <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
-                                        <Setter Property="IsEnabled" Value="True"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsExciseStamp, RelativeSource={RelativeSource 
+                                    <Button.Content>
+                                        <TextBlock FontSize="30" Foreground="White" Text="{DynamicResource ok}" Margin="5,0,5,0"/>
+                                    </Button.Content>
+                                    <Button.Style>
+                                        <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
+                                            <Setter Property="IsEnabled" Value="True"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsExciseStamp, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                                <Setter Property="IsEnabled" Value="True" />
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding IsExciseStamp, RelativeSource={RelativeSource 
+                                                    <Setter Property="IsEnabled" Value="True" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsExciseStamp, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="False">
-                                                <Setter Property="IsEnabled" Value="False" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                            </Button>
-
-                            <!--<Button Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                                Click="ExciseStampNone" Height="70" Width="360" Margin="0,0,5,5">
-                                <Button.Content>
-                                    <TextBlock FontSize="30" Text="{DynamicResource ExciseStampEmpty}" Margin="5,0,5,0"/>
-                                </Button.Content>
-                                <Button.Style>
-                                    <Style BasedOn="{StaticResource Default}" TargetType="Button">
-                                        <Setter Property="IsEnabled" Value="True"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsIgnoreExciseStamp, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                                <Setter Property="IsEnabled" Value="True" />
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding IsIgnoreExciseStamp, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
-                                                <Setter Property="IsEnabled" Value="False" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                            </Button>-->
-                        </Grid>
+                                                    <Setter Property="IsEnabled" Value="False" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </Grid>
 
 
-                        <ItemsControl Name="WaitAdminWeightButtons" VerticalAlignment="Center">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Button Height="75" Width="Auto" Margin="2"  HorizontalAlignment="Center" 
+                            <ItemsControl Name="WaitAdminWeightButtons" VerticalAlignment="Center">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Height="75" Width="Auto" Margin="2"  HorizontalAlignment="Center" 
                                                     Click="CustomWindowClickButton">
-                                        <TextBlock Text="{Binding Text}" Foreground="White" FontSize=" 24" FontWeight="Bold"/>
-                                        <Button.Style>
-                                            <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
-                                                <Setter Property="IsEnabled" Value="True"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsConfirmAdmin, RelativeSource={RelativeSource 
+                                            <TextBlock Text="{Binding Text}" Foreground="White" FontSize=" 24" FontWeight="Bold"/>
+                                            <Button.Style>
+                                                <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
+                                                    <Setter Property="IsEnabled" Value="True"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsConfirmAdmin, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="False">
-                                                        <Setter Property="IsEnabled" Value="False" />
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding IsNeedAdmin}" Value="True">
-                                                        <Setter Property="IsEnabled" Value="False" />
-                                                    </DataTrigger>
+                                                            <Setter Property="IsEnabled" Value="False" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding IsNeedAdmin}" Value="True">
+                                                            <Setter Property="IsEnabled" Value="False" />
+                                                        </DataTrigger>
 
-                                                    <DataTrigger Binding="{Binding IsNeedAdmin}" Value="False">
-                                                        <Setter Property="IsEnabled" Value="True" />
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding IsConfirmAdmin, RelativeSource={RelativeSource 
+                                                        <DataTrigger Binding="{Binding IsNeedAdmin}" Value="False">
+                                                            <Setter Property="IsEnabled" Value="True" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding IsConfirmAdmin, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                                        <Setter Property="IsEnabled" Value="True" />
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding IsCashRegister, RelativeSource={RelativeSource 
+                                                            <Setter Property="IsEnabled" Value="True" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding IsCashRegister, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                                        <Setter Property="IsEnabled" Value="True" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Button.Style>
-                                    </Button>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+                                                            <Setter Property="IsEnabled" Value="True" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
 
-                        <ItemsControl Name="CustomButtonsWaitAdmin" >
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate >
-                                    <Button Height="Auto" Width="Auto" Content="{Binding Text}"  
+                            <ItemsControl Name="CustomButtonsWaitAdmin" >
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate >
+                                        <Button Height="Auto" Width="Auto" Content="{Binding Text}"  
                                             Click="CustomWindowClickButton" HorizontalAlignment="Center">
-                                        <Button.Style>
-                                            <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsNeedAdmin}" Value="true">
-                                                        <Setter Property="IsEnabled" Value="False" />
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding IsNeedAdmin}" Value="false">
-                                                        <Setter Property="IsEnabled" Value="False" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Button.Style>
-                                    </Button>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-
+                                            <Button.Style>
+                                                <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsNeedAdmin}" Value="true">
+                                                            <Setter Property="IsEnabled" Value="False" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding IsNeedAdmin}" Value="false">
+                                                            <Setter Property="IsEnabled" Value="False" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
                         <Button TabIndex="1" Name="CodeSMS" Content="Введіть код підтвердження" Margin="10" Visibility="Collapsed"
                                  Style="{StaticResource WhiteButton}" Height="60" Click="CodeSMSUseBonusBtn"
                                  FontSize="35"  VerticalAlignment="Center" />
 
                         <Button   FontSize="22" Click="_Cancel" x:Name="WaitAdminCancel"
-                        Height="80" Width="300" VerticalAlignment="Center" Visibility="Visible">
+                        Height="80" Width="300" VerticalAlignment="Bottom" Visibility="Visible">
                             <StackPanel Orientation="Horizontal">
                                 <Image  Height="25" Width="25"  Source="icons\X.png"></Image>
                                 <TextBlock FontSize="30"  Text="{DynamicResource cancel}" Margin="5,0,5,0"/>
@@ -2189,7 +2180,7 @@
                         </Button>
                         <keyboard:OnScreenKeyboard Grid.Row="5"
                                                    Visibility="Visible"
-                                                   Height="250"
+                                                   Height="300"
                                                    Width="900"
                                                    x:Name="KBAdmin"                                  
                                                    VerticalAlignment="Top" 

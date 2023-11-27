@@ -882,7 +882,8 @@ namespace Front
                                     WaitAdminImage.Visibility = Visibility.Collapsed;
                                     WaitAdminCancel.Visibility = Visibility.Collapsed;
                                     TBExciseStamp.Visibility = Visibility.Visible;
-                                    KBAdmin.Visibility = Visibility.Collapsed;
+                                    KBAdmin.Visibility = Visibility.Visible;
+                                    KBAdmin.SetInput(TBExciseStamp);
                                     ExciseStampButtons.Visibility = Visibility.Visible;
                                     ExciseStampNameWares.Visibility = Visibility.Visible;
                                     WaitAdminTitle.Visibility = Visibility.Collapsed;
@@ -1342,6 +1343,7 @@ namespace Front
         private void AddExciseStamp(object sender, RoutedEventArgs e)
         {
             AddExciseStamp(TBExciseStamp.Text);
+            KBAdmin.SetInput(null);
         }
 
         private void ChangedExciseStamp(object sender, TextChangedEventArgs e)
@@ -1360,6 +1362,7 @@ namespace Front
         private void CustomWindowClickButton(object sender, RoutedEventArgs e)
         {
             //SetStateView(eStateMainWindows.WaitInput);
+            KBAdmin.SetInput(null);
             IsConfirmAdmin = false;
             Button btn = sender as Button;
             CustomButton res = btn.DataContext as CustomButton;
@@ -1811,7 +1814,7 @@ namespace Front
                 CustomMessage.Result = (bool res) =>
                 {
                     if (res)
-                        SendRemoteComand(comand, remoteInfo,  "DeleteReceipt");
+                        SendRemoteComand(comand, remoteInfo, "DeleteReceipt");
                 };
             }
             else
