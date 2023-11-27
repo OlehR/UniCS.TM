@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Pipes;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Policy;
@@ -113,8 +114,10 @@ namespace SharedLib
             return true;
         }
 
-        public async Task<bool> SendReceiptTo1CAsync(Receipt pReceipt)
+        public async Task<bool> SendReceiptTo1CAsync(Receipt pReceipt,string pServer=null)
         {
+            if (string.IsNullOrEmpty(pServer))
+                pServer = Global.Server1C;
             try
             {
                 foreach (var el in pReceipt.IdWorkplacePays)
@@ -122,7 +125,7 @@ namespace SharedLib
                     pReceipt.IdWorkplacePay = el;
                     var r = new Receipt1C(pReceipt);
                     var body = soapTo1C.GenBody("JSONCheck", new Parameters[] { new Parameters("JSONSting", r.GetBase64()) });
-                    var res = Global.IsTest ? "0" : await soapTo1C.RequestAsync(Global.Server1C, body, 240000, "application/json");
+                    var res = Global.IsTest ? "0" : await soapTo1C.RequestAsync(pServer, body, 240000, "application/json");
                     if (string.IsNullOrEmpty(res) || !res.Equals("0"))
                         return false;
                 }
@@ -875,17 +878,15 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                         return Res;
                     }
                 }
-                /*else
+                else
                 {
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = null, Status = eSyncStatus.NoFatalError, StatusDescription = "RequestAsync=>" + response.RequestMessage });
-                }*/
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, response.StatusCode.ToString());
+                }
             }
             catch (Exception e)
             { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e); }
             return null;
         }
-
-
     }
 
     public class WeightReceipt

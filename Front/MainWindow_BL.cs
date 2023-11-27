@@ -684,9 +684,9 @@ namespace Front
         {
             if (CurWares != null)
             {
+                var res = Bl.ds.CheckExciseStamp(new ExciseStamp(CurWares, pES));
                 if (Global.Settings.IsCheckExciseStamp)
-                {
-                    var res = Bl.ds.CheckExciseStamp(new ExciseStamp(CurWares, pES));
+                {                    
                     if (res != null)
                     {
                         if (!res.Equals(CurWares))
