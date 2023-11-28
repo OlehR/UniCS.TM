@@ -1098,29 +1098,7 @@ Where ID_WORKPLACE = @IdWorkplace
        Code_Warehouse as CodeWarehouse ,CODE_DEALER as CodeDealer,Prefix, DNSName,TypeWorkplace ,SettingsEx from WORKPLACE;";
             return db.Execute<WorkPlace>(SqlGetWorkplace);
         }
-
-        public bool BildWorkplace(IEnumerable<WorkPlace> pWP = null)
-        {
-            var WP = pWP ?? GetWorkPlace();
-            var WorkPlaceByTerminalId = new SortedList<Guid, WorkPlace>();
-            var WorkPlaceByWorkplaceId = new SortedList<int, WorkPlace>();
-            if (WP?.Any() == true)
-            {
-                foreach (var el in WP)
-                {
-                    WorkPlaceByTerminalId.Add(el.TerminalGUID, el);
-                    WorkPlaceByWorkplaceId.Add(el.IdWorkplace, el);
-                    if (el.IdWorkplace == Global.IdWorkPlace && el.Settings != null)
-                        Global.Settings = el.Settings;
-                }
-
-                Global.WorkPlaceByTerminalId = WorkPlaceByTerminalId;
-                Global.WorkPlaceByWorkplaceId = WorkPlaceByWorkplaceId;
-            }
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Записів=>{WP?.Count()}");
-
-            return true;
-        }
+              
 
         public virtual IEnumerable<FastGroup> GetFastGroup(int parCodeUpFastGroup)
         {

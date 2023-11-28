@@ -296,25 +296,26 @@ namespace ModelMID
                 res -= 0.01m;
             return res;
         }
-        /*
-        /// <summary>
-        /// Текучий чек (1-3) з масиву Receipts
-        /// </summary>
-        public static int CurrentReceipt = 0;        
 
-        /// <summary>
-        /// Список чеків (0-немає чека)
-        /// </summary>
-        public static IdReceipt[] Receipts = new IdReceipt[QuantityOpenReceipt];
+        public static bool BildWorkplace(IEnumerable<WorkPlace> pWP = null)
+        {
+            var WorkPlaceByTerminalId = new SortedList<Guid, WorkPlace>();
+            var WorkPlaceByWorkplaceId = new SortedList<int, WorkPlace>();
+            if (pWP?.Any() == true)
+            {
+                foreach (var el in pWP)
+                {
+                    WorkPlaceByTerminalId.Add(el.TerminalGUID, el);
+                    WorkPlaceByWorkplaceId.Add(el.IdWorkplace, el);
+                    if (el.IdWorkplace == Global.IdWorkPlace && el.Settings != null)
+                        Global.Settings = el.Settings;
+                }
+                Global.WorkPlaceByTerminalId = WorkPlaceByTerminalId;
+                Global.WorkPlaceByWorkplaceId = WorkPlaceByWorkplaceId;
+            }
+            FileLogger.WriteLogMessage("Global", System.Reflection.MethodBase.GetCurrentMethod().Name, $"Записів=>{pWP?.Count()}");
 
-        /// <summary>
-        /// Кількість пос-терміналів на касі.
-        /// </summary>
-        public static int QuantityPos = 2;
-
-        //public static int DefaultCodeClient = 0;
-
-        //public static string BillCoins = "грн:1:500,200,100,50,20,10,5,2,1;коп:0.01:50,10";
-        */
+            return true;
+        }
     }
 }

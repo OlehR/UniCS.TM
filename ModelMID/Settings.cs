@@ -61,5 +61,9 @@ namespace ModelMID
         /// Чи здійснювати контроль Акцизної марки на сервері.
         /// </summary>
         public bool IsCheckExciseStamp { get; set; }
+        /// <summary>
+        /// Чи відправляти чеки в 1С.
+        /// </summary>
+        public bool IsSend1C { get; set; } = true;
     }
 }

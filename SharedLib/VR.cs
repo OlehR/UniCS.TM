@@ -13,14 +13,24 @@ namespace SharedLib
         {
             AddWares,
             UpdateWares,
-            DeleteWares
+            DeleteWares,
+            DelReceipt
         }
-        public static async Task<string> SendMessageAsync(int IdWorkplace, string pStr, int pCode, decimal pQuantity, decimal pSum, eTypeVRMessage peType = eTypeVRMessage.AddWares, decimal pSumAll=0)
+        public static async Task<string> SendMessageAsync(int IdWorkplace, string pStr, int pCode, decimal pQuantity, decimal pSum, eTypeVRMessage pType = eTypeVRMessage.AddWares, decimal pSumAll=0)
         {
             string res = null;
             try
             {
                 string parContex = "text/xml";
+                switch (pType)
+                {
+                    case eTypeVRMessage.DeleteWares:
+                        pStr = "Видалення строки:" + pStr;
+                        break;
+                    case eTypeVRMessage.DelReceipt:
+                        pStr = "Анулювання чеку!" + pStr;
+                        break;
+                }
                 string Body = GenBody(pStr, pCode, pQuantity, pSum, pSumAll);
                 if (string.IsNullOrEmpty(Body))
                     return null;

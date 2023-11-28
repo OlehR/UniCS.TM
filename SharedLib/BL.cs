@@ -31,8 +31,8 @@ namespace SharedLib
 
         public BL()
         {
-            db = WDB_SQLite.GetInstance;
-            db.BildWorkplace();
+            db = WDB_SQLite.GetInstance;            
+            Global.BildWorkplace(db.GetWorkPlace());
             db.BildWaresWarehouse();
             ds = new DataSync(this);
             sBL = this;
