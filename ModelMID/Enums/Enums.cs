@@ -419,7 +419,7 @@ namespace ModelMID
         /// <summary>
         /// Слабоалкогольні напої без акцизної марки
         /// </summary>
-        LowAlcohol =5
+        LowAlcohol = 5
     }
 
     public enum eDBStatus

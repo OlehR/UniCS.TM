@@ -36,7 +36,7 @@ namespace SharedLib
             Right.Add(eTypeAccess.ReturnReceipt, R);
             Right.Add(eTypeAccess.ChoicePrice, eTypeUser.Сashier);
             Right.Add(eTypeAccess.ConfirmAge, eTypeUser.Сashier);
-            Right.Add(eTypeAccess.ExciseStamp, eTypeUser.Сashier);
+            Right.Add(eTypeAccess.ExciseStamp, R);
             Right.Add(eTypeAccess.FixWeight, eTypeUser.AdminSSC);
             Right.Add(eTypeAccess.AddNewWeight, eTypeUser.AdminSSC);
             Right.Add(eTypeAccess.AdminPanel, Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout ? eTypeUser.AdminSSC : eTypeUser.Сashier);
