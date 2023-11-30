@@ -2070,7 +2070,7 @@
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <Grid x:Name="ExciseStampButtons" Visibility="Collapsed">
                                 <Button Grid.Row="2" HorizontalAlignment="Center" 
-                                Click="AddExciseStamp"  Height="70" Width="150" Margin="5,0,0,5">
+                                Click="AddExciseStamp"  Height="75" Width="150" Margin="2">
                                     <Button.Content>
                                         <TextBlock FontSize="30" Foreground="White" Text="{DynamicResource ok}" Margin="5,0,5,0"/>
                                     </Button.Content>
@@ -2118,10 +2118,10 @@
                                    Mode=FindAncestor, AncestorType=Window}}" Value="True">
                                                             <Setter Property="IsEnabled" Value="True" />
                                                         </DataTrigger>
-                                                        <DataTrigger Binding="{Binding IsCashRegister, RelativeSource={RelativeSource 
+                                                        <!--<DataTrigger Binding="{Binding IsCashRegister, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="True">
                                                             <Setter Property="IsEnabled" Value="True" />
-                                                        </DataTrigger>
+                                                        </DataTrigger>-->
                                                     </Style.Triggers>
                                                 </Style>
                                             </Button.Style>

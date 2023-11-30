@@ -5,8 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Front" xmlns:keyboard="clr-namespace:OnScreenKeyboardControl.Keyboard"
         mc:Ignorable="d"
-        Title="TerminalPaymentInfo" WindowStyle="None"
-        WindowState="Normal" ShowInTaskbar="False"
+        Title="TerminalPaymentInfo"
+        WindowStyle="None"
+        WindowState="Normal"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterScreen"
         Height="768" Width="1024">
 
     <Window.Resources>
