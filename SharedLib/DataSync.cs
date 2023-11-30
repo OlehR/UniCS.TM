@@ -246,7 +246,10 @@ namespace SharedLib
                   
                     SQLite pD= new SQLite(NameDB);
                     if (pIsFull)
+                    {
                         pD.ExecuteNonQuery(db.SqlCreateMIDTable);
+                        pD.SetVersion(db.VerMID);
+                    }
 
                     if (!MsSQL.IsSync(Global.CodeWarehouse)) return false;
                     

@@ -43,7 +43,7 @@ namespace SharedLib
             return Path.Combine(Global.PathDB, $"{Date:yyyyMM}", $"MID_{Date:yyyyMMdd}{(pTmp ? "_tmp" : "")}.db");
         }
 
-        public WDB_SQLite(DateTime parD = default(DateTime), string pConnect = null, bool pIsUseOldDB = true, bool pIsCreateMidFile = false)
+        public WDB_SQLite(DateTime parD = default(DateTime), string pConnect = null, bool pIsUseOldDB = true)//, bool pIsCreateMidFile = false)
         {
             Connect = pConnect;
             DT = parD != default(DateTime) ? parD.Date : DateTime.Today.Date;
@@ -51,7 +51,8 @@ namespace SharedLib
             if (!File.Exists(ConfigFile))
             {
                 dbConfig = new SQLite(ConfigFile);
-                dbConfig.ExecuteNonQuery(SqlCreateConfigTable);                
+                dbConfig.ExecuteNonQuery(SqlCreateConfigTable);
+                dbConfig.SetVersion(VerConfig);
             }
             else
                 dbConfig = new SQLite(ConfigFile);
@@ -87,18 +88,16 @@ namespace SharedLib
                 //Створюємо щоденну табличку з чеками.
                 using var db = new SQLite(ReceiptFile);
                 db.ExecuteNonQuery(SqlCreateReceiptTable);
+                db.SetVersion(VerRC);
                 db.Close();               
             }
 
-            //if (!File.Exists(MidFile))
-            //{
-            if (pIsCreateMidFile)
+            /*if (pIsCreateMidFile)
             {
                 using var dbMid = new SQLite(MidFile);
                 dbMid.ExecuteNonQuery(SqlCreateMIDTable);
                 dbMid.Close();
-
-            }
+            }*/
             GetDB();
             DBStatus = eDBStatus.Ok;
         }
@@ -164,7 +163,7 @@ namespace SharedLib
                 int CurVerConfig = 0, CurVerMid = 0, CurVerRC = 0;
                 var Lines = SqlUpdateConfig.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
 
-                CurVerConfig = GetConfig<int>("VerConfig", dbConfig);
+                CurVerConfig = dbConfig.GetVersion;// GetConfig<int>("VerConfig", dbConfig);
                 CurVerMid = GetConfig<int>("VerMid", dbConfig);
                 CurVerRC = GetConfig<int>("VerRC", dbConfig);
 
@@ -264,7 +263,7 @@ namespace SharedLib
                             }
                             catch (Exception e)
                             {
-                                if (e.Message.IndexOf("duplicate column name:") == -1)
+                                if (e.Message.IndexOf("duplicate column name:") == -1 && e.Message.IndexOf("already exists")==-1)
                                 {
                                     FileLogger.WriteLogMessage($"WDB_SQLite.Parse Exception =>( el=>{el},pCurVersion=>{pCurVersion}) => (){Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace}", eTypeLog.Error);
                                     throw new Exception(e.Message, e);
@@ -750,10 +749,7 @@ insert into RECEIPT_Event(
         }
         ////////////////////////// MID
 
-        public bool CreateMIDTable()
-        {
-            return dbMid.ExecuteNonQuery(SqlCreateMIDTable)>0;
-        }
+        public bool CreateMIDTable() { return dbMid.ExecuteNonQuery(SqlCreateMIDTable)>0; }
         public bool CreateMIDIndex(SQLite pDB) { return pDB.ExecuteNonQuery(SqlCreateMIDIndex)>0; }
 
         public bool ReplaceUnitDimension(IEnumerable<UnitDimension> parData, SQLite pDB)

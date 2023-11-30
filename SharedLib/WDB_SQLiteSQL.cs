@@ -1,17 +1,8 @@
-﻿using ModelMID.DB;
-using ModelMID;
-using System.Collections.Concurrent;
-using Microsoft.VisualBasic;
-using System.Collections.Generic;
-using System.Text;
-using System.Security.Policy;
-using System.Transactions;
-
-namespace SharedLib
+﻿namespace SharedLib
 {
     public partial class WDB_SQLite 
     {
-        readonly int VerConfig = 16;
+        public readonly int VerConfig = 16;
         readonly string SqlUpdateConfig = @"alter table WORKPLACE add  Video_Camera_IP TEXT;--Ver=>0
 alter table WORKPLACE add  Video_Recorder_IP TEXT;--Ver=>0
 alter TABLE WEIGHT    add  CODE_WARES  INTEGER  NOT NULL DEFAULT 0;--Ver=>0
@@ -33,7 +24,7 @@ DROP INDEX IF exists id_FiscalArticle;--Ver=>15
 CREATE UNIQUE INDEX id_FiscalArticle ON FiscalArticle(IdWorkplacePay,CodeWares);--Ver=>15
 CREATE UNIQUE INDEX id_FiscalArticle_PLU ON FiscalArticle(IdWorkplacePay,PLU);--Ver=>16";
 
-        readonly int VerRC = 22;
+        public readonly int VerRC = 22;
         readonly string SqlUpdateRC = @"alter TABLE WARES_RECEIPT            add Fix_Weight NUMBER NOT NULL DEFAULT 0;--Ver=>0
 alter TABLE WARES_RECEIPT_PROMOTION  add TYPE_DISCOUNT  INTEGER  NOT NULL  DEFAULT (12);--Ver=>0
 alter TABLE wares_receipt            add Priority INTEGER  NOT NULL DEFAULT 0;--Ver=>0
@@ -63,7 +54,7 @@ alter TABLE RECEIPT    add  Number_Order      TEXT;--Ver=>20
 alter TABLE LOG_RRO add CodeError         INTEGER  NOT NULL DEFAULT 0;--Ver=>21
 alter TABLE LOG_RRO add TypePay           INTEGER  NOT NULL DEFAULT 0;--Ver=>22";
 
-        readonly int VerMID = 10;
+        public readonly int VerMID = 12;
         readonly string SqlUpdateMID = @"--Ver=>0;Reload;
 alter TABLE wares add Weight_Delta INTEGER  DEFAULT 0;--Ver=>0
 alter TABLE PROMOTION_SALE_DEALER add PRIORITY INTEGER NOT NULL DEFAULT 1;--Ver=>0
