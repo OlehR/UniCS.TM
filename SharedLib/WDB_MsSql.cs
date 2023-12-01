@@ -50,7 +50,7 @@ namespace SharedLib
             CD = null;
 
             Debug.WriteLine("SqlGetDimWorkplace");
-            var DW = db.Execute<WorkPlace>(SqlGetDimWorkplace);
+            var DW = GetDimWorkplace();
             Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Read SqlGetDimWorkplace => {DW.Count()}");
             pDB.ReplaceWorkPlace(DW);
             Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Write SqlGetDimWorkplace => {DW.Count()}");
@@ -276,9 +276,6 @@ namespace SharedLib
             return IsReady; 
         }
 
-        public IEnumerable<WorkPlace> GetDimWorkplace()
-        {
-            return db.Execute<WorkPlace>(SqlGetDimWorkplace);
-        }
+        public IEnumerable<WorkPlace> GetDimWorkplace() { return db.Execute<WorkPlace>(SqlGetDimWorkplace); }
     }
 }

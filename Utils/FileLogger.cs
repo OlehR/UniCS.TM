@@ -26,6 +26,7 @@ namespace Utils
         static FileLogger()
         {
             CreateDirectoryLog();
+            WriteLogMessage($"{Environment.NewLine}{Environment.NewLine}");
         }
 
         public static void Init(string pPathLog, int pIdWorkplace)

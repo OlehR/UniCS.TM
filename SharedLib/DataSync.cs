@@ -114,7 +114,7 @@ namespace SharedLib
             return true;
         }
 
-        public async Task<bool> SendReceiptTo1CAsync(Receipt pReceipt,string pServer=null)
+        public async Task<bool> SendReceiptTo1CAsync(Receipt pReceipt,string pServer=null,bool pIsChangeState=true)
         {
             if (string.IsNullOrEmpty(pServer))
                 pServer = Global.Server1C;
@@ -127,10 +127,13 @@ namespace SharedLib
                     var body = soapTo1C.GenBody("JSONCheck", new Parameters[] { new Parameters("JSONSting", r.GetBase64()) });
                     var res = Global.IsTest ? "0" : await soapTo1C.RequestAsync(pServer, body, 240000, "application/json");
                     if (string.IsNullOrEmpty(res) || !res.Equals("0"))
+                    {
                         return false;
+                    }
                 }
                 pReceipt.StateReceipt = eStateReceipt.Send;
-                db.SetStateReceipt(pReceipt);//Змінюєм стан чека на відправлено.
+                if(pIsChangeState)
+                    db.SetStateReceipt(pReceipt);//Змінюєм стан чека на відправлено.
                 return true;
             }
             catch (Exception ex)

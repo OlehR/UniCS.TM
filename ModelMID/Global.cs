@@ -297,7 +297,7 @@ namespace ModelMID
             return res;
         }
 
-        public static bool BildWorkplace(IEnumerable<WorkPlace> pWP = null)
+        public static bool BildWorkplace(IEnumerable<WorkPlace> pWP)
         {
             var WorkPlaceByTerminalId = new SortedList<Guid, WorkPlace>();
             var WorkPlaceByWorkplaceId = new SortedList<int, WorkPlace>();

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net.Http;
 using ModelMID;
+using Utils;
 
 namespace SharedLib
 {
@@ -52,6 +53,9 @@ namespace SharedLib
             {  
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation {  Exception = null, Status = eSyncStatus.NoFatalError, StatusDescription = "RequestAsync=>" + response.RequestMessage });
             }
+            if(string.IsNullOrEmpty(res) || !res.Equals("0"))
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"{parUrl}{Environment.NewLine}{parBody}{Environment.NewLine} res=>{res}");
+
             return res;
         }
 

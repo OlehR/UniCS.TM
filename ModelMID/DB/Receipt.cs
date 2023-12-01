@@ -378,7 +378,7 @@ decimal _SumWallet=0;
                 Res = res;
             }
 
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"ReceiptWares=>{Res}");
+            //FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"ReceiptWares=>{Res}");
             return Res;
         }
         public bool IsUseBonus { get { return Wares?.Where(el => el.TypeWares != eTypeWares.Ordinary).Any() == true; } }

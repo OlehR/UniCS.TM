@@ -99,7 +99,6 @@ namespace ModelMID
     
     public class ReceiptWares1C
     {
-
         public int Order { get; set; }
         public int CodeWares { get; set; }
         public decimal Quantity { get; set; }
@@ -163,6 +162,7 @@ namespace ModelMID
         public decimal Quantity { get; set; }
         public decimal QuantityOld { get; set; }
     }
+
     public class TimeScanReceipt
     {
         public DateTime Start { get; set; }
