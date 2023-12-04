@@ -162,7 +162,7 @@ decimal _SumWallet=0;
             set { _Wares = value?.Where(el=>el.CodeWares!= Global.Settings?.CodeWaresWallet).ToList(); }
         }
 
-        IEnumerable<Payment> _Payment;
+        public IEnumerable<Payment> _Payment;
         public IEnumerable<Payment> Payment { get { return IdWorkplacePay == 0 || _Payment == null ? _Payment : _Payment.Where(el => el.IdWorkplacePay == IdWorkplacePay); } set { _Payment = value; } }
 
         public IEnumerable<ReceiptEvent> ReceiptEvent { get; set; }
@@ -311,6 +311,8 @@ decimal _SumWallet=0;
         /// Вага власної сумки.
         /// </summary>
         public double OwnBag { get { return ReceiptEvent?.Sum(r => Convert.ToDouble(r.ProductConfirmedWeight)) ?? 0d; } }
+
+        public WorkplacePay WorkplacePay { get { return WorkplacePays?.Where(el => el.IdWorkplacePay == IdWorkplacePay)?.FirstOrDefault(); } }
 
         public WorkplacePay[] WorkplacePays { get; set; }
 

@@ -22,6 +22,7 @@ using Utils;
 using static Front.MainWindow;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using ModernExpo.SelfCheckout.Utils;
 
 namespace Front
 {
@@ -532,10 +533,14 @@ namespace Front
                             {
                                 for (var i = 0; i < IdWorkplacePays.Length; i++)
                                 {
-                                    Bl.db.ReplacePayment(new Payment(R) { IdWorkplacePay = R.IdWorkplace, IsSuccess = true, TypePay = eTypePay.Bonus, SumPay = R.SumTotal, SumExt = pSumBonus, PosAddAmount = R.Client?.PercentBonus ?? Client?.PercentBonus ?? 0m });
                                     R.IdWorkplacePay = IdWorkplacePays[i];
+                                    var Pay = new Payment(R) { IdWorkplacePay = R.IdWorkplacePay, IsSuccess = true, TypePay = eTypePay.Bonus, SumPay = R.SumTotal, SumExt = pSumBonus, PosAddAmount = R.Client?.PercentBonus ?? Client?.PercentBonus ?? 0m };
+
+                                    Bl.db.ReplacePayment(Pay);
+                                    R.Payment = Bl.GetPayment(R);
                                     R.ReCalcBonus();
                                 }
+                                R.IdWorkplacePay = 0;
                             }
                             R.Payment = Bl.GetPayment(R);
                             if ((pSumWallet > 0 || pSumBonus > 0) )
@@ -545,11 +550,13 @@ namespace Front
 
                                 if (pSumBonus > 0)
                                 {
+                                    FillPays(R);
                                     for (var i = 0; i < IdWorkplacePays.Length; i++)
                                     {
                                         R.IdWorkplacePay = IdWorkplacePays[i];
-                                        Bl.db.ReplacePayment(new Payment(R) { IdWorkplacePay = R.IdWorkplacePay, IsSuccess = true, TypePay = eTypePay.Cash, SumPay = Math.Round(R.SumTotal, 1), SumExt = Math.Round(R.SumTotal, 1) });
+                                        Bl.db.ReplacePayment(new Payment(R) { IdWorkplacePay = R.IdWorkplacePay, IsSuccess = true, TypePay = eTypePay.Cash, SumPay = R.WorkplacePay?.Sum ?? 0, SumExt = R.WorkplacePay?.Sum ?? 0 });
                                     }
+                                    R.IdWorkplacePay = 0;
                                     R.StateReceipt = eStateReceipt.Pay;
                                     Bl.SetStateReceipt(R, R.StateReceipt);
                                     R.Payment = Bl.GetPayment(R);
@@ -725,7 +732,7 @@ namespace Front
             if (StartScan != DateTime.MinValue) StartScan = DateTime.Now;
             Dispatcher.BeginInvoke(new ThreadStart(() => { ShowClientBonus.Visibility = Visibility.Collapsed; }));
             EF.PutToDisplay(curReceipt);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"{curReceipt.ToJSON()}");
+            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"{curReceipt?.ToJSON()}");
         }
 
         public void FillPays(Receipt pR)
