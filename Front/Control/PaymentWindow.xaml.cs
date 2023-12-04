@@ -95,7 +95,7 @@ namespace Front.Control
             MoneySum = MW.MoneySum;
             ChangeSumPaymant = MoneySum.ToString();
             SumMaxWallet = (MW.curReceipt?.MaxSumWallet < MW.Client?.Wallet ? MW.curReceipt?.MaxSumWallet : MW.Client?.Wallet) ?? 0;
-            IsPaymentBonuses = MW.Client != null && MW.Client?.SumMoneyBonus >= MoneySum;
+            IsPaymentBonuses = MW.Client != null && MW.Client?.SumMoneyBonus >= MoneySum && MW.curReceipt.IsOnlyOrdinary;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsRounding"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SumMaxWallet"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsPaymentBonuses"));
