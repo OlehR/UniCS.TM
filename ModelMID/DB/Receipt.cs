@@ -232,18 +232,10 @@ decimal _SumWallet=0;
         /// <summary>
         ///  Чи є товар, який потребує підтвердження віку. (0 не потребує підтверження віку)
         /// </summary>
-        public decimal AgeRestrict
-        {
-            get
-            {
-                decimal Res = 0;
-                if (Wares != null && Wares.Count() > 0)
-                {
-                    Res = Wares.Max(e => e.LimitAge);
-                }
-                return Res;
-            }
-        }
+        public decimal AgeRestrict{ get { return _Wares?.Max(e => e.LimitAge)??0;}}
+
+        public bool IsOnlyOrdinary { get { return _Wares?.Any(e => e.TypeWares != eTypeWares.Ordinary) == false; } }
+
         public Receipt()
         {
             Clear();
@@ -388,7 +380,7 @@ decimal _SumWallet=0;
 
         public IEnumerable<LogRRO> LogRROs;
         //public string FiscalReceipt { get { return LogRROs?.Where(el => el.IdWorkplacePay == IdWorkplacePay && el.TypeOperation == eTypeOperation.Sale)?.FirstOrDefault()?.FiscalNumber ?? NumberReceipt; } }
-        public bool ReCalc()
+        public bool ReCalcWallet()
         {
             SumWallet = Payment?.Where(r => r.TypePay == eTypePay.Wallet).Sum(r => r.SumPay) ?? 0;
             if (SumWallet > 0)
@@ -400,7 +392,7 @@ decimal _SumWallet=0;
                 decimal SumW = OrdinaryWares.Sum(el => el.SumWallet);
                 if (SumW != SumWallet)
                 {
-                    var Wr = OrdinaryWares.FirstOrDefault(el=>el.SumWallet>=SumW- SumWallet) ?? OrdinaryWares.First();
+                    var Wr = OrdinaryWares.FirstOrDefault(el => el.SumWallet >= SumW - SumWallet) ?? OrdinaryWares.First();
                     Wr.SumWallet += (SumWallet - SumW);
                 }
             }
@@ -408,6 +400,11 @@ decimal _SumWallet=0;
             if (SumWallet < 0)
             {
             }
+            return SumWallet > 0;
+        }
+
+        public bool ReCalcBonus()
+        {
             var SumBonusPay = Payment?.Where(r => r.TypePay == eTypePay.Bonus).Sum(r => r.SumExt) ?? 0;
 
             if (SumBonusPay > 0)
@@ -432,7 +429,7 @@ decimal _SumWallet=0;
                     }
                 }
             }
-            return SumWallet > 0 || SumBonus>0;
+            return SumBonus>0;
         }
 
         [JsonIgnore]

@@ -70,14 +70,6 @@ namespace SharedLib
          and CD.code=@IdWorkPlace 
   GROUP BY wh.Code, g.Order_Button,G.Image";
 
-        /* Це правильний запит
-        SELECT CONVERT(INT,wh.Code) AS CodeUp,CONVERT(INT,wh.Code)*1000+g.Order_Button AS CodeFastGroup,g.Name_Button AS Name
-        FROM DW.dbo.V1C_DIM_OPTION_WPC O
-        JOIN dw.dbo.WAREHOUSES wh ON o.Warehouse_RRef=wh._IDRRef
-        JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_GROUP G ON o._IDRRef=G._Reference18850_IDRRef
-        --JOIN DW.dbo.V1C_DIM_OPTION_WPC_FACT_WARES W ON G._Reference18850_IDRRef = W._Reference18850_IDRRef AND G. Order_Button = W.Order_Button
-          WHERE wh.Code=9*/
-
         string SqlGetDimFastWares = @"SELECT CONVERT(INT, wh.Code)*1000+CASE WHEN g.Order_Button=2 and wh.Code = 9 THEN 1 ELSE g.Order_Button END CodeFastGroup, -- хак для групи Овочі 1
             w1.code_wares AS CodeWares, max(w.OrderWares) as OrderWares
           FROM DW.dbo.V1C_DIM_OPTION_WPC O       

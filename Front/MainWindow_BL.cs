@@ -524,20 +524,32 @@ namespace Front
                         string rrn = R.AdditionC1;
                         if (pSumWallet != 0 || pSumBonus != 0)
                         {
+                            R.ReCalcWallet();
                             Bl.db.DelPayWalletBonus(R);
                             if (pSumWallet != 0)
                                 Bl.db.ReplacePayment(new Payment(R) { IdWorkplacePay = R.IdWorkplace, IsSuccess = true, TypePay = eTypePay.Wallet, SumPay = pSumWallet, SumExt = pSumWallet });
                             if (pSumBonus != 0)
-                                Bl.db.ReplacePayment(new Payment(R) { IdWorkplacePay = R.IdWorkplace, IsSuccess = true, TypePay = eTypePay.Bonus, SumPay = R.SumTotal, SumExt = pSumBonus, PosAddAmount = R.Client?.PercentBonus ?? Client?.PercentBonus ?? 0m });
-                            R.Payment = Bl.GetPayment(R);
-                            if ((pSumWallet > 0 || pSumBonus > 0) && R.ReCalc())
                             {
+                                for (var i = 0; i < IdWorkplacePays.Length; i++)
+                                {
+                                    Bl.db.ReplacePayment(new Payment(R) { IdWorkplacePay = R.IdWorkplace, IsSuccess = true, TypePay = eTypePay.Bonus, SumPay = R.SumTotal, SumExt = pSumBonus, PosAddAmount = R.Client?.PercentBonus ?? Client?.PercentBonus ?? 0m });
+                                    R.IdWorkplacePay = IdWorkplacePays[i];
+                                    R.ReCalcBonus();
+                                }
+                            }
+                            R.Payment = Bl.GetPayment(R);
+                            if ((pSumWallet > 0 || pSumBonus > 0) )
+                            {                                
                                 foreach (var el in R.Wares.Where(el => el.TypeWares == eTypeWares.Ordinary))
                                     Bl.db.ReplaceWaresReceipt(el);
 
                                 if (pSumBonus > 0)
                                 {
-                                    Bl.db.ReplacePayment(new Payment(R) { IdWorkplacePay = R.IdWorkplace, IsSuccess = true, TypePay = eTypePay.Cash, SumPay = Math.Round(R.SumTotal, 1), SumExt = Math.Round(R.SumTotal, 1) });
+                                    for (var i = 0; i < IdWorkplacePays.Length; i++)
+                                    {
+                                        R.IdWorkplacePay = IdWorkplacePays[i];
+                                        Bl.db.ReplacePayment(new Payment(R) { IdWorkplacePay = R.IdWorkplacePay, IsSuccess = true, TypePay = eTypePay.Cash, SumPay = Math.Round(R.SumTotal, 1), SumExt = Math.Round(R.SumTotal, 1) });
+                                    }
                                     R.StateReceipt = eStateReceipt.Pay;
                                     Bl.SetStateReceipt(R, R.StateReceipt);
                                     R.Payment = Bl.GetPayment(R);
@@ -545,7 +557,6 @@ namespace Front
                             }
                             FillPays(R);
                         }
-
 
                         for (var i = 0; i < IdWorkplacePays.Length; i++)
                         {
@@ -649,7 +660,6 @@ namespace Front
                             Bl.ds.SendReceiptTo1C(curReceipt);
                             SetCurReceipt(null);
                             Res = true;
-
                         }
                         else
                         {
