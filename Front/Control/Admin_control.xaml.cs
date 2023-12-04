@@ -1494,6 +1494,18 @@ from RECEIPT r
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsCashRegister)));
             }
         }
+
+        private void RemovePayment(object sender, RoutedEventArgs e)
+        {
+            MW.CustomMessage.Show("Дійсно видалити всі оплати?", "Увага!", eTypeMessage.Question);
+            MW.CustomMessage.Result = (bool resMes) =>
+            {
+                if (resMes)
+                {
+                    // Код який видаляє оплату
+                }
+            };
+        }
     }
 
     public class APIRadiobuton
