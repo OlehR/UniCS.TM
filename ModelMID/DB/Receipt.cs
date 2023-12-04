@@ -232,7 +232,7 @@ decimal _SumWallet=0;
         /// <summary>
         ///  Чи є товар, який потребує підтвердження віку. (0 не потребує підтверження віку)
         /// </summary>
-        public decimal AgeRestrict{ get { return _Wares?.Max(e => e.LimitAge)??0;}}
+        public decimal AgeRestrict{ get { return _Wares?.Any()==true? _Wares?.Max(e => e.LimitAge)??0:0;}}
 
         public bool IsOnlyOrdinary { get { return _Wares?.Any(e => e.TypeWares != eTypeWares.Ordinary) == false; } }
 
