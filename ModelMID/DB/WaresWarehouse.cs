@@ -8,7 +8,9 @@ namespace ModelMID.DB
     {
         Directions = 1,
         Brand = 2,
-        Group =3
+        Group =3,
+        Wares =4
+
     }
 
     public class WaresWarehouse

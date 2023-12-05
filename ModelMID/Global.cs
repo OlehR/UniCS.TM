@@ -26,6 +26,7 @@ namespace ModelMID
         public static SortedList<int, int> IdWorkPlacePayDirection = new SortedList<int, int>();
         public static SortedList<int, int> IdWorkPlacePayTM = new SortedList<int, int>();
         public static SortedList<int, int> IdWorkPlacePayGroup = new SortedList<int, int>();
+        public static SortedList<int, int> IdWorkPlacePayWares = new SortedList<int, int>();
 
         public static Settings Settings { get; set; }
 

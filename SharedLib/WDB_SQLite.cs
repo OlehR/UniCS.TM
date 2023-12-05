@@ -1297,6 +1297,9 @@ select sum( sum_pay* case when TYPE_PAY in (4) then -1 else 1 end) as sum from p
 
                     if (el.TypeData == eTypeData.Group && !Global.IdWorkPlacePayGroup.ContainsKey(el.Data))
                         Global.IdWorkPlacePayGroup.Add(el.Data, Global.Settings.IdWorkPlaceLink);
+
+                    if (el.TypeData == eTypeData.Wares && !Global.IdWorkPlacePayWares.ContainsKey(el.Data))
+                        Global.IdWorkPlacePayWares.Add(el.Data, Global.Settings.IdWorkPlaceLink);
                 }
             }
         }       

@@ -782,6 +782,7 @@ Price as Price --, wr.sum as Sum
  ,wrh.history as History
 ,w.Code_Group as CodeGroup
 ,w.CodeGroupUp
+,wr.Date_Create as DateCreate
                      from wares_receipt wr
                      join wares w on(wr.code_wares = w.code_wares)
                      join ADDITION_UNIT au on w.code_wares = au.code_wares and wr.code_unit=au.code_unit
