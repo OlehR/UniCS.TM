@@ -226,16 +226,18 @@ namespace ModelMID
             return null;
         }
 
-        public static int GetIdWorkPlacePay(int pCodeDirection, int pCodeTM, int[] pCodeGroup = null)
+        public static int GetIdWorkPlacePay(int pCodeDirection, int pCodeTM, int[] pCodeGroup = null,int pCodeWares=0)
         {
-            if (IdWorkPlacePayDirection.ContainsKey(pCodeDirection))
-                return IdWorkPlacePayDirection[pCodeDirection];
+            if (IdWorkPlacePayWares.ContainsKey(pCodeWares))
+                return IdWorkPlacePayWares[pCodeWares];
             if (IdWorkPlacePayTM.ContainsKey(pCodeTM))
                 return IdWorkPlacePayTM[pCodeTM];
             if (pCodeGroup?.Any() == true)
                 foreach (int el in pCodeGroup)
                     if (el != 0 && IdWorkPlacePayGroup.ContainsKey(el))
                         return IdWorkPlacePayGroup[el];
+            if (IdWorkPlacePayDirection.ContainsKey(pCodeDirection))
+                return IdWorkPlacePayDirection[pCodeDirection];            
             return IdWorkPlace;
         }
         public static IEnumerable<int> IdWorkPlaces;

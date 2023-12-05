@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json.Serialization;
 using Utils;
 
 namespace ModelMID
@@ -142,7 +143,7 @@ namespace ModelMID
         /// Корекція для вирівння в 1С
         /// </summary>
         public decimal Delta = 0;
-
+        [JsonIgnore]
         public decimal Sum
         {
             get { return Math.Round(Quantity * Price, 2, MidpointRounding.AwayFromZero); }

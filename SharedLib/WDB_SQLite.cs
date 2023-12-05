@@ -1282,24 +1282,23 @@ select sum( sum_pay* case when TYPE_PAY in (4) then -1 else 1 end) as sum from p
 
         public void BildWaresWarehouse(IEnumerable<WaresWarehouse> pWW=null)
         {
-            if (pWW == null)
-                pWW = GetWaresWarehouse();
+            pWW ??= GetWaresWarehouse();
 
             if (Global.Settings.IdWorkPlaceLink > 0 && Global.Settings.CodeWarehouseLink > 0)
             {
-                foreach (var el in pWW.Where(el => el.CodeWarehouse == Global.Settings.CodeWarehouseLink))
+                foreach (var el in pWW)
                 {
                     if (el.TypeData == eTypeData.Directions && !Global.IdWorkPlacePayDirection.ContainsKey(el.Data))
-                        Global.IdWorkPlacePayDirection.Add(el.Data, Global.Settings.IdWorkPlaceLink);
+                        Global.IdWorkPlacePayDirection.Add(el.Data, el.CodeWarehouse == Global.Settings.CodeWarehouseLink? Global.Settings.IdWorkPlaceLink: Global.IdWorkPlace);
 
                     if (el.TypeData == eTypeData.Brand && !Global.IdWorkPlacePayTM.ContainsKey(el.Data))
-                        Global.IdWorkPlacePayTM.Add(el.Data, Global.Settings.IdWorkPlaceLink);
+                        Global.IdWorkPlacePayTM.Add(el.Data, el.CodeWarehouse == Global.Settings.CodeWarehouseLink ? Global.Settings.IdWorkPlaceLink : Global.IdWorkPlace);
 
                     if (el.TypeData == eTypeData.Group && !Global.IdWorkPlacePayGroup.ContainsKey(el.Data))
-                        Global.IdWorkPlacePayGroup.Add(el.Data, Global.Settings.IdWorkPlaceLink);
+                        Global.IdWorkPlacePayGroup.Add(el.Data, el.CodeWarehouse == Global.Settings.CodeWarehouseLink ? Global.Settings.IdWorkPlaceLink : Global.IdWorkPlace);
 
                     if (el.TypeData == eTypeData.Wares && !Global.IdWorkPlacePayWares.ContainsKey(el.Data))
-                        Global.IdWorkPlacePayWares.Add(el.Data, Global.Settings.IdWorkPlaceLink);
+                        Global.IdWorkPlacePayWares.Add(el.Data, el.CodeWarehouse == Global.Settings.CodeWarehouseLink ? Global.Settings.IdWorkPlaceLink : Global.IdWorkPlace);
                 }
             }
         }       
