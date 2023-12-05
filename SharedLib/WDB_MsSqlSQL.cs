@@ -520,15 +520,17 @@ LEFT JOIN dbo.V1C_dim_type_price tp ON wh.type_price_RRef= tp.type_price_RRef;";
         string SqlGetWaresWarehous = @"SELECT ww.CodeWarehouse,ww.TypeData,ww.Data FROM  dbo.WaresWarehouse ww 
   JOIN dbo.WAREHOUSES Wh ON ww.CodeWarehouse=wh.CodeWarehouse2
   WHERE Wh.Code=@CodeWarehouse
-/*union ALL 
-SELECT isnull( wh.CodeWarehouse2, wh.Code)  AS CodeWarehouse, 3 AS TypeData, dn.code AS Data
+union ALL 
+SELECT 
+CASE WHEN org_Rref=0x81320050569E814D11E9A7CE5C69E2D2 THEN -1 ELSE 1 end*wh.CodeWarehouse2 AS CodeWarehouse, --Хак для мукачево
+CASE WHEN [is_leaf]=1 THEN 4 else 3 END  AS TypeData, dn.code AS Data
           FROM DW.dbo.V1C_DIM_OPTION_WPC O       
           JOIN  DW.dbo.V1C_DIM_OPTION_WPC_Org_Wares OW ON OW._Reference18850_IDRRef =o._IDRRef
           JOIN dw.dbo.V1C_dim_nomen dn  ON ow.nomen_RRef= dn.IDRRef        
           JOIN DW.dbo.V1C_DIM_OPTION_WPC_CASH_place CP ON o._IDRRef= cp._Reference18850_IDRRef      
           JOIN dw.dbo.V1C_CashDesk CD ON CD.CashDesk_RRef=cp.CashPlaceRRef 
           JOIN dw.dbo.WAREHOUSES wh ON o.Warehouse_RRef= wh._IDRRef 
-            WHERE  CD.code = @IdWorkPlace*/";
+            WHERE  CD.code = @IdWorkPlace";
     }
     class Res
     {

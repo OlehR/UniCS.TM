@@ -42,10 +42,11 @@ namespace Utils
         }
 
         static JsonSerializerOptions options = new JsonSerializerOptions()
-                            {
-                                ReferenceHandler = ReferenceHandler.IgnoreCycles//, WriteIndented = true
-                                ,DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-    };
+        {
+            IgnoreReadOnlyProperties = true,
+            ReferenceHandler = ReferenceHandler.IgnoreCycles,//, WriteIndented = true
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
+        };
 
         public static string ToJson(this object s)
         {
