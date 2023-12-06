@@ -14,7 +14,7 @@ namespace ModelMID
 
     public class ReceiptWares : IdReceiptWares, ICloneable
     {
-        public int IdWorkplacePay { get { if (_IdWorkplacePay == 0) _IdWorkplacePay = Global.GetIdWorkPlacePay(CodeDirection, CodeTM, new int[]{ CodeGroup,CodeGroupUp,CodeDirection}); return _IdWorkplacePay; } set { _IdWorkplacePay = value; } }
+        public int IdWorkplacePay { get { if (_IdWorkplacePay == 0) _IdWorkplacePay = Global.GetIdWorkPlacePay(CodeDirection, CodeTM, new int[]{ CodeGroup,CodeGroupUp,CodeDirection},CodeWares); return _IdWorkplacePay; } set { _IdWorkplacePay = value; } }
         int _IdWorkplacePay;
 
         /// <summary>
