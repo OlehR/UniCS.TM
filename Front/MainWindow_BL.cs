@@ -554,7 +554,7 @@ namespace Front
                                     for (var i = 0; i < IdWorkplacePays.Length; i++)
                                     {
                                         R.IdWorkplacePay = IdWorkplacePays[i];
-                                        Bl.db.ReplacePayment(new Payment(R) { IdWorkplacePay = R.IdWorkplacePay, IsSuccess = true, TypePay = eTypePay.Cash, SumPay = R.WorkplacePay?.Sum ?? 0, SumExt = R.WorkplacePay?.Sum ?? 0 });
+                                        Bl.db.ReplacePayment(new Payment(R) { IdWorkplacePay = R.IdWorkplacePay, IsSuccess = true, TypePay = eTypePay.Cash, SumPay = Math.Round( R.WorkplacePay?.Sum ?? 0, 1) , SumExt = Math.Round( R.WorkplacePay?.Sum ?? 0,1) });
                                     }
                                     R.IdWorkplacePay = 0;
                                     R.StateReceipt = eStateReceipt.Pay;
