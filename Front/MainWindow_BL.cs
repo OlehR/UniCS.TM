@@ -525,10 +525,14 @@ namespace Front
                         string rrn = R.AdditionC1;
                         if (pSumWallet != 0 || pSumBonus != 0)
                         {
-                            R.ReCalcWallet();
+                            
                             Bl.db.DelPayWalletBonus(R);
                             if (pSumWallet != 0)
+                            {
                                 Bl.db.ReplacePayment(new Payment(R) { IdWorkplacePay = R.IdWorkplace, IsSuccess = true, TypePay = eTypePay.Wallet, SumPay = pSumWallet, SumExt = pSumWallet });
+                                R.Payment = Bl.GetPayment(R);
+                                R.ReCalcWallet();
+                            }
                             if (pSumBonus != 0)
                             {
                                 for (var i = 0; i < IdWorkplacePays.Length; i++)
