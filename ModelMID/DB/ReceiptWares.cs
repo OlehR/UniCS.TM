@@ -313,18 +313,20 @@ namespace ModelMID
         {
             get
             {
-                string Res = (string.IsNullOrEmpty(History) || CodeUnit != Global.WeightCodeUnit ? "" : $"{History} кг{Environment.NewLine}") +
+                string Res =(IdWorkplacePay>0&& IdWorkplacePay!=IdWorkplace?"@":"")+ (string.IsNullOrEmpty(History) || CodeUnit != Global.WeightCodeUnit ? "" : $"{History} кг{Environment.NewLine}") +
                 (string.IsNullOrEmpty(NameDiscount) ? "" : NameDiscount + Environment.NewLine);
                 try
                 {
-                    if (ReceiptWaresPromotions != null)
+                    if (ReceiptWaresPromotions?.Any()==true)
+                    {
                         foreach (var el in ReceiptWaresPromotions)
                         {
                             var name = el.TypeDiscount == eTypeDiscount.Price ? (TypeWares == eTypeWares.Tobacco ? $"Ціна =>{Math.Round(el.Price / 1.05m, 2):N2}*5%={el.Price:N2}" : $"Ціна => {el.Price}") : (string.IsNullOrEmpty(el.NamePS) ? (string.IsNullOrEmpty(el.BarCode2Category) ? "" : el.BarCode2Category.Substring(3, 2) + "%") : el.NamePS);
                             Res += $"{name} - {el.Quantity} - {el.Sum:N2}{Environment.NewLine}";
                         }
-                    if (!string.IsNullOrEmpty(Res))
-                        Res = Res?.Substring(0, Res.Length - 1);
+                        if (!string.IsNullOrEmpty(Res))
+                            Res = Res?.Substring(0, Res.Length - 1);
+                    }
                     if (!string.IsNullOrEmpty(ExciseStamp))
                         Res += $"Акцизні марки:{ExciseStamp}";
                 }
