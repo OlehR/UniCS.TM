@@ -108,7 +108,7 @@ namespace SharedLib
             var r = ldb.ViewReceipt(pIdR, true);
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            _ = SendReceiptTo1CAsync(r);            
+            _= SendReceiptTo1CAsync(r);            
             _= SendReceipt(r); // В сховище чеків
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             return true;
@@ -116,6 +116,8 @@ namespace SharedLib
 
         public async Task<bool> SendReceiptTo1CAsync(Receipt pReceipt,string pServer=null,bool pIsChangeState=true)
         {
+            if(!Global.Settings.IsSend1C) return false;
+
             if (string.IsNullOrEmpty(pServer))
                 pServer = Global.Server1C;
             try

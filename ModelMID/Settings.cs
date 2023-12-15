@@ -65,5 +65,9 @@ namespace ModelMID
         /// Чи відправляти чеки в 1С.
         /// </summary>
         public bool IsSend1C { get; set; } = true;
+        /// <summary>
+        /// Чи можна розраховуватись бонусамим.
+        /// </summary>
+        public bool IsPayBonus { get;set; } =true;
     }
 }
