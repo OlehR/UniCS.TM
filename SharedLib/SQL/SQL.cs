@@ -9,7 +9,7 @@ namespace SharedLib
 {
     public class SQL
     {
-        private string ConectionString;
+        protected string ConectionString;
         public eTypeCommit TypeCommit { get; set; }
         /// <summary>
         /// Чи можна користуватись базою

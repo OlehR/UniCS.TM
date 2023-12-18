@@ -114,7 +114,7 @@ namespace SharedLib
             return true;
         }
 
-        public async Task<bool> SendReceiptTo1CAsync(Receipt pReceipt,string pServer=null,bool pIsChangeState=true)
+        public async Task<bool> SendReceiptTo1CAsync(Receipt pR,string pServer=null,bool pIsChangeState=true)
         {
             if(!Global.Settings.IsSend1C) return false;
 
@@ -122,31 +122,30 @@ namespace SharedLib
                 pServer = Global.Server1C;
             try
             {
-                foreach (var el in pReceipt.IdWorkplacePays)
+                foreach (var el in pR.IdWorkplacePays)
                 {
-                    pReceipt.IdWorkplacePay = el;
-                    var r = new Receipt1C(pReceipt);
+                    pR.IdWorkplacePay = el;
+                    var r = new Receipt1C(pR);
                     var body = soapTo1C.GenBody("JSONCheck", new Parameters[] { new Parameters("JSONSting", r.GetBase64()) });
                     var res = Global.IsTest ? "0" : await soapTo1C.RequestAsync(pServer, body, 240000, "application/json");
-                    if (string.IsNullOrEmpty(res) || !res.Equals("0"))
-                    {
-                        return false;
-                    }
+                    if (string.IsNullOrEmpty(res) || !res.Equals("0")) 
+                        return false;                    
                 }
-                pReceipt.StateReceipt = eStateReceipt.Send;
+                pR.StateReceipt = eStateReceipt.Send;
                 if(pIsChangeState)
-                    db.SetStateReceipt(pReceipt);//Змінюєм стан чека на відправлено.
+                    db.SetStateReceipt(pR);//Змінюєм стан чека на відправлено.
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"CodeReceipt=>{pR.CodeReceipt}");
                 return true;
             }
             catch (Exception ex)
             {
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex);
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = $"SendReceiptTo1CAsync=> {pReceipt.CodeReceipt}{Environment.NewLine}{ex.Message}{Environment.NewLine}{new System.Diagnostics.StackTrace()}"});
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pR.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = $"SendReceiptTo1CAsync=> {pR.CodeReceipt}{Environment.NewLine}{ex.Message}{Environment.NewLine}{new System.Diagnostics.StackTrace()}"});
                 return false;
             }
             finally
             {
-                pReceipt.IdWorkplacePay = 0;
+                pR.IdWorkplacePay = 0;
             }
         }
 
@@ -262,7 +261,7 @@ namespace SharedLib
 
                     if (pIsFull)                       
                     {
-                        int CW = db.db.ExecuteScalar<int>("select count(*) from wares");
+                        int CW = pD.ExecuteScalar<int>("select count(*) from wares");
                         if (CW > 1000)
                         {
                             Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Create MIDIndex");
@@ -884,6 +883,12 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     if (!string.IsNullOrEmpty(res))
                     {
                         var Res = JsonConvert.DeserializeObject<Status>(res);
+                        if (Res.State == 0 && !Global.Settings.IsSend1C)
+                        {
+                            pR.StateReceipt = eStateReceipt.Send;
+                            db.SetStateReceipt(pR);
+                        }
+                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"CodeReceipt=>{pR.CodeReceipt} State=>${Res.State} Text=>{Res.TextState}");
                         return Res;
                     }
                 }

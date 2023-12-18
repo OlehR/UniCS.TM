@@ -129,7 +129,8 @@ namespace SharedLib
                 DB.ExecuteNonQuery("ATTACH '" + MidFile + "' AS mid");
             DB.ExecuteNonQuery("ATTACH '" + ReceiptFile + "' AS con");
             //dbConfig = new SQLite(ConfigFile);
-            dbMid = new SQLite(MidFile);
+            if (File.Exists(MidFile))
+                dbMid = new SQLite(MidFile);
             dbRC = new SQLite(ReceiptFile);
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"ConfigFile=>{ConfigFile} MidFile={MidFile} ReceiptFile={ReceiptFile}");
             db = DB;

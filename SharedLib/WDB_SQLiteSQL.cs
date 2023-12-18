@@ -66,6 +66,7 @@ alter TABLE wares add Code_TM INTEGER NOT NULL DEFAULT 0; --Ver=>9;
 alter TABLE CLIENT add PHONE_ADD TEXT; --Ver=>10;
 alter TABLE FAST_GROUP add Image TEXT; --Ver=>11;
 alter TABLE wares add CodeGroupUp INTEGER  DEFAULT 0; --Ver=>12;
+alter TABLE client add IsMoneyCard INTEGER DEFAULT(0);--Ver=>13;
 --Ver=>11;Reload;";       
 
         readonly string SqlCreateConfigTable = @"
@@ -421,8 +422,9 @@ CREATE INDEX id_Client_NEW ON Client_NEW(BARCODE_CLIENT);
             PERCENT_DISCOUNT NUMBER,
             BARCODE TEXT NOT NULL,
             STATUS_CARD INTEGER DEFAULT(0),
-    view_code INTEGER NULL,
-	BirthDay DATETIME NULL
+            view_code INTEGER NULL,
+	        BirthDay DATETIME NULL,
+            IsMoneyCard INTEGER DEFAULT(0)
 );
 
 CREATE TABLE FAST_GROUP

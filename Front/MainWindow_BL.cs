@@ -607,7 +607,6 @@ namespace Front
                                 R.SumCreditCard = pay.SumPay;
                                 Bl.db.ReplaceReceipt(R);
                                 R.Payment = Bl.GetPayment(R);
-
                             }
                             else
                             {
@@ -667,7 +666,7 @@ namespace Front
                             R.DateReceipt = DateTime.Now;
                             Bl.UpdateReceiptFiscalNumber(R);
                             s.Play(eTypeSound.DoNotForgetProducts);
-                            Bl.ds.SendReceiptTo1C(curReceipt);
+                            Bl.SendReceiptTo1C(curReceipt);
                             SetCurReceipt(null);
                             Res = true;
                         }

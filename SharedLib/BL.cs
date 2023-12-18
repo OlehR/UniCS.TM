@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Diagnostics;
 using Utils;
 using System.Timers;
+using System.IO;
 
 namespace SharedLib
 {
@@ -31,10 +32,16 @@ namespace SharedLib
 
         public BL()
         {
-            db = WDB_SQLite.GetInstance;            
-            Global.BildWorkplace(db.GetWorkPlace());
-            db.BildWaresWarehouse();
+            db = WDB_SQLite.GetInstance;
             ds = new DataSync(this);
+            Global.BildWorkplace(db.GetWorkPlace());
+            if (!File.Exists(db.LastMidFile))
+            {
+                bool res=true;
+                ds.SyncData(ref res);
+            }           
+            db.BildWaresWarehouse();
+            
             sBL = this;
             var WP= Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace);
             if (WP != null)
@@ -562,7 +569,11 @@ namespace SharedLib
 
         public Task GetBonusAsync(Client pClient, int pIdWorkPlace) { return ds.GetBonusAsync(pClient, pIdWorkPlace); }
 
-        public bool SendReceiptTo1C(IdReceipt parIdReceipt) { return ds.SendReceiptTo1C(parIdReceipt); }
+        public void SendReceiptTo1C(IdReceipt parIdReceipt)
+        {
+            Task.Run(() => { ds.SendReceiptTo1C(parIdReceipt); });
+        }
+            
 
         public void CloseDB() { db?.Close(); }
 

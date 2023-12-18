@@ -97,6 +97,7 @@ namespace ModelMID
         /// 0-Активна,1-Заблокована,2 - видалена.
         /// </summary>
         public eStatusCard StatusCard { get; set; }
+       
         public string TranslatedStatusCard { get { return StatusCard.GetDescription(); } }
         /// <summary>
         /// Код карточки який видно на дисконтній карточці.
@@ -104,6 +105,11 @@ namespace ModelMID
         public Int64 ViewCode { get; set; }
 
         public DateTime BirthDay { get; set; }
+
+        /// <summary>
+        /// Чи карточка з коштами(сертифікати та інше)
+        /// </summary>
+        public bool IsMoneyCard { get; set; }
         public Client()
         {
         }

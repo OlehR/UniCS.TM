@@ -267,7 +267,7 @@ namespace SharedLib
             {
                 try
                 {
-                    db = new MSSQL();
+                    db = new MSSQL(5);
                     IsReady = true;
                     return db.ExecuteScalar<int>($"SELECT dbo.GetSync({pCodeWarehouse})") > 0;
                 }

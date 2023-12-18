@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using Dapper;
 using ModelMID;
 using Utils;
+using System.Threading;
 
 namespace SharedLib
 {
@@ -16,12 +17,12 @@ namespace SharedLib
         IDbTransaction transaction = null;
 
         //public TypeCommit TypeCommit { get; set; }
-        public MSSQL(String varConectionString= @"Server=10.1.0.22;Database=DW;Uid=dwreader;Pwd=DW_Reader;Connect Timeout=30;") :base(varConectionString)
+        public MSSQL(int pTimeout = 30, string pConectionString= @"Server=10.1.0.22;Database=DW;Uid=dwreader;Pwd=DW_Reader;") :base(pConectionString+$"Connect Timeout = {pTimeout};")
         {
             try
             {
-                connection = new SqlConnection(varConectionString);
-                connection.Open();
+                connection = new SqlConnection(ConectionString);
+                connection.Open();                
                 TypeCommit = eTypeCommit.Auto;
             } catch(Exception e) 
             { 

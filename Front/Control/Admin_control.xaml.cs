@@ -663,7 +663,7 @@ namespace Front.Control
 
         private void Transfer1CButton(object sender, RoutedEventArgs e)
         {
-            Bl.ds.SendReceiptTo1C(curReceipt);
+            Bl.SendReceiptTo1C(curReceipt);
             //MessageBox.Show("Передати в 1С");
         }
 
