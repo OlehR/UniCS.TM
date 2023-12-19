@@ -251,6 +251,7 @@ namespace SharedLib
 
         public bool IsSync(int pCodeWarehouse)
         {
+            return true;
             if(IsReady)
             {
                 try

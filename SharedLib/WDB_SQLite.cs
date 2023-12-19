@@ -164,53 +164,48 @@ namespace SharedLib
                 int CurVerConfig = 0, CurVerMid = 0, CurVerRC = 0;
                 var Lines = SqlUpdateConfig.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
 
-                CurVerConfig = dbConfig.GetVersion;// GetConfig<int>("VerConfig", dbConfig);
-                CurVerMid = GetConfig<int>("VerMid", dbConfig);
+                CurVerConfig = dbConfig.GetVersion;
+                //CurVerMid = GetConfig<int>("VerMid", dbConfig);
                 CurVerRC = GetConfig<int>("VerRC", dbConfig);
 
                 //Config
                 var (Ver, IsReload) = Parse(Lines, CurVerConfig, dbConfig);
-                if (Ver != CurVerConfig)
-                {
-                    SetConfig<int>("VerConfig", Ver);
-                    dbConfig.SetVersion(Ver);
-                }
+                if (Ver != CurVerConfig)                
+                    dbConfig.SetVersion(Ver);                
 
                 //Mid
                 if (File.Exists(MidFile))
                 {
                     using var dbMID = new SQLite(MidFile);
-                    CurVerMid = GetConfig<int>("VerMID",dbConfig);
+                    CurVerMid = dbMID.GetVersion;// GetConfig<int>("VerMID",dbConfig);
                     Lines = SqlUpdateMID.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
                     (Ver, IsReload) = Parse(Lines, CurVerMid, dbMID);
-                    dbMID.SetVersion(Ver);
+                    if(Ver != CurVerMid) 
+                        dbMID.SetVersion(Ver);
                     dbMID.Close(true);
                     if (IsReload)
                     {
                         if (File.Exists(MidFile)) File.Delete(MidFile);
                         pIsUseOld = false;
                     }
-                    if (Ver != CurVerMid)
-                        SetConfig<int>("VerMID", Ver);
-
+                    //if (Ver != CurVerMid) SetConfig<int>("VerMID", Ver);
                 }
                 //RC
-                CurVerRC = GetConfig<int>("VerRC",dbConfig);
+                //CurVerRC = GetConfig<int>("VerRC",dbConfig);
                 var cDT = DateTime.Now.Date.AddDays(-10);
-
                 while (cDT <= DateTime.Now.Date)
                 {
                     if (File.Exists(GetReceiptFile(cDT)))
                     {
                         using var dbRC = new SQLite(GetReceiptFile(cDT));
+                        CurVerRC = dbRC.GetVersion;
                         Lines = SqlUpdateRC.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
                         (Ver, IsReload) = Parse(Lines, CurVerRC, dbRC);
                         dbRC.SetVersion(Ver);
                     }
                     cDT = cDT.AddDays(1);
                 }
-                if (Ver != CurVerRC)
-                    SetConfig<int>("VerRC", Ver);
+                //if (Ver != CurVerRC) SetConfig<int>("VerRC", Ver);
                 return true;
             }
             catch (Exception ex)

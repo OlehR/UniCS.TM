@@ -226,9 +226,9 @@ namespace Front.Equipments.Implementation
                         }
 
                         if (SetError(M304.FiscalLineEx(article.NameWares, Convert.ToInt32((el.CodeUnit == Global.WeightCodeUnit ? 1000 : 1) * el.Quantity), Convert.ToInt32(el.PriceEKKA * 100), el.CodeUnit == Global.WeightCodeUnit ? 1 : 0, TG1, TG2, el.CodeWares, TypeDiscount, null, Math.Abs(Convert.ToInt32(el.SumDiscountEKKA * 100m)), null) == 0))
-                        {
-                            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка програмування товару: {StrError}");
-                            throw new Exception(Environment.NewLine + "Помилка програмування товару!" + Environment.NewLine + StrError);
+                        {                            
+                            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка програмування товару:{article.CodeWares} PLU=>{article.PLU} {article.NameWares} {StrError}");
+                            throw new Exception($"Помилка програмування товару!{Environment.NewLine}{article.CodeWares} PLU=>{article.PLU}{article.NameWares}{Environment.NewLine}{StrError}");
                         }
                     }
 
