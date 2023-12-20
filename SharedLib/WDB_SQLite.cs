@@ -166,7 +166,7 @@ namespace SharedLib
 
                 CurVerConfig = dbConfig.GetVersion;
                 //CurVerMid = GetConfig<int>("VerMid", dbConfig);
-                CurVerRC = GetConfig<int>("VerRC", dbConfig);
+                //CurVerRC = GetConfig<int>("VerRC", dbConfig);
 
                 //Config
                 var (Ver, IsReload) = Parse(Lines, CurVerConfig, dbConfig);
@@ -1298,6 +1298,13 @@ select sum( sum_pay* case when TYPE_PAY in (4) then -1 else 1 end) as sum from p
                 }
             }
         }       
+
+        public bool IsUseBarCode2Category(string pBarCode)
+        {
+            string SQL = $"select count(BARCODE_2_CATEGORY)  from WARES_RECEIPT_PROMOTION where BARCODE_2_CATEGORY='{pBarCode}'";
+            var Res = db.ExecuteScalar<bool>(SQL);
+            return Res;
+        }
 
     }
 }

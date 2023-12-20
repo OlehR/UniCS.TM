@@ -448,4 +448,12 @@ namespace ModelMID
         [Description("Карточка успішно зареєстрована")]
         Ok = 1
     }
+
+    public enum eTypeMessage
+    {
+        Error,
+        Warning,
+        Information,
+        Question
+    }
 }

@@ -1442,8 +1442,7 @@ namespace Front
                     else
                     if (res.Id == 33)
                     {
-                        AddExciseStamp("None");
-                        Bl.AddEventAge(curReceipt);
+                        ExciseStampNone(null, null);
                     }
                     return;
                 }

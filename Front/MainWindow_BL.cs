@@ -144,9 +144,12 @@ namespace Front
                     SetStateView(eStateMainWindows.WaitInput);
                 }
 
+                if( eSyncStatus.IncorectDiscountBarcode  == SyncInfo.Status || eSyncStatus.IncorectProductForDiscount == SyncInfo.Status)
+                {
+                    CustomMessage.Show(SyncInfo.StatusDescription, "Увага!!!", eTypeMessage.Warning);
+                }
                 FileLogger.WriteLogMessage($"MainWindow.OnSyncInfoCollected Status=>{SyncInfo.Status} StatusDescription=>{SyncInfo.StatusDescription}", eTypeLog.Full);
-            };
-
+            }; 
             Global.OnStatusChanged += (Status) =>
             {
                 ExchangeRateBar = Status.StringColor;
@@ -173,6 +176,11 @@ namespace Front
 
                 FileLogger.WriteLogMessage($"MainWindow.OnClientChanged(CodeReceipt=>{curReceipt?.CodeReceipt} Client.CodeClient=>{Client.CodeClient} Client.Wallet=> {pClient.Wallet} SumBonus=>{pClient.SumBonus})", eTypeLog.Full);
             };
+
+            Global.Message += (pMessage, pTypeMessage) =>
+                {
+                    CustomMessage.Show(pMessage, "Увага!", pTypeMessage);
+                };
 
             Bl.OnAdminBarCode += (pUser) =>
             {

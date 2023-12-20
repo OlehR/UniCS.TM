@@ -20,6 +20,8 @@ namespace ModelMID
 
         public static Action<int, eTypeWindows, string> OnClientWindows { get; set; }
 
+        public static Action<string, eTypeMessage> Message { get; set; }
+
         public static SortedList<Guid, WorkPlace> WorkPlaceByTerminalId;
         public static SortedList<int, WorkPlace> WorkPlaceByWorkplaceId;
 

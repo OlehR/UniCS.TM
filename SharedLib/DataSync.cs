@@ -417,7 +417,12 @@ namespace SharedLib
 
                 if (Cat2 == null || Cat2.Count() == 0)
                 {
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceipt.IdWorkplace), Status = eSyncStatus.IncorectProductForDiscount });
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceipt.IdWorkplace), Status = eSyncStatus.IncorectProductForDiscount, StatusDescription = "Для даного товару не можливо застосувати знижку 2 категорії." });
+                    return false;
+                }
+                if (db.IsUseBarCode2Category(pBarCode))
+                {
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceipt.IdWorkplace), Status = eSyncStatus.IncorectDiscountBarcode, StatusDescription = $"Даний штрихкод =>{pBarCode} другої категорії вже використаний!" });
                     return false;
                 }
                 var Cat2First = Cat2.First();
@@ -455,7 +460,7 @@ namespace SharedLib
                     }
                 }
                 if (isGood)
-                {                    
+                {
                     db.ReplaceWaresReceiptPromotion(Cat2);
                     db.InsertBarCode2Cat(Cat2First);
                     db.RecalcHeadReceipt(pIdReceipt);
@@ -464,7 +469,7 @@ namespace SharedLib
                 }
                 else
                 {
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceipt.IdWorkplace), Status = eSyncStatus.IncorectDiscountBarcode, StatusDescription = "CheckDiscountBarCodeAsync" });
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceipt.IdWorkplace), Status = eSyncStatus.IncorectDiscountBarcode, StatusDescription = $"Даний штрихкод =>{pBarCode} другої категорії вже використаний!" });
                     return false;
                 }
             }
@@ -761,7 +766,6 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             {
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "SendRWDeleteAsync=>" + Ldc.ToString() + " " + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
             }
-
         }
 
         public bool GetClientOrder1C(string pNumberOrder)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ModelMID;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -109,12 +110,5 @@ namespace Front.Control
         {
             ShowWindow(false);
         }
-    }
-    public enum eTypeMessage
-    {
-        Error,
-        Warning,
-        Information,
-        Question
-    }
+    }   
 }
