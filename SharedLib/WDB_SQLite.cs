@@ -801,7 +801,7 @@ insert into RECEIPT_Event(
 
         public bool ReplaceFastGroup(IEnumerable<FastGroup> parData, SQLite pDB)
         {
-            string SqlReplaceFastGroup = @"replace into FAST_GROUP(CODE_UP, Code_Fast_Group, Name) values(@CodeUp, @CodeFastGroup, @Name);";
+            string SqlReplaceFastGroup = @"replace into FAST_GROUP(CODE_UP, Code_Fast_Group, Name,Image) values(@CodeUp, @CodeFastGroup, @Name,@Image);";
             pDB.BulkExecuteNonQuery<FastGroup>(SqlReplaceFastGroup, parData, true);
             return true;
         }
@@ -1094,7 +1094,7 @@ Where ID_WORKPLACE = @IdWorkplace
 
         public virtual IEnumerable<FastGroup> GetFastGroup(int parCodeUpFastGroup)
         {
-            string SqlGetFastGroup = "select code_up as CodeUp,CODE_FAST_GROUP as CodeFastGroup,NAME from FAST_GROUP where code_up = @CodeUp order by CODE_FAST_GROUP";
+            string SqlGetFastGroup = "select code_up as CodeUp,CODE_FAST_GROUP as CodeFastGroup,NAME,Image from FAST_GROUP where code_up = @CodeUp order by CODE_FAST_GROUP";
             var FG = new FastGroup { CodeUp = parCodeUpFastGroup };
             return db.Execute<FastGroup, FastGroup>(SqlGetFastGroup, FG);
         }

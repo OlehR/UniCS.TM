@@ -712,17 +712,20 @@ namespace Front
         {
             if (CurWares != null)
             {
-                var res = Bl.ds.CheckExciseStamp(new ExciseStamp(CurWares, pES));
-                if (Global.Settings.IsCheckExciseStamp)
-                {                    
-                    if (res != null)
+                if (!"None".Equals(pES))
+                {
+                    if (Global.Settings.IsCheckExciseStamp)
                     {
-                        if (!res.Equals(CurWares))
+                        var res = Bl.ds.CheckExciseStamp(new ExciseStamp(CurWares, pES));                    
+                        if (res != null)
                         {
-                            CustomMessage.Show($"Дана акцизна марка вже використана {res.CodePeriod} {res.IdWorkplace} Чек=>{res.CodeReceipt} CodeWares=>{res.CodeWares}!", "Увага", eTypeMessage.Error);
-                            return;
+                            if (!res.Equals(CurWares))
+                            {
+                                CustomMessage.Show($"Дана акцизна марка вже використана {res.CodePeriod} {res.IdWorkplace} Чек=>{res.CodeReceipt} CodeWares=>{res.CodeWares}!", "Увага", eTypeMessage.Error);
+                                return;
+                            }
                         }
-                    }                    
+                    }
                 }
                 if (CurWares.AddExciseStamp(pES))
                 {                 //Додання акцизноії марки до алкоголю

@@ -16,8 +16,9 @@ namespace Front.Models
 			Type = 1;
 			Name = pFG.Name;
 			Code = pFG.CodeFastGroup;
-			//Pictures = $"{PathPicture}0000{Code}.jpg";
-		}
+            Image = pFG.Image;
+            //Pictures = $"{PathPicture}0000{Code}.jpg";
+        }
 		public GW(ReceiptWares pFG)
 		{
 			Type = 0;
@@ -34,8 +35,9 @@ namespace Front.Models
 		public int CodeUnit { get; set; }
 
 		public string GetName { get { return (Type == 1 ? "G" : "W") + Code.ToString(); } }
+		public string Image { get; set; }
 		public string Pictures { get {
-				string Pictures= Path.Combine(Global.PathPictures, (Type == 1 ? "Categories" : "Products"), $"{Code.ToString("D9")}");
+				string Pictures= Path.Combine(Global.PathPictures, (Type == 1 ? "Categories" : "Products"), string.IsNullOrEmpty(Image)? $"{Code.ToString("D9")}" : Image);
 				if (File.Exists(Pictures + ".png"))
 					return Pictures + ".png";
 				else
