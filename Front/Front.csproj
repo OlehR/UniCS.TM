@@ -7,8 +7,8 @@
     <ApplicationIcon />
     <Win32Resource />
     <NeutralLanguage>uk-UA</NeutralLanguage>
-    <AssemblyVersion>2.1.0.96</AssemblyVersion>
-    <FileVersion>2.1.0.96</FileVersion>
+    <AssemblyVersion>2.1.0.97</AssemblyVersion>
+    <FileVersion>2.1.0.97</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
