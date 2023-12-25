@@ -278,9 +278,9 @@ namespace Front
                 else
                 {
                     decimal Quantity = 0m;
-                    if(WaresName.Text.IndexOf('*')>0)
+                    if(WaresName.Text.IndexOf('*')>0|| WaresName.Text.IndexOf('=') > 0)
                     {
-                        var s = WaresName.Text.Split('*');
+                        var s = WaresName.Text.Split(WaresName.Text.IndexOf('*') > 0 ? '*': '=');
                         Quantity = s[0].ToDecimal() * (Gw.CodeUnit== Global.WeightCodeUnit? 1000:1);
                         if(Gw.CodeUnit != Global.WeightCodeUnit)
                             Quantity=Math.Round(Quantity, 0);

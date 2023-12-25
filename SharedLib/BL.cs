@@ -427,9 +427,9 @@ namespace SharedLib
                 else
                 {
                     //Reg = new Regex(@"^[0-9]{1,5}[,.]{0-1}[0-9]{1,5}[*]{1}[0-9]{1,8}[*]{0,1}$");
-                    if ( pName?.IndexOf('*')>0 )//Reg.IsMatch(pName))
+                    if ( pName?.IndexOf('*')>0  || pName?.IndexOf('=') > 0)//Reg.IsMatch(pName))
                     {
-                        var s = pName.Split('*');
+                        var s =  pName.Split(pName?.IndexOf('*') > 0?'*':'=');
                         int.TryParse(s[1], out int res);
                         if (res != 0)
                         {
