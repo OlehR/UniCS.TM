@@ -67,7 +67,7 @@ namespace ModelMID
         /// <summary>
         /// ціна за текучу одиницю.
         /// </summary>
-        public decimal Price { get { return _Price; } set { _Price = Math.Round(value, 2); } }
+        public decimal Price { get { return _Price == 0 && Prices?.Any() == true ? Prices.Max(el => el.Price) : _Price; } set { _Price = Math.Round(value, 2); } }
         // Дилерська категорія.                                       
         //public int CodeDealer { get; set; }
 
