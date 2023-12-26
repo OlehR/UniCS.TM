@@ -517,11 +517,11 @@ WHERE e.IsWork= 1 and  e.CodeUser NOT IN
 LEFT JOIN dbo.V1C_dim_warehouse wh ON cd.warehouse_RRef=wh.warehouse_RRef
 LEFT JOIN dbo.V1C_dim_type_price tp ON wh.type_price_RRef= tp.type_price_RRef;";
 
-        string SqlGetWaresWarehous = @"SELECT ww.CodeWarehouse,ww.TypeData,ww.Data FROM  dbo.WaresWarehouse ww 
+        string SqlGetWaresWarehous = @"SELECT DISTINCT ww.CodeWarehouse,ww.TypeData,ww.Data FROM  dbo.WaresWarehouse ww 
   JOIN dbo.WAREHOUSES Wh ON ww.CodeWarehouse=wh.CodeWarehouse2
   WHERE Wh.Code=@CodeWarehouse
-union ALL 
-SELECT 
+union  
+SELECT DISTINCT
 CASE WHEN org_Rref=0x81320050569E814D11E9A7CE5C69E2D2 THEN -1 ELSE 1 end*wh.CodeWarehouse2 AS CodeWarehouse, --Хак для мукачево
 CASE WHEN [is_leaf]=1 THEN 4 else 3 END  AS TypeData, dn.code AS Data
           FROM DW.dbo.V1C_DIM_OPTION_WPC O       
