@@ -312,6 +312,8 @@ namespace Front.Equipments
         SignalFlagModern,
         [Description("POS-термінал Ingenico")]
         Ingenico,
+        [Description("POS-термінал Android")]
+        BT_Android,
         [Description("Віртуальний POS-термінал")]
         VirtualBankPOS,
         [Description("ФР Exellio")]
@@ -367,6 +369,7 @@ namespace Front.Equipments
                 case eModelEquipment.SignalFlagModern:
                     return eTypeEquipment.Signal;
                 case eModelEquipment.Ingenico:
+                case eModelEquipment.BT_Android:
                 case eModelEquipment.VirtualBankPOS:
                     return eTypeEquipment.BankTerminal;
                 case eModelEquipment.ExellioFP:

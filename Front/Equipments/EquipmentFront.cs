@@ -304,6 +304,9 @@ namespace Front
                             case eModelEquipment.Ingenico:
                                 Terminal = new BT_Ingenico(el, config, LF, PosStatus);
                                 break;
+                            case eModelEquipment.BT_Android:
+                                Terminal = new BT_Android (el, config, LF, PosStatus);
+                                break;
                             case eModelEquipment.VirtualBankPOS:
                                 Terminal = new VirtualBankPOS(el, config, LF, PosStatus);
                                 break;

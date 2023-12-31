@@ -14,7 +14,7 @@ namespace SharedLib
         /// <summary>
         /// Чи можна користуватись базою
         /// </summary>
-        protected static bool IsLock = false;
+        protected  bool IsLock = false;
         public SQL(String varConectionString)
         {
             ConectionString = varConectionString;

@@ -6,18 +6,25 @@ using System.Collections.Generic;
 using ModelMID;
 using Microsoft.Extensions.Logging;
 using System.Linq;
+using System.Threading;
+using Utils;
 
 namespace Front.Equipments
 {
     public class BankTerminal : Equipment
-    {
-        
+    {       
+
+        public Action<StatusEquipment> OnStatus { get; set; }
+        protected static bool CancelRequested;
+
         protected byte MerchantId;
         List<Merchants> Merchants = new List<Merchants>();
-        public BankTerminal(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefine, ILoggerFactory pLoggerFactory = null) : 
+        public BankTerminal(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefine, ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) : 
             base(pEquipment, pConfiguration, pModelEquipment, pLoggerFactory) 
         {
             pConfiguration.GetSection($"{KeyPrefix}MerchantIds").Bind(Merchants);
+            MerchantId = Convert.ToByte(Configuration[$"{KeyPrefix}MerchanId"]);
+            OnStatus += pActionStatus;
         }
 
         public eBank CodeBank { get; set; } = eBank.NotDefine;
@@ -29,7 +36,7 @@ namespace Front.Equipments
 
         public virtual IEnumerable<string> GetLastReceipt() { throw new NotImplementedException(); }
 
-        public virtual void Cancel() { throw new NotImplementedException(); }
+        public virtual void Cancel() { CancelRequested = true; }     
 
         protected void SetStatus(eStatusPos pStatus)
         {
@@ -46,6 +53,17 @@ namespace Front.Equipments
             }
             return this.MerchantId;
         }
+
+        protected void InvokeLastStatusMsg(byte LastStatMsgCode)
+        {
+            eStatusPos StatusPos = eStatusPos.StatusCodeIsNotAvailable;
+            if (Enum.IsDefined(typeof(eStatusPos),(int) LastStatMsgCode))
+            {
+                StatusPos = (eStatusPos)LastStatMsgCode;
+            }
+            OnStatus?.Invoke(new PosStatus() { Status = StatusPos });
+        }
+
     }
 
     public class Merchants

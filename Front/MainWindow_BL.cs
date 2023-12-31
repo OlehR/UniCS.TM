@@ -710,6 +710,8 @@ namespace Front
 
         void AddExciseStamp(string pES)
         {
+            if (CurWares == null)
+                CurWares = curReceipt.GetLastWares;
             if (CurWares != null)
             {
                 if (!"None".Equals(pES))

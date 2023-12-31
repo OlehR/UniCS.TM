@@ -19,33 +19,30 @@ using ModernExpo.SelfCheckout.Entities.CommandServer;
 namespace Front.Equipments
 {    
     public class BT_Ingenico :BankTerminal, IDisposable
-    {        
+    {
+        public Action<IPosResponse> OnResponse { get; set; }
+        public Action<DeviceLog> OnDeviceWarning { get; set; }
+
         private static BPOS1LibClass BPOS;
-        private static bool CancelRequested;
-        private byte port;        
+       
+        private byte Port;        
         
         private readonly ILogger<BT_Ingenico> Logger;
         private readonly Encoding Encoding1251 = Encoding.GetEncoding(1251);
         private readonly Encoding Encoding1252 = Encoding.GetEncoding(1252);
+        
 
-        public Action<IPosResponse> OnResponse { get; set; }
-
-        public Action<StatusEquipment> OnStatus { get; set; }
-
-        public Action<DeviceLog> OnDeviceWarning { get; set; }        
-
-        public BT_Ingenico(Equipment pEquipment, IConfiguration pConfiguration, ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null, string pKeyPrefix = null) : 
-                                base(pEquipment, pConfiguration, eModelEquipment.Ingenico, pLoggerFactory)
+        public BT_Ingenico(Equipment pEquipment, IConfiguration pConfiguration, ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) : 
+                                base(pEquipment, pConfiguration, eModelEquipment.Ingenico, pLoggerFactory,pActionStatus)
         {            
             try
             {
                 State = eStateEquipment.Init;
                 Logger = LoggerFactory?.CreateLogger<BT_Ingenico>();
 
-                byte.TryParse(SerialPort, out port);
-                MerchantId = Convert.ToByte(Configuration[$"{KeyPrefix}MerchanId"]);
+                byte.TryParse(SerialPort, out Port);           
 
-                OnStatus += pActionStatus;
+               
                 SetCodeBank();
             }
             catch (Exception e)
@@ -550,54 +547,7 @@ namespace Front.Equipments
             }
         }
 
-        private void InvokeLastStatusMsg(byte LastStatMsgCode)
-        {
-            switch (LastStatMsgCode)
-            {
-                case 1:
-                    OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.CardWasRead });
-                    break;
-                case 2:
-                    OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.UsedAChipCard });
-                    break;
-                case 3:
-                    OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.AuthorizationInProgress });
-                    break;
-                case 4:
-                    OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.WaitingForCashierAction });
-                    break;
-                case 5:
-                    OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.PrintingReceipt });
-                    break;
-                case 6:
-                    OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.PinEntryIsNeeded });
-                    break;
-                case 7:
-                    OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.CardWasRemoved });
-                    break;
-                case 8:
-                    OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.EMVMultiAids });
-                    break;
-                case 9:
-                    OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.WaitingForCard });
-                    break;
-                case 10:
-                    OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.InProgress });
-                    break;
-                case 11:
-                    OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.CorrectTransaction });
-                    break;
-                case 12:
-                    OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.PinInputWaitKey });
-                    break;
-                case 13:
-                    OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.PinInputBackspacePressed });
-                    break;
-                case 14:
-                    OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.PinInputKeyPressed });
-                    break;
-            }
-        }
+        
 
         public void Settlement(byte pMerchantId=0)
         {
@@ -752,8 +702,6 @@ namespace Front.Equipments
             }
         }
 
-        public override void Cancel() { CancelRequested = true; }
-
         public override IEnumerable<string> GetLastReceipt() { return GetLastReceipt(); }
 
         public List<string> GetLastReceipt(bool IsStart = true)
@@ -800,7 +748,7 @@ namespace Front.Equipments
             BPOS.SetErrorLang((byte)1);
             BPOS.useLogging((byte)1, "ingenico.log");
             if (string.IsNullOrEmpty(IP) || IpPort == 0)
-                BPOS.CommOpen(port, BaudRate);
+                BPOS.CommOpen(Port, BaudRate);
             else
                 BPOS.CommOpenTCP(IP, IpPort.ToString());
             return true;
@@ -819,30 +767,6 @@ namespace Front.Equipments
             BPOS = null;
         }
     }
-
-    /*public enum ReturnCodes
-    {
-        ECRC_OK,
-        ECRC_FAIL,
-        ECRC_FAILEDTOOPENPORT,
-        ECRC_FAILEDTOENUMETAREPORTS,
-        ECRC_FAILEDTOCONNECT,
-        ECRC_NOTOPENED,
-        ECRC_NOTINITED,
-        ECRC_BUSY,
-        ECRC_NODATA,
-        ECRC_MESSAGECORRUPTED,
-        ECRC_TOOSMALLBUFFER,
-        ECRC_DISCONNECTED,
-        ECRC_RECVTIMEOUT,
-        ECRC_SENDMESSAGE,
-        ECRC_CONNECTION,
-        ECRC_READ_FILE,
-        ECRC_UNKNOWNERROR,
-        ECRC_CHECKTERM_TO,
-    }*/
-
-    
 
     public class PosDeviceLog : DeviceLog
     {

@@ -73,7 +73,7 @@ namespace Utils
             if (!Decimal.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out res))
                 res = pDefault;
             return res;
-        }
+        }        
 
         public static string ToS(this decimal s)
         {
