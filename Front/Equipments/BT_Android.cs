@@ -28,8 +28,7 @@ namespace Front.Equipments.Implementation
         bool IsRes = false;
         bool? IsResLongOperation = null;
         string StrRes = null;
-        Answer<dynamic> ResAnswer = null;
-        eCommand ResCommand;
+        Answer<dynamic> ResAnswer = null;       
         BatchTotals ResBatchTotals = null;
 
         public BT_Android(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) : base(pEquipment, pConfiguration, eModelEquipment.VirtualBankPOS, pLoggerFactory, pActionStatus)
@@ -40,7 +39,6 @@ namespace Front.Equipments.Implementation
 
         public override void Init()
         {
-
             lock (Lock)
             {
                 TextError = string.Empty;
@@ -51,7 +49,7 @@ namespace Front.Equipments.Implementation
                     SerialDevice.Open();
                     SerialDevice.DiscardInBuffer();
                     SerialDevice.DiscardOutBuffer();
-                    SendCommand(eCommand.PingDevice);
+                    SendCommand(eCommand.PingDevice,null,10*1000);
                     //State = eStateEquipment.On;
                 }
                 catch (Exception ex)
@@ -79,32 +77,37 @@ namespace Front.Equipments.Implementation
             SerialDevice = portStreamWrapper;
         }
 
-        public override Payment Purchase(decimal pAmount, decimal pCash, int IdWorkPlace = 0)
+        public override Payment Purchase(decimal pAmount, decimal pCash, int pIdWorkPlace = 0)
         {
-            SendCommand(pCash > 0 ? eCommand.Cashback : eCommand.Purchase, new PPurchase() { amount = pAmount.ToS(), discount = "0" }.ToJSON(), 120 * 1000);
+            byte MerchantId = GetMechantIdByIdWorkPlace(pIdWorkPlace);
+            SendCommand(pCash > 0 ? eCommand.Cashback : eCommand.Purchase, new PPurchase() { amount = pAmount.ToS(), discount = "0", merchantId = MerchantId.ToString() }.ToJSON(), 120 * 1000);
             return Res;
         }
 
-        public override Payment Refund(decimal pAmount, string pRRN, int IdWorkPlace = 0)
+        public override Payment Refund(decimal pAmount, string pRRN, int pIdWorkPlace = 0)
         {
-            SendCommand(eCommand.Refund, new { amount = pAmount.ToS(), rrn = pRRN }.ToJSON(), 120 * 1000);
+            byte MerchantId = GetMechantIdByIdWorkPlace(pIdWorkPlace);
+            SendCommand(eCommand.Refund, new { amount = pAmount.ToS(), rrn = pRRN, merchantId= MerchantId.ToString() }.ToJSON(), 120 * 1000);
             return Res;
         }
 
-        public override BatchTotals PrintZ(int IdWorkPlace = 0)
+        public override BatchTotals PrintZ(int pIdWorkPlace = 0)
         {
-            SendCommand(eCommand.Verify, new { merchantId = "0" }.ToJSON(), 20 * 1000);
+            byte MerchantId = GetMechantIdByIdWorkPlace(pIdWorkPlace);
+            SendCommand(eCommand.Verify, new { merchantId = MerchantId.ToString() }.ToJSON(), 20 * 1000);
             return ResBatchTotals;
         }
 
-        public override BatchTotals PrintX(int IdWorkPlace = 0)
+        public override BatchTotals PrintX(int pIdWorkPlace = 0)
         {
-            SendCommand(eCommand.Audit, new { merchantId = "0" }.ToJSON(), 20 * 1000);
+            byte MerchantId = GetMechantIdByIdWorkPlace(pIdWorkPlace);
+            SendCommand(eCommand.Audit, new { merchantId = MerchantId.ToString() }.ToJSON(), 20 * 1000);
             return ResBatchTotals;
         }
 
         public override StatusEquipment TestDevice()
         {
+            Init();
             SendCommand(eCommand.ServiceMessage, new { msgType = "identify" }.ToJSON(), 1000);
             string rr = $"{Environment.NewLine}{ResAnswer.@params}";
             SendCommand(eCommand.GetTerminalInfo, null, 1000);
@@ -121,49 +124,58 @@ namespace Front.Equipments.Implementation
         {
             lock (Lock)
             {
-                LastResult = 2;
-                string Cmd = null;
-                byte delimiter = 0x00;
-                List<byte> data = new List<byte>();
-
-                switch (pC)
+                try
                 {
-                    case eCommand.NotDefine:
-                        break;
-                    case eCommand.PingDevice:
-                        data.Add(delimiter);
-                        Cmd = "{\"method\":\"PingDevice\",\"step\":0}";
-                        break;
-                    case eCommand.GetTerminalInfo:
-                        Cmd = "{\"method\":\"" + pC.ToString() + "\",\"step\":0}";
-                        break;
+                    LastResult = 2;
+                    string Cmd = null;
+                    byte delimiter = 0x00;
+                    List<byte> data = new List<byte>();
 
-                    case eCommand.Audit:
-                    case eCommand.Verify:
-                    case eCommand.PrintBatchJournal:
-                    case eCommand.ServiceMessage:
-                    case eCommand.Refund:
-                    case eCommand.Purchase:
-                    case eCommand.Cashback:
-                    case eCommand.PrintReceiptNum:
-                        Cmd = "{\"method\":\"" + pC.ToString() + "\",\"step\":0,\"params\":" + pParam + " }";
-                        break;
+                    switch (pC)
+                    {
+                        case eCommand.NotDefine:
+                            break;
+                        case eCommand.PingDevice:
+                            data.Add(delimiter);
+                            Cmd = "{\"method\":\"PingDevice\",\"step\":0}";
+                            break;
+                        case eCommand.GetTerminalInfo:
+                            Cmd = "{\"method\":\"" + pC.ToString() + "\",\"step\":0}";
+                            break;
+
+                        case eCommand.Audit:
+                        case eCommand.Verify:
+                        case eCommand.PrintBatchJournal:
+                        case eCommand.ServiceMessage:
+                        case eCommand.Refund:
+                        case eCommand.Purchase:
+                        case eCommand.Cashback:
+                        case eCommand.PrintReceiptNum:
+                            Cmd = "{\"method\":\"" + pC.ToString() + "\",\"step\":0,\"params\":" + pParam + " }";
+                            break;
+                    }
+                    List<byte> message = Encoding.UTF8.GetBytes(Cmd).ToList();
+                    data.AddRange(message);
+                    data.Add(delimiter);
+                    var buffer = data.ToArray();
+                    IsRes = false;
+                    if (pC == eCommand.Purchase || pC == eCommand.Refund || pC == eCommand.Cashback)
+                        IsResLongOperation = false;
+                    SerialDevice.Write(buffer, 0, buffer.Length);
+                    bool res;
+                    if (pC == eCommand.Purchase || pC == eCommand.Refund || pC == eCommand.Cashback)
+                        res = WaitWithStatus(pWait);
+                    else
+                        res = Wait(pWait);
+                    return res;
+
                 }
-                List<byte> message = Encoding.UTF8.GetBytes(Cmd).ToList();
-                data.AddRange(message);
-                data.Add(delimiter);
-                var buffer = data.ToArray();
-                IsRes = false;
-                if (pC == eCommand.Purchase || pC == eCommand.Refund || pC == eCommand.Cashback)
-                    IsResLongOperation = false;
-                SerialDevice.Write(buffer, 0, buffer.Length);
-                bool res;
-                if (pC == eCommand.Purchase || pC == eCommand.Refund || pC == eCommand.Cashback)
-                    res = WaitWithStatus(pWait);
-                else
-                    res = Wait(pWait);
-
-                return res;
+                catch (Exception ex)
+                {
+                    State = eStateEquipment.Error;
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex);
+                    return false;
+                }
             }
         }
 
@@ -197,6 +209,7 @@ namespace Front.Equipments.Implementation
             if (len < 0) return false;
             while (data[len] == 0)
                 len--;
+            if (len < 2) return false;
             StrRes = Encoding.UTF8.GetString(data[0..(len + 1)]);
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, StrRes);
             var strs = StrRes.Split((char)0);
