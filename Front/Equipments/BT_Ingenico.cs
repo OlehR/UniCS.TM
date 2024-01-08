@@ -68,6 +68,7 @@ namespace Front.Equipments
             return Refund(Convert.ToDouble(pAmount), pRRN, IdWorkPlace).Result;
         }
 
+
         public async Task<Payment> Refund(double amount, string bsRRN,int pIdWorkPlace = 0)
         {           
             try
@@ -79,6 +80,7 @@ namespace Front.Equipments
                     };
                 CancelRequested = false;
                 BPOS.Refund(Convert.ToUInt32(amount * 100.0), 0U, GetMechantIdByIdWorkPlace(pIdWorkPlace), bsRRN);
+                OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.WaitingForCard });
                 Payment result = WaitPosRespone();
                 if (result.IsSuccess)
                 {

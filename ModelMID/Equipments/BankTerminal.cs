@@ -60,8 +60,9 @@ namespace Front.Equipments
             if (Enum.IsDefined(typeof(eStatusPos),(int) LastStatMsgCode))
             {
                 StatusPos = (eStatusPos)LastStatMsgCode;
+                OnStatus?.Invoke(new PosStatus() { Status = StatusPos });
             }
-            OnStatus?.Invoke(new PosStatus() { Status = StatusPos });
+            
         }
 
     }
