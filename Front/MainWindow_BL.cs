@@ -341,6 +341,7 @@ namespace Front
         {
             AdminControl.Init(pUser);
             SetStateView(eStateMainWindows.AdminPanel);
+
         }
 
         public void GetBarCode(string pBarCode, string pTypeBarCode)

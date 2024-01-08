@@ -108,15 +108,16 @@ namespace SharedLib
             var r = ldb.ViewReceipt(pIdR, true);
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            _= SendReceiptTo1CAsync(r);            
-            _= SendReceipt(r); // В сховище чеків
+            _= SendReceiptTo1CAsync(r);
+            _ = SendReceipt(pR); // В сховище чеків
+
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             return true;
         }
 
         public async Task<bool> SendReceiptTo1CAsync(Receipt pR,string pServer=null,bool pIsChangeState=true)
-        {
-            if(!Global.Settings.IsSend1C) return false;
+        {           
+            if (!Global.Settings.IsSend1C) return false;
 
             if (string.IsNullOrEmpty(pServer))
                 pServer = Global.Server1C;
@@ -134,7 +135,7 @@ namespace SharedLib
                 pR.StateReceipt = eStateReceipt.Send;
                 if(pIsChangeState)
                     db.SetStateReceipt(pR);//Змінюєм стан чека на відправлено.
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"CodeReceipt=>{pR.CodeReceipt}");
+                FileLogger.WriteLogMessage(this, "SendReceiptTo1CAsync", $"({pR.IdWorkplace},{pR.CodePeriod},{pR.CodeReceipt})");
                 return true;
             }
             catch (Exception ex)
@@ -154,7 +155,11 @@ namespace SharedLib
             var varDB = (parDB ?? db);
             var varReceipts = varDB.GetIdReceiptbyState(eStateReceipt.Print);
             foreach (var el in varReceipts)
-                await SendReceiptTo1CAsync(varDB.ViewReceipt(el, true));
+            {
+                var R = varDB.ViewReceipt(el, true);
+                await SendReceiptTo1CAsync(R);
+                _ = SendReceipt(R); // В сховище чеків
+            }
             if (parDB == null)
                 SendOldReceipt();
             Global.OnStatusChanged?.Invoke(db.GetStatus());

@@ -1,20 +1,14 @@
 ﻿using Front.Equipments.Utils;
-using Front.Equipments.Virtual;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using ModelMID;
 using RJCP.IO.Ports;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
-using System.Threading.Tasks;
 using Utils;
-using static Front.Models.KeyBoardUtilities;
 
 namespace Front.Equipments.Implementation
 {
@@ -49,8 +43,8 @@ namespace Front.Equipments.Implementation
                     SerialDevice.Open();
                     SerialDevice.DiscardInBuffer();
                     SerialDevice.DiscardOutBuffer();
-                    SendCommand(eCommand.PingDevice,null,10*1000);
-                    //State = eStateEquipment.On;
+                    if (SendCommand(eCommand.PingDevice, null, 10 * 1000))
+                        SetCodeBank();
                 }
                 catch (Exception ex)
                 {
@@ -62,6 +56,15 @@ namespace Front.Equipments.Implementation
                     SerialDevice.OnReceivedData = new Func<byte[], bool>(OnDataReceived);
                 }
             }
+        }
+
+        void SetCodeBank()
+        {
+            CodeBank = eBank.PrivatBank;//!!!TMP В майбутньому треба доробити
+            if (CodeBank == eBank.NotDefine)
+                State = eStateEquipment.Error;
+            else
+                State = eStateEquipment.On;
         }
 
         private void OpenPort()
