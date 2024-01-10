@@ -123,40 +123,46 @@ namespace Front.Equipments.Implementation
             return ResBatchTotals?.Receipt;
         }
 
+        public override void Cancel() {
+            SendCommand(eCommand.ServiceMessage, new { msgType = "interrupt" }.ToJSON(), 0);
+        }
+
         bool SendCommand(eCommand pC, string pParam = "{}", int pWait = 0)
         {
-            lock (Lock)
+
+            try
             {
-                try
+                LastResult = 2;
+                string Cmd = null;
+                byte delimiter = 0x00;
+                List<byte> data = new List<byte>();
+
+                switch (pC)
                 {
-                    LastResult = 2;
-                    string Cmd = null;
-                    byte delimiter = 0x00;
-                    List<byte> data = new List<byte>();
+                    case eCommand.NotDefine:
+                        break;
+                    case eCommand.PingDevice:
+                        data.Add(delimiter);
+                        Cmd = "{\"method\":\"PingDevice\",\"step\":0}";
+                        break;
+                    case eCommand.GetTerminalInfo:
+                        Cmd = "{\"method\":\"" + pC.ToString() + "\",\"step\":0}";
+                        break;
 
-                    switch (pC)
-                    {
-                        case eCommand.NotDefine:
-                            break;
-                        case eCommand.PingDevice:
-                            data.Add(delimiter);
-                            Cmd = "{\"method\":\"PingDevice\",\"step\":0}";
-                            break;
-                        case eCommand.GetTerminalInfo:
-                            Cmd = "{\"method\":\"" + pC.ToString() + "\",\"step\":0}";
-                            break;
-
-                        case eCommand.Audit:
-                        case eCommand.Verify:
-                        case eCommand.PrintBatchJournal:
-                        case eCommand.ServiceMessage:
-                        case eCommand.Refund:
-                        case eCommand.Purchase:
-                        case eCommand.Cashback:
-                        case eCommand.PrintReceiptNum:
-                            Cmd = "{\"method\":\"" + pC.ToString() + "\",\"step\":0,\"params\":" + pParam + " }";
-                            break;
-                    }
+                    case eCommand.Audit:
+                    case eCommand.Verify:
+                    case eCommand.PrintBatchJournal:
+                    case eCommand.ServiceMessage:
+                    case eCommand.Refund:
+                    case eCommand.Purchase:
+                    case eCommand.Cashback:
+                    case eCommand.PrintReceiptNum:
+                        Cmd = "{\"method\":\"" + pC.ToString() + "\",\"step\":0,\"params\":" + pParam + " }";
+                        break;
+                }
+                lock (Lock)
+                {
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, Cmd);
                     List<byte> message = Encoding.UTF8.GetBytes(Cmd).ToList();
                     data.AddRange(message);
                     data.Add(delimiter);
@@ -164,22 +170,24 @@ namespace Front.Equipments.Implementation
                     IsRes = false;
                     if (pC == eCommand.Purchase || pC == eCommand.Refund || pC == eCommand.Cashback)
                         IsResLongOperation = false;
-                    SerialDevice.Write(buffer, 0, buffer.Length);
-                    bool res;
-                    if (pC == eCommand.Purchase || pC == eCommand.Refund || pC == eCommand.Cashback)
-                        res = WaitWithStatus(pWait);
-                    else
-                        res = Wait(pWait);
-                    return res;
 
+                    SerialDevice.Write(buffer, 0, buffer.Length);
                 }
-                catch (Exception ex)
-                {
-                    State = eStateEquipment.Error;
-                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex);
-                    return false;
-                }
+                bool res;
+                if (pC == eCommand.Purchase || pC == eCommand.Refund || pC == eCommand.Cashback)
+                    res = WaitWithStatus(pWait);
+                else
+                    res = Wait(pWait);
+                return res;
+
             }
+            catch (Exception ex)
+            {
+                State = eStateEquipment.Error;
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex);
+                return false;
+            }
+
         }
 
         public bool Wait(int pTime = 1000)
@@ -334,6 +342,7 @@ namespace Front.Equipments.Implementation
         getLastStatMsgCode,
         getLastStatMsgDescription,
         identify
+        
     }
 
     class Params
