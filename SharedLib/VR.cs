@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Utils;
 
 namespace SharedLib
 {
@@ -18,6 +19,7 @@ namespace SharedLib
         }
         public static async Task<string> SendMessageAsync(int IdWorkplace, string pStr, int pCode, decimal pQuantity, decimal pSum, eTypeVRMessage pType = eTypeVRMessage.AddWares, decimal pSumAll=0)
         {
+            pStr = pStr.ToDelXML(); //Replace('&', ' ');
             string res = null;
             try
             {

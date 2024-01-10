@@ -56,6 +56,7 @@ namespace Front.Equipments
 
         protected void InvokeLastStatusMsg(byte LastStatMsgCode)
         {
+            if (LastStatMsgCode == 0) return;
             eStatusPos StatusPos = eStatusPos.StatusCodeIsNotAvailable;
             if (Enum.IsDefined(typeof(eStatusPos),(int) LastStatMsgCode))
             {

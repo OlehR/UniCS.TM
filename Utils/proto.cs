@@ -58,6 +58,11 @@ namespace Utils
             return s.Replace("&", "&amp;").Replace("\"", "&quot;").Replace("'", "&apos;").Replace("<", "&lt;").Replace(">", "&gt;");//.Replace(".", "&period;");
         }
 
+        public static string ToDelXML(this string s)
+        {
+            return s.Replace('&', ' ').Replace('\\', ' ').Replace('\'', ' ').Replace('<', ' ').Replace('>',' ');//.Replace(".", "&period;");
+        }
+
         public static int ToInt(this string s,int pDefault=0)
         {
             int res;

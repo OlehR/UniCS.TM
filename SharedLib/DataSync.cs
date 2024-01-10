@@ -117,7 +117,7 @@ namespace SharedLib
 
         public async Task<bool> SendReceiptTo1CAsync(Receipt pR,string pServer=null,bool pIsChangeState=true)
         {           
-            if (!Global.Settings.IsSend1C) return false;
+            if (!Global.Settings.IsSend1C && pIsChangeState) return false;
 
             if (string.IsNullOrEmpty(pServer))
                 pServer = Global.Server1C;
@@ -877,6 +877,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
 
         public async Task<Status> SendReceipt(Receipt pR)
         {
+            if (Global.IsTest) return null;
             try
             {
                 HttpClient client = new HttpClient();
