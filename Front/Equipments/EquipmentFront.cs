@@ -78,7 +78,7 @@ namespace Front
         public IEnumerable<Equipment> GetBankTerminal { get { return ListEquipment.Where(e => e.Type == eTypeEquipment.BankTerminal && e.State == eStateEquipment.On); } }
         public void SetBankTerminal(BankTerminal pBT) { Terminal = pBT; }
         public int CountTerminal { get { return GetBankTerminal.Count(); } }
-        public Equipment BankTerminal1 { get { return GetBankTerminal?.First(); } }
+        public Equipment BankTerminal1 { get { return GetBankTerminal?.FirstOrDefault(); } }
         public Equipment BankTerminal2 { get { return GetBankTerminal?.Skip(1).FirstOrDefault(); } }
         public Window W;
         // eTypeAccess OperationWaitAccess { get; set; } = eTypeAccess.NoDefinition;
