@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using System.Timers;
+//using System.Timers;
 using Utils;
 /*
 Mint.Hardware.ControlScales.BST106M60S
@@ -34,7 +34,7 @@ namespace Front.Equipments
     public class ScaleModern:Scale
     {
         double CheckTime = 3000d;
-        Timer mTimer;
+        System.Timers.Timer mTimer;
         DateTime TimeLastWeight;
         Scales bst;
         
@@ -106,9 +106,9 @@ namespace Front.Equipments
         {
             if (CheckTime > 0)
             {
-                mTimer = new Timer(CheckTime);
+                mTimer = new System.Timers.Timer(CheckTime);
                 mTimer.AutoReset = true;
-                mTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+                mTimer.Elapsed += new System.Timers.ElapsedEventHandler(OnTimedEvent);
                 mTimer.Start();
                 //OnTimedEvent(null,null);
             }
@@ -120,7 +120,7 @@ namespace Front.Equipments
             LastWeight = pWeight;
         }
 
-        private async void OnTimedEvent(Object source, ElapsedEventArgs e)
+        private async void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
         {
             return;
             var CurTime = DateTime.Now;

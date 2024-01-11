@@ -1,23 +1,15 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
 using ECRCommXLib;
-using System.Threading;
 using Newtonsoft.Json;
-using System.Linq;
 using ModelMID;
-using Front.Equipments.Virtual;
 using Utils;
 using Front.Equipments.Utils;
-using Front.Equipments.Implementation.ModelVchasno;
-using System.Diagnostics.Eventing.Reader;
-using ModernExpo.SelfCheckout.Entities.CommandServer;
+
 
 namespace Front.Equipments
-{    
+{
     public class BT_Ingenico :BankTerminal, IDisposable
     {
         public Action<IPosResponse> OnResponse { get; set; }

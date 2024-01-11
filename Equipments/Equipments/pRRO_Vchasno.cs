@@ -13,7 +13,7 @@ using System.Net.Http.Headers;
 using ModelMID.DB;
 using Utils;
 using SharedLib;
-using ModernExpo.SelfCheckout.Utils;
+//using ModernExpo.SelfCheckout.Utils;
 
 namespace Front.Equipments.Implementation
 {

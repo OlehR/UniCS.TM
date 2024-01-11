@@ -1,7 +1,7 @@
 ﻿using Front.Equipments.Implementation.FP700_Model;
 using Front.Equipments.Utils;
 using Front.Equipments.Virtual;
-using Front.Models;
+//using Front.Models;
 using Microsoft.Extensions.Configuration;
 using ModelMID;
 using ModelMID.DB;
@@ -14,7 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Documents;
+//using System.Windows.Documents;
 using System.Xml;
 using System.Xml.Linq;
 using Utils;

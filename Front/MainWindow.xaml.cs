@@ -27,7 +27,8 @@ using Front.Control;
 using System.Windows.Threading;
 using System.Net.Sockets;
 using System.Net;
-
+using System.Windows.Input;
+// W.KeyUp += SKB.Key_UP;
 namespace Front
 {
     public partial class MainWindow : Window, INotifyPropertyChanged
@@ -366,7 +367,7 @@ namespace Front
             Access.СurUser = new User() { TypeUser = eTypeUser.Client, CodeUser = 99999999, Login = "Client", NameUser = "Client" };
 
             Bl = new BL();
-            EF = new EquipmentFront(GetBarCode, null, this);
+            EF = new EquipmentFront(GetBarCode, null);
             InitAction();
 
             calculateWidthHeaderReceipt(TypeMonitor);
@@ -500,7 +501,18 @@ namespace Front
             Task.Run(() => Bl.ds.SyncDataAsync());
         }
 
-        public void SetWorkPlace()
+        public void SetKey(object sender, KeyEventArgs e)
+        {
+            var key = e.Key;
+            var aa = key.ToString();
+
+            if (!(key == Key.Enter || key == Key.Return || ((int)key >= 34 && (int)key <= 69))) 
+                return;
+            var Ch = aa.Length == 2 && aa[0] == 'D' ? aa[1] : aa[0];
+            EF.SetKey((int)key, Ch);
+        }
+
+            public void SetWorkPlace()
         {
             CS.SetOnOff(Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout && EF.ControlScale != null);
             Volume = (Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout);

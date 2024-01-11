@@ -8,10 +8,10 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+//using System.Windows.Forms;
 using Utils;
 using UtilNetwork;
-using static System.Windows.Forms.AxHost;
+//using static System.Windows.Forms.AxHost;
 
 namespace Front.Equipments.Virtual
 {

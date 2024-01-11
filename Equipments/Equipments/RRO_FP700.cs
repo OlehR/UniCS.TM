@@ -21,7 +21,7 @@ using System.Data;
 using System.Threading;
 using System.Diagnostics;
 using Front.Equipments.Implementation.ModelVchasno;
-using System.Windows.Forms;
+//using System.Windows.Forms;
 using System.Windows.Markup;
 using ModernExpo.SelfCheckout.Entities.CommandServer;
 

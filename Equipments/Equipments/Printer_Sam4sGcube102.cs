@@ -9,7 +9,7 @@ using QRCoder;
 using System.Windows.Forms;
 using static System.Net.Mime.MediaTypeNames;
 using Microsoft.Extensions.Configuration;
-using ModernExpo.SelfCheckout.Utils;
+
 using System.CodeDom.Compiler;
 using System.Diagnostics.Metrics;
 using Front.Equipments.Utils;

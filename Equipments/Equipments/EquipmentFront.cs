@@ -36,6 +36,7 @@ namespace Front
         public Scale ControlScale;
         SignalFlag Signal;
         BankTerminal Terminal;
+        ScanerKeyBoard KB;
         //Rro RRO;
         SortedList<int, Rro> RROs = new();
         IEnumerable<Rro> GetRROs(int pIdWorkplace)
@@ -80,14 +81,7 @@ namespace Front
         public int CountTerminal { get { return GetBankTerminal.Count(); } }
         public Equipment BankTerminal1 { get { return GetBankTerminal?.FirstOrDefault(); } }
         public Equipment BankTerminal2 { get { return GetBankTerminal?.Skip(1).FirstOrDefault(); } }
-        public Window W;
-        // eTypeAccess OperationWaitAccess { get; set; } = eTypeAccess.NoDefinition;
-
-        /// <summary>
-        /// Чи готове обладнання для оплати і фіскалізації
-        /// </summary>
-        //public bool IsReadySale { get { return Terminal.State == eStateEquipment.On && RROs.Where(el=>el.State == eStateEquipment.On); } }
-
+       
         public void ControlWeight(double pWeight, bool pIsStable)
         {
             OnControlWeight?.Invoke(pWeight, pIsStable);
@@ -144,13 +138,12 @@ namespace Front
             builder.AddConsole();
         });
 
-        public EquipmentFront(Action<string, string> pSetBarCode, Action<StatusEquipment> pActionStatus = null, Window pW = null)
+        public EquipmentFront(Action<string, string> pSetBarCode, Action<StatusEquipment> pActionStatus = null)
         {
             ILogger<EquipmentFront> logger = LF?.CreateLogger<EquipmentFront>();
             logger.LogDebug("Fp700 getInfo error");
             logger.LogInformation("LogInformation Fp700 getInfo error");
 
-            W = pW;
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             sEquipmentFront = this;
             //OnControlWeight += (pWeight, pIsStable) => { pSetControlWeight?.Invoke(pWeight, pIsStable); };                
@@ -197,14 +190,7 @@ namespace Front
                                 Sc = new ScanerCom(el, config, LF, pSetBarCode);
                                 break;
                             case eModelEquipment.ScanerKeyBoard:
-                                ScanerKeyBoard SKB = new ScanerKeyBoard(el, config, LF, pSetBarCode);
-                                if (W != null)
-                                {
-                                    W.KeyUp += SKB.Key_UP;
-                                    //W.TextInput += Sc.TextInput;
-                                    //((MainWindow)W).TBExciseStamp.TextInput += Sc.TextInput;
-                                }
-                                Sc = SKB;
+                                Sc = new ScanerKeyBoard(el, config, LF, pSetBarCode);                                
                                 break;
                             default:
                                 Sc = new Scaner(el, config);
@@ -1070,7 +1056,17 @@ namespace Front
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
             }
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pKeyCode"></param>
+        /// <param name="pCh"></param>
+        public void SetKey(int pKeyCode,char pCh)
+        {
+            KB?.SetKey(pKeyCode, pCh);
+        }
 
+        #region Weight
         /// <summary>
         /// Початок зважування на основній вазі
         /// </summary>
@@ -1116,6 +1112,8 @@ namespace Front
 
         public void StartMultipleTone() { Scaner?.StartMultipleTone(); }
         public void StopMultipleTone() { Scaner?.StopMultipleTone(); }
+
+#endregion
     }
 
 }
