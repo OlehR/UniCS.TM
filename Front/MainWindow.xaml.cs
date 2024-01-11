@@ -137,7 +137,7 @@ namespace Front
         /// </summary>
         public bool IsOwnBag { get { return ControlScaleCurrentWeight > 0 && ControlScaleCurrentWeight <= Global.MaxWeightBag; } }
         public string StrControlScaleCurrentWeightKg { get { return (ControlScaleCurrentWeight / 1000).ToString("N3"); } }
-        public bool IsPresentFirstTerminal { get { return EF.BankTerminal1 != null && EF.BankTerminal1.IsReady; } }
+        public bool IsPresentFirstTerminal { get { return EF.BankTerminal1 != null && EF.BankTerminal1.State == eStateEquipment.On; } }
         public bool IsPresentSecondTerminal { get { return EF.BankTerminal2 != null; } }
 
         bool IsViewProblemeWeight { get { return State == eStateMainWindows.WaitInput || State == eStateMainWindows.StartWindow; } }
