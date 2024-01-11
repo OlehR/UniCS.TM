@@ -27,7 +27,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerRRO", "ServerRRO\Serv
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UtilNetwork", "UtilNetwork\UtilNetwork.csproj", "{42653FA8-EF6C-4678-BC67-3665D68D2A32}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Equipments", "Equipments\Equipments.csproj", "{2853DF49-8B4B-4E44-A09F-F0151A18D674}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Equipments", "Equipments\Equipments.csproj", "{2853DF49-8B4B-4E44-A09F-F0151A18D674}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FrontAvalonia", "FrontAvalonia\FrontAvalonia.csproj", "{C2CE01D8-AE45-4287-8F04-FAF898F8C792}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FrontAvalonia.Desktop", "FrontAvalonia.Desktop\FrontAvalonia.Desktop.csproj", "{A3661D53-E158-4F6F-80A5-912BB5C44CDA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -87,6 +91,14 @@ Global
 		{2853DF49-8B4B-4E44-A09F-F0151A18D674}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2853DF49-8B4B-4E44-A09F-F0151A18D674}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2853DF49-8B4B-4E44-A09F-F0151A18D674}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2CE01D8-AE45-4287-8F04-FAF898F8C792}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2CE01D8-AE45-4287-8F04-FAF898F8C792}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2CE01D8-AE45-4287-8F04-FAF898F8C792}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2CE01D8-AE45-4287-8F04-FAF898F8C792}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3661D53-E158-4F6F-80A5-912BB5C44CDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3661D53-E158-4F6F-80A5-912BB5C44CDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3661D53-E158-4F6F-80A5-912BB5C44CDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3661D53-E158-4F6F-80A5-912BB5C44CDA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
