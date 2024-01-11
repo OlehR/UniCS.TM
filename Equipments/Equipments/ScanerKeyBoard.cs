@@ -1,6 +1,4 @@
 ﻿using Microsoft.Extensions.Configuration;
-using System.Windows.Forms;
-
 
 namespace Front.Equipments
 {
@@ -51,7 +49,5 @@ namespace Front.Equipments
             }
             LastCharDateTime = CurrentCharDateTime;
         }
-
-
     }
 }

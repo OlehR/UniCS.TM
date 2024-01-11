@@ -190,7 +190,7 @@ namespace Front
                                 Sc = new ScanerCom(el, config, LF, pSetBarCode);
                                 break;
                             case eModelEquipment.ScanerKeyBoard:
-                                Sc = new ScanerKeyBoard(el, config, LF, pSetBarCode);                                
+                                Sc = KB = new ScanerKeyBoard(el, config, LF, pSetBarCode);                                
                                 break;
                             default:
                                 Sc = new Scaner(el, config);
@@ -1065,7 +1065,6 @@ namespace Front
         {
             KB?.SetKey(pKeyCode, pCh);
         }
-
         #region Weight
         /// <summary>
         /// Початок зважування на основній вазі

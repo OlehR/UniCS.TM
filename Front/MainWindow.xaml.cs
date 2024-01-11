@@ -368,6 +368,7 @@ namespace Front
 
             Bl = new BL();
             EF = new EquipmentFront(GetBarCode, null);
+            KeyUp += SetKey;
             InitAction();
 
             calculateWidthHeaderReceipt(TypeMonitor);
@@ -506,7 +507,7 @@ namespace Front
             var key = e.Key;
             var aa = key.ToString();
 
-            if (!(key == Key.Enter || key == Key.Return || ((int)key >= 34 && (int)key <= 69))) 
+            if (!(key == Key.Enter || key == Key.Return || ((int)key >= 34 && (int)key <= 69)))
                 return;
             var Ch = aa.Length == 2 && aa[0] == 'D' ? aa[1] : aa[0];
             EF.SetKey((int)key, Ch);
