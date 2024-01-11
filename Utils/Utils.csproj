@@ -2,9 +2,11 @@
 
     <PropertyGroup>
       <TargetFramework>netstandard2.0</TargetFramework>
+      <LangVersion>8.0</LangVersion>
         <Version>1.0.2</Version>
         <AssemblyVersion>1.0.2.1</AssemblyVersion>
     </PropertyGroup>
+  
 
     <ItemGroup>
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
