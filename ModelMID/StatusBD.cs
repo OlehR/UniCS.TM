@@ -7,13 +7,14 @@ namespace ModelMID
 {
     public class StatusBD
     {
+        public eExchangeStatus ExchangeStatus {  get; set; }
         //public Color color;
-        public string StringColor;
+        public string StringColor { get { return ExchangeStatus.ToString(); } }
        // public string HexColor => $"{color.R:X2}{color.G:X2}{color.B:X2}";
-        public string Descriprion;
-        public void SetColor(eExchangeStatus parExchangeStatus)
+        public string Descriprion { get; set; }
+        /*public void SetColor(eExchangeStatus pExchangeStatus)
         {
-            switch(parExchangeStatus)
+            switch(pExchangeStatus)
             {
                 case eExchangeStatus.Red:
                     //color= Color.FromKnownColor(KnownColor.Red);
@@ -36,6 +37,6 @@ namespace ModelMID
                     StringColor = "Green";
                     break;
             }
-        }
+        } */
     }
 }

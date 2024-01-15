@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Net.Sockets;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,17 +10,12 @@ using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using Front.Control;
 using Front.Equipments;
-using Front.Equipments.Virtual;
 using Front.Models;
 using ModelMID;
 using ModelMID.DB;
 using Newtonsoft.Json;
 using SharedLib;
 using Utils;
-using static Front.MainWindow;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using ModernExpo.SelfCheckout.Utils;
 
 namespace Front
 {
@@ -341,7 +334,6 @@ namespace Front
         {
             AdminControl.Init(pUser);
             SetStateView(eStateMainWindows.AdminPanel);
-
         }
 
         public void GetBarCode(string pBarCode, string pTypeBarCode)

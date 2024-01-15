@@ -266,17 +266,13 @@ namespace ModelMID
         public static eExchangeStatus GetExchangeStatus(DateTime parDT)
         {
             var Diff = DateTime.Now - parDT;
-            if (parDT == default(DateTime) || Diff.Minutes < 15)
-                return eExchangeStatus.Green;
+            if (parDT == default(DateTime) || Diff.Minutes < 15) return eExchangeStatus.Green;
 
-            if (Diff.Minutes < 30)
-                return eExchangeStatus.LightGreen;
+            if (Diff.Minutes < 30) return eExchangeStatus.LightGreen;
 
-            if (Diff.Hours < 1)
-                return eExchangeStatus.Yellow;
+            if (Diff.Hours < 1) return eExchangeStatus.Yellow;
 
-            if (Diff.Hours < 3)
-                return eExchangeStatus.Orange;
+            if (Diff.Hours < 3) return eExchangeStatus.Orange;
 
             return eExchangeStatus.Red;
         }

@@ -22,13 +22,10 @@ using System.Windows.Media;
 using System.Windows.Documents;
 using System.Reflection;
 using System.IO;
-using System.Security.AccessControl;
 using Front.Control;
 using System.Windows.Threading;
-using System.Net.Sockets;
-using System.Net;
 using System.Windows.Input;
-// W.KeyUp += SKB.Key_UP;
+
 namespace Front
 {
     public partial class MainWindow : Window, INotifyPropertyChanged
@@ -343,6 +340,7 @@ namespace Front
 
         public MainWindow()
         {
+           DataContext = this;
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Ver={Version}", eTypeLog.Expanded);
 
             if (Global.PortAPI > 0)
@@ -1547,8 +1545,6 @@ namespace Front
                 CustomWindowValidText = regex.IsMatch(textBox.Text);
             }
         }
-
-
 
         private void PlusOrMinusCigarettes(object sender, RoutedEventArgs e)
         {

@@ -244,8 +244,8 @@ namespace SharedLib
             if (ExchangeStatus1 > ExchangeStatus)
                 ExchangeStatus = ExchangeStatus1;
 
-            var res = new StatusBD { Descriprion = $"DTFirstErrorDiscountOnLine=>{DTFirstErrorDiscountOnLine}, DTLastNotSendReceipt=>{DTLastNotSendReceipt},DTGetLastUpdateDirectory=>{DTGetLastUpdateDirectory}" };
-            res.SetColor(ExchangeStatus);
+            var res = new StatusBD { ExchangeStatus = ExchangeStatus, Descriprion = $"DTFirstErrorDiscountOnLine=>{DTFirstErrorDiscountOnLine}, DTLastNotSendReceipt=>{DTLastNotSendReceipt},DTGetLastUpdateDirectory=>{DTGetLastUpdateDirectory}" };
+           // res.SetColor(ExchangeStatus);
             return res;
         }
 
