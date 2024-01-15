@@ -159,7 +159,8 @@ namespace SharedLib
         {
             var idReceip = new IdReceipt() { IdWorkplace = (pIdWorkplace == 0 ? Global.IdWorkPlace : pIdWorkplace), CodePeriod = (pCodePeriod == 0 ? Global.GetCodePeriod() : pCodePeriod), CodeReceipt = Global.StartCodeReceipt };
             var Recipt = new Receipt(db.GetNewReceipt(idReceip));
-            db.RecalcPriceAsync(new IdReceiptWares(Recipt));
+            Global.OnReceiptCalculationComplete?.Invoke(Recipt);
+            //db.RecalcPriceAsync(new IdReceiptWares(Recipt));
             //Global.OnReceiptChanged?.Invoke(Recipt);
             return Recipt;
         }
