@@ -114,7 +114,7 @@ namespace Front
                     FileLogger.WriteLogMessage($"MainWindow.OnReceiptCalculationComplete Exception =>(pReceipt=>{pReceipt.ToJSON()}) => ({Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace})", eTypeLog.Error);
                 }
 
-                FileLogger.WriteLogMessage($"MainWindow.OnReceiptCalculationComplete(pReceipt=>{pReceipt.ToJSON()})", eTypeLog.Full);
+                FileLogger.WriteLogMessage($"MainWindow.OnReceiptCalculationComplete(pReceipt=>{pReceipt.ToJson()})", eTypeLog.Full);
             };
 
             Global.OnSyncInfoCollected += (SyncInfo) =>
@@ -740,7 +740,7 @@ namespace Front
             if (StartScan != DateTime.MinValue) StartScan = DateTime.Now;
             Dispatcher.BeginInvoke(new ThreadStart(() => { ShowClientBonus.Visibility = Visibility.Collapsed; }));
             EF.PutToDisplay(curReceipt);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"{curReceipt?.ToJSON()}");
+            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"CodeReceipt=>{curReceipt?.CodeReceipt}");
         }
 
         public void FillPays(Receipt pR)
