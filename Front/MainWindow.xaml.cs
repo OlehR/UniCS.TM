@@ -537,10 +537,14 @@ namespace Front
                     CS.WaitClear();
                 }
                 else
-                {
-                    ListWares = new ObservableCollection<ReceiptWares>(pReceipt?.Wares);
+                {                    
                     Dispatcher.BeginInvoke(new ThreadStart(() =>
                     {
+                      if (pReceipt.Wares?.Any() == true)
+                            ListWares = new ObservableCollection<ReceiptWares>(pReceipt.Wares);
+                        else
+                            ListWares?.Clear();
+
                         WaresList.ItemsSource = ListWares;
                         if (WaresList.Items.Count > 0)
                             WaresList.SelectedIndex = WaresList.Items.Count - 1;
@@ -1595,7 +1599,7 @@ namespace Front
             }
             else
             {
-                if (curReceipt == null || curReceipt.Wares != null && !curReceipt.Wares.Any())
+                if (curReceipt == null || curReceipt.Wares?.Any() != true)
                 {
                     if (Client != null)
                         ShowClientBonus.Visibility = Visibility.Visible;
