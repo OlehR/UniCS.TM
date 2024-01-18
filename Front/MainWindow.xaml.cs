@@ -25,6 +25,7 @@ using System.IO;
 using Front.Control;
 using System.Windows.Threading;
 using System.Windows.Input;
+using Front.ViewModels;
 
 namespace Front
 {
@@ -154,12 +155,8 @@ namespace Front
 
         public string GetBackgroundColor { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? "#ff9999" : "#FFFFFF"; } }
         public double GiveRest { get; set; } = 0;
-        public string BarcodeIssueCard { get; set; } = string.Empty;
-        public string PhoneIssueCard { get; set; } = string.Empty;
         public string VerifyCode { get; set; } = string.Empty;
         private StatusD<string> LastVerifyCode = new();
-        public bool IsBarcodeIssueCard { get { return !string.IsNullOrEmpty(BarcodeIssueCard); } }
-        public bool IsGetCard { get; set; } = false;
         public List<string> ClientPhoneNumvers = new List<string>();
         public eSyncStatus DatabaseUpdateStatus { get; set; } = eSyncStatus.SyncFinishedSuccess;
 
@@ -411,6 +408,9 @@ namespace Front
             AdminControl.Init(this);
             PaymentWindow.Init(this);
             CustomMessage.Init(this);
+            IssueCardUC.Init(this);
+            //IssueCardVM issueCardVM = new();
+            //issueCardVM.Init(this);
 
             //Провіряємо чи зміна відкрита.
             string BarCodeAdminSSC = Bl.db.GetConfig<string>("CodeAdminSSC");
@@ -820,7 +820,7 @@ namespace Front
                     CodeSMS.Visibility = Visibility.Collapsed;
                     WaitAdminWeightButtons.Visibility = Visibility.Visible;
                     WaitAdminAdditionalText.Visibility = Visibility.Collapsed;
-                    IssueCard.Visibility = Visibility.Collapsed;
+                    IssueCardUC.Visibility = Visibility.Collapsed;
                     AdminControl.Visibility = (State == eStateMainWindows.AdminPanel ? Visibility.Visible : Visibility.Collapsed);
                     AddMissingPackage.Visibility = Visibility.Collapsed;
 
@@ -1012,8 +1012,10 @@ namespace Front
                             //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsEnabledFindButton"));
                             break;
                         case eStateMainWindows.WaitInputIssueCard:
-                            IssueCard.Visibility = Visibility.Visible;
-                            EnterPhoneIssueCard(null, null);
+                            IssueCardUC.Visibility = Visibility.Visible;
+                            Background.Visibility = Visibility.Visible;
+                            BackgroundWares.Visibility = Visibility.Visible;
+                            IssueCardUC.ButPhoneIssueCard.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
                             break;
                         case eStateMainWindows.WaitInput:
                             //IsIgnoreExciseStamp = false;
@@ -1616,64 +1618,7 @@ namespace Front
 
         }
 
-        private void IssueCardButton(object sender, RoutedEventArgs e)
-        {
-            SetStateView(eStateMainWindows.WaitInputIssueCard);
-            //IssueCard.Visibility = Visibility.Visible;
-            //EnterBarcodeIssueCard(null,null);
-        }
 
-        private void EnterBarcodeIssueCard(object sender, RoutedEventArgs e)
-        {
-            //BorderNumPadIssueCard.Visibility = Visibility.Visible;
-            //NumPadIssueCard.Visibility = Visibility.Visible;
-
-            //NumPadIssueCard.Desciption = $"Введіть штрихкод";
-            //NumPadIssueCard.ValidationMask = "^[0-9]{13,15}$";
-            //NumPadIssueCard.Result = $"{BarcodeIssueCard}";
-            //NumPadIssueCard.IsEnableComma = false;
-            //NumPadIssueCard.CallBackResult = (string res) =>
-            //{
-            //    if (!string.IsNullOrEmpty(res))
-            //        BarcodeIssueCard = res;
-            //    else
-            //        BarcodeIssueCard = string.Empty;
-            //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("BarcodeIssueCard"));
-
-            //    BorderNumPadIssueCard.Visibility = Visibility.Visible;
-            //    NumPadIssueCard.Visibility = Visibility.Visible;
-            //};
-        }
-
-        private void EnterPhoneIssueCard(object sender, RoutedEventArgs e)
-        {
-            bool status = true;
-            BorderNumPadIssueCard.Visibility = Visibility.Visible;
-            NumPadIssueCard.Visibility = Visibility.Visible;
-
-            NumPadIssueCard.Desciption = $"Введіть Номер телефону";
-            NumPadIssueCard.ValidationMask = "^[0-9]{10}$";
-            NumPadIssueCard.Result = $"{PhoneIssueCard}";
-            NumPadIssueCard.IsEnableComma = false;
-            NumPadIssueCard.CallBackResult = (string res) =>
-            {
-                if (!string.IsNullOrEmpty(res))
-                    (PhoneIssueCard, status) = PhoneCorrection(res);
-                else
-                {
-                    PhoneIssueCard = string.Empty;
-                    EnterPhoneIssueCard(sender, e);
-                }
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("PhoneIssueCard"));
-
-                if (!status)
-                {
-                    BorderNumPadIssueCard.Visibility = Visibility.Visible;
-                    NumPadIssueCard.Visibility = Visibility.Visible;
-                }
-
-            };
-        }
         private (string, bool) PhoneCorrection(string phoneNumber)
         {
             if (string.IsNullOrEmpty(phoneNumber)) return (phoneNumber, false);
@@ -1688,113 +1633,12 @@ namespace Front
 
 
         }
-        private void IssueNewCardButton(object sender, RoutedEventArgs e)
-        {
-            ClientNew clientNew = new ClientNew() { BarcodeCashier = AdminSSC?.BarCode, BarcodeClient = BarcodeIssueCard, IdWorkplace = Global.IdWorkPlace, Phone = PhoneIssueCard, DateCreate = DateTime.Now };
-            eReturnClient r = eReturnClient.Error;
-            Task.Run(async () =>
-            {
-                r = await Bl.ds.Send1CClientAsync(clientNew);
-            }).Wait();
 
-            //if (r != eReturnClient.Ok)
-            //{
-            CustomMessage.Show(r.GetDescription(), r != eReturnClient.Ok ? "Помилка! Карточка не збереглась на сервері!!!" : "Карточка успішно збережена.", eTypeMessage.Information);
 
-            // MessageBox.Show(r.GetDescription(), r != eReturnClient.Ok ? "Помилка! Карточка не збереглась на сервері!!!" : "Карточка успішно збережена.");
-            // }
-            //else
-            // {
-            clientNew.State = r == eReturnClient.Ok ? 1 : 0;
-            Bl.db.ReplaceClientNew(clientNew);
-            if (r == eReturnClient.Ok)
-                CancelIssueCard(null, null);
-            //}
 
-        }
 
-        private void CancelIssueCard(object sender, RoutedEventArgs e)
-        {
-            SetStateView(eStateMainWindows.WaitInput);
-            PhoneIssueCard = string.Empty;
-            BarcodeIssueCard = string.Empty;
-            VerifyCode = string.Empty;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsBarcodeIssueCard)));
 
-        }
-
-        private void EnterVerifyCode(object sender, RoutedEventArgs e)
-        {
-            BorderNumPadIssueCard.Visibility = Visibility.Visible;
-            NumPadIssueCard.Visibility = Visibility.Visible;
-
-            NumPadIssueCard.Desciption = $"Введіть код підтвердження";
-            NumPadIssueCard.ValidationMask = "";
-            NumPadIssueCard.Result = $"";
-            NumPadIssueCard.IsEnableComma = false;
-            NumPadIssueCard.CallBackResult = (string res) =>
-            {
-                if (!string.IsNullOrEmpty(res))
-                    VerifyCode = res;
-                else
-                {
-                    VerifyCode = string.Empty;
-                    //EnterVerifyCode(sender, e);
-                }
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VerifyCode)));
-                if (LastVerifyCode.Data == VerifyCode)
-                    IsGetCard = true;
-                else
-                {
-                    IsGetCard = false;
-                    if (!string.IsNullOrEmpty(VerifyCode))
-                        CustomMessage.Show($"Введений код не вірний!", "Помилка!", eTypeMessage.Error);
-                    // MessageBox.Show($"Введений код не вірний!", "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsGetCard)));
-            };
-        }
-
-        private void ButSendVerifyCode(object sender, RoutedEventArgs e)
-        {
-
-            LastVerifyCode = Bl.ds.GetVerifySMS(PhoneIssueCard);
-            //LastVerifyCode = new StatusD<string> { Data = "123456", State = 0, TextState = "OK" };
-            CustomMessage.Show($"Код підтвердження надіслано за номером {PhoneIssueCard}", "Успішно!", eTypeMessage.Information);
-            //MessageBox.Show($"Код підтвердження надіслано за номером {PhoneIssueCard}", "Увага!", MessageBoxButton.OK, MessageBoxImage.Information);
-            EnterVerifyCode(null, null);
-        }
-
-        private void CodeSMSUseBonusBtn(object sender, RoutedEventArgs e)
-        {
-            BorderNumPadUseBonus.Visibility = Visibility.Visible;
-            NumPadUseBonus.Visibility = Visibility.Visible;
-            BackgroundWaitAdmin.Visibility = Visibility.Visible;
-
-            NumPadUseBonus.Desciption = $"Введіть код підтвердження";
-            NumPadUseBonus.ValidationMask = "";
-            NumPadUseBonus.Result = $"";
-            NumPadUseBonus.IsEnableComma = false;
-            NumPadUseBonus.CallBackResult = (string res) =>
-                          {
-                              if (!string.IsNullOrEmpty(res))
-                                  VerifyCode = res;
-                              else
-                              {
-                                  VerifyCode = string.Empty;
-                              }
-                              PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VerifyCode)));
-                              if (LastVerifyCode.Data == VerifyCode)
-                                  SetConfirm(AdminSSC, false, true);
-
-                              else
-                              {
-                                  CustomMessage.Show($"Введений код не вірний!", "Помилка!", eTypeMessage.Error);
-                                  //MessageBox.Show($"Введений код не вірний!", "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
-                              }
-                              BackgroundWaitAdmin.Visibility = Visibility.Collapsed;
-                          };
-        }
+  
 
         private void UpdateDB(object sender, RoutedEventArgs e)
         {
@@ -1871,6 +1715,41 @@ namespace Front
                         SocketAnsver?.Invoke(comand, MainWorkplace, new Status(ex));
                     }
                 });
+        }
+
+        private void IssueCardButton(object sender, RoutedEventArgs e)
+        {
+            SetStateView(eStateMainWindows.WaitInputIssueCard);
+        }
+        private void CodeSMSUseBonusBtn(object sender, RoutedEventArgs e)
+        {
+            BorderNumPadUseBonus.Visibility = Visibility.Visible;
+            NumPadUseBonus.Visibility = Visibility.Visible;
+            BackgroundWaitAdmin.Visibility = Visibility.Visible;
+
+            NumPadUseBonus.Desciption = $"Введіть код підтвердження";
+            NumPadUseBonus.ValidationMask = "";
+            NumPadUseBonus.Result = $"";
+            NumPadUseBonus.IsEnableComma = false;
+            NumPadUseBonus.CallBackResult = (string res) =>
+            {
+                if (!string.IsNullOrEmpty(res))
+                    VerifyCode = res;
+                else
+                {
+                    VerifyCode = string.Empty;
+                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VerifyCode)));
+                if (LastVerifyCode.Data == VerifyCode)
+                    SetConfirm(AdminSSC, false, true);
+
+                else
+                {
+                    CustomMessage.Show($"Введений код не вірний!", "Помилка!", eTypeMessage.Error);
+                    //MessageBox.Show($"Введений код не вірний!", "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                BackgroundWaitAdmin.Visibility = Visibility.Collapsed;
+            };
         }
     }
 

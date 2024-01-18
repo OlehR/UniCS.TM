@@ -4,6 +4,7 @@
     <TargetFramework>net6.0-windows</TargetFramework>
 	  <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
+	  <Nullable>disable</Nullable>
     <ApplicationIcon />
     <Win32Resource />
     <NeutralLanguage>uk-UA</NeutralLanguage>
@@ -17,7 +18,7 @@
 
   <ItemGroup>
     <None Remove="icons\18plus.png" />
-    <None Remove="icons\18PlusRed.png" />
+	  <None Remove="icons\18PlusRed.png" />
     <None Remove="icons\AdminPanel.png" />
     <None Remove="icons\back.png" />
     <None Remove="icons\backArrow.png" />

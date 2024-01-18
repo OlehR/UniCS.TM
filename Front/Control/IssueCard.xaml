@@ -1,0 +1,151 @@
+﻿<UserControl x:Class="Front.Control.IssueCard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Front.Control" 
+             xmlns:vm="clr-namespace:Front.ViewModels"   
+             mc:Ignorable="d" 
+             d:DesignHeight="650" d:DesignWidth="1000">
+    <UserControl.DataContext>
+        <vm:IssueCardVM/>
+    </UserControl.DataContext>
+    <Grid>
+        <!--Вікно видачі картки-->
+        <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
+     Grid.Row="0" Grid.RowSpan="4"
+     Grid.Column="1" Grid.ColumnSpan="4"
+     Name="IssueCardBorder" Visibility="Visible" Grid.ZIndex="2" 
+    CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Border.Effect>
+                <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+            </Border.Effect>
+            <Grid Width="1000" Height="650">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.5*"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="60"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="80"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
+                   HorizontalAlignment="Center" FontSize="24" FontWeight="Bold"
+                   Text="Видача картки покупцю"/>
+
+
+                <Grid Grid.Row="1" Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Штрихкод:" FontSize="24" Margin="5" Grid.Row="2"/>
+                    <TextBlock Text="Карта КНС:" FontSize="24" Margin="5" Grid.Row="3"/>
+                    <TextBlock Text="Номер телефону" FontSize="24" Margin="5" Grid.Row="4"/>
+                    <TextBlock Text="Код підтвердження" FontSize="24" Margin="5" Grid.Row="5"/>
+
+                    <Button Style="{StaticResource WhiteButton}" Margin="5" Name="ButBarcodeIssueCard"
+                    Grid.Column="1" Grid.Row="2"
+                    Content="{Binding BarcodeIssueCard}"/>
+                    <TextBlock Text="Назва картки" FontSize="24" Margin="5"
+                    Grid.Column="1" Grid.Row="3"/>
+                    <Button Style="{StaticResource WhiteButton}" Margin="5" Name="ButPhoneIssueCard"
+                    Grid.Column="1" Grid.Row="4"  Command="{Binding EnterPhone}"
+                    Content="{Binding PhoneIssueCard}"/>
+                    <Button Style="{StaticResource WhiteButton}" Margin="5" Name="ButVerifySMS"
+                    Grid.Column="1" Grid.Row="5"  Command="{Binding EnterVerifyCode}"
+                    Content="{Binding VerifyCode}"/>
+                </Grid>
+
+                <Border Grid.Row="1" Grid.Column="2" x:Name="BorderNumPadIssueCard" Visibility="{Binding NumPadVisibility}" Panel.ZIndex="2">
+                    <local:NumericPad x:Name="NumPadIssueCard" Width="400"  Height="480"  Visibility="{Binding NumPadVisibility}"/>
+                </Border>
+
+                <StackPanel Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button Width="250" Height="70"
+                            Content="Відправити код" 
+                            Name="SendVerifyCodeBT"
+                            Command="{Binding SendVerifyCode}"
+                            Click="ButSendVerifyCode">
+                        <Button.Style>
+                            <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
+                                <Setter Property="IsEnabled" Value="True"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsBarcodeIssueCard}" Value="True">
+                                        <Setter Property="IsEnabled" Value="True" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsBarcodeIssueCard}" Value="False">
+                                        <Setter Property="IsEnabled" Value="False" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsGetCard}" Value="true">
+                                        <Setter Property="IsEnabled" Value="False" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <Button Grid.Column="1"
+                 Width="250" Height="70"
+                Content="Видати без SMS"  Click="IssueNewCardButton" >
+                        <Button.Style>
+                            <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                <Setter Property="IsEnabled" Value="False"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsBarcodeIssueCard}" Value="True">
+                                        <Setter Property="IsEnabled" Value="True" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsBarcodeIssueCard}" Value="False">
+                                        <Setter Property="IsEnabled" Value="False" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
+
+
+                <Grid 
+                    Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0" Style="{StaticResource Default}" Width="150" Height="70"
+                Content="Відмінити"   Command="{Binding Cancel}" Click="CancelClick"/>
+                    <Button Grid.Column="1"
+                 Width="250" Height="70"
+                Content="Видати картку" Click="IssueNewCardButton" >
+                        <Button.Style>
+                            <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
+                                <Setter Property="IsEnabled" Value="False"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsGetCard}" Value="True">
+                                        <Setter Property="IsEnabled" Value="True" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsGetCard}" Value="False">
+                                        <Setter Property="IsEnabled" Value="False" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

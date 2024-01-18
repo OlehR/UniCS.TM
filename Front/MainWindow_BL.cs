@@ -343,9 +343,7 @@ namespace Front
                 SetStateView(eStateMainWindows.WaitInput);
             if (State == eStateMainWindows.WaitInputIssueCard)
             {
-                BarcodeIssueCard = pBarCode;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("BarcodeIssueCard"));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsBarcodeIssueCard"));
+                IssueCardUC.SetBarCode(pBarCode);
 
                 return;
             }
