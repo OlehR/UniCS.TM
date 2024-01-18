@@ -14,40 +14,6 @@ namespace ModelMID.DB
         { CreatedAt = DateTime.Now; }
 
         /// <summary>
-        /// Gets or sets the identifier.
-        /// </summary>
-        /// <value>The identifier.</value>
-
-        public Guid Id { get; set; }
-
-        public string IdGUID { get { return Id.ToString(); }set { if(value!=null)Id = Guid.Parse(value); } }
-        /// <summary>
-        /// Gets or sets the mobile device identifier.
-        /// </summary>
-        /// <value>The mobile device identifier.</value>
-        public Guid? MobileDeviceId { get; set; }
-        
-        public string MobileDeviceIdGUID { get {
-                return MobileDeviceId?.ToString();
-            } 
-            set {
-                if(value!=null) MobileDeviceId = Guid.Parse(value); } 
-        }
-
-        
-        /// <summary>
-        /// Gets or sets the receipt identifier.
-        /// </summary>
-        /// <value>The receipt identifier.</value>
-        //public Guid ReceiptId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the receipt item identifier.
-        /// </summary>
-        /// <value>The receipt item identifier.</value>
-        public Guid? ReceiptItemId { get { return WaresId; } set { if(value!=null) WaresId = value.Value; } }
-
-        /// <summary>
         /// Gets or sets the receipt product name.
         /// </summary>
         /// <value>The receipt product name.</value>
@@ -76,15 +42,7 @@ namespace ModelMID.DB
         /// </summary>
         /// <value>The product confirmed weight.</value>
         public int ProductConfirmedWeight { get; set; }
-
-        /// <summary>
-        /// Gets or sets the user identifier.
-        /// </summary>
-        /// <value>The user identifier.</value>
-        public Guid? UserId { get; set; }
-
-        public string UserIdGUID { get { return UserId?.ToString(); } set { if(value!=null) UserId = Guid.Parse(value); } }
-
+        
         /// <summary>
         /// Gets or sets the user name.
         /// </summary>

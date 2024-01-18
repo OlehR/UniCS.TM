@@ -420,10 +420,7 @@ namespace ModelMID
             Clear();
         }
 
-        public ReceiptWares(IdReceipt idReceipt, Guid parWaresId) : base(idReceipt, parWaresId)
-        {
-        }
-
+        
         public ReceiptWares(IdReceipt idReceipt) : base(idReceipt)
         {
         }

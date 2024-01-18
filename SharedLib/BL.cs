@@ -326,8 +326,7 @@ namespace SharedLib
                     _ = VR.SendMessageAsync(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum, VR.eTypeVRMessage.DeleteWares);
                 }
                 else
-                {
-                    //w.SetIdReceiptWares();
+                {                    
                     w.Quantity = pQuantity;
                     w.Sort = -1;
                     if (w.AmountSalesBan > 0 && w.Quantity > w.AmountSalesBan && (w.CodeUnit != Global.WeightCodeUnit && w.CodeUnit != Global.WeightCodeUnit))
@@ -409,7 +408,7 @@ namespace SharedLib
             db.ReplaceReceipt(RH);
             if (Global.RecalcPriceOnLine)
                 db.RecalcPriceAsync(new IdReceiptWares(pIdReceipt));
-            _ = ds.GetBonusAsync(parClient, pIdReceipt.IdWorkplace);
+            _ = GetBonusAsync(parClient);
         }
 
         public IEnumerable<ReceiptWares> GetProductsByName(IdReceipt pReceipt, string pName, int pOffSet = -1, int pLimit = 10, int pCodeFastGroup = 0)
@@ -462,26 +461,12 @@ namespace SharedLib
                 return null;
         }
 
-        //public bool UpdateWorkPlace(IEnumerable<WorkPlace> parData) { return db.ReplaceWorkPlace(parData); }
-
-
         public bool SetStateReceipt(IdReceipt pIdReceipt, eStateReceipt pStateReceipt)
         {
             if (pIdReceipt == null)
                 return false;
             var receipt = new Receipt(pIdReceipt) { StateReceipt = pStateReceipt, DateReceipt = DateTime.Now, UserCreate = GetUserIdbyWorkPlace(pIdReceipt.IdWorkplace) };
             return db.CloseReceipt(receipt);
-        }
-
-        public bool InsertWeight(string pBarCode, int parWeight, Guid parWares, TypeSaveWeight parTypeSaveWeight)
-        {
-            var CodeWares = 0;
-            if (string.IsNullOrEmpty(pBarCode) && parWares == Guid.Empty)
-                return false;
-            if (parWares != Guid.Empty)
-                CodeWares = new IdReceiptWares(new IdReceipt(), parWares).CodeWares;
-
-            return db.InsertWeight(new { BarCode = (parTypeSaveWeight == TypeSaveWeight.Add || pBarCode == null ? CodeWares.ToString() : pBarCode), Weight = (decimal)parWeight / 1000m, Status = parTypeSaveWeight });
         }
 
         public IEnumerable<ReceiptWares> GetWaresReceipt(IdReceipt pIdR )
@@ -568,7 +553,7 @@ namespace SharedLib
             return true;
         }
 
-        public Task GetBonusAsync(Client pClient, int pIdWorkPlace) { return ds.GetBonusAsync(pClient, pIdWorkPlace); }
+        public Task GetBonusAsync(Client pClient) { return ds.GetBonusAsync(pClient, Global.CodeWarehouse); }
 
         public void SendReceiptTo1C(IdReceipt parIdReceipt)
         {

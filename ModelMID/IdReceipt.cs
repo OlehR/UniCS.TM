@@ -50,21 +50,7 @@ namespace ModelMID
             SetIdReceipt(parIdReceipt);
         }
 
-        /*public IdReceipt(Guid parReceiptId)
-        {
-            SetGuid(parReceiptId);            
-        }
-
-        public void  SetGuid(Guid parReceiptId)
-        {
-            var strReceiptId = parReceiptId.ToString();
-            int v;
-            IdWorkplace = int.TryParse(strReceiptId.Substring(0, 8), out v) ? v : 0;
-            CodePeriod = int.TryParse(strReceiptId.Substring(14, 9).Replace("-", ""), out v) ? v:0; 
-            CodeReceipt = int.TryParse(strReceiptId.Substring(24, 12), out v) ? v : 0;
-       }*/
-
-        public void SetIdReceipt(IdReceipt idReceipt)
+         public void SetIdReceipt(IdReceipt idReceipt)
         {
             if (idReceipt == null)
                 return;

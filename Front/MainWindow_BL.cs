@@ -149,7 +149,7 @@ namespace Front
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ExchangeRateBar"));
             };
 
-            Global.OnClientChanged += (pClient, pIdWorkPlace) =>
+            Global.OnClientChanged += (pClient) =>
             {
                 Client = pClient;
 

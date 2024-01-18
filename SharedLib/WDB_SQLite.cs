@@ -414,7 +414,7 @@ namespace SharedLib
                 }
                 catch (Exception ex)
                 {
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceiptWares.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "RecalcPrice=>" + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "RecalcPrice=>" + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
                     return false;
                 }
             }
@@ -468,7 +468,6 @@ namespace SharedLib
                             var Price = RW.Where(e => e.CodeWares == el.CodeWares).Sum(e => e.Price);
                             vPrice = Price * (100 - el.DataDiscount) / 100m;
                         }
-
                         var RWP = new WaresReceiptPromotion(parIdReceipt) { CodeWares = el.CodeWares, Quantity = AddQuantity, Price = vPrice, CodePS = el.CodePS, NumberGroup = el.NumberGroup };
                         varRes.Add(RWP);
                     }
@@ -520,8 +519,8 @@ namespace SharedLib
 
         public bool ReplaceWorkPlace(IEnumerable<WorkPlace> parData)
         {
-            string SqlReplaceWorkPlace = @"replace into WORKPLACE(ID_WORKPLACE, NAME, Terminal_GUID, Video_Camera_IP, Video_Recorder_IP, Type_POS, Code_Warehouse, CODE_DEALER, Prefix, DNSName, TypeWorkplace, SettingsEx) values
-            (@IdWorkplace, @Name, @StrTerminalGUID, @VideoCameraIP, @VideoRecorderIP, @TypePOS, @CodeWarehouse, @CodeDealer, @Prefix, @DNSName, @TypeWorkplace, @SettingsEx);";
+            string SqlReplaceWorkPlace = @"replace into WORKPLACE(ID_WORKPLACE, NAME, Video_Camera_IP, Video_Recorder_IP, Type_POS, Code_Warehouse, CODE_DEALER, Prefix, DNSName, TypeWorkplace, SettingsEx) values
+            (@IdWorkplace, @Name,  @VideoCameraIP, @VideoRecorderIP, @TypePOS, @CodeWarehouse, @CodeDealer, @Prefix, @DNSName, @TypeWorkplace, @SettingsEx);";
 
             return dbConfig.BulkExecuteNonQuery<WorkPlace>(SqlReplaceWorkPlace, parData, true) > 0;
         }
@@ -712,14 +711,11 @@ update wares_receipt set Refunded_Quantity = Refunded_Quantity + @Quantity
             string SqlInsertReceiptEvent = @"
 insert into RECEIPT_Event(
     ID_WORKPLACE, CODE_PERIOD, CODE_RECEIPT, CODE_WARES, CODE_UNIT,
-    ID_GUID,
-    Mobile_Device_Id_GUID,
     Product_Name,
     Event_Type,
     Event_Name,
     Product_Weight,
-    Product_Confirmed_Weight,
-    UserId_GUID,
+    Product_Confirmed_Weight,    
     User_Name,
     Created_At,
     Resolved_At,
@@ -728,15 +724,12 @@ insert into RECEIPT_Event(
     Payment_Type,
     Total_Amount
     ) VALUES
-    (@IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit,
-    @IdGUID,
-    @MobileDeviceIdGUID,
+    (@IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit,    
     @ProductName,
     @EventType,
     @EventName,
     @ProductWeight,
     @ProductConfirmedWeight,
-    @UserIdGUID,
     @UserName,
     @CreatedAt,
     @ResolvedAt,
@@ -1102,7 +1095,7 @@ Where ID_WORKPLACE = @IdWorkplace
 
         public virtual IEnumerable<WorkPlace> GetWorkPlace()
         {
-            string SqlGetWorkplace = @"select ID_WORKPLACE as IdWorkplace, NAME as Name, Terminal_GUID as StrTerminalGUID, 
+            string SqlGetWorkplace = @"select ID_WORKPLACE as IdWorkplace, NAME as Name,
        Video_Camera_IP as VideoCameraIP, Video_Recorder_IP as VideoRecorderIP , Type_POS as TypePOS,
        Code_Warehouse as CodeWarehouse ,CODE_DEALER as CodeDealer,Prefix, DNSName,TypeWorkplace ,SettingsEx from WORKPLACE;";
             return db.Execute<WorkPlace>(SqlGetWorkplace);

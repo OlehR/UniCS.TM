@@ -48,7 +48,7 @@ namespace Front.Equipments.Implementation
             CultureInfo.DefaultThreadCurrentCulture = culture;
             CultureInfo.DefaultThreadCurrentUICulture = culture;
 
-            string xml = $"<Check Number=\"{pR.CodeReceipt}\" FN = \"{FN}\" OperationType=\"{(pR.TypeReceipt == eTypeReceipt.Sale ? 0 : 1)}\" uuid=\"{pR.ReceiptId}\">\n" +
+            string xml = $"<Check Number=\"{pR.CodeReceipt}\" FN = \"{FN}\" OperationType=\"{(pR.TypeReceipt == eTypeReceipt.Sale ? 0 : 1)}\" uuid=\"{pR.NumberReceipt1C}\">\n" +
                 GenL(pR) + "\n" + GenGoods(pR.Wares) +
                 $"\n<Payments> <Payment ID=\"{1}\" Sum = \"{pR.SumReceipt.ToS()}\"/></Payments>\n</Check>";
 

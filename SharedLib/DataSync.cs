@@ -141,7 +141,7 @@ namespace SharedLib
             catch (Exception ex)
             {
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex);
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pR.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = $"SendReceiptTo1CAsync=> {pR.CodeReceipt}{Environment.NewLine}{ex.Message}{Environment.NewLine}{new System.Diagnostics.StackTrace()}"});
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = $"SendReceiptTo1CAsync=> {pR.CodeReceipt}{Environment.NewLine}{ex.Message}{Environment.NewLine}{new System.Diagnostics.StackTrace()}"});
                 return false;
             }
             finally
@@ -371,7 +371,7 @@ namespace SharedLib
             db.SetConfig<DateTime>("LastDaySend", Ldc);
         }
 
-        public async Task GetBonusAsync(Client pClient, int pIdWorkPlace)
+        public async Task GetBonusAsync(Client pClient, int pCodeWarehouse=0)
         {
             try
             {
@@ -381,11 +381,10 @@ namespace SharedLib
                 res = res.Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
                 if (!string.IsNullOrEmpty(res) && decimal.TryParse(res, out Sum))
                     pClient.SumBonus = Sum; //!!!TMP
-                if(Sum>0)
-                {
-                    string Wh=Global.GetWorkPlaceByIdWorkplace(pIdWorkPlace).StrCodeWarehouse;
+                if(Sum>0 && pCodeWarehouse>0)
+                {                    
                     body = soapTo1C.GenBody("GetOtovProc", new Parameters[] {
-                        new Parameters("CodeOfSklad",Global.GetWorkPlaceByIdWorkplace(pIdWorkPlace).StrCodeWarehouse ),
+                        new Parameters("CodeOfSklad",pCodeWarehouse.ToString() ),
                         new Parameters("CodeOfCard", pClient.BarCode),
                         new Parameters("Summ", Sum.ToString().Replace(",","."))
                     });
@@ -407,9 +406,9 @@ namespace SharedLib
             }
             catch (Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdWorkPlace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = ex.Message });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation {  Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = ex.Message });
             }
-            Global.OnClientChanged?.Invoke(pClient, pIdWorkPlace);
+            Global.OnClientChanged?.Invoke(pClient);
         }
 
         public async Task<bool> CheckDiscountBarCodeAsync(IdReceipt pIdReceipt, string pBarCode, int pPercent)
@@ -422,12 +421,12 @@ namespace SharedLib
 
                 if (Cat2 == null || Cat2.Count() == 0)
                 {
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceipt.IdWorkplace), Status = eSyncStatus.IncorectProductForDiscount, StatusDescription = "Для даного товару не можливо застосувати знижку 2 категорії." });
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.IncorectProductForDiscount, StatusDescription = "Для даного товару не можливо застосувати знижку 2 категорії." });
                     return false;
                 }
                 if (db.IsUseBarCode2Category(pBarCode))
                 {
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceipt.IdWorkplace), Status = eSyncStatus.IncorectDiscountBarcode, StatusDescription = $"Даний штрихкод =>{pBarCode} другої категорії вже використаний!" });
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.IncorectDiscountBarcode, StatusDescription = $"Даний штрихкод =>{pBarCode} другої категорії вже використаний!" });
                     return false;
                 }
                 var Cat2First = Cat2.First();
@@ -459,7 +458,7 @@ namespace SharedLib
                     catch (Exception ex)
                     {
                         Global.ErrorDiscountOnLine++;
-                        Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "CheckDiscountBarCodeAsync=>" + ex.Message });
+                        Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "CheckDiscountBarCodeAsync=>" + ex.Message });
                         Global.OnStatusChanged?.Invoke(db.GetStatus());
 
                     }
@@ -474,14 +473,14 @@ namespace SharedLib
                 }
                 else
                 {
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceipt.IdWorkplace), Status = eSyncStatus.IncorectDiscountBarcode, StatusDescription = $"Даний штрихкод =>{pBarCode} другої категорії вже використаний!" });
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.IncorectDiscountBarcode, StatusDescription = $"Даний штрихкод =>{pBarCode} другої категорії вже використаний!" });
                     return false;
                 }
             }
 
             catch (Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pIdReceipt.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "CheckDiscountBarCodeAsync=>" + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "CheckDiscountBarCodeAsync=>" + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
             }
             return true;
         }
@@ -625,7 +624,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
 
             catch (Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(pReceiptWares.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "GetQrCoffe=>" + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "GetQrCoffe=>" + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
                 rr.Add(new ReceiptEvent(pReceiptWares) { EventType = eReceiptEventType.ErrorQR, EventName = ex.Message, CreatedAt = DateTime.Now });
             }
             res = res.Replace("\"", "");
@@ -686,7 +685,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             catch (Exception ex)
             {
                 var el = pRWD.First();
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(el.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "Send1CReceiptWaresDeletedAsync=>" + el.CodePeriod.ToString() + " " + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "Send1CReceiptWaresDeletedAsync=>" + el.CodePeriod.ToString() + " " + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
                 return false;
             }
         }

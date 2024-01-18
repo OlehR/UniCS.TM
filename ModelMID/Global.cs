@@ -15,14 +15,13 @@ namespace ModelMID
         public static Action<SyncInformation> OnSyncInfoCollected { get; set; }
         public static Action<StatusBD> OnStatusChanged { get; set; }
         //public static Action<eStateScale> OnChangedStatusScale { get; set; }
-        public static Action<Client, int> OnClientChanged { get; set; }
+        public static Action<Client> OnClientChanged { get; set; }
         public static Action<Receipt> OnReceiptChanged { get; set; }
 
         public static Action<int, eTypeWindows, string> OnClientWindows { get; set; }
 
         public static Action<string, eTypeMessage> Message { get; set; }
 
-        public static SortedList<Guid, WorkPlace> WorkPlaceByTerminalId;
         public static SortedList<int, WorkPlace> WorkPlaceByWorkplaceId;
 
         public static SortedList<int, int> IdWorkPlacePayDirection = new SortedList<int, int>();
@@ -193,20 +192,6 @@ namespace ModelMID
         /// <returns></returns>
         public static int GetCodeCompany(int CodeWares) { return 1; }
 
-        public static int GetIdWorkplaceByTerminalId(Guid parTerminalId)
-        {
-            if (WorkPlaceByTerminalId.ContainsKey(parTerminalId))
-                return WorkPlaceByTerminalId[parTerminalId].IdWorkplace;
-            return 0;
-        }
-
-        public static Guid GetTerminalIdByIdWorkplace(int parIdWorkPlace)
-        {
-            if (WorkPlaceByWorkplaceId.ContainsKey(parIdWorkPlace))
-                return WorkPlaceByWorkplaceId[parIdWorkPlace].TerminalGUID;
-            return Guid.Empty;
-        }
-
         public static WorkPlace GetWorkPlaceByIdWorkplace(int parIdWorkPlace)
         {
             if (WorkPlaceByWorkplaceId!=null && WorkPlaceByWorkplaceId.ContainsKey(parIdWorkPlace))
@@ -300,18 +285,15 @@ namespace ModelMID
 
         public static bool BildWorkplace(IEnumerable<WorkPlace> pWP)
         {
-            var WorkPlaceByTerminalId = new SortedList<Guid, WorkPlace>();
             var WorkPlaceByWorkplaceId = new SortedList<int, WorkPlace>();
             if (pWP?.Any() == true)
             {
                 foreach (var el in pWP)
                 {
-                    WorkPlaceByTerminalId.Add(el.TerminalGUID, el);
                     WorkPlaceByWorkplaceId.Add(el.IdWorkplace, el);
                     if (el.IdWorkplace == Global.IdWorkPlace && el.Settings != null)
                         Global.Settings = el.Settings;
                 }
-                Global.WorkPlaceByTerminalId = WorkPlaceByTerminalId;
                 Global.WorkPlaceByWorkplaceId = WorkPlaceByWorkplaceId;
             }
             FileLogger.WriteLogMessage("Global", System.Reflection.MethodBase.GetCurrentMethod().Name, $"Записів=>{pWP?.Count()}");

@@ -43,7 +43,7 @@ alter TABLE WARES_RECEIPT_PROMOTION  add Type_Wares  INTEGER  NOT NULL  DEFAULT 
 alter TABLE WARES_RECEIPT add Fix_Weight_Quantity NOT NULL DEFAULT 0;--Ver=>8
 alter TABLE RECEIPT    add  NUMBER_RECEIPT_POS TEXT;--Ver=>9
 alter TABLE RECEIPT    add Sum_Wallet NUMBER   NOT NULL DEFAULT 0;--Ver=>10
-alter TABLE RECEIPT    add ReceiptId TEXT;--Ver=>11
+--alter TABLE RECEIPT    add ReceiptId TEXT;--Ver=>11
 alter TABLE WARES_RECEIPT add id_workplace_pay INTEGER  NOT NULL DEFAULT 0;--Ver=>12
 alter TABLE payment add id_workplace_pay INTEGER  NOT NULL DEFAULT 0;--Ver=>13
 alter TABLE LOG_RRO add id_workplace_pay INTEGER  NOT NULL DEFAULT 0;--Ver=>13
@@ -72,8 +72,7 @@ alter TABLE client add IsMoneyCard INTEGER DEFAULT(0);--Ver=>13;
         readonly string SqlCreateConfigTable = @"
         CREATE TABLE WORKPLACE(
             ID_WORKPLACE INTEGER  NOT NULL,
-            NAME TEXT,
-            Terminal_GUID TEXT,
+            NAME TEXT,           
             Video_Camera_IP TEXT,
             Video_Recorder_IP TEXT,
             Type_POS NUMBER   NOT NULL DEFAULT 0,
@@ -86,7 +85,6 @@ alter TABLE client add IsMoneyCard INTEGER DEFAULT(0);--Ver=>13;
 
             );
         CREATE UNIQUE INDEX id_WORKPLACE ON WORKPLACE(ID_WORKPLACE);
-        CREATE UNIQUE INDEX WORKPLACE_TG ON WORKPLACE(Terminal_GUID);
 
         CREATE TABLE CONFIG(
           NAME_VAR TEXT     NOT NULL,
@@ -121,7 +119,7 @@ CREATE UNIQUE INDEX id_CONFIG ON CONFIG(NAME_VAR);
             CODE_PERIOD INTEGER  NOT NULL,
             CODE_RECEIPT INTEGER  NOT NULL,
             DATE_RECEIPT DATETIME NOT NULL DEFAULT (datetime('now','localtime')),
-    ReceiptId TEXT,
+--    ReceiptId TEXT,
 --    CODE_WAREHOUSE INTEGER  NOT NULL,
     Type_Receipt INTEGER NOT NULL DEFAULT 1,
     SUM_RECEIPT       NUMBER NOT NULL DEFAULT 0,
@@ -275,14 +273,11 @@ CREATE INDEX id_payment ON payment(CODE_RECEIPT);
             CODE_RECEIPT INTEGER  NOT NULL,
             CODE_WARES INTEGER  NOT NULL,
             CODE_UNIT INTEGER  NOT NULL,
-            ID_GUID TEXT,
-            Mobile_Device_Id_GUID TEXT,
             Product_Name TEXT,
             Event_Type INTEGER NOT NULL,
             Event_Name TEXT,
             Product_Weight INTEGER,
-            Product_Confirmed_Weight INTEGER,
-            UserId_GUID TEXT,
+            Product_Confirmed_Weight INTEGER,            
             User_Name TEXT,
             Created_At DATETIME,
             Resolved_At DATETIME,
@@ -566,9 +561,8 @@ CREATE TABLE FAST_GROUP
 
         CREATE UNIQUE INDEX TYPE_DISCOUNT_ID ON TYPE_DISCOUNT(TYPE_DISCOUNT );
         CREATE UNIQUE INDEX CLIENT_ID ON CLIENT(CODE_CLIENT );
-        CREATE UNIQUE INDEX CLIENT_BC ON CLIENT(BARCODE );
-        CREATE INDEX CLIENT_PH ON CLIENT(PHONE);
-        CREATE INDEX CLIENT_PHA ON CLIENT(Phone_Add);
+        --CREATE INDEX CLIENT_PH ON CLIENT(PHONE);
+        --CREATE INDEX CLIENT_PHA ON CLIENT(Phone_Add);
 
         CREATE UNIQUE INDEX PRICE_ID ON PRICE(CODE_DEALER, CODE_WARES );
 
@@ -645,7 +639,8 @@ select p.code_client as CodeClient, p.name_client as NameClient, 0 as TypeDiscou
 	   0.00 as SumMoneyBonus, 0.00 as SumBonus,1 IsUseBonusFromRest, 1 IsUseBonusToRest,1 as IsUseBonusFromRest,
      (select group_concat(ph.data) from ClientData ph where  p.Code_Client = ph.CodeClient and TypeData=1)   as BarCode,
        (select group_concat(ph.data) from ClientData ph where  p.Code_Client = ph.CodeClient and TypeData=2) as MainPhone,
-        Phone_Add as PhoneAdd, BIRTHDAY as BirthDay, Status_Card as StatusCard 
+       -- Phone_Add as PhoneAdd, 
+       BIRTHDAY as BirthDay, Status_Card as StatusCard 
    from t
      join client p on (t.CodeClient=p.code_client)
    left join TYPE_DISCOUNT td on td.TYPE_DISCOUNT=p.TYPE_DISCOUNT;;";
@@ -729,7 +724,7 @@ where @NameUpper is null or pd.price_dealer>0
 order by t.orders";
 
         readonly string SqlViewReceipt = @"
-select id_workplace IdWorkplace, code_period CodePeriod, code_receipt CodeReceipt, date_receipt DateReceipt, Type_Receipt as TypeReceipt, ReceiptId as ReceiptId,
+select id_workplace IdWorkplace, code_period CodePeriod, code_receipt CodeReceipt, date_receipt DateReceipt, Type_Receipt as TypeReceipt, --ReceiptId as ReceiptId,
 sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_receipt as StateReceipt, code_client as CodeClient,
  number_cashier as NumberCashier, number_receipt NumberReceipt, code_discount as CodeDiscount, sum_discount as SumDiscount, percent_discount as PercentDiscount, 
  code_bonus as CodeBonus, sum_bonus as SumBonus, sum_cash as SumCash, sum_credit_card as SumCreditCard, code_outcome as CodeOutcome, 
@@ -799,7 +794,7 @@ Price as Price --, wr.sum as Sum
                      and wr.code_wares = case when @CodeWares=0 then wr.code_wares else @CodeWares end
                      order by sort";
 
-        readonly string SqlReplaceReceipt = @"replace into receipt (id_workplace, code_period, code_receipt, date_receipt, ReceiptId,
+        readonly string SqlReplaceReceipt = @"replace into receipt (id_workplace, code_period, code_receipt, date_receipt, 
 sum_receipt, vat_receipt, code_pattern, state_receipt, code_client,
  number_cashier, number_receipt, code_discount, sum_discount, percent_discount, 
  code_bonus, sum_bonus, sum_cash, Sum_Wallet, sum_credit_card, code_outcome, 
@@ -808,7 +803,7 @@ sum_receipt, vat_receipt, code_pattern, state_receipt, code_client,
  ADDITION_C1,ADDITION_D1,Type_Receipt, 
  Id_Workplace_Refund,Code_Period_Refund,Code_Receipt_Refund,Number_Order,Sum_Fiscal
  ) values 
- (@IdWorkplace, @CodePeriod, @CodeReceipt,  @DateReceipt, @ReceiptId,
+ (@IdWorkplace, @CodePeriod, @CodeReceipt,  @DateReceipt, 
  @SumReceipt, @VatReceipt, @CodePattern, @StateReceipt, @CodeClient,
  @NumberCashier, @NumberReceipt, 0, @SumDiscount, @PercentDiscount,
  0, @SumBonus, @SumCash, @SumWallet, @SumCreditCard, 0, 
@@ -1112,14 +1107,11 @@ sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_
 
         readonly string SqlGetReceiptEvent = @"
 select ID_WORKPLACE as IdWorkplace,    CODE_PERIOD as CodePeriod,    CODE_RECEIPT as CodeReceipt,    CODE_WARES as CodeWares,    CODE_UNIT as CodeUnit,
-    ID_GUID as IDGUID,
-    Mobile_Device_Id_GUID as MobileDeviceIdGUID,
     Product_Name as ProductName,
     Event_Type as EventType,
     Event_Name as EventName,
     Product_Weight as ProductWeight,
     Product_Confirmed_Weight as ProductConfirmedWeight,
-    UserId_GUID as UserIdGUID,
     User_Name as UserName,
     Created_At as CreatedAt,
     Resolved_At as ResolvedAt,

@@ -59,8 +59,7 @@ namespace ModelMID
 
         //public string Error { get; set; } = null;
         public IEnumerable<string> Receipt { get; set; }
-
-        //public Payment(Guid parReceipt) : base(parReceipt) { }
+        
         public Payment(IdReceipt parIdReceipt) : base(parIdReceipt) { }
         public Payment(IdReceiptWares parIdReceiptWares) : base(parIdReceiptWares) { DateCreate = DateTime.Now;  }
         public Payment() { DateCreate = DateTime.Now; }

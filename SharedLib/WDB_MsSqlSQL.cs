@@ -511,7 +511,7 @@ WHERE e.IsWork= 1 and  e.CodeUser NOT IN
 (SELECT e.CodeUser FROM  dbo.V1C_employee e where e.IsWork= 1 GROUP by CodeUser HAVING count(*)>1)
 ";
 
-        string SqlGetDimWorkplace = @"SELECT cd.code AS IdWorkplace, cd.[DESC] AS Name, CONVERT(UNIQUEIDENTIFIER,cd.CashDesk_RRef) AS TerminalGUID, Video_Camera_IP AS VideoCameraIP
+        string SqlGetDimWorkplace = @"SELECT cd.code AS IdWorkplace, cd.[DESC] AS Name, Video_Camera_IP AS VideoCameraIP
   ,COALESCE(cast(wh.code AS int),9) AS CodeWarehouse ,COALESCE(cast(tp.code AS int),2) AS CodeDealer, cd.prefix, cd.DNSName, cd.TypeWorkplace,cd.SettingsEx
   FROM  dbo.V1C_CashDesk cd
 LEFT JOIN dbo.V1C_dim_warehouse wh ON cd.warehouse_RRef=wh.warehouse_RRef

@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Encodings.Web;
+using System.Text.Unicode;
 
 namespace Utils
 {
@@ -45,7 +47,8 @@ namespace Utils
         {
             IgnoreReadOnlyProperties = true,
             ReferenceHandler = ReferenceHandler.IgnoreCycles,//, WriteIndented = true
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
+            Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic)
         };
 
         public static string ToJson(this object s)

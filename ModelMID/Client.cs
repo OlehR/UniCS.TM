@@ -22,18 +22,6 @@ namespace ModelMID
     /// </summary>
     public class Client
     {
-        string ClientGuid = "1A3B944E-3632-467B-AFFA-";
-
-        public Guid ClientId
-        {
-            get
-            {
-                var strGuid = new String('0', 12) + CodeClient.ToString();
-                strGuid = ClientGuid + strGuid.Substring(strGuid.Length - 12);
-                return Guid.Parse(strGuid);
-            }
-        }
-
         /// <summary>
         /// Код клієнта
         /// </summary>
@@ -110,18 +98,11 @@ namespace ModelMID
         /// Чи карточка з коштами(сертифікати та інше)
         /// </summary>
         public bool IsMoneyCard { get; set; }
-        public Client()
-        {
-        }
+        public Client() { }
         public Client(int parCodeClient)
         {
-            CodeClient=parCodeClient;
-            //Clear();
-        }
-        public int GetClientByClientId(Guid parClientId)
-        {            
-            return Convert.ToInt32(parClientId.ToString().Substring(24, 12));
-        }
+            CodeClient=parCodeClient;            
+        }        
         
     }
 }

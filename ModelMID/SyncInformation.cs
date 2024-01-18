@@ -24,7 +24,6 @@ namespace ModelMID
         public eSyncStatus Status { get; set; }
         public string StatusDescription { get; set; }
         public object SyncData { get; set; }
-        public Exception Exception { get; set; }
-        public Guid TerminalId { get; set; }
+        public Exception Exception { get; set; }       
     }
 }

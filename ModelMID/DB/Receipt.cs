@@ -27,8 +27,7 @@ namespace ModelMID
         /// <summary>
         /// переклади eTypeReceipt для відображення
         /// </summary>
-        public string TranslationTypeReceipt { get { return TypeReceipt.GetDescription(); } }
-        public Guid TerminalId { get; set; }
+        public string TranslationTypeReceipt { get { return TypeReceipt.GetDescription(); } }        
 
         int _CodeClient;
         public int CodeClient { get { return Client?.CodeClient ?? _CodeClient; } set { _CodeClient = value; } }
