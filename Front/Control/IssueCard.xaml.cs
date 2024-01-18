@@ -7,8 +7,6 @@ using Utils;
 
 namespace Front.Control
 {
-
-
     /// <summary>
     /// Interaction logic for IssueCard.xaml
     /// </summary>

@@ -36,14 +36,9 @@ namespace Front.ViewModels
 
         public IssueCardVM()
         {
-            Bl = new BL();
+            Bl = BL.GetBL;
         }
-        MainWindow MW;
-        public void Init(MainWindow mw)
-        {
-
-            MW = mw;
-        }
+        
         public RelayCommand Cancel
         {
             get
