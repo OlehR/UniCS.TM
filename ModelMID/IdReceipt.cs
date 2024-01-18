@@ -21,20 +21,6 @@ namespace ModelMID
             }
         }
 
-        public Guid _ReceiptId=Guid.Empty;
-        public string ReceiptId
-        {
-            get
-            { 
-                if(_ReceiptId != Guid.Empty)  
-                    return _ReceiptId.ToString();
-                var strPeriod = CodePeriod.ToString("D8").Substring(0, 4) + "-" + CodePeriod.ToString("D8").Substring(4, 4);                              
-                var strGuid = IdWorkplace.ToString("D8") + "-FFFF-" + strPeriod + "-" + CodeReceipt.ToString("D12"); 
-                return strGuid;
-            }
-            set{ if(!Guid.TryParse(value, out _ReceiptId)) _ReceiptId = Guid.Empty; }
-        }        
-
         public int IdWorkplacePay { get; set; }
         public int IdWorkplace { get; set; }
         /// <summary>
