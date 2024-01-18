@@ -1,0 +1,92 @@
+﻿<UserControl x:Class="Front.Control.ClientDetails"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:Front.ViewModels"
+             xmlns:local="clr-namespace:Front.Control"
+             mc:Ignorable="d" 
+             MinHeight="500" MinWidth="700">
+    <UserControl.DataContext>
+        <vm:ClientDetailsVM/>
+    </UserControl.DataContext>
+    <Grid>
+        <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
+     Grid.Row="0" Grid.RowSpan="6"
+    Grid.Column="0" Grid.ColumnSpan="10" Visibility="Visible" Grid.ZIndex="2" 
+    CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center" MinHeight="500" MinWidth="700"
+        >
+            <Border.Effect>
+                <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+            </Border.Effect>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="4*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Інформація по картці"
+                   FontSize="28" HorizontalAlignment="Center" Foreground="Green"/>
+
+                <Grid Grid.Row="1" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="30,0,0,0">
+                        <TextBlock Text="Ім'я:" FontSize="24" FontWeight="Bold" Margin="2"/>
+                        <TextBlock Text="Сума на скарбничці:" FontSize="24" FontWeight="Bold" Margin="2"/>
+                        <TextBlock Text="Сума бонусів:" FontSize="24" FontWeight="Bold" Margin="2"/>
+                        <TextBlock Text="Сума бонусів в гривнях:" FontSize="24" FontWeight="Bold" Margin="2"/>
+                        <TextBlock Text="Номер телефону:" FontSize="24" FontWeight="Bold" Margin="2"/>
+                        <TextBlock Text="Другий номер телефону:" FontSize="24" FontWeight="Bold" Margin="2"/>
+                        <TextBlock Text="Відсоток знижки:" FontSize="24" FontWeight="Bold" Margin="2"/>
+                        <TextBlock Text="Відсоток перерахування:" FontSize="24" FontWeight="Bold" Margin="2"/>
+                        <TextBlock Text="Штрих-код картки:" FontSize="24" FontWeight="Bold" Margin="2"/>
+                        <TextBlock Text="Статус картки:" FontSize="24" FontWeight="Bold" Margin="2"/>
+                        <TextBlock Text="Дата народження:" FontSize="24" FontWeight="Bold" Margin="2"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Client.NameClient}" 
+                           FontSize="24" FontWeight="Bold" Margin="2"/>
+                        <TextBlock Text="{Binding Client.Wallet,StringFormat=0.00₴}" 
+                           FontSize="24" FontWeight="Bold" Margin="2"/>
+                        <TextBlock Text="{Binding Client.SumBonus}" 
+                           FontSize="24" FontWeight="Bold" Margin="2"/>
+                        <TextBlock Text="{Binding Client.SumMoneyBonus, StringFormat=0.00₴}" 
+                           FontSize="24" FontWeight="Bold" Margin="2"/>
+                        <TextBlock Text="{Binding Client.MainPhone}" 
+                           FontSize="24" FontWeight="Bold" Margin="2"/>
+
+                        <TextBlock Text="{Binding Client.PhoneAdd}" 
+                           FontSize="24" FontWeight="Bold" Margin="2"/>
+
+                        <TextBlock Text="{Binding Client.PersentDiscount, StringFormat={}{0}%}" 
+                           FontSize="24" FontWeight="Bold" Margin="2"/>
+                        <TextBlock Text="{Binding Client.PercentBonusIntegers,StringFormat={}{0}%}" 
+                           FontSize="24" FontWeight="Bold" Margin="2"/>
+                        <TextBlock Text="{Binding Client.BarCode}" 
+                           FontSize="24" FontWeight="Bold" Margin="2"/>
+
+                        <TextBlock Text="{Binding Client.TranslatedStatusCard}" 
+                           FontSize="24" FontWeight="Bold" Margin="2"/>
+
+                        <TextBlock Text="{Binding Client.BirthDay, StringFormat='{}{0:dd/MM/yyyy}'}" 
+                           FontSize="24" FontWeight="Bold" Margin="2"/>
+                    </StackPanel>
+                </Grid>
+
+                <Button Grid.Row="2"
+            FontSize="22" Click="Cancel"  Style="{StaticResource Default}"
+            Height="80" Width="300" VerticalAlignment="Center" Visibility="Visible">
+                    <StackPanel Orientation="Horizontal">
+                        <Image  Height="25" Width="25"  Source="/icons\X.png"></Image>
+                        <TextBlock FontSize="30"  Text="{DynamicResource cancel}" Margin="5,0,5,0"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

@@ -14,20 +14,14 @@
         Height="768" Width="1024"        
         >
 
-    <!--xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"-->
-    <!--Height="1080" Width="1920"-->
     <Window.DataContext>
         <onScreenKeyboardControl:ViewModel/>
     </Window.DataContext>
-    <!---->
+
     <Window.Resources>
         <local:BoolToVisibilityConverter
          x:Key="BoolToHiddenConverter"
          TrueValue="Visible" FalseValue="Hidden" />
-        <!--<Style TargetType="TextBlock">
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-        </Style>-->
         <Style TargetType="TextBlock">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
@@ -52,8 +46,6 @@
             </Style.Resources>
         </Style>
     </Window.Resources>
-
-
 
     <Grid>
         <Grid.RowDefinitions>
@@ -114,12 +106,10 @@
             </Border.Effect>
             <uc:NumericPad x:Name="InputNumberPhone"   />
         </Border>
+  
+       
 
-        <!--<DockPanel Grid.ColumnSpan="10" Grid.RowSpan="10">
-            <wv2:WebView2  x:Name="WebView2"
-                   Source="https://www.microsoft.com" 
-   />
-        </DockPanel>-->
+        <!--Верхня панель статусу-->
         <Border Grid.Row="0" Margin="5" Background="White"  >
 
             <Grid  Grid.Row="0">
@@ -578,42 +568,12 @@
             </Grid>
         </Border>
 
-        <!--<Border Grid.Row="2"  Background="#e4f7da" BorderThickness="0,0,0,1" >
-            <Border.Effect>
-                <DropShadowEffect ShadowDepth="5" BlurRadius="4" Color="#f2f2f2"/>
-            </Border.Effect>
-            <Grid Grid.Row="1" Margin="10,0,0,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="312*"></ColumnDefinition>
-                    <ColumnDefinition Width="78*"/>
-                    <ColumnDefinition Width="24*"/>
-                    <ColumnDefinition Width="76*"/>
-                    <ColumnDefinition Width="210*"></ColumnDefinition>
-                    <ColumnDefinition Width="70*"></ColumnDefinition>
-                    <ColumnDefinition Width="70*"></ColumnDefinition>
-                    -->
-        <!--<ColumnDefinition Width="70*"></ColumnDefinition>-->
-        <!--
-                    <ColumnDefinition Width="105*"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Foreground="Black" Text="{DynamicResource markWareName}" HorizontalAlignment="Left" FontWeight="Bold"/>
-                <TextBlock Grid.Column="4" Foreground="Black" Text="{DynamicResource markWareQuantity}" Margin="100,0,0,0" HorizontalAlignment="Center" FontWeight="Bold" />
-                <TextBlock Grid.Column="5" Foreground="Black" Text="{DynamicResource markWareWeight}"  Margin="10,0,0,0" FontWeight="Bold"/>
-                <TextBlock Grid.Column="6" Foreground="Black" Text="{DynamicResource markWarePrice}"  Margin="10,0,0,0" FontWeight="Bold"/>
-                -->
-        <!--<TextBlock Grid.Column="7" Foreground="Black" Text="{DynamicResource markWareDiscount}"  Margin="10,0,0,0" FontWeight="Bold"/>-->
-        <!--
-                <TextBlock Grid.Column="8" Foreground="Black" Text="{DynamicResource markWareInAll}"  FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-            </Grid>
-        </Border>-->
-
-
         <Border Grid.Row="1" Background="{Binding ExchangeRateBar, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}"></Border>
 
+        
         <Grid Grid.Row="2" Grid.RowSpan="2" Panel.ZIndex="2">
-            <!--Background="{Binding GetBackgroundColor, RelativeSource={RelativeSource 
-                     Mode=FindAncestor, AncestorType=Window}}"-->
+            <!--Основний грід товарів-->
             <ListView Name="WaresList"  
                      HorizontalContentAlignment="Stretch"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
@@ -1037,258 +997,13 @@
                 </ListView.View>
             </ListView>
 
-            <!--<ListBox  Name="WaresList" Background="{Binding GetBackgroundColor, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" HorizontalContentAlignment="Stretch"
-                          Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="6"  Grid.RowSpan="6"
-                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Border  BorderBrush="Silver" BorderThickness="0,0,0,1" >
-                            <Grid Margin="10,0,0,0" Width="{Binding WidthScreen, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="7*"></ColumnDefinition>
-                                    <ColumnDefinition Width="3*"></ColumnDefinition>
-                                    <ColumnDefinition Width="1*"></ColumnDefinition>
-                                    <ColumnDefinition Width="1*"></ColumnDefinition>
-                                    <ColumnDefinition Width="1*"></ColumnDefinition>
-                                    <ColumnDefinition Width="1.5*"></ColumnDefinition>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="auto"/>
-                                </Grid.RowDefinitions>
-
-                                <StackPanel Orientation="Vertical" Grid.Column="0">
-                                    <TextBlock Margin="0"  FontSize="12"  Text="{Binding GetStrWaresReceiptPromotion}" Visibility="{Binding IsReceiptPromotion,Converter={StaticResource BoolToHiddenConverter}}"/>
-                                    <TextBlock Margin="0" FontSize="35"  Text="{Binding NameWares}" TextWrapping="Wrap"  FontFamily="Roboto Condensed" FontWeight="DemiBold"/>
-                                </StackPanel>
-
-                                <Grid Grid.Column="1">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="1*"></ColumnDefinition>
-                                        <ColumnDefinition Width="1*"></ColumnDefinition>
-                                        <ColumnDefinition Width="1*"></ColumnDefinition>
-                                        <ColumnDefinition Width="1*"></ColumnDefinition>
-                                    </Grid.ColumnDefinitions>
-
-                                    <Button x:Name="Delete" Click="_Delete">
-                                        <Button.Content>
-                                            <Image  Margin="5" MaxWidth="50" Source="icons\delete.png"></Image>
-                                        </Button.Content>
-                                        <Button.Style>
-                                            <Style BasedOn="{StaticResource WhiteButton}" TargetType="Button">
-                                                <Setter Property="IsEnabled" Value="False"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsDel}" Value="True">
-                                                        <Setter Property="IsEnabled" Value="True"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Button.Style>
-                                    </Button>
-                                    <Button x:Name="Minus" Click="BtnClickMinusPlus" Grid.Column="1">
-                                        <Button.Content>
-                                            <Image Margin="15" MaxWidth="40" Source="icons\minus.png"></Image>
-                                        </Button.Content>
-                                        <Button.Style>
-                                            <Style BasedOn="{StaticResource WhiteButton}" TargetType="Button">
-                                                <Setter Property="IsEnabled" Value="False"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsMinus}" Value="True">
-                                                        <Setter Property="IsEnabled" Value="True"/>
-                                                    </DataTrigger>
-                                                      <DataTrigger Binding="{Binding ElementName=QuantityText, Path=Text}" Value="1">
-                                                            <Setter Property="IsEnabled" Value="False"/>
-                                                        </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Button.Style>
-                                    </Button>
-
-                                    <Button Grid.Column="2" Background="Transparent" BorderBrush="Transparent"
-                                            Click="_ChangeCountWares" >
-                                        <Button.Style>
-                                            <Style BasedOn="{StaticResource WhiteNotBorderButton}" TargetType="Button">
-                                                <Setter Property="IsEnabled" Value="True"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
-                                                        <Setter Property="Width" Value="100" />
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding IsPlus}" Value="True">
-                                                        <Setter Property="IsEnabled" Value="True" />
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding IsPlus}" Value="False">
-                                                        <Setter Property="IsEnabled" Value="False" />
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding IsCheckReturn, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                                        <Setter Property="IsEnabled" Value="True" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Button.Style>
-
-                                        <TextBlock x:Name="QuantityText" Grid.Column="2">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="Margin" Value="10"></Setter>
-                                                    <Setter Property="FontSize" Value="35"></Setter>
-                                                    <Setter Property="FontWeight" Value="Medium"></Setter>
-                                                    <Setter Property="HorizontalAlignment" Value="Center"></Setter>
-                                                    <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                                                    <Setter Property="Text" Value="{Binding Quantity}"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding IsWeight}" Value="True">
-                                                            <Setter Property="Text" Value="1"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
-                                    </Button>
-
-                                    <Button x:Name="Plus" Click="BtnClickMinusPlus" Grid.Column="3">
-                                        <Button.Content>
-                                            <Image Margin="15" MaxWidth="40" Source="icons\plus.png"></Image>
-                                        </Button.Content>
-                                        <Button.Style>
-                                            <Style BasedOn="{StaticResource WhiteButton}" TargetType="Button">
-                                                <Setter Property="IsEnabled" Value="False"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsPlus}" Value="True">
-                                                        <Setter Property="IsEnabled" Value="True"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Button.Style>
-                                    </Button>
-                                </Grid>
-
-                                <StackPanel Grid.Column="2" HorizontalAlignment="Left">
-                                    <TextBlock >
-                                        <TextBlock.Style>
-                                            <Style TargetType="TextBlock">
-                                                <Setter Property="Margin" Value="10"></Setter>
-                                                <Setter Property="FontSize" Value="18"></Setter>
-                                                <Setter Property="HorizontalAlignment" Value="Left"></Setter>
-                                                <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                                                <Setter Property="FontWeight" Value="DemiBold"></Setter>
-                                                <Setter Property="Text" Value="{Binding WeightBrutto}"/>
-                                                <Setter Property="FontWeight" Value="SemiBold"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsWeight}" Value="True">
-                                                        <Setter Property="Text" Value="{Binding Quantity}"/>
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
-                                                        <Setter Property="FontSize" Value="25" />
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                                        <Setter Property="FontSize" Value="20" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
-                                    <TextBlock >
-                                        <TextBlock.Style>
-                                            <Style TargetType="TextBlock">
-                                                <Setter Property="Margin" Value="10"></Setter>
-                                                <Setter Property="FontSize" Value="18"></Setter>
-                                                <Setter Property="HorizontalAlignment" Value="Left"></Setter>
-                                                <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                                                <Setter Property="FontWeight" Value="DemiBold"></Setter>
-                                                <Setter Property="Text" Value="{Binding FixedWeightInKg}"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
-                                                        <Setter Property="FontSize" Value="25" />
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                                        <Setter Property="FontSize" Value="20" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
-                                </StackPanel>
-                                <TextBlock Grid.Column="3" Text="{Binding Price, StringFormat=0.00 }"  >
-                                    <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="HorizontalAlignment" Value="Center"/>
-                                            <Setter Property="VerticalAlignment" Value="Center"/>
-                                            <Setter Property="FontWeight" Value="DemiBold"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
-                                                    <Setter Property="FontSize" Value="25" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                                    <Setter Property="FontSize" Value="20" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBlock.Style>
-                                </TextBlock>
-                                <StackPanel Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <TextBlock Grid.Column="5" Text="{Binding SumTotal, StringFormat=0.00}" FontWeight="Bold" >
-                                        <TextBlock.Style>
-                                            <Style TargetType="TextBlock">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
-                                                        <Setter Property="FontSize" Value="30" />
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                                        <Setter Property="FontSize" Value="24" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
-                                    <TextBlock    FontWeight="DemiBold" Foreground="Red">
-                                        <TextBlock.Style>
-                                            <Style TargetType="TextBlock">
-                                                <Setter Property="Text" Value="{Binding DiscountEKKA, StringFormat=-0.00}"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding DiscountEKKA}" Value="0">
-                                                        <Setter Property="Text" Value=""/>
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
-                                                        <Setter Property="FontSize" Value="20" />
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding IsHorizontalScreen, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                                        <Setter Property="FontSize" Value="15" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
-                                </StackPanel>
-
-
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>-->
-
-
-
+           
             <!--ФОН-->
             <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
                 Grid.Column="0" Grid.ColumnSpan="6"
                  Name="BackgroundWares" Visibility="Collapsed" Grid.ZIndex="2" 
                 Opacity="0.9"/>
-
 
             <!-- Ввід Акцизної марки    -->
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
@@ -1510,12 +1225,6 @@
                                                        ToggleButtonStyle="{StaticResource DefaultTouchToggleButtonStyle}"
                                                        CancelCommand="{Binding CancelCommand2}" Grid.RowSpan="2"/>
                         </StackPanel>
-
-
-
-
-
-
                     </Grid>
                 </Grid>
 
@@ -1690,98 +1399,6 @@
 
                 </Grid>
             </Border>
-            <!-- Інформація про клієнта   -->
-            <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
-                 Grid.Row="0" Grid.RowSpan="6"
-                Grid.Column="0" Grid.ColumnSpan="10"
-                 Name="ClientDetails" Visibility="Collapsed" Grid.ZIndex="2" 
-                CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center"
-                    MinHeight="500" MinWidth="700">
-                <Border.Effect>
-                    <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
-                </Border.Effect>
-
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"></RowDefinition>
-                        <RowDefinition Height="4*"></RowDefinition>
-                        <RowDefinition Height="*"></RowDefinition>
-                    </Grid.RowDefinitions>
-                    <TextBlock Text="Інформація по картці"
-                               FontSize="28" HorizontalAlignment="Center" Foreground="Green"/>
-
-                    <Grid Grid.Row="1" >
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="30,0,0,0">
-                            <TextBlock Text="Ім'я:" FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="Сума на скарбничці:" FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="Сума бонусів:" FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="Сума бонусів в гривнях:" FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="Номер телефону:" FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="Другий номер телефону:" FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="Відсоток знижки:" FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="Відсоток перерахування:" FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="Штрих-код картки:" FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="Статус картки:" FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="Дата народження:" FontSize="24" FontWeight="Bold" Margin="2"/>
-                        </StackPanel>
-                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock Text="{Binding Client.NameClient, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" 
-                                       FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="{Binding Client.Wallet,StringFormat=0.00₴, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" 
-                                       FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="{Binding Client.SumBonus, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" 
-                                       FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="{Binding Client.SumMoneyBonus, StringFormat=0.00₴, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" 
-                                       FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="{Binding Client.MainPhone, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" 
-                                       FontSize="24" FontWeight="Bold" Margin="2"/>
-
-                            <TextBlock Text="{Binding Client.PhoneAdd, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" 
-                                       FontSize="24" FontWeight="Bold" Margin="2"/>
-
-                            <TextBlock Text="{Binding Client.PersentDiscount, StringFormat={}{0}%, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" 
-                                       FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="{Binding Client.PercentBonusIntegers,StringFormat={}{0}%, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" 
-                                       FontSize="24" FontWeight="Bold" Margin="2"/>
-                            <TextBlock Text="{Binding Client.BarCode, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" 
-                                       FontSize="24" FontWeight="Bold" Margin="2"/>
-
-                            <TextBlock Text="{Binding Client.TranslatedStatusCard, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" 
-                                       FontSize="24" FontWeight="Bold" Margin="2"/>
-
-                            <TextBlock Text="{Binding Client.BirthDay, StringFormat='{}{0:dd/MM/yyyy}', RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" 
-                                       FontSize="24" FontWeight="Bold" Margin="2"/>
-                        </StackPanel>
-                    </Grid>
-
-                    <Button Grid.Row="2"
-                        FontSize="22" Click="_Cancel"  Style="{StaticResource Default}"
-                        Height="80" Width="300" VerticalAlignment="Center" Visibility="Visible">
-                        <StackPanel Orientation="Horizontal">
-                            <Image  Height="25" Width="25"  Source="icons\X.png"></Image>
-                            <TextBlock FontSize="30"  Text="{DynamicResource cancel}" Margin="5,0,5,0"/>
-                        </StackPanel>
-                    </Button>
-                </Grid>
-            </Border>
-
-
             <!-- Інформація про підлеглу касу   -->
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
                     Grid.Row="0" Grid.RowSpan="6"
@@ -2748,8 +2365,6 @@
                 Opacity="0.5"/>
 
 
-
-
         <!--Початок покупки - стартове вікно ВІДЕО-->
         <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="0"
                  Grid.Row="0" Grid.RowSpan="5"
@@ -2772,8 +2387,6 @@
                 <MediaElement Name="StartVideo" Volume="0" LoadedBehavior="Manual" >
 
                 </MediaElement>
-
-
             </Grid>
         </Border>
 
@@ -2833,6 +2446,11 @@
                       Grid.Column="0" Grid.ColumnSpan="4" 
                       x:Name="IssueCardUC" VerticalAlignment="Stretch" 
                       Grid.ZIndex="4" />
+        <!-- Інформація про клієнта -->
+        <uc:ClientDetails Grid.Row="0" Grid.RowSpan="5" Visibility="Collapsed"
+              Grid.Column="0" Grid.ColumnSpan="4" 
+              x:Name="ClientDetailsUC" VerticalAlignment="Stretch" 
+              Grid.ZIndex="4" />
         <!--Додати пакети-->
         <uc:AddPackagesBag Grid.Row="0" Grid.RowSpan="5" Visibility="Collapsed"
                               Grid.Column="0" Grid.ColumnSpan="4" 

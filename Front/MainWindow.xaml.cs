@@ -409,8 +409,7 @@ namespace Front
             PaymentWindow.Init(this);
             CustomMessage.Init(this);
             IssueCardUC.Init(this);
-            //IssueCardVM issueCardVM = new();
-            //issueCardVM.Init(this);
+            ClientDetailsUC.Init(this);
 
             //Провіряємо чи зміна відкрита.
             string BarCodeAdminSSC = Bl.db.GetConfig<string>("CodeAdminSSC");
@@ -801,7 +800,7 @@ namespace Front
                     ErrorBackground.Visibility = Visibility.Collapsed;
                     OwnBagWindows.Visibility = Visibility.Collapsed;
                     PaymentWindow.Visibility = Visibility.Collapsed;
-                    ClientDetails.Visibility = Visibility.Collapsed;
+                    ClientDetailsUC.Visibility = Visibility.Collapsed;
                     RemoteCashRegister.Visibility = Visibility.Collapsed;
 
                     CaptionCustomWindows.Visibility = Visibility.Visible;
@@ -1576,8 +1575,7 @@ namespace Front
 
         private void ShowClientDetails(object sender, RoutedEventArgs e)
         {
-            var aa = Client;
-            ClientDetails.Visibility = Visibility.Visible;
+            ClientDetailsUC.Visibility = Visibility.Visible;
             Background.Visibility = Visibility.Visible;
             BackgroundWares.Visibility = Visibility.Visible;
 
