@@ -36,12 +36,13 @@ namespace Front
                 CS.OnScalesData(pWeight, pIsStable);
             };
 
+
             EF.OnWeight += (pWeight, pIsStable) =>
             {
                 Weight = pWeight / 1000;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Weight)));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsWeightMagellan"));
             };
-
             EF.SetStatus += (info) =>
             {
                 if (info.IsСritical == true)
@@ -402,17 +403,16 @@ namespace Front
             if (pGV != null)
             {
                 CurW = pGV;
-                NameWares.Text = CurW.Name;
 
                 Image im = null;
-                foreach (var el in GridWeightWares.Children)
+                foreach (var el in WeightWaresUC.GridWeightWares.Children)
                 {
                     im = el as Image;
                     if (im != null)
                         break;
                 }
                 if (im != null)
-                    GridWeightWares.Children.Remove(im);
+                    WeightWaresUC.GridWeightWares.Children.Remove(im);
                 if (File.Exists(CurW.Pictures))
                 {
                     im = new Image
@@ -422,7 +422,7 @@ namespace Front
                     };
                     //Grid.SetColumn(Bt, i);
                     Grid.SetRow(im, 1);
-                    GridWeightWares.Children.Add(im);
+                    WeightWaresUC.GridWeightWares.Children.Add(im);
                 }
 
                 SetStateView(eStateMainWindows.WaitWeight);
