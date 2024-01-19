@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 
 namespace Utils
 {
@@ -35,17 +36,26 @@ namespace Utils
             State = -1;
             TextState = e.Message + "\n" + e.StackTrace;
         }
+        public Status(HttpStatusCode pSC) 
+        { if(pSC != HttpStatusCode.OK)
+            {
+                State = -(int)pSC;
+                TextState= pSC.ToString();
+            }
+        }
         public Status()
         {
             State = 0;
             TextState ="Ok";
         }
     }
-    public class StatusD<D> : Status
+    public class Status<D> : Status
     {
         public D Data { get; set; }
-        public StatusD() : base() { }
-        public StatusD(int pState = 0, string pTextState = "Ok"):base(pState ,  pTextState) { }
-        public StatusD(Exception e) : base(e) { }
+        public Status() : base() { }
+        public Status(D pD) : base() { Data = pD; }
+        public Status(int pState = 0, string pTextState = "Ok"):base(pState ,  pTextState) { }
+        public Status(Exception e) : base(e) { }
+        public Status(HttpStatusCode pSC):base(pSC) { }
     }
 }

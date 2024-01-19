@@ -371,7 +371,7 @@ namespace SharedLib
             db.SetConfig<DateTime>("LastDaySend", Ldc);
         }
 
-        public async Task GetBonusAsync(Client pClient, int pCodeWarehouse=0)
+        public async Task<Client> GetBonusAsync(Client pClient, int pCodeWarehouse=0)
         {
             try
             {
@@ -381,10 +381,10 @@ namespace SharedLib
                 res = res.Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
                 if (!string.IsNullOrEmpty(res) && decimal.TryParse(res, out Sum))
                     pClient.SumBonus = Sum; //!!!TMP
-                if(Sum>0 && pCodeWarehouse>0)
+                if(Sum>0 && pCodeWarehouse>0) 
                 {                    
                     body = soapTo1C.GenBody("GetOtovProc", new Parameters[] {
-                        new Parameters("CodeOfSklad",pCodeWarehouse.ToString() ),
+                        new Parameters("CodeOfSklad",$"{pCodeWarehouse:D9}"),
                         new Parameters("CodeOfCard", pClient.BarCode),
                         new Parameters("Summ", Sum.ToString().Replace(",","."))
                     });
@@ -409,6 +409,7 @@ namespace SharedLib
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation {  Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = ex.Message });
             }
             Global.OnClientChanged?.Invoke(pClient);
+            return pClient;
         }
 
         public async Task<bool> CheckDiscountBarCodeAsync(IdReceipt pIdReceipt, string pBarCode, int pPercent)
@@ -803,9 +804,9 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             return true;
         }
 
-        public StatusD<string> GetVerifySMS(string pPhone)
+        public Status<string> GetVerifySMS(string pPhone)
         {
-            StatusD<string>  Res = new();
+            Status<string>  Res = new();
              Task.Run(async () =>
             {
                 try
@@ -828,13 +829,13 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     if (response.IsSuccessStatusCode)
                     {
                         res = await response.Content.ReadAsStringAsync();
-                        Res = JsonConvert.DeserializeObject<StatusD<string>>(res);
+                        Res = JsonConvert.DeserializeObject<Status<string>>(res);
                         return ;
                     }
                 }
-                catch (Exception e) { new StatusD<string>(e); return;  }
+                catch (Exception e) { new Status<string>(e); return;  }
 
-                Res= new StatusD<string>(-1, "Не отримано код");
+                Res= new Status<string>(-1, "Не отримано код");
             }).Wait();
             return Res;
         }
@@ -856,7 +857,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     var res = await response.Content.ReadAsStringAsync();
                     if (!string.IsNullOrEmpty(res))
                     {
-                        var Res = JsonConvert.DeserializeObject<StatusD<ExciseStamp>>(res);
+                        var Res = JsonConvert.DeserializeObject<Status<ExciseStamp>>(res);
                         return Res.Data;
                     }
                 }
@@ -871,7 +872,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
 
         public ExciseStamp CheckExciseStamp(ExciseStamp pES, int pWait = 1000)
         {
-            return Task<ExciseStamp>.Run(() => { return CheckExciseStampAsync(pES, pWait); }).Result;
+            return Task<ExciseStamp>.Run(() => CheckExciseStampAsync(pES, pWait)).Result;
         }
 
         public async Task<Status> SendReceipt(Receipt pR)

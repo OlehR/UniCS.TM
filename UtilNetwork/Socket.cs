@@ -136,9 +136,9 @@ namespace UtilNetwork
             return res;
         }
 
-        public async Task<StatusD<D>> StartAsync<D>(string pData, bool IsResultStatus =true)
+        public async Task<Status<D>> StartAsync<D>(string pData, bool IsResultStatus =true)
         {
-            StatusD<D> res = null;
+            Status<D> res = null;
             try
             {
                 await client.ConnectAsync(ipEndPoint);
@@ -154,7 +154,7 @@ namespace UtilNetwork
                 {
                     var r = Encoding.UTF8.GetString(buffer, 0, received.Result);
                     if (IsResultStatus)
-                        res = JsonConvert.DeserializeObject<StatusD<D>>(r);
+                        res = JsonConvert.DeserializeObject<Status<D>>(r);
                     else
                         res = new() { Data = JsonConvert.DeserializeObject<D>(r) };                
                 }
