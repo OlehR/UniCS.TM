@@ -14,15 +14,8 @@ using Utils;
 
 namespace Front.ViewModels
 {
-    public class IssueCardVM : INotifyPropertyChanged
+    public class IssueCardVM : ViewModelBase
     {
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged([CallerMemberName] string prop = "")
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(prop));
-        }
         BL Bl;
         public string BarcodeIssueCard { get; set; } = string.Empty;
         public string PhoneIssueCard { get; set; } = string.Empty;

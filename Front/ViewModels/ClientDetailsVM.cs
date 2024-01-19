@@ -4,15 +4,8 @@ using System.Runtime.CompilerServices;
 
 namespace Front.ViewModels
 {
-    public class ClientDetailsVM : INotifyPropertyChanged
+    public class ClientDetailsVM: ViewModelBase
     {
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged([CallerMemberName] string prop = "")
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(prop));
-        }
         public Client Client { get; set; }
         public ClientDetailsVM()
         {

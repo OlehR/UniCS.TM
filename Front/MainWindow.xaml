@@ -522,49 +522,6 @@
 
 
 
-
-                <!--ВСЬОГО ДО ОПЛАТИ-->
-                <!--<TextBlock Grid.Column="5" FontSize="22" Text="{DynamicResource markInAll}" 
-                           Visibility="Visible" Name="textInAll" VerticalAlignment="Center" Foreground="Black" />
-                <StackPanel Grid.Column="6" Orientation="Horizontal"
-                           VerticalAlignment="Center"
-                           Name="valueInAll" Visibility="Visible">
-                    <TextBlock 
-                           FontSize="28"
-                           FontWeight="Bold"
-                           Foreground="#ff5500" Text="{Binding MoneySum, StringFormat=0.00₴, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window} }">
-                    </TextBlock>
-                    <TextBlock Margin="0"
-                           FontSize="28"
-                           FontWeight="Bold"
-                           Foreground="#ff5500" Text="{Binding WaresQuantity, StringFormat={}({0}), RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window} }">
-                    </TextBlock>
-                </StackPanel>-->
-
-
-                <!--<TextBlock Grid.Column="6"
-                           VerticalAlignment="Center"
-                           Name="valueInAll" Visibility="Visible"
-                           FontSize="28"
-                           FontWeight="Bold"
-                           Foreground="#ff5500">
-                    <TextBlock.Text>
-                        <MultiBinding StringFormat="{}{0}₴ ({1})">
-                            <Binding Path="MoneySum" StringFormat="0.00" RelativeSource="{RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}" />
-                            <Binding Path="WaresQuantity" RelativeSource="{RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}" />
-                        </MultiBinding>
-                    </TextBlock.Text>
-                </TextBlock>-->
-                <!--<TextBlock Grid.Column="6"  Foreground="Black"
-                       FontSize="22"  VerticalAlignment="Center"
-                       Visibility="Visible" Name="valueWaresQuantity"
-                       Text="{Binding WaresQuantity, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" />-->
-
             </Grid>
         </Border>
 
@@ -1877,74 +1834,7 @@
                 </Grid>
             </Border>
 
-            <!--Очікування ваги-->
-            <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
-                 Grid.Row="0" Grid.RowSpan="6"
-                Grid.Column="1" Grid.ColumnSpan="4"
-                 Name="WeightWares" Visibility="Collapsed" Grid.ZIndex="2" 
-                CornerRadius="10" MaxHeight="800">
-                <Border.Effect>
-                    <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
-                </Border.Effect>
-
-                <Grid Name="GridWeightWares">
-                    <Grid.RowDefinitions>
-                        <RowDefinition  Height="1*"></RowDefinition>
-                        <RowDefinition  Height="4*"></RowDefinition>
-                        <RowDefinition  Height="1*"></RowDefinition>
-                        <RowDefinition  Height="1*"></RowDefinition>
-                        <RowDefinition  Height="1*"></RowDefinition>
-                    </Grid.RowDefinitions>
-                    <TextBlock 
-                                x:Name="NameWares"  Grid.ColumnSpan="2" Grid.Row="2" Grid.RowSpan="1"  HorizontalAlignment="Center" VerticalAlignment="Center" 
-                                FontSize="35" TextWrapping="Wrap"
-                                Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=CurW.Name}" />
-                    <TextBlock Name="LWeight"
-                                 Grid.ColumnSpan="1" Grid.Row="3" Grid.RowSpan="1" Margin="3,-2,0,-2" HorizontalAlignment="Center" VerticalAlignment="Center" 
-                                FontSize="35" Height="Auto" 
-                                Text="{Binding Weight, StringFormat=0.000kg, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" />
-
-                    <Grid Grid.Row="4">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="2*"></ColumnDefinition>
-                            <ColumnDefinition Width="1*"></ColumnDefinition>
-                            <ColumnDefinition Width="1*"></ColumnDefinition>
-                            <ColumnDefinition Width="2*"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-
-                        <Button Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2"  HorizontalAlignment="Right" VerticalAlignment="Center"  FontSize="22" Name="ButtonOk" 
-                        Height="60" Width="auto" Click="ClickButtonOk">
-                            <StackPanel Orientation="Horizontal">
-                                <!-- <Image  Height="20" Width="20"  Source="icons\right.png"></Image>-->
-                                <TextBlock Foreground="White" FontSize="35" Text="Додати вагу у чек" Margin="10,0,10,0"/>
-                            </StackPanel>
-                            <Button.Style>
-                                <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
-                                    <Setter Property="IsEnabled" Value="True"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsWeightMagellan, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                            <Setter Property="IsEnabled" Value="True" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding IsWeightMagellan, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
-                                            <Setter Property="IsEnabled" Value="False" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-                        <Button Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="3" Style="{StaticResource Default}"  FontSize="22" Click="ClickButtonCancel" 
-                        Height="60" Width="250" VerticalAlignment="Center" HorizontalAlignment="Left">
-                            <StackPanel Orientation="Horizontal">
-                                <Image  Height="20" Width="20"  Source="icons\X.png"></Image>
-                                <TextBlock FontSize="35" Text="{DynamicResource cancel}" Margin="5,0,5,0"/>
-                            </StackPanel>
-                        </Button>
-                    </Grid>
-                </Grid>
-            </Border>
+ 
 
             <!-- ОПЛАТА  САМООБСЛУГОВУВАННЯ  -->
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
@@ -2450,6 +2340,11 @@
         <uc:ClientDetails Grid.Row="0" Grid.RowSpan="5" Visibility="Collapsed"
               Grid.Column="0" Grid.ColumnSpan="4" 
               x:Name="ClientDetailsUC" VerticalAlignment="Stretch" 
+              Grid.ZIndex="4" />
+        <!-- Інформація про клієнта -->
+        <uc:WeightWares Grid.Row="0" Grid.RowSpan="5" Visibility="Collapsed"
+              Grid.Column="0" Grid.ColumnSpan="4" 
+              x:Name="WeightWaresUC" VerticalAlignment="Stretch" 
               Grid.ZIndex="4" />
         <!--Додати пакети-->
         <uc:AddPackagesBag Grid.Row="0" Grid.RowSpan="5" Visibility="Collapsed"

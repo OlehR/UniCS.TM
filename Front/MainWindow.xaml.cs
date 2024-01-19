@@ -410,6 +410,7 @@ namespace Front
             CustomMessage.Init(this);
             IssueCardUC.Init(this);
             ClientDetailsUC.Init(this);
+            WeightWaresUC.Init(this);
 
             //Провіряємо чи зміна відкрита.
             string BarCodeAdminSSC = Bl.db.GetConfig<string>("CodeAdminSSC");
@@ -788,7 +789,7 @@ namespace Front
                     BackgroundWares.Visibility = Visibility.Collapsed;
                     WaitAdmin.Visibility = Visibility.Collapsed;
                     WaitAdminLogin.Visibility = Visibility.Collapsed;
-                    WeightWares.Visibility = Visibility.Collapsed;
+                    WeightWaresUC.Visibility = Visibility.Collapsed;
                     WaitPayment.Visibility = Visibility.Collapsed;
                     StartShopping.Visibility = Visibility.Collapsed;
                     StartShoppingLogo.Visibility = Visibility.Collapsed;
@@ -861,7 +862,7 @@ namespace Front
                         // break;
                         case eStateMainWindows.WaitWeight:
                             EF.StartWeight();
-                            WeightWares.Visibility = Visibility.Visible;
+                            WeightWaresUC.Visibility = Visibility.Visible;
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;
                             break;
@@ -1299,17 +1300,8 @@ namespace Front
             SetStateView(eStateMainWindows.WaitInput);
         }
 
-        private void ClickButtonOk(object sender, RoutedEventArgs e)
-        {
-            AddWares(CurW.Code, CurW.CodeUnit, Convert.ToDecimal(Weight * 1000));
-            ClickButtonCancel(sender, e);
-        }
-        private void ClickButtonCancel(object sender, RoutedEventArgs e)
-        {
-            EF.StoptWeight();
-            SetStateView(eStateMainWindows.WaitInput);
-            Weight = 0d;
-        }
+
+
         private void ButtonAdmin(object sender, RoutedEventArgs e)
         {
             SetStateView(eStateMainWindows.WaitAdminLogin);
@@ -1506,7 +1498,7 @@ namespace Front
         {
             s.Play(eTypeSound.ScanCustomerCardOrEnterPhone);
             InputNumberPhone.Desciption = "Введіть номер телефону";
-            InputNumberPhone.ValidationMask = "^[0-9]{10,13}$";
+            InputNumberPhone.ValidationMask = "^[0-9]{10,13}$"; //  ^\\d{4}$|^\\d{10}$|^\\d{12}$
             InputNumberPhone.Result = "";
             InputNumberPhone.IsEnableComma = false;
             InputNumberPhone.CallBackResult = FindClientByPhone;
