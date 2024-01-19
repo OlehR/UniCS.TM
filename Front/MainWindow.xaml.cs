@@ -156,7 +156,7 @@ namespace Front
         public string GetBackgroundColor { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? "#ff9999" : "#FFFFFF"; } }
         public double GiveRest { get; set; } = 0;
         public string VerifyCode { get; set; } = string.Empty;
-        private StatusD<string> LastVerifyCode = new();
+        private Status<string> LastVerifyCode = new();
         public List<string> ClientPhoneNumvers = new List<string>();
         public eSyncStatus DatabaseUpdateStatus { get; set; } = eSyncStatus.SyncFinishedSuccess;
 

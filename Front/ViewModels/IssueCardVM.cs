@@ -20,7 +20,7 @@ namespace Front.ViewModels
         public string BarcodeIssueCard { get; set; } = string.Empty;
         public string PhoneIssueCard { get; set; } = string.Empty;
         public string VerifyCode { get; set; } = string.Empty;
-        public StatusD<string> LastVerifyCode = new();
+        public Status<string> LastVerifyCode = new();
         public bool IsBarcodeIssueCard { get { return !string.IsNullOrEmpty(BarcodeIssueCard); } }
         public bool IsGetCard { get; set; } = false;
 
