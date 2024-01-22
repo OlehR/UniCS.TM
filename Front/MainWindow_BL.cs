@@ -22,27 +22,32 @@ namespace Front
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         int LastCodeWares = 0;
+
+        void SetClient()
+        {
+            OnPropertyChanged(nameof(ClientName));
+            OnPropertyChanged(nameof(Client));
+            OnPropertyChanged(nameof(IsViewClientInfo));
+        }
         public void InitAction()
         {
             #region Action
             EF.OnControlWeight += (pWeight, pIsStable) =>
             {
                 ControlScaleCurrentWeight = pWeight;
-
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ControlScaleCurrentWeight"));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("StrControlScaleCurrentWeightKg"));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsOwnBag"));
-
+                OnPropertyChanged(nameof(ControlScaleCurrentWeight));
+                OnPropertyChanged(nameof(StrControlScaleCurrentWeightKg));
+                OnPropertyChanged(nameof(IsOwnBag));
                 CS.OnScalesData(pWeight, pIsStable);
             };
-
 
             EF.OnWeight += (pWeight, pIsStable) =>
             {
                 Weight = pWeight / 1000;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Weight)));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsWeightMagellan"));
+                OnPropertyChanged(nameof(IsWeightMagellan));
             };
+
             EF.SetStatus += (info) =>
             {
                 if (info.IsСritical == true)
@@ -144,26 +149,26 @@ namespace Front
                 }
                 FileLogger.WriteLogMessage($"MainWindow.OnSyncInfoCollected Status=>{SyncInfo.Status} StatusDescription=>{SyncInfo.StatusDescription}", eTypeLog.Full);
             }; 
+            
             Global.OnStatusChanged += (Status) =>
             {
                 ExchangeRateBar = Status.StringColor;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ExchangeRateBar"));
-            };
+                OnPropertyChanged(nameof(ExchangeRateBar));
+            };            
 
             Global.OnClientChanged += (pClient) =>
             {
-                Client = pClient;
+                if(curReceipt!=null && pClient!=null ) curReceipt.Client = pClient;
 
                 var r = Dispatcher.BeginInvoke(new ThreadStart(() =>
                 {
                     NumericPad.Visibility = Visibility.Collapsed;
                     Background.Visibility = Visibility.Collapsed;
-                    BackgroundWares.Visibility = Visibility.Collapsed;
-                    if (Client != null)
-                        ShowClientBonus.Visibility = Visibility.Visible;
+                    BackgroundWares.Visibility = Visibility.Collapsed;                    
+                    //if (Client != null) ShowClientBonus.Visibility = Visibility.Visible;
                 }
                 ));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClientName"));
+                SetClient();
                 if (Client.BirthDay > new DateTime(1900, 1, 1))
                     if (Client.BirthDay.AddYears(18).Date <= DateTime.Now.Date)
                         Bl.AddEventAge(curReceipt);
@@ -171,10 +176,7 @@ namespace Front
                 FileLogger.WriteLogMessage($"MainWindow.OnClientChanged(CodeReceipt=>{curReceipt?.CodeReceipt} Client.CodeClient=>{Client.CodeClient} Client.Wallet=> {pClient.Wallet} SumBonus=>{pClient.SumBonus})", eTypeLog.Full);
             };
 
-            Global.Message += (pMessage, pTypeMessage) =>
-                {
-                    CustomMessage.Show(pMessage, "Увага!", pTypeMessage);
-                };
+            Global.Message += (pMessage, pTypeMessage) => CustomMessage.Show(pMessage, "Увага!", pTypeMessage);               
 
             Bl.OnAdminBarCode += (pUser) =>
             {
@@ -403,7 +405,6 @@ namespace Front
             if (pGV != null)
             {
                 CurW = pGV;
-
                 Image im = null;
                 foreach (var el in WeightWaresUC.GridWeightWares.Children)
                 {
@@ -419,16 +420,13 @@ namespace Front
                     {
                         Source = new BitmapImage(new Uri(CurW.Pictures)),
                         VerticalAlignment = VerticalAlignment.Center
-                    };
-                    //Grid.SetColumn(Bt, i);
+                    };                    
                     Grid.SetRow(im, 1);
                     WeightWaresUC.GridWeightWares.Children.Add(im);
                 }
-
                 SetStateView(eStateMainWindows.WaitWeight);
                 return;
             }
-
 
             if (pCodeWares > 0)
             {
@@ -437,9 +435,7 @@ namespace Front
                 CurWares = Bl.AddWaresCode(curReceipt, pCodeWares, pCodeUnit, pQuantity, pPrice);
 
                 if (CurWares != null)
-                {
                     IsPrises(pQuantity, pPrice);
-                }
             }
         }
 
@@ -456,7 +452,6 @@ namespace Front
                     Background.Visibility = Visibility.Collapsed;
                     BackgroundWares.Visibility = Visibility.Collapsed;
                     Thread.Sleep(200);
-
                     PayAndPrint();
                 };
                 AddMissingPackage.Visibility = Visibility.Visible;
@@ -470,7 +465,6 @@ namespace Front
                 SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ConfirmAge);
                 return;
             }
-
 
             Dispatcher.BeginInvoke(new ThreadStart(() =>
             { EquipmentStatusInPayment.Text = ""; }));
@@ -496,13 +490,13 @@ namespace Front
             string TextError = null;
 
             var R = Bl.GetReceiptHead(pR ?? curReceipt, true);
-            curReceipt = R;
+            SetCurReceipt( R,false);
             R.NameCashier = AdminSSC?.NameUser;
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"pTP=>{pTP} pSumCash=>{pSumCash} pIssuingCash=>{pIssuingCash} pSumWallet=>{pSumWallet} pSumBonus=>{pSumBonus} curReceipt=> {curReceipt.ToJson()}", eTypeLog.Expanded);
 
             int[] IdWorkplacePays = R.IdWorkplacePays;// Wares.Select(el => el.IdWorkplacePay).Distinct().OrderBy(el => el).ToArray();
             IsManyPayments = IdWorkplacePays.Length > 1;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsManyPayments"));
+            OnPropertyChanged(nameof(IsManyPayments));
             FillPays(R);
             AmountManyPayments = "";
             foreach (var item in R.WorkplacePays)
@@ -733,10 +727,11 @@ namespace Front
 
         public void NewReceipt()
         {
-            curReceipt = Bl.GetNewIdReceipt();
-            s.NewReceipt(curReceipt.CodeReceipt);
+            SetCurReceipt( Bl.GetNewIdReceipt());
+            if (curReceipt != null)  
+                s.NewReceipt(curReceipt.CodeReceipt);
             if (StartScan != DateTime.MinValue) StartScan = DateTime.Now;
-            Dispatcher.BeginInvoke(new ThreadStart(() => { ShowClientBonus.Visibility = Visibility.Collapsed; }));
+            //Dispatcher.BeginInvoke(new ThreadStart(() => { ShowClientBonus.Visibility = Visibility.Collapsed; }));
             EF.PutToDisplay(curReceipt);
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"CodeReceipt=>{curReceipt?.CodeReceipt}");
         }
@@ -759,13 +754,10 @@ namespace Front
             Status Res = null;
             try
             {
-
                 CommandAPI<dynamic> pC = JsonConvert.DeserializeObject<CommandAPI<dynamic>>(pDataApi);
                 CommandAPI<int> CommandInt;
                 CommandAPI<string> CommandString;
                 CommandAPI<InfoRemoteCheckout> CommandRemoteInfo;
-
-
                 switch (pC.Command)
                 {
                     case eCommand.GetCurrentReceipt:

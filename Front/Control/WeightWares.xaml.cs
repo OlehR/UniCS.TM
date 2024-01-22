@@ -43,8 +43,7 @@ namespace Front.Control
         {
             MW.EF.StoptWeight();
             MW.Weight = 0d;
-            MW.SetStateView(eStateMainWindows.WaitInput);
-            
+            MW.SetStateView(eStateMainWindows.WaitInput);            
         }
 
     }

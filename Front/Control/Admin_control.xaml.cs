@@ -627,7 +627,7 @@ namespace Front.Control
 
         private void FiscalizCheckButton(object sender, RoutedEventArgs e)
         {
-            MW.curReceipt = curReceipt;
+            MW.SetCurReceipt( curReceipt);
             MW.PayAndPrint();
             //MessageBox.Show("Фiскалізовано");
         }
@@ -1276,7 +1276,6 @@ from RECEIPT r
 
         private void RestoreSelectRecript(object sender, RoutedEventArgs e)
         {
-            MW.Client = null;
             MW.SetCurReceipt(Bl.GetReceiptHead(curReceipt, true));
             MW.SetStateView(eStateMainWindows.WaitInput);
         }

@@ -89,7 +89,7 @@ namespace Front
         }
 
         public void NewReceipt(int pCodeReceipt)
-        {
+        {            
             CodeReceipt= pCodeReceipt;
             IsUse.Clear();
             //LastTypeSound = eTypeSound.NotDefine;
