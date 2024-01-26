@@ -50,7 +50,11 @@ namespace Utils
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
             Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic)
         };
-
+        /// <summary>
+        ///  System.Text.Json
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
         public static string ToJson(this object s)
         {
             return System.Text.Json.JsonSerializer.Serialize(s, options);

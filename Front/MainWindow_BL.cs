@@ -158,7 +158,8 @@ namespace Front
 
             Global.OnClientChanged += (pClient) =>
             {
-                if(curReceipt!=null && pClient!=null ) curReceipt.Client = pClient;
+                if(curReceipt!=null && pClient!=null ) 
+                    curReceipt.Client = pClient;
 
                 var r = Dispatcher.BeginInvoke(new ThreadStart(() =>
                 {
@@ -347,10 +348,29 @@ namespace Front
             if (State == eStateMainWindows.WaitInputIssueCard)
             {
                 IssueCardUC.SetBarCode(pBarCode);
-
                 return;
             }
-            var u = Bl.GetUserByBarCode(pBarCode);
+
+            //Точно треба зробити через стан eStateMainWindows
+            if (NumericPad.Visibility == Visibility.Visible && "Введіть номер телефону".Equals(InputNumberPhone.Desciption))
+            {
+                pBarCode = "MTE2MmZlMGNjLTNlZmQtNDYxZC05NThiLTFjYmI3NjQ4YjM1NDIzLjAxLjIwMjQgMTM6MDE6Mjg=";
+                if (pBarCode.Length>56 )
+                {
+                    var QR = pBarCode.FromBase64();
+                    if(!string.IsNullOrEmpty(QR) && "1".Equals(QR[..1]) && QR.Length>=56)
+                    {
+                        string BarCode = QR[1..37];
+                        string Time = QR[37.. 56];
+                        DateTime dt= Time.ToDateTime("dd.MM.yyyy HH:mm:ss");
+                        if ((DateTime.Now - dt).TotalSeconds < 120)
+                           _ =Bl.ds.GetDiscount(new FindClient { BarCode = BarCode });
+
+                    }
+                }
+            }
+
+                var u = Bl.GetUserByBarCode(pBarCode);
             if (u != null)
             { Bl.OnAdminBarCode?.Invoke(u); return; }
 

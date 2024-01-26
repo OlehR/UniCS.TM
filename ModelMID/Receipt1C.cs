@@ -26,7 +26,7 @@ namespace ModelMID
         public int NumberCashDesk { get; set; }
         public string Description { get; set; }
         public UInt64 NumberReceipt { get; set; }
-        public int CodeClientCard { get; set; }
+        public long CodeClientCard { get; set; }
         public int CodeWarehouse { get; set; }
         public string RefundNumber { get; set; }
         /// <summary>
@@ -116,20 +116,20 @@ namespace ModelMID
         public string ManualPercentDiscount { get { return string.IsNullOrEmpty(BarCode2Category) || BarCode2Category.Length != 13 ? null : BarCode2Category.Substring(3, 2); } }
         public int TypeDiscount { get { return string.IsNullOrEmpty(BarCode2Category) || BarCode2Category.Length != 13 ? 0:1; } }
         public ReceiptWares1C() { }
-        public ReceiptWares1C(ReceiptWares parRW)
+        public ReceiptWares1C(ReceiptWares pRW)
         {
-            Order = parRW.Order;
-            CodeWares = parRW.CodeWares;
-            Quantity = parRW.Quantity;
-            AbrUnit = parRW.AbrUnit;
-            Price = parRW.Price;
-            SumDiscount = parRW.SumDiscount+parRW.SumWallet;
-            Sum = parRW.Sum - SumDiscount- parRW.SumBonus + parRW.Delta;            
-            CodePS = ( parRW.TypePrice==eTypePrice.Promotion || parRW.TypePrice == eTypePrice.PromotionIndicative ? parRW.ParPrice1:0);            
-            SumBonus = parRW.SumBonus;
-            BarCode2Category = parRW.BarCode2Category;
+            Order = pRW.Order;
+            CodeWares = pRW.CodeWares;
+            Quantity = pRW.Quantity;
+            AbrUnit = pRW.AbrUnit;
+            Price = pRW.Price;
+            SumDiscount = pRW.SumDiscount+pRW.SumWallet;
+            Sum = pRW.Sum - SumDiscount- pRW.SumBonus + pRW.Delta; 
+            CodePS = //pRW.ReceiptWaresPromotions?.Any()==true? pRW.ReceiptWaresPromotions.Where(el=> el.TypeDiscount ).FirstO Code_PS
+                  ( pRW.TypePrice==eTypePrice.Promotion || pRW.TypePrice == eTypePrice.PromotionIndicative ? pRW.ParPrice1:0);            
+            SumBonus = pRW.SumBonus;
+            BarCode2Category = pRW.BarCode2Category;
         }
-
     }
 
     public class ReceiptWaresDeleted1C : IdReceipt

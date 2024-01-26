@@ -470,9 +470,17 @@ namespace SharedLib
                         }
                         var RWP = new WaresReceiptPromotion(parIdReceipt) { CodeWares = el.CodeWares, Quantity = AddQuantity, Price = vPrice, CodePS = el.CodePS, NumberGroup = el.NumberGroup };
                         varRes.Add(RWP);
+                        ReceiptWares? rw = RW.FirstOrDefault(e => e.CodeWares == el.CodeWares);
+                        if(rw != null) 
+                        {
+                            rw.TypePrice = eTypePrice.Promotion;
+                            rw.ParPrice1 = RWP.CodePS;
+                            rw.ParPrice2 = (long)RWP.TypeDiscount;
+                            rw.ParPrice3 = RWP.Sum;
+                            ReplaceWaresReceipt(rw);
+                        }
                     }
                 }
-
             }
             DeleteWaresReceiptPromotion(parIdReceipt);
             if (varRes.Count > 0)
@@ -974,7 +982,7 @@ Where ID_WORKPLACE = @IdWorkplace
         /// <returns>
         ///Повертає  IEnumerable<Client> з клієнтами
         ///</returns>
-        public IEnumerable<Client> FindClient(string parBarCode = null, string parPhone = null, string parName = null, int parCodeClient = 0)
+        public IEnumerable<Client> FindClient(string parBarCode = null, string parPhone = null, string parName = null, long parCodeClient = 0)
         {
             var Res = db.Execute<object, Client>(SqlFindClient, new { CodeClient = parCodeClient, Phone = parPhone, BarCode = parBarCode, Name = (parName == null ? null : "%" + parName + "%") });
             return Res != null && Res.Any(el => el.StatusCard == eStatusCard.Active) ? Res.Where(el => el.StatusCard == eStatusCard.Active) : Res;
@@ -1051,7 +1059,7 @@ Where ID_WORKPLACE = @IdWorkplace
                     if (vReceipt != null)
                         el.Parent = vReceipt;
                     if (wrp != null)
-                        el.ReceiptWaresPromotions = wrp.Where(rr => ((IdReceiptWares)rr).Equals((IdReceiptWares)el));
+                        el.ReceiptWaresPromotions = wrp.Where(rr => ((IdReceiptWares)rr).Equals((IdReceiptWares)el)).ToArray();
                 }
             }
             return r;
@@ -1290,7 +1298,7 @@ select sum( sum_pay* case when TYPE_PAY in (4) then -1 else 1 end) as sum from p
         {
             pWW ??= GetWaresWarehouse();
 
-            if (Global.Settings.IdWorkPlaceLink > 0 && Global.Settings.CodeWarehouseLink > 0)
+            if (Global.Settings!=null&& Global.Settings.IdWorkPlaceLink > 0 && Global.Settings.CodeWarehouseLink > 0)
             {
                 foreach (var el in pWW)
                 {

@@ -69,5 +69,9 @@ namespace ModelMID
         /// Чи можна розраховуватись бонусамим.
         /// </summary>
         public bool IsPayBonus { get;set; } =true;
+        /// <summary>
+        /// Код в зовнішній системі
+        /// </summary>
+        public int CodeWarehouseExSystem { get; set; }
     }
 }

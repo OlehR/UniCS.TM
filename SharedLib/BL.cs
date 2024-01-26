@@ -355,7 +355,7 @@ namespace SharedLib
             return dbT.ViewReceipt(pIdR, parWithDetail);
         }
 
-        public Client GetClientByCode(IdReceipt pIdReceipt, int pCode)
+        public Client GetClientByCode(IdReceipt pIdReceipt, long pCode)
         {
             return SetClient(pIdReceipt, db.FindClient(null, null, null, pCode));
         }
@@ -374,8 +374,13 @@ namespace SharedLib
         {
             if (r.Count() == 0 && pPhone!=null)
             {
-                OnCustomWindow?.Invoke(new CustomWindow(eWindows.Info, $"Клієнта з номером {pPhone} не знайдено в базі!"));
-                return null;
+                var Res = ds.GetDiscount(new FindClient() { Phone = pPhone }).Result; 
+                if(Res!=null && Res.CodeClient!=0)
+                {
+                    r = new List<Client>() { Res };
+                }
+                else
+                    OnCustomWindow?.Invoke(new CustomWindow(eWindows.Info, $"Клієнта з номером {pPhone} не знайдено в базі!"));
             }
             if (r.Count() == 1)
             {
@@ -389,11 +394,10 @@ namespace SharedLib
                 var CW = new CustomWindow(eWindows.ChoiceClient, r);
                 OnCustomWindow?.Invoke(CW);
             }
-
             return null;
         }
 
-        private void UpdateClientInReceipt(IdReceipt pIdReceipt, Client parClient)
+        private void UpdateClientInReceipt(IdReceipt pIdReceipt, Client pClient)
         {
             var State = GetStateReceipt(pIdReceipt);
             if (State != eStateReceipt.Prepare)
@@ -403,12 +407,14 @@ namespace SharedLib
             }
 
             var RH = GetReceiptHead(pIdReceipt);
-            RH.CodeClient = parClient.CodeClient;
-            RH.PercentDiscount = parClient.PersentDiscount;
+            RH.CodeClient = pClient.CodeClient;
+            RH.PercentDiscount = pClient.PersentDiscount;
             db.ReplaceReceipt(RH);
+            Global.OnClientChanged?.Invoke(pClient);
             if (Global.RecalcPriceOnLine)
                 db.RecalcPriceAsync(new IdReceiptWares(pIdReceipt));
-            _ = GetBonusAsync(parClient);
+            _ = ds.GetDiscount(new FindClient() { Client = pClient, CodeWarehouse = Global.CodeWarehouse });
+            //_ = GetBonusAsync(parClient);
         }
 
         public IEnumerable<ReceiptWares> GetProductsByName(IdReceipt pReceipt, string pName, int pOffSet = -1, int pLimit = 10, int pCodeFastGroup = 0)

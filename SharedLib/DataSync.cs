@@ -29,13 +29,13 @@ namespace SharedLib
         public eSyncStatus Status = eSyncStatus.NotDefine;
         public bool IsReady { get {
                 if (db.DBStatus != eDBStatus.Ok) Status = eSyncStatus.ErrorDB;
-                return IsUseOldDB || ( Status != eSyncStatus.StartedFullSync && Status != eSyncStatus.Error && Status != eSyncStatus.ErrorDB); } }
+                return IsUseOldDB || (Status != eSyncStatus.StartedFullSync && Status != eSyncStatus.Error && Status != eSyncStatus.ErrorDB); } }
         public DataSync(BL pBL)
         {
             try
             {
                 MsSQL = new WDB_MsSql();
-            } catch { } 
+            } catch { }
 
             if (pBL != null)
             {
@@ -47,9 +47,9 @@ namespace SharedLib
         public async Task<bool> SyncDataAsync(bool parIsFull = false)
         {
             bool res = false;
-            if(!MsSQL.IsSync(Global.CodeWarehouse))
+            if (!MsSQL.IsSync(Global.CodeWarehouse))
             {
-                FileLogger.WriteLogMessage(this, "SyncDataAsync", $"Обмін заблоковано",eTypeLog.Expanded);
+                FileLogger.WriteLogMessage(this, "SyncDataAsync", $"Обмін заблоковано", eTypeLog.Expanded);
                 return res;
             }
             FileLogger.WriteLogMessage($"BL.SyncDataAsync({parIsFull}) Start");
@@ -89,7 +89,7 @@ namespace SharedLib
                 t.Elapsed += new ElapsedEventHandler(OnTimedEvent);
                 t.Start();
                 //OnTimedEvent(null,null);
-            }            
+            }
         }
 
         private async void OnTimedEvent(Object source, ElapsedEventArgs e)
@@ -101,22 +101,22 @@ namespace SharedLib
         {
             using var ldb = new WDB_SQLite(pIdR.DTPeriod);
             if (!MsSQL.IsSync(Global.CodeWarehouse))
-            {           
+            {
                 FileLogger.WriteLogMessage(this, "SendReceiptTo1C", $"Обмін заблоковано CodeReceipt=>{pIdR.CodeReceipt}", eTypeLog.Expanded);
                 return false;
             }
             var R = ldb.ViewReceipt(pIdR, true);
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            _= SendReceiptTo1CAsync(R);
+            _ = SendReceiptTo1CAsync(R);
             _ = SendReceipt(R); // В сховище чеків
 
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             return true;
         }
 
-        public async Task<bool> SendReceiptTo1CAsync(Receipt pR,string pServer=null,bool pIsChangeState=true)
-        {           
+        public async Task<bool> SendReceiptTo1CAsync(Receipt pR, string pServer = null, bool pIsChangeState = true)
+        {
             if (!Global.Settings.IsSend1C && pIsChangeState) return false;
 
             if (string.IsNullOrEmpty(pServer))
@@ -129,11 +129,11 @@ namespace SharedLib
                     var r = new Receipt1C(pR);
                     var body = soapTo1C.GenBody("JSONCheck", new Parameters[] { new Parameters("JSONSting", r.GetBase64()) });
                     var res = Global.IsTest ? "0" : await soapTo1C.RequestAsync(pServer, body, 240000, "application/json");
-                    if (string.IsNullOrEmpty(res) || !res.Equals("0")) 
-                        return false;                    
+                    if (string.IsNullOrEmpty(res) || !res.Equals("0"))
+                        return false;
                 }
                 pR.StateReceipt = eStateReceipt.Send;
-                if(pIsChangeState)
+                if (pIsChangeState)
                     db.SetStateReceipt(pR);//Змінюєм стан чека на відправлено.
                 FileLogger.WriteLogMessage(this, "SendReceiptTo1CAsync", $"({pR.IdWorkplace},{pR.CodePeriod},{pR.CodeReceipt})");
                 return true;
@@ -141,7 +141,7 @@ namespace SharedLib
             catch (Exception ex)
             {
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex);
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = $"SendReceiptTo1CAsync=> {pR.CodeReceipt}{Environment.NewLine}{ex.Message}{Environment.NewLine}{new System.Diagnostics.StackTrace()}"});
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = $"SendReceiptTo1CAsync=> {pR.CodeReceipt}{Environment.NewLine}{ex.Message}{Environment.NewLine}{new System.Diagnostics.StackTrace()}" });
                 return false;
             }
             finally
@@ -165,7 +165,7 @@ namespace SharedLib
             Global.OnStatusChanged?.Invoke(db.GetStatus());
             return true;
         }
-        
+
         public bool SyncData(ref bool pIsFull)
         {
             lock (this._locker)
@@ -191,7 +191,7 @@ namespace SharedLib
                                 Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Відсутні дані {varMidFile} parIsFull=>{pIsFull} ");
                             }
                         }
-                        catch(Exception) { pIsFull = true; }
+                        catch (Exception) { pIsFull = true; }
                     }
 
                     //WDB_SQLite SQLite;
@@ -215,7 +215,7 @@ namespace SharedLib
                         db.SetConfig<DateTime>("Load_Update", DateTime.Now.Date.AddDays(-1).Date);
                         db.Close(true);
                         db.GetDB();
-                        Exception Ex=null;
+                        Exception Ex = null;
                         if (File.Exists(varMidFile))
                         {
                             Thread.Sleep(200);
@@ -224,8 +224,8 @@ namespace SharedLib
                             {
                                 File.Delete(varMidFile);
                             }
-                            catch (Exception e) 
-                            {                           
+                            catch (Exception e)
+                            {
                                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
                             }
                         }
@@ -250,10 +250,10 @@ namespace SharedLib
                             Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = Ex, Status = eSyncStatus.Error, StatusDescription = $"SyncData Error=> Помилка видалення файла {Ex?.Message}" });
                             return false;
                         }
-                        Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Create New DB");                       
+                        Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Create New DB");
                     }
-                  
-                    SQLite pD= new SQLite(NameDB);
+
+                    SQLite pD = new SQLite(NameDB);
                     if (pIsFull)
                     {
                         pD.ExecuteNonQuery(db.SqlCreateMIDTable);
@@ -261,10 +261,10 @@ namespace SharedLib
                     }
 
                     if (!MsSQL.IsSync(Global.CodeWarehouse)) return false;
-                    
-                    var varMessageNMax = MsSQL.LoadData(db, pIsFull, Log,pD);
 
-                    if (pIsFull)                       
+                    var varMessageNMax = MsSQL.LoadData(db, pIsFull, Log, pD);
+
+                    if (pIsFull)
                     {
                         int CW = pD.ExecuteScalar<int>("select count(*) from wares");
                         if (CW > 1000)
@@ -279,14 +279,14 @@ namespace SharedLib
                                 Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} Set config LastMidFile=> {db.LastMidFile}");
                                 db.SetConfig<DateTime>("Load_Full", DateTime.Now);
                                 db.SetConfig<DateTime>("Load_Update", DateTime.Now);
-                                
+
                                 db.GetDB();
                             }
-                            catch(Exception e) 
+                            catch (Exception e)
                             {
                                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
                             }
-                           
+
                         }
                         else
                         {
@@ -294,14 +294,14 @@ namespace SharedLib
                             return false;
                         }
                     }
-                    
+
                     db.SetConfig<int>("MessageNo", varMessageNMax);
-                    db.SetConfig<DateTime>("Load_" + (pIsFull ? "Full" : "Update"), DateTime.Now );
+                    db.SetConfig<DateTime>("Load_" + (pIsFull ? "Full" : "Update"), DateTime.Now);
 
                     Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} End");
                     Status = pIsFull ? eSyncStatus.SyncFinishedSuccess : eSyncStatus.NotDefine;
                     Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.SyncFinishedSuccess, StatusDescription = "SyncData=>Ok" });
-                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name,"Log=>"+ Log.ToString());
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Log=>" + Log.ToString());
                 }
                 catch (Exception ex)
                 {
@@ -371,18 +371,18 @@ namespace SharedLib
             db.SetConfig<DateTime>("LastDaySend", Ldc);
         }
 
-        public async Task<Client> GetBonusAsync(Client pClient, int pCodeWarehouse=0)
+        public async Task<Client> GetBonusAsync(Client pClient, int pCodeWarehouse = 0)
         {
             try
             {
-                decimal Sum=0;
+                decimal Sum = 0;
                 var body = soapTo1C.GenBody("GetBonusSum", new Parameters[] { new Parameters("CodeOfCard", pClient.BarCode) });
                 var res = await soapTo1C.RequestAsync(Global.Server1C, body);
                 res = res.Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
                 if (!string.IsNullOrEmpty(res) && decimal.TryParse(res, out Sum))
                     pClient.SumBonus = Sum; //!!!TMP
-                if(Sum>0 && pCodeWarehouse>0) 
-                {                    
+                if (Sum > 0 && pCodeWarehouse > 0)
+                {
                     body = soapTo1C.GenBody("GetOtovProc", new Parameters[] {
                         new Parameters("CodeOfSklad",$"{pCodeWarehouse:D9}"),
                         new Parameters("CodeOfCard", pClient.BarCode),
@@ -392,8 +392,8 @@ namespace SharedLib
                     res = res.Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
                     if (!string.IsNullOrEmpty(res) && decimal.TryParse(res, out Sum))
                     {
-                        pClient.PercentBonus = Sum/100m; //!!!TMP
-                        pClient.SumMoneyBonus =Math.Round( pClient.SumBonus * pClient.PercentBonus,2);
+                        pClient.PercentBonus = Sum / 100m; //!!!TMP
+                        pClient.SumMoneyBonus = Math.Round(pClient.SumBonus * pClient.PercentBonus, 2);
                     }
                 }
 
@@ -406,7 +406,7 @@ namespace SharedLib
             }
             catch (Exception ex)
             {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation {  Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = ex.Message });
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = ex.Message });
             }
             Global.OnClientChanged?.Invoke(pClient);
             return pClient;
@@ -510,7 +510,7 @@ namespace SharedLib
    end
 -- commit tran";
 
-                
+
                 //var path = Path.Combine(ModelMID.Global.PathDB, "config.db");
                 // var dbSqlite = new SQLite(path);
                 var SqlSelect = @"select [barcode] as BarCode, weight as Weight, DATE_CREATE as Date,STATUS
@@ -600,7 +600,7 @@ where RE.EVENT_TYPE=1"
 ""plu-from"": {PLU},
 ""plu-to"": 0
 }".Replace("{Order}", (++pOrder).ToString()).Replace("{PLU}", pReceiptWares.PLU.ToString()).
-Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace("{Price}", ((int)(pReceiptWares.PriceDealer * 100m)).ToString()); 
+Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace("{Price}", ((int)(pReceiptWares.PriceDealer * 100m)).ToString());
 
             List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(pReceiptWares) { EventType = eReceiptEventType.AskQR, EventName = Body, CreatedAt = DateTime.Now } };
             try
@@ -673,7 +673,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                 var d = new { data = pRWD };
                 var r = JsonConvert.SerializeObject(d);
                 var plainTextBytes = Encoding.UTF8.GetBytes(r);
-                var resBase64 = Convert.ToBase64String(plainTextBytes);                
+                var resBase64 = Convert.ToBase64String(plainTextBytes);
                 var body = soapTo1C.GenBody("DeletedItemsInTheCheck", new Parameters[] { new Parameters("JSONSting", resBase64) });
 
                 var res = await soapTo1C.RequestAsync(Global.Server1C, body, 60000, "application/json");
@@ -697,9 +697,9 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             if (pC == null)
                 return eReturnClient.Error;
             try
-            {  
-                var body = soapTo1C.GenBody("IssuanceOfCards", new Parameters[] 
-                { 
+            {
+                var body = soapTo1C.GenBody("IssuanceOfCards", new Parameters[]
+                {
                     new Parameters("CardId", pC.BarcodeClient),
                     new Parameters("User",pC.BarcodeCashier),
                     new Parameters("ShopId",Global.CodeWarehouse.ToString()),
@@ -723,9 +723,9 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                 }
             }
             catch (Exception ex)
-            {                
-               // Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(el.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "Send1CReceiptWaresDeletedAsync=>" + el.CodePeriod.ToString() + " " + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
-               // return false;
+            {
+                // Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(el.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "Send1CReceiptWaresDeletedAsync=>" + el.CodePeriod.ToString() + " " + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
+                // return false;
             }
             return Res;
         }
@@ -734,13 +734,13 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
         public async Task Send1CClientAsync()
         {
             DateTime Ldc, Today = DateTime.Now.Date;
-             
+
             try
             {
                 Ldc = db.GetConfig<DateTime>("LastDaySendClient");
             }
             catch { Ldc = Today.AddDays(-10); }
-                       
+
             try
             {
                 if (Ldc == default(DateTime))
@@ -754,7 +754,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     foreach (var el in Cl)
                     {
                         eReturnClient res = await Send1CClientAsync(el);
-                        if (res==eReturnClient.Ok || res== eReturnClient.ErrorCardIsUse || res==eReturnClient.ErrorCardIsAlreadyPresent)
+                        if (res == eReturnClient.Ok || res == eReturnClient.ErrorCardIsUse || res == eReturnClient.ErrorCardIsAlreadyPresent)
                             ldb.SetConfirmClientNew(el);
                         else
                             Res = false;
@@ -782,7 +782,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     string s = "ПСЮ00000000";
                     pNumberOrder = pNumberOrder.Trim();
                     pNumberOrder = s.Substring(0, 11 - pNumberOrder.Length) + pNumberOrder;
-                    if (!MsSQL.IsSync(Global.CodeWarehouse)) return ;
+                    if (!MsSQL.IsSync(Global.CodeWarehouse)) return;
 
                     var Order = MsSQL.GetClientOrder(pNumberOrder);
                     if (Order != null && Order.Any())
@@ -794,7 +794,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                         Thread.Sleep(300);
                         foreach (var el in Order)
                         {
-                            bl.AddWaresCode(curReceipt, el.CodeWares, el.CodeUnit, (el.CodeUnit==Global.WeightCodeUnit? 1000:1) *  el.Quantity, el.Price, true);
+                            bl.AddWaresCode(curReceipt, el.CodeWares, el.CodeUnit, (el.CodeUnit == Global.WeightCodeUnit ? 1000 : 1) * el.Quantity, el.Price, true);
                         }
                     }
                 }
@@ -806,48 +806,48 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
 
         public Status<string> GetVerifySMS(string pPhone)
         {
-            Status<string>  Res = new();
-             Task.Run(async () =>
-            {
-                try
-                {
-                    string parUrl = "http://api.spar.uz.ua/SMS";
-                    var a = new { Phone = pPhone, Company = Global.Settings.CodeTM==56?"1":"2" };
-                    string pBody = a.ToJSON();
-                    int parWait = 2000;
-                    string parContex = "application/json";
-                    string res = null;
-                    HttpClient client = new HttpClient();
-                    client.Timeout = TimeSpan.FromMilliseconds(parWait);
+            Status<string> Res = new();
+            Task.Run(async () =>
+           {
+               try
+               {
+                   string parUrl = "http://api.spar.uz.ua/SMS";
+                   var a = new { Phone = pPhone, Company = Global.Settings.CodeTM == 56 ? "1" : "2" };
+                   string pBody = a.ToJSON();
+                   int parWait = 2000;
+                   string parContex = "application/json";
+                   string res = null;
+                   HttpClient client = new HttpClient();
+                   client.Timeout = TimeSpan.FromMilliseconds(parWait);
 
-                    HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, parUrl);
+                   HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, parUrl);
 
-                    if (!string.IsNullOrEmpty(pBody))
-                        requestMessage.Content = new StringContent(pBody, Encoding.UTF8, parContex);
-                    var response = await client.SendAsync(requestMessage);
+                   if (!string.IsNullOrEmpty(pBody))
+                       requestMessage.Content = new StringContent(pBody, Encoding.UTF8, parContex);
+                   var response = await client.SendAsync(requestMessage);
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        res = await response.Content.ReadAsStringAsync();
-                        Res = JsonConvert.DeserializeObject<Status<string>>(res);
-                        return ;
-                    }
-                }
-                catch (Exception e) { new Status<string>(e); return;  }
+                   if (response.IsSuccessStatusCode)
+                   {
+                       res = await response.Content.ReadAsStringAsync();
+                       Res = JsonConvert.DeserializeObject<Status<string>>(res);
+                       return;
+                   }
+               }
+               catch (Exception e) { new Status<string>(e); return; }
 
-                Res= new Status<string>(-1, "Не отримано код");
-            }).Wait();
+               Res = new Status<string>(-1, "Не отримано код");
+           }).Wait();
             return Res;
         }
 
-        public async Task<ExciseStamp> CheckExciseStampAsync(ExciseStamp pES,int pWait = 1000)
+        public async Task<ExciseStamp> CheckExciseStampAsync(ExciseStamp pES, int pWait = 1000)
         {
             try
             {
                 HttpClient client = new HttpClient();
                 client.Timeout = TimeSpan.FromMilliseconds(pWait);
 
-                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, "http://apitest.spar.uz.ua/"+"CheckExciseStamp");
+                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, "http://apitest.spar.uz.ua/" + "CheckExciseStamp");
                 string data = pES.ToJson();
                 requestMessage.Content = new StringContent(data, Encoding.UTF8, "application/json");
                 var response = await client.SendAsync(requestMessage);
@@ -865,7 +865,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                 {
                     Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = null, Status = eSyncStatus.NoFatalError, StatusDescription = "RequestAsync=>" + response.RequestMessage });
                 }
-            }catch(Exception e)
+            } catch (Exception e)
             { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e); }
             return null;
         }
@@ -883,7 +883,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                 HttpClient client = new HttpClient();
                 client.Timeout = TimeSpan.FromMilliseconds(20000);
 
-                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, "http://apitest.spar.uz.ua/"+"Receipt");
+                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, "http://apitest.spar.uz.ua/" + "Receipt");
                 string data = pR.ToJson();
                 requestMessage.Content = new StringContent(data, Encoding.UTF8, "application/json");
                 var response = await client.SendAsync(requestMessage);
@@ -900,6 +900,40 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                         }
                         FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"CodeReceipt=>{pR.CodeReceipt} State=>${Res.State} Text=>{Res.TextState}");
                         return Res;
+                    }
+                }
+                else
+                {
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, response.StatusCode.ToString());
+                }
+            }
+            catch (Exception e)
+            { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e); }
+            return null;
+        }
+
+        public async Task<Client> GetDiscount(FindClient pFC){
+            try
+            {
+                HttpClient client = new HttpClient();
+                client.Timeout = TimeSpan.FromMilliseconds(20000);
+
+                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, "http://apitest.spar.uz.ua/" + "api/GetDiscount");
+                string data = pFC.ToJson();
+                requestMessage.Content = new StringContent(data, Encoding.UTF8, "application/json");
+                var response = await client.SendAsync(requestMessage);
+                if (response.IsSuccessStatusCode)
+                {
+                    var res = await response.Content.ReadAsStringAsync();
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"res=>{res}");
+                    if (!string.IsNullOrEmpty(res))
+                    {
+                        var Res = JsonConvert.DeserializeObject<Status<Client>>(res);
+                        if (Res?.State == 0)
+                        {
+                            Global.OnClientChanged?.Invoke(Res.Data);
+                            return Res.Data;
+                        }
                     }
                 }
                 else

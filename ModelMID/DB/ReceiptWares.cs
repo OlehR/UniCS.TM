@@ -305,7 +305,7 @@ namespace ModelMID
         /// <summary>
         /// 
         /// </summary>
-        public IEnumerable<WaresReceiptPromotion> ReceiptWaresPromotions;
+        public WaresReceiptPromotion[] ReceiptWaresPromotions { get; set; } = null;
 
         public bool IsReceiptPromotion { get { return !string.IsNullOrEmpty(GetStrWaresReceiptPromotion); } }
 
@@ -313,8 +313,8 @@ namespace ModelMID
         {
             get
             {
-                string Res =(IdWorkplacePay>0&& IdWorkplacePay!=IdWorkplace?"@":"")+ (string.IsNullOrEmpty(History) || CodeUnit != Global.WeightCodeUnit ? "" : $"{History} кг{Environment.NewLine}") +
-                (string.IsNullOrEmpty(NameDiscount) ? "" : NameDiscount + Environment.NewLine);
+                string Res = (IdWorkplacePay > 0 && IdWorkplacePay != IdWorkplace ? "@" : "") + (string.IsNullOrEmpty(History) || CodeUnit != Global.WeightCodeUnit ? "" : $"{History} кг{Environment.NewLine}");
+                
                 try
                 {
                     if (ReceiptWaresPromotions?.Any()==true)
@@ -327,6 +327,9 @@ namespace ModelMID
                         if (!string.IsNullOrEmpty(Res))
                             Res = Res?.Substring(0, Res.Length - 1);
                     }
+                    else
+                     Res+= (string.IsNullOrEmpty(NameDiscount) ? "" : NameDiscount + Environment.NewLine);
+
                     if (!string.IsNullOrEmpty(ExciseStamp))
                         Res += $"Акцизні марки:{ExciseStamp}";
                 }
@@ -504,7 +507,7 @@ namespace ModelMID
                     var SumDiscount = OtherPromotion.Sum(r => r.Sum);
                     var QuantityDiscount = OtherPromotion.Sum(r => r.Quantity);
                     el.SumDiscount = QuantityDiscount * (el.Price - SumDiscount / QuantityDiscount);
-                    el.ReceiptWaresPromotions = OtherPromotion;
+                    el.ReceiptWaresPromotions = OtherPromotion.ToArray();
                     el.Quantity = AllQuantity - PromotionQuantity;
                     Res.Add(el);
                 }

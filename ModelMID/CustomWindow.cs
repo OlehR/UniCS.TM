@@ -226,7 +226,7 @@ namespace ModelMID
         /// <summary>
         /// Id >0 кнопки. Буде в відповіді 
         /// </summary>
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// Текст вікні
@@ -252,7 +252,7 @@ namespace ModelMID
         /// <summary>
         /// Id натиснененої кнопки. (-1 - Cancel )
         /// </summary>
-        public int IdButton { get; set; }
+        public long IdButton { get; set; }
 
         /// <summary>
         /// Додаткові дані для обробки.

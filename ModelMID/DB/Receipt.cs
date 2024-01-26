@@ -29,8 +29,8 @@ namespace ModelMID
         /// </summary>
         public string TranslationTypeReceipt { get { return TypeReceipt.GetDescription(); } }        
 
-        int _CodeClient;
-        public int CodeClient { get { return Client?.CodeClient ?? _CodeClient; } set { _CodeClient = value; } }
+        long _CodeClient;
+        public long CodeClient { get { return Client?.CodeClient ?? _CodeClient; } set { _CodeClient = value; } }
         public Client Client { get; set; }
         public int CodePattern { get; set; }
         public long NumberCashier { get; set; }

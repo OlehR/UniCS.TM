@@ -26,6 +26,7 @@ using Front.Control;
 using System.Windows.Threading;
 using System.Windows.Input;
 using Front.ViewModels;
+using QRCoder;
 
 namespace Front
 {
@@ -525,7 +526,7 @@ namespace Front
                             scrollViewer.ScrollToBottom();
                         }
                     }));
-                    if (OldClient?.CodeClient > 0 && curReceipt.CodeClient > 0 && OldClient.CodeClient == curReceipt.CodeClient)
+                    if (OldClient?.CodeClient > 0 && curReceipt.CodeClient > 0 && curReceipt.Client==null && OldClient.CodeClient == curReceipt.CodeClient)
                     {                        
                         curReceipt.Client = OldClient;              
                     }
@@ -1364,8 +1365,8 @@ namespace Front
                 }
                 if (res.CustomWindow?.Id == eWindows.UseBonus)
                 {
-                    LastVerifyCode = Bl.ds.GetVerifySMS(ClientPhoneNumvers[res.Id]);
-                    CustomMessage.Show($"Код підтвердження надіслано за номером {ClientPhoneNumvers[res.Id]}", "Увага!", eTypeMessage.Information);
+                    LastVerifyCode = Bl.ds.GetVerifySMS(ClientPhoneNumvers[(int)res.Id]);
+                    CustomMessage.Show($"Код підтвердження надіслано за номером {ClientPhoneNumvers[(int)res.Id]}", "Увага!", eTypeMessage.Information);
                     return;
                 }
 
@@ -1399,6 +1400,12 @@ namespace Front
         {
             if (curReceipt == null)
                 NewReceipt();
+            if (pResult.Length==4)
+            {
+                if(int.TryParse(pResult.Substring(0,4),out int res))
+                _ = Bl.ds.GetDiscount(new FindClient { PinCode = res });
+                return;
+            }
 
             if (pResult.Length >= 10)
             {
@@ -1417,7 +1424,6 @@ namespace Front
                 Background.Visibility = Visibility.Collapsed;
                 BackgroundWares.Visibility = Visibility.Collapsed;
             }
-
         }
 
         private void CustomWindowVerificationText(object sender, TextChangedEventArgs e)

@@ -25,7 +25,7 @@ namespace ModelMID
         /// <summary>
         /// Код клієнта
         /// </summary>
-        public int CodeClient { get; set; }
+        public long CodeClient { get; set; }
         /// <summary>
         ///  Назва клієнта
         /// </summary>
@@ -99,10 +99,6 @@ namespace ModelMID
         /// </summary>
         public bool IsMoneyCard { get; set; }
         public Client() { }
-        public Client(int parCodeClient)
-        {
-            CodeClient=parCodeClient;            
-        }        
-        
+        public Client(int parCodeClient) => CodeClient=parCodeClient; 
     }
 }

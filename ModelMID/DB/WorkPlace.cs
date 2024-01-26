@@ -56,7 +56,11 @@ namespace ModelMID.DB
             {
                 _SettingsEx = value;
                 if (!string.IsNullOrEmpty(value))
-                    try { _Settings = JsonConvert.DeserializeObject<Settings>(value); } catch (Exception) { };
+                    try { _Settings = JsonConvert.DeserializeObject<Settings>(value); } 
+                    catch (Exception e) 
+                    {
+                        FileLogger.WriteLogMessage(this, "SettingsEx", e);
+                    };
             }
         }
         Settings _Settings;
