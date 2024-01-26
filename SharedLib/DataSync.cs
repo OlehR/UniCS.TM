@@ -20,10 +20,11 @@ namespace SharedLib
     public class DataSync
     {
         public WDB_SQLite db { get { return bl?.db; } }
-        public BL bl;
+        BL bl;
         WDB_MsSql MsSQL;
+        public DataSync1C Ds1C;
         private readonly object _locker = new object();
-        public SoapTo1C soapTo1C = new SoapTo1C();
+        //public SoapTo1C soapTo1C = new SoapTo1C();
         public bool IsUseOldDB = true;
 
         public eSyncStatus Status = eSyncStatus.NotDefine;
@@ -35,6 +36,7 @@ namespace SharedLib
             try
             {
                 MsSQL = new WDB_MsSql();
+                Ds1C = new DataSync1C();
             } catch { }
 
             if (pBL != null)
@@ -108,47 +110,14 @@ namespace SharedLib
             var R = ldb.ViewReceipt(pIdR, true);
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            _ = SendReceiptTo1CAsync(R);
+            _ = Ds1C.SendReceiptTo1CAsync(R);
             _ = SendReceipt(R); // В сховище чеків
 
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             return true;
         }
 
-        public async Task<bool> SendReceiptTo1CAsync(Receipt pR, string pServer = null, bool pIsChangeState = true)
-        {
-            if (!Global.Settings.IsSend1C && pIsChangeState) return false;
-
-            if (string.IsNullOrEmpty(pServer))
-                pServer = Global.Server1C;
-            try
-            {
-                foreach (var el in pR.IdWorkplacePays)
-                {
-                    pR.IdWorkplacePay = el;
-                    var r = new Receipt1C(pR);
-                    var body = soapTo1C.GenBody("JSONCheck", new Parameters[] { new Parameters("JSONSting", r.GetBase64()) });
-                    var res = Global.IsTest ? "0" : await soapTo1C.RequestAsync(pServer, body, 240000, "application/json");
-                    if (string.IsNullOrEmpty(res) || !res.Equals("0"))
-                        return false;
-                }
-                pR.StateReceipt = eStateReceipt.Send;
-                if (pIsChangeState)
-                    db.SetStateReceipt(pR);//Змінюєм стан чека на відправлено.
-                FileLogger.WriteLogMessage(this, "SendReceiptTo1CAsync", $"({pR.IdWorkplace},{pR.CodePeriod},{pR.CodeReceipt})");
-                return true;
-            }
-            catch (Exception ex)
-            {
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex);
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = $"SendReceiptTo1CAsync=> {pR.CodeReceipt}{Environment.NewLine}{ex.Message}{Environment.NewLine}{new System.Diagnostics.StackTrace()}" });
-                return false;
-            }
-            finally
-            {
-                pR.IdWorkplacePay = 0;
-            }
-        }
+       
 
         public async Task<bool> SendAllReceipt(WDB_SQLite parDB = null)
         {
@@ -157,7 +126,7 @@ namespace SharedLib
             foreach (var el in varReceipts)
             {
                 var R = varDB.ViewReceipt(el, true);
-                await SendReceiptTo1CAsync(R);
+                await Ds1C.SendReceiptTo1CAsync(R);
                 _ = SendReceipt(R); // В сховище чеків
             }
             if (parDB == null)
@@ -370,122 +339,7 @@ namespace SharedLib
             //Перекидаємо лічильник на сьогодня.
             db.SetConfig<DateTime>("LastDaySend", Ldc);
         }
-
-        public async Task<Client> GetBonusAsync(Client pClient, int pCodeWarehouse = 0)
-        {
-            try
-            {
-                decimal Sum = 0;
-                var body = soapTo1C.GenBody("GetBonusSum", new Parameters[] { new Parameters("CodeOfCard", pClient.BarCode) });
-                var res = await soapTo1C.RequestAsync(Global.Server1C, body);
-                res = res.Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
-                if (!string.IsNullOrEmpty(res) && decimal.TryParse(res, out Sum))
-                    pClient.SumBonus = Sum; //!!!TMP
-                if (Sum > 0 && pCodeWarehouse > 0)
-                {
-                    body = soapTo1C.GenBody("GetOtovProc", new Parameters[] {
-                        new Parameters("CodeOfSklad",$"{pCodeWarehouse:D9}"),
-                        new Parameters("CodeOfCard", pClient.BarCode),
-                        new Parameters("Summ", Sum.ToString().Replace(",","."))
-                    });
-                    res = await soapTo1C.RequestAsync(Global.Server1C, body);
-                    res = res.Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
-                    if (!string.IsNullOrEmpty(res) && decimal.TryParse(res, out Sum))
-                    {
-                        pClient.PercentBonus = Sum / 100m; //!!!TMP
-                        pClient.SumMoneyBonus = Math.Round(pClient.SumBonus * pClient.PercentBonus, 2);
-                    }
-                }
-
-                body = soapTo1C.GenBody("GetMoneySum", new Parameters[] { new Parameters("CodeOfCard", pClient.BarCode) });
-                res = await soapTo1C.RequestAsync(Global.Server1C, body);
-
-                res = res.Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
-                if (!string.IsNullOrEmpty(res) && decimal.TryParse(res, out Sum))
-                    pClient.Wallet = Sum;
-            }
-            catch (Exception ex)
-            {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = ex.Message });
-            }
-            Global.OnClientChanged?.Invoke(pClient);
-            return pClient;
-        }
-
-        public async Task<bool> CheckDiscountBarCodeAsync(IdReceipt pIdReceipt, string pBarCode, int pPercent)
-        {
-            bool isGood = true;
-            decimal CountDiscount = 0; // На скільки товарів вже є знижка.
-            try
-            {
-                var Cat2 = db.CheckLastWares2Cat(pIdReceipt);
-
-                if (Cat2 == null || Cat2.Count() == 0)
-                {
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.IncorectProductForDiscount, StatusDescription = "Для даного товару не можливо застосувати знижку 2 категорії." });
-                    return false;
-                }
-                if (db.IsUseBarCode2Category(pBarCode))
-                {
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.IncorectDiscountBarcode, StatusDescription = $"Даний штрихкод =>{pBarCode} другої категорії вже використаний!" });
-                    return false;
-                }
-                var Cat2First = Cat2.First();
-                Cat2First.BarCode2Category = pBarCode == null ? "" : pBarCode;
-                Cat2First.Price = Cat2First.Price * (100m - (decimal)pPercent) / 100m;
-
-                var LastQuantyity = db.GetLastQuantity(Cat2First);
-                //Якщо не ваговий - то знижка на 1 шт.
-                if (Cat2First.CodeUnit != Global.WeightCodeUnit && LastQuantyity > 0)
-                    LastQuantyity = 1;
-
-                var pr = db.GetReceiptWaresPromotion(new IdReceiptWares(pIdReceipt, Cat2First.CodeWares));
-
-                if (pr != null && pr.Count() > 0)
-                    CountDiscount = pr.Where(r => r.BarCode2Category.Length == 13).Sum(r => r.Quantity);
-
-                if (CountDiscount > Cat2First.Quantity - LastQuantyity)
-                    isGood = false;
-                else
-                {
-                    Cat2First.Quantity = LastQuantyity;
-                    try
-                    {
-                        var body = soapTo1C.GenBody("GetRestOfLabel", new Parameters[] { new Parameters("CodeOfLabel", pBarCode) });
-                        var res = await soapTo1C.RequestAsync(Global.Server1C, body, 2000);
-                        isGood = res.Equals("1");
-                        Global.ErrorDiscountOnLine = 0;
-                    }
-                    catch (Exception ex)
-                    {
-                        Global.ErrorDiscountOnLine++;
-                        Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "CheckDiscountBarCodeAsync=>" + ex.Message });
-                        Global.OnStatusChanged?.Invoke(db.GetStatus());
-
-                    }
-                }
-                if (isGood)
-                {
-                    db.ReplaceWaresReceiptPromotion(Cat2);
-                    db.InsertBarCode2Cat(Cat2First);
-                    db.RecalcHeadReceipt(pIdReceipt);
-                    var r = bl.GetReceiptHead(pIdReceipt, true);
-                    Global.OnReceiptCalculationComplete?.Invoke(r);
-                }
-                else
-                {
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.IncorectDiscountBarcode, StatusDescription = $"Даний штрихкод =>{pBarCode} другої категорії вже використаний!" });
-                    return false;
-                }
-            }
-
-            catch (Exception ex)
-            {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "CheckDiscountBarCodeAsync=>" + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
-            }
-            return true;
-        }
-
+     
         public void LoadWeightKasa(DateTime parDT = default(DateTime))
         {
             if (!MsSQL.IsSync(Global.CodeWarehouse)) return;
@@ -648,7 +502,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                 {
                     using var ldb = new WDB_SQLite(Ldc);
                     var t = ldb.GetReceiptWaresDeleted();
-                    var res = await Send1CReceiptWaresDeletedAsync(t);
+                    var res = await Ds1C.Send1CReceiptWaresDeletedAsync(t);
 
                     if (res)
                         db.SetConfig<DateTime>("LastDaySendDeleted", Ldc);
@@ -663,74 +517,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             }
 
         }
-
-        public async Task<bool> Send1CReceiptWaresDeletedAsync(IEnumerable<ReceiptWaresDeleted1C> pRWD)
-        {
-            if (pRWD == null || pRWD.Count() == 0)
-                return true;
-            try
-            {
-                var d = new { data = pRWD };
-                var r = JsonConvert.SerializeObject(d);
-                var plainTextBytes = Encoding.UTF8.GetBytes(r);
-                var resBase64 = Convert.ToBase64String(plainTextBytes);
-                var body = soapTo1C.GenBody("DeletedItemsInTheCheck", new Parameters[] { new Parameters("JSONSting", resBase64) });
-
-                var res = await soapTo1C.RequestAsync(Global.Server1C, body, 60000, "application/json");
-
-                if (!string.IsNullOrEmpty(res) && res.Equals("0"))
-                    return true;
-
-                return false;
-            }
-            catch (Exception ex)
-            {
-                var el = pRWD.First();
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "Send1CReceiptWaresDeletedAsync=>" + el.CodePeriod.ToString() + " " + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
-                return false;
-            }
-        }
-
-        public async Task<eReturnClient> Send1CClientAsync(ClientNew pC)
-        {
-            eReturnClient Res = eReturnClient.ErrorConnect;
-            if (pC == null)
-                return eReturnClient.Error;
-            try
-            {
-                var body = soapTo1C.GenBody("IssuanceOfCards", new Parameters[]
-                {
-                    new Parameters("CardId", pC.BarcodeClient),
-                    new Parameters("User",pC.BarcodeCashier),
-                    new Parameters("ShopId",Global.CodeWarehouse.ToString()),
-                    new Parameters("DateOper",pC.DateCreate.ToString("yyyy-MM-dd HH:mm:ss")),
-                    new Parameters("NumTel",pC.Phone),
-                    new Parameters("CheckoutId",Global.IdWorkPlace.ToString()),
-                    new Parameters("TypeOfOperation","0")
-                });
-
-                var res = await soapTo1C.RequestAsync(Global.Server1C, body, 5000, "application/json");
-
-                if (!string.IsNullOrEmpty(res))
-                {
-                    int r = 0;
-                    if (int.TryParse(res, out r))
-                    {
-                        Res = (eReturnClient)r;
-                    }
-                    else
-                        Res = eReturnClient.Error;
-                }
-            }
-            catch (Exception ex)
-            {
-                // Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(el.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "Send1CReceiptWaresDeletedAsync=>" + el.CodePeriod.ToString() + " " + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
-                // return false;
-            }
-            return Res;
-        }
-
-
+       
         public async Task Send1CClientAsync()
         {
             DateTime Ldc, Today = DateTime.Now.Date;
@@ -753,7 +540,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     bool Res = true;
                     foreach (var el in Cl)
                     {
-                        eReturnClient res = await Send1CClientAsync(el);
+                        eReturnClient res = await Ds1C.Send1CClientAsync(el);
                         if (res == eReturnClient.Ok || res == eReturnClient.ErrorCardIsUse || res == eReturnClient.ErrorCardIsAlreadyPresent)
                             ldb.SetConfirmClientNew(el);
                         else

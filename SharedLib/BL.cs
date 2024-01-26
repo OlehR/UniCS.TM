@@ -151,10 +151,6 @@ namespace SharedLib
 
         public IEnumerable<QR> GetQR(IdReceipt pIdR) { return db.GetQR(pIdR); }
 
-        //public bool AddReceipt(IdReceipt pReceipt) { return AddReceipt(new Receipt(pReceipt)); }
-
-        //public bool AddReceipt(Receipt pReceipt) { return db.AddReceipt(pReceipt); }
-
         public Receipt GetNewIdReceipt(int pIdWorkplace = 0, int pCodePeriod = 0)
         {
             var idReceip = new IdReceipt() { IdWorkplace = (pIdWorkplace == 0 ? Global.IdWorkPlace : pIdWorkplace), CodePeriod = (pCodePeriod == 0 ? Global.GetCodePeriod() : pCodePeriod), CodeReceipt = Global.StartCodeReceipt };
@@ -221,7 +217,7 @@ namespace SharedLib
                                     w = db.FindWares(null, null, varCode);
                                     break;
                                 case eTypeCode.PercentDiscount:
-                                    _ = ds.CheckDiscountBarCodeAsync(pReceipt, pBarCode, varCode);
+                                    _ = ds.Ds1C.CheckDiscountBarCodeAsync(pReceipt, pBarCode, varCode);
                                     return new ReceiptWares(pReceipt);
                                 default:
                                     break;
@@ -519,28 +515,6 @@ namespace SharedLib
             return null;
         }
 
-        /*public bool SaveReceipt(Receipt pReceipt, bool isRefund = true)
-        {
-            var IdR = isRefund ? pReceipt.RefundId : pReceipt;
-
-            var dbR = DB(pReceipt);
-            dbR.ReplaceReceipt(pReceipt);
-            dbR.ReplacePayments(pReceipt.Payment);
-
-            var dbr = pReceipt.CodePeriod == pReceipt.CodePeriodRefund ? db : new WDB_SQLite(IdR.DTPeriod);
-            foreach (var el in pReceipt.Wares)
-            {
-                dbR.AddWares(el);
-                if (isRefund)
-                {
-                    var w = new ReceiptWares(IdR, el.WaresId);
-                    w.Quantity = el.Quantity;
-                    dbr.SetRefundedQuantity(w);
-                }
-            }
-            return true;
-        }*/
-
         public bool SaveReceiptEvents(IEnumerable<ReceiptEvent> pRE, bool pIsReplace = true)
         {
             if (pRE != null && pRE.Count() > 0)
@@ -559,13 +533,12 @@ namespace SharedLib
             return true;
         }
 
-        public Task GetBonusAsync(Client pClient) { return ds.GetBonusAsync(pClient, Global.CodeWarehouse); }
+        public Task GetBonusAsync(Client pClient) { return ds.Ds1C.GetBonusAsync(pClient, Global.CodeWarehouse); }
 
         public void SendReceiptTo1C(IdReceipt parIdReceipt)
         {
             Task.Run(() => { ds.SendReceiptTo1C(parIdReceipt); });
-        }
-            
+        }            
 
         public void CloseDB() { db?.Close(); }
 
@@ -598,14 +571,7 @@ namespace SharedLib
             Global.OnReceiptCalculationComplete?.Invoke(r);
             return Res;
         }
-
-        /// <summary>
-        /// Отриманий штрихкод з Обладнання.
-        /// </summary>
-        /// <param name="pBarCode"></param>
-        /// <param name="pTypeBarCode"></param>
-
-
+        
         public bool UpdateExciseStamp(IEnumerable<ReceiptWares> pRW)
         {
             var r = pRW.Where(e => e.ExciseStamp != null && e.ExciseStamp.Length > 0);
@@ -770,7 +736,6 @@ namespace SharedLib
                             }
                         }
                         break;
-
                 }
             }
         }
