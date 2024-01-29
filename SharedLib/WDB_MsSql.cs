@@ -221,6 +221,7 @@ namespace SharedLib
 
             //Пакети
             var GWL = new List<FastWares>();
+            if(Global.Bags!=null)
             foreach (var el in Global.Bags)
                 GWL.Add(new FastWares { CodeFastGroup = Global.CodeFastGroupBag, CodeWares = el });
 

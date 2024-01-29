@@ -20,11 +20,11 @@ namespace SharedLib
     public class DataSync1C
     {
         public SoapTo1C soapTo1C = new SoapTo1C();
-        public WDB_SQLite db;
+        WDB_SQLite db { get { return bl?.db; } }
         BL bl;
-        public DataSync1C() {
-            db = WDB_SQLite.GetInstance;
-            bl = BL.GetBL;
+        public DataSync1C(BL pBL) {
+           // db = WDB_SQLite.GetInstance;
+            bl = pBL;
         }
 
         public async Task<bool> SendReceiptTo1CAsync(Receipt pR, string pServer = null, bool pIsChangeState = true)
@@ -45,7 +45,7 @@ namespace SharedLib
                         return false;
                 }
                 pR.StateReceipt = eStateReceipt.Send;
-                if (pIsChangeState)
+                if (pIsChangeState&& db!=null)
                     db.SetStateReceipt(pR);//Змінюєм стан чека на відправлено.
                 FileLogger.WriteLogMessage(this, "SendReceiptTo1CAsync", $"({pR.IdWorkplace},{pR.CodePeriod},{pR.CodeReceipt})");
                 return true;
@@ -101,80 +101,6 @@ namespace SharedLib
             }
             Global.OnClientChanged?.Invoke(pClient);
             return pClient;
-        }
-
-        public async Task<bool> CheckDiscountBarCodeAsync(IdReceipt pIdReceipt, string pBarCode, int pPercent)
-        {
-            bool isGood = true;
-            decimal CountDiscount = 0; // На скільки товарів вже є знижка.
-            try
-            {
-                var Cat2 = db.CheckLastWares2Cat(pIdReceipt);
-
-                if (Cat2 == null || Cat2.Count() == 0)
-                {
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.IncorectProductForDiscount, StatusDescription = "Для даного товару не можливо застосувати знижку 2 категорії." });
-                    return false;
-                }
-                if (db.IsUseBarCode2Category(pBarCode))
-                {
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.IncorectDiscountBarcode, StatusDescription = $"Даний штрихкод =>{pBarCode} другої категорії вже використаний!" });
-                    return false;
-                }
-                var Cat2First = Cat2.First();
-                Cat2First.BarCode2Category = pBarCode == null ? "" : pBarCode;
-                Cat2First.Price = Cat2First.Price * (100m - (decimal)pPercent) / 100m;
-
-                var LastQuantyity = db.GetLastQuantity(Cat2First);
-                //Якщо не ваговий - то знижка на 1 шт.
-                if (Cat2First.CodeUnit != Global.WeightCodeUnit && LastQuantyity > 0)
-                    LastQuantyity = 1;
-
-                var pr = db.GetReceiptWaresPromotion(new IdReceiptWares(pIdReceipt, Cat2First.CodeWares));
-
-                if (pr != null && pr.Count() > 0)
-                    CountDiscount = pr.Where(r => r.BarCode2Category.Length == 13).Sum(r => r.Quantity);
-
-                if (CountDiscount > Cat2First.Quantity - LastQuantyity)
-                    isGood = false;
-                else
-                {
-                    Cat2First.Quantity = LastQuantyity;
-                    try
-                    {
-                        var body = soapTo1C.GenBody("GetRestOfLabel", new Parameters[] { new Parameters("CodeOfLabel", pBarCode) });
-                        var res = await soapTo1C.RequestAsync(Global.Server1C, body, 2000);
-                        isGood = res.Equals("1");
-                        Global.ErrorDiscountOnLine = 0;
-                    }
-                    catch (Exception ex)
-                    {
-                        Global.ErrorDiscountOnLine++;
-                        Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "CheckDiscountBarCodeAsync=>" + ex.Message });
-                        Global.OnStatusChanged?.Invoke(db.GetStatus());
-
-                    }
-                }
-                if (isGood)
-                {
-                    db.ReplaceWaresReceiptPromotion(Cat2);
-                    db.InsertBarCode2Cat(Cat2First);
-                    db.RecalcHeadReceipt(pIdReceipt);
-                    var r = bl.GetReceiptHead(pIdReceipt, true);
-                    Global.OnReceiptCalculationComplete?.Invoke(r);
-                }
-                else
-                {
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.IncorectDiscountBarcode, StatusDescription = $"Даний штрихкод =>{pBarCode} другої категорії вже використаний!" });
-                    return false;
-                }
-            }
-
-            catch (Exception ex)
-            {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "CheckDiscountBarCodeAsync=>" + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
-            }
-            return true;
         }
 
         public async Task<bool> Send1CReceiptWaresDeletedAsync(IEnumerable<ReceiptWaresDeleted1C> pRWD)
@@ -241,6 +167,13 @@ namespace SharedLib
                 // return false;
             }
             return Res;
+        }
+
+        public async Task<bool> IsUseDiscountBarCode(string pBarCode)
+        {
+            var body = soapTo1C.GenBody("GetRestOfLabel", new Parameters[] { new Parameters("CodeOfLabel", pBarCode) });
+            var res = await soapTo1C.RequestAsync(Global.Server1C, body, 2000);
+            return res.Equals("1");
         }
 
 

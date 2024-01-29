@@ -1387,7 +1387,7 @@ namespace Front
         {
             s.Play(eTypeSound.ScanCustomerCardOrEnterPhone);
             InputNumberPhone.Desciption = "Введіть номер телефону";
-            InputNumberPhone.ValidationMask = "^[0-9]{10,13}$"; //  ^\\d{4}$|^\\d{10}$|^\\d{12}$
+            InputNumberPhone.ValidationMask = Global.Settings.IsUseCardSparUkraine? "^\\d{4}$|^\\d{10}$|^\\d{12}$" : "^[0-9]{10,13}$"; 
             InputNumberPhone.Result = "";
             InputNumberPhone.IsEnableComma = false;
             InputNumberPhone.CallBackResult = FindClientByPhone;

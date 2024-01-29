@@ -352,9 +352,9 @@ namespace Front
             }
 
             //Точно треба зробити через стан eStateMainWindows
-            if (NumericPad.Visibility == Visibility.Visible && "Введіть номер телефону".Equals(InputNumberPhone.Desciption))
+            if(Global.Settings.IsUseCardSparUkraine && NumericPad.Visibility == Visibility.Visible && "Введіть номер телефону".Equals(InputNumberPhone.Desciption))
             {
-                pBarCode = "MTE2MmZlMGNjLTNlZmQtNDYxZC05NThiLTFjYmI3NjQ4YjM1NDIzLjAxLjIwMjQgMTM6MDE6Mjg=";
+               // pBarCode = "MTE2MmZlMGNjLTNlZmQtNDYxZC05NThiLTFjYmI3NjQ4YjM1NDIzLjAxLjIwMjQgMTM6MDE6Mjg=";
                 if (pBarCode.Length>56 )
                 {
                     var QR = pBarCode.FromBase64();
@@ -365,7 +365,6 @@ namespace Front
                         DateTime dt= Time.ToDateTime("dd.MM.yyyy HH:mm:ss");
                         if ((DateTime.Now - dt).TotalSeconds < 120)
                            _ =Bl.ds.GetDiscount(new FindClient { BarCode = BarCode });
-
                     }
                 }
             }

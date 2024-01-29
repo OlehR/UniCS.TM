@@ -85,7 +85,7 @@ namespace Front.ViewModels
             eReturnClient r = eReturnClient.Error;
             Task.Run(async () =>
             {
-                r = await Bl.ds.Send1CClientAsync(clientNew);
+                r = await Bl.ds.Ds1C.Send1CClientAsync(clientNew);
             }).Wait();
 
             clientNew.State = r == eReturnClient.Ok ? 1 : 0;

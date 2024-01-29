@@ -36,7 +36,7 @@ namespace SharedLib
             try
             {
                 MsSQL = new WDB_MsSql();
-                Ds1C = new DataSync1C();
+                Ds1C = new DataSync1C(pBL);
             } catch { }
 
             if (pBL != null)
@@ -699,11 +699,84 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             return null;
         }
 
-        public async Task<Client> GetDiscount(FindClient pFC){
+
+        public async Task<bool> CheckDiscountBarCodeAsync(IdReceipt pIdReceipt, string pBarCode, int pPercent)
+        {
+            bool isGood = true;
+            decimal CountDiscount = 0; // На скільки товарів вже є знижка.
             try
             {
+                var Cat2 = db.CheckLastWares2Cat(pIdReceipt);
+
+                if (Cat2 == null || Cat2.Count() == 0)
+                {
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.IncorectProductForDiscount, StatusDescription = "Для даного товару не можливо застосувати знижку 2 категорії." });
+                    return false;
+                }
+                if (db.IsUseBarCode2Category(pBarCode))
+                {
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.IncorectDiscountBarcode, StatusDescription = $"Даний штрихкод =>{pBarCode} другої категорії вже використаний!" });
+                    return false;
+                }
+                var Cat2First = Cat2.First();
+                Cat2First.BarCode2Category = pBarCode == null ? "" : pBarCode;
+                Cat2First.Price = Cat2First.Price * (100m - (decimal)pPercent) / 100m;
+
+                var LastQuantyity = db.GetLastQuantity(Cat2First);
+                //Якщо не ваговий - то знижка на 1 шт.
+                if (Cat2First.CodeUnit != Global.WeightCodeUnit && LastQuantyity > 0)
+                    LastQuantyity = 1;
+
+                var pr = db.GetReceiptWaresPromotion(new IdReceiptWares(pIdReceipt, Cat2First.CodeWares));
+
+                if (pr != null && pr.Count() > 0)
+                    CountDiscount = pr.Where(r => r.BarCode2Category.Length == 13).Sum(r => r.Quantity);
+
+                if (CountDiscount > Cat2First.Quantity - LastQuantyity)
+                    isGood = false;
+                else
+                {
+                    Cat2First.Quantity = LastQuantyity;
+                    try
+                    {
+                        isGood = await Ds1C.IsUseDiscountBarCode(pBarCode);
+                        Global.ErrorDiscountOnLine = 0;
+                    }
+                    catch (Exception ex)
+                    {
+                        Global.ErrorDiscountOnLine++;
+                        Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "CheckDiscountBarCodeAsync=>" + ex.Message });
+                        Global.OnStatusChanged?.Invoke(db.GetStatus());
+                    }
+                }
+                if (isGood)
+                {
+                    db.ReplaceWaresReceiptPromotion(Cat2);
+                    db.InsertBarCode2Cat(Cat2First);
+                    db.RecalcHeadReceipt(pIdReceipt);
+                    var r = bl.GetReceiptHead(pIdReceipt, true);
+                    Global.OnReceiptCalculationComplete?.Invoke(r);
+                }
+                else
+                {
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.IncorectDiscountBarcode, StatusDescription = $"Даний штрихкод =>{pBarCode} другої категорії вже використаний!" });
+                    return false;
+                }
+            }
+
+            catch (Exception ex)
+            {
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "CheckDiscountBarCodeAsync=>" + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
+            }
+            return true;
+        }
+
+        public async Task<Client> GetDiscount(FindClient pFC){
+            Client Result = null;
+            try
+            {                
                 HttpClient client = new HttpClient();
-                client.Timeout = TimeSpan.FromMilliseconds(20000);
+                client.Timeout = TimeSpan.FromSeconds(10);
 
                 HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, "http://apitest.spar.uz.ua/" + "api/GetDiscount");
                 string data = pFC.ToJson();
@@ -719,7 +792,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                         if (Res?.State == 0)
                         {
                             Global.OnClientChanged?.Invoke(Res.Data);
-                            return Res.Data;
+                            Result= Res.Data;
                         }
                     }
                 }
@@ -730,7 +803,9 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             }
             catch (Exception e)
             { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e); }
-            return null;
+            if(Result==null && !string.IsNullOrEmpty(pFC.Phone))
+              bl.OnCustomWindow?.Invoke(new CustomWindow(eWindows.Info, $"Клієнта з номером {pFC.Phone} не знайдено в базі!"));
+            return Result;
         }
     }
 

@@ -217,7 +217,7 @@ namespace SharedLib
                                     w = db.FindWares(null, null, varCode);
                                     break;
                                 case eTypeCode.PercentDiscount:
-                                    _ = ds.Ds1C.CheckDiscountBarCodeAsync(pReceipt, pBarCode, varCode);
+                                    _ = ds.CheckDiscountBarCodeAsync(pReceipt, pBarCode, varCode);
                                     return new ReceiptWares(pReceipt);
                                 default:
                                     break;
@@ -366,17 +366,14 @@ namespace SharedLib
             return SetClient(pIdReceipt, db.FindClient(null, pPhone), pPhone);
         }
 
-        Client SetClient(IdReceipt pIdReceipt, IEnumerable<Client> r, string pPhone=null)
+        Client SetClient(IdReceipt pIdReceipt, IEnumerable<Client> r, string pPhone = null)
         {
-            if (r.Count() == 0 && pPhone!=null)
+            if (r.Count() == 0 && pPhone != null)
             {
-                var Res = ds.GetDiscount(new FindClient() { Phone = pPhone }).Result; 
-                if(Res!=null && Res.CodeClient!=0)
-                {
-                    r = new List<Client>() { Res };
-                }
+                if(Global.Settings.IsUseCardSparUkraine)
+                  _ = ds.GetDiscount(new FindClient() { Phone = pPhone });
                 else
-                    OnCustomWindow?.Invoke(new CustomWindow(eWindows.Info, $"Клієнта з номером {pPhone} не знайдено в базі!"));
+                  OnCustomWindow?.Invoke(new CustomWindow(eWindows.Info, $"Клієнта з номером {pPhone} не знайдено в базі!"));
             }
             if (r.Count() == 1)
             {

@@ -116,7 +116,7 @@ namespace SharedLib
             }
         }
 
-        SQLite GetRC(DateTime pDT)
+        public SQLite GetRC(DateTime pDT)
         {
             NewDBRC();
             return new SQLite(GetReceiptFile(pDT));

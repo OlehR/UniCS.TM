@@ -73,5 +73,10 @@ namespace ModelMID
         /// Код в зовнішній системі
         /// </summary>
         public int CodeWarehouseExSystem { get; set; }
+        /// <summary>
+        /// Чи використовувати карточки SPAR Україна
+        /// </summary>
+        public bool IsUseCardSparUkraine { get; set; } = false;
+
     }
 }
