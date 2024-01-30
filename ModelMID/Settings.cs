@@ -78,5 +78,10 @@ namespace ModelMID
         /// </summary>
         public bool IsUseCardSparUkraine { get; set; } = false;
 
+        /// <summary>
+        /// Api
+        /// </summary>
+        public string Api { get; set; }
+
     }
 }

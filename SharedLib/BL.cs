@@ -370,8 +370,16 @@ namespace SharedLib
         {
             if (r.Count() == 0 && pPhone != null)
             {
-                if(Global.Settings.IsUseCardSparUkraine)
-                  _ = ds.GetDiscount(new FindClient() { Phone = pPhone });
+                if (Global.Settings.IsUseCardSparUkraine)
+                    Task.Run( async () => { 
+                      Client cl = await  ds.GetDiscount(new FindClient() { Phone = pPhone });
+                        if (cl != null)
+                        {
+                            UpdateClientInReceipt(pIdReceipt, cl);                           
+                        }
+                    }
+                    );
+                  
                 else
                   OnCustomWindow?.Invoke(new CustomWindow(eWindows.Info, $"Клієнта з номером {pPhone} не знайдено в базі!"));
             }

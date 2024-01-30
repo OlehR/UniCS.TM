@@ -44,7 +44,7 @@ namespace ModelMID
 
         public static int IdWorkPlaceIssuingCash;
 
-        public static int CodeWarehouse { get { return Settings?.CodeWarehouse??0; } }
+        public static int CodeWarehouse { get { return Settings?.CodeWarehouse ?? 0; } }
 
         public static bool IsTest = false;
         /// <summary>
@@ -62,7 +62,7 @@ namespace ModelMID
         /// <summary>
         /// Чи можна розраховуватись готівкою.
         /// </summary>
-        public static bool IsCash = false;      
+        public static bool IsCash = false;
 
         /// <summary>
         /// Час між синхронізаціями в секундах. 0- відклчено.
@@ -82,11 +82,11 @@ namespace ModelMID
         /// </summary>
         public static string PathLog = @"c:\temp\";
         public static string PathPictures = @"D:\Pictures\";
-        public static int PortAPI=0;
-       /// <summary>
-       /// Шлях до MID.ini та Key.map
-       /// </summary>
-       public static string PathIni = @"D:\WORK\CS\UniCS.TM\SharedLib\";
+        public static int PortAPI = 0;
+        /// <summary>
+        /// Шлях до MID.ini та Key.map
+        /// </summary>
+        public static string PathIni = @"D:\WORK\CS\UniCS.TM\SharedLib\";
 
         /// <summary>
         /// Максимальна кількість відкритих чеків касиром. Максимум 3.
@@ -123,13 +123,15 @@ namespace ModelMID
         /// Перераховувати ціни після кожної зміни в чеку
         /// </summary>
         public static bool RecalcPriceOnLine = true;
-        
+
         public static int CodeFastGroupBag = 0;
         public static List<int> Bags;
         //public static SortedList<int, string> Tax = new SortedList<int, string>();
         public static DeltaWeight[] DeltaWeight;
 
         public static string Server1C = "";
+        public static string _Api = null;
+        public static string Api { get { return string.IsNullOrEmpty(_Api) ? Global.Api : _Api; } }
         public static double MaxWeightBag = 100;
 
         public static List<CustomerBarCode> CustomerBarCode { get; set; }

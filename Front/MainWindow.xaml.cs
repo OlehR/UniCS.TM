@@ -526,12 +526,12 @@ namespace Front
                             scrollViewer.ScrollToBottom();
                         }
                     }));
-                    if (OldClient?.CodeClient > 0 && curReceipt.CodeClient > 0 && curReceipt.Client==null && OldClient.CodeClient == curReceipt.CodeClient)
+                    if (OldClient?.CodeClient != 0 && curReceipt.CodeClient != 0 && curReceipt.Client==null && OldClient.CodeClient == curReceipt.CodeClient)
                     {                        
                         curReceipt.Client = OldClient;              
                     }
 
-                    if (curReceipt.CodeClient > 0 && string.IsNullOrEmpty(curReceipt.Client?.NameClient))                    
+                    if (curReceipt.CodeClient != 0 && string.IsNullOrEmpty(curReceipt.Client?.NameClient))                    
                         Bl.GetClientByCode(curReceipt, curReceipt.CodeClient);
                     
                     if (curReceipt?.IsNeedExciseStamp == true)

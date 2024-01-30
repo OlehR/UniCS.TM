@@ -55,7 +55,8 @@ namespace SharedLib
             Global.BlockSales = new List<BlockSale>();
             AppConfiguration.GetSection("MID:BlockSale").Bind(Global.BlockSales);
 
-            Global.Server1C = AppConfiguration["MID:Server1C"];
+            Global.Server1C = AppConfiguration["MID:Server1C"];            
+
             if (!string.IsNullOrWhiteSpace(AppConfiguration["MID:CodeFastGroupBag"]))
                 Global.CodeFastGroupBag = Convert.ToInt32(AppConfiguration["MID:CodeFastGroupBag"]);
             try

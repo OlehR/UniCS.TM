@@ -598,7 +598,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
            {
                try
                {
-                   string parUrl = "http://api.spar.uz.ua/SMS";
+                   string parUrl = Global.Settings.Api+"SMS";
                    var a = new { Phone = pPhone, Company = Global.Settings.CodeTM == 56 ? "1" : "2" };
                    string pBody = a.ToJSON();
                    int parWait = 2000;
@@ -634,7 +634,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                 HttpClient client = new HttpClient();
                 client.Timeout = TimeSpan.FromMilliseconds(pWait);
 
-                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, "http://apitest.spar.uz.ua/" + "CheckExciseStamp");
+                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, Global.Api + "CheckExciseStamp");
                 string data = pES.ToJson();
                 requestMessage.Content = new StringContent(data, Encoding.UTF8, "application/json");
                 var response = await client.SendAsync(requestMessage);
@@ -664,13 +664,14 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
 
         public async Task<Status> SendReceipt(Receipt pR)
         {
+            string JSON = pR.ToJson();
             if (Global.IsTest) return null;
             try
             {
                 HttpClient client = new HttpClient();
                 client.Timeout = TimeSpan.FromMilliseconds(20000);
 
-                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, "http://apitest.spar.uz.ua/" + "Receipt");
+                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, Global.Api + "Receipt");
                 string data = pR.ToJson();
                 requestMessage.Content = new StringContent(data, Encoding.UTF8, "application/json");
                 var response = await client.SendAsync(requestMessage);
@@ -778,7 +779,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                 HttpClient client = new HttpClient();
                 client.Timeout = TimeSpan.FromSeconds(10);
 
-                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, "http://apitest.spar.uz.ua/" + "api/GetDiscount");
+                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, Global.Api + "api/GetDiscount");
                 string data = pFC.ToJson();
                 requestMessage.Content = new StringContent(data, Encoding.UTF8, "application/json");
                 var response = await client.SendAsync(requestMessage);
