@@ -66,37 +66,33 @@ namespace SharedLib
         {
             try
             {
-                decimal Sum = 0;
                 var body = soapTo1C.GenBody("GetBonusSum", new Parameters[] { new Parameters("CodeOfCard", pClient.BarCode) });
                 var res = await soapTo1C.RequestAsync(Global.Server1C, body);
-                res = res.Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
-                if (!string.IsNullOrEmpty(res) && decimal.TryParse(res, out Sum))
-                    pClient.SumBonus = Sum; //!!!TMP
-                if (Sum > 0 && pCodeWarehouse > 0)
+                
+                if (!string.IsNullOrEmpty(res) )
+                    pClient.SumBonus = res.ToDecimal(); //!!!TMP
+                if (pClient.SumBonus > 0 && pCodeWarehouse > 0)
                 {
                     body = soapTo1C.GenBody("GetOtovProc", new Parameters[] {
                         new Parameters("CodeOfSklad",$"{pCodeWarehouse:D9}"),
                         new Parameters("CodeOfCard", pClient.BarCode),
-                        new Parameters("Summ", Sum.ToString().Replace(",","."))
+                        new Parameters("Summ", pClient.SumBonus.ToS())
                     });
-                    res = await soapTo1C.RequestAsync(Global.Server1C, body);
-                    res = res.Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
-                    if (!string.IsNullOrEmpty(res) && decimal.TryParse(res, out Sum))
+                    res = await soapTo1C.RequestAsync(Global.Server1C, body);                   
+                    if (!string.IsNullOrEmpty(res) )
                     {
-                        pClient.PercentBonus = Sum / 100m; //!!!TMP
+                        pClient.PercentBonus = res.ToDecimal() / 100m; //!!!TMP
                         pClient.SumMoneyBonus = Math.Round(pClient.SumBonus * pClient.PercentBonus, 2);
                     }
                 }
-
                 body = soapTo1C.GenBody("GetMoneySum", new Parameters[] { new Parameters("CodeOfCard", pClient.BarCode) });
-                res = await soapTo1C.RequestAsync(Global.Server1C, body);
-
-                res = res.Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
-                if (!string.IsNullOrEmpty(res) && decimal.TryParse(res, out Sum))
-                    pClient.Wallet = Sum;
+                res = await soapTo1C.RequestAsync(Global.Server1C, body);                
+                if (!string.IsNullOrEmpty(res) )
+                    pClient.Wallet = res.ToDecimal();
             }
             catch (Exception ex)
             {
+                FileLogger.WriteLogMessage(this, "GetBonusAsync", ex);
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = ex.Message });
             }
             Global.OnClientChanged?.Invoke(pClient);

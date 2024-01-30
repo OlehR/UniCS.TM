@@ -53,8 +53,8 @@ namespace SharedLib
             {  
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation {  Exception = null, Status = eSyncStatus.NoFatalError, StatusDescription = "RequestAsync=>" + response.RequestMessage });
             }
-            if(string.IsNullOrEmpty(res) || !res.Equals("0"))
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"{parUrl}{Environment.NewLine}{parBody}{Environment.NewLine} res=>{res}");
+            if(string.IsNullOrEmpty(res))   // || !res.Equals("0"))
+                FileLogger.WriteLogMessage(this, "SharedLib.SoapTo1C.RequestAsync", $"{parUrl}{Environment.NewLine}{parBody}{Environment.NewLine} res=>{res}");
 
             return res;
         }

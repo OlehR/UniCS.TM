@@ -131,7 +131,7 @@ namespace ModelMID
 
         public static string Server1C = "";
         public static string _Api = null;
-        public static string Api { get { return string.IsNullOrEmpty(_Api) ? Global.Api : _Api; } }
+        public static string Api { get { return string.IsNullOrEmpty(_Api) ? Global.Settings?.Api : _Api; } }
         public static double MaxWeightBag = 100;
 
         public static List<CustomerBarCode> CustomerBarCode { get; set; }
