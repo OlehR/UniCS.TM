@@ -371,15 +371,7 @@ namespace SharedLib
             if (r.Count() == 0 && pPhone != null)
             {
                 if (Global.Settings.IsUseCardSparUkraine)
-                    Task.Run( async () => { 
-                      Client cl = await  ds.GetDiscount(new FindClient() { Phone = pPhone });
-                        if (cl != null)
-                        {
-                            UpdateClientInReceipt(pIdReceipt, cl);                           
-                        }
-                    }
-                    );
-                  
+                    GetDiscount(new FindClient() { Phone = pPhone }, pIdReceipt);
                 else
                   OnCustomWindow?.Invoke(new CustomWindow(eWindows.Info, $"Клієнта з номером {pPhone} не знайдено в базі!"));
             }
@@ -398,7 +390,7 @@ namespace SharedLib
             return null;
         }
 
-        private void UpdateClientInReceipt(IdReceipt pIdReceipt, Client pClient)
+        private void UpdateClientInReceipt(IdReceipt pIdReceipt, Client pClient, bool pIsGetDiscount = true)
         {
             var State = GetStateReceipt(pIdReceipt);
             if (State != eStateReceipt.Prepare)
@@ -414,8 +406,8 @@ namespace SharedLib
             Global.OnClientChanged?.Invoke(pClient);
             if (Global.RecalcPriceOnLine)
                 db.RecalcPriceAsync(new IdReceiptWares(pIdReceipt));
-            _ = ds.GetDiscount(new FindClient() { Client = pClient, CodeWarehouse = Global.CodeWarehouse });
-            //_ = GetBonusAsync(parClient);
+            if (pIsGetDiscount)
+                GetDiscount(new FindClient() { Client = pClient, CodeWarehouse = Global.CodeWarehouse }, pIdReceipt);            
         }
 
         public IEnumerable<ReceiptWares> GetProductsByName(IdReceipt pReceipt, string pName, int pOffSet = -1, int pLimit = 10, int pCodeFastGroup = 0)
@@ -759,5 +751,21 @@ namespace SharedLib
         public IEnumerable<Payment> GetPayment(IdReceipt idReceipt)=> db.GetPayment(idReceipt);        
 
         public IEnumerable<LogRRO> GetLogRRO(IdReceipt pR) => db.GetLogRRO(pR);
+
+        public void GetDiscount(FindClient pFC, IdReceipt pIdReceipt)
+        {
+            Task.Run(async () =>
+            {
+                Client cl = await ds.GetDiscount(pFC);
+                if (cl != null)
+                {
+                    if(pFC.Client==null)
+                     UpdateClientInReceipt(pIdReceipt, cl,false);
+                    else
+                     Global.OnClientChanged?.Invoke(cl);
+                }
+            });
+        }
+
     }
 }

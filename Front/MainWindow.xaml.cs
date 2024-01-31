@@ -1403,7 +1403,7 @@ namespace Front
             if (pResult.Length==4)
             {
                 if(int.TryParse(pResult.Substring(0,4),out int res))
-                _ = Bl.ds.GetDiscount(new FindClient { PinCode = res });
+                 Bl.GetDiscount(new FindClient { PinCode = res },curReceipt);
                 return;
             }
 

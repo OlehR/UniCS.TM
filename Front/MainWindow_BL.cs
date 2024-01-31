@@ -364,7 +364,7 @@ namespace Front
                         string Time = QR[37.. 56];
                         DateTime dt= Time.ToDateTime("dd.MM.yyyy HH:mm:ss");
                         if ((DateTime.Now - dt).TotalSeconds < 120)
-                           _ =Bl.ds.GetDiscount(new FindClient { BarCode = BarCode });
+                           Bl.GetDiscount(new FindClient { BarCode = BarCode },curReceipt);
                     }
                 }
             }

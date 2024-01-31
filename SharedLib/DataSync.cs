@@ -791,8 +791,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     {
                         var Res = JsonConvert.DeserializeObject<Status<Client>>(res);
                         if (Res?.State == 0)
-                        {
-                            Global.OnClientChanged?.Invoke(Res.Data);
+                        {                           
                             Result= Res.Data;
                         }
                     }
