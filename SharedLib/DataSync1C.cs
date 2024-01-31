@@ -67,7 +67,7 @@ namespace SharedLib
             try
             {
                 var body = soapTo1C.GenBody("GetBonusSum", new Parameters[] { new Parameters("CodeOfCard", pClient.BarCode) });
-                var res = await soapTo1C.RequestAsync(Global.Server1C, body);
+                var res = await soapTo1C.RequestAsync(Global.Server1C, body,5000);
                 
                 if (!string.IsNullOrEmpty(res) )
                     pClient.SumBonus = res.ToDecimal(); //!!!TMP
@@ -78,7 +78,7 @@ namespace SharedLib
                         new Parameters("CodeOfCard", pClient.BarCode),
                         new Parameters("Summ", pClient.SumBonus.ToS())
                     });
-                    res = await soapTo1C.RequestAsync(Global.Server1C, body);                   
+                    res = await soapTo1C.RequestAsync(Global.Server1C, body,5000);                   
                     if (!string.IsNullOrEmpty(res) )
                     {
                         pClient.PercentBonus = res.ToDecimal() / 100m; //!!!TMP
@@ -86,7 +86,7 @@ namespace SharedLib
                     }
                 }
                 body = soapTo1C.GenBody("GetMoneySum", new Parameters[] { new Parameters("CodeOfCard", pClient.BarCode) });
-                res = await soapTo1C.RequestAsync(Global.Server1C, body);                
+                res = await soapTo1C.RequestAsync(Global.Server1C, body, 5000);                
                 if (!string.IsNullOrEmpty(res) )
                     pClient.Wallet = res.ToDecimal();
             }
