@@ -40,7 +40,7 @@ namespace SharedLib
                     pR.IdWorkplacePay = el;
                     var r = new Receipt1C(pR);
                     var body = soapTo1C.GenBody("JSONCheck", new Parameters[] { new Parameters("JSONSting", r.GetBase64()) });
-                    var res = Global.IsTest ? "0" : await soapTo1C.RequestAsync(pServer, body, 240000, "application/json");
+                    var res = Global.IsTest ? "0" : await soapTo1C.RequestAsync(pServer, body, 60000, "application/json");
                     if (string.IsNullOrEmpty(res) || !res.Equals("0"))
                         return false;
                 }
