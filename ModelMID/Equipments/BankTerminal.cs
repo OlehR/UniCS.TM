@@ -28,6 +28,7 @@ namespace Front.Equipments
         }
 
         public eBank CodeBank { get; set; } = eBank.NotDefine;
+        public string TranslateCodeBank { get => CodeBank.GetDescription(); }
 
         virtual public BatchTotals PrintZ(int IdWorkPlace = 0) { throw new NotImplementedException(); }
         virtual public BatchTotals PrintX(int IdWorkPlace = 0) { throw new NotImplementedException(); }

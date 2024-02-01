@@ -287,9 +287,12 @@ namespace ModelMID
 
     public enum eBank
     {
+        [Description("НеВизначено")]
         NotDefine = 0,
+        [Description("Приват")]
         PrivatBank = 3,
-        Oschadbank = 11
+        [Description("Ощад")]
+        OschadBank = 11
     }
    
     /// <summary>

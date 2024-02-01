@@ -136,8 +136,8 @@ namespace Front
         public double ControlScaleCurrentWeight { get; set; } = 0d;
          
         public int QuantityCigarettes { get; set; } = 1;
-        public string NameFirstTerminal { get { return IsPresentFirstTerminal ? EF?.BankTerminal1.Name : null; } }
-        public string NameSecondTerminal { get { return IsPresentSecondTerminal ? EF?.BankTerminal2.Name : null; } }
+        public string NameFirstTerminal { get { return IsPresentFirstTerminal ? EF?.BankTerminal1.TranslateCodeBank : null; } }
+        public string NameSecondTerminal { get { return IsPresentSecondTerminal ? EF?.BankTerminal2.TranslateCodeBank : null; } }
 
         public string GetBackgroundColor { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? "#ff9999" : "#FFFFFF"; } }
         public double GiveRest { get; set; } = 0;

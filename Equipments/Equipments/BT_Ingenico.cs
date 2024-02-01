@@ -186,7 +186,7 @@ namespace Front.Equipments
                 if (a.Length > 3)
                     return eBank.PrivatBank;
                 else
-                    return eBank.Oschadbank; //OSCHADBANK
+                    return eBank.OschadBank; //OSCHADBANK
                
             }
             return eBank.NotDefine;
