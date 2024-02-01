@@ -124,7 +124,7 @@ namespace Front.Control
             }
             if (string.IsNullOrEmpty(TypeReturn))
                 TypeReturn = "AllPayments";
-            
+
 
 
         }
@@ -230,11 +230,8 @@ namespace Front.Control
         {
             Rounding();
             var btn = sender as Button;
-            var str = btn.Content as TextBlock;
-            var r = MW?.EF.GetBankTerminal.Where(el => str.Text.Equals(el.Name));
-            if (r.Count() == 1)
-                MW?.EF.SetBankTerminal(r.First() as BankTerminal);
-
+            var bank = btn.CommandParameter as BankTerminal;
+            MW?.EF.SetBankTerminal(bank);
             var task = Task.Run(() => MW.PrintAndCloseReceipt(null, eTypePay.Card, 0, SumCashDisbursement));
             MW.GiveRest = 0;
         }
@@ -274,7 +271,7 @@ namespace Front.Control
                             SumCashDisbursement = res;
                         else
                             MW.CustomMessage.Show($"Недостатня кількість готівки в касі! Максимальна сума видачі {SumCash}₴", "Помилка!", eTypeMessage.Error);
-                            //MW.ShowErrorMessage($"Недостатня кількість готівки в касі! Максимальна сума видачі {SumCash}₴");
+                    //MW.ShowErrorMessage($"Недостатня кількість готівки в касі! Максимальна сума видачі {SumCash}₴");
 
                     else
                         MW.CustomMessage.Show($"Сума видачі готівки повинна бути більша за {Global.Settings.SumDisbursementMin}₴ і меньше за {Global.Settings.SumDisbursementMax}₴", "Помилка!", eTypeMessage.Error);

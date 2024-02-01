@@ -113,10 +113,11 @@
                 </StackPanel>
             </Button>
 
-            <Button  Grid.Column="1"  Grid.Row="2"  FontSize="22"
+            <Button  Grid.Column="1"  Grid.Row="2"  FontSize="22" CommandParameter="{Binding FirstTerminal, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}"
                             Margin="10" Click="_ButtonPaymentBank">
                 <Button.Content>
-                    <TextBlock FontSize="24" Foreground="white" Text="{Binding NameFirstTerminal, RelativeSource={RelativeSource 
+                    <TextBlock FontSize="24" Foreground="white" Text="{Binding FirstTerminal.TranslateCodeBank, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}"/>
                 </Button.Content>
                 <Button.Style>
@@ -150,10 +151,11 @@
 
 
 
-            <Button Grid.Column="2"  Grid.Row="2"  FontSize="22"
+            <Button Grid.Column="2"  Grid.Row="2"  FontSize="22" CommandParameter="{Binding SecondTerminal, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}"
                             Margin="10" Click="_ButtonPaymentBank">
                 <Button.Content>
-                    <TextBlock FontSize="20" Foreground="white" Text="{Binding NameSecondTerminal, RelativeSource={RelativeSource 
+                    <TextBlock FontSize="20" Foreground="white" Text="{Binding SecondTerminal.TranslateCodeBank, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}"/>
                 </Button.Content>
                 <Button.Style>

@@ -136,8 +136,8 @@ namespace Front
         public double ControlScaleCurrentWeight { get; set; } = 0d;
          
         public int QuantityCigarettes { get; set; } = 1;
-        public string NameFirstTerminal { get { return IsPresentFirstTerminal ? EF?.BankTerminal1.TranslateCodeBank : null; } }
-        public string NameSecondTerminal { get { return IsPresentSecondTerminal ? EF?.BankTerminal2.TranslateCodeBank : null; } }
+        public BankTerminal FirstTerminal { get { return IsPresentFirstTerminal ? EF?.BankTerminal1 : null; } }
+        public BankTerminal SecondTerminal { get { return IsPresentSecondTerminal ? EF?.BankTerminal2 : null; } }
 
         public string GetBackgroundColor { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? "#ff9999" : "#FFFFFF"; } }
         public double GiveRest { get; set; } = 0;
@@ -903,8 +903,8 @@ namespace Front
                         case eStateMainWindows.ChoicePaymentMethod:
                             OnPropertyChanged(nameof(IsPresentSecondTerminal));
                             OnPropertyChanged(nameof(IsPresentFirstTerminal));
-                            OnPropertyChanged(nameof(NameSecondTerminal));
-                            OnPropertyChanged(nameof(NameFirstTerminal));
+                            OnPropertyChanged(nameof(SecondTerminal));
+                            OnPropertyChanged(nameof(FirstTerminal));
 
                             PaymentWindow.TransferAmounts(MoneySum);
                             Background.Visibility = Visibility.Visible;
