@@ -70,7 +70,7 @@ namespace Front
                             EquipmentInfo = rroStatus.Status.GetDescription();
                     }
                     if (EquipmentInfo != null)
-                        EquipmentStatusInPayment.Text = EquipmentInfo; //TMP - не працює через гетер
+                        PaymentWindowKSO_UC.EquipmentStatusInPayment.Text = EquipmentInfo; //TMP - не працює через гетер
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EquipmentInfo)));
                 }));
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"SetStatus ({info.ToJSON()})", eTypeLog.Expanded);
@@ -486,7 +486,7 @@ namespace Front
             }
 
             Dispatcher.BeginInvoke(new ThreadStart(() =>
-            { EquipmentStatusInPayment.Text = ""; }));
+            { PaymentWindowKSO_UC.EquipmentStatusInPayment.Text = ""; }));
             if (Global.TypeWorkplaceCurrent == eTypeWorkplace.CashRegister && (curReceipt.StateReceipt == eStateReceipt.Prepare || curReceipt.StateReceipt == eStateReceipt.StartPay))
             {
                 PaymentWindow.UpdatePaymentWindow();
@@ -521,7 +521,9 @@ namespace Front
             foreach (var item in R.WorkplacePays)
                 AmountManyPayments += $"{item.Sum} | ";
             AmountManyPayments = AmountManyPayments.Substring(0, AmountManyPayments.Length - 2);
+            OnPropertyChanged(nameof(AmountManyPayments));
             SumTotalManyPayments = $"Загальна сума: {R.SumTotal}₴";
+            OnPropertyChanged(nameof(SumTotalManyPayments));
             lock (LockPayPrint)
             {
                 R.StateReceipt = Bl.GetStateReceipt(R);

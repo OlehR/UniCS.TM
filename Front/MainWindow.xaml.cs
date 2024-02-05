@@ -388,6 +388,7 @@ namespace Front
             IssueCardUC.Init(this);
             ClientDetailsUC.Init(this);
             WeightWaresUC.Init(this);
+            PaymentWindowKSO_UC.Init(this);
 
             //Провіряємо чи зміна відкрита.
             string BarCodeAdminSSC = Bl.db.GetConfig<string>("CodeAdminSSC");
@@ -758,7 +759,7 @@ namespace Front
                     WaitAdmin.Visibility = Visibility.Collapsed;
                     WaitAdminLogin.Visibility = Visibility.Collapsed;
                     WeightWaresUC.Visibility = Visibility.Collapsed;
-                    WaitPayment.Visibility = Visibility.Collapsed;
+                    PaymentWindowKSO_UC.Visibility = Visibility.Collapsed;
                     StartShopping.Visibility = Visibility.Collapsed;
                     StartShoppingLogo.Visibility = Visibility.Collapsed;
                     ConfirmAge.Visibility = Visibility.Collapsed;
@@ -888,14 +889,14 @@ namespace Front
                             FWW.Show();
                             break;
                         case eStateMainWindows.ProcessPay:
-                            PaymentImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/newPaymentTerminal.png"));
-                            WaitPayment.Visibility = Visibility.Visible;
+                            PaymentWindowKSO_UC.PaymentImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/newPaymentTerminal.png"));
+                            PaymentWindowKSO_UC.Visibility = Visibility.Visible;
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;                           
                             break;
                         case eStateMainWindows.ProcessPrintReceipt:
-                            PaymentImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/newReceipt.png"));
-                            WaitPayment.Visibility = Visibility.Visible;
+                            PaymentWindowKSO_UC.PaymentImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/newReceipt.png"));
+                            PaymentWindowKSO_UC.Visibility = Visibility.Visible;
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;                            
                             break;
@@ -1449,10 +1450,6 @@ namespace Front
             SetStateView(eStateMainWindows.WaitOwnBag);
         }
 
-        private void CancelPayment(object sender, RoutedEventArgs e)
-        {
-            EF.PosCancel();
-        }
 
         private void TextPasswordChanged(object sender, RoutedEventArgs e)
         {

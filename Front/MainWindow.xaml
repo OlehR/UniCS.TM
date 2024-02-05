@@ -1834,148 +1834,6 @@
                 </Grid>
             </Border>
 
- 
-
-            <!-- ОПЛАТА  САМООБСЛУГОВУВАННЯ  -->
-            <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
-                 Grid.Row="0" Grid.RowSpan="6"
-                 Grid.Column="0" Grid.ColumnSpan="6"
-                 Name="WaitPayment" Visibility="Collapsed" Grid.ZIndex="2" 
-                CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Border.Effect>
-                    <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
-                </Border.Effect>
-
-                <Grid  Width="1000" Height="550">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="1*"></RowDefinition>
-                        <RowDefinition Height="3*"></RowDefinition>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" VerticalAlignment="Center">
-                        <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28" 
-                                Text="{DynamicResource WaitPayment }"/>
-                        <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Center" 
-                                    FontSize="28" Foreground="Red" FontWeight="DemiBold"
-                                    Text="{DynamicResource ManyPayments }">
-                            <TextBlock.Style>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsManyPayments, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
-                                            <Setter Property="Visibility" Value="Collapsed" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding IsManyPayments, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                            <Setter Property="Visibility" Value="Visible" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                    </StackPanel>
-
-                    <Image  Grid.Column="1" Grid.Row="1" x:Name="PaymentImage"
-                        Source="/icons/paymentTerminal.png"
-                     Width="250" Margin="15"/>
-
-                    <Grid Grid.Column="0" Grid.Row="1" x:Name="OnePayment">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*"></RowDefinition>
-                            <RowDefinition Height="0.5*"></RowDefinition>
-                            <RowDefinition Height="*"></RowDefinition>
-                        </Grid.RowDefinitions>
-                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <StackPanel>
-
-                                <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Center"
-                                            FontSize="28" 
-                                            Text="{DynamicResource AmountsOfPayments}">
-                                    <TextBlock.Style>
-                                        <Style TargetType="{x:Type TextBlock}">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsManyPayments, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
-                                                    <Setter Property="Visibility" Value="Collapsed" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding IsManyPayments, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                                    <Setter Property="Visibility" Value="Visible" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBlock.Style>
-                                </TextBlock>
-                                <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Center"
-                                            FontSize="28" Foreground="Red" FontWeight="Bold"
-                                            Margin="5" 
-                                            Text="{Binding AmountManyPayments, RelativeSource={RelativeSource 
-                                            Mode=FindAncestor, AncestorType=Window}}" TextWrapping="Wrap">
-                                    <TextBlock.Style>
-                                        <Style TargetType="{x:Type TextBlock}">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsManyPayments, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
-                                                    <Setter Property="Visibility" Value="Collapsed" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding IsManyPayments, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                                    <Setter Property="Visibility" Value="Visible" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBlock.Style>
-                                </TextBlock>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28" 
-                                            Margin="5"
-                                            Text="{DynamicResource AmountPayment}"/>
-                                <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Center"
-                                            FontSize="28" FontWeight="Bold" Foreground="Green"
-                                            Margin="5"
-                                            Text="{Binding MoneySum, StringFormat=0.00₴, RelativeSource={RelativeSource 
-                                            Mode=FindAncestor, AncestorType=Window}}"/>
-                            </StackPanel>
-                            <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="32" 
-                                        FontWeight="Bold"
-                                        Margin="5"
-                                        Text="{Binding SumTotalManyPayments, RelativeSource={RelativeSource 
-                                        Mode=FindAncestor, AncestorType=Window}}" TextWrapping="Wrap" >
-                                <TextBlock.Style>
-                                    <Style TargetType="{x:Type TextBlock}">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsManyPayments, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
-                                                <Setter Property="Visibility" Value="Collapsed" />
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding IsManyPayments, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                                <Setter Property="Visibility" Value="Visible" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
-                        </StackPanel>
-                        <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28" 
-                                Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="1"
-                                Text="{DynamicResource PaymentStatus}"/>
-                        <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="28" x:Name="EquipmentStatusInPayment" 
-                                Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="3" TextWrapping="Wrap"
-                                />
-                    </Grid>
-
-                    <Button Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" 
-                            BorderBrush="Transparent" Background="Transparent" HorizontalAlignment="Right" FontSize="22" Click="CancelPayment" 
-                        Height="50" Width="50" VerticalAlignment="Top">
-                    </Button>
-                </Grid>
-            </Border>
 
             <!-- Підтвердити вік ТАК/НІ   -->
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
@@ -2345,6 +2203,11 @@
         <uc:WeightWares Grid.Row="0" Grid.RowSpan="5" Visibility="Collapsed"
               Grid.Column="0" Grid.ColumnSpan="4" 
               x:Name="WeightWaresUC" VerticalAlignment="Stretch" 
+              Grid.ZIndex="4" />
+        <!-- Інформація про клієнта -->
+        <uc:PaymentWindowKSO Grid.Row="0" Grid.RowSpan="5" Visibility="Collapsed"
+              Grid.Column="0" Grid.ColumnSpan="4" 
+              x:Name="PaymentWindowKSO_UC" VerticalAlignment="Stretch" 
               Grid.ZIndex="4" />
         <!--Додати пакети-->
         <uc:AddPackagesBag Grid.Row="0" Grid.RowSpan="5" Visibility="Collapsed"
