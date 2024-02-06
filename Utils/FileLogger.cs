@@ -13,7 +13,15 @@ namespace Utils
     }
     public static class FileLogger
     {
-        private static string PathLog = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
+
+        private static string _PathLog = null;
+        public static string PathLog
+        {
+            set { _PathLog = value; FileLogger.CreateDir(); }
+            get { return _PathLog ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Log"); } //AppDomain.CurrentDomain.BaseDirectory
+        }
+
+
         private static int IdWorkplace;
         public static eTypeLog TypeLog = eTypeLog.Full;
 
@@ -121,6 +129,12 @@ namespace Utils
         {
             Console.WriteLine($@"[{DateTime.Now:dd-MM-yyyy HH:mm:ss}] {message}");
             // Console.ReadKey();
+        }
+
+        public static void CreateDir()
+        {
+            if (!Directory.Exists(PathLog))
+                Directory.CreateDirectory(PathLog);
         }
     }
 }
