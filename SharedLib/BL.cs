@@ -756,13 +756,12 @@ namespace SharedLib
         {
             Task.Run(async () =>
             {
-                //!!!TMP Поки не розберусь з сервером чеків.
                 if (pFC.Client != null)
                 {
                     var Client = await ds.Ds1C.GetBonusAsync(pFC.Client, pFC.CodeWarehouse);
                     Global.OnClientChanged?.Invoke(Client);
                 }
-                /*else
+                else
                 {
                     Client cl = await ds.GetDiscount(pFC);
                     if (cl != null)
@@ -772,7 +771,7 @@ namespace SharedLib
                         else
                             Global.OnClientChanged?.Invoke(cl);
                     }
-                }*/
+                }
             });
         }
 
