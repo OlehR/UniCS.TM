@@ -1,0 +1,78 @@
+<UserControl
+	         xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:AvaloniaMain.ViewModels"
+             xmlns:views="using:AvaloniaMain.Views"
+             mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080"
+             x:Class="AvaloniaMain.Views.IssueCardView"
+             x:DataType="vm:IssueCardViewModel">
+
+	<Design.DataContext>
+		<vm:IssueCardViewModel />
+	</Design.DataContext>
+
+	<!-- Define DataTemplates directly in Resources -->
+	<UserControl.DataTemplates>
+		<DataTemplate  DataType="{x:Type vm:ParentViewModel}">
+			<views:ParentView />
+		</DataTemplate>
+	</UserControl.DataTemplates>
+	<!--  -->
+	<Border CornerRadius="15" Background="White" BorderBrush="Black" BorderThickness="3" Height="650" Width="1050">
+		<Grid RowDefinitions="Auto,*,Auto">
+			<TextBlock Grid.Row="0" HorizontalAlignment="Center" FontWeight="Bold" FontSize="24" Margin="0,10,0,0">Видача картки покупцю</TextBlock>
+
+			<Grid  Grid.Row="1" ColumnDefinitions="650,350">
+				<Grid Margin="0,80,0,0" VerticalAlignment="Center" Grid.Column="0" Height=""  RowDefinitions="*,*,*,*" ColumnDefinitions="*,*">
+					<TextBlock   Margin="10,0,0,0" Height="60" Grid.Column="0" Grid.Row="0" FontWeight="Bold" FontSize="24" >Штрихкод:</TextBlock>
+					<TextBlock Margin="10,0,0,0" Height="60"  Grid.Column="0" Grid.Row="1" FontWeight="Bold" FontSize="24" >Карта КНС:</TextBlock>
+					<TextBlock Margin="10,0,0,0" Height="60"  Grid.Column="0" Grid.Row="2" FontWeight="Bold" FontSize="24" >Номер телефону</TextBlock>
+					<TextBlock Margin="10,0,0,0" Height="60"  Grid.Column="0" Grid.Row="3" FontWeight="Bold" FontSize="24" >Код підтвердження</TextBlock>
+					<Button  HorizontalAlignment="Left"  Command="{Binding ShowBarCode}" VerticalAlignment="Center"   Width="250" Height="60"  Background="White" BorderBrush="Black" BorderThickness="2" CornerRadius="10" Grid.Column="1" Grid.Row="0">
+						<TextBlock   VerticalAlignment="Center" FontSize="22" FontWeight="Bold" Text="{Binding BarCode}"></TextBlock>
+					</Button>
+
+					<TextBlock HorizontalAlignment="Left"   VerticalAlignment="Center"  FontSize="28" FontWeight="DemiBold" Grid.Column="1" Grid.Row="1" Width="200" Height="60"  >назва картки</TextBlock>
+
+					<Button  Command="{Binding ShowTelNumber}"  VerticalAlignment="Center" HorizontalAlignment="Left" Width="250" Height="60"  Background="White" BorderBrush="Black" BorderThickness="2" CornerRadius="10" Grid.Column="1" Grid.Row="2">
+						<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="22" FontWeight="Bold" Text="{Binding TelephoneNum}"></TextBlock>
+					</Button>
+					<Button Margin="0,10,0,0"  Command="{Binding ShowVerificationCode}" VerticalAlignment="Center" HorizontalAlignment="Left"   Width="250" Height="60"  Background="White" BorderBrush="Black" BorderThickness="2" CornerRadius="10" Grid.Column="1" Grid.Row="3">
+						<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="22" FontWeight="Bold" Text="{Binding VerificationCode}"></TextBlock>
+					</Button>
+				</Grid>
+				<Border  Grid.Column="1"   Grid.Row="1" >
+					<ContentControl VerticalAlignment="Center"   Height="700" Width="600" Grid.Column="1"   Content="{Binding CurrentPage}" >
+
+					</ContentControl>
+					<Border.RenderTransform>
+						<ScaleTransform ScaleX="0.75" ScaleY="0.68"></ScaleTransform>
+					</Border.RenderTransform>
+				</Border>
+
+			</Grid>
+
+
+			<Grid ColumnDefinitions="*,*" Grid.Row="2" Height="100">
+				<Button Command="{Binding CloseCommand}" CornerRadius="10" Grid.Column="0"   Height="65" Background="LightGray" VerticalAlignment="Center" HorizontalAlignment="Center">
+					<TextBlock FontSize="24" Margin="10,0,10,0" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold">Відмінити</TextBlock>
+				</Button>
+				<Button  CornerRadius="10" Grid.Column="1" Background="#464747" Height="65" VerticalAlignment="Center" HorizontalAlignment="Center">
+					<TextBlock  Margin="10,0,10,0"  FontSize="24"  HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold">
+						Видати картку
+						<TextBlock.Styles>
+							<Style Selector="TextBlock">
+								<Setter Property="Foreground" Value="White" />
+							</Style>
+						</TextBlock.Styles>
+					</TextBlock>
+				</Button>
+
+			</Grid>
+
+		</Grid>
+	</Border>
+
+</UserControl>

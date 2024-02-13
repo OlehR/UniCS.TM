@@ -1,0 +1,208 @@
+<UserControl
+	         xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:AvaloniaMain.ViewModels"
+             xmlns:views="using:AvaloniaMain.Views"
+             mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080"
+             x:Class="AvaloniaMain.Views.KeyBoardView"
+             x:DataType="vm:KeyBoardViewModel">
+	
+	<Grid Height="510" Width="1920" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,10" RowDefinitions="100,100,100,100,100" >
+		
+		<StackPanel Margin="4" Grid.Row="0" Orientation="Horizontal">
+			<Button Command="{Binding AddValue}" CommandParameter="0" Height="94" Background="White"  Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton1.CurrentValue}"></TextBlock>
+			</Button>
+			<Button  Command="{Binding AddValue}" CommandParameter="1" Height="94" Background="White" Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125">
+				<TextBlock Margin="10" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding  KeyBoardButton2.CurrentValue}"></TextBlock>
+			</Button>
+			<Button  Command="{Binding AddValue}" CommandParameter="2" Height="94" Background="White" Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125">
+				<TextBlock ZIndex="2" Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton3.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125"  Command="{Binding AddValue}" CommandParameter="3" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton4.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="4" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton5.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="5" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton6.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="6" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton7.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="7" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton8.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="8" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton9.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="9" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton10.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="10" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton11.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="11" Height="94" Background="White">
+				<TextBlock Margin="10" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton12.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="12" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton13.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="220" Command="{Binding Bksp}"   Height="94" Background="White">
+				<TextBlock Margin="10" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="Bksp"></TextBlock>
+			</Button>
+		</StackPanel>
+		
+		<StackPanel Margin="4" Grid.Row="1" Orientation="Horizontal">
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="190"   Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="Tab"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="13" Height="94" Background="White">
+				<TextBlock Margin="10" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton14.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="14" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton15.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="15" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton16.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="16" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton17.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="17" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton18.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="18" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton19.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="19" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton20.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="20" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton21.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="21" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton22.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="22" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton23.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="23" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton24.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="24" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton25.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="155" Command="{Binding AddValue}" CommandParameter="25" Height="94" Background="White">
+				<TextBlock Margin="10" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton26.CurrentValue}"></TextBlock>
+			</Button>
+		</StackPanel>
+		<StackPanel Grid.Row="2" Orientation="Horizontal">
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="260"  Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="Caps"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="26" Height="94" Background="White">
+				<TextBlock Margin="10" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton27.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="27" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton28.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="28" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton29.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="29" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton30.CurrentValue}"></TextBlock>
+			</Button>
+
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125"  Command="{Binding AddValue}" CommandParameter="30" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton31.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="31" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton32.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="32" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton33.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="33" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton34.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="34" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton35.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="35" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton36.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="36" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton37.CurrentValue}"></TextBlock>
+			</Button>
+			<Button  Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="220"   Height="94" Background="White">
+				<TextBlock Margin="10" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="Enter"></TextBlock>
+			</Button>
+		</StackPanel>
+		<StackPanel Grid.Row="3" Orientation="Horizontal">
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="340" Command="{Binding LayoutChange}" CommandParameter="shift"  Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="Shift"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="37" Height="94" Background="White">
+				<TextBlock Margin="10" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton38.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="38" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton39.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="39" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton40.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="40" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton41.CurrentValue}"></TextBlock>
+			</Button>
+
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="41" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton42.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="42" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton43.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="43" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton44.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="44" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton45.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="45" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton46.CurrentValue}"></TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="125" Command="{Binding AddValue}" CommandParameter="46" Height="94" Background="White">
+				<TextBlock  Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding KeyBoardButton47.CurrentValue}"></TextBlock>
+			</Button>
+
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="270" Command="{Binding LayoutChange}" CommandParameter="shift"  Height="94" Background="White">
+				<TextBlock Margin="10" FontSize="34" FontWeight="Bold" VerticalAlignment="Center"  Text="Shift"></TextBlock>
+			</Button>		</StackPanel>
+		<StackPanel Grid.Row="4" Orientation="Horizontal">
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="220"   Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="Clear"></TextBlock>
+			</Button>
+			<Button  Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Command="{Binding LayoutChange}" CommandParameter="en" Width="220"  Height="94" Background="White">
+				<TextBlock Margin="10" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" >En</TextBlock>
+			</Button>
+			<Button Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="1020"  Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" ></TextBlock>
+			</Button>
+			<Button  Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="220" Height="94" Background="White">
+				<TextBlock Margin="2" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="Save"></TextBlock>
+			</Button>
+
+
+			<Button  Margin="2" BorderBrush="Black" CornerRadius="10" BorderThickness="2" Width="218"   Height="94" Background="White">
+				<TextBlock Margin="10" FontSize="34" FontWeight="Bold" VerticalAlignment="Center" Text="Cancel"></TextBlock>
+			</Button>
+		</StackPanel>
+		
+	</Grid>
+	<Design.DataContext>
+		<vm:KeyBoardViewModel />
+	</Design.DataContext>	
+</UserControl>

@@ -1,0 +1,77 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:AvaloniaMain.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1000"
+             x:Class="AvaloniaMain.Views.TestView"
+             x:DataType="vm:TestViewModel">
+	
+	<!--Grid.ZIndex="2"-->
+	<Border BorderBrush="Black" BorderThickness="1" Height="1000" Width="1920" Opacity="0.9" Background="White">
+	<Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
+        Grid.Row="0" Grid.RowSpan="6"
+        Grid.Column="0" Grid.ColumnSpan="10"
+        Name="ClientDetails"
+        CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center"
+        MinHeight="600" MinWidth="700">
+		<Border.Effect>
+			<!--<DropShadowEffect ShadowDepth="2" BlurRadius="15"/>-->
+		</Border.Effect>
+
+		<Grid>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*"></RowDefinition>
+				<RowDefinition Height="4*"></RowDefinition>
+				<RowDefinition Height="*"></RowDefinition>
+			</Grid.RowDefinitions>
+
+			<TextBlock Text="Інформація по картці" FontSize="34"  HorizontalAlignment="Center" Foreground="Green"/>
+
+			<Grid Grid.Row="1">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+				</Grid.ColumnDefinitions>
+
+				<StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="30,0,0,0">
+					<TextBlock Text="Ім'я:" FontSize="24" FontWeight="Bold" Margin="2"/>
+					<TextBlock Text="Сума на скарбничці:" FontSize="24" FontWeight="Bold" Margin="2"/>
+					<TextBlock Text="Сума бонусів:" FontSize="24" FontWeight="Bold" Margin="2"/>
+					<TextBlock Text="Сума бонусів в гривнях:" FontSize="24" FontWeight="Bold" Margin="2"/>
+					<TextBlock Text="Номер телефону:" FontSize="24" FontWeight="Bold" Margin="2"/>
+					<TextBlock Text="Другий номер телефону:" FontSize="24" FontWeight="Bold" Margin="2"/>
+					<TextBlock Text="Відсоток знижки:" FontSize="24" FontWeight="Bold" Margin="2"/>
+					<TextBlock Text="Відсоток перерахування:" FontSize="24" FontWeight="Bold" Margin="2"/>
+					<TextBlock Text="Штрих-код картки:" FontSize="24" FontWeight="Bold" Margin="2"/>
+					<TextBlock Text="Статус картки:" FontSize="24" FontWeight="Bold" Margin="2"/>
+					<TextBlock Text="Дата народження:" FontSize="24" FontWeight="Bold" Margin="2"/>
+				</StackPanel>
+
+				<StackPanel Grid.Column="1" VerticalAlignment="Center">
+					<TextBlock Text="{Binding ClientName}" FontSize="24" FontWeight="Bold" Margin="2"/>
+					<TextBlock Text="WalletAmount" FontSize="24" FontWeight="Bold" Margin="2"/>
+					<TextBlock Text="BonusAmount" FontSize="24" FontWeight="Bold" Margin="2"/>
+					<TextBlock Text="MoneyBonusAmount" FontSize="24" FontWeight="Bold" Margin="2"/>
+					<TextBlock Text="MainPhone" FontSize="24" FontWeight="Bold" Margin="2"/>
+					<TextBlock Text="AdditionalPhone" FontSize="24" FontWeight="Bold" Margin="2"/>
+					<TextBlock Text="DiscountPercentage" FontSize="24" FontWeight="Bold" Margin="2"/>
+					<TextBlock Text="BonusPercentage" FontSize="24" FontWeight="Bold" Margin="2"/>
+					<TextBlock Text="BarCode" FontSize="24" FontWeight="Bold" Margin="2"/>
+					<TextBlock Text="CardStatus" FontSize="24" FontWeight="Bold" Margin="2"/>
+					<TextBlock Text="BirthDate" FontSize="24" FontWeight="Bold" Margin="2"/>
+				</StackPanel>
+			</Grid>
+
+			<Button  Command="{Binding CloseCommand}"  HorizontalAlignment="Center"  Grid.Row="2"
+					FontSize="22" Height="80" Width="300" VerticalAlignment="Center" >
+				<StackPanel HorizontalAlignment="Center"  Orientation="Horizontal">
+					<Image HorizontalAlignment="Center" Height="25" Width="25" Source="avares://AvaloniaMain/Assets/X.ico"/>
+					<TextBlock Foreground="Black" HorizontalAlignment="Center" FontSize="30" FontWeight="Bold" VerticalAlignment="Center" Text="Відмінити" Margin="5,0,5,0"/>
+				</StackPanel>
+			</Button>
+		</Grid>
+	</Border>
+	</Border>
+
+</UserControl>

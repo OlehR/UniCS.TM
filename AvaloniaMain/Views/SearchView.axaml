@@ -1,0 +1,124 @@
+<UserControl
+	         xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:AvaloniaMain.ViewModels"
+             xmlns:views="using:AvaloniaMain.Views"
+             mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080"
+             x:Class="AvaloniaMain.Views.SearchView"
+             x:DataType="vm:SearchViewModel">
+
+	<Design.DataContext>
+		<vm:SearchViewModel />
+	</Design.DataContext>
+
+	<!-- Define DataTemplates directly in Resources -->
+	<UserControl.DataTemplates>
+		<DataTemplate  DataType="{x:Type vm:KeyBoardViewModel}">
+			<views:KeyBoardView />
+		</DataTemplate>
+		
+	</UserControl.DataTemplates>
+	<Grid Background="White" RowDefinitions="Auto,550,60,400">
+		<Grid Grid.Row="0" ColumnDefinitions="2*,*,*">
+			<Button Command="{Binding CloseCommand}" Grid.Column="0" VerticalAlignment="Top" Height="65" Width="550" CornerRadius="15	" Margin="4">
+				<TextBlock Text="Повернутись до чеку" FontSize="32" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
+			</Button>
+			<Button Background="DarkGray" Grid.Column="1" VerticalAlignment="Top" Height="65" Width="450" CornerRadius="15" Margin="4">
+				<StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+					<Image Source="avares://AvaloniaMain/Assets/backArrow.ico" Margin="2" Height="50" Width="56"></Image>
+					<TextBlock Text="Назад" FontSize="32" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
+				</StackPanel>
+			</Button>
+			<Button Grid.Column="2" VerticalAlignment="Top" Height="65" Width="450" CornerRadius="15" Margin="4">
+				
+				<TextBlock Text="Виклик адміністратора" FontSize="32" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
+			</Button>
+		</Grid>
+		<Grid   VerticalAlignment="Bottom" Grid.Row="1" ColumnDefinitions="115,*,115" Height="550">
+			<Button Grid.Column="0" BorderBrush="Black" CornerRadius="20" BorderThickness="2" Background="DarkGray" HorizontalAlignment="Left"  Margin="5,0,0,0" Height="540" Width="100">
+				<Image Source="avares://AvaloniaMain/Assets/back.ico"></Image>
+			</Button>
+			<Grid Grid.Column="1" ColumnDefinitions="*,*,*,*,*" RowDefinitions="*,*">
+				<Button Background="Transparent" Grid.Column="0"  Height="260" Width="330" Grid.Row="0">
+				<Border  BorderBrush="Black" BorderThickness="2" CornerRadius="15" Height="260" Width="330">
+					<TextBox  BorderBrush="Transparent" Height="80" FontWeight="Black" FontSize="22" VerticalAlignment="Center"    TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Text="Конс Фрікіс юніор курка/морква 100г"></TextBox>
+				</Border>
+				</Button>
+				<Button Background="Transparent" Grid.Column="1"  Height="260" Width="330" Grid.Row="0">
+					<Border  BorderBrush="Black" BorderThickness="2" CornerRadius="15" Height="260" Width="330">
+						<TextBlock  Height="80"  FontWeight="Black" FontSize="22" VerticalAlignment="Center"    TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Text="Конс Фрікіс юніор курка/морква 100г"></TextBlock>
+					</Border>
+				</Button>
+				<Button Background="Transparent" Grid.Column="2"  Height="260" Width="330" Grid.Row="0">
+					<Border  BorderBrush="Black" BorderThickness="2" CornerRadius="15" Height="260" Width="330">
+						<TextBlock Height="80" FontWeight="Black"  FontSize="22" VerticalAlignment="Center"    TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Text="Конс Фрікіс юніор курка/морква 100г"></TextBlock>
+
+					</Border>
+				</Button>
+				<Button Background="Transparent" Grid.Column="3"  Height="260" Width="330" Grid.Row="0">
+					<Border  BorderBrush="Black" BorderThickness="2" CornerRadius="15" Height="260" Width="330">
+						<TextBlock   Height="80" FontWeight="Black" FontSize="22" VerticalAlignment="Center"    TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Text="Конс Фрікіс юніор курка/морква 100г"></TextBlock>
+
+					</Border>
+				</Button>
+				<Button  Background="Transparent" Grid.Column="4"  Height="260" Width="330" Grid.Row="0">
+					<Border  BorderBrush="Black" BorderThickness="2" CornerRadius="15" Height="260" Width="330">
+						<TextBlock Height="80" FontWeight="Black" FontSize="22" VerticalAlignment="Center"    TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Text="Конс Фрікіс юніор курка/морква 100г"></TextBlock>
+
+					</Border>
+				</Button>
+				<Button Background="Transparent" Grid.Column="0"  Height="260" Width="330" Grid.Row="1">
+					<Border  BorderBrush="Black" BorderThickness="2" CornerRadius="15" Height="260" Width="330">
+						<TextBlock Height="80" FontWeight="Black" FontSize="22" VerticalAlignment="Center"    TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Text="Конс Фрікіс юніор курка/морква 100г"></TextBlock>
+
+					</Border>
+				</Button>
+				<Button Background="Transparent" Grid.Column="1"  Height="260" Width="330" Grid.Row="1">
+					<Border  BorderBrush="Black" BorderThickness="2" CornerRadius="15" Height="260" Width="330">
+						<TextBlock Height="80" FontWeight="Black" FontSize="22" VerticalAlignment="Center"    TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Text="Конс Фрікіс юніор курка/морква 100г"></TextBlock>
+
+					</Border>
+				</Button>
+				<Button Background="Transparent" Grid.Column="2"  Height="260" Width="330" Grid.Row="1">
+					<Border  BorderBrush="Black" BorderThickness="2" CornerRadius="15" Height="260" Width="330">
+						<TextBlock Height="80" FontWeight="Black" FontSize="22" VerticalAlignment="Center"    TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Text="Конс Фрікіс юніор курка/морква 100г"></TextBlock>
+
+					</Border>
+				</Button>
+				<Button Background="Transparent" Grid.Column="3"  Height="260" Width="330" Grid.Row="1">
+					<Border  BorderBrush="Black" BorderThickness="2" CornerRadius="15" Height="260" Width="330">
+						<TextBlock Height="80" FontWeight="Black" FontSize="22" VerticalAlignment="Center"    TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Text="Конс Фрікіс юніор курка/морква 100г"></TextBlock>
+
+					</Border>
+				</Button>
+				<Button Background="Transparent" Grid.Column="4"  Height="260" Width="330" Grid.Row="1">
+					<Border  BorderBrush="Black" BorderThickness="2" CornerRadius="15" Height="260" Width="330">
+						<TextBlock Height="80" FontWeight="Black" FontSize="22" VerticalAlignment="Center"    TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Text="Конс Фрікіс юніор курка/морква 100г"></TextBlock>
+
+					</Border>
+				</Button>
+
+
+			</Grid>
+			<Button Grid.Column="2" BorderBrush="Black" CornerRadius="20" BorderThickness="2" Background="DarkGray" Margin="0,0,5,0"  HorizontalAlignment="Right" Height="540" Width="100">
+				<Image Source="avares://AvaloniaMain/Assets/right.ico"></Image>
+			</Button>
+		</Grid>
+		<StackPanel ZIndex="1" Orientation="Horizontal" Grid.Row="2" Height="70" VerticalAlignment="Center" >
+			<Label FontSize="26" FontWeight="Bold" VerticalAlignment="Center">Назва</Label>
+			<Border BorderBrush="#3384a1" BorderThickness="2" Height="50" Width="1780">
+				<TextBlock Margin="5,0,0,0" VerticalAlignment="Center" FontSize="32" FontWeight="Medium" Text="{Binding CurrentText}">
+					
+				</TextBlock>
+			</Border>
+		</StackPanel>
+		<Viewbox  VerticalAlignment="Top" Stretch="Fill" ZIndex="3" Grid.Row="3">
+		<ContentControl  VerticalAlignment="Bottom" Content="{Binding CurrentPage}" />
+			
+		</Viewbox>
+	</Grid>
+	
+
+</UserControl>
