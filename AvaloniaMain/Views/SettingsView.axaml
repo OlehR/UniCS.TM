@@ -1,0 +1,45 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:AvaloniaMain.ViewModels"
+    xmlns:views="using:AvaloniaMain.Views"
+    mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080"
+    x:Class="AvaloniaMain.Views.SettingsView"
+    x:DataType="vm:NumPadViewModel">
+	<Grid RowDefinitions="70,50,100,*">
+		<Grid Background="AliceBlue" Grid.Row="0" ColumnDefinitions="auto,*,Auto,auto,auto,auto">
+			<TextBlock Grid.Column="0" FontSize="25" FontWeight="Medium" Margin="0,10,0,0" Text="Резервна каса Новий"> </TextBlock>
+			<TextBlock Grid.Column="2" FontSize="24" Margin="0,14,0,0" Foreground="Green"   FontWeight="Medium" Text="Тестовий Охоронець КСО"> </TextBlock>
+			<TextBlock Grid.Column="3"  FontSize="32" Margin="0,7,0,0" FontWeight="Bold" Text="13:35"></TextBlock>
+			<Button Grid.Column="4" CornerRadius="15"  Height="60" Width="60" VerticalAlignment="Top" Margin="0,5,0,0">
+				<Image Source="/Assets/X.ico"></Image>
+			</Button>
+			<Button Grid.Column="5"  Height="60" Width="100" VerticalAlignment="Top" CornerRadius="15" Margin="5,5,5,0">
+				<TextBlock Text="Вихід" VerticalAlignment="Center" FontWeight="Black" HorizontalAlignment="Center" FontSize="30"  ></TextBlock>
+			</Button>
+		</Grid>
+		<TextBlock Background="AliceBlue" Margin="10,0,0,0" Grid.Row="1" FontSize="25" FontWeight="Medium"  Text="Версія КСО:2.2.0.126"></TextBlock>
+		<StackPanel Grid.Row="2" Orientation="Horizontal">
+			<Button Margin="4,0,4,0" VerticalAlignment="Top" >
+				<TextBlock FontSize="27" Margin="4" FontWeight="Medium">Зміна</TextBlock>
+			</Button>
+			<Button Margin="0,0,4,0" VerticalAlignment="Top" >
+				<TextBlock FontSize="27" Margin="4" FontWeight="Medium">Пристрої</TextBlock>
+			</Button>
+			<Button Margin="0,0,4,0" VerticalAlignment="Top" >
+				<TextBlock FontSize="27" Margin="4" FontWeight="Medium">Історія</TextBlock>
+			</Button>
+			<Button Margin="0,0,4,0" VerticalAlignment="Top" >
+				<TextBlock FontSize="27" Margin="4" FontWeight="Medium">Журнал</TextBlock>
+			</Button>
+			<Button Margin="0,0,4,0" VerticalAlignment="Top" >
+				<TextBlock FontSize="27" Margin="4" FontWeight="Medium">Помилки</TextBlock>
+			</Button>
+			<Button Margin="0,0,4,0" VerticalAlignment="Top" >
+				<TextBlock FontSize="27" Margin="4" FontWeight="Medium">Додаткові функції</TextBlock>
+			</Button>
+		</StackPanel>
+	</Grid>
+</UserControl>

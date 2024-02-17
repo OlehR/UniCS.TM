@@ -4,8 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:AvaloniaMain.ViewModels"
              mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1000"
-             x:Class="AvaloniaMain.Views.TestView"
-             x:DataType="vm:TestViewModel">
+             x:Class="AvaloniaMain.Views.ClientInfoView"
+             x:DataType="vm:ClientInfoViewModel">
 	
 	<!--Grid.ZIndex="2"-->
 	<Border BorderBrush="Black" BorderThickness="1" Height="1000" Width="1920" Opacity="0.9" Background="White">

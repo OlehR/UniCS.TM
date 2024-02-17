@@ -3,9 +3,9 @@ using AvaloniaMain.ViewModels;
 
 namespace AvaloniaMain.Views;
 
-public partial class TestView: UserControl
+public partial class ClientInfoView : UserControl
 {
-    public TestView()
+    public ClientInfoView()
     {
         InitializeComponent();
 

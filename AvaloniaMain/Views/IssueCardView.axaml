@@ -15,8 +15,8 @@
 
 	<!-- Define DataTemplates directly in Resources -->
 	<UserControl.DataTemplates>
-		<DataTemplate  DataType="{x:Type vm:ParentViewModel}">
-			<views:ParentView />
+		<DataTemplate  DataType="{x:Type vm:NumPadViewModel}">
+			<views:NumPadView />
 		</DataTemplate>
 	</UserControl.DataTemplates>
 	<!--  -->

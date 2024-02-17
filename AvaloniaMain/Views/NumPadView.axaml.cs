@@ -4,9 +4,9 @@ using Avalonia.Markup.Xaml;
 
 namespace AvaloniaMain.Views;
 
-public partial class ParentView : UserControl
+public partial class NumPadView : UserControl
 {
-    public ParentView()
+    public NumPadView()
     {
         InitializeComponent();
     }

@@ -41,8 +41,11 @@
     <Compile Update="Views\IssueCardView.axaml.cs">
       <DependentUpon>IssueCardView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\TestView.axaml.cs">
-      <DependentUpon>TestView.axaml</DependentUpon>
+    <Compile Update="Views\NumPadView.axaml.cs">
+      <DependentUpon>NumPadView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\ClientInfoView.axaml.cs">
+      <DependentUpon>ClientInfoView.axaml</DependentUpon>
     </Compile>
   </ItemGroup>
 </Project>

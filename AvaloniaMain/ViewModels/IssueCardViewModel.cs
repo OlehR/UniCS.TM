@@ -58,7 +58,7 @@ namespace AvaloniaMain.ViewModels
         private async Task ShowBarCommand()
         {
             string mask;
-            var parentViewModel = new ParentViewModel(BarCode,false);
+            var parentViewModel = new NumPadViewModel(BarCode,false);
             parentViewModel.NumberChanged += ParentViewModel_BarCodeChanged;
             parentViewModel.VisibilityChanged += ParentViewModel_VisibilityChanged;
             CurrentPage = parentViewModel;
@@ -66,7 +66,7 @@ namespace AvaloniaMain.ViewModels
         private async Task ShowNumberCommand()
         {
             string mask ="^[0-9]{10}$";
-            var parentViewModel = new ParentViewModel(TelephoneNum,false,mask);
+            var parentViewModel = new NumPadViewModel(TelephoneNum,false,mask);
             parentViewModel.NumberChanged += ParentViewModel_TelephoneChanged;
             parentViewModel.VisibilityChanged += ParentViewModel_VisibilityChanged;
 
@@ -75,7 +75,7 @@ namespace AvaloniaMain.ViewModels
         }
         private async Task ShowVerificationCommand()
         {
-            var parentViewModel = new ParentViewModel(VerificationCode, false);
+            var parentViewModel = new NumPadViewModel(VerificationCode, false);
             parentViewModel.NumberChanged += ParentViewModel_VerificationChanged;
             parentViewModel.VisibilityChanged += ParentViewModel_VisibilityChanged;
             CurrentPage = parentViewModel;

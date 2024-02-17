@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AvaloniaMain.ViewModels
 {
-    public class ParentViewModel : ViewModelBase
+    public class NumPadViewModel : ViewModelBase
     {
         private bool _enterEnable=false;
         public bool EnterEnable
@@ -45,7 +45,7 @@ namespace AvaloniaMain.ViewModels
         public ReactiveCommand<Unit, Unit> DeleteCommand => _deleteCommand ??= ReactiveCommand.CreateFromTask(DeleteLast);
         public ReactiveCommand<Unit, Unit> CloseCommand => _closeCommand ??= ReactiveCommand.CreateFromTask(Close);
 
-        public ParentViewModel(string number, bool Coma)
+        public NumPadViewModel(string number, bool Coma)
             
         {
             
@@ -55,7 +55,7 @@ namespace AvaloniaMain.ViewModels
             ExampleCommand = ReactiveCommand.Create<string>(PerformAction);
 
         }
-        public ParentViewModel(string number, bool Coma, string validationMask)
+        public NumPadViewModel(string number, bool Coma, string validationMask)
 
         {
             ValidationMask = validationMask;
@@ -65,7 +65,7 @@ namespace AvaloniaMain.ViewModels
 
         }
 
-        public ParentViewModel()
+        public NumPadViewModel()
         {
          
             ExampleCommand = ReactiveCommand.Create<string>(PerformAction);

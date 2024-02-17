@@ -54,7 +54,13 @@ namespace AvaloniaMain.ViewModels
             set=>this.RaiseAndSetIfChanged(ref _productsVisibility, value);
         }
 
-
+        private bool _SearchViewVisibility = false;
+        public bool SearchViewVisibility
+        {
+            get => _SearchViewVisibility;
+            set => this.RaiseAndSetIfChanged(ref _SearchViewVisibility, value);
+        }
+  
         public bool ClientInfoVIsibility
         {
             get => _clientInfoVIsibility;
@@ -245,7 +251,7 @@ namespace AvaloniaMain.ViewModels
         private async Task ShowUser()
         {
             CurrentPage = null;
-            CurrentPage = new TestViewModel(this);
+            CurrentPage = new ClientInfoViewModel(this);
             ClientInfoVIsibility = true;
             BackgroundVisibility = true;
             
@@ -264,9 +270,9 @@ namespace AvaloniaMain.ViewModels
         private async Task NumPad()
         {
             CurrentPage = null;
-            var parentViewModel = new ParentViewModel("",false);
-            parentViewModel.NumberChanged += ParentViewModel_NumberChanged;
-            parentViewModel.VisibilityChanged += ParentViewModel_VisibilityChanged;
+            var parentViewModel = new NumPadViewModel("",false);
+            parentViewModel.NumberChanged += NumPadViewModel_NumberChanged;
+            parentViewModel.VisibilityChanged += NumPadViewModel_VisibilityChanged;
             CurrentPage = parentViewModel;
             BackgroundVisibility = true;
             NumPadVIsibility = true;
@@ -278,24 +284,24 @@ namespace AvaloniaMain.ViewModels
             var searchViewModel= new SearchViewModel();
             searchViewModel.VisibilityChanged += SearchView_VisibilityChanged;
             CurrentPage = searchViewModel;
-          
-            KeyBoardVIsibility = true;
+            SearchViewVisibility = true;
         }
 
-        private void ParentViewModel_NumberChanged(object? sender, string newNumber)
+        private void NumPadViewModel_NumberChanged(object? sender, string newNumber)
         {
             UserNumber = newNumber;
         }
 
-        private void ParentViewModel_VisibilityChanged(object? sender, EventArgs? e)
+        private void NumPadViewModel_VisibilityChanged(object? sender, EventArgs? e)
         {
             NumPadVIsibility = false;   
             Close();
         }
         private void SearchView_VisibilityChanged(object? sender, EventArgs? e)
         {
-            KeyBoardVIsibility = false;
-            CurrentPage = null;
+            SearchViewVisibility = false;
+            Close();
+
         }
         private void IssueCard_VisibilityChanged(object? sender, EventArgs? e)
         {
@@ -305,17 +311,12 @@ namespace AvaloniaMain.ViewModels
 
         private async Task ChangeColorAsync()
         {
-
-            ButtonColor = "Yellow";
-            await Task.Delay(2000);
-            Visibility = true;
-            ButtonColor = "Red";
+            Visibility = true;       
         }
         public void Close()
         {
             BackgroundVisibility = false;
             CurrentPage = null;
-            ClientInfoVIsibility = false;
         }
      
     }

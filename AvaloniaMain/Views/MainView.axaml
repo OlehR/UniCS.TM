@@ -15,11 +15,11 @@
 
     <!-- Define DataTemplates directly in Resources -->
     <UserControl.DataTemplates>
-        <DataTemplate  DataType="{x:Type vm:ParentViewModel}">
-            <views:ParentView />
+        <DataTemplate  DataType="{x:Type vm:NumPadViewModel}">
+			<views:NumPadView />
         </DataTemplate>
-        <DataTemplate  DataType="{x:Type vm:TestViewModel}">
-            <views:TestView />
+        <DataTemplate  DataType="{x:Type vm:ClientInfoViewModel}">
+			<views:ClientInfoView />
         </DataTemplate>
 		<DataTemplate  DataType="{x:Type vm:IssueCardViewModel}">
 			<views:IssueCardView />
@@ -30,9 +30,9 @@
     </UserControl.DataTemplates>
 
 
-	<Grid RowDefinitions="Auto,Auto">
-  <Grid Grid.Row="0" Height="85"  ColumnDefinitions="700,310,310,*,120,120">
-	  <Button IsVisible="{Binding Visibility}" Command="{Binding ShowUserInfo}">
+	<Grid Background="White"  RowDefinitions="Auto,Auto">
+  <Grid Background="White" Grid.Row="0" Height="85"  ColumnDefinitions="700,310,310,*,120,120">
+	  <Button Background="White" IsVisible="{Binding Visibility}" Command="{Binding ShowUserInfo}">
 <Grid Margin="0,0,0,15" ColumnDefinitions="Auto,Auto" Grid.Column="0">
 	
 	
@@ -79,14 +79,13 @@
 		
 		<ContentControl  Grid.Row="1" ZIndex="2"  IsVisible="{Binding ClientInfoVIsibility}" Content="{Binding CurrentPage}" />
 		<ContentControl  Grid.Row="1" ZIndex="2"  IsVisible="{Binding NumPadVIsibility}" Content="{Binding CurrentPage}" />
-		<ContentControl  VerticalAlignment="Top" Margin="0,100,0,0"  Grid.Row="1" ZIndex="2"  IsVisible="{Binding  IssueCardVisibility}" Content="{Binding CurrentPage}" />
+		<ContentControl    Grid.Row="1" ZIndex="2"  IsVisible="{Binding  IssueCardVisibility}" Content="{Binding CurrentPage}" />
 
 		<Rectangle  Grid.Row="1" IsVisible="{Binding BackgroundVisibility}"  Height="900" VerticalAlignment="Top" Width="1920" Opacity="0.5" ZIndex="1"  Fill="white"></Rectangle>
 
 		<Grid Grid.Row="1" RowDefinitions="Auto,*,95">
  <Rectangle Grid.Row="0" Height="4" Fill="Green" VerticalAlignment="Bottom" ></Rectangle>
-		<!---->
-  <Grid RowDefinitions="Auto,Auto,Auto" Grid.Row="1">
+  <Grid Background="white" RowDefinitions="Auto,Auto,Auto" Grid.Row="1">
 	  
 		
 
@@ -120,7 +119,7 @@
 
 	  <ScrollViewer Grid.Row="1" IsVisible="True"   AllowAutoHide="False" Height="850"  VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Hidden" >
 		  
-		  <ListBox ItemsSource="{Binding RecieptPosition}" SelectedItem="{Binding SelectedRecieptPosition}">
+		  <ListBox Background="White" ItemsSource="{Binding RecieptPosition}" SelectedItem="{Binding SelectedRecieptPosition}">
   <ListBox.ItemTemplate>
     <DataTemplate>
 		
@@ -181,7 +180,7 @@
   </Grid>
 			<Rectangle  Grid.Row="2" Height="100" IsVisible="{Binding BackgroundVisibility}"  VerticalAlignment="Top" Width="1920" Opacity="0.5" ZIndex="2"  Fill="White"></Rectangle>
 
-			<Grid  Margin="0,5" Grid.Row="2"  Height="100" ColumnDefinitions="100,610,610,570">
+			<Grid Background="White"  Margin="0,5" Grid.Row="2"  Height="100" ColumnDefinitions="100,610,610,570">
 		
 		   <Border Grid.Column="0" Margin="3,0,0,6" Height="90" Width="100" BorderBrush="Black" BorderThickness="2" CornerRadius="8">
 		   <Button Background="White">
@@ -210,7 +209,7 @@
 
 
 		</Grid>
-    <ContentControl VerticalAlignment="Top"  ZIndex="2" IsVisible="{Binding KeyBoardVIsibility}" Content="{Binding CurrentPage}" />
+         <ContentControl VerticalAlignment="Top"  ZIndex="2" IsVisible="{Binding SearchViewVisibility}" Content="{Binding CurrentPage}" />
 
 </Grid>
 	 

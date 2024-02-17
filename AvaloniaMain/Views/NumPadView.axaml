@@ -6,8 +6,8 @@
     xmlns:vm="clr-namespace:AvaloniaMain.ViewModels"
     xmlns:views="using:AvaloniaMain.Views"
     mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080"
-    x:Class="AvaloniaMain.Views.ParentView"
-    x:DataType="vm:ParentViewModel"
+    x:Class="AvaloniaMain.Views.NumPadView"
+    x:DataType="vm:NumPadViewModel"
 	Height="700" Width="600">
 
 

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace AvaloniaMain.ViewModels
 {
-    public class TestViewModel : ViewModelBase
+    public class ClientInfoViewModel : ViewModelBase
     {
         private string _clientName="dfczad";
 
@@ -26,7 +26,7 @@ namespace AvaloniaMain.ViewModels
 
         public ReactiveCommand<Unit, Unit> CloseCommand => _closeCommand ??= ReactiveCommand.CreateFromTask(CloseAsync);
 
-        public TestViewModel(MainViewModel mainViewModel) 
+        public ClientInfoViewModel(MainViewModel mainViewModel) 
         {
             _mainViewModel = mainViewModel;
         }
