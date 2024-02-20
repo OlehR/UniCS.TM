@@ -23,14 +23,14 @@ namespace AvaloniaMain.ViewModels
             get => _currentPage;
             set => this.RaiseAndSetIfChanged(ref _currentPage, value);
         }
-
-
-            private bool _issueCardVisibility = false;
-        public bool IssueCardVisibility
+        private bool _currentPageVisibility = false;
+        public bool CurrentPageVisibility
         {
-            get => _issueCardVisibility;
-            set => this.RaiseAndSetIfChanged(ref _issueCardVisibility, value);
+            get => _currentPageVisibility;
+            set => this.RaiseAndSetIfChanged(ref _currentPageVisibility, value);
         }
+
+      
 
         private bool _backgroundVisibility = false;
         public bool BackgroundVisibility
@@ -39,36 +39,27 @@ namespace AvaloniaMain.ViewModels
             set => this.RaiseAndSetIfChanged(ref _backgroundVisibility, value);
         }
 
-        private bool _clientInfoVIsibility = false;
-        private bool _numPadVIsibility = false;
-        public bool NumPadVIsibility
-        {
-            get => _numPadVIsibility;
-            set => this.RaiseAndSetIfChanged(ref _numPadVIsibility, value);
-        }
 
-        private bool _productsVisibility=true;
-        public bool ProductsVisibility
-        {
-            get => _productsVisibility;
-            set=>this.RaiseAndSetIfChanged(ref _productsVisibility, value);
-        }
-
-        private bool _SearchViewVisibility = false;
-        public bool SearchViewVisibility
-        {
-            get => _SearchViewVisibility;
-            set => this.RaiseAndSetIfChanged(ref _SearchViewVisibility, value);
-        }
-  
-        public bool ClientInfoVIsibility
-        {
-            get => _clientInfoVIsibility;
-            set => this.RaiseAndSetIfChanged(ref _clientInfoVIsibility, value);
-        }
-        private bool _mainVIsibility = true;
-
-        public bool MainVIsibility
+        /*  private bool _numPadVIsibility = false;
+          public bool NumPadVIsibility
+          {
+              get => _numPadVIsibility;
+              set => this.RaiseAndSetIfChanged(ref _numPadVIsibility, value);
+          }
+          private bool _issueCardVisibility = false;
+          public bool IssueCardVisibility
+          {
+              get => _issueCardVisibility;
+              set => this.RaiseAndSetIfChanged(ref _issueCardVisibility, value);
+          }
+          private bool _productsVisibility=true;
+          public bool ProductsVisibility
+          {
+              get => _productsVisibility;
+              set=>this.RaiseAndSetIfChanged(ref _productsVisibility, value);
+          }
+        
+               public bool MainVIsibility
         {
             get => _mainVIsibility;
             set => this.RaiseAndSetIfChanged(ref _mainVIsibility, value);
@@ -79,7 +70,23 @@ namespace AvaloniaMain.ViewModels
         {
             get => _keyBoardVIsibility;
             set => this.RaiseAndSetIfChanged(ref _keyBoardVIsibility, value);
+        }*/
+
+        private bool _SearchViewVisibility = false;
+        public bool SearchViewVisibility
+        {
+            get => _SearchViewVisibility;
+            set => this.RaiseAndSetIfChanged(ref _SearchViewVisibility, value);
         }
+        private bool _clientInfoVIsibility = false;
+        public bool ClientInfoVIsibility
+        {
+            get => _clientInfoVIsibility;
+            set => this.RaiseAndSetIfChanged(ref _clientInfoVIsibility, value);
+        }
+        private bool _mainVIsibility = true;
+
+  
         private string _userNumber;
         public string UserNumber
         {
@@ -252,7 +259,7 @@ namespace AvaloniaMain.ViewModels
         {
             CurrentPage = null;
             CurrentPage = new ClientInfoViewModel(this);
-            ClientInfoVIsibility = true;
+            CurrentPageVisibility = true;
             BackgroundVisibility = true;
             
         }
@@ -264,7 +271,8 @@ namespace AvaloniaMain.ViewModels
             issueCardViewModel.VisibilityChanged += IssueCard_VisibilityChanged;
             CurrentPage = issueCardViewModel;
             BackgroundVisibility = true;
-            IssueCardVisibility = true;
+            CurrentPageVisibility = true;
+
         }
 
         private async Task NumPad()
@@ -275,7 +283,7 @@ namespace AvaloniaMain.ViewModels
             parentViewModel.VisibilityChanged += NumPadViewModel_VisibilityChanged;
             CurrentPage = parentViewModel;
             BackgroundVisibility = true;
-            NumPadVIsibility = true;
+            CurrentPageVisibility = true;
         }
         private async Task SearchViewModel()
         {
@@ -294,7 +302,7 @@ namespace AvaloniaMain.ViewModels
 
         private void NumPadViewModel_VisibilityChanged(object? sender, EventArgs? e)
         {
-            NumPadVIsibility = false;   
+            CurrentPageVisibility = false;   
             Close();
         }
         private void SearchView_VisibilityChanged(object? sender, EventArgs? e)
@@ -305,7 +313,7 @@ namespace AvaloniaMain.ViewModels
         }
         private void IssueCard_VisibilityChanged(object? sender, EventArgs? e)
         {
-            IssueCardVisibility = false;
+            CurrentPageVisibility = false;
             Close();
         }
 

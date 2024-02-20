@@ -77,10 +77,8 @@
        </Button>
     </Grid>
 		
-		<ContentControl  Grid.Row="1" ZIndex="2"  IsVisible="{Binding ClientInfoVIsibility}" Content="{Binding CurrentPage}" />
-		<ContentControl  Grid.Row="1" ZIndex="2"  IsVisible="{Binding NumPadVIsibility}" Content="{Binding CurrentPage}" />
-		<ContentControl    Grid.Row="1" ZIndex="2"  IsVisible="{Binding  IssueCardVisibility}" Content="{Binding CurrentPage}" />
-
+		<ContentControl  Grid.Row="1" ZIndex="2"  IsVisible="{Binding CurrentPageVisibility}" Content="{Binding CurrentPage}" />
+		
 		<Rectangle  Grid.Row="1" IsVisible="{Binding BackgroundVisibility}"  Height="900" VerticalAlignment="Top" Width="1920" Opacity="0.5" ZIndex="1"  Fill="white"></Rectangle>
 
 		<Grid Grid.Row="1" RowDefinitions="Auto,*,95">
