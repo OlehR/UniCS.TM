@@ -38,6 +38,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Equipments\Equipments.csproj" />
+    <ProjectReference Include="..\ModelMID\ModelMID.csproj" />
+    <ProjectReference Include="..\SharedLib\SharedLib.csproj" />
+    <ProjectReference Include="..\UtilNetwork\UtilNetwork.csproj" />
+    <ProjectReference Include="..\Utils\Utils.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Views\IssueCardView.axaml.cs">
       <DependentUpon>IssueCardView.axaml</DependentUpon>
     </Compile>
