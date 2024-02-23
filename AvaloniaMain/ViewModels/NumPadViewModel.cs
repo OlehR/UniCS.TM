@@ -8,34 +8,79 @@ using System.Threading.Tasks;
 namespace AvaloniaMain.ViewModels
 {
     public class NumPadViewModel : ViewModelBase
+
     {
-        private bool _enterEnable=false;
+
+        public event EventHandler<string>? NumberChanged;
+        public event EventHandler? VisibilityChanged;
+        private bool _enterEnable = false;
         public bool EnterEnable
         {
             get => _enterEnable;
-            set => this.RaiseAndSetIfChanged(ref _enterEnable, value);
+            set
+            {
+                if (_enterEnable != value)
+                {
+                    _enterEnable = value;
+                    OnPropertyChanged(nameof(EnterEnable));
+                }
+            }
         }
-        private string ValidationMask;
+
+        private string _validationMask;
+        public string ValidationMask
+        {
+            get => _validationMask;
+            set
+            {
+                if (_validationMask != value)
+                {
+                    _validationMask = value;
+                    OnPropertyChanged(nameof(ValidationMask));
+                }
+            }
+        }
+
         private bool _comaEnable;
         public bool ComaEnable
         {
             get => _comaEnable;
-            set => this.RaiseAndSetIfChanged(ref _comaEnable, value);
+            set
+            {
+                if (_comaEnable != value)
+                {
+                    _comaEnable = value;
+                    OnPropertyChanged(nameof(ComaEnable));
+                }
+            }
         }
+
         private bool _backGroundVisibility;
         public bool BackGroundVisibility
         {
             get => _backGroundVisibility;
-            set => this.RaiseAndSetIfChanged(ref _backGroundVisibility, value);
+            set
+            {
+                if (_backGroundVisibility != value)
+                {
+                    _backGroundVisibility = value;
+                    OnPropertyChanged(nameof(BackGroundVisibility));
+                }
+            }
         }
-       
-        public event EventHandler<string>? NumberChanged;
-        public event EventHandler? VisibilityChanged;
+
         private string _number = "";
         public string Number
         {
             get => _number;
-            set => this.RaiseAndSetIfChanged(ref _number, value);
+            set
+            {
+                if (_number != value)
+                {
+                    _number = value;
+                    OnPropertyChanged(nameof(Number));
+                }
+            }
         }
         public ReactiveCommand<string, Unit> ExampleCommand { get; }
         private ReactiveCommand<Unit, Unit> _deleteCommand;

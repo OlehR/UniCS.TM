@@ -21,21 +21,44 @@ namespace AvaloniaMain.ViewModels
         public string CurrentString
         {
             get => _currentString;
-            set => this.RaiseAndSetIfChanged(ref _currentString, value);
+            set
+            {
+                if (_currentString != value)
+                {
+                    _currentString = value;
+                    OnPropertyChanged(nameof(CurrentString));
+                }
+            }
         }
+
         private bool _shift;
         public bool Shift
         {
             get => _shift;
-            set=>this.RaiseAndSetIfChanged(ref _shift, value);
+            set
+            {
+                if (_shift != value)
+                {
+                    _shift = value;
+                    OnPropertyChanged(nameof(Shift));
+                }
+            }
         }
+
         private bool _en;
         public bool En
         {
             get => _en;
-            set => this.RaiseAndSetIfChanged(ref _en, value);
+            set
+            {
+                if (_en != value)
+                {
+                    _en = value;
+                    OnPropertyChanged(nameof(En));
+                }
+            }
         }
-       
+
         public ReactiveCommand<string, Unit> LayoutChange { get; }
         private ReactiveCommand<Unit, Unit> _bksp;
         public ReactiveCommand<Unit, Unit> Bksp => _bksp ??= ReactiveCommand.CreateFromTask(BkspCommand);

@@ -1,4 +1,5 @@
-﻿using ReactiveUI;
+﻿using Avalonia.Controls.Primitives;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,15 +16,30 @@ namespace AvaloniaMain.ViewModels
         public ViewModelBase CurrentPage
         {
             get=> _currentPage;
-            set=> this.RaiseAndSetIfChanged(ref _currentPage, value);
+            set
+            {
+                if(_currentPage!=value)
+                {
+                    _currentPage = value;
+                    OnPropertyChanged(nameof(CurrentPage));
+                }    
+            }
         }
+      
         private string _currentText;
         public string CurrentText
         {
             get => _currentText;
-            set => this.RaiseAndSetIfChanged(ref _currentText, value);
+            set
+            {
+                if (_currentText != value)
+                {
+                    _currentText = value;
+                    OnPropertyChanged(nameof(CurrentText));
+                }
+            }
         }
-     
+
         public SearchViewModel()
         {
             var viewModel = new KeyBoardViewModel();

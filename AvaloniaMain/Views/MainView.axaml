@@ -117,12 +117,16 @@
 
 	  <ScrollViewer Grid.Row="1" IsVisible="True"   AllowAutoHide="False" Height="850"  VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Hidden" >
 		  
-		  <ListBox Background="White" ItemsSource="{Binding RecieptPosition}" SelectedItem="{Binding SelectedRecieptPosition}">
+		  <ListBox Background="White" ItemsSource="{Binding RecieptPositions}" SelectedItem="{Binding SelectedRecieptPosition}">
   <ListBox.ItemTemplate>
     <DataTemplate>
 		
 			<Grid Height="90" ColumnDefinitions="1110,100,285,130,130,100">
-				<TextBlock TextWrapping="Wrap"  Margin="20,0,0,0" Height="80" FontSize="25" FontWeight="Bold" Text="{Binding Name}" />
+				<StackPanel>
+					<TextBlock TextWrapping="Wrap"  Margin="20,0,0,0" Height="20" FontSize="14" FontWeight="Medium" Text="{Binding GetStrWaresReceiptPromotion}" />
+
+					<TextBlock TextWrapping="Wrap"  Margin="20,0,0,0" Height="80" FontSize="25" FontWeight="Bold" Text="{Binding NameWares}" />
+				</StackPanel>
 				<Button Background="Transparent"  VerticalAlignment="Center" Grid.Column="1" Width="80" Height="80" HorizontalAlignment="Center">
 					<Border Width="70" Height="75" BorderBrush="Black" BorderThickness="4" CornerRadius="7">
 					<Image Height="60" Width="60" Source="/Assets/delete.ico"></Image>
@@ -132,14 +136,21 @@
 					<Button Margin="0,0,15,0" Height="80" Width="80">
 						<Image Height="40" Width="40" Source="/Assets/minus.ico"></Image>
 					</Button> 
-					<TextBlock Margin="15" VerticalAlignment="Center" FontSize="25" FontWeight="Bold" Height="40" HorizontalAlignment="Center" Text="{Binding Count}" />
+					<TextBlock Margin="15" VerticalAlignment="Center" FontSize="25" FontWeight="Bold" Height="40" HorizontalAlignment="Center" Text="{Binding Quantity	}" />
 					<Button  Margin="15,0,0,0" Height="80" Width="80">
 						<Image Height="40" Width="40" Source="/Assets/plus.ico"></Image>
 					</Button>
 				</StackPanel>
-				<TextBlock VerticalAlignment="Center" FontSize="25" FontWeight="Bold" Grid.Column="3" Height="40" HorizontalAlignment="Center" Text="{Binding Weight}" />
-				<TextBlock VerticalAlignment="Center" FontSize="25" FontWeight="Bold" Grid.Column="4" Height="40" HorizontalAlignment="Center" Text="{Binding PricePerOne}" />
-				<TextBlock VerticalAlignment="Center" FontSize="25" FontWeight="Bold" Grid.Column="5" Height="40" HorizontalAlignment="Center" Text="{Binding TotalPrice}" />
+				<StackPanel VerticalAlignment="Center" Grid.Column="3">
+					<TextBlock VerticalAlignment="Center" FontSize="24" FontWeight="Bold"  Height="40" HorizontalAlignment="Center" Text="{Binding WeightBrutto }" />
+					<TextBlock  VerticalAlignment="Center" FontSize="15" FontWeight="Medium"  Height="10" HorizontalAlignment="Center" Text="{Binding FixedWeightInKg}" />
+				</StackPanel>
+				<TextBlock VerticalAlignment="Center" FontSize="25" FontWeight="Bold" Grid.Column="4" Height="40" HorizontalAlignment="Center" Text="{Binding Price}" />
+				<StackPanel VerticalAlignment="Center" Grid.Column="5">
+					<TextBlock VerticalAlignment="Center" FontSize="25" FontWeight="Bold"  Height="40" HorizontalAlignment="Center" Text="{Binding  SumTotal}" />
+					<TextBlock Foreground="Red" VerticalAlignment="Center" FontSize="15" FontWeight="Bold"   Height="10" HorizontalAlignment="Center" Text="{Binding Discount, StringFormat='- {0}₴'}"  />
+
+				</StackPanel>
 			</Grid>
 		
     </DataTemplate>
@@ -197,7 +208,7 @@
 				   <Image Height="60" Width="60" Margin="40,0,0,0"  Source="/Assets/18PlusRed.ico"></Image>
 				   <Label Foreground="White" Margin="40,0,0,0" FontSize="50" HorizontalAlignment="Center" VerticalAlignment="Center">></Label>
 				   <Label Foreground="White"  Margin="5,0,0,0"  FontFamily="Black" FontSize="40" VerticalAlignment="Center">Оплата</Label>
-				   <TextBlock Foreground="White" Margin="5,0,0,0" FontSize="40" VerticalAlignment="Center" Text="680">
+				   <TextBlock Foreground="White" Margin="5,0,0,0" FontSize="40" VerticalAlignment="Center" Text="680₴">
 					 
 				   </TextBlock>
 			   </StackPanel>
