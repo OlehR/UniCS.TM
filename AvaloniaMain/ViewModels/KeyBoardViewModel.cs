@@ -132,19 +132,12 @@ namespace AvaloniaMain.ViewModels
         }
 
         public ReactiveCommand<string, Unit> AddValue { get; }
-    
-    
-
-
+  
         public KeyBoardViewModel()
         {
-            init();
-
-            
+            init();            
             AddValue = ReactiveCommand.Create<string>(AddValueCommand);
             LayoutChange = ReactiveCommand.Create<string>(LayoutChangeCommand);
-
-
         }
 
         private async Task BkspCommand()

@@ -13,7 +13,7 @@ using System.IO;
 
 namespace SharedLib
 {
-    public class BL
+    public partial class BL
     {
         static BL sBL;
         public WDB_SQLite db;

@@ -1,8 +1,10 @@
 ﻿using AvaloniaMain.Models;
 using AvaloniaMain.Views;
+using Front;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ModelMID;
 using ReactiveUI;
+using SharedLib;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,11 +13,18 @@ using System.Threading.Tasks;
 
 namespace AvaloniaMain.ViewModels
 {
-    public class MainViewModel : ViewModelBase
+    public partial class MainViewModel : ViewModelBase
     {
 
         public Client client=new Client();
-        
+        public BL Bl;
+        public EquipmentFront EF;
+        public ControlScale CS { get; set; }
+
+
+        public Receipt curReceipt;
+        public ReceiptWares CurWares { get; set; } = null;
+        public Client? Client { get { return curReceipt?.Client; } }
 
         private ViewModelBase? _currentPage;
         public ViewModelBase? CurrentPage
@@ -181,10 +190,14 @@ namespace AvaloniaMain.ViewModels
         private ReactiveCommand<Unit, Unit> _showIssueCard;
         public ReactiveCommand<Unit, Unit> _showSearchView;
 
-        public ObservableCollection<ReceiptWares> RecieptPositions { get; set; }
+        public ObservableCollection<ReceiptWares> ListWares { get; set; }
 
         public MainViewModel()
         {
+            Bl = BL.GetBL;
+            EF = new EquipmentFront(GetBarCode, null);
+
+
             InitClient();
             _showSearchView = ReactiveCommand.CreateFromTask(SearchViewModel);
             _changeColorCommand = ReactiveCommand.CreateFromTask(ChangeColorAsync);
@@ -195,26 +208,8 @@ namespace AvaloniaMain.ViewModels
             UserMoneyBonus = 17.10;
             UserMoneyBox = 121.35;
 
-            /*
-            CodeWares = 0;
-            NameWares = "";
-            //NameWaresReceipt = "";
-            PercentVat = 0;
-            TypeVat = 0;
-            CodeDefaultUnit = 0;
-            //CoefficientDefaultUnit = 0;
-            Price = 0;
-            //CodeDealer = 0;
-            TypePrice = eTypePrice.NotDefine;
-            SumDiscount = 0;
-            TypeFound = 0;
-            CodeUnit = 0;
-            Coefficient = 0;
-            CodePeriodIncome = 0;
-            CodeIncome = 0;
-            Quantity = 0;
-            IsSave = false;*/
-            RecieptPositions = new ObservableCollection<ReceiptWares>
+            
+            ListWares = new ObservableCollection<ReceiptWares>
             (new List<ReceiptWares>
             {
 

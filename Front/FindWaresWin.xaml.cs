@@ -26,8 +26,8 @@ namespace Front
         BL Bl;
         int CodeFastGroup = 0;
         int OffSet = 0;
-
         int MaxPage = 0;
+
         public bool IsUp { get { return CodeFastGroup > 0; } }
         public bool Volume { get; set; }
         public bool IsHorizontalScreen { get { return SystemParameters.PrimaryScreenWidth < SystemParameters.PrimaryScreenHeight ? true : false; } }
@@ -106,46 +106,20 @@ namespace Front
             }
 
         }
+
         string LastStr = null;
         void NewB()
         {
+            var WG=Bl.GetDataFindWares(CodeFastGroup, WaresName.Text, MW.curReceipt, ref OffSet, ref MaxPage, ref Limit);            
 
-            IEnumerable<GW> WG = null;
-            if (CodeFastGroup == 0 && WaresName.Text.Length == 0)
-            {
-                var aa = Bl.db.GetFastGroup(Global.CodeWarehouse)?.Select(r => new GW(r)).ToList();
-                MaxPage = aa.Count() / Limit;
-                for (int i = 0; i < Limit * OffSet; i++)
-                    aa.RemoveAt(0);
-
-                WG = aa;
-            }
-            else
-            {
-                if (WaresName.Text != LastStr)
-                {
-                    LastStr = WaresName.Text;
-                    OffSet = 0;
-                }
-                WG = Bl.GetProductsByName(MW.curReceipt, (WaresName.Text.Length > 1 ? WaresName.Text : ""), OffSet * Limit, Limit, CodeFastGroup)?.Select(r => new GW(r));
-                if (WG != null)
-                    MaxPage = WG.First().TotalRows / Limit;
-                else
-                    MaxPage = 0;
-
-            }
             ButtonUp.IsEnabled = IsUp;
             ButtonLeft.IsEnabled = (OffSet > 0);
             ButtonRight.IsEnabled = (OffSet < MaxPage);
             BildButtom(WG);
-
         }
 
         void BildButtom(IEnumerable<GW> pGW)
         {
-
-
-
             PictureGrid.Children.Clear();
             if (pGW == null)
                 return;
@@ -259,8 +233,6 @@ namespace Front
                 if (++i >= CountColumWares)
                 { j++; i = 0; }
                 if (j >= CountRowWares) break;
-
-
             }
         }
 
@@ -276,36 +248,23 @@ namespace Front
                     NewB();
                 }
                 else
-                {
-                    decimal Quantity = 0m;
-                    if(WaresName.Text.IndexOf('*')>0|| WaresName.Text.IndexOf('=') > 0)
-                    {
-                        var s = WaresName.Text.Split(WaresName.Text.IndexOf('*') > 0 ? '*': '=');
-                        Quantity = s[0].ToDecimal() * (Gw.CodeUnit== Global.WeightCodeUnit? 1000:1);
-                        if(Gw.CodeUnit != Global.WeightCodeUnit)
-                            Quantity=Math.Round(Quantity, 0);
-
-                    }                   
-
-                    if (Gw.CodeUnit == Global.WeightCodeUnit && Quantity==0)                    
-                        Close(Gw.Code, Gw.CodeUnit, 0, Gw);                    
-                    else                    
-                        Close(Gw.Code, Gw.CodeUnit, Quantity>0? Quantity: 1m);                    
-                       
+                {                    
+                    Close( Gw, Bl.GetQuantity(WaresName.Text, Gw.CodeUnit));
                 }
         }
 
-        private void Close(int pCodeWares, int pCodeUnit = 0, decimal pQuantity = 0m, GW pGW = null)
+        private void Close(GW pGW, decimal pQuantity = 0m )
         {
             if (MW != null)
             {
-                MW.AddWares(pCodeWares, pCodeUnit, pQuantity, 0m, pGW);
+                MW.AddWares(pGW.Code, pGW.CodeUnit, pQuantity, 0m, pGW.CodeUnit == Global.WeightCodeUnit && pQuantity == 0?pGW:null);
                 if (MW.State == eStateMainWindows.WaitFindWares)
                     MW.SetStateView(eStateMainWindows.WaitInput);
             }
             KB.SetInput(null);
             Close();
         }
+
         private async void WaresName_Changed(object sender, TextChangedEventArgs e)
         {
             await Task.Delay(1500);

@@ -117,7 +117,7 @@
 
 	  <ScrollViewer Grid.Row="1" IsVisible="True"   AllowAutoHide="False" Height="850"  VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Hidden" >
 		  
-		  <ListBox Background="White" ItemsSource="{Binding RecieptPositions}" SelectedItem="{Binding SelectedRecieptPosition}">
+		  <ListBox Background="White" ItemsSource="{Binding ListWares}" SelectedItem="{Binding SelectedRecieptPosition}">
   <ListBox.ItemTemplate>
     <DataTemplate>
 		
