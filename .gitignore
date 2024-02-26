@@ -453,3 +453,4 @@ $RECYCLE.BIN/
 !.vscode/launch.json
 !.vscode/extensions.json
 /Front/Properties/launchSettings.json
+/AvaloniaMain.Desktop/Properties/launchSettings.json
