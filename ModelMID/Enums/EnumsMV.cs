@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace Front.Models
+namespace ModelMID
 {
     public enum eStateMainWindows
     {
@@ -137,7 +135,7 @@ namespace Front.Models
         AnotherTypeMonitor
     }
 
-    public enum eCommand 
+    public enum eCommand
     {
         NotDefine,
         /// <summary>
@@ -159,7 +157,7 @@ namespace Front.Models
         /// <summary>
         /// Добавити вагу 
         /// </summary>
-        AddWeight,        
+        AddWeight,
         /// <summary>
         /// Загальний стан програми.
         /// </summary>
@@ -210,4 +208,3 @@ namespace Front.Models
         DeleteReceipt,
     }
 }
-

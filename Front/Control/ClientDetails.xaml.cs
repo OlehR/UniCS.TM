@@ -1,4 +1,5 @@
 ﻿using Front.Models;
+using ModelMID;
 using System.Windows;
 using System.Windows.Controls;
 

@@ -157,7 +157,7 @@ SELECT -- Кількість товари  набору (Основні)
     ,1 AS DataAdditionalCondition
     where @CodeWarehouse in (9,89)";
 
-        string SqlGetPromotionSaleDealer = @"SELECT 9000000000+CONVERT(INT, YEAR(dpg.date_time)*100000+dpg.number) AS CodePS, CONVERT(INT, dn.code) AS CodeWares, pg.date_beg AS DateBegin,pg.date_end AS DateEnd,CONVERT(INT, tp.code) AS CodeDealer
+        string SqlGetPromotionSaleDealer = @"SELECT DISTINCT 9000000000+CONVERT(INT, YEAR(dpg.date_time)*100000+dpg.number) AS CodePS, CONVERT(INT, dn.code) AS CodeWares, pg.date_beg AS DateBegin,pg.date_end AS DateEnd,CONVERT(INT, tp.code) AS CodeDealer
     , isnull(pp.Priority, 0) AS Priority
   FROM dbo.V1C_reg_promotion_gal pg
   JOIN dbo.V1C_doc_promotion_gal dpg ON pg.doc_RRef = dpg.doc_RRef

@@ -223,7 +223,7 @@ namespace Front.Control
         {
             ChangeSumPaymant = "0";
             CancelCashDisbursement();
-            MW.SetStateView(Models.eStateMainWindows.WaitInput);
+            MW.SetStateView(eStateMainWindows.WaitInput);
         }
 
         private void _ButtonPaymentBank(object sender, RoutedEventArgs e)
