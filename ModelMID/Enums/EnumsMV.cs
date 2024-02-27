@@ -110,7 +110,13 @@ namespace ModelMID
         /// <summary>
         /// Знайти клієнта за номером телефону
         /// </summary>
-        //FindClientByPhone,
+        [Description("Пошук за номером телефону")]
+        FindClientByPhone,
+        /// <summary>
+        /// Зміна кількості товару
+        /// </summary>
+        [Description("Зміна кількості товару")]
+        ChangeCountWares,
     }
 
     public enum eSender

@@ -352,7 +352,8 @@ namespace Front
             }
 
             //Точно треба зробити через стан eStateMainWindows
-            if(Global.Settings.IsUseCardSparUkraine && NumericPad.Visibility == Visibility.Visible && "Введіть номер телефону".Equals(InputNumberPhone.Desciption))
+            //if(Global.Settings.IsUseCardSparUkraine && State == eStateMainWindows.FindClientByPhone)
+            if (Global.Settings.IsUseCardSparUkraine && NumericPad.Visibility == Visibility.Visible && "Введіть номер телефону".Equals(UC_NumericPad.Desciption))
             {
                // pBarCode = "MTE2MmZlMGNjLTNlZmQtNDYxZC05NThiLTFjYmI3NjQ4YjM1NDIzLjAxLjIwMjQgMTM6MDE6Mjg=";
                 if (pBarCode.Length>56 )

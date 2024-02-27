@@ -1188,12 +1188,12 @@ from RECEIPT r
                 IsRemoveMoney = true;
             }
 
-            MW.InputNumberPhone.Desciption = DesciptionOparation;
-            MW.InputNumberPhone.ValidationMask = "";
-            MW.InputNumberPhone.Result = "";
-            MW.InputNumberPhone.IsEnableComma = true;
-            MW.InputNumberPhone.CallBackResult = (string res) => AddOrRemoveMoney(res, IsRemoveMoney, DesciptionOparation);
-            MW.NumericPad.Visibility = Visibility.Visible;
+            AdminUC_NumericPad.Desciption = DesciptionOparation;
+            AdminUC_NumericPad.ValidationMask = "";
+            AdminUC_NumericPad.Result = "";
+            AdminUC_NumericPad.IsEnableComma = true;
+            AdminUC_NumericPad.CallBackResult = (string res) => AddOrRemoveMoney(res, IsRemoveMoney, DesciptionOparation);
+            Admin_NumericPad.Visibility = Visibility.Visible;
             BackgroundShift.Visibility = Visibility.Visible;
 
         }
@@ -1256,7 +1256,7 @@ from RECEIPT r
                 //    else MW.ShowErrorMessage("Введіть коректну суму!");
                 //}
             }
-            MW.NumericPad.Visibility = Visibility.Collapsed;
+            Admin_NumericPad.Visibility = Visibility.Collapsed;
             BackgroundShift.Visibility = Visibility.Collapsed;
         }
 
@@ -1392,17 +1392,17 @@ from RECEIPT r
 
         private void ChangeOrderNumber(object sender, RoutedEventArgs e)
         {
-            MW.InputNumberPhone.Desciption = "Номер замовлення";
-            MW.InputNumberPhone.ValidationMask = "";
-            MW.InputNumberPhone.Result = "";
-            MW.InputNumberPhone.IsEnableComma = false;
-            MW.InputNumberPhone.CallBackResult = (string res) =>
+            AdminUC_NumericPad.Desciption = "Номер замовлення";
+            AdminUC_NumericPad.ValidationMask = "";
+            AdminUC_NumericPad.Result = "";
+            AdminUC_NumericPad.IsEnableComma = false;
+            AdminUC_NumericPad.CallBackResult = (string res) =>
             {
                 OrderNumber = res;
-                MW.NumericPad.Visibility = Visibility.Collapsed;
+                Admin_NumericPad.Visibility = Visibility.Collapsed;
                 BackgroundOtherFunction.Visibility = Visibility.Collapsed;
             };
-            MW.NumericPad.Visibility = Visibility.Visible;
+            Admin_NumericPad.Visibility = Visibility.Visible;
             BackgroundOtherFunction.Visibility = Visibility.Visible;
         }
 
@@ -1435,21 +1435,21 @@ from RECEIPT r
 
         private void FindChecksByNumber(object sender, RoutedEventArgs e)
         {
-            MW.InputNumberPhone.Desciption = "№ чека який шукаєте";
-            MW.InputNumberPhone.ValidationMask = "";
-            MW.InputNumberPhone.Result = "";
-            MW.InputNumberPhone.IsEnableComma = false;
-            MW.InputNumberPhone.CallBackResult = (string res) =>
+            AdminUC_NumericPad.Desciption = "№ чека який шукаєте";
+            AdminUC_NumericPad.ValidationMask = "";
+            AdminUC_NumericPad.Result = "";
+            AdminUC_NumericPad.IsEnableComma = false;
+            AdminUC_NumericPad.CallBackResult = (string res) =>
             {
                 if (!string.IsNullOrEmpty(res))
                     FindReceiptByNumber = Convert.ToInt32(res);
                 else
                     FindReceiptByNumber = 0;
                 CollectionViewSource.GetDefaultView(ListReceipts.ItemsSource).Refresh();
-                MW.NumericPad.Visibility = Visibility.Collapsed;
+                Admin_NumericPad.Visibility = Visibility.Collapsed;
                 BackgroundReceipts.Visibility = Visibility.Collapsed;
             };
-            MW.NumericPad.Visibility = Visibility.Visible;
+            Admin_NumericPad.Visibility = Visibility.Visible;
             BackgroundReceipts.Visibility = Visibility.Visible;
         }
 
