@@ -48,9 +48,12 @@ namespace SharedLib
                 var s = pS.Split(pS.IndexOf('*') > 0 ? '*' : '=');
                 Quantity = s[0].ToDecimal() * (pCodeUnit == Global.WeightCodeUnit ? 1000 : 1);
                 if (pCodeUnit != Global.WeightCodeUnit)
+                {
                     Quantity = Math.Round(Quantity, 0);
+                    if (Quantity == 0) Quantity=1m;
+                }
             }
-            return  Quantity;
+            return pCodeUnit != Global.WeightCodeUnit && Quantity == 0 ?1:Quantity;
         }
     }
 }
