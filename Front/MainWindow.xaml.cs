@@ -345,7 +345,7 @@ namespace Front
             Access.СurUser = new User() { TypeUser = eTypeUser.Client, CodeUser = 99999999, Login = "Client", NameUser = "Client" };
 
             Bl = new BL();
-            EF = new EquipmentFront(GetBarCode, null);
+            EF = new EquipmentFront();
             KeyUp += SetKey;
             InitAction();
             calculateWidthHeaderReceipt(TypeMonitor);

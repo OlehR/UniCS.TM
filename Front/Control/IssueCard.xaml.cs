@@ -16,13 +16,12 @@ namespace Front.Control
         MainWindow MW;
         public void Init(MainWindow mw)
         {
-            MW = mw;
+            MW = mw;           
         }
+
         public IssueCard()
         {
-
-
-            InitializeComponent();
+            InitializeComponent();            
             IssueCardVM = DataContext as IssueCardVM;
             ButPhoneIssueCard.Click += (sender, e) =>
             {
@@ -33,6 +32,7 @@ namespace Front.Control
                 NumPadIssueCard.ValidationMask = "^[0-9]{10}$";
                 NumPadIssueCard.Result = $"{IssueCardVM.PhoneIssueCard}";
                 NumPadIssueCard.IsEnableComma = false;
+
                 NumPadIssueCard.CallBackResult = (res) =>
                 {
 
@@ -51,8 +51,9 @@ namespace Front.Control
                         NumPadIssueCard.Visibility = Visibility.Visible;
                     }
                 };
-            };
 
+                IssueCardVM.BarcodeIssueCard = null;                
+            };
 
             ButVerifySMS.Click += (sender, e) =>
             {
@@ -65,7 +66,6 @@ namespace Front.Control
 
                 NumPadIssueCard.CallBackResult = (res) =>
                 {
-
                     if (!string.IsNullOrEmpty(res))
                         IssueCardVM.VerifyCode = res;
                     else
@@ -82,31 +82,29 @@ namespace Front.Control
                             MW.CustomMessage.Show($"Введений код не вірний!", "Помилка!", eTypeMessage.Error);
                     }
                     IssueCardVM.OnPropertyChanged(nameof(IssueCardVM.IsGetCard));
-
                 };
-
-
             };
         }
-        public void SetBarCode(string pBarCode) => IssueCardVM.BarcodeIssueCard = pBarCode;
 
+        public void SetBarCode(string pBarCode, string pType) => IssueCardVM.BarcodeIssueCard = pBarCode;
 
-                private void CancelClick(object sender, RoutedEventArgs e)
-                {
-                    MW.SetStateView(eStateMainWindows.WaitInput);
-                }
-                private (string, bool) PhoneCorrection(string phoneNumber)
-                {
-                    if (string.IsNullOrEmpty(phoneNumber)) return (phoneNumber, false);
-                    if (phoneNumber.IndexOf("38") == 0 && phoneNumber.Length == 12)
-                    {
-                        return (phoneNumber, true);
-                    }
-                    else
-                    {
-                        return ($"38{phoneNumber}", true);
-                    }
-                }
+        private void CancelClick(object sender, RoutedEventArgs e)
+        {
+           // EquipmentFront.OnBarCode -= SetBarCode;
+            MW.SetStateView(eStateMainWindows.WaitInput);
+        }
+        private (string, bool) PhoneCorrection(string phoneNumber)
+        {
+            if (string.IsNullOrEmpty(phoneNumber)) return (phoneNumber, false);
+            if (phoneNumber.IndexOf("38") == 0 && phoneNumber.Length == 12)
+            {
+                return (phoneNumber, true);
+            }
+            else
+            {
+                return ($"38{phoneNumber}", true);
+            }
+        }
 
         private void ButSendVerifyCode(object sender, RoutedEventArgs e)
         {
@@ -116,9 +114,9 @@ namespace Front.Control
 
         private void IssueNewCardButton(object sender, RoutedEventArgs e)
         {
+           // EquipmentFront.OnBarCode -= SetBarCode;
             eReturnClient eReturn = IssueCardVM.IssueNewCardButton();
             MW.CustomMessage.Show(eReturn.GetDescription(), eReturn != eReturnClient.Ok ? "Помилка! Карточка не збереглась на сервері!!!" : "Карточка успішно збережена.", eTypeMessage.Information);
-
         }
     }
 

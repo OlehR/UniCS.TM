@@ -195,10 +195,10 @@ namespace AvaloniaMain.ViewModels
         public MainViewModel()
         {
             Bl = BL.GetBL;
-            EF = new EquipmentFront(GetBarCode, null);
+            EF = new EquipmentFront();
 
+            EquipmentFront.OnBarCode += (pBarCode, pTypeBarCode) => GetBarCode(pBarCode, pTypeBarCode);
 
-            InitClient();
             _showSearchView = ReactiveCommand.CreateFromTask(SearchViewModel);
             _changeColorCommand = ReactiveCommand.CreateFromTask(ChangeColorAsync);
             _showUserInfo=ReactiveCommand.CreateFromTask(ShowUser);

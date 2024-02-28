@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ModelMID;
+using ModelMID.DB;
 using SharedLib;
 using Utils;
 
@@ -18,20 +20,18 @@ namespace SharedLib
             OnSetStateView?.Invoke(pSMV, pTypeAccess, pRW, pCW, pS);
         }
 
-        /*
-        public void GetBarCode(string pBarCode, string pTypeBarCode)
+        /*public void GetBarCode(string pBarCode, string pTypeBarCode)
         {
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"(pBarCode=>{pBarCode},  pTypeBarCode=>{pTypeBarCode})");
-            if (State == eStateMainWindows.StartWindow)
+            if (MW.State == eStateMainWindows.StartWindow)
                 SetStateView(eStateMainWindows.WaitInput);
-            if (State == eStateMainWindows.WaitInputIssueCard)
+            if (MW.State == eStateMainWindows.WaitInputIssueCard)
             {
                 IssueCardUC.SetBarCode(pBarCode);
                 return;
             }
 
-            //Точно треба зробити через стан eStateMainWindows
-            if (Global.Settings.IsUseCardSparUkraine && NumericPad.Visibility == Visibility.Visible && "Введіть номер телефону".Equals(InputNumberPhone.Desciption))
+            if (Global.Settings.IsUseCardSparUkraine && MW.State == eStateMainWindows.FindClientByPhone)
             {
                 // pBarCode = "MTE2MmZlMGNjLTNlZmQtNDYxZC05NThiLTFjYmI3NjQ4YjM1NDIzLjAxLjIwMjQgMTM6MDE6Mjg=";
                 if (pBarCode.Length > 56)
@@ -64,7 +64,7 @@ namespace SharedLib
             else
             {
                 ReceiptWares w = null;
-                if (IsAddNewWares && (State == eStateMainWindows.WaitInput || State == eStateMainWindows.StartWindow))
+                if (IsAddNewWares && (MW.State == eStateMainWindows.WaitInput || MW.State == eStateMainWindows.StartWindow))
                 {
                     if (MW.curReceipt == null || !MW.curReceipt.IsLockChange)
                     {
@@ -80,7 +80,7 @@ namespace SharedLib
                 }
                 else
                 {
-                    w = AddWaresBarCode(curReceipt, pBarCode, 1, true);
+                    w = AddWaresBarCode(MW.curReceipt, pBarCode, 1, true);
                 }
                 if (w != null)
                     return;
@@ -92,10 +92,56 @@ namespace SharedLib
                 }
             }
 
-            if ((State != eStateMainWindows.WaitInput && State != eStateMainWindows.StartWindow) || MW.curReceipt?.IsLockChange == true || !IsAddNewWares)
-                if (State != eStateMainWindows.ProcessPay && State != eStateMainWindows.ProcessPrintReceipt && State != eStateMainWindows.WaitCustomWindows)
+            if ((MW.State != eStateMainWindows.WaitInput && MW.State != eStateMainWindows.StartWindow) || MW.curReceipt?.IsLockChange == true || !IsAddNewWares)
+                if (MW.State != eStateMainWindows.ProcessPay && MW.State != eStateMainWindows.ProcessPrintReceipt && MW.State != eStateMainWindows.WaitCustomWindows)
                     SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.AdminPanel);
 
+        }
+*/
+        private string GetExciseStamp(string pBarCode)
+        {
+            if (pBarCode.Contains("t.gov.ua"))
+            {
+                string Res = pBarCode.Substring(pBarCode.IndexOf("t.gov.ua") + 9);
+                pBarCode = Res.Substring(0, Res.Length - 11);
+            }
+
+            Regex regex = new Regex(@"^\w{4}[0-9]{6}?$");
+            if (regex.IsMatch(pBarCode))
+                return pBarCode;
+            return null;
+        }
+
+        /*void AddExciseStamp(string pES)
+        {
+            if (MW.CurWares == null)
+                MW.CurWares = MW.curReceipt.GetLastWares;
+            if (MW.CurWares != null)
+            {
+                if (!"None".Equals(pES))
+                {
+                    if (Global.Settings.IsCheckExciseStamp)
+                    {
+                        var res = ds.CheckExciseStamp(new ExciseStamp(MW.CurWares, pES));
+                        if (res != null)
+                        {
+                            if (!res.Equals(MW.CurWares) && res.State >= 0)
+                            {
+                                CustomMessage.Show($"Дана акцизна марка вже використана {res.CodePeriod} {res.IdWorkplace} Чек=>{res.CodeReceipt} CodeWares=>{res.CodeWares}!", "Увага", eTypeMessage.Error);
+                                return;
+                            }
+                        }
+                    }
+                }
+                if (MW.CurWares.AddExciseStamp(pES))
+                {                 //Додання акцизноії марки до алкоголю
+                    UpdateExciseStamp(new List<ReceiptWares>() { MW.CurWares });
+                    MW.TypeAccessWait = eTypeAccess.NoDefine;
+                    SetStateView(eStateMainWindows.WaitInput);
+                }
+                else
+                    CustomMessage.Show("Дана акцизна марка вже використана!", "Увага", eTypeMessage.Error);
+            }
         }*/
 
         void IsPrises(decimal pQuantity = 0m, decimal pPrice = 0m)

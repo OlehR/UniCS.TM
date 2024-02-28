@@ -78,6 +78,16 @@ namespace Front
                     SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ErrorEquipment, null);
             };
 
+            EquipmentFront.OnBarCode += GetBarCode;
+
+
+            //!!!TMP Костиль бо не працює підписка на рівні IssueCardUC
+            EquipmentFront.OnBarCode += (pBarCode, pTypeBarCode) =>
+            {
+                if(State == eStateMainWindows.WaitInputIssueCard)
+                  IssueCardUC.SetBarCode(pBarCode, pTypeBarCode);
+            };
+
             Global.OnReceiptCalculationComplete += (pReceipt) =>
             {
                 try
@@ -347,14 +357,12 @@ namespace Front
                 SetStateView(eStateMainWindows.WaitInput);
             if (State == eStateMainWindows.WaitInputIssueCard)
             {
-                IssueCardUC.SetBarCode(pBarCode);
+                //IssueCardUC.SetBarCode(pBarCode);
                 return;
             }
 
-            //Точно треба зробити через стан eStateMainWindows
-            //if(Global.Settings.IsUseCardSparUkraine && State == eStateMainWindows.FindClientByPhone)
-            if (Global.Settings.IsUseCardSparUkraine && NumericPad.Visibility == Visibility.Visible && "Введіть номер телефону".Equals(UC_NumericPad.Desciption))
-            {
+           if(Global.Settings.IsUseCardSparUkraine && State == eStateMainWindows.FindClientByPhone)
+           {
                // pBarCode = "MTE2MmZlMGNjLTNlZmQtNDYxZC05NThiLTFjYmI3NjQ4YjM1NDIzLjAxLjIwMjQgMTM6MDE6Mjg=";
                 if (pBarCode.Length>56 )
                 {
