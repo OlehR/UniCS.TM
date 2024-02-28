@@ -19,17 +19,14 @@ namespace SharedLib
         {
             OnSetStateView?.Invoke(pSMV, pTypeAccess, pRW, pCW, pS);
         }
-
+        
         /*public void GetBarCode(string pBarCode, string pTypeBarCode)
         {
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"(pBarCode=>{pBarCode},  pTypeBarCode=>{pTypeBarCode})");
             if (MW.State == eStateMainWindows.StartWindow)
                 SetStateView(eStateMainWindows.WaitInput);
-            if (MW.State == eStateMainWindows.WaitInputIssueCard)
-            {
-                IssueCardUC.SetBarCode(pBarCode);
-                return;
-            }
+            if (MW.State == eStateMainWindows.WaitInputIssueCard) return;
+            
 
             if (Global.Settings.IsUseCardSparUkraine && MW.State == eStateMainWindows.FindClientByPhone)
             {
@@ -97,7 +94,8 @@ namespace SharedLib
                     SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.AdminPanel);
 
         }
-*/
+        
+      */ 
         private string GetExciseStamp(string pBarCode)
         {
             if (pBarCode.Contains("t.gov.ua"))
@@ -112,7 +110,7 @@ namespace SharedLib
             return null;
         }
 
-        /*void AddExciseStamp(string pES)
+        void AddExciseStamp(string pES)
         {
             if (MW.CurWares == null)
                 MW.CurWares = MW.curReceipt.GetLastWares;
@@ -127,7 +125,7 @@ namespace SharedLib
                         {
                             if (!res.Equals(MW.CurWares) && res.State >= 0)
                             {
-                                CustomMessage.Show($"Дана акцизна марка вже використана {res.CodePeriod} {res.IdWorkplace} Чек=>{res.CodeReceipt} CodeWares=>{res.CodeWares}!", "Увага", eTypeMessage.Error);
+                                Global.Message?.Invoke($"Дана акцизна марка вже використана {res.CodePeriod} {res.IdWorkplace} Чек=>{res.CodeReceipt} CodeWares=>{res.CodeWares}!",  eTypeMessage.Error);
                                 return;
                             }
                         }
@@ -140,9 +138,9 @@ namespace SharedLib
                     SetStateView(eStateMainWindows.WaitInput);
                 }
                 else
-                    CustomMessage.Show("Дана акцизна марка вже використана!", "Увага", eTypeMessage.Error);
+                    Global.Message?.Invoke("Дана акцизна марка вже використана!", eTypeMessage.Error);
             }
-        }*/
+        }
 
         void IsPrises(decimal pQuantity = 0m, decimal pPrice = 0m)
         {
@@ -152,21 +150,51 @@ namespace SharedLib
                 return;
             }
 
-            if (MW.CurWares.Price == 0) //Повідомлення Про відсутність ціни
+            if (MW.CurWares?.Price == 0) //Повідомлення Про відсутність ціни
             {
                 SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, new CustomWindow(eWindows.NoPrice, MW.CurWares.NameWares));
             }
-            if (MW.CurWares.Prices != null && pPrice == 0m) //Меню з вибором ціни. Сигарети.
+            if (MW.CurWares?.Prices != null && pPrice == 0m) //Меню з вибором ціни. Сигарети.
             {
                 if (MW.CurWares.IsMultiplePrices)
                 {
                     SetStateView(eStateMainWindows.WaitInputPrice, eTypeAccess.NoDefine, MW.CurWares);
                 }
             }
-            if (MW.CurWares.IsMultiplePrices && pPrice > 0m)
+            if (MW.CurWares?.IsMultiplePrices==true && pPrice > 0m)
                 MW.CurWares = null;
         }
 
+        DateTime StartScan = DateTime.MinValue;
+        void TimeScan(bool? pIsSave = null)
+        {
+            if ((MW.State == eStateMainWindows.WaitAdmin && !MW.CS.IsProblem) || MW.State == eStateMainWindows.AdminPanel || MW.State == eStateMainWindows.WaitAdminLogin ||
+                       MW.State == eStateMainWindows.ChoicePaymentMethod || MW.State == eStateMainWindows.ProcessPay || MW.State == eStateMainWindows.StartWindow || pIsSave == true)
+            {
+                if (StartScan != DateTime.MinValue)
+                {
+                    SaveReceiptEvents(new List<ReceiptEvent>() { new ReceiptEvent(MW.curReceipt) { ResolvedAt = StartScan, EventType = eReceiptEventType.TimeScanReceipt, EventName = "Час сканування чека" } }, false);
+                    StartScan = DateTime.MinValue;
+                }
+            }
+            else
+            {
+                if (pIsSave == false || (StartScan == DateTime.MinValue && (
+                        MW.State == eStateMainWindows.WaitInput || MW.State == eStateMainWindows.WaitFindWares || MW.State == eStateMainWindows.WaitInputPrice || MW.State == eStateMainWindows.WaitInputIssueCard)))
+                    StartScan = DateTime.Now;
+            }
+        }
+        /*
+        public void NewReceipt()
+        {
+            GetNewIdReceipt();
+            if (MW.curReceipt != null)
+                MW.s.NewReceipt(MW.curReceipt.CodeReceipt);
+            if (StartScan != DateTime.MinValue) StartScan = DateTime.Now;
+            //Dispatcher.BeginInvoke(new ThreadStart(() => { ShowClientBonus.Visibility = Visibility.Collapsed; }));
+            EF.PutToDisplay(MW.curReceipt);
+            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"CodeReceipt=>{MW.curReceipt?.CodeReceipt}");
+        }*/
 
     }
 }

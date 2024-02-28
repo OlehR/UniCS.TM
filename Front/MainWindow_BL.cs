@@ -757,7 +757,7 @@ namespace Front
 
         public void NewReceipt()
         {
-            SetCurReceipt( Bl.GetNewIdReceipt());
+            Bl.GetNewIdReceipt();
             if (curReceipt != null)  
                 s.NewReceipt(curReceipt.CodeReceipt);
             if (StartScan != DateTime.MinValue) StartScan = DateTime.Now;
