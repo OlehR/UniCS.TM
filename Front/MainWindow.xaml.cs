@@ -505,7 +505,9 @@ namespace Front
             try
             {
                 var OldClient = curReceipt?.Client;
+                curReceipt = new(); //Через дивний баг коли curReceipt.Wares залишалось порожне. а в pReceipt було з записами.
                 curReceipt = pReceipt;
+
                 if (curReceipt == null)
                 {
                     Dispatcher.BeginInvoke(new ThreadStart(() => { ListWares?.Clear(); }));
@@ -683,7 +685,7 @@ namespace Front
                     if (State != eStateMainWindows.ProcessPay)
                         EF.StopMultipleTone();
 
-                    TimeScan();
+                    Blf.TimeScan();
 
                     //Генеруємо з кастомні вікна
                     if (TypeAccessWait == eTypeAccess.FixWeight)
@@ -1017,7 +1019,7 @@ namespace Front
             }
         }
 
-        void TimeScan(bool? pIsSave = null)
+        /*void TimeScan(bool? pIsSave = null)
         {
             if ((State == eStateMainWindows.WaitAdmin && !CS.IsProblem) || State == eStateMainWindows.AdminPanel || State == eStateMainWindows.WaitAdminLogin ||
                        State == eStateMainWindows.ChoicePaymentMethod || State == eStateMainWindows.ProcessPay || State == eStateMainWindows.StartWindow || pIsSave == true)
@@ -1034,7 +1036,7 @@ namespace Front
                         State == eStateMainWindows.WaitInput || State == eStateMainWindows.WaitFindWares || State == eStateMainWindows.WaitInputPrice || State == eStateMainWindows.WaitInputIssueCard)))
                     StartScan = DateTime.Now;
             }
-        }
+        }*/
 
         private void _Delete(object sender, RoutedEventArgs e)
         {
@@ -1125,7 +1127,7 @@ namespace Front
         private void _Search(object sender, RoutedEventArgs e) => SetStateView(eStateMainWindows.WaitFindWares);
 
 
-        void IsPrises(decimal pQuantity = 0m, decimal pPrice = 0m)
+        /*void IsPrises(decimal pQuantity = 0m, decimal pPrice = 0m)
         {
             if (CurWares.TypeWares == eTypeWares.Alcohol && CurWares?.Price > 0m)
             {
@@ -1147,6 +1149,7 @@ namespace Front
             if (CurWares.IsMultiplePrices && pPrice > 0m)
                 CurWares = null;
         }
+        */
 
         private void _ButtonHelp(object sender, RoutedEventArgs e)
         {
@@ -1157,7 +1160,7 @@ namespace Front
         {
             if (ControlScaleCurrentWeight > 0 && ControlScaleCurrentWeight < Global.MaxWeightBag)
             {
-                NewReceipt();
+                Blf.NewReceipt();
                 Bl.AddOwnBag(curReceipt, Convert.ToDecimal(ControlScaleCurrentWeight));
                 SetStateView(eStateMainWindows.WaitInput);
             }
@@ -1176,7 +1179,7 @@ namespace Front
 
         private void StartBuy(object sender, RoutedEventArgs e)
         {
-            NewReceipt();
+            Blf.NewReceipt();
             SetStateView(eStateMainWindows.WaitInput);
         }
 
@@ -1258,7 +1261,7 @@ namespace Front
         {
         }
 
-        private string GetExciseStamp(string pBarCode)
+        /*private string GetExciseStamp(string pBarCode)
         {
             if (pBarCode.Contains("t.gov.ua"))
             {
@@ -1271,25 +1274,27 @@ namespace Front
                 return pBarCode;
             return null;
         }
+        */
+
         public void StartOpenMoneyBox()
         {
             EF.OpenMoneyBox();
         }
         private void AddExciseStamp(object sender, RoutedEventArgs e)
         {
-            AddExciseStamp(TBExciseStamp.Text);
+            Blf.AddExciseStamp(TBExciseStamp.Text);
             KBAdmin.SetInput(null);
         }
 
         private void ChangedExciseStamp(object sender, TextChangedEventArgs e)
         {
             TextBox textBox = (TextBox)sender;
-            IsExciseStamp = !string.IsNullOrEmpty(GetExciseStamp(textBox.Text));
+            IsExciseStamp = !string.IsNullOrEmpty(Blf.GetExciseStamp(textBox.Text));
         }
 
         private void ExciseStampNone(object sender, RoutedEventArgs e)
         {
-            AddExciseStamp("None");
+            Blf.AddExciseStamp("None");
             Bl.AddEventAge(curReceipt);
         }
 
@@ -1347,7 +1352,7 @@ namespace Front
 
                     if (res.Id == 6)
                     {
-                        NewReceipt();
+                        Blf.NewReceipt();
                         SetStateView(eStateMainWindows.StartWindow);
                         return;
                     }
@@ -1412,7 +1417,7 @@ namespace Front
         private void FindClientByPhone(string pResult)
         {
             if (curReceipt == null)
-                NewReceipt();
+                Blf.NewReceipt();
             if (pResult.Length == 4)
             {
                 if (int.TryParse(pResult.Substring(0, 4), out int res))
@@ -1483,9 +1488,9 @@ namespace Front
                 {
                     if (res)
                     {
-                        TimeScan(true);
+                        Blf.TimeScan(true);
                         ReceiptPostpone = curReceipt;
-                        NewReceipt();
+                        Blf.NewReceipt();
                         WaresList.Focus();
                     }
                 };
@@ -1496,7 +1501,7 @@ namespace Front
                 {
                     //if (Client != null) ShowClientBonus.Visibility = Visibility.Visible;
 
-                    TimeScan(false);
+                    Blf.TimeScan(false);
                     Global.OnReceiptCalculationComplete?.Invoke(ReceiptPostpone);
                     ReceiptPostpone = null;
                     WaresList.Focus();

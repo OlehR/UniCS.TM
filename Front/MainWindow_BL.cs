@@ -78,7 +78,7 @@ namespace Front
                     SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ErrorEquipment, null);
             };
 
-            EquipmentFront.OnBarCode += GetBarCode;
+            EquipmentFront.OnBarCode += Blf.GetBarCode;
 
 
             //!!!TMP Костиль бо не працює підписка на рівні IssueCardUC
@@ -350,7 +350,7 @@ namespace Front
             SetStateView(eStateMainWindows.AdminPanel);
         }
 
-        public void GetBarCode(string pBarCode, string pTypeBarCode)
+        /*public void GetBarCode(string pBarCode, string pTypeBarCode)
         {
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"(pBarCode=>{pBarCode},  pTypeBarCode=>{pTypeBarCode})");
             if (State == eStateMainWindows.StartWindow)
@@ -427,7 +427,8 @@ namespace Front
                     SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.AdminPanel);
 
         }
-
+        */
+        
         public void AddWares(int pCodeWares, int pCodeUnit = 0, decimal pQuantity = 0m, decimal pPrice = 0m, GW pGV = null)
         {
             if (pGV != null)
@@ -459,11 +460,11 @@ namespace Front
             if (pCodeWares > 0)
             {
                 if (curReceipt == null)
-                    NewReceipt();
+                    Blf.NewReceipt();
                 CurWares = Bl.AddWaresCode(curReceipt, pCodeWares, pCodeUnit, pQuantity, pPrice);
 
                 if (CurWares != null)
-                    IsPrises(pQuantity, pPrice);
+                    Blf.IsPrises(pQuantity, pPrice);
             }
         }
 
@@ -723,6 +724,7 @@ namespace Front
             }
         }
 
+        /*
         void AddExciseStamp(string pES)
         {
             if (CurWares == null)
@@ -754,8 +756,9 @@ namespace Front
                     CustomMessage.Show("Дана акцизна марка вже використана!", "Увага", eTypeMessage.Error);
             }
         }
-
-        public void NewReceipt()
+        */
+        
+        /*public void NewReceipt()
         {
             Bl.GetNewIdReceipt();
             if (curReceipt != null)  
@@ -764,7 +767,7 @@ namespace Front
             //Dispatcher.BeginInvoke(new ThreadStart(() => { ShowClientBonus.Visibility = Visibility.Collapsed; }));
             EF.PutToDisplay(curReceipt);
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"CodeReceipt=>{curReceipt?.CodeReceipt}");
-        }
+        }*/
 
         public void FillPays(Receipt pR)
         {

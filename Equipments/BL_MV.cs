@@ -27,10 +27,8 @@ namespace Front.Equipments
         
 
         public static Action<eStateMainWindows, eTypeAccess, ReceiptWares, CustomWindow, eSender> OnSetStateView { get; set; }
-        public void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine, eTypeAccess pTypeAccess = eTypeAccess.NoDefine, ReceiptWares pRW = null, CustomWindow pCW = null, eSender pS = eSender.NotDefine)
-        {
-            OnSetStateView?.Invoke(pSMV, pTypeAccess, pRW, pCW, pS);
-        }
+        public void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine, eTypeAccess pTypeAccess = eTypeAccess.NoDefine, ReceiptWares pRW = null, CustomWindow pCW = null, eSender pS = eSender.NotDefine)=>        
+            OnSetStateView?.Invoke(pSMV, pTypeAccess, pRW, pCW, pS);        
         
         public void GetBarCode(string pBarCode, string pTypeBarCode)
         {
@@ -107,7 +105,7 @@ namespace Front.Equipments
 
         }        
        
-        private string GetExciseStamp(string pBarCode)
+        public string GetExciseStamp(string pBarCode)
         {
             if (pBarCode.Contains("t.gov.ua"))
             {
@@ -121,7 +119,7 @@ namespace Front.Equipments
             return null;
         }
 
-        void AddExciseStamp(string pES)
+        public void AddExciseStamp(string pES)
         {
             if (MW.CurWares == null)
                 MW.CurWares = MW.curReceipt.GetLastWares;
@@ -153,7 +151,7 @@ namespace Front.Equipments
             }
         }
 
-        void IsPrises(decimal pQuantity = 0m, decimal pPrice = 0m)
+        public void IsPrises(decimal pQuantity = 0m, decimal pPrice = 0m)
         {
             if (MW.CurWares.TypeWares == eTypeWares.Alcohol && MW.CurWares?.Price > 0m)
             {
@@ -177,7 +175,8 @@ namespace Front.Equipments
         }
 
         DateTime StartScan = DateTime.MinValue;
-        void TimeScan(bool? pIsSave = null)
+
+        public void TimeScan(bool? pIsSave = null)
         {
             if ((MW.State == eStateMainWindows.WaitAdmin && !MW.CS.IsProblem) || MW.State == eStateMainWindows.AdminPanel || MW.State == eStateMainWindows.WaitAdminLogin ||
                        MW.State == eStateMainWindows.ChoicePaymentMethod || MW.State == eStateMainWindows.ProcessPay || MW.State == eStateMainWindows.StartWindow || pIsSave == true)

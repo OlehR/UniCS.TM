@@ -989,7 +989,7 @@ namespace Front.Control
                     FindChecksByDate(null, null);
                     var R = Bl.GetReceiptHead(MW.curReceipt, true);
                     if (R.StateReceipt == eStateReceipt.Canceled)
-                        MW.NewReceipt();
+                        MW.Blf.NewReceipt();
                     else
                         Global.OnReceiptCalculationComplete?.Invoke(R);
 
