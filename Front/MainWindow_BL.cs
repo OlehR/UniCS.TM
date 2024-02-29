@@ -301,7 +301,7 @@ namespace Front
                     }
                     break;
                 case eTypeAccess.DelReciept:
-                    _ = VR.SendMessageAsync(Global.IdWorkPlace, "", 0, 0, curReceipt?.SumTotal??0, VR.eTypeVRMessage.DelReceipt);
+                    VR.SendMessage(Global.IdWorkPlace, "", 0, 0, curReceipt?.SumTotal??0, VR.eTypeVRMessage.DelReceipt);
                     Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
                     SetCurReceipt(null);
                     TypeAccessWait = eTypeAccess.NoDefine;

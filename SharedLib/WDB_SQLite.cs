@@ -347,7 +347,7 @@ namespace SharedLib
                     if (parW != null)
                     {
                         var SumAll = r.Wares.Sum(d => d.Sum - d.SumDiscount);
-                        _ = VR.SendMessageAsync(parW.IdWorkplace, parW.NameWares, parW.Articl, parW.Quantity, parW.Sum, VR.eTypeVRMessage.AddWares, SumAll);
+                        VR.SendMessage(parW.IdWorkplace, parW.NameWares, parW.Articl, parW.Quantity, parW.Sum, VR.eTypeVRMessage.AddWares, SumAll);
                     }
                 }
             });

@@ -17,6 +17,12 @@ namespace SharedLib
             DeleteWares,
             DelReceipt
         }
+        public static void SendMessage(int IdWorkplace, string pStr, int pCode, decimal pQuantity, decimal pSum, eTypeVRMessage pType = eTypeVRMessage.AddWares, decimal pSumAll = 0)
+        {
+            Task.Run(() => SendMessageAsync(IdWorkplace, pStr, pCode, pQuantity, pSum, pType, pSumAll));
+        }
+
+
         public static async Task<string> SendMessageAsync(int IdWorkplace, string pStr, int pCode, decimal pQuantity, decimal pSum, eTypeVRMessage pType = eTypeVRMessage.AddWares, decimal pSumAll=0)
         {
             pStr = pStr.ToDelXML(); //Replace('&', ' ');
