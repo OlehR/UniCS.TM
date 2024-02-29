@@ -1437,7 +1437,6 @@ namespace Front
                 Background.Visibility = Visibility.Collapsed;
                 BackgroundWares.Visibility = Visibility.Collapsed;
             }
-            SetStateView(eStateMainWindows.WaitInput);
         }
 
         private void CustomWindowVerificationText(object sender, TextChangedEventArgs e)
