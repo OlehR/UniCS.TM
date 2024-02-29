@@ -59,7 +59,7 @@ namespace SharedLib
             }
             catch (Exception ex) 
             {
-                var r = ex.Message;
+                FileLogger.WriteLogMessage("VR.SendMessageAsync",ex);
             };
 
             return res;
