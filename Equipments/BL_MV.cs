@@ -9,18 +9,30 @@ using ModelMID.DB;
 using SharedLib;
 using Utils;
 
-namespace SharedLib
+namespace Front.Equipments
 {
-    public partial class BL
+    public partial class BLF
     {
+        static BLF sBLF;
+        public static BLF GetBLF { get { return sBLF ?? new BLF(); } }
+        
         IMW MW; 
+        BL Bl { get { return MW?.Bl; } }
+        EquipmentFront EF { get { return MW?.EF; } }
+        public BLF()
+        {
+            sBLF = this;
+        }
+        public void Init(IMW pMW) => MW = pMW;
+        
+
         public static Action<eStateMainWindows, eTypeAccess, ReceiptWares, CustomWindow, eSender> OnSetStateView { get; set; }
         public void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine, eTypeAccess pTypeAccess = eTypeAccess.NoDefine, ReceiptWares pRW = null, CustomWindow pCW = null, eSender pS = eSender.NotDefine)
         {
             OnSetStateView?.Invoke(pSMV, pTypeAccess, pRW, pCW, pS);
         }
         
-        /*public void GetBarCode(string pBarCode, string pTypeBarCode)
+        public void GetBarCode(string pBarCode, string pTypeBarCode)
         {
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"(pBarCode=>{pBarCode},  pTypeBarCode=>{pTypeBarCode})");
             if (MW.State == eStateMainWindows.StartWindow)
@@ -40,14 +52,14 @@ namespace SharedLib
                         string Time = QR[37..56];
                         DateTime dt = Time.ToDateTime("dd.MM.yyyy HH:mm:ss");
                         if ((DateTime.Now - dt).TotalSeconds < 120)
-                            GetDiscount(new FindClient { BarCode = BarCode }, MW.curReceipt);
+                            Bl.GetDiscount(new FindClient { BarCode = BarCode }, MW.curReceipt);
                     }
                 }
             }
 
-            var u = GetUserByBarCode(pBarCode);
+            var u = Bl.GetUserByBarCode(pBarCode);
             if (u != null)
-            { OnAdminBarCode?.Invoke(u); return; }
+            { Bl.OnAdminBarCode?.Invoke(u); return; }
 
             if (MW.TypeAccessWait == eTypeAccess.ExciseStamp)
             {
@@ -61,13 +73,13 @@ namespace SharedLib
             else
             {
                 ReceiptWares w = null;
-                if (IsAddNewWares && (MW.State == eStateMainWindows.WaitInput || MW.State == eStateMainWindows.StartWindow))
+                if (MW.IsAddNewWares && (MW.State == eStateMainWindows.WaitInput || MW.State == eStateMainWindows.StartWindow))
                 {
                     if (MW.curReceipt == null || !MW.curReceipt.IsLockChange)
                     {
                         if (MW.curReceipt == null)
                             NewReceipt();
-                        w = AddWaresBarCode(MW.curReceipt, pBarCode, 1);
+                        w = Bl.AddWaresBarCode(MW.curReceipt, pBarCode, 1);
                         if (w != null && w.CodeWares > 0)
                         {
                             MW.CurWares = w;
@@ -77,25 +89,24 @@ namespace SharedLib
                 }
                 else
                 {
-                    w = AddWaresBarCode(MW.curReceipt, pBarCode, 1, true);
+                    w = Bl.AddWaresBarCode(MW.curReceipt, pBarCode, 1, true);
                 }
                 if (w != null)
                     return;
 
                 if (MW.curReceipt != null)
                 {
-                    var c = GetClientByBarCode(MW.curReceipt, pBarCode.ToLower());
+                    var c = Bl.GetClientByBarCode(MW.curReceipt, pBarCode.ToLower());
                     if (c != null) return;
                 }
             }
 
-            if ((MW.State != eStateMainWindows.WaitInput && MW.State != eStateMainWindows.StartWindow) || MW.curReceipt?.IsLockChange == true || !IsAddNewWares)
+            if ((MW.State != eStateMainWindows.WaitInput && MW.State != eStateMainWindows.StartWindow) || MW.curReceipt?.IsLockChange == true || !MW.IsAddNewWares)
                 if (MW.State != eStateMainWindows.ProcessPay && MW.State != eStateMainWindows.ProcessPrintReceipt && MW.State != eStateMainWindows.WaitCustomWindows)
                     SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.AdminPanel);
 
-        }
-        
-      */ 
+        }        
+       
         private string GetExciseStamp(string pBarCode)
         {
             if (pBarCode.Contains("t.gov.ua"))
@@ -120,7 +131,7 @@ namespace SharedLib
                 {
                     if (Global.Settings.IsCheckExciseStamp)
                     {
-                        var res = ds.CheckExciseStamp(new ExciseStamp(MW.CurWares, pES));
+                        var res = Bl.ds.CheckExciseStamp(new ExciseStamp(MW.CurWares, pES));
                         if (res != null)
                         {
                             if (!res.Equals(MW.CurWares) && res.State >= 0)
@@ -133,7 +144,7 @@ namespace SharedLib
                 }
                 if (MW.CurWares.AddExciseStamp(pES))
                 {                 //Додання акцизноії марки до алкоголю
-                    UpdateExciseStamp(new List<ReceiptWares>() { MW.CurWares });
+                    Bl.UpdateExciseStamp(new List<ReceiptWares>() { MW.CurWares });
                     MW.TypeAccessWait = eTypeAccess.NoDefine;
                     SetStateView(eStateMainWindows.WaitInput);
                 }
@@ -173,7 +184,7 @@ namespace SharedLib
             {
                 if (StartScan != DateTime.MinValue)
                 {
-                    SaveReceiptEvents(new List<ReceiptEvent>() { new ReceiptEvent(MW.curReceipt) { ResolvedAt = StartScan, EventType = eReceiptEventType.TimeScanReceipt, EventName = "Час сканування чека" } }, false);
+                    Bl.SaveReceiptEvents(new List<ReceiptEvent>() { new ReceiptEvent(MW.curReceipt) { ResolvedAt = StartScan, EventType = eReceiptEventType.TimeScanReceipt, EventName = "Час сканування чека" } }, false);
                     StartScan = DateTime.MinValue;
                 }
             }
@@ -184,17 +195,17 @@ namespace SharedLib
                     StartScan = DateTime.Now;
             }
         }
-        /*
+        
         public void NewReceipt()
         {
-            GetNewIdReceipt();
+            Bl.GetNewIdReceipt();
             if (MW.curReceipt != null)
                 MW.s.NewReceipt(MW.curReceipt.CodeReceipt);
             if (StartScan != DateTime.MinValue) StartScan = DateTime.Now;
             //Dispatcher.BeginInvoke(new ThreadStart(() => { ShowClientBonus.Visibility = Visibility.Collapsed; }));
             EF.PutToDisplay(MW.curReceipt);
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"CodeReceipt=>{MW.curReceipt?.CodeReceipt}");
-        }*/
+        }
 
     }
 }

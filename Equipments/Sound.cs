@@ -1,11 +1,12 @@
 ﻿using ModelMID;
+using SharedLib;
 using System.Collections.Generic;
 using System.IO;
 using System.Media;
 using System.Threading.Tasks;
 using Utils;
 
-namespace SharedLib
+namespace Front.Equipments
 {
     public enum eTypeSound
     {

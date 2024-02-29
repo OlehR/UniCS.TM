@@ -30,24 +30,25 @@ using QRCoder;
 
 namespace Front
 {
-    public partial class MainWindow : Window, INotifyPropertyChanged
+    public partial class MainWindow : Window, INotifyPropertyChanged,IMW
     {
         public string Version { get { return Assembly.GetExecutingAssembly().GetName().Version.ToString(); } }
         public event PropertyChangedEventHandler PropertyChanged;
         public Access Access = Access.GetAccess();
-        public BL Bl;
-        public EquipmentFront EF;
+        public BL Bl { get; set; } = null;
+        public BLF Blf { get; set; } = null;
+        public EquipmentFront EF { get; set; } = null;
         public ControlScale CS { get; set; }
         Action<eCommand, WorkPlace, Status> SocketAnsver;
         public WorkPlace MainWorkplace { get; set; } = new();
         public WorkPlace RemoteWorkplace { get; set; } = new();
 
-        Sound s;
+        public Sound s { get; set; }
         public string Clock { get; set; } = DateTime.Now.ToShortDateString();
         public User AdminSSC { get; set; } = null;
         public DateTime DTAdminSSC { get; set; }
 
-        public Receipt curReceipt;//{ get; set; } = null;
+        public Receipt curReceipt{ get; set; } = null;
         public Receipt ReceiptPostpone = null;
         /// <summary>
         /// Можливість правки кількості для замовлень
@@ -67,7 +68,7 @@ namespace Front
 
         public GW CurW { get; set; } = null;
 
-        public eStateMainWindows State = eStateMainWindows.StartWindow;
+        public eStateMainWindows State { get; set; } = eStateMainWindows.StartWindow;
         public eTypeAccess TypeAccessWait { get; set; }
         public ObservableCollection<ReceiptWares> ListWares { get; set; }
         public CustomWindow customWindow { get; set; }
@@ -344,7 +345,9 @@ namespace Front
 
             Access.СurUser = new User() { TypeUser = eTypeUser.Client, CodeUser = 99999999, Login = "Client", NameUser = "Client" };
 
-            Bl = new BL();
+            Bl = new();
+            Blf = BLF.GetBLF;
+            Blf.Init(this);
             EF = new EquipmentFront();
             KeyUp += SetKey;
             InitAction();
