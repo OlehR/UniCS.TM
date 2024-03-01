@@ -25,6 +25,7 @@ namespace Front
         {
             InitializeComponent();
             mainThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+            System.Threading.Thread.CurrentThread.CurrentUICulture = _Language;
         }
 
         protected override void OnStartup(StartupEventArgs e)

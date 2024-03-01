@@ -88,6 +88,8 @@ namespace Front
                   IssueCardUC.SetBarCode(pBarCode, pTypeBarCode);
             };
 
+            BLF.OnSetStateView += SetStateView;
+
             Global.OnReceiptCalculationComplete += (pReceipt) =>
             {
                 try
