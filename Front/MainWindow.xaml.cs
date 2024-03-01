@@ -108,8 +108,9 @@ namespace Front
         {
             get
             {
-                return (MoneySum >= 0 && WaresQuantity != "0" && IsAddNewWares)
-                                                           || (curReceipt?.TypeReceipt == eTypeReceipt.Refund && MoneySum > 0) || curReceipt?.StateReceipt == eStateReceipt.Pay;
+                return (MoneySum >= 0 && WaresQuantity != "0" && (IsAddNewWares || State == eStateMainWindows.FindClientByPhone)) 
+                    || (curReceipt?.TypeReceipt == eTypeReceipt.Refund && MoneySum > 0) 
+                    || curReceipt?.StateReceipt == eStateReceipt.Pay;
             }
         }
 
