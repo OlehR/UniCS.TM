@@ -154,14 +154,14 @@ public SearchViewModel()
             viewModel.TextChanged += KeyBoard_TextChanged;
             CurrentPage = viewModel;
             Bl = BL.GetBL;
-            var Res = Bl.GetDataFindWares(CodeFastGroup, CurrentText, new ModelMID.IdReceipt(), ref OffSet, ref MaxPage, ref Limit);
+            Blf = BLF.GetBLF;
+            var Res = Blf.GetDataFindWares(CodeFastGroup, CurrentText, new ModelMID.IdReceipt(), ref OffSet, ref MaxPage, ref Limit);
             AllProducts = Res?.Select(el => new GWA(el)).ToList();
             OnPageProducts = AllProducts.GetRange(Limit * (Current-1), Limit);
             UpdatePageProducts();
             if (AllProducts.Count > Limit)
             {
                 IsRightEnable = true;
-
             }
             MaxPage = (int)Math.Ceiling((decimal)AllProducts.Count / Limit);
 

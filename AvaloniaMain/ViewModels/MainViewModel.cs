@@ -1,6 +1,7 @@
 ﻿using AvaloniaMain.Models;
 using AvaloniaMain.Views;
 using Front;
+using Front.Equipments;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ModelMID;
 using ReactiveUI;
@@ -13,18 +14,21 @@ using System.Threading.Tasks;
 
 namespace AvaloniaMain.ViewModels
 {
-    public partial class MainViewModel : ViewModelBase
+    public partial class MainViewModel : ViewModelBase,IMW
     {
+        public Receipt curReceipt { get; set; }
+        public ReceiptWares CurWares { get; set; }
+        public Client Client { get { return curReceipt?.Client; } }
+        public Sound s { get; set; }
+        public ControlScale CS { get; set; }
+        public BL Bl { get; set; }
+        public EquipmentFront EF { get; set; }
+        public eStateMainWindows State { get; set; }
+        public eTypeAccess TypeAccessWait { get; set; }
 
         public Client client=new Client();
-        public BL Bl;
-        public EquipmentFront EF;
-        public ControlScale CS { get; set; }
 
-
-        public Receipt curReceipt;
-        public ReceiptWares CurWares { get; set; } = null;
-        public Client? Client { get { return curReceipt?.Client; } }
+        public BLF Blf;
 
         private ViewModelBase? _currentPage;
         public ViewModelBase? CurrentPage
@@ -195,6 +199,8 @@ namespace AvaloniaMain.ViewModels
         public MainViewModel()
         {
             Bl = BL.GetBL;
+            Blf = new BLF();
+            Blf.Init(this);
             EF = new EquipmentFront();
 
             EquipmentFront.OnBarCode += (pBarCode, pTypeBarCode) => GetBarCode(pBarCode, pTypeBarCode);

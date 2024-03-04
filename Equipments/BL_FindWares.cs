@@ -17,7 +17,8 @@ namespace Front.Equipments
             IEnumerable<GW>? WG = null;
             if (pCodeFastGroup == 0 && pWaresName.Length == 0)
             {
-                var aa = Bl.db.GetFastGroup(Global.CodeWarehouse)?.Select(r => new GW(r)).ToList();
+                var a = Bl.db.GetFastGroup(Global.CodeWarehouse);
+                var aa=a?.Select(r => new GW(r))?.ToList();
                 pMaxPage = aa.Count() / pLimit;
                 for (int i = 0; i < pLimit * pOffSet; i++)
                     aa.RemoveAt(0);
