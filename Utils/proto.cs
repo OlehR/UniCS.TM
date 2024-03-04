@@ -85,7 +85,16 @@ namespace Utils
             if (!Decimal.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out res))
                 res = pDefault;
             return res;
-        }        
+        }
+
+        public static double ToDouble(this string s, double pDefault = 0)
+        {
+            double res;
+            s = s.Replace(',', '.');
+            if (!double.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out res))
+                res = pDefault;
+            return res;
+        }
 
         public static string ToS(this decimal s)
         {

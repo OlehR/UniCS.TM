@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 using System;
 
 using Avalonia.Controls.Primitives;
-using Avalonia.Media.Imaging;
-using ModelMID;
 using ReactiveUI;
 using SharedLib;
 using System;
@@ -27,6 +25,7 @@ namespace AvaloniaMain.ViewModels
     internal class SearchViewModel : ViewModelBase
     {
         BL Bl;
+        BLF Blf;
         int CodeFastGroup = 0;
         int OffSet = 0;
         int MaxPage = 0;

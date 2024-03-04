@@ -257,10 +257,10 @@ namespace Front.Control
         {
             IdReceipt IdR = new() { CodePeriod = MW.curReceipt.CodePeriod, IdWorkplacePay = Global.IdWorkPlace };
             decimal SumCash = MW.EF.GetSumInCash(IdR);// Bl.db.GetSumCash(IdR);
-            MW.InputNumberPhone.Desciption = $"Введіть суму видачі. В касі {SumCash}₴";
-            MW.InputNumberPhone.ValidationMask = "";
-            MW.InputNumberPhone.Result = "";
-            MW.InputNumberPhone.CallBackResult = (string result) =>
+            PaymentWindowUC_NumericPad.Desciption = $"Введіть суму видачі. В касі {SumCash}₴";
+            PaymentWindowUC_NumericPad.ValidationMask = "";
+            PaymentWindowUC_NumericPad.Result = "";
+            PaymentWindowUC_NumericPad.CallBackResult = (string result) =>
             {
 
                 if (!string.IsNullOrEmpty(result))
@@ -281,7 +281,7 @@ namespace Front.Control
                 BackgroundPayment.Visibility = Visibility.Collapsed;
             };
             BackgroundPayment.Visibility = Visibility.Visible;
-            MW.NumericPad.Visibility = Visibility.Visible;
+            PaymentWindow_NumericPad.Visibility = Visibility.Visible;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCashPayment"));
             Rounding();
         }
@@ -360,13 +360,13 @@ namespace Front.Control
                     RoundingDownPrice(MoneySum, 10);
                     break;
                 case "enterAmount":
-                    MW.InputNumberPhone.Desciption = $"Максимальна сума списання: {SumMaxWallet}";
-                    MW.InputNumberPhone.ValidationMask = "";
-                    MW.InputNumberPhone.Result = "";
-                    MW.InputNumberPhone.IsEnableComma = true;
-                    MW.NumericPad.Visibility = Visibility.Visible;
+                    PaymentWindowUC_NumericPad.Desciption = $"Максимальна сума списання: {SumMaxWallet}";
+                    PaymentWindowUC_NumericPad.ValidationMask = "";
+                    PaymentWindowUC_NumericPad.Result = "";
+                    PaymentWindowUC_NumericPad.IsEnableComma = true;
+                    PaymentWindow_NumericPad.Visibility = Visibility.Visible;
                     BackgroundPayment.Visibility = Visibility.Visible;
-                    MW.InputNumberPhone.CallBackResult = (string result) =>
+                    PaymentWindowUC_NumericPad.CallBackResult = (string result) =>
                     {
                         tmp = string.IsNullOrEmpty(result) ? 0 : Convert.ToDecimal(result);
                         //if (tmp > MoneySum)

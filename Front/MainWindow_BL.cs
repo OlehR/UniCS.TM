@@ -78,6 +78,18 @@ namespace Front
                     SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ErrorEquipment, null);
             };
 
+            EquipmentFront.OnBarCode += Blf.GetBarCode;
+
+
+            //!!!TMP Костиль бо не працює підписка на рівні IssueCardUC
+            EquipmentFront.OnBarCode += (pBarCode, pTypeBarCode) =>
+            {
+                if(State == eStateMainWindows.WaitInputIssueCard)
+                  IssueCardUC.SetBarCode(pBarCode, pTypeBarCode);
+            };
+
+            BLF.OnSetStateView += SetStateView;
+
             Global.OnReceiptCalculationComplete += (pReceipt) =>
             {
                 try
@@ -291,7 +303,7 @@ namespace Front
                     }
                     break;
                 case eTypeAccess.DelReciept:
-                    _ = VR.SendMessageAsync(Global.IdWorkPlace, "", 0, 0, curReceipt?.SumTotal??0, VR.eTypeVRMessage.DelReceipt);
+                    VR.SendMessage(Global.IdWorkPlace, "", 0, 0, curReceipt?.SumTotal??0, VR.eTypeVRMessage.DelReceipt);
                     Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
                     SetCurReceipt(null);
                     TypeAccessWait = eTypeAccess.NoDefine;
@@ -340,20 +352,19 @@ namespace Front
             SetStateView(eStateMainWindows.AdminPanel);
         }
 
-        public void GetBarCode(string pBarCode, string pTypeBarCode)
+        /*public void GetBarCode(string pBarCode, string pTypeBarCode)
         {
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"(pBarCode=>{pBarCode},  pTypeBarCode=>{pTypeBarCode})");
             if (State == eStateMainWindows.StartWindow)
                 SetStateView(eStateMainWindows.WaitInput);
             if (State == eStateMainWindows.WaitInputIssueCard)
             {
-                IssueCardUC.SetBarCode(pBarCode);
+                //IssueCardUC.SetBarCode(pBarCode);
                 return;
             }
 
-            //Точно треба зробити через стан eStateMainWindows
-            if(Global.Settings.IsUseCardSparUkraine && NumericPad.Visibility == Visibility.Visible && "Введіть номер телефону".Equals(InputNumberPhone.Desciption))
-            {
+           if(Global.Settings.IsUseCardSparUkraine && State == eStateMainWindows.FindClientByPhone)
+           {
                // pBarCode = "MTE2MmZlMGNjLTNlZmQtNDYxZC05NThiLTFjYmI3NjQ4YjM1NDIzLjAxLjIwMjQgMTM6MDE6Mjg=";
                 if (pBarCode.Length>56 )
                 {
@@ -418,7 +429,8 @@ namespace Front
                     SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.AdminPanel);
 
         }
-
+        */
+        
         public void AddWares(int pCodeWares, int pCodeUnit = 0, decimal pQuantity = 0m, decimal pPrice = 0m, GW pGV = null)
         {
             if (pGV != null)
@@ -450,11 +462,11 @@ namespace Front
             if (pCodeWares > 0)
             {
                 if (curReceipt == null)
-                    NewReceipt();
+                    Blf.NewReceipt();
                 CurWares = Bl.AddWaresCode(curReceipt, pCodeWares, pCodeUnit, pQuantity, pPrice);
 
                 if (CurWares != null)
-                    IsPrises(pQuantity, pPrice);
+                    Blf.IsPrises(pQuantity, pPrice);
             }
         }
 
@@ -714,6 +726,7 @@ namespace Front
             }
         }
 
+        /*
         void AddExciseStamp(string pES)
         {
             if (CurWares == null)
@@ -745,17 +758,18 @@ namespace Front
                     CustomMessage.Show("Дана акцизна марка вже використана!", "Увага", eTypeMessage.Error);
             }
         }
-
-        public void NewReceipt()
+        */
+        
+        /*public void NewReceipt()
         {
-            SetCurReceipt( Bl.GetNewIdReceipt());
+            Bl.GetNewIdReceipt();
             if (curReceipt != null)  
                 s.NewReceipt(curReceipt.CodeReceipt);
             if (StartScan != DateTime.MinValue) StartScan = DateTime.Now;
             //Dispatcher.BeginInvoke(new ThreadStart(() => { ShowClientBonus.Visibility = Visibility.Collapsed; }));
             EF.PutToDisplay(curReceipt);
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"CodeReceipt=>{curReceipt?.CodeReceipt}");
-        }
+        }*/
 
         public void FillPays(Receipt pR)
         {

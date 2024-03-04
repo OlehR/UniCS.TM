@@ -13,7 +13,7 @@ using System.IO;
 
 namespace SharedLib
 {
-    public partial class BL
+    public class BL
     {
         static BL sBL;
         public WDB_SQLite db;
@@ -107,7 +107,7 @@ namespace SharedLib
             stopWatch.Start();
             // Get the elapsed time as a TimeSpan value.            
 
-            _ = VR.SendMessageAsync(pW.IdWorkplace, pW.NameWares, pW.Articl, pW.Quantity, pW.Sum);
+            VR.SendMessage(pW.IdWorkplace, pW.NameWares, pW.Articl, pW.Quantity, pW.Sum);
             stopWatch.Stop();
             TimeSpan ts = stopWatch.Elapsed;
             Console.WriteLine("\nVR=>" + ts.TotalMilliseconds + "\n");
@@ -319,7 +319,7 @@ namespace SharedLib
                 if (pQuantity == 0)
                 {
                     db.DeleteReceiptWares(w);
-                    _ = VR.SendMessageAsync(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum, VR.eTypeVRMessage.DeleteWares);
+                    VR.SendMessage(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum, VR.eTypeVRMessage.DeleteWares);
                 }
                 else
                 {                    
@@ -335,7 +335,7 @@ namespace SharedLib
                     }
 
                     res = db.UpdateQuantityWares(w);
-                    _ = VR.SendMessageAsync(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum, VR.eTypeVRMessage.UpdateWares);
+                    VR.SendMessage(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum, VR.eTypeVRMessage.UpdateWares);
                 }
                 if (Global.RecalcPriceOnLine)
                     db.RecalcPriceAsync(pReceiptWaresId);

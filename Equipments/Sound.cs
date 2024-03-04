@@ -1,20 +1,13 @@
-﻿using Front.Equipments.Implementation;
-using Front.Models;
-using ModelMID;
-using ModernExpo.SelfCheckout.Utils;
-using System;
+﻿using ModelMID;
+using SharedLib;
 using System.Collections.Generic;
-using System.Drawing.Drawing2D;
 using System.IO;
-using System.Linq;
 using System.Media;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Media;
 using Utils;
 
-namespace Front
-{ 
+namespace Front.Equipments
+{
     public enum eTypeSound
     {
         NotDefine = 0,
@@ -97,7 +90,8 @@ namespace Front
         }
 
         public void Play(eTypeSound pS)
-        {            
+        {    
+            
             if(!IsSound)
                 return;
             if (pS == eTypeSound.IncorectWeight)
@@ -107,7 +101,7 @@ namespace Front
                     return;
             }
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, pS.ToString(),eTypeLog.Expanded);
-            var FileName = Path.Combine(Global.PathCur,"Sound",App.Language.Name,pS.ToString()+ ".wav");
+            var FileName = Path.Combine(Global.PathCur,"Sound", System.Threading.Thread.CurrentThread.CurrentUICulture.Name,pS.ToString()+ ".wav");
             if(!File.Exists(FileName))
                 FileName = Path.Combine(Global.PathCur, "Sound", "en", pS.ToString()+ ".wav");// $@"D:\MID\Sound\en\{pS}.wav";
             if(File.Exists(FileName) && Player != null && LastTypeSound != pS)

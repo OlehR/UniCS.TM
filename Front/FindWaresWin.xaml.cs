@@ -11,7 +11,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Controls.Primitives;
 using System.ComponentModel;
 using System.Windows.Media;
-using Front.Models;
+using Front.Equipments;
 using System.Threading.Tasks;
 using static Front.MainWindow;
 using Utils;
@@ -24,6 +24,7 @@ namespace Front
         public event PropertyChangedEventHandler PropertyChanged;
 
         BL Bl;
+        BLF Blf;
         int CodeFastGroup = 0;
         int OffSet = 0;
         int MaxPage = 0;
@@ -90,6 +91,7 @@ namespace Front
             CreateGridForWares(); //створення гріду з товарами
             MW = pMW;
             Bl = BL.GetBL;
+            Blf = BLF.GetBLF;
             KB.SetInput(WaresName);
             NewB();
 
@@ -110,7 +112,7 @@ namespace Front
         string LastStr = null;
         void NewB()
         {
-            var WG=Bl.GetDataFindWares(CodeFastGroup, WaresName.Text, MW.curReceipt, ref OffSet, ref MaxPage, ref Limit);            
+            var WG=Blf.GetDataFindWares(CodeFastGroup, WaresName.Text, MW.curReceipt, ref OffSet, ref MaxPage, ref Limit);            
 
             ButtonUp.IsEnabled = IsUp;
             ButtonLeft.IsEnabled = (OffSet > 0);
@@ -249,7 +251,7 @@ namespace Front
                 }
                 else
                 {                    
-                    Close( Gw, Bl.GetQuantity(WaresName.Text, Gw.CodeUnit));
+                    Close( Gw, Blf.GetQuantity(WaresName.Text, Gw.CodeUnit));
                 }
         }
 

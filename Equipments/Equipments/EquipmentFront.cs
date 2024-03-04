@@ -27,6 +27,8 @@ namespace Front
         public bool IsFinishInit = false;
         public Action<double, bool> OnControlWeight { get; set; }
         public Action<double, bool> OnWeight { get; set; }
+        static public Action<string, string>? OnBarCode { get; set; }
+
         private IEnumerable<Equipment> ListEquipment = new List<Equipment>();
         //eStateEquipment _State = eStateEquipment.Off;
         readonly BL Bl = BL.GetBL;
@@ -101,34 +103,11 @@ namespace Front
             get
             {
                 return ListEquipment.Where(el => el.IsСritical == true).Max(el => el.State);
-            }
-            /* set
-             {
-                 if (_State != value)
-                     if (value == eStateEquipment.Error)
-                         _State = value;
-                     else
-                       if (value == eStateEquipment.On)
-                     {
-                         eStateEquipment st = eStateEquipment.On;
-                         foreach (var el in ListEquipment)
-                         {
-                             if (el.State == eStateEquipment.Off || el.State == eStateEquipment.Error)
-                             {
-                                 st = el.State;
-                                 break;
-                             }
-                         }
-                         _State = st;
-                     }
-                // if (_State != value) SetState?.Invoke(_State);
-             }*/
+            }            
         }
 
         public Action<StatusEquipment> SetStatus { get; set; }
-
-        //public Action<eStateEquipment> SetState { get; set; }
-
+ 
         static EquipmentFront sEquipmentFront;
 
         public static EquipmentFront GetEquipmentFront { get { return sEquipmentFront; } }
@@ -138,23 +117,18 @@ namespace Front
             builder.AddConsole();
         });
 
-        public EquipmentFront(Action<string, string> pSetBarCode, Action<StatusEquipment> pActionStatus = null)
+        public EquipmentFront( )
         {
-            ILogger<EquipmentFront> logger = LF?.CreateLogger<EquipmentFront>();
-            logger.LogDebug("Fp700 getInfo error");
-            logger.LogInformation("LogInformation Fp700 getInfo error");
-
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             sEquipmentFront = this;
             //OnControlWeight += (pWeight, pIsStable) => { pSetControlWeight?.Invoke(pWeight, pIsStable); };                
 
-
             OnWeight += (pWeight, pIsStable) =>
             { if (IsControlScale && ControlScale?.Model == eModelEquipment.VirtualControlScale) OnControlWeight?.Invoke(pWeight, pIsStable); };
-            Task.Run(() => Init(pSetBarCode, pActionStatus));
+            Task.Run(() => Init());
         }
 
-        public void Init(Action<string, string> pSetBarCode, Action<StatusEquipment> pActionStatus = null)
+        public void Init()
         {
             using ILoggerFactory loggerFactory =
            LoggerFactory.Create(builder =>
@@ -180,17 +154,17 @@ namespace Front
                         switch (el.Model)
                         {
                             case eModelEquipment.MagellanScaner:
-                                Sc = new MagellanScaner(el, config, LF, pSetBarCode);
+                                Sc = new MagellanScaner(el, config, LF, OnBarCode);
                                 Scaner = Sc;
                                 break;
                             case eModelEquipment.VirtualScaner:
-                                Sc = new VirtualScaner(el, config, LF, pSetBarCode);
+                                Sc = new VirtualScaner(el, config, LF, OnBarCode);
                                 break;
                             case eModelEquipment.ScanerCom:
-                                Sc = new ScanerCom(el, config, LF, pSetBarCode);
+                                Sc = new ScanerCom(el, config, LF, OnBarCode);
                                 break;
                             case eModelEquipment.ScanerKeyBoard:
-                                Sc = KB = new ScanerKeyBoard(el, config, LF, pSetBarCode);                                
+                                Sc = KB = new ScanerKeyBoard(el, config, LF, OnBarCode);                                
                                 break;
                             default:
                                 Sc = new Scaner(el, config);
@@ -339,23 +313,23 @@ namespace Front
                                 RRO = new Equipments.RRO_ExellioFP(el, config, LF);
                                 break;
                             case eModelEquipment.pRRO_SG:
-                                RRO = new Front.Equipments.pRRO_SG.pRRO_SG(el, config, LF, pActionStatus);
+                                RRO = new Front.Equipments.pRRO_SG.pRRO_SG(el, config, LF);
                                 break;
                             case eModelEquipment.pRRo_WebCheck:
-                                RRO = new pRRO_WebCheck(el, config, LF, pActionStatus);
+                                RRO = new pRRO_WebCheck(el, config, LF);
                                 RRO.Init();
                                 break;
                             case eModelEquipment.RRO_Maria:
-                                RRO = new RRO_Maria(el, config, LF, pActionStatus);
+                                RRO = new RRO_Maria(el, config, LF);
                                 break;
                             case eModelEquipment.VirtualRRO:
-                                RRO = new VirtualRRO(el, config, LF, pActionStatus, Printer, this);
+                                RRO = new VirtualRRO(el, config, LF, null, Printer, this);
                                 break;
                             case eModelEquipment.RRO_FP700:
-                                RRO = new RRO_FP700(el, config, LF, pActionStatus);
+                                RRO = new RRO_FP700(el, config, LF);
                                 break;
                             case eModelEquipment.pRRO_Vchasno:
-                                RRO = new pRRO_Vchasno(el, config, LF, pActionStatus);
+                                RRO = new pRRO_Vchasno(el, config, LF);
                                 break;
                             default:
                                 RRO = new Rro(el, config);

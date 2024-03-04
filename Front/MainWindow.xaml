@@ -104,7 +104,7 @@
             <Border.Effect>
                 <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
             </Border.Effect>
-            <uc:NumericPad x:Name="InputNumberPhone"   />
+            <uc:NumericPad x:Name="UC_NumericPad"   />
         </Border>
   
        

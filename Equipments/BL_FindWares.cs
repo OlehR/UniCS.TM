@@ -7,18 +7,17 @@ using ModelMID;
 using SharedLib;
 using Utils;
 
-namespace SharedLib
+namespace Front.Equipments
 {
-    public partial class BL
+    public partial class BLF
     {
-
         string LastStr = null;
         public IEnumerable<GW>? GetDataFindWares(int pCodeFastGroup,string pWaresName,IdReceipt pIdR ,ref int pOffSet,ref int pMaxPage,ref int pLimit)
         {
             IEnumerable<GW>? WG = null;
             if (pCodeFastGroup == 0 && pWaresName.Length == 0)
             {
-                var aa = db.GetFastGroup(Global.CodeWarehouse)?.Select(r => new GW(r)).ToList();
+                var aa = Bl.db.GetFastGroup(Global.CodeWarehouse)?.Select(r => new GW(r)).ToList();
                 pMaxPage = aa.Count() / pLimit;
                 for (int i = 0; i < pLimit * pOffSet; i++)
                     aa.RemoveAt(0);
@@ -31,7 +30,7 @@ namespace SharedLib
                     LastStr = pWaresName;
                     pOffSet = 0;
                 }
-                WG = GetProductsByName(pIdR, (pWaresName.Length > 1 ? pWaresName : ""), pOffSet * pLimit, pLimit, pCodeFastGroup)?.Select(r => new GW(r));
+                WG = Bl.GetProductsByName(pIdR, (pWaresName.Length > 1 ? pWaresName : ""), pOffSet * pLimit, pLimit, pCodeFastGroup)?.Select(r => new GW(r));
                 if (WG != null)
                     pMaxPage = WG.First().TotalRows / pLimit;
                 else
@@ -48,9 +47,12 @@ namespace SharedLib
                 var s = pS.Split(pS.IndexOf('*') > 0 ? '*' : '=');
                 Quantity = s[0].ToDecimal() * (pCodeUnit == Global.WeightCodeUnit ? 1000 : 1);
                 if (pCodeUnit != Global.WeightCodeUnit)
+                {
                     Quantity = Math.Round(Quantity, 0);
+                    if (Quantity == 0) Quantity=1m;
+                }
             }
-            return  Quantity;
+            return pCodeUnit != Global.WeightCodeUnit && Quantity == 0 ?1:Quantity;
         }
     }
 }

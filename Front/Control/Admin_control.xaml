@@ -2188,6 +2188,17 @@
 
                 </Grid>
             </Border>
+            <!-- цифрова клавіатура -->
+            <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
+                 Grid.Row="0" Grid.RowSpan="6"
+                 Grid.Column="0" Grid.ColumnSpan="6"
+                 Name="Admin_NumericPad" Visibility="Collapsed" Grid.ZIndex="5" 
+                CornerRadius="10" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+                </Border.Effect>
+                <uc:NumericPad x:Name="AdminUC_NumericPad"   />
+            </Border>
         </Grid>
     </Border>
 </UserControl>
