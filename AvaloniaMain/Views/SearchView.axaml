@@ -26,8 +26,7 @@
 				<TextBlock Text="Повернутись до чеку" FontSize="32" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
 
 			</Button>
-			<Image Height="100" Width="200" Source="{Binding ImageFromBinding}" />
-
+			<Image Height="100" Width="200" Source="{Binding  ImageFromBinding}" />
 			<Button Background="DarkGray" Grid.Column="1" VerticalAlignment="Top" Height="65" Width="450" CornerRadius="15" Margin="4">
 				<StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
 					<Image Source="avares://AvaloniaMain/Assets/backArrow.ico" Margin="2" Height="50" Width="56"></Image>
@@ -40,7 +39,7 @@
 			</Button>
 		</Grid>
 		<Grid   VerticalAlignment="Bottom" Grid.Row="1" ColumnDefinitions="100,*,100" Height="550">
-			<Button Grid.Column="0" BorderBrush="Black" CornerRadius="20" BorderThickness="2" Background="DarkGray" HorizontalAlignment="Left"  Margin="5,0,0,0" Height="540" Width="100">
+			<Button Command="{Binding Slide}" CommandParameter="left" IsEnabled="{Binding  IsLeftEnable}" Grid.Column="0" BorderBrush="Black" CornerRadius="20" BorderThickness="2" Background="DarkGray" HorizontalAlignment="Left"  Margin="5,0,0,0" Height="540" Width="100">
 				<Image Source="avares://AvaloniaMain/Assets/back.ico"></Image>
 			</Button>
 			<ListBox   VerticalAlignment="Top"  Grid.Column="1" ItemsSource="{Binding OnPageProductsTop }">
@@ -53,11 +52,8 @@
 					<DataTemplate>
 				<Button Background="Transparent" Grid.Column="3"  Height="260" Width="320" Grid.Row="1">
 				<Border  BorderBrush="Black" BorderThickness="2" CornerRadius="15" Margin="0" Height="260" Width="320">
-					<StackPanel Orientation="Vertical">
-						<Image Height="100" Width="200" Source="{Binding ImageFromBinding}" />
-						<TextBlock Height="80" FontWeight="Black" FontSize="22" VerticalAlignment="Center"    TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Text="{Binding Name}"></TextBlock>
+					<Image Height="220" Width="280" Source="{Binding ImageBit}" />
 
-					</StackPanel>
 				</Border>
 					
 				</Button>
@@ -75,11 +71,11 @@
 					<DataTemplate >
 						<Button Background="Transparent" Grid.Column="3"  Height="260" Width="320" Grid.Row="1">
 							<Border  BorderBrush="Black" BorderThickness="2" CornerRadius="15" Height="260" Width="320">
-								<StackPanel Orientation="Vertical">
-									<Image Height="100" Width="200" Source="C:/Pictures/Categories\\000009001.jpg " />
-									<TextBlock Height="80" FontWeight="Black" FontSize="22" VerticalAlignment="Center"    TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Text="{Binding Name}"></TextBlock>
+								
 
-								</StackPanel>
+									
+										<Image Height="220" Width="280" Source="{Binding ImageBit}" />
+
 
 							</Border>
 						</Button>
@@ -89,7 +85,7 @@
 			</ListBox>
 
 
-			<Button Grid.Column="2" BorderBrush="Black" CornerRadius="20" BorderThickness="2" Background="DarkGray" Margin="0,0,5,0"  HorizontalAlignment="Right" Height="540" Width="100">
+			<Button Command="{Binding Slide}" CommandParameter="right" IsEnabled="{Binding  IsRightEnable}" Grid.Column="2" BorderBrush="Black" CornerRadius="20" BorderThickness="2" Background="DarkGray" Margin="0,0,5,0"  HorizontalAlignment="Right" Height="540" Width="100">
 				<Image Source="avares://AvaloniaMain/Assets/right.ico"></Image>
 			</Button>
 		</Grid>

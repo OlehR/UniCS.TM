@@ -1,4 +1,11 @@
-﻿using Avalonia.Controls.Primitives;
+﻿using ModelMID;
+using ReactiveUI;
+using SharedLib;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System;
+
+using Avalonia.Controls.Primitives;
 using Avalonia.Media.Imaging;
 using ModelMID;
 using ReactiveUI;
@@ -9,47 +16,53 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Text;
+using Front.Equipments;
 
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using AvaloniaMain.ViewModels.Model;
 
 namespace AvaloniaMain.ViewModels
 {
     internal class SearchViewModel : ViewModelBase
     {
         BL Bl;
-        private string _path = "C:/Pictures/Categories\\000009001.jpg";
-        public Bitmap _imageFromBinding;
-        public Bitmap ImageFromBinding
-        {
-            get => _imageFromBinding;
-            set
-            {
-                if (_imageFromBinding != value)
-                {
-                    _imageFromBinding = value;
-                    OnPropertyChanged(nameof(ImageFromBinding));
-                }
-            }
-        }
-        public string path 
-        {
-            get => _path;
-            set
-            {
-                if (_path != value)
-                {
-                    _path = value;
-                    OnPropertyChanged(nameof(path));
-                }
-            }
-        }
         int CodeFastGroup = 0;
         int OffSet = 0;
         int MaxPage = 0;
         int Limit = 10;
-        int Current = 0;
-        private List<GW> _onPageProductsTop;
-        public List<GW> OnPageProductsTop
+        int Current = 1;
+        public ReactiveCommand<string, Unit> Slide { get; }
+
+
+        private bool _IsLeftEnable = false;
+        public bool IsLeftEnable
+        {
+            get => _IsLeftEnable;
+            set
+            {
+                if (_IsLeftEnable != value)
+                {
+                    _IsLeftEnable = value;
+                    OnPropertyChanged(nameof(IsLeftEnable));
+                }
+            }
+        }
+        private bool _IsRightEnable = true;
+        public bool IsRightEnable
+        {
+            get => _IsRightEnable;
+            set
+            {
+                if (_IsRightEnable != value)
+                {
+                    _IsRightEnable = value;
+                    OnPropertyChanged(nameof(IsRightEnable));
+                }
+            }
+        }
+        private List<GWA> _onPageProductsTop;
+        public List<GWA> OnPageProductsTop
         {
             get => _onPageProductsTop;
             set
@@ -62,8 +75,8 @@ namespace AvaloniaMain.ViewModels
             }
         }
 
-        private List<GW> _onPageProductsBottom;
-        public List<GW> OnPageProductsBottom
+        private List<GWA> _onPageProductsBottom;
+        public List<GWA> OnPageProductsBottom
         {
             get => _onPageProductsBottom;
             set
@@ -76,8 +89,8 @@ namespace AvaloniaMain.ViewModels
             }
         }
 
-        private List<GW> _onPageProducts;
-        public List<GW> OnPageProducts
+        private List<GWA> _onPageProducts;
+        public List<GWA> OnPageProducts
         {
             get => _onPageProducts;
             set
@@ -90,8 +103,8 @@ namespace AvaloniaMain.ViewModels
             }
         }
 
-        private List<GW> _AllProducts;
-        public List<GW> AllProducts
+        private List<GWA> _AllProducts;
+        public List<GWA> AllProducts
         {
             get => _AllProducts;
             set
@@ -107,18 +120,18 @@ namespace AvaloniaMain.ViewModels
         private ViewModelBase _currentPage;
         public ViewModelBase CurrentPage
         {
-            get=> _currentPage;
+            get => _currentPage;
             set
             {
-                if(_currentPage!=value)
+                if (_currentPage != value)
                 {
                     _currentPage = value;
                     OnPropertyChanged(nameof(CurrentPage));
-                }    
+                }
             }
         }
-      
-        private string _currentText="";
+
+        private string _currentText = "";
         public string CurrentText
         {
             get => _currentText;
@@ -132,24 +145,28 @@ namespace AvaloniaMain.ViewModels
             }
         }
 
-        public SearchViewModel()
+public SearchViewModel()
         {
-            try
-            {
-                ImageFromBinding =
-                    ImageHelper.LoadFromFile("C:/Pictures/Categories/000009001.jpg");
-            }
-            catch (Exception ex) { }
-            
+            Slide = ReactiveCommand.Create<string>(SldeAction);
+
+
+
             var viewModel = new KeyBoardViewModel();
             viewModel.TextChanged += KeyBoard_TextChanged;
             CurrentPage = viewModel;
             Bl = BL.GetBL;
-            var Res=Bl.GetDataFindWares(CodeFastGroup, CurrentText,new ModelMID.IdReceipt(),ref OffSet,ref MaxPage,ref Limit);
-            AllProducts = (List<GW>)Res;
-            OnPageProducts = AllProducts.GetRange(Limit * Current, Limit);
+            var Res = Bl.GetDataFindWares(CodeFastGroup, CurrentText, new ModelMID.IdReceipt(), ref OffSet, ref MaxPage, ref Limit);
+            AllProducts = Res?.Select(el => new GWA(el)).ToList();
+            OnPageProducts = AllProducts.GetRange(Limit * (Current-1), Limit);
             UpdatePageProducts();
+            if (AllProducts.Count > Limit)
+            {
+                IsRightEnable = true;
 
+            }
+            MaxPage = (int)Math.Ceiling((decimal)AllProducts.Count / Limit);
+
+            IsLeftEnable = false;
 
         }
 
@@ -166,10 +183,55 @@ namespace AvaloniaMain.ViewModels
         }
         private void UpdatePageProducts()
         {
-            if (OnPageProducts != null )
+
+            if (OnPageProducts != null)
             {
-                OnPageProductsTop = OnPageProducts.GetRange(0, Limit / 2);
-                OnPageProductsBottom = OnPageProducts.GetRange(Limit / 2, Limit / 2);
+                /*foreach (var item in OnPageProducts)
+                {
+                    item.ImageBitInit();
+                }*/
+                int count = OnPageProducts.Count;
+                if(count == 1) 
+                {
+                    OnPageProductsTop = OnPageProducts.GetRange(0,1);
+                }
+                else if(count%2==0)
+                {
+                    OnPageProductsTop = OnPageProducts.GetRange(0,count/2); //4 0 1
+                    OnPageProductsBottom = OnPageProducts.GetRange(count/2,count/2); //4 2 3
+                }
+                else
+                {
+                    OnPageProductsTop = OnPageProducts.GetRange(0, count / 2+1); //5 0 1 2
+                    OnPageProductsBottom = OnPageProducts.GetRange(count / 2+1, count / 2); //5 3 4
+                }
+
+              
+            }
+        }
+        public void SldeAction(string symbol)
+        {
+            //24 right 11 curent=2 on page=10*2
+            if (symbol == "left")
+            {
+                Current--;
+                OnPageProducts = AllProducts.GetRange(Limit * (Current - 1), Limit);
+
+                UpdatePageProducts();
+                IsRightEnable = true;
+                if (Current == 1) IsLeftEnable = false;
+            }
+            else
+            {
+                Current++;
+                if(Limit *(Current - 1)+ Limit>AllProducts.Count)
+                {
+                    OnPageProducts = AllProducts.GetRange(Limit * (Current - 1), AllProducts.Count- Limit * (Current - 1));
+                }  
+                else OnPageProducts = AllProducts.GetRange(Limit * (Current - 1), Limit);
+                UpdatePageProducts();
+                IsLeftEnable = true;
+                if (Current == MaxPage) IsRightEnable = false;
             }
         }
     }

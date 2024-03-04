@@ -11,7 +11,8 @@ namespace ModelMID
 {
 	public class GW
 	{
-		public GW(FastGroup pFG)
+        public GW() { }
+        public GW(FastGroup pFG)
 		{
 			Type = 1;
 			Name = pFG.Name;
