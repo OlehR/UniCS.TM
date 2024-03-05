@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ModelMID;
 using ModelMID.DB;
+using Newtonsoft.Json;
 using SharedLib;
 using Utils;
 
@@ -204,6 +206,176 @@ namespace Front.Equipments
             //Dispatcher.BeginInvoke(new ThreadStart(() => { ShowClientBonus.Visibility = Visibility.Collapsed; }));
             EF.PutToDisplay(MW.curReceipt);
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"CodeReceipt=>{MW.curReceipt?.CodeReceipt}");
+        }
+        
+        private void CustomWindowClickButton(CustomButton res)
+        {
+            /*
+            if (res != null)
+            {
+                if (res.CustomWindow?.Id == eWindows.RestoreLastRecipt)
+                {
+                    if (res.Id == 1)
+                    {
+                        var R=Bl.GetLastReceipt();
+                        Bl.db.RecalcPriceAsync(new IdReceiptWares(R));
+                        SetStateView(eStateMainWindows.WaitInput);
+                    }
+                    if (res.Id == 2)
+                    {
+                        var Res = Bl.GetLastReceipt();
+                        Bl.SetStateReceipt(Res, eStateReceipt.Canceled);
+                        SetStateView(eStateMainWindows.StartWindow);
+                    }
+                    return;
+                }
+                if (res.CustomWindow?.Id == eWindows.ConfirmWeight)
+                {
+                    if (res.Id == -1)
+                    {
+                        MW.IsShowWeightWindows = false;
+                        SetStateView(eStateMainWindows.BlockWeight);
+                        return;
+                    }
+                    if (res.Id == 4)
+                    {
+                        MW.IsShowWeightWindows = false;
+                        EF.ControlScaleCalibrateZero();
+                        return;
+                    }
+
+                    if (res.Id == 6)
+                    {
+                        NewReceipt();
+                        SetStateView(eStateMainWindows.StartWindow);
+                        return;
+                    }
+                    if (MW.CS.RW != null)
+                    {
+                        MW.CS.RW.FixWeightQuantity = MW.CS.RW.Quantity;
+                        MW.CS.RW.FixWeight += Convert.ToDecimal(MW.CS.СurrentlyWeight);
+                        MW.CS.StateScale = eStateScale.Stabilized;
+                    }
+
+                }
+
+                if (res.CustomWindow?.Id == eWindows.ExciseStamp)
+                {
+                    if (res.Id == 32)
+                    {
+                        WaitAdminTitle.Visibility = Visibility.Visible;
+                        EF.SetColor(System.Drawing.Color.Violet);
+                        MW.s.Play(eTypeSound.WaitForAdministrator);
+                    }
+                    else
+                    if (res.Id == 33)
+                    {
+                        ExciseStampNone(null, null);
+                    }
+                    return;
+                }
+                if (res.CustomWindow?.Id == eWindows.ConfirmAge)
+                {
+                    MW.TypeAccessWait = eTypeAccess.NoDefine;
+                    SetStateView(eStateMainWindows.WaitInput);
+
+                    if (res.Id == 1)
+                        Task.Run(new Action(() => { Bl.AddEventAge(MW.curReceipt); PayAndPrint(); }));
+                    return;
+                }
+                if (res.CustomWindow?.Id == eWindows.UseBonus)
+                {
+                    LastVerifyCode = Bl.ds.GetVerifySMS(ClientPhoneNumvers[(int)res.Id]);
+                    Global.Message?.Invoke($"Код підтвердження надіслано за номером {ClientPhoneNumvers[(int)res.Id]}", eTypeMessage.Information);
+                    return;
+                }
+
+                var r = new CustomWindowAnswer()
+                {
+                    idReceipt = MW.curReceipt,
+                    Id = res.CustomWindow?.Id ?? eWindows.NoDefinition,
+                    IdButton = res.Id,
+                    Text = TextBoxCustomWindows.Text,
+                    ExtData = res.CustomWindow?.Id == eWindows.ConfirmWeight ? MW.CS?.RW : null
+                };
+                Bl.SetCustomWindows(r);
+                SetStateView(eStateMainWindows.WaitInput);
+            }*/
+        }
+
+        Status CallBackApi(string pDataApi)
+        {
+            Status Res = null;
+            /*try
+            {
+                CommandAPI<dynamic> pC = JsonConvert.DeserializeObject<CommandAPI<dynamic>>(pDataApi);
+                CommandAPI<int> CommandInt;
+                CommandAPI<string> CommandString;
+                CommandAPI<InfoRemoteCheckout> CommandRemoteInfo;
+                switch (pC.Command)
+                {
+                    case eCommand.GetCurrentReceipt:
+                        Res = new Status(0, curReceipt?.ToJSON());
+                        break;
+                    case eCommand.GetReceipt:
+                        var Command = JsonConvert.DeserializeObject<CommandAPI<IdReceipt>>(pDataApi);
+                        Res = new Status(0, Bl.GetReceiptHead(Command.Data, true)?.ToJSON());
+                        break;
+                    case eCommand.XReport:
+                        CommandInt = JsonConvert.DeserializeObject<CommandAPI<int>>(pDataApi);
+                        Res = new Status(0, EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = CommandInt.Data })?.ToJSON());
+                        break;
+                    case eCommand.OpenShift:
+                        CommandString = JsonConvert.DeserializeObject<CommandAPI<string>>(pDataApi);
+                        var u = Bl.GetUserByBarCode(CommandString.Data);
+                        if (u != null)
+                        {
+                            AdminControl.OpenShift(u);
+                            Res = new Status(0, $"Зміна відкрита:{u.NameUser}");
+                        }
+                        break;
+                    case eCommand.GeneralCondition:
+                        CommandRemoteInfo = JsonConvert.DeserializeObject<CommandAPI<InfoRemoteCheckout>>(pDataApi);
+                        var r = Bl.GetUserByBarCode(CommandRemoteInfo.Data.UserBarcode);
+                        RemoteCheckout = CommandRemoteInfo.Data;
+                        RemoteWorkplace = Bl.db.GetWorkPlace().FirstOrDefault(el => el.IdWorkplace == RemoteCheckout.RemoteIdWorkPlace);
+                        if (RemoteCheckout.RemoteCigarettesPrices.Count > 1)
+                            RemotePrices.ItemsSource = RemoteCheckout.RemoteCigarettesPrices;
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RemoteWorkplace)));
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RemoteCheckout)));
+                        Res = new Status(0, $"Загальний стан каси: {RemoteWorkplace.Name}");
+                        break;
+                    case eCommand.Confirm:
+                        CommandRemoteInfo = JsonConvert.DeserializeObject<CommandAPI<InfoRemoteCheckout>>(pDataApi);
+                        if (CommandRemoteInfo.Data.StateMainWindows == eStateMainWindows.BlockWeight || CommandRemoteInfo.Data.StateMainWindows == eStateMainWindows.ProblemWeight
+                            || CommandRemoteInfo.Data.TypeAccess == eTypeAccess.FixWeight)
+                        {
+                            CS.RW.FixWeightQuantity = CS.RW.Quantity;
+                            CS.RW.FixWeight += Convert.ToDecimal(CS.СurrentlyWeight);
+                            CS.StateScale = eStateScale.Stabilized;
+                            SetStateView(eStateMainWindows.WaitInput);
+                        }
+                        if (CommandRemoteInfo.Data.StateMainWindows == eStateMainWindows.WaitAdmin && CommandRemoteInfo.Data.TypeAccess == eTypeAccess.ChoicePrice)
+                        {
+                            Bl.AddEventAge(curReceipt);
+                            AddWares(CurWares.CodeWares, CurWares.CodeUnit, CommandRemoteInfo.Data.QuantityCigarettes, CommandRemoteInfo.Data.SelectRemoteCigarettesPrice.price);
+                            QuantityCigarettes = 1;
+                            SetStateView(eStateMainWindows.WaitInput);
+                        }
+                        Res = new Status(0, $"{CommandRemoteInfo.Data.StateMainWindows} {CommandRemoteInfo.Data.TypeAccess}");
+                        break;
+                    case eCommand.DeleteReceipt:
+                        if (curReceipt != null && curReceipt.StateReceipt == eStateReceipt.Prepare)
+                            Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
+
+                        SetCurReceipt(null);
+                        SetStateView(eStateMainWindows.StartWindow);
+                        Res = new Status(0, $"Чек видалено!");
+                        break;
+                }
+            }
+            catch (Exception ex) { Res = new Status(ex); }*/
+            return Res;
         }
 
     }

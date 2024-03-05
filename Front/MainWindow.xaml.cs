@@ -79,7 +79,9 @@ namespace Front
         public string EquipmentInfo { get; set; }
         bool _Volume = true;
         public bool Volume { get { return _Volume; } set { _Volume = value; if (s != null) s.IsSound = value; } }
-
+        /// <summary>
+        /// Треба переробити без цієї змінної!!!!
+        /// </summary>
         public bool IsShowWeightWindows { get; set; } = false;
         public bool IsConfirmAdmin { get; set; }
         public bool IsExciseStamp { get; set; }
