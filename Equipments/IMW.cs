@@ -18,6 +18,7 @@ namespace Front.Equipments
         public EquipmentFront EF { get; set; }
         public eStateMainWindows State { get; set; }
         public eTypeAccess TypeAccessWait { get; set; }
+        public bool IsShowWeightWindows { get; set; }
 
         /// <summary>
         /// Чи можна добавляти товар 

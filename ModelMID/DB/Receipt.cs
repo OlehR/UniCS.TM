@@ -27,7 +27,7 @@ namespace ModelMID
         /// <summary>
         /// переклади eTypeReceipt для відображення
         /// </summary>
-        public string TranslationTypeReceipt { get { return TypeReceipt.GetDescription(); } }        
+        public string TranslationTypeReceipt { get { return TypeReceipt.GetDescription(); } }
 
         long _CodeClient;
         public long CodeClient { get { return Client?.CodeClient ?? _CodeClient; } set { _CodeClient = value; } }
@@ -85,11 +85,11 @@ namespace ModelMID
             set { _SumCash = value; }
         }
 
-decimal _SumWallet=0;
+        decimal _SumWallet = 0;
         /// <summary>
         /// Списані/нараховані гроші скарбничка
         /// </summary>
-        public decimal SumWallet { get {  return Payment?.Any()==true? Payment.Where(el => el.TypePay == eTypePay.Wallet)?.Sum(el => el.SumPay) ?? 0 : _SumWallet; } set { _SumWallet = value; } }
+        public decimal SumWallet { get { return Payment?.Any() == true ? Payment.Where(el => el.TypePay == eTypePay.Wallet)?.Sum(el => el.SumPay) ?? 0 : _SumWallet; } set { _SumWallet = value; } }
 
         decimal _SumCreditCard;
         /// <summary>
@@ -97,7 +97,7 @@ decimal _SumWallet=0;
         /// </summary>
         public decimal SumCreditCard
         {
-            get { return (Payment != null && Payment.Any(el => el.TypePay == eTypePay.Card)  ? Payment.Where(el=>el.TypePay==eTypePay.Card).Sum(el => el.SumPay) : _SumCreditCard); }
+            get { return (Payment != null && Payment.Any(el => el.TypePay == eTypePay.Card) ? Payment.Where(el => el.TypePay == eTypePay.Card).Sum(el => el.SumPay) : _SumCreditCard); }
             set { _SumCreditCard = value; }
         }
 
@@ -105,7 +105,7 @@ decimal _SumWallet=0;
         /// <summary>
         /// Сума використаних бонусних грн.
         /// </summary>
-        public decimal SumBonus { get { return _SumBonus>0 &&_Wares==null? _SumBonus : _Wares?.Sum(el => el.SumBonus) ?? 0m; } set { _SumBonus = value; } }
+        public decimal SumBonus { get { return _SumBonus > 0 && _Wares == null ? _SumBonus : _Wares?.Sum(el => el.SumBonus) ?? 0m; } set { _SumBonus = value; } }
 
         public string CodeCreditCard { get; set; }
         public string NumberSlip { get; set; }
@@ -147,18 +147,18 @@ decimal _SumWallet=0;
                     res = _Wares.Where(el => el.IdWorkplacePay == IdWorkplacePay && el.Quantity != 0m);
                 if (IdWorkplacePay == IdWorkplace)
                 {
-                    decimal SumWallet = Math.Round( Payment?.Where(r => r.TypePay == eTypePay.Wallet).Sum(r => r.SumPay) ?? 0,2);
+                    decimal SumWallet = Math.Round(Payment?.Where(r => r.TypePay == eTypePay.Wallet).Sum(r => r.SumPay) ?? 0, 2);
                     if (SumWallet < 0)
                     {
                         var r = res.ToList();
                         r.Add(new ReceiptWares(this)
-                        { CodeWares = Global.Settings.CodeWaresWallet, Quantity = 1, CodeUnit = 19, CodeDefaultUnit = 19, Sum = -SumWallet,PriceDealer= -SumWallet, NameWares = "Скарбничка", TypeVat = 2, PercentVat = 20 });
+                        { CodeWares = Global.Settings.CodeWaresWallet, Quantity = 1, CodeUnit = 19, CodeDefaultUnit = 19, Sum = -SumWallet, PriceDealer = -SumWallet, NameWares = "Скарбничка", TypeVat = 2, PercentVat = 20 });
                         res = r;
                     }
                 }
                 return res;
             }
-            set { _Wares = value?.Where(el=>el.CodeWares!= Global.Settings?.CodeWaresWallet).ToList(); }
+            set { _Wares = value?.Where(el => el.CodeWares != Global.Settings?.CodeWaresWallet).ToList(); }
         }
 
         public IEnumerable<Payment> _Payment;
@@ -207,9 +207,9 @@ decimal _SumWallet=0;
         public int CountWeightGoods { get
             {
                 int Res = 0;
-                if (Wares != null && Wares.Any(el=>el.IsWeight))
+                if (Wares != null && Wares.Any(el => el.IsWeight))
                 {
-                    Res = Wares.Where(x => x.IsWeight).Sum(el=> el.HistoryQuantity.Count()>0? el.HistoryQuantity.Count() : 1);
+                    Res = Wares.Where(x => x.IsWeight).Sum(el => el.HistoryQuantity.Count() > 0 ? el.HistoryQuantity.Count() : 1);
                 }
                 return Res;
             } }
@@ -231,7 +231,7 @@ decimal _SumWallet=0;
         /// <summary>
         ///  Чи є товар, який потребує підтвердження віку. (0 не потребує підтверження віку)
         /// </summary>
-        public decimal AgeRestrict{ get { return _Wares?.Any()==true? _Wares?.Max(e => e.LimitAge)??0:0;}}
+        public decimal AgeRestrict { get { return _Wares?.Any() == true ? _Wares?.Max(e => e.LimitAge) ?? 0 : 0; } }
 
         public bool IsOnlyOrdinary { get { return _Wares?.Any(e => e.TypeWares != eTypeWares.Ordinary) == false; } }
 
@@ -328,21 +328,21 @@ decimal _SumWallet=0;
                         Res.Add($"Бонуси:{Client.SumBonus}");
                     if (Client.Wallet > 0)
                         Res.Add($"Скарбничка:{Client.Wallet}");
-                    if(SumBonus>0)
+                    if (SumBonus > 0)
                         Res.Add($"Списані бонусні грн:{SumBonus}");
                 }
                 return Res;
             }
         }
 
-        public IEnumerable<string> Footer { get { return Global.GetWorkPlaceByIdWorkplace(IdWorkplacePay > 0? IdWorkplacePay : IdWorkplace)?.Settings?.Footer; } }
+        public IEnumerable<string> Footer { get { return Global.GetWorkPlaceByIdWorkplace(IdWorkplacePay > 0 ? IdWorkplacePay : IdWorkplace)?.Settings?.Footer; } }
 
         public bool IsQR()
         {
             return Wares?.Where(r => !string.IsNullOrEmpty(r.QR)).Any() ?? false;
         }
 
-        public IEnumerable<ReceiptWares> GetParserWaresReceipt(bool pIsPrice = true, bool pIsExcise = true,bool pIsWeight = false)
+        public IEnumerable<ReceiptWares> GetParserWaresReceipt(bool pIsPrice = true, bool pIsExcise = true, bool pIsWeight = false)
         {
             if ((!pIsPrice && !pIsExcise) || Wares == null)
                 return Wares;
@@ -430,15 +430,17 @@ decimal _SumWallet=0;
                     }
                 }
             }
-            return SumBonus>0;
+            return SumBonus > 0;
         }
 
         [JsonIgnore]
-        public bool IsPrintIssueOfCash { get { return (Payment!=null && Payment.Any(el => el.TypePay == eTypePay.IssueOfCash)) && (LogRROs==null || !LogRROs.Any(el => el.TypeOperation == eTypeOperation.IssueOfCash)); } }
+        public bool IsPrintIssueOfCash { get { return (Payment != null && Payment.Any(el => el.TypePay == eTypePay.IssueOfCash)) && (LogRROs == null || !LogRROs.Any(el => el.TypeOperation == eTypeOperation.IssueOfCash)); } }
         [JsonIgnore]
-        public Payment IssueOfCash { get { return Payment?.Where(el=> el.TypePay== eTypePay.IssueOfCash).FirstOrDefault(); } }
+        public Payment IssueOfCash { get { return Payment?.Where(el => el.TypePay == eTypePay.IssueOfCash).FirstOrDefault(); } }
 
         public eTypePay TypePay { get { return Payment != null && Payment.Any(el => el.TypePay == eTypePay.Card || el.TypePay == eTypePay.Cash) ? Payment.FirstOrDefault(el => el.TypePay == eTypePay.Card || el.TypePay == eTypePay.Cash).TypePay : eTypePay.None; } }
+
+        public bool IsManyPayments { get { return IdWorkplacePays?.Length > 1; } }
     }
     public class WorkplacePay
     {
