@@ -99,6 +99,8 @@ namespace Front.Equipments
                     var c = Bl.GetClientByBarCode(MW.curReceipt, pBarCode.ToLower());
                     if (c != null) return;
                 }
+                Global.Message?.Invoke($"Даний штрихкод {pBarCode} не знайдено в базі!!!",eTypeMessage.Error );
+                return;
             }
 
             if ((MW.State != eStateMainWindows.WaitInput && MW.State != eStateMainWindows.StartWindow) || MW.curReceipt?.IsLockChange == true || !MW.IsAddNewWares)
