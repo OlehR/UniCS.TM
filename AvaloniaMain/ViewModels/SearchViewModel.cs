@@ -26,13 +26,16 @@ namespace AvaloniaMain.ViewModels
     {
         BL Bl;
         BLF Blf;
-        int CodeFastGroup = 0;
+        int CodeFastGroup =0;
         int OffSet = 0;
         int MaxPage = 0;
+        
         int Limit = 10;
-        int Current = 1;
+        int Current = 0;
         public ReactiveCommand<string, Unit> Slide { get; }
+        public ReactiveCommand<GWA, Unit> GetCodeFastGroup { get; }
 
+        public ReactiveCommand<Unit, Unit> Back { get; }
 
         private bool _IsLeftEnable = false;
         public bool IsLeftEnable
@@ -129,6 +132,8 @@ namespace AvaloniaMain.ViewModels
                 }
             }
         }
+        public event EventHandler<string>? NumberChanged;
+
 
         private string _currentText = "";
         public string CurrentText
@@ -146,34 +151,35 @@ namespace AvaloniaMain.ViewModels
 
 public SearchViewModel()
         {
+            Back = ReactiveCommand.CreateFromTask(BackAction);
+
+            GetCodeFastGroup = ReactiveCommand.Create<GWA>(GetCodeAction);
             Slide = ReactiveCommand.Create<string>(SldeAction);
-
-
-
             var viewModel = new KeyBoardViewModel();
             viewModel.TextChanged += KeyBoard_TextChanged;
             CurrentPage = viewModel;
             Bl = BL.GetBL;
             Blf = BLF.GetBLF;
-            var Res = Blf.GetDataFindWares(CodeFastGroup, CurrentText, new ModelMID.IdReceipt(), ref OffSet, ref MaxPage, ref Limit);
-            AllProducts = Res?.Select(el => new GWA(el)).ToList();
-            OnPageProducts = AllProducts.GetRange(Limit * (Current-1), Limit);
-            UpdatePageProducts();
-            if (AllProducts.Count > Limit)
-            {
-                IsRightEnable = true;
-            }
-            MaxPage = (int)Math.Ceiling((decimal)AllProducts.Count / Limit);
-
-            IsLeftEnable = false;
+            Update();
 
         }
 
-        private void KeyBoard_TextChanged(object? sender, string text)
+        private async Task BackAction()
+        {
+            CurrentText = "";
+            Current = 0;
+            CodeFastGroup = 0;
+            Update();
+           
+        }
+            private void KeyBoard_TextChanged(object? sender, string text)
         {
             CurrentText = text;
+         
+            Update();
         }
-
+        
+        
         private ReactiveCommand<Unit, Unit> _closeCommand;
         public ReactiveCommand<Unit, Unit> CloseCommand => _closeCommand ??= ReactiveCommand.CreateFromTask(Close);
         private async Task Close()
@@ -185,10 +191,7 @@ public SearchViewModel()
 
             if (OnPageProducts != null)
             {
-                /*foreach (var item in OnPageProducts)
-                {
-                    item.ImageBitInit();
-                }*/
+              
                 int count = OnPageProducts.Count;
                 if(count == 1) 
                 {
@@ -208,30 +211,70 @@ public SearchViewModel()
               
             }
         }
+        public void GetCodeAction(GWA selectedItem)
+        {
+            if (selectedItem.Type == 1)
+            {
+                CodeFastGroup = selectedItem.Code;
+                Update();
+            }
+        }   
+
         public void SldeAction(string symbol)
         {
-            //24 right 11 curent=2 on page=10*2
             if (symbol == "left")
             {
+
                 Current--;
-                OnPageProducts = AllProducts.GetRange(Limit * (Current - 1), Limit);
+                OnPageProducts = AllProducts.GetRange(Limit *Current , Limit);
 
                 UpdatePageProducts();
                 IsRightEnable = true;
-                if (Current == 1) IsLeftEnable = false;
+                if (Current == 0) IsLeftEnable = false;
             }
             else
             {
                 Current++;
-                if(Limit *(Current - 1)+ Limit>AllProducts.Count)
+                if(Limit *Current+ Limit>AllProducts.Count)
                 {
-                    OnPageProducts = AllProducts.GetRange(Limit * (Current - 1), AllProducts.Count- Limit * (Current - 1));
+                    OnPageProducts = AllProducts.GetRange(Limit * Current, AllProducts.Count- Limit * Current);
                 }  
-                else OnPageProducts = AllProducts.GetRange(Limit * (Current - 1), Limit);
+                else OnPageProducts = AllProducts.GetRange(Limit * Current, Limit);
                 UpdatePageProducts();
                 IsLeftEnable = true;
                 if (Current == MaxPage) IsRightEnable = false;
             }
+        }
+        public void Update()
+        {
+            Current = 0;
+            OnPageProductsBottom = null;
+            OnPageProductsTop = null;
+            var Res = Blf.GetDataFindWares(CodeFastGroup, CurrentText, new ModelMID.IdReceipt(), ref OffSet, ref MaxPage, ref Limit);
+            AllProducts = Res?.Select(el => new GWA(el)).ToList();
+          
+            if (AllProducts != null)
+            {
+                if (AllProducts.Count <= Limit)
+                {
+                    OnPageProducts = AllProducts;
+                    IsRightEnable = false;
+                }
+                else
+                {
+                    OnPageProducts = AllProducts.GetRange(Limit * Current, Limit);
+                    IsRightEnable = true;
+
+                }
+                UpdatePageProducts();
+               
+
+                IsLeftEnable = false;
+            }
+       
+
+            
+       
         }
     }
 }

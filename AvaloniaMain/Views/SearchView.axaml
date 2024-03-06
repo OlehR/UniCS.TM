@@ -27,7 +27,7 @@
 
 			</Button>
 			<Image Height="100" Width="200" Source="{Binding  ImageFromBinding}" />
-			<Button Background="DarkGray" Grid.Column="1" VerticalAlignment="Top" Height="65" Width="450" CornerRadius="15" Margin="4">
+			<Button  Command="{Binding Back}" Background="DarkGray" Grid.Column="1" VerticalAlignment="Top" Height="65" Width="450" CornerRadius="15" Margin="4">
 				<StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
 					<Image Source="avares://AvaloniaMain/Assets/backArrow.ico" Margin="2" Height="50" Width="56"></Image>
 					<TextBlock Text="Назад" FontSize="32" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
@@ -50,13 +50,14 @@
 				</ListBox.ItemsPanel>
 				<ListBox.ItemTemplate>
 					<DataTemplate>
-				<Button Background="Transparent" Grid.Column="3"  Height="260" Width="320" Grid.Row="1">
-				<Border  BorderBrush="Black" BorderThickness="2" CornerRadius="15" Margin="0" Height="260" Width="320">
-					<Image Height="220" Width="280" Source="{Binding ImageBit}" />
-
-				</Border>
-					
-				</Button>
+						<Button Command="{Binding DataContext.GetCodeFastGroup, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}" CommandParameter="{Binding}" Background="Transparent" Grid.Column="3"  Height="260" Width="320" Grid.Row="1">
+							<Border  BorderBrush="Black" BorderThickness="2" CornerRadius="15" Margin="0" Height="260" Width="320">
+								<StackPanel Orientation="Vertical">
+									<Image Height="220" Width="280" Source="{Binding ImageBit}" />
+									<TextBlock IsVisible="{Binding IsTextVisible} " FontSize="18" FontWeight="Bold" Text="{Binding Name}"></TextBlock>
+								</StackPanel>
+							</Border>
+						</Button>
 					</DataTemplate>
 
 				</ListBox.ItemTemplate>
@@ -69,14 +70,12 @@
 				</ListBox.ItemsPanel>
 				<ListBox.ItemTemplate>
 					<DataTemplate >
-						<Button Background="Transparent" Grid.Column="3"  Height="260" Width="320" Grid.Row="1">
-							<Border  BorderBrush="Black" BorderThickness="2" CornerRadius="15" Height="260" Width="320">
-								
-
-									
-										<Image Height="220" Width="280" Source="{Binding ImageBit}" />
-
-
+						<Button Command="{Binding DataContext.GetCodeFastGroup, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}" CommandParameter="{Binding}" Background="Transparent" Grid.Column="3"  Height="260" Width="320" Grid.Row="1">
+							<Border  BorderBrush="Black" BorderThickness="2" CornerRadius="15" Margin="0" Height="260" Width="320">
+								<StackPanel Orientation="Vertical">
+									<Image Height="220" Width="280" Source="{Binding ImageBit}" />
+									<TextBlock IsVisible="{Binding IsTextVisible} " FontSize="18" FontWeight="Bold" Text="{Binding Name}"></TextBlock>
+								</StackPanel>
 							</Border>
 						</Button>
 					</DataTemplate>
