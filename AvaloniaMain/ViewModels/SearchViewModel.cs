@@ -24,6 +24,8 @@ namespace AvaloniaMain.ViewModels
 {
     internal class SearchViewModel : ViewModelBase
     {
+        public event EventHandler<GWA>? WareSelect;
+
         BL Bl;
         BLF Blf;
         int CodeFastGroup =0;
@@ -218,6 +220,11 @@ public SearchViewModel()
                 CodeFastGroup = selectedItem.Code;
                 Update();
             }
+            else
+            {
+                WareSelect.Invoke(this, selectedItem);
+                Close();
+            }
         }   
 
         public void SldeAction(string symbol)
@@ -226,8 +233,7 @@ public SearchViewModel()
             {
 
                 Current--;
-                OnPageProducts = AllProducts.GetRange(Limit *Current , Limit);
-
+                OnPageProducts = AllProducts.GetRange(Limit*Current , Limit);
                 UpdatePageProducts();
                 IsRightEnable = true;
                 if (Current == 0) IsLeftEnable = false;
@@ -250,7 +256,7 @@ public SearchViewModel()
             Current = 0;
             OnPageProductsBottom = null;
             OnPageProductsTop = null;
-            var Res = Blf.GetDataFindWares(CodeFastGroup, CurrentText, new ModelMID.IdReceipt(), ref OffSet, ref MaxPage, ref Limit);
+            var Res = Blf.GetDataFindWares(CodeFastGroup, CurrentText, new ModelMID.IdReceipt(), ref Current, ref MaxPage, ref Limit);
             AllProducts = Res?.Select(el => new GWA(el)).ToList();
           
             if (AllProducts != null)

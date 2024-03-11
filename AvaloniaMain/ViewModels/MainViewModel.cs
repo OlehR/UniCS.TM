@@ -1,4 +1,5 @@
 ﻿using AvaloniaMain.Models;
+using AvaloniaMain.ViewModels.Model;
 using AvaloniaMain.Views;
 using Front;
 using Front.Equipments;
@@ -16,6 +17,8 @@ namespace AvaloniaMain.ViewModels
 {
     public partial class MainViewModel : ViewModelBase,IMW
     {
+       // public ObservableCollection<ReceiptWares> ListWares { get; set; }
+
         public Receipt curReceipt { get; set; }
         public ReceiptWares CurWares { get; set; }
         public Client Client { get { return curReceipt?.Client; } }
@@ -31,6 +34,19 @@ namespace AvaloniaMain.ViewModels
 
         public BLF Blf;
 
+        private ObservableCollection<ReceiptWares> _ListWares;
+        public ObservableCollection<ReceiptWares> ListWares
+        {
+            get => _ListWares;
+            set
+            {
+                if (_ListWares != value)
+                {
+                    _ListWares = value;
+                    OnPropertyChanged(nameof(ListWares));
+                }
+            }
+        }
         private ViewModelBase? _currentPage;
         public ViewModelBase? CurrentPage
         {
@@ -195,10 +211,10 @@ namespace AvaloniaMain.ViewModels
         private ReactiveCommand<Unit, Unit> _showIssueCard;
         public ReactiveCommand<Unit, Unit> _showSearchView;
 
-        public ObservableCollection<ReceiptWares> ListWares { get; set; }
 
         public MainViewModel()
         {
+
             Bl = BL.GetBL;
             Blf = new BLF();
             Blf.Init(this);
@@ -215,7 +231,7 @@ namespace AvaloniaMain.ViewModels
             UserMoneyBonus = 17.10;
             UserMoneyBox = 121.35;
 
-            
+            NewReceipt();
             ListWares = new ObservableCollection<ReceiptWares>
             (new List<ReceiptWares>
             {
@@ -324,6 +340,7 @@ namespace AvaloniaMain.ViewModels
             CurrentPage = null;
             var searchViewModel= new SearchViewModel();
             searchViewModel.VisibilityChanged += SearchView_VisibilityChanged;
+            searchViewModel.WareSelect += AddWare;
             CurrentPage = searchViewModel;
             SearchViewVisibility = true;
         }
@@ -331,6 +348,41 @@ namespace AvaloniaMain.ViewModels
         private void NumPadViewModel_NumberChanged(object? sender, string newNumber)
         {
             UserNumber = newNumber;
+        }
+        private void AddWare(object? sender, GWA ware)
+        {
+            AddWares(ware.Code, ware.CodeUnit);
+        }
+        public void AddWares(int pCodeWares, int pCodeUnit = 0, decimal pQuantity = 0m, decimal pPrice = 0m, GW pGV = null)
+        {
+
+
+            if (pCodeWares > 0)
+            {
+                if (curReceipt == null)
+                    Blf.NewReceipt();
+                CurWares = Bl.AddWaresCode(curReceipt, pCodeWares, pCodeUnit, pQuantity, pPrice);
+
+                if(CurWares!=null)
+                {
+                    Receipt receipt = curReceipt;
+                    if (receipt.Wares != null)
+                    {
+                        List<ReceiptWares> waresList = new List<ReceiptWares>(receipt.Wares);
+                        waresList.Add(CurWares);
+                        receipt.Wares = waresList;
+                    }
+                    else
+                    {
+                        List<ReceiptWares> waresList=new List<ReceiptWares> ();
+
+                        waresList.Add(CurWares);
+                        receipt.Wares = waresList;
+                    }
+                   
+                    SetCurReceipt(receipt);
+                }
+            }
         }
 
         private void NumPadViewModel_VisibilityChanged(object? sender, EventArgs? e)
@@ -341,6 +393,7 @@ namespace AvaloniaMain.ViewModels
         private void SearchView_VisibilityChanged(object? sender, EventArgs? e)
         {
             SearchViewVisibility = false;
+
             Close();
 
         }
