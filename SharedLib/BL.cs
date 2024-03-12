@@ -702,7 +702,7 @@ namespace SharedLib
                     case eWindows.ChoiceClient:
                         GetClientByCode(pCWA.idReceipt, pCWA.IdButton);
                         break;
-                    case eWindows.PhoneClient:
+                    case eWindows.PhoneClient:                        
                         GetClientByPhone(pCWA.idReceipt, pCWA.Text);
                         break;
                     case eWindows.ConfirmWeight:

@@ -186,6 +186,9 @@ namespace Front
                     if (Client.BirthDay.AddYears(18).Date <= DateTime.Now.Date)
                         Bl.AddEventAge(curReceipt);
 
+                if (Client != null && State == eStateMainWindows.FindClientByPhone)
+                    State = eStateMainWindows.WaitInput;
+
                 FileLogger.WriteLogMessage($"MainWindow.OnClientChanged(CodeReceipt=>{curReceipt?.CodeReceipt} Client.CodeClient=>{Client.CodeClient} Client.Wallet=> {pClient.Wallet} SumBonus=>{pClient.SumBonus})", eTypeLog.Full);
             };
 
