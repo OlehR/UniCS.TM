@@ -240,7 +240,7 @@ namespace AvaloniaMain.ViewModels
                 curReceipt = pReceipt;
                 if (curReceipt == null)
                 {
-                    //Dispatcher.BeginInvoke(new ThreadStart(() => { 
+                        //Dispatcher.BeginInvoke(new ThreadStart(() => { 
                         ListWares?.Clear(); //}));
                     CS.WaitClear();
                 }
