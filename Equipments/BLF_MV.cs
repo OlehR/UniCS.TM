@@ -73,7 +73,7 @@ namespace Front.Equipments
             else
             {
                 ReceiptWares w = null;
-                if (MW.IsAddNewWares && (MW.State == eStateMainWindows.WaitInput || MW.State == eStateMainWindows.StartWindow))
+                if (MW.IsAddNewWares) //&& (MW.State == eStateMainWindows.WaitInput || MW.State == eStateMainWindows.StartWindow)
                 {
                     if (MW.curReceipt == null || !MW.curReceipt.IsLockChange)
                     {
@@ -99,6 +99,7 @@ namespace Front.Equipments
                     var c = Bl.GetClientByBarCode(MW.curReceipt, pBarCode.ToLower());
                     if (c != null) return;
                 }
+                FileLogger.WriteLogMessage(this, "GetBarCode", $"Штрихкод {pBarCode} не знайдено State=>{MW.State} TypeAccessWait=>{MW.TypeAccessWait}");
                 Global.Message?.Invoke($"Даний штрихкод {pBarCode} не знайдено в базі!!!",eTypeMessage.Error );
                 return;
             }
