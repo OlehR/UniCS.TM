@@ -8,8 +8,8 @@
     <ApplicationIcon />
     <Win32Resource />
     <NeutralLanguage>uk-UA</NeutralLanguage>
-    <AssemblyVersion>2.2.0.132</AssemblyVersion>
-    <FileVersion>2.2.0.132</FileVersion>
+    <AssemblyVersion>2.2.0.135</AssemblyVersion>
+    <FileVersion>2.2.0.135</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

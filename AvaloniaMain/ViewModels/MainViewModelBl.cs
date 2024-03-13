@@ -168,8 +168,9 @@ namespace AvaloniaMain.ViewModels
                 if (Client?.BirthDay > new DateTime(1900, 1, 1))
                     if (Client.BirthDay.AddYears(18).Date <= DateTime.Now.Date)
                         Bl.AddEventAge(curReceipt);
-
-                FileLogger.WriteLogMessage($"MainWindow.OnClientChanged(CodeReceipt=>{curReceipt?.CodeReceipt} Client.CodeClient=>{pClient.CodeClient} Client.Wallet=> {pClient.Wallet} SumBonus=>{pClient.SumBonus})", eTypeLog.Full);
+                if (Client != null && State == eStateMainWindows.FindClientByPhone)
+                    State = eStateMainWindows.WaitInput;
+                FileLogger.WriteLogMessage($"MainWindow.OnClientChanged(CodeReceipt=>{curReceipt?.CodeReceipt} Client.CodeClient=>{pClient?.CodeClient} Client.Wallet=> {pClient?.Wallet} SumBonus=>{pClient?.SumBonus})", eTypeLog.Full);
             };
 
             //Global.Message += (pMessage, pTypeMessage) => CustomMessage.Show(pMessage, "Увага!", pTypeMessage);

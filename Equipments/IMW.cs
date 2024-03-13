@@ -23,7 +23,7 @@ namespace Front.Equipments
         /// <summary>
         /// Чи можна добавляти товар 
         /// </summary>
-        public bool IsAddNewWares { get { return curReceipt == null ? true : !curReceipt.IsLockChange && State == eStateMainWindows.WaitInput && !CS.IsProblem; } }
+        public bool IsAddNewWares { get { return curReceipt == null ? true : !curReceipt.IsLockChange && !CS.IsProblem  && (State == eStateMainWindows.WaitInput || State == eStateMainWindows.StartWindow) ; } }
 
     }
 }
