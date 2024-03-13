@@ -1294,6 +1294,18 @@ select sum( sum_pay* case when TYPE_PAY in (4) then -1 else 1 end) as sum from p
             return Res;
         }
 
+
+        public bool ReplaceWaresLink(IEnumerable<WaresLink> pWW, SQLite pDB)
+        {
+            bool Res = false;
+            if (pWW?.Any() == true)
+            {
+                string SQL = "replace into WaresLink (CodeWares,CodeWaresTo,Sort) values (@CodeWares,@CodeWaresTo,@Sort)";
+                Res = pDB.BulkExecuteNonQuery<WaresLink>(SQL, pWW, true) > 0;               
+            }
+            return Res;
+        }
+
         public void BildWaresWarehouse(IEnumerable<WaresWarehouse> pWW = null)
         {
             pWW ??= GetWaresWarehouse();

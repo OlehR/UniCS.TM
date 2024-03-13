@@ -546,7 +546,14 @@ CREATE TABLE FAST_GROUP
         CREATE TABLE WaresWarehouse(
             CodeWarehouse INTEGER NOT NULL
             ,TypeData INTEGER NOT NULL
-            , Data INTEGER NOT NULL);";
+            , Data INTEGER NOT NULL);
+
+        CREATE TABLE WaresLink(
+            CodeWares INTEGER NOT NULL,
+            CodeWaresTo INTEGER NOT NULL,            
+            Sort INTEGER NOT NULL
+        );
+";
 
         readonly string SqlCreateMIDIndex = @"
         CREATE UNIQUE INDEX UNIT_DIMENSION_ID ON UNIT_DIMENSION(CODE_UNIT );
@@ -599,7 +606,10 @@ CREATE TABLE FAST_GROUP
         CREATE INDEX ClientData_ID ON ClientData(Data, TypeData);
         CREATE UNIQUE INDEX ClientData_D_TD ON ClientData(CodeClient, Data, TypeData);
 
-        CREATE UNIQUE INDEX WaresWarehouse_ID ON WaresWarehouse(CodeWarehouse, TypeData, Data);";
+        CREATE UNIQUE INDEX WaresWarehouse_ID ON WaresWarehouse(CodeWarehouse, TypeData, Data);
+
+        CREATE UNIQUE INDEX  WaresLink_ID ON WaresLink (CodeWares,CodeWaresTo);
+";
 
         readonly string SqlSpeedScan = @"select 
 round(60*60*(select count(*) as n 

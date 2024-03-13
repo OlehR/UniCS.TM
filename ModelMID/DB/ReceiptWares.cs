@@ -611,5 +611,7 @@ namespace ModelMID
 
             return Res;
         }
+
+        public IEnumerable<GW> WaresLink { get; set; }
     }
 }
