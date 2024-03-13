@@ -127,17 +127,17 @@
 
 					<TextBlock TextWrapping="Wrap"  Margin="20,0,0,0" Height="80" FontSize="25" FontWeight="Bold" Text="{Binding NameWares}" />
 				</StackPanel>
-				<Button Background="Transparent"  VerticalAlignment="Center" Grid.Column="1" Width="80" Height="80" HorizontalAlignment="Center">
+				<Button Command="{Binding DataContext.Delete , RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}" CommandParameter="{Binding}" Background="Transparent"  VerticalAlignment="Center" Grid.Column="1" Width="80" Height="80" HorizontalAlignment="Center">
 					<Border Width="70" Height="75" BorderBrush="Black" BorderThickness="4" CornerRadius="7">
 					<Image Height="60" Width="60" Source="/Assets/delete.ico"></Image>
 					</Border>
 				</Button>
 				<StackPanel HorizontalAlignment="Center"  Orientation="Horizontal"  Grid.Column="2">
-					<Button Margin="0,0,15,0" Height="80" Width="80">
+					<Button Command="{Binding DataContext.ChangeQuantityMinus, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}" CommandParameter="{Binding}" Margin="0,0,15,0" Height="80" Width="80">
 						<Image Height="40" Width="40" Source="/Assets/minus.ico"></Image>
 					</Button> 
-					<TextBlock Margin="15" VerticalAlignment="Center" FontSize="25" FontWeight="Bold" Height="40" HorizontalAlignment="Center" Text="{Binding Quantity	}" />
-					<Button  Margin="15,0,0,0" Height="80" Width="80">
+					<TextBlock Margin="15" VerticalAlignment="Center" FontSize="25" FontWeight="Bold" Height="40" HorizontalAlignment="Center" Text="{Binding Quantity}" />
+					<Button Command="{Binding DataContext.ChangeQuantityPlus, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}" CommandParameter="{Binding}"  Margin="15,0,0,0" Height="80" Width="80">
 						<Image Height="40" Width="40" Source="/Assets/plus.ico"></Image>
 					</Button>
 				</StackPanel>
@@ -147,7 +147,7 @@
 				</StackPanel>
 				<TextBlock VerticalAlignment="Center" FontSize="25" FontWeight="Bold" Grid.Column="4" Height="40" HorizontalAlignment="Center" Text="{Binding Price}" />
 				<StackPanel VerticalAlignment="Center" Grid.Column="5">
-					<TextBlock VerticalAlignment="Center" FontSize="25" FontWeight="Bold"  Height="40" HorizontalAlignment="Center" Text="{Binding  SumTotal}" />
+					<TextBlock VerticalAlignment="Center" FontSize="25" FontWeight="Bold"  Height="40" HorizontalAlignment="Center" Text="{Binding  Sum}" />
 					<TextBlock Foreground="Red" VerticalAlignment="Center" FontSize="15" FontWeight="Bold"   Height="10" HorizontalAlignment="Center" Text="{Binding Discount, StringFormat='- {0}₴'}"  />
 
 				</StackPanel>
