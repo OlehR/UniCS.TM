@@ -317,7 +317,19 @@ CREATE INDEX id_RRO ON Log_RRO(CODE_RECEIPT, ID_WORKPLACE, CODE_PERIOD);
             DATE_CREATE DATETIME NOT NULL DEFAULT (datetime('now','localtime'))  
 );
 CREATE INDEX id_Client_NEW ON Client_NEW(BARCODE_CLIENT);
-        CREATE INDEX id_Client_NEW_S ON Client_NEW(STATE);";
+        CREATE INDEX id_Client_NEW_S ON Client_NEW(STATE);
+
+CREATE TABLE WaresReceiptLink(
+            IdWorkplace INTEGER  NOT NULL,
+            CodePeriod INTEGER  NOT NULL,
+            CodeReceipt INTEGER  NOT NULL,
+            CodeWares INTEGER NOT NULL,
+            CodeWaresTo INTEGER NOT NULL,            
+            Quantity NUMBER NOT NULL default 0
+        );
+CREATE UNIQUE INDEX IdWaresReceiptLink ON WaresReceiptLink(IdWorkplace,CodePeriod,CodeReceipt,CodeWares,CodeWaresTo);
+CREATE UNIQUE INDEX IdWaresReceiptLink ON WaresReceiptLink(IdWorkplace,CodePeriod,CodeReceipt,CodeWaresTo,CodeWares);
+";
         
         public readonly string SqlCreateMIDTable = @"
         CREATE TABLE UNIT_DIMENSION(
@@ -609,6 +621,7 @@ CREATE TABLE FAST_GROUP
         CREATE UNIQUE INDEX WaresWarehouse_ID ON WaresWarehouse(CodeWarehouse, TypeData, Data);
 
         CREATE UNIQUE INDEX  WaresLink_ID ON WaresLink (CodeWares,CodeWaresTo);
+        CREATE INDEX  WaresLink_CWT ON WaresLink (CodeWaresTo);
 ";
 
         readonly string SqlSpeedScan = @"select 

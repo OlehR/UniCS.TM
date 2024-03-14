@@ -441,6 +441,8 @@ namespace ModelMID
         public eTypePay TypePay { get { return Payment != null && Payment.Any(el => el.TypePay == eTypePay.Card || el.TypePay == eTypePay.Cash) ? Payment.FirstOrDefault(el => el.TypePay == eTypePay.Card || el.TypePay == eTypePay.Cash).TypePay : eTypePay.None; } }
 
         public bool IsManyPayments { get { return IdWorkplacePays?.Length > 1; } }
+
+        public bool IsWaresLink { get { return GetLastWares?.IsWaresLink == true; } }
     }
     public class WorkplacePay
     {
@@ -486,6 +488,6 @@ namespace ModelMID
         /// Час чека
         /// </summary>
         public DateTime DT { get; set; }
-        public IEnumerable<TaxResult> Taxes { get; set; }
+        public IEnumerable<TaxResult> Taxes { get; set; }       
     }
 }

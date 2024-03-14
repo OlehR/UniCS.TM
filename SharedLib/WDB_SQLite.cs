@@ -1060,6 +1060,7 @@ Where ID_WORKPLACE = @IdWorkplace
                         el.Parent = vReceipt;
                     if (wrp != null)
                         el.ReceiptWaresPromotions = wrp.Where(rr => ((IdReceiptWares)rr).Equals((IdReceiptWares)el)).ToArray();
+                    el.WaresLink = GetLinkWares(el.CodeWares);
                 }
             }
             return r;
@@ -1333,6 +1334,21 @@ select sum( sum_pay* case when TYPE_PAY in (4) then -1 else 1 end) as sum from p
         {
             string SQL = $"select count(BARCODE_2_CATEGORY)  from WARES_RECEIPT_PROMOTION where BARCODE_2_CATEGORY='{pBarCode}'";
             var Res = db.ExecuteScalar<bool>(SQL);
+            return Res;
+        }
+
+        public bool InsertWaresReceiptLink(IEnumerable<WaresReceiptLink> pWRL)
+        {
+            string SQL = @"replace into WaresReceiptLink  (IdWorkplace, CodePeriod, CodeReceipt, CodeWares, CodeWaresTo, Quantity) VALUES
+                                                         (@IdWorkplace,@CodePeriod,@CodeReceipt,@CodeWares,@CodeWaresTo,@Quantity)";
+            return dbRC.BulkExecuteNonQuery<WaresReceiptLink>(SQL, pWRL) > 0;
+        }
+
+        public IEnumerable<GW> GetLinkWares(int pCodeWares)
+        {
+            string SQL = $@"select 0 as Type, w.CODE_WARES as code, w.NAME_WARES as name, w.Code_Unit as CodeUnit, count(*) over() as TotalRows 
+    from WaresLink wl join  wares w on wl.CodeWares = w.Code_wares where wl.CodeWaresTo={pCodeWares} order by wl.sort";
+            var Res = db.Execute<GW>(SQL);
             return Res;
         }
 

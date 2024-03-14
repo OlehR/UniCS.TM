@@ -613,5 +613,6 @@ namespace ModelMID
         }
 
         public IEnumerable<GW> WaresLink { get; set; }
+        public bool IsWaresLink { get { return WaresLink?.Any() == true; } }
     }
 }
