@@ -10,19 +10,23 @@ using SharedLib;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
 
 namespace AvaloniaMain.ViewModels
 {
-    public partial class MainViewModel : ViewModelBase,IMW
+    public partial class MainViewModel : ViewModelBase, IMW
     {
-       // public ObservableCollection<ReceiptWares> ListWares { get; set; }
+        // public ObservableCollection<ReceiptWares> ListWares { get; set; }
 
         public Receipt curReceipt { get; set; }
         public ReceiptWares CurWares { get; set; }
         public Client Client { get { return curReceipt?.Client; } }
         public Sound s { get; set; }
+        public ReactiveCommand<ReceiptWares, Unit> Delete { get; }
+        public ReactiveCommand<ReceiptWares, Unit> ChangeQuantityMinus { get; }
+        public ReactiveCommand<ReceiptWares, Unit> ChangeQuantityPlus { get; }
         public ControlScale CS { get; set; }
         public BL Bl { get; set; }
         public EquipmentFront EF { get; set; }
@@ -30,7 +34,7 @@ namespace AvaloniaMain.ViewModels
         public eTypeAccess TypeAccessWait { get; set; }
         public bool IsShowWeightWindows { get; set; }
 
-        public Client client=new Client();
+        public Client client = new Client();
 
         public BLF Blf;
 
@@ -214,7 +218,9 @@ namespace AvaloniaMain.ViewModels
 
         public MainViewModel()
         {
-
+            Delete = ReactiveCommand.Create<ReceiptWares>(DeleteItem);
+            ChangeQuantityMinus = ReactiveCommand.Create<ReceiptWares>(MinusItem);
+            ChangeQuantityPlus = ReactiveCommand.Create<ReceiptWares>(PlusItem);
             Bl = BL.GetBL;
             Blf = new BLF();
             Blf.Init(this);
@@ -224,7 +230,7 @@ namespace AvaloniaMain.ViewModels
 
             _showSearchView = ReactiveCommand.CreateFromTask(SearchViewModel);
             _changeColorCommand = ReactiveCommand.CreateFromTask(ChangeColorAsync);
-            _showUserInfo=ReactiveCommand.CreateFromTask(ShowUser);
+            _showUserInfo = ReactiveCommand.CreateFromTask(ShowUser);
             _showIssueCard = ReactiveCommand.CreateFromTask(ShowIssueCardAsync);
             _showNumPad = ReactiveCommand.CreateFromTask(NumPad);
 
@@ -232,67 +238,8 @@ namespace AvaloniaMain.ViewModels
             UserMoneyBox = 121.35;
 
             NewReceipt();
-            ListWares = new ObservableCollection<ReceiptWares>
-            (new List<ReceiptWares>
-            {
+            ListWares = new ObservableCollection<ReceiptWares>();
 
-                new ReceiptWares
-                {
-                  NameWares="Яблуко",
-                  PercentVat=0,
-                  TypeVat=0,
-                                    WeightBrutto=10,
-
-                  Price=10,
-                  SumDiscount=10.00M,
-                  TypeFound=0,
-                  Coefficient=0,
-                  Quantity=1,
-
-                },
-                  new ReceiptWares
-                {
-                  NameWares="Яблуко",
-                  PercentVat=0,
-                  TypeVat=0,
-                  Price=10,
-                  SumDiscount=10,
-                  TypeFound=0,
-                                    WeightBrutto=10,
-
-                  Coefficient=0,
-                  Quantity=1,
-
-                },
-                    new ReceiptWares
-                {
-                  NameWares="Яблуко",
-                  PercentVat=0,
-                  TypeVat=0,
-                  Price=10,
-                  SumDiscount=10,
-                                    WeightBrutto=10,
-
-                  TypeFound=0,
-                  Coefficient=0,
-                  Quantity=1,
-
-                },
-                      new ReceiptWares
-                {
-                  NameWares="Яблуко",
-                  PercentVat=0,
-                  TypeVat=0,
-                  Price=10,
-                  SumDiscount=10,
-                  WeightBrutto=10,
-                  TypeFound=0,
-                  Coefficient=0,
-                  Quantity=1,
-
-                },
-
-            }) ;
         }
         public ReactiveCommand<Unit, Unit> ShowUserInfo => _showUserInfo;
         public ReactiveCommand<Unit, Unit> ShowSearchView => _showSearchView;
@@ -303,17 +250,17 @@ namespace AvaloniaMain.ViewModels
 
         public ReactiveCommand<Unit, Unit> ChangeColorCommand => _changeColorCommand;
 
-       
+
         private async Task ShowUser()
         {
             CurrentPage = null;
             CurrentPage = new ClientInfoViewModel(this, client);
             CurrentPageVisibility = true;
             BackgroundVisibility = true;
-            
+
         }
-       
-             private async Task ShowIssueCardAsync()
+
+        private async Task ShowIssueCardAsync()
         {
             CurrentPage = null;
             var issueCardViewModel = new IssueCardViewModel();
@@ -327,7 +274,7 @@ namespace AvaloniaMain.ViewModels
         private async Task NumPad()
         {
             CurrentPage = null;
-            var parentViewModel = new NumPadViewModel("",false);
+            var parentViewModel = new NumPadViewModel("", false);
             parentViewModel.NumberChanged += NumPadViewModel_NumberChanged;
             parentViewModel.VisibilityChanged += NumPadViewModel_VisibilityChanged;
             CurrentPage = parentViewModel;
@@ -336,9 +283,9 @@ namespace AvaloniaMain.ViewModels
         }
         private async Task SearchViewModel()
         {
-          
+
             CurrentPage = null;
-            var searchViewModel= new SearchViewModel();
+            var searchViewModel = new SearchViewModel();
             searchViewModel.VisibilityChanged += SearchView_VisibilityChanged;
             searchViewModel.WareSelect += AddWare;
             CurrentPage = searchViewModel;
@@ -362,8 +309,8 @@ namespace AvaloniaMain.ViewModels
                 if (curReceipt == null)
                     Blf.NewReceipt();
                 CurWares = Bl.AddWaresCode(curReceipt, pCodeWares, pCodeUnit, pQuantity, pPrice);
-
-                if(CurWares!=null)
+                CurWares.Quantity = 1;
+                if (CurWares != null)
                 {
                     Receipt receipt = curReceipt;
                     if (receipt.Wares != null)
@@ -374,12 +321,12 @@ namespace AvaloniaMain.ViewModels
                     }
                     else
                     {
-                        List<ReceiptWares> waresList=new List<ReceiptWares> ();
+                        List<ReceiptWares> waresList = new List<ReceiptWares>();
 
                         waresList.Add(CurWares);
                         receipt.Wares = waresList;
                     }
-                   
+
                     SetCurReceipt(receipt);
                 }
             }
@@ -387,7 +334,7 @@ namespace AvaloniaMain.ViewModels
 
         private void NumPadViewModel_VisibilityChanged(object? sender, EventArgs? e)
         {
-            CurrentPageVisibility = false;   
+            CurrentPageVisibility = false;
             Close();
         }
         private void SearchView_VisibilityChanged(object? sender, EventArgs? e)
@@ -405,7 +352,7 @@ namespace AvaloniaMain.ViewModels
 
         private async Task ChangeColorAsync()
         {
-            Visibility = true;       
+            Visibility = true;
         }
         public void Close()
         {
@@ -414,7 +361,7 @@ namespace AvaloniaMain.ViewModels
         }
         public void InitClient()
         {
-            client.BirthDay= DateTime.Now;
+            client.BirthDay = DateTime.Now;
             client.NameClient = "Станіслав Денис Іванович";
             client.Wallet = 100;
             client.SumBonus = 101;
@@ -422,14 +369,38 @@ namespace AvaloniaMain.ViewModels
             client.MainPhone = "0995130322";
             client.PhoneAdd = "0995130323";
             client.PersentDiscount = 10;
-           
+
             client.BarCode = "1233021030114";
             client.StatusCard = 0;
-            
+
         }
-     
+        public void DeleteItem (ReceiptWares rp)
+        {
+            List<ReceiptWares> list = (List<ReceiptWares>)curReceipt.Wares;
+            list.Remove(rp);
+            curReceipt.Wares = list;
+            SetCurReceipt(curReceipt);
+        }
+        public void MinusItem(ReceiptWares rp)
+        {
+            ReceiptWares foundItem = curReceipt.Wares.FirstOrDefault(item => item == rp);
+
+            if (foundItem != null && foundItem.Quantity > 1)
+            {
+                foundItem.Quantity -= 1; 
+            }
+            SetCurReceipt(curReceipt);
+
+        }
+        public void PlusItem(ReceiptWares rp)
+        {
+            ReceiptWares foundItem = curReceipt.Wares.FirstOrDefault(item => item == rp);         
+                foundItem.Quantity += 1;
+            SetCurReceipt(curReceipt);
+        }
     }
 }
+
 
 
 
