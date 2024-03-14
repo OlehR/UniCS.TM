@@ -9,6 +9,7 @@ namespace ModelMID.DB
         public int CodeWares { get; set; }
         public int CodeWaresTo { get; set; }
         public int CodeWarehouse { get; set; }
+        public bool IsDefault { get; set; }
         public int Sort { get; set; }
     }
 }

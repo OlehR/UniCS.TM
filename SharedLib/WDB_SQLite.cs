@@ -1301,7 +1301,7 @@ select sum( sum_pay* case when TYPE_PAY in (4) then -1 else 1 end) as sum from p
             bool Res = false;
             if (pWW?.Any() == true)
             {
-                string SQL = "replace into WaresLink (CodeWares,CodeWaresTo,Sort) values (@CodeWares,@CodeWaresTo,@Sort)";
+                string SQL = "replace into WaresLink (CodeWares,CodeWaresTo,IsDefault,Sort) values (@CodeWares,@CodeWaresTo,@IsDefault,@Sort)";
                 Res = pDB.BulkExecuteNonQuery<WaresLink>(SQL, pWW, true) > 0;               
             }
             return Res;

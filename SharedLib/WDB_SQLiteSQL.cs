@@ -562,7 +562,8 @@ CREATE TABLE FAST_GROUP
 
         CREATE TABLE WaresLink(
             CodeWares INTEGER NOT NULL,
-            CodeWaresTo INTEGER NOT NULL,            
+            CodeWaresTo INTEGER NOT NULL,
+            IsDefault INTEGER NOT NULL default 0,
             Sort INTEGER NOT NULL
         );
 ";
