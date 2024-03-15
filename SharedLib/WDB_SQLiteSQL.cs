@@ -324,11 +324,12 @@ CREATE TABLE WaresReceiptLink(
             CodePeriod INTEGER  NOT NULL,
             CodeReceipt INTEGER  NOT NULL,
             CodeWares INTEGER NOT NULL,
+            Sort INTEGER NOT NULL default 0,
             CodeWaresTo INTEGER NOT NULL,            
             Quantity NUMBER NOT NULL default 0
         );
-CREATE UNIQUE INDEX IdWaresReceiptLink ON WaresReceiptLink(IdWorkplace,CodePeriod,CodeReceipt,CodeWares,CodeWaresTo);
-CREATE UNIQUE INDEX IdWaresReceiptLink ON WaresReceiptLink(IdWorkplace,CodePeriod,CodeReceipt,CodeWaresTo,CodeWares);
+CREATE UNIQUE INDEX IdWaresReceiptLink ON WaresReceiptLink(IdWorkplace,CodePeriod,CodeReceipt,CodeWares,Sort,CodeWaresTo);
+CREATE UNIQUE INDEX IdWaresReceiptLink ON WaresReceiptLink(IdWorkplace,CodePeriod,CodeReceipt,CodeWaresTo,Sort,CodeWares);
 ";
         
         public readonly string SqlCreateMIDTable = @"

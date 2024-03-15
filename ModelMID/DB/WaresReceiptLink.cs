@@ -6,8 +6,9 @@ namespace ModelMID.DB
 {   
     public class WaresReceiptLink:IdReceiptWares
     {        
-        public int CodeWaresTo { get; set; }
-        public int CodeWarehouse { get; set; }
+        public int CodeWaresTo { get; set; }        
         public decimal Sort { get; set; }
+        public int  Quantity { get; set; }
+
     }
 }
