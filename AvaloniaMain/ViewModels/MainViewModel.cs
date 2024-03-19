@@ -225,7 +225,9 @@ namespace AvaloniaMain.ViewModels
             Blf = new BLF();
             Blf.Init(this);
             EF = new EquipmentFront();
-
+            InitAction();
+            EF.Init();
+            State = eStateMainWindows.WaitInput;
             EquipmentFront.OnBarCode += (pBarCode, pTypeBarCode) => GetBarCode(pBarCode, pTypeBarCode);
 
             _showSearchView = ReactiveCommand.CreateFromTask(SearchViewModel);
@@ -302,9 +304,17 @@ namespace AvaloniaMain.ViewModels
         }
         public void AddWares(int pCodeWares, int pCodeUnit = 0, decimal pQuantity = 0m, decimal pPrice = 0m, GW pGV = null)
         {
-
-
             if (pCodeWares > 0)
+            {
+                if (curReceipt == null)
+                    Blf.NewReceipt();
+                CurWares = Bl.AddWaresCode(curReceipt, pCodeWares, pCodeUnit, 1, pPrice);
+
+                if (CurWares != null)
+                    Blf.IsPrises(pQuantity, pPrice);
+            }
+
+            /*if (pCodeWares > 0)
             {
                 if (curReceipt == null)
                     Blf.NewReceipt();
@@ -329,7 +339,7 @@ namespace AvaloniaMain.ViewModels
 
                     SetCurReceipt(receipt);
                 }
-            }
+            }*/
         }
 
         private void NumPadViewModel_VisibilityChanged(object? sender, EventArgs? e)
@@ -383,20 +393,24 @@ namespace AvaloniaMain.ViewModels
         }
         public void MinusItem(ReceiptWares rp)
         {
-            ReceiptWares foundItem = curReceipt.Wares.FirstOrDefault(item => item == rp);
+            Bl.ChangeQuantity(rp, rp.Quantity - 1);
+           /* ReceiptWares foundItem = curReceipt.Wares.FirstOrDefault(item => item == rp);
 
             if (foundItem != null && foundItem.Quantity > 1)
             {
                 foundItem.Quantity -= 1; 
             }
-            SetCurReceipt(curReceipt);
+            SetCurReceipt(curReceipt);*/
 
         }
         public void PlusItem(ReceiptWares rp)
         {
-            ReceiptWares foundItem = curReceipt.Wares.FirstOrDefault(item => item == rp);         
-                foundItem.Quantity += 1;
-            SetCurReceipt(curReceipt);
+            //ReceiptWares foundItem = curReceipt.Wares.FirstOrDefault(item => item == rp);
+
+            Bl.ChangeQuantity(rp, rp.Quantity + 1);
+
+            //foundItem.Quantity += 1;
+            //SetCurReceipt(curReceipt);
         }
     }
 }

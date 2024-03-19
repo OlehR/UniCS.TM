@@ -2,6 +2,7 @@
 using Avalonia.Threading;
 using AvaloniaMain.Models;
 using AvaloniaMain.Views;
+using Front;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ModelMID;
 using ModelMID.DB;
@@ -71,6 +72,9 @@ namespace AvaloniaMain.ViewModels
             };
 
             int LastCodeWares = 0;
+
+            EquipmentFront.OnBarCode += Blf.GetBarCode;
+
             Global.OnReceiptCalculationComplete += (pReceipt) =>
             {
                 try
@@ -195,9 +199,9 @@ namespace AvaloniaMain.ViewModels
             };
 
             //Обробка стану контрольної ваги.
-            CS.OnStateScale += (pStateScale, pRW, pСurrentlyWeight) =>
+            /*CS.OnStateScale += (pStateScale, pRW, pСurrentlyWeight) =>
             {
-                /*
+                
                 //Якщо повернення ігноруємо вагу.
                 if (curReceipt?.TypeReceipt == eTypeReceipt.Refund && pStateScale != eStateScale.Stabilized)
                     return;
@@ -228,8 +232,8 @@ namespace AvaloniaMain.ViewModels
                             Bl.FixWeight(pRW);
                         break;
                 }
-                SetPropertyChanged();*/
-            };
+                SetPropertyChanged();
+        };*/
         }
         #endregion
 
