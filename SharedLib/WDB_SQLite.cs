@@ -1339,17 +1339,26 @@ select sum( sum_pay* case when TYPE_PAY in (4) then -1 else 1 end) as sum from p
 
         public bool ReplaceWaresReceiptLink(IEnumerable<WaresReceiptLink> pWRL)
         {
-            string SQL = @"replace into WaresReceiptLink  (IdWorkplace, CodePeriod, CodeReceipt, CodeWares, Sort, CodeWaresTo, Quantity) VALUES
+            try
+            {
+                string SQL = @"replace into WaresReceiptLink  (IdWorkplace, CodePeriod, CodeReceipt, CodeWares, Sort, CodeWaresTo, Quantity) VALUES
                                                          (@IdWorkplace,@CodePeriod,@CodeReceipt,@CodeWares,@Sort,@CodeWaresTo,@Quantity)";
-            return dbRC.BulkExecuteNonQuery<WaresReceiptLink>(SQL, pWRL) > 0;
+                return dbRC.BulkExecuteNonQuery<WaresReceiptLink>(SQL, pWRL) > 0;
+            }catch (Exception e) { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e); }
+            return false;
         }
 
         public IEnumerable<GW> GetLinkWares(int pCodeWares)
         {
-            string SQL = $@"select 0 as Type, w.CODE_WARES as code, w.NAME_WARES as name, w.Code_Unit as CodeUnit, count(*) over() as TotalRows 
+            try
+            {
+                string SQL = $@"select 0 as Type, w.CODE_WARES as code, w.NAME_WARES as name, w.Code_Unit as CodeUnit, count(*) over() as TotalRows 
     from WaresLink wl join  wares w on wl.CodeWares = w.Code_wares where wl.CodeWaresTo={pCodeWares} order by wl.sort";
             var Res = db.Execute<GW>(SQL);
             return Res;
+            }
+            catch (Exception e) { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e); }
+            return null;
         }
        
     }
