@@ -388,6 +388,7 @@ namespace AvaloniaMain.ViewModels
         {
             List<ReceiptWares> list = (List<ReceiptWares>)curReceipt.Wares;
             list.Remove(rp);
+            
             curReceipt.Wares = list;
             SetCurReceipt(curReceipt);
         }

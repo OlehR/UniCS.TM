@@ -218,6 +218,7 @@ public SearchViewModel()
             if (selectedItem.Type == 1)
             {
                 CodeFastGroup = selectedItem.Code;
+                Current = 0;
                 Update();
             }
             else
@@ -233,54 +234,30 @@ public SearchViewModel()
             {
 
                 Current--;
-                OnPageProducts = AllProducts.GetRange(Limit*Current , Limit);
-                UpdatePageProducts();
-                IsRightEnable = true;
-                if (Current == 0) IsLeftEnable = false;
+                Update();
+            
             }
             else
             {
                 Current++;
-                if(Limit *Current+ Limit>AllProducts.Count)
-                {
-                    OnPageProducts = AllProducts.GetRange(Limit * Current, AllProducts.Count- Limit * Current);
-                }  
-                else OnPageProducts = AllProducts.GetRange(Limit * Current, Limit);
-                UpdatePageProducts();
-                IsLeftEnable = true;
-                if (Current == MaxPage) IsRightEnable = false;
+                Update();
+              
             }
         }
         public void Update()
         {
-            Current = 0;
             OnPageProductsBottom = null;
             OnPageProductsTop = null;
             var Res = Blf.GetDataFindWares(CodeFastGroup, CurrentText, new ModelMID.IdReceipt(), ref Current, ref MaxPage, ref Limit);
             AllProducts = Res?.Select(el => new GWA(el)).ToList();
-          
-            if (AllProducts != null)
-            {
-                if (AllProducts.Count <= Limit)
-                {
-                    OnPageProducts = AllProducts;
-                    IsRightEnable = false;
-                }
-                else
-                {
-                    OnPageProducts = AllProducts.GetRange(Limit * Current, Limit);
-                    IsRightEnable = true;
-
-                }
-                UpdatePageProducts();
-               
-
-                IsLeftEnable = false;
-            }
-       
-
+            if(AllProducts.Count>Limit) { OnPageProducts = AllProducts.GetRange(Current * Limit, Limit);}
+            else { OnPageProducts = AllProducts; }
             
-       
+            if (Current == 0) { IsLeftEnable = false; }
+            else { IsLeftEnable = true; }
+            if (Current == MaxPage) { IsRightEnable = false; }
+            else { IsRightEnable = true; }
+                UpdatePageProducts();      
         }
     }
 }

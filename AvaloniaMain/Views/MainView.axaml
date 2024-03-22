@@ -7,7 +7,8 @@
              xmlns:views="using:AvaloniaMain.Views"
              mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080"
              x:Class="AvaloniaMain.Views.MainView"
-             x:DataType="vm:MainViewModel">
+             x:DataType="vm:MainViewModel"
+			 xmlns:converters="clr-namespace:AvaloniaMain.Converters" >
 
     <Design.DataContext>
         <vm:MainViewModel />
@@ -28,10 +29,12 @@
 			<views:SearchView />
 		</DataTemplate>
     </UserControl.DataTemplates>
-
+	<UserControl.Resources>
+		<converters:QuantityToMinusButtonEnabledConverter x:Key="QuantityToMinusButtonEnabledConverter" />
+	</UserControl.Resources>
 
 	<Grid Background="White"  RowDefinitions="Auto,Auto">
-  <Grid Background="White" Grid.Row="0" Height="85"  ColumnDefinitions="700,310,310,*,120,120">
+  <Grid Background="White" Grid.Row="0" Height="85"  ColumnDefinitions="700,310,310,*,220,220">
 	  <Button Background="White" IsVisible="{Binding Visibility}" Command="{Binding ShowUserInfo}">
 <Grid Margin="0,0,0,15" ColumnDefinitions="Auto,Auto" Grid.Column="0">
 	
@@ -69,10 +72,10 @@
        <Button  Background="#e0e0e0" FontSize="18" FontWeight="Black"  Grid.Column="2" Margin="1" Width="300" Height="70" CornerRadius="15">
          <Label HorizontalAlignment="Center" VerticalAlignment="Center">Відкласти чек </Label>
        </Button>
-       <Button Command="{Binding ChangeColorCommand}" Background="{Binding ButtonColor}" Grid.Column="4" Margin="2" Width="120" Height="60" CornerRadius="15">
+       <Button Command="{Binding ChangeColorCommand}" Background="{Binding ButtonColor}" Grid.Column="4" Margin="2" Width="220" Height="60" CornerRadius="15">
        <Image Source="/Assets/OkColor.ico"></Image>
        </Button>
-      <Button  Background="#e0e0e0"  Grid.Column="5" Margin="2" Width="120" Height="60" CornerRadius="15">
+      <Button  Background="#e0e0e0"  Grid.Column="5" Margin="2" Width="220" Height="60" CornerRadius="15">
       <Image Source="/Assets/AdminPanel.ico"></Image>
        </Button>
     </Grid>
@@ -133,8 +136,8 @@
 					</Border>
 				</Button>
 				<StackPanel HorizontalAlignment="Center"  Orientation="Horizontal"  Grid.Column="2">
-					<Button Command="{Binding DataContext.ChangeQuantityMinus, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}" CommandParameter="{Binding}" Margin="0,0,15,0" Height="80" Width="80">
-						<Image Height="40" Width="40" Source="/Assets/minus.ico"></Image>
+					<Button Command="{Binding DataContext.ChangeQuantityMinus, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}" CommandParameter="{Binding}" Margin="0,0,15,0" Height="80" Width="80"
+							IsEnabled="{Binding Quantity, Converter={StaticResource QuantityToMinusButtonEnabledConverter}}"><Image Height="40" Width="40" Source="/Assets/minus.ico"></Image>
 					</Button> 
 					<TextBlock Margin="15" VerticalAlignment="Center" FontSize="25" FontWeight="Bold" Height="40" HorizontalAlignment="Center" Text="{Binding Quantity}" />
 					<Button Command="{Binding DataContext.ChangeQuantityPlus, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}" CommandParameter="{Binding}"  Margin="15,0,0,0" Height="80" Width="80">
