@@ -22,7 +22,8 @@ namespace Front.Equipments.Implementation
         int TimeOut = 45000;
         Encoding win1251 = Encoding.GetEncoding("windows-1251");
         WDB_SQLite db = WDB_SQLite.GetInstance;
-        string Url, Token, Device = "Test";
+        string Url, Token, Device = "Test", PrinterName;
+        bool IsOpenDrawerProgram { get => !string.IsNullOrEmpty(PrinterName) && Global.TypeWorkplaceCurrent == eTypeWorkplace.CashRegister; }
         public pRRO_Vchasno(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) :
                 base(pEquipment, pConfiguration, eModelEquipment.pRRO_Vchasno, pLoggerFactory, pActionStatus)
         {
@@ -32,6 +33,7 @@ namespace Front.Equipments.Implementation
                 Url = Configuration[$"{KeyPrefix}Url"];
                 Token = Configuration[$"{KeyPrefix}Token"];
                 Device = Configuration[$"{KeyPrefix}Device"];
+                PrinterName = Configuration[$"{KeyPrefix}PrinterName"];
 
                 var d = GetDeviceInfo2();
                 IsOpenWorkDay = !string.IsNullOrEmpty(d?.info?.shift_dt);
@@ -63,7 +65,7 @@ namespace Front.Equipments.Implementation
             List<LogRRO> res = null;
             Responce<ResponceReceipt> Res = null;
             if (!IsOpenWorkDay) OpenWorkDay();
-            if (!IsOpenWorkDay) return new LogRRO(pR) { CodeError = -1, Error = "Не вдалось відкрити зміну" } ;
+            if (!IsOpenWorkDay) return new LogRRO(pR) { CodeError = -1, Error = "Не вдалось відкрити зміну" };
 
             //var c = pR.Payment?.Where(el => el.TypePay == eTypePay.IssueOfCash);
             var RealPay = pR.Payment?.Where(el => el.TypePay == eTypePay.Card || el.TypePay == eTypePay.Cash || el.TypePay == eTypePay.Wallet);
@@ -88,15 +90,16 @@ namespace Front.Equipments.Implementation
                 {
                     FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
                 }
+            if (IsOpenDrawerProgram)
+                OpenMoneyBox();
+            return GetLogRRO(pR, Res, pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, Res?.info?.printinfo?.sum_topay ?? 0m);
 
-            return  GetLogRRO(pR, Res, pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, Res?.info?.printinfo?.sum_topay ?? 0m);
-            
         }
 
         public override LogRRO IssueOfCash(Receipt pR)
         {
             Responce<ResponceReceipt> Res = null;
-            if (pR.IssueOfCash!=null) //&& Res!=null && Res.res==0
+            if (pR.IssueOfCash != null) //&& Res!=null && Res.res==0
             {
                 pR.Wares = null;
                 ApiRRO d = new(pR, this, true) { token = Token, device = Device, tag = pR.NumberReceiptRRO + "_IC" };
@@ -104,7 +107,7 @@ namespace Front.Equipments.Implementation
                 var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");
                 Res = JsonConvert.DeserializeObject<Responce<ResponceReceipt>>(r);
             }
-            return GetLogRRO(pR, Res,  eTypeOperation.IssueOfCash, Res?.info?.printinfo?.sum_topay ?? 0m);
+            return GetLogRRO(pR, Res, eTypeOperation.IssueOfCash, Res?.info?.printinfo?.sum_topay ?? 0m);
         }
 
         public override LogRRO PrintCopyReceipt(int parNCopy = 1)
@@ -131,6 +134,8 @@ namespace Front.Equipments.Implementation
             var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");
 
             var Res = JsonConvert.DeserializeObject<Responce<ResponceReceipt>>(r);
+            if (IsOpenDrawerProgram)
+                OpenMoneyBox();
             return GetLogRRO(new IdReceipt() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace }, Res, eTypeOperation.NoFiscalReceipt);
 
         }
@@ -140,11 +145,15 @@ namespace Front.Equipments.Implementation
             var res = PrintXZ(pIdR, true);
             if (res != null && res.CodeError == 0)
                 IsOpenWorkDay = false;
+            if (IsOpenDrawerProgram)
+                OpenMoneyBox();
             return res;
         }
 
         override public LogRRO PrintX(IdReceipt pIdR)
         {
+            if (IsOpenDrawerProgram)
+                OpenMoneyBox();
             return PrintXZ(pIdR, false);
         }
 
@@ -156,6 +165,8 @@ namespace Front.Equipments.Implementation
             Responce<ResponceReport> Res = JsonConvert.DeserializeObject<Responce<ResponceReport>>(r);
             decimal Sum = Res?.info?.pays?.Sum(el => el.sum_p + el.round_pu - el.round_pd) ?? 0;
             decimal SumRefund = Res?.info?.pays?.Sum(el => el.sum_m + el.round_mu - el.round_md) ?? 0;
+            if (IsOpenDrawerProgram)
+                OpenMoneyBox();
             return GetLogRRO<ResponceReport>(pIdR, Res, IsZ ? eTypeOperation.ZReport : eTypeOperation.XReport, Sum, SumRefund);
         }
 
@@ -183,7 +194,9 @@ namespace Front.Equipments.Implementation
             string dd = d.ToJSON();
             var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");
             Responce<ResponceReport> Res = JsonConvert.DeserializeObject<Responce<ResponceReport>>(r);
-            return GetLogRRO(pIdR, Res, pSum > 0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyIn,pSum);
+            if (IsOpenDrawerProgram)
+                OpenMoneyBox();
+            return GetLogRRO(pIdR, Res, pSum > 0 ? eTypeOperation.MoneyIn : eTypeOperation.MoneyIn, pSum);
         }
 
         override public StatusEquipment TestDevice()
@@ -211,10 +224,10 @@ namespace Front.Equipments.Implementation
             return $"IdWorkplacePay=>{IdWorkplacePay}{Environment.NewLine}Url=>{Url}{Environment.NewLine}{r}";
         }
 
-        public override decimal GetSumInCash(IdReceipt pIdR) 
+        public override decimal GetSumInCash(IdReceipt pIdR)
         {
-            var r= GetDeviceInfo2();
-            return r.info?.safe??-1m;
+            var r = GetDeviceInfo2();
+            return r.info?.safe ?? -1m;
         }
 
         LogRRO GetLogRRO<Ob>(IdReceipt pIdR, Responce<Ob> pR, eTypeOperation pTypeOperation, decimal pSum = 0m, decimal pRefund = 0m)
@@ -285,7 +298,7 @@ namespace Front.Equipments.Implementation
             decimal sum = 0;
             if (pR != null && pR.Wares != null && pR.Wares.Any())
                 sum = pR.Wares.Where(el => el.IdWorkplacePay == pR.IdWorkplacePay || pR.IdWorkplacePay == 0).
-                        Sum(el => Math.Round(el.Price * el.Quantity, 2,MidpointRounding.AwayFromZero) - el.SumTotalDiscount );
+                        Sum(el => Math.Round(el.Price * el.Quantity, 2, MidpointRounding.AwayFromZero) - el.SumTotalDiscount);
             return sum;
         }
 
@@ -293,7 +306,7 @@ namespace Front.Equipments.Implementation
         {
             Responce<ResponceReceipt> Res = pRes as Responce<ResponceReceipt>;
             if (Res != null && Res.info != null && Res.info.printinfo != null)
-            {                
+            {
                 string QR = null;
                 var QRs = Res.info.printinfo.qr?.Split(";");
                 if (QRs.Length >= 4)
@@ -315,7 +328,7 @@ namespace Front.Equipments.Implementation
                     }
                     catch (Exception) { };
                 }
-                var DT=Res.info.printinfo.dt.ToDateTime("d-M-yyyy HH:mm:ss");
+                var DT = Res.info.printinfo.dt.ToDateTime("d-M-yyyy HH:mm:ss");
                 pR.Fiscals.Add(pR.IdWorkplacePay, new Fiscal()
                 {
                     IdWorkplacePay = pR.IdWorkplacePay,
@@ -331,7 +344,13 @@ namespace Front.Equipments.Implementation
             };
         }
 
-        override public bool PutToDisplay(string ptext, int pLine) { return true;}
+        override public bool PutToDisplay(string ptext, int pLine) { return true; }
+        public override bool OpenMoneyBox(int pTime = 15)
+        {
+            string dd = @"{ ""ver"": 6, ""source"": """", ""device"": """ + (PrinterName ?? "SAM4S") + @""", ""type"": 2, ""doc"": {""opendrawer"": 1}}";
+            var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");
+            return true;
+        }
     }
 }
 
@@ -367,7 +386,9 @@ namespace Front.Equipments.Implementation.ModelVchasno
         NumberFiscal = 20,
         NumberReceipt = 21,
         [Description("Копія чеку")]
-        CopyReceipt = 22
+        CopyReceipt = 22,
+        [Description("Відкрити грошову скриньку")]
+        OpenMoneyBox = 23
 
     }
 
@@ -431,11 +452,11 @@ namespace Front.Equipments.Implementation.ModelVchasno
     {
         public FiscalRRO() { }
         public FiscalRRO(eTask pT) { task = pT; }
-        public FiscalRRO(Receipt pR, Rro pRro,bool pIsIssueOfCash=false)
+        public FiscalRRO(Receipt pR, Rro pRro, bool pIsIssueOfCash = false)
         {
             if (pR != null)
             {
-                task = pR.TypeReceipt == eTypeReceipt.Sale ? eTask.Sale : eTask.Refund;                
+                task = pR.TypeReceipt == eTypeReceipt.Sale ? eTask.Sale : eTask.Refund;
                 if (pIsIssueOfCash)
                 {
                     task = eTask.IssueOfCash;
@@ -476,7 +497,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
             }
         }
         public decimal sum { get; set; }
-        public decimal round { get { return Math.Abs(-sum + (pays?.Sum(r => r.sum)??0m)) <0.1m ? - sum + pays?.Sum(r => r.sum) ?? 0m:0m; } }
+        public decimal round { get { return Math.Abs(-sum + (pays?.Sum(r => r.sum) ?? 0m)) < 0.1m ? -sum + pays?.Sum(r => r.sum) ?? 0m : 0m; } }
         public string comment_up { get; set; }
         public string comment_down { get; set; }
         public IEnumerable<WaresRRO> rows { get; set; }
@@ -767,7 +788,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
         public decimal round { set; get; }
         public decimal sum_topay { set; get; }
         public IEnumerable<FiscalPay> pays { set; get; }
-        public IEnumerable<ResponceTaxReceipt> taxes { set; get; }        
+        public IEnumerable<ResponceTaxReceipt> taxes { set; get; }
         public string fisn { set; get; }
         public string dt { set; get; }
         public string qr { set; get; }
@@ -842,8 +863,8 @@ namespace Front.Equipments.Implementation.ModelVchasno
     class FiscalPay
     {
         /// <summary>
-     /// Вид оплати(текстом)
-     /// </summary>
+        /// Вид оплати(текстом)
+        /// </summary>
         public string type { set; get; }
 
         /// <summary>
