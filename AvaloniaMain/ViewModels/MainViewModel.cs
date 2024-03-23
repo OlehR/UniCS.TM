@@ -3,7 +3,7 @@ using AvaloniaMain.ViewModels.Model;
 using AvaloniaMain.Views;
 using Front;
 using Front.Equipments;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+//using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ModelMID;
 using ReactiveUI;
 using SharedLib;
