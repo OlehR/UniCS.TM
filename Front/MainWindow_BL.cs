@@ -355,85 +355,6 @@ namespace Front
             SetStateView(eStateMainWindows.AdminPanel);
         }
 
-        /*public void GetBarCode(string pBarCode, string pTypeBarCode)
-        {
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"(pBarCode=>{pBarCode},  pTypeBarCode=>{pTypeBarCode})");
-            if (State == eStateMainWindows.StartWindow)
-                SetStateView(eStateMainWindows.WaitInput);
-            if (State == eStateMainWindows.WaitInputIssueCard)
-            {
-                //IssueCardUC.SetBarCode(pBarCode);
-                return;
-            }
-
-           if(Global.Settings.IsUseCardSparUkraine && State == eStateMainWindows.FindClientByPhone)
-           {
-               // pBarCode = "MTE2MmZlMGNjLTNlZmQtNDYxZC05NThiLTFjYmI3NjQ4YjM1NDIzLjAxLjIwMjQgMTM6MDE6Mjg=";
-                if (pBarCode.Length>56 )
-                {
-                    var QR = pBarCode.FromBase64();
-                    if(!string.IsNullOrEmpty(QR) && "1".Equals(QR[..1]) && QR.Length>=56)
-                    {
-                        string BarCode = QR[1..37];
-                        string Time = QR[37.. 56];
-                        DateTime dt= Time.ToDateTime("dd.MM.yyyy HH:mm:ss");
-                        if ((DateTime.Now - dt).TotalSeconds < 120)
-                           Bl.GetDiscount(new FindClient { BarCode = BarCode },curReceipt);
-                    }
-                }
-            }
-
-                var u = Bl.GetUserByBarCode(pBarCode);
-            if (u != null)
-            { Bl.OnAdminBarCode?.Invoke(u); return; }
-
-            if (TypeAccessWait == eTypeAccess.ExciseStamp)
-            {
-                string ExciseStamp = GetExciseStamp(pBarCode);
-                if (!string.IsNullOrEmpty(ExciseStamp))
-                {
-                    AddExciseStamp(ExciseStamp);
-                    return;
-                }
-            }
-            else
-            {
-                ReceiptWares w = null;
-                if (IsAddNewWares && (State == eStateMainWindows.WaitInput || State == eStateMainWindows.StartWindow))
-                {
-                    if (curReceipt == null || !curReceipt.IsLockChange)
-                    {
-                        if (curReceipt == null)
-                            NewReceipt();
-                        w = Bl.AddWaresBarCode(curReceipt, pBarCode, 1);
-                        if (w != null && w.CodeWares > 0)
-                        {
-                            CurWares = w;
-                            IsPrises(1, 0);
-                        }
-                    }
-                }
-                else
-                {
-                    w = Bl.AddWaresBarCode(curReceipt, pBarCode, 1, true);
-                }
-                if (w != null)
-                    return;
-
-                if (curReceipt != null)
-                {
-                    var c = Bl.GetClientByBarCode(curReceipt, pBarCode.ToLower());
-                    if (c != null) return;
-                }
-            }
-
-            if ((State != eStateMainWindows.WaitInput && State != eStateMainWindows.StartWindow) || curReceipt?.IsLockChange == true || !IsAddNewWares)
-                if (State != eStateMainWindows.ProcessPay && State != eStateMainWindows.ProcessPrintReceipt && State != eStateMainWindows.WaitCustomWindows)
-                    SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.AdminPanel);
-
-        }
-        */
-        
         public void AddWares(int pCodeWares, int pCodeUnit = 0, decimal pQuantity = 0m, decimal pPrice = 0m, GW pGV = null)
         {
             if (pGV != null)
@@ -531,7 +452,7 @@ namespace Front
             int[] IdWorkplacePays = R.IdWorkplacePays;// Wares.Select(el => el.IdWorkplacePay).Distinct().OrderBy(el => el).ToArray();
             IsManyPayments = IdWorkplacePays.Length > 1;
             OnPropertyChanged(nameof(IsManyPayments));
-            FillPays(R);
+            Blf.FillPays(R);
             AmountManyPayments = "";
             foreach (var item in R.WorkplacePays)
                 AmountManyPayments += $"{item.Sum} | ";
@@ -583,7 +504,7 @@ namespace Front
 
                                 if (pSumBonus > 0)
                                 {
-                                    FillPays(R);
+                                    Blf.FillPays(R);
                                     for (var i = 0; i < IdWorkplacePays.Length; i++)
                                     {
                                         R.IdWorkplacePay = IdWorkplacePays[i];
@@ -595,7 +516,7 @@ namespace Front
                                     R.Payment = Bl.GetPayment(R);
                                 }
                             }
-                            FillPays(R);
+                            Blf.FillPays(R);
                         }
 
                         for (var i = 0; i < IdWorkplacePays.Length; i++)
@@ -727,65 +648,7 @@ namespace Front
                 }
                 return Res;
             }
-        }
-
-        /*
-        void AddExciseStamp(string pES)
-        {
-            if (CurWares == null)
-                CurWares = curReceipt.GetLastWares;
-            if (CurWares != null)
-            {
-                if (!"None".Equals(pES))
-                {
-                    if (Global.Settings.IsCheckExciseStamp)
-                    {
-                        var res = Bl.ds.CheckExciseStamp(new ExciseStamp(CurWares, pES));                    
-                        if (res != null)
-                        {
-                            if (!res.Equals(CurWares) && res.State>=0)
-                            {
-                                CustomMessage.Show($"Дана акцизна марка вже використана {res.CodePeriod} {res.IdWorkplace} Чек=>{res.CodeReceipt} CodeWares=>{res.CodeWares}!", "Увага", eTypeMessage.Error);
-                                return;
-                            }
-                        }
-                    }
-                }
-                if (CurWares.AddExciseStamp(pES))
-                {                 //Додання акцизноії марки до алкоголю
-                    Bl.UpdateExciseStamp(new List<ReceiptWares>() { CurWares });
-                    TypeAccessWait = eTypeAccess.NoDefine;
-                    SetStateView(eStateMainWindows.WaitInput);
-                }
-                else
-                    CustomMessage.Show("Дана акцизна марка вже використана!", "Увага", eTypeMessage.Error);
-            }
-        }
-        */
-        
-        /*public void NewReceipt()
-        {
-            Bl.GetNewIdReceipt();
-            if (curReceipt != null)  
-                s.NewReceipt(curReceipt.CodeReceipt);
-            if (StartScan != DateTime.MinValue) StartScan = DateTime.Now;
-            //Dispatcher.BeginInvoke(new ThreadStart(() => { ShowClientBonus.Visibility = Visibility.Collapsed; }));
-            EF.PutToDisplay(curReceipt);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"CodeReceipt=>{curReceipt?.CodeReceipt}");
-        }*/
-
-        public void FillPays(Receipt pR)
-        {
-            int[] IdWorkplacePays = pR.IdWorkplacePays;//Wares.Select(el => el.IdWorkplacePay).Distinct().OrderBy(el => el).ToArray();
-            pR.WorkplacePays = new WorkplacePay[IdWorkplacePays.Length];
-            for (var i = 0; i < IdWorkplacePays.Length; i++)
-            {
-                pR.IdWorkplacePay = IdWorkplacePays[i];
-                var r = new WorkplacePay() { IdWorkplacePay = IdWorkplacePays[i], Sum = EF.SumReceiptFiscal(pR), SumCash = EF.SumCashReceiptFiscal(pR) };
-                pR.WorkplacePays[i] = r;
-            }
-            pR.IdWorkplacePay = 0;
-        }
+        }       
 
         Status CallBackApi(string pDataApi)
         {

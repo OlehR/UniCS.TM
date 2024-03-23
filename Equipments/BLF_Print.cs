@@ -242,7 +242,7 @@ namespace Front.Equipments
                 pR.WorkplacePays[i] = r;
             }
             pR.IdWorkplacePay = 0;
-        }
+        }       
 
     }
 }

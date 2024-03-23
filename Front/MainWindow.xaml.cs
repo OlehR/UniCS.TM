@@ -1297,8 +1297,7 @@ namespace Front
 
         private void ExciseStampNone(object sender, RoutedEventArgs e)
         {
-            Blf.AddExciseStamp("None");
-            Bl.AddEventAge(curReceipt);
+            Blf.ExciseStampNone();           
         }
 
         private void CustomWindowClickButton(object sender, RoutedEventArgs e)
