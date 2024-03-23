@@ -33,6 +33,8 @@ namespace ModelMID
         public string Prefix { get; set; }
         public eTypeCode TypeCode { get; set; }
         public int LenghtCode { get; set; }
+        public int LenghtOperator { get; set; }
         public int LenghtQuantity { get; set; }
+        public int GetTotalLenght { get { return KindBarCode == eKindBarCode.EAN13 ? 13 : LenghtCode + LenghtOperator + LenghtQuantity; } }
     }
 }

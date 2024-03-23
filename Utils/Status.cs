@@ -36,17 +36,17 @@ namespace Utils
             State = -1;
             TextState = e.Message + "\n" + e.StackTrace;
         }
-        public Status(HttpStatusCode pSC) 
-        { if(pSC != HttpStatusCode.OK)
+        public Status(HttpStatusCode pSC)
+        { if (pSC != HttpStatusCode.OK)
             {
                 State = -(int)pSC;
-                TextState= pSC.ToString();
+                TextState = pSC.ToString();
             }
         }
         public Status()
         {
             State = 0;
-            TextState ="Ok";
+            TextState = "Ok";
         }
     }
     public class Status<D> : Status
@@ -54,8 +54,18 @@ namespace Utils
         public D Data { get; set; }
         public Status() : base() { }
         public Status(D pD) : base() { Data = pD; }
-        public Status(int pState = 0, string pTextState = "Ok"):base(pState ,  pTextState) { }
+        public Status(int pState = 0, string pTextState = "Ok") : base(pState, pTextState) { }
         public Status(Exception e) : base(e) { }
-        public Status(HttpStatusCode pSC):base(pSC) { }
+        public Status(HttpStatusCode pSC) : base(pSC) { }
     }
+    public class StatusIsBonus : Status<string>
+    {
+        public bool is_bonus {get{ return Data?.IndexOf("нараховано бонусів ") > 0; } }
+        public StatusIsBonus(int pState = 0, string pTextState = "Ok") : base(pState, pTextState) { }
+        public StatusIsBonus(Status<string> pS)
+        {
+            new StatusIsBonus(pS.State, pS.TextState) { Data=pS.Data}; 
+        }
+    }
+
 }
