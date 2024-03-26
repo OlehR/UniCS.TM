@@ -343,7 +343,7 @@ namespace Front
                     ShowAdmin(pUser);
                     break;
                 case eTypeAccess.UseBonus:
-                    var task = Task.Run(() => PrintAndCloseReceipt(null, eTypePay.Bonus, 0, 0, 0, Client?.SumMoneyBonus ?? 0m));
+                    var task = Task.Run(() => Blf.PrintAndCloseReceipt(null, eTypePay.Bonus, 0, 0, 0, Client?.SumMoneyBonus ?? 0m));
                     break;
             }
             return true;
@@ -430,10 +430,10 @@ namespace Front
             }
             else
             {
-                var task = Task.Run(() => PrintAndCloseReceipt());
+                var task = Task.Run(() => Blf.PrintAndCloseReceipt());
             }
         }
-
+/*
         object LockPayPrint = new object();
         /// <summary>
         /// Оплата і Друк чека.
@@ -449,17 +449,12 @@ namespace Front
             R.NameCashier = AdminSSC?.NameUser;
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"pTP=>{pTP} pSumCash=>{pSumCash} pIssuingCash=>{pIssuingCash} pSumWallet=>{pSumWallet} pSumBonus=>{pSumBonus} curReceipt=> {curReceipt.ToJson()}", eTypeLog.Expanded);
 
-            int[] IdWorkplacePays = R.IdWorkplacePays;// Wares.Select(el => el.IdWorkplacePay).Distinct().OrderBy(el => el).ToArray();
-            IsManyPayments = IdWorkplacePays.Length > 1;
-            OnPropertyChanged(nameof(IsManyPayments));
-            Blf.FillPays(R);
-            AmountManyPayments = "";
-            foreach (var item in R.WorkplacePays)
-                AmountManyPayments += $"{item.Sum} | ";
-            AmountManyPayments = AmountManyPayments.Substring(0, AmountManyPayments.Length - 2);
-            OnPropertyChanged(nameof(AmountManyPayments));
-            SumTotalManyPayments = $"Загальна сума: {R.SumTotal}₴";
+            int[] IdWorkplacePays = R.IdWorkplacePays;          
+            
+            Blf.FillPays(R);            
+            OnPropertyChanged(nameof(AmountManyPayments));            
             OnPropertyChanged(nameof(SumTotalManyPayments));
+            OnPropertyChanged(nameof(IsManyPayments));
             lock (LockPayPrint)
             {
                 R.StateReceipt = Bl.GetStateReceipt(R);
@@ -649,7 +644,7 @@ namespace Front
                 return Res;
             }
         }       
-
+*/
         Status CallBackApi(string pDataApi)
         {
             Status Res = null;

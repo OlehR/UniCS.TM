@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -385,6 +386,46 @@ namespace Front.Equipments
             }
             catch (Exception ex) { Res = new Status(ex); }*/
             return Res;
+        }
+
+        public void SetCurReceipt(Receipt pReceipt, bool IsRefresh = true)
+        {
+            try
+            {
+                var OldClient = MW.curReceipt?.Client;
+                MW.curReceipt = new(); //Через дивний баг коли curReceipt.Wares залишалось порожне. а в pReceipt було з записами.
+                MW.curReceipt = pReceipt;
+
+                if (MW.curReceipt == null)
+                {
+                    MW.RunOnUiThread(() => { MW.ListWares?.Clear(); });
+                    MW.CS.WaitClear();
+                }
+                else
+                {
+                    MW.RunOnUiThread(() =>
+                    {
+                        if (pReceipt.Wares?.Any() == true)
+                            MW.ListWares = new ObservableCollection<ReceiptWares>(pReceipt.Wares);
+                        else
+                            MW.ListWares?.Clear();                        
+                    });
+                    if (OldClient?.CodeClient != 0 && MW.curReceipt.CodeClient != 0 && MW.curReceipt.Client == null &&  OldClient.CodeClient == MW.curReceipt.CodeClient)
+                    {
+                        MW.curReceipt.Client = OldClient;
+                    }
+
+                    if (MW.curReceipt.CodeClient != 0 && string.IsNullOrEmpty(MW.curReceipt.Client?.NameClient))
+                        Bl.GetClientByCode(MW.curReceipt, MW.curReceipt.CodeClient);
+
+                    if (MW.curReceipt?.IsNeedExciseStamp == true)
+                        SetStateView(eStateMainWindows.WaitInput);                    
+                }
+            }
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+            }           
         }
 
     }

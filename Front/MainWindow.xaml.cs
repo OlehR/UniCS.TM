@@ -221,9 +221,22 @@ namespace Front
         public int HeightScreen { get { return (int)SystemParameters.PrimaryScreenHeight; } }
         public int HeightStartVideo { get { return SystemParameters.PrimaryScreenWidth < SystemParameters.PrimaryScreenHeight ? 1300 : 700; } }
         public string[] PathVideo = null;
-        public bool IsManyPayments { get; set; } = false;
-        public string AmountManyPayments { get; set; } = "";
-        public string SumTotalManyPayments { get; set; } = "Загальна сума: ";
+        public bool IsManyPayments { get { return curReceipt?.IdWorkplacePays?.Length > 1; } }
+        public string AmountManyPayments
+        {
+            get
+            {
+                var res = "";
+                if (curReceipt != null)
+                {
+                    foreach (var item in curReceipt?.WorkplacePays)
+                        res += $"{item.Sum} | ";
+                    res = res.Substring(0, res.Length - 2);
+                }
+                return res;
+            }
+        }
+        public string SumTotalManyPayments { get { return $"Загальна сума: {curReceipt.SumTotal}₴"; } }
         public bool IsCashRegister { get { return (Global.TypeWorkplaceCurrent == eTypeWorkplace.CashRegister); } }
 
         public System.Drawing.Color GetFlagColor(eStateMainWindows pStateMainWindows, eTypeAccess pTypeAccess, eStateScale pSS)
@@ -574,6 +587,11 @@ namespace Front
             OnPropertyChanged(nameof(IsReceiptPostpone));
             OnPropertyChanged(nameof(IsReceiptPostponeNotNull));
             OnPropertyChanged(nameof(IsOrderReceipt));
+            OnPropertyChanged(nameof(IsManyPayments));
+            OnPropertyChanged(nameof(AmountManyPayments));
+            OnPropertyChanged(nameof(SumTotalManyPayments));
+            SetClient();
+
         }
 
         DateTime StartScan = DateTime.MinValue;
@@ -1201,7 +1219,7 @@ namespace Front
             if (r.Count() == 1)
                 EF.SetBankTerminal(r.First() as BankTerminal);
 
-            var task = Task.Run(() => PrintAndCloseReceipt());
+            var task = Task.Run(() => Blf.PrintAndCloseReceipt());
         }
 
         private void _ButtonPayment(object sender, RoutedEventArgs e)
