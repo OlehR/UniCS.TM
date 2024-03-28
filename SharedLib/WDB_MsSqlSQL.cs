@@ -505,7 +505,7 @@ SELECT wh.CodeWarehouse2 AS CodeWarehouse from WAREHOUSES wh where wh.Code = @Co
 UNION 
 SELECT @CodeWarehouse AS CodeWarehouse 
 )
-SELECT code_wares as CodeWares, Price, Type_Wares as TypeWares FROM dbo.V1C_MRC mrc JOIN wh ON  mrc.Code_Warehouse=wh.CodeWarehouse";
+SELECT DISTINCT code_wares as CodeWares, Price, Type_Wares as TypeWares FROM dbo.V1C_MRC mrc JOIN wh ON  mrc.Code_Warehouse=wh.CodeWarehouse";
         /*SELECT code_wares as CodeWares, Price, Type_Wares as TypeWares FROM dbo.V1C_MRC where Code_Warehouse = @CodeWarehouse
 UNION  
 SELECT code_wares as CodeWares, Price, Type_Wares as TypeWares FROM dbo.V1C_MRC mrc 
