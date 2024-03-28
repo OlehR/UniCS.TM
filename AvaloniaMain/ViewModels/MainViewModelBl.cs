@@ -43,7 +43,7 @@ namespace AvaloniaMain.ViewModels
 
             EF.SetStatus += (info) =>
             {
-                Dispavaloniaatcher.BeginInvoke(new ThreadStart(() =>{ }));
+                
                 /*if (info.IsСritical == true)
                 {
                     LastErrorEquipment = info.TextState;
