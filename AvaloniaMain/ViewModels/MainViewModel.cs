@@ -275,8 +275,9 @@ namespace AvaloniaMain.ViewModels
 
         private async Task NumPad()
         {
+            string mask = "^[0-9]{10}$";
             CurrentPage = null;
-            var parentViewModel = new NumPadViewModel("", false);
+            var parentViewModel = new NumPadViewModel("", false,mask);
             parentViewModel.NumberChanged += NumPadViewModel_NumberChanged;
             parentViewModel.VisibilityChanged += NumPadViewModel_VisibilityChanged;
             CurrentPage = parentViewModel;
@@ -294,9 +295,32 @@ namespace AvaloniaMain.ViewModels
             SearchViewVisibility = true;
         }
 
-        private void NumPadViewModel_NumberChanged(object? sender, string newNumber)
+        private void NumPadViewModel_NumberChanged(object? sender, string pResult)
         {
-            UserNumber = newNumber;
+            if (curReceipt == null)
+                Blf.NewReceipt();
+            if (pResult.Length == 4)
+            {
+                if (int.TryParse(pResult.Substring(0, 4), out int res))
+                    Bl.GetDiscount(new FindClient { PinCode = res }, curReceipt);
+                return;
+            }
+
+            if (pResult.Length >= 10)
+            {
+                var r = new CustomWindowAnswer()
+                {
+                    idReceipt = curReceipt,
+                    Id = eWindows.PhoneClient,
+                    IdButton = 1,
+                    Text = pResult,
+                    ExtData = CS?.RW
+                };
+                
+                Bl.SetCustomWindows(r);
+                curReceipt = curReceipt;    
+            }
+          
         }
         private void AddWare(object? sender, GWA ware)
         {
