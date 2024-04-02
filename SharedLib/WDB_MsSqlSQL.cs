@@ -146,16 +146,18 @@ SELECT -- Кількість товари  набору (Основні)
   AND wh_ex.doc_promotion_RRef IS null
   GROUP BY CONVERT(INT, YEAR(dp.year_doc)*10000+dp.number),pk.number_kit
   UNION ALL
-  SELECT -- Оптові продажі.
-     8000000000+@CodeWarehouse AS CodePS
-    ,1 AS NumberGroup
-    ,0 AS CodeWares
-    ,1 AS UseIndicative
-    ,14 AS TypeDiscount--%
-    ,0 AS AdditionalCondition
-    ,case when @CodeWarehouse = 89 then 29 else 51 end  AS Data
-    ,1 AS DataAdditionalCondition
-    where @CodeWarehouse in (9,89)";
+ SELECT -- Оптові продажі.
+   8000000000+TRY_CONVERT(int, wh.code,0) AS CodePS
+  ,1 AS NumberGroup
+  ,0 AS CodeWares
+  ,1 AS UseIndicative
+  ,14 AS TypeDiscount--%
+  ,0 AS AdditionalCondition
+  ,TRY_CONVERT(int, tp.code ) as Data
+  ,1 AS DataAdditionalCondition 
+  FROM dbo.V1C_dim_warehouse wh
+    JOIN dbo.V1C_dim_type_price tp ON wh.type_price_opt_RRef=tp.type_price_RRef
+ WHERE TRY_CONVERT(int, wh.code) = @CodeWarehouse  ";
 
         string SqlGetPromotionSaleDealer = @"SELECT DISTINCT 9000000000+CONVERT(INT, YEAR(dpg.date_time)*100000+dpg.number) AS CodePS, CONVERT(INT, dn.code) AS CodeWares, pg.date_beg AS DateBegin,pg.date_end AS DateEnd,CONVERT(INT, tp.code) AS CodeDealer
     , isnull(pp.Priority, 0) AS Priority
@@ -227,8 +229,8 @@ SELECT DISTINCT
 AND try_convert(int,wh.code) = @CodeWarehouse
 union all
 SELECT
-  8000000000+@CodeWarehouse AS CodePS
- ,'Оптові продажі '+convert(NVARCHAR, @CodeWarehouse) as NamePS
+  8000000000+TRY_CONVERT(int, wh.code) AS CodePS
+ ,'Оптові продажі '+convert(NVARCHAR, TRY_CONVERT(int, wh.code)) as NamePS
  ,1 AS CodePattern
  ,9 AS State
  , CONVERT(date,'20230101',112) AS DateBegin
@@ -239,7 +241,8 @@ SELECT
   , 0.00 AS SumOrder
   ,0 AS TypeWorkCoupon
   , NULL AS BarCodeCoupon
-  where @CodeWarehouse in (9,89);";
+   FROM dbo.V1C_dim_warehouse wh
+  WHERE  wh.type_price_opt_RRef<>0 AND TRY_CONVERT(int, wh.code) = @CodeWarehouse;";
 
 
         string SqlGetPromotionSaleFilter = @"WITH wh_ex AS
@@ -419,30 +422,34 @@ SELECT -- Товари набору (Основні)
   AND wh_ex.doc_promotion_RRef IS null
   union all
   SELECT -- оптовий склад
-   8000000000+@CodeWarehouse AS CodePS
-    ,1 AS CodeGroupFilter
-    ,51 AS TypeGroupFilter
-    ,1 AS RuleGroupFilter
-    ,0 AS CodeProporty
-    ,0 AS CodeChoice
-    , @CodeWarehouse as CodeData --AS CodeWarehouse
-    , CONVERT(NUMERIC, NULL) AS CodeDataEnd
-    where @CodeWarehouse in (9,89)
+ 8000000000+TRY_CONVERT(int, wh.code) AS CodePS
+  ,1 AS CodeGroupFilter
+  ,51 AS TypeGroupFilter
+  ,1 AS RuleGroupFilter
+  ,0 AS CodeProporty
+  ,0 AS CodeChoice
+  ,TRY_CONVERT(int, wh.code)  as CodeData --AS CodeWarehouse
+  , CONVERT(NUMERIC, NULL) AS CodeDataEnd 
+   FROM dbo.V1C_dim_warehouse wh
+  WHERE  wh.type_price_opt_RRef<>0 AND TRY_CONVERT(int, wh.code) = @CodeWarehouse
 
      union all
-SELECT -- оптовий склад товари і кількості
-   8000000000+@CodeWarehouse AS CodePS
+  SELECT -- оптовий склад товари і кількості
+   8000000000+TRY_CONVERT(int, wh.code) AS CodePS
     ,1 AS CodeGroupFilter
     ,12 AS TypeGroupFilter
     ,1 AS RuleGroupFilter
     ,0 AS CodeProporty
     ,0 AS CodeChoice
-    , try_convert(int, w.code_wares)  as CodeData --AS CodeWarehouse
+    , try_convert(int, w.code_wares)  as CodeData 
     , ow.quantity AS CodeDataEnd
-
  FROM dbo.V1C_DIM_OPTION_WPC_opt_wares ow
-JOIN Wares w ON w._IDRRef= ow.NomenRref
-   where @CodeWarehouse = 9
+ JOIN dbo.V1C_DIM_OPTION_WPC o ON o._IDRRef=ow._Reference18850_IDRRef
+      JOIN Wares w ON w._IDRRef= ow.NomenRref
+      JOIN V1C_dim_warehouse wh ON o.Warehouse_RRef=wh.warehouse_RRef
+      JOIN dbo.V1C_dim_type_price tp ON wh.type_price_opt_RRef=tp.type_price_RRef
+WHERE TRY_CONVERT(int, wh.code) = @CodeWarehouse
+
      union all
 SELECT -- оптовий склад товари і кількості
    8000000000+CodeWarehouse AS CodePS
@@ -453,7 +460,6 @@ SELECT -- оптовий склад товари і кількості
     ,0 AS CodeChoice
     , codewares  as CodeData --AS CodeWarehouse
     , quantity AS CodeDataEnd
-
  FROM dbo.QuantityOpt 
    WHERE quantity>0
    AND CodeWarehouse= @CodeWarehouse
@@ -499,7 +505,7 @@ SELECT wh.CodeWarehouse2 AS CodeWarehouse from WAREHOUSES wh where wh.Code = @Co
 UNION 
 SELECT @CodeWarehouse AS CodeWarehouse 
 )
-SELECT code_wares as CodeWares, Price, Type_Wares as TypeWares FROM dbo.V1C_MRC mrc JOIN wh ON  mrc.Code_Warehouse=wh.CodeWarehouse";
+SELECT DISTINCT code_wares as CodeWares, Price, Type_Wares as TypeWares FROM dbo.V1C_MRC mrc JOIN wh ON  mrc.Code_Warehouse=wh.CodeWarehouse";
         /*SELECT code_wares as CodeWares, Price, Type_Wares as TypeWares FROM dbo.V1C_MRC where Code_Warehouse = @CodeWarehouse
 UNION  
 SELECT code_wares as CodeWares, Price, Type_Wares as TypeWares FROM dbo.V1C_MRC mrc 

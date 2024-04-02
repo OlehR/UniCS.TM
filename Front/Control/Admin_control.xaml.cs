@@ -1048,7 +1048,7 @@ namespace Front.Control
                 {
                     var r = Bl.GetReceiptHead(el, true);
                     Total += r.SumTotal;
-                    MW.FillPays(r);
+                    MW.Blf.FillPays(r);
                     decimal SumPr = 0, Sum1c = 0;
                     SumPr = r.WorkplacePays?.Where(e => e.IdWorkplacePay == IdWP.IdWorkplace)?.Sum(e => e.Sum) ?? 0m;
                     if (SumPr > 0)

@@ -232,7 +232,7 @@ namespace Front.Control
             var btn = sender as Button;
             var bank = btn.CommandParameter as BankTerminal;
             MW?.EF.SetBankTerminal(bank);
-            var task = Task.Run(() => MW.PrintAndCloseReceipt(null, eTypePay.Card, 0, SumCashDisbursement));
+            var task = Task.Run(() => MW.Blf.PrintAndCloseReceipt(null, eTypePay.Card, 0, SumCashDisbursement));
             MW.GiveRest = 0;
         }
 
@@ -240,7 +240,7 @@ namespace Front.Control
         {
             MW.PaymentWindowKSO_UC.EquipmentStatusInPayment.Text = "";
             MW.GiveRest = (double)RestMoney;
-            var task = Task.Run(() => MW.PrintAndCloseReceipt(null, eTypePay.Cash, ChangeSumPaymantDecimal, 0, -SumUseWallet));
+            var task = Task.Run(() => MW.Blf.PrintAndCloseReceipt(null, eTypePay.Cash, ChangeSumPaymantDecimal, 0, -SumUseWallet));
         }
 
         private void CancelCashDisbursementButton(object sender, RoutedEventArgs e)

@@ -43,6 +43,7 @@ namespace AvaloniaMain.ViewModels
 
             EF.SetStatus += (info) =>
             {
+                
                 /*if (info.IsСritical == true)
                 {
                     LastErrorEquipment = info.TextState;

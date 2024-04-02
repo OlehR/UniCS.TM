@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -211,9 +212,9 @@ namespace Front.Equipments
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"CodeReceipt=>{MW.curReceipt?.CodeReceipt}");
         }
         
-        private void CustomWindowClickButton(CustomButton res)
+        /*private void CustomWindowClickButton(CustomButton res)
         {
-            /*
+            
             if (res != null)
             {
                 if (res.CustomWindow?.Id == eWindows.RestoreLastRecipt)
@@ -273,7 +274,7 @@ namespace Front.Equipments
                     else
                     if (res.Id == 33)
                     {
-                        ExciseStampNone(null, null);
+                        ExciseStampNone();
                     }
                     return;
                 }
@@ -303,13 +304,19 @@ namespace Front.Equipments
                 };
                 Bl.SetCustomWindows(r);
                 SetStateView(eStateMainWindows.WaitInput);
-            }*/
+            }
+        }*/
+
+        public void ExciseStampNone()
+        {
+            AddExciseStamp("None");
+            Bl.AddEventAge(MW.curReceipt);
         }
 
         Status CallBackApi(string pDataApi)
         {
             Status Res = null;
-            /*try
+           /* try
             {
                 CommandAPI<dynamic> pC = JsonConvert.DeserializeObject<CommandAPI<dynamic>>(pDataApi);
                 CommandAPI<int> CommandInt;
@@ -318,7 +325,7 @@ namespace Front.Equipments
                 switch (pC.Command)
                 {
                     case eCommand.GetCurrentReceipt:
-                        Res = new Status(0, curReceipt?.ToJSON());
+                        Res = new Status(0, MW.curReceipt?.ToJSON());
                         break;
                     case eCommand.GetReceipt:
                         var Command = JsonConvert.DeserializeObject<CommandAPI<IdReceipt>>(pDataApi);
@@ -353,15 +360,15 @@ namespace Front.Equipments
                         if (CommandRemoteInfo.Data.StateMainWindows == eStateMainWindows.BlockWeight || CommandRemoteInfo.Data.StateMainWindows == eStateMainWindows.ProblemWeight
                             || CommandRemoteInfo.Data.TypeAccess == eTypeAccess.FixWeight)
                         {
-                            CS.RW.FixWeightQuantity = CS.RW.Quantity;
-                            CS.RW.FixWeight += Convert.ToDecimal(CS.СurrentlyWeight);
-                            CS.StateScale = eStateScale.Stabilized;
+                            MW.CS.RW.FixWeightQuantity = MW.CS.RW.Quantity;
+                            MW.CS.RW.FixWeight += Convert.ToDecimal(MW.CS.СurrentlyWeight);
+                            MW.CS.StateScale = eStateScale.Stabilized;
                             SetStateView(eStateMainWindows.WaitInput);
                         }
                         if (CommandRemoteInfo.Data.StateMainWindows == eStateMainWindows.WaitAdmin && CommandRemoteInfo.Data.TypeAccess == eTypeAccess.ChoicePrice)
                         {
-                            Bl.AddEventAge(curReceipt);
-                            AddWares(CurWares.CodeWares, CurWares.CodeUnit, CommandRemoteInfo.Data.QuantityCigarettes, CommandRemoteInfo.Data.SelectRemoteCigarettesPrice.price);
+                            Bl.AddEventAge(MW.curReceipt);
+                            AddWares(CurWares.CodeWares, MW.CurWares.CodeUnit, CommandRemoteInfo.Data.QuantityCigarettes, CommandRemoteInfo.Data.SelectRemoteCigarettesPrice.price);
                             QuantityCigarettes = 1;
                             SetStateView(eStateMainWindows.WaitInput);
                         }
@@ -379,6 +386,46 @@ namespace Front.Equipments
             }
             catch (Exception ex) { Res = new Status(ex); }*/
             return Res;
+        }
+
+        public void SetCurReceipt(Receipt pReceipt, bool IsRefresh = true)
+        {
+            try
+            {
+                var OldClient = MW.curReceipt?.Client;
+                MW.curReceipt = new(); //Через дивний баг коли curReceipt.Wares залишалось порожне. а в pReceipt було з записами.
+                MW.curReceipt = pReceipt;
+
+                if (MW.curReceipt == null)
+                {
+                    MW.RunOnUiThread(() => { MW.ListWares?.Clear(); });
+                    MW.CS.WaitClear();
+                }
+                else
+                {
+                    MW.RunOnUiThread(() =>
+                    {
+                        if (pReceipt.Wares?.Any() == true)
+                            MW.ListWares = new ObservableCollection<ReceiptWares>(pReceipt.Wares);
+                        else
+                            MW.ListWares?.Clear();                        
+                    });
+                    if (OldClient?.CodeClient != 0 && MW.curReceipt.CodeClient != 0 && MW.curReceipt.Client == null &&  OldClient.CodeClient == MW.curReceipt.CodeClient)
+                    {
+                        MW.curReceipt.Client = OldClient;
+                    }
+
+                    if (MW.curReceipt.CodeClient != 0 && string.IsNullOrEmpty(MW.curReceipt.Client?.NameClient))
+                        Bl.GetClientByCode(MW.curReceipt, MW.curReceipt.CodeClient);
+
+                    if (MW.curReceipt?.IsNeedExciseStamp == true)
+                        SetStateView(eStateMainWindows.WaitInput);                    
+                }
+            }
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+            }           
         }
 
     }

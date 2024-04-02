@@ -21,25 +21,16 @@ namespace Front.Equipments
         public bool PrintAndCloseReceipt(Receipt pR = null, eTypePay pTP = eTypePay.Card, decimal pSumCash = 0m, decimal pIssuingCash = 0, decimal pSumWallet = 0, decimal pSumBonus = 0)
         {
             bool Res = false;
-            /*string TextError = null;
+            string TextError = null;
 
             var R = MW.Bl.GetReceiptHead(pR ?? MW.curReceipt, true);
             SetCurReceipt(R, false);
-            R.NameCashier = AdminSSC?.NameUser;
+            R.NameCashier = MW.AdminSSC?.NameUser;
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"pTP=>{pTP} pSumCash=>{pSumCash} pIssuingCash=>{pIssuingCash} pSumWallet=>{pSumWallet} pSumBonus=>{pSumBonus} curReceipt=> {MW.curReceipt.ToJson()}", eTypeLog.Expanded);
 
             int[] IdWorkplacePays = R.IdWorkplacePays;// Wares.Select(el => el.IdWorkplacePay).Distinct().OrderBy(el => el).ToArray();
-            IsManyPayments = IdWorkplacePays.Length > 1;
-            OnPropertyChanged(nameof(IsManyPayments));
-            FillPays(R);
-            AmountManyPayments = "";
-            foreach (var item in R.WorkplacePays)
-                AmountManyPayments += $"{item.Sum} | ";
-            AmountManyPayments = AmountManyPayments.Substring(0, AmountManyPayments.Length - 2);
-            OnPropertyChanged(nameof(AmountManyPayments));
-            SumTotalManyPayments = $"Загальна сума: {R.SumTotal}₴";
-            OnPropertyChanged(nameof(SumTotalManyPayments));
-
+            
+            
             lock (LockPayPrint)
             {
                 R.StateReceipt = Bl.GetStateReceipt(R);
@@ -68,7 +59,7 @@ namespace Front.Equipments
                                 for (var i = 0; i < IdWorkplacePays.Length; i++)
                                 {
                                     R.IdWorkplacePay = IdWorkplacePays[i];
-                                    var Pay = new Payment(R) { IdWorkplacePay = R.IdWorkplacePay, IsSuccess = true, TypePay = eTypePay.Bonus, SumPay = R.SumTotal, SumExt = pSumBonus, PosAddAmount = R.Client?.PercentBonus ?? Client?.PercentBonus ?? 0m };
+                                    var Pay = new Payment(R) { IdWorkplacePay = R.IdWorkplacePay, IsSuccess = true, TypePay = eTypePay.Bonus, SumPay = R.SumTotal, SumExt = pSumBonus, PosAddAmount = R.Client?.PercentBonus ?? MW.Client?.PercentBonus ?? 0m };
 
                                     Bl.db.ReplacePayment(Pay);
                                     R.Payment = Bl.GetPayment(R);
@@ -95,10 +86,9 @@ namespace Front.Equipments
                                     Bl.SetStateReceipt(R, R.StateReceipt);
                                     R.Payment = Bl.GetPayment(R);
                                 }
-                            }
-                            FillPays(R);
+                            }                            
                         }
-
+                        FillPays(R);
                         for (var i = 0; i < IdWorkplacePays.Length; i++)
                         {
                             if (R.Payment != null && R.Payment.Any(el => el.IdWorkplacePay == IdWorkplacePays[i] && el.TypePay != eTypePay.Wallet))
@@ -142,7 +132,7 @@ namespace Front.Equipments
                             {
                                 R.StateReceipt = R.Payment?.Any() == true ? eStateReceipt.PartialPay : eStateReceipt.Prepare;
                                 Bl.SetStateReceipt(MW.curReceipt, R.StateReceipt);
-                                TextError = $"Оплата не пройшла: {EquipmentInfo}";
+                                TextError = $"Оплата не пройшла: {MW.EquipmentInfo}";
                                 break;
                             }
                         }
@@ -227,7 +217,7 @@ namespace Front.Equipments
                     Global.Message?.Invoke(TextError, eTypeMessage.Error);
                 }
                 return Res;
-            }*/
+            }
             return Res;
         }
 
@@ -242,7 +232,7 @@ namespace Front.Equipments
                 pR.WorkplacePays[i] = r;
             }
             pR.IdWorkplacePay = 0;
-        }
+        }       
 
     }
 }

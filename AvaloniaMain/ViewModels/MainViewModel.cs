@@ -5,6 +5,7 @@ using Front;
 using Front.Equipments;
 //using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ModelMID;
+
 using ReactiveUI;
 using SharedLib;
 using System;
@@ -33,6 +34,8 @@ namespace AvaloniaMain.ViewModels
         public eStateMainWindows State { get; set; }
         public eTypeAccess TypeAccessWait { get; set; }
         public bool IsShowWeightWindows { get; set; }
+        public string EquipmentInfo { get; set; }
+        public ModelMID.DB.User AdminSSC { get; set; } = null;
 
         public Client client = new Client();
 
