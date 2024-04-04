@@ -1031,6 +1031,22 @@ namespace Front
                                 SetStateView(eStateMainWindows.WaitInput);
                             };
                             break;
+                        case eStateMainWindows.AddMissingPackage:
+                            AddMissingPackage.CountPackeges = curReceipt.CountWeightGoods;
+                            AddMissingPackage.CallBackResult = (int res) =>
+                            {
+                                Bl.AddEvent(curReceipt, eReceiptEventType.PackagesBag, res != 0 ? "Додавання пакетів в чек" : "Відміна додавання пакетів");
+                                Bl.AddWaresCode(curReceipt, Global.Settings.CodePackagesBag, 19, res);
+                                AddMissingPackage.Visibility = Visibility.Collapsed;
+                                Background.Visibility = Visibility.Collapsed;
+                                BackgroundWares.Visibility = Visibility.Collapsed;
+                                Thread.Sleep(200);
+                                PayAndPrint();
+                            };
+                            AddMissingPackage.Visibility = Visibility.Visible;
+                            Background.Visibility = Visibility.Visible;
+                            BackgroundWares.Visibility = Visibility.Visible;
+                            break;
                         default:
                             break;
                     }

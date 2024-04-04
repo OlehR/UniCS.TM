@@ -16,12 +16,12 @@ namespace Front.Control
         MainWindow MW;
         public void Init(MainWindow mw)
         {
-            MW = mw;           
+            MW = mw;
         }
 
         public IssueCard()
         {
-            InitializeComponent();            
+            InitializeComponent();
             IssueCardVM = DataContext as IssueCardVM;
             ButPhoneIssueCard.Click += (sender, e) =>
             {
@@ -52,7 +52,7 @@ namespace Front.Control
                     }
                 };
 
-                IssueCardVM.BarcodeIssueCard = null;                
+                IssueCardVM.BarcodeIssueCard = null;
             };
 
             ButVerifySMS.Click += (sender, e) =>
@@ -90,7 +90,7 @@ namespace Front.Control
 
         private void CancelClick(object sender, RoutedEventArgs e)
         {
-           // EquipmentFront.OnBarCode -= SetBarCode;
+            // EquipmentFront.OnBarCode -= SetBarCode;
             MW.SetStateView(eStateMainWindows.WaitInput);
         }
         private (string, bool) PhoneCorrection(string phoneNumber)
@@ -114,9 +114,15 @@ namespace Front.Control
 
         private void IssueNewCardButton(object sender, RoutedEventArgs e)
         {
-           // EquipmentFront.OnBarCode -= SetBarCode;
+            // EquipmentFront.OnBarCode -= SetBarCode;
             eReturnClient eReturn = IssueCardVM.IssueNewCardButton();
             MW.CustomMessage.Show(eReturn.GetDescription(), eReturn != eReturnClient.Ok ? "Помилка! Карточка не збереглась на сервері!!!" : "Карточка успішно збережена.", eTypeMessage.Information);
+            if (eReturn == eReturnClient.Ok)
+            {
+                IssueCardVM.Reset();
+                MW.SetStateView(eStateMainWindows.WaitInput);
+            }
+
         }
     }
 
