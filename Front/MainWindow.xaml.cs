@@ -757,7 +757,7 @@ namespace Front
                         Task.Run(async () =>
                         {
                             ObservableCollection<Models.Price> prices = new();
-                            if (CurWares != null && CurWares.Prices != null && CurWares.Prices.Count() > 0)
+                            if (CurWares?.Prices?.Any()==true)
                             {
                                 prices = new ObservableCollection<Models.Price>(CurWares.Prices.OrderByDescending(r => r.Price).Select(r => new Models.Price(r.Price, true, r.TypeWares)));
                                 // rrr.First().IsEnable = true;
@@ -827,7 +827,7 @@ namespace Front
                             break;
                         case eStateMainWindows.WaitInputPrice:
                             TypeAccessWait = eTypeAccess.ChoicePrice;
-                            if (CurWares != null && CurWares.Prices != null && CurWares.Prices.Count() > 0)
+                            if ( CurWares?.Prices?.Any()==true)
                             {
                                 var rrr = new ObservableCollection<Models.Price>(CurWares.Prices.OrderByDescending(r => r.Price).Select(r => new Models.Price(r.Price, Access.GetRight(TypeAccessWait), r.TypeWares)));
                                 rrr.First().IsEnable = true;
@@ -928,6 +928,7 @@ namespace Front
                             break;
 
                         case eStateMainWindows.ChoicePaymentMethod:
+                            PaymentWindow.UpdatePaymentWindow();
                             OnPropertyChanged(nameof(IsPresentSecondTerminal));
                             OnPropertyChanged(nameof(IsPresentFirstTerminal));
                             OnPropertyChanged(nameof(SecondTerminal));
@@ -1246,7 +1247,7 @@ namespace Front
                     {
                         if (price.IsConfirmAge)
                             Bl.AddEventAge(curReceipt);
-                        AddWares(CurWares.CodeWares, CurWares.CodeUnit, QuantityCigarettes, price.price);
+                        Blf.AddWares(CurWares.CodeWares, CurWares.CodeUnit, QuantityCigarettes, price.price);
                         QuantityCigarettes = 1;
                     }
                 }
@@ -1281,21 +1282,6 @@ namespace Front
         private void TextPasswordChanged(object sender, TextChangedEventArgs e)
         {
         }
-
-        /*private string GetExciseStamp(string pBarCode)
-        {
-            if (pBarCode.Contains("t.gov.ua"))
-            {
-                string Res = pBarCode.Substring(pBarCode.IndexOf("t.gov.ua") + 9);
-                pBarCode = Res.Substring(0, Res.Length - 11);
-            }
-
-            Regex regex = new Regex(@"^\w{4}[0-9]{6}?$");
-            if (regex.IsMatch(pBarCode))
-                return pBarCode;
-            return null;
-        }
-        */
 
         public void StartOpenMoneyBox()
         {
@@ -1421,7 +1407,7 @@ namespace Front
                     idReceipt = curReceipt,
                     Id = res.CustomWindow?.Id ?? eWindows.NoDefinition,
                     IdButton = res.Id,
-                    Text = TextBoxCustomWindows.Text,
+                    Text = res.CustomWindow?.InputText, //TextBoxCustomWindows.Text,
                     ExtData = res.CustomWindow?.Id == eWindows.ConfirmWeight ? CS?.RW : null
                 };
                 Bl.SetCustomWindows(r);

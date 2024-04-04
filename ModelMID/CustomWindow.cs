@@ -58,6 +58,10 @@ namespace ModelMID
         /// </summary>
         public string ValidationMask { get; set; }
         /// <summary>
+        /// Поле вводу
+        /// </summary>
+        public string InputText { get; set; }
+        /// <summary>
         /// В скільки рядків розміщати кнопки.
         /// </summary>
         public int ColumnButtons { get; set; } = 1;

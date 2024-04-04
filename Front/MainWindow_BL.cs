@@ -355,7 +355,7 @@ namespace Front
             SetStateView(eStateMainWindows.AdminPanel);
         }
 
-        public void AddWares(int pCodeWares, int pCodeUnit = 0, decimal pQuantity = 0m, decimal pPrice = 0m, GW pGV = null)
+        public void ShowWeightWares( GW pGV = null)
         {
             if (pGV != null)
             {
@@ -381,23 +381,14 @@ namespace Front
                 }
                 SetStateView(eStateMainWindows.WaitWeight);
                 return;
-            }
-
-            if (pCodeWares > 0)
-            {
-                if (curReceipt == null)
-                    Blf.NewReceipt();
-                CurWares = Bl.AddWaresCode(curReceipt, pCodeWares, pCodeUnit, pQuantity, pPrice);
-
-                if (CurWares != null)
-                    Blf.IsPrises(pQuantity, pPrice);
-            }
+            }            
         }
 
         public void PayAndPrint()
         {
             if (curReceipt.StateReceipt < eStateReceipt.Pay && curReceipt.CountWeightGoods > 0 && !curReceipt.Wares.Any(x => x.CodeWares == Global.Settings.CodePackagesBag) && !curReceipt.IsPakagesAded && curReceipt.TypeReceipt == eTypeReceipt.Sale)
             {
+                //SetStateView(eStateMainWindows.AddMissingPackage);
                 AddMissingPackage.CountPackeges = curReceipt.CountWeightGoods;
                 AddMissingPackage.CallBackResult = (int res) =>
                 {
@@ -700,7 +691,7 @@ namespace Front
                         if (CommandRemoteInfo.Data.StateMainWindows == eStateMainWindows.WaitAdmin && CommandRemoteInfo.Data.TypeAccess == eTypeAccess.ChoicePrice)
                         {
                             Bl.AddEventAge(curReceipt);
-                            AddWares(CurWares.CodeWares, CurWares.CodeUnit, CommandRemoteInfo.Data.QuantityCigarettes, CommandRemoteInfo.Data.SelectRemoteCigarettesPrice.price);
+                            Blf.AddWares(CurWares.CodeWares, CurWares.CodeUnit, CommandRemoteInfo.Data.QuantityCigarettes, CommandRemoteInfo.Data.SelectRemoteCigarettesPrice.price);
                             QuantityCigarettes = 1;
                             SetStateView(eStateMainWindows.WaitInput);
                         }

@@ -1123,7 +1123,9 @@
                                    Mode=FindAncestor, AncestorType=Window}}"/>
                             <TextBox Grid.Row="2" TabIndex="1" x:Name="TextBoxCustomWindows"
                                      TextChanged="CustomWindowVerificationText" 
-                                     FontSize="20"  VerticalAlignment="Center" />
+                                     FontSize="20"  VerticalAlignment="Center" 
+                                     Text="{Binding customWindow.InputText, RelativeSource={RelativeSource 
+Mode=FindAncestor, AncestorType=Window}}"/>
 
                             <ScrollViewer  VerticalScrollBarVisibility="Auto" Height="250"  x:Name="ButtonsCustomWindows" >
                                 <ItemsControl Name="CustomWindowsItemControl" VerticalAlignment="Center">
