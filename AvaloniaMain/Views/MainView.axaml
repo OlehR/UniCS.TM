@@ -37,7 +37,7 @@
 
 	<Grid Background="White"  RowDefinitions="Auto,Auto">
   <Grid Background="White" Grid.Row="0" Height="85"  ColumnDefinitions="700,310,310,*,220,220">
-	  <Button Background="White" IsVisible="{Binding Visibility}" Command="{Binding ShowUserInfo}">
+	  <Button Background="White" IsVisible="{Binding IsUserActive}" Command="{Binding ShowUserInfo}">
 <Grid Margin="0,0,0,15" ColumnDefinitions="Auto,Auto" Grid.Column="0">
 	
 	
@@ -46,14 +46,14 @@
             <Grid Height="60" Margin="3" RowDefinitions="*,*" ColumnDefinitions="Auto,Auto">
               <Label FontSize="20"  Width="160" HorizontalAlignment="Center" >Скарбничка:</Label>
 				<Label FontSize="20" Width="160" Grid.Row="1" >Сума Бонусів:</Label>
-              <TextBlock  FontWeight="Bold" Margin=""  FontSize="20"  VerticalAlignment="Center" Grid.Column="1" Text="{Binding UserMoneyBox}">
+              <TextBlock  FontWeight="Bold" Margin=""  FontSize="20"  VerticalAlignment="Center" Grid.Column="1" Text="{Binding Client.Wallet}">
 				  <TextBlock.Styles>
 					  <Style Selector="TextBlock">
 						  <Setter Property="Foreground" Value="Green" />
 					  </Style>
 				  </TextBlock.Styles>
 			  </TextBlock>
-              <TextBlock FontSize="20" FontWeight="Bold"    VerticalAlignment="Center" Grid.Column="1" Grid.Row="1" Text="{Binding UserMoneyBonus}">
+              <TextBlock FontSize="20" FontWeight="Bold"    VerticalAlignment="Center" Grid.Column="1" Grid.Row="1" Text="{Binding Client.SumBonus}">
 				  <TextBlock.Styles>
 					  <Style Selector="TextBlock">
 						  <Setter Property="Foreground" Value="Green" />
@@ -64,7 +64,7 @@
 			
         </Border>
   
-        <Image   Margin="4"    Grid.Column="1"  IsVisible="{Binding Visibility }"  Height="60"  Width="100" Source="/Assets/ClientBonus.ico"></Image>
+        <Image   Margin="4"    Grid.Column="1"  IsVisible="{Binding IsUserActive }"  Height="60"  Width="100" Source="/Assets/ClientBonus.ico"></Image>
       
       </Grid>
 	  </Button>
