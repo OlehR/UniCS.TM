@@ -1619,7 +1619,22 @@ Mode=FindAncestor, AncestorType=Window}}"/>
                                 x:Name="WaitAdminImage"/>
                         <TextBlock  HorizontalAlignment="Center" Foreground="Black" FontSize="28"
                                     Name="WaitAdminTitle" 
-                                    Text="{DynamicResource WaitAdmin }"/>
+                                    Text="{DynamicResource WaitAdmin }">
+                            <TextBlock.Style>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsWaitAdminTitle, RelativeSource={RelativeSource 
+               Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsWaitAdminTitle, RelativeSource={RelativeSource 
+               Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
                         <TextBlock  HorizontalAlignment="Center" Foreground="Black" FontSize="28"
                                     Name="ExciseStampNameWares"
                                     Text="{Binding CurWaresName, RelativeSource={RelativeSource 
