@@ -5,6 +5,8 @@ using AvaloniaMain.ViewModels.Model;
 using AvaloniaMain.Views;
 using Front;
 using Front.Equipments;
+using Front.Equipments.Implementation;
+
 //using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ModelMID;
 
@@ -35,6 +37,12 @@ namespace AvaloniaMain.ViewModels
                     OnPropertyChanged(nameof(_curReceipt));
                     OnPropertyChanged(nameof(Client));
                     OnPropertyChanged(nameof(IsUserActive));
+                    OnPropertyChanged(nameof(MoneySum));
+                    OnPropertyChanged(nameof(UserMoneyBonus));
+                    OnPropertyChanged(nameof(UserMoneyBox));
+                    OnPropertyChanged(nameof(Discount));
+
+
                 }
 
             }
@@ -49,7 +57,8 @@ namespace AvaloniaMain.ViewModels
             
         }
         public ReceiptWares CurWares { get; set; }
-        public Client Client { get { return curReceipt?.Client; }}
+        public Client Client { 
+            get { return curReceipt?.Client; }}
         public Sound s { get; set; }
         public ReactiveCommand<ReceiptWares, Unit> Delete { get; }
         public ReactiveCommand<ReceiptWares, Unit> ChangeQuantityMinus { get; }
@@ -66,6 +75,12 @@ namespace AvaloniaMain.ViewModels
 
         public BLF Blf;
 
+        private decimal _MoneySum;
+        public decimal MoneySum
+        {
+            get { return EF.SumReceiptFiscal(curReceipt); }
+          
+        }
         private ObservableCollection<ReceiptWares> _ListWares;
         public ObservableCollection<ReceiptWares> ListWares
         {
@@ -377,7 +392,7 @@ namespace AvaloniaMain.ViewModels
         }
         private void AddWare(object? sender, GWA ware)
         {
-            AddWares(ware.Code, ware.CodeUnit);
+            AddWares(ware.Code, ware.CodeUnit);  
         }
         public void AddWares(int pCodeWares, int pCodeUnit = 0, decimal pQuantity = 0m, decimal pPrice = 0m, GW pGV = null)
         {
@@ -466,7 +481,7 @@ namespace AvaloniaMain.ViewModels
         public void MinusItem(ReceiptWares rp)
         {
             Bl.ChangeQuantity(rp, rp.Quantity - 1);
-       
+            
 
         }
         public void PlusItem(ReceiptWares rp)
@@ -489,6 +504,7 @@ namespace AvaloniaMain.ViewModels
                 ExtData = cb.CustomWindow?.Id == eWindows.ConfirmWeight ? CS?.RW : null
             };
             Bl.SetCustomWindows(r);
+           // curReceipt.PercentDiscount = Client.PersentDiscount;
         }
 
     }

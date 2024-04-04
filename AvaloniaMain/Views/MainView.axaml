@@ -46,14 +46,14 @@
             <Grid Height="60" Margin="3" RowDefinitions="*,*" ColumnDefinitions="Auto,Auto">
               <Label FontSize="20"  Width="160" HorizontalAlignment="Center" >Скарбничка:</Label>
 				<Label FontSize="20" Width="160" Grid.Row="1" >Сума Бонусів:</Label>
-              <TextBlock  FontWeight="Bold" Margin=""  FontSize="20"  VerticalAlignment="Center" Grid.Column="1" Text="{Binding Client.Wallet}">
+              <TextBlock  FontWeight="Bold" Margin=""  FontSize="20"  VerticalAlignment="Center" Grid.Column="1" Text="{Binding UserMoneyBox}">
 				  <TextBlock.Styles>
 					  <Style Selector="TextBlock">
 						  <Setter Property="Foreground" Value="Green" />
 					  </Style>
 				  </TextBlock.Styles>
 			  </TextBlock>
-              <TextBlock FontSize="20" FontWeight="Bold"    VerticalAlignment="Center" Grid.Column="1" Grid.Row="1" Text="{Binding Client.SumBonus}">
+              <TextBlock FontSize="20" FontWeight="Bold"    VerticalAlignment="Center" Grid.Column="1" Grid.Row="1" Text="{Binding UserMoneyBonus}">
 				  <TextBlock.Styles>
 					  <Style Selector="TextBlock">
 						  <Setter Property="Foreground" Value="Green" />
@@ -69,10 +69,10 @@
       </Grid>
 	  </Button>
        <Button Background="#e0e0e0" Command="{Binding ShowIssueCard}" Grid.Column="1" Width="300" Height="70" CornerRadius="15">
-         <Label HorizontalAlignment="Center"  FontSize="18" FontWeight="Black" VerticalAlignment="Center">Видача картки</Label>
+		   <TextBlock HorizontalAlignment="Center"  FontSize="18" FontWeight="Bold" VerticalAlignment="Center">Видача картки</TextBlock>
        </Button>
-       <Button  Background="#e0e0e0" FontSize="18" FontWeight="Black"  Grid.Column="2" Margin="1" Width="300" Height="70" CornerRadius="15">
-         <Label HorizontalAlignment="Center" VerticalAlignment="Center">Відкласти чек </Label>
+       <Button  Background="#e0e0e0" FontSize="18" FontWeight="Bold"  Grid.Column="2" Margin="1" Width="300" Height="70" CornerRadius="15">
+         <TextBlock HorizontalAlignment="Center" FontSize="18" VerticalAlignment="Center">Відкласти чек </TextBlock>
        </Button>
        <Button Command="{Binding ChangeColorCommand}" Background="{Binding ButtonColor}" Grid.Column="4" Margin="2" Width="220" Height="60" CornerRadius="15">
        <Image Source="/Assets/OkColor.ico"></Image>
@@ -96,7 +96,7 @@
 	 
 
 	  <Border Grid.Row="0" IsVisible="True" Background="#e4f7da">
-         <Grid ColumnDefinitions="1110,100,285,130,130,160">
+         <Grid ColumnDefinitions="1040,100,260,130,130,160">
 			 <Border   Height="40"  Grid.Column="0">
                                   <Label VerticalAlignment="Center"   FontWeight="Bold" FontSize="15" HorizontalAlignment="Center">Назва</Label>
 			 </Border>
@@ -127,9 +127,9 @@
   <ListBox.ItemTemplate>
     <DataTemplate>
 		
-			<Grid Height="90" ColumnDefinitions="1110,auto,auto,130,130,100">
+			<Grid Height="90" ColumnDefinitions="1070,auto,auto,130,140,100">
 				<StackPanel>
-					<TextBlock TextWrapping="Wrap"  Margin="20,0,0,0" Height="20" FontSize="10" FontWeight="Medium" Text="знижка 10% з обмеженням 10000 грн. на місяць" />
+					<TextBlock TextWrapping="Wrap"  Margin="20,0,0,0" Height="20" FontSize="10" FontWeight="Medium" Text="{Binding CurWares.GetStrWaresReceiptPromotion}" />
 
 					<TextBlock VerticalAlignment="Center" TextWrapping="Wrap"  Margin="20,0,0,0" Height="80" FontSize="32" FontWeight="Bold" Text="{Binding NameWares}" />
 				</StackPanel>
@@ -223,7 +223,7 @@
 				   <Image Height="60" Width="60" Margin="40,0,0,0"  Source="/Assets/18PlusRed.ico"></Image>
 				   <Label Foreground="White" Margin="40,0,0,0" FontSize="50" HorizontalAlignment="Center" VerticalAlignment="Center">></Label>
 				   <Label Foreground="White"  Margin="5,0,0,0"  FontFamily="Black" FontSize="40" VerticalAlignment="Center">Оплата</Label>
-				   <TextBlock Foreground="White" Margin="5,0,0,0" FontSize="40" VerticalAlignment="Center" Text="680₴">
+				   <TextBlock Foreground="White" Margin="5,0,0,0" FontSize="40" VerticalAlignment="Center" Text="{Binding MoneySum, StringFormat='- {0}₴' }">
 					 
 				   </TextBlock>
 			   </StackPanel>
