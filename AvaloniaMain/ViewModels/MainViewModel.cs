@@ -23,9 +23,33 @@ namespace AvaloniaMain.ViewModels
     {
         // public ObservableCollection<ReceiptWares> ListWares { get; set; }
 
-        public Receipt curReceipt { get; set; }
+        private Receipt _curReceipt { get; set; }
+        public Receipt curReceipt
+        {
+            get => _curReceipt;
+            set
+            {
+                if (_curReceipt != value)
+                {
+                    _curReceipt = value;
+                    OnPropertyChanged(nameof(_curReceipt));
+                    OnPropertyChanged(nameof(Client));
+                    OnPropertyChanged(nameof(IsUserActive));
+                }
+
+            }
+        }
+        public bool IsUserActive 
+        { get
+            {
+                if (curReceipt.Client != null) { return true; }
+                else return false;
+            }
+     
+            
+        }
         public ReceiptWares CurWares { get; set; }
-        public Client Client { get { return curReceipt?.Client; } }
+        public Client Client { get { return curReceipt?.Client; }}
         public Sound s { get; set; }
         public ReactiveCommand<ReceiptWares, Unit> Delete { get; }
         public ReactiveCommand<ReceiptWares, Unit> ChangeQuantityMinus { get; }
@@ -39,7 +63,6 @@ namespace AvaloniaMain.ViewModels
         public string EquipmentInfo { get; set; }
         public ModelMID.DB.User AdminSSC { get; set; } = null;
 
-        public Client client = new Client();
 
         public BLF Blf;
 
@@ -82,7 +105,7 @@ namespace AvaloniaMain.ViewModels
                 }
             }
         }
-
+        
         private bool _currentPageVisibility = false;
         public bool CurrentPageVisibility
         {
@@ -210,19 +233,7 @@ namespace AvaloniaMain.ViewModels
             }
         }
 
-        private bool _visibility = false;
-        public bool Visibility
-        {
-            get => _visibility;
-            set
-            {
-                if (_visibility != value)
-                {
-                    _visibility = value;
-                    OnPropertyChanged(nameof(Visibility));
-                }
-            }
-        }
+       
 
         private string _buttonColor = "#419e08";
         public string ButtonColor
@@ -256,7 +267,7 @@ namespace AvaloniaMain.ViewModels
             ChangeQuantityPlus = ReactiveCommand.Create<ReceiptWares>(PlusItem);
             Bl = BL.GetBL;
             Blf = new BLF();
-          
+            
             Blf.Init(this);
             EF = new EquipmentFront();
             InitAction();
@@ -265,7 +276,6 @@ namespace AvaloniaMain.ViewModels
             EquipmentFront.OnBarCode += (pBarCode, pTypeBarCode) => GetBarCode(pBarCode, pTypeBarCode);
 
             _showSearchView = ReactiveCommand.CreateFromTask(SearchViewModel);
-            _changeColorCommand = ReactiveCommand.CreateFromTask(ChangeColorAsync);
             _showUserInfo = ReactiveCommand.CreateFromTask(ShowUser);
             _showIssueCard = ReactiveCommand.CreateFromTask(ShowIssueCardAsync);
             _showNumPad = ReactiveCommand.CreateFromTask(NumPad);
@@ -283,13 +293,12 @@ namespace AvaloniaMain.ViewModels
         public ReactiveCommand<Unit, Unit> ShowNumPad => _showNumPad;
         public ReactiveCommand<Unit, Unit> ShowIssueCard => _showIssueCard;
         public ReactiveCommand<CustomWindow, Unit> ShowCustomWindow => _showCustomWindow;
-        public ReactiveCommand<Unit, Unit> ChangeColorCommand => _changeColorCommand;
 
 
         private async Task ShowUser()
         {
             CurrentPage = null;
-            CurrentPage = new ClientInfoViewModel(this, client);
+            CurrentPage = new ClientInfoViewModel(this, curReceipt.Client);
             CurrentPageVisibility = true;
             BackgroundVisibility = true;
 
@@ -424,7 +433,6 @@ namespace AvaloniaMain.ViewModels
         private void SearchView_VisibilityChanged(object? sender, EventArgs? e)
         {
             SearchViewVisibility = false;
-
             Close();
 
         }
@@ -434,10 +442,7 @@ namespace AvaloniaMain.ViewModels
             Close();
         }
 
-        private async Task ChangeColorAsync()
-        {
-            Visibility = true;
-        }
+    
         public void Close()
         {
             BackgroundVisibility = false;
@@ -448,21 +453,7 @@ namespace AvaloniaMain.ViewModels
             BackgroundVisibility = false;
             NumPadPage = null;
         }
-        public void InitClient()
-        {
-            client.BirthDay = DateTime.Now;
-            client.NameClient = "Станіслав Денис Іванович";
-            client.Wallet = 100;
-            client.SumBonus = 101;
-            client.SumMoneyBonus = 102;
-            client.MainPhone = "0995130322";
-            client.PhoneAdd = "0995130323";
-            client.PersentDiscount = 10;
-
-            client.BarCode = "1233021030114";
-            client.StatusCard = 0;
-
-        }
+     
         public void DeleteItem (ReceiptWares rp)
         {
             List<ReceiptWares> list = (List<ReceiptWares>)curReceipt.Wares;
@@ -490,6 +481,7 @@ namespace AvaloniaMain.ViewModels
 
             var r = new CustomWindowAnswer()
             {
+                
                 idReceipt = curReceipt,
                 Id = cb.CustomWindow?.Id ?? eWindows.NoDefinition,
                 IdButton = cb.Id,
