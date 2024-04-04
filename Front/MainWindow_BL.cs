@@ -57,7 +57,6 @@ namespace Front
                     SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ErrorEquipment);
                     return;
                 }
-                return;
                 var r = Dispatcher.BeginInvoke(new ThreadStart(() =>
                 {
                     PosStatus PS = info as PosStatus;
@@ -400,8 +399,10 @@ namespace Front
                 return;
             }
 
-            Dispatcher.BeginInvoke(new ThreadStart(() =>
-            { PaymentWindowKSO_UC.EquipmentStatusInPayment.Text = ""; }));
+            //Dispatcher.BeginInvoke(new ThreadStart(() =>
+            //{ PaymentWindowKSO_UC.EquipmentStatusInPayment.Text = ""; }));
+            EquipmentInfo = string.Empty;
+            OnPropertyChanged(nameof(EquipmentInfo));
             if (Global.TypeWorkplaceCurrent == eTypeWorkplace.CashRegister && (curReceipt.StateReceipt == eStateReceipt.Prepare || curReceipt.StateReceipt == eStateReceipt.StartPay))
             {
                 PaymentWindow.UpdatePaymentWindow();
