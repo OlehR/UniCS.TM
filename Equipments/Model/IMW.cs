@@ -6,6 +6,7 @@ using Front.Equipments;
 using ModelMID;
 using ModelMID.DB;
 using SharedLib;
+using Utils;
 
 namespace Front.Equipments
 {
@@ -30,6 +31,14 @@ namespace Front.Equipments
         /// </summary>
         public User AdminSSC { get; set; }
 
+        /// <summary>
+        /// код який прийшов з SMS (Не найкраще рішення)
+        /// </summary>
+        public Status<string> LastVerifyCode { get; set; }
+        /// <summary>
+        /// Чи показувати В адмінпанелі текст "Будь ласка очікуйте охорону!";
+        /// </summary>
+        public bool IsWaitAdminTitle { get; set; }
         /// <summary>
         /// Чи можна добавляти товар 
         /// </summary>
