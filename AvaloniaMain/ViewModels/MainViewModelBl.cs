@@ -196,6 +196,7 @@ namespace AvaloniaMain.ViewModels
 
             Bl.OnCustomWindow += (pCW) =>
             {
+                ShowCustomWindowAsync(pCW);
                 //SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, pCW);
             };
 
