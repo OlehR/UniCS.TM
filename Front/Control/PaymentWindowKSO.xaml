@@ -134,6 +134,7 @@
                      Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="1"
                      Text="{DynamicResource PaymentStatus}"/>
                 <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="28" x:Name="EquipmentStatusInPayment" 
+                             Text="{Binding EquipmentInfo, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
                      Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="3" TextWrapping="Wrap"
                      />
             </Grid>

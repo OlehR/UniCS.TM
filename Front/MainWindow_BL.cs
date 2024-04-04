@@ -44,7 +44,7 @@ namespace Front
             EF.OnWeight += (pWeight, pIsStable) =>
             {
                 Weight = pWeight / 1000;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Weight)));
+                OnPropertyChanged(nameof(Weight));
                 OnPropertyChanged(nameof(IsWeightMagellan));
             };
 
@@ -57,6 +57,7 @@ namespace Front
                     SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ErrorEquipment);
                     return;
                 }
+                return;
                 var r = Dispatcher.BeginInvoke(new ThreadStart(() =>
                 {
                     PosStatus PS = info as PosStatus;
@@ -69,9 +70,10 @@ namespace Front
                         if (rroStatus != null)
                             EquipmentInfo = rroStatus.Status.GetDescription();
                     }
-                    if (EquipmentInfo != null)
-                        PaymentWindowKSO_UC.EquipmentStatusInPayment.Text = EquipmentInfo; //TMP - не працює через гетер
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EquipmentInfo)));
+
+                   // if (EquipmentInfo != null)  
+                    //    PaymentWindowKSO_UC.EquipmentStatusInPayment.Text = EquipmentInfo; //TMP - не працює через гетер
+                    OnPropertyChanged(nameof(EquipmentInfo));
                 }));
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"SetStatus ({info.ToJSON()})", eTypeLog.Expanded);
                 if (EF.StatCriticalEquipment != eStateEquipment.On)
@@ -138,7 +140,7 @@ namespace Front
             Global.OnSyncInfoCollected += (SyncInfo) =>
             {
                 DatabaseUpdateStatus = SyncInfo.Status;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DatabaseUpdateStatus)));
+                OnPropertyChanged(nameof(DatabaseUpdateStatus));
                 //Почалось повне оновлення.
                 if (SyncInfo.Status == eSyncStatus.StartedFullSync && !Bl.ds.IsUseOldDB)
                     SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.StartFullUpdate);
@@ -660,8 +662,8 @@ namespace Front
                         RemoteWorkplace = Bl.db.GetWorkPlace().FirstOrDefault(el => el.IdWorkplace == RemoteCheckout.RemoteIdWorkPlace);
                         if (RemoteCheckout.RemoteCigarettesPrices.Count > 1)
                             RemotePrices.ItemsSource = RemoteCheckout.RemoteCigarettesPrices;
-                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RemoteWorkplace)));
-                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RemoteCheckout)));
+                        OnPropertyChanged(nameof(RemoteWorkplace));
+                        OnPropertyChanged(nameof(RemoteCheckout));
                         Res = new Status(0, $"Загальний стан каси: {RemoteWorkplace.Name}");
                         break;
                     case eCommand.Confirm:

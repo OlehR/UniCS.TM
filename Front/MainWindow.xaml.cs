@@ -76,7 +76,7 @@ namespace Front
 
         public decimal MoneySum { get { return EF.SumReceiptFiscal(curReceipt); } }
 
-        public string EquipmentInfo { get; set; }
+        public string EquipmentInfo { get; set; } = "test";
         bool _Volume = true;
         public bool Volume { get { return _Volume; } set { _Volume = value; if (s != null) s.IsSound = value; } }
         /// <summary>
