@@ -30,7 +30,7 @@ using QRCoder;
 
 namespace Front
 {
-    public partial class MainWindow : Window, INotifyPropertyChanged,IMW
+    public partial class MainWindow : Window, INotifyPropertyChanged, IMW
     {
         public string Version { get { return Assembly.GetExecutingAssembly().GetName().Version.ToString(); } }
         public event PropertyChangedEventHandler PropertyChanged;
@@ -48,8 +48,10 @@ namespace Front
         public User AdminSSC { get; set; } = null;
         public DateTime DTAdminSSC { get; set; }
 
-        public Receipt curReceipt{ get; set; } = null;
+        public Receipt curReceipt { get; set; } = null;
         public Receipt ReceiptPostpone = null;
+        bool _IsWaitAdminTitle = false;
+        public bool IsWaitAdminTitle { get =>_IsWaitAdminTitle ; set{ _IsWaitAdminTitle = value;OnPropertyChanged(nameof(IsWaitAdminTitle)); } }
         /// <summary>
         /// Можливість правки кількості для замовлень
         /// </summary>
@@ -110,8 +112,8 @@ namespace Front
         {
             get
             {
-                return (MoneySum >= 0 && WaresQuantity != "0" && (IsAddNewWares || State == eStateMainWindows.FindClientByPhone)) 
-                    || (curReceipt?.TypeReceipt == eTypeReceipt.Refund && MoneySum > 0) 
+                return (MoneySum >= 0 && WaresQuantity != "0" && (IsAddNewWares || State == eStateMainWindows.FindClientByPhone))
+                    || (curReceipt?.TypeReceipt == eTypeReceipt.Refund && MoneySum > 0)
                     || curReceipt?.StateReceipt == eStateReceipt.Pay;
             }
         }
@@ -146,7 +148,7 @@ namespace Front
         public string GetBackgroundColor { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? "#ff9999" : "#FFFFFF"; } }
         public double GiveRest { get; set; } = 0;
         public string VerifyCode { get; set; } = string.Empty;
-        private Status<string> LastVerifyCode = new();
+        public Status<string> LastVerifyCode {get;set;}= new();
 
         public eSyncStatus DatabaseUpdateStatus { get; set; } = eSyncStatus.SyncFinishedSuccess;
 
@@ -294,7 +296,8 @@ namespace Front
                             tb.Inlines.Add(new Run(LastErrorEquipment) { FontWeight = FontWeights.Bold, Foreground = Brushes.Red });
                         break;
                     case eTypeAccess.LockSale:
-                        WaitAdminTitle.Visibility = Visibility.Collapsed;
+                        IsWaitAdminTitle = false;
+        //WaitAdminTitle.Visibility = Visibility.Collapsed;
                         tb.Inlines.Add("Зміна заблокована");
                         break;
                     case eTypeAccess.FixWeight:
@@ -302,16 +305,19 @@ namespace Front
                         tb.Inlines.Add(new Run(CS.InfoEx) { Foreground = Brushes.Black, FontSize = 20 });
                         break;
                     case eTypeAccess.ConfirmAge:
-                        WaitAdminTitle.Visibility = Visibility.Collapsed;
+                        IsWaitAdminTitle = false;
+                        //WaitAdminTitle.Visibility = Visibility.Collapsed;
                         WaitAdminImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/18PlusRed.png"));
                         tb.Inlines.Add(new Run(IsCashRegister ? "Клієнту виповнилось 18?" : "Вам виповнилось 18 років?") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red, FontSize = 32 });
                         break;
                     case eTypeAccess.ExciseStamp:
-                        WaitAdminTitle.Visibility = Visibility.Collapsed;
+                        IsWaitAdminTitle = false;
+                       // WaitAdminTitle.Visibility = Visibility.Collapsed;
                         tb.Inlines.Add(new Run("Відскануйте акцизну марку!") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red, FontSize = 32 });
                         break;
                     case eTypeAccess.UseBonus:
-                        WaitAdminTitle.Visibility = Visibility.Collapsed;
+                        IsWaitAdminTitle = false;
+                        //WaitAdminTitle.Visibility = Visibility.Collapsed;
                         tb.Inlines.Add(new Run("Для списання бонусів потрібно підтвердження охорони!") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red, FontSize = 32 });
                         break;
                 }
@@ -808,7 +814,8 @@ namespace Front
                     KBAdmin.Visibility = Visibility.Collapsed;
                     ExciseStampButtons.Visibility = Visibility.Collapsed;
                     ExciseStampNameWares.Visibility = Visibility.Collapsed;
-                    WaitAdminTitle.Visibility = Visibility.Visible;
+                    IsWaitAdminTitle = true;
+                    //WaitAdminTitle.Visibility = Visibility.Visible;
                     CodeSMS.Visibility = Visibility.Collapsed;
                     WaitAdminWeightButtons.Visibility = Visibility.Visible;
                     WaitAdminAdditionalText.Visibility = Visibility.Collapsed;
@@ -857,7 +864,8 @@ namespace Front
                                 case eTypeAccess.FixWeight:
                                     if (CS.StateScale == eStateScale.WaitClear)
                                     {
-                                        WaitAdminTitle.Visibility = Visibility.Collapsed;
+                                        IsWaitAdminTitle = false;
+                                        //WaitAdminTitle.Visibility = Visibility.Collapsed;
                                         WaitAdminImage.Visibility = Visibility.Collapsed;
                                     }
                                     break;
@@ -873,7 +881,8 @@ namespace Front
                                     KBAdmin.SetInput(TBExciseStamp);
                                     ExciseStampButtons.Visibility = Visibility.Visible;
                                     ExciseStampNameWares.Visibility = Visibility.Visible;
-                                    WaitAdminTitle.Visibility = Visibility.Collapsed;
+                                    IsWaitAdminTitle = false;
+                                    //WaitAdminTitle.Visibility = Visibility.Collapsed;
                                     CodeSMS.Visibility = Visibility.Collapsed;
                                     break;
                                 case eTypeAccess.UseBonus:
@@ -887,7 +896,8 @@ namespace Front
                                         KBAdmin.Visibility = Visibility.Collapsed;
                                         ExciseStampButtons.Visibility = Visibility.Collapsed;
                                         ExciseStampNameWares.Visibility = Visibility.Collapsed;
-                                        WaitAdminTitle.Visibility = Visibility.Collapsed;
+                                        IsWaitAdminTitle = false;
+                                        //WaitAdminTitle.Visibility = Visibility.Collapsed;
                                         CodeSMS.Visibility = Visibility.Visible;
                                         WaitAdminAdditionalText.Visibility = Visibility.Visible;
                                     }
@@ -1041,7 +1051,7 @@ namespace Front
                                 Background.Visibility = Visibility.Collapsed;
                                 BackgroundWares.Visibility = Visibility.Collapsed;
                                 Thread.Sleep(200);
-                                PayAndPrint();
+                                Blf.PayAndPrint();
                             };
                             AddMissingPackage.Visibility = Visibility.Visible;
                             Background.Visibility = Visibility.Visible;
@@ -1241,7 +1251,7 @@ namespace Front
 
         private void _ButtonPayment(object sender, RoutedEventArgs e)
         {
-            PayAndPrint();
+            Blf.PayAndPrint();
         }
 
         /// <summary>
@@ -1391,6 +1401,7 @@ namespace Front
                 {
                     if (res.Id == 32)
                     {
+                        IsWaitAdminTitle = true;
                         WaitAdminTitle.Visibility = Visibility.Visible;
                         EF.SetColor(System.Drawing.Color.Violet);
                         s.Play(eTypeSound.WaitForAdministrator);
@@ -1408,7 +1419,7 @@ namespace Front
                     SetStateView(eStateMainWindows.WaitInput);
 
                     if (res.Id == 1)
-                        Task.Run(new Action(() => { Bl.AddEventAge(curReceipt); PayAndPrint(); }));
+                        Task.Run(new Action(() => { Bl.AddEventAge(curReceipt); Blf.PayAndPrint(); }));
                     return;
                 }
                 if (res.CustomWindow?.Id == eWindows.UseBonus)

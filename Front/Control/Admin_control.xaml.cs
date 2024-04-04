@@ -628,7 +628,7 @@ namespace Front.Control
         private void FiscalizCheckButton(object sender, RoutedEventArgs e)
         {
             MW.SetCurReceipt( curReceipt);
-            MW.PayAndPrint();
+            MW.Blf.PayAndPrint();
             //MessageBox.Show("Фiскалізовано");
         }
 

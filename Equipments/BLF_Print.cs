@@ -14,28 +14,13 @@ namespace Front.Equipments
 {
     public partial class BLF
     {
-        /*
+
+
         public void PayAndPrint()
         {
-            //Чи треба добавляти пакети
             if (MW.curReceipt.StateReceipt < eStateReceipt.Pay && MW.curReceipt.CountWeightGoods > 0 && !MW.curReceipt.Wares.Any(x => x.CodeWares == Global.Settings.CodePackagesBag) && !MW.curReceipt.IsPakagesAded && MW.curReceipt.TypeReceipt == eTypeReceipt.Sale)
             {
                 SetStateView(eStateMainWindows.AddMissingPackage);
-                //Переробити через окремий стан
-                AddMissingPackage.CountPackeges = curReceipt.CountWeightGoods;
-                AddMissingPackage.CallBackResult = (int res) =>
-                {
-                    Bl.AddEvent(curReceipt, eReceiptEventType.PackagesBag, res != 0 ? "Додавання пакетів в чек" : "Відміна додавання пакетів");
-                    Bl.AddWaresCode(curReceipt, Global.Settings.CodePackagesBag, 19, res);
-                    AddMissingPackage.Visibility = Visibility.Collapsed;
-                    Background.Visibility = Visibility.Collapsed;
-                    BackgroundWares.Visibility = Visibility.Collapsed;
-                    Thread.Sleep(200);
-                    PayAndPrint();
-                };
-                AddMissingPackage.Visibility = Visibility.Visible;
-                Background.Visibility = Visibility.Visible;
-                BackgroundWares.Visibility = Visibility.Visible;
                 return;
             }
 
@@ -44,19 +29,17 @@ namespace Front.Equipments
                 SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ConfirmAge);
                 return;
             }
-
-            Dispatcher.BeginInvoke(new ThreadStart(() =>
-            { PaymentWindowKSO_UC.EquipmentStatusInPayment.Text = ""; }));
+            MW.EquipmentInfo = string.Empty;
+            
             if (Global.TypeWorkplaceCurrent == eTypeWorkplace.CashRegister && (MW.curReceipt.StateReceipt == eStateReceipt.Prepare || MW.curReceipt.StateReceipt == eStateReceipt.StartPay))
-            {                
+            {  
                 SetStateView(eStateMainWindows.ChoicePaymentMethod);
             }
             else
             {
                 var task = Task.Run(() => PrintAndCloseReceipt());
             }
-        }*/
-
+        }
         object LockPayPrint = new object();
         /// <summary>
         /// Оплата і Друк чека.

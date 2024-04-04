@@ -18,6 +18,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
+using Utils;
 
 namespace AvaloniaMain.ViewModels
 {
@@ -70,8 +71,10 @@ namespace AvaloniaMain.ViewModels
         public eTypeAccess TypeAccessWait { get; set; }
         public bool IsShowWeightWindows { get; set; }
         public string EquipmentInfo { get; set; }
+        public bool IsWaitAdminTitle { get; set; }
         public ModelMID.DB.User AdminSSC { get; set; } = null;
-
+        public Status<string> LastVerifyCode { get; set; } = new();
+        public Client client = new Client();
 
         public BLF Blf;
 

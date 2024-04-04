@@ -265,7 +265,7 @@ namespace Front.Equipments
             AddExciseStamp("None");
             Bl.AddEventAge(MW.curReceipt);
         }
-        /*
+        
         private void CustomWindowClickButton(CustomButton res)
         {
             
@@ -322,7 +322,8 @@ namespace Front.Equipments
                     if (res.Id == 32)
                     {
                         //Не зрозуміло Як пробити.
-                        WaitAdminTitle.Visibility = Visibility.Visible;
+                        MW.IsWaitAdminTitle = true;
+                        //WaitAdminTitle.Visibility = Visibility.Visible;
                         EF.SetColor(System.Drawing.Color.Violet);
                         MW.s.Play(eTypeSound.WaitForAdministrator);
                     }
@@ -345,7 +346,7 @@ namespace Front.Equipments
                 if (res.CustomWindow?.Id == eWindows.UseBonus)
                 {
                     //Напевно краще зробити через подіхї.
-                    LastVerifyCode = Bl.ds.GetVerifySMS(res.Text);
+                    MW.LastVerifyCode = Bl.ds.GetVerifySMS(res.Text);
                     Global.Message?.Invoke($"Код підтвердження надіслано за номером {res.Text}", eTypeMessage.Information);
                     return;
                 }
@@ -363,7 +364,7 @@ namespace Front.Equipments
                 SetStateView(eStateMainWindows.WaitInput);
             }
         }
-*/
+
         Status CallBackApi(string pDataApi)
         {
             Status Res = null;
