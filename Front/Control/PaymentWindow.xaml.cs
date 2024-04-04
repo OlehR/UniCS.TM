@@ -238,7 +238,8 @@ namespace Front.Control
 
         private void _ButtonPaymentCash(object sender, RoutedEventArgs e)
         {
-            MW.PaymentWindowKSO_UC.EquipmentStatusInPayment.Text = "";
+            //MW.PaymentWindowKSO_UC.EquipmentStatusInPayment.Text = "";
+            MW.EquipmentInfo = string.Empty;
             MW.GiveRest = (double)RestMoney;
             var task = Task.Run(() => MW.Blf.PrintAndCloseReceipt(null, eTypePay.Cash, ChangeSumPaymantDecimal, 0, -SumUseWallet));
         }
