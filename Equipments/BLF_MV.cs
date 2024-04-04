@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using System.Windows.Forms.VisualStyles;
 using ModelMID;
 using ModelMID.DB;
 using Newtonsoft.Json;
@@ -211,8 +206,67 @@ namespace Front.Equipments
             EF.PutToDisplay(MW.curReceipt);
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"CodeReceipt=>{MW.curReceipt?.CodeReceipt}");
         }
-        
-        /*private void CustomWindowClickButton(CustomButton res)
+
+        public void SetCurReceipt(Receipt pReceipt, bool IsRefresh = true)
+        {
+            try
+            {
+                var OldClient = MW.curReceipt?.Client;
+                MW.curReceipt = new(); //Через дивний баг коли curReceipt.Wares залишалось порожне. а в pReceipt було з записами.
+                MW.curReceipt = pReceipt;
+
+                if (MW.curReceipt == null)
+                {
+                    MW.RunOnUiThread(() => { MW.ListWares?.Clear(); });
+                    MW.CS.WaitClear();
+                }
+                else
+                {
+                    MW.RunOnUiThread(() =>
+                    {
+                        if (pReceipt.Wares?.Any() == true)
+                            MW.ListWares = new ObservableCollection<ReceiptWares>(pReceipt.Wares);
+                        else
+                            MW.ListWares?.Clear();
+                    });
+                    if (OldClient?.CodeClient != 0 && MW.curReceipt.CodeClient != 0 && MW.curReceipt.Client == null && OldClient.CodeClient == MW.curReceipt.CodeClient)
+                    {
+                        MW.curReceipt.Client = OldClient;
+                    }
+
+                    if (MW.curReceipt.CodeClient != 0 && string.IsNullOrEmpty(MW.curReceipt.Client?.NameClient))
+                        Bl.GetClientByCode(MW.curReceipt, MW.curReceipt.CodeClient);
+
+                    if (MW.curReceipt?.IsNeedExciseStamp == true)
+                        SetStateView(eStateMainWindows.WaitInput);
+                }
+            }
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+            }
+        }
+
+        public void AddWares(int pCodeWares, int pCodeUnit = 0, decimal pQuantity = 0m, decimal pPrice = 0m)
+        {
+            if (pCodeWares > 0)
+            {
+                if (MW.curReceipt == null)
+                    NewReceipt();
+                MW.CurWares = Bl.AddWaresCode(MW.curReceipt, pCodeWares, pCodeUnit, pQuantity, pPrice);
+
+                if (MW.CurWares != null)
+                    IsPrises(pQuantity, pPrice);
+            }
+        }
+
+        public void ExciseStampNone()
+        {
+            AddExciseStamp("None");
+            Bl.AddEventAge(MW.curReceipt);
+        }
+        /*
+        private void CustomWindowClickButton(CustomButton res)
         {
             
             if (res != null)
@@ -267,6 +321,7 @@ namespace Front.Equipments
                 {
                     if (res.Id == 32)
                     {
+                        //Не зрозуміло Як пробити.
                         WaitAdminTitle.Visibility = Visibility.Visible;
                         EF.SetColor(System.Drawing.Color.Violet);
                         MW.s.Play(eTypeSound.WaitForAdministrator);
@@ -289,8 +344,9 @@ namespace Front.Equipments
                 }
                 if (res.CustomWindow?.Id == eWindows.UseBonus)
                 {
-                    LastVerifyCode = Bl.ds.GetVerifySMS(ClientPhoneNumvers[(int)res.Id]);
-                    Global.Message?.Invoke($"Код підтвердження надіслано за номером {ClientPhoneNumvers[(int)res.Id]}", eTypeMessage.Information);
+                    //Напевно краще зробити через подіхї.
+                    LastVerifyCode = Bl.ds.GetVerifySMS(res.Text);
+                    Global.Message?.Invoke($"Код підтвердження надіслано за номером {res.Text}", eTypeMessage.Information);
                     return;
                 }
 
@@ -299,20 +355,15 @@ namespace Front.Equipments
                     idReceipt = MW.curReceipt,
                     Id = res.CustomWindow?.Id ?? eWindows.NoDefinition,
                     IdButton = res.Id,
-                    Text = TextBoxCustomWindows.Text,
+                    // необхідно переробити на res.CustomWindow?.InputText
+                    Text = res.CustomWindow?.InputText,//TextBoxCustomWindows.Text,
                     ExtData = res.CustomWindow?.Id == eWindows.ConfirmWeight ? MW.CS?.RW : null
                 };
                 Bl.SetCustomWindows(r);
                 SetStateView(eStateMainWindows.WaitInput);
             }
-        }*/
-
-        public void ExciseStampNone()
-        {
-            AddExciseStamp("None");
-            Bl.AddEventAge(MW.curReceipt);
         }
-
+*/
         Status CallBackApi(string pDataApi)
         {
             Status Res = null;
@@ -388,45 +439,8 @@ namespace Front.Equipments
             return Res;
         }
 
-        public void SetCurReceipt(Receipt pReceipt, bool IsRefresh = true)
-        {
-            try
-            {
-                var OldClient = MW.curReceipt?.Client;
-                MW.curReceipt = new(); //Через дивний баг коли curReceipt.Wares залишалось порожне. а в pReceipt було з записами.
-                MW.curReceipt = pReceipt;
+        
 
-                if (MW.curReceipt == null)
-                {
-                    MW.RunOnUiThread(() => { MW.ListWares?.Clear(); });
-                    MW.CS.WaitClear();
-                }
-                else
-                {
-                    MW.RunOnUiThread(() =>
-                    {
-                        if (pReceipt.Wares?.Any() == true)
-                            MW.ListWares = new ObservableCollection<ReceiptWares>(pReceipt.Wares);
-                        else
-                            MW.ListWares?.Clear();                        
-                    });
-                    if (OldClient?.CodeClient != 0 && MW.curReceipt.CodeClient != 0 && MW.curReceipt.Client == null &&  OldClient.CodeClient == MW.curReceipt.CodeClient)
-                    {
-                        MW.curReceipt.Client = OldClient;
-                    }
-
-                    if (MW.curReceipt.CodeClient != 0 && string.IsNullOrEmpty(MW.curReceipt.Client?.NameClient))
-                        Bl.GetClientByCode(MW.curReceipt, MW.curReceipt.CodeClient);
-
-                    if (MW.curReceipt?.IsNeedExciseStamp == true)
-                        SetStateView(eStateMainWindows.WaitInput);                    
-                }
-            }
-            catch (Exception e)
-            {
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
-            }           
-        }
 
     }
 }

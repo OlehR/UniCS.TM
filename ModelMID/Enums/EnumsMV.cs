@@ -117,6 +117,11 @@ namespace ModelMID
         /// </summary>
         [Description("Зміна кількості товару")]
         ChangeCountWares,
+        /// <summary>
+        /// Добавлення пакетів
+        /// </summary>
+        [Description("Добавлення пакетів")]
+        AddMissingPackage
     }
 
     public enum eSender

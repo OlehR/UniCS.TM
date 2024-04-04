@@ -255,13 +255,18 @@ namespace Front
                 }
         }
 
-        private void Close(GW pGW, decimal pQuantity = 0m )
+        private void Close(GW pGW, decimal pQuantity = 0m)
         {
             if (MW != null)
             {
-                MW.AddWares(pGW.Code, pGW.CodeUnit, pQuantity, 0m, pGW.CodeUnit == Global.WeightCodeUnit && pQuantity == 0?pGW:null);
-                if (MW.State == eStateMainWindows.WaitFindWares)
-                    MW.SetStateView(eStateMainWindows.WaitInput);
+                if (pGW.CodeUnit == Global.WeightCodeUnit && pQuantity == 0)
+                    MW.ShowWeightWares(pGW);
+                else
+                {
+                    MW.Blf.AddWares(pGW.Code, pGW.CodeUnit, pQuantity, 0m);
+                    if (MW.State == eStateMainWindows.WaitFindWares)
+                        MW.SetStateView(eStateMainWindows.WaitInput);
+                }
             }
             KB.SetInput(null);
             Close();

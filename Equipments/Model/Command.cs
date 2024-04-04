@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Front.Models
+namespace Front.Equipments
 {
     public class CommandAPI<t>
     {

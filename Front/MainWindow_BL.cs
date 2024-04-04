@@ -355,7 +355,7 @@ namespace Front
             SetStateView(eStateMainWindows.AdminPanel);
         }
 
-        public void AddWares(int pCodeWares, int pCodeUnit = 0, decimal pQuantity = 0m, decimal pPrice = 0m, GW pGV = null)
+        public void ShowWeightWares( GW pGV = null)
         {
             if (pGV != null)
             {
@@ -381,37 +381,14 @@ namespace Front
                 }
                 SetStateView(eStateMainWindows.WaitWeight);
                 return;
-            }
-
-            if (pCodeWares > 0)
-            {
-                if (curReceipt == null)
-                    Blf.NewReceipt();
-                CurWares = Bl.AddWaresCode(curReceipt, pCodeWares, pCodeUnit, pQuantity, pPrice);
-
-                if (CurWares != null)
-                    Blf.IsPrises(pQuantity, pPrice);
-            }
+            }            
         }
 
         public void PayAndPrint()
         {
             if (curReceipt.StateReceipt < eStateReceipt.Pay && curReceipt.CountWeightGoods > 0 && !curReceipt.Wares.Any(x => x.CodeWares == Global.Settings.CodePackagesBag) && !curReceipt.IsPakagesAded && curReceipt.TypeReceipt == eTypeReceipt.Sale)
             {
-                AddMissingPackage.CountPackeges = curReceipt.CountWeightGoods;
-                AddMissingPackage.CallBackResult = (int res) =>
-                {
-                    Bl.AddEvent(curReceipt, eReceiptEventType.PackagesBag, res != 0 ? "Додавання пакетів в чек" : "Відміна додавання пакетів");
-                    Bl.AddWaresCode(curReceipt, Global.Settings.CodePackagesBag, 19, res);
-                    AddMissingPackage.Visibility = Visibility.Collapsed;
-                    Background.Visibility = Visibility.Collapsed;
-                    BackgroundWares.Visibility = Visibility.Collapsed;
-                    Thread.Sleep(200);
-                    PayAndPrint();
-                };
-                AddMissingPackage.Visibility = Visibility.Visible;
-                Background.Visibility = Visibility.Visible;
-                BackgroundWares.Visibility = Visibility.Visible;
+                SetStateView(eStateMainWindows.AddMissingPackage);
                 return;
             }
 
@@ -700,7 +677,7 @@ namespace Front
                         if (CommandRemoteInfo.Data.StateMainWindows == eStateMainWindows.WaitAdmin && CommandRemoteInfo.Data.TypeAccess == eTypeAccess.ChoicePrice)
                         {
                             Bl.AddEventAge(curReceipt);
-                            AddWares(CurWares.CodeWares, CurWares.CodeUnit, CommandRemoteInfo.Data.QuantityCigarettes, CommandRemoteInfo.Data.SelectRemoteCigarettesPrice.price);
+                            Blf.AddWares(CurWares.CodeWares, CurWares.CodeUnit, CommandRemoteInfo.Data.QuantityCigarettes, CommandRemoteInfo.Data.SelectRemoteCigarettesPrice.price);
                             QuantityCigarettes = 1;
                             SetStateView(eStateMainWindows.WaitInput);
                         }

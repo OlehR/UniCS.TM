@@ -125,7 +125,7 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
 
-                    <Button Grid.Column="0" Style="{StaticResource Default}" Width="150" Height="70"
+                    <Button Grid.Column="0" Style="{StaticResource Default}" Width="150" Height="70" Name="CancelBtn"
                 Content="Відмінити"   Command="{Binding Cancel}" Click="CancelClick"/>
                     <Button Grid.Column="1"
                  Width="250" Height="70"
