@@ -1,4 +1,6 @@
-﻿using AvaloniaMain.Models;
+﻿using Avalonia.Controls;
+using Avalonia.Interactivity;
+using AvaloniaMain.Models;
 using AvaloniaMain.ViewModels.Model;
 using AvaloniaMain.Views;
 using Front;
@@ -67,6 +69,19 @@ namespace AvaloniaMain.ViewModels
                 }
             }
         }
+         private ViewModelBase? _NumPadPage;
+        public ViewModelBase? NumPadPage
+        {
+            get => _NumPadPage;
+            set
+            {
+                if (_NumPadPage != value)
+                {
+                    _NumPadPage = value;
+                    OnPropertyChanged(nameof(NumPadPage));
+                }
+            }
+        }
 
         private bool _currentPageVisibility = false;
         public bool CurrentPageVisibility
@@ -78,6 +93,19 @@ namespace AvaloniaMain.ViewModels
                 {
                     _currentPageVisibility = value;
                     OnPropertyChanged(nameof(CurrentPageVisibility));
+                }
+            }
+        }
+        private bool _NumPadPageVisibility = false;
+        public bool NumPadPageVisibility
+        {
+            get => _NumPadPageVisibility;
+            set
+            {
+                if (_NumPadPageVisibility != value)
+                {
+                    _NumPadPageVisibility = value;
+                    OnPropertyChanged(nameof(NumPadPageVisibility));
                 }
             }
         }
@@ -214,9 +242,11 @@ namespace AvaloniaMain.ViewModels
 
         private ReactiveCommand<Unit, Unit> _changeColorCommand;
         private ReactiveCommand<Unit, Unit> _showNumPad;
+
         private ReactiveCommand<Unit, Unit> _showUserInfo;
         private ReactiveCommand<Unit, Unit> _showIssueCard;
         public ReactiveCommand<Unit, Unit> _showSearchView;
+        public ReactiveCommand<CustomWindow, Unit> _showCustomWindow;
 
 
         public MainViewModel()
@@ -226,6 +256,7 @@ namespace AvaloniaMain.ViewModels
             ChangeQuantityPlus = ReactiveCommand.Create<ReceiptWares>(PlusItem);
             Bl = BL.GetBL;
             Blf = new BLF();
+          
             Blf.Init(this);
             EF = new EquipmentFront();
             InitAction();
@@ -238,6 +269,7 @@ namespace AvaloniaMain.ViewModels
             _showUserInfo = ReactiveCommand.CreateFromTask(ShowUser);
             _showIssueCard = ReactiveCommand.CreateFromTask(ShowIssueCardAsync);
             _showNumPad = ReactiveCommand.CreateFromTask(NumPad);
+            _showCustomWindow = ReactiveCommand.Create<CustomWindow>(ShowCustomWindowAsync);
 
             UserMoneyBonus = 17.10;
             UserMoneyBox = 121.35;
@@ -250,9 +282,7 @@ namespace AvaloniaMain.ViewModels
         public ReactiveCommand<Unit, Unit> ShowSearchView => _showSearchView;
         public ReactiveCommand<Unit, Unit> ShowNumPad => _showNumPad;
         public ReactiveCommand<Unit, Unit> ShowIssueCard => _showIssueCard;
-
-
-
+        public ReactiveCommand<CustomWindow, Unit> ShowCustomWindow => _showCustomWindow;
         public ReactiveCommand<Unit, Unit> ChangeColorCommand => _changeColorCommand;
 
 
@@ -275,17 +305,28 @@ namespace AvaloniaMain.ViewModels
             CurrentPageVisibility = true;
 
         }
+        private void ShowCustomWindowAsync(CustomWindow pCw)
+        {
+            CurrentPage = null;
+            var CwViewModel = new CustomWindowViewModel(pCw);
+            CwViewModel.VisibilityChanged+= ShowCustomWindowVisibilityChanged;
+            CwViewModel.SelectClientEvent += CustomWindowClickButton;
+            CurrentPage = CwViewModel;
+            BackgroundVisibility = true;
+            CurrentPageVisibility = true;
+
+        }
 
         private async Task NumPad()
         {
             string mask = "^[0-9]{10}$";
-            CurrentPage = null;
+            NumPadPage = null;
             var parentViewModel = new NumPadViewModel("", false,mask);
             parentViewModel.NumberChanged += NumPadViewModel_NumberChanged;
             parentViewModel.VisibilityChanged += NumPadViewModel_VisibilityChanged;
-            CurrentPage = parentViewModel;
+            NumPadPage = parentViewModel;
             BackgroundVisibility = true;
-            CurrentPageVisibility = true;
+            NumPadPageVisibility = true;
         }
         private async Task SearchViewModel()
         {
@@ -371,6 +412,12 @@ namespace AvaloniaMain.ViewModels
 
         private void NumPadViewModel_VisibilityChanged(object? sender, EventArgs? e)
         {
+           NumPadPageVisibility = false;
+            NumPadClose();
+        }
+        
+        private void ShowCustomWindowVisibilityChanged(object? sender, EventArgs? e)
+        {
             CurrentPageVisibility = false;
             Close();
         }
@@ -396,6 +443,11 @@ namespace AvaloniaMain.ViewModels
             BackgroundVisibility = false;
             CurrentPage = null;
         }
+        public void NumPadClose()
+        {
+            BackgroundVisibility = false;
+            NumPadPage = null;
+        }
         public void InitClient()
         {
             client.BirthDay = DateTime.Now;
@@ -415,31 +467,38 @@ namespace AvaloniaMain.ViewModels
         {
             List<ReceiptWares> list = (List<ReceiptWares>)curReceipt.Wares;
             list.Remove(rp);
-            
+            Bl.ChangeQuantity(rp, 0);
+
             curReceipt.Wares = list;
             SetCurReceipt(curReceipt);
         }
         public void MinusItem(ReceiptWares rp)
         {
             Bl.ChangeQuantity(rp, rp.Quantity - 1);
-           /* ReceiptWares foundItem = curReceipt.Wares.FirstOrDefault(item => item == rp);
-
-            if (foundItem != null && foundItem.Quantity > 1)
-            {
-                foundItem.Quantity -= 1; 
-            }
-            SetCurReceipt(curReceipt);*/
+       
 
         }
         public void PlusItem(ReceiptWares rp)
         {
-            //ReceiptWares foundItem = curReceipt.Wares.FirstOrDefault(item => item == rp);
+          
 
             Bl.ChangeQuantity(rp, rp.Quantity + 1);
 
-            //foundItem.Quantity += 1;
-            //SetCurReceipt(curReceipt);
         }
+        private void CustomWindowClickButton(object sender, CustomButton cb, string Text)
+        {
+
+            var r = new CustomWindowAnswer()
+            {
+                idReceipt = curReceipt,
+                Id = cb.CustomWindow?.Id ?? eWindows.NoDefinition,
+                IdButton = cb.Id,
+                Text = Text,
+                ExtData = cb.CustomWindow?.Id == eWindows.ConfirmWeight ? CS?.RW : null
+            };
+            Bl.SetCustomWindows(r);
+        }
+
     }
 }
 

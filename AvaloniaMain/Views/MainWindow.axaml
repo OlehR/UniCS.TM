@@ -7,13 +7,13 @@
         mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080"
         x:Class="AvaloniaMain.Views.MainWindow"
         Title="AvaloniaMain"
-		Width="1920" 
+		Width="1920"
 		Height="1080" WindowState="FullScreen"
 		x:DataType="vm:MainViewModel">
 	<Window.DataContext>
 		<vm:MainViewModel/>
 	</Window.DataContext>
-	
+
 	<views:MainView />
 
 </Window>

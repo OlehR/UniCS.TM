@@ -14,7 +14,6 @@
         <vm:MainViewModel />
     </Design.DataContext>
 
-    <!-- Define DataTemplates directly in Resources -->
     <UserControl.DataTemplates>
         <DataTemplate  DataType="{x:Type vm:NumPadViewModel}">
 			<views:NumPadView />
@@ -22,6 +21,9 @@
         <DataTemplate  DataType="{x:Type vm:ClientInfoViewModel}">
 			<views:ClientInfoView />
         </DataTemplate>
+		<DataTemplate  DataType="{x:Type vm:CustomWindowViewModel}">
+			<views:CustomWindowView />
+		</DataTemplate>
 		<DataTemplate  DataType="{x:Type vm:IssueCardViewModel}">
 			<views:IssueCardView />
 		</DataTemplate>
@@ -81,7 +83,8 @@
     </Grid>
 		
 		<ContentControl  Grid.Row="1" ZIndex="2"  IsVisible="{Binding CurrentPageVisibility}" Content="{Binding CurrentPage}" />
-		
+		<ContentControl  Grid.Row="1" ZIndex="2"  IsVisible="{Binding NumPadPageVisibility}" Content="{Binding NumPadPage}" />
+
 		<Rectangle  Grid.Row="1" IsVisible="{Binding BackgroundVisibility}"  Height="900" VerticalAlignment="Top" Width="1920" Opacity="0.5" ZIndex="1"  Fill="white"></Rectangle>
 
 		<Grid Grid.Row="1" RowDefinitions="Auto,*,95">
