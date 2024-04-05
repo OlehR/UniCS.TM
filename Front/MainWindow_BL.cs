@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using Equipments.Model;
 using Front.Control;
 using Front.Equipments;
 using Front.Models;
@@ -16,6 +17,7 @@ using ModelMID.DB;
 using Newtonsoft.Json;
 using SharedLib;
 using Utils;
+using Pr = Equipments.Model.Price;
 
 namespace Front
 {
@@ -324,7 +326,7 @@ namespace Front
                     Blf.PayAndPrint();
                     break;
                 case eTypeAccess.ChoicePrice:
-                    foreach (Models.Price el in Prices.ItemsSource)
+                    foreach (Pr el in Prices.ItemsSource)
                     {
                         el.IsEnable = true;
                         el.IsConfirmAge = true;

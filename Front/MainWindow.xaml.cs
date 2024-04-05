@@ -27,6 +27,8 @@ using System.Windows.Threading;
 using System.Windows.Input;
 using Front.ViewModels;
 using QRCoder;
+using Equipments.Model;
+using Pr=Equipments.Model.Price;
 
 namespace Front
 {
@@ -186,18 +188,7 @@ namespace Front
             }
         }
         public InfoRemoteCheckout RemoteCheckout { get; set; } = new();
-        public class InfoRemoteCheckout
-        {
-            public eStateMainWindows StateMainWindows { get; set; } = eStateMainWindows.NotDefine;
-            public string TransleteStateMainWindows { get { return StateMainWindows.GetDescription(); } }
-            public int RemoteIdWorkPlace { get; set; } = Global.IdWorkPlace;
-            public eTypeAccess TypeAccess { get; set; } = eTypeAccess.NoDefine;
-            public string TextInfo { get; set; } = string.Empty;
-            public string UserBarcode { get; set; } = string.Empty;
-            public ObservableCollection<Models.Price> RemoteCigarettesPrices { get; set; } = new();
-            public Models.Price SelectRemoteCigarettesPrice { get; set; } = null;
-            public int QuantityCigarettes { get; set; } = 1;
-        }
+       
         public WidthHeaderReceipt widthHeaderReceipt { get; set; }
         public void calculateWidthHeaderReceipt(eTypeMonitor TypeMonitor)
         {
@@ -762,10 +753,10 @@ namespace Front
                     if (MainWorkplace != null)
                         Task.Run(async () =>
                         {
-                            ObservableCollection<Models.Price> prices = new();
+                            ObservableCollection<Pr> prices = new();
                             if (CurWares?.Prices?.Any()==true)
                             {
-                                prices = new ObservableCollection<Models.Price>(CurWares.Prices.OrderByDescending(r => r.Price).Select(r => new Models.Price(r.Price, true, r.TypeWares)));
+                                prices = new ObservableCollection<Pr>(CurWares.Prices.OrderByDescending(r => r.Price).Select(r => new Pr(r.Price, true, r.TypeWares)));
                                 // rrr.First().IsEnable = true;
                             }
                             InfoRemoteCheckout remoteInfo = new() { StateMainWindows = pSMV, TypeAccess = TypeAccessWait, TextInfo = $"{CS.InfoEx}", UserBarcode = AdminSSC?.BarCode, RemoteCigarettesPrices = prices };
@@ -836,7 +827,7 @@ namespace Front
                             TypeAccessWait = eTypeAccess.ChoicePrice;
                             if ( CurWares?.Prices?.Any()==true)
                             {
-                                var rrr = new ObservableCollection<Models.Price>(CurWares.Prices.OrderByDescending(r => r.Price).Select(r => new Models.Price(r.Price, Access.GetRight(TypeAccessWait), r.TypeWares)));
+                                var rrr = new ObservableCollection<Pr>(CurWares.Prices.OrderByDescending(r => r.Price).Select(r => new Pr(r.Price, Access.GetRight(TypeAccessWait), r.TypeWares)));
                                 rrr.First().IsEnable = true;
                                 Prices.ItemsSource = rrr;
                             }
@@ -1067,25 +1058,7 @@ namespace Front
             }
         }
 
-        /*void TimeScan(bool? pIsSave = null)
-        {
-            if ((State == eStateMainWindows.WaitAdmin && !CS.IsProblem) || State == eStateMainWindows.AdminPanel || State == eStateMainWindows.WaitAdminLogin ||
-                       State == eStateMainWindows.ChoicePaymentMethod || State == eStateMainWindows.ProcessPay || State == eStateMainWindows.StartWindow || pIsSave == true)
-            {
-                if (StartScan != DateTime.MinValue)
-                {
-                    Bl.SaveReceiptEvents(new List<ReceiptEvent>() { new ReceiptEvent(curReceipt) { ResolvedAt = StartScan, EventType = eReceiptEventType.TimeScanReceipt, EventName = "Час сканування чека" } }, false);
-                    StartScan = DateTime.MinValue;
-                }
-            }
-            else
-            {
-                if (pIsSave == false || (StartScan == DateTime.MinValue && (
-                        State == eStateMainWindows.WaitInput || State == eStateMainWindows.WaitFindWares || State == eStateMainWindows.WaitInputPrice || State == eStateMainWindows.WaitInputIssueCard)))
-                    StartScan = DateTime.Now;
-            }
-        }*/
-
+        
         private void _Delete(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
@@ -1174,31 +1147,6 @@ namespace Front
 
         private void _Search(object sender, RoutedEventArgs e) => SetStateView(eStateMainWindows.WaitFindWares);
 
-
-        /*void IsPrises(decimal pQuantity = 0m, decimal pPrice = 0m)
-        {
-            if (CurWares.TypeWares == eTypeWares.Alcohol && CurWares?.Price > 0m)
-            {
-                SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ExciseStamp, CurWares);
-                return;
-            }
-
-            if (CurWares.Price == 0) //Повідомлення Про відсутність ціни
-            {
-                SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, new CustomWindow(eWindows.NoPrice, CurWares.NameWares));
-            }
-            if (CurWares.Prices != null && pPrice == 0m) //Меню з вибором ціни. Сигарети.
-            {
-                if (CurWares.IsMultiplePrices)
-                {
-                    SetStateView(eStateMainWindows.WaitInputPrice, eTypeAccess.NoDefine, CurWares);
-                }
-            }
-            if (CurWares.IsMultiplePrices && pPrice > 0m)
-                CurWares = null;
-        }
-        */
-
         private void _ButtonHelp(object sender, RoutedEventArgs e)
         {
             SetStateView(Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout || AdminSSC == null ? eStateMainWindows.WaitAdmin : eStateMainWindows.AdminPanel, eTypeAccess.AdminPanel);
@@ -1266,7 +1214,7 @@ namespace Front
                 Button btn = sender as Button;
                 if (btn != null)
                 {
-                    var price = btn.DataContext as Models.Price;
+                    var price = btn.DataContext as Pr;
 
                     TextBlock Tb = btn.Content as TextBlock;
                     if (Tb != null)
@@ -1593,7 +1541,7 @@ namespace Front
             Button btn = sender as Button;
             if (btn != null)
             {
-                var price = btn.DataContext as Models.Price;
+                var price = btn.DataContext as Pr;
 
                 InfoRemoteCheckout remoteInfo = new()
                 {

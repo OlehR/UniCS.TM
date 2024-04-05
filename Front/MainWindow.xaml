@@ -1465,7 +1465,7 @@ Mode=FindAncestor, AncestorType=Window}}"/>
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <Button Click="AddPriceRemoteWares"  Height="80"  Width="450" Margin="2" Style="{StaticResource WhiteButton}"
-                                                    Background="{Binding BackGroundColor}" IsEnabled="{Binding IsEnable}">
+                                                    IsEnabled="{Binding IsEnable}">
                                                 <TextBlock FontSize="28" Text="{Binding StrPrice}" Tag="{Binding}" />
                                                 <Button.Resources>
                                                     <Style TargetType="Border">
