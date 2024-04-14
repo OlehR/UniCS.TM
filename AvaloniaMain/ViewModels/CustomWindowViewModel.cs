@@ -25,6 +25,10 @@ namespace AvaloniaMain.ViewModels
             SelectClientEvent?.Invoke(this, cb, Text);
             VisibilityChanged.Invoke(this, EventArgs.Empty);
         }
+        public CustomWindowViewModel()
+        {
+           
+        }
         private CustomWindow CW;
         public CustomWindowViewModel(CustomWindow cW)
         {

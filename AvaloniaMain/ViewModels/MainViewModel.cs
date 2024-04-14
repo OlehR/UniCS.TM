@@ -24,7 +24,6 @@ namespace AvaloniaMain.ViewModels
 {
     public partial class MainViewModel : ViewModelBase, IMW
     {
-        // public ObservableCollection<ReceiptWares> ListWares { get; set; }
 
         private Receipt _curReceipt { get; set; }
         public Receipt curReceipt
@@ -58,6 +57,7 @@ namespace AvaloniaMain.ViewModels
             
         }
         public ReceiptWares CurWares { get; set; }
+        public Receipt ReceiptPostpone = null;
         public Client Client { 
             get { return curReceipt?.Client; }}
         public Sound s { get; set; }
@@ -75,7 +75,7 @@ namespace AvaloniaMain.ViewModels
         public ModelMID.DB.User AdminSSC { get; set; } = null;
         public Status<string> LastVerifyCode { get; set; } = new();
         public Client client = new Client();
-
+        public eSyncStatus DatabaseUpdateStatus { get; set; } = eSyncStatus.SyncFinishedSuccess;
         public BLF Blf;
 
         private decimal _MoneySum;
@@ -164,6 +164,19 @@ namespace AvaloniaMain.ViewModels
                 }
             }
         }
+        private bool _numBackgroundVisibility = false;
+        public bool NumBackgroundVisibility
+        {
+            get => _numBackgroundVisibility;
+            set
+            {
+                if (_numBackgroundVisibility != value)
+                {
+                    _numBackgroundVisibility = value;
+                    OnPropertyChanged(nameof(NumBackgroundVisibility));
+                }
+            }
+        }
 
         // Додаткові властивості можна змінити аналогічно...
 
@@ -177,6 +190,19 @@ namespace AvaloniaMain.ViewModels
                 {
                     _SearchViewVisibility = value;
                     OnPropertyChanged(nameof(SearchViewVisibility));
+                }
+            }
+        }
+        private bool _ShowMessageView = false;
+        public bool ShowMessageView
+        {
+            get => _ShowMessageView;
+            set
+            {
+                if (_ShowMessageView != value)
+                {
+                    _ShowMessageView = value;
+                    OnPropertyChanged(nameof(ShowMessageView));
                 }
             }
         }
@@ -271,10 +297,11 @@ namespace AvaloniaMain.ViewModels
 
         private ReactiveCommand<Unit, Unit> _changeColorCommand;
         private ReactiveCommand<Unit, Unit> _showNumPad;
-
+        private ReactiveCommand<Unit, Unit> _showMessage;
         private ReactiveCommand<Unit, Unit> _showUserInfo;
         private ReactiveCommand<Unit, Unit> _showIssueCard;
         public ReactiveCommand<Unit, Unit> _showSearchView;
+        public ReactiveCommand<Unit, Unit> _PostoponeCheckCommand;
         public ReactiveCommand<CustomWindow, Unit> _showCustomWindow;
 
 
@@ -298,7 +325,8 @@ namespace AvaloniaMain.ViewModels
             _showIssueCard = ReactiveCommand.CreateFromTask(ShowIssueCardAsync);
             _showNumPad = ReactiveCommand.CreateFromTask(NumPad);
             _showCustomWindow = ReactiveCommand.Create<CustomWindow>(ShowCustomWindowAsync);
-
+            _showMessage = ReactiveCommand.CreateFromTask(ShowMessageAsync);
+            _PostoponeCheckCommand= ReactiveCommand.CreateFromTask(PostponeCheck);
             UserMoneyBonus = 17.10;
             UserMoneyBox = 121.35;
 
@@ -309,9 +337,53 @@ namespace AvaloniaMain.ViewModels
         public ReactiveCommand<Unit, Unit> ShowUserInfo => _showUserInfo;
         public ReactiveCommand<Unit, Unit> ShowSearchView => _showSearchView;
         public ReactiveCommand<Unit, Unit> ShowNumPad => _showNumPad;
+        public ReactiveCommand<Unit, Unit> ShowMessage => _showMessage;
+        public ReactiveCommand<Unit, Unit> PostoponeCheckCommand => _PostoponeCheckCommand;
         public ReactiveCommand<Unit, Unit> ShowIssueCard => _showIssueCard;
         public ReactiveCommand<CustomWindow, Unit> ShowCustomWindow => _showCustomWindow;
+        
+        private async Task PostponeCheck()
+        {
+            if (ReceiptPostpone == null)
+            {
+                var showMessgeViewModel = new ShowMessageViewModel("Ви дійсно хочете відкласти чек?", "Відкладення чеку", eTypeMessage.Question);
+                showMessgeViewModel.VisibilityChanged += ShowMessage_VisibilityChanged;
+                showMessgeViewModel.Result = (bool res) =>
+                {
+                    if (res)
+                    {
+                        Blf.TimeScan(true);
+                        ReceiptPostpone = curReceipt;
+                        ShowMessage_VisibilityChanged(showMessgeViewModel, EventArgs.Empty);
+                        Blf.NewReceipt();
+                        //  WaresList.Focus();
+                    }
 
+                };
+                CurrentPage = showMessgeViewModel;
+                BackgroundVisibility = true;
+                CurrentPageVisibility = true;
+                
+            }
+            else
+            {
+                if (curReceipt == null || curReceipt.Wares?.Any() != true)
+                {
+                    //if (Client != null) ShowClientBonus.Visibility = Visibility.Visible;
+
+                    Blf.TimeScan(false);
+                    Global.OnReceiptCalculationComplete?.Invoke(ReceiptPostpone);
+                    ReceiptPostpone = null;
+                    // WaresList.Focus();
+                }
+                else
+                {
+                    var showMessgeViewModel = new ShowMessageViewModel("Неможливо відновити чек не закривши текучий", "Увага!", eTypeMessage.Information);
+                    showMessgeViewModel.VisibilityChanged += ShowMessage_VisibilityChanged;
+                }
+            }
+           
+        }
 
         private async Task ShowUser()
         {
@@ -332,6 +404,23 @@ namespace AvaloniaMain.ViewModels
             CurrentPageVisibility = true;
 
         }
+        private async Task ShowMessageAsync()
+        {
+            CurrentPage = null;
+            var showMessgeViewModel = new ShowMessageViewModel($"Запустити оновлення бази даних?{Environment.NewLine}{Bl.db.LastMidFile} {Bl.db.GetConfig<DateTime>("Load_Update")}", $"Оновлення бази даних", eTypeMessage.Question);
+            showMessgeViewModel.VisibilityChanged += ShowMessage_VisibilityChanged;
+            showMessgeViewModel.Result = (bool res) =>
+            {
+                if (res)
+                    Task.Run(() => Bl.ds.SyncDataAsync());
+
+            };
+            CurrentPage = showMessgeViewModel;
+            BackgroundVisibility = true;
+            CurrentPageVisibility = true;
+
+        }
+        
         private void ShowCustomWindowAsync(CustomWindow pCw)
         {
             CurrentPage = null;
@@ -352,7 +441,7 @@ namespace AvaloniaMain.ViewModels
             parentViewModel.NumberChanged += NumPadViewModel_NumberChanged;
             parentViewModel.VisibilityChanged += NumPadViewModel_VisibilityChanged;
             NumPadPage = parentViewModel;
-            BackgroundVisibility = true;
+            NumBackgroundVisibility = true;
             NumPadPageVisibility = true;
         }
         private async Task SearchViewModel()
@@ -409,32 +498,7 @@ namespace AvaloniaMain.ViewModels
                     Blf.IsPrises(pQuantity, pPrice);
             }
 
-            /*if (pCodeWares > 0)
-            {
-                if (curReceipt == null)
-                    Blf.NewReceipt();
-                CurWares = Bl.AddWaresCode(curReceipt, pCodeWares, pCodeUnit, pQuantity, pPrice);
-                CurWares.Quantity = 1;
-                if (CurWares != null)
-                {
-                    Receipt receipt = curReceipt;
-                    if (receipt.Wares != null)
-                    {
-                        List<ReceiptWares> waresList = new List<ReceiptWares>(receipt.Wares);
-                        waresList.Add(CurWares);
-                        receipt.Wares = waresList;
-                    }
-                    else
-                    {
-                        List<ReceiptWares> waresList = new List<ReceiptWares>();
-
-                        waresList.Add(CurWares);
-                        receipt.Wares = waresList;
-                    }
-
-                    SetCurReceipt(receipt);
-                }
-            }*/
+           
         }
 
         private void NumPadViewModel_VisibilityChanged(object? sender, EventArgs? e)
@@ -459,8 +523,13 @@ namespace AvaloniaMain.ViewModels
             CurrentPageVisibility = false;
             Close();
         }
+        private void ShowMessage_VisibilityChanged(object? sender, EventArgs? e)
+        {
+            CurrentPageVisibility = false;
+            Close();
+        }
 
-    
+
         public void Close()
         {
             BackgroundVisibility = false;
@@ -468,7 +537,9 @@ namespace AvaloniaMain.ViewModels
         }
         public void NumPadClose()
         {
-            BackgroundVisibility = false;
+           
+
+        NumBackgroundVisibility = false; 
             NumPadPage = null;
         }
      
@@ -512,6 +583,20 @@ namespace AvaloniaMain.ViewModels
 
     }
 }
+
+
+/*
+   private void UpdateDB(object sender, RoutedEventArgs e)
+        {
+            CustomMessage.Show($"Запустити оновлення бази даних?{Environment.NewLine}{Bl.db.LastMidFile} {Bl.db.GetConfig<DateTime>("Load_Update")}", $"Оновлення бази даних", eTypeMessage.Question);
+            CustomMessage.Result = (bool res) =>
+            {
+                if (res)
+                    Task.Run(() => Bl.ds.SyncDataAsync());
+            };
+        }*/
+
+
 
 
 
