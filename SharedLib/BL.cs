@@ -180,7 +180,7 @@ namespace SharedLib
             if (pBarCode == null)
                 return null;
             IEnumerable<ReceiptWares> w = null;
-            pBarCode = pBarCode.Trim();
+            pBarCode = (string) pBarCode.Trim().Clone();
             if (!IsOnlyDiscount)
                 if (pBarCode.Length >= 8)
                     w = db.FindWares(pBarCode);//Пошук по штрихкоду
@@ -196,16 +196,20 @@ namespace SharedLib
             //ReceiptWares W = null;
             if (w == null || w.Count() == 0 && pBarCode.Length >= 8) // Якщо не знайшли спробуем по ваговим і штучним штрихкодам.          
             {
-                foreach (var el in Global.CustomerBarCode.Where(el => el.KindBarCode == eKindBarCode.EAN13 /*&& (el.TypeBarCode == eTypeBarCode.WaresWeight || el.TypeBarCode == eTypeBarCode.WaresUnit )*/))
+                foreach (var el in Global.CustomerBarCode.Where(el => el.KindBarCode == eKindBarCode.EAN13 || el.KindBarCode == eKindBarCode.Code128 /*&& (el.TypeBarCode == eTypeBarCode.WaresWeight || el.TypeBarCode == eTypeBarCode.WaresUnit )*/))
                 {
                     w = null;
-                    if (el.Prefix.Equals(pBarCode.Substring(0, el.Prefix.Length)))
+                    if (el.TotalLenght != pBarCode.Length)
+                        continue;
+                    if (el.Prefix.Equals(pBarCode[..el.Prefix.Length]))
                     {
-                        if (el.KindBarCode == eKindBarCode.EAN13 && pBarCode.Length != 13)
-                            break;
+                       
+                            if (el.KindBarCode == eKindBarCode.EAN13 && pBarCode.Length != 13)
+                                continue;
 
                         int varCode = Convert.ToInt32(pBarCode.Substring(el.Prefix.Length, el.LenghtCode));
-                        int varValue = Convert.ToInt32(pBarCode.Substring(el.Prefix.Length + el.LenghtCode, el.LenghtQuantity));
+                        int varCodeOperator = Convert.ToInt32(pBarCode.Substring(el.Prefix.Length, el.LenghtOperator));
+                        int varValue = Convert.ToInt32(pBarCode.Substring(el.Prefix.Length + el.LenghtCode+ el.LenghtOperator, el.LenghtQuantity));
                         if (!IsOnlyDiscount || el.TypeCode == eTypeCode.PercentDiscount)
                         {
                             switch (el.TypeCode)

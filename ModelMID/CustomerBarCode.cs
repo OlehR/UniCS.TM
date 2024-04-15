@@ -11,11 +11,12 @@ namespace ModelMID
         Code=2,
         PercentDiscount=3
     }
+
     public enum eTypeBarCode
     {
         NotDefine = 0,
-        WaresWeight =1, //Ваговий
-        WaresUnit=2, //Штучний
+        WaresWeight = 1, //Ваговий
+        WaresUnit = 2, //Штучний
         DiscountAfterWares = 3 //Знижка , яка надається після сканування товару.
     }
 
@@ -26,6 +27,7 @@ namespace ModelMID
         Code128=2,
         QR = 3
     }
+
     public class CustomerBarCode
     {
         public eKindBarCode KindBarCode { get; set; } // //1 - EAN-13
@@ -35,6 +37,6 @@ namespace ModelMID
         public int LenghtCode { get; set; }
         public int LenghtOperator { get; set; }
         public int LenghtQuantity { get; set; }
-        public int GetTotalLenght { get { return KindBarCode == eKindBarCode.EAN13 ? 13 : LenghtCode + LenghtOperator + LenghtQuantity; } }
+        public int TotalLenght { get { return KindBarCode == eKindBarCode.EAN13 ? 13 : (Prefix?.Length??0) + LenghtCode + LenghtOperator + LenghtQuantity; } }
     }
 }
