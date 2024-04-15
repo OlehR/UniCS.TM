@@ -13,8 +13,8 @@ namespace Front.Equipments
     {
         static BLF sBLF;
         public static BLF GetBLF { get { return sBLF ?? new BLF(); } }
-        
-        IMW MW; 
+
+        IMW MW;
         BL Bl { get { return MW?.Bl; } }
         EquipmentFront EF { get { return MW?.EF; } }
         public BLF()
@@ -22,19 +22,19 @@ namespace Front.Equipments
             sBLF = this;
         }
         public void Init(IMW pMW) => MW = pMW;
-        
+
 
         public static Action<eStateMainWindows, eTypeAccess, ReceiptWares, CustomWindow, eSender> OnSetStateView { get; set; }
-        public void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine, eTypeAccess pTypeAccess = eTypeAccess.NoDefine, ReceiptWares pRW = null, CustomWindow pCW = null, eSender pS = eSender.NotDefine)=>        
-            OnSetStateView?.Invoke(pSMV, pTypeAccess, pRW, pCW, pS);        
-        
+        public void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine, eTypeAccess pTypeAccess = eTypeAccess.NoDefine, ReceiptWares pRW = null, CustomWindow pCW = null, eSender pS = eSender.NotDefine) =>
+            OnSetStateView?.Invoke(pSMV, pTypeAccess, pRW, pCW, pS);
+
         public void GetBarCode(string pBarCode, string pTypeBarCode)
         {
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"(pBarCode=>{pBarCode},  pTypeBarCode=>{pTypeBarCode})");
             if (MW.State == eStateMainWindows.StartWindow)
                 SetStateView(eStateMainWindows.WaitInput);
             if (MW.State == eStateMainWindows.WaitInputIssueCard) return;
-            
+
 
             if (Global.Settings.IsUseCardSparUkraine && MW.State == eStateMainWindows.FindClientByPhone)
             {
@@ -96,7 +96,17 @@ namespace Front.Equipments
                     if (c != null) return;
                 }
                 FileLogger.WriteLogMessage(this, "GetBarCode", $"Штрихкод {pBarCode} не знайдено State=>{MW.State} TypeAccessWait=>{MW.TypeAccessWait}");
-                Global.Message?.Invoke($"Даний штрихкод {pBarCode} не знайдено в базі!!!",eTypeMessage.Error );
+                if (MW.IsAddNewWares)
+
+                    Global.Message?.Invoke($"Даний штрихкод {pBarCode} не знайдено в базі!!!", eTypeMessage.Error);
+                else
+                {
+                    if (MW.CS?.IsProblem == true)
+                        Global.Message?.Invoke($"Не можливо додати товар оскільки є проблеми з ваговою платформою!", eTypeMessage.Error);
+                    else
+                        Global.Message?.Invoke($"Не можливо додати товар в  режимі {MW.State.GetDescription()}", eTypeMessage.Error);
+                }
+
                 return;
             }
 
@@ -104,8 +114,8 @@ namespace Front.Equipments
                 if (MW.State != eStateMainWindows.ProcessPay && MW.State != eStateMainWindows.ProcessPrintReceipt && MW.State != eStateMainWindows.WaitCustomWindows)
                     SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.AdminPanel);
 
-        }        
-       
+        }
+
         public string GetExciseStamp(string pBarCode)
         {
             if (pBarCode.Contains("t.gov.ua"))
@@ -135,7 +145,7 @@ namespace Front.Equipments
                         {
                             if (!res.Equals(MW.CurWares) && res.State >= 0)
                             {
-                                Global.Message?.Invoke($"Дана акцизна марка вже використана {res.CodePeriod} {res.IdWorkplace} Чек=>{res.CodeReceipt} CodeWares=>{res.CodeWares}!",  eTypeMessage.Error);
+                                Global.Message?.Invoke($"Дана акцизна марка вже використана {res.CodePeriod} {res.IdWorkplace} Чек=>{res.CodeReceipt} CodeWares=>{res.CodeWares}!", eTypeMessage.Error);
                                 return;
                             }
                         }
@@ -171,7 +181,7 @@ namespace Front.Equipments
                     SetStateView(eStateMainWindows.WaitInputPrice, eTypeAccess.NoDefine, MW.CurWares);
                 }
             }
-            if (MW.CurWares?.IsMultiplePrices==true && pPrice > 0m)
+            if (MW.CurWares?.IsMultiplePrices == true && pPrice > 0m)
                 MW.CurWares = null;
         }
 
@@ -195,7 +205,7 @@ namespace Front.Equipments
                     StartScan = DateTime.Now;
             }
         }
-        
+
         public void NewReceipt()
         {
             Bl.GetNewIdReceipt();
@@ -265,17 +275,17 @@ namespace Front.Equipments
             AddExciseStamp("None");
             Bl.AddEventAge(MW.curReceipt);
         }
-        
+
         private void CustomWindowClickButton(CustomButton res)
         {
-            
+
             if (res != null)
             {
                 if (res.CustomWindow?.Id == eWindows.RestoreLastRecipt)
                 {
                     if (res.Id == 1)
                     {
-                        var R=Bl.GetLastReceipt();
+                        var R = Bl.GetLastReceipt();
                         Bl.db.RecalcPriceAsync(new IdReceiptWares(R));
                         SetStateView(eStateMainWindows.WaitInput);
                     }
@@ -368,79 +378,79 @@ namespace Front.Equipments
         Status CallBackApi(string pDataApi)
         {
             Status Res = null;
-           /* try
-            {
-                CommandAPI<dynamic> pC = JsonConvert.DeserializeObject<CommandAPI<dynamic>>(pDataApi);
-                CommandAPI<int> CommandInt;
-                CommandAPI<string> CommandString;
-                CommandAPI<InfoRemoteCheckout> CommandRemoteInfo;
-                switch (pC.Command)
-                {
-                    case eCommand.GetCurrentReceipt:
-                        Res = new Status(0, MW.curReceipt?.ToJSON());
-                        break;
-                    case eCommand.GetReceipt:
-                        var Command = JsonConvert.DeserializeObject<CommandAPI<IdReceipt>>(pDataApi);
-                        Res = new Status(0, Bl.GetReceiptHead(Command.Data, true)?.ToJSON());
-                        break;
-                    case eCommand.XReport:
-                        CommandInt = JsonConvert.DeserializeObject<CommandAPI<int>>(pDataApi);
-                        Res = new Status(0, EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = CommandInt.Data })?.ToJSON());
-                        break;
-                    case eCommand.OpenShift:
-                        CommandString = JsonConvert.DeserializeObject<CommandAPI<string>>(pDataApi);
-                        var u = Bl.GetUserByBarCode(CommandString.Data);
-                        if (u != null)
-                        {
-                            AdminControl.OpenShift(u);
-                            Res = new Status(0, $"Зміна відкрита:{u.NameUser}");
-                        }
-                        break;
-                    case eCommand.GeneralCondition:
-                        CommandRemoteInfo = JsonConvert.DeserializeObject<CommandAPI<InfoRemoteCheckout>>(pDataApi);
-                        var r = Bl.GetUserByBarCode(CommandRemoteInfo.Data.UserBarcode);
-                        RemoteCheckout = CommandRemoteInfo.Data;
-                        RemoteWorkplace = Bl.db.GetWorkPlace().FirstOrDefault(el => el.IdWorkplace == RemoteCheckout.RemoteIdWorkPlace);
-                        if (RemoteCheckout.RemoteCigarettesPrices.Count > 1)
-                            RemotePrices.ItemsSource = RemoteCheckout.RemoteCigarettesPrices;
-                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RemoteWorkplace)));
-                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RemoteCheckout)));
-                        Res = new Status(0, $"Загальний стан каси: {RemoteWorkplace.Name}");
-                        break;
-                    case eCommand.Confirm:
-                        CommandRemoteInfo = JsonConvert.DeserializeObject<CommandAPI<InfoRemoteCheckout>>(pDataApi);
-                        if (CommandRemoteInfo.Data.StateMainWindows == eStateMainWindows.BlockWeight || CommandRemoteInfo.Data.StateMainWindows == eStateMainWindows.ProblemWeight
-                            || CommandRemoteInfo.Data.TypeAccess == eTypeAccess.FixWeight)
-                        {
-                            MW.CS.RW.FixWeightQuantity = MW.CS.RW.Quantity;
-                            MW.CS.RW.FixWeight += Convert.ToDecimal(MW.CS.СurrentlyWeight);
-                            MW.CS.StateScale = eStateScale.Stabilized;
-                            SetStateView(eStateMainWindows.WaitInput);
-                        }
-                        if (CommandRemoteInfo.Data.StateMainWindows == eStateMainWindows.WaitAdmin && CommandRemoteInfo.Data.TypeAccess == eTypeAccess.ChoicePrice)
-                        {
-                            Bl.AddEventAge(MW.curReceipt);
-                            AddWares(CurWares.CodeWares, MW.CurWares.CodeUnit, CommandRemoteInfo.Data.QuantityCigarettes, CommandRemoteInfo.Data.SelectRemoteCigarettesPrice.price);
-                            QuantityCigarettes = 1;
-                            SetStateView(eStateMainWindows.WaitInput);
-                        }
-                        Res = new Status(0, $"{CommandRemoteInfo.Data.StateMainWindows} {CommandRemoteInfo.Data.TypeAccess}");
-                        break;
-                    case eCommand.DeleteReceipt:
-                        if (curReceipt != null && curReceipt.StateReceipt == eStateReceipt.Prepare)
-                            Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
+            /* try
+             {
+                 CommandAPI<dynamic> pC = JsonConvert.DeserializeObject<CommandAPI<dynamic>>(pDataApi);
+                 CommandAPI<int> CommandInt;
+                 CommandAPI<string> CommandString;
+                 CommandAPI<InfoRemoteCheckout> CommandRemoteInfo;
+                 switch (pC.Command)
+                 {
+                     case eCommand.GetCurrentReceipt:
+                         Res = new Status(0, MW.curReceipt?.ToJSON());
+                         break;
+                     case eCommand.GetReceipt:
+                         var Command = JsonConvert.DeserializeObject<CommandAPI<IdReceipt>>(pDataApi);
+                         Res = new Status(0, Bl.GetReceiptHead(Command.Data, true)?.ToJSON());
+                         break;
+                     case eCommand.XReport:
+                         CommandInt = JsonConvert.DeserializeObject<CommandAPI<int>>(pDataApi);
+                         Res = new Status(0, EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = CommandInt.Data })?.ToJSON());
+                         break;
+                     case eCommand.OpenShift:
+                         CommandString = JsonConvert.DeserializeObject<CommandAPI<string>>(pDataApi);
+                         var u = Bl.GetUserByBarCode(CommandString.Data);
+                         if (u != null)
+                         {
+                             AdminControl.OpenShift(u);
+                             Res = new Status(0, $"Зміна відкрита:{u.NameUser}");
+                         }
+                         break;
+                     case eCommand.GeneralCondition:
+                         CommandRemoteInfo = JsonConvert.DeserializeObject<CommandAPI<InfoRemoteCheckout>>(pDataApi);
+                         var r = Bl.GetUserByBarCode(CommandRemoteInfo.Data.UserBarcode);
+                         RemoteCheckout = CommandRemoteInfo.Data;
+                         RemoteWorkplace = Bl.db.GetWorkPlace().FirstOrDefault(el => el.IdWorkplace == RemoteCheckout.RemoteIdWorkPlace);
+                         if (RemoteCheckout.RemoteCigarettesPrices.Count > 1)
+                             RemotePrices.ItemsSource = RemoteCheckout.RemoteCigarettesPrices;
+                         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RemoteWorkplace)));
+                         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RemoteCheckout)));
+                         Res = new Status(0, $"Загальний стан каси: {RemoteWorkplace.Name}");
+                         break;
+                     case eCommand.Confirm:
+                         CommandRemoteInfo = JsonConvert.DeserializeObject<CommandAPI<InfoRemoteCheckout>>(pDataApi);
+                         if (CommandRemoteInfo.Data.StateMainWindows == eStateMainWindows.BlockWeight || CommandRemoteInfo.Data.StateMainWindows == eStateMainWindows.ProblemWeight
+                             || CommandRemoteInfo.Data.TypeAccess == eTypeAccess.FixWeight)
+                         {
+                             MW.CS.RW.FixWeightQuantity = MW.CS.RW.Quantity;
+                             MW.CS.RW.FixWeight += Convert.ToDecimal(MW.CS.СurrentlyWeight);
+                             MW.CS.StateScale = eStateScale.Stabilized;
+                             SetStateView(eStateMainWindows.WaitInput);
+                         }
+                         if (CommandRemoteInfo.Data.StateMainWindows == eStateMainWindows.WaitAdmin && CommandRemoteInfo.Data.TypeAccess == eTypeAccess.ChoicePrice)
+                         {
+                             Bl.AddEventAge(MW.curReceipt);
+                             AddWares(CurWares.CodeWares, MW.CurWares.CodeUnit, CommandRemoteInfo.Data.QuantityCigarettes, CommandRemoteInfo.Data.SelectRemoteCigarettesPrice.price);
+                             QuantityCigarettes = 1;
+                             SetStateView(eStateMainWindows.WaitInput);
+                         }
+                         Res = new Status(0, $"{CommandRemoteInfo.Data.StateMainWindows} {CommandRemoteInfo.Data.TypeAccess}");
+                         break;
+                     case eCommand.DeleteReceipt:
+                         if (curReceipt != null && curReceipt.StateReceipt == eStateReceipt.Prepare)
+                             Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
 
-                        SetCurReceipt(null);
-                        SetStateView(eStateMainWindows.StartWindow);
-                        Res = new Status(0, $"Чек видалено!");
-                        break;
-                }
-            }
-            catch (Exception ex) { Res = new Status(ex); }*/
+                         SetCurReceipt(null);
+                         SetStateView(eStateMainWindows.StartWindow);
+                         Res = new Status(0, $"Чек видалено!");
+                         break;
+                 }
+             }
+             catch (Exception ex) { Res = new Status(ex); }*/
             return Res;
         }
 
-        
+
 
 
     }
