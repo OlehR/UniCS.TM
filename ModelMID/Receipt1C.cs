@@ -115,6 +115,7 @@ namespace ModelMID
         public int NumberPS { get { return CodePS > 20000000 ? Convert.ToInt32(CodePS.ToString().Substring((CodePS > 100000000 ? 1 : 0)+4)):0; } }
         public string ManualPercentDiscount { get { return string.IsNullOrEmpty(BarCode2Category) || BarCode2Category.Length != 13 ? null : BarCode2Category.Substring(3, 2); } }
         public int TypeDiscount { get { return string.IsNullOrEmpty(BarCode2Category) || BarCode2Category.Length != 13 ? 0:1; } }
+        public int CodeOperator { get; set; }
         public ReceiptWares1C() { }
         public ReceiptWares1C(ReceiptWares pRW)
         {
@@ -129,6 +130,7 @@ namespace ModelMID
                   ( pRW.TypePrice==eTypePrice.Promotion || pRW.TypePrice == eTypePrice.PromotionIndicative ? pRW.ParPrice1:0);            
             SumBonus = pRW.SumBonus;
             BarCode2Category = pRW.BarCode2Category;
+            CodeOperator=pRW.CodeOperator;
         }
     }
 

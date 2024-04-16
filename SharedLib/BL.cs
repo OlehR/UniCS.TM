@@ -192,7 +192,7 @@ namespace SharedLib
                     else
                         return null;
                 }
-
+            int CodeOperator=0;
             //ReceiptWares W = null;
             if (w == null || w.Count() == 0 && pBarCode.Length >= 8) // Якщо не знайшли спробуем по ваговим і штучним штрихкодам.          
             {
@@ -208,7 +208,7 @@ namespace SharedLib
                             continue;
 
                         int varCode = Convert.ToInt32(pBarCode.Substring(el.Prefix.Length, el.LenghtCode));
-                        int varCodeOperator = el.LenghtOperator > 0 ? Convert.ToInt32(pBarCode.Substring(el.Prefix.Length, el.LenghtOperator)) : 0;
+                        CodeOperator = el.LenghtOperator > 0 ? Convert.ToInt32(pBarCode.Substring(el.Prefix.Length+el.LenghtCode, el.LenghtOperator)) : 0;
                         int varValue = Convert.ToInt32(pBarCode.Substring(el.Prefix.Length + el.LenghtCode + el.LenghtOperator, el.LenghtQuantity));
                         if (!IsOnlyDiscount || el.TypeCode == eTypeCode.PercentDiscount)
                         {
@@ -233,6 +233,7 @@ namespace SharedLib
                                     pQuantity = varValue;
                                 break;
                             }
+                           
                         }
                     }
                 }
@@ -243,6 +244,7 @@ namespace SharedLib
                 return null;
 
             var W = w.First();
+            W.CodeOperator = CodeOperator;
             W.RecalcTobacco();
             if (pBarCode.Length >= 8)
                 W.BarCode = pBarCode;

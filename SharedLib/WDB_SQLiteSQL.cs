@@ -1,4 +1,6 @@
-﻿namespace SharedLib
+﻿using System.Diagnostics.Metrics;
+
+namespace SharedLib
 {
     public partial class WDB_SQLite 
     {
@@ -52,7 +54,8 @@ alter TABLE WARES_RECEIPT add Sum_Wallet NUMBER   NOT NULL DEFAULT 0;--Ver=>18
 alter TABLE payment    add Code_Bank    INTEGER  NOT NULL DEFAULT 0;--Ver=>19
 alter TABLE RECEIPT    add  Number_Order      TEXT;--Ver=>20
 alter TABLE LOG_RRO add CodeError         INTEGER  NOT NULL DEFAULT 0;--Ver=>21
-alter TABLE LOG_RRO add TypePay           INTEGER  NOT NULL DEFAULT 0;--Ver=>22";
+alter TABLE LOG_RRO add TypePay           INTEGER  NOT NULL DEFAULT 0;--Ver=>22
+alter TABLE WARES_RECEIPT_HISTORY add CodeOperator INTEGER  NOT NULL default 0;--Ver=>23";
 
         public readonly int VerMID = 13;
         readonly string SqlUpdateMID = @"--Ver=>0;Reload;
@@ -225,12 +228,12 @@ CREATE UNIQUE INDEX id_WARES_RECEIPT_PROMOTION ON WARES_RECEIPT_PROMOTION(CODE_R
             CODE_RECEIPT INTEGER  NOT NULL,
             CODE_WARES INTEGER  NOT NULL,
             CODE_UNIT INTEGER  NOT NULL,
-        --    CODE_WAREHOUSE INTEGER  NOT NULL,
             QUANTITY NUMBER   NOT NULL,
             QUANTITY_OLD NUMBER   NOT NULL default 0,
             SORT INTEGER  NOT NULL default 0,
             CODE_OPERATION INTEGER  NOT NULL,
-             DATE_CREATE DATETIME NOT NULL default (datetime('now','localtime'))
+            CodeOperator INTEGER  NOT NULL default 0,
+            DATE_CREATE DATETIME NOT NULL default (datetime('now','localtime'))
 	);
 CREATE INDEX id_WARES_RECEIPT_HISTORY ON WARES_RECEIPT_HISTORY(CODE_RECEIPT, CODE_WARES, ID_WORKPLACE, CODE_PERIOD);
 
@@ -778,7 +781,7 @@ where ID_WORKPLACE = @IdWorkplace
 
         readonly string SqlViewReceiptWares = @"
 select wr.id_workplace as IdWorkplace, wr.code_period as CodePeriod, wr.code_receipt as CodeReceipt, wr.code_wares as CodeWares, w.Name_Wares as NameWares , wr.quantity as Quantity, ud.abr_unit as AbrUnit,
-Price as Price --, wr.sum as Sum
+Price as Price
 , Type_Price as TypePrice
                 , wr.code_unit as CodeUnit, w.Code_unit as CodeDefaultUnit, PAR_PRICE_1 as ParPrice1, PAR_PRICE_2 as ParPrice2, par_price_3 as ParPrice3,
                      au.COEFFICIENT as Coefficient, w.NAME_WARES_RECEIPT as  NameWaresReceipt, sort,
@@ -802,6 +805,7 @@ Price as Price --, wr.sum as Sum
  ,wr.sum_wallet as SumWallet
  ,case when max(SORT) over(PARTITION BY CODE_RECEIPT) = sort then  1 else 0 end as IsLast
  ,wrh.history as History
+ ,wrh.Operator
 ,w.Code_Group as CodeGroup
 ,w.CodeGroupUp
 ,wr.Date_Create as DateCreate
@@ -810,7 +814,7 @@ Price as Price --, wr.sum as Sum
                      join ADDITION_UNIT au on w.code_wares = au.code_wares and wr.code_unit=au.code_unit
                      join unit_dimension ud on(wr.code_unit = ud.code_unit)
                      left join PROMOTION_SALE ps  on PAR_PRICE_1 = ps.CODE_PS and type_price = 9
-                     left join(select code_wares, group_concat(wrh.quantity-wrh.QUANTITY_OLD,'; ') as history, count(*) from WARES_RECEIPT_HISTORY wrh
+                     left join(select code_wares, group_concat( cast((wrh.quantity-wrh.QUANTITY_OLD) as text),'; ') as history,group_concat( wrh.CodeOperator,'; ') Operator from WARES_RECEIPT_HISTORY wrh
                                        where  wrh.id_workplace=@IdWorkplace and  wrh.code_period =@CodePeriod and wrh.code_receipt=@CodeReceipt
                                               and wrh.code_wares = case when @CodeWares = 0 then wrh.code_wares else @CodeWares end
                                        group by wrh.code_wares having count(*)>1) wrh on(wrh.Code_Wares= wr.Code_Wares)
@@ -862,8 +866,8 @@ update receipt
  @AdditionN1,@AdditionN2,@AdditionN3,
  @AdditionC1,@AdditionD1,@BarCode2Category,@Description,@RefundedQuantity,@MaxRefundQuantity,@SumBonus,@SumWallet);
  ;
-insert into  WARES_RECEIPT_HISTORY ( ID_WORKPLACE,  CODE_PERIOD, CODE_RECEIPT, CODE_WARES, CODE_UNIT, QUANTITY, QUANTITY_OLD, CODE_OPERATION)     
-values ( @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit, @Quantity,@QuantityOld, 0);";
+insert into  WARES_RECEIPT_HISTORY ( ID_WORKPLACE,  CODE_PERIOD, CODE_RECEIPT, CODE_WARES, CODE_UNIT, QUANTITY, QUANTITY_OLD, CODE_OPERATION,CodeOperator)     
+values ( @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit, @Quantity,@QuantityOld, 0,@CodeOperator);";
 
         readonly string SqlReplaceWaresReceipt = @"
 replace into wares_receipt(id_workplace, code_period, code_receipt, id_workplace_pay, code_wares, code_unit,
@@ -937,8 +941,8 @@ update wares_receipt set quantity = @Quantity,
 						   sum=@Quantity* price ---, Sum_Vat = @SumVat
                      where id_workplace = @IdWorkplace and code_period = @CodePeriod and code_receipt = @CodeReceipt
                      and code_wares = @CodeWares;-- and code_unit = @CodeUnit;
-        insert into  WARES_RECEIPT_HISTORY(ID_WORKPLACE, CODE_PERIOD, CODE_RECEIPT, CODE_WARES, CODE_UNIT, QUANTITY, QUANTITY_OLD, CODE_OPERATION)
-values(@IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit, @Quantity, @QuantityOld,case when @QuantityOld = 0 then 0 else 1 end);";
+        insert into  WARES_RECEIPT_HISTORY(ID_WORKPLACE, CODE_PERIOD, CODE_RECEIPT, CODE_WARES, CODE_UNIT, QUANTITY, QUANTITY_OLD, CODE_OPERATION,CodeOperator)
+values(@IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit, @Quantity, @QuantityOld,case when @QuantityOld = 0 then 0 else 1 end,@CodeOperator);";
 
         readonly string SqlDeleteReceiptWares = @"
 delete from  wares_receipt
@@ -947,8 +951,8 @@ delete from  wares_receipt
 
                and code_unit = case when @CodeUnit = 0 then code_unit else @CodeUnit end
   ;
-        insert into  WARES_RECEIPT_HISTORY(ID_WORKPLACE, CODE_PERIOD, CODE_RECEIPT, CODE_WARES, CODE_UNIT, QUANTITY, QUANTITY_OLD, CODE_OPERATION)
-values(@IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit, 0, @Quantity,-1);
+        insert into  WARES_RECEIPT_HISTORY(ID_WORKPLACE, CODE_PERIOD, CODE_RECEIPT, CODE_WARES, CODE_UNIT, QUANTITY, QUANTITY_OLD, CODE_OPERATION,CodeOperator)
+values(@IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit, 0, @Quantity,-1,@CodeOperator);
 
         delete from  WARES_RECEIPT_PROMOTION
            where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt
