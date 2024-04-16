@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "AvaloniaMain": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\MID\\appsettings_v.json"
+    }
+  }
+}

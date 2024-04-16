@@ -1,0 +1,180 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="450"
+             x:Class="AvaloniaMain.Views.PaymentView"
+			 xmlns:vm="clr-namespace:AvaloniaMain.ViewModels"
+             xmlns:views="using:AvaloniaMain.Views"
+			  x:DataType="vm:PaymentViewModel">
+	<Design.DataContext>
+		<vm:PaymentViewModel />
+	</Design.DataContext>
+	<Border  CornerRadius="10" BoxShadow="0 0 10 3 #BF000000" Height="450" Width="1000">
+		<Grid  RowDefinitions="5*,2*">
+		<Grid Grid.Row="0" ColumnDefinitions="5*,2*" Background="">
+			<Grid RowDefinitions="3*,*,3*,2*" Background="White">
+				<Grid ColumnDefinitions="170,170,*">
+					<Button  Margin="5" Height="60" Width="160" CornerRadius="15"  VerticalAlignment="Top" >
+						<TextBlock HorizontalAlignment="Center" FontSize="18" FontWeight="Bold" Text="Відкрити скриньку" TextWrapping="Wrap"/>
+					</Button>
+					<Button Background="#4d4d4b"  CornerRadius="15" Grid.Column="1" Width="160"   FontSize="22" Height="60" VerticalAlignment="Top"
+						  Margin="5" >
+						
+							<TextBlock FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="white" Text="Бонусами"/>
+					</Button>
+					<Grid Margin="5,5,0,0" Grid.Column="2" ColumnDefinitions="*,*"  Height="60" VerticalAlignment="Top" RowDefinitions="*,*">
+						<TextBlock Grid.Row="0" Grid.Column="0" FontSize="24" VerticalAlignment="Center">
+							Всього (грн.):
+						</TextBlock>
+						<TextBlock  Grid.Row="1" Grid.Column="0"  FontSize="24"  VerticalAlignment="Center">
+							Решта (грн.):
+						</TextBlock>
+						<TextBlock Margin="0,0,30,0"  Grid.Row="1" Grid.Column="1"  FontSize="24" HorizontalAlignment="Right"  VerticalAlignment="Center">
+							16.90₴
+						</TextBlock>
+						<TextBlock Margin="0,0,30,0"  Grid.Row="0" Grid.Column="1"  FontSize="24" HorizontalAlignment="Right"  VerticalAlignment="Center">
+							116.90₴
+						</TextBlock>
+					</Grid>
+				</Grid>
+				<Grid Margin="5,0,0,0" Grid.Row="1" ColumnDefinitions="*,*,3*">
+					<TextBlock Background="" VerticalAlignment="Center" FontSize="16" FontWeight="Bold">
+						Сума оплати:
+					</TextBlock>
+					<Border Grid.Column="1" BorderBrush="Black" BorderThickness="1">
+						<TextBlock Text="16.9" VerticalAlignment="Center" FontWeight="Medium" FontSize="18"/>
+							
+					</Border>
+				</Grid>
+				<Grid Grid.Row="2" ColumnDefinitions="*,*,*,*">
+					<Button Margin="5,0,0,0" CornerRadius="10" Height="80"  Width="150">
+						<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" FontSize="22">
+							x Відмінити
+						</TextBlock>
+					</Button>
+					<Button  Background="#419e08" Grid.Column="1" Margin="5,0,0,0" CornerRadius="10" Height="80"  Width="150">
+						<TextBlock Foreground="White"  HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" FontSize="19">
+							НеВизначено
+						</TextBlock>
+					</Button>
+					<Button  Background="#419e08" Grid.Column="3" Margin="5,0,0,0" CornerRadius="10" Height="80"  Width="150">
+						<TextBlock Foreground="White"  HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" FontSize="24">
+							Готівка
+						</TextBlock>
+					</Button>
+				</Grid>
+				<Border Grid.Row="3" BorderBrush="Black" CornerRadius="10" BoxShadow="0 0 10 3 #BF000000"   Margin="7,0,7,0">
+					
+					<Grid ColumnDefinitions="3*,6*,2*">
+						<Button Margin="5,0,0,0" CornerRadius="15" Width="150" Height="50">
+							<StackPanel Orientation="Vertical">
+								<TextBlock FontWeight="Bold"  FontSize="16">Відмінити</TextBlock>
+								<TextBlock  FontWeight="Bold"  FontSize="16"> видачу готівки</TextBlock>
+							</StackPanel>							
+						</Button>
+						<StackPanel Orientation="Horizontal" VerticalAlignment="Center" Grid.Column="1">
+							<TextBlock VerticalAlignment="Center" FontSize="18" FontWeight="Medium">Сума видачі грошових коштів:</TextBlock>
+							<TextBlock Margin="5,0,0,0" VerticalAlignment="Center" FontSize="24" Text="0" FontWeight="Medium"></TextBlock>
+							<Button Background="#ffc900" Margin="5,0,0,0" CornerRadius="15" Width="150" Height="50">
+								<StackPanel Orientation="Vertical">
+									<TextBlock FontWeight="Bold"  FontSize="16">Вивести суму</TextBlock>
+									<TextBlock   FontWeight="Bold"  FontSize="16">видачі готівки</TextBlock>
+								</StackPanel>
+							</Button>
+
+						</StackPanel>
+					</Grid>
+				</Border>
+			</Grid>
+			<Grid Grid.Column="1" ColumnDefinitions="*,*,*" RowDefinitions="*,*,*,*">
+				
+				<Button Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Height="70" Width="90" CornerRadius="10">
+					<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" FontWeight="Bold">7</TextBlock>
+				</Button>
+				<Button Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Height="70" Width="90" CornerRadius="10">
+					<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" FontWeight="Bold">8</TextBlock>
+				</Button>
+				<Button Grid.Column="2" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Height="70" Width="90" CornerRadius="10">
+					<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" FontWeight="Bold">9</TextBlock>
+				</Button>
+				<Button Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Height="70" Width="90" CornerRadius="10">
+					<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" FontWeight="Bold">4</TextBlock>
+				</Button>
+				<Button Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Height="70" Width="90" CornerRadius="10">
+					<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" FontWeight="Bold">5</TextBlock>
+				</Button>
+				<Button Grid.Column="2" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Height="70" Width="90" CornerRadius="10">
+					<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" FontWeight="Bold">6</TextBlock>
+				</Button>
+				<Button Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center" Height="70" Width="90" CornerRadius="10">
+					<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" FontWeight="Bold">1</TextBlock>
+				</Button>
+				<Button Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center" Height="70" Width="90" CornerRadius="10">
+					<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" FontWeight="Bold">2</TextBlock>
+				</Button>
+				<Button Grid.Column="2" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center" Height="70" Width="90" CornerRadius="10">
+					<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" FontWeight="Bold">3</TextBlock>
+				</Button>
+				<Button Grid.Column="0" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Center" Height="70" Width="90" CornerRadius="10">
+					<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" FontWeight="Bold">0</TextBlock>
+				</Button>
+				<Button Grid.Column="1" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Center" Height="70" Width="90" CornerRadius="10">
+					<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Text="," FontWeight="Bold"></TextBlock>
+				</Button>
+				<Button Grid.Column="2" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Center" Height="70" Width="90" CornerRadius="10">
+					<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" FontWeight="Bold">C</TextBlock>
+				</Button>
+			</Grid>
+		</Grid>
+		<Border Grid.Row="1" Height="110" VerticalAlignment="Bottom" BoxShadow="0 0 10 3 #BF000000" Margin="10,20,5,20" CornerRadius="10"  >
+			<Grid ColumnDefinitions="8*,*" >
+				<Grid ColumnDefinitions="*,*,*,*,*,*" RowDefinitions="*,*"  Grid.Column="0">
+					<StackPanel HorizontalAlignment="Center"  VerticalAlignment="Center" Orientation="Vertical">
+						<TextBlock FontSize="18" FontWeight="Bold" >Сума відкласти</TextBlock>
+						<TextBlock HorizontalAlignment="Center" Text="0.00#" FontSize="18" FontWeight="Bold" ></TextBlock>
+					</StackPanel>
+					<StackPanel Grid.Column="0" Grid.Row="1" HorizontalAlignment="Center"  VerticalAlignment="Center" Orientation="Vertical">
+						<TextBlock FontSize="18" FontWeight="Bold" >Cума списати </TextBlock>
+						<TextBlock HorizontalAlignment="Center" Text="0.00#" FontSize="18" FontWeight="Bold" ></TextBlock>
+					</StackPanel>
+					<Button FontWeight="Bold"  Grid.Row="0" Grid.Column="1" Height="50" CornerRadius="10" HorizontalAlignment="Center" Width="120" Background="#4d4d4b" >
+						<TextBlock Text="Заокруглити до 50 коп."  Width="120" VerticalAlignment="Center" TextWrapping="Wrap" Margin="12,0,0,0" ></TextBlock>
+					</Button>
+					<Button FontWeight="Bold"  Grid.Row="1" Grid.Column="1" Height="50" CornerRadius="10" HorizontalAlignment="Center" Width="120" Background="#4d4d4b" >
+						<TextBlock Text="Списати до 1 грн."  Width="120" VerticalAlignment="Center" TextWrapping="Wrap" Margin="12,0,0,0" ></TextBlock>
+					</Button>
+					<Button FontWeight="Bold"  Grid.Row="1" Grid.Column="2" Height="50" CornerRadius="10" HorizontalAlignment="Center" Width="120" Background="#4d4d4b" >
+						<TextBlock Text="Списати до 2 грн."  Width="120" VerticalAlignment="Center" TextWrapping="Wrap" Margin="12,0,0,0" ></TextBlock>
+					</Button>
+					<Button FontWeight="Bold"  Grid.Row="0" Grid.Column="2" Height="50" CornerRadius="10" HorizontalAlignment="Center" Width="120" Background="#4d4d4b" >
+						<TextBlock Text="Заокруглити до 2грн ."  Width="120" VerticalAlignment="Center" TextWrapping="Wrap" Margin="12,0,0,0" ></TextBlock>
+					</Button>
+					<Button FontWeight="Bold"  Grid.Row="0" Grid.Column="3" Height="50" CornerRadius="10" HorizontalAlignment="Center" Width="120" Background="#4d4d4b" >
+						<TextBlock Text="Заокруглити до 2грн ."  Width="120" VerticalAlignment="Center" TextWrapping="Wrap" Margin="12,0,0,0" ></TextBlock>
+					</Button>
+					<Button FontWeight="Bold"  Grid.Row="1" Grid.Column="3" Height="50" CornerRadius="10" HorizontalAlignment="Center" Width="120" Background="#4d4d4b" >
+						<TextBlock Text="Списати до 5 грн."  Width="120" VerticalAlignment="Center" TextWrapping="Wrap" Margin="12,0,0,0" ></TextBlock>
+					</Button>
+					<Button FontWeight="Bold"  Grid.Row="0" Grid.Column="4" Height="50" CornerRadius="10" HorizontalAlignment="Center" Width="120" Background="#4d4d4b" >
+						<TextBlock Text="Заокруглити до 5грн "  Width="120" VerticalAlignment="Center" TextWrapping="Wrap" Margin="12,0,0,0" ></TextBlock>
+					</Button>
+					<Button FontWeight="Bold"  Grid.Row="1" Grid.Column="4" Height="50" CornerRadius="10" HorizontalAlignment="Center" Width="120" Background="#4d4d4b" >
+						<TextBlock Text="Списати до 10 грн."  Width="120" VerticalAlignment="Center" TextWrapping="Wrap" Margin="12,0,0,0" ></TextBlock>
+					</Button>
+					<Button FontWeight="Bold" Grid.Row="0" Grid.Column="5" Height="50" CornerRadius="10" HorizontalAlignment="Center" Width="120" Background="#4d4d4b" >
+						<TextBlock Text="Заокруглити до 10 грн."  Width="120" VerticalAlignment="Center" TextWrapping="Wrap" Margin="12,0,0,0" ></TextBlock>
+					</Button>
+					<Button FontWeight="Bold"  Grid.Row="1" Grid.Column="5" Height="50" CornerRadius="10" HorizontalAlignment="Center" Width="120" Background="#4d4d4b" >
+						<TextBlock  HorizontalAlignment="Center" Foreground="White" Text="Ввести суму"  VerticalAlignment="Center" TextWrapping="Wrap"  ></TextBlock>
+					</Button>
+				</Grid>
+				<Button Background="#fff0b3" Grid.Column="1"  Margin="-4,0,0,0" CornerRadius="10" Height="70"   >
+					<TextBlock Text="Відміна заокруглень та списань" FontWeight="Bold"  Width="110" Margin="5,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" ></TextBlock>
+				</Button>
+			</Grid>
+		</Border>
+		
+	</Grid>
+	</Border>
+</UserControl>
