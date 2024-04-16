@@ -28,18 +28,21 @@ namespace AvaloniaMain.ViewModels
         private Receipt _curReceipt { get; set; }
         public Receipt curReceipt
         {
-            get => _curReceipt;
+            get
+            {              
+                return _curReceipt; }
             set
-            {
-                if (_curReceipt != value)
+
+            { 
+               
+            if (_curReceipt != value)
                 {
                     _curReceipt = value;
                     OnPropertyChanged(nameof(_curReceipt));
                     OnPropertyChanged(nameof(Client));
                     OnPropertyChanged(nameof(IsUserActive));
+                    OnPropertyChanged(nameof(ClientWallet)); 
                     OnPropertyChanged(nameof(MoneySum));
-                    OnPropertyChanged(nameof(UserMoneyBonus));
-                    OnPropertyChanged(nameof(UserMoneyBox));
                     OnPropertyChanged(nameof(Discount));
 
 
@@ -58,8 +61,11 @@ namespace AvaloniaMain.ViewModels
         }
         public ReceiptWares CurWares { get; set; }
         public Receipt ReceiptPostpone = null;
+
         public Client Client { 
-            get { return curReceipt?.Client; }}
+            get {
+                return curReceipt?.Client; }
+        }
         public Sound s { get; set; }
         public ReactiveCommand<ReceiptWares, Unit> Delete { get; }
         public ReactiveCommand<ReceiptWares, Unit> ChangeQuantityMinus { get; }
@@ -74,10 +80,20 @@ namespace AvaloniaMain.ViewModels
         public bool IsWaitAdminTitle { get; set; }
         public ModelMID.DB.User AdminSSC { get; set; } = null;
         public Status<string> LastVerifyCode { get; set; } = new();
-        public Client client = new Client();
+      //  public Client client = new Client();
         public eSyncStatus DatabaseUpdateStatus { get; set; } = eSyncStatus.SyncFinishedSuccess;
         public BLF Blf;
 
+        public decimal ClientWallet
+        {
+            get { return _curReceipt.Client.Wallet; }
+
+        }
+        public decimal ClientSumMoneyBonus
+        {
+            get { return _curReceipt.Client.SumMoneyBonus; }
+
+        }
         private decimal _MoneySum;
         public decimal MoneySum
         {
@@ -207,7 +223,7 @@ namespace AvaloniaMain.ViewModels
             }
         }
 
-        private bool _clientInfoVIsibility = false;
+      /*  private bool _clientInfoVIsibility = false;
         public bool ClientInfoVIsibility
         {
             get => _clientInfoVIsibility;
@@ -219,7 +235,7 @@ namespace AvaloniaMain.ViewModels
                     OnPropertyChanged(nameof(ClientInfoVIsibility));
                 }
             }
-        }
+        }*/
 
         private bool _mainVIsibility = true;
         public bool MainVIsibility
@@ -249,33 +265,10 @@ namespace AvaloniaMain.ViewModels
             }
         }
 
-        private double _UserMoneyBox;
-        public double UserMoneyBox
-        {
-            get => _UserMoneyBox;
-            set
-            {
-                if (_UserMoneyBox != value)
-                {
-                    _UserMoneyBox = value;
-                    OnPropertyChanged(nameof(UserMoneyBox));
-                }
-            }
-        }
 
-        private double _UserMoneyBonus;
-        public double UserMoneyBonus
-        {
-            get => _UserMoneyBonus;
-            set
-            {
-                if (_UserMoneyBonus != value)
-                {
-                    _UserMoneyBonus = value;
-                    OnPropertyChanged(nameof(UserMoneyBonus));
-                }
-            }
-        }
+
+       
+  
 
        
 
@@ -327,8 +320,7 @@ namespace AvaloniaMain.ViewModels
             _showCustomWindow = ReactiveCommand.Create<CustomWindow>(ShowCustomWindowAsync);
             _showMessage = ReactiveCommand.CreateFromTask(ShowMessageAsync);
             _PostoponeCheckCommand= ReactiveCommand.CreateFromTask(PostponeCheck);
-            UserMoneyBonus = 17.10;
-            UserMoneyBox = 121.35;
+    
 
             NewReceipt();
             ListWares = new ObservableCollection<ReceiptWares>();
@@ -388,9 +380,10 @@ namespace AvaloniaMain.ViewModels
         private async Task ShowUser()
         {
             CurrentPage = null;
-            CurrentPage = new ClientInfoViewModel(this, curReceipt.Client);
+            CurrentPage = new ClientInfoViewModel(this, Client);
             CurrentPageVisibility = true;
             BackgroundVisibility = true;
+
 
         }
 
@@ -578,7 +571,10 @@ namespace AvaloniaMain.ViewModels
                 ExtData = cb.CustomWindow?.Id == eWindows.ConfirmWeight ? CS?.RW : null
             };
             Bl.SetCustomWindows(r);
-           // curReceipt.PercentDiscount = Client.PersentDiscount;
+
+            OnPropertyChanged(nameof(ClientWallet));
+            OnPropertyChanged(nameof(ClientSumMoneyBonus));
+            // curReceipt.PercentDiscount = Client.PersentDiscount;
         }
 
     }
