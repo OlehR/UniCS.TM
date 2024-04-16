@@ -29,7 +29,7 @@ namespace SharedLib
 
         public async Task<bool> SendReceiptTo1CAsync(Receipt pR, string pServer = null, bool pIsChangeState = true)
         {
-            //if (!Global.Settings.IsSend1C && pIsChangeState) return false;
+            if (!Global.Settings.IsSend1C && pIsChangeState) return false;
 
             if (string.IsNullOrEmpty(pServer))
                 pServer = Global.Server1C;
