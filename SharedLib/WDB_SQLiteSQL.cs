@@ -804,7 +804,7 @@ Price as Price
  ,wr.id_workplace_pay as IdWorkplacePay
  ,wr.sum_wallet as SumWallet
  ,case when max(SORT) over(PARTITION BY CODE_RECEIPT) = sort then  1 else 0 end as IsLast
- ,wrh.history as History
+ ,case when wrh.nn>1 then wrh.history else '' end as History
  ,wrh.Operator
 ,w.Code_Group as CodeGroup
 ,w.CodeGroupUp
@@ -814,10 +814,10 @@ Price as Price
                      join ADDITION_UNIT au on w.code_wares = au.code_wares and wr.code_unit=au.code_unit
                      join unit_dimension ud on(wr.code_unit = ud.code_unit)
                      left join PROMOTION_SALE ps  on PAR_PRICE_1 = ps.CODE_PS and type_price = 9
-                     left join(select code_wares, group_concat( cast((wrh.quantity-wrh.QUANTITY_OLD) as text),'; ') as history,group_concat( wrh.CodeOperator,'; ') Operator from WARES_RECEIPT_HISTORY wrh
+                     left join(select code_wares, group_concat( cast((wrh.quantity-wrh.QUANTITY_OLD) as text),'; ') as history,group_concat( wrh.CodeOperator,'; ') Operator, count(*) as nn from WARES_RECEIPT_HISTORY wrh
                                        where  wrh.id_workplace=@IdWorkplace and  wrh.code_period =@CodePeriod and wrh.code_receipt=@CodeReceipt
                                               and wrh.code_wares = case when @CodeWares = 0 then wrh.code_wares else @CodeWares end
-                                       group by wrh.code_wares having count(*)>1) wrh on(wrh.Code_Wares= wr.Code_Wares)
+                                       group by wrh.code_wares ) wrh on(wrh.Code_Wares= wr.Code_Wares)
                      where wr.id_workplace=@IdWorkplace and  wr.code_period =@CodePeriod and wr.code_receipt=@CodeReceipt
 
                      and wr.code_wares = case when @CodeWares=0 then wr.code_wares else @CodeWares end

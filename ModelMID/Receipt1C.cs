@@ -115,6 +115,9 @@ namespace ModelMID
         public int NumberPS { get { return CodePS > 20000000 ? Convert.ToInt32(CodePS.ToString().Substring((CodePS > 100000000 ? 1 : 0)+4)):0; } }
         public string ManualPercentDiscount { get { return string.IsNullOrEmpty(BarCode2Category) || BarCode2Category.Length != 13 ? null : BarCode2Category.Substring(3, 2); } }
         public int TypeDiscount { get { return string.IsNullOrEmpty(BarCode2Category) || BarCode2Category.Length != 13 ? 0:1; } }
+        /// <summary>
+        /// Оператор Ваг
+        /// </summary>
         public int CodeOperator { get; set; }
         public ReceiptWares1C() { }
         public ReceiptWares1C(ReceiptWares pRW)
