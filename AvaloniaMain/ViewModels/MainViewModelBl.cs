@@ -110,7 +110,7 @@ namespace AvaloniaMain.ViewModels
                             EF.PutToDisplay(pReceipt, $"{CurWares.NameWaresReceipt}{Environment.NewLine}{CurWares.Quantity}x{CurWares.Price}={CurWares.SumTotal}", 0);
                     }
                     // if (curReceipt?.Wares?.Count() == 0 && curReceipt.OwnBag==0d) CS.WaitClear();
-                    CS.StartWeightNewGoogs(curReceipt, IsDel ? CurWares : null);
+                    CS?.StartWeightNewGoogs(curReceipt, IsDel ? CurWares : null);
                 }
                 catch (Exception e)
                 {
