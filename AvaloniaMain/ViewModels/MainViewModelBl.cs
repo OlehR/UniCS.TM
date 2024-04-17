@@ -280,17 +280,36 @@ namespace AvaloniaMain.ViewModels
 
                     //if (curReceipt?.IsNeedExciseStamp == true)
                     //    SetStateView(eStateMainWindows.WaitInput);
-                    //SetClient();
+                    SetClient();
                 }
             }
             catch (Exception e)
             {
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
             }
-           
-           
+
+            SetPropertyChanged();
         }
+        public void SetPropertyChanged()
+        {
        
+            OnPropertyChanged(nameof(CS));
+            OnPropertyChanged(nameof(Client));
+            OnPropertyChanged(nameof(MoneySum));
+          
+            SetClient();
+
+        }
+
+        void SetClient()
+        {
+           
+            OnPropertyChanged(nameof(Client));
+            OnPropertyChanged(nameof(ClientWallet));
+            OnPropertyChanged(nameof(ClientSumMoneyBonus));
+
+        }
+
         public void GetBarCode(string pBarCode, string pTypeBarCode)
         {
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"(pBarCode=>{pBarCode},  pTypeBarCode=>{pTypeBarCode})");

@@ -44,8 +44,6 @@ namespace AvaloniaMain.ViewModels
                     OnPropertyChanged(nameof(ClientWallet)); 
                     OnPropertyChanged(nameof(MoneySum));
                     OnPropertyChanged(nameof(Discount));
-
-
                 }
 
             }
@@ -89,6 +87,7 @@ namespace AvaloniaMain.ViewModels
             get { return _curReceipt.Client.Wallet; }
 
         }
+
         public decimal ClientSumMoneyBonus
         {
             get { return _curReceipt.Client.SumMoneyBonus; }
@@ -571,6 +570,7 @@ namespace AvaloniaMain.ViewModels
                 ExtData = cb.CustomWindow?.Id == eWindows.ConfirmWeight ? CS?.RW : null
             };
             Bl.SetCustomWindows(r);
+            SetStateView(eStateMainWindows.WaitInput);
 
             OnPropertyChanged(nameof(ClientWallet));
             OnPropertyChanged(nameof(ClientSumMoneyBonus));
