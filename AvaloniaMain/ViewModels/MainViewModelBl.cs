@@ -168,8 +168,8 @@ namespace AvaloniaMain.ViewModels
                     BackgroundWares.Visibility = Visibility.Collapsed;
                     //if (Client != null) ShowClientBonus.Visibility = Visibility.Visible;
                 }
-                ));
-                SetClient();*/
+                ));*/
+                SetClient();
                 if (Client?.BirthDay > new DateTime(1900, 1, 1))
                     if (Client.BirthDay.AddYears(18).Date <= DateTime.Now.Date)
                         Bl.AddEventAge(curReceipt);

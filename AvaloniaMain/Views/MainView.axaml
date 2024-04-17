@@ -49,7 +49,7 @@
             <Grid Height="60" Margin="3" RowDefinitions="*,*" ColumnDefinitions="Auto,Auto">
               <Label FontSize="20"  Width="160" HorizontalAlignment="Center" >Скарбничка:</Label>
 				<Label FontSize="20" Width="160" Grid.Row="1" >Сума Бонусів:</Label>
-              <TextBlock  FontWeight="Bold" Margin=""  FontSize="20"  VerticalAlignment="Center" Grid.Column="1" Text="{Binding Client.Wallet}">
+              <TextBlock  FontWeight="Bold" Margin=""  FontSize="20"  VerticalAlignment="Center" Grid.Column="1" Text="{Binding ClientWallet}">
 				  <TextBlock.Styles>
 					  <Style Selector="TextBlock">
 						  <Setter Property="Foreground" Value="Green" />
