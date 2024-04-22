@@ -33,9 +33,15 @@
 		<DataTemplate  DataType="{x:Type vm:ShowMessageViewModel}">
 			<views:ShowMessageView />
 		</DataTemplate>
+		<DataTemplate  DataType="{x:Type vm:PaymentViewModel}">
+			<views:PaymentView />
+		</DataTemplate>
     </UserControl.DataTemplates>
 	<UserControl.Resources>
 		<converters:QuantityToMinusButtonEnabledConverter x:Key="QuantityToMinusButtonEnabledConverter" />
+	</UserControl.Resources>
+	<UserControl.Resources>
+		<converters:DatabaseUpdateStatusToColorConverter x:Key="DatabaseUpdateStatusToColorConverter" />
 	</UserControl.Resources>
 
 	<Grid Background="White"  RowDefinitions="Auto,Auto">
@@ -71,14 +77,15 @@
       
       </Grid>
 	  </Button>
-       <Button Background="#e0e0e0" Command="{Binding ShowIssueCard}" Grid.Column="1" Width="300" Height="70" CornerRadius="15">
+       <Button  Background="#e0e0e0" Command="{Binding ShowIssueCard}" Grid.Column="1" Width="300" Height="70" CornerRadius="15">
 		   <TextBlock HorizontalAlignment="Center"  FontSize="18" FontWeight="Bold" VerticalAlignment="Center">Видача картки</TextBlock>
        </Button>
-       <Button Command="{Binding PostoponeCheckCommand}" Background="#e0e0e0" FontSize="18" FontWeight="Bold"  Grid.Column="2" Margin="1" Width="300" Height="70" CornerRadius="15">
-         <TextBlock HorizontalAlignment="Center" FontSize="18" VerticalAlignment="Center">Відкласти чек </TextBlock>
+       <Button IsEnabled="{Binding IsReceiptPostpone}" Command="{Binding PostoponeCheckCommand}" Background="#e0e0e0" FontSize="18" FontWeight="Bold"  Grid.Column="2" Margin="1" Width="300" Height="70" CornerRadius="15">
+         <TextBlock Foreground="{Binding IsReceiptPostponeNotNullText}" Background="{Binding IsReceiptPostponeNotNull}" HorizontalAlignment="Center" FontSize="18" VerticalAlignment="Center">Відкласти чек </TextBlock>
        </Button>
-       <Button Command="{Binding ShowMessage}"  Grid.Column="4" Margin="2" Width="220" Height="60" CornerRadius="15">
-       <Image Source="/Assets/OkColor.ico"></Image>
+       <Button Background="{Binding DatabaseUpdateStatus,Converter={StaticResource DatabaseUpdateStatusToColorConverter}}" Command="{Binding ShowMessage}"  Grid.Column="4" Margin="2" Width="220" Height="60" CornerRadius="15">
+		  
+		   <Image Source="/Assets/OkColor.ico"></Image>
        </Button>
       <Button  Background="#e0e0e0"  Grid.Column="5" Margin="2" Width="220" Height="60" CornerRadius="15">
       <Image Source="/Assets/AdminPanel.ico"></Image>
@@ -143,22 +150,22 @@
 					
 				</Button>
 			    </Border>
-				<StackPanel HorizontalAlignment="Center"  Orientation="Horizontal"  Grid.Column="2">
-					<Border Height="73" Width="73" ZIndex="2" Margin="0,0,5,0" CornerRadius="15" BorderBrush="Black" BorderThickness="2">
+				<Grid ColumnDefinitions="73,70,73" HorizontalAlignment="Center"    Grid.Column="2">
+					<Border Grid.Column="0" Height="73" Width="73" ZIndex="2" Margin="0,0,5,0" CornerRadius="15" BorderBrush="Black" BorderThickness="2">
 						<Button HorizontalAlignment="Center"  CornerRadius="15" Background="White" Command="{Binding DataContext.ChangeQuantityMinus, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}" CommandParameter="{Binding}"  Height="71" Width="71"
-						IsEnabled="{Binding Quantity, Converter={StaticResource QuantityToMinusButtonEnabledConverter}}">
+						IsEnabled="{Binding IsMinus}">
 							<Image  Height="40" Width="40" Source="/Assets/minus.ico"></Image>
 						</Button>
 					</Border>
 				
-					<TextBlock Margin="5" VerticalAlignment="Center" FontSize="25" Width="70" FontWeight="Bold" Height="40" HorizontalAlignment="Center" Text="{Binding Quantity}" />
-					<Border Height="73" Width="73" ZIndex="2" Margin="5,0,0,0" CornerRadius="15"  BorderBrush="Black" BorderThickness="2">
+					<TextBlock Grid.Column="1" Margin="5" VerticalAlignment="Center" FontSize="25" Width="70" TextAlignment="Center"  HorizontalAlignment="Center" FontWeight="Bold" Height="40" Text="{Binding Quantity}" />
+					<Border Grid.Column="2" Height="73" Width="73" ZIndex="2" Margin="5,0,0,0" CornerRadius="15"  BorderBrush="Black" BorderThickness="2">
 
-						<Button CornerRadius="15" Background="White" Command="{Binding DataContext.ChangeQuantityPlus, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}" HorizontalAlignment="Center" CommandParameter="{Binding}"  Height="71" Width="71">
+						<Button IsEnabled="{Binding IsPlus}" CornerRadius="15" Background="White" Command="{Binding DataContext.ChangeQuantityPlus, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}" HorizontalAlignment="Center" CommandParameter="{Binding}"  Height="71" Width="71">
 						<Image HorizontalAlignment="Center" Height="40" Width="40" Source="/Assets/plus.ico"></Image>
 					</Button>
 					</Border>
-				</StackPanel>
+				</Grid>
 				<StackPanel VerticalAlignment="Center" Grid.Column="3">
 					<TextBlock Margin="0,2,0,2"   FontSize="24" FontWeight="Medium"  HorizontalAlignment="Center" Text="{Binding WeightBrutto }" />
 					<TextBlock Margin="0,2,0,2"   FontSize="15" FontWeight="Medium"  HorizontalAlignment="Center" Text="{Binding FixedWeightInKg}" />
@@ -222,7 +229,7 @@
 		   <Button Command="{Binding ShowNumPad}" Height="90" Margin="3,0,0,6" CornerRadius="15" Width="610" Grid.Column="2">
 			   <Label FontFamily="Black" FontSize="35" VerticalAlignment="Center" HorizontalAlignment="Center" >Проскануйте бонусну карту </Label>
 		   </Button>
-		   <Button Height="90" CornerRadius="15" Margin="3,0,0,6" Grid.Column="3" Width="570" Background="#419e08">
+		   <Button Command="{Binding showPaymentWindow}" Height="90" CornerRadius="15" Margin="3,0,0,6" Grid.Column="3" Width="570" Background="#419e08">
 			   <StackPanel Orientation="Horizontal">
 				   <Image Height="60" Width="60" Margin="40,0,0,0"  Source="/Assets/18PlusRed.ico"></Image>
 				   <Label Foreground="White" Margin="40,0,0,0" FontSize="50" HorizontalAlignment="Center" VerticalAlignment="Center">></Label>

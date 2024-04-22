@@ -151,7 +151,7 @@ namespace AvaloniaMain.ViewModels
             }
         }
 
-public SearchViewModel()
+          public SearchViewModel()
         {
             Back = ReactiveCommand.CreateFromTask(BackAction);
 

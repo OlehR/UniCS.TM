@@ -30,7 +30,7 @@ namespace Front.Control
         public bool EnteringPriceManually { get; set; } = false;
         decimal _SumUseWallet = 0;
         public string TypeReturn { get; set; }
-        public decimal SumUseWallet
+        public decimal SumUseWallet // скільки списуємо з гаманця
         {
             get { return _SumUseWallet; }
             set
@@ -93,10 +93,10 @@ namespace Front.Control
 
 
             MoneySum = MW.MoneySum;
-            ChangeSumPaymant = MoneySum.ToString();
-            SumMaxWallet = (MW.curReceipt?.MaxSumWallet < MW.Client?.Wallet ? MW.curReceipt?.MaxSumWallet : MW.Client?.Wallet) ?? 0;
-            IsPaymentBonuses = MW.Client != null && MW.Client?.SumMoneyBonus >= MoneySum && MW.curReceipt.IsOnlyOrdinary;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsRounding"));
+            ChangeSumPaymant = MoneySum.ToString(); //вікно де змінюється сума округлення і т.д.
+            SumMaxWallet = (MW.curReceipt?.MaxSumWallet < MW.Client?.Wallet ? MW.curReceipt?.MaxSumWallet : MW.Client?.Wallet) ?? 0; //максмсальна сума списання з гаманця
+            IsPaymentBonuses = MW.Client != null && MW.Client?.SumMoneyBonus >= MoneySum && MW.curReceipt.IsOnlyOrdinary; // оплата бонусами
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsRounding")); // вертає тру якщо є юзер і впливає на панель з можливою знижкою по гаманцю і на кнопки округлення
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SumMaxWallet"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsPaymentBonuses"));
             Rounding();
@@ -320,9 +320,9 @@ namespace Front.Control
         }
 
         private void CalculateReturn()
-        {
-            if (ChangeSumPaymantDecimal > 0)
-                RestMoney = Math.Round((ChangeSumPaymantDecimal - Convert.ToDecimal(MoneySumToRound)), 2);
+    {
+            if (ChangeSumPaymantDecimal > 0) // це поле це таж сама ціна просто з строки в decimal
+                    RestMoney = Math.Round((ChangeSumPaymantDecimal - Convert.ToDecimal(MoneySumToRound)), 2); //решта
             else
                 RestMoney = 0;
         }
@@ -388,7 +388,7 @@ namespace Front.Control
                         }
 
 
-                        MoneySumToRound = MoneySum - tmp;
+                        MoneySumToRound = MoneySum - tmp; // сума до якої ми округлюємо стоїть навпроти всього:
                         SumUseWallet = -tmp;
                         ChangeSumPaymant = MoneySumToRound.ToString();
                         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ChangeSumPaymant"));
@@ -399,8 +399,8 @@ namespace Front.Control
                     };
                     break;
                 default:
-                    MoneySumToRound = (decimal)MW.MoneySum;
-                    SumUseWallet = 0;
+                    MoneySumToRound = (decimal)MW.MoneySum; //навпроти всього
+                    SumUseWallet = 0; //?
                     break;
             }
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MoneySumToRound"));

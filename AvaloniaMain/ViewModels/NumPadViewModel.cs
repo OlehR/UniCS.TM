@@ -13,6 +13,19 @@ namespace AvaloniaMain.ViewModels
 
         public event EventHandler<string>? NumberChanged;
         public event EventHandler? VisibilityChanged;
+        private string _Desciption = "";
+        public string Desciption
+        {
+            get=> _Desciption;
+            set
+            {
+                if(value != _Desciption)
+                {
+                    _Desciption= value;
+                    OnPropertyChanged(nameof(Desciption));
+                }
+            }
+        }
         private bool _enterEnable = false;
         public bool EnterEnable
         {
@@ -108,6 +121,15 @@ namespace AvaloniaMain.ViewModels
             Number = number;
             ExampleCommand = ReactiveCommand.Create<string>(PerformAction);
 
+        }
+        public NumPadViewModel(string number, bool Coma, string validationMask, string desc)
+
+        {
+            Desciption = desc;
+            ValidationMask = validationMask;
+            ComaEnable = Coma;
+            Number = number;
+            ExampleCommand = ReactiveCommand.Create<string>(PerformAction);
         }
 
         public NumPadViewModel()

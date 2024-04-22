@@ -1,5 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Media;
+using AvaloniaMain.Converters;
 using AvaloniaMain.Models;
 using AvaloniaMain.ViewModels.Model;
 using AvaloniaMain.Views;
@@ -78,7 +80,9 @@ namespace AvaloniaMain.ViewModels
         public bool IsWaitAdminTitle { get; set; }
         public ModelMID.DB.User AdminSSC { get; set; } = null;
         public Status<string> LastVerifyCode { get; set; } = new();
-      //  public Client client = new Client();
+        public SolidColorBrush IsReceiptPostponeNotNull { get { return new SolidColorBrush(ReceiptPostpone == null ? Colors.Transparent : Colors.Red); } }
+        public SolidColorBrush IsReceiptPostponeNotNullText { get { return new SolidColorBrush(ReceiptPostpone == null ? Colors.Black : Colors.White); } }
+        public bool IsReceiptPostpone { get { return ReceiptPostpone == null || (curReceipt == null || curReceipt.Wares == null || !curReceipt.Wares.Any()); } }
         public eSyncStatus DatabaseUpdateStatus { get; set; } = eSyncStatus.SyncFinishedSuccess;
         public BLF Blf;
 
@@ -295,6 +299,8 @@ namespace AvaloniaMain.ViewModels
         public ReactiveCommand<Unit, Unit> _showSearchView;
         public ReactiveCommand<Unit, Unit> _PostoponeCheckCommand;
         public ReactiveCommand<CustomWindow, Unit> _showCustomWindow;
+        public ReactiveCommand<Unit, Unit> _showPaymentWindow;
+
 
 
         public MainViewModel()
@@ -319,13 +325,14 @@ namespace AvaloniaMain.ViewModels
             _showCustomWindow = ReactiveCommand.Create<CustomWindow>(ShowCustomWindowAsync);
             _showMessage = ReactiveCommand.CreateFromTask(ShowMessageAsync);
             _PostoponeCheckCommand= ReactiveCommand.CreateFromTask(PostponeCheck);
-    
+            _showPaymentWindow = ReactiveCommand.CreateFromTask(PaymentWindow);
 
             NewReceipt();
             ListWares = new ObservableCollection<ReceiptWares>();
 
         }
         public ReactiveCommand<Unit, Unit> ShowUserInfo => _showUserInfo;
+        public ReactiveCommand<Unit, Unit> showPaymentWindow => _showPaymentWindow;
         public ReactiveCommand<Unit, Unit> ShowSearchView => _showSearchView;
         public ReactiveCommand<Unit, Unit> ShowNumPad => _showNumPad;
         public ReactiveCommand<Unit, Unit> ShowMessage => _showMessage;
@@ -347,14 +354,13 @@ namespace AvaloniaMain.ViewModels
                         ReceiptPostpone = curReceipt;
                         ShowMessage_VisibilityChanged(showMessgeViewModel, EventArgs.Empty);
                         Blf.NewReceipt();
-                        //  WaresList.Focus();
+                      
                     }
 
                 };
                 CurrentPage = showMessgeViewModel;
                 BackgroundVisibility = true;
                 CurrentPageVisibility = true;
-                
             }
             else
             {
@@ -373,7 +379,9 @@ namespace AvaloniaMain.ViewModels
                     showMessgeViewModel.VisibilityChanged += ShowMessage_VisibilityChanged;
                 }
             }
-           
+                 OnPropertyChanged(nameof(IsReceiptPostpone));
+                OnPropertyChanged(nameof(IsReceiptPostponeNotNull));
+            OnPropertyChanged(nameof(IsReceiptPostponeNotNullText));
         }
 
         private async Task ShowUser()
@@ -384,6 +392,22 @@ namespace AvaloniaMain.ViewModels
             BackgroundVisibility = true;
 
 
+        }
+        private async Task PaymentWindow()
+        {
+            CurrentPage = null;
+            var paymentviewmodel= new PaymentViewModel(this);
+            paymentviewmodel.VisibilityChanged += PaymentWindowVisibilityChanged;
+            CurrentPage = paymentviewmodel;
+           CurrentPageVisibility = true;
+            BackgroundVisibility = true;
+
+
+        }
+        private void PaymentWindowVisibilityChanged(object? sender, EventArgs? e)
+        {
+            CurrentPageVisibility = false;
+            Close();
         }
 
         private async Task ShowIssueCardAsync()
@@ -410,7 +434,7 @@ namespace AvaloniaMain.ViewModels
             CurrentPage = showMessgeViewModel;
             BackgroundVisibility = true;
             CurrentPageVisibility = true;
-
+            OnPropertyChanged(nameof(DatabaseUpdateStatus));
         }
         
         private void ShowCustomWindowAsync(CustomWindow pCw)
@@ -446,6 +470,7 @@ namespace AvaloniaMain.ViewModels
             CurrentPage = searchViewModel;
             SearchViewVisibility = true;
         }
+
 
         private void NumPadViewModel_NumberChanged(object? sender, string pResult)
         {

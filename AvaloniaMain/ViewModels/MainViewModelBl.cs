@@ -296,7 +296,13 @@ namespace AvaloniaMain.ViewModels
             OnPropertyChanged(nameof(CS));
             OnPropertyChanged(nameof(Client));
             OnPropertyChanged(nameof(MoneySum));
-          
+            OnPropertyChanged(nameof(IsReceiptPostpone));
+            OnPropertyChanged(nameof(IsReceiptPostponeNotNull));
+            OnPropertyChanged(nameof(IsReceiptPostponeNotNullText));
+
+            
+
+
             SetClient();
 
         }
