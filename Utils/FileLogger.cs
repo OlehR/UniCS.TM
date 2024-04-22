@@ -18,7 +18,7 @@ namespace Utils
         public static string PathLog
         {
             set { _PathLog = value; FileLogger.CreateDir(); }
-            get { return _PathLog ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Log"); } //AppDomain.CurrentDomain.BaseDirectory
+            get { return _PathLog ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Logs"); } //AppDomain.CurrentDomain.BaseDirectory
         }
 
 

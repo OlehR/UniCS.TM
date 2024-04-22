@@ -590,10 +590,10 @@ namespace ModelMID
         public List<ReceiptWares> ParseByWeight()
         {
             List<ReceiptWares> Res = new List<ReceiptWares>();
-            if (SumBonus==0 && IsWeight && !string.IsNullOrEmpty(History) && Math.Abs(HistoryQuantity.Sum() - Quantity) < 0.001m)
+            if (SumBonus == 0 && IsWeight && !string.IsNullOrEmpty(History) && Math.Abs(HistoryQuantity.Sum() - Quantity) < 0.001m)
             {
                 decimal Sum = 0m;
-                int i=0;
+                int i = 0;
                 var aa = Operators.Length;
                 foreach (var el in HistoryQuantity)
                 {
@@ -606,19 +606,22 @@ namespace ModelMID
                         NewEl.SumWallet = Math.Round(NewEl.Quantity * SumWallet / Quantity, 2, MidpointRounding.AwayFromZero);
                         NewEl.CodeOperator = (i < Operators.Length ? Operators[i] : 0);
                         Res.Add(NewEl);
-                        Sum += NewEl.SumTotal;                       
+                        Sum += NewEl.SumTotal;
                     }
                     i++;
                 }
                 // Коригування кінцевої суми.
                 if (SumTotal != Sum)
                 {
-                    Res.First().Delta +=  -Sum+ SumTotal;
-                }               
+                    Res.First().Delta += -Sum + SumTotal;
+                }
             }
             else
+            {
+                if (IsWeight && CodeOperator == 0 && Operators?.Any()==true)
+                    CodeOperator = Operators?.FirstOrDefault()??0;
                 Res.Add(this);
-
+            }
             return Res;
         }
 

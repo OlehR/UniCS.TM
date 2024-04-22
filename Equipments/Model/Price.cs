@@ -17,8 +17,13 @@ namespace Equipments.Model
         public eTypeWares TypeWares { get; set; }
         public decimal price { get; set; }
         public string StrPrice { get { return $"{price.ToString("n2", CultureInfo.InvariantCulture)} ₴"; } }
-        public bool IsEnable { get; set; }
-        public bool IsConfirmAge { get; set; } = false;        
+        bool _IsEnable;
+        public bool IsEnable { get { return _IsEnable; } set{_IsEnable=value; OnPropertyChanged(nameof(IsEnable)); } }
+        public bool IsConfirmAge { get; set; } = false;
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 
 }
