@@ -28,7 +28,8 @@ using System.Windows.Input;
 using Front.ViewModels;
 using QRCoder;
 using Equipments.Model;
-using Pr=Equipments.Model.Price;
+using Pr = Equipments.Model.Price;
+using ModernExpo.SelfCheckout.Utils;
 
 namespace Front
 {
@@ -53,7 +54,7 @@ namespace Front
         public Receipt curReceipt { get; set; } = null;
         public Receipt ReceiptPostpone = null;
         bool _IsWaitAdminTitle = false;
-        public bool IsWaitAdminTitle { get =>_IsWaitAdminTitle ; set{ _IsWaitAdminTitle = value;OnPropertyChanged(nameof(IsWaitAdminTitle)); } }
+        public bool IsWaitAdminTitle { get => _IsWaitAdminTitle; set { _IsWaitAdminTitle = value; OnPropertyChanged(nameof(IsWaitAdminTitle)); } }
         /// <summary>
         /// Можливість правки кількості для замовлень
         /// </summary>
@@ -142,6 +143,26 @@ namespace Front
         /// теперішня вага
         /// </summary>
         public double ControlScaleCurrentWeight { get; set; } = 0d;
+        /// <summary>
+        /// Чи показувати супутні товари
+        /// </summary>
+        public bool IsShowRelatedProducts
+        {
+            get
+            {
+                if (curReceipt?.GetLastWares?.IsWaresLink == true)
+                {
+                    RelatedProductsUC.AddRelatedProducts(curReceipt?.GetLastWares);
+                    ScrolDown();
+                    return true;
+                }
+                else
+                {
+                    ScrolDown();
+                    return false;
+                }
+            }
+        }
 
         public int QuantityCigarettes { get; set; } = 1;
         public BankTerminal FirstTerminal { get { return IsPresentFirstTerminal ? EF?.BankTerminal1 : null; } }
@@ -150,7 +171,7 @@ namespace Front
         public string GetBackgroundColor { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? "#ff9999" : "#FFFFFF"; } }
         public double GiveRest { get; set; } = 0;
         public string VerifyCode { get; set; } = string.Empty;
-        public Status<string> LastVerifyCode {get;set;}= new();
+        public Status<string> LastVerifyCode { get; set; } = new();
 
         public eSyncStatus DatabaseUpdateStatus { get; set; } = eSyncStatus.SyncFinishedSuccess;
 
@@ -188,7 +209,7 @@ namespace Front
             }
         }
         public InfoRemoteCheckout RemoteCheckout { get; set; } = new();
-       
+
         public WidthHeaderReceipt widthHeaderReceipt { get; set; }
         public void calculateWidthHeaderReceipt(eTypeMonitor TypeMonitor)
         {
@@ -288,7 +309,7 @@ namespace Front
                         break;
                     case eTypeAccess.LockSale:
                         IsWaitAdminTitle = false;
-        //WaitAdminTitle.Visibility = Visibility.Collapsed;
+                        //WaitAdminTitle.Visibility = Visibility.Collapsed;
                         tb.Inlines.Add("Зміна заблокована");
                         break;
                     case eTypeAccess.FixWeight:
@@ -303,7 +324,7 @@ namespace Front
                         break;
                     case eTypeAccess.ExciseStamp:
                         IsWaitAdminTitle = false;
-                       // WaitAdminTitle.Visibility = Visibility.Collapsed;
+                        // WaitAdminTitle.Visibility = Visibility.Collapsed;
                         tb.Inlines.Add(new Run("Відскануйте акцизну марку!") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red, FontSize = 32 });
                         break;
                     case eTypeAccess.UseBonus:
@@ -405,6 +426,8 @@ namespace Front
             ClientDetailsUC.Init(this);
             WeightWaresUC.Init(this);
             PaymentWindowKSO_UC.Init(this);
+            RelatedProductsUC.Init(this);
+
 
             //Провіряємо чи зміна відкрита.
             string BarCodeAdminSSC = Bl.db.GetConfig<string>("CodeAdminSSC");
@@ -538,12 +561,7 @@ namespace Front
                         WaresList.ItemsSource = ListWares;
                         if (WaresList.Items.Count > 0)
                             WaresList.SelectedIndex = WaresList.Items.Count - 1;
-                        if (VisualTreeHelper.GetChildrenCount(WaresList) > 0)
-                        {
-                            Border border = (Border)VisualTreeHelper.GetChild(WaresList, 0);
-                            ScrollViewer scrollViewer = (ScrollViewer)VisualTreeHelper.GetChild(border, 0);
-                            scrollViewer.ScrollToBottom();
-                        }
+                        ScrolDown();
                     }));
                     if (OldClient?.CodeClient != 0 && curReceipt.CodeClient != 0 && curReceipt.Client == null && OldClient.CodeClient == curReceipt.CodeClient)
                     {
@@ -587,6 +605,7 @@ namespace Front
             OnPropertyChanged(nameof(IsManyPayments));
             OnPropertyChanged(nameof(AmountManyPayments));
             OnPropertyChanged(nameof(SumTotalManyPayments));
+            OnPropertyChanged(nameof(IsShowRelatedProducts));
             SetClient();
 
         }
@@ -754,7 +773,7 @@ namespace Front
                         Task.Run(async () =>
                         {
                             ObservableCollection<Pr> prices = new();
-                            if (CurWares?.Prices?.Any()==true)
+                            if (CurWares?.Prices?.Any() == true)
                             {
                                 prices = new ObservableCollection<Pr>(CurWares.Prices.OrderByDescending(r => r.Price).Select(r => new Pr(r.Price, true, r.TypeWares)));
                                 // rrr.First().IsEnable = true;
@@ -825,7 +844,7 @@ namespace Front
                             break;
                         case eStateMainWindows.WaitInputPrice:
                             TypeAccessWait = eTypeAccess.ChoicePrice;
-                            if ( CurWares?.Prices?.Any()==true)
+                            if (CurWares?.Prices?.Any() == true)
                             {
                                 var rrr = new ObservableCollection<Pr>(CurWares.Prices.OrderByDescending(r => r.Price).Select(r => new Pr(r.Price, Access.GetRight(TypeAccessWait), r.TypeWares)));
                                 rrr.First().IsEnable = true;
@@ -981,6 +1000,7 @@ namespace Front
                             break;
                         case eStateMainWindows.WaitInput:
                             WaresList.Focus(); //Для сканера через імітацію клавіатури
+
                             break;
                         case eStateMainWindows.WaitOwnBag:
                             StartShopping.Visibility = Visibility.Collapsed;
@@ -1058,7 +1078,7 @@ namespace Front
             }
         }
 
-        
+
         private void _Delete(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
@@ -1275,7 +1295,7 @@ namespace Front
 
         private void ExciseStampNone(object sender, RoutedEventArgs e)
         {
-            Blf.ExciseStampNone();           
+            Blf.ExciseStampNone();
         }
 
         private void CustomWindowClickButton(object sender, RoutedEventArgs e)
@@ -1606,7 +1626,15 @@ namespace Front
                 BackgroundWaitAdmin.Visibility = Visibility.Collapsed;
             };
         }
-
+        public void ScrolDown()
+        {
+            if (VisualTreeHelper.GetChildrenCount(WaresList) > 0)
+            {
+                Border border = (Border)VisualTreeHelper.GetChild(WaresList, 0);
+                ScrollViewer scrollViewer = (ScrollViewer)VisualTreeHelper.GetChild(border, 0);
+                scrollViewer.ScrollToBottom();
+            }
+        }
         private void OnPropertyChanged(String info)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(info));

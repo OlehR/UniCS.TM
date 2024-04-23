@@ -1,30 +1,30 @@
-﻿using ModelMID.DB;
+﻿using Front.Equipments;
 using ModelMID;
+using ModelMID.DB;
+using ModernExpo.SelfCheckout.Utils;
 using SharedLib;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Imaging;
 using System.Windows.Controls.Primitives;
-using System.ComponentModel;
 using System.Windows.Media;
-using Front.Equipments;
-using System.Threading.Tasks;
-using static Front.MainWindow;
-using Utils;
+using System.Windows.Media.Imaging;
 
-namespace Front
+namespace Front.Control
 {
-
-    public partial class FindWaresWin : Window
+    /// <summary>
+    /// Interaction logic for RelatedProducts.xaml
+    /// </summary>
+    public partial class RelatedProducts : UserControl, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-
         BL Bl;
         BLF Blf;
+        public WDB_SQLite db;
         int CodeFastGroup = 0;
         int OffSet = 0;
         int MaxPage = 0;
@@ -46,25 +46,7 @@ namespace Front
                     return eTypeMonitor.AnotherTypeMonitor;
             }
         }
-        public int HeightKeyboard { get; set; } = 400;
-        private void CalculateHeightKeyboard()
-        {
-            switch (TypeMonitor)
-            {
-                case eTypeMonitor.HorisontalMonitorKSO:
-                    HeightKeyboard = 400;
-                    break;
-                case eTypeMonitor.VerticalMonitorKSO:
-                    HeightKeyboard = 400;
-                    break;
-                case eTypeMonitor.HorisontalMonitorRegular:
-                    HeightKeyboard = 320;
-                    break;
-                default:
-                    HeightKeyboard =320;
-                    break;
-            }
-        }
+
         public int WidthScreen { get { return (int)SystemParameters.PrimaryScreenWidth; } }
         public int HeightScreen { get { return (int)SystemParameters.PrimaryScreenHeight; } }
         /// <summary>
@@ -79,22 +61,29 @@ namespace Front
         /// Кількість колонок в пошуку (залежить від розміру екрану)
         /// </summary>
         int CountColumWares;
+        public string TextRelatedProducts { get => LastWares.IsNotNull() ? $"Додаткові товари до: {LastWares.NameWares}" : "Помилка"; }
+        public bool IsShowLinkWares { get; set; } = true;
+        ReceiptWares LastWares = new();
         MainWindow MW;
-        public FindWaresWin(MainWindow pMW)
+        public void Init(MainWindow mw)
         {
-            CalculateHeightKeyboard();
-            InitializeComponent();
-            WindowState = WindowState.Maximized;
-            //WindowStyle = WindowStyle.None;
-            CountRowWares = IsHorizontalScreen ? 5 : 2;
-            CountColumWares = IsHorizontalScreen ? 3 : 5;
-            CreateGridForWares(); //створення гріду з товарами
-            MW = pMW;
+            MW = mw;
             Bl = BL.GetBL;
             Blf = BLF.GetBLF;
-            KB.SetInput(WaresName);
+            CountRowWares = IsHorizontalScreen ? 5 : 2;
+            CountColumWares = IsHorizontalScreen ? 3 : 5;
+            db = WDB_SQLite.GetInstance;
+            CreateGridForWares(); //створення гріду з товарами
+        }
+        public void AddRelatedProducts(ReceiptWares lastWares)
+        {
+            LastWares = lastWares.IsNotNull() ? lastWares : new ReceiptWares();
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TextRelatedProducts)));
             NewB();
-
+        }
+        public RelatedProducts()
+        {
+            InitializeComponent();
         }
         void CreateGridForWares()
         {
@@ -108,18 +97,17 @@ namespace Front
             }
 
         }
-
-        string LastStr = null;
         void NewB()
         {
-            var WG=Blf.GetDataFindWares(CodeFastGroup, WaresName.Text, MW.curReceipt, ref OffSet, ref MaxPage, ref Limit);            
-
-            ButtonUp.IsEnabled = IsUp;
+            List<GW> WG = LastWares.WaresLink.ToList(); //Blf.GetDataFindWares(CodeFastGroup, string.Empty, MW.curReceipt, ref OffSet, ref MaxPage, ref Limit);
+            for (int i = 0; i < Limit * OffSet; i++)
+                WG.RemoveAt(0);
+            //ButtonUp.IsEnabled = IsUp;
+            MaxPage = WG.Count() / Limit;
             ButtonLeft.IsEnabled = (OffSet > 0);
             ButtonRight.IsEnabled = (OffSet < MaxPage);
             BildButtom(WG);
         }
-
         void BildButtom(IEnumerable<GW> pGW)
         {
             PictureGrid.Children.Clear();
@@ -150,7 +138,7 @@ namespace Front
                 if (File.Exists(el.Pictures))
                 {
                     ImageStackPanel.Source = new BitmapImage(new Uri(el.Pictures));
-                    ImageStackPanel.Height = TypeMonitor == eTypeMonitor.HorisontalMonitorRegular || TypeMonitor == eTypeMonitor.AnotherTypeMonitor ? 100 : 180; //180;
+                    ImageStackPanel.Height = TypeMonitor == eTypeMonitor.HorisontalMonitorRegular || TypeMonitor == eTypeMonitor.AnotherTypeMonitor ? 80 : 160; //180;
                     ImageStackPanel.Margin = new Thickness(5);
                     //Bt.Content = new Image
                     //{
@@ -182,8 +170,7 @@ namespace Front
                 else leng = 0;
 
                 var lengthText = 20;
-                NameWares.TextWrapping = TextWrapping.Wrap;
-                if (TypeMonitor ==  eTypeMonitor.HorisontalMonitorRegular || TypeMonitor == eTypeMonitor.AnotherTypeMonitor)
+                if (TypeMonitor == eTypeMonitor.HorisontalMonitorRegular || TypeMonitor == eTypeMonitor.AnotherTypeMonitor)
                 {
                     NameWares.FontSize = 12;
                     NameWares.Text = el.Name;//.Insert(lengthText, Environment.NewLine);
@@ -199,6 +186,7 @@ namespace Front
                 NameWares.HorizontalAlignment = HorizontalAlignment.Center;
                 NameWares.VerticalAlignment = VerticalAlignment.Center;
                 NameWares.Margin = new Thickness(5, 0, 5, 0);
+                NameWares.TextWrapping = TextWrapping.Wrap;
                 NameWares.TextAlignment = TextAlignment.Center;
                 if (el.Type == 1) //якщо група товарів тоді показати лише фото
                 {
@@ -238,7 +226,6 @@ namespace Front
                 if (j >= CountRowWares) break;
             }
         }
-
         private void BtClick(object sender, RoutedEventArgs e)
         {
             OffSet = 0;
@@ -251,42 +238,26 @@ namespace Front
                     NewB();
                 }
                 else
-                {                    
-                    Close( Gw, Blf.GetQuantity(WaresName.Text, Gw.CodeUnit));
-                }
-        }
-
-        private void Close(GW pGW, decimal pQuantity = 0m)
-        {
-            if (MW != null)
-            {
-                if (pGW.CodeUnit == Global.WeightCodeUnit && pQuantity == 0)
-                    MW.ShowWeightWares(pGW);
-                else
                 {
-                    MW.Blf.AddWares(pGW.Code, pGW.CodeUnit, pQuantity, 0m);
-                    if (MW.State == eStateMainWindows.WaitFindWares)
-                        MW.SetStateView(eStateMainWindows.WaitInput);
+                    //Додаємо супутній товар
+                    db.ReplaceWaresReceiptLink(new List<WaresReceiptLink> { new WaresReceiptLink
+                    {
+                        CodeWares = Gw.Code,
+                        Quantity = 1,
+                        CodeWaresTo = LastWares.CodeWares,
+                        CodePeriod = LastWares.CodePeriod,
+                        CodeReceipt = MW.curReceipt.CodeReceipt,
+                        CodeUnit = LastWares.CodeUnit,
+                        IdWorkplace = LastWares.IdWorkplace,
+                        IdWorkplacePay = LastWares.IdWorkplacePay,
+                        Order = LastWares.Order,
+                        Parent = LastWares.Parent,
+                        Sort = LastWares.Sort,
+
+                    } }) ;
+                    
+                    //Close(Gw, Blf.GetQuantity(WaresName.Text, Gw.CodeUnit));
                 }
-            }
-            KB.SetInput(null);
-            Close();
-        }
-
-        private async void WaresName_Changed(object sender, TextChangedEventArgs e)
-        {
-            await Task.Delay(1500);
-            NewB();
-        }
-
-        private void ClickButtonUp(object sender, RoutedEventArgs e)
-        {
-            if (CodeFastGroup > 0)
-            {
-                CodeFastGroup = 0;
-                OffSet = 0;
-                NewB();
-            }
         }
         private void ClickButtonLeft(object sender, RoutedEventArgs e)
         {
@@ -305,20 +276,21 @@ namespace Front
             }
         }
 
-        private void ClickButtonCancel(object sender, RoutedEventArgs e)
+        private void Hide_ShowWaresLink(object sender, RoutedEventArgs e)
         {
-            MW?.SetStateView(eStateMainWindows.WaitInput);
-            KB.SetInput(null);
-            Close();
-        }
+            Button btn = sender as Button;
+            switch (btn.Name)
+            {
+                case "ShowWaresLink":
+                    IsShowLinkWares = true;
+                    break;
+                case "HideWaresLink":
+                    IsShowLinkWares = false;
+                    break;
+            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsShowLinkWares)));
+            MW.ScrolDown();
 
-        private void _ButtonHelp(object sender, RoutedEventArgs e)
-        {
-            MW?.SetStateView(eStateMainWindows.WaitAdmin);
-            KB.SetInput(null);
-            Close();
         }
     }
-
-
 }

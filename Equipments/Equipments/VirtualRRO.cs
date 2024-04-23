@@ -384,14 +384,14 @@ namespace Front.Equipments.Implementation
                 TextReport.Add($"{pR.Fiscal.DT.ToString("dd/MM/yyyy H:mm")}");
 
                 if (pR.TypeReceipt == eTypeReceipt.Sale)
+                {
+                    TextReport.Add($"QR=>{pR.Fiscal.QR}");
                     TextReport.Add(PrintCenter("Фіскальний чек"));
+                }
             }
             if (pR.TypeReceipt == eTypeReceipt.Refund)
                 TextReport.Add(PrintCenter("Видатковий чек"));
-            else
-            {
-                TextReport.Add($"QR=>{pR.Fiscal.QR}");
-            }
+
             if (Printer == null)
             {
                 EF.PrintNoFiscalReceipt(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = Global.IdWorkPlace }, TextReport);
