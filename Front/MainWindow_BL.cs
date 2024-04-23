@@ -72,7 +72,7 @@ namespace Front
                             EquipmentInfo = rroStatus.Status.GetDescription();
                     }
 
-                   // if (EquipmentInfo != null)  
+                    // if (EquipmentInfo != null)  
                     //    PaymentWindowKSO_UC.EquipmentStatusInPayment.Text = EquipmentInfo; //TMP - не працює через гетер
                     OnPropertyChanged(nameof(EquipmentInfo));
                 }));
@@ -87,8 +87,8 @@ namespace Front
             //!!!TMP Костиль бо не працює підписка на рівні IssueCardUC
             EquipmentFront.OnBarCode += (pBarCode, pTypeBarCode) =>
             {
-                if(State == eStateMainWindows.WaitInputIssueCard)
-                  IssueCardUC.SetBarCode(pBarCode, pTypeBarCode);
+                if (State == eStateMainWindows.WaitInputIssueCard)
+                    IssueCardUC.SetBarCode(pBarCode, pTypeBarCode);
             };
 
             BLF.OnSetStateView += SetStateView;
@@ -126,8 +126,17 @@ namespace Front
                         else
                             EF.PutToDisplay(pReceipt, $"{CurWares.NameWaresReceipt}{Environment.NewLine}{CurWares.Quantity}x{CurWares.Price}={CurWares.SumTotal}", 0);
                     }
-                    // if (curReceipt?.Wares?.Count() == 0 && curReceipt.OwnBag==0d) CS.WaitClear();
-
+                    ////Вибір супутніх товарів
+                    //Dispatcher.BeginInvoke(new ThreadStart(() =>
+                    //{
+                    //    if (curReceipt?.GetLastWares?.IsWaresLink == true)
+                    //    {
+                    //        RelatedProductsUC.Visibility = Visibility.Visible;
+                    //        RelatedProductsUC.AddRelatedProducts(curReceipt?.GetLastWares);
+                    //    }
+                    //    else
+                    //        RelatedProductsUC.Visibility = Visibility.Collapsed;
+                    //}));
                     CS.StartWeightNewGoogs(curReceipt, IsDel ? CurWares : null);
                 }
                 catch (Exception e)
@@ -158,29 +167,29 @@ namespace Front
                     SetStateView(eStateMainWindows.WaitInput);
                 }
 
-                if( eSyncStatus.IncorectDiscountBarcode  == SyncInfo.Status || eSyncStatus.IncorectProductForDiscount == SyncInfo.Status)
+                if (eSyncStatus.IncorectDiscountBarcode == SyncInfo.Status || eSyncStatus.IncorectProductForDiscount == SyncInfo.Status)
                 {
                     CustomMessage.Show(SyncInfo.StatusDescription, "Увага!!!", eTypeMessage.Warning);
                 }
                 FileLogger.WriteLogMessage($"MainWindow.OnSyncInfoCollected Status=>{SyncInfo.Status} StatusDescription=>{SyncInfo.StatusDescription}", eTypeLog.Full);
-            }; 
-            
+            };
+
             Global.OnStatusChanged += (Status) =>
             {
                 ExchangeRateBar = Status.StringColor;
                 OnPropertyChanged(nameof(ExchangeRateBar));
-            };            
+            };
 
             Global.OnClientChanged += (pClient) =>
             {
-                if(curReceipt!=null && pClient!=null ) 
+                if (curReceipt != null && pClient != null)
                     curReceipt.Client = pClient;
 
                 var r = Dispatcher.BeginInvoke(new ThreadStart(() =>
                 {
                     NumericPad.Visibility = Visibility.Collapsed;
                     Background.Visibility = Visibility.Collapsed;
-                    BackgroundWares.Visibility = Visibility.Collapsed;                    
+                    BackgroundWares.Visibility = Visibility.Collapsed;
                     //if (Client != null) ShowClientBonus.Visibility = Visibility.Visible;
                 }
                 ));
@@ -195,7 +204,7 @@ namespace Front
                 FileLogger.WriteLogMessage($"MainWindow.OnClientChanged(CodeReceipt=>{curReceipt?.CodeReceipt} Client.CodeClient=>{Client.CodeClient} Client.Wallet=> {pClient.Wallet} SumBonus=>{pClient.SumBonus})", eTypeLog.Full);
             };
 
-            Global.Message += (pMessage, pTypeMessage) => CustomMessage.Show(pMessage, "Увага!", pTypeMessage);               
+            Global.Message += (pMessage, pTypeMessage) => CustomMessage.Show(pMessage, "Увага!", pTypeMessage);
 
             Bl.OnAdminBarCode += (pUser) =>
             {
@@ -309,7 +318,7 @@ namespace Front
                     }
                     break;
                 case eTypeAccess.DelReciept:
-                    VR.SendMessage(Global.IdWorkPlace, "", 0, 0, curReceipt?.SumTotal??0, VR.eTypeVRMessage.DelReceipt);
+                    VR.SendMessage(Global.IdWorkPlace, "", 0, 0, curReceipt?.SumTotal ?? 0, VR.eTypeVRMessage.DelReceipt);
                     Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
                     SetCurReceipt(null);
                     TypeAccessWait = eTypeAccess.NoDefine;
@@ -358,7 +367,7 @@ namespace Front
             SetStateView(eStateMainWindows.AdminPanel);
         }
 
-        public void ShowWeightWares( GW pGV = null)
+        public void ShowWeightWares(GW pGV = null)
         {
             if (pGV != null)
             {
@@ -378,13 +387,13 @@ namespace Front
                     {
                         Source = new BitmapImage(new Uri(CurW.Pictures)),
                         VerticalAlignment = VerticalAlignment.Center
-                    };                    
+                    };
                     Grid.SetRow(im, 1);
                     WeightWaresUC.GridWeightWares.Children.Add(im);
                 }
                 SetStateView(eStateMainWindows.WaitWeight);
                 return;
-            }            
+            }
         }
 
         /*public void PayAndPrint()

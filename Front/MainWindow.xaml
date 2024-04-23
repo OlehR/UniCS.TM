@@ -106,8 +106,8 @@
             </Border.Effect>
             <uc:NumericPad x:Name="UC_NumericPad"   />
         </Border>
-  
-       
+
+
 
         <!--Верхня панель статусу-->
         <Border Grid.Row="0" Margin="5" Background="White"  >
@@ -528,320 +528,358 @@
         <Border Grid.Row="1" Background="{Binding ExchangeRateBar, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}"></Border>
 
-        
+
         <Grid Grid.Row="2" Grid.RowSpan="2" Panel.ZIndex="2">
-            <!--Основний грід товарів-->
-            <ListView Name="WaresList"  
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <!--Основний грід товарів-->
+                <ListView Name="WaresList"  
                      HorizontalContentAlignment="Stretch"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                <ListView.Style>
-                    <Style TargetType="ListView">
-                        <Setter Property="Foreground" Value="Black"/>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="ListView">
-                                    <Border Name="Border">
-                                        <!--Фон товарів-->
-                                        <Border.Background>
-                                            <SolidColorBrush Color="{Binding GetBackgroundColor, RelativeSource={RelativeSource 
+                    <ListView.Style>
+                        <Style TargetType="ListView">
+                            <Setter Property="Foreground" Value="Black"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListView">
+                                        <Border Name="Border">
+                                            <!--Фон товарів-->
+                                            <Border.Background>
+                                                <SolidColorBrush Color="{Binding GetBackgroundColor, RelativeSource={RelativeSource 
                      Mode=FindAncestor, AncestorType=Window}}" />
-                                        </Border.Background>
-                                        <Border.BorderBrush>
-                                            <SolidColorBrush Color="{Binding GetBackgroundColor, RelativeSource={RelativeSource 
+                                            </Border.Background>
+                                            <Border.BorderBrush>
+                                                <SolidColorBrush Color="{Binding GetBackgroundColor, RelativeSource={RelativeSource 
                      Mode=FindAncestor, AncestorType=Window}}" />
-                                        </Border.BorderBrush>
-                                        <ScrollViewer Style="{DynamicResource {x:Static GridView.GridViewScrollViewerStyleKey}}">
-                                            <ItemsPresenter />
-                                        </ScrollViewer>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </ListView.Style>
+                                            </Border.BorderBrush>
+                                            <ScrollViewer Style="{DynamicResource {x:Static GridView.GridViewScrollViewerStyleKey}}">
+                                                <ItemsPresenter />
+                                            </ScrollViewer>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListView.Style>
 
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn  Header="{DynamicResource markWareName}" Width="{Binding widthHeaderReceipt.WidthName, RelativeSource={RelativeSource 
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn  Header="{DynamicResource markWareName}" Width="{Binding widthHeaderReceipt.WidthName, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Vertical" Grid.Column="0" HorizontalAlignment="Left">
-                                        <TextBlock Margin="0"   Text="{Binding GetStrWaresReceiptPromotion}" Visibility="{Binding IsReceiptPromotion,Converter={StaticResource BoolToHiddenConverter}}">
-                                            <TextBlock.Style>
-                                                <Style TargetType="{x:Type TextBlock}">
-                                                    <Setter Property="FontSize" Value="12"/>
-                                                    <Setter Property="FontWeight" Value="SemiBold"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
-                                                                     Value="HorisontalMonitorRegular">
-                                                            <Setter Property="FontSize" Value="10" />
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
-                                        <TextBlock Margin="0"   Text="{Binding NameWares}" TextWrapping="Wrap"  FontFamily="Roboto Condensed" FontWeight="DemiBold">
-                                            <TextBlock.Style>
-                                                <Style TargetType="{x:Type TextBlock}">
-                                                    <Setter Property="FontSize" Value="35"/>
-                                                    <Setter Property="FontWeight" Value="SemiBold"/>
-
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
-                                                                     Value="HorisontalMonitorRegular">
-                                                            <Setter Property="FontSize" Value="24" />
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-
-
-                        <GridViewColumn  Header=""  Width="{Binding widthHeaderReceipt.WidthWastebasket, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Button x:Name="Delete" Click="_Delete">
-                                        <Button.Content>
-                                            <Image  Margin="5"  Source="icons\delete.png"/>
-                                        </Button.Content>
-                                        <Button.Style>
-                                            <Style BasedOn="{StaticResource WhiteButton}" TargetType="Button">
-                                                <Setter Property="IsEnabled" Value="False"/>
-                                                <Setter Property="MaxHeight" Value="90" />
-                                                <Setter Property="MaxWidth" Value="90" />
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsDel}" Value="True">
-                                                        <Setter Property="IsEnabled" Value="True"/>
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
-                                                                     Value="HorisontalMonitorRegular">
-                                                        <Setter Property="MaxWidth" Value="55" />
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
-                                                                     Value="VerticalMonitorKSO">
-                                                        <Setter Property="MaxWidth" Value="70" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Button.Style>
-                                    </Button>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-
-
-
-                        <GridViewColumn  Header="{DynamicResource markWareQuantity}" Width="{Binding widthHeaderReceipt.WidthCountWares, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Button x:Name="Minus" Click="BtnClickMinusPlus" Grid.Column="1">
-                                            <Button.Content>
-                                                <Image Margin="15"  Source="icons\minus.png">
-                                                    <Image.Style>
-                                                        <Style TargetType="{x:Type Image}">
-                                                            <Setter Property="MaxWidth" Value="60" />
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
-                                                                     Value="HorisontalMonitorRegular">
-                                                                    <Setter Property="MaxWidth" Value="20" />
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </Image.Style>
-                                                </Image>
-                                            </Button.Content>
-                                            <Button.Style>
-                                                <Style BasedOn="{StaticResource WhiteButton}" TargetType="Button">
-                                                    <Setter Property="IsEnabled" Value="False"/>
-                                                    <Setter Property="MaxWidth" Value="55" />
-                                                    <Setter Property="MaxHeight" Value="55" />
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
-                                                                     Value="HorisontalMonitorRegular">
-                                                            <Setter Property="MaxHeight" Value="55" />
-                                                            <Setter Property="MaxWidth" Value="55" />
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
-                                                                     Value="VerticalMonitorKSO">
-                                                            <Setter Property="MaxWidth" Value="70" />
-                                                            <Setter Property="MaxHeight" Value="70" />
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
-                                                                     Value="HorisontalMonitorKSO">
-                                                            <Setter Property="MaxWidth" Value="90" />
-                                                            <Setter Property="MaxHeight" Value="90" />
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding IsMinus}" Value="True">
-                                                            <Setter Property="IsEnabled" Value="True"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding ElementName=QuantityText, Path=Text}" Value="1">
-                                                            <Setter Property="IsEnabled" Value="False"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Button.Style>
-                                        </Button>
-
-                                        <Button Grid.Column="2" Background="Transparent" BorderBrush="Transparent"
-                                            Click="_ChangeCountWares" >
-                                            <Button.Style>
-                                                <Style BasedOn="{StaticResource WhiteNotBorderButton}" TargetType="Button">
-                                                    <Setter Property="IsEnabled" Value="True"/>
-                                                    <Setter Property="Width" Value="55" />
-                                                    <Setter Property="Height" Value="55" />
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
-                                                                     Value="HorisontalMonitorRegular">
-                                                            <Setter Property="Height" Value="55" />
-                                                            <Setter Property="Width" Value="55" />
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
-                                                                     Value="VerticalMonitorKSO">
-                                                            <Setter Property="Width" Value="70" />
-                                                            <Setter Property="Height" Value="70" />
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
-                                                                     Value="HorisontalMonitorKSO">
-                                                            <Setter Property="Width" Value="90" />
-                                                            <Setter Property="Height" Value="90" />
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding IsPlus}" Value="True">
-                                                            <Setter Property="IsEnabled" Value="True" />
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding IsPlus}" Value="False">
-                                                            <Setter Property="IsEnabled" Value="False" />
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding IsCheckReturn, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                                            <Setter Property="IsEnabled" Value="True" />
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding IsOrderReceipt, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                                            <Setter Property="IsEnabled" Value="True" />
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Button.Style>
-
-                                            <TextBlock x:Name="QuantityText" Grid.Column="2">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Vertical" Grid.Column="0" HorizontalAlignment="Left">
+                                            <TextBlock Margin="0"   Text="{Binding GetStrWaresReceiptPromotion}" Visibility="{Binding IsReceiptPromotion,Converter={StaticResource BoolToHiddenConverter}}">
                                                 <TextBlock.Style>
-                                                    <Style TargetType="TextBlock">
-                                                        <Setter Property="Margin" Value="10"></Setter>
-                                                        <Setter Property="FontSize" Value="35"></Setter>
-                                                        <Setter Property="FontWeight" Value="Medium"></Setter>
-                                                        <Setter Property="HorizontalAlignment" Value="Center"></Setter>
-                                                        <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                                                        <Setter Property="Text" Value="{Binding Quantity}"/>
+                                                    <Style TargetType="{x:Type TextBlock}">
+                                                        <Setter Property="FontSize" Value="12"/>
+                                                        <Setter Property="FontWeight" Value="SemiBold"/>
                                                         <Style.Triggers>
                                                             <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
                                                                      Value="HorisontalMonitorRegular">
-                                                                <Setter Property="FontSize" Value="24" />
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding IsWeight}" Value="True">
-                                                                <Setter Property="Text" Value="1"/>
+                                                                <Setter Property="FontSize" Value="10" />
                                                             </DataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
                                                 </TextBlock.Style>
                                             </TextBlock>
-                                        </Button>
+                                            <TextBlock Margin="0"   Text="{Binding NameWares}" TextWrapping="Wrap"  FontFamily="Roboto Condensed" FontWeight="DemiBold">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="{x:Type TextBlock}">
+                                                        <Setter Property="FontSize" Value="35"/>
+                                                        <Setter Property="FontWeight" Value="SemiBold"/>
 
-                                        <Button x:Name="Plus" Click="BtnClickMinusPlus" Grid.Column="3">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
+                                                                     Value="HorisontalMonitorRegular">
+                                                                <Setter Property="FontSize" Value="24" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+
+                            <GridViewColumn  Header=""  Width="{Binding widthHeaderReceipt.WidthWastebasket, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button x:Name="Delete" Click="_Delete">
                                             <Button.Content>
-                                                <Image Margin="15"  Source="icons\plus.png"></Image>
+                                                <Image  Margin="5"  Source="icons\delete.png"/>
                                             </Button.Content>
                                             <Button.Style>
                                                 <Style BasedOn="{StaticResource WhiteButton}" TargetType="Button">
                                                     <Setter Property="IsEnabled" Value="False"/>
-                                                    <Setter Property="MaxWidth" Value="55" />
-                                                    <Setter Property="MaxHeight" Value="55" />
+                                                    <Setter Property="MaxHeight" Value="90" />
+                                                    <Setter Property="MaxWidth" Value="90" />
                                                     <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsDel}" Value="True">
+                                                            <Setter Property="IsEnabled" Value="True"/>
+                                                        </DataTrigger>
                                                         <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
                                                                      Value="HorisontalMonitorRegular">
-                                                            <Setter Property="MaxHeight" Value="55" />
                                                             <Setter Property="MaxWidth" Value="55" />
                                                         </DataTrigger>
                                                         <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
                                                                      Value="VerticalMonitorKSO">
                                                             <Setter Property="MaxWidth" Value="70" />
-                                                            <Setter Property="MaxHeight" Value="70" />
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
-                                                                     Value="HorisontalMonitorKSO">
-                                                            <Setter Property="MaxWidth" Value="90" />
-                                                            <Setter Property="MaxHeight" Value="90" />
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding IsPlus}" Value="True">
-                                                            <Setter Property="IsEnabled" Value="True"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
                                             </Button.Style>
                                         </Button>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
 
-                        <GridViewColumn  Header="{DynamicResource markWareWeight}" Width="{Binding widthHeaderReceipt.WidthWeight, RelativeSource={RelativeSource 
+
+
+                            <GridViewColumn  Header="{DynamicResource markWareQuantity}" Width="{Binding widthHeaderReceipt.WidthCountWares, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <StackPanel Grid.Column="2" HorizontalAlignment="Left">
-                                        <TextBlock >
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="Margin" Value="10"></Setter>
-                                                    <Setter Property="FontSize" Value="18"></Setter>
-                                                    <Setter Property="HorizontalAlignment" Value="Left"></Setter>
-                                                    <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                                                    <Setter Property="FontWeight" Value="DemiBold"></Setter>
-                                                    <Setter Property="Text" Value="{Binding WeightBrutto}"/>
-                                                    <Setter Property="FontWeight" Value="SemiBold"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding IsWeight}" Value="True">
-                                                            <Setter Property="Text" Value="{Binding Quantity}"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
-                                                            <Setter Property="FontSize" Value="25" />
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="VerticalMonitorKSO">
-                                                            <Setter Property="FontSize" Value="20" />
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
-                                                            <Setter Property="FontSize" Value="14" />
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
-                                        <TextBlock >
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="Margin" Value="10"></Setter>
-                                                    <Setter Property="FontSize" Value="18"></Setter>
-                                                    <Setter Property="HorizontalAlignment" Value="Left"></Setter>
-                                                    <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                                                    <Setter Property="FontWeight" Value="DemiBold"></Setter>
-                                                    <Setter Property="Text" Value="{Binding FixedWeightInKg}"/>
-                                                    <Style.Triggers>
-
-                                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button x:Name="Minus" Click="BtnClickMinusPlus" Grid.Column="1">
+                                                <Button.Content>
+                                                    <Image Margin="15"  Source="icons\minus.png">
+                                                        <Image.Style>
+                                                            <Style TargetType="{x:Type Image}">
+                                                                <Setter Property="MaxWidth" Value="60" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
                                                                      Value="HorisontalMonitorRegular">
-                                                            <Setter Property="FontSize" Value="24" />
-                                                        </DataTrigger>
+                                                                        <Setter Property="MaxWidth" Value="20" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Image.Style>
+                                                    </Image>
+                                                </Button.Content>
+                                                <Button.Style>
+                                                    <Style BasedOn="{StaticResource WhiteButton}" TargetType="Button">
+                                                        <Setter Property="IsEnabled" Value="False"/>
+                                                        <Setter Property="MaxWidth" Value="55" />
+                                                        <Setter Property="MaxHeight" Value="55" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
+                                                                     Value="HorisontalMonitorRegular">
+                                                                <Setter Property="MaxHeight" Value="55" />
+                                                                <Setter Property="MaxWidth" Value="55" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
+                                                                     Value="VerticalMonitorKSO">
+                                                                <Setter Property="MaxWidth" Value="70" />
+                                                                <Setter Property="MaxHeight" Value="70" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
+                                                                     Value="HorisontalMonitorKSO">
+                                                                <Setter Property="MaxWidth" Value="90" />
+                                                                <Setter Property="MaxHeight" Value="90" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding IsMinus}" Value="True">
+                                                                <Setter Property="IsEnabled" Value="True"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding ElementName=QuantityText, Path=Text}" Value="1">
+                                                                <Setter Property="IsEnabled" Value="False"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                            </Button>
 
+                                            <Button Grid.Column="2" Background="Transparent" BorderBrush="Transparent"
+                                            Click="_ChangeCountWares" >
+                                                <Button.Style>
+                                                    <Style BasedOn="{StaticResource WhiteNotBorderButton}" TargetType="Button">
+                                                        <Setter Property="IsEnabled" Value="True"/>
+                                                        <Setter Property="Width" Value="55" />
+                                                        <Setter Property="Height" Value="55" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
+                                                                     Value="HorisontalMonitorRegular">
+                                                                <Setter Property="Height" Value="55" />
+                                                                <Setter Property="Width" Value="55" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
+                                                                     Value="VerticalMonitorKSO">
+                                                                <Setter Property="Width" Value="70" />
+                                                                <Setter Property="Height" Value="70" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
+                                                                     Value="HorisontalMonitorKSO">
+                                                                <Setter Property="Width" Value="90" />
+                                                                <Setter Property="Height" Value="90" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding IsPlus}" Value="True">
+                                                                <Setter Property="IsEnabled" Value="True" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding IsPlus}" Value="False">
+                                                                <Setter Property="IsEnabled" Value="False" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding IsCheckReturn, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                                                <Setter Property="IsEnabled" Value="True" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding IsOrderReceipt, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                                                <Setter Property="IsEnabled" Value="True" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+
+                                                <TextBlock x:Name="QuantityText" Grid.Column="2">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Margin" Value="10"></Setter>
+                                                            <Setter Property="FontSize" Value="35"></Setter>
+                                                            <Setter Property="FontWeight" Value="Medium"></Setter>
+                                                            <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+                                                            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                                            <Setter Property="Text" Value="{Binding Quantity}"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
+                                                                     Value="HorisontalMonitorRegular">
+                                                                    <Setter Property="FontSize" Value="24" />
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding IsWeight}" Value="True">
+                                                                    <Setter Property="Text" Value="1"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </Button>
+
+                                            <Button x:Name="Plus" Click="BtnClickMinusPlus" Grid.Column="3">
+                                                <Button.Content>
+                                                    <Image Margin="15"  Source="icons\plus.png"></Image>
+                                                </Button.Content>
+                                                <Button.Style>
+                                                    <Style BasedOn="{StaticResource WhiteButton}" TargetType="Button">
+                                                        <Setter Property="IsEnabled" Value="False"/>
+                                                        <Setter Property="MaxWidth" Value="55" />
+                                                        <Setter Property="MaxHeight" Value="55" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
+                                                                     Value="HorisontalMonitorRegular">
+                                                                <Setter Property="MaxHeight" Value="55" />
+                                                                <Setter Property="MaxWidth" Value="55" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
+                                                                     Value="VerticalMonitorKSO">
+                                                                <Setter Property="MaxWidth" Value="70" />
+                                                                <Setter Property="MaxHeight" Value="70" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
+                                                                     Value="HorisontalMonitorKSO">
+                                                                <Setter Property="MaxWidth" Value="90" />
+                                                                <Setter Property="MaxHeight" Value="90" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding IsPlus}" Value="True">
+                                                                <Setter Property="IsEnabled" Value="True"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                            </Button>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn  Header="{DynamicResource markWareWeight}" Width="{Binding widthHeaderReceipt.WidthWeight, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Grid.Column="2" HorizontalAlignment="Left">
+                                            <TextBlock >
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Margin" Value="10"></Setter>
+                                                        <Setter Property="FontSize" Value="18"></Setter>
+                                                        <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+                                                        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                                        <Setter Property="FontWeight" Value="DemiBold"></Setter>
+                                                        <Setter Property="Text" Value="{Binding WeightBrutto}"/>
+                                                        <Setter Property="FontWeight" Value="SemiBold"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsWeight}" Value="True">
+                                                                <Setter Property="Text" Value="{Binding Quantity}"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
+                                                                <Setter Property="FontSize" Value="25" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="VerticalMonitorKSO">
+                                                                <Setter Property="FontSize" Value="20" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                                <Setter Property="FontSize" Value="14" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                            <TextBlock >
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Margin" Value="10"></Setter>
+                                                        <Setter Property="FontSize" Value="18"></Setter>
+                                                        <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+                                                        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                                        <Setter Property="FontWeight" Value="DemiBold"></Setter>
+                                                        <Setter Property="Text" Value="{Binding FixedWeightInKg}"/>
+                                                        <Style.Triggers>
+
+                                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
+                                                                     Value="HorisontalMonitorRegular">
+                                                                <Setter Property="FontSize" Value="24" />
+                                                            </DataTrigger>
+
+                                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
+                                                                <Setter Property="FontSize" Value="25" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="VerticalMonitorKSO">
+                                                                <Setter Property="FontSize" Value="20" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                                <Setter Property="FontSize" Value="14" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn  Header="{DynamicResource markWarePrice}" Width="{Binding widthHeaderReceipt.WidthPrice, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Grid.Column="3" Text="{Binding Price, StringFormat=0.00 }"  >
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                                    <Setter Property="FontWeight" Value="DemiBold"/>
+                                                    <Setter Property="FontSize" Value="18" />
+                                                    <Style.Triggers>
                                                         <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
                                                             <Setter Property="FontSize" Value="25" />
@@ -852,109 +890,93 @@
                                                         </DataTrigger>
                                                         <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
-                                                            <Setter Property="FontSize" Value="14" />
+                                                            <Setter Property="FontSize" Value="18" />
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
                                             </TextBlock.Style>
                                         </TextBlock>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
 
-                        <GridViewColumn  Header="{DynamicResource markWarePrice}" Width="{Binding widthHeaderReceipt.WidthPrice, RelativeSource={RelativeSource 
+                            <GridViewColumn  Header="{DynamicResource markWareInAll}" Width="{Binding widthHeaderReceipt.WidthTotalPrise, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Grid.Column="3" Text="{Binding Price, StringFormat=0.00 }"  >
-                                        <TextBlock.Style>
-                                            <Style TargetType="TextBlock">
-                                                <Setter Property="HorizontalAlignment" Value="Center"/>
-                                                <Setter Property="VerticalAlignment" Value="Center"/>
-                                                <Setter Property="FontWeight" Value="DemiBold"/>
-                                                <Setter Property="FontSize" Value="18" />
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
-                                                        <Setter Property="FontSize" Value="25" />
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="VerticalMonitorKSO">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <TextBlock Grid.Column="5" Text="{Binding SumTotal, StringFormat=0.00}" FontWeight="Bold" >
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
                                                         <Setter Property="FontSize" Value="20" />
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
-                                                        <Setter Property="FontSize" Value="18" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-
-                        <GridViewColumn  Header="{DynamicResource markWareInAll}" Width="{Binding widthHeaderReceipt.WidthTotalPrise, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <StackPanel Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                        <TextBlock Grid.Column="5" Text="{Binding SumTotal, StringFormat=0.00}" FontWeight="Bold" >
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="FontSize" Value="20" />
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
-                                                            <Setter Property="FontSize" Value="30" />
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                                                <Setter Property="FontSize" Value="30" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="VerticalMonitorKSO">
-                                                            <Setter Property="FontSize" Value="24" />
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                                                <Setter Property="FontSize" Value="24" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
-                                                            <Setter Property="FontSize" Value="20" />
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
-                                        <TextBlock    FontWeight="DemiBold" Foreground="Red">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="Text" Value="{Binding Discount, StringFormat=-0.00}"/>
-                                                    <Setter Property="FontSize" Value="12" />
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Discount}" Value="0">
-                                                            <Setter Property="Text" Value=""/>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                                                <Setter Property="FontSize" Value="20" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                            <TextBlock    FontWeight="DemiBold" Foreground="Red">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Text" Value="{Binding Discount, StringFormat=-0.00}"/>
+                                                        <Setter Property="FontSize" Value="12" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Discount}" Value="0">
+                                                                <Setter Property="Text" Value=""/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
-                                                            <Setter Property="FontSize" Value="20" />
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                                                <Setter Property="FontSize" Value="20" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="VerticalMonitorKSO">
-                                                            <Setter Property="FontSize" Value="15" />
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                                                <Setter Property="FontSize" Value="15" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
-                                                            <Setter Property="FontSize" Value="12" />
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                    </GridView>
-                </ListView.View>
-            </ListView>
+                                                                <Setter Property="FontSize" Value="12" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+                <!-- Супутні товари -->
+                <uc:RelatedProducts Grid.Row="1"
+                                    x:Name="RelatedProductsUC" VerticalAlignment="Bottom"
+                                    Grid.ZIndex="4" >
+                    <uc:RelatedProducts.Style>
+                        <Style TargetType="{x:Type uc:RelatedProducts}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsShowRelatedProducts, RelativeSource={RelativeSource 
+                                    Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </uc:RelatedProducts.Style>
+                </uc:RelatedProducts>
+            </Grid>
 
-           
+
             <!--ФОН-->
             <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
                  Grid.Row="0" Grid.RowSpan="6"
@@ -2226,6 +2248,7 @@ Mode=FindAncestor, AncestorType=Window}}"/>
               Grid.Column="0" Grid.ColumnSpan="4" 
               x:Name="PaymentWindowKSO_UC" VerticalAlignment="Stretch" 
               Grid.ZIndex="4" />
+
         <!--Додати пакети-->
         <uc:AddPackagesBag Grid.Row="0" Grid.RowSpan="5" Visibility="Collapsed"
                               Grid.Column="0" Grid.ColumnSpan="4" 
