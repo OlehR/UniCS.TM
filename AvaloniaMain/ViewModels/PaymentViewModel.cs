@@ -104,7 +104,7 @@ namespace AvaloniaMain.ViewModels
         public PaymentViewModel(MainViewModel mW)
         {
             MW = mW;
-            numpad = new NumPadViewModel("", true, "", "123");
+            
             UpdatePaymentWindow();
             buttonRoundPressCommand = ReactiveCommand.Create<string>(buttonRoundPress);
             ChangeSumButtonCommand = ReactiveCommand.Create<string>(ChangeSumButton);
@@ -225,16 +225,33 @@ namespace AvaloniaMain.ViewModels
                     case "enterAmount":
                     var np = new NumPadViewModel("", true, "", $"максимальна сума списання {SumMaxWallet}");
                     np.VisibilityChanged += CloseNumPad;
+                    np.NumberChanged += (sender, result) =>
+                    {
 
-                    /*     PaymentWindowUC_NumericPad.Desciption = $"Максимальна сума списання: {SumMaxWallet}";
-                         PaymentWindowUC_NumericPad.ValidationMask = "";
-                         PaymentWindowUC_NumericPad.Result = "";
-                         PaymentWindowUC_NumericPad.IsEnableComma = true;
-                         PaymentWindow_NumericPad.Visibility = Visibility.Visible;
-                         BackgroundPayment.Visibility = Visibility.Visible;
-                    np.NumberChanged +=;*/
+                        tmp = string.IsNullOrEmpty(result) ? 0 : Convert.ToDecimal(result);
+                   
+                        
+                        if (SumMaxWallet < tmp)
+                        {
+                            tmp = SumMaxWallet;
+                           // MW.CustomMessage.Show($"Вказана сума більша за максимально можлив", "Помилка!", eTypeMessage.Error);
+                            //MW.ShowErrorMessage("Вказана сума більша за максимально можливу");
+                        }
 
+                        MoneySumToRound = MoneySum - tmp; // сума до якої ми округлюємо стоїть навпроти всього:
+                        SumUseWallet = -tmp;
+                        ChangeSumPaymant = MoneySumToRound.ToString();
+                        OnPropertyChanged(nameof(ChangeSumPaymant));
+                        OnPropertyChanged(nameof(MoneySumToRound));
+                        OnPropertyChanged(nameof(IsCashPayment));
+                      
+                        CalculateReturn();
+                    };
+
+
+                    numpad = np;
                     Visibility = true;
+                
                     break;
                 default:
                     MoneySumToRound = (decimal)MW.MoneySum;
@@ -255,6 +272,7 @@ namespace AvaloniaMain.ViewModels
                 RestMoney = 0;
             OnPropertyChanged(nameof(RestMoney));
         }
+
         public decimal RoundingDownPrice(decimal price, decimal precision)
         {
             price = Convert.ToInt32(Math.Round(price * 100, 3));
@@ -267,6 +285,7 @@ namespace AvaloniaMain.ViewModels
             SumUseWallet = MoneySumToRound - MoneySum;
             return MoneySumToRound;
         }
+
         public decimal RoundingUpPrice(decimal price, decimal precision)
         {
             price = Convert.ToInt32(Math.Round(price * 100, 3));
@@ -282,6 +301,8 @@ namespace AvaloniaMain.ViewModels
         {
             Visibility = false;
             numpad = null;
+            OnPropertyChanged(nameof(numpad));
+            OnPropertyChanged(nameof(Visibility));
         }
        
         private async Task Close()

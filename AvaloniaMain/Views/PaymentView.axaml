@@ -185,7 +185,7 @@
 					<Button Command="{Binding buttonRoundPressCommand}" CommandParameter="plus10" FontWeight="Bold" Grid.Row="0" Grid.Column="5" Height="50" CornerRadius="10" HorizontalAlignment="Center" Width="120" >
 						<TextBlock Text="Заокруглити до 10 грн."  Width="120" VerticalAlignment="Center" TextWrapping="Wrap" Margin="12,0,0,0" ></TextBlock>
 					</Button>
-					<Button FontWeight="Bold"  Grid.Row="1" Grid.Column="5" Height="50" CornerRadius="10" Background="#419e08" HorizontalAlignment="Center" Width="120"  >
+					<Button Command="{Binding buttonRoundPressCommand}" CommandParameter="enterAmount" FontWeight="Bold"  Grid.Row="1" Grid.Column="5" Height="50" CornerRadius="10" Background="#419e08" HorizontalAlignment="Center" Width="120"  >
 						<TextBlock  HorizontalAlignment="Center" Foreground="White" Text="Ввести суму"  VerticalAlignment="Center" TextWrapping="Wrap"  ></TextBlock>
 					</Button>
 				</Grid>
