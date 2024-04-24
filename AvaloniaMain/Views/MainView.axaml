@@ -139,7 +139,7 @@
 		
 			<Grid Height="90" ColumnDefinitions="1070,100,260,130,140,100">
 				<StackPanel>
-					<TextBlock TextWrapping="Wrap"  Margin="20,0,0,0" Height="20" FontSize="10" FontWeight="Medium" Text="{Binding GetStrWaresReceiptPromotion}" />
+					<TextBlock TextWrapping="Wrap" IsVisible="{Binding DataContext.IsUserActive, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}" Margin="20,0,0,0" Height="20" FontSize="10" FontWeight="Medium" Text="{Binding GetStrWaresReceiptPromotion}" />
 
 					<TextBlock VerticalAlignment="Center" TextWrapping="Wrap"  Margin="20,0,0,0" Height="80" FontSize="32" FontWeight="Bold" Text="{Binding NameWares}" />
 				</StackPanel>
@@ -173,7 +173,7 @@
 				<TextBlock VerticalAlignment="Center" FontSize="25" FontWeight="Bold" Grid.Column="4" Height="40" HorizontalAlignment="Center" Text="{Binding Price}" />
 				<StackPanel VerticalAlignment="Center" Grid.Column="5">
 					<TextBlock VerticalAlignment="Center" FontSize="25" FontWeight="Bold"  HorizontalAlignment="Center" Text="{Binding  Sum}" />
-					<TextBlock Foreground="Red" VerticalAlignment="Center" FontSize="13" FontWeight="Bold"    HorizontalAlignment="Center" Text="{Binding Discount, StringFormat='- {0}₴'}"  />
+					<TextBlock Foreground="Red" IsVisible="{Binding DataContext.IsUserActive, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}} " VerticalAlignment="Center" FontSize="13" FontWeight="Bold"    HorizontalAlignment="Center" Text="{Binding Discount, StringFormat='- {0}₴'}"  />
 
 				</StackPanel>
 			</Grid>
