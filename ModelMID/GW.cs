@@ -46,5 +46,6 @@ namespace ModelMID
                 //return Path.Combine(Global.PathPictures, (Type == 1 ? "Categories" : "Products"), $"{Code.ToString("D9")}.jpg"); 
 			} }
 		public bool IsWeight { get{ return Type == 0 && CodeUnit == Global.WeightCodeUnit; } }
+		public bool IsSelected { get; set; } = false;
 	}
 }

@@ -11,6 +11,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -221,6 +222,22 @@ namespace Front.Control
                     Grid.SetRow(WeightImg, j);
                     PictureGrid.Children.Add(WeightImg);
                 }
+                var IsSelectedImg = new Image();
+                Uri resourceUriIsSel = new Uri("/icons/check-mark.png", UriKind.Relative);
+                IsSelectedImg.Source = new BitmapImage(resourceUriIsSel);
+                IsSelectedImg.Width = IsSelectedImg.Height = 50;
+                IsSelectedImg.HorizontalAlignment = HorizontalAlignment.Right;
+                IsSelectedImg.VerticalAlignment = VerticalAlignment.Top;
+                if (el.IsSelected)
+                    IsSelectedImg.Visibility = Visibility.Visible;
+                else
+                    IsSelectedImg.Visibility = Visibility.Collapsed;
+
+                IsSelectedImg.Tag = el.Code;
+                Grid.SetColumn(IsSelectedImg, i);
+                Grid.SetRow(IsSelectedImg, j);
+
+                PictureGrid.Children.Add(IsSelectedImg);
                 if (++i >= CountColumWares)
                 { j++; i = 0; }
                 if (j >= CountRowWares) break;
@@ -228,9 +245,27 @@ namespace Front.Control
         }
         private void BtClick(object sender, RoutedEventArgs e)
         {
+
             OffSet = 0;
             ToggleButton aa = (ToggleButton)sender;
             GW Gw = aa.Tag as GW;
+
+            if (Gw.IsSelected)
+                Gw.IsSelected = false;
+            else 
+                Gw.IsSelected = true;
+            foreach (UIElement element in PictureGrid.Children)
+            {
+                if (element is Image) // якщо ваші зображення містяться в кнопках
+                {
+                    Image image = element as Image;
+                    if (image != null && image.Tag.ToString() == Gw.Code.ToString())
+                    {
+                        image.Visibility = Gw.IsSelected? Visibility.Visible : Visibility.Collapsed;
+                    }
+                }
+            }
+
             if (Gw != null)
                 if (Gw.Type == 1)
                 {
@@ -240,7 +275,8 @@ namespace Front.Control
                 else
                 {
                     //Додаємо супутній товар
-                    db.ReplaceWaresReceiptLink(new List<WaresReceiptLink> { new WaresReceiptLink
+                    if (Gw.IsSelected)
+                        db.ReplaceWaresReceiptLink(new List<WaresReceiptLink> { new WaresReceiptLink
                     {
                         CodeWares = Gw.Code,
                         Quantity = 1,
@@ -254,8 +290,9 @@ namespace Front.Control
                         Parent = LastWares.Parent,
                         Sort = LastWares.Sort,
 
-                    } }) ;
-                    
+                    } });
+                    else
+                        MW.CustomMessage.Show($"Потрібно додати видалення позицій з яких зняли вибір", "Помилка!", eTypeMessage.Error);
                     //Close(Gw, Blf.GetQuantity(WaresName.Text, Gw.CodeUnit));
                 }
         }
