@@ -4,6 +4,7 @@ using System.Data;
 //using DB_SQLite;
 using System.IO;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Dapper;
@@ -89,7 +90,7 @@ namespace SharedLib
             //Close();
         }
 
-        void CreateRC(string pReceiptFile=null)
+        void CreateRC(string pReceiptFile = null)
         {
             if (string.IsNullOrEmpty(pReceiptFile))
                 pReceiptFile = ReceiptFile;
@@ -177,27 +178,19 @@ namespace SharedLib
             try
             {
                 IsFirstStart = false;
-                int CurVerConfig = 0, CurVerMid = 0, CurVerRC = 0;
-                var Lines = SqlUpdateConfig.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-
-                CurVerConfig = dbConfig.GetVersion;
-                //CurVerMid = GetConfig<int>("VerMid", dbConfig);
-                //CurVerRC = GetConfig<int>("VerRC", dbConfig);
-
+                //int CurVerConfig = 0, CurVerMid = 0, CurVerRC = 0;
+                //var Lines = SqlUpdateConfig.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                
                 //Config
-                var (Ver, IsReload) = Parse(Lines, CurVerConfig, dbConfig);
-                if (Ver != CurVerConfig)
-                    dbConfig.SetVersion(Ver);
+                 Parse(SqlUpdateConfig, dbConfig);                
 
                 //Mid
                 if (File.Exists(MidFile))
                 {
                     using var dbMID = new SQLite(MidFile);
-                    CurVerMid = dbMID.GetVersion;// GetConfig<int>("VerMID",dbConfig);
-                    Lines = SqlUpdateMID.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-                    (Ver, IsReload) = Parse(Lines, CurVerMid, dbMID);
-                    if (Ver != CurVerMid)
-                        dbMID.SetVersion(Ver);
+                    //CurVerMid = dbMID.GetVersion;// GetConfig<int>("VerMID",dbConfig);
+                    //Lines = SqlUpdateMID.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                    bool IsReload = Parse(SqlUpdateMID, dbMID);                    
                     dbMID.Close(true);
                     if (IsReload)
                     {
@@ -206,28 +199,30 @@ namespace SharedLib
                     }
                     //if (Ver != CurVerMid) SetConfig<int>("VerMID", Ver);
                 }
-                //RC
-                //CurVerRC = GetConfig<int>("VerRC",dbConfig);
+
+                //RC                
                 var cDT = DateTime.Now.Date.AddDays(-10);
+                if (DT < cDT) UpdateRC(DT);
                 while (cDT <= DateTime.Now.Date)
                 {
-                    if (File.Exists(GetReceiptFile(cDT)))
-                    {
-                        using var dbRC = GetRC(cDT);// new SQLite(GetReceiptFile(cDT));
-                        CurVerRC = dbRC.GetVersion;
-                        Lines = SqlUpdateRC.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-                        (Ver, IsReload) = Parse(Lines, CurVerRC, dbRC);
-                        dbRC.SetVersion(Ver);
-                    }
+                    UpdateRC(cDT);
                     cDT = cDT.AddDays(1);
                 }
-                //if (Ver != CurVerRC) SetConfig<int>("VerRC", Ver);
                 return true;
             }
             catch (Exception ex)
             {
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex);
                 return false;
+            }
+        }
+
+        void UpdateRC(DateTime pDT)
+        {
+            if (File.Exists(GetReceiptFile(pDT)))
+            {
+                using var dbRC = GetRC(pDT);               
+                Parse(SqlUpdateRC, dbRC);                
             }
         }
 
@@ -249,12 +244,14 @@ namespace SharedLib
             return res;
         }
 
-        protected (int, bool) Parse(string[] pLines, int pCurVersion, SQLite pDB)
+        protected bool Parse(string pComand, SQLite pDB)
         {
+            string[] Lines = pComand.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            int pCurVersion = pDB.GetVersion;
             int NewVer = pCurVersion, Ver;
             bool isReload = false;
 
-            foreach (var el in pLines)
+            foreach (var el in Lines)
             {
                 var i = el.ToUpper().IndexOf("VER=>");
                 if (i >= 0)
@@ -287,8 +284,9 @@ namespace SharedLib
                     }
                 }
             }
-
-            return (NewVer, isReload);
+            if(NewVer!= pCurVersion)
+                pDB.SetVersion(NewVer);
+            return  isReload;
         }
 
         /// <summary>
@@ -1027,7 +1025,7 @@ Where ID_WORKPLACE = @IdWorkplace
                 {
                     r.Wares = ViewReceiptWares(r, true);
                     foreach (var el in r.Wares)
-                        el.AdditionalWeights = db.Execute<object, decimal>(SqlAdditionalWeightsWares, new { CodeWares = el.CodeWares });
+                        el.AdditionalWeights = db.Execute<object, decimal>(SqlAdditionalWeightsWares, new { el.CodeWares });
 
                     r.Payment = GetPayment(parIdReceipt);
                     r.ReceiptEvent = GetReceiptEvent(parIdReceipt);

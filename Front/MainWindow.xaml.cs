@@ -161,6 +161,7 @@ namespace Front
                     ScrolDown();
                     return false;
                 }
+                //return false;
             }
         }
 

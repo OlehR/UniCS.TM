@@ -494,6 +494,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
                 if (pR.Footer?.Any() == true)
                     comment_down = String.Join('\n', pR.Footer);
                 sum = pR.Wares?.Sum(el => Math.Round(el.Price * el.Quantity, 2, MidpointRounding.AwayFromZero) - el.SumTotalDiscount) ?? 0m; ;
+                not_check_safe = true;
             }
         }
         public decimal sum { get; set; }
@@ -504,6 +505,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
         public IEnumerable<PaysRRO> pays { get; set; }
 
         public Cash cash { get; set; }
+        public bool not_check_safe { get; set; }
     }
 
     class Cash

@@ -8,8 +8,8 @@
     <ApplicationIcon />
     <Win32Resource />
     <NeutralLanguage>uk-UA</NeutralLanguage>
-    <AssemblyVersion>2.2.0.145</AssemblyVersion>
-    <FileVersion>2.2.0.145</FileVersion>
+    <AssemblyVersion>2.2.0.147</AssemblyVersion>
+    <FileVersion>2.2.0.147</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -23,6 +23,7 @@
     <None Remove="icons\back.png" />
     <None Remove="icons\backArrow.png" />
     <None Remove="icons\BankTerminal.png" />
+    <None Remove="icons\check-mark.png" />
     <None Remove="icons\checkout.png" />
     <None Remove="icons\ClientBonus.png" />
     <None Remove="icons\ClientBonusGray.png" />
@@ -93,6 +94,9 @@
     </Resource>
     <Resource Include="icons\backArrow.png" />
     <Resource Include="icons\BankTerminal.png" />
+    <Resource Include="icons\check-mark.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="icons\checkout.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>

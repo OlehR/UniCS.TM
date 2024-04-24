@@ -26,7 +26,7 @@ DROP INDEX IF exists id_FiscalArticle;--Ver=>15
 CREATE UNIQUE INDEX id_FiscalArticle ON FiscalArticle(IdWorkplacePay,CodeWares);--Ver=>15
 CREATE UNIQUE INDEX id_FiscalArticle_PLU ON FiscalArticle(IdWorkplacePay,PLU);--Ver=>16";
 
-        public readonly int VerRC = 22;
+        public readonly int VerRC = 23;
         readonly string SqlUpdateRC = @"alter TABLE WARES_RECEIPT            add Fix_Weight NUMBER NOT NULL DEFAULT 0;--Ver=>0
 alter TABLE WARES_RECEIPT_PROMOTION  add TYPE_DISCOUNT  INTEGER  NOT NULL  DEFAULT (12);--Ver=>0
 alter TABLE wares_receipt            add Priority INTEGER  NOT NULL DEFAULT 0;--Ver=>0
