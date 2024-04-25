@@ -266,35 +266,35 @@ namespace Front.Control
                 }
             }
 
-            if (Gw != null)
-                if (Gw.Type == 1)
-                {
-                    CodeFastGroup = Gw.Code;
-                    NewB();
-                }
-                else
-                {
-                    //Додаємо супутній товар
-                    if (Gw.IsSelected)
-                        db.ReplaceWaresReceiptLink(new List<WaresReceiptLink> { new WaresReceiptLink
-                    {
-                        CodeWares = Gw.Code,
-                        Quantity = 1,
-                        CodeWaresTo = LastWares.CodeWares,
-                        CodePeriod = LastWares.CodePeriod,
-                        CodeReceipt = MW.curReceipt.CodeReceipt,
-                        CodeUnit = LastWares.CodeUnit,
-                        IdWorkplace = LastWares.IdWorkplace,
-                        IdWorkplacePay = LastWares.IdWorkplacePay,
-                        Order = LastWares.Order,
-                        Parent = LastWares.Parent,
-                        Sort = LastWares.Sort,
+            //if (Gw != null)
+            //    if (Gw.Type == 1)
+            //    {
+            //        CodeFastGroup = Gw.Code;
+            //        NewB();
+            //    }
+            //    else
+            //    {
+            //        //Додаємо супутній товар
+            //        if (Gw.IsSelected)
+            //            db.ReplaceWaresReceiptLink(new List<WaresReceiptLink> { new WaresReceiptLink
+            //        {
+            //            CodeWares = Gw.Code,
+            //            Quantity = 1,
+            //            CodeWaresTo = LastWares.CodeWares,
+            //            CodePeriod = LastWares.CodePeriod,
+            //            CodeReceipt = MW.curReceipt.CodeReceipt,
+            //            CodeUnit = LastWares.CodeUnit,
+            //            IdWorkplace = LastWares.IdWorkplace,
+            //            IdWorkplacePay = LastWares.IdWorkplacePay,
+            //            Order = LastWares.Order,
+            //            Parent = LastWares.Parent,
+            //            Sort = LastWares.Sort,
 
-                    } });
-                    else
-                        MW.CustomMessage.Show($"Потрібно додати видалення позицій з яких зняли вибір", "Помилка!", eTypeMessage.Error);
-                    //Close(Gw, Blf.GetQuantity(WaresName.Text, Gw.CodeUnit));
-                }
+            //        } });
+            //        else
+            //            MW.CustomMessage.Show($"Потрібно додати видалення позицій з яких зняли вибір", "Помилка!", eTypeMessage.Error);
+            //        //Close(Gw, Blf.GetQuantity(WaresName.Text, Gw.CodeUnit));
+            //    }
         }
         private void ClickButtonLeft(object sender, RoutedEventArgs e)
         {
@@ -327,6 +327,36 @@ namespace Front.Control
             }
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsShowLinkWares)));
             MW.ScrolDown();
+
+        }
+
+        private void AddRelatedProducts(object sender, RoutedEventArgs e)
+        {
+            List < WaresReceiptLink > addedRelatedProducts =  new List<WaresReceiptLink> ();
+            foreach (var item in LastWares.WaresLink)
+            {
+                if (item.IsSelected)
+                {
+                    MW.Blf.AddWares(item.Code, LastWares.CodeUnit, 1, 0m);
+                    addedRelatedProducts.Add(new WaresReceiptLink
+                    {
+                        CodeWares = item.Code,
+                        Quantity = 1,
+                        CodeWaresTo = LastWares.CodeWares,
+                        CodePeriod = LastWares.CodePeriod,
+                        CodeReceipt = MW.curReceipt.CodeReceipt,
+                        CodeUnit = LastWares.CodeUnit,
+                        IdWorkplace = LastWares.IdWorkplace,
+                        IdWorkplacePay = LastWares.IdWorkplacePay,
+                        Order = LastWares.Order,
+                        Parent = LastWares.Parent,
+                        Sort = LastWares.Sort,
+
+                    });
+                }
+            }
+            db.ReplaceWaresReceiptLink(addedRelatedProducts);
+            this.HideWaresLink.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
 
         }
     }

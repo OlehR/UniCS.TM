@@ -11,7 +11,7 @@
     </UserControl.DataContext>
     <UserControl.Resources>
         <Style TargetType="TextBlock">
-            <Setter Property="FontSize" Value="24" />
+            <Setter Property="FontSize" Value="28" />
             <Setter Property="FontFamily" Value="Source Sans Pro" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="FontWeight" Value="Bold" />
@@ -29,7 +29,7 @@
                     <Setter Property="Height" Value="500" />
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding IsShowLinkWares, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" Value="false">
-                            <Setter Property="Height" Value="50" />
+                            <Setter Property="Height" Value="60" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
@@ -41,7 +41,7 @@
             <Grid Grid.Row="1" Grid.ColumnSpan="4" >
 
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="60"/>
                     <RowDefinition Height="1*" />
                 </Grid.RowDefinitions>
 
@@ -49,12 +49,27 @@
                 <Grid Grid.Column="0" Grid.ColumnSpan="3">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="150"></ColumnDefinition>
                         <ColumnDefinition Width="100"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Text="{Binding TextRelatedProducts, RelativeSource={RelativeSource 
                         Mode=FindAncestor, AncestorType=UserControl}}"/>
-                    <Button Click="Hide_ShowWaresLink" Name="HideWaresLink" Grid.Column="1">
+                    <Button Grid.Column="1" Click="AddRelatedProducts" 
+                            Content="Додати" >
+                        <Button.Style>
+                            <Style  BasedOn="{StaticResource greenButton}" TargetType="Button">
+                                <Setter Property="Visibility" Value="Visible" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsShowLinkWares, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" Value="false">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    
+                    <Button Click="Hide_ShowWaresLink" Name="HideWaresLink" Grid.Column="2">
                         <Button.Style>
                             <Style  BasedOn="{StaticResource WhiteButton}" TargetType="Button">
                                 <Style.Triggers>
@@ -70,7 +85,7 @@
                             </Image.Source>
                         </Image>
                     </Button>
-                    <Button Click="Hide_ShowWaresLink" Name="ShowWaresLink" Grid.Column="1" >
+                    <Button Click="Hide_ShowWaresLink" Name="ShowWaresLink" Grid.Column="2" >
                         <Button.Style>
                             <Style  BasedOn="{StaticResource WhiteButton}" TargetType="Button">
                                 <Setter Property="Visibility" Value="Collapsed" />
