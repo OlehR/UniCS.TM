@@ -1058,7 +1058,7 @@ Where ID_WORKPLACE = @IdWorkplace
                         el.Parent = vReceipt;
                     if (wrp != null)
                         el.ReceiptWaresPromotions = wrp.Where(rr => ((IdReceiptWares)rr).Equals((IdReceiptWares)el)).ToArray();
-                    el.WaresLink = GetLinkWares(el.CodeWares);
+                    el.WaresLink = GetLinkWares(el);
                 }
             }
             return r;
@@ -1346,13 +1346,21 @@ select sum( sum_pay* case when TYPE_PAY in (4) then -1 else 1 end) as sum from p
             return false;
         }
 
-        public IEnumerable<GW> GetLinkWares(int pCodeWares)
+        public IEnumerable<GW> GetLinkWares(IdReceiptWares pIdRW)
         {
             try
             {
-                string SQL = $@"select 0 as Type, w.CODE_WARES as code, w.NAME_WARES as name, w.Code_Unit as CodeUnit, count(*) over() as TotalRows 
-    from WaresLink wl join  wares w on wl.CodeWares = w.Code_wares where wl.CodeWaresTo={pCodeWares} order by wl.sort";
-            var Res = db.Execute<GW>(SQL);
+                string SQL = @"select 0 as Type, w.CODE_WARES as code, w.NAME_WARES as name, w.Code_Unit as CodeUnit, count(*) over() as TotalRows,
+    case when wrl.CodeWares is not null then 1 else 0 end as IsSelected
+    from WaresLink wl
+    join wares w on (wl.CodeWares = w.Code_wares )
+    left join WaresReceiptLink wrl on (wl.CodeWares = wrl.CodeWares and
+    wrl.IdWorkplace = @IdWorkplace and wrl.CodePeriod = @CodePeriod and wrl.CodeReceipt = @CodeReceipt)
+    where wl.CodeWaresTo = @CodeWares
+ order by wl.sort;";
+                    /*$@"select 0 as Type, w.CODE_WARES as code, w.NAME_WARES as name, w.Code_Unit as CodeUnit, count(*) over() as TotalRows 
+    from WaresLink wl join  wares w on wl.CodeWares = w.Code_wares where wl.CodeWaresTo=@CodeWares order by wl.sort";*/
+            var Res = db.Execute< IdReceiptWares,GW>(SQL,pIdRW);
             return Res;
             }
             catch (Exception e) { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e); }
