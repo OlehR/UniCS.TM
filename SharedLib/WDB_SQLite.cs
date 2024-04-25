@@ -1335,11 +1335,16 @@ select sum( sum_pay* case when TYPE_PAY in (4) then -1 else 1 end) as sum from p
             return Res;
         }
 
-        public bool ReplaceWaresReceiptLink(IEnumerable<WaresReceiptLink> pWRL)
+        public bool ReplaceWaresReceiptLink(IEnumerable<WaresReceiptLink> pWRL,bool IsDelete=false)
         {
             try
             {
-                string SQL = @"replace into WaresReceiptLink  (IdWorkplace, CodePeriod, CodeReceipt, CodeWares, Sort, CodeWaresTo, Quantity) VALUES
+                string SQL = @"delete from  WaresReceiptLink where  IdWorkplace = @IdWorkplace and CodePeriod = @CodePeriod and CodeReceipt = @CodeReceipt and CodeWaresTo = @CodeWares";
+                if (IsDelete && pWRL.Any())                
+                    dbRC.ExecuteNonQuery<WaresReceiptLink>(SQL, pWRL.FirstOrDefault());
+                
+
+                SQL = @"replace into WaresReceiptLink  (IdWorkplace, CodePeriod, CodeReceipt, CodeWares, Sort, CodeWaresTo, Quantity) VALUES
                                                          (@IdWorkplace,@CodePeriod,@CodeReceipt,@CodeWares,@Sort,@CodeWaresTo,@Quantity)";
                 return dbRC.BulkExecuteNonQuery<WaresReceiptLink>(SQL, pWRL) > 0;
             }catch (Exception e) { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e); }
