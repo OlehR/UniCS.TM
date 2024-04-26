@@ -53,7 +53,7 @@ namespace Front.Control
         /// <summary>
         /// максимальна кількість товарів на вікні
         /// </summary>
-        int Limit = SystemParameters.PrimaryScreenWidth < SystemParameters.PrimaryScreenHeight ? 15 : 10;
+        int Limit = SystemParameters.PrimaryScreenWidth < SystemParameters.PrimaryScreenHeight ? 12 : 10;
         /// <summary>
         /// Кількість рядків в пошуку (залежить від розміру екрану)
         /// </summary>
@@ -71,7 +71,7 @@ namespace Front.Control
             MW = mw;
             Bl = BL.GetBL;
             Blf = BLF.GetBLF;
-            CountRowWares = IsHorizontalScreen ? 5 : 2;
+            CountRowWares = IsHorizontalScreen ? 4 : 2;
             CountColumWares = IsHorizontalScreen ? 3 : 5;
             db = WDB_SQLite.GetInstance;
             CreateGridForWares(); //створення гріду з товарами
@@ -80,6 +80,7 @@ namespace Front.Control
         {
             LastWares = lastWares.IsNotNull() ? lastWares : new ReceiptWares();
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TextRelatedProducts)));
+            this.ShowWaresLink.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
             NewB();
         }
         public RelatedProducts()
@@ -139,7 +140,7 @@ namespace Front.Control
                 if (File.Exists(el.Pictures))
                 {
                     ImageStackPanel.Source = new BitmapImage(new Uri(el.Pictures));
-                    ImageStackPanel.Height = TypeMonitor == eTypeMonitor.HorisontalMonitorRegular || TypeMonitor == eTypeMonitor.AnotherTypeMonitor ? 80 : 160; //180;
+                    ImageStackPanel.Height = TypeMonitor == eTypeMonitor.HorisontalMonitorRegular || TypeMonitor == eTypeMonitor.AnotherTypeMonitor ? 70 : 160; //180;
                     ImageStackPanel.Margin = new Thickness(5);
                     //Bt.Content = new Image
                     //{
