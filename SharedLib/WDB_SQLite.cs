@@ -1335,7 +1335,7 @@ select sum( sum_pay* case when TYPE_PAY in (4) then -1 else 1 end) as sum from p
             return Res;
         }
 
-        public bool ReplaceWaresReceiptLink(IEnumerable<WaresReceiptLink> pWRL,bool IsDelete=false)
+        public bool ReplaceWaresReceiptLink(IEnumerable<WaresReceiptLink> pWRL,bool IsDelete=true)
         {
             try
             {
