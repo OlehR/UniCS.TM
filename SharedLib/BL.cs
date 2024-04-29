@@ -762,22 +762,21 @@ namespace SharedLib
         {
             Task.Run(async () =>
             {
+                Client cl;
                 if (pFC.Client != null)
                 {
-                    var Client = await ds.Ds1C.GetBonusAsync(pFC.Client, pFC.CodeWarehouse);
-                    Global.OnClientChanged?.Invoke(Client);
+                    cl = await ds.Ds1C.GetBonusAsync(pFC.Client, pFC.CodeWarehouse);
                 }
                 else
                 {
-                    Client cl = await ds.GetDiscount(pFC);
+                    cl = await ds.GetDiscount(pFC);
                     if (cl != null)
                     {
-                        if (pFC.Client == null)
-                            UpdateClientInReceipt(pIdReceipt, cl, false);
-                        else
-                            Global.OnClientChanged?.Invoke(cl);
+                        UpdateClientInReceipt(pIdReceipt, cl, false);
                     }
                 }
+                if (cl != null)
+                    Global.OnClientChanged?.Invoke(cl);
             });
         }
 

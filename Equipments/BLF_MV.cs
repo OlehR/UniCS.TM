@@ -4,6 +4,7 @@ using System.Windows.Forms.VisualStyles;
 using ModelMID;
 using ModelMID.DB;
 using Newtonsoft.Json;
+using QRCoder;
 using SharedLib;
 using Utils;
 
@@ -42,7 +43,7 @@ namespace Front.Equipments
                 if (pBarCode.Length > 56)
                 {
                     var QR = pBarCode.FromBase64();
-                    if (!string.IsNullOrEmpty(QR) && "1".Equals(QR[..1]) && QR.Length >= 56)
+                    if (!string.IsNullOrEmpty(QR)  && QR.Length >= 56)
                     {
                         string BarCode = QR[1..37];
                         string Time = QR[37..56];
@@ -50,6 +51,14 @@ namespace Front.Equipments
                         if ((DateTime.Now - dt).TotalSeconds < 120)
                             Bl.GetDiscount(new FindClient { BarCode = BarCode }, MW.curReceipt);
                     }
+                }
+                else
+                if (pBarCode.StartsWith("*1*"))
+                {
+                    var c = Bl.GetClientByBarCode(MW.curReceipt, pBarCode.ToLower());
+                    if (c == null)
+                        Bl.GetDiscount(new FindClient { BarCode = pBarCode }, MW.curReceipt);
+                    return;
                 }
             }
 
@@ -93,7 +102,7 @@ namespace Front.Equipments
                 if (MW.curReceipt != null)
                 {
                     var c = Bl.GetClientByBarCode(MW.curReceipt, pBarCode.ToLower());
-                    if (c != null) return;
+                    if (c != null) return;                    
                 }
                 FileLogger.WriteLogMessage(this, "GetBarCode", $"Штрихкод {pBarCode} не знайдено State=>{MW.State} TypeAccessWait=>{MW.TypeAccessWait}");
                 if (MW.IsAddNewWares)
@@ -104,7 +113,8 @@ namespace Front.Equipments
                     if (MW.CS?.IsProblem == true)
                         Global.Message?.Invoke($"Не можливо додати товар оскільки є проблеми з ваговою платформою!", eTypeMessage.Error);
                     else
-                        Global.Message?.Invoke($"Не можливо додати товар в  режимі {MW.State.GetDescription()}", eTypeMessage.Error);
+                        if(!Global.Settings.IsUseCardSparUkraine || MW.State != eStateMainWindows.FindClientByPhone)
+                            Global.Message?.Invoke($"Не можливо додати товар в  режимі {MW.State.GetDescription()}", eTypeMessage.Error);
                 }
 
                 return;
