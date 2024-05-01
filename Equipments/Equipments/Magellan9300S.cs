@@ -364,7 +364,7 @@ namespace Front.Equipments
             }
         }
 
-        private void OnTimedEvent(object sender, ElapsedEventArgs e) => this._serialDevice?.Write(this.GetCommand("11"));
+        private void OnTimedEvent(object sender, ElapsedEventArgs e) => this._serialDevice?.Write(this.GetCommand("14")); //11
 
         private void CloseIfOpen()
         {
@@ -385,11 +385,36 @@ namespace Front.Equipments
                 return false;
             this._tmpStr = this._tmpStr.Replace("\r", string.Empty);
             if (this._tmpStr.StartsWith("S08"))
-                this.BarcodeProcessing(this._tmpStr.Substring(3));
-            else if (this._tmpStr.StartsWith("S11"))
+            {
+                int ind = _tmpStr.IndexOf("S14");
+                if (ind > 0)
+                    this.BarcodeProcessing(this._tmpStr.Substring(3, ind - 3));
+                else
+                    this.BarcodeProcessing(this._tmpStr.Substring(3));
+            }
+                //this.BarcodeProcessing(this._tmpStr.Substring(3));
+            else if (_tmpStr.StartsWith("S11")) //11
                 this.WeightProcessing(this._tmpStr.Substring(3));
+
+            else if (this._tmpStr.StartsWith("S144")) //14
+                this.WeightProcessing14(this._tmpStr.Substring(4));
+            else if (this._tmpStr.StartsWith("S143") || this._tmpStr.StartsWith("S141")) //14
+                this.WeightProcessing14("0");
             this._tmpStr = string.Empty;
             return true;
+        }
+
+        private void WeightProcessing14(string weightStr)
+        {
+            double result;
+            if (double.TryParse(weightStr, NumberStyles.Any, (IFormatProvider)CultureInfo.InvariantCulture, out result))
+            { 
+                Action<double> onWeightChanged = this.OnWeightChanged;
+                if (onWeightChanged != null)
+                    onWeightChanged(result);
+                this._attempt = 0;
+            }
+            
         }
 
         private void WeightProcessing(string weightStr)
