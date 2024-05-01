@@ -126,17 +126,6 @@ namespace Front
                         else
                             EF.PutToDisplay(pReceipt, $"{CurWares.NameWaresReceipt}{Environment.NewLine}{CurWares.Quantity}x{CurWares.Price}={CurWares.SumTotal}", 0);
                     }
-                    ////Вибір супутніх товарів
-                    //Dispatcher.BeginInvoke(new ThreadStart(() =>
-                    //{
-                    //    if (curReceipt?.GetLastWares?.IsWaresLink == true)
-                    //    {
-                    //        RelatedProductsUC.Visibility = Visibility.Visible;
-                    //        RelatedProductsUC.AddRelatedProducts(curReceipt?.GetLastWares);
-                    //    }
-                    //    else
-                    //        RelatedProductsUC.Visibility = Visibility.Collapsed;
-                    //}));
                     CS.StartWeightNewGoogs(curReceipt, IsDel ? CurWares : null);
                 }
                 catch (Exception e)

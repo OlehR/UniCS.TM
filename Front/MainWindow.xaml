@@ -2238,7 +2238,7 @@ Mode=FindAncestor, AncestorType=Window}}"/>
               Grid.Column="0" Grid.ColumnSpan="4" 
               x:Name="ClientDetailsUC" VerticalAlignment="Stretch" 
               Grid.ZIndex="4" />
-        <!-- Інформація про клієнта -->
+        <!-- Зважування товарів на магелані -->
         <uc:WeightWares Grid.Row="0" Grid.RowSpan="5" Visibility="Collapsed"
               Grid.Column="0" Grid.ColumnSpan="4" 
               x:Name="WeightWaresUC" VerticalAlignment="Stretch" 

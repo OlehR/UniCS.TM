@@ -190,6 +190,8 @@ namespace Front
                     return eTypeMonitor.AnotherTypeMonitor;
             }
         }
+        public bool IsSecondMonitor { get; set; } = false;
+        SecondMonitorWindows SecondMonitorWin;
 
         public class WidthHeaderReceipt
         {
@@ -508,6 +510,31 @@ namespace Front
                 }
             }
 
+            // Спочатку перевірте наявність додаткових екранів
+            if (System.Windows.Forms.Screen.AllScreens.Length > 1)
+            {
+                IsSecondMonitor = true;
+                // Отримайте інформацію про всі екрани
+                System.Windows.Forms.Screen[] screens = System.Windows.Forms.Screen.AllScreens;
+
+                // Виберіть другий екран (індекс 1, бо нульовий екран - це основний)
+                System.Windows.Forms.Screen additionalScreen = screens[1];
+
+                // Створіть новий об'єкт вікна SecondMonitorWindows
+                SecondMonitorWin = new SecondMonitorWindows(this);
+
+                // Встановіть розміри вікна на весь екран додаткового монітора
+                SecondMonitorWin.WindowStartupLocation = WindowStartupLocation.Manual;
+                SecondMonitorWin.Left = additionalScreen.WorkingArea.Left;
+                SecondMonitorWin.Top = additionalScreen.WorkingArea.Top;
+                SecondMonitorWin.Width = additionalScreen.WorkingArea.Width;
+                SecondMonitorWin.Height = additionalScreen.WorkingArea.Height;
+
+                // Покажіть вікно
+                SecondMonitorWin.Show();
+                SecondMonitorWin.WindowState = WindowState.Maximized;
+            }
+
             SetStateView(eStateMainWindows.StartWindow);
             SetWorkPlace();
             Task.Run(() => Bl.ds.SyncDataAsync());
@@ -607,6 +634,8 @@ namespace Front
             OnPropertyChanged(nameof(AmountManyPayments));
             OnPropertyChanged(nameof(SumTotalManyPayments));
             OnPropertyChanged(nameof(IsShowRelatedProducts));
+            if (IsSecondMonitor)
+                SecondMonitorWin.UpdateSecondMonitor();
             SetClient();
 
         }
