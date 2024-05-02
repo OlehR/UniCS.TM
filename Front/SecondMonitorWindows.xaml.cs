@@ -19,11 +19,15 @@ namespace Front
     public partial class SecondMonitorWindows : Window, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        public IMW MW { get; set; }
+        public MainWindow MW { get; set; }
         public ObservableCollection<ReceiptWares> ListWares { get; set; }
         private DispatcherTimer timer;
         private DateTime lastUpdateTime;
-        public SecondMonitorWindows(IMW pMW)
+        System.Windows.Forms.Screen mainScreen = System.Windows.Forms.Screen.AllScreens[0];
+        System.Windows.Forms.Screen additionalScreen = System.Windows.Forms.Screen.AllScreens.Count() > 1 ? System.Windows.Forms.Screen.AllScreens[1] : null;
+        public bool IsKSO { get; set; } = false; // замінити на Global.TypeWorkplaceCurrent
+        public bool IsShowStartWindows { get => MW.State == eStateMainWindows.StartWindow && !IsKSO; }
+        public SecondMonitorWindows(MainWindow pMW)
         {
             InitializeComponent();
 
@@ -82,7 +86,7 @@ namespace Front
                 }
                 catch (Exception e) { }
             };
-         }
+        }
 
         public void ScrolDown()
         {
@@ -95,33 +99,22 @@ namespace Front
         }
         public void UpdateSecondMonitor()
         {
+            OnPropertyChanged(nameof(IsShowStartWindows));
             if (MW.State == eStateMainWindows.StartWindow)
             {
 
                 StartVideo.Play();
                 SecondVideo.Pause();
-                StartShopping.Visibility = Visibility.Visible;
-                WaresList.Visibility = Visibility.Collapsed;
+                //StartShopping.Visibility = Visibility.Visible;
+                //WaresList.Visibility = Visibility.Collapsed;
             }
             else
             {
                 StartVideo.Pause();
                 SecondVideo.Play();
-                StartShopping.Visibility = Visibility.Collapsed;
-                WaresList.Visibility = Visibility.Visible;
+                //StartShopping.Visibility = Visibility.Collapsed;
+                //WaresList.Visibility = Visibility.Visible;
             }
-            /*
-            ListWares = MW.ListWares;
-            WaresList.ItemsSource = ListWares;
-            OnPropertyChanged(nameof(ListWares));
-            if (VisualTreeHelper.GetChildrenCount(WaresList) > 0)
-            {
-                Border border = (Border)VisualTreeHelper.GetChild(WaresList, 0);
-                ScrollViewer scrollViewer = (ScrollViewer)VisualTreeHelper.GetChild(border, 0);
-                scrollViewer.ScrollToBottom();
-            }
-            if (WaresList.Items.Count > 0)
-                WaresList.SelectedIndex = WaresList.Items.Count - 1;*/
             lastUpdateTime = DateTime.Now;
         }
         private void Timer_Tick(object sender, EventArgs e)
@@ -148,7 +141,48 @@ namespace Front
 
         private void StartBuy(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Придумати що тоді робити");
+            SwapScrean(true);
+
+            //MessageBox.Show("Придумати що тоді робити");
+        }
+
+        private void SwapScrean(bool isKSO)
+        {
+            IsKSO = isKSO;
+            OnPropertyChanged(nameof(IsKSO));
+            OnPropertyChanged(nameof(IsShowStartWindows));
+            this.WindowState = WindowState.Normal;
+            MW.WindowState = WindowState.Normal;
+
+            if (isKSO)
+            {
+                this.Left = mainScreen.WorkingArea.Left;
+                this.Top = mainScreen.WorkingArea.Top;
+
+
+                MW.Left = additionalScreen.WorkingArea.Left;
+                MW.Top = additionalScreen.WorkingArea.Top;
+            }
+            else
+            {
+                this.Left = additionalScreen.WorkingArea.Left;
+                this.Top = additionalScreen.WorkingArea.Top;
+
+
+                MW.Left = mainScreen.WorkingArea.Left;
+                MW.Top = mainScreen.WorkingArea.Top;
+            }
+
+
+
+            MW.WindowState = WindowState.Maximized;
+            this.WindowState = WindowState.Maximized;
+
+        }
+
+        private void StartNormal(object sender, RoutedEventArgs e)
+        {
+            SwapScrean(false);
         }
     }
 }

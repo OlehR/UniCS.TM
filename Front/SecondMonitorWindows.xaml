@@ -28,6 +28,7 @@
      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListView.Style>
                 <Style TargetType="ListView">
+                    <Setter Property="Visibility" Value="Visible"/>
                     <Setter Property="Foreground" Value="Black"/>
                     <Setter Property="Template">
                         <Setter.Value>
@@ -49,6 +50,12 @@
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
+                    
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsShowStartWindows, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="true">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
                 </Style>
             </ListView.Style>
 
@@ -212,13 +219,47 @@
         </ListView>
 
         <MediaElement Grid.Column="2" Name="SecondVideo" Volume="0" LoadedBehavior="Manual" >
-
+            <MediaElement.Style>
+                <Style   TargetType="MediaElement">
+                    <Setter Property="Visibility" Value="Visible" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsKSO, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </MediaElement.Style>
         </MediaElement>
+        <Button Grid.Column="2" Click="StartNormal" Content="Перейти в зивичайний режим">
+            <Button.Style>
+                <Style  BasedOn="{StaticResource WhiteButton}" TargetType="Button">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Setter Property="Width" Value="450" />
+                    <Setter Property="Height" Value="80" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsKSO, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
         <!--Початок покупки - стартове вікно ВІДЕО-->
         <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="0"
                  Grid.Row="0" Grid.RowSpan="5"
                 Grid.Column="0" Grid.ColumnSpan="4"
-                 Name="StartShopping" Visibility="Collapsed" Grid.ZIndex="2" >
+                 Name="StartShopping"  Grid.ZIndex="2" >
+            <Border.Style>
+                <Style  TargetType="Border">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsShowStartWindows, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="true">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+
             <Grid x:Name="MP">
                 <!--<Button Style="{StaticResource TransparentButton}" Click="StartBuy" Panel.ZIndex="3" x:Name="StartBuyButton"/>-->
 
