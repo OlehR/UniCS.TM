@@ -1,7 +1,10 @@
-﻿using ModelMID;
+﻿using Front.Equipments;
+using ModelMID;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -16,11 +19,11 @@ namespace Front
     public partial class SecondMonitorWindows : Window, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        public MainWindow MW { get; set; }
+        public IMW MW { get; set; }
         public ObservableCollection<ReceiptWares> ListWares { get; set; }
         private DispatcherTimer timer;
         private DateTime lastUpdateTime;
-        public SecondMonitorWindows(MainWindow pMW)
+        public SecondMonitorWindows(IMW pMW)
         {
             InitializeComponent();
 
@@ -53,6 +56,42 @@ namespace Front
             timer.Tick += Timer_Tick;
             timer.Start();
 
+            Global.OnReceiptCalculationComplete += (pReceipt) =>
+            {
+                try
+                {
+                    if (pReceipt == null)
+                    {
+                        Dispatcher.BeginInvoke(new ThreadStart(() => { ListWares?.Clear(); }));
+                    }
+                    else
+                    {
+                        Dispatcher.BeginInvoke(new ThreadStart(() =>
+                        {
+                            if (pReceipt.Wares?.Any() == true)
+                                ListWares = new ObservableCollection<ReceiptWares>(pReceipt.Wares);
+                            else
+                                ListWares?.Clear();
+
+                            WaresList.ItemsSource = ListWares;
+                            if (WaresList.Items.Count > 0)
+                                WaresList.SelectedIndex = WaresList.Items.Count - 1;
+                            ScrolDown();
+                        }));
+                    }
+                }
+                catch (Exception e) { }
+            };
+         }
+
+        public void ScrolDown()
+        {
+            if (VisualTreeHelper.GetChildrenCount(WaresList) > 0)
+            {
+                Border border = (Border)VisualTreeHelper.GetChild(WaresList, 0);
+                ScrollViewer scrollViewer = (ScrollViewer)VisualTreeHelper.GetChild(border, 0);
+                scrollViewer.ScrollToBottom();
+            }
         }
         public void UpdateSecondMonitor()
         {
@@ -71,6 +110,7 @@ namespace Front
                 StartShopping.Visibility = Visibility.Collapsed;
                 WaresList.Visibility = Visibility.Visible;
             }
+            /*
             ListWares = MW.ListWares;
             WaresList.ItemsSource = ListWares;
             OnPropertyChanged(nameof(ListWares));
@@ -81,7 +121,7 @@ namespace Front
                 scrollViewer.ScrollToBottom();
             }
             if (WaresList.Items.Count > 0)
-                WaresList.SelectedIndex = WaresList.Items.Count - 1;
+                WaresList.SelectedIndex = WaresList.Items.Count - 1;*/
             lastUpdateTime = DateTime.Now;
         }
         private void Timer_Tick(object sender, EventArgs e)

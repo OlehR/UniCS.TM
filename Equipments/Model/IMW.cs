@@ -47,5 +47,7 @@ namespace Front.Equipments
         public ObservableCollection<ReceiptWares> ListWares {get;set;}
         public virtual void RunOnUiThread(Action pA) { }
 
+        public string[] PathVideo { get; set; }
+
     }
 }

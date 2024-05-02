@@ -237,7 +237,7 @@ namespace Front
         public int WidthScreen { get { return (int)SystemParameters.PrimaryScreenWidth; } }
         public int HeightScreen { get { return (int)SystemParameters.PrimaryScreenHeight; } }
         public int HeightStartVideo { get { return SystemParameters.PrimaryScreenWidth < SystemParameters.PrimaryScreenHeight ? 1300 : 700; } }
-        public string[] PathVideo = null;
+        public string[] PathVideo { get; set; } = null;
         public bool IsManyPayments { get { return curReceipt?.IdWorkplacePays?.Length > 1; } }
         public string AmountManyPayments
         {
