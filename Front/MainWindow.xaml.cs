@@ -379,8 +379,7 @@ namespace Front
             foreach (var el in fc)
                 if (!FC.ContainsKey(el.State))
                     FC.Add(el.State, el.Color);
-
-            Access.СurUser = new User() { TypeUser = eTypeUser.Client, CodeUser = 99999999, Login = "Client", NameUser = "Client" };
+            //Access.СurUser = new User() { TypeUser = eTypeUser.Client, CodeUser = 99999999, Login = "Client", NameUser = "Client" };
 
             Bl = new();
             Blf = BLF.GetBLF;

@@ -24,10 +24,11 @@ namespace SharedLib
         
         public Access()
         {
-            Init();            
+            Init();
+            Instance = this;
         }
 
-        public void Init() 
+        public void Init(User pUser=null) 
         {
             Right.Clear();
             eTypeUser R = (Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout ? eTypeUser.AdminSSC : eTypeUser.Guardian);//eTypeUser.AdminSSC;//
@@ -40,7 +41,9 @@ namespace SharedLib
             Right.Add(eTypeAccess.FixWeight, eTypeUser.AdminSSC);
             Right.Add(eTypeAccess.AddNewWeight, eTypeUser.AdminSSC);
             Right.Add(eTypeAccess.AdminPanel, Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout ? eTypeUser.AdminSSC : eTypeUser.Сashier);
-            Right.Add(eTypeAccess.UseBonus, eTypeUser.Guardian);
+            Right.Add(eTypeAccess.UseBonus, eTypeUser.Guardian);            
+            //if (Global.TypeWorkplaceCurrent == eTypeWorkplace.CashRegister && pUser != null)
+            СurUser = Global.TypeWorkplaceCurrent == eTypeWorkplace.CashRegister && pUser!=null?  pUser: new(){ TypeUser = eTypeUser.Client, CodeUser = 99999999, Login = "Client", NameUser = "Client" };
         }
 
         public bool GetRight(eTypeUser pTypeUser, eTypeAccess pTypeRight)

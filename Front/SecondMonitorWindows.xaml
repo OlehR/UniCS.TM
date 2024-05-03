@@ -230,7 +230,7 @@
                 </Style>
             </MediaElement.Style>
         </MediaElement>
-        <Button Grid.Column="2" Click="StartNormal" Content="Перейти в зивичайний режим">
+        <Button Grid.Column="2" Click="StartNormal" Content="Перейти в звичайний режим">
             <Button.Style>
                 <Style  BasedOn="{StaticResource WhiteButton}" TargetType="Button">
                     <Setter Property="Visibility" Value="Collapsed" />

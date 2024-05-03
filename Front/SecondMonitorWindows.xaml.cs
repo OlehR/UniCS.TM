@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
 using static System.Windows.Forms.AxHost;
+using SharedLib;
 
 namespace Front
 {
@@ -99,24 +100,27 @@ namespace Front
         }
         public void UpdateSecondMonitor()
         {
-            OnPropertyChanged(nameof(IsShowStartWindows));
-            if (MW.State == eStateMainWindows.StartWindow)
+            Dispatcher.BeginInvoke(new ThreadStart(() =>
             {
-
-                StartVideo.Play();
-                SecondVideo.Pause();
-                //StartShopping.Visibility = Visibility.Visible;
-                //WaresList.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                StartVideo.Pause();
-                SecondVideo.Play();
-                //StartShopping.Visibility = Visibility.Collapsed;
-                //WaresList.Visibility = Visibility.Visible;
-            }
+                OnPropertyChanged(nameof(IsShowStartWindows));
+                if (MW.State == eStateMainWindows.StartWindow)
+                {
+                    StartVideo.Play();
+                    SecondVideo.Pause();
+                    //StartShopping.Visibility = Visibility.Visible;
+                    //WaresList.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    StartVideo.Pause();
+                    SecondVideo.Play();
+                    //StartShopping.Visibility = Visibility.Collapsed;
+                    //WaresList.Visibility = Visibility.Visible;
+                }
+            }));
             lastUpdateTime = DateTime.Now;
         }
+
         private void Timer_Tick(object sender, EventArgs e)
         {
             // Перевіряємо різницю в часі між останнім оновленням і поточним часом
@@ -149,6 +153,11 @@ namespace Front
         private void SwapScrean(bool isKSO)
         {
             IsKSO = isKSO;
+
+            Global.TypeWorkplaceCurrent = IsKSO ? eTypeWorkplace.SelfServicCheckout : eTypeWorkplace.CashRegister;
+            MW.SetWorkPlace();
+            Access.GetAccess()?.Init(MW.AdminSSC);
+
             OnPropertyChanged(nameof(IsKSO));
             OnPropertyChanged(nameof(IsShowStartWindows));
             this.WindowState = WindowState.Normal;
@@ -173,11 +182,8 @@ namespace Front
                 MW.Top = mainScreen.WorkingArea.Top;
             }
 
-
-
             MW.WindowState = WindowState.Maximized;
             this.WindowState = WindowState.Maximized;
-
         }
 
         private void StartNormal(object sender, RoutedEventArgs e)

@@ -29,7 +29,7 @@ namespace Front.Control
     public partial class Admin_control : UserControl, INotifyPropertyChanged
     {
         Action<eCommand, WorkPlace, Status> OnSocket;
-        public Access Access = Access.GetAccess();
+        Access Access = Access.GetAccess();
         public event PropertyChangedEventHandler PropertyChanged;
         EquipmentFront EF;
         ObservableCollection<Receipt> Receipts;
@@ -1489,7 +1489,7 @@ from RECEIPT r
             {
                 Global.TypeWorkplaceCurrent = SelTypeCheckout.TypeWorkplace_;
                 MW.SetWorkPlace();
-                Access.Init();
+                Access.Init(MW.AdminSSC);
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsCashRegister)));
             }
         }
