@@ -30,6 +30,8 @@ using QRCoder;
 using Equipments.Model;
 using Pr = Equipments.Model.Price;
 using ModernExpo.SelfCheckout.Utils;
+using LibVLCSharp.Shared;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace Front
 {
@@ -402,16 +404,16 @@ namespace Front
             if (Directory.Exists(DirName))
                 PathVideo = Directory.GetFiles(DirName);
 
-            if (PathVideo != null && PathVideo.Length != 0)
-            {
-                StartVideo.Source = new Uri(PathVideo[0]);
-                StartVideo.Play();
-                StartVideo.MediaEnded += (object sender, RoutedEventArgs e) =>
-                {
-                    StartVideo.Position = new TimeSpan(0, 0, 0, 0, 1);
-                    StartVideo.Play();
-                };
-            }
+            /*if (PathVideo != null && PathVideo.Length != 0)
+            {                
+                   StartVideo.Source = new Uri(PathVideo[0]);
+                   StartVideo.Play();
+                   StartVideo.MediaEnded += (object sender, RoutedEventArgs e) =>
+                   {
+                       StartVideo.Position = new TimeSpan(0, 0, 0, 0, 1);
+                       StartVideo.Play();
+                   };
+            }*/
 
             DirName = Path.Combine(Global.PathPictures, "Logo");
             if (Directory.Exists(DirName))
@@ -510,7 +512,7 @@ namespace Front
             }
 
             // Спочатку перевірте наявність додаткових екранів
-            if (System.Windows.Forms.Screen.AllScreens.Length > 1)
+            if (System.Windows.Forms.Screen.AllScreens.Length > 1 && Global.TypeWorkplace==eTypeWorkplace.Both)
             {
                 IsSecondMonitor = true;
                 // Отримайте інформацію про всі екрани
@@ -537,6 +539,7 @@ namespace Front
             SetStateView(eStateMainWindows.StartWindow);
             SetWorkPlace();
             Task.Run(() => Bl.ds.SyncDataAsync());
+            Loaded += VideoView_Loaded;
         }
 
         public void SetKey(object sender, KeyEventArgs e)
@@ -548,6 +551,61 @@ namespace Front
                 return;
             var Ch = aa.Length == 2 && aa[0] == 'D' ? aa[1] : aa[0];
             EF.SetKey((int)key, Ch);
+        }
+
+        Media media;
+        LibVLCSharp.Shared.MediaPlayer _mediaPlayer;
+        private void VideoView_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (PathVideo != null && PathVideo.Length != 0)
+            {
+                var _libVLC = new LibVLC( enableDebugLogs: true);
+                _mediaPlayer = new LibVLCSharp.Shared.MediaPlayer(_libVLC);
+                
+                StartVideo.MediaPlayer = _mediaPlayer;
+
+                media = new Media(_libVLC, new Uri("D:\\pictures\\Video\\1.mp4")); //VopakVideo "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")))
+                media.AddOption(":input-repeat=65535");//
+                
+                StartVideo.MediaPlayer.EndReached += MediaPlayer_EndReached;
+                StartVideo.MouseDown += StartVideo_MouseDown;
+                //StartVideo.MouseCli += 
+                StartVideo.TouchEnter += StartVideo_TouchEnter;
+                StartVideo.TouchDown += StartVideo_TouchEnter;
+
+                StartVideo.MediaPlayer.Play(media);
+
+            }
+        }
+
+        private void StartVideo_TouchEnter(object sender, TouchEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void StartVideo_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void MediaPlayer_EndReached(object sender, EventArgs e)
+        {
+            return;
+            Dispatcher.BeginInvoke(new ThreadStart(() =>
+            {
+                StartVideo.MediaPlayer.Pause();
+                StartVideo.MediaPlayer.Play(media);
+            }
+            ));
+            
+           // ThreadPool.QueueUserWorkItem((x) => this.StartVideo.MediaPlayer.Stop());
+           //StartVideo.MediaPlayer = _mediaPlayer;
+
+            //if (StartVideo.MediaPlayer.IsPlaying)            
+            //   StartVideo.MediaPlayer.Pause();
+
+            //if (!StartVideo.MediaPlayer.IsPlaying)            
+            //    StartVideo.MediaPlayer.Play(media);
         }
 
         public void SetWorkPlace()
@@ -730,9 +788,9 @@ namespace Front
                     }
 
                     if (pSMV != eStateMainWindows.StartWindow && State == eStateMainWindows.StartWindow)
-                        StartVideo.Pause();
+                        StartVideo.MediaPlayer.SetPause(true);
                     if (pSMV == eStateMainWindows.StartWindow && State != eStateMainWindows.StartWindow && IsCashRegister == false)
-                        StartVideo.Play();
+                        StartVideo.MediaPlayer.SetPause(false);
 
                     //Якщо 
                     if (pSMV == eStateMainWindows.NotDefine)

@@ -6,7 +6,8 @@
         xmlns:keyboard="clr-namespace:OnScreenKeyboardControl.Keyboard"
         xmlns:local="clr-namespace:Front" 
         xmlns:onScreenKeyboardControl="clr-namespace:OnScreenKeyboardControl"
-        xmlns:uc="clr-namespace:Front.Control"        
+        xmlns:uc="clr-namespace:Front.Control" 
+        xmlns:vlc="clr-namespace:LibVLCSharp.WPF;assembly=LibVLCSharp.WPF"
         mc:Ignorable="d"
         Title="MainWindow" 
         WindowState="Maximized"
@@ -2171,9 +2172,11 @@ Mode=FindAncestor, AncestorType=Window}}"/>
                 <!--<Image Source="icons\VopakLogo.png" Height="500"/>-->
                 <!--<MediaElement   Name="StartVideo" Source="icons\sparVideo.mp4" LoadedBehavior="Manual" Volume="0"   />-->
 
-                <MediaElement Name="StartVideo" Volume="0" LoadedBehavior="Manual" >
+                <!--<MediaElement Name="StartVideo" Volume="0" LoadedBehavior="Manual" ></MediaElement>-->
 
-                </MediaElement>
+                <vlc:VideoView x:Name="StartVideo"  Grid.ZIndex="1"/>
+
+                
             </Grid>
         </Border>
 
