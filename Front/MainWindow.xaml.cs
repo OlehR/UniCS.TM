@@ -539,8 +539,10 @@ namespace Front
             SetStateView(eStateMainWindows.StartWindow);
             SetWorkPlace();
             Task.Run(() => Bl.ds.SyncDataAsync());
-            Loaded += VideoView_Loaded;
+            Loaded += (a, b) => { IsLoading = true; StarVideo(); };
         }
+
+        bool IsLoading = false;
 
         public void SetKey(object sender, KeyEventArgs e)
         {
@@ -555,17 +557,12 @@ namespace Front
 
         Media media;
         LibVLCSharp.Shared.MediaPlayer _mediaPlayer;
-        private void VideoView_Loaded(object sender, RoutedEventArgs e)
+        private void VideoView_Loaded(object sender=null, RoutedEventArgs e=null)
         {
-            if (PathVideo != null && PathVideo.Length != 0)
-            {
-                 
-                StartVideo.MouseDown += StartVideo_MouseDown;
-                //StartVideo.MouseCli += 
-                StartVideo.TouchEnter += StartVideo_TouchEnter;
-                StartVideo.TouchDown += StartVideo_TouchEnter;
 
-                var _libVLC = new LibVLC( enableDebugLogs: true);
+            if (PathVideo != null && PathVideo.Length != 0)
+            {                 
+                 var _libVLC = new LibVLC( enableDebugLogs: true);
                 _mediaPlayer = new LibVLCSharp.Shared.MediaPlayer(_libVLC);
                 
                 StartVideo.MediaPlayer = _mediaPlayer;
@@ -576,18 +573,9 @@ namespace Front
                 //StartVideo.MediaPlayer.EndReached += MediaPlayer_EndReached;
             }
         }
+        
 
-        private void StartVideo_TouchEnter(object sender, TouchEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void StartVideo_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void MediaPlayer_EndReached(object sender, EventArgs e)
+        /*private void MediaPlayer_EndReached(object sender, EventArgs e)
         {
             return;
             Dispatcher.BeginInvoke(new ThreadStart(() =>
@@ -596,7 +584,7 @@ namespace Front
                 StartVideo.MediaPlayer.Play(media);
             }
             ));
-        }
+        }*/
 
         public void SetWorkPlace()
         {
@@ -775,15 +763,7 @@ namespace Front
                     if (pSMV != eStateMainWindows.WaitAdminLogin)
                     {
                         TypeAccessWait = pTypeAccess;
-                    }
-
-                    if (StartVideo?.MediaPlayer != null)
-                    {
-                        if (pSMV != eStateMainWindows.StartWindow && State == eStateMainWindows.StartWindow)
-                            StartVideo?.MediaPlayer.SetPause(true);
-                        if (pSMV == eStateMainWindows.StartWindow && State != eStateMainWindows.StartWindow && IsCashRegister == false)
-                            StartVideo?.MediaPlayer.SetPause(false);
-                    }
+                    }                    
 
                     //Якщо 
                     if (pSMV == eStateMainWindows.NotDefine)
@@ -796,10 +776,11 @@ namespace Front
                         State = pSMV;
                         SetPropertyChanged();
                         EF.SetColor(GetFlagColor(State, TypeAccessWait, CS.StateScale));
-                    }
+                    }               
 
-                    //Зупиняєм пищання сканера
-                    if (State != eStateMainWindows.ProcessPay)
+
+                //Зупиняєм пищання сканера
+                if (State != eStateMainWindows.ProcessPay)
                         EF.StopMultipleTone();
 
                     Blf.TimeScan();
@@ -1154,7 +1135,24 @@ namespace Front
                     SetPropertyChanged();
                 }));
                 var res = r.Wait(new TimeSpan(0, 0, 0, 0, 200));
+                StarVideo();
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"End res=>{res} pSMV={pSMV}/{State}, pTypeAccess={pTypeAccess}/{TypeAccessWait}, pRW ={pRW} , pCW={pCW},  pS={pS}", eTypeLog.Full);
+            }
+        }
+
+        void StarVideo(eStateMainWindows? pState=null)
+        {
+            if (pState == null)
+                pState = State;
+            if (StartVideo != null && StartVideo.MediaPlayer == null && IsLoading && !IsCashRegister)
+                VideoView_Loaded();
+
+            if (StartVideo?.MediaPlayer != null)
+            {
+                if (pState != eStateMainWindows.StartWindow)
+                    StartVideo?.MediaPlayer.SetPause(true);
+                if (pState == eStateMainWindows.StartWindow && !IsCashRegister)
+                    StartVideo?.MediaPlayer.SetPause(false);
             }
         }
 
@@ -1275,6 +1273,7 @@ namespace Front
 
         private void StartBuy(object sender, RoutedEventArgs e)
         {
+            StarVideo(eStateMainWindows.WaitInput);
             Blf.NewReceipt();
             SetStateView(eStateMainWindows.WaitInput);
         }
