@@ -246,16 +246,16 @@ namespace Front
             get
             {
                 var res = "";
-                if (curReceipt != null)
+                if ( curReceipt?.WorkplacePays?.Any()==true)
                 {
-                    foreach (var item in curReceipt?.WorkplacePays)
+                    foreach (var item in curReceipt.WorkplacePays)
                         res += $"{item.Sum} | ";
                     res = res.Substring(0, res.Length - 2);
                 }
                 return res;
             }
         }
-        public string SumTotalManyPayments { get { return $"Загальна сума: {curReceipt.SumTotal}₴"; } }
+        public string SumTotalManyPayments { get { return $"Загальна сума: {curReceipt?.SumTotal??0}₴"; } }
         public bool IsCashRegister { get { return (Global.TypeWorkplaceCurrent == eTypeWorkplace.CashRegister); } }
 
         public System.Drawing.Color GetFlagColor(eStateMainWindows pStateMainWindows, eTypeAccess pTypeAccess, eStateScale pSS)
