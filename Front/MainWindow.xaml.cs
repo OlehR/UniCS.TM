@@ -30,7 +30,7 @@ using QRCoder;
 using Equipments.Model;
 using Pr = Equipments.Model.Price;
 using ModernExpo.SelfCheckout.Utils;
-using LibVLCSharp.Shared;
+//using LibVLCSharp.Shared;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace Front
@@ -404,7 +404,7 @@ namespace Front
             if (Directory.Exists(DirName))
                 PathVideo = Directory.GetFiles(DirName);
 
-            /*if (PathVideo != null && PathVideo.Length != 0)
+            if (PathVideo != null && PathVideo.Length != 0)
             {                
                    StartVideo.Source = new Uri(PathVideo[0]);
                    StartVideo.Play();
@@ -413,7 +413,7 @@ namespace Front
                        StartVideo.Position = new TimeSpan(0, 0, 0, 0, 1);
                        StartVideo.Play();
                    };
-            }*/
+            }
 
             DirName = Path.Combine(Global.PathPictures, "Logo");
             if (Directory.Exists(DirName))
@@ -539,7 +539,7 @@ namespace Front
             SetStateView(eStateMainWindows.StartWindow);
             SetWorkPlace();
             Task.Run(() => Bl.ds.SyncDataAsync());
-            Loaded += (a, b) => { IsLoading = true; StarVideo(); };
+          //  Loaded += (a, b) => { IsLoading = true; StarVideo(); };
         }
 
         bool IsLoading = false;
@@ -554,7 +554,7 @@ namespace Front
             var Ch = aa.Length == 2 && aa[0] == 'D' ? aa[1] : aa[0];
             EF.SetKey((int)key, Ch);
         }
-
+        /*
         Media media;
         LibVLCSharp.Shared.MediaPlayer _mediaPlayer;
         private void VideoView_Loaded(object sender=null, RoutedEventArgs e=null)
@@ -567,15 +567,39 @@ namespace Front
                 
                 StartVideo.MediaPlayer = _mediaPlayer;
 
-                media = new Media(_libVLC, new Uri(PathVideo[0]));// "D:\\pictures\\Video\\1.mp4")); //"http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")))
+                media = new Media(_libVLC, new Uri(PathVideo[0]));// "D:\\pictures\\Video\\1.mp4"));
                 media.AddOption(":input-repeat=65535");
                 StartVideo.MediaPlayer.Play(media);
                 //StartVideo.MediaPlayer.EndReached += MediaPlayer_EndReached;
             }
         }
         
+        void StarVideo(eStateMainWindows? pState=null)
+        {
+            if (pState == null)
+                pState = State;
+  
+            if (StartVideo != null && StartVideo.MediaPlayer == null && IsLoading && !IsCashRegister)
+                VideoView_Loaded();
 
-        /*private void MediaPlayer_EndReached(object sender, EventArgs e)
+
+            if (StartVideo?.MediaPlayer != null)
+            {
+                if (pState != eStateMainWindows.StartWindow && StartVideo.MediaPlayer.IsPlaying)
+                {
+                    StartVideo.MediaPlayer.SetPause(true);
+                    StartVideo.Visibility=Visibility.Collapsed;
+                }
+                if (pState == eStateMainWindows.StartWindow && !IsCashRegister && !StartVideo.MediaPlayer.IsPlaying)
+                {
+                    StartVideo.Visibility = Visibility.Visible;
+                    StartVideo.MediaPlayer.SetPause(false);                   
+                }
+            }
+        }
+
+
+        private void MediaPlayer_EndReached(object sender, EventArgs e)
         {
             return;
             Dispatcher.BeginInvoke(new ThreadStart(() =>
@@ -763,7 +787,12 @@ namespace Front
                     if (pSMV != eStateMainWindows.WaitAdminLogin)
                     {
                         TypeAccessWait = pTypeAccess;
-                    }                    
+                    }
+
+                    if (pSMV != eStateMainWindows.StartWindow && State == eStateMainWindows.StartWindow)
+                        StartVideo.Pause();
+                    if (pSMV == eStateMainWindows.StartWindow && State != eStateMainWindows.StartWindow && IsCashRegister == false)
+                        StartVideo.Play();
 
                     //Якщо 
                     if (pSMV == eStateMainWindows.NotDefine)
@@ -1135,27 +1164,10 @@ namespace Front
                     SetPropertyChanged();
                 }));
                 var res = r.Wait(new TimeSpan(0, 0, 0, 0, 200));
-                StarVideo();
+                //StarVideo();
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"End res=>{res} pSMV={pSMV}/{State}, pTypeAccess={pTypeAccess}/{TypeAccessWait}, pRW ={pRW} , pCW={pCW},  pS={pS}", eTypeLog.Full);
             }
         }
-
-        void StarVideo(eStateMainWindows? pState=null)
-        {
-            if (pState == null)
-                pState = State;
-            if (StartVideo != null && StartVideo.MediaPlayer == null && IsLoading && !IsCashRegister)
-                VideoView_Loaded();
-
-            if (StartVideo?.MediaPlayer != null)
-            {
-                if (pState != eStateMainWindows.StartWindow)
-                    StartVideo?.MediaPlayer.SetPause(true);
-                if (pState == eStateMainWindows.StartWindow && !IsCashRegister)
-                    StartVideo?.MediaPlayer.SetPause(false);
-            }
-        }
-
 
         private void _Delete(object sender, RoutedEventArgs e)
         {
@@ -1273,7 +1285,7 @@ namespace Front
 
         private void StartBuy(object sender, RoutedEventArgs e)
         {
-            StarVideo(eStateMainWindows.WaitInput);
+            //StarVideo(eStateMainWindows.WaitInput);
             Blf.NewReceipt();
             SetStateView(eStateMainWindows.WaitInput);
         }

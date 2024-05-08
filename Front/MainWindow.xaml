@@ -6,15 +6,14 @@
         xmlns:keyboard="clr-namespace:OnScreenKeyboardControl.Keyboard"
         xmlns:local="clr-namespace:Front" 
         xmlns:onScreenKeyboardControl="clr-namespace:OnScreenKeyboardControl"
-        xmlns:uc="clr-namespace:Front.Control" 
-        xmlns:vlc="clr-namespace:LibVLCSharp.WPF;assembly=LibVLCSharp.WPF"
+        xmlns:uc="clr-namespace:Front.Control"       
         mc:Ignorable="d"
         Title="MainWindow" 
         WindowState="Maximized"
         WindowStyle="None"
         Height="768" Width="1024"        
         >
-
+    <!--  xmlns:vlc="clr-namespace:LibVLCSharp.WPF;assembly=LibVLCSharp.WPF"-->
     <Window.DataContext>
         <onScreenKeyboardControl:ViewModel/>
     </Window.DataContext>
@@ -2159,31 +2158,31 @@ Mode=FindAncestor, AncestorType=Window}}"/>
                 Grid.Column="0" Grid.ColumnSpan="4"
                  Name="StartShopping" Visibility="Collapsed" Grid.ZIndex="2" >
             <Grid x:Name="MP">
-                <!--  <Button Style="{StaticResource TransparentButton}" Click="StartBuy" Panel.ZIndex="3"/> -->
+                <Button Style="{StaticResource TransparentButton}" Click="StartBuy" Panel.ZIndex="3"/>
 
-               <!-- <Button Margin="10,10,10,100"  Opacity="0.7" Style="{StaticResource StartButtun}"  FontSize="48" Click="StartBuy"  Grid.ZIndex="2"
-                         Height="70" Width="500" VerticalAlignment="Bottom">
+                <Button Margin="10,10,10,100"  Opacity="0.7" Style="{StaticResource StartButtun}"  FontSize="48" Click="StartBuy"  Grid.ZIndex="2"
+                     Height="70" Width="500" VerticalAlignment="Bottom">
                     <StackPanel Orientation="Horizontal">
                         <Image  Height="50" Width="50"  Source="icons\shoppingCart.png"></Image>
                         <TextBlock FontSize="50" Text="{DynamicResource startShopping}" FontFamily="Source Sans Pro"   Margin="5,10,5,0"/>
                     </StackPanel>
-                </Button> -->
+                </Button>
 
                 <!--<Image Source="icons\VopakLogo.png" Height="500"/>-->
                 <!--<MediaElement   Name="StartVideo" Source="icons\sparVideo.mp4" LoadedBehavior="Manual" Volume="0"   />-->
 
-                <!--<MediaElement Name="StartVideo" Volume="0" LoadedBehavior="Manual" ></MediaElement>-->
+                <MediaElement Name="StartVideo" Volume="0" LoadedBehavior="Manual" >
+                </MediaElement>
 
-                <vlc:VideoView x:Name="StartVideo">
-                    <Button Margin="10,10,10,100"  Opacity="0.7" Style="{StaticResource StartButtun}"  FontSize="48" Click="StartBuy"  Grid.ZIndex="2"
+                <!--<vlc:VideoView x:Name="StartVideo">
+                    <Button Margin="10,10,10,100"  Opacity="0.7" Style="{StaticResource StartButtun}"  FontSize="48" Click="StartBuy"  
          Height="70" Width="500" VerticalAlignment="Bottom">
                         <StackPanel Orientation="Horizontal">
                             <Image  Height="50" Width="50"  Source="icons\shoppingCart.png"></Image>
                             <TextBlock FontSize="50" Text="{DynamicResource startShopping}" FontFamily="Source Sans Pro"   Margin="5,10,5,0"/>
                         </StackPanel>
                     </Button>
-
-                </vlc:VideoView>
+                </vlc:VideoView>-->
 
             </Grid>
         </Border>
