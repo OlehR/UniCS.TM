@@ -565,7 +565,7 @@ namespace Front
                 
                 StartVideo.MediaPlayer = _mediaPlayer;
 
-                media = new Media(_libVLC, new Uri(PathVideo[0])); // "D:\\pictures\\Video\\1.mp4")); "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")))
+                media = new Media(_libVLC, new Uri(PathVideo[0]));// "D:\\pictures\\Video\\1.mp4")); //"http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")))
                 media.AddOption(":input-repeat=65535");//
                 
                 StartVideo.MediaPlayer.EndReached += MediaPlayer_EndReached;
@@ -575,7 +575,6 @@ namespace Front
                 StartVideo.TouchDown += StartVideo_TouchEnter;
 
                 StartVideo.MediaPlayer.Play(media);
-
             }
         }
 
@@ -598,15 +597,6 @@ namespace Front
                 StartVideo.MediaPlayer.Play(media);
             }
             ));
-            
-           // ThreadPool.QueueUserWorkItem((x) => this.StartVideo.MediaPlayer.Stop());
-           //StartVideo.MediaPlayer = _mediaPlayer;
-
-            //if (StartVideo.MediaPlayer.IsPlaying)            
-            //   StartVideo.MediaPlayer.Pause();
-
-            //if (!StartVideo.MediaPlayer.IsPlaying)            
-            //    StartVideo.MediaPlayer.Play(media);
         }
 
         public void SetWorkPlace()
@@ -788,10 +778,13 @@ namespace Front
                         TypeAccessWait = pTypeAccess;
                     }
 
-                    if (pSMV != eStateMainWindows.StartWindow && State == eStateMainWindows.StartWindow)
-                        StartVideo.MediaPlayer.SetPause(true);
-                    if (pSMV == eStateMainWindows.StartWindow && State != eStateMainWindows.StartWindow && IsCashRegister == false)
-                        StartVideo.MediaPlayer.SetPause(false);
+                    if (StartVideo?.MediaPlayer != null)
+                    {
+                        if (pSMV != eStateMainWindows.StartWindow && State == eStateMainWindows.StartWindow)
+                            StartVideo?.MediaPlayer.SetPause(true);
+                        if (pSMV == eStateMainWindows.StartWindow && State != eStateMainWindows.StartWindow && IsCashRegister == false)
+                            StartVideo?.MediaPlayer.SetPause(false);
+                    }
 
                     //Якщо 
                     if (pSMV == eStateMainWindows.NotDefine)

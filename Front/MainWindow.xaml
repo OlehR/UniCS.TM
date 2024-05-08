@@ -2174,7 +2174,7 @@ Mode=FindAncestor, AncestorType=Window}}"/>
 
                 <!--<MediaElement Name="StartVideo" Volume="0" LoadedBehavior="Manual" ></MediaElement>-->
 
-                <vlc:VideoView x:Name="StartVideo"  Grid.ZIndex="1"/>
+                <vlc:VideoView x:Name="StartVideo"  Grid.ZIndex="1"/> 
 
                 
             </Grid>
