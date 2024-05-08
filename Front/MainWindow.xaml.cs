@@ -559,12 +559,13 @@ namespace Front
         {
             if (PathVideo != null && PathVideo.Length != 0)
             {
+
                 var _libVLC = new LibVLC( enableDebugLogs: true);
                 _mediaPlayer = new LibVLCSharp.Shared.MediaPlayer(_libVLC);
                 
                 StartVideo.MediaPlayer = _mediaPlayer;
 
-                media = new Media(_libVLC, new Uri("D:\\pictures\\Video\\1.mp4")); //VopakVideo "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")))
+                media = new Media(_libVLC, new Uri(PathVideo[0])); // "D:\\pictures\\Video\\1.mp4")); "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")))
                 media.AddOption(":input-repeat=65535");//
                 
                 StartVideo.MediaPlayer.EndReached += MediaPlayer_EndReached;
