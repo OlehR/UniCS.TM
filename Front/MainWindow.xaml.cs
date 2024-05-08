@@ -559,6 +559,11 @@ namespace Front
         {
             if (PathVideo != null && PathVideo.Length != 0)
             {
+                 
+                StartVideo.MouseDown += StartVideo_MouseDown;
+                //StartVideo.MouseCli += 
+                StartVideo.TouchEnter += StartVideo_TouchEnter;
+                StartVideo.TouchDown += StartVideo_TouchEnter;
 
                 var _libVLC = new LibVLC( enableDebugLogs: true);
                 _mediaPlayer = new LibVLCSharp.Shared.MediaPlayer(_libVLC);
@@ -566,15 +571,9 @@ namespace Front
                 StartVideo.MediaPlayer = _mediaPlayer;
 
                 media = new Media(_libVLC, new Uri(PathVideo[0]));// "D:\\pictures\\Video\\1.mp4")); //"http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")))
-                media.AddOption(":input-repeat=65535");//
-                
-                StartVideo.MediaPlayer.EndReached += MediaPlayer_EndReached;
-                StartVideo.MouseDown += StartVideo_MouseDown;
-                //StartVideo.MouseCli += 
-                StartVideo.TouchEnter += StartVideo_TouchEnter;
-                StartVideo.TouchDown += StartVideo_TouchEnter;
-
+                media.AddOption(":input-repeat=65535");
                 StartVideo.MediaPlayer.Play(media);
+                //StartVideo.MediaPlayer.EndReached += MediaPlayer_EndReached;
             }
         }
 
