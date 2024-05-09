@@ -344,7 +344,7 @@ namespace SharedLib
                     VR.SendMessage(w.IdWorkplace, $"{pUser?.NameUser} => {w.NameWares}", w.Articl, w.Quantity, w.Sum, VR.eTypeVRMessage.UpdateWares);
                 }
                 if (Global.RecalcPriceOnLine)
-                    db.RecalcPriceAsync(pReceiptWaresId,pUser);
+                    db.RecalcPriceAsync(pReceiptWaresId, pQuantity==0?pUser:null);
             }
             return res;
         }

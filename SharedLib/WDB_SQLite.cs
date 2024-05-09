@@ -340,7 +340,7 @@ namespace SharedLib
                     if (r?.Wares?.Any() == true)
                     {
                         var W = r.GetLastWares;
-                        if (W != null)
+                        if (W != null && pUser==null) // dblf
                             VR.SendMessage(W.IdWorkplace, pUser == null ? W.NameWares : $"{pUser.NameUser}=>{W.NameWares}", W.Articl, W.Quantity, W.Sum, VR.eTypeVRMessage.AddWares, r.SumTotal);
                     }
                 }

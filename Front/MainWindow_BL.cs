@@ -300,7 +300,7 @@ namespace Front
                 case eTypeAccess.DelWares:
                     if (curReceipt?.IsLockChange == false)
                     {
-                        Bl.ChangeQuantity(CurWares, 0);
+                        Bl.ChangeQuantity(CurWares, 0,pUser);
                         CurWares = null;//.Quantity = 0;
                         TypeAccessWait = eTypeAccess.NoDefine;
                         SetStateView(eStateMainWindows.WaitInput);
