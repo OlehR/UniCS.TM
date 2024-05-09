@@ -294,7 +294,7 @@ namespace Front
                     CustomMessage.Show($"Не достатньо прав для операції {TypeAccessWait} {Environment.NewLine}в {pUser.NameUser} з правами {pUser.TypeUser}", "Увага", eTypeMessage.Error);
                 return false;
             }
-
+            VR.SendMessage(Global.IdWorkPlace, $"{TypeAccessWait} =>{pUser.NameUser}", 0, 0, curReceipt?.SumTotal ?? 0, VR.eTypeVRMessage.Confirm);
             switch (TypeAccessWait)
             {
                 case eTypeAccess.DelWares:
