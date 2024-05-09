@@ -29,8 +29,7 @@ using Front.ViewModels;
 using QRCoder;
 using Equipments.Model;
 using Pr = Equipments.Model.Price;
-using ModernExpo.SelfCheckout.Utils;
-//using LibVLCSharp.Shared;
+using LibVLCSharp.Shared;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace Front
@@ -404,7 +403,7 @@ namespace Front
             if (Directory.Exists(DirName))
                 PathVideo = Directory.GetFiles(DirName);
 
-            if (PathVideo != null && PathVideo.Length != 0)
+            /*if (PathVideo != null && PathVideo.Length != 0)
             {                
                    StartVideo.Source = new Uri(PathVideo[0]);
                    StartVideo.Play();
@@ -413,7 +412,7 @@ namespace Front
                        StartVideo.Position = new TimeSpan(0, 0, 0, 0, 1);
                        StartVideo.Play();
                    };
-            }
+            }*/
 
             DirName = Path.Combine(Global.PathPictures, "Logo");
             if (Directory.Exists(DirName))
@@ -477,7 +476,7 @@ namespace Front
                 {
                     //curReceipt = LastR;               
                     SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, new CustomWindow(eWindows.RestoreLastRecipt, LastR.SumReceipt.ToString()));
-                    return;
+                    //return;
                 }
             }
             else //Касове місце
@@ -509,6 +508,7 @@ namespace Front
                 {
                     var ms = ex.Message;
                 }
+                SetStateView(eStateMainWindows.StartWindow);
             }
 
             // Спочатку перевірте наявність додаткових екранів
@@ -535,11 +535,10 @@ namespace Front
                 SecondMonitorWin.Show();
                 SecondMonitorWin.WindowState = WindowState.Maximized;
             }
-
-            SetStateView(eStateMainWindows.StartWindow);
+            
             SetWorkPlace();
             Task.Run(() => Bl.ds.SyncDataAsync());
-          //  Loaded += (a, b) => { IsLoading = true; StarVideo(); };
+            Loaded += (a, b) => { IsLoading = true; StarVideo(); };
         }
 
         bool IsLoading = false;
@@ -554,7 +553,7 @@ namespace Front
             var Ch = aa.Length == 2 && aa[0] == 'D' ? aa[1] : aa[0];
             EF.SetKey((int)key, Ch);
         }
-        /*
+        
         Media media;
         LibVLCSharp.Shared.MediaPlayer _mediaPlayer;
         private void VideoView_Loaded(object sender=null, RoutedEventArgs e=null)
@@ -579,7 +578,7 @@ namespace Front
             if (pState == null)
                 pState = State;
   
-            if (StartVideo != null && StartVideo.MediaPlayer == null && IsLoading && !IsCashRegister)
+            if (StartVideo != null && StartVideo.MediaPlayer == null && IsLoading && !IsCashRegister && pState == eStateMainWindows.StartWindow)
                 VideoView_Loaded();
 
 
@@ -598,7 +597,7 @@ namespace Front
             }
         }
 
-
+        /*
         private void MediaPlayer_EndReached(object sender, EventArgs e)
         {
             return;
@@ -789,10 +788,10 @@ namespace Front
                         TypeAccessWait = pTypeAccess;
                     }
 
-                    if (pSMV != eStateMainWindows.StartWindow && State == eStateMainWindows.StartWindow)
+                    /*if (pSMV != eStateMainWindows.StartWindow && State == eStateMainWindows.StartWindow)
                         StartVideo.Pause();
                     if (pSMV == eStateMainWindows.StartWindow && State != eStateMainWindows.StartWindow && IsCashRegister == false)
-                        StartVideo.Play();
+                        StartVideo.Play();*/
 
                     //Якщо 
                     if (pSMV == eStateMainWindows.NotDefine)
@@ -1164,7 +1163,9 @@ namespace Front
                     SetPropertyChanged();
                 }));
                 var res = r.Wait(new TimeSpan(0, 0, 0, 0, 200));
-                //StarVideo();
+
+                Dispatcher.BeginInvoke(new ThreadStart(() => StarVideo()));
+                
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"End res=>{res} pSMV={pSMV}/{State}, pTypeAccess={pTypeAccess}/{TypeAccessWait}, pRW ={pRW} , pCW={pCW},  pS={pS}", eTypeLog.Full);
             }
         }
