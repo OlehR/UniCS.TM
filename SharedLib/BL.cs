@@ -305,7 +305,7 @@ namespace SharedLib
             return Res;
         }
 
-        public bool ChangeQuantity(IdReceiptWares pReceiptWaresId, decimal pQuantity)
+        public bool ChangeQuantity(IdReceiptWares pReceiptWaresId, decimal pQuantity,User pUser=null)
         {
             var State = GetStateReceipt(pReceiptWaresId);
             if (State != eStateReceipt.Prepare)
@@ -325,7 +325,7 @@ namespace SharedLib
                 if (pQuantity == 0)
                 {
                     db.DeleteReceiptWares(w);
-                    VR.SendMessage(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum, VR.eTypeVRMessage.DeleteWares);
+                    VR.SendMessage(w.IdWorkplace, $"{pUser?.NameUser} =>{w.NameWares}", w.Articl, w.Quantity, w.Sum, VR.eTypeVRMessage.DeleteWares);
                 }
                 else
                 {
@@ -341,10 +341,10 @@ namespace SharedLib
                     }
 
                     res = db.UpdateQuantityWares(w);
-                    VR.SendMessage(w.IdWorkplace, w.NameWares, w.Articl, w.Quantity, w.Sum, VR.eTypeVRMessage.UpdateWares);
+                    VR.SendMessage(w.IdWorkplace, $"{pUser?.NameUser} => {w.NameWares}", w.Articl, w.Quantity, w.Sum, VR.eTypeVRMessage.UpdateWares);
                 }
                 if (Global.RecalcPriceOnLine)
-                    db.RecalcPriceAsync(pReceiptWaresId);
+                    db.RecalcPriceAsync(pReceiptWaresId,pUser);
             }
             return res;
         }

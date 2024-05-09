@@ -329,23 +329,19 @@ namespace SharedLib
                 return strTDU;
         }
 
-        public Task RecalcPriceAsync(IdReceiptWares pIdReceiptWares)
+        public Task RecalcPriceAsync(IdReceiptWares pIdReceiptWares, User? pUser = null)
         {
             return Task.Run(() => RecalcPrice(pIdReceiptWares)).ContinueWith(async res =>
             {
                 if (await res)
-                {
-                    //Console.WriteLine(OnReceiptCalculationComplete != null);
-                    var r = //ViewReceiptWares(new IdReceiptWares(pIdReceiptWares, 0), true);//вертаємо весь чек.
-                    ViewReceipt(pIdReceiptWares, true);
+                {              
+                    var r = ViewReceipt(pIdReceiptWares, true);
                     Global.OnReceiptCalculationComplete?.Invoke(r);
-                    if (r?.Wares == null || r?.Wares?.Count() == 0)
-                        return;
-                    var parW = r.Wares.Last();
-                    if (parW != null)
+                    if (r?.Wares?.Any() == true)
                     {
-                        var SumAll = r.Wares.Sum(d => d.Sum - d.SumDiscount);
-                        VR.SendMessage(parW.IdWorkplace, parW.NameWares, parW.Articl, parW.Quantity, parW.Sum, VR.eTypeVRMessage.AddWares, SumAll);
+                        var W = r.GetLastWares;
+                        if (W != null)
+                            VR.SendMessage(W.IdWorkplace, pUser == null ? W.NameWares : $"{pUser.NameUser}=>{W.NameWares}", W.Articl, W.Quantity, W.Sum, VR.eTypeVRMessage.AddWares, r.SumTotal);
                     }
                 }
             });
