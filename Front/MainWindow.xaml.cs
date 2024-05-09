@@ -893,6 +893,7 @@ namespace Front
                     PaymentWindowKSO_UC.Visibility = Visibility.Collapsed;
                     StartShopping.Visibility = Visibility.Collapsed;
                     StartShoppingLogo.Visibility = Visibility.Collapsed;
+                    StartShoppingButtons.Visibility = Visibility.Collapsed;
                     ConfirmAge.Visibility = Visibility.Collapsed;
                     CustomWindows.Visibility = Visibility.Collapsed;
                     ErrorBackground.Visibility = Visibility.Collapsed;
@@ -926,7 +927,10 @@ namespace Front
                     {
                         case eStateMainWindows.StartWindow:
                             if (PathVideo != null && PathVideo.Length != 0 && IsCashRegister == false)
+                            {
+                                StartShoppingButtons.Visibility = Visibility.Visible;
                                 StartShopping.Visibility = Visibility.Visible;
+                            }
                             else
                                 StartShoppingLogo.Visibility = Visibility.Visible;
 
