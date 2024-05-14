@@ -1975,35 +1975,56 @@ Mode=FindAncestor, AncestorType=Window}}"/>
                      Style="{StaticResource Default}" HorizontalContentAlignment="Stretch"
                          Click="FindClientByPhoneClick"
                            Visibility="Visible">
-                <TextBlock HorizontalAlignment="Center"   Text="{Binding ClientName, RelativeSource={RelativeSource 
+                <StackPanel Orientation="Horizontal">
+                    <Image HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Image.Style>
+                            <Style TargetType="Image">
+                                <Setter Property="Source" Value="icons\warning.png"/>
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Width" Value="50"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Client.StatusCard, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="Block">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Client.StatusCard, RelativeSource={RelativeSource 
+                                                 Mode=FindAncestor, AncestorType=Window}}" Value="Delete">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Image.Style>
+                    </Image>
+                    <TextBlock HorizontalAlignment="Center"   Text="{Binding ClientName, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Setter Property="FontSize" Value="18" />
-                            <Setter Property="FontWeight" Value="SemiBold"/>
-                            <Setter Property="Foreground" Value="Gray"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Client.StatusCard, RelativeSource={RelativeSource 
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="FontSize" Value="18" />
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="Foreground" Value="Gray"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Client.StatusCard, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="Active">
-                                    <Setter Property="Foreground" Value="Black" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                        <Setter Property="Foreground" Value="Black" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
-                                    <Setter Property="FontSize" Value="35" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                        <Setter Property="FontSize" Value="35" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="VerticalMonitorKSO">
-                                    <Setter Property="FontSize" Value="24" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                                        <Setter Property="FontSize" Value="24" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
-                                    <Setter Property="FontSize" Value="18" />
-                                </DataTrigger>
-                            </Style.Triggers>
+                                        <Setter Property="FontSize" Value="18" />
+                                    </DataTrigger>
+                                </Style.Triggers>
 
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </StackPanel>
             </Button>
 
             <Button  Grid.Column="3"  Grid.Row="0" Grid.RowSpan="2" FontSize="22" Click="_ButtonPayment">
