@@ -7,7 +7,6 @@
         xmlns:onScreenKeyboardControl="clr-namespace:OnScreenKeyboardControl"
         Title="Пошук товару"
         WindowStyle="None"
-        WindowState="Maximized"
         Height="768" Width="1024"
         mc:Ignorable="d">
     <Window.DataContext>

@@ -245,7 +245,7 @@ namespace Front
             get
             {
                 var res = "";
-                if ( curReceipt?.WorkplacePays?.Any()==true)
+                if (curReceipt?.WorkplacePays?.Any() == true)
                 {
                     foreach (var item in curReceipt.WorkplacePays)
                         res += $"{item.Sum} | ";
@@ -254,7 +254,7 @@ namespace Front
                 return res;
             }
         }
-        public string SumTotalManyPayments { get { return $"Загальна сума: {curReceipt?.SumTotal??0}₴"; } }
+        public string SumTotalManyPayments { get { return $"Загальна сума: {curReceipt?.SumTotal ?? 0}₴"; } }
         public bool IsCashRegister { get { return (Global.TypeWorkplaceCurrent == eTypeWorkplace.CashRegister); } }
 
         public System.Drawing.Color GetFlagColor(eStateMainWindows pStateMainWindows, eTypeAccess pTypeAccess, eStateScale pSS)
@@ -512,7 +512,7 @@ namespace Front
             }
 
             // Спочатку перевірте наявність додаткових екранів
-            if (System.Windows.Forms.Screen.AllScreens.Length > 1 && Global.TypeWorkplace==eTypeWorkplace.Both)
+            if (System.Windows.Forms.Screen.AllScreens.Length > 1 && Global.TypeWorkplace == eTypeWorkplace.Both)
             {
                 IsSecondMonitor = true;
                 // Отримайте інформацію про всі екрани
@@ -535,7 +535,7 @@ namespace Front
                 SecondMonitorWin.Show();
                 SecondMonitorWin.WindowState = WindowState.Maximized;
             }
-            
+
             SetWorkPlace();
             Task.Run(() => Bl.ds.SyncDataAsync());
             Loaded += (a, b) => { IsLoading = true; StarVideo(); };
@@ -553,17 +553,17 @@ namespace Front
             var Ch = aa.Length == 2 && aa[0] == 'D' ? aa[1] : aa[0];
             EF.SetKey((int)key, Ch);
         }
-        
+
         Media media;
         LibVLCSharp.Shared.MediaPlayer _mediaPlayer;
-        private void VideoView_Loaded(object sender=null, RoutedEventArgs e=null)
+        private void VideoView_Loaded(object sender = null, RoutedEventArgs e = null)
         {
 
             if (PathVideo != null && PathVideo.Length != 0)
-            {                 
-                 var _libVLC = new LibVLC( enableDebugLogs: true);
+            {
+                var _libVLC = new LibVLC(enableDebugLogs: true);
                 _mediaPlayer = new LibVLCSharp.Shared.MediaPlayer(_libVLC);
-                
+
                 StartVideo.MediaPlayer = _mediaPlayer;
 
                 media = new Media(_libVLC, new Uri(PathVideo[0]));// "D:\\pictures\\Video\\1.mp4"));
@@ -572,12 +572,12 @@ namespace Front
                 //StartVideo.MediaPlayer.EndReached += MediaPlayer_EndReached;
             }
         }
-        
-        void StarVideo(eStateMainWindows? pState=null)
+
+        void StarVideo(eStateMainWindows? pState = null)
         {
             if (pState == null)
                 pState = State;
-  
+
             if (StartVideo != null && StartVideo.MediaPlayer == null && IsLoading && !IsCashRegister && pState == eStateMainWindows.StartWindow)
                 VideoView_Loaded();
 
@@ -587,12 +587,12 @@ namespace Front
                 if (pState != eStateMainWindows.StartWindow && StartVideo.MediaPlayer.IsPlaying)
                 {
                     StartVideo.MediaPlayer.SetPause(true);
-                    StartVideo.Visibility=Visibility.Collapsed;
+                    StartVideo.Visibility = Visibility.Collapsed;
                 }
                 if (pState == eStateMainWindows.StartWindow && !IsCashRegister && !StartVideo.MediaPlayer.IsPlaying)
                 {
                     StartVideo.Visibility = Visibility.Visible;
-                    StartVideo.MediaPlayer.SetPause(false);                   
+                    StartVideo.MediaPlayer.SetPause(false);
                 }
             }
         }
@@ -804,11 +804,11 @@ namespace Front
                         State = pSMV;
                         SetPropertyChanged();
                         EF.SetColor(GetFlagColor(State, TypeAccessWait, CS.StateScale));
-                    }               
+                    }
 
 
-                //Зупиняєм пищання сканера
-                if (State != eStateMainWindows.ProcessPay)
+                    //Зупиняєм пищання сканера
+                    if (State != eStateMainWindows.ProcessPay)
                         EF.StopMultipleTone();
 
                     Blf.TimeScan();
@@ -1025,7 +1025,33 @@ namespace Front
                             break;
                         case eStateMainWindows.WaitFindWares:
                             FindWaresWin FWW = new FindWaresWin(this);
-                            FWW.Show();
+
+                            if (IsSecondMonitor)
+                            {
+                                System.Windows.Forms.Screen[] screens = System.Windows.Forms.Screen.AllScreens;
+
+                                // Виберіть другий екран (індекс 1, бо нульовий екран - це основний)
+                                System.Windows.Forms.Screen additionalScreen = Global.TypeWorkplaceCurrent == eTypeWorkplace.CashRegister ? screens[0] : screens[1];
+
+                                FWW.WindowStartupLocation = WindowStartupLocation.Manual;
+                                FWW.Left = additionalScreen.WorkingArea.Left;
+                                FWW.Top = additionalScreen.WorkingArea.Top;
+                                FWW.Width = additionalScreen.WorkingArea.Width;
+                                FWW.Height = additionalScreen.WorkingArea.Height;
+
+                                // Покажіть вікно
+                                FWW.Show();
+                                FWW.WindowState = WindowState.Maximized;
+
+                            }
+                            else
+                            {
+
+                                FWW.WindowState = WindowState.Maximized;
+                                FWW.Show();
+                            }
+                                
+                            
                             break;
                         case eStateMainWindows.ProcessPay:
                             PaymentWindowKSO_UC.PaymentImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/newPaymentTerminal.png"));
@@ -1169,7 +1195,7 @@ namespace Front
                 var res = r.Wait(new TimeSpan(0, 0, 0, 0, 200));
 
                 Dispatcher.BeginInvoke(new ThreadStart(() => StarVideo()));
-                
+
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"End res=>{res} pSMV={pSMV}/{State}, pTypeAccess={pTypeAccess}/{TypeAccessWait}, pRW ={pRW} , pCW={pCW},  pS={pS}", eTypeLog.Full);
             }
         }
@@ -1291,6 +1317,10 @@ namespace Front
         private void StartBuy(object sender, RoutedEventArgs e)
         {
             //StarVideo(eStateMainWindows.WaitInput);
+            StartAddWares();
+        }
+        public void StartAddWares()
+        {
             Blf.NewReceipt();
             SetStateView(eStateMainWindows.WaitInput);
         }

@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using static System.Windows.Forms.AxHost;
 using SharedLib;
+using static Front.MainWindow;
 
 namespace Front
 {
@@ -28,6 +29,43 @@ namespace Front
         System.Windows.Forms.Screen additionalScreen = System.Windows.Forms.Screen.AllScreens.Count() > 1 ? System.Windows.Forms.Screen.AllScreens[1] : null;
         public bool IsKSO { get; set; } = false; // замінити на Global.TypeWorkplaceCurrent
         public bool IsShowStartWindows { get => MW.State == eStateMainWindows.StartWindow && !IsKSO; }
+        public int WidthScreen { get { return (int)SystemParameters.PrimaryScreenWidth; } }
+        public WidthHeaderReceipt widthHeaderReceiptSM { get; set; }
+        public eTypeMonitor TypeMonitor
+        {
+            get
+            {
+                if (SystemParameters.PrimaryScreenWidth > SystemParameters.PrimaryScreenHeight && SystemParameters.PrimaryScreenWidth <= 1024)
+                    return eTypeMonitor.HorisontalMonitorRegular;
+                else if (SystemParameters.PrimaryScreenWidth > SystemParameters.PrimaryScreenHeight && SystemParameters.PrimaryScreenWidth == 1920)
+                    return eTypeMonitor.HorisontalMonitorKSO;
+                else if (SystemParameters.PrimaryScreenWidth < SystemParameters.PrimaryScreenHeight)
+                    return eTypeMonitor.VerticalMonitorKSO;
+                else
+                    return eTypeMonitor.AnotherTypeMonitor;
+                //return eTypeMonitor.HorisontalMonitorRegular;
+            }
+        }
+        public void calculateWidthHeaderReceipt(eTypeMonitor TypeMonitor)
+        {
+            var coefWidth = WidthScreen / 165;
+            switch (TypeMonitor)
+            {
+                //case eTypeMonitor.HorisontalMonitorKSO:
+                //    widthHeaderReceiptSM = new WidthHeaderReceipt(1100, 100, 290, 130, 130, 140);
+                //    break;
+                //case eTypeMonitor.VerticalMonitorKSO:
+                //    widthHeaderReceiptSM = new WidthHeaderReceipt(400, 90, 230, 120, 100, 150);
+                //    break;
+                //int widthName, int widthWastebasket, int widthCountWares, int widthWeight, int widthPrice, int widthTotalPrise
+                case eTypeMonitor.HorisontalMonitorRegular:
+                    widthHeaderReceiptSM = new WidthHeaderReceipt(260, 0, 95, 0, 75, 90);
+                    break;
+                default:
+                    widthHeaderReceiptSM = new WidthHeaderReceipt(54 * coefWidth, 5 * coefWidth, 15 * coefWidth, 8 * coefWidth, 8 * coefWidth, 8 * coefWidth);
+                    break;
+            }
+        }
         public SecondMonitorWindows(MainWindow pMW)
         {
             InitializeComponent();
@@ -87,6 +125,8 @@ namespace Front
                 }
                 catch (Exception e) { }
             };
+            UpdateTypeWorkplace();
+            calculateWidthHeaderReceipt(TypeMonitor);
         }
 
         public void ScrolDown()
@@ -130,11 +170,13 @@ namespace Front
             {
                 // Якщо пройшло більше 5 хвилин з останнього оновлення, відображаємо кнопку Start
                 StartBuyButton.Visibility = Visibility.Visible;
+                TransparentStartBuyButton.Visibility = Visibility.Visible;
             }
             else
             {
                 // Інакше, продовжуємо відлік
                 StartBuyButton.Visibility = Visibility.Collapsed;
+                TransparentStartBuyButton.Visibility = Visibility.Collapsed;
                 timer.Start();
             }
         }
@@ -150,7 +192,7 @@ namespace Front
             //MessageBox.Show("Придумати що тоді робити");
         }
 
-        private void SwapScrean(bool isKSO)
+        private void UpdateTypeWorkplace(bool isKSO = false)
         {
             IsKSO = isKSO;
 
@@ -160,9 +202,13 @@ namespace Front
 
             OnPropertyChanged(nameof(IsKSO));
             OnPropertyChanged(nameof(IsShowStartWindows));
+
+        }
+        private void SwapScrean(bool isKSO)
+        {
+            UpdateTypeWorkplace(isKSO);
             this.WindowState = WindowState.Normal;
             MW.WindowState = WindowState.Normal;
-
             if (isKSO)
             {
                 this.Left = mainScreen.WorkingArea.Left;
@@ -171,6 +217,7 @@ namespace Front
 
                 MW.Left = additionalScreen.WorkingArea.Left;
                 MW.Top = additionalScreen.WorkingArea.Top;
+                MW.StartAddWares();
             }
             else
             {

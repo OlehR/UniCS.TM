@@ -84,7 +84,7 @@ namespace Front
         {
             CalculateHeightKeyboard();
             InitializeComponent();
-            WindowState = WindowState.Maximized;
+           // WindowState = WindowState.Maximized;
             //WindowStyle = WindowStyle.None;
             CountRowWares = IsHorizontalScreen ? 5 : 2;
             CountColumWares = IsHorizontalScreen ? 3 : 5;
