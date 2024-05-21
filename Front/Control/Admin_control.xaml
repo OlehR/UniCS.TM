@@ -2001,7 +2001,7 @@
                                         </StackPanel>
                                     </StackPanel>
                                 </GroupBox>
-                                <GroupBox Grid.Column="1" Grid.Row="1" Header="Вибір типу каси">
+                                <!--<GroupBox Grid.Column="1" Grid.Row="1" Header="Вибір типу каси">
                                     <GroupBox.Style>
                                         <Style TargetType="GroupBox">
                                             <Setter Property="Visibility" Value="Collapsed" />
@@ -2025,7 +2025,7 @@
                                             </ComboBox.ItemTemplate>
                                         </ComboBox>
                                     </StackPanel>
-                                </GroupBox>
+                                </GroupBox>-->
                             </StackPanel>
                         </ScrollViewer>
 

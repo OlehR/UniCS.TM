@@ -12,6 +12,7 @@ using System.Windows.Threading;
 using static System.Windows.Forms.AxHost;
 using SharedLib;
 using static Front.MainWindow;
+using LibVLCSharp.Shared;
 
 namespace Front
 {
@@ -27,10 +28,11 @@ namespace Front
         private DateTime lastUpdateTime;
         System.Windows.Forms.Screen mainScreen = System.Windows.Forms.Screen.AllScreens[0];
         System.Windows.Forms.Screen additionalScreen = System.Windows.Forms.Screen.AllScreens.Count() > 1 ? System.Windows.Forms.Screen.AllScreens[1] : null;
-        public bool IsKSO { get; set; } = false; // замінити на Global.TypeWorkplaceCurrent
+        public bool IsKSO { get; set; } = false;
         public bool IsShowStartWindows { get => MW.State == eStateMainWindows.StartWindow && !IsKSO; }
         public int WidthScreen { get { return (int)SystemParameters.PrimaryScreenWidth; } }
         public WidthHeaderReceipt widthHeaderReceiptSM { get; set; }
+        bool IsLoading = false;
         public eTypeMonitor TypeMonitor
         {
             get
@@ -74,25 +76,25 @@ namespace Front
             ListWares = MW.ListWares;
             WaresList.ItemsSource = ListWares;
 
-            //Показ відео при старті
-            if (MW.PathVideo != null && MW.PathVideo.Length != 0)
-            {
-                StartVideo.Source = new Uri(MW.PathVideo[0]);
-                StartVideo.Play();
-                StartVideo.MediaEnded += (object sender, RoutedEventArgs e) =>
-                {
-                    StartVideo.Position = new TimeSpan(0, 0, 0, 0, 1);
-                    StartVideo.Play();
-                };
+            ////Показ відео при старті
+            //if (MW.PathVideo != null && MW.PathVideo.Length != 0)
+            //{
+            //    StartVideo.Source = new Uri(MW.PathVideo[0]);
+            //    StartVideo.Play();
+            //    StartVideo.MediaEnded += (object sender, RoutedEventArgs e) =>
+            //    {
+            //        StartVideo.Position = new TimeSpan(0, 0, 0, 0, 1);
+            //        StartVideo.Play();
+            //    };
 
-                SecondVideo.Source = new Uri(MW.PathVideo[0]);
-                SecondVideo.Stop();
-                SecondVideo.MediaEnded += (object sender, RoutedEventArgs e) =>
-                {
-                    StartVideo.Position = new TimeSpan(0, 0, 0, 0, 1);
-                    StartVideo.Play();
-                };
-            }
+            //    SecondVideo.Source = new Uri(MW.PathVideo[0]);
+            //    SecondVideo.Stop();
+            //    SecondVideo.MediaEnded += (object sender, RoutedEventArgs e) =>
+            //    {
+            //        StartVideo.Position = new TimeSpan(0, 0, 0, 0, 1);
+            //        StartVideo.Play();
+            //    };
+            //}
             // Ініціалізуємо таймер
             timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(5); // Встановлюємо інтервал таймера на 5 хвилин
@@ -127,8 +129,72 @@ namespace Front
             };
             UpdateTypeWorkplace();
             calculateWidthHeaderReceipt(TypeMonitor);
+            Loaded += (a, b) => { IsLoading = true; StarVideo(); };
+            
         }
+        void StarVideo(eStateMainWindows? pState = null)
+        {
+            if (pState == null)
+                pState = MW.State;
 
+            if (StartVideo != null && StartVideo.MediaPlayer == null && IsLoading && pState == eStateMainWindows.StartWindow)
+                VideoView_Loaded();
+            if (SecondVideo != null && SecondVideo.MediaPlayer == null && IsLoading)
+            {
+                SecondVideoView_Loaded();
+            }
+
+            if (StartVideo?.MediaPlayer != null)
+            {
+                if (pState != eStateMainWindows.StartWindow && StartVideo.MediaPlayer.IsPlaying)
+                {
+                    StartVideo.MediaPlayer.SetPause(true);
+                    StartVideo.Visibility = Visibility.Collapsed;
+                }
+                if (pState == eStateMainWindows.StartWindow && !MW.IsCashRegister && !StartVideo.MediaPlayer.IsPlaying)
+                {
+                    StartVideo.Visibility = Visibility.Visible;
+                    StartVideo.MediaPlayer.SetPause(false);
+                }
+            }
+            if (pState == eStateMainWindows.StartWindow)
+            {
+                SecondVideo.Visibility = Visibility.Collapsed;
+                SecondVideo.MediaPlayer.SetPause(true);
+            }
+        }
+        Media media;
+        LibVLCSharp.Shared.MediaPlayer _mediaPlayer;
+        private void VideoView_Loaded(object sender = null, RoutedEventArgs e = null)
+        {
+
+            if (MW.PathVideo != null && MW.PathVideo.Length != 0)
+            {
+                var _libVLC = new LibVLC(enableDebugLogs: true);
+                _mediaPlayer = new LibVLCSharp.Shared.MediaPlayer(_libVLC);
+
+                StartVideo.MediaPlayer = _mediaPlayer;
+
+                media = new Media(_libVLC, new Uri(MW.PathVideo[0]));
+                media.AddOption(":input-repeat=65535");
+                StartVideo.MediaPlayer.Play(media);
+            }
+        }
+        private void SecondVideoView_Loaded(object sender = null, RoutedEventArgs e = null)
+        {
+
+            if (MW.PathVideo != null && MW.PathVideo.Length != 0)
+            {
+                var _libVLC = new LibVLC(enableDebugLogs: true);
+                _mediaPlayer = new LibVLCSharp.Shared.MediaPlayer(_libVLC);
+
+                SecondVideo.MediaPlayer = _mediaPlayer;
+
+                media = new Media(_libVLC, new Uri(MW.PathVideo[0]));
+                media.AddOption(":input-repeat=65535");
+                SecondVideo.MediaPlayer.Play(media);
+            }
+        }
         public void ScrolDown()
         {
             if (VisualTreeHelper.GetChildrenCount(WaresList) > 0)
@@ -145,17 +211,24 @@ namespace Front
                 OnPropertyChanged(nameof(IsShowStartWindows));
                 if (MW.State == eStateMainWindows.StartWindow)
                 {
-                    StartVideo.Play();
-                    SecondVideo.Pause();
-                    //StartShopping.Visibility = Visibility.Visible;
-                    //WaresList.Visibility = Visibility.Collapsed;
+                    StartVideo.MediaPlayer.SetPause(false);
+                    StartVideo.Visibility = Visibility.Visible;
+                    StartShoppingButtons.Visibility = Visibility.Visible;
+
+                    SecondVideo.MediaPlayer.SetPause(true);
+                    SecondVideo.Visibility = Visibility.Collapsed;
                 }
                 else
                 {
-                    StartVideo.Pause();
-                    SecondVideo.Play();
-                    //StartShopping.Visibility = Visibility.Collapsed;
-                    //WaresList.Visibility = Visibility.Visible;
+                    StartVideo.Visibility = Visibility.Collapsed;
+                    StartVideo.MediaPlayer.SetPause(true);
+                    StartShoppingButtons.Visibility = Visibility.Collapsed;
+
+                    if (!IsKSO)
+                    {
+                        SecondVideo.MediaPlayer.SetPause(false);
+                        SecondVideo.Visibility = Visibility.Visible;
+                    }
                 }
             }));
             lastUpdateTime = DateTime.Now;
@@ -166,17 +239,15 @@ namespace Front
             // Перевіряємо різницю в часі між останнім оновленням і поточним часом
             TimeSpan elapsedTime = DateTime.Now - lastUpdateTime;
             // Якщо касир не тикав нічого 5 хв тоді перевести в режим КСО
-            if (elapsedTime.TotalSeconds >= 5) //TotalMinutes >= 5
+            if (elapsedTime.TotalMinutes >= 5) //TotalMinutes >= 5
             {
                 // Якщо пройшло більше 5 хвилин з останнього оновлення, відображаємо кнопку Start
-                StartBuyButton.Visibility = Visibility.Visible;
-                TransparentStartBuyButton.Visibility = Visibility.Visible;
+                StartShoppingButtons.Visibility = Visibility.Visible;
             }
             else
             {
                 // Інакше, продовжуємо відлік
-                StartBuyButton.Visibility = Visibility.Collapsed;
-                TransparentStartBuyButton.Visibility = Visibility.Collapsed;
+                StartShoppingButtons.Visibility = Visibility.Collapsed;
                 timer.Start();
             }
         }
@@ -188,8 +259,6 @@ namespace Front
         private void StartBuy(object sender, RoutedEventArgs e)
         {
             SwapScrean(true);
-
-            //MessageBox.Show("Придумати що тоді робити");
         }
 
         private void UpdateTypeWorkplace(bool isKSO = false)
@@ -231,6 +300,7 @@ namespace Front
 
             MW.WindowState = WindowState.Maximized;
             this.WindowState = WindowState.Maximized;
+            UpdateSecondMonitor();
         }
 
         private void StartNormal(object sender, RoutedEventArgs e)

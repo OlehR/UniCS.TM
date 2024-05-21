@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vlc="clr-namespace:LibVLCSharp.WPF;assembly=LibVLCSharp.WPF"
         xmlns:local="clr-namespace:Front"
         mc:Ignorable="d"
         Title="SecondMonitorWindows" 
@@ -275,7 +276,7 @@
                        Text="{Binding MW.ClientName, RelativeSource={RelativeSource 
                Mode=FindAncestor, AncestorType=Window}}"/>
         </Grid>
-        <MediaElement Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" Name="SecondVideo" Volume="0" LoadedBehavior="Manual" >
+        <!--<MediaElement Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" Name="SecondVideo" Volume="0" LoadedBehavior="Manual" >
             <MediaElement.Style>
                 <Style   TargetType="MediaElement">
                     <Setter Property="Visibility" Value="Visible" />
@@ -286,7 +287,13 @@
                     </Style.Triggers>
                 </Style>
             </MediaElement.Style>
-        </MediaElement>
+        </MediaElement>-->
+        <vlc:VideoView x:Name="SecondVideo" 
+                       Grid.Column="2" Grid.Row="1" Grid.RowSpan="2">
+            
+        </vlc:VideoView>
+
+
         <Button Grid.Column="2" Grid.Row="1" Click="StartNormal" Content="Перейти в звичайний режим">
             <Button.Style>
                 <Style  BasedOn="{StaticResource WhiteButton}" TargetType="Button">
@@ -318,7 +325,7 @@
             </Border.Style>
 
             <Grid x:Name="MP">
-                <Button Style="{StaticResource TransparentButton}" Click="StartBuy" Panel.ZIndex="3" x:Name="TransparentStartBuyButton"/>
+                <!--<Button Style="{StaticResource TransparentButton}" Click="StartBuy" Panel.ZIndex="3" x:Name="TransparentStartBuyButton"/>
 
                 <Button Margin="10,10,10,100"  Opacity="0.7" Style="{StaticResource StartButtun}" 
                         x:Name="StartBuyButton"  Visibility="Collapsed"
@@ -330,12 +337,23 @@
                     </StackPanel>
                 </Button>
 
-                <!--<Image Source="icons\VopakLogo.png" Height="500"/>-->
-                <!--<MediaElement   Name="StartVideo" Source="icons\sparVideo.mp4" LoadedBehavior="Manual" Volume="0"   />-->
-
                 <MediaElement Name="StartVideo" Volume="0" LoadedBehavior="Manual" >
 
-                </MediaElement>
+                </MediaElement>-->
+                <vlc:VideoView x:Name="StartVideo">
+                    <Grid x:Name="StartShoppingButtons">
+                        <Button Opacity="0.01" Background="White" Click="StartBuy" Panel.ZIndex="3" x:Name="TransparentStartBuyButton"/>
+                        <Button Margin="10,10,10,100"  Opacity="0.7" Style="{StaticResource StartButtun}" 
+                                x:Name="StartBuyButton"
+                                FontSize="48" Click="StartBuy"  
+         Height="70" Width="500" VerticalAlignment="Bottom">
+                            <StackPanel Orientation="Horizontal">
+                                <Image  Height="50" Width="50"  Source="icons\shoppingCart.png"></Image>
+                                <TextBlock FontSize="50" Text="{DynamicResource startShopping}" FontFamily="Source Sans Pro"   Margin="5,10,5,0"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                </vlc:VideoView>
             </Grid>
         </Border>
     </Grid>
