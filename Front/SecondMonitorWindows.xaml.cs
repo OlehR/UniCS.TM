@@ -239,7 +239,7 @@ namespace Front
             // Перевіряємо різницю в часі між останнім оновленням і поточним часом
             TimeSpan elapsedTime = DateTime.Now - lastUpdateTime;
             // Якщо касир не тикав нічого 5 хв тоді перевести в режим КСО
-            if (elapsedTime.TotalMinutes >= 5) //TotalMinutes >= 5
+            if (elapsedTime.TotalSeconds >= 30 && MW?.State == eStateMainWindows.StartWindow && !IsKSO) //TotalMinutes >= 5
             {
                 // Якщо пройшло більше 5 хвилин з останнього оновлення, відображаємо кнопку Start
                 StartShoppingButtons.Visibility = Visibility.Visible;
