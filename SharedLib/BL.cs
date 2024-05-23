@@ -470,7 +470,7 @@ namespace SharedLib
         {
             if (pIdReceipt == null)
                 return false;
-            var receipt = new Receipt(pIdReceipt) { StateReceipt = pStateReceipt, DateReceipt = DateTime.Now, UserCreate = GetUserIdbyWorkPlace(pIdReceipt.IdWorkplace) };
+            var receipt = new Receipt(pIdReceipt) { StateReceipt = pStateReceipt, DateReceipt = DateTime.Now, UserCreate = GetUserIdbyWorkPlace(pIdReceipt.IdWorkplace),TypeWorkplace=Global.TypeWorkplaceCurrent };
             return db.CloseReceipt(receipt);
         }
 
