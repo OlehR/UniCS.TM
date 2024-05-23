@@ -34,6 +34,7 @@ namespace ModelMID
         public Client Client { get; set; }
         public int CodePattern { get; set; }
         public long NumberCashier { get; set; }
+        public eTypeWorkplace TypeWorkplace { get; set; }
         /// <summary>
         /// Назва касира необхідно для друку на чеку.
         /// </summary>

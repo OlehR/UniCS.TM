@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Metrics;
+﻿using ModelMID;
+using System.Diagnostics.Metrics;
 
 namespace SharedLib
 {
@@ -55,7 +56,8 @@ alter TABLE payment    add Code_Bank    INTEGER  NOT NULL DEFAULT 0;--Ver=>19
 alter TABLE RECEIPT    add  Number_Order      TEXT;--Ver=>20
 alter TABLE LOG_RRO add CodeError         INTEGER  NOT NULL DEFAULT 0;--Ver=>21
 alter TABLE LOG_RRO add TypePay           INTEGER  NOT NULL DEFAULT 0;--Ver=>22
-alter TABLE WARES_RECEIPT_HISTORY add CodeOperator INTEGER  NOT NULL default 0;--Ver=>23";
+alter TABLE WARES_RECEIPT_HISTORY add CodeOperator INTEGER  NOT NULL default 0;--Ver=>23
+alter TABLE RECEIPT add        TypeWorkplace NUMBER   NOT NULL DEFAULT 0;--Ver=>24";
 
         public readonly int VerMID = 13;
         readonly string SqlUpdateMID = @"--Ver=>0;Reload;
@@ -129,6 +131,7 @@ CREATE UNIQUE INDEX id_CONFIG ON CONFIG(NAME_VAR);
     VAT_RECEIPT       NUMBER NOT NULL DEFAULT 0,
     CODE_PATTERN      INTEGER NOT NULL DEFAULT 0,
     STATE_RECEIPT     INTEGER NOT NULL DEFAULT 0,
+    TypeWorkplace     NUMBER   NOT NULL DEFAULT 0,
     CODE_CLIENT       INTEGER NOT NULL DEFAULT 0,
     NUMBER_CASHIER    INTEGER NOT NULL DEFAULT 0,
     NUMBER_RECEIPT    TEXT,
@@ -823,7 +826,7 @@ Price as Price
                      and wr.code_wares = case when @CodeWares=0 then wr.code_wares else @CodeWares end
                      order by sort";
 
-        readonly string SqlReplaceReceipt = @"replace into receipt (id_workplace, code_period, code_receipt, date_receipt, 
+        readonly string SqlReplaceReceipt = @"replace into receipt (id_workplace, code_period, code_receipt, date_receipt, TypeWorkplace,
 sum_receipt, vat_receipt, code_pattern, state_receipt, code_client,
  number_cashier, number_receipt, code_discount, sum_discount, percent_discount, 
  code_bonus, sum_bonus, sum_cash, Sum_Wallet, sum_credit_card, code_outcome, 
@@ -832,7 +835,7 @@ sum_receipt, vat_receipt, code_pattern, state_receipt, code_client,
  ADDITION_C1,ADDITION_D1,Type_Receipt, 
  Id_Workplace_Refund,Code_Period_Refund,Code_Receipt_Refund,Number_Order,Sum_Fiscal
  ) values 
- (@IdWorkplace, @CodePeriod, @CodeReceipt,  @DateReceipt, 
+ (@IdWorkplace, @CodePeriod, @CodeReceipt,  @DateReceipt, @TypeWorkplace,
  @SumReceipt, @VatReceipt, @CodePattern, @StateReceipt, @CodeClient,
  @NumberCashier, @NumberReceipt, 0, @SumDiscount, @PercentDiscount,
  0, @SumBonus, @SumCash, @SumWallet, @SumCreditCard, 0, 
@@ -842,14 +845,15 @@ sum_receipt, vat_receipt, code_pattern, state_receipt, code_client,
  @IdWorkplaceRefund,@CodePeriodRefund, @CodeReceiptRefund,@NumberOrder,@SumFiscal
  )";
 
-        readonly string SqlCloseReceipt =@"
+        readonly string SqlCloseReceipt = @"
 update receipt
    set STATE_RECEIPT = @StateReceipt,
        NUMBER_RECEIPT = @NumberReceipt,
        Date_receipt = datetime('now', 'localtime'), --max(@DateReceipt, Date_receipt), -- 
        USER_CREATE = @UserCreate,
        Sum_Bonus =@SumBonus,
-       Sum_Fiscal = @SumFiscal
+       Sum_Fiscal = @SumFiscal,
+       TypeWorkplace = @TypeWorkplace
  where ID_WORKPLACE = @IdWorkplace
    and CODE_PERIOD = @CodePeriod
    and CODE_RECEIPT = @CodeReceipt";
