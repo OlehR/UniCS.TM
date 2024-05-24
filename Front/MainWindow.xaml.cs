@@ -372,7 +372,7 @@ namespace Front
             {
                 FileLogger.WriteLogMessage($"SocketAnsver: {Environment.NewLine}Command: {Command} {Environment.NewLine}WorkPlaceName: {WorkPlace.Name}{Environment.NewLine}IdWorkPlace: {WorkPlace.IdWorkplace}{Environment.NewLine}Ansver: {Ansver.TextState}", eTypeLog.Full);
             };
-            CS = new ControlScale(10d, Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout);
+            CS = new ControlScale(this,10d);
             s = Sound.GetSound(CS);
             Volume = (Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout);
             var fc = new List<FlagColor>();
@@ -621,7 +621,6 @@ namespace Front
 
         public void SetWorkPlace()
         {
-            CS.SetOnOff(Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout && EF.ControlScale != null);
             Volume = (Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout);
             OnPropertyChanged(nameof(IsCashRegister));
         }
