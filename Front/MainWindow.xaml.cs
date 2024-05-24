@@ -579,28 +579,32 @@ namespace Front
         {
             if (pState == null)
                 pState = State;
-
-            if (StartVideo != null && StartVideo.MediaPlayer == null && IsLoading && !IsCashRegister && pState == eStateMainWindows.StartWindow)
-                Task.Run(() => VideoView_Loaded());
-            else
-                StopStartVideo(pState);
+            Dispatcher.BeginInvoke(new ThreadStart(() =>
+            {
+                if (StartVideo != null && StartVideo.MediaPlayer == null && IsLoading && !IsCashRegister && pState == eStateMainWindows.StartWindow)
+                    Task.Run(() => VideoView_Loaded());
+                else
+                    StopStartVideo(pState);
+            }));
         }
 
         private void StopStartVideo(eStateMainWindows? pState)
         {
-            if (StartVideo?.MediaPlayer != null)
-            {
-                if (pState != eStateMainWindows.StartWindow && StartVideo.MediaPlayer.IsPlaying)
+            
+                if (StartVideo?.MediaPlayer != null)
                 {
-                    StartVideo.MediaPlayer.SetPause(true);
-                    StartVideo.Visibility = Visibility.Collapsed;
+                    if (pState != eStateMainWindows.StartWindow && StartVideo.MediaPlayer.IsPlaying)
+                    {
+                        StartVideo.MediaPlayer.SetPause(true);
+                        StartVideo.Visibility = Visibility.Collapsed;
+                    }
+                    if (pState == eStateMainWindows.StartWindow && !IsCashRegister && !StartVideo.MediaPlayer.IsPlaying)
+                    {
+                        StartVideo.Visibility = Visibility.Visible;
+                        StartVideo.MediaPlayer.SetPause(false);
+                    }
                 }
-                if (pState == eStateMainWindows.StartWindow && !IsCashRegister && !StartVideo.MediaPlayer.IsPlaying)
-                {
-                    StartVideo.Visibility = Visibility.Visible;
-                    StartVideo.MediaPlayer.SetPause(false);
-                }
-            }
+           
         }
 
         /*
