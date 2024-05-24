@@ -556,19 +556,21 @@ namespace Front
 
         Media media;
         LibVLCSharp.Shared.MediaPlayer _mediaPlayer;
+        bool IsBilding=false;
         private void VideoView_Loaded(object sender = null, RoutedEventArgs e = null)
         {
-
-            if (PathVideo != null && PathVideo.Length != 0)
+            if (!IsBilding && PathVideo?.Length>0 )
             {
-                var _libVLC = new LibVLC(enableDebugLogs: true);
-                _mediaPlayer = new LibVLCSharp.Shared.MediaPlayer(_libVLC);
-
-                StartVideo.MediaPlayer = _mediaPlayer;
-
+                IsBilding = true;
+                
+                    var _libVLC = new LibVLC(); //enableDebugLogs: true);                
+                    _mediaPlayer = new LibVLCSharp.Shared.MediaPlayer(_libVLC);
                 media = new Media(_libVLC, new Uri(PathVideo[0]));// "D:\\pictures\\Video\\1.mp4"));
                 media.AddOption(":input-repeat=65535");
-                StartVideo.MediaPlayer.Play(media);
+                Dispatcher.BeginInvoke(new ThreadStart(() => {
+                    StartVideo.MediaPlayer = _mediaPlayer;               
+                 StartVideo.MediaPlayer.Play(media); StopStartVideo(State); }));
+                IsBilding = false;
                 //StartVideo.MediaPlayer.EndReached += MediaPlayer_EndReached;
             }
         }
@@ -579,9 +581,13 @@ namespace Front
                 pState = State;
 
             if (StartVideo != null && StartVideo.MediaPlayer == null && IsLoading && !IsCashRegister && pState == eStateMainWindows.StartWindow)
-                VideoView_Loaded();
+                Task.Run(() => VideoView_Loaded());
+            else
+                StopStartVideo(pState);
+        }
 
-
+        private void StopStartVideo(eStateMainWindows? pState)
+        {
             if (StartVideo?.MediaPlayer != null)
             {
                 if (pState != eStateMainWindows.StartWindow && StartVideo.MediaPlayer.IsPlaying)
@@ -1194,7 +1200,7 @@ namespace Front
                 }));
                 var res = r.Wait(new TimeSpan(0, 0, 0, 0, 200));
 
-                Dispatcher.BeginInvoke(new ThreadStart(() => StarVideo()));
+                StarVideo();
 
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"End res=>{res} pSMV={pSMV}/{State}, pTypeAccess={pTypeAccess}/{TypeAccessWait}, pRW ={pRW} , pCW={pCW},  pS={pS}", eTypeLog.Full);
             }
