@@ -736,8 +736,8 @@ namespace Front
             {
                 var r = Dispatcher.BeginInvoke(new ThreadStart(() =>
                 {
-                    if ((EF.StatCriticalEquipment != eStateEquipment.On || !Bl.ds.IsReady || IsLockSale || CS.IsProblem || curReceipt?.IsNeedExciseStamp == true || IsChoicePrice) &&
-                       pSMV != eStateMainWindows.WaitAdminLogin && pSMV != eStateMainWindows.AdminPanel)
+                    if (((EF.StatCriticalEquipment != eStateEquipment.On || !Bl.ds.IsReady || IsLockSale || CS.IsProblem || curReceipt?.IsNeedExciseStamp == true || IsChoicePrice) &&
+                       pSMV != eStateMainWindows.WaitAdminLogin && pSMV != eStateMainWindows.AdminPanel) && pSMV != eStateMainWindows.ChangeCountWares)
                     {
                         eTypeAccess Res = eTypeAccess.NoDefine;
                         if (EF.StatCriticalEquipment != eStateEquipment.On) Res = eTypeAccess.ErrorEquipment;
@@ -1056,8 +1056,8 @@ namespace Front
                                 FWW.WindowState = WindowState.Maximized;
                                 FWW.Show();
                             }
-                                
-                            
+
+
                             break;
                         case eStateMainWindows.ProcessPay:
                             PaymentWindowKSO_UC.PaymentImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/newPaymentTerminal.png"));
