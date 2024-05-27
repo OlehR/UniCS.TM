@@ -478,6 +478,8 @@ namespace Front
                     SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, new CustomWindow(eWindows.RestoreLastRecipt, LastR.SumReceipt.ToString()));
                     //return;
                 }
+                else
+                    SetStateView(eStateMainWindows.StartWindow);
             }
             else //Касове місце
             {
@@ -535,13 +537,13 @@ namespace Front
                 SecondMonitorWin.Show();
                 SecondMonitorWin.WindowState = WindowState.Maximized;
             }
-
+           
             SetWorkPlace();
             Task.Run(() => Bl.ds.SyncDataAsync());
-            Loaded += (a, b) => { IsLoading = true; StarVideo(); };
+            Loaded += (a, b) => VideoView_Loaded(); // { IsLoading = true; StarVideo(); };
         }
 
-        bool IsLoading = false;
+       // bool IsLoading = false;
 
         public void SetKey(object sender, KeyEventArgs e)
         {
@@ -553,39 +555,42 @@ namespace Front
             var Ch = aa.Length == 2 && aa[0] == 'D' ? aa[1] : aa[0];
             EF.SetKey((int)key, Ch);
         }
-
-        Media media;
-        LibVLCSharp.Shared.MediaPlayer _mediaPlayer;
-        bool IsBilding=false;
+        public LibVLC LibVLC  = null;
+        public Media Media=null;
+        LibVLCSharp.Shared.MediaPlayer MediaPlayer=null;
+        bool? IsBild=null;
         private void VideoView_Loaded(object sender = null, RoutedEventArgs e = null)
         {
-            if (!IsBilding && PathVideo?.Length>0 )
+            if (IsBild==null && PathVideo?.Length>0 )
             {
-                IsBilding = true;
-                
-                    var _libVLC = new LibVLC(); //enableDebugLogs: true);                
-                    _mediaPlayer = new LibVLCSharp.Shared.MediaPlayer(_libVLC);
-                media = new Media(_libVLC, new Uri(PathVideo[0]));// "D:\\pictures\\Video\\1.mp4"));
-                media.AddOption(":input-repeat=65535");
-                Dispatcher.BeginInvoke(new ThreadStart(() => {
-                    StartVideo.MediaPlayer = _mediaPlayer;               
-                 StartVideo.MediaPlayer.Play(media); StopStartVideo(State); }));
-                IsBilding = false;
-                //StartVideo.MediaPlayer.EndReached += MediaPlayer_EndReached;
+                IsBild = false;
+                LibVLC = new LibVLC(); //enableDebugLogs: true);                
+                    MediaPlayer = new LibVLCSharp.Shared.MediaPlayer(LibVLC);
+                Media = new Media(LibVLC, new Uri(PathVideo[0]));// "D:\\pictures\\Video\\1.mp4"));
+                Media.AddOption(":input-repeat=65535");
+                Task.Delay(1000);                
+                IsBild = true;
+                StarVideo();
             }
+           
         }
 
         void StarVideo(eStateMainWindows? pState = null)
         {
             if (pState == null)
                 pState = State;
-            Dispatcher.BeginInvoke(new ThreadStart(() =>
-            {
-                if (StartVideo != null && StartVideo.MediaPlayer == null && IsLoading && !IsCashRegister && pState == eStateMainWindows.StartWindow)
-                    Task.Run(() => VideoView_Loaded());
-                else
-                    StopStartVideo(pState);
+
+            Dispatcher.BeginInvoke(new ThreadStart(() => {
+                if (StartVideo != null && StartVideo.MediaPlayer == null  && IsBild==true && !IsCashRegister && pState == eStateMainWindows.StartWindow)               
+                //if (StartVideo.Visibility == Visibility.Visible)
+                {
+                    StartVideo.MediaPlayer = MediaPlayer;
+                    StartVideo.MediaPlayer.Play(Media);
+                }
+                if(StartVideo.MediaPlayer!=null) StopStartVideo(pState);
+
             }));
+           
         }
 
         private void StopStartVideo(eStateMainWindows? pState)

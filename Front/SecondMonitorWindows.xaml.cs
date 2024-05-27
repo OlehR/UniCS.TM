@@ -13,6 +13,7 @@ using static System.Windows.Forms.AxHost;
 using SharedLib;
 using static Front.MainWindow;
 using LibVLCSharp.Shared;
+using System.Net.NetworkInformation;
 
 namespace Front
 {
@@ -129,10 +130,11 @@ namespace Front
             };
             UpdateTypeWorkplace();
             calculateWidthHeaderReceipt(TypeMonitor);
-            Loaded += (a, b) => { IsLoading = true; StarVideo(); };
+           // Loaded += (a, b) => { IsLoading = true; StarVideo(); };
             
         }
-        void StarVideo(eStateMainWindows? pState = null)
+
+        /*void StarVideo(eStateMainWindows? pState = null)
         {
             if (pState == null)
                 pState = MW.State;
@@ -194,7 +196,7 @@ namespace Front
                 media.AddOption(":input-repeat=65535");
                 SecondVideo.MediaPlayer.Play(media);
             }
-        }
+        }*/
         public void ScrolDown()
         {
             if (VisualTreeHelper.GetChildrenCount(WaresList) > 0)
@@ -208,7 +210,18 @@ namespace Front
         {
             Dispatcher.BeginInvoke(new ThreadStart(() =>
             {
+                if (StartVideo != null && StartVideo.MediaPlayer == null )
+                {
+                    StartVideo.MediaPlayer = new LibVLCSharp.Shared.MediaPlayer(MW.LibVLC);
+                    StartVideo.MediaPlayer.Play(MW.Media);
+                    SecondVideo.MediaPlayer = new LibVLCSharp.Shared.MediaPlayer(MW.LibVLC);
+                    SecondVideo.MediaPlayer.Play(MW.Media);                    
+                }
+
                 OnPropertyChanged(nameof(IsShowStartWindows));
+                lastUpdateTime = DateTime.Now;
+                if (StartVideo.MediaPlayer == null) return;
+
                 if (MW.State == eStateMainWindows.StartWindow)
                 {
                     StartVideo.MediaPlayer.SetPause(false);
@@ -231,7 +244,7 @@ namespace Front
                     }
                 }
             }));
-            lastUpdateTime = DateTime.Now;
+          
         }
 
         private void Timer_Tick(object sender, EventArgs e)
