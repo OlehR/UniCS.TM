@@ -9,7 +9,7 @@
     <Win32Resource />
     <NeutralLanguage>uk-UA</NeutralLanguage>
     <AssemblyVersion>2.2.0.153</AssemblyVersion>
-    <FileVersion>2.2.0.153</FileVersion>
+    <FileVersion>2.2.0.154</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
