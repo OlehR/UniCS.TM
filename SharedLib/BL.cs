@@ -658,7 +658,7 @@ namespace SharedLib
                     if (IsRefund && el.SumDiscount > 0)
                     {
                         el.Sum -= el.SumDiscount;
-                        el.Price = el.Sum / el.Quantity;
+                        el.Price = Math.Round(el.Sum / el.Quantity,2,MidpointRounding.ToZero);
                         el.SumDiscount = 0;
                     }
                     if (!pIsFull)

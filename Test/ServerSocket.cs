@@ -3,7 +3,6 @@ using System.Net;
 using System;
 //using static NetworkClient;
 using System.Text;
-using System.Windows.Interop;
 
 public class AsynchronousSocketServer
 {
@@ -35,11 +34,11 @@ public class AsynchronousSocketServer
         Socket client = result.AsyncState as Socket;
         int readLen = client.EndReceive(result);
 
-        NetworkRawMessage msg = (NetworkRawMessage)result.AsyncState;
+        //NetworkRawMessage msg = (NetworkRawMessage)result.AsyncState;
 
         if (readLen > 0)
         {
-            res=Encoding.UTF8.GetString(msg.content);
+           // res=Encoding.UTF8.GetString(msg.content);
             
         }
         else

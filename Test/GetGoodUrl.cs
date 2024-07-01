@@ -13,7 +13,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-
 namespace Test
 {
     public class ImageListex
@@ -65,8 +64,6 @@ namespace Test
                 string ex = "jpg";
                 webClient.DownloadFile(url, $"d:\\pictures\\highPhoto\\{CodeWares.Trim()}.{ex}");
                 Console.WriteLine("Ok");
-
-
             }
             catch (Exception ex)
             {
@@ -77,7 +74,6 @@ namespace Test
 
     public class SortImg
     {
-
         public void SortPhoto()
         {
             int[] count = new int[32] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -122,7 +118,6 @@ namespace Test
                 a = a++;
             }
         }
-
     }
 
     public class data
@@ -155,15 +150,14 @@ namespace Test
         {
             string varSQLSelect = @"SELECT b.bar_code as BarCode, b.code_wares CodeWares, w.name_wares AS NameWares
   FROM  (SELECT DISTINCT da.code_wares  FROM  dbo.dw_am da WHERE   da.Quantity_Min>0  ) AS da
-  JOIN dbo.barcode b ON da.code_wares=b.code_wares
-  LEFT JOIN dbo.Wares w ON da.code_wares = w.code_wares
+  JOIN dbo.barcode b ON da.code_wares=b.code_wares AND LEN(b.bar_code)>=13 
+  JOIN dbo.Wares w ON da.code_wares = w.code_wares
   LEFT JOIN dbo.barcode_out bo ON b.bar_code=bo.bar_code
   WHERE 
-    bo.error <> 'Ok' AND --IS NOT NULL AND 
-   -- bo.DateUrl< CONVERT(DATE,'20211112',112) AND
-    LEN(b.bar_code)>=13 AND 
-    NOT EXISTS (SELECT bou.CodeWares FROM barcode_out bou WHERE bo.error='Ok' AND  da.code_wares=bou.CodeWares AND bou.bar_code<>bo.bar_code )
-   -- AND b.bar_code like'482%'  ";
+    --( bo.error = 'Ok' AND  bo.DateUrl< CONVERT(DATE,'20240612',112) )  OR 
+    bo.DateUrl is NULL
+ AND b.bar_code like'482%'
+   --NOT EXISTS (SELECT bou.CodeWares FROM barcode_out bou WHERE bo.error='Ok' AND  da.code_wares=bou.CodeWares AND bou.bar_code<>bo.bar_code )";
 
             var dbMs = new MSSQL();
             var rand = new Random();
@@ -578,8 +572,6 @@ namespace Test
 
                 Console.WriteLine(el.Name);
 
-
-
                 if (str.IndexOf("Код УКТ ЗЕД") != -1)//якщо код присутній
                 {
                     Str = GetElement(str, "Код УКТ ЗЕД", "<td>", "</td>");
@@ -618,8 +610,6 @@ namespace Test
                     counter++;
                 }
 
-
-
                 int tempIndex = 0;//забираємо ; з назви
                 for (; ; )
                 {
@@ -632,8 +622,6 @@ namespace Test
                     }
                 }
 
-
-
                 WriteToFile.Add($"{el.Name};{el.BarCode};{tempWrite}{r14}");//фінальна строка
 
                 Units.Clear();
@@ -644,10 +632,7 @@ namespace Test
         void WriteCSV(List<string> Text)
         {
             var filePath = @"D:\Test.csv";
-
             File.AppendAllLines(filePath, Text, System.Text.Encoding.GetEncoding("Windows-1251"));
-
-
         }
         public String ReplaceCharInString(String str, int index, Char newSymb)
         {
@@ -657,36 +642,5 @@ namespace Test
         {
             return decimal.Parse(pD, CultureInfo.InvariantCulture);
         }
-
-        /*public void RenameWares()
-        {
-            string varSQLSelect = @"SELECT b.bar_code as BarCode,ww.code_wares CodeWares,ww.articl Article
-  --FROM dbo.tmp_wares w
-  from dbo.wares ww  --ON w.code_wares=ww.code_wares
-  JOIN dbo.barcode b ON ww.code_wares=b.code_wares
-  JOIN dbo.barcode_out bo ON b.bar_code=bo.bar_code
-  WHERE bo.Error='Ok' and Url_Picture is not  null";
-
-            var dbMs = new MSSQL();
-            //var rand = new Random();
-            Console.WriteLine("Get BarCode");
-            var s = dbMs.Execute<data>(varSQLSelect);
-            foreach (var el in s)
-            {
-                var ex = "jpg";
-                var FileName = $"d:\\pictures\\{ el.Article.Trim()}.{ex}";
-                if (!File.Exists(FileName))
-                {
-                    ex = "png";
-                    FileName = $"d:\\pictures\\{ el.Article.Trim()}.{ex}";
-                    if (!File.Exists(FileName))
-                    {
-                        Console.WriteLine(FileName);
-                        continue;
-                    }
-                };
-                File.Move(FileName, $"d:\\pictures\\new\\{ el.CodeWares.Trim()}.{ex}");
-            }
-        }*/
     }
 }

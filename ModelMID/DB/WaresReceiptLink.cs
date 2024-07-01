@@ -9,6 +9,5 @@ namespace ModelMID.DB
         public int CodeWaresTo { get; set; }        
         public decimal Sort { get; set; }
         public int  Quantity { get; set; }
-
     }
 }
