@@ -217,5 +217,9 @@ namespace ModelMID
         /// Видалити чек
         /// </summary>
         DeleteReceipt,
+        /// <summary>
+        /// Отримати номер замовлення для друку клієнта
+        /// </summary>
+        GetOrderNumber,
     }
 }

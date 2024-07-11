@@ -31,6 +31,8 @@ using Equipments.Model;
 using Pr = Equipments.Model.Price;
 using LibVLCSharp.Shared;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
+using System.Net;
+using System.Data.SqlTypes;
 
 namespace Front
 {
@@ -372,7 +374,7 @@ namespace Front
             {
                 FileLogger.WriteLogMessage($"SocketAnsver: {Environment.NewLine}Command: {Command} {Environment.NewLine}WorkPlaceName: {WorkPlace.Name}{Environment.NewLine}IdWorkPlace: {WorkPlace.IdWorkplace}{Environment.NewLine}Ansver: {Ansver.TextState}", eTypeLog.Full);
             };
-            CS = new ControlScale(this,10d);
+            CS = new ControlScale(this, 10d);
             s = Sound.GetSound(CS);
             Volume = (Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout);
             var fc = new List<FlagColor>();
@@ -537,13 +539,13 @@ namespace Front
                 SecondMonitorWin.Show();
                 SecondMonitorWin.WindowState = WindowState.Maximized;
             }
-           
+
             SetWorkPlace();
             Task.Run(() => Bl.ds.SyncDataAsync());
             Loaded += (a, b) => VideoView_Loaded(); // { IsLoading = true; StarVideo(); };
         }
 
-       // bool IsLoading = false;
+        // bool IsLoading = false;
 
         public void SetKey(object sender, KeyEventArgs e)
         {
@@ -555,24 +557,24 @@ namespace Front
             var Ch = aa.Length == 2 && aa[0] == 'D' ? aa[1] : aa[0];
             EF.SetKey((int)key, Ch);
         }
-        public LibVLC LibVLC  = null;
-        public Media Media=null;
-        LibVLCSharp.Shared.MediaPlayer MediaPlayer=null;
-        bool? IsBild=null;
+        public LibVLC LibVLC = null;
+        public Media Media = null;
+        LibVLCSharp.Shared.MediaPlayer MediaPlayer = null;
+        bool? IsBild = null;
         private void VideoView_Loaded(object sender = null, RoutedEventArgs e = null)
         {
-            if (IsBild==null && PathVideo?.Length>0 )
+            if (IsBild == null && PathVideo?.Length > 0)
             {
                 IsBild = false;
                 LibVLC = new LibVLC(); //enableDebugLogs: true);                
-                    MediaPlayer = new LibVLCSharp.Shared.MediaPlayer(LibVLC);
+                MediaPlayer = new LibVLCSharp.Shared.MediaPlayer(LibVLC);
                 Media = new Media(LibVLC, new Uri(PathVideo[0]));// "D:\\pictures\\Video\\1.mp4"));
                 Media.AddOption(":input-repeat=65535");
-                Task.Delay(1000);                
+                Task.Delay(1000);
                 IsBild = true;
                 StarVideo();
             }
-           
+
         }
 
         void StarVideo(eStateMainWindows? pState = null)
@@ -580,36 +582,37 @@ namespace Front
             if (pState == null)
                 pState = State;
 
-            Dispatcher.BeginInvoke(new ThreadStart(() => {
-                if (StartVideo != null && StartVideo.MediaPlayer == null  && IsBild==true && !IsCashRegister && pState == eStateMainWindows.StartWindow)               
+            Dispatcher.BeginInvoke(new ThreadStart(() =>
+            {
+                if (StartVideo != null && StartVideo.MediaPlayer == null && IsBild == true && !IsCashRegister && pState == eStateMainWindows.StartWindow)
                 //if (StartVideo.Visibility == Visibility.Visible)
                 {
                     StartVideo.MediaPlayer = MediaPlayer;
                     StartVideo.MediaPlayer.Play(Media);
                 }
-                if(StartVideo.MediaPlayer!=null) StopStartVideo(pState);
+                if (StartVideo.MediaPlayer != null) StopStartVideo(pState);
 
             }));
-           
+
         }
 
         private void StopStartVideo(eStateMainWindows? pState)
         {
-            
-                if (StartVideo?.MediaPlayer != null)
+
+            if (StartVideo?.MediaPlayer != null)
+            {
+                if (pState != eStateMainWindows.StartWindow && StartVideo.MediaPlayer.IsPlaying)
                 {
-                    if (pState != eStateMainWindows.StartWindow && StartVideo.MediaPlayer.IsPlaying)
-                    {
-                        StartVideo.MediaPlayer.SetPause(true);
-                        StartVideo.Visibility = Visibility.Collapsed;
-                    }
-                    if (pState == eStateMainWindows.StartWindow && !IsCashRegister && !StartVideo.MediaPlayer.IsPlaying)
-                    {
-                        StartVideo.Visibility = Visibility.Visible;
-                        StartVideo.MediaPlayer.SetPause(false);
-                    }
+                    StartVideo.MediaPlayer.SetPause(true);
+                    StartVideo.Visibility = Visibility.Collapsed;
                 }
-           
+                if (pState == eStateMainWindows.StartWindow && !IsCashRegister && !StartVideo.MediaPlayer.IsPlaying)
+                {
+                    StartVideo.Visibility = Visibility.Visible;
+                    StartVideo.MediaPlayer.SetPause(false);
+                }
+            }
+
         }
 
         /*
@@ -1357,9 +1360,27 @@ namespace Front
             var task = Task.Run(() => Blf.PrintAndCloseReceipt());
         }
 
+        //Тестовий варіант роботи замовлень!!!
         private void _ButtonPayment(object sender, RoutedEventArgs e)
         {
             Blf.PayAndPrint();
+
+            //Task.Run(async () =>
+            //{
+            //    CommandAPI<Receipt> Command = new() { Command = eCommand.GetOrderNumber, Data = curReceipt };
+
+            //    try
+            //    {
+            //        var r = new SocketClient(IPAddress.Parse("127.0.0.1"), 3444);
+            //        var Ansver = await r.StartAsync(Command.ToJson());
+            //        SocketAnsver?.Invoke(eCommand.GetOrderNumber, MainWorkplace, Ansver);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        FileLogger.WriteLogMessage(this, $"GeneralCondition DNSName=>{IPAddress.Parse("127.0.0.1")} {Command} ", ex);
+            //        SocketAnsver?.Invoke(eCommand.GetOrderNumber, MainWorkplace, new Status(ex));
+            //    }
+            //});
         }
 
         /// <summary>
