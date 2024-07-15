@@ -290,11 +290,11 @@ namespace Front.Equipments.Implementation
                 TextReport.Add(PrintCenter(pR.TypeReceipt.GetDescription()));
             }
 
-            TextReport.Add(($"Касир {pR.NameCashier}"));
-            TextReport.Add(($"Касир {pR.NumberReceipt1C}"));
+            TextReport.Add(($"Касир: {pR.NameCashier}"));
+            TextReport.Add(($"Фіскальний номер: {pR.NumberReceipt1C}"));
             if (!string.IsNullOrEmpty(pR.Client?.NameClient))
             {
-                TextReport.Add(($"Касир {pR.Client?.NameClient}"));
+                TextReport.Add(($"{pR.Client?.NameClient}"));
                 TextReport.Add(($"Бонуси: {pR.Client?.SumBonus}"));
                 TextReport.Add(($"Скарбничка: {pR.Client?.Wallet}"));
             }
@@ -335,8 +335,15 @@ namespace Front.Equipments.Implementation
 
 
             TextReport.Add(PrintTwoColums("Сума", pR.SumCash.ToString("F2")));
-            decimal roundFiscal = pR.SumCash - SumReceiptFiscal(pR);
-            
+            decimal sumReceiptFiscal = SumReceiptFiscal(pR);
+            if (sumReceiptFiscal<0.01m)
+            {
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка при розрахунку чеку! Округлення не може бути більше 10 копійок!");
+                throw new Exception(Environment.NewLine + "Помилка при розрахунку чеку! Округлення не може бути більше 10 копійок!" + Environment.NewLine + StrError);
+            }
+            decimal roundFiscal = pR.SumCash - sumReceiptFiscal;
+
+
             if (roundFiscal != 0)
                 TextReport.Add(PrintTwoColums("Заокруглення", roundFiscal.ToString("F2")));
             if (pR.Fiscal?.Taxes?.Count() > 0)
