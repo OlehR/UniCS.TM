@@ -72,7 +72,10 @@ alter TABLE CLIENT add PHONE_ADD TEXT; --Ver=>10;
 alter TABLE FAST_GROUP add Image TEXT; --Ver=>11;
 alter TABLE wares add CodeGroupUp INTEGER  DEFAULT 0; --Ver=>12;
 alter TABLE client add IsMoneyCard INTEGER DEFAULT(0);--Ver=>13;
---Ver=>11;Reload;";       
+alter TABLE PROMOTION_SALE_DEALER add MaxQuantity NUMBER NOT NULL DEFAULT 0;--Ver=>14;
+--Ver=>11;Reload;
+
+";       
 
         readonly string SqlCreateConfigTable = @"
         CREATE TABLE WORKPLACE(
@@ -516,7 +519,8 @@ CREATE TABLE FAST_GROUP
             DATE_BEGIN DATETIME NOT NULL,
             DATE_END DATETIME NOT NULL,
             Code_Dealer INTEGER NOT NULL,
-            PRIORITY INTEGER  NOT NULL DEFAULT 0
+            PRIORITY INTEGER  NOT NULL DEFAULT 0,
+            MaxQuantity NUMBER NOT NULL DEFAULT 0
 );
 
         CREATE TABLE PROMOTION_SALE_GROUP_WARES(
@@ -1007,7 +1011,7 @@ where psf.code_ps  is null
 and EPS.code_ps  is null
 )
 --select* from PSEW
-select psd.CODE_PS as CodePs,psd.PRIORITY as Priority ,11 as TypeDiscont  ,p.PRICE_DEALER as Data,1 as IsIgnoreMinPrice
+select psd.CODE_PS as CodePs,psd.PRIORITY as Priority ,11 as TypeDiscont  ,p.PRICE_DEALER as Data,1 as IsIgnoreMinPrice, MaxQuantity as MaxQuantity
 from  PROMOTION_SALE_DEALER psd
  --join PROMOTION_SALE ps on ps.CODE_PS=psd.CODE_PS
  join PRICE p on psd.CODE_DEALER=p.CODE_DEALER and psd.CODE_WARES= p.CODE_WARES
@@ -1018,7 +1022,7 @@ and
  datetime('now','localtime') between psd.Date_begin and psd.DATE_END
  and p.PRICE_DEALER>0
 union all -- По групам товарів
- select PSF.CODE_PS,0 as priority , 13 as Type_discont, PSD.DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice
+ select PSF.CODE_PS,0 as priority , 13 as Type_discont, PSD.DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice,0 as MaxQuantity
   from wares w
   join PROMOTION_SALE_GROUP_WARES PSGW on PSGW.CODE_GROUP_WARES= w.CODE_GROUP
   join PROMOTION_SALE_FILTER PSF on (PSF.TYPE_GROUP_FILTER= 15 and PSF.RULE_GROUP_FILTER= 1 and PSF.CODE_DATA= PSGW.CODE_GROUP_WARES_PS)
@@ -1027,18 +1031,18 @@ union all -- По групам товарів
   where EPS.CODE_PS is null
   and w.CODE_WARES= @CodeWares
 union all --По товарам
- select PSF.CODE_PS,0 as priority , PSD.TYPE_DISCOUNT as Type_discont, PSD.DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice
+ select PSF.CODE_PS,0 as priority , PSD.TYPE_DISCOUNT as Type_discont, PSD.DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice,0 as MaxQuantity
   from PROMOTION_SALE_FILTER PSF
   join PROMOTION_SALE_DATA PSD on (PSD.CODE_WARES= 0 and PSD.CODE_PS= PSF.CODE_PS)
   left join ExeptionPS EPS on(PSF.CODE_PS= EPS.CODE_PS)
   where PSF.TYPE_GROUP_FILTER=11 and PSF.RULE_GROUP_FILTER= 1 and PSF.CODE_DATA= @CodeWares and EPS.CODE_PS is null and PSD.TYPE_DISCOUNT<=20
 union all --акції для всіх товарів.
- select PSEW.CODE_PS,0 as priority , PSD.TYPE_DISCOUNT as Type_discont, PSD.DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice
+ select PSEW.CODE_PS,0 as priority , PSD.TYPE_DISCOUNT as Type_discont, PSD.DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice,0 as MaxQuantity
   from PSEW
   join PROMOTION_SALE_DATA PSD on (PSD.CODE_PS= PSEW.CODE_PS)
   where PSD.TYPE_DISCOUNT<=20 and PSD.TYPE_DISCOUNT!=14
 union all
-select PSf.CODE_PS,0 as priority, PSD.TYPE_DISCOUNT as Type_discont, p.PRICE_DEALER as DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice
+select PSf.CODE_PS,0 as priority, PSD.TYPE_DISCOUNT as Type_discont, p.PRICE_DEALER as DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice,0 as MaxQuantity
   from PROMOTION_SALE_FILTER PSF
   left join ExeptionPS EPS on  (PSF.CODE_PS=EPS.CODE_PS) 
   join PROMOTION_SALE_DATA PSD on(PSD.CODE_PS= PSF.CODE_PS)

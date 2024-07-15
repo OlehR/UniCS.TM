@@ -112,6 +112,10 @@ namespace ModelMID
         public int Priority { get; set; }
         public DateTime DateCreate { get; set; }
         public int UserCreate { get; set; }
+        /// <summary>
+        /// Максимальна кількість для якої працює знижку.
+        /// </summary>
+        public decimal MaxQuantity { get; set; }
     }
 
 
@@ -149,6 +153,8 @@ namespace ModelMID
         public decimal Data { get; set; }        
         public decimal Price { get; set; }
         public int IsIgnoreMinPrice { get; set; }
+        public decimal MaxQuantity { get; set; }
+
         public decimal CalcPrice(decimal parPrice,bool IsUsePrice=true)
         {
             //decimal curPrice = 0;

@@ -36,17 +36,19 @@ namespace SharedLib
                 pServer = Global.Server1C;
             try
             {
-               
+                bool IsErrorSend = false;
                 foreach (var el in pR.IdWorkplacePays)
                 {
                     pR.IdWorkplacePay = el;
                     var r = new Receipt1C(pR);
                     var body = soapTo1C.GenBody("JSONCheck", new Parameters[] { new Parameters("JSONSting", r.GetBase64()) });
                     var res = Global.IsTest ? "0" : await soapTo1C.RequestAsync(pServer, body, 60000, "application/json");
-                    if (string.IsNullOrEmpty(res) || !res.Equals("0"))
-                        return Res;
-                    Res += JsonConvert.SerializeObject(r)+Environment.NewLine;
+                    IsErrorSend |= !res.Equals("0");
+                    if (!IsErrorSend)
+                        Res += JsonConvert.SerializeObject(r)+Environment.NewLine;
                 }
+                if (IsErrorSend)
+                    return "IsErrorSend";
                 pR.StateReceipt = eStateReceipt.Send;
                 if (pIsChangeState&& db!=null)
                     db.SetStateReceipt(pR);//Змінюєм стан чека на відправлено.

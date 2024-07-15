@@ -314,9 +314,7 @@ namespace SharedLib
             var Ldc = GetConfig<DateTime>("LastDaySend");
             if (Ldc != DateTime.Now.Date)
                 return Ldc;
-
             return db.ExecuteScalar<DateTime>(SqlGetDateFirstNotSendReceipt);
-
         }
 
         public DateTime GetLastUpdateDirectory()
@@ -384,12 +382,28 @@ namespace SharedLib
 
                         if (Res != null && RW.ParPrice1 != 999999 && (Res.Priority > 0 || string.IsNullOrEmpty(RW.BarCode2Category)))//Не перераховуємо для  Сигарет s для 2 категорії окрім пріоритет 1
                         {
-                            RW.Price = MPI.GetPrice(Res.Price, Res.IsIgnoreMinPrice == 0, Res.CodePs > 0);
-                            RW.TypePrice = MPI.typePrice;
-                            RW.ParPrice1 = Res.CodePs;
-                            RW.ParPrice2 = (long)Res.TypeDiscont;
-                            RW.ParPrice3 = Res.Data;
-                            RW.Priority = Res.Priority;
+                            if (Res.MaxQuantity > 0)// Якщо акція обмежена по кількості робимо на шталт сигарет
+                            {
+                                RW.Price = RW.PriceDealer;
+                                RW.ParPrice1 = 888888;
+                                RW.ParPrice2 = (long)Res.TypeDiscont;
+                                RW.ParPrice3 = Res.Data;
+                                RW.Priority = Res.Priority;
+
+                                WaresReceiptPromotion[] WRP = new WaresReceiptPromotion[1] { new WaresReceiptPromotion(RW)
+                                        {CodeWares=RW.CodeWares, Price=Math.Round( Res.Price,2), TypeDiscount=eTypeDiscount.Price, 
+                                          Quantity= (RW.Quantity>Res.MaxQuantity ? Res.MaxQuantity:RW.Quantity), CodePS=888888,BarCode2Category="" }};
+                                ReplaceWaresReceiptPromotion(WRP);
+                            }
+                            else
+                            {
+                                RW.Price = MPI.GetPrice(Res.Price, Res.IsIgnoreMinPrice == 0, Res.CodePs > 0);
+                                RW.TypePrice = MPI.typePrice;
+                                RW.ParPrice1 = Res.CodePs;
+                                RW.ParPrice2 = (long)Res.TypeDiscont;
+                                RW.ParPrice3 = Res.Data;
+                                RW.Priority = Res.Priority;
+                            }
                         }
                         //Якщо друга категорія - перераховуємо на основі Роздрібної ціни.
                         if (Res.Priority == 0 && !string.IsNullOrEmpty(RW.BarCode2Category) && RW.BarCode2Category.Length == 13)
@@ -852,7 +866,7 @@ replace into PROMOTION_SALE_FILTER(CODE_PS, CODE_GROUP_FILTER, TYPE_GROUP_FILTER
         public bool ReplacePromotionSaleDealer(IEnumerable<PromotionSaleDealer> parData, SQLite pDB)
         {
             pDB.ExecuteNonQuery("delete from PROMOTION_SALE_DEALER", new { }, pDB.Transaction);
-            string SqlReplacePromotionSaleDealer = @"replace into PROMOTION_SALE_DEALER(CODE_PS, Code_Wares, DATE_BEGIN, DATE_END, Code_Dealer, Priority) values(@CodePS, @CodeWares, @DateBegin, @DateEnd, @CodeDealer, @Priority); --@CodePS,@CodeWares,@DateBegin,@DateEnd,@CodeDealer";
+            string SqlReplacePromotionSaleDealer = @"replace into PROMOTION_SALE_DEALER(CODE_PS, Code_Wares, DATE_BEGIN, DATE_END, Code_Dealer, Priority,MaxQuantity) values(@CodePS, @CodeWares, @DateBegin, @DateEnd, @CodeDealer, @Priority,@MaxQuantity); --@CodePS,@CodeWares,@DateBegin,@DateEnd,@CodeDealer";
             return pDB.BulkExecuteNonQuery<PromotionSaleDealer>(SqlReplacePromotionSaleDealer, parData, true) > 0;
         }
 

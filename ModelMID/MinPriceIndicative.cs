@@ -32,7 +32,6 @@ namespace ModelMID
                 varPrice = Indicative;
                 typePrice = isPromotion ? eTypePrice.PromotionIndicative : eTypePrice.PDDiscontIndicative;
             }
-
             return varPrice;
         }
         /// <summary>
