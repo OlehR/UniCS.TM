@@ -69,5 +69,9 @@ namespace ModelMID
         /// Торгова марка (в 1С - Бренд) 
         /// </summary>
         public int CodeTM { get; set; }
+        /// <summary>
+        /// Код місця виготовлення (1 - Піцца, 2 - ХотДог)
+        /// </summary>
+        public int ProductionLocation { get; set; }
     }
 }

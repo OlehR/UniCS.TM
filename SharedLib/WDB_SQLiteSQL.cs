@@ -73,6 +73,7 @@ alter TABLE FAST_GROUP add Image TEXT; --Ver=>11;
 alter TABLE wares add CodeGroupUp INTEGER  DEFAULT 0; --Ver=>12;
 alter TABLE client add IsMoneyCard INTEGER DEFAULT(0);--Ver=>13;
 alter TABLE PROMOTION_SALE_DEALER add MaxQuantity NUMBER NOT NULL DEFAULT 0;--Ver=>14;
+alter TABLE wares add ProductionLocation INTEGER  DEFAULT 0; --Ver=>15;
 --Ver=>11;Reload;
 
 ";       
@@ -396,7 +397,8 @@ CREATE UNIQUE INDEX IdWaresReceiptLink2 ON WaresReceiptLink(IdWorkplace,CodePeri
               Limit_Age NUMBER,
               PLU INTEGER,
               Code_Direction INTEGER,
-              Code_TM INTEGER NOT NULL DEFAULT 0
+              Code_TM INTEGER NOT NULL DEFAULT 0,
+              ProductionLocation INTEGER  DEFAULT 0
 );
 
         CREATE TABLE ADDITION_UNIT(
