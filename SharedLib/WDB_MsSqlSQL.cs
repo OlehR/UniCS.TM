@@ -31,6 +31,7 @@ namespace SharedLib
         WHEN Weight_Fact<0 and Weight_Fact<>-1 THEN -Weight_Fact ELSE Weight_Fact END AS WeightFact
   , w.Weight_Delta as WeightDelta, w.code_UKTZED AS CodeUKTZED, w.Limit_age as LimitAge, w.PLU, w.Code_Direction as CodeDirection
   , w.code_brand as CodeTM -- бо в 1С спутано.
+  ,w.ProductionLocation
   FROM dbo.Wares w
   WHERE w.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull= 1";
 
