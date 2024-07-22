@@ -372,8 +372,12 @@ namespace SharedLib
             return SetClient(pIdReceipt, db.FindClient(null, pPhone), pPhone);
         }
 
-        Client SetClient(IdReceipt pIdReceipt, IEnumerable<Client> r, string pPhone = null)
+        Client SetClient(IdReceipt pIdReceipt, IEnumerable<Client> pClients, string pPhone = null)
         {
+            var r = pClients.Where(el => el.StatusCard == eStatusCard.Active);
+            if (!r.Any())
+                r=pClients;
+
             if (r.Count() == 0 && pPhone != null)
             {
                 if (Global.Settings.IsUseCardSparUkraine)
