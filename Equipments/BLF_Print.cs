@@ -172,6 +172,8 @@ namespace Front.Equipments
                     }
                     finally { R.IdWorkplacePay = 0; }
                 }
+
+                { }
                 R.StateReceipt = Bl.GetStateReceipt(R);
                 if (R.StateReceipt == eStateReceipt.Pay || R.StateReceipt == eStateReceipt.PartialPrint || R.StateReceipt == eStateReceipt.StartPrint)
                 {
