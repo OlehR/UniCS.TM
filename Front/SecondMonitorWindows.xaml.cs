@@ -176,7 +176,9 @@ namespace Front
                     StartVideo.MediaPlayer = new LibVLCSharp.Shared.MediaPlayer(MW.LibVLC);
                     StartVideo.MediaPlayer.Play(MW.Media);
                     //SecondVideo.MediaPlayer = new LibVLCSharp.Shared.MediaPlayer(MW.LibVLC);
-                    //SecondVideo.MediaPlayer.Play(MW.Media);                    
+                    //SecondVideo.MediaPlayer.Play(MW.Media);
+                    CurrentImage.Visibility = Visibility.Visible;
+                    NextImage.Visibility = Visibility.Visible;
                 }
 
                 OnPropertyChanged(nameof(IsShowStartWindows));
@@ -191,6 +193,8 @@ namespace Front
 
                     //SecondVideo.MediaPlayer.SetPause(true);
                     //SecondVideo.Visibility = Visibility.Collapsed;
+                    CurrentImage.Visibility = Visibility.Collapsed;
+                    NextImage.Visibility = Visibility.Collapsed;
                 }
                 else
                 {
@@ -202,6 +206,8 @@ namespace Front
                     {
                         //SecondVideo.MediaPlayer.SetPause(false);
                         //SecondVideo.Visibility = Visibility.Visible;
+                        CurrentImage.Visibility = Visibility.Visible;
+                        NextImage.Visibility = Visibility.Visible;
                     }
                 }
             }));
@@ -225,7 +231,7 @@ namespace Front
                 timer.Start();
             }
 
-            if (imageFiles != null && imageFiles.Count > 0)
+            if (imageFiles != null && imageFiles.Count > 0 && !IsKSO)
             {
                 currentIndex = (currentIndex + 1) % imageFiles.Count;
                 string nextImage = imageFiles[currentIndex];
