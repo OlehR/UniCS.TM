@@ -16,26 +16,55 @@ namespace AvaloniaMain.ViewModels
         public string BarCode
         {
             get => _barCode;
-            set=> this.RaiseAndSetIfChanged(ref _barCode, value);
+            set
+            {
+                if (_barCode != value)
+                {
+                    _barCode = value;
+                    OnPropertyChanged(nameof(BarCode));
+                }
+            }
         }
         private string _telephoneNum;
         public string TelephoneNum
         {
             get => _telephoneNum;
-            set => this.RaiseAndSetIfChanged(ref _telephoneNum, value);
+            set
+            {
+                if (_telephoneNum != value)
+                {
+                    _telephoneNum = value;
+                    OnPropertyChanged(nameof(TelephoneNum));
+                }
+            }
         }
+
         private string _verificationCode;
         public string VerificationCode
         {
             get => _verificationCode;
-            set => this.RaiseAndSetIfChanged(ref _verificationCode, value);
+            set
+            {
+                if (_verificationCode != value)
+                {
+                    _verificationCode = value;
+                    OnPropertyChanged(nameof(VerificationCode));
+                }
+            }
         }
-        public ViewModelBase? _currentPage;
 
-        public ViewModelBase? CurrentPage
+        private ViewModelBase _currentPage;
+        public ViewModelBase CurrentPage
         {
             get => _currentPage;
-            set => this.RaiseAndSetIfChanged(ref _currentPage, value);
+            set
+            {
+                if (_currentPage != value)
+                {
+                    _currentPage = value;
+                    OnPropertyChanged(nameof(CurrentPage));
+                }
+            }
         }
 
         private ReactiveCommand<Unit, Unit> _showBarCode;

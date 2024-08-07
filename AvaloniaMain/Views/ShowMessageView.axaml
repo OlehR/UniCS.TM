@@ -1,0 +1,50 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="701" d:DesignHeight="401"
+             x:Class="AvaloniaMain.Views.ShowMessageView">
+	<Border Width="700" Height="400" Background="White" BorderBrush="Gray" CornerRadius="15" BorderThickness="4">
+		
+
+		<Grid>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*"/>
+				<RowDefinition Height="*"/>
+				<RowDefinition Height="*"/>
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
+
+			<Image x:Name="ImageTypeMessage" Source="{Binding ImageBit}"
+                   Width="80" Height="80"/>
+
+			<TextBlock Grid.Row="1" HorizontalAlignment="Center" Text="{Binding TextTypeMessage} " VerticalAlignment="Center" FontSize="30"
+                       TextWrapping="Wrap">
+			</TextBlock>
+			<ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+				<TextBlock  Text="{Binding TextMessage} " Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="15,0,15,0"
+                        TextWrapping="Wrap">
+				</TextBlock>
+			</ScrollViewer>
+
+
+			<Grid   HorizontalAlignment="Center" Grid.Row="3">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+				</Grid.ColumnDefinitions>
+				<Button Command="{Binding YesNoChoise}" CommandParameter="yes" Background="Green" CornerRadius="20" FontWeight="Bold" FontSize="22" Margin="0,0,100,0"   Grid.Column="0" 
+                        x:Name="YesButton"   Foreground="White" Width="150"  Height="80" >
+					<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Так"></TextBlock>
+					</Button>
+				<Button Command="{Binding YesNoChoise}" CommandParameter="no"  CornerRadius="20" Margin="100,0,0,0" Grid.Column="1"
+                        x:Name="NoButton"  Width="150" Height="80" >
+					<TextBlock HorizontalAlignment="Center" FontWeight="Bold" FontSize="22" VerticalAlignment="Center" Text="Ні"></TextBlock>
+				</Button>
+
+				<!-- <Button  Grid.Column="0"  Grid.ColumnSpan="2	"
+                        x:Name="OkButton" Content="Ок" Width="150" Height="80"/>-->
+			</Grid>
+		</Grid>
+	</Border>
+</UserControl>

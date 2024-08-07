@@ -7,11 +7,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Front.Models
+namespace ModelMID
 {
 	public class GW
 	{
-		public GW(FastGroup pFG)
+        public GW() { }
+        public GW(FastGroup pFG)
 		{
 			Type = 1;
 			Name = pFG.Name;
@@ -45,5 +46,6 @@ namespace Front.Models
                 //return Path.Combine(Global.PathPictures, (Type == 1 ? "Categories" : "Products"), $"{Code.ToString("D9")}.jpg"); 
 			} }
 		public bool IsWeight { get{ return Type == 0 && CodeUnit == Global.WeightCodeUnit; } }
+		public bool IsSelected { get; set; } = false;
 	}
 }

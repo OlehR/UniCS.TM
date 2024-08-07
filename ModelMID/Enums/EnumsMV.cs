@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace Front.Models
+namespace ModelMID
 {
     public enum eStateMainWindows
     {
@@ -112,7 +110,18 @@ namespace Front.Models
         /// <summary>
         /// Знайти клієнта за номером телефону
         /// </summary>
-        //FindClientByPhone,
+        [Description("Пошук за номером телефону")]
+        FindClientByPhone,
+        /// <summary>
+        /// Зміна кількості товару
+        /// </summary>
+        [Description("Зміна кількості товару")]
+        ChangeCountWares,
+        /// <summary>
+        /// Добавлення пакетів
+        /// </summary>
+        [Description("Добавлення пакетів")]
+        AddMissingPackage
     }
 
     public enum eSender
@@ -137,7 +146,7 @@ namespace Front.Models
         AnotherTypeMonitor
     }
 
-    public enum eCommand 
+    public enum eCommand
     {
         NotDefine,
         /// <summary>
@@ -159,7 +168,7 @@ namespace Front.Models
         /// <summary>
         /// Добавити вагу 
         /// </summary>
-        AddWeight,        
+        AddWeight,
         /// <summary>
         /// Загальний стан програми.
         /// </summary>
@@ -208,6 +217,9 @@ namespace Front.Models
         /// Видалити чек
         /// </summary>
         DeleteReceipt,
+        /// <summary>
+        /// Отримати номер замовлення для друку клієнта
+        /// </summary>
+        GetOrderNumber,
     }
 }
-

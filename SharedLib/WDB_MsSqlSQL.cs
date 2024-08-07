@@ -31,6 +31,7 @@ namespace SharedLib
         WHEN Weight_Fact<0 and Weight_Fact<>-1 THEN -Weight_Fact ELSE Weight_Fact END AS WeightFact
   , w.Weight_Delta as WeightDelta, w.code_UKTZED AS CodeUKTZED, w.Limit_age as LimitAge, w.PLU, w.Code_Direction as CodeDirection
   , w.code_brand as CodeTM -- бо в 1С спутано.
+  ,w.ProductionLocation
   FROM dbo.Wares w
   WHERE w.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull= 1";
 
@@ -84,11 +85,11 @@ namespace SharedLib
 
         string SqlGetPromotionSaleData = @"WITH wh_ex AS
           (SELECT pw.doc_promotion_RRef,
-            SUM(CASE WHEN CONVERT(INT, dw.code) = @CodeWarehouse THEN 1 ELSE 0 END) AS Wh, COUNT(*) AS all_wh
+            SUM(CASE WHEN CONVERT(INT, dw.code) in (@CodeWarehouse,@CodeWarehouseLink) THEN 1 ELSE 0 END) AS Wh, COUNT(*) AS all_wh
     FROM DW.dbo.V1C_doc_promotion_warehouse pw
     JOIN DW.dbo.V1C_dim_warehouse dw ON dw.warehouse_RRef= pw.warehouse_RRef
 GROUP BY pw.doc_promotion_RRef
-  HAVING SUM(CASE WHEN dw.code = @CodeWarehouse THEN 1 ELSE 0 END) = 0)  
+  HAVING SUM(CASE WHEN dw.code in (@CodeWarehouse,@CodeWarehouseLink) THEN 1 ELSE 0 END) = 0)  
 
 SELECT
    CONVERT(INT, YEAR(dp.year_doc)*10000+dp.number) AS CodePS
@@ -146,19 +147,21 @@ SELECT -- Кількість товари  набору (Основні)
   AND wh_ex.doc_promotion_RRef IS null
   GROUP BY CONVERT(INT, YEAR(dp.year_doc)*10000+dp.number),pk.number_kit
   UNION ALL
-  SELECT -- Оптові продажі.
-     8000000000+@CodeWarehouse AS CodePS
-    ,1 AS NumberGroup
-    ,0 AS CodeWares
-    ,1 AS UseIndicative
-    ,14 AS TypeDiscount--%
-    ,0 AS AdditionalCondition
-    ,case when @CodeWarehouse = 89 then 29 else 51 end  AS Data
-    ,1 AS DataAdditionalCondition
-    where @CodeWarehouse in (9,89)";
+ SELECT -- Оптові продажі.
+   8000000000+TRY_CONVERT(int, wh.code,0) AS CodePS
+  ,1 AS NumberGroup
+  ,0 AS CodeWares
+  ,1 AS UseIndicative
+  ,14 AS TypeDiscount--%
+  ,0 AS AdditionalCondition
+  ,TRY_CONVERT(int, tp.code ) as Data
+  ,1 AS DataAdditionalCondition 
+  FROM dbo.V1C_dim_warehouse wh
+    JOIN dbo.V1C_dim_type_price tp ON wh.type_price_opt_RRef=tp.type_price_RRef
+ WHERE TRY_CONVERT(int, wh.code) in (@CodeWarehouse,@CodeWarehouseLink)  ";
 
-        string SqlGetPromotionSaleDealer = @"SELECT 9000000000+CONVERT(INT, YEAR(dpg.date_time)*100000+dpg.number) AS CodePS, CONVERT(INT, dn.code) AS CodeWares, pg.date_beg AS DateBegin,pg.date_end AS DateEnd,CONVERT(INT, tp.code) AS CodeDealer
-    , isnull(pp.Priority, 0) AS Priority
+        string SqlGetPromotionSaleDealer = @"SELECT DISTINCT 9000000000+CONVERT(INT, YEAR(dpg.date_time)*100000+dpg.number) AS CodePS, CONVERT(INT, dn.code) AS CodeWares, pg.date_beg AS DateBegin,pg.date_end AS DateEnd,CONVERT(INT, tp.code) AS CodeDealer
+    , isnull(pp.Priority+1, 0) AS Priority, 0 as MaxQuantity
   FROM dbo.V1C_reg_promotion_gal pg
   JOIN dbo.V1C_doc_promotion_gal dpg ON pg.doc_RRef = dpg.doc_RRef
   JOIN dbo.V1C_dim_nomen dn ON pg.nomen_RRef= dn.IDRRef
@@ -166,7 +169,7 @@ SELECT -- Кількість товари  набору (Основні)
   JOIN dbo.V1C_dim_warehouse wh ON wh.subdivision_RRef= pg.subdivision_RRef
   LEFT JOIN dbo.V1C_DIM_Priority_Promotion PP ON tp.Priority_Promotion_RRef= pp.Priority_Promotion_RRef
   where pg.date_end>GETDATE()
-  AND wh.code = @CodeWarehouse;";
+  AND wh.code in (@CodeWarehouse,@CodeWarehouseLink);";
 
         string SqlGetPromotionSale = @"SELECT  
 --dp._IDRRef
@@ -200,11 +203,11 @@ SELECT -- Кількість товари  набору (Основні)
   , NULL AS BarCodeCoupon
     FROM DW.dbo.V1C_doc_promotion dp
   LEFT JOIN (SELECT pw.doc_promotion_RRef,
-    SUM(CASE WHEN try_CONVERT(INT, dw.code) = @CodeWarehouse THEN 1 ELSE 0 END) AS Wh, COUNT(*) AS all_wh
+    SUM(CASE WHEN try_CONVERT(INT, dw.code) in (@CodeWarehouse,@CodeWarehouseLink) THEN 1 ELSE 0 END) AS Wh, COUNT(*) AS all_wh
     FROM DW.dbo.V1C_doc_promotion_warehouse pw
     JOIN DW.dbo.V1C_dim_warehouse dw ON dw.warehouse_RRef= pw.warehouse_RRef
 GROUP BY pw.doc_promotion_RRef
-  HAVING SUM(CASE WHEN dw.code = @CodeWarehouse THEN 1 ELSE 0 END) = 0) wh_ex ON wh_ex.doc_promotion_RRef=dp._IDRRef
+  HAVING SUM(CASE WHEN dw.code in (@CodeWarehouse,@CodeWarehouseLink) THEN 1 ELSE 0 END) = 0) wh_ex ON wh_ex.doc_promotion_RRef=dp._IDRRef
   WHERE dp.d_end>getdate() AND wh_ex.doc_promotion_RRef IS null
 UNION ALL
 SELECT DISTINCT 
@@ -224,11 +227,11 @@ SELECT DISTINCT
   JOIN  dbo.V1C_doc_promotion_gal dpg ON pg.doc_RRef = dpg.doc_RRef
   JOIN dbo.V1C_dim_warehouse wh ON wh.subdivision_RRef= pg.subdivision_RRef
   where pg.date_end>GETDATE()
-AND try_convert(int,wh.code) = @CodeWarehouse
+AND try_convert(int,wh.code) in (@CodeWarehouse,@CodeWarehouseLink)
 union all
 SELECT
-  8000000000+@CodeWarehouse AS CodePS
- ,'Оптові продажі '+convert(NVARCHAR, @CodeWarehouse) as NamePS
+  8000000000+TRY_CONVERT(int, wh.code) AS CodePS
+ ,'Оптові продажі '+convert(NVARCHAR, TRY_CONVERT(int, wh.code)) as NamePS
  ,1 AS CodePattern
  ,9 AS State
  , CONVERT(date,'20230101',112) AS DateBegin
@@ -239,16 +242,17 @@ SELECT
   , 0.00 AS SumOrder
   ,0 AS TypeWorkCoupon
   , NULL AS BarCodeCoupon
-  where @CodeWarehouse in (9,89);";
+   FROM dbo.V1C_dim_warehouse wh
+  WHERE  wh.type_price_opt_RRef<>0 AND TRY_CONVERT(int, wh.code) in (@CodeWarehouse,@CodeWarehouseLink);";
 
 
         string SqlGetPromotionSaleFilter = @"WITH wh_ex AS
           (SELECT pw.doc_promotion_RRef,
-            SUM(CASE WHEN CONVERT(INT, dw.code) = @CodeWarehouse THEN 1 ELSE 0 END) AS Wh, COUNT(*) AS all_wh
+            SUM(CASE WHEN CONVERT(INT, dw.code) in (@CodeWarehouse,@CodeWarehouseLink) THEN 1 ELSE 0 END) AS Wh, COUNT(*) AS all_wh
     FROM DW.dbo.V1C_doc_promotion_warehouse pw
     JOIN DW.dbo.V1C_dim_warehouse dw ON dw.warehouse_RRef= pw.warehouse_RRef
 GROUP BY pw.doc_promotion_RRef
-  HAVING SUM(CASE WHEN dw.code = @CodeWarehouse THEN 1 ELSE 0 END) = 0)  
+  HAVING SUM(CASE WHEN dw.code in (@CodeWarehouse,@CodeWarehouseLink) THEN 1 ELSE 0 END) = 0)  
 
 SELECT  --Склади дії
     CONVERT(INT, YEAR(dp.year_doc)*10000+dp.number) AS CodePS
@@ -298,7 +302,7 @@ SELECT  --Вид дисконтної карти (Тип Клієнта)
   JOIN dbo.V1C_dim_warehouse wh ON wh.subdivision_RRef= pg.subdivision_RRef
   LEFT JOIN dbo.V1C_DIM_Priority_Promotion PP ON tp.Priority_Promotion_RRef= pp.Priority_Promotion_RRef
   where pg.date_end>GETDATE()
-  AND wh.code = @CodeWarehouse
+  AND wh.code in (@CodeWarehouse,@CodeWarehouseLink)
   --and pg.IsOnlyCard= 1
   GROUP BY CONVERT(INT, YEAR(dpg.date_time)*100000+dpg.number)
   HAVING SUM(CASE WHEN pg.IsOnlyCard= 1 THEN 1 ELSE 0 end)>0 AND SUM(CASE WHEN pg.IsOnlyCard= 1 THEN 0 ELSE 1 end)=0
@@ -419,30 +423,34 @@ SELECT -- Товари набору (Основні)
   AND wh_ex.doc_promotion_RRef IS null
   union all
   SELECT -- оптовий склад
-   8000000000+@CodeWarehouse AS CodePS
-    ,1 AS CodeGroupFilter
-    ,51 AS TypeGroupFilter
-    ,1 AS RuleGroupFilter
-    ,0 AS CodeProporty
-    ,0 AS CodeChoice
-    , @CodeWarehouse as CodeData --AS CodeWarehouse
-    , CONVERT(NUMERIC, NULL) AS CodeDataEnd
-    where @CodeWarehouse in (9,89)
+ 8000000000+TRY_CONVERT(int, wh.code) AS CodePS
+  ,1 AS CodeGroupFilter
+  ,51 AS TypeGroupFilter
+  ,1 AS RuleGroupFilter
+  ,0 AS CodeProporty
+  ,0 AS CodeChoice
+  ,TRY_CONVERT(int, wh.code)  as CodeData --AS CodeWarehouse
+  , CONVERT(NUMERIC, NULL) AS CodeDataEnd 
+   FROM dbo.V1C_dim_warehouse wh
+  WHERE  wh.type_price_opt_RRef<>0 AND TRY_CONVERT(int, wh.code) in (@CodeWarehouse,@CodeWarehouseLink)
 
      union all
-SELECT -- оптовий склад товари і кількості
-   8000000000+@CodeWarehouse AS CodePS
+  SELECT -- оптовий склад товари і кількості
+   8000000000+TRY_CONVERT(int, wh.code) AS CodePS
     ,1 AS CodeGroupFilter
     ,12 AS TypeGroupFilter
     ,1 AS RuleGroupFilter
     ,0 AS CodeProporty
     ,0 AS CodeChoice
-    , try_convert(int, w.code_wares)  as CodeData --AS CodeWarehouse
+    , try_convert(int, w.code_wares)  as CodeData 
     , ow.quantity AS CodeDataEnd
-
  FROM dbo.V1C_DIM_OPTION_WPC_opt_wares ow
-JOIN Wares w ON w._IDRRef= ow.NomenRref
-   where @CodeWarehouse = 9
+ JOIN dbo.V1C_DIM_OPTION_WPC o ON o._IDRRef=ow._Reference18850_IDRRef
+      JOIN Wares w ON w._IDRRef= ow.NomenRref
+      JOIN V1C_dim_warehouse wh ON o.Warehouse_RRef=wh.warehouse_RRef
+      JOIN dbo.V1C_dim_type_price tp ON wh.type_price_opt_RRef=tp.type_price_RRef
+WHERE TRY_CONVERT(int, wh.code) in (@CodeWarehouse,@CodeWarehouseLink)
+
      union all
 SELECT -- оптовий склад товари і кількості
    8000000000+CodeWarehouse AS CodePS
@@ -453,10 +461,9 @@ SELECT -- оптовий склад товари і кількості
     ,0 AS CodeChoice
     , codewares  as CodeData --AS CodeWarehouse
     , quantity AS CodeDataEnd
-
  FROM dbo.QuantityOpt 
    WHERE quantity>0
-   AND CodeWarehouse= @CodeWarehouse
+   AND CodeWarehouse in (@CodeWarehouse,@CodeWarehouseLink)
     AND @CodeWarehouse = 89
 ;";
 
@@ -482,20 +489,29 @@ SELECT distinct -- Товари набору (Основні)
   JOIN DW.dbo.V1C_doc_promotion dp ON dp._IDRRef= pk.doc_promotion_RRef
   LEFT JOIN DW.dbo.V1C_doc_promotion_kit pk_k ON (pk_k.doc_promotion_RRef= pk.doc_promotion_RRef AND pk.nomen_RRef = pk_k.nomen_RRef AND pk.number_kit = pk_k.number_kit AND pk_k.is_main= 0x01)
   LEFT JOIN(SELECT pw.doc_promotion_RRef,
-    SUM(CASE WHEN CONVERT(INT, dw.code) = @CodeWarehouse THEN 1 ELSE 0 END) AS Wh, COUNT(*) AS all_wh
+    SUM(CASE WHEN CONVERT(INT, dw.code) in (@CodeWarehouse,@CodeWarehouseLink) THEN 1 ELSE 0 END) AS Wh, COUNT(*) AS all_wh
     FROM DW.dbo.V1C_doc_promotion_warehouse pw
     JOIN DW.dbo.V1C_dim_warehouse dw ON dw.warehouse_RRef= pw.warehouse_RRef
 GROUP BY pw.doc_promotion_RRef
-  HAVING SUM(CASE WHEN dw.code = @CodeWarehouse THEN 1 ELSE 0 END) = 0) wh_ex ON wh_ex.doc_promotion_RRef=dp._IDRRef
+  HAVING SUM(CASE WHEN dw.code in (@CodeWarehouse,@CodeWarehouseLink) THEN 1 ELSE 0 END) = 0) wh_ex ON wh_ex.doc_promotion_RRef=dp._IDRRef
   WHERE dp.d_end>getdate()
   AND pk.is_main=0
   AND wh_ex.doc_promotion_RRef IS null";
 
-        string SqlGetMRC = @"SELECT code_wares as CodeWares, Price, Type_Wares as TypeWares FROM dbo.V1C_MRC where Code_Warehouse = @CodeWarehouse
+        string SqlGetMRC = @"WITH WH AS 
+(
+SELECT wh.Code AS CodeWarehouse from WAREHOUSES wh where wh.CodeWarehouse2 = @CodeWarehouse
+UNION 
+SELECT wh.CodeWarehouse2 AS CodeWarehouse from WAREHOUSES wh where wh.Code = @CodeWarehouse
+UNION 
+SELECT @CodeWarehouse AS CodeWarehouse 
+)
+SELECT DISTINCT code_wares as CodeWares, Price, Type_Wares as TypeWares FROM dbo.V1C_MRC mrc JOIN wh ON  mrc.Code_Warehouse=wh.CodeWarehouse";
+        /*SELECT code_wares as CodeWares, Price, Type_Wares as TypeWares FROM dbo.V1C_MRC where Code_Warehouse = @CodeWarehouse
 UNION  
 SELECT code_wares as CodeWares, Price, Type_Wares as TypeWares FROM dbo.V1C_MRC mrc 
 JOIN WAREHOUSES wh ON mrc.Code_Warehouse = wh.Code  
-where wh.CodeWarehouse2 = @CodeWarehouse;";
+where wh.CodeWarehouse2 = @CodeWarehouse;*/
 
         string SqlSalesBan = @"
         SELECT CODE_GROUP_WARES AS CodeGroupWares, amount
@@ -537,7 +553,10 @@ CASE WHEN [is_leaf]=1 THEN 4 else 3 END  AS TypeData, dn.code AS Data
         public string number { get; set; }
         public decimal sum { get; set; }
     }
-    class pWarehouse { public int CodeWarehouse { get; set; } }
+    class pWarehouse { 
+        public int CodeWarehouse { get; set; }
+        public int CodeWarehouseLink { get; set; }
+    }
     class pMessage : pWarehouse
     {
         public int IsFull { get; set; }

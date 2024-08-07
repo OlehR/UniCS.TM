@@ -49,17 +49,17 @@
 				</StackPanel>
 
 				<StackPanel Grid.Column="1" VerticalAlignment="Center">
-					<TextBlock Text="{Binding ClientName}" FontSize="24" FontWeight="Bold" Margin="2"/>
-					<TextBlock Text="WalletAmount" FontSize="24" FontWeight="Bold" Margin="2"/>
-					<TextBlock Text="BonusAmount" FontSize="24" FontWeight="Bold" Margin="2"/>
-					<TextBlock Text="MoneyBonusAmount" FontSize="24" FontWeight="Bold" Margin="2"/>
-					<TextBlock Text="MainPhone" FontSize="24" FontWeight="Bold" Margin="2"/>
-					<TextBlock Text="AdditionalPhone" FontSize="24" FontWeight="Bold" Margin="2"/>
-					<TextBlock Text="DiscountPercentage" FontSize="24" FontWeight="Bold" Margin="2"/>
-					<TextBlock Text="BonusPercentage" FontSize="24" FontWeight="Bold" Margin="2"/>
-					<TextBlock Text="BarCode" FontSize="24" FontWeight="Bold" Margin="2"/>
-					<TextBlock Text="CardStatus" FontSize="24" FontWeight="Bold" Margin="2"/>
-					<TextBlock Text="BirthDate" FontSize="24" FontWeight="Bold" Margin="2"/>
+					<TextBlock Text="{Binding Client.NameClient}" FontSize="24" FontWeight="Bold" Margin="2"/>
+					<TextBlock Text="{Binding Client.Wallet}" FontSize="24" FontWeight="Bold" Margin="2"/>
+					<TextBlock Text="{Binding Client.SumBonus}" FontSize="24" FontWeight="Bold" Margin="2"/>
+					<TextBlock Text="{Binding Client.SumMoneyBonus}" FontSize="24" FontWeight="Bold" Margin="2"/>
+					<TextBlock Text="{Binding Client.MainPhone}" FontSize="24" FontWeight="Bold" Margin="2"/>
+					<TextBlock Text="{Binding Client.PhoneAdd}" FontSize="24" FontWeight="Bold" Margin="2"/>
+					<TextBlock Text="{Binding Client.PersentDiscount}" FontSize="24" FontWeight="Bold" Margin="2"/>
+					<TextBlock Text="{Binding Client.PercentBonusIntegers}" FontSize="24" FontWeight="Bold" Margin="2"/>
+					<TextBlock Text="{Binding Client.BarCode}" FontSize="24" FontWeight="Bold" Margin="2"/>
+					<TextBlock Text="{Binding Client.TranslatedStatusCard}" FontSize="24" FontWeight="Bold" Margin="2"/>
+					<TextBlock Text="{Binding Client.BirthDay}" FontSize="24" FontWeight="Bold" Margin="2"/>
 				</StackPanel>
 			</Grid>
 

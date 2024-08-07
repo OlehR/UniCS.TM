@@ -7,13 +7,13 @@
              xmlns:views="using:AvaloniaMain.Views"
              mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080"
              x:Class="AvaloniaMain.Views.MainView"
-             x:DataType="vm:MainViewModel">
+             x:DataType="vm:MainViewModel"
+			 xmlns:converters="clr-namespace:AvaloniaMain.Converters" >
 
     <Design.DataContext>
         <vm:MainViewModel />
     </Design.DataContext>
 
-    <!-- Define DataTemplates directly in Resources -->
     <UserControl.DataTemplates>
         <DataTemplate  DataType="{x:Type vm:NumPadViewModel}">
 			<views:NumPadView />
@@ -21,18 +21,32 @@
         <DataTemplate  DataType="{x:Type vm:ClientInfoViewModel}">
 			<views:ClientInfoView />
         </DataTemplate>
+		<DataTemplate  DataType="{x:Type vm:CustomWindowViewModel}">
+			<views:CustomWindowView />
+		</DataTemplate>
 		<DataTemplate  DataType="{x:Type vm:IssueCardViewModel}">
 			<views:IssueCardView />
 		</DataTemplate>
 		<DataTemplate  DataType="{x:Type vm:SearchViewModel}">
 			<views:SearchView />
 		</DataTemplate>
+		<DataTemplate  DataType="{x:Type vm:ShowMessageViewModel}">
+			<views:ShowMessageView />
+		</DataTemplate>
+		<DataTemplate  DataType="{x:Type vm:PaymentViewModel}">
+			<views:PaymentView />
+		</DataTemplate>
     </UserControl.DataTemplates>
-
+	<UserControl.Resources>
+		<converters:QuantityToMinusButtonEnabledConverter x:Key="QuantityToMinusButtonEnabledConverter" />
+	</UserControl.Resources>
+	<UserControl.Resources>
+		<converters:DatabaseUpdateStatusToColorConverter x:Key="DatabaseUpdateStatusToColorConverter" />
+	</UserControl.Resources>
 
 	<Grid Background="White"  RowDefinitions="Auto,Auto">
-  <Grid Background="White" Grid.Row="0" Height="85"  ColumnDefinitions="700,310,310,*,120,120">
-	  <Button Background="White" IsVisible="{Binding Visibility}" Command="{Binding ShowUserInfo}">
+  <Grid Background="White" Grid.Row="0" Height="85"  ColumnDefinitions="700,310,310,*,220,220">
+	  <Button Background="White" IsVisible="{Binding IsUserActive}" Command="{Binding ShowUserInfo}">
 <Grid Margin="0,0,0,15" ColumnDefinitions="Auto,Auto" Grid.Column="0">
 	
 	
@@ -41,14 +55,14 @@
             <Grid Height="60" Margin="3" RowDefinitions="*,*" ColumnDefinitions="Auto,Auto">
               <Label FontSize="20"  Width="160" HorizontalAlignment="Center" >Скарбничка:</Label>
 				<Label FontSize="20" Width="160" Grid.Row="1" >Сума Бонусів:</Label>
-              <TextBlock  FontWeight="Bold" Margin=""  FontSize="20"  VerticalAlignment="Center" Grid.Column="1" Text="{Binding UserMoneyBox}">
+              <TextBlock  FontWeight="Bold" Margin=""  FontSize="20"  VerticalAlignment="Center" Grid.Column="1" Text="{Binding ClientWallet}">
 				  <TextBlock.Styles>
 					  <Style Selector="TextBlock">
 						  <Setter Property="Foreground" Value="Green" />
 					  </Style>
 				  </TextBlock.Styles>
 			  </TextBlock>
-              <TextBlock FontSize="20" FontWeight="Bold"    VerticalAlignment="Center" Grid.Column="1" Grid.Row="1" Text="{Binding UserMoneyBonus}">
+              <TextBlock FontSize="20" FontWeight="Bold"    VerticalAlignment="Center" Grid.Column="1" Grid.Row="1" Text="{Binding ClientSumMoneyBonus}">
 				  <TextBlock.Styles>
 					  <Style Selector="TextBlock">
 						  <Setter Property="Foreground" Value="Green" />
@@ -59,28 +73,30 @@
 			
         </Border>
   
-        <Image   Margin="4"    Grid.Column="1"  IsVisible="{Binding Visibility }"  Height="60"  Width="100" Source="/Assets/ClientBonus.ico"></Image>
+        <Image   Margin="4"    Grid.Column="1"  IsVisible="{Binding IsUserActive }"  Height="60"  Width="100" Source="/Assets/ClientBonus.ico"></Image>
       
       </Grid>
 	  </Button>
-       <Button Background="#e0e0e0" Command="{Binding ShowIssueCard}" Grid.Column="1" Width="300" Height="70" CornerRadius="15">
-         <Label HorizontalAlignment="Center"  FontSize="18" FontWeight="Black" VerticalAlignment="Center">Видача картки</Label>
+       <Button  Background="#e0e0e0" Command="{Binding ShowIssueCard}" Grid.Column="1" Width="300" Height="70" CornerRadius="15">
+		   <TextBlock HorizontalAlignment="Center"  FontSize="18" FontWeight="Bold" VerticalAlignment="Center">Видача картки</TextBlock>
        </Button>
-       <Button  Background="#e0e0e0" FontSize="18" FontWeight="Black"  Grid.Column="2" Margin="1" Width="300" Height="70" CornerRadius="15">
-         <Label HorizontalAlignment="Center" VerticalAlignment="Center">Відкласти чек </Label>
+       <Button IsEnabled="{Binding IsReceiptPostpone}" Command="{Binding PostoponeCheckCommand}" Background="#e0e0e0" FontSize="18" FontWeight="Bold"  Grid.Column="2" Margin="1" Width="300" Height="70" CornerRadius="15">
+         <TextBlock Foreground="{Binding IsReceiptPostponeNotNullText}" Background="{Binding IsReceiptPostponeNotNull}" HorizontalAlignment="Center" FontSize="18" VerticalAlignment="Center">Відкласти чек </TextBlock>
        </Button>
-       <Button Command="{Binding ChangeColorCommand}" Background="{Binding ButtonColor}" Grid.Column="4" Margin="2" Width="120" Height="60" CornerRadius="15">
-       <Image Source="/Assets/OkColor.ico"></Image>
+       <Button Background="{Binding DatabaseUpdateStatus,Converter={StaticResource DatabaseUpdateStatusToColorConverter}}" Command="{Binding ShowMessage}"  Grid.Column="4" Margin="2" Width="220" Height="60" CornerRadius="15">
+		  
+		   <Image Source="/Assets/OkColor.ico"></Image>
        </Button>
-      <Button  Background="#e0e0e0"  Grid.Column="5" Margin="2" Width="120" Height="60" CornerRadius="15">
+      <Button  Background="#e0e0e0"  Grid.Column="5" Margin="2" Width="220" Height="60" CornerRadius="15">
       <Image Source="/Assets/AdminPanel.ico"></Image>
        </Button>
     </Grid>
 		
 		<ContentControl  Grid.Row="1" ZIndex="2"  IsVisible="{Binding CurrentPageVisibility}" Content="{Binding CurrentPage}" />
-		
-		<Rectangle  Grid.Row="1" IsVisible="{Binding BackgroundVisibility}"  Height="900" VerticalAlignment="Top" Width="1920" Opacity="0.5" ZIndex="1"  Fill="white"></Rectangle>
+		<ContentControl  Grid.Row="1" ZIndex="2"  IsVisible="{Binding NumPadPageVisibility}" Content="{Binding NumPadPage}" />
 
+		<Rectangle  Grid.Row="1" IsVisible="{Binding BackgroundVisibility}"  Height="900" VerticalAlignment="Top" Width="1920" Opacity="0.5" ZIndex="1"  Fill="white"></Rectangle>
+		<Rectangle ZIndex="1"  Grid.Row="1" IsVisible="{Binding NumBackgroundVisibility}"  Height="900" VerticalAlignment="Top" Width="1920" Opacity="0.5"  Fill="white"></Rectangle>
 		<Grid Grid.Row="1" RowDefinitions="Auto,*,95">
  <Rectangle Grid.Row="0" Height="4" Fill="Green" VerticalAlignment="Bottom" ></Rectangle>
   <Grid Background="white" RowDefinitions="Auto,Auto,Auto" Grid.Row="1">
@@ -90,7 +106,7 @@
 	 
 
 	  <Border Grid.Row="0" IsVisible="True" Background="#e4f7da">
-         <Grid ColumnDefinitions="1110,100,285,130,130,160">
+         <Grid ColumnDefinitions="1040,100,260,130,130,160">
 			 <Border   Height="40"  Grid.Column="0">
                                   <Label VerticalAlignment="Center"   FontWeight="Bold" FontSize="15" HorizontalAlignment="Center">Назва</Label>
 			 </Border>
@@ -117,29 +133,49 @@
 
 	  <ScrollViewer Grid.Row="1" IsVisible="True"   AllowAutoHide="False" Height="850"  VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Hidden" >
 		  
-		  <ListBox Background="White" ItemsSource="{Binding RecieptPosition}" SelectedItem="{Binding SelectedRecieptPosition}">
+		  <ListBox Background="White" ItemsSource="{Binding ListWares}" SelectedItem="{Binding SelectedRecieptPosition}">
   <ListBox.ItemTemplate>
     <DataTemplate>
 		
-			<Grid Height="90" ColumnDefinitions="1110,100,285,130,130,100">
-				<TextBlock TextWrapping="Wrap"  Margin="20,0,0,0" Height="80" FontSize="25" FontWeight="Bold" Text="{Binding Name}" />
-				<Button Background="Transparent"  VerticalAlignment="Center" Grid.Column="1" Width="80" Height="80" HorizontalAlignment="Center">
-					<Border Width="70" Height="75" BorderBrush="Black" BorderThickness="4" CornerRadius="7">
-					<Image Height="60" Width="60" Source="/Assets/delete.ico"></Image>
-					</Border>
-				</Button>
-				<StackPanel HorizontalAlignment="Center"  Orientation="Horizontal"  Grid.Column="2">
-					<Button Margin="0,0,15,0" Height="80" Width="80">
-						<Image Height="40" Width="40" Source="/Assets/minus.ico"></Image>
-					</Button> 
-					<TextBlock Margin="15" VerticalAlignment="Center" FontSize="25" FontWeight="Bold" Height="40" HorizontalAlignment="Center" Text="{Binding Count}" />
-					<Button  Margin="15,0,0,0" Height="80" Width="80">
-						<Image Height="40" Width="40" Source="/Assets/plus.ico"></Image>
-					</Button>
+			<Grid Height="90" ColumnDefinitions="1070,100,260,130,140,100">
+				<StackPanel>
+					<TextBlock TextWrapping="Wrap" IsVisible="{Binding DataContext.IsUserActive, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}" Margin="20,0,0,0" Height="20" FontSize="10" FontWeight="Medium" Text="{Binding GetStrWaresReceiptPromotion}" />
+
+					<TextBlock VerticalAlignment="Center" TextWrapping="Wrap"  Margin="20,0,0,0" Height="80" FontSize="32" FontWeight="Bold" Text="{Binding NameWares}" />
 				</StackPanel>
-				<TextBlock VerticalAlignment="Center" FontSize="25" FontWeight="Bold" Grid.Column="3" Height="40" HorizontalAlignment="Center" Text="{Binding Weight}" />
-				<TextBlock VerticalAlignment="Center" FontSize="25" FontWeight="Bold" Grid.Column="4" Height="40" HorizontalAlignment="Center" Text="{Binding PricePerOne}" />
-				<TextBlock VerticalAlignment="Center" FontSize="25" FontWeight="Bold" Grid.Column="5" Height="40" HorizontalAlignment="Center" Text="{Binding TotalPrice}" />
+				<Border Grid.Column="1" Margin="0,0,10,0"  Width="85" Height="75" BorderBrush="Black" BorderThickness="4" CornerRadius="7">
+				<Button  Command="{Binding DataContext.Delete , RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}" CommandParameter="{Binding}" Background="Transparent"  VerticalAlignment="Center"  Width="86" Height="76" HorizontalAlignment="Center">
+					
+					<Image Height="60" Width="60" Source="/Assets/delete.ico"></Image>
+					
+				</Button>
+			    </Border>
+				<Grid ColumnDefinitions="73,70,73" HorizontalAlignment="Center"    Grid.Column="2">
+					<Border Grid.Column="0" Height="73" Width="73" ZIndex="2" Margin="0,0,5,0" CornerRadius="15" BorderBrush="Black" BorderThickness="2">
+						<Button HorizontalAlignment="Center"  CornerRadius="15" Background="White" Command="{Binding DataContext.ChangeQuantityMinus, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}" CommandParameter="{Binding}"  Height="71" Width="71"
+						IsEnabled="{Binding IsMinus}">
+							<Image  Height="40" Width="40" Source="/Assets/minus.ico"></Image>
+						</Button>
+					</Border>
+				
+					<TextBlock Grid.Column="1" Margin="5" VerticalAlignment="Center" FontSize="25" Width="70" TextAlignment="Center"  HorizontalAlignment="Center" FontWeight="Bold" Height="40" Text="{Binding Quantity}" />
+					<Border Grid.Column="2" Height="73" Width="73" ZIndex="2" Margin="5,0,0,0" CornerRadius="15"  BorderBrush="Black" BorderThickness="2">
+
+						<Button IsEnabled="{Binding IsPlus}" CornerRadius="15" Background="White" Command="{Binding DataContext.ChangeQuantityPlus, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}" HorizontalAlignment="Center" CommandParameter="{Binding}"  Height="71" Width="71">
+						<Image HorizontalAlignment="Center" Height="40" Width="40" Source="/Assets/plus.ico"></Image>
+					</Button>
+					</Border>
+				</Grid>
+				<StackPanel VerticalAlignment="Center" Grid.Column="3">
+					<TextBlock Margin="0,2,0,2"   FontSize="24" FontWeight="Medium"  HorizontalAlignment="Center" Text="{Binding WeightBrutto }" />
+					<TextBlock Margin="0,2,0,2"   FontSize="15" FontWeight="Medium"  HorizontalAlignment="Center" Text="{Binding FixedWeightInKg}" />
+				</StackPanel>
+				<TextBlock VerticalAlignment="Center" FontSize="25" FontWeight="Bold" Grid.Column="4" Height="40" HorizontalAlignment="Center" Text="{Binding Price}" />
+				<StackPanel VerticalAlignment="Center" Grid.Column="5">
+					<TextBlock VerticalAlignment="Center" FontSize="25" FontWeight="Bold"  HorizontalAlignment="Center" Text="{Binding  Sum}" />
+					<TextBlock Foreground="Red" IsVisible="{Binding DataContext.IsUserActive, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}} " VerticalAlignment="Center" FontSize="13" FontWeight="Bold"    HorizontalAlignment="Center" Text="{Binding Discount, StringFormat='- {0}₴'}"  />
+
+				</StackPanel>
 			</Grid>
 		
     </DataTemplate>
@@ -177,6 +213,7 @@
 
   </Grid>
 			<Rectangle  Grid.Row="2" Height="100" IsVisible="{Binding BackgroundVisibility}"  VerticalAlignment="Top" Width="1920" Opacity="0.5" ZIndex="2"  Fill="White"></Rectangle>
+		<Rectangle  Grid.Row="2" Height="100" IsVisible="{Binding NumBackgroundVisibility}"  VerticalAlignment="Top" Width="1920" Opacity="0.5" ZIndex="2"  Fill="White"></Rectangle>
 
 			<Grid Background="White"  Margin="0,5" Grid.Row="2"  Height="100" ColumnDefinitions="100,610,610,570">
 		
@@ -192,12 +229,12 @@
 		   <Button Command="{Binding ShowNumPad}" Height="90" Margin="3,0,0,6" CornerRadius="15" Width="610" Grid.Column="2">
 			   <Label FontFamily="Black" FontSize="35" VerticalAlignment="Center" HorizontalAlignment="Center" >Проскануйте бонусну карту </Label>
 		   </Button>
-		   <Button Height="90" CornerRadius="15" Margin="3,0,0,6" Grid.Column="3" Width="570" Background="#419e08">
+		   <Button Command="{Binding showPaymentWindow}" Height="90" CornerRadius="15" Margin="3,0,0,6" Grid.Column="3" Width="570" Background="#419e08">
 			   <StackPanel Orientation="Horizontal">
 				   <Image Height="60" Width="60" Margin="40,0,0,0"  Source="/Assets/18PlusRed.ico"></Image>
 				   <Label Foreground="White" Margin="40,0,0,0" FontSize="50" HorizontalAlignment="Center" VerticalAlignment="Center">></Label>
 				   <Label Foreground="White"  Margin="5,0,0,0"  FontFamily="Black" FontSize="40" VerticalAlignment="Center">Оплата</Label>
-				   <TextBlock Foreground="White" Margin="5,0,0,0" FontSize="40" VerticalAlignment="Center" Text="680">
+				   <TextBlock Foreground="White" Margin="5,0,0,0" FontSize="40" VerticalAlignment="Center" Text="{Binding MoneySum, StringFormat='- {0}₴' }">
 					 
 				   </TextBlock>
 			   </StackPanel>

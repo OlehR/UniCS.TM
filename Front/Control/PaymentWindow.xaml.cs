@@ -30,7 +30,7 @@ namespace Front.Control
         public bool EnteringPriceManually { get; set; } = false;
         decimal _SumUseWallet = 0;
         public string TypeReturn { get; set; }
-        public decimal SumUseWallet
+        public decimal SumUseWallet // скільки списуємо з гаманця
         {
             get { return _SumUseWallet; }
             set
@@ -93,10 +93,10 @@ namespace Front.Control
 
 
             MoneySum = MW.MoneySum;
-            ChangeSumPaymant = MoneySum.ToString();
-            SumMaxWallet = (MW.curReceipt?.MaxSumWallet < MW.Client?.Wallet ? MW.curReceipt?.MaxSumWallet : MW.Client?.Wallet) ?? 0;
-            IsPaymentBonuses = MW.Client != null && MW.Client?.SumMoneyBonus >= MoneySum && MW.curReceipt.IsOnlyOrdinary;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsRounding"));
+            ChangeSumPaymant = MoneySum.ToString(); //вікно де змінюється сума округлення і т.д.
+            SumMaxWallet = (MW.curReceipt?.MaxSumWallet < MW.Client?.Wallet ? MW.curReceipt?.MaxSumWallet : MW.Client?.Wallet) ?? 0; //максмсальна сума списання з гаманця
+            IsPaymentBonuses = MW.Client != null && MW.Client?.SumMoneyBonus >= MoneySum && MW.curReceipt.IsOnlyOrdinary; // оплата бонусами
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsRounding")); // вертає тру якщо є юзер і впливає на панель з можливою знижкою по гаманцю і на кнопки округлення
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SumMaxWallet"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsPaymentBonuses"));
             Rounding();
@@ -223,7 +223,7 @@ namespace Front.Control
         {
             ChangeSumPaymant = "0";
             CancelCashDisbursement();
-            MW.SetStateView(Models.eStateMainWindows.WaitInput);
+            MW.SetStateView(eStateMainWindows.WaitInput);
         }
 
         private void _ButtonPaymentBank(object sender, RoutedEventArgs e)
@@ -232,15 +232,16 @@ namespace Front.Control
             var btn = sender as Button;
             var bank = btn.CommandParameter as BankTerminal;
             MW?.EF.SetBankTerminal(bank);
-            var task = Task.Run(() => MW.PrintAndCloseReceipt(null, eTypePay.Card, 0, SumCashDisbursement));
+            var task = Task.Run(() => MW.Blf.PrintAndCloseReceipt(null, eTypePay.Card, 0, SumCashDisbursement));
             MW.GiveRest = 0;
         }
 
         private void _ButtonPaymentCash(object sender, RoutedEventArgs e)
         {
-            MW.PaymentWindowKSO_UC.EquipmentStatusInPayment.Text = "";
+            //MW.PaymentWindowKSO_UC.EquipmentStatusInPayment.Text = "";
+            MW.EquipmentInfo = string.Empty;
             MW.GiveRest = (double)RestMoney;
-            var task = Task.Run(() => MW.PrintAndCloseReceipt(null, eTypePay.Cash, ChangeSumPaymantDecimal, 0, -SumUseWallet));
+            var task = Task.Run(() => MW.Blf.PrintAndCloseReceipt(null, eTypePay.Cash, ChangeSumPaymantDecimal, 0, -SumUseWallet));
         }
 
         private void CancelCashDisbursementButton(object sender, RoutedEventArgs e)
@@ -257,10 +258,10 @@ namespace Front.Control
         {
             IdReceipt IdR = new() { CodePeriod = MW.curReceipt.CodePeriod, IdWorkplacePay = Global.IdWorkPlace };
             decimal SumCash = MW.EF.GetSumInCash(IdR);// Bl.db.GetSumCash(IdR);
-            MW.InputNumberPhone.Desciption = $"Введіть суму видачі. В касі {SumCash}₴";
-            MW.InputNumberPhone.ValidationMask = "";
-            MW.InputNumberPhone.Result = "";
-            MW.InputNumberPhone.CallBackResult = (string result) =>
+            PaymentWindowUC_NumericPad.Desciption = $"Введіть суму видачі. В касі {SumCash}₴";
+            PaymentWindowUC_NumericPad.ValidationMask = "";
+            PaymentWindowUC_NumericPad.Result = "";
+            PaymentWindowUC_NumericPad.CallBackResult = (string result) =>
             {
 
                 if (!string.IsNullOrEmpty(result))
@@ -281,7 +282,7 @@ namespace Front.Control
                 BackgroundPayment.Visibility = Visibility.Collapsed;
             };
             BackgroundPayment.Visibility = Visibility.Visible;
-            MW.NumericPad.Visibility = Visibility.Visible;
+            PaymentWindow_NumericPad.Visibility = Visibility.Visible;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCashPayment"));
             Rounding();
         }
@@ -319,9 +320,9 @@ namespace Front.Control
         }
 
         private void CalculateReturn()
-        {
-            if (ChangeSumPaymantDecimal > 0)
-                RestMoney = Math.Round((ChangeSumPaymantDecimal - Convert.ToDecimal(MoneySumToRound)), 2);
+    {
+            if (ChangeSumPaymantDecimal > 0) // це поле це таж сама ціна просто з строки в decimal
+                    RestMoney = Math.Round((ChangeSumPaymantDecimal - Convert.ToDecimal(MoneySumToRound)), 2); //решта
             else
                 RestMoney = 0;
         }
@@ -360,13 +361,13 @@ namespace Front.Control
                     RoundingDownPrice(MoneySum, 10);
                     break;
                 case "enterAmount":
-                    MW.InputNumberPhone.Desciption = $"Максимальна сума списання: {SumMaxWallet}";
-                    MW.InputNumberPhone.ValidationMask = "";
-                    MW.InputNumberPhone.Result = "";
-                    MW.InputNumberPhone.IsEnableComma = true;
-                    MW.NumericPad.Visibility = Visibility.Visible;
+                    PaymentWindowUC_NumericPad.Desciption = $"Максимальна сума списання: {SumMaxWallet}";
+                    PaymentWindowUC_NumericPad.ValidationMask = "";
+                    PaymentWindowUC_NumericPad.Result = "";
+                    PaymentWindowUC_NumericPad.IsEnableComma = true;
+                    PaymentWindow_NumericPad.Visibility = Visibility.Visible;
                     BackgroundPayment.Visibility = Visibility.Visible;
-                    MW.InputNumberPhone.CallBackResult = (string result) =>
+                    PaymentWindowUC_NumericPad.CallBackResult = (string result) =>
                     {
                         tmp = string.IsNullOrEmpty(result) ? 0 : Convert.ToDecimal(result);
                         //if (tmp > MoneySum)
@@ -387,7 +388,7 @@ namespace Front.Control
                         }
 
 
-                        MoneySumToRound = MoneySum - tmp;
+                        MoneySumToRound = MoneySum - tmp; // сума до якої ми округлюємо стоїть навпроти всього:
                         SumUseWallet = -tmp;
                         ChangeSumPaymant = MoneySumToRound.ToString();
                         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ChangeSumPaymant"));
@@ -398,8 +399,8 @@ namespace Front.Control
                     };
                     break;
                 default:
-                    MoneySumToRound = (decimal)MW.MoneySum;
-                    SumUseWallet = 0;
+                    MoneySumToRound = (decimal)MW.MoneySum; //навпроти всього
+                    SumUseWallet = 0; //?
                     break;
             }
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MoneySumToRound"));

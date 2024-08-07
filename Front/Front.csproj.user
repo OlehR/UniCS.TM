@@ -30,6 +30,9 @@
     <Compile Update="Control\PaymentWindowKSO.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Control\RelatedProducts.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Control\ShowMessage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -37,6 +40,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="KeyPad.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="SecondMonitorWindows.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -63,6 +69,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Control\PaymentWindowKSO.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Control\RelatedProducts.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Control\ShowMessage.xaml">
@@ -96,6 +105,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Resources\yelowButton.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="SecondMonitorWindows.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

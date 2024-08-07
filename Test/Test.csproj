@@ -8,12 +8,11 @@
 
   <ItemGroup>
     <PackageReference Include="BarCode" Version="2020.6.0" />
-    <PackageReference Include="System.IO.Packaging" Version="6.0.0" />
+    <PackageReference Include="System.IO.Packaging" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ModelMID\ModelMID.csproj" />
-    <ProjectReference Include="..\ModernIntegration\ModernIntegration.csproj" />
     <ProjectReference Include="..\SharedLib\SharedLib.csproj" />
   </ItemGroup>
 

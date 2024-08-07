@@ -4,6 +4,7 @@ using System.Data;
 //using DB_SQLite;
 using System.IO;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Dapper;
@@ -89,7 +90,7 @@ namespace SharedLib
             //Close();
         }
 
-        void CreateRC(string pReceiptFile=null)
+        void CreateRC(string pReceiptFile = null)
         {
             if (string.IsNullOrEmpty(pReceiptFile))
                 pReceiptFile = ReceiptFile;
@@ -177,27 +178,19 @@ namespace SharedLib
             try
             {
                 IsFirstStart = false;
-                int CurVerConfig = 0, CurVerMid = 0, CurVerRC = 0;
-                var Lines = SqlUpdateConfig.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-
-                CurVerConfig = dbConfig.GetVersion;
-                //CurVerMid = GetConfig<int>("VerMid", dbConfig);
-                //CurVerRC = GetConfig<int>("VerRC", dbConfig);
-
+                //int CurVerConfig = 0, CurVerMid = 0, CurVerRC = 0;
+                //var Lines = SqlUpdateConfig.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                
                 //Config
-                var (Ver, IsReload) = Parse(Lines, CurVerConfig, dbConfig);
-                if (Ver != CurVerConfig)
-                    dbConfig.SetVersion(Ver);
+                 Parse(SqlUpdateConfig, dbConfig);                
 
                 //Mid
                 if (File.Exists(MidFile))
                 {
                     using var dbMID = new SQLite(MidFile);
-                    CurVerMid = dbMID.GetVersion;// GetConfig<int>("VerMID",dbConfig);
-                    Lines = SqlUpdateMID.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-                    (Ver, IsReload) = Parse(Lines, CurVerMid, dbMID);
-                    if (Ver != CurVerMid)
-                        dbMID.SetVersion(Ver);
+                    //CurVerMid = dbMID.GetVersion;// GetConfig<int>("VerMID",dbConfig);
+                    //Lines = SqlUpdateMID.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                    bool IsReload = Parse(SqlUpdateMID, dbMID);                    
                     dbMID.Close(true);
                     if (IsReload)
                     {
@@ -206,28 +199,30 @@ namespace SharedLib
                     }
                     //if (Ver != CurVerMid) SetConfig<int>("VerMID", Ver);
                 }
-                //RC
-                //CurVerRC = GetConfig<int>("VerRC",dbConfig);
+
+                //RC                
                 var cDT = DateTime.Now.Date.AddDays(-10);
+                if (DT < cDT) UpdateRC(DT);
                 while (cDT <= DateTime.Now.Date)
                 {
-                    if (File.Exists(GetReceiptFile(cDT)))
-                    {
-                        using var dbRC = GetRC(cDT);// new SQLite(GetReceiptFile(cDT));
-                        CurVerRC = dbRC.GetVersion;
-                        Lines = SqlUpdateRC.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-                        (Ver, IsReload) = Parse(Lines, CurVerRC, dbRC);
-                        dbRC.SetVersion(Ver);
-                    }
+                    UpdateRC(cDT);
                     cDT = cDT.AddDays(1);
                 }
-                //if (Ver != CurVerRC) SetConfig<int>("VerRC", Ver);
                 return true;
             }
             catch (Exception ex)
             {
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex);
                 return false;
+            }
+        }
+
+        void UpdateRC(DateTime pDT)
+        {
+            if (File.Exists(GetReceiptFile(pDT)))
+            {
+                using var dbRC = GetRC(pDT);               
+                Parse(SqlUpdateRC, dbRC);                
             }
         }
 
@@ -249,12 +244,14 @@ namespace SharedLib
             return res;
         }
 
-        protected (int, bool) Parse(string[] pLines, int pCurVersion, SQLite pDB)
+        protected bool Parse(string pComand, SQLite pDB)
         {
+            string[] Lines = pComand.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            int pCurVersion = pDB.GetVersion;
             int NewVer = pCurVersion, Ver;
             bool isReload = false;
 
-            foreach (var el in pLines)
+            foreach (var el in Lines)
             {
                 var i = el.ToUpper().IndexOf("VER=>");
                 if (i >= 0)
@@ -287,8 +284,9 @@ namespace SharedLib
                     }
                 }
             }
-
-            return (NewVer, isReload);
+            if(NewVer!= pCurVersion)
+                pDB.SetVersion(NewVer);
+            return  isReload;
         }
 
         /// <summary>
@@ -316,9 +314,7 @@ namespace SharedLib
             var Ldc = GetConfig<DateTime>("LastDaySend");
             if (Ldc != DateTime.Now.Date)
                 return Ldc;
-
             return db.ExecuteScalar<DateTime>(SqlGetDateFirstNotSendReceipt);
-
         }
 
         public DateTime GetLastUpdateDirectory()
@@ -331,23 +327,19 @@ namespace SharedLib
                 return strTDU;
         }
 
-        public Task RecalcPriceAsync(IdReceiptWares pIdReceiptWares)
+        public Task RecalcPriceAsync(IdReceiptWares pIdReceiptWares, User? pUser = null)
         {
             return Task.Run(() => RecalcPrice(pIdReceiptWares)).ContinueWith(async res =>
             {
                 if (await res)
-                {
-                    //Console.WriteLine(OnReceiptCalculationComplete != null);
-                    var r = //ViewReceiptWares(new IdReceiptWares(pIdReceiptWares, 0), true);//вертаємо весь чек.
-                    ViewReceipt(pIdReceiptWares, true);
+                {              
+                    var r = ViewReceipt(pIdReceiptWares, true);
                     Global.OnReceiptCalculationComplete?.Invoke(r);
-                    if (r?.Wares == null || r?.Wares?.Count() == 0)
-                        return;
-                    var parW = r.Wares.Last();
-                    if (parW != null)
+                    if (r?.Wares?.Any() == true)
                     {
-                        var SumAll = r.Wares.Sum(d => d.Sum - d.SumDiscount);
-                        _ = VR.SendMessageAsync(parW.IdWorkplace, parW.NameWares, parW.Articl, parW.Quantity, parW.Sum, VR.eTypeVRMessage.AddWares, SumAll);
+                        var W = r.GetLastWares;
+                        if (W != null && pUser==null) // dblf
+                            VR.SendMessage(W.IdWorkplace, pUser == null ? W.NameWares : $"{pUser.NameUser}=>{W.NameWares}", W.Articl, W.Quantity, W.Sum, VR.eTypeVRMessage.AddWares, r.SumTotal);
                     }
                 }
             });
@@ -390,12 +382,28 @@ namespace SharedLib
 
                         if (Res != null && RW.ParPrice1 != 999999 && (Res.Priority > 0 || string.IsNullOrEmpty(RW.BarCode2Category)))//Не перераховуємо для  Сигарет s для 2 категорії окрім пріоритет 1
                         {
-                            RW.Price = MPI.GetPrice(Res.Price, Res.IsIgnoreMinPrice == 0, Res.CodePs > 0);
-                            RW.TypePrice = MPI.typePrice;
-                            RW.ParPrice1 = Res.CodePs;
-                            RW.ParPrice2 = (long)Res.TypeDiscont;
-                            RW.ParPrice3 = Res.Data;
-                            RW.Priority = Res.Priority;
+                            if (Res.MaxQuantity > 0)// Якщо акція обмежена по кількості робимо на шталт сигарет
+                            {
+                                RW.Price = RW.PriceDealer;
+                                RW.ParPrice1 = 888888;
+                                RW.ParPrice2 = (long)Res.TypeDiscont;
+                                RW.ParPrice3 = Res.Data;
+                                RW.Priority = Res.Priority;
+
+                                WaresReceiptPromotion[] WRP = new WaresReceiptPromotion[1] { new WaresReceiptPromotion(RW)
+                                        {CodeWares=RW.CodeWares, Price=Math.Round( Res.Price,2), TypeDiscount=eTypeDiscount.Price, 
+                                          Quantity= (RW.Quantity>Res.MaxQuantity ? Res.MaxQuantity:RW.Quantity), CodePS=888888,BarCode2Category="" }};
+                                ReplaceWaresReceiptPromotion(WRP);
+                            }
+                            else
+                            {
+                                RW.Price = MPI.GetPrice(Res.Price, Res.IsIgnoreMinPrice == 0, Res.CodePs > 0);
+                                RW.TypePrice = MPI.typePrice;
+                                RW.ParPrice1 = Res.CodePs;
+                                RW.ParPrice2 = (long)Res.TypeDiscont;
+                                RW.ParPrice3 = Res.Data;
+                                RW.Priority = Res.Priority;
+                            }
                         }
                         //Якщо друга категорія - перераховуємо на основі Роздрібної ціни.
                         if (Res.Priority == 0 && !string.IsNullOrEmpty(RW.BarCode2Category) && RW.BarCode2Category.Length == 13)
@@ -597,6 +605,7 @@ INSERT OR ignore into GEN_WORKPLACE(ID_WORKPLACE, CODE_PERIOD, CODE_RECEIPT) val
 
         public bool CloseReceipt(Receipt pR)
         {
+            pR.TypeWorkplace = Global.TypeWorkplaceCurrent;
             lock (GetObjectForLockByIdWorkplace(pR.IdWorkplace))
             {
                 if (DT == pR.DTPeriod)
@@ -857,7 +866,7 @@ replace into PROMOTION_SALE_FILTER(CODE_PS, CODE_GROUP_FILTER, TYPE_GROUP_FILTER
         public bool ReplacePromotionSaleDealer(IEnumerable<PromotionSaleDealer> parData, SQLite pDB)
         {
             pDB.ExecuteNonQuery("delete from PROMOTION_SALE_DEALER", new { }, pDB.Transaction);
-            string SqlReplacePromotionSaleDealer = @"replace into PROMOTION_SALE_DEALER(CODE_PS, Code_Wares, DATE_BEGIN, DATE_END, Code_Dealer, Priority) values(@CodePS, @CodeWares, @DateBegin, @DateEnd, @CodeDealer, @Priority); --@CodePS,@CodeWares,@DateBegin,@DateEnd,@CodeDealer";
+            string SqlReplacePromotionSaleDealer = @"replace into PROMOTION_SALE_DEALER(CODE_PS, Code_Wares, DATE_BEGIN, DATE_END, Code_Dealer, Priority,MaxQuantity) values(@CodePS, @CodeWares, @DateBegin, @DateEnd, @CodeDealer, @Priority,@MaxQuantity); --@CodePS,@CodeWares,@DateBegin,@DateEnd,@CodeDealer";
             return pDB.BulkExecuteNonQuery<PromotionSaleDealer>(SqlReplacePromotionSaleDealer, parData, true) > 0;
         }
 
@@ -1027,7 +1036,7 @@ Where ID_WORKPLACE = @IdWorkplace
                 {
                     r.Wares = ViewReceiptWares(r, true);
                     foreach (var el in r.Wares)
-                        el.AdditionalWeights = db.Execute<object, decimal>(SqlAdditionalWeightsWares, new { CodeWares = el.CodeWares });
+                        el.AdditionalWeights = db.Execute<object, decimal>(SqlAdditionalWeightsWares, new { el.CodeWares });
 
                     r.Payment = GetPayment(parIdReceipt);
                     r.ReceiptEvent = GetReceiptEvent(parIdReceipt);
@@ -1060,6 +1069,7 @@ Where ID_WORKPLACE = @IdWorkplace
                         el.Parent = vReceipt;
                     if (wrp != null)
                         el.ReceiptWaresPromotions = wrp.Where(rr => ((IdReceiptWares)rr).Equals((IdReceiptWares)el)).ToArray();
+                    el.WaresLink = GetLinkWares(el);
                 }
             }
             return r;
@@ -1170,7 +1180,7 @@ Select min(case when CODE_DEALER = -888888  then PRICE_DEALER else null end) as 
         public IEnumerable<Receipt> GetReceipts(DateTime parStartDate, DateTime parFinishDate, int parIdWorkPlace)
         {
             string SqlGetReceipts = @"select id_workplace IdWorkplace, code_period CodePeriod, code_receipt CodeReceipt, date_receipt DateReceipt, Type_Receipt as TypeReceipt,
-sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_receipt as StateReceipt, code_client as CodeClient,
+sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_receipt as StateReceipt,TypeWorkplace, code_client as CodeClient,
  number_cashier as NumberCashier, number_receipt NumberReceipt, code_discount as CodeDiscount, sum_discount as SumDiscount, percent_discount as PercentDiscount, 
  code_bonus as CodeBonus, sum_bonus as SumBonus, sum_cash as SumCash, sum_credit_card as SumCreditCard, code_outcome as CodeOutcome, 
  code_credit_card as CodeCreditCard, number_slip as NumberSlip,Number_Receipt_POS as NumberReceiptPOS, number_tax_income as NumberTaxIncome,USER_CREATE as UseCreate, Date_Create as DateCreate,
@@ -1294,6 +1304,18 @@ select sum( sum_pay* case when TYPE_PAY in (4) then -1 else 1 end) as sum from p
             return Res;
         }
 
+
+        public bool ReplaceWaresLink(IEnumerable<WaresLink> pWW, SQLite pDB)
+        {
+            bool Res = false;
+            if (pWW?.Any() == true)
+            {
+                string SQL = "replace into WaresLink (CodeWares,CodeWaresTo,IsDefault,Sort) values (@CodeWares,@CodeWaresTo,@IsDefault,@Sort)";
+                Res = pDB.BulkExecuteNonQuery<WaresLink>(SQL, pWW, true) > 0;               
+            }
+            return Res;
+        }
+
         public void BildWaresWarehouse(IEnumerable<WaresWarehouse> pWW = null)
         {
             pWW ??= GetWaresWarehouse();
@@ -1324,5 +1346,42 @@ select sum( sum_pay* case when TYPE_PAY in (4) then -1 else 1 end) as sum from p
             return Res;
         }
 
+        public bool ReplaceWaresReceiptLink(IEnumerable<WaresReceiptLink> pWRL,bool IsDelete=true)
+        {
+            try
+            {
+                string SQL = @"delete from  WaresReceiptLink where  IdWorkplace = @IdWorkplace and CodePeriod = @CodePeriod and CodeReceipt = @CodeReceipt and CodeWaresTo = @CodeWares";
+                if (IsDelete && pWRL.Any())                
+                    dbRC.ExecuteNonQuery<WaresReceiptLink>(SQL, pWRL.FirstOrDefault());
+                
+
+                SQL = @"replace into WaresReceiptLink  (IdWorkplace, CodePeriod, CodeReceipt, CodeWares, Sort, CodeWaresTo, Quantity) VALUES
+                                                         (@IdWorkplace,@CodePeriod,@CodeReceipt,@CodeWares,@Sort,@CodeWaresTo,@Quantity)";
+                return dbRC.BulkExecuteNonQuery<WaresReceiptLink>(SQL, pWRL) > 0;
+            }catch (Exception e) { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e); }
+            return false;
+        }
+
+        public IEnumerable<GW> GetLinkWares(IdReceiptWares pIdRW)
+        {
+            try
+            {
+                string SQL = @"select 0 as Type, w.CODE_WARES as code, w.NAME_WARES as name, w.Code_Unit as CodeUnit, count(*) over() as TotalRows,
+    case when wrl.CodeWares is not null then 1 else 0 end as IsSelected
+    from WaresLink wl
+    join wares w on (wl.CodeWares = w.Code_wares )
+    left join WaresReceiptLink wrl on (wl.CodeWares = wrl.CodeWares and
+    wrl.IdWorkplace = @IdWorkplace and wrl.CodePeriod = @CodePeriod and wrl.CodeReceipt = @CodeReceipt)
+    where wl.CodeWaresTo = @CodeWares
+ order by wl.sort;";
+                    /*$@"select 0 as Type, w.CODE_WARES as code, w.NAME_WARES as name, w.Code_Unit as CodeUnit, count(*) over() as TotalRows 
+    from WaresLink wl join  wares w on wl.CodeWares = w.Code_wares where wl.CodeWaresTo=@CodeWares order by wl.sort";*/
+            var Res = db.Execute< IdReceiptWares,GW>(SQL,pIdRW);
+            return Res;
+            }
+            catch (Exception e) { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e); }
+            return null;
+        }
+       
     }
 }

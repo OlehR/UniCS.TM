@@ -18,7 +18,7 @@ namespace Utils
         public static string PathLog
         {
             set { _PathLog = value; FileLogger.CreateDir(); }
-            get { return _PathLog ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Log"); } //AppDomain.CurrentDomain.BaseDirectory
+            get { return _PathLog ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Logs"); } //AppDomain.CurrentDomain.BaseDirectory
         }
 
 
@@ -94,9 +94,15 @@ namespace Utils
             WriteLogMessage($"({pO?.GetHashCode()}){pO?.GetType().FullName}.{pMetodName} {pMessage}", pTypeLog);
         }
 
+
         public static void WriteLogMessage(object pO, string pMetodName, Exception pE)
         {
             WriteLogMessage($"({pO?.GetHashCode()}){pO?.GetType().FullName}.{pMetodName} {pE.Message}{Environment.NewLine}{pE.StackTrace}", eTypeLog.Error);
+        }
+
+        public static void WriteLogMessage( string pMetodName, Exception pE)
+        {
+            WriteLogMessage($"{pMetodName} {pE.Message}{Environment.NewLine}{pE.StackTrace}", eTypeLog.Error);
         }
 
         public static void WriteLogMessage( string message, eTypeLog pTypeLog = eTypeLog.Full)

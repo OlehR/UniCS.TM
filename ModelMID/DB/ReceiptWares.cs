@@ -404,9 +404,10 @@ namespace ModelMID
         /// 
         /// </summary>
         public string History { get; set; }
-        public List<decimal> HistoryQuantity { get {
+        public List<decimal> HistoryQuantity { get
+            {
                 List<decimal> Res = new List<decimal>();
-                if(!string.IsNullOrEmpty(History))
+                if (!string.IsNullOrEmpty(History))
                 {
                     var res = History.Split(';');
                     foreach (var item in res)
@@ -416,7 +417,13 @@ namespace ModelMID
             } }
 
         public string Currency { get; set; }
-
+        public int CodeOperator { get; set; }
+        public string Operator { get; set; }
+        public int[] Operators { get{               
+                if (!string.IsNullOrEmpty(Operator))                
+                    return Operator.Split(';').Select(el=>el.ToInt()).ToArray();
+                return new int[0];
+            } }
         public string GetPrices { get { return Prices == null ? null : string.Join(";", Prices.Select(n => n.Price.ToString(CultureInfo.InvariantCulture)).ToArray()); } }
         public ReceiptWares()
         {
@@ -583,10 +590,11 @@ namespace ModelMID
         public List<ReceiptWares> ParseByWeight()
         {
             List<ReceiptWares> Res = new List<ReceiptWares>();
-            if (SumBonus==0 && IsWeight && !string.IsNullOrEmpty(History) && Math.Abs(HistoryQuantity.Sum() - Quantity) < 0.001m)
+            if (SumBonus == 0 && IsWeight && !string.IsNullOrEmpty(History) && Math.Abs(HistoryQuantity.Sum() - Quantity) < 0.001m)
             {
                 decimal Sum = 0m;
-
+                int i = 0;
+                var aa = Operators.Length;
                 foreach (var el in HistoryQuantity)
                 {
                     if (el > 0)
@@ -596,20 +604,28 @@ namespace ModelMID
                         NewEl.SumDiscount = Math.Round(NewEl.Quantity * SumDiscount / Quantity, 2, MidpointRounding.AwayFromZero);
                         NewEl.SumBonus = Math.Round(NewEl.Quantity * SumBonus / Quantity, 2, MidpointRounding.AwayFromZero);
                         NewEl.SumWallet = Math.Round(NewEl.Quantity * SumWallet / Quantity, 2, MidpointRounding.AwayFromZero);
+                        NewEl.CodeOperator = (i < Operators.Length ? Operators[i] : 0);
                         Res.Add(NewEl);
                         Sum += NewEl.SumTotal;
                     }
+                    i++;
                 }
                 // Коригування кінцевої суми.
                 if (SumTotal != Sum)
                 {
-                    Res.First().Delta +=  -Sum+ SumTotal;
-                }               
+                    Res.First().Delta += -Sum + SumTotal;
+                }
             }
             else
+            {
+                if (IsWeight && CodeOperator == 0 && Operators?.Any()==true)
+                    CodeOperator = Operators?.FirstOrDefault()??0;
                 Res.Add(this);
-
+            }
             return Res;
         }
+
+        public IEnumerable<GW> WaresLink { get; set; }
+        public bool IsWaresLink { get { return WaresLink?.Any() == true; } }
     }
 }

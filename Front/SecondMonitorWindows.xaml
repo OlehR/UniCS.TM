@@ -1,0 +1,385 @@
+﻿<Window x:Class="Front.SecondMonitorWindows"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vlc="clr-namespace:LibVLCSharp.WPF;assembly=LibVLCSharp.WPF"
+        xmlns:local="clr-namespace:Front"
+        mc:Ignorable="d"
+        Title="SecondMonitorWindows" 
+        WindowStyle="None"
+        Height="768" Width="1024"   >
+
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontFamily" Value="Source Sans Pro" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontWeight" Value="DemiBold" />
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80"/>
+            <RowDefinition/>
+            <RowDefinition Height="80"/>
+        </Grid.RowDefinitions>
+        <!--Основний грід товарів-->
+        <ListView Name="WaresList"   Grid.RowSpan="2"
+     HorizontalContentAlignment="Stretch"
+     ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListView.Style>
+                <Style TargetType="ListView">
+                    <Setter Property="Visibility" Value="Visible"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListView">
+                                <Border Name="Border">
+                                    <!--Фон товарів-->
+                                    <Border.Background>
+                                        <SolidColorBrush Color="{Binding MW.GetBackgroundColor, RelativeSource={RelativeSource 
+     Mode=FindAncestor, AncestorType=Window}}" />
+                                    </Border.Background>
+                                    <Border.BorderBrush>
+                                        <SolidColorBrush Color="{Binding MW.GetBackgroundColor, RelativeSource={RelativeSource 
+     Mode=FindAncestor, AncestorType=Window}}" />
+                                    </Border.BorderBrush>
+                                    <ScrollViewer Style="{DynamicResource {x:Static GridView.GridViewScrollViewerStyleKey}}">
+                                        <ItemsPresenter />
+                                    </ScrollViewer>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsShowStartWindows, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="true">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ListView.Style>
+
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn   Width="{Binding widthHeaderReceiptSM.WidthName, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <!--<Image Source="icons\name.png" Width="50" Height="50" />-->
+                                    <TextBlock Text="{DynamicResource markWareName}" FontSize="14" Foreground="Black" FontWeight="Bold" FontFamily="Source Sans Pro"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Vertical" Grid.Column="0" HorizontalAlignment="Left">
+                                    <TextBlock Margin="0"   Text="{Binding NameWares}" TextWrapping="Wrap"  FontFamily="Roboto Condensed" FontWeight="DemiBold">
+                                        <TextBlock.Style>
+                                            <Style TargetType="{x:Type TextBlock}">
+                                                <Setter Property="FontSize" Value="26"/>
+                                                <Setter Property="FontWeight" Value="SemiBold"/>
+
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding MW.TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
+                                                     Value="HorisontalMonitorRegular">
+                                                        <Setter Property="FontSize" Value="14" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+
+                    <GridViewColumn   Width="{Binding widthHeaderReceiptSM.WidthCountWares, RelativeSource={RelativeSource 
+       Mode=FindAncestor, AncestorType=Window}}">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <!--<Image Source="icons\counter.png" Width="50" Height="50" />-->
+                                    <TextBlock Text="Кіль-ть" FontSize="12" Foreground="Black" FontWeight="Bold" FontFamily="Source Sans Pro"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock x:Name="QuantityText" Grid.Column="2">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Margin" Value="10"></Setter>
+                                            <Setter Property="FontSize" Value="24"></Setter>
+                                            <Setter Property="FontWeight" Value="Medium"></Setter>
+                                            <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+                                            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                            <Setter Property="Text" Value="{Binding Quantity}"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
+                                         Value="HorisontalMonitorRegular">
+                                                    <Setter Property="FontSize" Value="14" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+
+                    <GridViewColumn   Width="{Binding widthHeaderReceiptSM.WidthPrice, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}"  >
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <!--<Image Source="icons\price.png" Width="50" Height="50" />-->
+                                    <TextBlock Text="{DynamicResource markWarePrice}" FontSize="12" Foreground="Black" FontWeight="Bold" FontFamily="Source Sans Pro"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Grid.Column="3" Text="{Binding Price, StringFormat=0.00 }"  >
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                            <Setter Property="FontWeight" Value="DemiBold"/>
+                                            <Setter Property="FontSize" Value="16" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding MW.TypeMonitor, RelativeSource={RelativeSource 
+                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
+                                                    <Setter Property="FontSize" Value="20" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding MW.TypeMonitor, RelativeSource={RelativeSource 
+                   Mode=FindAncestor, AncestorType=Window}}" Value="VerticalMonitorKSO">
+                                                    <Setter Property="FontSize" Value="16" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding MW.TypeMonitor, RelativeSource={RelativeSource 
+                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                    <Setter Property="FontSize" Value="14" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn   Width="{Binding widthHeaderReceiptSM.WidthTotalPrise, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" >
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <!--<Image Source="icons\total.png" Width="50" Height="50" />-->
+                                    <TextBlock Text="{DynamicResource markWareInAll}" FontSize="12" Foreground="Black" FontWeight="Bold" FontFamily="Source Sans Pro"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <TextBlock Grid.Column="5" Text="{Binding SumTotal, StringFormat=0.00}" FontWeight="Bold" >
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="FontSize" Value="18" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding MW.TypeMonitor, RelativeSource={RelativeSource 
+                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
+                                                        <Setter Property="FontSize" Value="20" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding MW.TypeMonitor, RelativeSource={RelativeSource 
+                   Mode=FindAncestor, AncestorType=Window}}" Value="VerticalMonitorKSO">
+                                                        <Setter Property="FontSize" Value="18" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding MW.TypeMonitor, RelativeSource={RelativeSource 
+                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                        <Setter Property="FontSize" Value="14" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                    <TextBlock    FontWeight="DemiBold" Foreground="Red">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Text" Value="{Binding Discount, StringFormat=-0.00}"/>
+                                                <Setter Property="FontSize" Value="10" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Discount}" Value="0">
+                                                        <Setter Property="Text" Value=""/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding MW.TypeMonitor, RelativeSource={RelativeSource 
+                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorKSO">
+                                                        <Setter Property="FontSize" Value="14" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding MW.TypeMonitor, RelativeSource={RelativeSource 
+                   Mode=FindAncestor, AncestorType=Window}}" Value="VerticalMonitorKSO">
+                                                        <Setter Property="FontSize" Value="15" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding MW.TypeMonitor, RelativeSource={RelativeSource 
+                   Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                        <Setter Property="FontSize" Value="10" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <!--Підсумок по чеку-->
+        <Grid Grid.Column="0" Grid.Row="2"  >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="4"/>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="20,0,20,0" Background="Black" CornerRadius="4"/>
+
+            <TextBlock Grid.Row="1" Text="Всього:" Margin="20,0,0,0" FontSize="30"></TextBlock>
+            <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right"
+                       Text="{Binding MW.MoneySum, StringFormat=0.00₴, RelativeSource={RelativeSource 
+                Mode=FindAncestor, AncestorType=Window} }"
+                       Margin="0,0,20,0" FontSize="30" Foreground="#419e08"></TextBlock>
+        </Grid>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="4"/>
+                <RowDefinition Height="0.7*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Visibility="{Binding MW.IsViewClientInfo, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Margin="20,0,0,0" Orientation="Horizontal">
+                    <TextBlock  Text="Скарбничка: "/>
+                    <TextBlock FontWeight="Bold" Foreground="Green"
+                               Text="{Binding MW.Client.Wallet, StringFormat=0.00₴, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" HorizontalAlignment="Right" Margin="0,0,20,0"
+                            Orientation="Horizontal">
+                    <TextBlock  Text="Сума бонусів: "/>
+                    <TextBlock FontWeight="Bold" Foreground="Green" 
+                               Text="{Binding MW.Client.SumMoneyBonus, StringFormat=0.00₴, RelativeSource={RelativeSource 
+                   Mode=FindAncestor, AncestorType=Window}}"/>
+                </StackPanel>
+            </Grid>
+            <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="20,0,20,0" Background="Black" CornerRadius="4"/>
+            <TextBlock HorizontalAlignment="Center" Grid.Row="2"
+                       Text="{Binding MW.ClientName, RelativeSource={RelativeSource 
+               Mode=FindAncestor, AncestorType=Window}}"/>
+        </Grid>
+        <!--<MediaElement Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" Name="SecondVideo" Volume="0" LoadedBehavior="Manual" >
+            <MediaElement.Style>
+                <Style   TargetType="MediaElement">
+                    <Setter Property="Visibility" Value="Visible" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsKSO, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </MediaElement.Style>
+        </MediaElement>-->
+
+        <!--<vlc:VideoView x:Name="SecondVideo" 
+                       Grid.Column="2" Grid.Row="1" Grid.RowSpan="2">
+
+        </vlc:VideoView>-->
+        <!--<Image  Name="SlideshowImage" Stretch="Uniform"
+                Grid.Column="2" Grid.Row="1" Grid.RowSpan="2"   />-->
+        <Image Name="CurrentImage" Stretch="Uniform" Opacity="1" 
+               Grid.Column="2" Grid.Row="1" Grid.RowSpan="2"/>
+        <Image Name="NextImage" Stretch="Uniform" Opacity="0" 
+               Grid.Column="2" Grid.Row="1" Grid.RowSpan="2"/>
+
+
+        <Button Grid.Column="2" Grid.Row="1" Click="StartNormal" Content="Перейти в звичайний режим">
+            <Button.Style>
+                <Style  BasedOn="{StaticResource WhiteButton}" TargetType="Button">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Setter Property="Width" Value="450" />
+                    <Setter Property="Height" Value="80" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsKSO, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+        <!--Початок покупки - стартове вікно ВІДЕО-->
+        <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="0"
+                 Grid.Row="0" Grid.RowSpan="5"
+                Grid.Column="0" Grid.ColumnSpan="4"
+                 Name="StartShopping"  Grid.ZIndex="2" >
+            <Border.Style>
+                <Style  TargetType="Border">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsShowStartWindows, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="true">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+
+            <Grid x:Name="MP">
+                <!--<Button Style="{StaticResource TransparentButton}" Click="StartBuy" Panel.ZIndex="3" x:Name="TransparentStartBuyButton"/>
+
+                <Button Margin="10,10,10,100"  Opacity="0.7" Style="{StaticResource StartButtun}" 
+                        x:Name="StartBuyButton"  Visibility="Collapsed"
+                        FontSize="48" Click="StartBuy"  Grid.ZIndex="2"
+                         Height="70" Width="500" VerticalAlignment="Bottom" >
+                    <StackPanel Orientation="Horizontal">
+                        <Image  Height="50" Width="50"  Source="icons\shoppingCart.png"></Image>
+                        <TextBlock FontSize="50" Text="{DynamicResource startShopping}" FontFamily="Source Sans Pro"   Margin="5,10,5,0"/>
+                    </StackPanel>
+                </Button>
+
+                <MediaElement Name="StartVideo" Volume="0" LoadedBehavior="Manual" >
+
+                </MediaElement>-->
+                <vlc:VideoView x:Name="StartVideo">
+                    <Grid x:Name="StartShoppingButtons">
+                        <Button Opacity="0.01" Background="White" Click="StartBuy" Panel.ZIndex="3" x:Name="TransparentStartBuyButton"/>
+                        <Button Margin="10,10,10,100"  Opacity="0.7" Style="{StaticResource StartButtun}" 
+                                x:Name="StartBuyButton"
+                                FontSize="48" Click="StartBuy"  
+         Height="70" Width="500" VerticalAlignment="Bottom">
+                            <StackPanel Orientation="Horizontal">
+                                <Image  Height="50" Width="50"  Source="icons\shoppingCart.png"></Image>
+                                <TextBlock FontSize="50" Text="{DynamicResource startShopping}" FontFamily="Source Sans Pro"   Margin="5,10,5,0"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                </vlc:VideoView>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

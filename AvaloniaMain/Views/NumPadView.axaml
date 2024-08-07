@@ -32,7 +32,7 @@
 		</Grid.ColumnDefinitions>
 
 		<Grid Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="0" Grid.RowSpan="2">
-			<TextBlock x:Name="productNameChanges" Text="Binding Desciption" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" FontWeight="Bold" FontSize="30"/>
+			<TextBlock x:Name="productNameChanges" Text="{Binding Desciption}" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" FontWeight="Bold" FontSize="30"/>
 		</Grid>
 		<Grid Grid.Row="2" Grid.ColumnSpan="3" Margin="5,5,5,5">
 			<Border Background="White" CornerRadius="10" BorderBrush="black" BorderThickness="4" />

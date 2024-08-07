@@ -665,7 +665,12 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
         public async Task<Status> SendReceipt(Receipt pR)
         {
             string JSON = pR.ToJson();
-            if (Global.IsTest) return null;
+            if (Global.IsTest)
+            {
+                pR.StateReceipt = eStateReceipt.Send;
+                db.SetStateReceipt(pR);
+                return null;
+            }
             try
             {
                 HttpClient client = new HttpClient();

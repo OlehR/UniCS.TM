@@ -309,7 +309,7 @@ namespace Front.Equipments
                 }
                 ClearDisplay();
                 //DeleteAllArticles();
-                return (num & (OnSynchronizeWaitCommandResult(eCommand.PaperCut) ? 1 : 0)) != 0 ? eDeviceConnectionStatus.Enabled : eDeviceConnectionStatus.InitializationError;
+                return (num & (OnSynchronizeWaitCommandResult(eCommandFP700.PaperCut) ? 1 : 0)) != 0 ? eDeviceConnectionStatus.Enabled : eDeviceConnectionStatus.InitializationError;
             }
             catch (Exception ex)
             {
@@ -378,7 +378,7 @@ namespace Front.Equipments
                 
                 ClearDisplay();
                 IsZReportDone();
-                if (SendPackage(eCommand.PrintDiagnosticInformation))
+                if (SendPackage(eCommandFP700.PrintDiagnosticInformation))
                     return eDeviceConnectionStatus.Enabled;
                 return SerialDevice.IsOpen ? eDeviceConnectionStatus.InitializationError : eDeviceConnectionStatus.NotConnected;
             }
@@ -492,10 +492,10 @@ namespace Front.Equipments
                 string str = pCashier;
                 if (str.Length >= 24)
                     str = str.Remove(23);
-                OnSynchronizeWaitCommandResult(eCommand.SetOperatorName, string.Format("{0},{1},{2}", (object)_operatorCode, (object)_operatorPassword, (object)str));
+                OnSynchronizeWaitCommandResult(eCommandFP700.SetOperatorName, string.Format("{0},{1},{2}", (object)_operatorCode, (object)_operatorPassword, (object)str));
             }
             ClearDisplay();
-            OnSynchronizeWaitCommandResult(eCommand.OpenFiscalReceipt, string.Format("{0},{1},{2}", (object)_operatorCode, (object)_operatorPassword, (object)_tillNumber), (Action<string>)(res => Console.WriteLine(res)));
+            OnSynchronizeWaitCommandResult(eCommandFP700.OpenFiscalReceipt, string.Format("{0},{1},{2}", (object)_operatorCode, (object)_operatorPassword, (object)_tillNumber), (Action<string>)(res => Console.WriteLine(res)));
             return true;
         }
 
@@ -524,7 +524,7 @@ namespace Front.Equipments
                 if (!string.IsNullOrWhiteSpace(el.BarCode))  data += "&" + el.BarCode;
                 if (!string.IsNullOrEmpty(el.ExciseStamp))   data += "!" + el.ExciseStamp;
 
-                int num2 = OnSynchronizeWaitCommandResult(eCommand.RegisterProductInReceiptWithDisplay, data, (Action<string>)(res => { })) ? 1 : 0;
+                int num2 = OnSynchronizeWaitCommandResult(eCommandFP700.RegisterProductInReceiptWithDisplay, data, (Action<string>)(res => { })) ? 1 : 0;
                 //string errCode = string.Empty;
                 //OnSynchronizeWaitCommandResult(eCommand.GetLastError, onResponseCallback: ((Action<string>)(res => errCode = res)));
                 //_logger?.LogDebug("[ FP700 ] FillUpItemLastCode: " + errCode);
@@ -540,7 +540,7 @@ namespace Front.Equipments
             foreach (ReceiptText comment in comments)
             {
                 if (!string.IsNullOrWhiteSpace(comment.Text))
-                    res = OnSynchronizeWaitCommandResult(eCommand.PrintFiscalComment, comment.Text);
+                    res = OnSynchronizeWaitCommandResult(eCommandFP700.PrintFiscalComment, comment.Text);
                 if(!res)
                 {
                     FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"res=>{res}",eTypeLog.Error);
@@ -571,7 +571,7 @@ namespace Front.Equipments
             if (Pay.TypePay == eTypePay.Card)
             {
                 Decimal totalAmount = 0M;
-                OnSynchronizeWaitCommandResult(eCommand.FiscalTransactionStatus, onResponseCallback: (Action<string>)(res =>
+                OnSynchronizeWaitCommandResult(eCommandFP700.FiscalTransactionStatus, onResponseCallback: (Action<string>)(res =>
                 {
                     string[] strArray = res.Split(',');
                     if (strArray.Length == 1)
@@ -594,7 +594,7 @@ namespace Front.Equipments
             bool paySuccess = false;
             char paidCode = char.MinValue;
             int amount = 0;
-            OnSynchronizeWaitCommandResult(eCommand.PayInfoFiscalReceipt, data, (Action<string>)(res =>
+            OnSynchronizeWaitCommandResult(eCommandFP700.PayInfoFiscalReceipt, data, (Action<string>)(res =>
             {
 
                 _logger?.LogDebug("[ FP700 ] PayInfoFiscalReceipt res = " + res);
@@ -607,7 +607,7 @@ namespace Front.Equipments
                 if (amount == 0)
                 {
                     string errCode = string.Empty;
-                    OnSynchronizeWaitCommandResult(eCommand.GetLastError, onResponseCallback: ((Action<string>)(res => errCode = res)));
+                    OnSynchronizeWaitCommandResult(eCommandFP700.GetLastError, onResponseCallback: ((Action<string>)(res => errCode = res)));
                     _logger?.LogDebug("[ FP700 ] GetLastError: " + errCode);
                 }
                 throw new Exception("NotPaid");
@@ -632,7 +632,7 @@ namespace Front.Equipments
         {
             bool res = false;
             string Command = $"-{pPay.SumPay.ToS()}&{GetPayStr(pPay)}";
-            OnSynchronizeWaitCommandResult(eCommand.ServiceCashInOut, Command, (Action<string>)(response =>
+            OnSynchronizeWaitCommandResult(eCommandFP700.ServiceCashInOut, Command, (Action<string>)(response =>
             {
                 string[] strArray = response.Split(',');
                 if (strArray.Length < 4)
@@ -654,7 +654,7 @@ namespace Front.Equipments
         public string CloseReceipt()//ReceiptViewModel receipt
         {
             string res = (string)null;
-            OnSynchronizeWaitCommandResult(eCommand.CloseFiscalReceipt, onResponseCallback: ((Action<string>)(response =>
+            OnSynchronizeWaitCommandResult(eCommandFP700.CloseFiscalReceipt, onResponseCallback: ((Action<string>)(response =>
             {
                 if (string.IsNullOrEmpty(response))
                     return;
@@ -667,16 +667,16 @@ namespace Front.Equipments
             return res;
         }
 
-        public void PrintDividerLine(bool shouldPrintBeforeFiscalInfo) => OnSynchronizeWaitCommandResult(eCommand.PrintDividerLine);
+        public void PrintDividerLine(bool shouldPrintBeforeFiscalInfo) => OnSynchronizeWaitCommandResult(eCommandFP700.PrintDividerLine);
 
-        public bool CopyReceipt() => OnSynchronizeWaitCommandResult(eCommand.FiscalReceiptCopy, "1");
+        public bool CopyReceipt() => OnSynchronizeWaitCommandResult(eCommandFP700.FiscalReceiptCopy, "1");
 
-        override public bool OpenMoneyBox(int pTime = 15) => OnSynchronizeWaitCommandResult(eCommand.OpenMoneyBox);
+        override public bool OpenMoneyBox(int pTime = 15) => OnSynchronizeWaitCommandResult(eCommandFP700.OpenMoneyBox);
 
         public bool MoneyMoving(decimal pSum)
         {
             bool res = false;
-            OnSynchronizeWaitCommandResult(eCommand.ServiceCashInOut, pSum == 0 ? "" : (pSum > 0 ? "+" : "-") + Math.Abs(pSum).ToS(), (Action<string>)(response =>
+            OnSynchronizeWaitCommandResult(eCommandFP700.ServiceCashInOut, pSum == 0 ? "" : (pSum > 0 ? "+" : "-") + Math.Abs(pSum).ToS(), (Action<string>)(response =>
             {
                 string[] strArray = response.Split(',');
                 if (strArray.Length < 4)
@@ -700,31 +700,31 @@ namespace Front.Equipments
             string str = "";
             if (endDate.HasValue)
                 str = "," + endDate.Value.ToString("ddMMyy");
-            return OnSynchronizeWaitCommandResult(IsFull ? eCommand.FullReportByPeriod : eCommand.ShortReportByPeriod, _operatorPassword + "," + startDate.ToString("ddMMyy") + str);
+            return OnSynchronizeWaitCommandResult(IsFull ? eCommandFP700.FullReportByPeriod : eCommandFP700.ShortReportByPeriod, _operatorPassword + "," + startDate.ToString("ddMMyy") + str);
         }
 
-        public void OpenReturnReceipt() => OnSynchronizeWaitCommandResult(eCommand.ReturnReceipt, string.Format("{0},{1},{2}", (object)_operatorCode, (object)_operatorPassword, (object)_tillNumber), (Action<string>)(res => _logger?.LogDebug("[ FP700 ] ReturnReceipt res = " + res)));
+        public void OpenReturnReceipt() => OnSynchronizeWaitCommandResult(eCommandFP700.ReturnReceipt, string.Format("{0},{1},{2}", (object)_operatorCode, (object)_operatorPassword, (object)_tillNumber), (Action<string>)(res => _logger?.LogDebug("[ FP700 ] ReturnReceipt res = " + res)));
 
         public bool PrintSeviceReceipt(List<ReceiptText> texts)
         {
             ObliterateFiscalReceipt();
             ClearDisplay();
-            OnSynchronizeWaitCommandResult(eCommand.OpenNonFiscalReceipt);
+            OnSynchronizeWaitCommandResult(eCommandFP700.OpenNonFiscalReceipt);
             foreach (ReceiptText text in texts)
             {
                 switch (text.RenderType)
                 {
                     case eRenderAs.Text:
-                        OnSynchronizeWaitCommandResult(eCommand.PrintNonFiscalComment, text.Text);
+                        OnSynchronizeWaitCommandResult(eCommandFP700.PrintNonFiscalComment, text.Text);
                         continue;
                     case eRenderAs.QR:
-                        OnSynchronizeWaitCommandResult(eCommand.PrintCode, "Q," + text.Text);
+                        OnSynchronizeWaitCommandResult(eCommandFP700.PrintCode, "Q," + text.Text);
                         continue;
                     default:
                         continue;
                 }
             }
-            OnSynchronizeWaitCommandResult(eCommand.CloseNonFiscalReceipt);
+            OnSynchronizeWaitCommandResult(eCommandFP700.CloseNonFiscalReceipt);
             return true;
         }
 
@@ -732,13 +732,13 @@ namespace Front.Equipments
         {
             ObliterateFiscalReceipt();
             ClearDisplay();
-            OnSynchronizeWaitCommandResult(eCommand.OpenNonFiscalReceipt);
+            OnSynchronizeWaitCommandResult(eCommandFP700.OpenNonFiscalReceipt);
             return true;
         }
 
         public bool CloseServiceReceipt()
         {
-            OnSynchronizeWaitCommandResult(eCommand.CloseNonFiscalReceipt);
+            OnSynchronizeWaitCommandResult(eCommandFP700.CloseNonFiscalReceipt);
             return true;
         }
 
@@ -746,7 +746,7 @@ namespace Front.Equipments
         {
             if (string.IsNullOrEmpty(text?.Text))
                 return true;
-            OnSynchronizeWaitCommandResult(eCommand.PrintNonFiscalComment, text.Text);
+            OnSynchronizeWaitCommandResult(eCommandFP700.PrintNonFiscalComment, text.Text);
             return true;
         }
 
@@ -761,28 +761,28 @@ namespace Front.Equipments
         {
             if (!(configuration is Fp700ReceiptConfiguration receiptConfiguration))
                 return false;
-            SendPackage(eCommand.ReceiptDetailsPrintSetupAdditionalSettings, "0" + receiptConfiguration.HeaderLine1);
-            SendPackage(eCommand.ReceiptDetailsPrintSetupAdditionalSettings, "1" + receiptConfiguration.HeaderLine2);
-            SendPackage(eCommand.ReceiptDetailsPrintSetupAdditionalSettings, "2" + receiptConfiguration.HeaderLine3);
-            SendPackage(eCommand.ReceiptDetailsPrintSetupAdditionalSettings, "3" + receiptConfiguration.HeaderLine4);
-            SendPackage(eCommand.ReceiptDetailsPrintSetupAdditionalSettings, "4" + receiptConfiguration.HeaderLine5);
-            SendPackage(eCommand.ReceiptDetailsPrintSetupAdditionalSettings, "5" + receiptConfiguration.HeaderLine6);
-            SendPackage(eCommand.ReceiptDetailsPrintSetupAdditionalSettings, "6" + receiptConfiguration.FooterLine1);
-            SendPackage(eCommand.ReceiptDetailsPrintSetupAdditionalSettings, "7" + receiptConfiguration.FooterLine2);
-            return SendPackage(eCommand.ReceiptDetailsPrintSetupAdditionalSettings, string.Format("L{0}", (object)(receiptConfiguration.ShouldPrintLogo ? 1 : 0)));
+            SendPackage(eCommandFP700.ReceiptDetailsPrintSetupAdditionalSettings, "0" + receiptConfiguration.HeaderLine1);
+            SendPackage(eCommandFP700.ReceiptDetailsPrintSetupAdditionalSettings, "1" + receiptConfiguration.HeaderLine2);
+            SendPackage(eCommandFP700.ReceiptDetailsPrintSetupAdditionalSettings, "2" + receiptConfiguration.HeaderLine3);
+            SendPackage(eCommandFP700.ReceiptDetailsPrintSetupAdditionalSettings, "3" + receiptConfiguration.HeaderLine4);
+            SendPackage(eCommandFP700.ReceiptDetailsPrintSetupAdditionalSettings, "4" + receiptConfiguration.HeaderLine5);
+            SendPackage(eCommandFP700.ReceiptDetailsPrintSetupAdditionalSettings, "5" + receiptConfiguration.HeaderLine6);
+            SendPackage(eCommandFP700.ReceiptDetailsPrintSetupAdditionalSettings, "6" + receiptConfiguration.FooterLine1);
+            SendPackage(eCommandFP700.ReceiptDetailsPrintSetupAdditionalSettings, "7" + receiptConfiguration.FooterLine2);
+            return SendPackage(eCommandFP700.ReceiptDetailsPrintSetupAdditionalSettings, string.Format("L{0}", (object)(receiptConfiguration.ShouldPrintLogo ? 1 : 0)));
         }
 
         public bool SetupPrinter() => true;
 
-        public bool SetupPaperWidth(eFiscalPrinterPaperWidthEnum width) => OnSynchronizeWaitCommandResult(eCommand.ReceiptDetailsPrintSetupAdditionalSettings, "N" + (width == eFiscalPrinterPaperWidthEnum.Width80mm ? "0" : "1"));
+        public bool SetupPaperWidth(eFiscalPrinterPaperWidthEnum width) => OnSynchronizeWaitCommandResult(eCommandFP700.ReceiptDetailsPrintSetupAdditionalSettings, "N" + (width == eFiscalPrinterPaperWidthEnum.Width80mm ? "0" : "1"));
 
-        public bool SetupTime(DateTime time) => OnSynchronizeWaitCommandResult(eCommand.SetDateTime, time.ToString(DateFormat));
+        public bool SetupTime(DateTime time) => OnSynchronizeWaitCommandResult(eCommandFP700.SetDateTime, time.ToString(DateFormat));
 
         public string XReport()
         {
             string Res = null;
             ObliterateFiscalReceipt();
-            OnSynchronizeWaitCommandResult(eCommand.EveryDayReport, _operatorPassword + ",2", ((Action<string>)(response => Res = response)));
+            OnSynchronizeWaitCommandResult(eCommandFP700.EveryDayReport, _operatorPassword + ",2", ((Action<string>)(response => Res = response)));
 
             return Res;
         }
@@ -791,7 +791,7 @@ namespace Front.Equipments
         {
             string Res = null;
             ObliterateFiscalReceipt();
-            OnSynchronizeWaitCommandResult(eCommand.EveryDayReport, _operatorPassword + ",0", ((Action<string>)(response => Res = response)));
+            OnSynchronizeWaitCommandResult(eCommandFP700.EveryDayReport, _operatorPassword + ",0", ((Action<string>)(response => Res = response)));
             IsZReportAlreadyDone = true;
             DeleteAllArticles();            
             return Res;
@@ -801,7 +801,7 @@ namespace Front.Equipments
         {
             decimal Total = 0, TotalRnd = 0;
             string res = null;
-            OnSynchronizeWaitCommandResult(eCommand.SubTotal, onResponseCallback: ((Action<string>)(response => res = response)));
+            OnSynchronizeWaitCommandResult(eCommandFP700.SubTotal, onResponseCallback: ((Action<string>)(response => res = response)));
             var r = res?.Split(',');
             if (r.Length > 1)
             {
@@ -811,14 +811,14 @@ namespace Front.Equipments
             return (Total / 100M, TotalRnd / 100M);
         }
 
-        public bool ArticleReport() => OnSynchronizeWaitCommandResult(eCommand.ArticleReport, string.Format("{0},{1}", (object)_operatorPassword, (object)eArticleReportType.S));
+        public bool ArticleReport() => OnSynchronizeWaitCommandResult(eCommandFP700.ArticleReport, string.Format("{0},{1}", (object)_operatorPassword, (object)eArticleReportType.S));
 
         //public void DeleteAllProgrammingArticles() => db.DelAllFiscalArticle();
 
         public bool ObliterateFiscalReceipt()
         {
-            OnSynchronizeWaitCommandResult(eCommand.CloseNonFiscalReceipt);
-            OnSynchronizeWaitCommandResult(eCommand.ObliterateFiscalReceipt, onResponseCallback: ((Action<string>)(res => _logger?.LogDebug("[ FP700 ] ObliterateFiscalReceipt res = " + res))));
+            OnSynchronizeWaitCommandResult(eCommandFP700.CloseNonFiscalReceipt);
+            OnSynchronizeWaitCommandResult(eCommandFP700.ObliterateFiscalReceipt, onResponseCallback: ((Action<string>)(res => _logger?.LogDebug("[ FP700 ] ObliterateFiscalReceipt res = " + res))));
             return true;
         }
 
@@ -829,7 +829,7 @@ namespace Front.Equipments
         public string GetLastZReportNumber()
         {
             string result = "";
-            OnSynchronizeWaitCommandResult(eCommand.LastZReportInfo, "0", (Action<string>)(res =>
+            OnSynchronizeWaitCommandResult(eCommandFP700.LastZReportInfo, "0", (Action<string>)(res =>
             {
                 if (string.IsNullOrEmpty(res))
                     return;
@@ -844,7 +844,7 @@ namespace Front.Equipments
         private bool IsZReportDone()
         {
             bool result = false;
-            OnSynchronizeWaitCommandResult(eCommand.ShiftInfo, onResponseCallback: ((Action<string>)(res =>
+            OnSynchronizeWaitCommandResult(eCommandFP700.ShiftInfo, onResponseCallback: ((Action<string>)(res =>
             {
                 if (string.IsNullOrWhiteSpace(res))
                     return;
@@ -876,7 +876,7 @@ namespace Front.Equipments
         public TimeSpan MinuteLastZReport()
         {
             int Time = -1;
-            OnSynchronizeWaitCommandResult(eCommand.ShiftInfo, onResponseCallback: ((Action<string>)(res =>
+            OnSynchronizeWaitCommandResult(eCommandFP700.ShiftInfo, onResponseCallback: ((Action<string>)(res =>
             {
                 if (string.IsNullOrWhiteSpace(res))
                     return;
@@ -899,7 +899,7 @@ namespace Front.Equipments
         private DocumentNumbers GetLastNumbers()
         {
             DocumentNumbers documentNumbers = new DocumentNumbers();
-            OnSynchronizeWaitCommandResult(eCommand.LastDocumentsNumbers, onResponseCallback: ((Action<string>)(res =>
+            OnSynchronizeWaitCommandResult(eCommandFP700.LastDocumentsNumbers, onResponseCallback: ((Action<string>)(res =>
             {
                 _logger?.LogDebug("FP700 [GetLastNumbers] " + res);
                 if (string.IsNullOrEmpty(res))
@@ -919,11 +919,11 @@ namespace Front.Equipments
         public DateTime? GetCurrentFiscalPrinterDate()
         {
             DateTime? currentDate = new DateTime?();
-            OnSynchronizeWaitCommandResult(eCommand.GetDateTime, onResponseCallback: ((Action<string>)(response => currentDate = new DateTime?(DateTime.ParseExact(response, DateFormat, (IFormatProvider)CultureInfo.InvariantCulture)))));
+            OnSynchronizeWaitCommandResult(eCommandFP700.GetDateTime, onResponseCallback: ((Action<string>)(response => currentDate = new DateTime?(DateTime.ParseExact(response, DateFormat, (IFormatProvider)CultureInfo.InvariantCulture)))));
             return currentDate;
         }
 
-        private void DeleteAllArticles() => OnSynchronizeWaitCommandResult(eCommand.ArticleProgramming, "DA," + _operatorPassword, (Action<string>)(res =>
+        private void DeleteAllArticles() => OnSynchronizeWaitCommandResult(eCommandFP700.ArticleProgramming, "DA," + _operatorPassword, (Action<string>)(res =>
         {
             if (res?.Trim().ToUpper().StartsWith("P") ==true)
             {
@@ -950,7 +950,7 @@ namespace Front.Equipments
                     if (!string.IsNullOrWhiteSpace(pRW.CodeUKTZED))
                         str = "^" + pRW.CodeUKTZED + ",";
                     string data = string.Format("P{0}{1},1,{2}{3},{4},", (object)TaxGroup(pRW), (object)FirstFreeArticle, (object)str, (object)pRW.Price.ToString("F2", (IFormatProvider)CultureInfo.InvariantCulture), (object)_operatorPassword) + pRW.NameWaresReceipt.LimitCharactersForTwoLines(_maxItemLength, '\t');
-                    OnSynchronizeWaitCommandResult(eCommand.ArticleProgramming, data, (Action<string>)(res =>
+                    OnSynchronizeWaitCommandResult(eCommandFP700.ArticleProgramming, data, (Action<string>)(res =>
                    {
                        if (res.Trim().ToUpper().Equals("P"))
                        { 
@@ -974,13 +974,13 @@ namespace Front.Equipments
 
         private void ClearDisplay()
         {
-            OnSynchronizeWaitCommandResult(eCommand.ClearDisplay);                
+            OnSynchronizeWaitCommandResult(eCommandFP700.ClearDisplay);                
         }
 
         private int FindFirstFreeArticle()
         {
             int firstPluNumber = -1;
-            OnSynchronizeWaitCommandResult(eCommand.ArticleProgramming, "X", (Action<string>)(response =>
+            OnSynchronizeWaitCommandResult(eCommandFP700.ArticleProgramming, "X", (Action<string>)(response =>
             {
                 int startIndex = -1;
                 for (int index = 0; index < response.Length; ++index)
@@ -1002,7 +1002,7 @@ namespace Front.Equipments
         private DiagnosticInfo GetDiagnosticInfo()
         {
             DiagnosticInfo diagnosticInfo = (DiagnosticInfo)null;
-            OnSynchronizeWaitCommandResult(eCommand.DiagnosticInfo, onResponseCallback: ((Action<string>)(res =>
+            OnSynchronizeWaitCommandResult(eCommandFP700.DiagnosticInfo, onResponseCallback: ((Action<string>)(res =>
             {
                 try
                 {
@@ -1038,7 +1038,7 @@ namespace Front.Equipments
         private string GetRoundCash()
         {
             string Res = null;
-            OnSynchronizeWaitCommandResult(eCommand.ReceiptDetailsPrintSetupAdditionalSettings, "IR", onResponseCallback: (Action<string>)(res =>
+            OnSynchronizeWaitCommandResult(eCommandFP700.ReceiptDetailsPrintSetupAdditionalSettings, "IR", onResponseCallback: (Action<string>)(res =>
             {
                 Res = res;
             }));
@@ -1051,9 +1051,9 @@ namespace Front.Equipments
             if (!s.Equals(pMoney))
             {
                 string Res = null;
-                OnSynchronizeWaitCommandResult(eCommand.ReceiptDetailsPrintSetupAdditionalSettings, $"R{pMoney}");
+                OnSynchronizeWaitCommandResult(eCommandFP700.ReceiptDetailsPrintSetupAdditionalSettings, $"R{pMoney}");
                 Thread.Sleep(200);
-                OnSynchronizeWaitCommandResult(eCommand.SaveSettingInMemory);
+                OnSynchronizeWaitCommandResult(eCommandFP700.SaveSettingInMemory);
                 Thread.Sleep(200);
             }
             return s = GetRoundCash();
@@ -1065,7 +1065,7 @@ namespace Front.Equipments
         {
             bool result = false;
             bool shouldThrow = false;
-            OnSynchronizeWaitCommandResult(eCommand.StateOfDataTransmission, onResponseCallback: ((Action<string>)(res =>
+            OnSynchronizeWaitCommandResult(eCommandFP700.StateOfDataTransmission, onResponseCallback: ((Action<string>)(res =>
             {
                 if (string.IsNullOrWhiteSpace(res))
                 {
@@ -1101,7 +1101,7 @@ namespace Front.Equipments
        volatile bool isResultGot = false;
        object Lock = new();
         Stopwatch Timer = new Stopwatch();
-       private bool OnSynchronizeWaitCommandResult( eCommand pCommand, string pData = "",  Action<string> onResponseCallback = null, Action<Exception> onExceptionCallback = null)
+       private bool OnSynchronizeWaitCommandResult( eCommandFP700 pCommand, string pData = "",  Action<string> onResponseCallback = null, Action<Exception> onExceptionCallback = null)
        {
             if (!SerialDevice.IsOpen)
                 if(!ReopenPort())
@@ -1144,11 +1144,11 @@ namespace Front.Equipments
   
             return isResultGot;
         }
-        public bool SendPackage(eCommand command, string data = "", int waitingTimeout = 10)
+        public bool SendPackage(eCommandFP700 command, string data = "", int waitingTimeout = 10)
         {
             // FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"{command} {data}");
 
-           bool flag = command != eCommand.ClearDisplay && command != eCommand.ShiftInfo && command != eCommand.DiagnosticInfo && command != eCommand.EveryDayReport && command != eCommand.LastDocumentsNumbers && command != eCommand.ObliterateFiscalReceipt && command != eCommand.PaperCut && command != eCommand.GetDateTime && command != eCommand.PaperPulling && command != eCommand.LastZReportInfo && command != eCommand.PrintDiagnosticInformation;
+           bool flag = command != eCommandFP700.ClearDisplay && command != eCommandFP700.ShiftInfo && command != eCommandFP700.DiagnosticInfo && command != eCommandFP700.EveryDayReport && command != eCommandFP700.LastDocumentsNumbers && command != eCommandFP700.ObliterateFiscalReceipt && command != eCommandFP700.PaperCut && command != eCommandFP700.GetDateTime && command != eCommandFP700.PaperPulling && command != eCommandFP700.LastZReportInfo && command != eCommandFP700.PrintDiagnosticInformation;
            if (!IsZReportAlreadyDone & flag)
                return false;
            if (_hasCriticalError & flag)
@@ -1270,7 +1270,7 @@ namespace Front.Equipments
                     return false;
                 }
             }
-            eCommand Command = (eCommand)int.Parse(BitConverter.ToString(data, num1 + 3, 1), NumberStyles.HexNumber);
+            eCommandFP700 Command = (eCommandFP700)int.Parse(BitConverter.ToString(data, num1 + 3, 1), NumberStyles.HexNumber);
             int count = num2 - num1 - 4;
             byte[] ReceivedData = new byte[count];
             Buffer.BlockCopy((Array)data, num1 + 4, (Array)ReceivedData, 0, count);
@@ -1538,11 +1538,11 @@ namespace Front.Equipments
             IsStop = false;
             bb = new();
             string res = null;
-            OnSynchronizeWaitCommandResult(eCommand.KSEF, $"R,{pCodeReceipt}", ResKSEF);
+            OnSynchronizeWaitCommandResult(eCommandFP700.KSEF, $"R,{pCodeReceipt}", ResKSEF);
             int i = 500;
             while (!IsFinish && !IsStop && --i>0)
             {
-                OnSynchronizeWaitCommandResult(eCommand.KSEF, $"N", ResKSEF);
+                OnSynchronizeWaitCommandResult(eCommandFP700.KSEF, $"N", ResKSEF);
             }
             if(!IsStop)
                 CloseIfOpened();
@@ -1570,7 +1570,7 @@ namespace Front.Equipments
         public override decimal GetSumInCash(IdReceipt pIdR)
         {
             decimal Sum = -1;
-            OnSynchronizeWaitCommandResult(eCommand.ServiceCashInOut, "", (Action<string>)(response =>
+            OnSynchronizeWaitCommandResult(eCommandFP700.ServiceCashInOut, "", (Action<string>)(response =>
             {
                 string[] strArray = response.Split(',');
                 if (strArray.Length < 3)
@@ -1606,7 +1606,7 @@ namespace Front.Equipments
                 if (pText?.Length > 20)
                     pText = pText[..20];
                 if (!string.IsNullOrWhiteSpace(pText))
-                    OnSynchronizeWaitCommandResult(pLine==1? eCommand.FirstLineDisplay: eCommand.LastLineDisplay, pText);
+                    OnSynchronizeWaitCommandResult(pLine==1? eCommandFP700.FirstLineDisplay: eCommandFP700.LastLineDisplay, pText);
             }
             return true;
         }

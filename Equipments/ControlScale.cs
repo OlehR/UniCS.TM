@@ -1,10 +1,12 @@
-﻿using System;
+﻿using Front.Equipments;
+using ModelMID;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Utils;
 
-namespace ModelMID
+namespace SharedLib
 {
     class WeightTime
     {
@@ -246,7 +248,7 @@ namespace ModelMID
         /// <summary>
         /// Чи працює контрольна вага
         /// </summary>
-        bool IsOn;
+        bool IsOn { get { return Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout && MW?.EF?.ControlScale != null; } }
         bool _IsControl = true;
         /// <summary>
         /// Тимчасове відключення контролю (наприклад після оплати)
@@ -254,14 +256,13 @@ namespace ModelMID
         public bool IsControl { get { return _IsControl; } set { _IsControl = value; if (!_IsControl) StateScale = eStateScale.Stabilized; } }
 
         MidlWeight MidlWeight;
-
-        public ControlScale(double pDelta = 10d, bool pIsOn = true)
+        IMW MW;
+        public ControlScale(IMW pMW, double pDelta = 10d)
         {
+            MW= pMW;
             _Delta = pDelta;
-            MidlWeight = new MidlWeight(3);
-            IsOn = pIsOn;
+            MidlWeight = new MidlWeight(3);            
         }
-        public void SetOnOff(bool pIsOn) { IsOn = pIsOn; }
 
         bool IsTooLight { get { return WaitWeight.Length > 0 && WaitWeight.Count(e => e.Weight * Quantity < Delta) > 0; } }
         bool IsRightWeight(double pWeight)

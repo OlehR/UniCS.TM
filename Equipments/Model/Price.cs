@@ -1,9 +1,8 @@
 ﻿using ModelMID;
-using System.Windows.Media;
 using System.Globalization;
 using System.ComponentModel;
 
-namespace Front.Models
+namespace Equipments.Model
 {
     public class Price: INotifyPropertyChanged
     {
@@ -18,14 +17,12 @@ namespace Front.Models
         public eTypeWares TypeWares { get; set; }
         public decimal price { get; set; }
         public string StrPrice { get { return $"{price.ToString("n2", CultureInfo.InvariantCulture)} ₴"; } }
-        public bool IsEnable { get; set; }
+        bool _IsEnable;
+        public bool IsEnable { get { return _IsEnable; } set{_IsEnable=value; OnPropertyChanged(nameof(IsEnable)); } }
         public bool IsConfirmAge { get; set; } = false;
-        public Brush BackGroundColor
+        protected void OnPropertyChanged(string propertyName)
         {
-            get
-            {
-                return new SolidColorBrush(IsEnable ? Color.FromArgb(20, 100, 100, 100) : Color.FromArgb(50, 100, 0, 0));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 

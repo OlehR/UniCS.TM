@@ -28,7 +28,7 @@ namespace Front.Equipments.Implementation
         const int WIDTHPAGE = 200;//e.PageBounds.Width; // ширина паперу принтера
         public Font MainFont = new("Courier", FONTSIZE, FontStyle.Bold, GraphicsUnit.Point);
         public Font SecondFont = new("Courier", SECONDFONTSIZE, FontStyle.Bold, GraphicsUnit.Point);
-        public bool IsPrintReceipt = false;
+        public bool IsPrintReceipt= true;
 
         public int TopIndent;
         QRCodeGenerator qrGenerator = new();
@@ -102,11 +102,7 @@ namespace Front.Equipments.Implementation
             {
                 if (item.Contains("QR=>"))
                 {
-                    string QRInfo = item.Replace("QR=>", string.Empty);
-                    var qrCodeData = qrGenerator.CreateQrCode(QRInfo, QRCodeGenerator.ECCLevel.Q);
-                    var qrCode = new QRCode(qrCodeData);
-                    var QRImage = qrCode.GetGraphic(2);
-                    e.Graphics.DrawImage(QRImage, (int)((WIDTHPAGE - QRImage.Width) * 0.85 / 2), position += 10);
+                    position = PrintQR(e, position, item);
                 }
                 else position = PrintLine(e, item, position, maxChar, SecondFont);
             }
@@ -121,11 +117,24 @@ namespace Front.Equipments.Implementation
 
             foreach (var item in ArrayStr)
             {
-                // maxChar = item.Length;
-                position = PrintLine(e, ClearStr(item), position, maxChar, MainFont);
+                if (item.Contains("QR=>"))
+                {
+                    position = PrintQR(e, position, item);
+                }
+                else
+                    position = PrintLine(e, ClearStr(item), position, maxChar, MainFont);
             }
         }
-
+        private int PrintQR(PrintPageEventArgs e, int position, string line)
+        {
+            string QRInfo = line.Replace("QR=>", string.Empty);
+            var qrCodeData = qrGenerator.CreateQrCode(QRInfo, QRCodeGenerator.ECCLevel.Q);
+            var qrCode = new QRCode(qrCodeData);
+            var QRImage = qrCode.GetGraphic(2);
+            e.Graphics.DrawImage(QRImage, (int)((WIDTHPAGE - QRImage.Width) * 0.85 / 2), position += 10);
+            position += QRImage.Height;
+            return position;
+        }
         private void PrintPageReceipt(object sender, PrintPageEventArgs e)
         {
             int[] IdWorkplacePays = Receipt.IdWorkplacePays;

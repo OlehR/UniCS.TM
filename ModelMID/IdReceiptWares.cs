@@ -30,7 +30,7 @@ namespace ModelMID
         public override bool Equals(object obj)
         {
             if (obj is IdReceiptWares)
-            {
+                {
                 var o = (IdReceiptWares)obj;
                 return CodeWares == o.CodeWares && base.Equals(o);
             }

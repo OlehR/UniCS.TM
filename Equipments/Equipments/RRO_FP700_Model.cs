@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Front.Equipments.Implementation.FP700_Model
 {
-    public enum eCommand
+    public enum eCommandFP700
     {
         GetLastError = 32, // 0x00000020
         ClearDisplay = 33, // 0x00000021

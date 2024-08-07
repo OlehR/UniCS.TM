@@ -27,34 +27,39 @@ namespace SharedLib
             bl = pBL;
         }
 
-        public async Task<bool> SendReceiptTo1CAsync(Receipt pR, string pServer = null, bool pIsChangeState = true)
+        public async Task<string> SendReceiptTo1CAsync(Receipt pR, string pServer = null, bool pIsChangeState = true)
         {
-            if (!Global.Settings.IsSend1C && pIsChangeState) return false;
+            string Res = null;
+            if (!Global.Settings.IsSend1C && pIsChangeState) return Res;
 
             if (string.IsNullOrEmpty(pServer))
                 pServer = Global.Server1C;
             try
             {
+                bool IsErrorSend = false;
                 foreach (var el in pR.IdWorkplacePays)
                 {
                     pR.IdWorkplacePay = el;
                     var r = new Receipt1C(pR);
                     var body = soapTo1C.GenBody("JSONCheck", new Parameters[] { new Parameters("JSONSting", r.GetBase64()) });
                     var res = Global.IsTest ? "0" : await soapTo1C.RequestAsync(pServer, body, 60000, "application/json");
-                    if (string.IsNullOrEmpty(res) || !res.Equals("0"))
-                        return false;
+                    IsErrorSend |= !res.Equals("0");
+                    if (!IsErrorSend)
+                        Res += JsonConvert.SerializeObject(r)+Environment.NewLine;
                 }
+                if (IsErrorSend)
+                    return "IsErrorSend";
                 pR.StateReceipt = eStateReceipt.Send;
                 if (pIsChangeState&& db!=null)
                     db.SetStateReceipt(pR);//Змінюєм стан чека на відправлено.
                 FileLogger.WriteLogMessage(this, "SendReceiptTo1CAsync", $"({pR.IdWorkplace},{pR.CodePeriod},{pR.CodeReceipt})");
-                return true;
+                return Res;
             }
             catch (Exception ex)
             {
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex);
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = $"SendReceiptTo1CAsync=> {pR.CodeReceipt}{Environment.NewLine}{ex.Message}{Environment.NewLine}{new System.Diagnostics.StackTrace()}" });
-                return false;
+                return null;
             }
             finally
             {

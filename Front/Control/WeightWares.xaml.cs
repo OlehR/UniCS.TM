@@ -1,5 +1,6 @@
 ﻿using Front.Models;
 using Front.ViewModels;
+using ModelMID;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,7 +37,7 @@ namespace Front.Control
 
         private void ClickButtonOk(object sender, RoutedEventArgs e)
         {
-            MW.AddWares(MW.CurW.Code, MW.CurW.CodeUnit, Convert.ToDecimal(MW.Weight * 1000));
+            MW.Blf.AddWares(MW.CurW.Code, MW.CurW.CodeUnit, Convert.ToDecimal(MW.Weight * 1000));
         }
 
         private void ClickButtonCancel(object sender, RoutedEventArgs e)

@@ -67,15 +67,17 @@ namespace Front.Equipments.Implementation
             { var m = e.Message; }
         }
 
-        bool Init()
+        bool Init(string operatorName = "")
         {
+            operatorName = operatorName == "" ? OperatorName : operatorName;
+            operatorName = operatorName.Length >= 24 ? operatorName.Remove(23) : operatorName;
             if (IsInit)
             {
                 Done();
                 IsInit = false;
             }
 
-            if (!SetError(M304.Init(SerialPort, OperatorName, OperatorPass, false) != 1))
+            if (!SetError(M304.Init(SerialPort, operatorName, OperatorPass, false) != 1))
             {
                 if (string.IsNullOrEmpty(M304.GetDocumentsInfoXML()))
                     Done();
@@ -174,7 +176,7 @@ namespace Front.Equipments.Implementation
         override public LogRRO PrintReceipt(Receipt pR)
         {
             string XMLCheckResult = "";
-            if (Init())
+            if (Init(pR.NameCashier))
             {
                 int SumCashPay = 0;
                 int SumCardPay = 0;
@@ -209,9 +211,9 @@ namespace Front.Equipments.Implementation
                                 if (SetError((M304.AddExciseStamps(item) != 1)))
                                     break;
                             }
-                            
+
                         }
-                            
+
                         if (el.SumDiscountEKKA == 0)
                             TypeDiscount = -1;//без знижок
                         if (el.SumDiscountEKKA > 0)
@@ -226,7 +228,7 @@ namespace Front.Equipments.Implementation
                         }
 
                         if (SetError(M304.FiscalLineEx(article.NameWares, Convert.ToInt32((el.CodeUnit == Global.WeightCodeUnit ? 1000 : 1) * el.Quantity), Convert.ToInt32(el.PriceEKKA * 100), el.CodeUnit == Global.WeightCodeUnit ? 1 : 0, TG1, TG2, el.CodeWares, TypeDiscount, null, Math.Abs(Convert.ToInt32(el.SumDiscountEKKA * 100m)), null) == 0))
-                        {                            
+                        {
                             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка програмування товару:{article.CodeWares} PLU=>{article.PLU} {article.NameWares} {StrError}");
                             throw new Exception($"Помилка програмування товару!{Environment.NewLine}{article.CodeWares} PLU=>{article.PLU}{article.NameWares}{Environment.NewLine}{StrError}");
                         }

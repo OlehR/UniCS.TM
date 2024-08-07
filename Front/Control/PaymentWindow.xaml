@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Front.Control"
+             xmlns:uc="clr-namespace:Front.Control" 
              mc:Ignorable="d" 
              MinHeight="450" Width="1000">
     <!-- ОПЛАТА ЗВИЧАЙНА КАСА  -->
@@ -456,7 +456,17 @@
 
                 </Border>
             </StackPanel>
-
+            <!-- цифрова клавіатура -->
+            <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
+      Grid.Row="0" Grid.RowSpan="6"
+      Grid.Column="0" Grid.ColumnSpan="6"
+      Name="PaymentWindow_NumericPad" Visibility="Collapsed" Grid.ZIndex="5" 
+     CornerRadius="10" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+                </Border.Effect>
+                <uc:NumericPad x:Name="PaymentWindowUC_NumericPad"   />
+            </Border>
         </Grid>
     </Border>
 </UserControl>

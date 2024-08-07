@@ -24,8 +24,10 @@
 		<Grid Grid.Row="0" ColumnDefinitions="2*,*,*">
 			<Button Command="{Binding CloseCommand}" Grid.Column="0" VerticalAlignment="Top" Height="65" Width="550" CornerRadius="15	" Margin="4">
 				<TextBlock Text="Повернутись до чеку" FontSize="32" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
+
 			</Button>
-			<Button Background="DarkGray" Grid.Column="1" VerticalAlignment="Top" Height="65" Width="450" CornerRadius="15" Margin="4">
+			<Image Height="100" Width="200" Source="{Binding  ImageFromBinding}" />
+			<Button  Command="{Binding Back}" Background="DarkGray" Grid.Column="1" VerticalAlignment="Top" Height="65" Width="450" CornerRadius="15" Margin="4">
 				<StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
 					<Image Source="avares://AvaloniaMain/Assets/backArrow.ico" Margin="2" Height="50" Width="56"></Image>
 					<TextBlock Text="Назад" FontSize="32" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
@@ -36,73 +38,53 @@
 				<TextBlock Text="Виклик адміністратора" FontSize="32" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
 			</Button>
 		</Grid>
-		<Grid   VerticalAlignment="Bottom" Grid.Row="1" ColumnDefinitions="115,*,115" Height="550">
-			<Button Grid.Column="0" BorderBrush="Black" CornerRadius="20" BorderThickness="2" Background="DarkGray" HorizontalAlignment="Left"  Margin="5,0,0,0" Height="540" Width="100">
+		<Grid   VerticalAlignment="Bottom" Grid.Row="1" ColumnDefinitions="100,*,100" Height="550">
+			<Button Command="{Binding Slide}" CommandParameter="left" IsEnabled="{Binding  IsLeftEnable}" Grid.Column="0" BorderBrush="Black" CornerRadius="20" BorderThickness="2" Background="DarkGray" HorizontalAlignment="Left"  Margin="5,0,0,0" Height="540" Width="100">
 				<Image Source="avares://AvaloniaMain/Assets/back.ico"></Image>
 			</Button>
-			<Grid Grid.Column="1" ColumnDefinitions="*,*,*,*,*" RowDefinitions="*,*">
-				<Button Background="Transparent" Grid.Column="0"  Height="260" Width="330" Grid.Row="0">
-				<Border  BorderBrush="Black" BorderThickness="2" CornerRadius="15" Height="260" Width="330">
-					<TextBox  BorderBrush="Transparent" Height="80" FontWeight="Black" FontSize="22" VerticalAlignment="Center"    TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Text="Конс Фрікіс юніор курка/морква 100г"></TextBox>
-				</Border>
-				</Button>
-				<Button Background="Transparent" Grid.Column="1"  Height="260" Width="330" Grid.Row="0">
-					<Border  BorderBrush="Black" BorderThickness="2" CornerRadius="15" Height="260" Width="330">
-						<TextBlock  Height="80"  FontWeight="Black" FontSize="22" VerticalAlignment="Center"    TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Text="Конс Фрікіс юніор курка/морква 100г"></TextBlock>
-					</Border>
-				</Button>
-				<Button Background="Transparent" Grid.Column="2"  Height="260" Width="330" Grid.Row="0">
-					<Border  BorderBrush="Black" BorderThickness="2" CornerRadius="15" Height="260" Width="330">
-						<TextBlock Height="80" FontWeight="Black"  FontSize="22" VerticalAlignment="Center"    TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Text="Конс Фрікіс юніор курка/морква 100г"></TextBlock>
+			<ListBox   VerticalAlignment="Top"  Grid.Column="1" ItemsSource="{Binding OnPageProductsTop }">
+				<ListBox.ItemsPanel>
+					<ItemsPanelTemplate>
+						<StackPanel Orientation='Horizontal'/>
+					</ItemsPanelTemplate>
+				</ListBox.ItemsPanel>
+				<ListBox.ItemTemplate>
+					<DataTemplate>
+						<Button	 Command="{Binding DataContext.GetCodeFastGroup, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}" CommandParameter="{Binding}" Background="Transparent" Grid.Column="3"  Height="260" Width="320" Grid.Row="1">
+							<Border Background="White"  BorderBrush="Black" BorderThickness="2" CornerRadius="15" Margin="0" Height="260" Width="320">
+								<Grid RowDefinitions="*,auto">
+									<Image Margin="5,5,5,5" Grid.Row="0" Width="280" Source="{Binding ImageBit}" />
+									<TextBlock Margin="0,0,0,5" Grid.Row="1" HorizontalAlignment="Center" IsVisible="{Binding IsTextVisible} " FontSize="24" FontWeight="Bold" TextWrapping="WrapWithOverflow" Text="{Binding Name}"></TextBlock>
+								</Grid>
+							</Border>
+						</Button>
+					</DataTemplate>
 
-					</Border>
-				</Button>
-				<Button Background="Transparent" Grid.Column="3"  Height="260" Width="330" Grid.Row="0">
-					<Border  BorderBrush="Black" BorderThickness="2" CornerRadius="15" Height="260" Width="330">
-						<TextBlock   Height="80" FontWeight="Black" FontSize="22" VerticalAlignment="Center"    TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Text="Конс Фрікіс юніор курка/морква 100г"></TextBlock>
+				</ListBox.ItemTemplate>
+			</ListBox>
+			<ListBox   VerticalAlignment="Bottom"  Grid.Column="1" ItemsSource="{Binding OnPageProductsBottom }">
+				<ListBox.ItemsPanel>
+					<ItemsPanelTemplate>
+						<StackPanel Orientation='Horizontal'/>
+					</ItemsPanelTemplate>
+				</ListBox.ItemsPanel>
+				<ListBox.ItemTemplate>
+					<DataTemplate >
+						<Button Command="{Binding DataContext.GetCodeFastGroup, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}" CommandParameter="{Binding}" Background="Transparent" Grid.Column="3"  Height="260" Width="320" Grid.Row="1">
+							<Border Background="White"  BorderBrush="Black" BorderThickness="2" CornerRadius="15" Margin="0" Height="260" Width="320">
+								<Grid RowDefinitions="*,auto">
+									<Image Grid.Row="0" Width="280" Source="{Binding ImageBit}" />
+									<TextBlock Margin="0,0,0,5" Grid.Row="1" HorizontalAlignment="Center" IsVisible="{Binding IsTextVisible} " FontSize="24" FontWeight="Bold" TextWrapping="WrapWithOverflow" Text="{Binding Name}"></TextBlock>
+								</Grid>
+							</Border>
+						</Button>
+					</DataTemplate>
 
-					</Border>
-				</Button>
-				<Button  Background="Transparent" Grid.Column="4"  Height="260" Width="330" Grid.Row="0">
-					<Border  BorderBrush="Black" BorderThickness="2" CornerRadius="15" Height="260" Width="330">
-						<TextBlock Height="80" FontWeight="Black" FontSize="22" VerticalAlignment="Center"    TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Text="Конс Фрікіс юніор курка/морква 100г"></TextBlock>
-
-					</Border>
-				</Button>
-				<Button Background="Transparent" Grid.Column="0"  Height="260" Width="330" Grid.Row="1">
-					<Border  BorderBrush="Black" BorderThickness="2" CornerRadius="15" Height="260" Width="330">
-						<TextBlock Height="80" FontWeight="Black" FontSize="22" VerticalAlignment="Center"    TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Text="Конс Фрікіс юніор курка/морква 100г"></TextBlock>
-
-					</Border>
-				</Button>
-				<Button Background="Transparent" Grid.Column="1"  Height="260" Width="330" Grid.Row="1">
-					<Border  BorderBrush="Black" BorderThickness="2" CornerRadius="15" Height="260" Width="330">
-						<TextBlock Height="80" FontWeight="Black" FontSize="22" VerticalAlignment="Center"    TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Text="Конс Фрікіс юніор курка/морква 100г"></TextBlock>
-
-					</Border>
-				</Button>
-				<Button Background="Transparent" Grid.Column="2"  Height="260" Width="330" Grid.Row="1">
-					<Border  BorderBrush="Black" BorderThickness="2" CornerRadius="15" Height="260" Width="330">
-						<TextBlock Height="80" FontWeight="Black" FontSize="22" VerticalAlignment="Center"    TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Text="Конс Фрікіс юніор курка/морква 100г"></TextBlock>
-
-					</Border>
-				</Button>
-				<Button Background="Transparent" Grid.Column="3"  Height="260" Width="330" Grid.Row="1">
-					<Border  BorderBrush="Black" BorderThickness="2" CornerRadius="15" Height="260" Width="330">
-						<TextBlock Height="80" FontWeight="Black" FontSize="22" VerticalAlignment="Center"    TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Text="Конс Фрікіс юніор курка/морква 100г"></TextBlock>
-
-					</Border>
-				</Button>
-				<Button Background="Transparent" Grid.Column="4"  Height="260" Width="330" Grid.Row="1">
-					<Border  BorderBrush="Black" BorderThickness="2" CornerRadius="15" Height="260" Width="330">
-						<TextBlock Height="80" FontWeight="Black" FontSize="22" VerticalAlignment="Center"    TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Text="Конс Фрікіс юніор курка/морква 100г"></TextBlock>
-
-					</Border>
-				</Button>
+				</ListBox.ItemTemplate>
+			</ListBox>
 
 
-			</Grid>
-			<Button Grid.Column="2" BorderBrush="Black" CornerRadius="20" BorderThickness="2" Background="DarkGray" Margin="0,0,5,0"  HorizontalAlignment="Right" Height="540" Width="100">
+			<Button Command="{Binding Slide}" CommandParameter="right" IsEnabled="{Binding  IsRightEnable}" Grid.Column="2" BorderBrush="Black" CornerRadius="20" BorderThickness="2" Background="DarkGray" Margin="0,0,5,0"  HorizontalAlignment="Right" Height="540" Width="100">
 				<Image Source="avares://AvaloniaMain/Assets/right.ico"></Image>
 			</Button>
 		</Grid>

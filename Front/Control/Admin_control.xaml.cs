@@ -29,7 +29,7 @@ namespace Front.Control
     public partial class Admin_control : UserControl, INotifyPropertyChanged
     {
         Action<eCommand, WorkPlace, Status> OnSocket;
-        public Access Access = Access.GetAccess();
+        Access Access = Access.GetAccess();
         public event PropertyChangedEventHandler PropertyChanged;
         EquipmentFront EF;
         ObservableCollection<Receipt> Receipts;
@@ -144,7 +144,7 @@ namespace Front.Control
                         });
                     }
                 }
-                ComboBoxChooseTypeCheckout.ItemsSource = ListTypeWorkplace;
+                //ComboBoxChooseTypeCheckout.ItemsSource = ListTypeWorkplace;
                 RefreshJournal();
             }
             catch (Exception ex) { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex); }
@@ -190,7 +190,7 @@ namespace Front.Control
 
                 try
                 {
-                    ComboBoxChooseTypeCheckout.SelectedItem = ListTypeWorkplace.First(x => x.TypeWorkplace_ == curWorkplace);
+                    //ComboBoxChooseTypeCheckout.SelectedItem = ListTypeWorkplace.First(x => x.TypeWorkplace_ == curWorkplace);
                     if (EF != null && EF.GetListEquipment?.Count() > 0)
                     {
                         AllEquipment = new ObservableCollection<Equipment>(EF.GetListEquipment);
@@ -628,7 +628,7 @@ namespace Front.Control
         private void FiscalizCheckButton(object sender, RoutedEventArgs e)
         {
             MW.SetCurReceipt( curReceipt);
-            MW.PayAndPrint();
+            MW.Blf.PayAndPrint();
             //MessageBox.Show("Фiскалізовано");
         }
 
@@ -989,7 +989,7 @@ namespace Front.Control
                     FindChecksByDate(null, null);
                     var R = Bl.GetReceiptHead(MW.curReceipt, true);
                     if (R.StateReceipt == eStateReceipt.Canceled)
-                        MW.NewReceipt();
+                        MW.Blf.NewReceipt();
                     else
                         Global.OnReceiptCalculationComplete?.Invoke(R);
 
@@ -1048,7 +1048,7 @@ namespace Front.Control
                 {
                     var r = Bl.GetReceiptHead(el, true);
                     Total += r.SumTotal;
-                    MW.FillPays(r);
+                    MW.Blf.FillPays(r);
                     decimal SumPr = 0, Sum1c = 0;
                     SumPr = r.WorkplacePays?.Where(e => e.IdWorkplacePay == IdWP.IdWorkplace)?.Sum(e => e.Sum) ?? 0m;
                     if (SumPr > 0)
@@ -1188,12 +1188,12 @@ from RECEIPT r
                 IsRemoveMoney = true;
             }
 
-            MW.InputNumberPhone.Desciption = DesciptionOparation;
-            MW.InputNumberPhone.ValidationMask = "";
-            MW.InputNumberPhone.Result = "";
-            MW.InputNumberPhone.IsEnableComma = true;
-            MW.InputNumberPhone.CallBackResult = (string res) => AddOrRemoveMoney(res, IsRemoveMoney, DesciptionOparation);
-            MW.NumericPad.Visibility = Visibility.Visible;
+            AdminUC_NumericPad.Desciption = DesciptionOparation;
+            AdminUC_NumericPad.ValidationMask = "";
+            AdminUC_NumericPad.Result = "";
+            AdminUC_NumericPad.IsEnableComma = true;
+            AdminUC_NumericPad.CallBackResult = (string res) => AddOrRemoveMoney(res, IsRemoveMoney, DesciptionOparation);
+            Admin_NumericPad.Visibility = Visibility.Visible;
             BackgroundShift.Visibility = Visibility.Visible;
 
         }
@@ -1256,7 +1256,7 @@ from RECEIPT r
                 //    else MW.ShowErrorMessage("Введіть коректну суму!");
                 //}
             }
-            MW.NumericPad.Visibility = Visibility.Collapsed;
+            Admin_NumericPad.Visibility = Visibility.Collapsed;
             BackgroundShift.Visibility = Visibility.Collapsed;
         }
 
@@ -1392,17 +1392,17 @@ from RECEIPT r
 
         private void ChangeOrderNumber(object sender, RoutedEventArgs e)
         {
-            MW.InputNumberPhone.Desciption = "Номер замовлення";
-            MW.InputNumberPhone.ValidationMask = "";
-            MW.InputNumberPhone.Result = "";
-            MW.InputNumberPhone.IsEnableComma = false;
-            MW.InputNumberPhone.CallBackResult = (string res) =>
+            AdminUC_NumericPad.Desciption = "Номер замовлення";
+            AdminUC_NumericPad.ValidationMask = "";
+            AdminUC_NumericPad.Result = "";
+            AdminUC_NumericPad.IsEnableComma = false;
+            AdminUC_NumericPad.CallBackResult = (string res) =>
             {
                 OrderNumber = res;
-                MW.NumericPad.Visibility = Visibility.Collapsed;
+                Admin_NumericPad.Visibility = Visibility.Collapsed;
                 BackgroundOtherFunction.Visibility = Visibility.Collapsed;
             };
-            MW.NumericPad.Visibility = Visibility.Visible;
+            Admin_NumericPad.Visibility = Visibility.Visible;
             BackgroundOtherFunction.Visibility = Visibility.Visible;
         }
 
@@ -1435,21 +1435,21 @@ from RECEIPT r
 
         private void FindChecksByNumber(object sender, RoutedEventArgs e)
         {
-            MW.InputNumberPhone.Desciption = "№ чека який шукаєте";
-            MW.InputNumberPhone.ValidationMask = "";
-            MW.InputNumberPhone.Result = "";
-            MW.InputNumberPhone.IsEnableComma = false;
-            MW.InputNumberPhone.CallBackResult = (string res) =>
+            AdminUC_NumericPad.Desciption = "№ чека який шукаєте";
+            AdminUC_NumericPad.ValidationMask = "";
+            AdminUC_NumericPad.Result = "";
+            AdminUC_NumericPad.IsEnableComma = false;
+            AdminUC_NumericPad.CallBackResult = (string res) =>
             {
                 if (!string.IsNullOrEmpty(res))
                     FindReceiptByNumber = Convert.ToInt32(res);
                 else
                     FindReceiptByNumber = 0;
                 CollectionViewSource.GetDefaultView(ListReceipts.ItemsSource).Refresh();
-                MW.NumericPad.Visibility = Visibility.Collapsed;
+                Admin_NumericPad.Visibility = Visibility.Collapsed;
                 BackgroundReceipts.Visibility = Visibility.Collapsed;
             };
-            MW.NumericPad.Visibility = Visibility.Visible;
+            Admin_NumericPad.Visibility = Visibility.Visible;
             BackgroundReceipts.Visibility = Visibility.Visible;
         }
 
@@ -1485,13 +1485,13 @@ from RECEIPT r
 
         private void ChooseTypeCheckoutComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (ComboBoxChooseTypeCheckout.SelectedItem is CurentTypeWorkplace SelTypeCheckout)
-            {
-                Global.TypeWorkplaceCurrent = SelTypeCheckout.TypeWorkplace_;
-                MW.SetWorkPlace();
-                Access.Init();
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsCashRegister)));
-            }
+            //if (ComboBoxChooseTypeCheckout.SelectedItem is CurentTypeWorkplace SelTypeCheckout)
+            //{
+            //    Global.TypeWorkplaceCurrent = SelTypeCheckout.TypeWorkplace_;
+            //    MW.SetWorkPlace();
+            //    Access.Init(MW.AdminSSC);
+            //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsCashRegister)));
+            //}
         }
 
         private void RemovePayment(object sender, RoutedEventArgs e)

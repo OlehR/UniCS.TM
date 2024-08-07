@@ -1,5 +1,6 @@
 ﻿using AvaloniaMain.Models;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+//using Microsoft.CodeAnalysis.CSharp.Syntax;
+using ModelMID;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -11,23 +12,30 @@ namespace AvaloniaMain.ViewModels
 {
     public class ClientInfoViewModel : ViewModelBase
     {
-        private string _clientName="dfczad";
-
-        public string ClientName
-        {
-            get => _clientName;
-            set => this.RaiseAndSetIfChanged(ref _clientName, value);
-        }
+        
 
         private MainViewModel _mainViewModel;
-
+        private Client _client;
+        public Client Client
+        {
+            get { return _client; }
+            set
+            {
+                if(value != _client) 
+                {
+                    _client = value;
+                    OnPropertyChanged(nameof(Client));
+                }
+            }
+        }
 
         private ReactiveCommand<Unit, Unit> _closeCommand;
 
         public ReactiveCommand<Unit, Unit> CloseCommand => _closeCommand ??= ReactiveCommand.CreateFromTask(CloseAsync);
 
-        public ClientInfoViewModel(MainViewModel mainViewModel) 
+        public ClientInfoViewModel(MainViewModel mainViewModel, Client client) 
         {
+             Client = client;
             _mainViewModel = mainViewModel;
         }
 

@@ -8,8 +8,8 @@
     <ApplicationIcon />
     <Win32Resource />
     <NeutralLanguage>uk-UA</NeutralLanguage>
-    <AssemblyVersion>2.2.0.126</AssemblyVersion>
-    <FileVersion>2.2.0.126</FileVersion>
+    <AssemblyVersion>2.2.0.157</AssemblyVersion>
+    <FileVersion>2.2.0.157</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -23,6 +23,7 @@
     <None Remove="icons\back.png" />
     <None Remove="icons\backArrow.png" />
     <None Remove="icons\BankTerminal.png" />
+    <None Remove="icons\check-mark.png" />
     <None Remove="icons\checkout.png" />
     <None Remove="icons\ClientBonus.png" />
     <None Remove="icons\ClientBonusGray.png" />
@@ -72,18 +73,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <COMReference Include="ExellioFP">
-      <WrapperTool>tlbimp</WrapperTool>
-      <VersionMinor>0</VersionMinor>
-      <VersionMajor>1</VersionMajor>
-      <Guid>4dd3339c-96ca-4901-935b-3b0dc9998cd2</Guid>
-      <Lcid>0</Lcid>
-      <Isolated>false</Isolated>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </COMReference>
-  </ItemGroup>
-
-  <ItemGroup>
     <Resource Include="icons\18plus.png" />
     <Resource Include="icons\18PlusRed.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -93,6 +82,9 @@
     </Resource>
     <Resource Include="icons\backArrow.png" />
     <Resource Include="icons\BankTerminal.png" />
+    <Resource Include="icons\check-mark.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="icons\checkout.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
@@ -158,10 +150,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="LibVLCSharp" Version="3.8.2" />
+    <PackageReference Include="LibVLCSharp.WPF" Version="3.8.2" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2277.86" />
     <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
     <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
+    <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.20" />
   </ItemGroup>
 
   <ItemGroup>
