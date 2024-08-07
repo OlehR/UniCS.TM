@@ -20,8 +20,8 @@
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="80"/>
@@ -56,7 +56,7 @@
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
-                    
+
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding IsShowStartWindows, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="true">
                             <Setter Property="Visibility" Value="Collapsed" />
@@ -67,25 +67,19 @@
 
             <ListView.View>
                 <GridView>
-                    <GridViewColumn  Header="{DynamicResource markWareName}" Width="{Binding widthHeaderReceiptSM.WidthName, RelativeSource={RelativeSource 
+                    <GridViewColumn   Width="{Binding widthHeaderReceiptSM.WidthName, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <!--<Image Source="icons\name.png" Width="50" Height="50" />-->
+                                    <TextBlock Text="{DynamicResource markWareName}" FontSize="14" Foreground="Black" FontWeight="Bold" FontFamily="Source Sans Pro"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Vertical" Grid.Column="0" HorizontalAlignment="Left">
-                                    <TextBlock Margin="0"   Text="{Binding GetStrWaresReceiptPromotion}" >
-                                        <TextBlock.Style>
-                                            <Style TargetType="{x:Type TextBlock}">
-                                                <Setter Property="FontSize" Value="12"/>
-                                                <Setter Property="FontWeight" Value="SemiBold"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding MW.TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
-                                                     Value="HorisontalMonitorRegular">
-                                                        <Setter Property="FontSize" Value="8" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
                                     <TextBlock Margin="0"   Text="{Binding NameWares}" TextWrapping="Wrap"  FontFamily="Roboto Condensed" FontWeight="DemiBold">
                                         <TextBlock.Style>
                                             <Style TargetType="{x:Type TextBlock}">
@@ -95,7 +89,7 @@
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding MW.TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
                                                      Value="HorisontalMonitorRegular">
-                                                        <Setter Property="FontSize" Value="18" />
+                                                        <Setter Property="FontSize" Value="14" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -107,8 +101,16 @@
                     </GridViewColumn>
 
 
-                    <GridViewColumn  Header="{DynamicResource markWareQuantity}" Width="{Binding widthHeaderReceiptSM.WidthCountWares, RelativeSource={RelativeSource 
+                    <GridViewColumn   Width="{Binding widthHeaderReceiptSM.WidthCountWares, RelativeSource={RelativeSource 
        Mode=FindAncestor, AncestorType=Window}}">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <!--<Image Source="icons\counter.png" Width="50" Height="50" />-->
+                                    <TextBlock Text="Кіль-ть" FontSize="12" Foreground="Black" FontWeight="Bold" FontFamily="Source Sans Pro"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock x:Name="QuantityText" Grid.Column="2">
@@ -123,7 +125,7 @@
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
                                          Value="HorisontalMonitorRegular">
-                                                    <Setter Property="FontSize" Value="20" />
+                                                    <Setter Property="FontSize" Value="14" />
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
@@ -134,8 +136,16 @@
                     </GridViewColumn>
 
 
-                    <GridViewColumn  Header="{DynamicResource markWarePrice}" Width="{Binding widthHeaderReceiptSM.WidthPrice, RelativeSource={RelativeSource 
+                    <GridViewColumn   Width="{Binding widthHeaderReceiptSM.WidthPrice, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}"  >
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <!--<Image Source="icons\price.png" Width="50" Height="50" />-->
+                                    <TextBlock Text="{DynamicResource markWarePrice}" FontSize="12" Foreground="Black" FontWeight="Bold" FontFamily="Source Sans Pro"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Grid.Column="3" Text="{Binding Price, StringFormat=0.00 }"  >
@@ -156,7 +166,7 @@
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding MW.TypeMonitor, RelativeSource={RelativeSource 
                    Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
-                                                    <Setter Property="FontSize" Value="16" />
+                                                    <Setter Property="FontSize" Value="14" />
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
@@ -166,8 +176,16 @@
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
 
-                    <GridViewColumn  Header="{DynamicResource markWareInAll}" Width="{Binding widthHeaderReceiptSM.WidthTotalPrise, RelativeSource={RelativeSource 
+                    <GridViewColumn   Width="{Binding widthHeaderReceiptSM.WidthTotalPrise, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}" >
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <!--<Image Source="icons\total.png" Width="50" Height="50" />-->
+                                    <TextBlock Text="{DynamicResource markWareInAll}" FontSize="12" Foreground="Black" FontWeight="Bold" FontFamily="Source Sans Pro"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -186,7 +204,7 @@
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding MW.TypeMonitor, RelativeSource={RelativeSource 
                    Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
-                                                        <Setter Property="FontSize" Value="18" />
+                                                        <Setter Property="FontSize" Value="14" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -211,7 +229,7 @@
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding MW.TypeMonitor, RelativeSource={RelativeSource 
                    Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
-                                                        <Setter Property="FontSize" Value="12" />
+                                                        <Setter Property="FontSize" Value="10" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -288,10 +306,17 @@
                 </Style>
             </MediaElement.Style>
         </MediaElement>-->
-        <vlc:VideoView x:Name="SecondVideo" 
+
+        <!--<vlc:VideoView x:Name="SecondVideo" 
                        Grid.Column="2" Grid.Row="1" Grid.RowSpan="2">
-            
-        </vlc:VideoView>
+
+        </vlc:VideoView>-->
+        <!--<Image  Name="SlideshowImage" Stretch="Uniform"
+                Grid.Column="2" Grid.Row="1" Grid.RowSpan="2"   />-->
+        <Image Name="CurrentImage" Stretch="Uniform" Opacity="1" 
+               Grid.Column="2" Grid.Row="1" Grid.RowSpan="2"/>
+        <Image Name="NextImage" Stretch="Uniform" Opacity="0" 
+               Grid.Column="2" Grid.Row="1" Grid.RowSpan="2"/>
 
 
         <Button Grid.Column="2" Grid.Row="1" Click="StartNormal" Content="Перейти в звичайний режим">

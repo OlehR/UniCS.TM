@@ -14,6 +14,10 @@ using SharedLib;
 using static Front.MainWindow;
 using LibVLCSharp.Shared;
 using System.Net.NetworkInformation;
+using System.Collections.Generic;
+using System.IO;
+using System.Windows.Media.Imaging;
+using System.Windows.Media.Animation;
 
 namespace Front
 {
@@ -34,6 +38,11 @@ namespace Front
         public int WidthScreen { get { return (int)SystemParameters.PrimaryScreenWidth; } }
         public WidthHeaderReceipt widthHeaderReceiptSM { get; set; }
         bool IsLoading = false;
+
+        private DispatcherTimer timerSlideshow;
+        private List<string> imageFiles;
+        private int currentIndex = 0;
+
         public eTypeMonitor TypeMonitor
         {
             get
@@ -51,7 +60,7 @@ namespace Front
         }
         public void calculateWidthHeaderReceipt(eTypeMonitor TypeMonitor)
         {
-            var coefWidth = WidthScreen / 165;
+            var coefWidth = WidthScreen / 241;
             switch (TypeMonitor)
             {
                 //case eTypeMonitor.HorisontalMonitorKSO:
@@ -62,10 +71,10 @@ namespace Front
                 //    break;
                 //int widthName, int widthWastebasket, int widthCountWares, int widthWeight, int widthPrice, int widthTotalPrise
                 case eTypeMonitor.HorisontalMonitorRegular:
-                    widthHeaderReceiptSM = new WidthHeaderReceipt(260, 0, 95, 0, 75, 90);
+                    widthHeaderReceiptSM = new WidthHeaderReceipt(140, 0, 65, 0, 60, 90);//new WidthHeaderReceipt(260, 0, 95, 0, 75, 90);
                     break;
                 default:
-                    widthHeaderReceiptSM = new WidthHeaderReceipt(54 * coefWidth, 5 * coefWidth, 15 * coefWidth, 8 * coefWidth, 8 * coefWidth, 8 * coefWidth);
+                    widthHeaderReceiptSM = new WidthHeaderReceipt(54 * coefWidth, 5 * coefWidth, 15 * coefWidth, 8 * coefWidth, 10 * coefWidth, 12 * coefWidth);
                     break;
             }
         }
@@ -76,29 +85,11 @@ namespace Front
             MW = pMW;
             ListWares = MW.ListWares;
             WaresList.ItemsSource = ListWares;
-
-            ////Показ відео при старті
-            //if (MW.PathVideo != null && MW.PathVideo.Length != 0)
-            //{
-            //    StartVideo.Source = new Uri(MW.PathVideo[0]);
-            //    StartVideo.Play();
-            //    StartVideo.MediaEnded += (object sender, RoutedEventArgs e) =>
-            //    {
-            //        StartVideo.Position = new TimeSpan(0, 0, 0, 0, 1);
-            //        StartVideo.Play();
-            //    };
-
-            //    SecondVideo.Source = new Uri(MW.PathVideo[0]);
-            //    SecondVideo.Stop();
-            //    SecondVideo.MediaEnded += (object sender, RoutedEventArgs e) =>
-            //    {
-            //        StartVideo.Position = new TimeSpan(0, 0, 0, 0, 1);
-            //        StartVideo.Play();
-            //    };
-            //}
+            //слайдшоу реклами
+            LoadImagesFromFolder();
             // Ініціалізуємо таймер
             timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(5); // Встановлюємо інтервал таймера на 5 хвилин
+            timer.Interval = TimeSpan.FromSeconds(5); // Встановлюємо інтервал таймера на 5 секунд
             timer.Tick += Timer_Tick;
             timer.Start();
 
@@ -130,73 +121,43 @@ namespace Front
             };
             UpdateTypeWorkplace();
             calculateWidthHeaderReceipt(TypeMonitor);
-           // Loaded += (a, b) => { IsLoading = true; StarVideo(); };
-            
+            // Loaded += (a, b) => { IsLoading = true; StarVideo(); };
+
         }
 
-        /*void StarVideo(eStateMainWindows? pState = null)
+
+        private void LoadImagesFromFolder()
         {
-            if (pState == null)
-                pState = MW.State;
-
-            if (StartVideo != null && StartVideo.MediaPlayer == null && IsLoading && pState == eStateMainWindows.StartWindow)
-                VideoView_Loaded();
-            if (SecondVideo != null && SecondVideo.MediaPlayer == null && IsLoading)
+            string folderPath = Path.Combine(Global.PathPictures, "Advertising");
+            if (CheckIfImagesExist(folderPath))
             {
-                SecondVideoView_Loaded();
+                imageFiles = new List<string>();
+                imageFiles.AddRange(Directory.GetFiles(folderPath, "*.jpg"));
+                imageFiles.AddRange(Directory.GetFiles(folderPath, "*.png"));
             }
-
-            if (StartVideo?.MediaPlayer != null)
+            else
             {
-                if (pState != eStateMainWindows.StartWindow && StartVideo.MediaPlayer.IsPlaying)
-                {
-                    StartVideo.MediaPlayer.SetPause(true);
-                    StartVideo.Visibility = Visibility.Collapsed;
-                }
-                if (pState == eStateMainWindows.StartWindow && !MW.IsCashRegister && !StartVideo.MediaPlayer.IsPlaying)
-                {
-                    StartVideo.Visibility = Visibility.Visible;
-                    StartVideo.MediaPlayer.SetPause(false);
-                }
-            }
-            if (pState == eStateMainWindows.StartWindow)
-            {
-                SecondVideo.Visibility = Visibility.Collapsed;
-                SecondVideo.MediaPlayer.SetPause(true);
+                folderPath = Path.Combine(Global.PathPictures, "Logo");
+                if (CheckIfImagesExist(folderPath))
+                    imageFiles = new List<string>(Directory.GetFiles(folderPath, "*.png"));
+                //MessageBox.Show("Folder does not exist.");
             }
         }
-        Media media;
-        LibVLCSharp.Shared.MediaPlayer _mediaPlayer;
-        private void VideoView_Loaded(object sender = null, RoutedEventArgs e = null)
+        private bool CheckIfImagesExist(string folderPath)
         {
-
-            if (MW.PathVideo != null && MW.PathVideo.Length != 0)
+            if (!Directory.Exists(folderPath))
             {
-                var _libVLC = new LibVLC(enableDebugLogs: true);
-                _mediaPlayer = new LibVLCSharp.Shared.MediaPlayer(_libVLC);
-
-                StartVideo.MediaPlayer = _mediaPlayer;
-
-                media = new Media(_libVLC, new Uri(MW.PathVideo[0]));
-                media.AddOption(":input-repeat=65535");
-                StartVideo.MediaPlayer.Play(media);
+                return false;
             }
+
+            var jpgFiles = Directory.GetFiles(folderPath, "*.jpg");
+            var pngFiles = Directory.GetFiles(folderPath, "*.png");
+
+            return jpgFiles.Any() || pngFiles.Any();
         }
-        private void SecondVideoView_Loaded(object sender = null, RoutedEventArgs e = null)
-        {
 
-            if (MW.PathVideo != null && MW.PathVideo.Length != 0)
-            {
-                var _libVLC = new LibVLC(enableDebugLogs: true);
-                _mediaPlayer = new LibVLCSharp.Shared.MediaPlayer(_libVLC);
 
-                SecondVideo.MediaPlayer = _mediaPlayer;
 
-                media = new Media(_libVLC, new Uri(MW.PathVideo[0]));
-                media.AddOption(":input-repeat=65535");
-                SecondVideo.MediaPlayer.Play(media);
-            }
-        }*/
         public void ScrolDown()
         {
             if (VisualTreeHelper.GetChildrenCount(WaresList) > 0)
@@ -210,12 +171,12 @@ namespace Front
         {
             Dispatcher.BeginInvoke(new ThreadStart(() =>
             {
-                if (StartVideo != null && StartVideo.MediaPlayer == null )
+                if (StartVideo != null && StartVideo.MediaPlayer == null)
                 {
                     StartVideo.MediaPlayer = new LibVLCSharp.Shared.MediaPlayer(MW.LibVLC);
                     StartVideo.MediaPlayer.Play(MW.Media);
-                    SecondVideo.MediaPlayer = new LibVLCSharp.Shared.MediaPlayer(MW.LibVLC);
-                    SecondVideo.MediaPlayer.Play(MW.Media);                    
+                    //SecondVideo.MediaPlayer = new LibVLCSharp.Shared.MediaPlayer(MW.LibVLC);
+                    //SecondVideo.MediaPlayer.Play(MW.Media);                    
                 }
 
                 OnPropertyChanged(nameof(IsShowStartWindows));
@@ -228,8 +189,8 @@ namespace Front
                     StartVideo.Visibility = Visibility.Visible;
                     StartShoppingButtons.Visibility = Visibility.Visible;
 
-                    SecondVideo.MediaPlayer.SetPause(true);
-                    SecondVideo.Visibility = Visibility.Collapsed;
+                    //SecondVideo.MediaPlayer.SetPause(true);
+                    //SecondVideo.Visibility = Visibility.Collapsed;
                 }
                 else
                 {
@@ -239,12 +200,12 @@ namespace Front
 
                     if (!IsKSO)
                     {
-                        SecondVideo.MediaPlayer.SetPause(false);
-                        SecondVideo.Visibility = Visibility.Visible;
+                        //SecondVideo.MediaPlayer.SetPause(false);
+                        //SecondVideo.Visibility = Visibility.Visible;
                     }
                 }
             }));
-          
+
         }
 
         private void Timer_Tick(object sender, EventArgs e)
@@ -262,6 +223,28 @@ namespace Front
                 // Інакше, продовжуємо відлік
                 StartShoppingButtons.Visibility = Visibility.Collapsed;
                 timer.Start();
+            }
+
+            if (imageFiles != null && imageFiles.Count > 0)
+            {
+                currentIndex = (currentIndex + 1) % imageFiles.Count;
+                string nextImage = imageFiles[currentIndex];
+
+                BitmapImage bitmap = new BitmapImage(new Uri(nextImage));
+                NextImage.Source = bitmap;
+
+                // Анімація для плавної зміни зображення
+                DoubleAnimation fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(1));
+                DoubleAnimation fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(1));
+
+                fadeOut.Completed += (s, a) =>
+                {
+                    CurrentImage.Source = NextImage.Source;
+                    CurrentImage.BeginAnimation(OpacityProperty, fadeIn);
+                };
+
+                CurrentImage.BeginAnimation(OpacityProperty, fadeOut);
+                NextImage.BeginAnimation(OpacityProperty, fadeIn);
             }
         }
         private void OnPropertyChanged(String info)

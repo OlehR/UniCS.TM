@@ -568,8 +568,15 @@
 
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn  Header="{DynamicResource markWareName}" Width="{Binding widthHeaderReceipt.WidthName, RelativeSource={RelativeSource 
+                            <GridViewColumn   Width="{Binding widthHeaderReceipt.WidthName, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}">
+                                <GridViewColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{DynamicResource markWareName}" FontSize="16" Foreground="Black" FontWeight="Bold" FontFamily="Source Sans Pro"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </GridViewColumn.HeaderTemplate>
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Vertical" Grid.Column="0" HorizontalAlignment="Left">
@@ -608,8 +615,15 @@
                             </GridViewColumn>
 
 
-                            <GridViewColumn  Header=""  Width="{Binding widthHeaderReceipt.WidthWastebasket, RelativeSource={RelativeSource 
+                            <GridViewColumn    Width="{Binding widthHeaderReceipt.WidthWastebasket, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}">
+                                <GridViewColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="" FontSize="16" Foreground="Black" FontWeight="Bold" FontFamily="Source Sans Pro"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </GridViewColumn.HeaderTemplate>
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <Button x:Name="Delete" Click="_Delete">
@@ -643,8 +657,15 @@
 
 
 
-                            <GridViewColumn  Header="{DynamicResource markWareQuantity}" Width="{Binding widthHeaderReceipt.WidthCountWares, RelativeSource={RelativeSource 
+                            <GridViewColumn   Width="{Binding widthHeaderReceipt.WidthCountWares, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}">
+                                <GridViewColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{DynamicResource markWareQuantity}" FontSize="16" Foreground="Black" FontWeight="Bold" FontFamily="Source Sans Pro"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </GridViewColumn.HeaderTemplate>
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">
@@ -797,8 +818,15 @@
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
 
-                            <GridViewColumn  Header="{DynamicResource markWareWeight}" Width="{Binding widthHeaderReceipt.WidthWeight, RelativeSource={RelativeSource 
+                            <GridViewColumn   Width="{Binding widthHeaderReceipt.WidthWeight, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}">
+                                <GridViewColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{DynamicResource markWareWeight}" FontSize="16" Foreground="Black" FontWeight="Bold" FontFamily="Source Sans Pro"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </GridViewColumn.HeaderTemplate>
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Grid.Column="2" HorizontalAlignment="Left">
@@ -869,8 +897,15 @@
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
 
-                            <GridViewColumn  Header="{DynamicResource markWarePrice}" Width="{Binding widthHeaderReceipt.WidthPrice, RelativeSource={RelativeSource 
+                            <GridViewColumn   Width="{Binding widthHeaderReceipt.WidthPrice, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}">
+                                <GridViewColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{DynamicResource markWarePrice}" FontSize="16" Foreground="Black" FontWeight="Bold" FontFamily="Source Sans Pro"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </GridViewColumn.HeaderTemplate>
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Grid.Column="3" Text="{Binding Price, StringFormat=0.00 }"  >
@@ -901,8 +936,15 @@
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
 
-                            <GridViewColumn  Header="{DynamicResource markWareInAll}" Width="{Binding widthHeaderReceipt.WidthTotalPrise, RelativeSource={RelativeSource 
+                            <GridViewColumn  Width="{Binding widthHeaderReceipt.WidthTotalPrise, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=Window}}">
+                                <GridViewColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{DynamicResource markWareInAll}" FontSize="16" Foreground="Black" FontWeight="Bold" FontFamily="Source Sans Pro"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </GridViewColumn.HeaderTemplate>
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center">

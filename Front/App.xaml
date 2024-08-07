@@ -1690,9 +1690,15 @@
                                     </Border.Background>
 
                                     <!--Заголовки до колонок-->
-                                    <DockPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <ContentPresenter x:Name="HeaderContent"
+                                          Margin="0,0,0,1"
+                                          RecognizesAccessKey="True"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                    <!--<DockPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                                         <TextBlock Text="{TemplateBinding Content}"  FontSize="16" Foreground="Black" FontWeight="Bold" FontFamily="Source Sans Pro"/>
-                                    </DockPanel>
+                                    </DockPanel>-->
                                     <!--<ContentPresenter x:Name="HeaderContent"
                                                       Margin="0,0,0,1"
                                                       RecognizesAccessKey="True"
