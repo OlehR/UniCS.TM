@@ -161,7 +161,7 @@ SELECT -- Кількість товари  набору (Основні)
  WHERE TRY_CONVERT(int, wh.code) in (@CodeWarehouse,@CodeWarehouseLink)  ";
 
         string SqlGetPromotionSaleDealer = @"SELECT DISTINCT 9000000000+CONVERT(INT, YEAR(dpg.date_time)*100000+dpg.number) AS CodePS, CONVERT(INT, dn.code) AS CodeWares, pg.date_beg AS DateBegin,pg.date_end AS DateEnd,CONVERT(INT, tp.code) AS CodeDealer
-    , isnull(pp.Priority+1, 0) AS Priority, 0 as MaxQuantity
+    , isnull(pp.Priority+1, 0) AS Priority, pg.MaxQuantity
   FROM dbo.V1C_reg_promotion_gal pg
   JOIN dbo.V1C_doc_promotion_gal dpg ON pg.doc_RRef = dpg.doc_RRef
   JOIN dbo.V1C_dim_nomen dn ON pg.nomen_RRef= dn.IDRRef
