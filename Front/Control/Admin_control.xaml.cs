@@ -1047,10 +1047,12 @@ namespace Front.Control
                 foreach (var el in Receipts.Where(el => el.StateReceipt >= eStateReceipt.Pay))
                 {
                     var r = Bl.GetReceiptHead(el, true);
+                    
                     Total += r.SumTotal;
                     MW.Blf.FillPays(r);
-                    decimal SumPr = 0, Sum1c = 0;
+                    decimal SumPr = 0, Sum1c = 0;                   
                     SumPr = r.WorkplacePays?.Where(e => e.IdWorkplacePay == IdWP.IdWorkplace)?.Sum(e => e.Sum) ?? 0m;
+                    r.IdWorkplacePay = IdWP.IdWorkplace;
                     if (SumPr > 0)
                     {
                         if (R1C.ContainsKey(r.NumberReceipt1C))
@@ -1069,8 +1071,12 @@ namespace Front.Control
                             }
                         }
                     }
+                    r.IdWorkplacePay = IdWP.IdWorkplace;
                 }
                 Res.Append($"Програма {IdWP.CodeWarehouse} Total={Total}{Environment.NewLine}");
+
+                foreach( var r in Receipts )
+                    r.IdWorkplacePay = IdWP.IdWorkplace;
 
                 foreach (var el in R1C)
                 {
@@ -1087,13 +1093,13 @@ namespace Front.Control
 
             string SQL = @"select ""№""||Pay.code_receipt ||"" Delta=>""||round(Pay.sum-R.Sum,2)|| "" SumPay=>""|| Pay.sum ||"" SumR=>""||R.Sum as res from 
 --(select  code_receipt,json_extract(json,'$.SumPay') as sum from LOG_RRO where TYPE_OPERATION=20100) as Pay
-(select CODE_RECEIPT,sum_pay as sum from payment where TYPE_PAY in(1,2) )  as Pay
+(select CODE_RECEIPT,sum_pay as sum,id_workplace_pay  from payment where TYPE_PAY in(1,2) )  as Pay
 left join 
 (
-select code_receipt,TEXT_RECEIPT, 
+select code_receipt,id_workplace_pay,TEXT_RECEIPT, 
 0.00+replace( replace( substring(TEXT_RECEIPT,instr(TEXT_RECEIPT,'С У М А        ')+8,24),' ',''),',','.')+replace( replace( substring(TEXT_RECEIPT,instr(TEXT_RECEIPT,'ЗАОКРУГЛЕННЯ  ')+12,24),' ',''),',','.')  as sum  
 from LOG_RRO where TYPE_OPERATION=0 and instr(TEXT_RECEIPT,'С У М А        ')>0) R
-on pay.code_receipt=R.code_receipt
+on pay.code_receipt=R.code_receipt and pay.id_workplace_pay=R.id_workplace_pay
 where round(Pay.sum-R.Sum,2) >0
 order by Pay.code_receipt";
 
@@ -1108,8 +1114,8 @@ order by Pay.code_receipt";
 
             SQL = @"select '№'||p.code_RECEIPT || ' Фіскальний=>'||p.sum_pay||'  Програма=>'|| round(  r.SUM_RECEIPt-r.SUM_DISCOUNT-r.sum_bonus-coalesce(pr.SUM_PAY,0),2) as sum_r--,r.SUM_RECEIPT,r.SUM_BONUS,r.SUM_DISCOUNT
 from RECEIPT r
- left join PAYMENT p on r.code_receipt=p.code_receipt and p.type_pay=7
-  left join PAYMENT pr on r.code_receipt=pr.code_receipt and pr.type_pay=5
+ left join ( select code_receipt,sum( SUM_PAY) as SUM_PAY from PAYMENT where type_pay=7 group by code_receipt ) p on r.code_receipt=p.code_receipt 
+  left join ( select code_receipt,sum( SUM_PAY) as SUM_PAY from PAYMENT where type_pay=5 group by code_receipt ) pr on r.code_receipt=pr.code_receipt 
  where  round( p.sum_pay,2)<>round(  r.SUM_RECEIPt-r.SUM_DISCOUNT-r.sum_bonus-coalesce(pr.SUM_PAY,0),2)
  and r.state_receipt=9";
             ss = db.db.Execute<string>(SQL);
