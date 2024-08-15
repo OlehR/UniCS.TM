@@ -642,7 +642,7 @@ INSERT OR ignore into GEN_WORKPLACE(ID_WORKPLACE, CODE_PERIOD, CODE_RECEIPT) val
         public bool DeleteWaresReceiptPromotion(IdReceipt parIdReceipt)
         {
             string SqlDeleteWaresReceiptPromotion = @"delete from  WARES_RECEIPT_PROMOTION 
-   where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt and CODE_PS<>999999 and (BARCODE_2_CATEGORY is null or length(BARCODE_2_CATEGORY)=0 );";
+   where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt and CODE_PS not in (999999,888888) and (BARCODE_2_CATEGORY is null or length(BARCODE_2_CATEGORY)=0 );";
             return dbRC.ExecuteNonQuery<IdReceipt>(SqlDeleteWaresReceiptPromotion, parIdReceipt) > 0;
         }
 

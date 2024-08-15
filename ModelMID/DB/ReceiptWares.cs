@@ -503,13 +503,13 @@ namespace ModelMID
                 PromotionQuantity = PromotionPrice.Sum(r => r.Quantity);
             }
 
-            if (PromotionQuantity > 0)
+            if (PromotionQuantity > 0 && el.ParPrice1 != 888888)
             {
                 decimal AllQuantity = el.Quantity;
                 var OtherPromotion = el.ReceiptWaresPromotions.Where(r => r.TypeDiscount != eTypeDiscount.Price);
                 el.ReceiptWaresPromotions = null;
 
-                if (PromotionQuantity < AllQuantity)
+                if (PromotionQuantity < AllQuantity && OtherPromotion.Any())
                 {
                     var SumDiscount = OtherPromotion.Sum(r => r.Sum);
                     var QuantityDiscount = OtherPromotion.Sum(r => r.Quantity);
