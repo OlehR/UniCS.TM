@@ -1,5 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  
   <PropertyGroup>
+    <InterceptorsPreviewNamespaces>$(InterceptorsPreviewNamespaces);Microsoft.Extensions.Configuration.Binder.SourceGeneration</InterceptorsPreviewNamespaces>
+
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
 	  <UseWindowsForms>true</UseWindowsForms>
@@ -10,6 +13,7 @@
     <NeutralLanguage>uk-UA</NeutralLanguage>
     <AssemblyVersion>2.2.0.159</AssemblyVersion>
     <FileVersion>2.2.0.159</FileVersion>
+    <LangVersion>12.0</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
