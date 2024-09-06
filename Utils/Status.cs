@@ -37,7 +37,7 @@ namespace Utils
             TextState = e.Message + "\n" + e.StackTrace;
         }
         public Status(HttpStatusCode pSC)
-        { if (pSC != HttpStatusCode.OK)
+        { if (pSC != HttpStatusCode.OK && pSC != HttpStatusCode.Created)
             {
                 State = -(int)pSC;
                 TextState = pSC.ToString();
