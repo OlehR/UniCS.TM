@@ -20,7 +20,8 @@ namespace ModelMID
         ConfirmAge,
         Info,
         BlockSale,
-        UseBonus
+        UseBonus,
+        MaxSumReceipt
 
     }
 
@@ -170,6 +171,12 @@ namespace ModelMID
                 case eWindows.BlockSale:
                     Caption = "Увага";
                     Text = pObject as string;
+                    AnswerRequired = true;
+                    break;
+                case eWindows.MaxSumReceipt:
+                    Caption = "Увага!";
+                    decimal v = Convert.ToDecimal(pObject);
+                    Text = $"Сума чека не може перевищувати {v} грн" ;
                     AnswerRequired = true;
                     break;
                 default:

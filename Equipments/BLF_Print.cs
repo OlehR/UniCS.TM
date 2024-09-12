@@ -18,6 +18,12 @@ namespace Front.Equipments
 
         public void PayAndPrint()
         {
+
+            if(Global.Settings.MaxSumReceipt>0 && MW.curReceipt.SumTotal> Global.Settings.MaxSumReceipt)
+            {
+                SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, new CustomWindow(eWindows.MaxSumReceipt, Global.Settings.MaxSumReceipt));
+                return;
+            }
             if (MW.curReceipt.StateReceipt < eStateReceipt.Pay && MW.curReceipt.CountWeightGoods > 0 && !MW.curReceipt.Wares.Any(x => x.CodeWares == Global.Settings.CodePackagesBag) && !MW.curReceipt.IsPakagesAded && MW.curReceipt.TypeReceipt == eTypeReceipt.Sale)
             {
                 SetStateView(eStateMainWindows.AddMissingPackage);

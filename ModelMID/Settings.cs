@@ -82,6 +82,10 @@ namespace ModelMID
         /// Api
         /// </summary>
         public string Api { get; set; }
+        /// <summary>
+        /// максимальна сума чека.
+        /// </summary>
+        public decimal MaxSumReceipt { get; set; }
 
     }
 }
