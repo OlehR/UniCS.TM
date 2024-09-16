@@ -15,6 +15,10 @@ namespace Front.Equipments
     /// </summary>
     public class Rro : Equipment
     {
+        /// <summary>
+        /// Серійний номер фіскалки.
+        /// </summary>
+        public string SerialNumber = null;
         protected string OperatorName;
         protected string OperatorPass = "0000";
         protected int CodeError = -1;

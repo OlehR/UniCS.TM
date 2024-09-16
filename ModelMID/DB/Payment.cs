@@ -52,7 +52,12 @@ namespace ModelMID
         /// Ймовірно транзакція в межах відкритої зміни
         /// </summary>
         public string  TransactionId { get; set; } //НОВЕ!
-        
+
+        /// <summary>
+        /// Merchant Торгової точки.
+        /// </summary>
+        public string MerchantID { get; set; }
+
         public DateTime DateCreate { get; set; }
 
         public string TransactionStatus { get; set; }

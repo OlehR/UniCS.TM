@@ -32,8 +32,7 @@ namespace Front.Equipments
                 State = eStateEquipment.Init;
                 Logger = LoggerFactory?.CreateLogger<BT_Ingenico>();
 
-                byte.TryParse(SerialPort, out Port);           
-
+                byte.TryParse(SerialPort, out Port);   
                
                 SetCodeBank();
             }
@@ -188,7 +187,7 @@ namespace Front.Equipments
                 else
                     return eBank.OschadBank; //OSCHADBANK
                
-            }
+            }            
             return eBank.NotDefine;
         }
 
@@ -213,6 +212,7 @@ namespace Front.Equipments
                     if (a.Length > 2)
                         str += $"{Environment.NewLine}TerminalId: {a[1]}{Environment.NewLine}";
                     str += $"{Environment.NewLine}TerminalInfo: {terminalInfo}";
+                    str += $"MerchantId=>{MerchantId}"; 
                 }
                 return str;
             }
@@ -275,7 +275,8 @@ namespace Front.Equipments
                     CardHolder = this.GetString(BPOS.CardHolder),
                     IssuerName = this.GetString(BPOS.IssuerName),
                     Bank = this.GetString(BPOS.ECRDataTM),
-                    CodeBank = this.CodeBank
+                    CodeBank = this.CodeBank,
+                    MerchantID=BPOS.MerchantID
                     //Receipt= this.ParseReceipt(BPOS.Receipt)
                 };
             }

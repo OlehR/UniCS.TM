@@ -42,6 +42,10 @@ namespace Front.Equipments.Implementation
                 //IsOpenWorkDay = !string.IsNullOrEmpty(res.devices.Where(r=>r.dev_id== "EE7CA036-C88B-44DA-8C82-511C56EEBB72").First().shiftdt);
                 if (!IsOpenWorkDay)
                     OpenWorkDay();
+                if(IsOpenWorkDay)
+                {
+                    SerialNumber = GetDeviceInfo2()?.info?.fisid.ToString();
+                }
                 State = eStateEquipment.On;
             }
             catch (Exception)
@@ -495,10 +499,19 @@ namespace Front.Equipments.Implementation.ModelVchasno
                     comment_down = String.Join('\n', pR.Footer);
                 sum = pR.Wares?.Sum(el => Math.Round(el.Price * el.Quantity, 2, MidpointRounding.AwayFromZero) - el.SumTotalDiscount) ?? 0m; ;
                 not_check_safe = true;
+                if(pR.TypeReceipt==eTypeReceipt.Refund)
+                {
+                    BL Bl = BL.GetBL;
+                    var e = Bl.GetReceiptHead(pR.RefundId);
+                    purchase_receipt_fisn = e.NumberReceipt;
+                    purchase_rro_fisn = pRro.SerialNumber;
+                }
             }
         }
         public decimal sum { get; set; }
         public decimal round { get { return Math.Abs(-sum + (pays?.Sum(r => r.sum) ?? 0m)) < 0.1m ? -sum + pays?.Sum(r => r.sum) ?? 0m : 0m; } }
+        public string purchase_receipt_fisn {  get; set; }
+        public string purchase_rro_fisn { get; set; }        
         public string comment_up { get; set; }
         public string comment_down { get; set; }
         public IEnumerable<WaresRRO> rows { get; set; }
