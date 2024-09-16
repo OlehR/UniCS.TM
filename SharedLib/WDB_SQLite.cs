@@ -1153,7 +1153,7 @@ Select min(case when CODE_DEALER = -888888  then PRICE_DEALER else null end) as 
  TYPE_PAY as TypePay, Code_Bank as CodeBank, CODE_WARES as CodeWares, SUM_PAY as SumPay, SUM_EXT as SumExt,
     NUMBER_TERMINAL as NumberTerminal,   NUMBER_RECEIPT as NumberReceipt, CODE_AUTHORIZATION as CodeAuthorization, NUMBER_SLIP as NumberSlip,
     Pos_Paid as PosPaid, Pos_Add_Amount as PosAddAmount, DATE_CREATE as DateCreate,Number_Card as NumberCard,
-    Card_Holder as CardHolder ,Issuer_Name as IssuerName, Bank,TransactionId
+    Card_Holder as CardHolder ,Issuer_Name as IssuerName, Bank,TransactionId,MerchantID
    from payment
   where   id_workplace = @IdWorkplace and code_period = @CodePeriod and code_receipt = @CodeReceipt";
             if (DT == pIdR.DTPeriod)

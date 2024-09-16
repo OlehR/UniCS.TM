@@ -27,7 +27,7 @@ DROP INDEX IF exists id_FiscalArticle;--Ver=>15
 CREATE UNIQUE INDEX id_FiscalArticle ON FiscalArticle(IdWorkplacePay,CodeWares);--Ver=>15
 CREATE UNIQUE INDEX id_FiscalArticle_PLU ON FiscalArticle(IdWorkplacePay,PLU);--Ver=>16";
 
-        public readonly int VerRC = 23;
+        public readonly int VerRC = 25;
         readonly string SqlUpdateRC = @"alter TABLE WARES_RECEIPT            add Fix_Weight NUMBER NOT NULL DEFAULT 0;--Ver=>0
 alter TABLE WARES_RECEIPT_PROMOTION  add TYPE_DISCOUNT  INTEGER  NOT NULL  DEFAULT (12);--Ver=>0
 alter TABLE wares_receipt            add Priority INTEGER  NOT NULL DEFAULT 0;--Ver=>0
@@ -57,7 +57,8 @@ alter TABLE RECEIPT    add  Number_Order      TEXT;--Ver=>20
 alter TABLE LOG_RRO add CodeError         INTEGER  NOT NULL DEFAULT 0;--Ver=>21
 alter TABLE LOG_RRO add TypePay           INTEGER  NOT NULL DEFAULT 0;--Ver=>22
 alter TABLE WARES_RECEIPT_HISTORY add CodeOperator INTEGER  NOT NULL default 0;--Ver=>23
-alter TABLE RECEIPT add        TypeWorkplace NUMBER   NOT NULL DEFAULT 0;--Ver=>24";
+alter TABLE RECEIPT add        TypeWorkplace NUMBER   NOT NULL DEFAULT 0;--Ver=>24
+alter TABLE payment add MerchantID TEXT;--Ver=>25";
 
         public readonly int VerMID = 13;
         readonly string SqlUpdateMID = @"--Ver=>0;Reload;
@@ -74,6 +75,7 @@ alter TABLE wares add CodeGroupUp INTEGER  DEFAULT 0; --Ver=>12;
 alter TABLE client add IsMoneyCard INTEGER DEFAULT(0);--Ver=>13;
 alter TABLE PROMOTION_SALE_DEALER add MaxQuantity NUMBER NOT NULL DEFAULT 0;--Ver=>14;
 alter TABLE wares add ProductionLocation INTEGER  DEFAULT 0; --Ver=>15;
+
 --Ver=>11;Reload;
 
 ";       
@@ -273,6 +275,7 @@ CREATE UNIQUE INDEX id_wares_ekka ON wares_ekka(CODE_WARES, price);
             Issuer_Name TEXT,
             Bank TEXT,
             TransactionId TEXT,
+            MerchantID TEXT,
             DATE_CREATE DATETIME NOT NULL   DEFAULT (datetime('now','localtime'))
 );
 CREATE INDEX id_payment ON payment(CODE_RECEIPT);
@@ -1102,8 +1105,8 @@ replace into Wares(CODE_WARES, CODE_GROUP, CodeGroupUp, NAME_WARES, Name_Wares_U
                      @WeightFact, @WeightDelta, @CodeUKTZED, @LimitAge, @PLU, @CodeDirection, @CodeTM,@ProductionLocation);";
 
         readonly string SqlReplacePayment = @"
- replace into  payment(ID_WORKPLACE, id_workplace_pay , CODE_PERIOD, CODE_RECEIPT, TYPE_PAY, Code_Bank, CODE_WARES, SUM_PAY, SUM_ext, NUMBER_TERMINAL, NUMBER_RECEIPT, CODE_authorization, NUMBER_SLIP, Number_Card, Pos_Paid , Pos_Add_Amount , Card_Holder, Issuer_Name, Bank, TransactionId, DATE_CREATE) values
-                        (@IdWorkplace, @IdWorkplacePay , @CodePeriod, @CodeReceipt, @TypePay, @CodeBank, @CodeWares, @SumPay, @SumExt, @NumberTerminal, @NumberReceipt, @CodeAuthorization, @NumberSlip, @NumberCard, @PosPaid, @PosAddAmount , @CardHolder, @IssuerName, @Bank, @TransactionId, @DateCreate);";
+ replace into  payment(ID_WORKPLACE, id_workplace_pay , CODE_PERIOD, CODE_RECEIPT, TYPE_PAY, Code_Bank, CODE_WARES, SUM_PAY, SUM_ext, NUMBER_TERMINAL, NUMBER_RECEIPT, CODE_authorization, NUMBER_SLIP, Number_Card, Pos_Paid, Pos_Add_Amount, Card_Holder, Issuer_Name, Bank,  TransactionId,  MerchantID,  DATE_CREATE) values
+                        (@IdWorkplace, @IdWorkplacePay ,@CodePeriod, @CodeReceipt, @TypePay, @CodeBank, @CodeWares, @SumPay, @SumExt, @NumberTerminal, @NumberReceipt, @CodeAuthorization, @NumberSlip, @NumberCard, @PosPaid,  @PosAddAmount, @CardHolder, @IssuerName, @Bank, @TransactionId, @MerchantID, @DateCreate);";
 
         readonly string SqlCheckLastWares2Cat = @"
 select wr.id_workplace as IdWorkplace, wr.code_period as CodePeriod, wr.code_receipt as CodeReceipt, wr.code_wares as Codewares,
