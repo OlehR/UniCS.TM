@@ -499,7 +499,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
                     comment_down = String.Join('\n', pR.Footer);
                 sum = pR.Wares?.Sum(el => Math.Round(el.Price * el.Quantity, 2, MidpointRounding.AwayFromZero) - el.SumTotalDiscount) ?? 0m; ;
                 not_check_safe = true;
-                if(pR.TypeReceipt==eTypeReceipt.Refund)
+                if(pR.TypeReceipt==eTypeReceipt.Refund) //Можливо варто перевести на рівень вище.
                 {
                     BL Bl = BL.GetBL;
                     var e = Bl.GetReceiptHead(pR.RefundId);
@@ -578,7 +578,8 @@ namespace Front.Equipments.Implementation.ModelVchasno
             rrn = pP.CodeAuthorization;
             cardmask = pP.NumberCard;
             term_id = pP.NumberTerminal;
-            bank_id = pP.Bank;
+            bank_name = pP.Bank;
+            bank_id= pP.MerchantID;
             auth_code = pP.NumberSlip;
             switch (pP.TypePay)
             {
@@ -597,6 +598,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
         public string cardmask { get; set; }
         public string term_id { get; set; }
         public string bank_id { get; set; }
+        public string bank_name { get; set; }
         public string auth_code { get; set; }
     }
 
