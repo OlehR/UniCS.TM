@@ -1421,6 +1421,11 @@ namespace Front
         }
         private void LoginButton(object sender, RoutedEventArgs e)
         {
+            if (LoginTextBlock.Text == string.Empty || PasswordTextBlock.Password == string.Empty)
+            {
+                CustomMessage.Show("Введіть коректний логін та пароль!", "Увага!", eTypeMessage.Warning);
+                return;
+            }
             var U = Bl.GetUserByLogin(LoginTextBlock.Text, PasswordTextBlock.Password);
             if (U == null)
             {
