@@ -28,7 +28,7 @@ namespace Front.Equipments.Implementation
         const int WIDTHPAGE = 200;//e.PageBounds.Width; // ширина паперу принтера
         public Font MainFont = new("Courier", FONTSIZE, FontStyle.Bold, GraphicsUnit.Point);
         public Font SecondFont = new("Courier", SECONDFONTSIZE, FontStyle.Bold, GraphicsUnit.Point);
-        public bool IsPrintReceipt= true;
+        public bool IsPrintReceipt = true;
 
         public int TopIndent;
         QRCodeGenerator qrGenerator = new();
@@ -55,41 +55,53 @@ namespace Front.Equipments.Implementation
             }
             return true;
         }
-
+        object LockPrint = new object();
         override public bool Print(IEnumerable<string> pR)
         {
-            var count = pR.Count();
-            if (count > 0)
+            lock (LockPrint)
             {
-                ArrayStr = pR;
-
-                if (count == 2)
+                var count = pR.Count();
+                if (count > 0)
                 {
-                    PrintDocument printDocument = new PrintDocument();
-                    printDocument.PrintPage += PrintCoffeQR;
-                    printDocument.DocumentName = "Coffe QR";
-                    PrintDialog printDialog = new();
-                    printDialog.Document = printDocument;
-                    printDialog.PrinterSettings.PrinterName = NamePrinter;
-                    printDialog.Document.Print(); // печатаем
+                    ArrayStr = pR;
 
+                    if (pR.FirstOrDefault().Contains("Номер замовлення")) // переробити
+                    {
+                        PrintDocument printDocument = new PrintDocument();
+                        printDocument.PrintPage += PrintOrderNumber;
+                        printDocument.DocumentName = "Order print";
+                        PrintDialog printDialog = new();
+                        printDialog.Document = printDocument;
+                        printDialog.PrinterSettings.PrinterName = NamePrinter;
+                        printDialog.Document.Print(); // печатаем
+                    }
+                    else if (count == 2)
+                    {
+                        PrintDocument printDocument = new PrintDocument();
+                        printDocument.PrintPage += PrintCoffeQR;
+                        printDocument.DocumentName = "Coffe QR";
+                        PrintDialog printDialog = new();
+                        printDialog.Document = printDocument;
+                        printDialog.PrinterSettings.PrinterName = NamePrinter;
+                        printDialog.Document.Print(); // печатаем
+
+                    }
+                    else
+                    {
+                        PrintDocument printDocument = new PrintDocument();
+                        printDocument.PrintPage += PrintArrayStrings;
+                        printDocument.DocumentName = "ArrayStrings";
+                        PrintDialog printDialog = new();
+                        printDialog.Document = printDocument;
+                        printDialog.PrinterSettings.PrinterName = NamePrinter;
+                        printDialog.Document.Print(); // печатаем
+                    }
+
+
+                    return true;
                 }
-                else
-                {
-                    PrintDocument printDocument = new PrintDocument();
-                    printDocument.PrintPage += PrintArrayStrings;
-                    printDocument.DocumentName = "ArrayStrings";
-                    PrintDialog printDialog = new();
-                    printDialog.Document = printDocument;
-                    printDialog.PrinterSettings.PrinterName = NamePrinter;
-                    printDialog.Document.Print(); // печатаем
-                }
-
-
-                return true;
+                else return false;
             }
-            else return false;
-
         }
 
         private void PrintCoffeQR(object sender, PrintPageEventArgs e)
@@ -105,6 +117,26 @@ namespace Front.Equipments.Implementation
                     position = PrintQR(e, position, item);
                 }
                 else position = PrintLine(e, item, position, maxChar, SecondFont);
+            }
+        }
+        private void PrintOrderNumber(object sender, PrintPageEventArgs e)
+        {
+            int position = 0;
+            int fontSize = 12;
+            int maxChar = (e.PageBounds.Width - 70) / fontSize;
+            Font CustomFont = new("Courier", fontSize, FontStyle.Bold, GraphicsUnit.Point);
+            Font CustomFont2 = new("Courier", 36, FontStyle.Bold, GraphicsUnit.Point);
+            TopIndent = fontSize + 1;
+
+            foreach (var item in ArrayStr)
+            {
+                if (item.Contains("Номер замовлення"))
+                {
+                    position = PrintLine(e, item, position, maxChar, CustomFont);
+                }
+                else
+                    e.Graphics.DrawString(item, CustomFont2, Brushes.Black, 30, position+ fontSize);
+                //position = PrintLine(e, item, position, maxChar, CustomFont2);
             }
         }
 

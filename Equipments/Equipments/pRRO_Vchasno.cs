@@ -503,8 +503,12 @@ namespace Front.Equipments.Implementation.ModelVchasno
                 {
                     BL Bl = BL.GetBL;
                     var e = Bl.GetReceiptHead(pR.RefundId);
-                    purchase_receipt_fisn = e.NumberReceipt;
-                    purchase_rro_fisn = pRro.SerialNumber;
+                    if (e != null)
+                    {
+                        purchase_receipt_fisn = e.NumberReceipt;
+                        purchase_rro_fisn = pRro.SerialNumber;
+                    }
+                   
                 }
             }
         }

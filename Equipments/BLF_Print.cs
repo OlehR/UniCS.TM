@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Utils;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrayNotify;
+using UtilNetwork;
+using System.Net;
 
 namespace Front.Equipments
 {
@@ -179,7 +181,27 @@ namespace Front.Equipments
                     finally { R.IdWorkplacePay = 0; }
                 }
 
-                { }
+                {
+                    Task.Run(async () =>
+                    {
+                        CommandAPI<Receipt> Command = new() { Command = eCommand.GetOrderNumber, Data = R };
+
+                        try
+                        {
+                            var r = new SocketClient(IPAddress.Parse("127.0.0.1"), 3444);
+                            var Ansver = await r.StartAsync(Command.ToJson());
+                            List<string> list = new List<string>() { "Номер замовлення:", $"{Ansver.TextState}" };
+                            var res = EF.PrintNoFiscalReceipt(R, list);
+                            FileLogger.WriteLogMessage($"SocketAnsver: {Environment.NewLine}Command: {Command} {Environment.NewLine}IdWorkPlace: {R.IdWorkplace}{Environment.NewLine}Ansver: {Ansver.TextState}", eTypeLog.Full);
+                            //SocketAnsver?.Invoke(eCommand.GetOrderNumber, MainWorkplace, Ansver);
+                        }
+                        catch (Exception ex)
+                        {
+                            FileLogger.WriteLogMessage(this, $"GeneralCondition DNSName=>{IPAddress.Parse("127.0.0.1")} {Command} ", ex);
+                            //SocketAnsver?.Invoke(eCommand.GetOrderNumber, MainWorkplace, new Status(ex));
+                        }
+                    });
+                }
                 R.StateReceipt = Bl.GetStateReceipt(R);
                 if (R.StateReceipt == eStateReceipt.Pay || R.StateReceipt == eStateReceipt.PartialPrint || R.StateReceipt == eStateReceipt.StartPrint)
                 {
