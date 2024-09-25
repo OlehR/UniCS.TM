@@ -67,8 +67,8 @@ namespace SharedLib
   JOIN DW.dbo.V1C_DIM_OPTION_WPC_CASH_place CP ON o._IDRRef= cp._Reference18850_IDRRef
   JOIN dw.dbo.V1C_CashDesk CD ON CD.CashDesk_RRef=cp.CashPlaceRRef
   JOIN dw.dbo.WAREHOUSES wh ON cd.Warehouse_RRef= wh._IDRRef
-    WHERE (g.Order_Button<>2 or wh.Code<>9 ) -- хак для групи Овочі 1
-         and CD.code=@IdWorkPlace 
+    WHERE --(g.Order_Button<>2 or wh.Code<>9 ) and -- хак для групи Овочі 1
+          CD.code=@IdWorkPlace 
   GROUP BY wh.Code, g.Order_Button,G.Image";
 
         string SqlGetDimFastWares = @"SELECT CONVERT(INT, wh.Code)*1000+ g.Order_Button as CodeFastGroup, -- хак для групи Овочі 1
