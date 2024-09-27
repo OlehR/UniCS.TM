@@ -67,17 +67,17 @@ namespace SharedLib
             }
             catch
             { Global.IdWorkPlace = 36; }
-            
+
             try
             {
                 Global.IdWorkPlaceIssuingCash = Convert.ToInt32(AppConfiguration["MID:IdWorkPlaceIssuingCash"]);
             }
             catch
-            {}
+            { }
             finally
             {
-                if(Global.IdWorkPlaceIssuingCash==0)
-                Global.IdWorkPlaceIssuingCash = Global.IdWorkPlace;
+                if (Global.IdWorkPlaceIssuingCash == 0)
+                    Global.IdWorkPlaceIssuingCash = Global.IdWorkPlace;
             }
 
             try
@@ -136,8 +136,20 @@ namespace SharedLib
             {
                 Global.IsCash = Convert.ToBoolean(AppConfiguration["MID:IsCash"]);
             }
+
             catch
             { Global.IsCash = false; }
+            try
+            {
+                Global.IsPrintOrderReceipt = Convert.ToBoolean(AppConfiguration["MID:IsPrintOrderReceipt"]);
+                Global.IPAddressOrderService = AppConfiguration["MID:IPAddressOrderService"];
+            }
+
+            catch
+            {
+                Global.IsPrintOrderReceipt = false;
+                Global.IPAddressOrderService = "127.0.0.1";
+            }
 
             try
             {
@@ -155,22 +167,22 @@ namespace SharedLib
 
 
             var IdWorkPlaces = new List<IdWorkPlaces>();
-            var _IdWorkPlaces = new List<int>() { Global.IdWorkPlace }; 
-            if(Global.Settings?.IdWorkPlaceLink>0)
+            var _IdWorkPlaces = new List<int>() { Global.IdWorkPlace };
+            if (Global.Settings?.IdWorkPlaceLink > 0)
                 _IdWorkPlaces.Add(Global.Settings.IdWorkPlaceLink);
-        
+
             AppConfiguration.GetSection("MID:IdWorkPlaces").Bind(IdWorkPlaces);
-            
+
             foreach (var el in IdWorkPlaces)
             {
                 _IdWorkPlaces.Add(el.IdWorkPlace);
                 if (el?.CodeDirections != null)
-                 foreach (var dir in el.CodeDirections)
-                    Global.IdWorkPlacePayDirection.Add(dir, el.IdWorkPlace);
+                    foreach (var dir in el.CodeDirections)
+                        Global.IdWorkPlacePayDirection.Add(dir, el.IdWorkPlace);
 
-                if(el?.CodeTM!=null)
-                 foreach (var TM in el.CodeTM)
-                    Global.IdWorkPlacePayTM.Add(TM, el.IdWorkPlace);
+                if (el?.CodeTM != null)
+                    foreach (var TM in el.CodeTM)
+                        Global.IdWorkPlacePayTM.Add(TM, el.IdWorkPlace);
             }
             Global.IdWorkPlaces = _IdWorkPlaces.Distinct();
             try

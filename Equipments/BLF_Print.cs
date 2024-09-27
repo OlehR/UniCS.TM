@@ -21,7 +21,7 @@ namespace Front.Equipments
         public void PayAndPrint()
         {
 
-            if(Global.Settings.MaxSumReceipt>0 && MW.curReceipt.SumTotal> Global.Settings.MaxSumReceipt)
+            if (Global.Settings.MaxSumReceipt > 0 && MW.curReceipt.SumTotal > Global.Settings.MaxSumReceipt)
             {
                 SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, new CustomWindow(eWindows.MaxSumReceipt, Global.Settings.MaxSumReceipt));
                 return;
@@ -38,9 +38,9 @@ namespace Front.Equipments
                 return;
             }
             MW.EquipmentInfo = string.Empty;
-            
+
             if (Global.TypeWorkplaceCurrent == eTypeWorkplace.CashRegister && (MW.curReceipt.StateReceipt == eStateReceipt.Prepare || MW.curReceipt.StateReceipt == eStateReceipt.StartPay))
-            {  
+            {
                 SetStateView(eStateMainWindows.ChoicePaymentMethod);
             }
             else
@@ -64,8 +64,8 @@ namespace Front.Equipments
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"pTP=>{pTP} pSumCash=>{pSumCash} pIssuingCash=>{pIssuingCash} pSumWallet=>{pSumWallet} pSumBonus=>{pSumBonus} curReceipt=> {MW.curReceipt.ToJson()}", eTypeLog.Expanded);
 
             int[] IdWorkplacePays = R.IdWorkplacePays;// Wares.Select(el => el.IdWorkplacePay).Distinct().OrderBy(el => el).ToArray();
-            
-            
+
+
             lock (LockPayPrint)
             {
                 R.StateReceipt = Bl.GetStateReceipt(R);
@@ -121,7 +121,7 @@ namespace Front.Equipments
                                     Bl.SetStateReceipt(R, R.StateReceipt);
                                     R.Payment = Bl.GetPayment(R);
                                 }
-                            }                            
+                            }
                         }
                         FillPays(R);
                         for (var i = 0; i < IdWorkplacePays.Length; i++)
@@ -182,25 +182,35 @@ namespace Front.Equipments
                 }
 
                 {
-                    Task.Run(async () =>
+                    if (Global.IsPrintOrderReceipt)
                     {
-                        CommandAPI<Receipt> Command = new() { Command = eCommand.GetOrderNumber, Data = R };
 
-                        try
+
+                        Task.Run(async () =>
                         {
-                            var r = new SocketClient(IPAddress.Parse("127.0.0.1"), 3444);
-                            var Ansver = await r.StartAsync(Command.ToJson());
-                            List<string> list = new List<string>() { "Номер замовлення:", $"{Ansver.TextState}" };
-                            var res = EF.PrintNoFiscalReceipt(R, list);
-                            FileLogger.WriteLogMessage($"SocketAnsver: {Environment.NewLine}Command: {Command} {Environment.NewLine}IdWorkPlace: {R.IdWorkplace}{Environment.NewLine}Ansver: {Ansver.TextState}", eTypeLog.Full);
-                            //SocketAnsver?.Invoke(eCommand.GetOrderNumber, MainWorkplace, Ansver);
-                        }
-                        catch (Exception ex)
-                        {
-                            FileLogger.WriteLogMessage(this, $"GeneralCondition DNSName=>{IPAddress.Parse("127.0.0.1")} {Command} ", ex);
-                            //SocketAnsver?.Invoke(eCommand.GetOrderNumber, MainWorkplace, new Status(ex));
-                        }
-                    });
+                            CommandAPI<Receipt> Command = new() { Command = eCommand.GetOrderNumber, Data = R };
+
+                            try
+                            {
+                                var r = new SocketClient(IPAddress.Parse(Global.IPAddressOrderService), 3444);
+                                var Ansver = await r.StartAsync(Command.ToJson());
+                                List<string> list = new List<string>() { "Номер замовлення:", $"{Ansver.TextState}" };
+                                var res = EF.PrintNoFiscalReceipt(R, list);
+                                List<string> listWares = new List<string>();
+                                listWares = R.Wares.Select(x => $"{x.NameWares} => {x.Quantity}").ToList();
+                                listWares.Insert(0, $"Список замовлення №{Ansver.TextState}");
+                                listWares.Add(DateTime.Now.ToString("g"));
+                                var res2 = EF.PrintNoFiscalReceipt(R, listWares);
+                                FileLogger.WriteLogMessage($"SocketAnsver: {Environment.NewLine}Command: {Command} {Environment.NewLine}IdWorkPlace: {R.IdWorkplace}{Environment.NewLine}Ansver: {Ansver.TextState}", eTypeLog.Full);
+                                //SocketAnsver?.Invoke(eCommand.GetOrderNumber, MainWorkplace, Ansver);
+                            }
+                            catch (Exception ex)
+                            {
+                                FileLogger.WriteLogMessage(this, $"GeneralCondition DNSName=>{IPAddress.Parse(Global.IPAddressOrderService)} {Command} ", ex);
+                                //SocketAnsver?.Invoke(eCommand.GetOrderNumber, MainWorkplace, new Status(ex));
+                            }
+                        });
+                    }
                 }
                 R.StateReceipt = Bl.GetStateReceipt(R);
                 if (R.StateReceipt == eStateReceipt.Pay || R.StateReceipt == eStateReceipt.PartialPrint || R.StateReceipt == eStateReceipt.StartPrint)
@@ -289,7 +299,7 @@ namespace Front.Equipments
                 pR.WorkplacePays[i] = r;
             }
             pR.IdWorkplacePay = 0;
-        }       
+        }
 
     }
 }

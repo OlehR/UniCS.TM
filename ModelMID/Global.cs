@@ -55,6 +55,9 @@ namespace ModelMID
         public static int DefaultCodeDealer { get; set; }
         //{ get { switch (CodeWarehouse) { case 9: return 2; case 15: return 4; case 148: return 42; default: return 0; } } }//!!!!TMP      
 
+        public static bool IsPrintOrderReceipt = false;
+        public static string IPAddressOrderService = "127.0.0.1";
+
         public static bool IsGenQrCoffe = true;
 
         public static int CodeWaresWallet = 0;
