@@ -2001,7 +2001,7 @@
                                         </StackPanel>
                                     </StackPanel>
                                 </GroupBox>
-                                <GroupBox Grid.Column="1" Grid.Row="1" Header="Друк чеку замовлення покупця">
+                                <GroupBox Grid.Column="1" Grid.Row="1" Header="Друк чеку замовлення">
                                     <!--<GroupBox.Style>
                                         <Style TargetType="GroupBox">
                                             <Setter Property="Visibility" Value="Visible" />
@@ -2014,7 +2014,7 @@
                                         </Style>
                                     </GroupBox.Style>-->
                                     <StackPanel Orientation="Horizontal">
-                                        <CheckBox Height="50" Grid.Column="6" Content="Друк чека покупця" HorizontalAlignment="Left" 
+                                        <CheckBox Height="50" Grid.Column="6" Content="Друк чека зачовлення" HorizontalAlignment="Left" 
                                                   Style="{DynamicResource OrangeSwitchStyleCheckBox}" VerticalAlignment="Center"
                                                   IsChecked="{Binding IsPrintOrderReceipt}"
                                                   />
