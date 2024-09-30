@@ -29,10 +29,10 @@ namespace Front.Equipments
         public DateTime LockDT { get; set; }
         public eTypeOperation TypeOperation { get; set; } = eTypeOperation.NotDefine;
 
-        string DefaultTax=null;
+        string DefaultTax = null;
         SortedList<int, string> Tax = new SortedList<int, string>();
 
-        public eTypePay TypePay { get;set; }
+        public eTypePay TypePay { get; set; }
         /// <summary>
         /// Чи відкрита зміна.
         /// </summary>
@@ -60,9 +60,9 @@ namespace Front.Equipments
             if (LTax.Count() == 0)
                 Configuration.GetSection("MID:VAT").Bind(LTax);
             foreach (var el in LTax)
-                    if (!Tax.ContainsKey(el.Code))
-                        Tax.Add(el.Code, el.CodeEKKA);
-            TypePay = Configuration.GetValue<eTypePay>($"{KeyPrefix}TypePay",eTypePay.None);
+                if (!Tax.ContainsKey(el.Code))
+                    Tax.Add(el.Code, el.CodeEKKA);
+            TypePay = Configuration.GetValue<eTypePay>($"{KeyPrefix}TypePay", eTypePay.None);
         }
 
         public virtual void SetOperatorName(string pOperatorName)
@@ -122,7 +122,7 @@ namespace Front.Equipments
             return null; //throw new NotImplementedException();
         }
 
-        virtual public bool PutToDisplay(string ptext,int pLine=1)
+        virtual public bool PutToDisplay(string ptext, int pLine = 1)
         {
             throw new NotImplementedException();
         }
@@ -151,9 +151,9 @@ namespace Front.Equipments
         public virtual decimal SumReceiptFiscal(Receipt pR)
         {
             decimal sum = 0;
-            if (pR != null && pR.Wares != null && pR.Wares.Any())            
-                 sum = pR.IdWorkplacePay == 0  ? pR.Wares.Sum(r => (r.SumTotal)): pR.Wares.Where(r=>r.IdWorkplacePay== pR.IdWorkplacePay).Sum(r => (r.SumTotal));
-             //decimal sum = pR.Wares.Sum(el => Math.Round(el.Price * el.Quantity, 2) - Math.Round(el.SumDiscount, 2)); //pR.SumTotal;
+            if (pR != null && pR.Wares != null && pR.Wares.Any())
+                sum = pR.IdWorkplacePay == 0 ? pR.Wares.Sum(r => (r.SumTotal)) : pR.Wares.Where(r => r.IdWorkplacePay == pR.IdWorkplacePay).Sum(r => (r.SumTotal));
+            //decimal sum = pR.Wares.Sum(el => Math.Round(el.Price * el.Quantity, 2) - Math.Round(el.SumDiscount, 2)); //pR.SumTotal;
             return sum; //throw new NotImplementedException();
         }
 
@@ -165,15 +165,15 @@ namespace Front.Equipments
         /// <summary>
         /// Зупиняє останню довготривалу операцію. Наприклад Отримання текста чеку на фізичних фіскалках. 
         /// </summary>
-        virtual public void Stop() { IsStop = true;  }
+        virtual public void Stop() { IsStop = true; }
 
-       /// <summary>
-       /// Отримуємо Суму з текста чека.
-       /// </summary>
-       /// <returns></returns>
+        /// <summary>
+        /// Отримуємо Суму з текста чека.
+        /// </summary>
+        /// <returns></returns>
         public virtual decimal GetSumFromTextReceipt(string pTextReceipt) { return 0; }
 
-        public virtual void GetFiscalInfo(Receipt pR,object pRes) { }
+        public virtual void GetFiscalInfo(Receipt pR, object pRes) { }
 
         public string TaxGroup(ReceiptWares pRW)
         {
@@ -208,7 +208,77 @@ namespace Front.Equipments
         /// <param name="pP"></param>
         /// <returns></returns>
         public virtual LogRRO IssueOfCash(Receipt pR) { throw new NotImplementedException(); }
+        /// <summary>
+        /// Звіт X,Z з тексту чи JSON
+        /// </summary>
+        /// <param name="pTXT"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public ReportXZ GetReport(string pTXT) { throw new NotImplementedException(); }
+    }
 
+    public class SumReport
+    {
+        public eTypePay TypePay { get; set; }
+        public eTypeReceipt TypeReceipt { get; set; }
+        public decimal Sum { get; set; }
+        /// <summary>
+        /// Сума завкруглення в верхню сторону.
+        /// </summary>
+        public decimal SumUpRound { get; set; }
+        /// <summary>
+        /// Сума завкруглення в нижню сторону.
+        /// </summary>
+        public decimal SumDownRound { get; set; }
+    }
 
+    public class TaxReport
+    {
+        public int TypeVAT { get; set; }
+        public string Name { get; set; }
+        public string TaxLit { get; set; }
+        public eTypeReceipt TypeReceipt { get; set; }
+        public decimal BaseSum { get; set; }
+        public decimal TaxSum { get; set; }
+        public decimal ExTaxSum { get; set; }
+    }
+
+    public class ReportXZ
+    {
+        /// <summary>
+        /// Чи звіт є Z звітом.
+        /// </summary>
+        public bool IsZ { get; set; }
+        DateTime Date { get; set; }
+        public IEnumerable<SumReport> Pay { get; set; }
+        public IEnumerable<TaxReport> Tax { get; set; }
+        public decimal SumCashRefund { get; set; }
+        public decimal SumCashSale { get; set; }
+        public decimal SumCardRefund { get; set; }
+        public decimal SumCardSale { get; set; }
+        /// <summary>
+        /// Сума видачі готівки.
+        /// </summary>
+        public decimal SumIssueOfCash { get; set; }
+        /// <summary>
+        /// Чеків продаж
+        /// </summary>
+        public int CountSale { get; set; }
+        /// <summary>
+        /// Чеків повернення
+        /// </summary>
+        public int CountRefund { get; set; }
+        /// <summary>
+        /// Чеків видачі готівки
+        /// </summary>
+        public int CountIssueOfCash { get; set; }
+        /// <summary>
+        /// Службове внесення
+        /// </summary>
+        public decimal MoveMoneyIn { get; set; }
+        /// <summary>
+        /// Службове Вилучення
+        /// </summary>
+        public decimal MoveMoneyOut { get; set; }
     }
 }
