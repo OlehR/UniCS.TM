@@ -75,6 +75,16 @@ namespace Front.Equipments.Implementation
                         printDialog.PrinterSettings.PrinterName = NamePrinter;
                         printDialog.Document.Print(); // печатаем
                     }
+                    else if (pR.FirstOrDefault().Contains("Список замовлення")) // переробити
+                    {
+                        PrintDocument printDocument = new PrintDocument();
+                        printDocument.PrintPage += PrintWaresOrder;
+                        printDocument.DocumentName = "Print Wares order";
+                        PrintDialog printDialog = new();
+                        printDialog.Document = printDocument;
+                        printDialog.PrinterSettings.PrinterName = NamePrinter;
+                        printDialog.Document.Print(); // печатаем
+                    }
                     else if (count == 2)
                     {
                         PrintDocument printDocument = new PrintDocument();
@@ -135,11 +145,31 @@ namespace Front.Equipments.Implementation
                     position = PrintLine(e, item, position, maxChar, CustomFont);
                 }
                 else
-                    e.Graphics.DrawString(item, CustomFont2, Brushes.Black, 30, position+ fontSize);
+                    e.Graphics.DrawString(item, CustomFont2, Brushes.Black, 30, position + fontSize);
                 //position = PrintLine(e, item, position, maxChar, CustomFont2);
             }
         }
+        private void PrintWaresOrder(object sender, PrintPageEventArgs e)
+        {
+            int position = 0;
+            int fontSize = 12;
+            int maxChar = (e.PageBounds.Width - 70) / fontSize;
+            Font CustomFont = new("Courier", fontSize, FontStyle.Bold, GraphicsUnit.Point);
+            TopIndent = fontSize + 1;
 
+            foreach (var item in ArrayStr)
+            {
+                //if (item.Contains("=>"))
+                //{
+                //    string[] substrings = item.Split(new string[] { "=>" }, StringSplitOptions.None);
+                //    position = PrintTwoColum(e, substrings[0], substrings[1], position, maxChar );
+                //}
+                //else
+                position = PrintLine(e, item, position +2, maxChar, CustomFont);
+
+                //position = PrintLine(e, item, position, maxChar, CustomFont2);
+            }
+        }
         private void PrintArrayStrings(object sender, PrintPageEventArgs e)
         {
             int position = 0;

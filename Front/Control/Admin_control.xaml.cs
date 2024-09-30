@@ -97,6 +97,7 @@ namespace Front.Control
         public eTypeWorkplace eTypeWorkplaceForXaml { get; set; } = Global.TypeWorkplaceCurrent;
         ObservableCollection<CurentTypeWorkplace> ListTypeWorkplace = new ObservableCollection<CurentTypeWorkplace>();
         eTypeWorkplace curWorkplace = Global.TypeWorkplaceCurrent == eTypeWorkplace.Both ? eTypeWorkplace.SelfServicCheckout : Global.TypeWorkplaceCurrent;
+        public bool IsPrintOrderReceipt { get => Global.IsPrintOrderReceipt; set { Global.IsPrintOrderReceipt = value; } }
 
         public void ControlScale(double pWeight, bool pIsStable)
         {
