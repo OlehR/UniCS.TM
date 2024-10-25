@@ -350,21 +350,7 @@
             </Border.Style>
 
             <Grid x:Name="MP">
-                <!--<Button Style="{StaticResource TransparentButton}" Click="StartBuy" Panel.ZIndex="3" x:Name="TransparentStartBuyButton"/>
 
-                <Button Margin="10,10,10,100"  Opacity="0.7" Style="{StaticResource StartButtun}" 
-                        x:Name="StartBuyButton"  Visibility="Collapsed"
-                        FontSize="48" Click="StartBuy"  Grid.ZIndex="2"
-                         Height="70" Width="500" VerticalAlignment="Bottom" >
-                    <StackPanel Orientation="Horizontal">
-                        <Image  Height="50" Width="50"  Source="icons\shoppingCart.png"></Image>
-                        <TextBlock FontSize="50" Text="{DynamicResource startShopping}" FontFamily="Source Sans Pro"   Margin="5,10,5,0"/>
-                    </StackPanel>
-                </Button>
-
-                <MediaElement Name="StartVideo" Volume="0" LoadedBehavior="Manual" >
-
-                </MediaElement>-->
                 <vlc:VideoView x:Name="StartVideo">
                     <Grid x:Name="StartShoppingButtons">
                         <Button Opacity="0.01" Background="White" Click="StartBuy" Panel.ZIndex="3" x:Name="TransparentStartBuyButton"/>
