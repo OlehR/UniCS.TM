@@ -63,7 +63,7 @@ namespace ModelMID
         public Int64 CodePS { get; set; }
         public int CodeGroupFilter { get; set; }
         /// <summary>
-        /// Тип (10- товари,11- по товару, 12-Товари від кількості, 15-по групі, 20-Час,30-клієнт,4-Номер чека, 50-склади, 60-Форма оплати, ) ( select t.*, t.rowid from C.DATA_NAME t where t.data_level=53)
+        /// Тип (10- товари,11- по товару, 12-Товари від кількості, 15-по групі, 20-Час,30-клієнт,4-Номер чека, 50-склади, 60-Форма оплати,70- Купони ) ( select t.*, t.rowid from C.DATA_NAME t where t.data_level=53)
         /// </summary>
         public int TypeGroupFilter { get; set; }
         /// <summary>
@@ -131,14 +131,17 @@ namespace ModelMID
         public int CodeWares { get; set; }
     }
 
-    public class ParameterPromotion
+    public class ParameterPromotion:IdReceipt
     {
+        public ParameterPromotion(IdReceipt pIR):base(pIR){ }
+        public ParameterPromotion() : base() { }
         public int CodeWarehouse { get; set; }
         public int TypeCard { get; set; }
         public int Time { get; set; }
         public DateTime BirthDay { get; set; }
         public int CodeWares { get; set; }
         public int CodeDealer { get; set; }
+        public int CodeClient { get; set; }
         /// <summary>
         /// Кількість товару
         /// </summary>
@@ -154,7 +157,7 @@ namespace ModelMID
         public decimal Price { get; set; }
         public int IsIgnoreMinPrice { get; set; }
         public decimal MaxQuantity { get; set; }
-
+        public bool IsOneTime { get; set; }
         public decimal CalcPrice(decimal parPrice,bool IsUsePrice=true)
         {
             //decimal curPrice = 0;

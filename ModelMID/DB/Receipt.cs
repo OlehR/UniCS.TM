@@ -166,6 +166,7 @@ namespace ModelMID
         public IEnumerable<Payment> Payment { get { return IdWorkplacePay == 0 || _Payment == null ? _Payment : _Payment.Where(el => el.IdWorkplacePay == IdWorkplacePay); } set { _Payment = value; } }
 
         public IEnumerable<ReceiptEvent> ReceiptEvent { get; set; }
+        public IEnumerable<OneTime> OneTime { get; set; }
 
         //public bool _IsLockChange = false;
         public bool IsLockChange { get { return /*_IsLockChange ||*/ StateReceipt != eStateReceipt.Prepare || SumBonus > 0m; } }

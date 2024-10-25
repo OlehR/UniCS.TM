@@ -207,22 +207,27 @@ namespace SharedLib
                         if (el.KindBarCode == eKindBarCode.EAN13 && pBarCode.Length != 13)
                             continue;
 
-                        int varCode = Convert.ToInt32(pBarCode.Substring(el.Prefix.Length, el.LenghtCode));
+                        int Code = Convert.ToInt32(pBarCode.Substring(el.Prefix.Length, el.LenghtCode));
                         CodeOperator = el.LenghtOperator > 0 ? Convert.ToInt32(pBarCode.Substring(el.Prefix.Length+el.LenghtCode, el.LenghtOperator)) : 0;
-                        int varValue = Convert.ToInt32(pBarCode.Substring(el.Prefix.Length + el.LenghtCode + el.LenghtOperator, el.LenghtQuantity));
+                        int varValue = el.LenghtQuantity>0?Convert.ToInt32(pBarCode.Substring(el.Prefix.Length + el.LenghtCode + el.LenghtOperator, el.LenghtQuantity)):0;
                         if (!IsOnlyDiscount || el.TypeCode == eTypeCode.PercentDiscount)
                         {
                             switch (el.TypeCode)
                             {
                                 case eTypeCode.Article:
-                                    w = db.FindWares(null, null, 0, 0, 0, varCode);
+                                    w = db.FindWares(null, null, 0, 0, 0, Code);
                                     break;
                                 case eTypeCode.Code:
-                                    w = db.FindWares(null, null, varCode);
+                                    w = db.FindWares(null, null, Code);
                                     break;
                                 case eTypeCode.PercentDiscount:
-                                    _ = ds.CheckDiscountBarCodeAsync(pReceipt, pBarCode, varCode);
+                                    _ = ds.CheckDiscountBarCodeAsync(pReceipt, pBarCode, Code);
                                     return new ReceiptWares(pReceipt);
+                                case eTypeCode.Coupon:                                    
+                                case eTypeCode.OneTimeCoupon:
+                                    if (CheckOneTime(pReceipt, Code, el.TypeCode))
+                                        return new ReceiptWares(pReceipt);
+                                    else return null;                                    
                                 default:
                                     break;
                             }
@@ -232,12 +237,10 @@ namespace SharedLib
                                 if (pQuantity > 0)
                                     pQuantity = varValue;
                                 break;
-                            }
-                           
+                            }                           
                         }
                     }
                 }
-
             }
 
             if (w == null || w.Count() != 1)
@@ -256,6 +259,30 @@ namespace SharedLib
             W.SetIdReceipt(pReceipt);
             W.Quantity = (W.CodeUnit == Global.WeightCodeUnit ? pQuantity / 1000m : pQuantity);// Вага приходить в грамах
             return AddReceiptWares(W);
+        }
+
+        public bool CheckOneTime(IdReceipt pReceipt,int pCodeData,eTypeCode pTypeCode)
+        {
+            var RC = new OneTime(pReceipt) { CodeData = pCodeData,TypeData= pTypeCode};
+            RC.CodePS = db.GetCodePS(pCodeData);
+            if (pTypeCode == eTypeCode.OneTimeCoupon)
+            {
+                OneTime R = ds.CheckOneTime(RC).Result;
+                if(  !pReceipt.Equals(R) && R!=null) 
+                {
+                    Global.Message?.Invoke($"Даний купон=>{pCodeData} вже використано в чеку {R.IdWorkplace}-{R.CodePeriod}-{R.CodeReceipt} !!!", eTypeMessage.Information);
+                    return true;
+                }               
+            }
+            
+            if (RC.CodePS > 0)
+            {
+                db.ReplaceOneTime(RC);
+                db.RecalcPriceAsync(new(pReceipt));
+                return true;
+            }
+            Global.Message?.Invoke($"Даний купон=>{pCodeData} не можна застосувати!!!", eTypeMessage.Information);
+            return true;
         }
 
         public ReceiptWares AddWaresCode(IdReceipt pIdReceipt, int pCodeWares, int pCodeUnit, decimal pQuantity = 0, decimal pPrice = 0, bool IsFixPrice = false)
@@ -413,6 +440,7 @@ namespace SharedLib
             RH.CodeClient = pClient.CodeClient;
             RH.PercentDiscount = pClient.PersentDiscount;
             db.ReplaceReceipt(RH);
+                       
             Global.OnClientChanged?.Invoke(pClient);
             if (Global.RecalcPriceOnLine)
                 db.RecalcPriceAsync(new IdReceiptWares(pIdReceipt));
@@ -766,19 +794,27 @@ namespace SharedLib
         {
             Task.Run(async () =>
             {
-                Client cl;
+                Client cl = await ds.GetDiscount(pFC);
                 if (pFC.Client != null)
                 {
-                    cl = await ds.Ds1C.GetBonusAsync(pFC.Client, pFC.CodeWarehouse);
+                    //cl = await ds.Ds1C.GetBonusAsync(pFC.Client, pFC.CodeWarehouse);
                 }
                 else
                 {
-                    cl = await ds.GetDiscount(pFC);
+                    //cl = await ds.GetDiscount(pFC);
                     if (cl != null)
                     {
                         UpdateClientInReceipt(pIdReceipt, cl, false);
                     }
                 }
+                if (cl?.OneTimePromotion?.Any() == true)
+                {
+                    foreach (var el in cl.OneTimePromotion.Select(el => new OneTime(pIdReceipt) { CodePS = el, TypeData = eTypeCode.Client, CodeData = cl.CodeClient }))
+                        db.ReplaceOneTime(el);
+                    if (Global.RecalcPriceOnLine)
+                        db.RecalcPriceAsync(new IdReceiptWares(pIdReceipt));
+                }
+
                 if (cl != null)
                     Global.OnClientChanged?.Invoke(cl);
             });

@@ -180,9 +180,9 @@ namespace SharedLib
                 IsFirstStart = false;
                 //int CurVerConfig = 0, CurVerMid = 0, CurVerRC = 0;
                 //var Lines = SqlUpdateConfig.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-                
+
                 //Config
-                 Parse(SqlUpdateConfig, dbConfig);                
+                Parse(SqlUpdateConfig, dbConfig);
 
                 //Mid
                 if (File.Exists(MidFile))
@@ -190,7 +190,7 @@ namespace SharedLib
                     using var dbMID = new SQLite(MidFile);
                     //CurVerMid = dbMID.GetVersion;// GetConfig<int>("VerMID",dbConfig);
                     //Lines = SqlUpdateMID.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-                    bool IsReload = Parse(SqlUpdateMID, dbMID);                    
+                    bool IsReload = Parse(SqlUpdateMID, dbMID);
                     dbMID.Close(true);
                     if (IsReload)
                     {
@@ -221,8 +221,8 @@ namespace SharedLib
         {
             if (File.Exists(GetReceiptFile(pDT)))
             {
-                using var dbRC = GetRC(pDT);               
-                Parse(SqlUpdateRC, dbRC);                
+                using var dbRC = GetRC(pDT);
+                Parse(SqlUpdateRC, dbRC);
             }
         }
 
@@ -240,7 +240,7 @@ namespace SharedLib
                 ExchangeStatus = ExchangeStatus1;
 
             var res = new StatusBD { ExchangeStatus = ExchangeStatus, Descriprion = $"DTFirstErrorDiscountOnLine=>{DTFirstErrorDiscountOnLine}, DTLastNotSendReceipt=>{DTLastNotSendReceipt},DTGetLastUpdateDirectory=>{DTGetLastUpdateDirectory}" };
-           // res.SetColor(ExchangeStatus);
+            // res.SetColor(ExchangeStatus);
             return res;
         }
 
@@ -284,9 +284,9 @@ namespace SharedLib
                     }
                 }
             }
-            if(NewVer!= pCurVersion)
+            if (NewVer != pCurVersion)
                 pDB.SetVersion(NewVer);
-            return  isReload;
+            return isReload;
         }
 
         /// <summary>
@@ -332,13 +332,13 @@ namespace SharedLib
             return Task.Run(() => RecalcPrice(pIdReceiptWares)).ContinueWith(async res =>
             {
                 if (await res)
-                {              
+                {
                     var r = ViewReceipt(pIdReceiptWares, true);
                     Global.OnReceiptCalculationComplete?.Invoke(r);
                     if (r?.Wares?.Any() == true)
                     {
                         var W = r.GetLastWares;
-                        if (W != null && pUser==null) // dblf
+                        if (W != null && pUser == null) // dblf
                             VR.SendMessage(W.IdWorkplace, pUser == null ? W.NameWares : $"{pUser.NameUser}=>{W.NameWares}", W.Articl, W.Quantity, W.Sum, VR.eTypeVRMessage.AddWares, r.SumTotal);
                     }
                 }
@@ -364,7 +364,7 @@ namespace SharedLib
                     if (InfoClient.Count() == 1)
                         par = InfoClient.First();
                     else
-                        par = new ParameterPromotion();
+                        par = new ParameterPromotion(pIdReceiptWares);
 
                     //par.BirthDay = DateTime.Now.Date; Test
                     par.CodeWarehouse = Global.CodeWarehouse;
@@ -386,12 +386,12 @@ namespace SharedLib
                             {
                                 RW.Price = RW.PriceDealer;
                                 RW.ParPrice1 = 888888;
-                                RW.ParPrice2 = (long)Res.TypeDiscont;
+                                RW.ParPrice2 = (Res.IsOneTime ? -1 : 1)*(long)Res.TypeDiscont;
                                 RW.ParPrice3 = Res.Data;
                                 RW.Priority = Res.Priority;
 
                                 WaresReceiptPromotion[] WRP = new WaresReceiptPromotion[1] { new WaresReceiptPromotion(RW)
-                                        {CodeWares=RW.CodeWares, Price=Math.Round( Res.Price,2), TypeDiscount=eTypeDiscount.Price, 
+                                        {CodeWares=RW.CodeWares, Price=Math.Round( Res.Price,2), TypeDiscount=eTypeDiscount.Price,
                                           Quantity= (RW.Quantity>Res.MaxQuantity ? Res.MaxQuantity:RW.Quantity), CodePS=888888,BarCode2Category="" }};
                                 ReplaceWaresReceiptPromotion(WRP);
                             }
@@ -400,7 +400,7 @@ namespace SharedLib
                                 RW.Price = MPI.GetPrice(Res.Price, Res.IsIgnoreMinPrice == 0, Res.CodePs > 0);
                                 RW.TypePrice = MPI.typePrice;
                                 RW.ParPrice1 = Res.CodePs;
-                                RW.ParPrice2 = (long)Res.TypeDiscont;
+                                RW.ParPrice2 = (Res.IsOneTime?-1:1)* (long)Res.TypeDiscont;
                                 RW.ParPrice3 = Res.Data;
                                 RW.Priority = Res.Priority;
                             }
@@ -479,7 +479,7 @@ namespace SharedLib
                         var RWP = new WaresReceiptPromotion(parIdReceipt) { CodeWares = el.CodeWares, Quantity = AddQuantity, Price = vPrice, CodePS = el.CodePS, NumberGroup = el.NumberGroup };
                         varRes.Add(RWP);
                         ReceiptWares? rw = RW.FirstOrDefault(e => e.CodeWares == el.CodeWares);
-                        if(rw != null) 
+                        if (rw != null)
                         {
                             rw.TypePrice = eTypePrice.Promotion;
                             rw.ParPrice1 = RWP.CodePS;
@@ -1026,21 +1026,34 @@ Where ID_WORKPLACE = @IdWorkplace
             }
         }
 
-        public virtual Receipt ViewReceipt(IdReceipt parIdReceipt, bool parWithDetail = false)
+        public virtual IEnumerable<OneTime> GetOneTime(IdReceipt pR)
         {
-            var res = this.db.Execute<IdReceipt, Receipt>(SqlViewReceipt, parIdReceipt);
+            string SQL = "select * from ReceiptOneTime where IdWorkplace = @IdWorkplace and CodePeriod = @CodePeriod and CodeReceipt = @CodeReceipt";
+            if (DT == pR.DTPeriod)
+                return dbRC.Execute<IdReceipt, OneTime>(SQL, pR);
+            else
+            {
+                using var dbRCD = GetRC(pR.DTPeriod);
+                return dbRCD.Execute<IdReceipt, OneTime>(SQL, pR);
+            }
+        }
+
+        public virtual Receipt ViewReceipt(IdReceipt pIdReceipt, bool pWithDetail = false)
+        {
+            var res = this.db.Execute<IdReceipt, Receipt>(SqlViewReceipt, pIdReceipt);
             if (res.Count() == 1)
             {
                 var r = res.FirstOrDefault();
-                if (parWithDetail)
+                if (pWithDetail)
                 {
                     r.Wares = ViewReceiptWares(r, true);
                     foreach (var el in r.Wares)
                         el.AdditionalWeights = db.Execute<object, decimal>(SqlAdditionalWeightsWares, new { el.CodeWares });
 
-                    r.Payment = GetPayment(parIdReceipt);
-                    r.ReceiptEvent = GetReceiptEvent(parIdReceipt);
-                    r.LogRROs = GetLogRRO(parIdReceipt);
+                    r.Payment = GetPayment(pIdReceipt);
+                    r.ReceiptEvent = GetReceiptEvent(pIdReceipt);
+                    r.LogRROs = GetLogRRO(pIdReceipt);
+                    r.OneTime = GetOneTime(pIdReceipt);
                 }
                 return r;
             }
@@ -1311,7 +1324,7 @@ select sum( sum_pay* case when TYPE_PAY in (4) then -1 else 1 end) as sum from p
             if (pWW?.Any() == true)
             {
                 string SQL = "replace into WaresLink (CodeWares,CodeWaresTo,IsDefault,Sort) values (@CodeWares,@CodeWaresTo,@IsDefault,@Sort)";
-                Res = pDB.BulkExecuteNonQuery<WaresLink>(SQL, pWW, true) > 0;               
+                Res = pDB.BulkExecuteNonQuery<WaresLink>(SQL, pWW, true) > 0;
             }
             return Res;
         }
@@ -1320,7 +1333,7 @@ select sum( sum_pay* case when TYPE_PAY in (4) then -1 else 1 end) as sum from p
         {
             pWW ??= GetWaresWarehouse();
 
-            if (Global.Settings!=null&& Global.Settings.IdWorkPlaceLink > 0 && Global.Settings.CodeWarehouseLink > 0)
+            if (Global.Settings != null && Global.Settings.IdWorkPlaceLink > 0 && Global.Settings.CodeWarehouseLink > 0)
             {
                 foreach (var el in pWW)
                 {
@@ -1346,19 +1359,20 @@ select sum( sum_pay* case when TYPE_PAY in (4) then -1 else 1 end) as sum from p
             return Res;
         }
 
-        public bool ReplaceWaresReceiptLink(IEnumerable<WaresReceiptLink> pWRL,bool IsDelete=true)
+        public bool ReplaceWaresReceiptLink(IEnumerable<WaresReceiptLink> pWRL, bool IsDelete = true)
         {
             try
             {
                 string SQL = @"delete from  WaresReceiptLink where  IdWorkplace = @IdWorkplace and CodePeriod = @CodePeriod and CodeReceipt = @CodeReceipt and CodeWaresTo = @CodeWares";
-                if (IsDelete && pWRL.Any())                
+                if (IsDelete && pWRL.Any())
                     dbRC.ExecuteNonQuery<WaresReceiptLink>(SQL, pWRL.FirstOrDefault());
-                
+
 
                 SQL = @"replace into WaresReceiptLink  (IdWorkplace, CodePeriod, CodeReceipt, CodeWares, Sort, CodeWaresTo, Quantity) VALUES
                                                          (@IdWorkplace,@CodePeriod,@CodeReceipt,@CodeWares,@Sort,@CodeWaresTo,@Quantity)";
                 return dbRC.BulkExecuteNonQuery<WaresReceiptLink>(SQL, pWRL) > 0;
-            }catch (Exception e) { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e); }
+            }
+            catch (Exception e) { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e); }
             return false;
         }
 
@@ -1374,14 +1388,18 @@ select sum( sum_pay* case when TYPE_PAY in (4) then -1 else 1 end) as sum from p
     wrl.IdWorkplace = @IdWorkplace and wrl.CodePeriod = @CodePeriod and wrl.CodeReceipt = @CodeReceipt)
     where wl.CodeWaresTo = @CodeWares
  order by wl.sort;";
-                    /*$@"select 0 as Type, w.CODE_WARES as code, w.NAME_WARES as name, w.Code_Unit as CodeUnit, count(*) over() as TotalRows 
-    from WaresLink wl join  wares w on wl.CodeWares = w.Code_wares where wl.CodeWaresTo=@CodeWares order by wl.sort";*/
-            var Res = db.Execute< IdReceiptWares,GW>(SQL,pIdRW);
-            return Res;
+                /*$@"select 0 as Type, w.CODE_WARES as code, w.NAME_WARES as name, w.Code_Unit as CodeUnit, count(*) over() as TotalRows 
+from WaresLink wl join  wares w on wl.CodeWares = w.Code_wares where wl.CodeWaresTo=@CodeWares order by wl.sort";*/
+                var Res = db.Execute<IdReceiptWares, GW>(SQL, pIdRW);
+                return Res;
             }
             catch (Exception e) { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e); }
             return null;
         }
-       
+
+        public Int64 GetCodePS(Int64 pCode) =>
+             db.ExecuteScalar<Int64>($"select CODE_PS from PROMOTION_SALE_FILTER where TYPE_GROUP_FILTER =71 and {pCode} BETWEEN CODE_DATA and CODE_DATA_END");
+
+        public bool ReplaceOneTime(OneTime pRC) => dbRC.ExecuteNonQuery<OneTime>(SqlReplaceOneTime, pRC) > 0;
     }
 }
