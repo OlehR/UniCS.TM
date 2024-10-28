@@ -63,7 +63,7 @@ CREATE TABLE ReceiptOneTime (IdWorkplace INTEGER NOT NULL, CodePeriod  INTEGER N
 CREATE UNIQUE INDEX IdReceiptOneTime ON ReceiptOneTime(IdWorkplace,CodePeriod,CodeReceipt,CodePS,TypeData,CodeData);--Ver=>26
 CREATE INDEX IndReceiptOneTime ON ReceiptOneTime(TypeData,CodeData,CodePS);--Ver=>26";
 
-        public readonly int VerMID = 15;
+        public readonly int VerMID = 16;
         readonly string SqlUpdateMID = @"--Ver=>0;Reload;
 alter TABLE wares add Weight_Delta INTEGER  DEFAULT 0;--Ver=>0
 alter TABLE PROMOTION_SALE_DEALER add PRIORITY INTEGER NOT NULL DEFAULT 1;--Ver=>0
@@ -78,7 +78,7 @@ alter TABLE wares add CodeGroupUp INTEGER  DEFAULT 0; --Ver=>12;
 alter TABLE client add IsMoneyCard INTEGER DEFAULT(0);--Ver=>13;
 alter TABLE PROMOTION_SALE_DEALER add MaxQuantity NUMBER NOT NULL DEFAULT 0;--Ver=>14;
 alter TABLE wares add ProductionLocation INTEGER  DEFAULT 0; --Ver=>15;
-alter TABLE PROMOTION_SALE  add IsOneTime INTEGER  NOT NULL default 0; --Ver=>15;
+alter TABLE PROMOTION_SALE  add IsOneTime INTEGER  NOT NULL default 0; --Ver=>16;
 --Ver=>11;Reload;";       
 
         readonly string SqlCreateConfigTable = @"
