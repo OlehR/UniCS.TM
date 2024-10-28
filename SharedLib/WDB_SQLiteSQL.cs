@@ -27,7 +27,7 @@ DROP INDEX IF exists id_FiscalArticle;--Ver=>15
 CREATE UNIQUE INDEX id_FiscalArticle ON FiscalArticle(IdWorkplacePay,CodeWares);--Ver=>15
 CREATE UNIQUE INDEX id_FiscalArticle_PLU ON FiscalArticle(IdWorkplacePay,PLU);--Ver=>16";
 
-        public readonly int VerRC = 25;
+        public readonly int VerRC = 26;
         readonly string SqlUpdateRC = @"alter TABLE WARES_RECEIPT            add Fix_Weight NUMBER NOT NULL DEFAULT 0;--Ver=>0
 alter TABLE WARES_RECEIPT_PROMOTION  add TYPE_DISCOUNT  INTEGER  NOT NULL  DEFAULT (12);--Ver=>0
 alter TABLE wares_receipt            add Priority INTEGER  NOT NULL DEFAULT 0;--Ver=>0
@@ -58,9 +58,12 @@ alter TABLE LOG_RRO add CodeError         INTEGER  NOT NULL DEFAULT 0;--Ver=>21
 alter TABLE LOG_RRO add TypePay           INTEGER  NOT NULL DEFAULT 0;--Ver=>22
 alter TABLE WARES_RECEIPT_HISTORY add CodeOperator INTEGER  NOT NULL default 0;--Ver=>23
 alter TABLE RECEIPT add        TypeWorkplace NUMBER   NOT NULL DEFAULT 0;--Ver=>24
-alter TABLE payment add MerchantID TEXT;--Ver=>25";
+alter TABLE payment add MerchantID TEXT;--Ver=>25
+CREATE TABLE ReceiptOneTime (IdWorkplace INTEGER NOT NULL, CodePeriod  INTEGER NOT NULL, CodeReceipt INTEGER NOT NULL, CodePS INTEGER NOT NULL, TypeData INTEGER NOT NULL, CodeData INTEGER NOT NULL);--Ver=>26
+CREATE UNIQUE INDEX IdReceiptOneTime ON ReceiptOneTime(IdWorkplace,CodePeriod,CodeReceipt,CodePS,TypeData,CodeData);--Ver=>26
+CREATE INDEX IndReceiptOneTime ON ReceiptOneTime(TypeData,CodeData,CodePS);--Ver=>26";
 
-        public readonly int VerMID = 13;
+        public readonly int VerMID = 15;
         readonly string SqlUpdateMID = @"--Ver=>0;Reload;
 alter TABLE wares add Weight_Delta INTEGER  DEFAULT 0;--Ver=>0
 alter TABLE PROMOTION_SALE_DEALER add PRIORITY INTEGER NOT NULL DEFAULT 1;--Ver=>0
@@ -75,10 +78,8 @@ alter TABLE wares add CodeGroupUp INTEGER  DEFAULT 0; --Ver=>12;
 alter TABLE client add IsMoneyCard INTEGER DEFAULT(0);--Ver=>13;
 alter TABLE PROMOTION_SALE_DEALER add MaxQuantity NUMBER NOT NULL DEFAULT 0;--Ver=>14;
 alter TABLE wares add ProductionLocation INTEGER  DEFAULT 0; --Ver=>15;
-
---Ver=>11;Reload;
-
-";       
+alter TABLE PROMOTION_SALE  add IsOneTime INTEGER  NOT NULL default 0; --Ver=>15;
+--Ver=>11;Reload;";       
 
         readonly string SqlCreateConfigTable = @"
         CREATE TABLE WORKPLACE(
