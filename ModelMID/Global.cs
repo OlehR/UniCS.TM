@@ -137,7 +137,7 @@ namespace ModelMID
         public static string Api { get { return string.IsNullOrEmpty(_Api) ? Global.Settings?.Api : _Api; } }
         public static double MaxWeightBag = 100;
 
-        public static List<CustomerBarCode> CustomerBarCode { get; set; }
+        //public static List<CustomerBarCode> CustomerBarCode { get; set; }
         public static List<BlockSale> BlockSales { get; set; }
 
         public static eMethodExecutionLoggingType MethodExecutionLogging = eMethodExecutionLoggingType.Always;

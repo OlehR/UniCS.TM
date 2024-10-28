@@ -196,7 +196,7 @@ namespace SharedLib
             //ReceiptWares W = null;
             if (w == null || w.Count() == 0 && pBarCode.Length >= 8) // Якщо не знайшли спробуем по ваговим і штучним штрихкодам.          
             {
-                foreach (var el in Global.CustomerBarCode.Where(el => el.KindBarCode == eKindBarCode.EAN13 || el.KindBarCode == eKindBarCode.Code128 /*&& (el.TypeBarCode == eTypeBarCode.WaresWeight || el.TypeBarCode == eTypeBarCode.WaresUnit )*/))
+                foreach (var el in Global.Settings.CustomerBarCode.Where(el => el.KindBarCode == eKindBarCode.EAN13 || el.KindBarCode == eKindBarCode.Code128 /*&& (el.TypeBarCode == eTypeBarCode.WaresWeight || el.TypeBarCode == eTypeBarCode.WaresUnit )*/))
                 {
                     w = null;
                     if (el.TotalLenght != pBarCode.Length)
