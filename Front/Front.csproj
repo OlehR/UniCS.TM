@@ -11,9 +11,9 @@
     <ApplicationIcon />
     <Win32Resource />
     <NeutralLanguage>uk-UA</NeutralLanguage>
-    <AssemblyVersion>2.3.0.169</AssemblyVersion>
-    <FileVersion>2.3.0.169</FileVersion>
-    
+    <AssemblyVersion>2.3.0.170</AssemblyVersion>
+    <FileVersion>2.3.0.170</FileVersion>
+    <LangVersion>12.0</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
