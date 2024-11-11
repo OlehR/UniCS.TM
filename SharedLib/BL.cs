@@ -652,13 +652,13 @@ namespace SharedLib
             ReceiptEvent el = new ReceiptEvent(pRecipt) { EventType = eReceiptEventType.AgeRestrictedProduct, EventName = "Вік підтверджено", CreatedAt = DateTime.Now };
 
             db.InsertReceiptEvent(el);
-            pRecipt.ReceiptEvent = pRecipt.ReceiptEvent == null ? l : pRecipt.ReceiptEvent.Append<ReceiptEvent>(el);
+            pRecipt.ReceiptEvent = pRecipt.ReceiptEvent == null ? new List<ReceiptEvent> { el } : pRecipt.ReceiptEvent.Append<ReceiptEvent>(el);
         }
         public void AddEvent(Receipt pRecipt, eReceiptEventType pE, string text = null)
         {
             ReceiptEvent el = new ReceiptEvent(pRecipt) { EventType = pE, EventName = text ?? pE.ToString(), CreatedAt = DateTime.Now };
             db.InsertReceiptEvent(el);
-            pRecipt.ReceiptEvent = pRecipt.ReceiptEvent == null ? l : pRecipt.ReceiptEvent.Append<ReceiptEvent>(el);
+            pRecipt.ReceiptEvent = pRecipt.ReceiptEvent == null ? new List<ReceiptEvent> { el } : pRecipt.ReceiptEvent.Append<ReceiptEvent>(el);
         }
 
         /// <summary>
