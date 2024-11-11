@@ -146,22 +146,27 @@ namespace ModelMID
         /// Кількість товару
         /// </summary>
         public decimal Quantity { get; set; }
+        /// <summary>
+        /// Цінова акція
+        /// </summary>
+        public bool IsPricePromotion { get; set; } = true;
     }
 
     public class PricePromotion
     {
         public Int64 CodePs { get; set; }
         public int Priority { get; set; }
-        public eTypeDiscount TypeDiscont { get; set; }
+        public eTypeDiscount TypeDiscount { get; set; }
         public decimal Data { get; set; }        
         public decimal Price { get; set; }
         public int IsIgnoreMinPrice { get; set; }
         public decimal MaxQuantity { get; set; }
         public bool IsOneTime { get; set; }
+        public string DataText { get; set; }
         public decimal CalcPrice(decimal parPrice,bool IsUsePrice=true)
         {
             //decimal curPrice = 0;
-            switch (TypeDiscont)
+            switch (TypeDiscount)
             {
                 case eTypeDiscount.Price:
                 case eTypeDiscount.ReplacePriceDealer:

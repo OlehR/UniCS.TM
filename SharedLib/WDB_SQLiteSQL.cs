@@ -63,7 +63,7 @@ CREATE TABLE ReceiptOneTime (IdWorkplace INTEGER NOT NULL, CodePeriod  INTEGER N
 CREATE UNIQUE INDEX IdReceiptOneTime ON ReceiptOneTime(IdWorkplace,CodePeriod,CodeReceipt,CodePS,TypeData,CodeData);--Ver=>26
 CREATE INDEX IndReceiptOneTime ON ReceiptOneTime(TypeData,CodeData,CodePS);--Ver=>26";
 
-        public readonly int VerMID = 16;
+        public readonly int VerMID = 17;
         readonly string SqlUpdateMID = @"--Ver=>0;Reload;
 alter TABLE wares add Weight_Delta INTEGER  DEFAULT 0;--Ver=>0
 alter TABLE PROMOTION_SALE_DEALER add PRIORITY INTEGER NOT NULL DEFAULT 1;--Ver=>0
@@ -77,8 +77,9 @@ alter TABLE FAST_GROUP add Image TEXT; --Ver=>11;
 alter TABLE wares add CodeGroupUp INTEGER  DEFAULT 0; --Ver=>12;
 alter TABLE client add IsMoneyCard INTEGER DEFAULT(0);--Ver=>13;
 alter TABLE PROMOTION_SALE_DEALER add MaxQuantity NUMBER NOT NULL DEFAULT 0;--Ver=>14;
-alter TABLE wares add ProductionLocation INTEGER  DEFAULT 0; --Ver=>15;
-alter TABLE PROMOTION_SALE  add IsOneTime INTEGER  NOT NULL default 0; --Ver=>16;
+alter TABLE wares add ProductionLocation INTEGER  DEFAULT 0;--Ver=>15;
+alter TABLE PROMOTION_SALE  add IsOneTime INTEGER  NOT NULL default 0;--Ver=>16;
+alter TABLE PROMOTION_SALE_DATA add DATA_TEXT TEXT;--Ver=>17;
 --Ver=>11;Reload;";       
 
         readonly string SqlCreateConfigTable = @"
@@ -503,6 +504,7 @@ CREATE TABLE FAST_GROUP
             ADDITIONAL_CONDITION INTEGER  NOT NULL,
             DATA NUMBER   NOT NULL,
             DATA_ADDITIONAL_CONDITION NUMBER   NOT NULL,
+            DATA_TEXT TEXT,
             DATE_CREATE DATETIME,
             USER_CREATE INTEGER
         );
@@ -1040,7 +1042,7 @@ where psf.code_ps  is null
 and EPS.code_ps  is null
 )
 --select* from PSEW
- select psd.CODE_PS as CodePs,psd.PRIORITY as Priority ,11 as TypeDiscont  ,p.PRICE_DEALER as Data,1 as IsIgnoreMinPrice, MaxQuantity as MaxQuantity, ps.IsOneTime
+ select psd.CODE_PS as CodePs,psd.PRIORITY as Priority ,11 as TypeDiscount  ,p.PRICE_DEALER as Data,1 as IsIgnoreMinPrice, MaxQuantity as MaxQuantity, ps.IsOneTime,'' as DataText
  from  PROMOTION_SALE_DEALER psd
  join PROMOTION_SALE ps on ps.CODE_PS=psd.CODE_PS
  join PRICE p on psd.CODE_DEALER=p.CODE_DEALER and psd.CODE_WARES= p.CODE_WARES
@@ -1050,7 +1052,7 @@ and EPS.code_ps  is null
  datetime('now','localtime') between psd.Date_begin and psd.DATE_END
  and p.PRICE_DEALER>0
  union all -- По групам товарів
- select PSF.CODE_PS,0 as priority , 13 as Type_discont, PSD.DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice,0 as MaxQuantity, ps.IsOneTime
+ select PSF.CODE_PS,0 as priority , 13 as Type_discont, PSD.DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice,0 as MaxQuantity, ps.IsOneTime,psd.DATA_TEXT as DataText
  from wares w
  join PROMOTION_SALE_GROUP_WARES PSGW on PSGW.CODE_GROUP_WARES= w.CODE_GROUP
  join PROMOTION_SALE_FILTER PSF on (PSF.TYPE_GROUP_FILTER= 15 and PSF.RULE_GROUP_FILTER= 1 and PSF.CODE_DATA= PSGW.CODE_GROUP_WARES_PS)
@@ -1058,23 +1060,26 @@ and EPS.code_ps  is null
  join PROMOTION_SALE_DATA PSD on(PSD.CODE_WARES= 0 and PSD.CODE_PS= PSF.CODE_PS)
  left join ExeptionPS EPS on(PSF.CODE_PS= EPS.CODE_PS)
  where EPS.CODE_PS is null
+ and abs(PSD.TYPE_DISCOUNT) = PSD.TYPE_DISCOUNT * case when @IsPricePromotion=0 then -1 else 1 end
  and w.CODE_WARES= @CodeWares
  union all --По товарам
- select PSF.CODE_PS,0 as priority , PSD.TYPE_DISCOUNT as Type_discont, PSD.DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice,0 as MaxQuantity, ps.IsOneTime
+ select PSF.CODE_PS,0 as priority , PSD.TYPE_DISCOUNT as TypeDiscount, PSD.DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice,0 as MaxQuantity, ps.IsOneTime,psd.DATA_TEXT as DataText
  from PROMOTION_SALE_FILTER PSF
  join PROMOTION_SALE_DATA PSD on (PSD.CODE_WARES= 0 and PSD.CODE_PS= PSF.CODE_PS)
  join PROMOTION_SALE ps on ps.CODE_PS=PSF.CODE_PS
  left join ExeptionPS EPS on(PSF.CODE_PS= EPS.CODE_PS)
  where PSF.TYPE_GROUP_FILTER=11 and PSF.RULE_GROUP_FILTER= 1 and EPS.CODE_PS is null and PSD.TYPE_DISCOUNT<=20
+ and abs(PSD.TYPE_DISCOUNT) = PSD.TYPE_DISCOUNT * case when @IsPricePromotion=0 then -1 else 1 end
  and PSF.CODE_DATA= @CodeWares 
  union all --акції для всіх товарів.
- select PSEW.CODE_PS,0 as priority , PSD.TYPE_DISCOUNT as Type_discont, PSD.DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice,0 as MaxQuantity, ps.IsOneTime
+ select PSEW.CODE_PS,0 as priority , PSD.TYPE_DISCOUNT as Type_discont, PSD.DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice,0 as MaxQuantity, ps.IsOneTime,psd.DATA_TEXT as DataText
  from PSEW
  join PROMOTION_SALE_DATA PSD on (PSD.CODE_PS= PSEW.CODE_PS)
  join PROMOTION_SALE ps on ps.CODE_PS=PSD.CODE_PS
  where PSD.TYPE_DISCOUNT<=20 and PSD.TYPE_DISCOUNT!=14
+ and abs(PSD.TYPE_DISCOUNT) = PSD.TYPE_DISCOUNT * case when @IsPricePromotion=0 then -1 else 1 end
  union all
- select PSf.CODE_PS,0 as priority, PSD.TYPE_DISCOUNT as Type_discont, p.PRICE_DEALER as DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice,0 as MaxQuantity, ps.IsOneTime
+ select PSf.CODE_PS,0 as priority, PSD.TYPE_DISCOUNT as TypeDiscount, p.PRICE_DEALER as DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice,0 as MaxQuantity, ps.IsOneTime,psd.DATA_TEXT as DataText
  from PROMOTION_SALE_FILTER PSF
  join PROMOTION_SALE ps on ps.CODE_PS=PSF.CODE_PS
  left join ExeptionPS EPS on  (PSF.CODE_PS=EPS.CODE_PS) 
@@ -1083,6 +1088,7 @@ and EPS.code_ps  is null
  where PSF.TYPE_GROUP_FILTER=12 and PSF.CODE_DATA_END<=@Quantity
  and PSF.CODE_DATA= @CodeWares
  and PSD.TYPE_DISCOUNT= 14
+ and abs(PSD.TYPE_DISCOUNT) = PSD.TYPE_DISCOUNT * case when @IsPricePromotion=0 then -1 else 1 end
  and EPS.CODE_PS is null
 ";
 /*@"select psd.CODE_PS as CodePs,psd.PRIORITY as Priority ,11 as TypeDiscont  ,p.PRICE_DEALER as Data,1 as IsIgnoreMinPrice, MaxQuantity as MaxQuantity

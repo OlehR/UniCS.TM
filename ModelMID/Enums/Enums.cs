@@ -221,6 +221,24 @@ namespace ModelMID
 
     public enum eTypeDiscount
     {
+        /// <summary>
+        /// Текст Касиру.
+        /// </summary>
+        TextСashier = -1,
+        /// <summary>
+        /// Друк тексту на чеку.
+        /// </summary>
+        TextReceipt =-2,
+        /// <summary>
+        /// Друк QR на чеку
+        /// </summary>
+        PrintQRReceipt = -3,
+        /// <summary>
+        /// Текст на екрані клієнта.
+        /// </summary>
+        TextClientScreen =-4,
+
+
         NotDefine = 0,
         /// <summary>
         /// Фіксована ціна

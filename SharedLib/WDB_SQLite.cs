@@ -358,18 +358,7 @@ namespace SharedLib
             {
                 try
                 {
-                    var RH = ViewReceipt(pIdReceiptWares);
-                    ParameterPromotion par;
-                    var InfoClient = GetInfoClientByReceipt(pIdReceiptWares);
-                    if (InfoClient.Count() == 1)
-                        par = InfoClient.First();
-                    else
-                        par = new ParameterPromotion(pIdReceiptWares);
-
-                    //par.BirthDay = DateTime.Now.Date; Test
-                    par.CodeWarehouse = Global.CodeWarehouse;
-                    par.Time = Convert.ToInt32(RH.DateReceipt.ToString("HHmm"));
-                    par.CodeDealer = Global.DefaultCodeDealer;
+                    ParameterPromotion par = GetParameterPromotion(pIdReceiptWares);
 
                     var r = ViewReceiptWares(pIdReceiptWares);
 
@@ -386,7 +375,7 @@ namespace SharedLib
                             {
                                 RW.Price = RW.PriceDealer;
                                 RW.ParPrice1 = 888888;
-                                RW.ParPrice2 = (Res.IsOneTime ? -1 : 1)*(long)Res.TypeDiscont;
+                                RW.ParPrice2 = (Res.IsOneTime ? -1 : 1)*(long)Res.TypeDiscount;
                                 RW.ParPrice3 = Res.Data;
                                 RW.Priority = Res.Priority;
 
@@ -400,7 +389,7 @@ namespace SharedLib
                                 RW.Price = MPI.GetPrice(Res.Price, Res.IsIgnoreMinPrice == 0, Res.CodePs > 0);
                                 RW.TypePrice = MPI.typePrice;
                                 RW.ParPrice1 = Res.CodePs;
-                                RW.ParPrice2 = (Res.IsOneTime?-1:1)* (long)Res.TypeDiscont;
+                                RW.ParPrice2 = (Res.IsOneTime?-1:1)* (long)Res.TypeDiscount;
                                 RW.ParPrice3 = Res.Data;
                                 RW.Priority = Res.Priority;
                             }
@@ -723,7 +712,7 @@ update wares_receipt set Refunded_Quantity = Refunded_Quantity + @Quantity
             return dbRC.ExecuteNonQuery<ReceiptWares>(SqlSetRefundedQuantity, parReceiptWares) > 0;
         }
 
-        public bool InsertReceiptEvent(IEnumerable<ReceiptEvent> parRE)
+        public bool InsertReceiptEvent(ReceiptEvent pRE)
         {
             string SqlInsertReceiptEvent = @"
 insert into RECEIPT_Event(
@@ -754,7 +743,7 @@ insert into RECEIPT_Event(
     @FiscalNumber,
     @PaymentType,
     @TotalAmount);";
-            return dbRC.BulkExecuteNonQuery<ReceiptEvent>(SqlInsertReceiptEvent, parRE) > 0;
+            return dbRC.ExecuteNonQuery<ReceiptEvent>(SqlInsertReceiptEvent, pRE) > 0;
         }
 
         public bool DeleteReceiptEvent(IdReceipt parIdReceipt)
@@ -1401,5 +1390,37 @@ from WaresLink wl join  wares w on wl.CodeWares = w.Code_wares where wl.CodeWare
              db.ExecuteScalar<Int64>($"select CODE_PS from PROMOTION_SALE_FILTER where TYPE_GROUP_FILTER =71 and {pCode} BETWEEN CODE_DATA and CODE_DATA_END");
 
         public bool ReplaceOneTime(OneTime pRC) => dbRC.ExecuteNonQuery<OneTime>(SqlReplaceOneTime, pRC) > 0;
+
+        public ParameterPromotion GetParameterPromotion(IdReceipt pIdR,bool pIsPricePromotion=true)
+        {
+            ParameterPromotion par;
+            var InfoClient = GetInfoClientByReceipt(pIdR);
+            if (InfoClient.Count() == 1)
+                par = InfoClient.First();
+            else
+                par = new ParameterPromotion(pIdR);
+            var RH = ViewReceipt(pIdR);
+            //par.BirthDay = DateTime.Now.Date; Test
+            par.CodeWarehouse = Global.CodeWarehouse;
+            par.Time = Convert.ToInt32(RH.DateReceipt.ToString("HHmm"));
+            par.CodeDealer = Global.DefaultCodeDealer;
+            par.IsPricePromotion = pIsPricePromotion;
+            return par;
+        }
+        public IEnumerable<PricePromotion> GetNoPricePromorion(IdReceipt pIdR)
+        {
+            List<PricePromotion> Res = new List<PricePromotion>();
+            ParameterPromotion par = GetParameterPromotion(pIdR, false);
+
+            var r = ViewReceiptWares(pIdR);
+            foreach (var RW in r)
+            {
+                par.CodeWares = RW.CodeWares;
+                par.Quantity = RW.Quantity;
+                var res=db.Execute<ParameterPromotion, PricePromotion>(SqlGetPrice, par);
+                Res.AddRange(res);
+            }             
+            return Res;
+        }
     }
 }

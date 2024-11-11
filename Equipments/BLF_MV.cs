@@ -204,7 +204,7 @@ namespace Front.Equipments
             {
                 if (StartScan != DateTime.MinValue)
                 {
-                    Bl.SaveReceiptEvents(new List<ReceiptEvent>() { new ReceiptEvent(MW.curReceipt) { ResolvedAt = StartScan, EventType = eReceiptEventType.TimeScanReceipt, EventName = "Час сканування чека" } }, false);
+                    Bl.db.InsertReceiptEvent( new ReceiptEvent(MW.curReceipt) { ResolvedAt = StartScan, EventType = eReceiptEventType.TimeScanReceipt, EventName = "Час сканування чека" });
                     StartScan = DateTime.MinValue;
                 }
             }

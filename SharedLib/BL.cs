@@ -550,7 +550,7 @@ namespace SharedLib
             return null;
         }
 
-        public bool SaveReceiptEvents(IEnumerable<ReceiptEvent> pRE, bool pIsReplace = true)
+        /*public bool SaveReceiptEvents(IEnumerable<ReceiptEvent> pRE, bool pIsReplace = true)
         {
             if (pRE != null && pRE.Count() > 0)
             {
@@ -566,7 +566,7 @@ namespace SharedLib
                 }
             }
             return true;
-        }
+        }*/
 
         public Task GetBonusAsync(Client pClient) { return ds.Ds1C.GetBonusAsync(pClient, Global.CodeWarehouse); }
 
@@ -650,15 +650,14 @@ namespace SharedLib
         public void AddEventAge(Receipt pRecipt)
         {
             ReceiptEvent el = new ReceiptEvent(pRecipt) { EventType = eReceiptEventType.AgeRestrictedProduct, EventName = "Вік підтверджено", CreatedAt = DateTime.Now };
-            var l = new List<ReceiptEvent> { el };
-            db.InsertReceiptEvent(l);
+
+            db.InsertReceiptEvent(el);
             pRecipt.ReceiptEvent = pRecipt.ReceiptEvent == null ? l : pRecipt.ReceiptEvent.Append<ReceiptEvent>(el);
         }
         public void AddEvent(Receipt pRecipt, eReceiptEventType pE, string text = null)
         {
             ReceiptEvent el = new ReceiptEvent(pRecipt) { EventType = pE, EventName = text ?? pE.ToString(), CreatedAt = DateTime.Now };
-            var l = new List<ReceiptEvent> { el };
-            db.InsertReceiptEvent(l);
+            db.InsertReceiptEvent(el);
             pRecipt.ReceiptEvent = pRecipt.ReceiptEvent == null ? l : pRecipt.ReceiptEvent.Append<ReceiptEvent>(el);
         }
 
@@ -752,7 +751,7 @@ namespace SharedLib
                                 case 1: //Фіксування ваги
                                     if (r != null)
                                     {
-                                        List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(r) { EventType = eReceiptEventType.IncorrectWeight, EventName = "Ручне підтвердження ваги", CreatedAt = DateTime.Now } };
+                                        var rr = new ReceiptEvent(r) { EventType = eReceiptEventType.IncorrectWeight, EventName = "Ручне підтвердження ваги", CreatedAt = DateTime.Now };
                                         db.InsertReceiptEvent(rr);
                                         FixWeight(r);
                                     }
@@ -777,7 +776,7 @@ namespace SharedLib
 
         public void AddOwnBag(IdReceipt pR, decimal pWeight)
         {
-            List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(pR) { EventType = eReceiptEventType.OwnBag, EventName = "Власна думка", ProductConfirmedWeight = Convert.ToInt32(pWeight), CreatedAt = DateTime.Now } };
+            var rr = new ReceiptEvent(pR) { EventType = eReceiptEventType.OwnBag, EventName = "Власна думка", ProductConfirmedWeight = Convert.ToInt32(pWeight), CreatedAt = DateTime.Now };
             db.InsertReceiptEvent(rr);
 
             var r = GetReceiptHead(pR, true);
