@@ -10,16 +10,16 @@
 
 
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="2.1.28" />
+    <PackageReference Include="Dapper" Version="2.1.35" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />    
-    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.130" />
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="23.6.1" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.118" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.119" />
     <PackageReference Include="System.Windows.Extensions" Version="8.0.0" />
   </ItemGroup>
 

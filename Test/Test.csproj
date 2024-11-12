@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BarCode" Version="2020.6.0" />
-    <PackageReference Include="System.IO.Packaging" Version="8.0.0" />
+    <PackageReference Include="BarCode" Version="2024.11.5" />
+    <PackageReference Include="System.IO.Packaging" Version="8.0.1" />
   </ItemGroup>
 
   <ItemGroup>

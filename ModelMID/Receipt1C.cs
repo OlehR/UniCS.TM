@@ -17,6 +17,10 @@ namespace ModelMID
         /// </summary>
         public string Number { get; set; }
         /// <summary>
+        /// Номер чека в 1с основної компанії
+        /// </summary>
+        public string NumberMain { get; set; }
+        /// <summary>
         /// 1 - звичайний, -1 - повернення
         /// </summary>
         public eTypeReceipt TypeReceipt { get; set; }
@@ -48,6 +52,8 @@ namespace ModelMID
             Date = pR.DateReceipt;
             //Фінт з датою заради 4 знаків для дати. Вистачить на років 30.
             Number = pR.NumberReceipt1C;
+            if ( pR.IdWorkplacePays?.Count()>1 && pR.IdWorkplacePay > 0 && pR.IdWorkplacePay != pR.IdWorkplace)
+                NumberMain = pR.NumberReceiptMain1C;
             RefundNumber = pR.RefundNumberReceipt1C;
             TypeReceipt =  (pR.TypeReceipt== eTypeReceipt.Refund? eTypeReceipt.Refund:eTypeReceipt.Sale);
             NumberCashDesk = pR.IdWorkplacePay > 0 ? pR.IdWorkplacePay : pR.IdWorkplace;
