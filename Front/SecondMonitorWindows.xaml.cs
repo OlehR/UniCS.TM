@@ -218,11 +218,14 @@ namespace Front
         {
             // Перевіряємо різницю в часі між останнім оновленням і поточним часом
             TimeSpan elapsedTime = DateTime.Now - lastUpdateTime;
-            // Якщо касир не тикав нічого 5 хв тоді перевести в режим КСО
-            if (elapsedTime.TotalSeconds >= 30 && MW?.State == eStateMainWindows.StartWindow && !IsKSO) //TotalMinutes >= 5
+            // Якщо касир не тикав нічого 30 сек тоді перевести в режим КСО
+            if (elapsedTime.TotalSeconds >= 30 && !IsKSO && (MW?.State == eStateMainWindows.StartWindow || (MW?.State == eStateMainWindows.WaitInput && MW.curReceipt?.SumReceipt == 0 && MW.curReceipt?.StateReceipt <= eStateReceipt.Prepare))) //TotalMinutes >= 5
             {
-                // Якщо пройшло більше 5 хвилин з останнього оновлення, відображаємо кнопку Start
+                // Якщо пройшло більше 30 секунд з останнього оновлення, відображаємо кнопку Start
                 StartShoppingButtons.Visibility = Visibility.Visible;
+                // Повернення на початковий екран якщо чек пустий
+                if (MW?.State == eStateMainWindows.WaitInput && MW.curReceipt?.SumReceipt == 0 && MW.curReceipt?.StateReceipt <= eStateReceipt.Prepare)
+                    MW.CancelReceipt();
             }
             else
             {

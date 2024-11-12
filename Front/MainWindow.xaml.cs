@@ -1290,6 +1290,10 @@ namespace Front
 
         private void _Back(object sender, RoutedEventArgs e)
         {
+            CancelReceipt();
+        }
+        public void CancelReceipt()
+        {
             // Правильний блок.
             if (Access.GetRight(eTypeAccess.DelReciept) || curReceipt?.SumReceipt == 0 || curReceipt?.StateReceipt >= eStateReceipt.Print)
             {
