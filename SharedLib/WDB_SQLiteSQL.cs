@@ -63,7 +63,7 @@ CREATE TABLE ReceiptOneTime (IdWorkplace INTEGER NOT NULL, CodePeriod  INTEGER N
 CREATE UNIQUE INDEX IdReceiptOneTime ON ReceiptOneTime(IdWorkplace,CodePeriod,CodeReceipt,CodePS,TypeData,CodeData);--Ver=>26
 CREATE INDEX IndReceiptOneTime ON ReceiptOneTime(TypeData,CodeData,CodePS);--Ver=>26";
 
-        public readonly int VerMID = 17;
+        public readonly int VerMID = 18;
         readonly string SqlUpdateMID = @"--Ver=>0;Reload;
 alter TABLE wares add Weight_Delta INTEGER  DEFAULT 0;--Ver=>0
 alter TABLE PROMOTION_SALE_DEALER add PRIORITY INTEGER NOT NULL DEFAULT 1;--Ver=>0
@@ -80,6 +80,7 @@ alter TABLE PROMOTION_SALE_DEALER add MaxQuantity NUMBER NOT NULL DEFAULT 0;--Ve
 alter TABLE wares add ProductionLocation INTEGER  DEFAULT 0;--Ver=>15;
 alter TABLE PROMOTION_SALE  add IsOneTime INTEGER  NOT NULL default 0;--Ver=>16;
 alter TABLE PROMOTION_SALE_DATA add DATA_TEXT TEXT;--Ver=>17;
+alter TABLE TYPE_DISCOUNT add IsСertificate INTEGER NOT NULL DEFAULT(0);--Ver=>18;
 --Ver=>11;Reload;";       
 
         readonly string SqlCreateConfigTable = @"
@@ -444,7 +445,8 @@ CREATE INDEX IndReceiptOneTime ON ReceiptOneTime(TypeData,CodeData,CodePS);";
         CREATE TABLE TYPE_DISCOUNT(
             TYPE_DISCOUNT INTEGER NOT NULL PRIMARY KEY,
             NAME TEXT    NOT NULL,
-            PERCENT_DISCOUNT NUMBER
+            PERCENT_DISCOUNT NUMBER,
+            IsСertificate INTEGER NOT NULL DEFAULT(0) 
         );
 
 
@@ -691,14 +693,15 @@ union
 )
 
 select p.code_client as CodeClient, p.name_client as NameClient, 0 as TypeDiscount, td.NAME as NameDiscount, p.percent_discount as PersentDiscount, 0 as CodeDealer, 
-	   0.00 as SumMoneyBonus, 0.00 as SumBonus,1 IsUseBonusFromRest, 1 IsUseBonusToRest,1 as IsUseBonusFromRest,
+	   0.00 as SumMoneyBonus, 0.00 as SumBonus,1 IsUseBonusFromRest, 1 IsUseBonusToRest,1 as IsUseBonusFromRest, 
      (select group_concat(ph.data) from ClientData ph where  p.Code_Client = ph.CodeClient and TypeData=1)   as BarCode,
        (select group_concat(ph.data) from ClientData ph where  p.Code_Client = ph.CodeClient and TypeData=2) as MainPhone,
        -- Phone_Add as PhoneAdd, 
-       BIRTHDAY as BirthDay, Status_Card as StatusCard 
+       BIRTHDAY as BirthDay, Status_Card as StatusCard,
+       td.IsСertificate
    from t
      join client p on (t.CodeClient=p.code_client)
-   left join TYPE_DISCOUNT td on td.TYPE_DISCOUNT=p.TYPE_DISCOUNT;;";
+   left join TYPE_DISCOUNT td on td.TYPE_DISCOUNT=p.TYPE_DISCOUNT;";
 
         readonly string SqlReplacePromotionSale = @"replace into PROMOTION_SALE (CODE_PS, NAME_PS, CODE_PATTERN, STATE, DATE_BEGIN, DATE_END, TYPE, TYPE_DATA, PRIORITY, SUM_ORDER, TYPE_WORK_COUPON, BAR_CODE_COUPON, DATE_CREATE, USER_CREATE) 
 values 

@@ -52,7 +52,9 @@ namespace SharedLib
            convert(int, wh._code)=@CodeWarehouse)
            OR p.CODE_DEALER<0";
 
-        string SqlGetDimTypeDiscount = @"SELECT Type_discount AS CodeTypeDiscount, Name AS Name, Percent_discount AS PercentDiscount FROM DW.dbo.V1C_DIM_TYPE_DISCOUNT";
+        string SqlGetDimTypeDiscount = @"SELECT Type_discount AS CodeTypeDiscount, Name AS Name, Percent_discount AS PercentDiscount, 
+CASE WHEN kard_disc_type_id IN (0xBC8CFC297E763BE448E1098F069E2D9A,0xBE42F21E3C6F33804B2BF6D344591EBF) THEN 1 ELSE 0 END AS IsСertificate
+    FROM DW.dbo.V1C_DIM_TYPE_DISCOUNT";
 
         string SqlGetDimClient = @"SELECT cl.CodeClient, cl.NameClient, cl.TypeDiscount, cl.PersentDiscount, cl.BarCode, cl.StatusCard, cl.ViewCode, cl.BirthDay,
   ISNULL(cl.MainPhone, cl.Phone) AS MainPhone, Phone as PhoneAdd

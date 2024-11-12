@@ -802,7 +802,7 @@ insert into RECEIPT_Event(
 
         public bool ReplaceTypeDiscount(IEnumerable<TypeDiscount> parData, SQLite pDB)
         {
-            string SqlReplaceTypeDiscount = @"replace into TYPE_DISCOUNT(TYPE_DISCOUNT, NAME, PERCENT_DISCOUNT) values(@CodeTypeDiscount, @Name, @PercentDiscount);";
+            string SqlReplaceTypeDiscount = @"replace into TYPE_DISCOUNT(TYPE_DISCOUNT, NAME, PERCENT_DISCOUNT,IsСertificate) values(@CodeTypeDiscount, @Name, @PercentDiscount,@IsСertificate);";
             pDB.BulkExecuteNonQuery<TypeDiscount>(SqlReplaceTypeDiscount, parData, true);
             return true;
         }

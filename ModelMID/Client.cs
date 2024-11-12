@@ -103,6 +103,7 @@ namespace ModelMID
         /// Чи карточка з коштами(сертифікати та інше)
         /// </summary>
         public bool IsMoneyCard { get; set; }
+        public bool IsСertificate { get; set; }
         public Client() { }
         public Client(int parCodeClient) => CodeClient=parCodeClient; 
     }
