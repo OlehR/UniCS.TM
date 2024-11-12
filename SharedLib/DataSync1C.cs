@@ -37,9 +37,10 @@ namespace SharedLib
             try
             {
                 bool IsErrorSend = false;
-                List<int> IdWP = new() { pR.IdWorkplace };
-                if (pR.IdWorkplacePays.Count() > 1)
-                    IdWP.AddRange(pR.IdWorkplacePays.Where(el => el != pR.IdWorkplace));
+                List<int> IdWP =  pR.IdWorkplacePays.Where(el => el == pR.IdWorkplace).ToList();
+                var l = pR.IdWorkplacePays.Where(el => el != pR.IdWorkplace);
+                if (l.Count() > 0)
+                    IdWP.AddRange(l);
                
                 foreach (var el in IdWP)
                 {
