@@ -155,7 +155,7 @@ namespace Front.Equipments
                         {
                             if (!res.Equals(MW.CurWares) && res.State >= 0)
                             {
-                                Global.Message?.Invoke($"Дана акцизна марка вже використана {res.CodePeriod} {res.IdWorkplace} Чек=>{res.CodeReceipt} CodeWares=>{res.CodeWares}!", eTypeMessage.Error);
+                                Global.Message?.Invoke($"Дана акцизна марка {pES} вже використана {res.CodePeriod} Касове місце=>{res.IdWorkplace} Чек=>{res.CodeReceipt} CodeWares=>{res.CodeWares}!", eTypeMessage.Error);
                                 return;
                             }
                         }
