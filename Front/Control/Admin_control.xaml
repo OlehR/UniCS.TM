@@ -2014,7 +2014,7 @@
                                         </Style>
                                     </GroupBox.Style>-->
                                     <StackPanel Orientation="Horizontal">
-                                        <CheckBox Height="50" Grid.Column="6" Content="Друк чека зачовлення" HorizontalAlignment="Left" 
+                                        <CheckBox Height="50" Grid.Column="6" Content="Друк чека замовлення" HorizontalAlignment="Left" 
                                                   Style="{DynamicResource OrangeSwitchStyleCheckBox}" VerticalAlignment="Center"
                                                   IsChecked="{Binding IsPrintOrderReceipt}"
                                                   />

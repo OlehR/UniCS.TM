@@ -27,6 +27,7 @@ namespace Front.Control
         public decimal SumCashDisbursement { get; set; } = 0;
         public decimal SumMaxWallet { get; set; } = 0;
         public bool IsPaymentBonuses { get; set; } = false;
+        public bool IsUseСertificate { get => MW?.Client?.IsСertificate == true; }
         public bool EnteringPriceManually { get; set; } = false;
         decimal _SumUseWallet = 0;
         public string TypeReturn { get; set; }
@@ -98,7 +99,9 @@ namespace Front.Control
             IsPaymentBonuses = MW.Client != null && MW.Client?.SumMoneyBonus >= MoneySum && MW.curReceipt.IsOnlyOrdinary; // оплата бонусами
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsRounding")); // вертає тру якщо є юзер і впливає на панель з можливою знижкою по гаманцю і на кнопки округлення
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SumMaxWallet"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsPaymentBonuses"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsPaymentBonuses")); 
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsUseСertificate)));
+
             Rounding();
         }
         void RefreshTypePayment()

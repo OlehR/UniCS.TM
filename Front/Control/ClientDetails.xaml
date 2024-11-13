@@ -47,6 +47,7 @@
                         <TextBlock Text="Штрих-код картки:" FontSize="24" FontWeight="Bold" Margin="2"/>
                         <TextBlock Text="Статус картки:" FontSize="24" FontWeight="Bold" Margin="2"/>
                         <TextBlock Text="Дата народження:" FontSize="24" FontWeight="Bold" Margin="2"/>
+                        <TextBlock Text="Подарунковий сертифікат:" FontSize="24" FontWeight="Bold" Margin="2"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
                         <TextBlock Text="{Binding Client.NameClient}" 
@@ -75,6 +76,8 @@
 
                         <TextBlock Text="{Binding Client.BirthDay, StringFormat='{}{0:dd/MM/yyyy}'}" 
                            FontSize="24" FontWeight="Bold" Margin="2"/>
+                        <TextBlock Text="{Binding Client.IsСertificate}" 
+                            FontSize="24" FontWeight="Bold" Margin="2"/>
                     </StackPanel>
                 </Grid>
 
