@@ -1461,6 +1461,8 @@ namespace Front
         {
             TextBox textBox = (TextBox)sender;
             IsExciseStamp = !string.IsNullOrEmpty(Blf.GetExciseStamp(textBox.Text));
+            if (IsExciseStamp)
+                textBox.Text = textBox.Text.ToString().ToUpper();
         }
 
         private void ExciseStampNone(object sender, RoutedEventArgs e)

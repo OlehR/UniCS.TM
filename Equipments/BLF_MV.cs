@@ -134,7 +134,8 @@ namespace Front.Equipments
                 pBarCode = Res.Substring(0, Res.Length - 11);
             }
 
-            Regex regex = new Regex(@"^\w{4}[0-9]{6}?$");
+            Regex regex = new Regex(@"^[A-Z]{4}\d{6}$");
+            pBarCode = pBarCode.ToUpper();
             if (regex.IsMatch(pBarCode))
                 return pBarCode;
             return null;
