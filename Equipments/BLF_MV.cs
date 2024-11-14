@@ -128,14 +128,15 @@ namespace Front.Equipments
 
         public string GetExciseStamp(string pBarCode)
         {
-            if (pBarCode.Contains("t.gov.ua"))
+            pBarCode = pBarCode.ToUpper();
+            if (pBarCode.Contains("T.GOV.UA"))
             {
-                string Res = pBarCode.Substring(pBarCode.IndexOf("t.gov.ua") + 9);
+                string Res = pBarCode.Substring(pBarCode.IndexOf("T.GOV.UA") + 9);
                 pBarCode = Res.Substring(0, Res.Length - 11);
             }
 
             Regex regex = new Regex(@"^[A-Z]{4}\d{6}$");
-            pBarCode = pBarCode.ToUpper();
+            
             if (regex.IsMatch(pBarCode))
                 return pBarCode;
             return null;
