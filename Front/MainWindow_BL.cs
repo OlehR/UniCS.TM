@@ -296,9 +296,9 @@ namespace Front
             }
             VR.SendMessage(Global.IdWorkPlace, $"{TypeAccessWait} =>{pUser.NameUser}", 0, 0, curReceipt?.SumTotal ?? 0, VR.eTypeVRMessage.Confirm);
 
-            Bl.db.InsertReceiptEvent(new List<ReceiptEvent>() {
+            Bl.db.InsertReceiptEvent(
                 new(curReceipt) {EventType=eReceiptEventType.Other,EventName= TypeAccessWait.ToString(),UserName=pUser.CodeUser.ToString(),CodeWares=CurWares?.CodeWares??0
-            } });
+            });
             switch (TypeAccessWait)
             {
                 case eTypeAccess.DelWares:

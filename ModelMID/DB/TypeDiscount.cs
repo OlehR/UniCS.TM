@@ -9,5 +9,6 @@ namespace ModelMID
         public int CodeTypeDiscount { get; set; }
         public string Name { get; set; }
         public decimal PercentDiscount { get; set; }
+        public bool IsСertificate { get; set; }
     }
 }

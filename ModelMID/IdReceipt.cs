@@ -8,8 +8,8 @@ namespace ModelMID
     public class IdReceipt
     {
 
-        protected string PrefixWarehouse { get { switch (Global.CodeWarehouse) { case 9: return "K"; case 15: return "B"; case 148: return "E"; default: return "X"; } } }
-        
+        protected string PrefixWarehouse { get { return "X"; } }
+
         protected string Prefix
         {
             get
@@ -17,7 +17,18 @@ namespace ModelMID
                 string res = Global.GetWorkPlaceByIdWorkplace(IdWorkplacePay > 0 ? IdWorkplacePay : IdWorkplace)?.Prefix;
                 if (string.IsNullOrEmpty(res))
                     res = PrefixWarehouse + Global.GetNumberCashDeskByIdWorkplace(IdWorkplace);
-                return res;                
+                return res;
+            }
+        }
+
+        protected string PrefixMain
+        {
+            get
+            {
+                string res = Global.GetWorkPlaceByIdWorkplace(IdWorkplace)?.Prefix;
+                if (string.IsNullOrEmpty(res))
+                    res = PrefixWarehouse + Global.GetNumberCashDeskByIdWorkplace(IdWorkplace);
+                return res;
             }
         }
 
@@ -26,17 +37,17 @@ namespace ModelMID
         /// <summary>
         /// Код робочого місця (важливо коли кілька підприємців)
         /// </summary>
-   
+
         public int CodePeriod { get; set; }
         public int CodeReceipt { get; set; }
 
-        public DateTime DTPeriod { get 
+        public DateTime DTPeriod { get
             {
                 DateTime res;
                 if (DateTime.TryParseExact(CodePeriod.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out res))
                     return res;
-                return DateTime.Now.Date;            
-            } 
+                return DateTime.Now.Date;
+            }
         }
         public IdReceipt()
         {
@@ -50,14 +61,14 @@ namespace ModelMID
             SetIdReceipt(parIdReceipt);
         }
 
-         public void SetIdReceipt(IdReceipt idReceipt)
+        public void SetIdReceipt(IdReceipt idReceipt)
         {
             if (idReceipt == null)
                 return;
             IdWorkplace = idReceipt.IdWorkplace;
             CodePeriod = idReceipt.CodePeriod;
             CodeReceipt = idReceipt.CodeReceipt;
-            IdWorkplacePay= idReceipt.IdWorkplacePay;
+            IdWorkplacePay = idReceipt.IdWorkplacePay;
         }
         public override bool Equals(object obj)
         {
@@ -73,18 +84,14 @@ namespace ModelMID
             return IdWorkplace * 100000 + CodePeriod * 1000 + CodeReceipt;
         }
 
-        public string NumberReceipt1C
-        {
-            get
-            {
-                var d = Convert.ToInt32(Math.Floor((DTPeriod - new DateTime(2019, 01, 01)).TotalDays)).ToString("D4");
-                return Prefix + d + CodeReceipt.ToString("D4");//PrefixWarehouse + Global.GetNumberCashDeskByIdWorkplace(IdWorkplace) 
-            }
-        }
-        /// <summary>
-        /// Унікальний номер чека  коли 2 підприємця і 2 чека 
-        /// </summary>
-        public string NumberReceiptRRO
+        public string NumberReceipt1C { get { return Prefix + OnlyNumberReceipt1C; } }
+        public string NumberReceiptMain1C { get { return PrefixMain + OnlyNumberReceipt1C; } }
+
+        public string OnlyNumberReceipt1C { get { return Convert.ToInt32(Math.Floor((DTPeriod - new DateTime(2019, 01, 01)).TotalDays)).ToString("D4") + CodeReceipt.ToString("D4"); } }
+    /// <summary>
+    /// Унікальний номер чека  коли 2 підприємця і 2 чека 
+    /// </summary>
+    public string NumberReceiptRRO
         {
             get { return NumberReceipt1C + (IdWorkplacePay>0?$"_{IdWorkplacePay}":"");}
         }

@@ -87,5 +87,7 @@ namespace ModelMID
         /// </summary>
         public decimal MaxSumReceipt { get; set; }
 
+        public IEnumerable<CustomerBarCode> CustomerBarCode { get; set; }
+
     }
 }

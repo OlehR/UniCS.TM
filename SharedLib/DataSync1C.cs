@@ -37,7 +37,12 @@ namespace SharedLib
             try
             {
                 bool IsErrorSend = false;
-                foreach (var el in pR.IdWorkplacePays)
+                List<int> IdWP =  pR.IdWorkplacePays.Where(el => el == pR.IdWorkplace).ToList();
+                var l = pR.IdWorkplacePays.Where(el => el != pR.IdWorkplace);
+                if (l.Count() > 0)
+                    IdWP.AddRange(l);
+               
+                foreach (var el in IdWP)
                 {
                     pR.IdWorkplacePay = el;
                     var r = new Receipt1C(pR);

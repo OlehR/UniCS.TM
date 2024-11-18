@@ -113,6 +113,100 @@ namespace ModelMID
         And = 1
     }
 
+
+    public enum eTypePromotionFilter
+    {
+        NotDefine = 0,
+        /// <summary>
+        /// Товари
+        /// </summary>
+        Wares = 11,
+        /// <summary>
+        /// Бренди(ТМ)
+        /// </summary>
+        TM = 14,
+        /// <summary>
+        /// Групи товарів
+        /// </summary>
+        GroupWares = 15,
+        /// <summary>
+        /// Властивості товарів
+        /// </summary>
+        ProportyWares = 19,
+        /// <summary>
+        /// Період
+        /// </summary>
+        Period = 21,
+        /// <summary>
+        /// Час
+        /// </summary>
+        Time = 22,
+        /// <summary>
+        /// Період відносно Дня народження
+        /// </summary>
+        Birthday = 23,
+        /// <summary>
+        /// Період відносно Активації карточки
+        /// </summary>
+        СardАctivation = 24,
+        /// <summary>
+        /// День в місяці
+        /// </summary>
+        DayInMonth = 25,
+        /// <summary>
+        /// День в Тижні
+        /// </summary>
+        DayInWeek = 26,
+        /// <summary>
+        /// День в Тижні з годинами
+        /// </summary>
+        DayInWeekWithTime = 27,
+        /// <summary>
+        /// По переліку клієнтів
+        /// </summary>
+        Client = 31,
+        /// <summary>
+        /// По типу клієнта.
+        /// </summary>
+        TypeClient = 32,
+        /// <summary>
+        /// По властивості клієнта.
+        /// </summary>
+        ProportyClient = 39,
+        /// <summary>
+        /// Для Чека №
+        /// </summary>
+        NumberReceipt = 41,
+        /// <summary>
+        /// Для кожного N чека.
+        /// </summary>
+        ForEachReceipt = 42,
+        /// <summary>
+        /// Склад
+        /// </summary>
+        Warehouse = 51,
+        /// <summary>
+        /// По властивості Склада
+        /// </summary>
+        ProportyWarehouse = 59,
+        /// <summary>
+        /// Готівка
+        /// </summary>
+        Cash = 61,
+        /// <summary>
+        /// Карткою
+        /// </summary>
+        Card = 62,
+        /// <summary>
+        /// Бонуси
+        /// </summary>
+        Bonus = 63,
+        /// <summary>
+        ///Купон 
+        /// </summary>
+        Coupon = 71
+
+    }
     public enum eTypePrice
     {
         NotDefine = 0,
@@ -127,6 +221,24 @@ namespace ModelMID
 
     public enum eTypeDiscount
     {
+        /// <summary>
+        /// Текст Касиру.
+        /// </summary>
+        TextСashier = -1,
+        /// <summary>
+        /// Друк тексту на чеку.
+        /// </summary>
+        TextReceipt =-2,
+        /// <summary>
+        /// Друк QR на чеку
+        /// </summary>
+        PrintQRReceipt = -3,
+        /// <summary>
+        /// Текст на екрані клієнта.
+        /// </summary>
+        TextClientScreen =-4,
+
+
         NotDefine = 0,
         /// <summary>
         /// Фіксована ціна

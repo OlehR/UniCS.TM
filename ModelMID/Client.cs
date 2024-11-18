@@ -94,10 +94,16 @@ namespace ModelMID
 
         public DateTime BirthDay { get; set; }
 
+        public IEnumerable<Int64> OneTimePromotion { get; set; }
+        /// <summary>
+        /// Якщо пройшов результат з сервера
+        /// </summary>
+        public bool IsCheckOnline { get; set; }
         /// <summary>
         /// Чи карточка з коштами(сертифікати та інше)
         /// </summary>
         public bool IsMoneyCard { get; set; }
+        public bool IsСertificate { get; set; }
         public Client() { }
         public Client(int parCodeClient) => CodeClient=parCodeClient; 
     }

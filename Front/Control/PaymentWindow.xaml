@@ -144,6 +144,10 @@
                                    Mode=FindAncestor, AncestorType=UserControl}}" Value="AllPayments">
                                 <Setter Property="IsEnabled" Value="True" />
                             </DataTrigger>
+                            <DataTrigger Binding="{Binding IsUseСertificate, RelativeSource={RelativeSource 
+                               Mode=FindAncestor, AncestorType=UserControl}}" Value="True">
+                                <Setter Property="IsEnabled" Value="False" />
+                            </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </Button.Style>
@@ -182,6 +186,10 @@
                                    Mode=FindAncestor, AncestorType=UserControl}}" Value="AllPayments">
                                 <Setter Property="IsEnabled" Value="True" />
                             </DataTrigger>
+                            <DataTrigger Binding="{Binding IsUseСertificate, RelativeSource={RelativeSource 
+                                 Mode=FindAncestor, AncestorType=UserControl}}" Value="True">
+                                <Setter Property="IsEnabled" Value="False" />
+                            </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </Button.Style>
@@ -218,6 +226,10 @@
                                    Mode=FindAncestor, AncestorType=UserControl}}" Value="AllPayments">
                                 <Setter Property="IsEnabled" Value="True" />
                             </DataTrigger>
+                            <DataTrigger Binding="{Binding IsUseСertificate, RelativeSource={RelativeSource 
+                                Mode=FindAncestor, AncestorType=UserControl}}" Value="True">
+                                <Setter Property="IsEnabled" Value="False" />
+                            </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </Button.Style>
@@ -245,7 +257,7 @@
                                 <Setter Property="VerticalAlignment" Value="Center" />
                                 <Setter Property="FontWeight" Value="Bold" />
                                 <Setter Property="Foreground" Value="Green" />
-                                
+
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding SumCashDisbursement, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=UserControl}}" Value="0">

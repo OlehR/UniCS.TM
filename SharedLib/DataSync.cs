@@ -28,16 +28,22 @@ namespace SharedLib
         public bool IsUseOldDB = true;
 
         public eSyncStatus Status = eSyncStatus.NotDefine;
-        public bool IsReady { get {
+        public bool IsReady
+        {
+            get
+            {
                 if (db.DBStatus != eDBStatus.Ok) Status = eSyncStatus.ErrorDB;
-                return IsUseOldDB || (Status != eSyncStatus.StartedFullSync && Status != eSyncStatus.Error && Status != eSyncStatus.ErrorDB); } }
+                return IsUseOldDB || (Status != eSyncStatus.StartedFullSync && Status != eSyncStatus.Error && Status != eSyncStatus.ErrorDB);
+            }
+        }
         public DataSync(BL pBL)
         {
             try
             {
                 MsSQL = new WDB_MsSql();
                 Ds1C = new DataSync1C(pBL);
-            } catch { }
+            }
+            catch { }
 
             if (pBL != null)
             {
@@ -117,7 +123,7 @@ namespace SharedLib
             return true;
         }
 
-       
+
 
         public async Task<bool> SendAllReceipt(WDB_SQLite parDB = null)
         {
@@ -339,7 +345,7 @@ namespace SharedLib
             //Перекидаємо лічильник на сьогодня.
             db.SetConfig<DateTime>("LastDaySend", Ldc);
         }
-     
+
         public void LoadWeightKasa(DateTime parDT = default(DateTime))
         {
             if (!MsSQL.IsSync(Global.CodeWarehouse)) return;
@@ -456,7 +462,7 @@ where RE.EVENT_TYPE=1"
 }".Replace("{Order}", (++pOrder).ToString()).Replace("{PLU}", pReceiptWares.PLU.ToString()).
 Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace("{Price}", ((int)(pReceiptWares.PriceDealer * 100m)).ToString());
 
-            List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(pReceiptWares) { EventType = eReceiptEventType.AskQR, EventName = Body, CreatedAt = DateTime.Now } };
+            bl.db.InsertReceiptEvent(new ReceiptEvent(pReceiptWares) { EventType = eReceiptEventType.AskQR, EventName = Body, CreatedAt = DateTime.Now } );
             try
             {
                 HttpClient client = new HttpClient();
@@ -480,11 +486,10 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             catch (Exception ex)
             {
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "GetQrCoffe=>" + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
-                rr.Add(new ReceiptEvent(pReceiptWares) { EventType = eReceiptEventType.ErrorQR, EventName = ex.Message, CreatedAt = DateTime.Now });
+                bl.db.InsertReceiptEvent(new ReceiptEvent(pReceiptWares) { EventType = eReceiptEventType.ErrorQR, EventName = ex.Message, CreatedAt = DateTime.Now });
             }
             res = res.Replace("\"", "");
-            rr.Add(new ReceiptEvent(pReceiptWares) { EventType = eReceiptEventType.AnswerQR, EventName = res, CreatedAt = DateTime.Now });
-            bl.db.InsertReceiptEvent(rr);
+            bl.db.InsertReceiptEvent(new ReceiptEvent(pReceiptWares) { EventType = eReceiptEventType.AnswerQR, EventName = res, CreatedAt = DateTime.Now });
             return res;
         }
 
@@ -517,7 +522,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             }
 
         }
-       
+
         public async Task Send1CClientAsync()
         {
             DateTime Ldc, Today = DateTime.Now.Date;
@@ -598,8 +603,8 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
            {
                try
                {
-                   string parUrl = Global.Settings.Api+"SMS";
-                   var a = new { Phone = pPhone, Company = Global.Settings.CodeTM == 56 ? "1" : "2" };
+                   string parUrl = Global.Settings.Api + "SMS";
+                   var a = new { Phone = pPhone, Company = Global.Settings.CodeTM == 2 ? "1" : "2" };
                    string pBody = a.ToJSON();
                    int parWait = 2000;
                    string parContex = "application/json";
@@ -652,7 +657,8 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                 {
                     Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = null, Status = eSyncStatus.NoFatalError, StatusDescription = "RequestAsync=>" + response.RequestMessage });
                 }
-            } catch (Exception e)
+            }
+            catch (Exception e)
             { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e); }
             return null;
         }
@@ -777,10 +783,11 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             return true;
         }
 
-        public async Task<Client> GetDiscount(FindClient pFC){
+        public async Task<Client> GetDiscount(FindClient pFC)
+        {
             Client Result = null;
             try
-            {                
+            {
                 HttpClient client = new HttpClient();
                 client.Timeout = TimeSpan.FromSeconds(10);
 
@@ -796,8 +803,8 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     {
                         var Res = JsonConvert.DeserializeObject<Status<Client>>(res);
                         if (Res?.State == 0)
-                        {                           
-                            Result= Res.Data;
+                        {
+                            Result = Res.Data;
                         }
                     }
                 }
@@ -808,9 +815,37 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             }
             catch (Exception e)
             { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e); }
-            if(Result==null && !string.IsNullOrEmpty(pFC.Phone))
-              bl.OnCustomWindow?.Invoke(new CustomWindow(eWindows.Info, $"Клієнта з номером {pFC.Phone} не знайдено в базі!"));
+            if (Result == null && !string.IsNullOrEmpty(pFC.Phone))
+                bl.OnCustomWindow?.Invoke(new CustomWindow(eWindows.Info, $"Клієнта з номером {pFC.Phone} не знайдено в базі!"));
             return Result;
+        }
+
+        public async Task<OneTime> CheckOneTime(OneTime pRC)
+        {
+            try
+            {
+                HttpClient client = new HttpClient();
+                client.Timeout = TimeSpan.FromMilliseconds(2000);
+
+                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, Global.Api + "CheckOneTime");
+                string data = pRC.ToJson();
+                requestMessage.Content = new StringContent(data, Encoding.UTF8, "application/json");
+                var response = await client.SendAsync(requestMessage);
+                if (response.IsSuccessStatusCode)
+                {
+                    var res = await response.Content.ReadAsStringAsync();
+                    if (!string.IsNullOrEmpty(res))
+                    {
+                        var Res = JsonConvert.DeserializeObject<Status<OneTime>>(res);
+                        if (Res?.State == 0)
+                        {
+                            return Res.Data;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex) { }
+            return null;
         }
     }
 

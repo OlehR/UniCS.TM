@@ -196,7 +196,7 @@ namespace SharedLib
             //ReceiptWares W = null;
             if (w == null || w.Count() == 0 && pBarCode.Length >= 8) // Якщо не знайшли спробуем по ваговим і штучним штрихкодам.          
             {
-                foreach (var el in Global.CustomerBarCode.Where(el => el.KindBarCode == eKindBarCode.EAN13 || el.KindBarCode == eKindBarCode.Code128 /*&& (el.TypeBarCode == eTypeBarCode.WaresWeight || el.TypeBarCode == eTypeBarCode.WaresUnit )*/))
+                foreach (var el in Global.Settings.CustomerBarCode.Where(el => el.KindBarCode == eKindBarCode.EAN13 || el.KindBarCode == eKindBarCode.Code128 /*&& (el.TypeBarCode == eTypeBarCode.WaresWeight || el.TypeBarCode == eTypeBarCode.WaresUnit )*/))
                 {
                     w = null;
                     if (el.TotalLenght != pBarCode.Length)
@@ -207,22 +207,27 @@ namespace SharedLib
                         if (el.KindBarCode == eKindBarCode.EAN13 && pBarCode.Length != 13)
                             continue;
 
-                        int varCode = Convert.ToInt32(pBarCode.Substring(el.Prefix.Length, el.LenghtCode));
+                        int Code = Convert.ToInt32(pBarCode.Substring(el.Prefix.Length, el.LenghtCode));
                         CodeOperator = el.LenghtOperator > 0 ? Convert.ToInt32(pBarCode.Substring(el.Prefix.Length+el.LenghtCode, el.LenghtOperator)) : 0;
-                        int varValue = Convert.ToInt32(pBarCode.Substring(el.Prefix.Length + el.LenghtCode + el.LenghtOperator, el.LenghtQuantity));
+                        int varValue = el.LenghtQuantity>0?Convert.ToInt32(pBarCode.Substring(el.Prefix.Length + el.LenghtCode + el.LenghtOperator, el.LenghtQuantity)):0;
                         if (!IsOnlyDiscount || el.TypeCode == eTypeCode.PercentDiscount)
                         {
                             switch (el.TypeCode)
                             {
                                 case eTypeCode.Article:
-                                    w = db.FindWares(null, null, 0, 0, 0, varCode);
+                                    w = db.FindWares(null, null, 0, 0, 0, Code);
                                     break;
                                 case eTypeCode.Code:
-                                    w = db.FindWares(null, null, varCode);
+                                    w = db.FindWares(null, null, Code);
                                     break;
                                 case eTypeCode.PercentDiscount:
-                                    _ = ds.CheckDiscountBarCodeAsync(pReceipt, pBarCode, varCode);
+                                    _ = ds.CheckDiscountBarCodeAsync(pReceipt, pBarCode, Code);
                                     return new ReceiptWares(pReceipt);
+                                case eTypeCode.Coupon:                                    
+                                case eTypeCode.OneTimeCoupon:
+                                    if (CheckOneTime(pReceipt, Code, el.TypeCode))
+                                        return new ReceiptWares(pReceipt);
+                                    else return null;                                    
                                 default:
                                     break;
                             }
@@ -232,12 +237,10 @@ namespace SharedLib
                                 if (pQuantity > 0)
                                     pQuantity = varValue;
                                 break;
-                            }
-                           
+                            }                           
                         }
                     }
                 }
-
             }
 
             if (w == null || w.Count() != 1)
@@ -256,6 +259,30 @@ namespace SharedLib
             W.SetIdReceipt(pReceipt);
             W.Quantity = (W.CodeUnit == Global.WeightCodeUnit ? pQuantity / 1000m : pQuantity);// Вага приходить в грамах
             return AddReceiptWares(W);
+        }
+
+        public bool CheckOneTime(IdReceipt pReceipt,int pCodeData,eTypeCode pTypeCode)
+        {
+            var RC = new OneTime(pReceipt) { CodeData = pCodeData,TypeData= pTypeCode};
+            RC.CodePS = db.GetCodePS(pCodeData);
+            if (pTypeCode == eTypeCode.OneTimeCoupon)
+            {
+                OneTime R = ds.CheckOneTime(RC).Result;
+                if(  !pReceipt.Equals(R) && R!=null) 
+                {
+                    Global.Message?.Invoke($"Даний купон=>{pCodeData} вже використано в чеку {R.IdWorkplace}-{R.CodePeriod}-{R.CodeReceipt} !!!", eTypeMessage.Information);
+                    return true;
+                }               
+            }
+            
+            if (RC.CodePS > 0)
+            {
+                db.ReplaceOneTime(RC);
+                db.RecalcPriceAsync(new(pReceipt));
+                return true;
+            }
+            Global.Message?.Invoke($"Даний купон=>{pCodeData} не можна застосувати!!!", eTypeMessage.Information);
+            return true;
         }
 
         public ReceiptWares AddWaresCode(IdReceipt pIdReceipt, int pCodeWares, int pCodeUnit, decimal pQuantity = 0, decimal pPrice = 0, bool IsFixPrice = false)
@@ -413,6 +440,7 @@ namespace SharedLib
             RH.CodeClient = pClient.CodeClient;
             RH.PercentDiscount = pClient.PersentDiscount;
             db.ReplaceReceipt(RH);
+                       
             Global.OnClientChanged?.Invoke(pClient);
             if (Global.RecalcPriceOnLine)
                 db.RecalcPriceAsync(new IdReceiptWares(pIdReceipt));
@@ -522,7 +550,7 @@ namespace SharedLib
             return null;
         }
 
-        public bool SaveReceiptEvents(IEnumerable<ReceiptEvent> pRE, bool pIsReplace = true)
+        /*public bool SaveReceiptEvents(IEnumerable<ReceiptEvent> pRE, bool pIsReplace = true)
         {
             if (pRE != null && pRE.Count() > 0)
             {
@@ -538,7 +566,7 @@ namespace SharedLib
                 }
             }
             return true;
-        }
+        }*/
 
         public Task GetBonusAsync(Client pClient) { return ds.Ds1C.GetBonusAsync(pClient, Global.CodeWarehouse); }
 
@@ -622,16 +650,15 @@ namespace SharedLib
         public void AddEventAge(Receipt pRecipt)
         {
             ReceiptEvent el = new ReceiptEvent(pRecipt) { EventType = eReceiptEventType.AgeRestrictedProduct, EventName = "Вік підтверджено", CreatedAt = DateTime.Now };
-            var l = new List<ReceiptEvent> { el };
-            db.InsertReceiptEvent(l);
-            pRecipt.ReceiptEvent = pRecipt.ReceiptEvent == null ? l : pRecipt.ReceiptEvent.Append<ReceiptEvent>(el);
+
+            db.InsertReceiptEvent(el);
+            pRecipt.ReceiptEvent = pRecipt.ReceiptEvent == null ? new List<ReceiptEvent> { el } : pRecipt.ReceiptEvent.Append<ReceiptEvent>(el);
         }
         public void AddEvent(Receipt pRecipt, eReceiptEventType pE, string text = null)
         {
             ReceiptEvent el = new ReceiptEvent(pRecipt) { EventType = pE, EventName = text ?? pE.ToString(), CreatedAt = DateTime.Now };
-            var l = new List<ReceiptEvent> { el };
-            db.InsertReceiptEvent(l);
-            pRecipt.ReceiptEvent = pRecipt.ReceiptEvent == null ? l : pRecipt.ReceiptEvent.Append<ReceiptEvent>(el);
+            db.InsertReceiptEvent(el);
+            pRecipt.ReceiptEvent = pRecipt.ReceiptEvent == null ? new List<ReceiptEvent> { el } : pRecipt.ReceiptEvent.Append<ReceiptEvent>(el);
         }
 
         /// <summary>
@@ -724,7 +751,7 @@ namespace SharedLib
                                 case 1: //Фіксування ваги
                                     if (r != null)
                                     {
-                                        List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(r) { EventType = eReceiptEventType.IncorrectWeight, EventName = "Ручне підтвердження ваги", CreatedAt = DateTime.Now } };
+                                        var rr = new ReceiptEvent(r) { EventType = eReceiptEventType.IncorrectWeight, EventName = "Ручне підтвердження ваги", CreatedAt = DateTime.Now };
                                         db.InsertReceiptEvent(rr);
                                         FixWeight(r);
                                     }
@@ -749,7 +776,7 @@ namespace SharedLib
 
         public void AddOwnBag(IdReceipt pR, decimal pWeight)
         {
-            List<ReceiptEvent> rr = new List<ReceiptEvent> { new ReceiptEvent(pR) { EventType = eReceiptEventType.OwnBag, EventName = "Власна думка", ProductConfirmedWeight = Convert.ToInt32(pWeight), CreatedAt = DateTime.Now } };
+            var rr = new ReceiptEvent(pR) { EventType = eReceiptEventType.OwnBag, EventName = "Власна думка", ProductConfirmedWeight = Convert.ToInt32(pWeight), CreatedAt = DateTime.Now };
             db.InsertReceiptEvent(rr);
 
             var r = GetReceiptHead(pR, true);
@@ -766,19 +793,27 @@ namespace SharedLib
         {
             Task.Run(async () =>
             {
-                Client cl;
+                Client cl = await ds.GetDiscount(pFC);
                 if (pFC.Client != null)
                 {
-                    cl = await ds.Ds1C.GetBonusAsync(pFC.Client, pFC.CodeWarehouse);
+                    //cl = await ds.Ds1C.GetBonusAsync(pFC.Client, pFC.CodeWarehouse);
                 }
                 else
                 {
-                    cl = await ds.GetDiscount(pFC);
+                    //cl = await ds.GetDiscount(pFC);
                     if (cl != null)
                     {
                         UpdateClientInReceipt(pIdReceipt, cl, false);
                     }
                 }
+                if (cl?.OneTimePromotion?.Any() == true)
+                {
+                    foreach (var el in cl.OneTimePromotion.Select(el => new OneTime(pIdReceipt) { CodePS = el, TypeData = eTypeCode.Client, CodeData = cl.CodeClient }))
+                        db.ReplaceOneTime(el);
+                    if (Global.RecalcPriceOnLine)
+                        db.RecalcPriceAsync(new IdReceiptWares(pIdReceipt));
+                }
+
                 if (cl != null)
                     Global.OnClientChanged?.Invoke(cl);
             });

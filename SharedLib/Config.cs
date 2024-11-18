@@ -46,8 +46,8 @@ namespace SharedLib
             DeltaWeight.Sort((x, y) => decimal.Compare(x.Weight, y.Weight));
             Global.DeltaWeight = DeltaWeight.ToArray();
 
-            Global.CustomerBarCode = new List<CustomerBarCode>();
-            AppConfiguration.GetSection("MID:CustomerBarCode").Bind(Global.CustomerBarCode);
+            //Global.CustomerBarCode = new List<CustomerBarCode>();
+            //AppConfiguration.GetSection("MID:CustomerBarCode").Bind(Global.CustomerBarCode);
 
             Global.Bags = new List<int>();
             AppConfiguration.GetSection("MID:Bags").Bind(Global.Bags);

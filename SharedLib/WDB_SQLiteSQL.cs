@@ -27,7 +27,7 @@ DROP INDEX IF exists id_FiscalArticle;--Ver=>15
 CREATE UNIQUE INDEX id_FiscalArticle ON FiscalArticle(IdWorkplacePay,CodeWares);--Ver=>15
 CREATE UNIQUE INDEX id_FiscalArticle_PLU ON FiscalArticle(IdWorkplacePay,PLU);--Ver=>16";
 
-        public readonly int VerRC = 25;
+        public readonly int VerRC = 26;
         readonly string SqlUpdateRC = @"alter TABLE WARES_RECEIPT            add Fix_Weight NUMBER NOT NULL DEFAULT 0;--Ver=>0
 alter TABLE WARES_RECEIPT_PROMOTION  add TYPE_DISCOUNT  INTEGER  NOT NULL  DEFAULT (12);--Ver=>0
 alter TABLE wares_receipt            add Priority INTEGER  NOT NULL DEFAULT 0;--Ver=>0
@@ -58,9 +58,12 @@ alter TABLE LOG_RRO add CodeError         INTEGER  NOT NULL DEFAULT 0;--Ver=>21
 alter TABLE LOG_RRO add TypePay           INTEGER  NOT NULL DEFAULT 0;--Ver=>22
 alter TABLE WARES_RECEIPT_HISTORY add CodeOperator INTEGER  NOT NULL default 0;--Ver=>23
 alter TABLE RECEIPT add        TypeWorkplace NUMBER   NOT NULL DEFAULT 0;--Ver=>24
-alter TABLE payment add MerchantID TEXT;--Ver=>25";
+alter TABLE payment add MerchantID TEXT;--Ver=>25
+CREATE TABLE ReceiptOneTime (IdWorkplace INTEGER NOT NULL, CodePeriod  INTEGER NOT NULL, CodeReceipt INTEGER NOT NULL, CodePS INTEGER NOT NULL, TypeData INTEGER NOT NULL, CodeData INTEGER NOT NULL);--Ver=>26
+CREATE UNIQUE INDEX IdReceiptOneTime ON ReceiptOneTime(IdWorkplace,CodePeriod,CodeReceipt,CodePS,TypeData,CodeData);--Ver=>26
+CREATE INDEX IndReceiptOneTime ON ReceiptOneTime(TypeData,CodeData,CodePS);--Ver=>26";
 
-        public readonly int VerMID = 13;
+        public readonly int VerMID = 18;
         readonly string SqlUpdateMID = @"--Ver=>0;Reload;
 alter TABLE wares add Weight_Delta INTEGER  DEFAULT 0;--Ver=>0
 alter TABLE PROMOTION_SALE_DEALER add PRIORITY INTEGER NOT NULL DEFAULT 1;--Ver=>0
@@ -74,11 +77,11 @@ alter TABLE FAST_GROUP add Image TEXT; --Ver=>11;
 alter TABLE wares add CodeGroupUp INTEGER  DEFAULT 0; --Ver=>12;
 alter TABLE client add IsMoneyCard INTEGER DEFAULT(0);--Ver=>13;
 alter TABLE PROMOTION_SALE_DEALER add MaxQuantity NUMBER NOT NULL DEFAULT 0;--Ver=>14;
-alter TABLE wares add ProductionLocation INTEGER  DEFAULT 0; --Ver=>15;
-
---Ver=>11;Reload;
-
-";       
+alter TABLE wares add ProductionLocation INTEGER  DEFAULT 0;--Ver=>15;
+alter TABLE PROMOTION_SALE  add IsOneTime INTEGER  NOT NULL default 0;--Ver=>16;
+alter TABLE PROMOTION_SALE_DATA add DATA_TEXT TEXT;--Ver=>17;
+alter TABLE TYPE_DISCOUNT add IsСertificate INTEGER NOT NULL DEFAULT(0);--Ver=>18;
+--Ver=>11;Reload;";       
 
         readonly string SqlCreateConfigTable = @"
         CREATE TABLE WORKPLACE(
@@ -343,7 +346,18 @@ CREATE TABLE WaresReceiptLink(
         );
 CREATE UNIQUE INDEX IdWaresReceiptLink ON WaresReceiptLink(IdWorkplace,CodePeriod,CodeReceipt,CodeWares,Sort,CodeWaresTo);
 CREATE UNIQUE INDEX IdWaresReceiptLink2 ON WaresReceiptLink(IdWorkplace,CodePeriod,CodeReceipt,CodeWaresTo,Sort,CodeWares);
-";
+
+CREATE TABLE ReceiptOneTime (
+IdWorkplace INTEGER NOT NULL,
+CodePeriod  INTEGER NOT NULL,
+CodeReceipt INTEGER NOT NULL,    
+CodePS      INTEGER NOT NULL,
+TypeData INTEGER NOT NULL,
+CodeData INTEGER NOT NULL
+);
+
+CREATE UNIQUE INDEX IdReceiptOneTime ON ReceiptOneTime(IdWorkplace,CodePeriod,CodeReceipt,CodePS,TypeData,CodeData);
+CREATE INDEX IndReceiptOneTime ON ReceiptOneTime(TypeData,CodeData,CodePS);";
         
         public readonly string SqlCreateMIDTable = @"
         CREATE TABLE UNIT_DIMENSION(
@@ -431,7 +445,8 @@ CREATE UNIQUE INDEX IdWaresReceiptLink2 ON WaresReceiptLink(IdWorkplace,CodePeri
         CREATE TABLE TYPE_DISCOUNT(
             TYPE_DISCOUNT INTEGER NOT NULL PRIMARY KEY,
             NAME TEXT    NOT NULL,
-            PERCENT_DISCOUNT NUMBER
+            PERCENT_DISCOUNT NUMBER,
+            IsСertificate INTEGER NOT NULL DEFAULT(0) 
         );
 
 
@@ -477,6 +492,7 @@ CREATE TABLE FAST_GROUP
             SUM_ORDER NUMBER   NOT NULL,
             TYPE_WORK_COUPON INTEGER  NOT NULL,
             BAR_CODE_COUPON TEXT,
+            IsOneTime INTEGER  NOT NULL default 0,
             DATE_CREATE DATETIME,
             USER_CREATE INTEGER
         );
@@ -490,6 +506,7 @@ CREATE TABLE FAST_GROUP
             ADDITIONAL_CONDITION INTEGER  NOT NULL,
             DATA NUMBER   NOT NULL,
             DATA_ADDITIONAL_CONDITION NUMBER   NOT NULL,
+            DATA_TEXT TEXT,
             DATE_CREATE DATETIME,
             USER_CREATE INTEGER
         );
@@ -676,14 +693,15 @@ union
 )
 
 select p.code_client as CodeClient, p.name_client as NameClient, 0 as TypeDiscount, td.NAME as NameDiscount, p.percent_discount as PersentDiscount, 0 as CodeDealer, 
-	   0.00 as SumMoneyBonus, 0.00 as SumBonus,1 IsUseBonusFromRest, 1 IsUseBonusToRest,1 as IsUseBonusFromRest,
+	   0.00 as SumMoneyBonus, 0.00 as SumBonus,1 IsUseBonusFromRest, 1 IsUseBonusToRest,1 as IsUseBonusFromRest, 
      (select group_concat(ph.data) from ClientData ph where  p.Code_Client = ph.CodeClient and TypeData=1)   as BarCode,
        (select group_concat(ph.data) from ClientData ph where  p.Code_Client = ph.CodeClient and TypeData=2) as MainPhone,
        -- Phone_Add as PhoneAdd, 
-       BIRTHDAY as BirthDay, Status_Card as StatusCard 
+       BIRTHDAY as BirthDay, Status_Card as StatusCard,
+       td.IsСertificate
    from t
      join client p on (t.CodeClient=p.code_client)
-   left join TYPE_DISCOUNT td on td.TYPE_DISCOUNT=p.TYPE_DISCOUNT;;";
+   left join TYPE_DISCOUNT td on td.TYPE_DISCOUNT=p.TYPE_DISCOUNT;";
 
         readonly string SqlReplacePromotionSale = @"replace into PROMOTION_SALE (CODE_PS, NAME_PS, CODE_PATTERN, STATE, DATE_BEGIN, DATE_END, TYPE, TYPE_DATA, PRIORITY, SUM_ORDER, TYPE_WORK_COUPON, BAR_CODE_COUPON, DATE_CREATE, USER_CREATE) 
 values 
@@ -782,15 +800,16 @@ Sum_Fiscal as SumFiscal
    and CODE_PERIOD = @CodePeriod
    and CODE_RECEIPT = @CodeReceipt";
 
-        readonly string SqlGetInfoClientByReceipt =@"
-select COALESCE(c.TYPE_DISCOUNT,0) as TypeCard,c.BirthDay
+        readonly string SqlGetInfoClientByReceipt = @"
+select COALESCE(c.TYPE_DISCOUNT,0) as TypeCard,c.BirthDay,@IdWorkplace as IdWorkplace, @CodePeriod as CodePeriod,@CodeReceipt as CodeReceipt, r.code_client as CodeClient
     from receipt r
-
     join client c on r.code_client=c.code_client
 where ID_WORKPLACE = @IdWorkplace
    and CODE_PERIOD = @CodePeriod
    and CODE_RECEIPT = @CodeReceipt";
 
+
+   
         readonly string SqlViewReceiptWares = @"
 select wr.id_workplace as IdWorkplace, wr.code_period as CodePeriod, wr.code_receipt as CodeReceipt, wr.code_wares as CodeWares, w.Name_Wares as NameWares , wr.quantity as Quantity, ud.abr_unit as AbrUnit,
 Price as Price
@@ -1003,8 +1022,18 @@ select PSF.CODE_PS
   from wares w
   join PROMOTION_SALE_GROUP_WARES PSGW on PSGW.CODE_GROUP_WARES= w.CODE_GROUP
   join PROMOTION_SALE_FILTER PSF on (PSF.TYPE_GROUP_FILTER= 15 and PSF.RULE_GROUP_FILTER= -1 and PSF.CODE_DATA= PSGW.CODE_GROUP_WARES_PS)
-  where w.CODE_WARES=@CodeWares   
- 
+  where w.CODE_WARES=@CodeWares  
+union  --Виключення акцій з купонами
+  select PSF.CODE_PS
+	from PROMOTION_SALE_FILTER PSF 
+		left join ReceiptOneTime OT on (OT.CodePS=PSF.CODE_PS and OT.TypeData in (4,5) and IdWorkplace = @IdWorkplace and CodePeriod = @CodePeriod and CodeReceipt = @CodeReceipt)
+		where PSF.TYPE_GROUP_FILTER= 71 and OT.CodePS is null 
+  union -- вже використані одноразові акції.
+  select OT.CodePS as CODE_PS from ReceiptOneTime OT where OT.TypeData = 6 and OT.CodeData=@CodeClient and OT.IdWorkplace = @IdWorkplace and OT.CodePeriod = @CodePeriod and OT.CodeReceipt = @CodeReceipt
+ union -- Одноразова акція тільки для клієнта
+  select ps.CODE_PS from PROMOTION_SALE  ps   
+	where IsOneTime=1 and not EXISTS (  
+		select 1 from ReceiptOneTime OT where OT.CodePS=0 and OT.TypeData=6 and OT.CodeData= @CodeClient and OT.IdWorkplace = @IdWorkplace and OT.CodePeriod = @CodePeriod and OT.CodeReceipt = @CodeReceipt)
 ),
 PSEW as 
 (select psfe.CODE_PS from
@@ -1016,7 +1045,56 @@ where psf.code_ps  is null
 and EPS.code_ps  is null
 )
 --select* from PSEW
-select psd.CODE_PS as CodePs,psd.PRIORITY as Priority ,11 as TypeDiscont  ,p.PRICE_DEALER as Data,1 as IsIgnoreMinPrice, MaxQuantity as MaxQuantity
+ select psd.CODE_PS as CodePs,psd.PRIORITY as Priority ,11 as TypeDiscount  ,p.PRICE_DEALER as Data,1 as IsIgnoreMinPrice, MaxQuantity as MaxQuantity, ps.IsOneTime,'' as DataText
+ from  PROMOTION_SALE_DEALER psd
+ join PROMOTION_SALE ps on ps.CODE_PS=psd.CODE_PS
+ join PRICE p on psd.CODE_DEALER=p.CODE_DEALER and psd.CODE_WARES= p.CODE_WARES
+ LEFT JOIN EXEPTIONPS EPS ON  (psd.CODE_PS= EPS.CODE_PS)
+ WHERE EPS.CODE_PS IS NULL and
+ psd.CODE_WARES = @CodeWares and
+ datetime('now','localtime') between psd.Date_begin and psd.DATE_END
+ and p.PRICE_DEALER>0
+ union all -- По групам товарів
+ select PSF.CODE_PS,0 as priority , 13 as Type_discont, PSD.DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice,0 as MaxQuantity, ps.IsOneTime,psd.DATA_TEXT as DataText
+ from wares w
+ join PROMOTION_SALE_GROUP_WARES PSGW on PSGW.CODE_GROUP_WARES= w.CODE_GROUP
+ join PROMOTION_SALE_FILTER PSF on (PSF.TYPE_GROUP_FILTER= 15 and PSF.RULE_GROUP_FILTER= 1 and PSF.CODE_DATA= PSGW.CODE_GROUP_WARES_PS)
+ join PROMOTION_SALE ps on ps.CODE_PS=PSF.CODE_PS
+ join PROMOTION_SALE_DATA PSD on(PSD.CODE_WARES= 0 and PSD.CODE_PS= PSF.CODE_PS)
+ left join ExeptionPS EPS on(PSF.CODE_PS= EPS.CODE_PS)
+ where EPS.CODE_PS is null
+ and abs(PSD.TYPE_DISCOUNT) = PSD.TYPE_DISCOUNT * case when @IsPricePromotion=0 then -1 else 1 end
+ and w.CODE_WARES= @CodeWares
+ union all --По товарам
+ select PSF.CODE_PS,0 as priority , PSD.TYPE_DISCOUNT as TypeDiscount, PSD.DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice,0 as MaxQuantity, ps.IsOneTime,psd.DATA_TEXT as DataText
+ from PROMOTION_SALE_FILTER PSF
+ join PROMOTION_SALE_DATA PSD on (PSD.CODE_WARES= 0 and PSD.CODE_PS= PSF.CODE_PS)
+ join PROMOTION_SALE ps on ps.CODE_PS=PSF.CODE_PS
+ left join ExeptionPS EPS on(PSF.CODE_PS= EPS.CODE_PS)
+ where PSF.TYPE_GROUP_FILTER=11 and PSF.RULE_GROUP_FILTER= 1 and EPS.CODE_PS is null and PSD.TYPE_DISCOUNT<=20
+ and abs(PSD.TYPE_DISCOUNT) = PSD.TYPE_DISCOUNT * case when @IsPricePromotion=0 then -1 else 1 end
+ and PSF.CODE_DATA= @CodeWares 
+ union all --акції для всіх товарів.
+ select PSEW.CODE_PS,0 as priority , PSD.TYPE_DISCOUNT as Type_discont, PSD.DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice,0 as MaxQuantity, ps.IsOneTime,psd.DATA_TEXT as DataText
+ from PSEW
+ join PROMOTION_SALE_DATA PSD on (PSD.CODE_PS= PSEW.CODE_PS)
+ join PROMOTION_SALE ps on ps.CODE_PS=PSD.CODE_PS
+ where PSD.TYPE_DISCOUNT<=20 and PSD.TYPE_DISCOUNT!=14
+ and abs(PSD.TYPE_DISCOUNT) = PSD.TYPE_DISCOUNT * case when @IsPricePromotion=0 then -1 else 1 end
+ union all
+ select PSf.CODE_PS,0 as priority, PSD.TYPE_DISCOUNT as TypeDiscount, p.PRICE_DEALER as DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice,0 as MaxQuantity, ps.IsOneTime,psd.DATA_TEXT as DataText
+ from PROMOTION_SALE_FILTER PSF
+ join PROMOTION_SALE ps on ps.CODE_PS=PSF.CODE_PS
+ left join ExeptionPS EPS on  (PSF.CODE_PS=EPS.CODE_PS) 
+ join PROMOTION_SALE_DATA PSD on(PSD.CODE_PS= PSF.CODE_PS)
+ Join price p on  p.CODE_DEALER=PSD.DATA and p.code_wares=@CodeWares
+ where PSF.TYPE_GROUP_FILTER=12 and PSF.CODE_DATA_END<=@Quantity
+ and PSF.CODE_DATA= @CodeWares
+ and PSD.TYPE_DISCOUNT= 14
+ and abs(PSD.TYPE_DISCOUNT) = PSD.TYPE_DISCOUNT * case when @IsPricePromotion=0 then -1 else 1 end
+ and EPS.CODE_PS is null
+";
+/*@"select psd.CODE_PS as CodePs,psd.PRIORITY as Priority ,11 as TypeDiscont  ,p.PRICE_DEALER as Data,1 as IsIgnoreMinPrice, MaxQuantity as MaxQuantity
 from  PROMOTION_SALE_DEALER psd
  --join PROMOTION_SALE ps on ps.CODE_PS=psd.CODE_PS
  join PRICE p on psd.CODE_DEALER=p.CODE_DEALER and psd.CODE_WARES= p.CODE_WARES
@@ -1055,7 +1133,7 @@ select PSf.CODE_PS,0 as priority, PSD.TYPE_DISCOUNT as Type_discont, p.PRICE_DEA
   where PSF.TYPE_GROUP_FILTER=12 and PSF.CODE_DATA_END<=@Quantity
   and PSF.CODE_DATA= @CodeWares
   and PSD.TYPE_DISCOUNT= 14
-  and EPS.CODE_PS is null";
+  and EPS.CODE_PS is null";*/
 
         readonly string SqlGetPricePromotionSale2Category = @"select CODE_PS from PROMOTION_SALE_2_CATEGORY where CODE_WARES = @CodeWares";
 
@@ -1191,6 +1269,9 @@ from WARES_RECEIPT wrh
 left join RECEIPT r on (r.ID_WORKPLACE =wrh.Id_Workplace and r.CODE_PERIOD = wrh.Code_Period and r.CODE_RECEIPT = wrh.Code_Receipt)
 where r.STATE_RECEIPT=-1
  --and r.DATE_RECEIPT>=BeginDate and   wrh.DATE_CREATE<EndDate";
+
+        private readonly string SqlReplaceOneTime = @"replace into ReceiptOneTime(IdWorkplace, CodePeriod, CodeReceipt, CodePS, TypeData, CodeData) 
+            values (@IdWorkplace, @CodePeriod, @CodeReceipt, @CodePS, @TypeData, @CodeData )";
 
 
     }

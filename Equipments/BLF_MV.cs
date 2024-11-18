@@ -128,13 +128,15 @@ namespace Front.Equipments
 
         public string GetExciseStamp(string pBarCode)
         {
-            if (pBarCode.Contains("t.gov.ua"))
+            pBarCode = pBarCode.ToUpper();
+            if (pBarCode.Contains("T.GOV.UA"))
             {
-                string Res = pBarCode.Substring(pBarCode.IndexOf("t.gov.ua") + 9);
+                string Res = pBarCode.Substring(pBarCode.IndexOf("T.GOV.UA") + 9);
                 pBarCode = Res.Substring(0, Res.Length - 11);
             }
 
-            Regex regex = new Regex(@"^\w{4}[0-9]{6}?$");
+            Regex regex = new Regex(@"^[A-Z]{4}\d{6}$");
+            
             if (regex.IsMatch(pBarCode))
                 return pBarCode;
             return null;
@@ -155,7 +157,7 @@ namespace Front.Equipments
                         {
                             if (!res.Equals(MW.CurWares) && res.State >= 0)
                             {
-                                Global.Message?.Invoke($"Дана акцизна марка вже використана {res.CodePeriod} {res.IdWorkplace} Чек=>{res.CodeReceipt} CodeWares=>{res.CodeWares}!", eTypeMessage.Error);
+                                Global.Message?.Invoke($"Дана акцизна марка {pES} вже використана {res.CodePeriod} Касове місце=>{res.IdWorkplace} Чек=>{res.CodeReceipt} CodeWares=>{res.CodeWares}!", eTypeMessage.Error);
                                 return;
                             }
                         }
@@ -204,7 +206,7 @@ namespace Front.Equipments
             {
                 if (StartScan != DateTime.MinValue)
                 {
-                    Bl.SaveReceiptEvents(new List<ReceiptEvent>() { new ReceiptEvent(MW.curReceipt) { ResolvedAt = StartScan, EventType = eReceiptEventType.TimeScanReceipt, EventName = "Час сканування чека" } }, false);
+                    Bl.db.InsertReceiptEvent( new ReceiptEvent(MW.curReceipt) { ResolvedAt = StartScan, EventType = eReceiptEventType.TimeScanReceipt, EventName = "Час сканування чека" });
                     StartScan = DateTime.MinValue;
                 }
             }

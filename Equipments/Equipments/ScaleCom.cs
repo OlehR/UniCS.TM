@@ -10,6 +10,7 @@ using System.Timers;
 using Front.Equipments.Utils;
 using Front.Equipments.Virtual;
 using Utils;
+using System.Diagnostics.Metrics;
 
 namespace Front.Equipments
 {
@@ -65,6 +66,7 @@ namespace Front.Equipments
 
         public override void StartWeight()
         {
+            OnScalesData?.Invoke(0d, true);
             if (!SerialDevice.IsOpen)
                 SerialDevice.Open();
             Timer.Start();
@@ -80,6 +82,11 @@ namespace Front.Equipments
         {
             IsRead = true;
             SerialDevice?.Write(ModelScale == eScaleCom.ICS15 ? new byte[4] { 0, 0, 0, 3 } : new byte[1] { 0 });
+            if (CountZero++ >= 2)
+            {
+                OnScalesData?.Invoke(0d, true);
+                CountZero = 0;
+            }
         }
         //GetReadDataSync(new byte[4] {0,0,0,3},OnDataReceived2);
 
@@ -96,27 +103,27 @@ namespace Front.Equipments
             SerialDevice = portStreamWrapper;
         }
 
-        //int CountZero = 0;
+        int CountZero = 0;
         private bool OnDataReceived(byte[] data)
         {
-            string  Str = Encoding.ASCII.GetString(data);
-
+            CountZero = 0;
+            string  Str = Encoding.ASCII.GetString(data);            
             if (ModelScale == eScaleCom.ICS15)
             {
                 if (IsRead && Str.Length >= 6)
-                {
+                {                    
                     IsRead = false;
                     Str = Str.Substring(0, 6);
                     char[] charArray = Str.ToCharArray();
                     Array.Reverse(charArray);
                     if (double.TryParse(charArray, out double Weight))
                     {
-                        if (Weight == 0d)
+                        //if (Weight == 0d)
                             //{
                             // if (CountZero < 3)
                             //  {
                             //     CountZero++;
-                            return true;
+                           // return true;
                         // }
                         //}
                         //CountZero = 0;
