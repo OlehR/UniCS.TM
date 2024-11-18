@@ -1365,27 +1365,7 @@ namespace Front
         }
 
         //Тестовий варіант роботи замовлень!!!
-        private void _ButtonPayment(object sender, RoutedEventArgs e)
-        {
-            Blf.PayAndPrint();
-
-            //Task.Run(async () =>
-            //{
-            //    CommandAPI<Receipt> Command = new() { Command = eCommand.GetOrderNumber, Data = curReceipt };
-
-            //    try
-            //    {
-            //        var r = new SocketClient(IPAddress.Parse("127.0.0.1"), 3444);
-            //        var Ansver = await r.StartAsync(Command.ToJson());
-            //        SocketAnsver?.Invoke(eCommand.GetOrderNumber, MainWorkplace, Ansver);
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        FileLogger.WriteLogMessage(this, $"GeneralCondition DNSName=>{IPAddress.Parse("127.0.0.1")} {Command} ", ex);
-            //        SocketAnsver?.Invoke(eCommand.GetOrderNumber, MainWorkplace, new Status(ex));
-            //    }
-            //});
-        }
+        private void _ButtonPayment(object sender, RoutedEventArgs e) =>  Blf.PayAndPrint();  
 
         /// <summary>
         /// Добавляєм товар(сигарери) з списку цін
@@ -1488,7 +1468,8 @@ namespace Front
                     return;
                 }
             }
-
+            Blf.CustomWindowClickButton(res);
+            /*
             if (res != null)
             {
                 if (res.CustomWindow?.Id == eWindows.RestoreLastRecipt)
@@ -1579,7 +1560,7 @@ namespace Front
                 };
                 Bl.SetCustomWindows(r);
                 SetStateView(eStateMainWindows.WaitInput);
-            }
+            }*/
         }
 
         private void FindClientByPhoneClick(object sender, RoutedEventArgs e)

@@ -113,17 +113,17 @@ namespace ModelMID
                     Caption = "Назва товару";
                     AnswerRequired = true;
                     ValidationMask = @"^\w{4}[0-9]{6}?$";
-                    if (pObject is bool IsCashRegister == true)
+                    //if (pObject is bool IsCashRegister == true)
                         Buttons = new ObservableCollection<CustomButton>()
                         {
                             new CustomButton() {CustomWindow = this,  Id = 33, Text = "Підтвердження акцизу", IsNeedAdmin = true }
                         };
-                    else
+                    /*else
                         Buttons = new ObservableCollection<CustomButton>()
                         {
                             new CustomButton() {CustomWindow = this,  Id = 32, Text = "Акцизний код відсутній", IsNeedAdmin = false },
                             new CustomButton() {CustomWindow = this,  Id = 33, Text = "Підтвердження акцизу", IsNeedAdmin = true }
-                        };
+                        };*/
 
                     break;
                 case eWindows.PhoneClient:

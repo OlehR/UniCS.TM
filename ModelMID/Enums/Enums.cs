@@ -222,6 +222,10 @@ namespace ModelMID
     public enum eTypeDiscount
     {
         /// <summary>
+        /// "Бали" для розрахунку інших акцій.
+        /// </summary>
+        ForCountOtherPromotion=-9,
+        /// <summary>
         /// Текст Касиру.
         /// </summary>
         TextСashier = -1,
@@ -570,5 +574,12 @@ namespace ModelMID
         Warning,
         Information,
         Question
+    }
+
+    public enum eShopTM
+    {
+        Vopak = 1,
+        Spar = 2,       
+        Lubo = 3
     }
 }

@@ -234,6 +234,17 @@ CREATE UNIQUE INDEX id_RECEIPT ON RECEIPT(CODE_RECEIPT, ID_WORKPLACE, CODE_PERIO
 	);
 CREATE UNIQUE INDEX id_WARES_RECEIPT_PROMOTION ON WARES_RECEIPT_PROMOTION(CODE_RECEIPT, CODE_WARES, CODE_PS, NUMBER_GROUP, ID_WORKPLACE, CODE_PERIOD, BARCODE_2_CATEGORY);
 
+CREATE TABLE WaresReceiptPromotionNoPrice(
+            IdWorkplace INTEGER  NOT NULL,
+            CodePeriod INTEGER  NOT NULL,
+            CodeReceipt INTEGER  NOT NULL,
+            CodeWares INTEGER  NOT NULL,
+            CodePS INTEGER  NOT NULL,
+            TypeDiscount INTEGER  NOT NULL,
+            Data NUMBER   NOT NULL
+	);
+CREATE INDEX id_WaresReceiptPromotionNoPrice ON WaresReceiptPromotionNoPrice(IdWorkplace,CodePeriod,CodeReceipt,CodeWares);
+
         CREATE TABLE WARES_RECEIPT_HISTORY(
             ID_WORKPLACE INTEGER  NOT NULL,
             CODE_PERIOD INTEGER  NOT NULL,
@@ -1053,7 +1064,7 @@ and EPS.code_ps  is null
  WHERE EPS.CODE_PS IS NULL and
  psd.CODE_WARES = @CodeWares and
  datetime('now','localtime') between psd.Date_begin and psd.DATE_END
- and p.PRICE_DEALER>0
+ and p.PRICE_DEALER>0 and @IsPricePromotion=1
  union all -- По групам товарів
  select PSF.CODE_PS,0 as priority , 13 as Type_discont, PSD.DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice,0 as MaxQuantity, ps.IsOneTime,psd.DATA_TEXT as DataText
  from wares w

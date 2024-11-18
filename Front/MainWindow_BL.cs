@@ -388,32 +388,7 @@ namespace Front
                 return;
             }
         }
-
-        /*public void PayAndPrint()
-        {
-            if (curReceipt.StateReceipt < eStateReceipt.Pay && curReceipt.CountWeightGoods > 0 && !curReceipt.Wares.Any(x => x.CodeWares == Global.Settings.CodePackagesBag) && !curReceipt.IsPakagesAded && curReceipt.TypeReceipt == eTypeReceipt.Sale)
-            {
-                SetStateView(eStateMainWindows.AddMissingPackage);
-                return;
-            }
-
-            if (curReceipt.StateReceipt < eStateReceipt.Pay && curReceipt.AgeRestrict > 0 && curReceipt.IsConfirmAgeRestrict == false)
-            {
-                SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ConfirmAge);
-                return;
-            }            
-            EquipmentInfo = string.Empty;
-            OnPropertyChanged(nameof(EquipmentInfo));
-            if (Global.TypeWorkplaceCurrent == eTypeWorkplace.CashRegister && (curReceipt.StateReceipt == eStateReceipt.Prepare || curReceipt.StateReceipt == eStateReceipt.StartPay))
-            {
-                PaymentWindow.UpdatePaymentWindow();
-                SetStateView(eStateMainWindows.ChoicePaymentMethod);
-            }
-            else
-            {
-                var task = Task.Run(() => Blf.PrintAndCloseReceipt());
-            }
-        }*/
+        
 
         Status CallBackApi(string pDataApi)
         {

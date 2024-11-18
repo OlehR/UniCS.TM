@@ -59,7 +59,8 @@ CASE WHEN kard_disc_type_id IN (0xBC8CFC297E763BE448E1098F069E2D9A,0xBE42F21E3C6
         string SqlGetDimClient = @"SELECT cl.CodeClient, cl.NameClient, cl.TypeDiscount, cl.PersentDiscount, cl.BarCode, cl.StatusCard, cl.ViewCode, cl.BirthDay,
   ISNULL(cl.MainPhone, cl.Phone) AS MainPhone, Phone as PhoneAdd
   FROM client cl WITH (NOLOCK)
-  WHERE cl.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull= 1";
+  WHERE (cl.CodeTM IS NULL OR  cl.CodeTM = CASE WHEN cl.CodeTM=0 THEN cl.CodeTM ELSE @ShopTM END )
+  AND (cl.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull= 1)";
 
         string SqlGetClientData = @"SELECT * FROM ClientData  cl WITH (NOLOCK) WHERE cl.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull=1";
 
@@ -565,5 +566,6 @@ CASE WHEN [is_leaf]=1 THEN 4 else 3 END  AS TypeData, dn.code AS Data
         public int MessageNoMin { get; set; }
         public int MessageNoMax { get; set; }
         public int IdWorkPlace { get; set; }
+        public eShopTM ShopTM { get; set; }
     }
 }

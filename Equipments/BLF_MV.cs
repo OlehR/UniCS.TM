@@ -288,9 +288,8 @@ namespace Front.Equipments
             Bl.AddEventAge(MW.curReceipt);
         }
 
-        private void CustomWindowClickButton(CustomButton res)
+        public void CustomWindowClickButton(CustomButton res)
         {
-
             if (res != null)
             {
                 if (res.CustomWindow?.Id == eWindows.RestoreLastRecipt)
@@ -298,6 +297,7 @@ namespace Front.Equipments
                     if (res.Id == 1)
                     {
                         var R = Bl.GetLastReceipt();
+                        SetCurReceipt(R);
                         Bl.db.RecalcPriceAsync(new IdReceiptWares(R));
                         SetStateView(eStateMainWindows.WaitInput);
                     }
@@ -308,7 +308,8 @@ namespace Front.Equipments
                         SetStateView(eStateMainWindows.StartWindow);
                     }
                     return;
-                }
+                }              
+                
                 if (res.CustomWindow?.Id == eWindows.ConfirmWeight)
                 {
                     if (res.Id == -1)
@@ -343,9 +344,9 @@ namespace Front.Equipments
                 {
                     if (res.Id == 32)
                     {
-                        //Не зрозуміло Як пробити.
                         MW.IsWaitAdminTitle = true;
-                        //WaitAdminTitle.Visibility = Visibility.Visible;
+                        //TMP!!!!
+                        //MW.WaitAdminTitle.Visibility = Visibility.Visible;
                         EF.SetColor(System.Drawing.Color.Violet);
                         MW.s.Play(eTypeSound.WaitForAdministrator);
                     }
@@ -364,10 +365,11 @@ namespace Front.Equipments
                     if (res.Id == 1)
                         Task.Run(new Action(() => { Bl.AddEventAge(MW.curReceipt); PayAndPrint(); }));
                     return;
-                }
+                }               
+
                 if (res.CustomWindow?.Id == eWindows.UseBonus)
                 {
-                    //Напевно краще зробити через подіхї.
+                    //Напевно краще зробити через подіхї. MW.LastVerifyCode = Bl.ds.GetVerifySMS(MW.ClientPhoneNumvers[(int)res.Id]);
                     MW.LastVerifyCode = Bl.ds.GetVerifySMS(res.Text);
                     Global.Message?.Invoke($"Код підтвердження надіслано за номером {res.Text}", eTypeMessage.Information);
                     return;
@@ -378,13 +380,13 @@ namespace Front.Equipments
                     idReceipt = MW.curReceipt,
                     Id = res.CustomWindow?.Id ?? eWindows.NoDefinition,
                     IdButton = res.Id,
-                    // необхідно переробити на res.CustomWindow?.InputText
-                    Text = res.CustomWindow?.InputText,//TextBoxCustomWindows.Text,
+                    Text = res.CustomWindow?.InputText, 
                     ExtData = res.CustomWindow?.Id == eWindows.ConfirmWeight ? MW.CS?.RW : null
                 };
                 Bl.SetCustomWindows(r);
                 SetStateView(eStateMainWindows.WaitInput);
             }
+           
         }
 
         Status CallBackApi(string pDataApi)
