@@ -221,5 +221,17 @@ namespace ModelMID
         /// Отримати номер замовлення для друку клієнта
         /// </summary>
         GetOrderNumber,
+        /// <summary>
+        /// Зміна статусу замовлення
+        /// </summary>
+        ChangeOrderState,
+        /// <summary>
+        /// Отримання списку всіх замовлень
+        /// </summary>
+        GetAllOrders,
+        /// <summary>
+        /// Отримати активні замовлення (всі окрім виконаних)
+        /// </summary>
+        GetActiveOrders,
     }
 }
