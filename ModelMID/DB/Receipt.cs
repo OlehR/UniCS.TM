@@ -1,7 +1,9 @@
 ﻿using ModelMID.DB;
 using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Utils;
 
@@ -76,6 +78,17 @@ namespace ModelMID
         /// </summary>
         public decimal SumRest { get; set; }
         public decimal SumTotal { get { return SumReceipt - SumDiscount - SumBonus - SumWallet; } }
+        IEnumerable<string> _BankName;
+        public IEnumerable<string> BankName
+        {
+            get { return Payment != null && Payment.Any(el => el.TypePay == eTypePay.Card) ? Payment.Select(el=>el.CodeBank.ToString()) : new List<string>(); }
+            set
+            {
+                _BankName = value;
+            }
+        }
+      
+
         decimal _SumCash;
         /// <summary>
         /// Оплачено Готівкою
@@ -130,7 +143,7 @@ namespace ModelMID
                 if (RefundId == null)
                     return null;
                 var d = Convert.ToInt32(Math.Floor((RefundId.DTPeriod - new DateTime(2019, 01, 01)).TotalDays)).ToString("D4");
-                return Prefix + d + CodeReceiptRefund.ToString("D4");//PrefixWarehouse + Global.GetNumberCashDeskByIdWorkplace(IdWorkplaceRefund)
+                return Prefix + d + CodeReceiptRefund.ToString("D4");//PrefixWarehouse + GlobaQl.GetNumberCashDeskByIdWorkplace(IdWorkplaceRefund)
             }
         }
         public int IdWorkplaceRefund { get { return RefundId == null ? 0 : RefundId.IdWorkplace; } set { if (RefundId == null) RefundId = new IdReceipt(); RefundId.IdWorkplace = value; } }
@@ -151,7 +164,7 @@ namespace ModelMID
                     decimal SumWallet = Math.Round(Payment?.Where(r => r.TypePay == eTypePay.Wallet).Sum(r => r.SumPay) ?? 0, 2);
                     if (SumWallet < 0)
                     {
-                        var r = res.ToList();
+                        var r = res==null?new List<ReceiptWares>():res.ToList();
                         r.Add(new ReceiptWares(this)
                         { CodeWares = Global.Settings.CodeWaresWallet, Quantity = 1, CodeUnit = 19, CodeDefaultUnit = 19, Sum = -SumWallet, PriceDealer = -SumWallet, NameWares = "Скарбничка", TypeVat = 2, PercentVat = 20 });
                         res = r;
@@ -164,7 +177,7 @@ namespace ModelMID
 
         public IEnumerable<Payment> _Payment;
         public IEnumerable<Payment> Payment { get { return IdWorkplacePay == 0 || _Payment == null ? _Payment : _Payment.Where(el => el.IdWorkplacePay == IdWorkplacePay); } set { _Payment = value; } }
-
+       
         public IEnumerable<ReceiptEvent> ReceiptEvent { get; set; }
 
         //public bool _IsLockChange = false;
