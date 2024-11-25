@@ -16,17 +16,15 @@ namespace Front.Equipments
 {
     public partial class BLF
     {
-
-
         public void PayAndPrint()
         {
             //MW.curReceipt.Client.SumMoneyBonus = 100;
-            /*var xx = Bl.db.GetNoPricePromorion(MW.curReceipt);
-            if(xx.Any())
+            var xx = Bl.db.GetNoPricePromorion(MW.curReceipt).Where(x => x.TypeDiscount == eTypeDiscount.TextСashier).FirstOrDefault();
+            if(MW.curReceipt?.Client!=null && xx!=null)
             {
-                SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, new CustomWindow(eWindows.Info, xx.FirstOrDefault().DataText));
+                SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, new CustomWindow(eWindows.OneTimePromotion, xx));
                 return;
-            } */           
+            }          
 
             if (Global.Settings.MaxSumReceipt > 0 && MW.curReceipt.SumTotal > Global.Settings.MaxSumReceipt)
             {

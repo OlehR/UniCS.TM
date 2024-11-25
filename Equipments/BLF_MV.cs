@@ -292,6 +292,13 @@ namespace Front.Equipments
         {
             if (res != null)
             {
+                if (res.CustomWindow?.Id == eWindows.OneTimePromotion && MW.curReceipt?.Client!=null)
+                {
+                    Bl.db.ReplaceOneTime(new OneTime(MW.curReceipt) {CodePS = res.Id,CodeData = MW.curReceipt?.Client?.CodeClient??0,TypeData = eTypeCode.Client });
+                    PayAndPrint();
+                    return;
+                }
+
                 if (res.CustomWindow?.Id == eWindows.RestoreLastRecipt)
                 {
                     if (res.Id == 1)

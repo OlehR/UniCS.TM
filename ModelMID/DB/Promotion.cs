@@ -27,6 +27,7 @@ namespace ModelMID
         public string BarCodeCoupon { get; set; }
         public DateTime DateCreate { get; set; }
         public int UserCreate { get; set; }
+        public bool IsOneTime { get; set; }
     }
     public class PromotionSaleData
     {
@@ -56,6 +57,7 @@ namespace ModelMID
         public decimal DataAdditionalCondition { get; set; }
         public DateTime DateCreate { get; set; }
         public int UserCreate { get; set; }
+        public string DataText { get; set; }
     }
 
     public class PromotionSaleFilter

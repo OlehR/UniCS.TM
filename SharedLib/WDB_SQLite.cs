@@ -837,9 +837,8 @@ insert into RECEIPT_Event(
         public bool ReplacePromotionSaleData(IEnumerable<PromotionSaleData> parData, SQLite pDB)
         {
             pDB.ExecuteNonQuery("delete from PROMOTION_SALE_DATA", new { }, pDB.Transaction);
-            string SqlReplacePromotionSaleData = @"
-replace into PROMOTION_SALE_DATA(CODE_PS, NUMBER_GROUP, CODE_WARES, USE_INDICATIVE, TYPE_DISCOUNT, ADDITIONAL_CONDITION, DATA, DATA_ADDITIONAL_CONDITION)
-                          values(@CodePS, @NumberGroup, @CodeWares, @UseIndicative, @TypeDiscount, @AdditionalCondition, @Data, @DataAdditionalCondition)";
+            string SqlReplacePromotionSaleData = @"replace into PROMOTION_SALE_DATA(CODE_PS, NUMBER_GROUP, CODE_WARES, USE_INDICATIVE, TYPE_DISCOUNT, ADDITIONAL_CONDITION, DATA, DATA_ADDITIONAL_CONDITION,Data_Text)
+                          values(@CodePS, @NumberGroup, @CodeWares, @UseIndicative, @TypeDiscount, @AdditionalCondition, @Data, @DataAdditionalCondition,@DataText)";
             return pDB.BulkExecuteNonQuery<PromotionSaleData>(SqlReplacePromotionSaleData, parData, true) > 0;
         }
 
@@ -1043,6 +1042,7 @@ Where ID_WORKPLACE = @IdWorkplace
                     r.ReceiptEvent = GetReceiptEvent(pIdReceipt);
                     r.LogRROs = GetLogRRO(pIdReceipt);
                     r.OneTime = GetOneTime(pIdReceipt);
+                    r.WaresReceiptPromotionNoPrice =GetWaresReceiptPromotionNoPrice(pIdReceipt);
                 }
                 return r;
             }
@@ -1407,20 +1407,56 @@ from WaresLink wl join  wares w on wl.CodeWares = w.Code_wares where wl.CodeWare
             par.IsPricePromotion = pIsPricePromotion;
             return par;
         }
-        public IEnumerable<PricePromotion> GetNoPricePromorion(IdReceipt pIdR)
+
+        public IEnumerable<PricePromotion> GetNoPricePromorion( Receipt pIdR)
         {
             List<PricePromotion> Res = new List<PricePromotion>();
             ParameterPromotion par = GetParameterPromotion(pIdR, false);
 
             var r = ViewReceiptWares(pIdR);
+            DeleteWaresReceiptPromotionNoPrice(pIdR);
             foreach (var RW in r)
             {
                 par.CodeWares = RW.CodeWares;
                 par.Quantity = RW.Quantity;
+                
                 var res=db.Execute<ParameterPromotion, PricePromotion>(SqlGetPrice, par);
-                Res.AddRange(res);
+
+                if (res?.Any() == true)
+                {
+                    Res.AddRange(res);
+                    foreach (var el in Res)
+                    {
+                        if (el.TypeDiscount == eTypeDiscount.ForCountOtherPromotion)
+                            ReplaceWaresReceiptPromotionNoPrice(new WaresReceiptPromotionNoPrice(RW) { CodePS = el.CodePs, Data = RW.Quantity, TypeDiscount = el.TypeDiscount });
+                    }
+                }
             }             
             return Res;
         }
+
+        public bool ReplaceWaresReceiptPromotionNoPrice(WaresReceiptPromotionNoPrice pNP)
+        {
+            string SQL = @"replace into WaresReceiptPromotionNoPrice (IdWorkplace, CodePeriod, CodeReceipt, CodeWares, CodePS, TypeDiscount, Data) values (@IdWorkplace,@CodePeriod,@CodeReceipt,@CodeWares,@CodePS,@TypeDiscount,@Data)";
+            return dbRC.ExecuteNonQuery<WaresReceiptPromotionNoPrice>(SQL, pNP) > 0;
+        }
+
+        public IEnumerable<WaresReceiptPromotionNoPrice> GetWaresReceiptPromotionNoPrice(IdReceipt pIdR)
+        {
+            string Sql = @"select IdWorkplace, CodePeriod, CodeReceipt, CodeWares, CodePS, TypeDiscount, Data from WaresReceiptPromotionNoPrice where IdWorkplace = @IdWorkplace and CodePeriod = @CodePeriod and CodeReceipt = @CodeReceipt";
+            return dbRC.Execute<IdReceipt, WaresReceiptPromotionNoPrice>(Sql, pIdR);
+        }
+        public bool DeleteWaresReceiptPromotionNoPrice(IdReceipt pIdR)
+        {
+            string Sql = @"delete from WaresReceiptPromotionNoPrice where IdWorkplace = @IdWorkplace and CodePeriod = @CodePeriod and CodeReceipt = @CodeReceipt";
+            return dbRC.ExecuteNonQuery<IdReceipt>(Sql, pIdR)>0;
+        }
+
+        /*public IEnumerable<long> GetParamPrice(ParameterPromotion par)
+        {
+            string SQL = SqlGetPriceFilter+ "\nSelect CODE_PS from ExeptionPS where CODE_PS=20240788";
+            return db.Execute<ParameterPromotion, long>(SQL, par);
+        }*/
+
     }
 }

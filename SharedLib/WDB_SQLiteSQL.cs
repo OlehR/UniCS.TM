@@ -714,9 +714,9 @@ select p.code_client as CodeClient, p.name_client as NameClient, 0 as TypeDiscou
      join client p on (t.CodeClient=p.code_client)
    left join TYPE_DISCOUNT td on td.TYPE_DISCOUNT=p.TYPE_DISCOUNT;";
 
-        readonly string SqlReplacePromotionSale = @"replace into PROMOTION_SALE (CODE_PS, NAME_PS, CODE_PATTERN, STATE, DATE_BEGIN, DATE_END, TYPE, TYPE_DATA, PRIORITY, SUM_ORDER, TYPE_WORK_COUPON, BAR_CODE_COUPON, DATE_CREATE, USER_CREATE) 
+        readonly string SqlReplacePromotionSale = @"replace into PROMOTION_SALE (CODE_PS, NAME_PS, CODE_PATTERN, STATE, DATE_BEGIN, DATE_END, TYPE, TYPE_DATA, PRIORITY, SUM_ORDER, TYPE_WORK_COUPON, BAR_CODE_COUPON, IsOneTime, DATE_CREATE, USER_CREATE) 
 values 
-     (@CodePS, @NamePS, @CodePattern,@State, @DateBegin, @DateEnd,@Type, @TypeData,@Priority, @SumOrder, @TypeWorkCoupon,  @BarCodeCoupon,  @DateCreate, @UserCreate);";
+     (@CodePS, @NamePS, @CodePattern,@State, @DateBegin, @DateEnd,@Type, @TypeData,@Priority, @SumOrder, @TypeWorkCoupon,  @BarCodeCoupon, @IsOneTime, @DateCreate, @UserCreate);";
 
         readonly string SqlGetLogRRO = @"Select ID_WORKPLACE as IdWorkplace,CODE_PERIOD as CodePeriod,CODE_RECEIPT as CodeReceipt,ID_WORKPLACE_PAY as IdWorkplacePay,
       FiscalNumber as FiscalNumber, Number_Operation as NumberOperation,Type_Operation as TypeOperation, SUM as SUM,
@@ -1001,7 +1001,7 @@ values(@IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit, 0, @Quant
            where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt
                        and code_wares =  case when @CodeWares = 0 then code_wares else @CodeWares end;";
 
-        readonly string SqlGetPrice = @"
+        readonly string SqlGetPriceFilter = @"
 With ExeptionPS as 
 (select CODE_PS --,51 --Склади
     from PROMOTION_SALE_FILTER
@@ -1034,7 +1034,7 @@ select PSF.CODE_PS
   join PROMOTION_SALE_GROUP_WARES PSGW on PSGW.CODE_GROUP_WARES= w.CODE_GROUP
   join PROMOTION_SALE_FILTER PSF on (PSF.TYPE_GROUP_FILTER= 15 and PSF.RULE_GROUP_FILTER= -1 and PSF.CODE_DATA= PSGW.CODE_GROUP_WARES_PS)
   where w.CODE_WARES=@CodeWares  
-union  --Виключення акцій з купонами
+ union  --Виключення акцій з купонами
   select PSF.CODE_PS
 	from PROMOTION_SALE_FILTER PSF 
 		left join ReceiptOneTime OT on (OT.CodePS=PSF.CODE_PS and OT.TypeData in (4,5) and IdWorkplace = @IdWorkplace and CodePeriod = @CodePeriod and CodeReceipt = @CodeReceipt)
@@ -1045,6 +1045,7 @@ union  --Виключення акцій з купонами
   select ps.CODE_PS from PROMOTION_SALE  ps   
 	where IsOneTime=1 and not EXISTS (  
 		select 1 from ReceiptOneTime OT where OT.CodePS=0 and OT.TypeData=6 and OT.CodeData= @CodeClient and OT.IdWorkplace = @IdWorkplace and OT.CodePeriod = @CodePeriod and OT.CodeReceipt = @CodeReceipt)
+
 ),
 PSEW as 
 (select psfe.CODE_PS from
@@ -1054,8 +1055,8 @@ PSEW as
  left join ExeptionPS  EPS on psfe.CODE_PS=EPS.CODE_PS
 where psf.code_ps  is null
 and EPS.code_ps  is null
-)
---select* from PSEW
+)";
+        string SqlGetPrice { get { return SqlGetPriceFilter + @"
  select psd.CODE_PS as CodePs,psd.PRIORITY as Priority ,11 as TypeDiscount  ,p.PRICE_DEALER as Data,1 as IsIgnoreMinPrice, MaxQuantity as MaxQuantity, ps.IsOneTime,'' as DataText
  from  PROMOTION_SALE_DEALER psd
  join PROMOTION_SALE ps on ps.CODE_PS=psd.CODE_PS
@@ -1082,9 +1083,10 @@ and EPS.code_ps  is null
  join PROMOTION_SALE_DATA PSD on (PSD.CODE_WARES= 0 and PSD.CODE_PS= PSF.CODE_PS)
  join PROMOTION_SALE ps on ps.CODE_PS=PSF.CODE_PS
  left join ExeptionPS EPS on(PSF.CODE_PS= EPS.CODE_PS)
- where PSF.TYPE_GROUP_FILTER=11 and PSF.RULE_GROUP_FILTER= 1 and EPS.CODE_PS is null and PSD.TYPE_DISCOUNT<=20
+ where PSF.TYPE_GROUP_FILTER=11 and PSF.RULE_GROUP_FILTER= 1  and PSD.TYPE_DISCOUNT<=20
  and abs(PSD.TYPE_DISCOUNT) = PSD.TYPE_DISCOUNT * case when @IsPricePromotion=0 then -1 else 1 end
  and PSF.CODE_DATA= @CodeWares 
+ and EPS.CODE_PS is null
  union all --акції для всіх товарів.
  select PSEW.CODE_PS,0 as priority , PSD.TYPE_DISCOUNT as Type_discont, PSD.DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice,0 as MaxQuantity, ps.IsOneTime,psd.DATA_TEXT as DataText
  from PSEW
@@ -1104,7 +1106,7 @@ and EPS.code_ps  is null
  and PSD.TYPE_DISCOUNT= 14
  and abs(PSD.TYPE_DISCOUNT) = PSD.TYPE_DISCOUNT * case when @IsPricePromotion=0 then -1 else 1 end
  and EPS.CODE_PS is null
-";
+"; } }
 /*@"select psd.CODE_PS as CodePs,psd.PRIORITY as Priority ,11 as TypeDiscont  ,p.PRICE_DEALER as Data,1 as IsIgnoreMinPrice, MaxQuantity as MaxQuantity
 from  PROMOTION_SALE_DEALER psd
  --join PROMOTION_SALE ps on ps.CODE_PS=psd.CODE_PS

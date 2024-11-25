@@ -21,8 +21,8 @@ namespace ModelMID
         Info,
         BlockSale,
         UseBonus,
-        MaxSumReceipt
-
+        MaxSumReceipt,
+        OneTimePromotion
     }
 
     public class CustomWindow
@@ -179,6 +179,14 @@ namespace ModelMID
                     Text = $"Сума чека не може перевищувати {v} грн" ;
                     AnswerRequired = true;
                     break;
+                case eWindows.OneTimePromotion:
+                    Caption = "Увага!";
+                    PricePromotion r = pObject as PricePromotion;
+                    Text = r.DataText;
+                    Buttons = new ObservableCollection<CustomButton>() {
+                        new CustomButton() { CustomWindow = this, Id = r.CodePs, Text = "Повідомлено", IsNeedAdmin = false }};
+                    AnswerRequired = true;
+                    break;
                 default:
                     Buttons = new ObservableCollection<CustomButton>();
                     break;
@@ -242,7 +250,7 @@ namespace ModelMID
         /// <summary>
         /// Текст вікні
         /// </summary>
-        public string Text { get; set; }
+        public string Text { get; set; }      
 
         public CustomWindow CustomWindow { get; set; }
     }

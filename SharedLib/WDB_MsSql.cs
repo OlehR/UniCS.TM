@@ -30,7 +30,7 @@ namespace SharedLib
             int varMessageNoMax = db.ExecuteScalar<int>(SqlGetMessageNo);
             int varMessageNoMin = pDB.GetConfig<int>("MessageNo") + 1;
 
-            return varMessageNoMin;//!!!!!!!!!!!!!!TMP
+            //return varMessageNoMin;//!!!!!!!!!!!!!!TMP
             Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} LoadData varMessageNoMin={varMessageNoMin} varMessageNoMax={varMessageNoMax}");
 
             var oWarehouse = new pWarehouse() { CodeWarehouse = Global.CodeWarehouse, CodeWarehouseLink=Global.Settings?.IdWorkPlaceLink??0 };
