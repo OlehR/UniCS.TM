@@ -1042,7 +1042,7 @@ Where ID_WORKPLACE = @IdWorkplace
                     r.ReceiptEvent = GetReceiptEvent(pIdReceipt);
                     r.LogRROs = GetLogRRO(pIdReceipt);
                     r.OneTime = GetOneTime(pIdReceipt);
-                    r.WaresReceiptPromotionNoPrice =GetWaresReceiptPromotionNoPrice(pIdReceipt);
+                    r.ReceiptWaresPromotionNoPrice =GetReceiptWaresPromotionNoPrice(pIdReceipt);
                 }
                 return r;
             }
@@ -1414,7 +1414,7 @@ from WaresLink wl join  wares w on wl.CodeWares = w.Code_wares where wl.CodeWare
             ParameterPromotion par = GetParameterPromotion(pIdR, false);
 
             var r = ViewReceiptWares(pIdR);
-            DeleteWaresReceiptPromotionNoPrice(pIdR);
+            
             foreach (var RW in r)
             {
                 par.CodeWares = RW.CodeWares;
@@ -1424,31 +1424,32 @@ from WaresLink wl join  wares w on wl.CodeWares = w.Code_wares where wl.CodeWare
 
                 if (res?.Any() == true)
                 {
+                    DeleteReceiptWaresPromotionNoPrice(pIdR, eTypeDiscount.ForCountOtherPromotion);
                     Res.AddRange(res);
                     foreach (var el in Res)
                     {
                         if (el.TypeDiscount == eTypeDiscount.ForCountOtherPromotion)
-                            ReplaceWaresReceiptPromotionNoPrice(new WaresReceiptPromotionNoPrice(RW) { CodePS = el.CodePs, Data = RW.Quantity, TypeDiscount = el.TypeDiscount });
+                            ReplaceReceiptWaresPromotionNoPrice(new ReceiptWaresPromotionNoPrice(RW) { CodePS = el.CodePs, Data = RW.Quantity, TypeDiscount = el.TypeDiscount });
                     }
                 }
             }             
             return Res;
         }
 
-        public bool ReplaceWaresReceiptPromotionNoPrice(WaresReceiptPromotionNoPrice pNP)
+        public bool ReplaceReceiptWaresPromotionNoPrice(ReceiptWaresPromotionNoPrice pNP)
         {
-            string SQL = @"replace into WaresReceiptPromotionNoPrice (IdWorkplace, CodePeriod, CodeReceipt, CodeWares, CodePS, TypeDiscount, Data) values (@IdWorkplace,@CodePeriod,@CodeReceipt,@CodeWares,@CodePS,@TypeDiscount,@Data)";
-            return dbRC.ExecuteNonQuery<WaresReceiptPromotionNoPrice>(SQL, pNP) > 0;
+            string SQL = @"replace into ReceiptWaresPromotionNoPrice (IdWorkplace, CodePeriod, CodeReceipt, CodeWares, CodePS, TypeDiscount, Data,DataEx) values (@IdWorkplace,@CodePeriod,@CodeReceipt,@CodeWares,@CodePS,@TypeDiscount,@Data,@DataEx)";
+            return dbRC.ExecuteNonQuery<ReceiptWaresPromotionNoPrice>(SQL, pNP) > 0;
         }
 
-        public IEnumerable<WaresReceiptPromotionNoPrice> GetWaresReceiptPromotionNoPrice(IdReceipt pIdR)
+        public IEnumerable<ReceiptWaresPromotionNoPrice> GetReceiptWaresPromotionNoPrice(IdReceipt pIdR)
         {
-            string Sql = @"select IdWorkplace, CodePeriod, CodeReceipt, CodeWares, CodePS, TypeDiscount, Data from WaresReceiptPromotionNoPrice where IdWorkplace = @IdWorkplace and CodePeriod = @CodePeriod and CodeReceipt = @CodeReceipt";
-            return dbRC.Execute<IdReceipt, WaresReceiptPromotionNoPrice>(Sql, pIdR);
+            string Sql = @"select IdWorkplace, CodePeriod, CodeReceipt, CodeWares, CodePS, TypeDiscount, Data from ReceiptWaresPromotionNoPrice where IdWorkplace = @IdWorkplace and CodePeriod = @CodePeriod and CodeReceipt = @CodeReceipt";
+            return dbRC.Execute<IdReceipt, ReceiptWaresPromotionNoPrice>(Sql, pIdR);
         }
-        public bool DeleteWaresReceiptPromotionNoPrice(IdReceipt pIdR)
+        public bool DeleteReceiptWaresPromotionNoPrice(IdReceipt pIdR, eTypeDiscount pTD)
         {
-            string Sql = @"delete from WaresReceiptPromotionNoPrice where IdWorkplace = @IdWorkplace and CodePeriod = @CodePeriod and CodeReceipt = @CodeReceipt";
+            string Sql = $@"delete from ReceiptWaresPromotionNoPrice where IdWorkplace = @IdWorkplace and CodePeriod = @CodePeriod and CodeReceipt = @CodeReceipt and TypeDiscount={(int)pTD}";
             return dbRC.ExecuteNonQuery<IdReceipt>(Sql, pIdR)>0;
         }
 

@@ -22,7 +22,7 @@ namespace ModelMID
         BlockSale,
         UseBonus,
         MaxSumReceipt,
-        OneTimePromotion
+        NoPricePromotion
     }
 
     public class CustomWindow
@@ -73,11 +73,13 @@ namespace ModelMID
         /// </summary>
         public bool IsCancelButton { get; set; } = true;
 
+        public object DataEx { get; set; } = true;
         public CustomWindow() { }
 
         public CustomWindow(eWindows pW, object pObject = null)
         {
             Id = pW;
+            DataEx = pObject;
             switch (pW)
             {
                 case eWindows.RestoreLastRecipt:
@@ -114,7 +116,7 @@ namespace ModelMID
                     AnswerRequired = true;
                     ValidationMask = @"^\w{4}[0-9]{6}?$";
                     //if (pObject is bool IsCashRegister == true)
-                        Buttons = new ObservableCollection<CustomButton>()
+                    Buttons = new ObservableCollection<CustomButton>()
                         {
                             new CustomButton() {CustomWindow = this,  Id = 33, Text = "Підтвердження акцизу", IsNeedAdmin = true }
                         };
@@ -176,15 +178,28 @@ namespace ModelMID
                 case eWindows.MaxSumReceipt:
                     Caption = "Увага!";
                     decimal v = Convert.ToDecimal(pObject);
-                    Text = $"Сума чека не може перевищувати {v} грн" ;
+                    Text = $"Сума чека не може перевищувати {v} грн";
                     AnswerRequired = true;
                     break;
-                case eWindows.OneTimePromotion:
+                case eWindows.NoPricePromotion:
                     Caption = "Увага!";
                     PricePromotion r = pObject as PricePromotion;
-                    Text = r.DataText;
-                    Buttons = new ObservableCollection<CustomButton>() {
-                        new CustomButton() { CustomWindow = this, Id = r.CodePs, Text = "Повідомлено", IsNeedAdmin = false }};
+                    
+                    var TextButton = r.DataText.Split(';');
+                    Text = TextButton[0];
+                    if (TextButton?.Count() > 1)
+                    {
+                        Buttons = new ObservableCollection<CustomButton>();                        
+                        for (int i = 1; i < TextButton?.Count(); i++)
+                            Buttons.Add(new CustomButton() { CustomWindow = this, Id = i, Text = TextButton[i], IsNeedAdmin = false });
+                    }
+                    else
+                    {
+                        Text = r.DataText;
+                        Buttons = new ObservableCollection<CustomButton>() {
+                        new CustomButton() { CustomWindow = this, Id = 0, Text = "Повідомлено", IsNeedAdmin = false }};
+                    }
+
                     AnswerRequired = true;
                     break;
                 default:
@@ -252,7 +267,8 @@ namespace ModelMID
         /// </summary>
         public string Text { get; set; }      
 
-        public CustomWindow CustomWindow { get; set; }
+        public CustomWindow CustomWindow { get; set; }        
+
     }
 
     public class CustomWindowAnswer

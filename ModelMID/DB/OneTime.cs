@@ -13,5 +13,6 @@ namespace ModelMID.DB
         public eStateExciseStamp State { get; set; } = eStateExciseStamp.Try;
         public eTypeCode TypeData { get; set; }
         public Int64 CodeData { get; set; }
+        //public int ExData { get; set; }
     }
 }

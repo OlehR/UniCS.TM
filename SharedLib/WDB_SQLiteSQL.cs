@@ -1,4 +1,5 @@
 ﻿using ModelMID;
+using System.Data;
 using System.Diagnostics.Metrics;
 
 namespace SharedLib
@@ -27,7 +28,7 @@ DROP INDEX IF exists id_FiscalArticle;--Ver=>15
 CREATE UNIQUE INDEX id_FiscalArticle ON FiscalArticle(IdWorkplacePay,CodeWares);--Ver=>15
 CREATE UNIQUE INDEX id_FiscalArticle_PLU ON FiscalArticle(IdWorkplacePay,PLU);--Ver=>16";
 
-        public readonly int VerRC = 26;
+        public readonly int VerRC = 27;
         readonly string SqlUpdateRC = @"alter TABLE WARES_RECEIPT            add Fix_Weight NUMBER NOT NULL DEFAULT 0;--Ver=>0
 alter TABLE WARES_RECEIPT_PROMOTION  add TYPE_DISCOUNT  INTEGER  NOT NULL  DEFAULT (12);--Ver=>0
 alter TABLE wares_receipt            add Priority INTEGER  NOT NULL DEFAULT 0;--Ver=>0
@@ -61,7 +62,9 @@ alter TABLE RECEIPT add        TypeWorkplace NUMBER   NOT NULL DEFAULT 0;--Ver=>
 alter TABLE payment add MerchantID TEXT;--Ver=>25
 CREATE TABLE ReceiptOneTime (IdWorkplace INTEGER NOT NULL, CodePeriod  INTEGER NOT NULL, CodeReceipt INTEGER NOT NULL, CodePS INTEGER NOT NULL, TypeData INTEGER NOT NULL, CodeData INTEGER NOT NULL);--Ver=>26
 CREATE UNIQUE INDEX IdReceiptOneTime ON ReceiptOneTime(IdWorkplace,CodePeriod,CodeReceipt,CodePS,TypeData,CodeData);--Ver=>26
-CREATE INDEX IndReceiptOneTime ON ReceiptOneTime(TypeData,CodeData,CodePS);--Ver=>26";
+CREATE INDEX IndReceiptOneTime ON ReceiptOneTime(TypeData,CodeData,CodePS);--Ver=>26
+CREATE TABLE ReceiptWaresPromotionNoPrice(IdWorkplace INTEGER  NOT NULL, CodePeriod INTEGER  NOT NULL, CodeReceipt INTEGER  NOT NULL, CodeWares INTEGER  NOT NULL, CodePS INTEGER  NOT NULL, TypeDiscount INTEGER  NOT NULL,Data NUMBER NOT NULL,DataEx NUMBER NOT NULL);--Ver=>27
+CREATE INDEX id_ReceiptWaresPromotionNoPrice ON ReceiptWaresPromotionNoPrice(IdWorkplace,CodePeriod,CodeReceipt,CodeWares);--Ver=>27";
 
         public readonly int VerMID = 18;
         readonly string SqlUpdateMID = @"--Ver=>0;Reload;
@@ -234,16 +237,17 @@ CREATE UNIQUE INDEX id_RECEIPT ON RECEIPT(CODE_RECEIPT, ID_WORKPLACE, CODE_PERIO
 	);
 CREATE UNIQUE INDEX id_WARES_RECEIPT_PROMOTION ON WARES_RECEIPT_PROMOTION(CODE_RECEIPT, CODE_WARES, CODE_PS, NUMBER_GROUP, ID_WORKPLACE, CODE_PERIOD, BARCODE_2_CATEGORY);
 
-CREATE TABLE WaresReceiptPromotionNoPrice(
+CREATE TABLE ReceiptWaresPromotionNoPrice(
             IdWorkplace INTEGER  NOT NULL,
             CodePeriod INTEGER  NOT NULL,
             CodeReceipt INTEGER  NOT NULL,
             CodeWares INTEGER  NOT NULL,
             CodePS INTEGER  NOT NULL,
             TypeDiscount INTEGER  NOT NULL,
-            Data NUMBER   NOT NULL
+            Data NUMBER   NOT NULL,
+            DataEx NUMBER   NOT NULL
 	);
-CREATE INDEX id_WaresReceiptPromotionNoPrice ON WaresReceiptPromotionNoPrice(IdWorkplace,CodePeriod,CodeReceipt,CodeWares);
+CREATE INDEX id_ReceiptWaresPromotionNoPrice ON ReceiptWaresPromotionNoPrice(IdWorkplace,CodePeriod,CodeReceipt,CodeWares);
 
         CREATE TABLE WARES_RECEIPT_HISTORY(
             ID_WORKPLACE INTEGER  NOT NULL,
@@ -256,7 +260,8 @@ CREATE INDEX id_WaresReceiptPromotionNoPrice ON WaresReceiptPromotionNoPrice(IdW
             SORT INTEGER  NOT NULL default 0,
             CODE_OPERATION INTEGER  NOT NULL,
             CodeOperator INTEGER  NOT NULL default 0,
-            DATE_CREATE DATETIME NOT NULL default (datetime('now','localtime'))
+            DATE_CREATE DATETIME NOT NULL default (datetime('now','localtime')),
+            DataEx NUMBER NOT NULL default 0
 	);
 CREATE INDEX id_WARES_RECEIPT_HISTORY ON WARES_RECEIPT_HISTORY(CODE_RECEIPT, CODE_WARES, ID_WORKPLACE, CODE_PERIOD);
 

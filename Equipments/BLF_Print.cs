@@ -22,7 +22,7 @@ namespace Front.Equipments
             var xx = Bl.db.GetNoPricePromorion(MW.curReceipt).Where(x => x.TypeDiscount == eTypeDiscount.TextСashier).FirstOrDefault();
             if(MW.curReceipt?.Client!=null && xx!=null)
             {
-                SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, new CustomWindow(eWindows.OneTimePromotion, xx));
+                SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, new CustomWindow(eWindows.NoPricePromotion, xx));
                 return;
             }          
 

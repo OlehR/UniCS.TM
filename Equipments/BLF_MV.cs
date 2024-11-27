@@ -292,9 +292,14 @@ namespace Front.Equipments
         {
             if (res != null)
             {
-                if (res.CustomWindow?.Id == eWindows.OneTimePromotion && MW.curReceipt?.Client!=null)
+                if (res.CustomWindow?.Id == eWindows.NoPricePromotion && MW.curReceipt?.Client!=null)
                 {
-                    Bl.db.ReplaceOneTime(new OneTime(MW.curReceipt) {CodePS = res.Id,CodeData = MW.curReceipt?.Client?.CodeClient??0,TypeData = eTypeCode.Client });
+                    PricePromotion PP = res.CustomWindow.DataEx as PricePromotion;
+                     
+                    Bl.db.ReplaceReceiptWaresPromotionNoPrice(new ReceiptWaresPromotionNoPrice(new IdReceiptWares(MW.curReceipt)) 
+                        { CodePS = PP?.CodePs??0, DataEx=res.Id,TypeDiscount=PP?.TypeDiscount??eTypeDiscount.NotDefine,Data=1 });
+                    if (PP?.IsOneTime==true )
+                     Bl.db.ReplaceOneTime(new OneTime(MW.curReceipt) {CodePS = PP.CodePs,CodeData = MW.curReceipt?.Client?.CodeClient??0,TypeData = eTypeCode.Client });
                     PayAndPrint();
                     return;
                 }
