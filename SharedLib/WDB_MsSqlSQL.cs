@@ -50,7 +50,11 @@ namespace SharedLib
             JOIN utppsu.dbo._Reference133 AS Wh ON Wh._IDRRef= d._Reference133_IDRRef
             WHERE ((p.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull=1) AND
            convert(int, wh._code)=@CodeWarehouse)
-           OR p.CODE_DEALER<0";
+UNION ALL 
+           SELECT p.CODE_DEALER AS CodeDealer, p.code_wares AS CodeWares, p.price AS PriceDealer 
+            FROM dbo.price p 
+            WHERE (p.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull=1) AND     
+            p.CODE_DEALER<0";
 
         string SqlGetDimTypeDiscount = @"SELECT Type_discount AS CodeTypeDiscount, Name AS Name, Percent_discount AS PercentDiscount, 
 CASE WHEN kard_disc_type_id IN (0xBC8CFC297E763BE448E1098F069E2D9A,0xBE42F21E3C6F33804B2BF6D344591EBF) THEN 1 ELSE 0 END AS IsСertificate
