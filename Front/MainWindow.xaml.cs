@@ -25,14 +25,9 @@ using System.IO;
 using Front.Control;
 using System.Windows.Threading;
 using System.Windows.Input;
-using Front.ViewModels;
-using QRCoder;
 using Equipments.Model;
 using Pr = Equipments.Model.Price;
 using LibVLCSharp.Shared;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
-using System.Net;
-using System.Data.SqlTypes;
 
 namespace Front
 {
@@ -48,12 +43,10 @@ namespace Front
         Action<eCommand, WorkPlace, Status> SocketAnsver;
         public WorkPlace MainWorkplace { get; set; } = new();
         public WorkPlace RemoteWorkplace { get; set; } = new();
-
         public Sound s { get; set; }
         public string Clock { get; set; } = DateTime.Now.ToShortDateString();
         public User AdminSSC { get; set; } = null;
         public DateTime DTAdminSSC { get; set; }
-
         public Receipt curReceipt { get; set; } = null;
         public Receipt ReceiptPostpone = null;
         bool _IsWaitAdminTitle = false;
@@ -65,25 +58,18 @@ namespace Front
         public bool IsReceiptPostponeNotNull { get { return ReceiptPostpone == null; } }
         public bool IsFullReturn = false;
         public bool IsReceiptPostpone { get { return ReceiptPostpone == null || (curReceipt == null || curReceipt.Wares == null || !curReceipt.Wares.Any()); } }
-
         public ReceiptWares CurWares { get; set; } = null;
-
         public Client Client { get { return curReceipt?.Client; } }
         public string ClientName { get { return curReceipt != null && curReceipt.CodeClient == Client?.CodeClient ? Client?.NameClient : "Проскануйте бонусну картку"; } }
         public List<string> ClientPhoneNumvers = new List<string>();
         public Visibility IsViewClientInfo { get { return Client == null ? Visibility.Collapsed : Visibility.Visible; } }
-
-
         public GW CurW { get; set; } = null;
-
         public eStateMainWindows State { get; set; } = eStateMainWindows.StartWindow;
         public eTypeAccess TypeAccessWait { get; set; }
         public ObservableCollection<ReceiptWares> ListWares { get; set; }
         public CustomWindow customWindow { get; set; }
         public string WaresQuantity { get { return curReceipt?.Wares?.Count().ToString() ?? "0"; } }
-
         public decimal MoneySum { get { return EF.SumReceiptFiscal(curReceipt); } }
-
         public string EquipmentInfo { get; set; } = "test";
         bool _Volume = true;
         public bool Volume { get { return _Volume; } set { _Volume = value; if (s != null) s.IsSound = value; } }
@@ -171,14 +157,11 @@ namespace Front
         public int QuantityCigarettes { get; set; } = 1;
         public BankTerminal FirstTerminal { get { return IsPresentFirstTerminal ? EF?.BankTerminal1 : null; } }
         public BankTerminal SecondTerminal { get { return IsPresentSecondTerminal ? EF?.BankTerminal2 : null; } }
-
         public string GetBackgroundColor { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? "#ff9999" : "#FFFFFF"; } }
         public double GiveRest { get; set; } = 0;
         public string VerifyCode { get; set; } = string.Empty;
         public Status<string> LastVerifyCode { get; set; } = new();
-
         public eSyncStatus DatabaseUpdateStatus { get; set; } = eSyncStatus.SyncFinishedSuccess;
-
         public eTypeMonitor TypeMonitor
         {
             get
@@ -215,7 +198,6 @@ namespace Front
             }
         }
         public InfoRemoteCheckout RemoteCheckout { get; set; } = new();
-
         public WidthHeaderReceipt widthHeaderReceipt { get; set; }
         public void calculateWidthHeaderReceipt(eTypeMonitor TypeMonitor)
         {
@@ -593,12 +575,10 @@ namespace Front
                 if (StartVideo.MediaPlayer != null) StopStartVideo(pState);
 
             }));
-
         }
 
         private void StopStartVideo(eStateMainWindows? pState)
         {
-
             if (StartVideo?.MediaPlayer != null)
             {
                 if (pState != eStateMainWindows.StartWindow && StartVideo.MediaPlayer.IsPlaying)
@@ -612,7 +592,6 @@ namespace Front
                     StartVideo.MediaPlayer.SetPause(false);
                 }
             }
-
         }
 
         /*
@@ -1252,8 +1231,6 @@ namespace Front
             {
                 ReceiptWares temp = btn.DataContext as ReceiptWares;
                 SetStateView(eStateMainWindows.ChangeCountWares, eTypeAccess.NoDefine, temp);
-
-
             }
         }
 
@@ -1288,10 +1265,7 @@ namespace Front
             }
         }
 
-        private void _Back(object sender, RoutedEventArgs e)
-        {
-            CancelReceipt();
-        }
+        private void _Back(object sender, RoutedEventArgs e) => CancelReceipt();
         public void CancelReceipt()
         {
             // Правильний блок.
@@ -1309,11 +1283,8 @@ namespace Front
 
         private void _Search(object sender, RoutedEventArgs e) => SetStateView(eStateMainWindows.WaitFindWares);
 
-        private void _ButtonHelp(object sender, RoutedEventArgs e)
-        {
-            SetStateView(Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout || AdminSSC == null ? eStateMainWindows.WaitAdmin : eStateMainWindows.AdminPanel, eTypeAccess.AdminPanel);
-        }
-
+        private void _ButtonHelp(object sender, RoutedEventArgs e) => SetStateView(Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout || AdminSSC == null ? eStateMainWindows.WaitAdmin : eStateMainWindows.AdminPanel, eTypeAccess.AdminPanel);
+        
         private void _OwnBag(object sender, RoutedEventArgs e)
         {
             if (ControlScaleCurrentWeight > 0 && ControlScaleCurrentWeight < Global.MaxWeightBag)
@@ -1324,10 +1295,8 @@ namespace Front
             }
         }
 
-        private void _BuyBag(object sender, RoutedEventArgs e)
-        {
-            Bl.GetClientByPhone(curReceipt, "0664417744");
-        }
+        private void _BuyBag(object sender, RoutedEventArgs e)=>  Bl.GetClientByPhone(curReceipt, "0664417744");
+        
 
         private void _Cancel(object sender, RoutedEventArgs e)
         {
@@ -1335,11 +1304,7 @@ namespace Front
             SetStateView(eStateMainWindows.WaitInput);
         }
 
-        private void StartBuy(object sender, RoutedEventArgs e)
-        {
-            //StarVideo(eStateMainWindows.WaitInput);
-            StartAddWares();
-        }
+        private void StartBuy(object sender, RoutedEventArgs e) => StartAddWares();        
         public void StartAddWares()
         {
             Blf.NewReceipt();
@@ -1360,32 +1325,11 @@ namespace Front
             var r = EF.GetBankTerminal.Where(el => str.Text.Equals(el.Name));
             if (r.Count() == 1)
                 EF.SetBankTerminal(r.First() as BankTerminal);
-
             var task = Task.Run(() => Blf.PrintAndCloseReceipt());
         }
 
         //Тестовий варіант роботи замовлень!!!
-        private void _ButtonPayment(object sender, RoutedEventArgs e)
-        {
-            Blf.PayAndPrint();
-
-            //Task.Run(async () =>
-            //{
-            //    CommandAPI<Receipt> Command = new() { Command = eCommand.GetOrderNumber, Data = curReceipt };
-
-            //    try
-            //    {
-            //        var r = new SocketClient(IPAddress.Parse("127.0.0.1"), 3444);
-            //        var Ansver = await r.StartAsync(Command.ToJson());
-            //        SocketAnsver?.Invoke(eCommand.GetOrderNumber, MainWorkplace, Ansver);
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        FileLogger.WriteLogMessage(this, $"GeneralCondition DNSName=>{IPAddress.Parse("127.0.0.1")} {Command} ", ex);
-            //        SocketAnsver?.Invoke(eCommand.GetOrderNumber, MainWorkplace, new Status(ex));
-            //    }
-            //});
-        }
+        private void _ButtonPayment(object sender, RoutedEventArgs e) =>  Blf.PayAndPrint();  
 
         /// <summary>
         /// Добавляєм товар(сигарери) з списку цін
@@ -1415,14 +1359,10 @@ namespace Front
             SetStateView(eStateMainWindows.WaitInput);
         }
 
-        private void ButtonAdmin(object sender, RoutedEventArgs e)
-        {
-            SetStateView(eStateMainWindows.WaitAdminLogin);
-        }
-        private void LoginCancel(object sender, RoutedEventArgs e)
-        {
-            SetConfirm(null);
-        }
+        private void ButtonAdmin(object sender, RoutedEventArgs e)=> SetStateView(eStateMainWindows.WaitAdminLogin);
+        
+        private void LoginCancel(object sender, RoutedEventArgs e) => SetConfirm(null);
+
         private void LoginButton(object sender, RoutedEventArgs e)
         {
             if (LoginTextBlock.Text == string.Empty || PasswordTextBlock.Password == string.Empty)
@@ -1447,10 +1387,8 @@ namespace Front
         {
         }
 
-        public void StartOpenMoneyBox()
-        {
-            EF.OpenMoneyBox();
-        }
+        public void StartOpenMoneyBox() => EF.OpenMoneyBox();
+
         private void AddExciseStamp(object sender, RoutedEventArgs e)
         {
             Blf.AddExciseStamp(TBExciseStamp.Text);
@@ -1465,11 +1403,8 @@ namespace Front
                 textBox.Text = textBox.Text.ToString().ToUpper();
         }
 
-        private void ExciseStampNone(object sender, RoutedEventArgs e)
-        {
-            Blf.ExciseStampNone();
-        }
-
+        private void ExciseStampNone(object sender, RoutedEventArgs e) => Blf.ExciseStampNone();
+        
         private void CustomWindowClickButton(object sender, RoutedEventArgs e)
         {
             KBAdmin.SetInput(null);
@@ -1488,7 +1423,8 @@ namespace Front
                     return;
                 }
             }
-
+            Blf.CustomWindowClickButton(res);
+            /*
             if (res != null)
             {
                 if (res.CustomWindow?.Id == eWindows.RestoreLastRecipt)
@@ -1579,14 +1515,11 @@ namespace Front
                 };
                 Bl.SetCustomWindows(r);
                 SetStateView(eStateMainWindows.WaitInput);
-            }
+            }*/
         }
 
-        private void FindClientByPhoneClick(object sender, RoutedEventArgs e)
-        {
-            SetStateView(eStateMainWindows.FindClientByPhone);
-        }
-
+        private void FindClientByPhoneClick(object sender, RoutedEventArgs e) => SetStateView(eStateMainWindows.FindClientByPhone);
+        
         private void FindClientByPhone(string pResult)
         {
             if (curReceipt == null)
@@ -1635,11 +1568,7 @@ namespace Front
             OnPropertyChanged(nameof(QuantityCigarettes));
         }
 
-        private void StartOwnBag(object sender, RoutedEventArgs e)
-        {
-            SetStateView(eStateMainWindows.WaitOwnBag);
-        }
-
+        private void StartOwnBag(object sender, RoutedEventArgs e) => SetStateView(eStateMainWindows.WaitOwnBag);
 
         private void TextPasswordChanged(object sender, RoutedEventArgs e)
         {
@@ -1672,8 +1601,6 @@ namespace Front
             {
                 if (curReceipt == null || curReceipt.Wares?.Any() != true)
                 {
-                    //if (Client != null) ShowClientBonus.Visibility = Visibility.Visible;
-
                     Blf.TimeScan(false);
                     Global.OnReceiptCalculationComplete?.Invoke(ReceiptPostpone);
                     ReceiptPostpone = null;
@@ -1725,7 +1652,6 @@ namespace Front
             }
             else
                 SendRemoteComand(comand, remoteInfo, "Confirm");
-
         }
 
         private void AddPriceRemoteWares(object sender, RoutedEventArgs e)
@@ -1767,10 +1693,8 @@ namespace Front
                 });
         }
 
-        private void IssueCardButton(object sender, RoutedEventArgs e)
-        {
-            SetStateView(eStateMainWindows.WaitInputIssueCard);
-        }
+        private void IssueCardButton(object sender, RoutedEventArgs e) => SetStateView(eStateMainWindows.WaitInputIssueCard);
+        
         private void CodeSMSUseBonusBtn(object sender, RoutedEventArgs e)
         {
             BorderNumPadUseBonus.Visibility = Visibility.Visible;
@@ -1807,9 +1731,6 @@ namespace Front
                 scrollViewer.ScrollToBottom();
             }
         }
-        private void OnPropertyChanged(String info)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(info));
-        }
+        private void OnPropertyChanged(String info) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(info));        
     }
 }

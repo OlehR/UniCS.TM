@@ -50,7 +50,11 @@ namespace SharedLib
             JOIN utppsu.dbo._Reference133 AS Wh ON Wh._IDRRef= d._Reference133_IDRRef
             WHERE ((p.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull=1) AND
            convert(int, wh._code)=@CodeWarehouse)
-           OR p.CODE_DEALER<0";
+UNION ALL 
+           SELECT p.CODE_DEALER AS CodeDealer, p.code_wares AS CodeWares, p.price AS PriceDealer 
+            FROM dbo.price p 
+            WHERE (p.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull=1) AND     
+            p.CODE_DEALER<0";
 
         string SqlGetDimTypeDiscount = @"SELECT Type_discount AS CodeTypeDiscount, Name AS Name, Percent_discount AS PercentDiscount, 
 CASE WHEN kard_disc_type_id IN (0xBC8CFC297E763BE448E1098F069E2D9A,0xBE42F21E3C6F33804B2BF6D344591EBF) THEN 1 ELSE 0 END AS IsСertificate
@@ -59,7 +63,8 @@ CASE WHEN kard_disc_type_id IN (0xBC8CFC297E763BE448E1098F069E2D9A,0xBE42F21E3C6
         string SqlGetDimClient = @"SELECT cl.CodeClient, cl.NameClient, cl.TypeDiscount, cl.PersentDiscount, cl.BarCode, cl.StatusCard, cl.ViewCode, cl.BirthDay,
   ISNULL(cl.MainPhone, cl.Phone) AS MainPhone, Phone as PhoneAdd
   FROM client cl WITH (NOLOCK)
-  WHERE cl.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull= 1";
+  WHERE (cl.CodeTM IS NULL OR  cl.CodeTM = CASE WHEN cl.CodeTM=0 THEN cl.CodeTM ELSE @ShopTM END )
+  AND (cl.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull= 1)";
 
         string SqlGetClientData = @"SELECT * FROM ClientData  cl WITH (NOLOCK) WHERE cl.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull=1";
 
@@ -102,6 +107,7 @@ SELECT
     ,0 AS AdditionalCondition
     , MAX(pn.[percent]) AS Data
     ,1 AS DataAdditionalCondition --Ігнорувати мінімальні ціни
+    ,cast('' AS NVARCHAR(100) ) AS DataText
   FROM DW.dbo.V1C_doc_promotion_nomen pn
   --JOIN dw.dbo.V1C_dim_nomen dn ON pn.nomen_RRef= dn.IDRRef
   JOIN DW.dbo.V1C_doc_promotion dp ON dp._IDRRef= pn.doc_promotion_RRef
@@ -122,6 +128,7 @@ SELECT
         AS Data
     ,0 AS DataAdditionalCondition
   --, dp.[comment]
+   ,cast('' AS NVARCHAR(100) ) AS DataText
         FROM DW.dbo.V1C_doc_promotion dp
   LEFT JOIN wh_ex ON (wh_ex.doc_promotion_RRef= dp._IDRRef)
   WHERE dp.d_end>getdate()
@@ -139,6 +146,7 @@ SELECT -- Кількість товари  набору (Основні)
     ,0 AS AdditionalCondition
     , MAX(pk.amount) + CASE WHEN MAX(pk.amount)=1 AND MAX(pk_k.nomen_RRef) IS NOT NULL THEN 1 ELSE 0 end AS Data
     ,1 AS DataAdditionalCondition --Ігнорувати мінімальні ціни
+     ,cast('' AS NVARCHAR(100) ) AS DataText
   FROM DW.dbo.V1C_doc_promotion_kit pk
   JOIN dw.dbo.V1C_dim_nomen dn ON pk.nomen_RRef= dn.IDRRef
   JOIN DW.dbo.V1C_doc_promotion dp ON dp._IDRRef= pk.doc_promotion_RRef AND dp.d_end>GETDATE()
@@ -157,10 +165,93 @@ SELECT -- Кількість товари  набору (Основні)
   ,14 AS TypeDiscount--%
   ,0 AS AdditionalCondition
   ,TRY_CONVERT(int, tp.code ) as Data
-  ,1 AS DataAdditionalCondition 
+  ,1 AS DataAdditionalCondition
+   ,cast('' AS NVARCHAR(100) ) AS DataText
   FROM dbo.V1C_dim_warehouse wh
     JOIN dbo.V1C_dim_type_price tp ON wh.type_price_opt_RRef=tp.type_price_RRef
- WHERE TRY_CONVERT(int, wh.code) in (@CodeWarehouse,@CodeWarehouseLink)  ";
+ WHERE TRY_CONVERT(int, wh.code) in (@CodeWarehouse,@CodeWarehouseLink) 
+union ALL
+SELECT
+   CONVERT(INT, YEAR(dp.year_doc)*10000+dp.number) AS CodePS
+    ,1 AS NumberGroup
+    ,0 AS CodeWares
+    ,1 AS UseIndicative
+    ,-4 AS TypeDiscount--ТекстДляКСОКлиенту TextClientScreen
+    ,0 AS AdditionalCondition
+    ,0 AS Data
+    ,1 AS DataAdditionalCondition --Ігнорувати мінімальні ціни
+    ,dp.TextClientScreen AS DataText
+  FROM  DW.dbo.V1C_doc_promotion dp 
+  LEFT JOIN wh_ex ON (wh_ex.doc_promotion_RRef= dp._IDRRef)
+  WHERE dp.d_end>getdate() 
+  AND wh_ex.doc_promotion_RRef IS NULL
+AND len(dp.TextClientScreen)>0 
+UNION ALL
+SELECT
+   CONVERT(INT, YEAR(dp.year_doc)*10000+dp.number) AS CodePS
+    ,1 AS NumberGroup
+    ,0 AS CodeWares
+    ,1 AS UseIndicative
+    ,-1 AS TypeDiscount-- TextСashier
+    ,0 AS AdditionalCondition
+    ,0 AS Data
+    ,1 AS DataAdditionalCondition --Ігнорувати мінімальні ціни
+    ,dp.TextСashier AS DataText
+  FROM  DW.dbo.V1C_doc_promotion dp 
+  LEFT JOIN wh_ex ON (wh_ex.doc_promotion_RRef= dp._IDRRef)
+  WHERE dp.d_end>getdate() 
+  AND wh_ex.doc_promotion_RRef IS NULL
+AND len(dp.TextСashier)>0 
+UNION ALL
+SELECT
+   CONVERT(INT, YEAR(dp.year_doc)*10000+dp.number) AS CodePS
+    ,1 AS NumberGroup
+    ,0 AS CodeWares
+    ,1 AS UseIndicative
+    ,-2 AS TypeDiscount-- TextReceipt
+    ,0 AS AdditionalCondition
+    ,0 AS Data
+    ,1 AS DataAdditionalCondition --Ігнорувати мінімальні ціни
+    ,dp.TextReceipt AS DataText
+  FROM  DW.dbo.V1C_doc_promotion dp 
+  LEFT JOIN wh_ex ON (wh_ex.doc_promotion_RRef= dp._IDRRef)
+  WHERE dp.d_end>getdate() 
+  AND wh_ex.doc_promotion_RRef IS NULL
+AND len(dp.TextReceipt)>0 
+UNION ALL
+SELECT
+   CONVERT(INT, YEAR(dp.year_doc)*10000+dp.number) AS CodePS
+    ,1 AS NumberGroup
+    ,0 AS CodeWares
+    ,1 AS UseIndicative
+    ,-3 AS TypeDiscount-- PrintQRReceipt
+    ,0 AS AdditionalCondition
+    ,dp.NumberPSCoupone AS Data
+    ,1 AS DataAdditionalCondition --Ігнорувати мінімальні ціни
+    ,'' AS DataText
+  FROM  DW.dbo.V1C_doc_promotion dp 
+  LEFT JOIN wh_ex ON (wh_ex.doc_promotion_RRef= dp._IDRRef)
+  WHERE dp.d_end>getdate() 
+  AND wh_ex.doc_promotion_RRef IS NULL
+AND dp.NumberPSCoupone>0 
+union all
+SELECT
+   CONVERT(INT, YEAR(dp.year_doc)*10000+dp.number) AS CodePS
+    ,1 AS NumberGroup
+    ,0 AS CodeWares
+    ,1 AS UseIndicative
+    ,-9 AS TypeDiscount-- ForCountOtherPromotion
+    ,0 AS AdditionalCondition
+    ,0 AS Data
+    ,0 AS DataAdditionalCondition --Ігнорувати мінімальні ціни
+    ,'' AS DataText
+  FROM  DW.dbo.V1C_doc_promotion dp 
+  JOIN dw.dbo.V1C_doc_promotion_kit pk ON dp._IDRRef=pk.doc_promotion_RRef
+  LEFT JOIN wh_ex ON (wh_ex.doc_promotion_RRef= dp._IDRRef)
+  WHERE dp.d_end>getdate() 
+  AND wh_ex.doc_promotion_RRef IS NULL
+AND dp.kind_promotion =0x94BE56137942F05C49313B91A28B535D --Комплімент з купоном
+";
 
         string SqlGetPromotionSaleDealer = @"SELECT DISTINCT 9000000000+CONVERT(INT, YEAR(dpg.date_time)*100000+dpg.number) AS CodePS, CONVERT(INT, dn.code) AS CodeWares, pg.date_beg AS DateBegin,pg.date_end AS DateEnd,CONVERT(INT, tp.code) AS CodeDealer
     , isnull(pp.Priority+1, 0) AS Priority, pg.MaxQuantity
@@ -203,6 +294,7 @@ SELECT -- Кількість товари  набору (Основні)
 --  ,dp.is_exclusion_nomen
   ,0 AS TypeWorkCoupon
   , NULL AS BarCodeCoupon
+  ,dp.IsOneTime AS IsOneTime
     FROM DW.dbo.V1C_doc_promotion dp
   LEFT JOIN (SELECT pw.doc_promotion_RRef,
     SUM(CASE WHEN try_CONVERT(INT, dw.code) in (@CodeWarehouse,@CodeWarehouseLink) THEN 1 ELSE 0 END) AS Wh, COUNT(*) AS all_wh
@@ -225,6 +317,7 @@ SELECT DISTINCT
   , 0.00 AS SumOrder
   ,0 AS TypeWorkCoupon
   , NULL AS BarCodeCoupon
+  ,0 AS IsOneTime
   FROM dbo.V1C_reg_promotion_gal pg
   JOIN  dbo.V1C_doc_promotion_gal dpg ON pg.doc_RRef = dpg.doc_RRef
   JOIN dbo.V1C_dim_warehouse wh ON wh.subdivision_RRef= pg.subdivision_RRef
@@ -244,6 +337,7 @@ SELECT
   , 0.00 AS SumOrder
   ,0 AS TypeWorkCoupon
   , NULL AS BarCodeCoupon
+  ,0 AS IsOneTime
    FROM dbo.V1C_dim_warehouse wh
   WHERE  wh.type_price_opt_RRef<>0 AND TRY_CONVERT(int, wh.code) in (@CodeWarehouse,@CodeWarehouseLink);";
 
@@ -565,5 +659,6 @@ CASE WHEN [is_leaf]=1 THEN 4 else 3 END  AS TypeData, dn.code AS Data
         public int MessageNoMin { get; set; }
         public int MessageNoMax { get; set; }
         public int IdWorkPlace { get; set; }
+        public eShopTM ShopTM { get; set; }
     }
 }

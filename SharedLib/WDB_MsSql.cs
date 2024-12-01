@@ -34,7 +34,7 @@ namespace SharedLib
             Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} LoadData varMessageNoMin={varMessageNoMin} varMessageNoMax={varMessageNoMax}");
 
             var oWarehouse = new pWarehouse() { CodeWarehouse = Global.CodeWarehouse, CodeWarehouseLink=Global.Settings?.IdWorkPlaceLink??0 };
-            var oMessage = new pMessage() { IsFull = parIsFull ? 1 : 0, MessageNoMin = varMessageNoMin, MessageNoMax = varMessageNoMax, CodeWarehouse = Global.CodeWarehouse, IdWorkPlace = Global.IdWorkPlace };
+            var oMessage = new pMessage() { IsFull = parIsFull ? 1 : 0, MessageNoMin = varMessageNoMin, MessageNoMax = varMessageNoMax, CodeWarehouse = Global.CodeWarehouse, IdWorkPlace = Global.IdWorkPlace, ShopTM=Global.Settings.CodeTM  };
 
             Debug.WriteLine("SqlGetWaresLink");
             var WL = db.Execute<pWarehouse, WaresLink>("SELECT CodeWares,CodeWaresTo, 0 as IsDefault,min(Sort) AS Sort FROM dbo.V1C_DimWaresLink  wl WHERE Wl.CodeWarehouse IN (0, @CodeWarehouse) GROUP BY CodeWares,CodeWaresTo", oMessage);

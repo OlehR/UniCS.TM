@@ -180,6 +180,7 @@ namespace ModelMID
        
         public IEnumerable<ReceiptEvent> ReceiptEvent { get; set; }
         public IEnumerable<OneTime> OneTime { get; set; }
+        public IEnumerable<ReceiptWaresPromotionNoPrice> ReceiptWaresPromotionNoPrice { get; set; }
 
         //public bool _IsLockChange = false;
         public bool IsLockChange { get { return /*_IsLockChange ||*/ StateReceipt != eStateReceipt.Prepare || SumBonus > 0m; } }

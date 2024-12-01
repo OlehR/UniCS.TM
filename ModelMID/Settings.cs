@@ -16,7 +16,7 @@ namespace ModelMID
         /// <summary>
         /// 55-Вопак,56-Spar
         /// </summary>
-        public int CodeTM { get; set; }
+        public eShopTM CodeTM { get; set; }
         /// <summary>
         /// Мінімальна сума видачі готівки через касу
         /// </summary>
