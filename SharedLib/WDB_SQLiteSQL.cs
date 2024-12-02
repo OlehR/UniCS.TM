@@ -787,6 +787,7 @@ select t.code_wares as CodeWares,w.name_wares NameWares,w.name_wares_receipt  as
         ,(select max(AMOUNT)  as AMOUNT from SALES_BAN sb where sb.CODE_GROUP_WARES=w.CODE_GROUP) as AmountSalesBan
 ,w.Code_Group as CodeGroup
 ,w.CodeGroupUp
+,w.ProductionLocation
 from t$1 t
 left join wares w on t.code_wares=w.code_wares
 left join price pd on ( pd.code_wares=t.code_wares and pd.code_dealer= @CodeDealer)
@@ -856,6 +857,7 @@ Price as Price
 ,w.Code_Group as CodeGroup
 ,w.CodeGroupUp
 ,wr.Date_Create as DateCreate
+,w.ProductionLocation
                      from wares_receipt wr
                      join wares w on(wr.code_wares = w.code_wares)
                      join ADDITION_UNIT au on w.code_wares = au.code_wares and wr.code_unit=au.code_unit
