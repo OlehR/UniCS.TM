@@ -1399,7 +1399,7 @@ from WaresLink wl join  wares w on wl.CodeWares = w.Code_wares where wl.CodeWare
                 par = InfoClient.First();
             else
                 par = new ParameterPromotion(pIdR);
-            var RH = ViewReceipt(pIdR);
+            var RH = GetReceiptHead(pIdR);
             //par.BirthDay = DateTime.Now.Date; Test
             par.CodeWarehouse = Global.CodeWarehouse;
             par.Time = Convert.ToInt32(RH.DateReceipt.ToString("HHmm"));
@@ -1458,6 +1458,12 @@ from WaresLink wl join  wares w on wl.CodeWares = w.Code_wares where wl.CodeWare
             string SQL = SqlGetPriceFilter+ "\nSelect CODE_PS from ExeptionPS where CODE_PS=20240788";
             return db.Execute<ParameterPromotion, long>(SQL, par);
         }*/
-
+        public Receipt GetReceiptHead(IdReceipt pIdR, bool parWithDetail = false)
+        {
+            if (pIdR.CodePeriod == Global.GetCodePeriod())
+                return ViewReceipt(pIdR, parWithDetail);
+            using var dbT = new WDB_SQLite(pIdR.DTPeriod);
+            return dbT.ViewReceipt(pIdR, parWithDetail);
+        }
     }
 }

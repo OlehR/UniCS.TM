@@ -376,29 +376,12 @@ namespace SharedLib
             return res;
         }
 
-        public Receipt GetReceiptHead(IdReceipt pIdR, bool parWithDetail = false)
-        {
-            if (pIdR.CodePeriod == Global.GetCodePeriod())
-                return db.ViewReceipt(pIdR, parWithDetail);
-            using var dbT = new WDB_SQLite(pIdR.DTPeriod);
-            return dbT.ViewReceipt(pIdR, parWithDetail);
-        }
+        public Receipt GetReceiptHead(IdReceipt pIdR, bool parWithDetail = false) => db.GetReceiptHead(pIdR, parWithDetail);        
 
-        public Client GetClientByCode(IdReceipt pIdReceipt, long pCode)
-        {
-            return SetClient(pIdReceipt, db.FindClient(null, null, null, pCode));
-        }
+        public Client GetClientByCode(IdReceipt pIdReceipt, long pCode) => SetClient(pIdReceipt, db.FindClient(null, null, null, pCode));
 
-        public Client GetClientByBarCode(IdReceipt pIdReceipt, string pBarCode)
-        {
-            return SetClient(pIdReceipt, db.FindClient(pBarCode));
-        }
-
-        public Client GetClientByPhone(IdReceipt pIdReceipt, string pPhone)
-        {
-            return SetClient(pIdReceipt, db.FindClient(null, pPhone), pPhone);
-        }
-
+        public Client GetClientByBarCode(IdReceipt pIdReceipt, string pBarCode) => SetClient(pIdReceipt, db.FindClient(pBarCode));
+        public Client GetClientByPhone(IdReceipt pIdReceipt, string pPhone) => SetClient(pIdReceipt, db.FindClient(null, pPhone), pPhone);
         Client SetClient(IdReceipt pIdReceipt, IEnumerable<Client> pClients, string pPhone = null)
         {
             var r = pClients.Where(el => el.StatusCard == eStatusCard.Active);
@@ -602,7 +585,7 @@ namespace SharedLib
         public bool FixWeight(ReceiptWares pRW)
         {
             bool Res = db.FixWeight(pRW);
-            var r = db.ViewReceipt(pRW, true);
+            var r = GetReceiptHead(pRW, true);
             Global.OnReceiptCalculationComplete?.Invoke(r);
             return Res;
         }
