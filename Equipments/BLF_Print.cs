@@ -187,7 +187,8 @@ namespace Front.Equipments
                 }
 
                 {
-                    if (Global.IsPrintOrderReceipt)
+                    bool IsNeadOrderReceipt = R.Wares.Where(x=>x.ProductionLocation != 0).Any();
+                    if (Global.IsPrintOrderReceipt && IsNeadOrderReceipt)
                     {
 
 
