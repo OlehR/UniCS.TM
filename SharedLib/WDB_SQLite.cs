@@ -1072,6 +1072,7 @@ Where ID_WORKPLACE = @IdWorkplace
                     if (wrp != null)
                         el.ReceiptWaresPromotions = wrp.Where(rr => ((IdReceiptWares)rr).Equals((IdReceiptWares)el)).ToArray();
                     el.WaresLink = GetLinkWares(el);
+                    el.ReceiptWaresLink = GetReceiptWaresLink(el);
                 }
             }
             return r;
@@ -1348,18 +1349,18 @@ select sum( sum_pay* case when TYPE_PAY in (4) then -1 else 1 end) as sum from p
             return Res;
         }
 
-        public bool ReplaceWaresReceiptLink(IEnumerable<WaresReceiptLink> pWRL, bool IsDelete = true)
+        public bool ReplaceWaresReceiptLink(IEnumerable<ReceiptWaresLink> pWRL, bool IsDelete = true)
         {
             try
             {
                 string SQL = @"delete from  WaresReceiptLink where  IdWorkplace = @IdWorkplace and CodePeriod = @CodePeriod and CodeReceipt = @CodeReceipt and CodeWaresTo = @CodeWares";
                 if (IsDelete && pWRL.Any())
-                    dbRC.ExecuteNonQuery<WaresReceiptLink>(SQL, pWRL.FirstOrDefault());
+                    dbRC.ExecuteNonQuery<ReceiptWaresLink>(SQL, pWRL.FirstOrDefault());
 
 
                 SQL = @"replace into WaresReceiptLink  (IdWorkplace, CodePeriod, CodeReceipt, CodeWares, Sort, CodeWaresTo, Quantity) VALUES
                                                          (@IdWorkplace,@CodePeriod,@CodeReceipt,@CodeWares,@Sort,@CodeWaresTo,@Quantity)";
-                return dbRC.BulkExecuteNonQuery<WaresReceiptLink>(SQL, pWRL) > 0;
+                return dbRC.BulkExecuteNonQuery<ReceiptWaresLink>(SQL, pWRL) > 0;
             }
             catch (Exception e) { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e); }
             return false;
@@ -1464,6 +1465,14 @@ from WaresLink wl join  wares w on wl.CodeWares = w.Code_wares where wl.CodeWare
                 return ViewReceipt(pIdR, parWithDetail);
             using var dbT = new WDB_SQLite(pIdR.DTPeriod);
             return dbT.ViewReceipt(pIdR, parWithDetail);
+        }
+
+       public IEnumerable<ReceiptWaresLink> GetReceiptWaresLink(IdReceiptWares pIdRW)
+        {
+            string Sql = @"select wrl.*,w.NAME_WARES as NameWares from WaresReceiptLink wrl 
+    join Wares w on wrl.CodeWaresTo=w.Code_Wares
+where wrl.IdWorkplace = @IdWorkplace and wrl.CodePeriod = @CodePeriod and wrl.CodeReceipt = @CodeReceipt and wrl.CodeWaresTo = @CodeWares";
+            return db.Execute<IdReceiptWares, ReceiptWaresLink>(Sql, pIdRW);
         }
     }
 }

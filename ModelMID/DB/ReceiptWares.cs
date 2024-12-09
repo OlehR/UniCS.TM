@@ -631,5 +631,6 @@ namespace ModelMID
         /// Місце виготовлення виробу.
         /// </summary>
         public int ProductionLocation { get; set; }
+        public IEnumerable< ReceiptWaresLink> ReceiptWaresLink { get; set; }
     }
 }
