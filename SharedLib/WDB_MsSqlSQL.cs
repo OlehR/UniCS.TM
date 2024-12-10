@@ -545,7 +545,7 @@ SELECT -- Товари набору (Основні)
       JOIN Wares w ON w._IDRRef= ow.NomenRref
       JOIN V1C_dim_warehouse wh ON o.Warehouse_RRef=wh.warehouse_RRef
       JOIN dbo.V1C_dim_type_price tp ON wh.type_price_opt_RRef=tp.type_price_RRef
-WHERE TRY_CONVERT(int, wh.code) in (@CodeWarehouse,@CodeWarehouseLink)
+WHERE TRY_CONVERT(int, wh.code) in (@CodeWarehouse,@CodeWarehouseLink) and @CodeWarehouse not in (89,9)
 
      union all
 SELECT -- оптовий склад товари і кількості
@@ -560,7 +560,7 @@ SELECT -- оптовий склад товари і кількості
  FROM dbo.QuantityOpt 
    WHERE quantity>0
    AND CodeWarehouse in (@CodeWarehouse,@CodeWarehouseLink)
-    AND @CodeWarehouse = 89
+    AND @CodeWarehouse in (89,9)
 ;";
 
 
