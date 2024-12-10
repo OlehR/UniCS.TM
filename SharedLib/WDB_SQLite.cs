@@ -1470,7 +1470,7 @@ from WaresLink wl join  wares w on wl.CodeWares = w.Code_wares where wl.CodeWare
        public IEnumerable<ReceiptWaresLink> GetReceiptWaresLink(IdReceiptWares pIdRW)
         {
             string Sql = @"select wrl.*,w.NAME_WARES as NameWares from WaresReceiptLink wrl 
-    join Wares w on wrl.CodeWaresTo=w.Code_Wares
+    join Wares w on wrl.CodeWares=w.Code_Wares
 where wrl.IdWorkplace = @IdWorkplace and wrl.CodePeriod = @CodePeriod and wrl.CodeReceipt = @CodeReceipt and wrl.CodeWaresTo = @CodeWares";
             return db.Execute<IdReceiptWares, ReceiptWaresLink>(Sql, pIdRW);
         }
