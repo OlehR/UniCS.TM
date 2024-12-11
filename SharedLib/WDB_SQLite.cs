@@ -1072,7 +1072,7 @@ Where ID_WORKPLACE = @IdWorkplace
                     if (wrp != null)
                         el.ReceiptWaresPromotions = wrp.Where(rr => ((IdReceiptWares)rr).Equals((IdReceiptWares)el)).ToArray();
                     el.WaresLink = GetLinkWares(el);
-                    //el.ReceiptWaresLink = GetReceiptWaresLink(el);
+                    el.ReceiptWaresLink = GetReceiptWaresLink(el);
                 }
             }
             return r;
