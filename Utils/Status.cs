@@ -62,12 +62,10 @@ namespace Utils
     {
         public bool is_bonus {get;set;}
         public StatusIsBonus(int pState = 0, string pTextState = "Ok") : base(pState, pTextState) { }
-        public StatusIsBonus(Status<string> pS)
+        public StatusIsBonus(Status<string> pS):base(pS.State, pS.TextState)
         {
-            new StatusIsBonus(pS.State, pS.TextState) {
-                Data = pS.Data,
-                is_bonus = Data?.IndexOf("нараховано бонусів ") > 0
-            };    
+            Data = pS.Data;
+            is_bonus = Data?.IndexOf("нараховано бонусів ") > 0;            
         }
     }
 }
