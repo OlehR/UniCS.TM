@@ -185,8 +185,7 @@ namespace Front.Equipments
                 if (a.Length > 3)
                     return eBank.PrivatBank;
                 else
-                    return eBank.OschadBank; //OSCHADBANK
-               
+                    return terminalInfo.IndexOf("/MTB") > 0 ? eBank.MTB:eBank.OschadBank; //OSCHADBANK               
             }            
             return eBank.NotDefine;
         }
@@ -212,7 +211,7 @@ namespace Front.Equipments
                     if (a.Length > 2)
                         str += $"{Environment.NewLine}TerminalId: {a[1]}{Environment.NewLine}";
                     str += $"{Environment.NewLine}TerminalInfo: {terminalInfo}";
-                    str += $"MerchantId=>{MerchantId}"; 
+                    str += $"{Environment.NewLine}MerchantId=>{MerchantId}"; 
                 }
                 return str;
             }

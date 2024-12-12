@@ -408,7 +408,9 @@ namespace ModelMID
         [Description("Приват")]
         PrivatBank = 3,
         [Description("Ощад")]
-        OschadBank = 11
+        OschadBank = 11,
+        [Description("MTB")]
+        MTB = 13
     }
    
     /// <summary>
