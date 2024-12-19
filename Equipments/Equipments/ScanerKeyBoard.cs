@@ -30,12 +30,12 @@ namespace Front.Equipments
         string Barcode = string.Empty;
         DateTime LastCharDateTime = DateTime.Now;
 
-        string s;
+        //string s;
         public void SetKey(int pKeyCode, char pCh)
         {
             try
             {
-                s += $"=>{pKeyCode} BC=>{Barcode}<={Environment.NewLine}";
+               // s += $"=>{pKeyCode} BC=>{Barcode}<={Environment.NewLine}";
                 if ((pKeyCode == LeftShift || pKeyCode == RightShift) )
                 {
                     if (!string.IsNullOrEmpty(Barcode))
@@ -56,7 +56,7 @@ namespace Front.Equipments
                             _ => e
                         };
                         Barcode = Barcode[..^1] + z;
-                        s += $"{e} {z} {pKeyCode} {Barcode}{Environment.NewLine}";
+                       // s += $"{e} {z} {pKeyCode} {Barcode}{Environment.NewLine}";
                     }
                 }
                 else

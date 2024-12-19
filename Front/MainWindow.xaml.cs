@@ -528,12 +528,12 @@ namespace Front
         }
 
         // bool IsLoading = false;
-        string ss = "";
+        //string ss = "";
         public void SetKey(object sender, KeyEventArgs e)
         {
             var key = e.Key;
             var aa = key.ToString();
-            ss += $"{e.Device}  {e.InputSource} {e.Handled} {e.SystemKey} {e.KeyStates} {e.DeadCharProcessedKey} {e.ImeProcessedKey} {e.IsDown } {e.IsUp} {key} {aa} {Environment.NewLine}";
+           // ss += $"{e.Device}  {e.InputSource} {e.Handled} {e.SystemKey} {e.KeyStates} {e.DeadCharProcessedKey} {e.ImeProcessedKey} {e.IsDown } {e.IsUp} {key} {aa} {Environment.NewLine}";
             if (!(key == Key.Enter || key == Key.Return || key==Key.LeftShift || key == Key.RightShift || ((int)key >= 34 && (int)key <= 69)))
                 return;
             var Ch = aa.Length == 2 && aa[0] == 'D' ? aa[1] : aa[0];
