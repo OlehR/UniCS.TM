@@ -171,5 +171,13 @@ namespace Utils
                 }
             });
         }
+
+        public static DateTime WithoutTimeZone(this DateTime dateTime)
+        {
+            if (dateTime.Kind != DateTimeKind.Unspecified)
+                return new DateTime(dateTime.Ticks, DateTimeKind.Unspecified);
+
+            return dateTime;
+        }
     }
 }
