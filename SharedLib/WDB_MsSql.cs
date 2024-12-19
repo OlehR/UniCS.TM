@@ -30,10 +30,19 @@ namespace SharedLib
             int varMessageNoMax = db.ExecuteScalar<int>(SqlGetMessageNo);
             int varMessageNoMin = pDB.GetConfig<int>("MessageNo") + 1;
 
+            
+            int CodeWarehouseLink = 0;
+            if(Global.Settings?.IdWorkPlaceLink>0)
+            {
+                var r = pDB.GetWorkPlace();
+                CodeWarehouseLink  = r.FirstOrDefault (el => (el.IdWorkplace == Global.Settings?.IdWorkPlaceLink))?.CodeWarehouse??0;
+            }
+
+
             //return varMessageNoMin;//!!!!!!!!!!!!!!TMP
             Log.Append($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss.fffffff} LoadData varMessageNoMin={varMessageNoMin} varMessageNoMax={varMessageNoMax}");
 
-            var oWarehouse = new pWarehouse() { CodeWarehouse = Global.CodeWarehouse, CodeWarehouseLink=Global.Settings?.IdWorkPlaceLink??0 };
+            var oWarehouse = new pWarehouse() { CodeWarehouse = Global.CodeWarehouse, CodeWarehouseLink= CodeWarehouseLink };
             var oMessage = new pMessage() { IsFull = parIsFull ? 1 : 0, MessageNoMin = varMessageNoMin, MessageNoMax = varMessageNoMax, CodeWarehouse = Global.CodeWarehouse, IdWorkPlace = Global.IdWorkPlace, ShopTM=Global.Settings.CodeTM  };
 
             Debug.WriteLine("SqlGetWaresLink");

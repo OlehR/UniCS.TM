@@ -5,6 +5,8 @@ namespace Front.Equipments
     public class ScanerKeyBoard : Scaner
     {
         const int Enter = 6;
+        const int LeftShift = 116;
+        const int RightShift = 117;
         public ScanerKeyBoard(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<string, string> pOnBarCode = null) : base(pEquipment, pConfiguration, eModelEquipment.MagellanScaner, pLoggerFactory, pOnBarCode)
         {
             State = eStateEquipment.On;
@@ -28,26 +30,61 @@ namespace Front.Equipments
         string Barcode = string.Empty;
         DateTime LastCharDateTime = DateTime.Now;
 
+        string s;
         public void SetKey(int pKeyCode, char pCh)
         {
-            DateTime CurrentCharDateTime = DateTime.Now;
-            if (Barcode == string.Empty || (CurrentCharDateTime - LastCharDateTime).TotalSeconds < 0.15)
+            try
             {
-                if (pKeyCode == Enter)
+                s += $"=>{pKeyCode} BC=>{Barcode}<={Environment.NewLine}";
+                if ((pKeyCode == LeftShift || pKeyCode == RightShift) )
                 {
-                    OnBarCode?.Invoke(Barcode, null);
-                    Barcode = string.Empty;
+                    if (!string.IsNullOrEmpty(Barcode))
+                    {
+                        var e = Barcode[Barcode.Length - 1];
+                        char z = e switch
+                        {
+                            '0' => ')',
+                            '1' => '!',
+                            '2' => '@',
+                            '3' => '#',
+                            '4' => '$',
+                            '5' => '%',
+                            '6' => '^',
+                            '7' => '&',
+                            '8' => '*',
+                            '9' => '(',
+                            _ => e
+                        };
+                        Barcode = Barcode[..^1] + z;
+                        s += $"{e} {z} {pKeyCode} {Barcode}{Environment.NewLine}";
+                    }
                 }
                 else
                 {
-                    Barcode += pCh;
+                    DateTime CurrentCharDateTime = DateTime.Now;
+                    if (Barcode == string.Empty || (CurrentCharDateTime - LastCharDateTime).TotalSeconds < 0.15)
+                    {
+                        if (pKeyCode == Enter)
+                        {
+                            OnBarCode?.Invoke(Barcode, null);
+                            Barcode = string.Empty;
+                        }
+                        else
+                        {
+                            Barcode += pCh;
+                        }
+                    }
+                    else
+                    {
+                        Barcode = string.Empty;
+                    }
+                    LastCharDateTime = CurrentCharDateTime;
                 }
             }
-            else
+            catch (Exception e)
             {
-                Barcode = string.Empty;
+                var ss = e.Message;
             }
-            LastCharDateTime = CurrentCharDateTime;
         }
     }
 }
