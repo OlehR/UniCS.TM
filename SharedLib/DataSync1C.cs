@@ -29,6 +29,7 @@ namespace SharedLib
 
         public async Task<string> SendReceiptTo1CAsync(Receipt pR, string pServer = null, bool pIsChangeState = true)
         {
+           // if (!Global.Is1C) return null;
             string Res = null;
             if (!Global.Settings.IsSend1C && pIsChangeState) return Res;
 

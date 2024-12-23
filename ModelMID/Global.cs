@@ -11,6 +11,7 @@ namespace ModelMID
     /// </summary>
     public class Global
     {
+        public static bool Is1C = false;
         public static Action<Receipt> OnReceiptCalculationComplete { get; set; }
         public static Action<SyncInformation> OnSyncInfoCollected { get; set; }
         public static Action<StatusBD> OnStatusChanged { get; set; }
