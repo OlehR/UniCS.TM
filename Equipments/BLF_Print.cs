@@ -203,7 +203,7 @@ namespace Front.Equipments
                                 List<string> list = new List<string>() { "Номер замовлення:", $"{Ansver.TextState}" };
                                 var res = EF.PrintNoFiscalReceipt(R, list);
                                 List<string> listWares = new List<string>();
-                                listWares = R.Wares.Select(x => $"{x.NameWares} => {x.Quantity}").ToList();
+                                listWares = R.Wares.Where(x=> x.ProductionLocation>0).Select(x => $"{x.NameWares} => {x.Quantity}").ToList();
                                 listWares.Insert(0, $"Список замовлення №{Ansver.TextState}");
                                 listWares.Add(DateTime.Now.ToString("g"));
                                 var res2 = EF.PrintNoFiscalReceipt(R, listWares);
