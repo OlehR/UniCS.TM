@@ -22,7 +22,7 @@ namespace Utils
             NullValueHandling = NullValueHandling.Ignore,
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore
         }; //, Culture = MyCulture 
-
+        [Obsolete("ToJSON is deprecated, please use ToJson instead.")]
         public static string ToJSON(this object s,string  pDateFormatString = null)
         {
             if (s == null) return "";
@@ -38,7 +38,7 @@ namespace Utils
                     };
                 var res = JsonConvert.SerializeObject(s, Setting);
                 return res;
-            }catch(Exception ex) { 
+            }catch(Exception) { 
                 return ""; 
             }
         }
