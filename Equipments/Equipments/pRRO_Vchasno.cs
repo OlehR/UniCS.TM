@@ -177,8 +177,8 @@ namespace Front.Equipments.Implementation
         override public bool PeriodZReport(IdReceipt pIdR, DateTime pBegin, DateTime pEnd, bool IsFull = true)
         {
             ApiRRO d = new(eTask.PeriodZReport) { token = Token, device = Device };
-            d.fiscal.dt_from = pBegin.Date.ToString("yyyyMMddHHmmss");
-            d.fiscal.dt_to = pEnd.Date.ToString("yyyyMMddHHmmss");
+            d.fiscal.dt_from = pBegin.Date.ToString("yyyyMMdd");
+            d.fiscal.dt_to = pEnd.Date.ToString("yyyyMMdd");
             string dd = d.ToJSON();
             var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");
             Responce<ResponceReport> Res = JsonConvert.DeserializeObject<Responce<ResponceReport>>(r);
