@@ -30,6 +30,8 @@ namespace ModelMID
                 string res = Global.GetWorkPlaceByIdWorkplace(IdWorkplace)?.Prefix;
                 if (string.IsNullOrEmpty(res))
                     res = PrefixWarehouse + Global.GetNumberCashDeskByIdWorkplace(IdWorkplace);
+                if (DateTime.Now.Year >= 2025 && res.Length == 3)
+                    res += "0";
                 return res;
             }
         }
@@ -89,13 +91,13 @@ namespace ModelMID
         public string NumberReceipt1C { get { return Prefix + OnlyNumberReceipt1C; } }
         public string NumberReceiptMain1C { get { return PrefixMain + OnlyNumberReceipt1C; } }
 
-        public string OnlyNumberReceipt1C { get { return (DateTime.Now.Year >= 2025 ? $"{DateTime.Now.Month:X1}{DateTime.Now.Day:D2}": Convert.ToInt32(Math.Floor((DTPeriod - new DateTime(2019, 01, 01)).TotalDays)).ToString("D4") )+ CodeReceipt.ToString("D4"); } }
+        public string OnlyNumberReceipt1C { get { return (CodePeriod >= 20250101 ? $"{DTPeriod.Month:X1}{DTPeriod.Day:D2}": Convert.ToInt32(Math.Floor((DTPeriod - new DateTime(2019, 01, 01)).TotalDays)).ToString("D4") )+ CodeReceipt.ToString("D4"); } }
     /// <summary>
     /// Унікальний номер чека  коли 2 підприємця і 2 чека 
     /// </summary>
     public string NumberReceiptRRO
         {
-            get { return (DateTime.Now.Year >= 2025? DateTime.Now.Year.ToString() : "")+"_"+NumberReceipt1C + (IdWorkplacePay>0?$"_{IdWorkplacePay}":"");}
+            get { return (DTPeriod.Year >= 2025? DTPeriod.Year.ToString() : "")+"_"+NumberReceipt1C + (IdWorkplacePay>0?$"_{IdWorkplacePay}":"");}
         }
     }
 }

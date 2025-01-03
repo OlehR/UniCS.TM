@@ -82,10 +82,7 @@ namespace ModelMID
         public IEnumerable<string> BankName
         {
             get { return Payment != null && Payment.Any(el => el.TypePay == eTypePay.Card) ? Payment.Select(el=>el.CodeBank.ToString()) : new List<string>(); }
-            set
-            {
-                _BankName = value;
-            }
+            set{ _BankName = value;}
         }
       
 
@@ -140,10 +137,9 @@ namespace ModelMID
         {
             get
             {
-                if (RefundId == null)
-                    return null;
-                var d = Convert.ToInt32(Math.Floor((RefundId.DTPeriod - new DateTime(2019, 01, 01)).TotalDays)).ToString("D4");
-                return Prefix + d + CodeReceiptRefund.ToString("D4");//PrefixWarehouse + GlobaQl.GetNumberCashDeskByIdWorkplace(IdWorkplaceRefund)
+                //if (RefundId == null) return null;
+                //var d = Convert.ToInt32(Math.Floor((RefundId.DTPeriod - new DateTime(2019, 01, 01)).TotalDays)).ToString("D4");
+                return RefundId?.NumberReceipt1C; // Prefix + d + CodeReceiptRefund.ToString("D4");//PrefixWarehouse + GlobaQl.GetNumberCashDeskByIdWorkplace(IdWorkplaceRefund)
             }
         }
         public int IdWorkplaceRefund { get { return RefundId == null ? 0 : RefundId.IdWorkplace; } set { if (RefundId == null) RefundId = new IdReceipt(); RefundId.IdWorkplace = value; } }
