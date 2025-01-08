@@ -15,6 +15,7 @@ namespace ModelMID
     /// </summary>
     public class Receipt : IdReceipt
     {
+        public long Id;
         private DateTime _DateReceipt;
         /// <summary>
         /// Дата Чека
