@@ -167,11 +167,11 @@ namespace SharedLib
                     else
                         Res = eReturnClient.Error;
                 }
+                 FileLogger.WriteLogMessage(this, "Send1CClientAsync", $"{body}=>{res}");
             }
             catch (Exception ex)
             {
-                // Global.OnSyncInfoCollected?.Invoke(new SyncInformation { TerminalId = Global.GetTerminalIdByIdWorkplace(el.IdWorkplace), Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "Send1CReceiptWaresDeletedAsync=>" + el.CodePeriod.ToString() + " " + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
-                // return false;
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex);
             }
             return Res;
         }
