@@ -271,7 +271,7 @@ namespace SharedLib
                 if(  !pReceipt.Equals(R) && R!=null) 
                 {
                     Global.Message?.Invoke($"Даний купон=>{pCodeData} вже використано в чеку {R.IdWorkplace}-{R.CodePeriod}-{R.CodeReceipt} !!!", eTypeMessage.Information);
-                    return true;
+                    return false;
                 }               
             }
             

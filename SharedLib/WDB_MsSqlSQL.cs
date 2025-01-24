@@ -350,6 +350,7 @@ SELECT
 GROUP BY pw.doc_promotion_RRef
   HAVING SUM(CASE WHEN dw.code in (@CodeWarehouse,@CodeWarehouseLink) THEN 1 ELSE 0 END) = 0)  
 
+
 SELECT  --Склади дії
     CONVERT(INT, YEAR(dp.year_doc)*10000+dp.number) AS CodePS
     ,1 AS CodeGroupFilter
@@ -546,7 +547,6 @@ SELECT -- Товари набору (Основні)
       JOIN V1C_dim_warehouse wh ON o.Warehouse_RRef=wh.warehouse_RRef
       JOIN dbo.V1C_dim_type_price tp ON wh.type_price_opt_RRef=tp.type_price_RRef
 WHERE TRY_CONVERT(int, wh.code) in (@CodeWarehouse,@CodeWarehouseLink) and @CodeWarehouse not in (89,9)
-
      union all
 SELECT -- оптовий склад товари і кількості
    8000000000+CodeWarehouse AS CodePS
@@ -561,9 +561,32 @@ SELECT -- оптовий склад товари і кількості
    WHERE quantity>0
    AND CodeWarehouse in (@CodeWarehouse,@CodeWarehouseLink)
     AND @CodeWarehouse in (89,9)
+union all
+SELECT -- Купони. Бажано доробити фільтр по складу.
+    9000000000+CONVERT(INT, YEAR(pg.date_time)*100000+pg.number) AS CodePS
+    ,1 AS CodeGroupFilter
+    ,71 AS TypeGroupFilter
+    ,1 AS RuleGroupFilter
+    ,0 AS CodeProporty
+    ,0 AS CodeChoice
+    , BeginCoupon  as CodeData --AS CodeWarehouse
+    , EndCoupon AS CodeDataEnd
+ FROM dbo.V1C_doc_promotion_gal pg
+   WHERE pg.BeginCoupon>0
+   --AND CodeWarehouse in (@CodeWarehouse,@CodeWarehouseLink)
+ UNION ALL
+SELECT -- Купони. Бажано доробити фільтр по складу.
+     CONVERT(INT, YEAR(dp.year_doc)*10000+dp.number) AS CodePS
+    ,1 AS CodeGroupFilter
+    ,71 AS TypeGroupFilter
+    ,1 AS RuleGroupFilter
+    ,0 AS CodeProporty
+    ,0 AS CodeChoice
+    , BeginCoupon  as CodeData --AS CodeWarehouse
+    , EndCoupon AS CodeDataEnd
+ FROM DW.dbo.V1C_doc_promotion dp
+   WHERE dp.BeginCoupon>0
 ;";
-
-
         string SqlGetPromotionSaleGroupWares = @"SELECT CODE_GROUP_WARES_PS as CodeGroupWaresPS, CODE_GROUP_WARES as CodeGroupWares FROM dbo.GetPromotionSaleGW()";
 
         string SqlGetPromotionSale2Category = @"SELECT distinct CONVERT(INT, YEAR(dp.year_doc)*10000+dp.number) AS CodePS, dn.code AS CodeWares
