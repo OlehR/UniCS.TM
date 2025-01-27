@@ -389,7 +389,7 @@ SELECT  --Вид дисконтної карти (Тип Клієнта)
     ,-1 AS RuleGroupFilter
     ,0 AS CodeProporty
     ,0 AS CodeChoice
-    ,0 as CodeData --AS CodeWarehouse
+    ,0 as CodeData 
     , CONVERT(NUMERIC, NULL) AS CodeDataEnd
 
   FROM dbo.V1C_reg_promotion_gal pg

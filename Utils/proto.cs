@@ -77,6 +77,13 @@ namespace Utils
                 res = pDefault;
             return res;
         }
+        public static long ToLong(this string s, int pDefault = 0)
+        {
+            long res;
+            if (!long.TryParse(s, out res))
+                res = pDefault;
+            return res;
+        }
 
         public static decimal ToDecimal(this string s, decimal pDefault = 0)
         {

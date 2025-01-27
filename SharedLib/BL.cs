@@ -225,7 +225,7 @@ namespace SharedLib
                                     return new ReceiptWares(pReceipt);
                                 case eTypeCode.Coupon:                                    
                                 case eTypeCode.OneTimeCoupon:
-                                    if (CheckOneTime(pReceipt, Code, el.TypeCode))
+                                    if (CheckOneTime(pReceipt, pBarCode.ToLong(), el.TypeCode))
                                         return new ReceiptWares(pReceipt);
                                     else return null;                                    
                                 default:
@@ -261,7 +261,7 @@ namespace SharedLib
             return AddReceiptWares(W);
         }
 
-        public bool CheckOneTime(IdReceipt pReceipt,int pCodeData,eTypeCode pTypeCode)
+        public bool CheckOneTime(IdReceipt pReceipt,long pCodeData,eTypeCode pTypeCode)
         {
             var RC = new OneTime(pReceipt) { CodeData = pCodeData,TypeData= pTypeCode};
             RC.CodePS = db.GetCodePS(pCodeData);
