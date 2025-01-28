@@ -277,10 +277,11 @@ namespace Front.Equipments
                     try
                     {
                         var r = new SocketClient(IPAddress.Parse(Global.IPAddressOrderService), 3444);
-                        var Ansver = await r.StartAsync(Command.ToJson());
+                        var ComandStr = Command.ToJson();
+                        var Ansver = await r.StartAsync(ComandStr);
                         if (!Ansver.status && IsTryAgain)
                         {
-                            FileLogger.WriteLogMessage($"SocketAnsver: {Environment.NewLine}Command: {Command} {Environment.NewLine}IdWorkPlace: {R.IdWorkplace}{Environment.NewLine}Ansver: {Ansver.TextState}{Environment.NewLine} Перша спроба", eTypeLog.Error);
+                            FileLogger.WriteLogMessage($"SocketAnsver: {Environment.NewLine}Command: {ComandStr} {Environment.NewLine}IdWorkPlace: {R.IdWorkplace}{Environment.NewLine}Ansver: {Ansver.TextState}{Environment.NewLine} Перша спроба", eTypeLog.Error);
                             PrintOrderReceipt(R, false);
                             return;
                         }
@@ -291,12 +292,12 @@ namespace Front.Equipments
                         listWares.Insert(0, $"Список замовлення №{Ansver.TextState}");
                         listWares.Add(DateTime.Now.ToString("g"));
                         var res2 = EF.PrintNoFiscalReceipt(R, listWares);
-                        FileLogger.WriteLogMessage($"SocketAnsver: {Environment.NewLine}Command: {Command} {Environment.NewLine}IdWorkPlace: {R.IdWorkplace}{Environment.NewLine}Ansver: {Ansver.TextState}", eTypeLog.Full);
+                        FileLogger.WriteLogMessage($"SocketAnsver: {Environment.NewLine}Command: {ComandStr} {Environment.NewLine}IdWorkPlace: {R.IdWorkplace}{Environment.NewLine}Ansver: {Ansver.TextState}", eTypeLog.Full);
                         //SocketAnsver?.Invoke(eCommand.GetOrderNumber, MainWorkplace, Ansver);
                     }
                     catch (Exception ex)
                     {
-                        FileLogger.WriteLogMessage(this, $"GeneralCondition DNSName=>{IPAddress.Parse(Global.IPAddressOrderService)} {Command} ", ex);
+                        FileLogger.WriteLogMessage(this, $"GeneralCondition DNSName=>{IPAddress.Parse(Global.IPAddressOrderService)} {Command.ToJson()} ", ex);
                         //SocketAnsver?.Invoke(eCommand.GetOrderNumber, MainWorkplace, new Status(ex));
                     }
                 });
