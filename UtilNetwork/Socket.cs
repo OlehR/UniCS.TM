@@ -17,11 +17,12 @@ namespace UtilNetwork
         bool IsStart = false;
         Socket listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         IPEndPoint ipPoint = new IPEndPoint(IPAddress.Any, 3443);//(IPAddress.Parse(IP), IpPort);
-         
-        public SocketServer( int pPort, Func< string, Status> pS)
+        int SizeBuffer;
+        public SocketServer( int pPort, Func< string, Status> pS,int pSizeBuffer=1024)
         {
             Action=pS; 
             ipPoint = new IPEndPoint(IPAddress.Any, pPort);
+            SizeBuffer = pSizeBuffer;
         }
 
         public async Task StartAsync()
@@ -45,12 +46,12 @@ namespace UtilNetwork
                         // получаем сообщение
                         StringBuilder builder = new StringBuilder();
                         int bytes = 0; // количество полученных байтов
-                        byte[] data = new byte[1024]; // буфер для получаемых данных
+                        byte[] data = new byte[SizeBuffer]; // буфер для получаемых данных
 
                         do
                         {
                             bytes = await handler.ReceiveAsync(data, SocketFlags.None);
-                            builder.Append(Encoding.UTF8.GetString(data, 0, bytes));
+                            builder.Append(Encoding.UTF8.GetString(data, 0, bytes)); //!!!! в цілому неправильне місце для конвертації в string. Вирішуємо за рахунок великого буфера.
                             Console.WriteLine(builder.ToString());
                         }
                         while (handler.Available > 0);
