@@ -382,6 +382,17 @@ SELECT  --Вид дисконтної карти (Тип Клієнта)
   WHERE kind_promotion = 0xA6F61431ECE9ED4646ECAA3A735174ED
     AND dp.d_end>getdate()
     AND wh_ex.doc_promotion_RRef IS null
+ UNION all --Акція тільки власників карток
+ SELECT CONVERT(INT, YEAR(dp.year_doc)*10000+dp.number) AS CodePS
+    ,1 AS CodeGroupFilter
+,32 AS TypeGroupFilter
+,-1 AS RuleGroupFilter
+,0 AS CodeProporty
+,0 AS CodeChoice
+,0 as CodeData 
+, CONVERT(NUMERIC, NULL) AS CodeDataEnd
+  FROM dbo.V1C_doc_promotion dp WHERE dp.d_end>getdate() AND dp.IsOnlyCard>0
+
  UNION all --Акція галушки тільки власників карток
  SELECT 9000000000+CONVERT(INT, YEAR(dpg.date_time)*100000+dpg.number) AS CodePS
     ,1 AS CodeGroupFilter
@@ -572,7 +583,7 @@ SELECT -- Купони. Бажано доробити фільтр по скла
     , BeginCoupon  as CodeData --AS CodeWarehouse
     , EndCoupon AS CodeDataEnd
  FROM dbo.V1C_doc_promotion_gal pg
-   WHERE pg.BeginCoupon>0
+   WHERE pg.BeginCoupon>0 and date_end>getdate() 
    --AND CodeWarehouse in (@CodeWarehouse,@CodeWarehouseLink)
  UNION ALL
 SELECT -- Купони. Бажано доробити фільтр по складу.
@@ -585,7 +596,7 @@ SELECT -- Купони. Бажано доробити фільтр по скла
     , BeginCoupon  as CodeData --AS CodeWarehouse
     , EndCoupon AS CodeDataEnd
  FROM DW.dbo.V1C_doc_promotion dp
-   WHERE dp.BeginCoupon>0
+   WHERE dp.d_end>getdate() and dp.BeginCoupon>0
 ;";
         string SqlGetPromotionSaleGroupWares = @"SELECT CODE_GROUP_WARES_PS as CodeGroupWaresPS, CODE_GROUP_WARES as CodeGroupWares FROM dbo.GetPromotionSaleGW()";
 
