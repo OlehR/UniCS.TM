@@ -246,7 +246,7 @@ SELECT
     ,0 AS DataAdditionalCondition --Ігнорувати мінімальні ціни
     ,'' AS DataText
   FROM  DW.dbo.V1C_doc_promotion dp 
-  JOIN dw.dbo.V1C_doc_promotion_kit pk ON dp._IDRRef=pk.doc_promotion_RRef
+  --JOIN dw.dbo.V1C_doc_promotion_kit pk ON dp._IDRRef=pk.doc_promotion_RRef
   LEFT JOIN wh_ex ON (wh_ex.doc_promotion_RRef= dp._IDRRef)
   WHERE dp.d_end>getdate() 
   AND wh_ex.doc_promotion_RRef IS NULL
