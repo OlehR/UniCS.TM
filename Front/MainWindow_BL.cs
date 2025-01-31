@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using Equipments;
 using Equipments.Model;
 using Front.Control;
 using Front.Equipments;
@@ -390,7 +391,7 @@ namespace Front
         }
         
 
-        Status CallBackApi(string pDataApi)
+        /*Status CallBackApi(string pDataApi)
         {
             Status Res = null;
             try
@@ -463,6 +464,6 @@ namespace Front
             }
             catch (Exception ex) { Res = new Status(ex); }
             return Res;
-        }
+        }*/
     }
 }

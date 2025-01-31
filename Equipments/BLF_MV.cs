@@ -400,9 +400,8 @@ namespace Front.Equipments
                 SetStateView(eStateMainWindows.WaitInput);
             }
            
-        }
-
-        /*status CallBackApi(string pDataApi)
+        }        
+        public Status CallBackApi(string pDataApi)
         {
             Status Res = null;
             try
@@ -429,20 +428,16 @@ namespace Front.Equipments
                         var u = Bl.GetUserByBarCode(CommandString.Data);
                         if (u != null)
                         {
-                            AdminControl.OpenShift(u);
+                            OpenShift(u);
                             Res = new Status(0, $"Зміна відкрита:{u.NameUser}");
                         }
                         break;
                     case eCommand.GeneralCondition:
                         CommandRemoteInfo = JsonConvert.DeserializeObject<CommandAPI<InfoRemoteCheckout>>(pDataApi);
                         var r = Bl.GetUserByBarCode(CommandRemoteInfo.Data.UserBarcode);
-                        RemoteCheckout = CommandRemoteInfo.Data;
-                        RemoteWorkplace = Bl.db.GetWorkPlace().FirstOrDefault(el => el.IdWorkplace == RemoteCheckout.RemoteIdWorkPlace);
-                        if (RemoteCheckout.RemoteCigarettesPrices.Count > 1)
-                            RemotePrices.ItemsSource = RemoteCheckout.RemoteCigarettesPrices;
-                        OnPropertyChanged(nameof(RemoteWorkplace));
-                        OnPropertyChanged(nameof(RemoteCheckout));
-                        Res = new Status(0, $"Загальний стан каси: {RemoteWorkplace.Name}");
+                        MW.RemoteCheckout = CommandRemoteInfo.Data; 
+        
+                        Res = new Status(0, $"Загальний стан каси: {MW.RemoteWorkplace.Name}");
                         break;
                     case eCommand.Confirm:
                         CommandRemoteInfo = JsonConvert.DeserializeObject<CommandAPI<InfoRemoteCheckout>>(pDataApi);
@@ -457,8 +452,8 @@ namespace Front.Equipments
                         if (CommandRemoteInfo.Data.StateMainWindows == eStateMainWindows.WaitAdmin && CommandRemoteInfo.Data.TypeAccess == eTypeAccess.ChoicePrice)
                         {
                             Bl.AddEventAge(MW.curReceipt);
-                            Blf.AddWares(MW.CurWares.CodeWares, MW.CurWares.CodeUnit, CommandRemoteInfo.Data.QuantityCigarettes, CommandRemoteInfo.Data.SelectRemoteCigarettesPrice.price);
-                            QuantityCigarettes = 1;
+                            AddWares(MW.CurWares.CodeWares, MW.CurWares.CodeUnit, CommandRemoteInfo.Data.QuantityCigarettes, CommandRemoteInfo.Data.SelectRemoteCigarettesPrice.price);
+                            MW.QuantityCigarettes = 1;
                             SetStateView(eStateMainWindows.WaitInput);
                         }
                         Res = new Status(0, $"{CommandRemoteInfo.Data.StateMainWindows} {CommandRemoteInfo.Data.TypeAccess}");
@@ -475,9 +470,7 @@ namespace Front.Equipments
             }
             catch (Exception ex) { Res = new Status(ex); }
             return Res;
-        }*/
-
-
+        }
 
 
     }

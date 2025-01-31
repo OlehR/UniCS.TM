@@ -28,6 +28,8 @@ namespace Front.Control
     /// </summary>
     public partial class Admin_control : UserControl, INotifyPropertyChanged
     {
+
+        BLF Blf;
         Action<eCommand, WorkPlace, Status> OnSocket;
         Access Access = Access.GetAccess();
         public event PropertyChangedEventHandler PropertyChanged;
@@ -107,6 +109,7 @@ namespace Front.Control
 
         public Admin_control()
         {
+            Blf = BLF.GetBLF;
             try
             {
                 OnSocket += (Command, WorkPlace, Ansver) =>
@@ -178,8 +181,7 @@ namespace Front.Control
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("NameAdminUserOpenShift"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DataOpenShift"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsControlScale"));
-
-
+            OpenShiftShow.Visibility = MW.AdminSSC == null ?  Visibility.Collapsed: Visibility.Visible;
 
             Dispatcher.BeginInvoke(new ThreadStart(() =>
             {
@@ -351,8 +353,7 @@ namespace Front.Control
                 else
                 {
                     Thread.Sleep(100);
-                    MW.CustomMessage.Show($"Помилка друку звіта:({r.CodeError}){Environment.NewLine}{r.Error}", "Помилка!", eTypeMessage.Error);
-                    //MW.ShowErrorMessage($"Помилка друку звіта:({r.CodeError}){Environment.NewLine}{r.Error}");
+                    MW.CustomMessage.Show($"Помилка друку звіта:({r.CodeError}){Environment.NewLine}{r.Error}", "Помилка!", eTypeMessage.Error);                    
                 }
             });
         }
@@ -376,33 +377,18 @@ namespace Front.Control
                             else
                             {
                                 Thread.Sleep(100);
-                                MW.CustomMessage.Show($"Помилка друку звіта:({r.CodeError}){Environment.NewLine}{r.Error}", "Помилка!", eTypeMessage.Error);
-                                //MW.ShowErrorMessage($"Помилка друку звіта:({r.CodeError}){Environment.NewLine}{r.Error}");
+                                MW.CustomMessage.Show($"Помилка друку звіта:({r.CodeError}){Environment.NewLine}{r.Error}", "Помилка!", eTypeMessage.Error);                                
                             }
                         });
                     }
                 };
-                //if (MessageBox.Show("Ви хочете зробити Z-звіт на фіскальному апараті?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                //{
-                //    var task = Task.Run(() =>
-                //{
-                //    var r = EF.RroPrintZ(new IdReceipt() { IdWorkplace = SelectedWorkPlace.IdWorkplace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
-                //    if (r.CodeError == 0)
-                //        ViewReceiptFiscal(r);
-                //    else
-                //    {
-                //        Thread.Sleep(100);
-                //        MW.ShowErrorMessage($"Помилка друку звіта:({r.CodeError}){Environment.NewLine}{r.Error}");
-                //    }
-                //});
-                //}
+                
             }
             else
             {
                 MW.SetStateView(eStateMainWindows.StartWindow);
                 TabAdmin.SelectedIndex = 0;
-                MW.CustomMessage.Show("Існує відкритий чек! Для закриття зміни потрібно закрити всі чеки!", "Увага!", eTypeMessage.Warning);
-                //MW.ShowErrorMessage("Існує відкритий чек! Для закриття зміни потрібно закрити всі чеки!");
+                MW.CustomMessage.Show("Існує відкритий чек! Для закриття зміни потрібно закрити всі чеки!", "Увага!", eTypeMessage.Warning);               
             }
         }
 
@@ -427,20 +413,8 @@ namespace Front.Control
 
         public void OpenShift(User pU)
         {
-            MW.AdminSSC = pU;
-            if (Global.TypeWorkplace == eTypeWorkplace.CashRegister)
-                MW.Access.СurUser = pU;
-            MW.DTAdminSSC = DateTime.Now;
-            MW.Bl.db.SetConfig<DateTime>("DateAdminSSC", DateTime.Now);
-            MW.Bl.db.SetConfig<string>("CodeAdminSSC", pU.BarCode);
-            MW.Bl.StartWork(Global.IdWorkPlace, pU.BarCode);
-            //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClosedShift"));
-            //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("NameAdminUserOpenShift"));
-            //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DataOpenShift"));
-            OpenShiftShow.Visibility = Visibility.Visible;
+            Blf.OpenShift(pU);            
             Init();
-            if (MW.State == eStateMainWindows.WaitAdmin)
-                MW.SetStateView(eStateMainWindows.StartWindow);
         }
 
         private void WorkFinish_Click(object sender, RoutedEventArgs e)
@@ -450,18 +424,13 @@ namespace Front.Control
                 MW.AdminSSC = null;
                 MW.Bl.db.SetConfig<string>("CodeAdminSSC", string.Empty);
                 MW.Bl.StoptWork(Global.IdWorkPlace);
-                //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClosedShift"));
-                //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("NameAdminUserOpenShift"));
-                //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DataOpenShift"));
-                OpenShiftShow.Visibility = Visibility.Collapsed;
                 Init();
             }
             else
             {
                 MW.SetStateView(eStateMainWindows.StartWindow);
                 TabAdmin.SelectedIndex = 0;
-                MW.CustomMessage.Show("Існує відкритий чек! Для закриття зміни потрібно закрити всі чеки!", "Увага!", eTypeMessage.Warning);
-                //MW.ShowErrorMessage("Існує відкритий чек! Для закриття зміни потрібно закрити всі чеки!");
+                MW.CustomMessage.Show("Існує відкритий чек! Для закриття зміни потрібно закрити всі чеки!", "Увага!", eTypeMessage.Warning);               
             }
         }
 

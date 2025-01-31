@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using Equipments.Model;
 using Front.Equipments;
 using ModelMID;
 using ModelMID.DB;
@@ -30,7 +31,10 @@ namespace Front.Equipments
         /// Користувач який відкрив зміну.
         /// </summary>
         public User AdminSSC { get; set; }
-
+        /// <summary>
+        /// Час відкриття зміни .
+        /// </summary>
+        public DateTime DTAdminSSC { get; set; }
         /// <summary>
         /// код який прийшов з SMS (Не найкраще рішення)
         /// </summary>
@@ -49,5 +53,8 @@ namespace Front.Equipments
 
         public string[] PathVideo { get; set; }
 
+        public int QuantityCigarettes { get; set; }
+        public WorkPlace RemoteWorkplace { get; set; }
+        public InfoRemoteCheckout RemoteCheckout { get; set; }
     }
 }

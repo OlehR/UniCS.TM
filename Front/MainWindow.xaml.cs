@@ -28,6 +28,7 @@ using System.Windows.Input;
 using Equipments.Model;
 using Pr = Equipments.Model.Price;
 using LibVLCSharp.Shared;
+using Equipments;
 
 namespace Front
 {
@@ -42,7 +43,9 @@ namespace Front
         public ControlScale CS { get; set; }
         Action<eCommand, WorkPlace, Status> SocketAnsver;
         public WorkPlace MainWorkplace { get; set; } = new();
-        public WorkPlace RemoteWorkplace { get; set; } = new();
+
+        //WorkPlace _RemoteWorkplace = new();
+        public WorkPlace RemoteWorkplace { get; set; } = new();//{ get { return _RemoteWorkplace; } set { _RemoteWorkplace = value; OnPropertyChanged(nameof(RemoteWorkplace)); } } 
         public Sound s { get; set; }
         public string Clock { get; set; } = DateTime.Now.ToShortDateString();
         public User AdminSSC { get; set; } = null;
@@ -197,7 +200,20 @@ namespace Front
                 WidthTotalPrise = widthTotalPrise;
             }
         }
-        public InfoRemoteCheckout RemoteCheckout { get; set; } = new();
+        InfoRemoteCheckout _RemoteCheckout  = new();
+        public InfoRemoteCheckout RemoteCheckout
+        {
+            get { return _RemoteCheckout; }
+            set
+            {
+                _RemoteCheckout = value; 
+                if (RemoteCheckout.RemoteCigarettesPrices.Count > 1)
+                    RemotePrices.ItemsSource = RemoteCheckout.RemoteCigarettesPrices;                
+                RemoteWorkplace = Bl.db.GetWorkPlace().FirstOrDefault(el => el.IdWorkplace == RemoteCheckout.RemoteIdWorkPlace);
+                OnPropertyChanged(nameof(RemoteWorkplace));
+                OnPropertyChanged(nameof(RemoteCheckout));
+            }
+        }
         public WidthHeaderReceipt widthHeaderReceipt { get; set; }
         public void calculateWidthHeaderReceipt(eTypeMonitor TypeMonitor)
         {
@@ -346,30 +362,30 @@ namespace Front
         {
             DataContext = this;
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Ver={Version}", eTypeLog.Expanded);
+            Bl = new();
+            Blf = BLF.GetBLF;
+            Blf.Init(this);
+            EF = new EquipmentFront();
+            CS = new ControlScale(this, 10d);
+            s = Sound.GetSound(CS);
 
             if (Global.PortAPI > 0)
             {
-                SocketServer = new SocketServer(Global.PortAPI, CallBackApi);
+                SocketServer = new SocketServer(Global.PortAPI, Blf.CallBackApi);
                 _ = SocketServer.StartAsync();
             }
             SocketAnsver += (Command, WorkPlace, Ansver) =>
             {
                 FileLogger.WriteLogMessage($"SocketAnsver: {Environment.NewLine}Command: {Command} {Environment.NewLine}WorkPlaceName: {WorkPlace.Name}{Environment.NewLine}IdWorkPlace: {WorkPlace.IdWorkplace}{Environment.NewLine}Ansver: {Ansver.TextState}", eTypeLog.Full);
             };
-            CS = new ControlScale(this, 10d);
-            s = Sound.GetSound(CS);
+            
             Volume = (Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout);
             var fc = new List<FlagColor>();
             Config.GetConfiguration().GetSection("MID:FlagColor").Bind(fc);
             foreach (var el in fc)
                 if (!FC.ContainsKey(el.State))
-                    FC.Add(el.State, el.Color);
-            //Access.СurUser = new User() { TypeUser = eTypeUser.Client, CodeUser = 99999999, Login = "Client", NameUser = "Client" };
+                    FC.Add(el.State, el.Color);            
 
-            Bl = new();
-            Blf = BLF.GetBLF;
-            Blf.Init(this);
-            EF = new EquipmentFront();
             KeyUp += SetKey;
             InitAction();
             calculateWidthHeaderReceipt(TypeMonitor);
@@ -804,7 +820,6 @@ namespace Front
                         EF.SetColor(GetFlagColor(State, TypeAccessWait, CS.StateScale));
                     }
 
-
                     //Зупиняєм пищання сканера
                     if (State != eStateMainWindows.ProcessPay)
                         EF.StopMultipleTone();
@@ -855,15 +870,13 @@ namespace Front
                         State = eStateMainWindows.StartWindow;
                     }
 
-
                     if (MainWorkplace != null)
                         Task.Run(async () =>
                         {
                             ObservableCollection<Pr> prices = new();
                             if (CurWares?.Prices?.Any() == true)
                             {
-                                prices = new ObservableCollection<Pr>(CurWares.Prices.OrderByDescending(r => r.Price).Select(r => new Pr(r.Price, true, r.TypeWares)));
-                                // rrr.First().IsEnable = true;
+                                prices = new ObservableCollection<Pr>(CurWares.Prices.OrderByDescending(r => r.Price).Select(r => new Pr(r.Price, true, r.TypeWares)));                                
                             }
                             InfoRemoteCheckout remoteInfo = new() { StateMainWindows = pSMV, TypeAccess = TypeAccessWait, TextInfo = $"{CS.InfoEx}", UserBarcode = AdminSSC?.BarCode, RemoteCigarettesPrices = prices };
                             CommandAPI<InfoRemoteCheckout> Command = new() { Command = eCommand.GeneralCondition, Data = remoteInfo };
@@ -1193,7 +1206,6 @@ namespace Front
                 var res = r.Wait(new TimeSpan(0, 0, 0, 0, 200));
 
                 StarVideo();
-
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"End res=>{res} pSMV={pSMV}/{State}, pTypeAccess={pTypeAccess}/{TypeAccessWait}, pRW ={pRW} , pCW={pCW},  pS={pS}", eTypeLog.Full);
             }
         }
@@ -1425,99 +1437,7 @@ namespace Front
                     return;
                 }
             }
-            Blf.CustomWindowClickButton(res);
-            /*
-            if (res != null)
-            {
-                if (res.CustomWindow?.Id == eWindows.RestoreLastRecipt)
-                {
-                    if (res.Id == 1)
-                    {
-                        SetCurReceipt(Bl.GetLastReceipt());
-                        Bl.db.RecalcPriceAsync(new IdReceiptWares(curReceipt));
-                        SetStateView(eStateMainWindows.WaitInput);
-                    }
-                    if (res.Id == 2)
-                    {
-                        var Res = Bl.GetLastReceipt();
-                        Bl.SetStateReceipt(Res, eStateReceipt.Canceled);
-                        SetStateView(eStateMainWindows.StartWindow);
-                    }
-                    return;
-                }
-                if (res.CustomWindow?.Id == eWindows.ConfirmWeight)
-                {
-                    if (res.Id == -1)
-                    {
-                        IsShowWeightWindows = false;
-                        SetStateView(eStateMainWindows.BlockWeight);
-                        return;
-                    }
-                    if (res.Id == 4)
-                    {
-                        IsShowWeightWindows = false;
-                        EF.ControlScaleCalibrateZero();
-                        return;
-                    }
-
-                    if (res.Id == 6)
-                    {
-                        Blf.NewReceipt();
-                        SetStateView(eStateMainWindows.StartWindow);
-                        return;
-                    }
-                    if (CS.RW != null)
-                    {
-                        CS.RW.FixWeightQuantity = CS.RW.Quantity;
-                        CS.RW.FixWeight += Convert.ToDecimal(CS.СurrentlyWeight);
-                        CS.StateScale = eStateScale.Stabilized;
-                    }
-
-                }
-
-                if (res.CustomWindow?.Id == eWindows.ExciseStamp)
-                {
-                    if (res.Id == 32)
-                    {
-                        IsWaitAdminTitle = true;
-                        WaitAdminTitle.Visibility = Visibility.Visible;
-                        EF.SetColor(System.Drawing.Color.Violet);
-                        s.Play(eTypeSound.WaitForAdministrator);
-                    }
-                    else
-                    if (res.Id == 33)
-                    {
-                        ExciseStampNone(null, null);
-                    }
-                    return;
-                }
-                if (res.CustomWindow?.Id == eWindows.ConfirmAge)
-                {
-                    TypeAccessWait = eTypeAccess.NoDefine;
-                    SetStateView(eStateMainWindows.WaitInput);
-
-                    if (res.Id == 1)
-                        Task.Run(new Action(() => { Bl.AddEventAge(curReceipt); Blf.PayAndPrint(); }));
-                    return;
-                }
-                if (res.CustomWindow?.Id == eWindows.UseBonus)
-                {
-                    LastVerifyCode = Bl.ds.GetVerifySMS(ClientPhoneNumvers[(int)res.Id]);
-                    CustomMessage.Show($"Код підтвердження надіслано за номером {ClientPhoneNumvers[(int)res.Id]}", "Увага!", eTypeMessage.Information);
-                    return;
-                }
-
-                var r = new CustomWindowAnswer()
-                {
-                    idReceipt = curReceipt,
-                    Id = res.CustomWindow?.Id ?? eWindows.NoDefinition,
-                    IdButton = res.Id,
-                    Text = res.CustomWindow?.InputText, //TextBoxCustomWindows.Text,
-                    ExtData = res.CustomWindow?.Id == eWindows.ConfirmWeight ? CS?.RW : null
-                };
-                Bl.SetCustomWindows(r);
-                SetStateView(eStateMainWindows.WaitInput);
-            }*/
+            Blf.CustomWindowClickButton(res);           
         }
 
         private void FindClientByPhoneClick(object sender, RoutedEventArgs e) => SetStateView(eStateMainWindows.FindClientByPhone);
