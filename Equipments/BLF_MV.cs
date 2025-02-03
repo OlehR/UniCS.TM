@@ -1,11 +1,9 @@
 ﻿using System.Collections.ObjectModel;
+using System.Text.Json;
 using System.Text.RegularExpressions;
-using System.Windows.Forms.VisualStyles;
 using Equipments.Model;
 using ModelMID;
 using ModelMID.DB;
-using Newtonsoft.Json;
-using QRCoder;
 using SharedLib;
 using Utils;
 
@@ -406,25 +404,25 @@ namespace Front.Equipments
             Status Res = null;
             try
             {
-                CommandAPI<dynamic> pC = JsonConvert.DeserializeObject<CommandAPI<dynamic>>(pDataApi);
+                CommandAPI<dynamic> pC = JsonSerializer.Deserialize<CommandAPI<dynamic>>(pDataApi);
                 CommandAPI<int> CommandInt;
                 CommandAPI<string> CommandString;
                 CommandAPI<InfoRemoteCheckout> CommandRemoteInfo;
                 switch (pC.Command)
                 {
                     case eCommand.GetCurrentReceipt:
-                        Res = new Status(0, MW.curReceipt?.ToJSON());
+                        Res = new Status(0, MW.curReceipt?.ToJson());
                         break;
                     case eCommand.GetReceipt:
-                        var Command = JsonConvert.DeserializeObject<CommandAPI<IdReceipt>>(pDataApi);
+                        var Command = JsonSerializer.Deserialize<CommandAPI<IdReceipt>>(pDataApi);
                         Res = new Status(0, Bl.GetReceiptHead(Command.Data, true)?.ToJSON());
                         break;
                     case eCommand.XReport:
-                        CommandInt = JsonConvert.DeserializeObject<CommandAPI<int>>(pDataApi);
+                        CommandInt = JsonSerializer.Deserialize<CommandAPI<int>>(pDataApi);
                         Res = new Status(0, EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = CommandInt.Data })?.ToJSON());
                         break;
                     case eCommand.OpenShift:
-                        CommandString = JsonConvert.DeserializeObject<CommandAPI<string>>(pDataApi);
+                        CommandString = JsonSerializer.Deserialize<CommandAPI<string>>(pDataApi);
                         var u = Bl.GetUserByBarCode(CommandString.Data);
                         if (u != null)
                         {
@@ -433,14 +431,14 @@ namespace Front.Equipments
                         }
                         break;
                     case eCommand.GeneralCondition:
-                        CommandRemoteInfo = JsonConvert.DeserializeObject<CommandAPI<InfoRemoteCheckout>>(pDataApi);
+                        CommandRemoteInfo = JsonSerializer.Deserialize<CommandAPI<InfoRemoteCheckout>>(pDataApi);
                         var r = Bl.GetUserByBarCode(CommandRemoteInfo.Data.UserBarcode);
                         MW.RemoteCheckout = CommandRemoteInfo.Data; 
         
                         Res = new Status(0, $"Загальний стан каси: {MW.RemoteWorkplace.Name}");
                         break;
                     case eCommand.Confirm:
-                        CommandRemoteInfo = JsonConvert.DeserializeObject<CommandAPI<InfoRemoteCheckout>>(pDataApi);
+                        CommandRemoteInfo = JsonSerializer.Deserialize<CommandAPI<InfoRemoteCheckout>>(pDataApi);
                         if (CommandRemoteInfo.Data.StateMainWindows == eStateMainWindows.BlockWeight || CommandRemoteInfo.Data.StateMainWindows == eStateMainWindows.ProblemWeight
                             || CommandRemoteInfo.Data.TypeAccess == eTypeAccess.FixWeight)
                         {
