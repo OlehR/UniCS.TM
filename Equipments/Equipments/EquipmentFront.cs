@@ -27,7 +27,7 @@ namespace Front
         public bool IsFinishInit = false;
         public Action<double, bool> OnControlWeight { get; set; }
         public Action<double, bool> OnWeight { get; set; }
-        static public Action<string, string>? OnBarCode { get; set; }
+        public Action<string, string> OnBarCode { get; set; }
 
         private IEnumerable<Equipment> ListEquipment = new List<Equipment>();
         //eStateEquipment _State = eStateEquipment.Off;
@@ -84,10 +84,10 @@ namespace Front
         public BankTerminal BankTerminal1 { get { return GetBankTerminal?.FirstOrDefault() as BankTerminal; } }
         public BankTerminal BankTerminal2 { get { return GetBankTerminal?.Skip(1).FirstOrDefault() as BankTerminal; } }
        
-        public void ControlWeight(double pWeight, bool pIsStable)
-        {
-            OnControlWeight?.Invoke(pWeight, pIsStable);
-        }
+        public void ControlWeight(double pWeight, bool pIsStable)=>OnControlWeight?.Invoke(pWeight, pIsStable);
+        public void Weight(double pWeight, bool pIsStable) => OnWeight?.Invoke(pWeight, pIsStable);
+        void BarCode(string pBarCode,string pType)=>   OnBarCode?.Invoke(pBarCode, pType);        
+
         public eStateEquipment StatCriticalEquipment
         {
             get
@@ -117,14 +117,16 @@ namespace Front
             builder.AddConsole();
         });
 
+        static EquipmentFront sEF = null;
+        public static EquipmentFront GetEF { get { return sEF ?? new EquipmentFront(); } }
         public EquipmentFront( )
         {
+            sEF = this;
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             sEquipmentFront = this;
             //OnControlWeight += (pWeight, pIsStable) => { pSetControlWeight?.Invoke(pWeight, pIsStable); };                
 
-            OnWeight += (pWeight, pIsStable) =>
-            { if (IsControlScale && ControlScale?.Model == eModelEquipment.VirtualControlScale) OnControlWeight?.Invoke(pWeight, pIsStable); };
+            OnWeight += (pWeight, pIsStable) => { if (IsControlScale && ControlScale?.Model == eModelEquipment.VirtualControlScale) OnControlWeight?.Invoke(pWeight, pIsStable); };
             Task.Run(() => Init());
         }
 
@@ -154,17 +156,17 @@ namespace Front
                         switch (el.Model)
                         {
                             case eModelEquipment.MagellanScaner:
-                                Sc = new MagellanScaner(el, config, LF, OnBarCode);
+                                Sc = new MagellanScaner(el, config, LF, BarCode);
                                 Scaner = Sc;
                                 break;
                             case eModelEquipment.VirtualScaner:
-                                Sc = new VirtualScaner(el, config, LF, OnBarCode);
+                                Sc = new VirtualScaner(el, config, LF, BarCode);
                                 break;
                             case eModelEquipment.ScanerCom:
-                                Sc = new ScanerCom(el, config, LF, OnBarCode);
+                                Sc = new ScanerCom(el, config, LF, BarCode);
                                 break;
                             case eModelEquipment.ScanerKeyBoard:
-                                Sc = KB = new ScanerKeyBoard(el, config, LF, OnBarCode);                                
+                                Sc = KB = new ScanerKeyBoard(el, config, LF, BarCode);                                
                                 break;
                             default:
                                 Sc = new Scaner(el, config);
@@ -186,13 +188,13 @@ namespace Front
                     switch (ElEquipment.Model)
                     {
                         case eModelEquipment.MagellanScale:
-                            Scale = new MagellanScale(((MagellanScaner)Scaner), OnWeight);//TMP!!! OnControlWeight - Нафіг                        
+                            Scale = new MagellanScale(((MagellanScaner)Scaner), Weight);//TMP!!! OnControlWeight - Нафіг                        
                             break;
                         case eModelEquipment.VirtualScale:
-                            Scale = new VirtualScale(ElEquipment, config, LF, OnWeight);
+                            Scale = new VirtualScale(ElEquipment, config, LF, Weight);
                             break;
                         case eModelEquipment.ScaleCom:
-                            Scale = new ScaleCom(ElEquipment, config, LF, OnWeight);
+                            Scale = new ScaleCom(ElEquipment, config, LF, Weight);
                             // Scale.StartWeight();
                             break;
                         default:

@@ -365,7 +365,7 @@ namespace Front
             Bl = new();
             Blf = BLF.GetBLF;
             Blf.Init(this);
-            EF = new EquipmentFront();
+            EF = EquipmentFront.GetEF;
             CS = new ControlScale(this, 10d);
             s = Sound.GetSound(CS);
 

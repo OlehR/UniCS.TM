@@ -82,11 +82,11 @@ namespace Front
                     SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ErrorEquipment, null);
             };
 
-            EquipmentFront.OnBarCode += Blf.GetBarCode;
+            EF.OnBarCode += Blf.GetBarCode;
 
 
             //!!!TMP Костиль бо не працює підписка на рівні IssueCardUC
-            EquipmentFront.OnBarCode += (pBarCode, pTypeBarCode) =>
+            EF.OnBarCode += (pBarCode, pTypeBarCode) =>
             {
                 if (State == eStateMainWindows.WaitInputIssueCard)
                     IssueCardUC.SetBarCode(pBarCode, pTypeBarCode);
