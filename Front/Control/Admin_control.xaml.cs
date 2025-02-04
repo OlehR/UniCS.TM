@@ -176,16 +176,16 @@ namespace Front.Control
         {
             if (pAdminUser != null)
                 AdminUser = pAdminUser;
-            //adminastratorName.Text = AdminUser.NameUser;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClosedShift"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AdminUser"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("NameAdminUserOpenShift"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DataOpenShift"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsControlScale"));
-            OpenShiftShow.Visibility = MW?.AdminSSC == null ?  Visibility.Collapsed: Visibility.Visible;
 
             Dispatcher.BeginInvoke(new ThreadStart(() =>
             {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClosedShift"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AdminUser"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("NameAdminUserOpenShift"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DataOpenShift"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsControlScale"));
+                OpenShiftShow.Visibility = MW?.AdminSSC == null ? Visibility.Collapsed : Visibility.Visible;
+
                 int i = 0;
                 while (!EF.IsFinishInit && i++ < 200)
                 {
