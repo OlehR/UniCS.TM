@@ -571,7 +571,7 @@ SELECT -- оптовий склад товари і кількості
  FROM dbo.QuantityOpt 
    WHERE quantity>0
    AND CodeWarehouse in (@CodeWarehouse,@CodeWarehouseLink)
-    AND @CodeWarehouse in (89,9)
+    --AND @CodeWarehouse in (89,9)
 union all
 SELECT -- Купони. Бажано доробити фільтр по складу.
     9000000000+CONVERT(INT, YEAR(pg.date_time)*100000+pg.number) AS CodePS

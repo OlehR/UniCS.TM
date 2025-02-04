@@ -123,7 +123,7 @@ namespace Front.Control
                 {
                     TypeMessageRadiobuton.Add(new APIRadiobuton() { ServerTypeMessage = item });
                 }
-                Init(AdminUser);
+               
 
 
                 InitializeComponent();
@@ -131,6 +131,7 @@ namespace Front.Control
                 ComboBoxWorkPlaces.ItemsSource = WorkPlaces;
 
                 this.DataContext = this;
+                Init(AdminUser);
                 //Список команд для віддаленого керування
                 //ListRadioButtonAPI.ItemsSource = TypeMessageRadiobuton;
 
@@ -181,7 +182,7 @@ namespace Front.Control
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("NameAdminUserOpenShift"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DataOpenShift"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsControlScale"));
-            OpenShiftShow.Visibility = MW.AdminSSC == null ?  Visibility.Collapsed: Visibility.Visible;
+            OpenShiftShow.Visibility = MW?.AdminSSC == null ?  Visibility.Collapsed: Visibility.Visible;
 
             Dispatcher.BeginInvoke(new ThreadStart(() =>
             {
