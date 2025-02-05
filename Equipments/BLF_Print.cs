@@ -272,19 +272,27 @@ namespace Front.Equipments
 
                 Task.Run(async () =>
                 {
-                    CommandAPI<Receipt> Command = new() { Command = eCommand.GetOrderNumber, Data = R };
+                    List<OrderWares> wares = new();
+                    foreach (var goods in R.Wares)
+                    {
+                        if (goods.ProductionLocation > 0) // Перевірка чи товар потрібно готувати на якісь із зон
+                            wares.Add(new OrderWares(goods));
+                    }
+                    var order = (new Order { IdWorkplace = R.IdWorkplace, Status = eStatus.Waiting, CodePeriod = R.CodePeriod, CodeReceipt = R.CodeReceipt, DateCreate = DateTime.Now,  Type = R.TranslationTypeReceipt, Wares = wares });
+
+                    CommandAPI<Order> Command = new() { Command = eCommand.GetOrderNumber, Data = order };
 
                     try
                     {
                         var r = new SocketClient(IPAddress.Parse(Global.IPAddressOrderService), 3444);
                         var ComandStr = Command.ToJson();
                         var Ansver = await r.StartAsync(ComandStr);
-                        if (!Ansver.status && IsTryAgain)
-                        {
-                            FileLogger.WriteLogMessage($"SocketAnsver: {Environment.NewLine}Command: {ComandStr} {Environment.NewLine}IdWorkPlace: {R.IdWorkplace}{Environment.NewLine}Ansver: {Ansver.TextState}{Environment.NewLine} Перша спроба", eTypeLog.Error);
-                            PrintOrderReceipt(R, false);
-                            return;
-                        }
+                        //if (!Ansver.status && IsTryAgain)
+                        //{
+                        //    FileLogger.WriteLogMessage($"SocketAnsver: {Environment.NewLine}Command: {ComandStr} {Environment.NewLine}IdWorkPlace: {R.IdWorkplace}{Environment.NewLine}Ansver: {Ansver.TextState}{Environment.NewLine} Перша спроба", eTypeLog.Error);
+                        //    PrintOrderReceipt(R, false);
+                        //    return;
+                        //}
                         List<string> list = new List<string>() { "Номер замовлення:", $"{Ansver.TextState}" };
                         var res = EF.PrintNoFiscalReceipt(R, list);
                         List<string> listWares = new List<string>();
