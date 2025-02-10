@@ -17,12 +17,12 @@ namespace Utils
         private static string _PathLog = null;
         public static string PathLog
         {
-            set { _PathLog = value; FileLogger.CreateDir(); }
+            set { _PathLog = value; CreateDir(); }
             get { return _PathLog ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Logs"); } //AppDomain.CurrentDomain.BaseDirectory
         }
 
 
-        private static int IdWorkplace;
+        private static int IdWorkplace=0;
         public static eTypeLog TypeLog = eTypeLog.Full;
 
         public static string GetFileName { get { return $"{Path.Combine(PathLog, $"Log_{IdWorkplace}_{DateTime.Now:yyyyMMdd}.log")}"; } }
@@ -33,7 +33,14 @@ namespace Utils
         private static readonly object DictionaryLocker = new object();
         static FileLogger()
         {
-            CreateDirectoryLog();
+            try
+            {
+                CreateDirectoryLog();
+            }
+            catch (Exception e)
+            {
+                
+            }
             WriteLogMessage($"{Environment.NewLine}{Environment.NewLine}");
         }
 
