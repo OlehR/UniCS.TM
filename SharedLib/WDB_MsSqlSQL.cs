@@ -242,7 +242,7 @@ SELECT
     ,1 AS UseIndicative
     ,-9 AS TypeDiscount-- ForCountOtherPromotion
     ,0 AS AdditionalCondition
-    ,0 AS Data
+    ,dp.number_ex_value AS Data 
     ,0 AS DataAdditionalCondition --Ігнорувати мінімальні ціни
     ,'' AS DataText
   FROM  DW.dbo.V1C_doc_promotion dp 
@@ -527,7 +527,7 @@ SELECT -- Товари набору (Основні)
   JOIN dw.dbo.V1C_dim_nomen dn ON pk.nomen_RRef= dn.IDRRef
   JOIN DW.dbo.V1C_doc_promotion dp ON dp._IDRRef= pk.doc_promotion_RRef
   LEFT JOIN wh_ex ON (wh_ex.doc_promotion_RRef= dp._IDRRef)
-  WHERE dp.d_end>getdate() AND pk.is_main= 1
+  WHERE dp.d_end>getdate() AND (pk.is_main= 1 or  dp.kind_promotion =0x94BE56137942F05C49313B91A28B535D)
   AND wh_ex.doc_promotion_RRef IS null
   union all
   SELECT -- оптовий склад
@@ -626,7 +626,8 @@ GROUP BY pw.doc_promotion_RRef
   HAVING SUM(CASE WHEN dw.code in (@CodeWarehouse,@CodeWarehouseLink) THEN 1 ELSE 0 END) = 0) wh_ex ON wh_ex.doc_promotion_RRef=dp._IDRRef
   WHERE dp.d_end>getdate()
   AND pk.is_main=0
-  AND wh_ex.doc_promotion_RRef IS null";
+  AND wh_ex.doc_promotion_RRef IS null
+  --and kind_promotion <> 0x94BE56137942F05C49313B91A28B535D";
 
         string SqlGetMRC = @"WITH WH AS 
 (

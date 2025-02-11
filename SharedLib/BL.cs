@@ -797,6 +797,12 @@ namespace SharedLib
                         db.RecalcPriceAsync(new IdReceiptWares(pIdReceipt));
                 }
 
+                if(cl?.ReceiptGift?.Any()== true)
+                {
+                    foreach (var el in cl.ReceiptGift.Select(el => new ReceiptGift(pIdReceipt) { CodePS = el.CodePS, NumberGroup=el.NumberGroup,Quantity=el.Quantity}))
+                        db.ReplaceReceiptGift(el);
+                }
+
                 if (cl != null)
                     Global.OnClientChanged?.Invoke(cl);
             });

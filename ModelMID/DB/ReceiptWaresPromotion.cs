@@ -39,6 +39,8 @@ namespace ModelMID
 
         public eTypeWares TypeWares { get; set; }
 
+        public decimal Coefficient { get; set; }
+
         public WaresReceiptPromotion() : base()
         {
         }

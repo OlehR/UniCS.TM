@@ -465,7 +465,7 @@ namespace SharedLib
                             var Price = RW.Where(e => e.CodeWares == el.CodeWares).Sum(e => e.Price);
                             vPrice = Price * (100 - el.DataDiscount) / 100m;
                         }
-                        var RWP = new WaresReceiptPromotion(parIdReceipt) { CodeWares = el.CodeWares, Quantity = AddQuantity, Price = vPrice, CodePS = el.CodePS, NumberGroup = el.NumberGroup };
+                        var RWP = new WaresReceiptPromotion(parIdReceipt) { CodeWares = el.CodeWares, Quantity = AddQuantity, Price = vPrice, CodePS = el.CodePS, NumberGroup = el.NumberGroup, Coefficient = el.Coefficient };
                         varRes.Add(RWP);
                         ReceiptWares? rw = RW.FirstOrDefault(e => e.CodeWares == el.CodeWares);
                         if (rw != null)
@@ -1409,13 +1409,13 @@ from WaresLink wl join  wares w on wl.CodeWares = w.Code_wares where wl.CodeWare
             return par;
         }
 
-        public IEnumerable<PricePromotion> GetNoPricePromorion( Receipt pIdR)
+        public IEnumerable<PricePromotion> GetNoPricePromorion( Receipt pR)
         {
             List<PricePromotion> Res = new List<PricePromotion>();
-            ParameterPromotion par = GetParameterPromotion(pIdR, false);
+            ParameterPromotion par = GetParameterPromotion(pR, false);
 
-            var r = ViewReceiptWares(pIdR);
-            
+            var r = ViewReceiptWares(pR);
+            DeleteReceiptWaresPromotionNoPrice(pR, eTypeDiscount.ForCountOtherPromotion);
             foreach (var RW in r)
             {
                 par.CodeWares = RW.CodeWares;
@@ -1424,13 +1424,12 @@ from WaresLink wl join  wares w on wl.CodeWares = w.Code_wares where wl.CodeWare
                 var res=db.Execute<ParameterPromotion, PricePromotion>(SqlGetPrice, par);
 
                 if (res?.Any() == true)
-                {
-                    DeleteReceiptWaresPromotionNoPrice(pIdR, eTypeDiscount.ForCountOtherPromotion);
+                {                   
                     Res.AddRange(res);
-                    foreach (var el in Res)
+                    foreach (var el in res)
                     {
-                        if (el.TypeDiscount == eTypeDiscount.ForCountOtherPromotion)
-                            ReplaceReceiptWaresPromotionNoPrice(new ReceiptWaresPromotionNoPrice(RW) { CodePS = el.CodePs, Data = RW.Quantity, TypeDiscount = el.TypeDiscount });
+                        if (el.TypeDiscount == eTypeDiscount.ForCountOtherPromotion && pR.CodeClient!=0)
+                            ReplaceReceiptWaresPromotionNoPrice(new ReceiptWaresPromotionNoPrice(RW) { CodePS = el.CodePs, Data = RW.Quantity, TypeDiscount = el.TypeDiscount, DataEx = pR.CodeClient });
                     }
                 }
             }             
@@ -1445,7 +1444,7 @@ from WaresLink wl join  wares w on wl.CodeWares = w.Code_wares where wl.CodeWare
 
         public IEnumerable<ReceiptWaresPromotionNoPrice> GetReceiptWaresPromotionNoPrice(IdReceipt pIdR)
         {
-            string Sql = @"select IdWorkplace, CodePeriod, CodeReceipt, CodeWares, CodePS, TypeDiscount, Data from ReceiptWaresPromotionNoPrice where IdWorkplace = @IdWorkplace and CodePeriod = @CodePeriod and CodeReceipt = @CodeReceipt";
+            string Sql = @"select IdWorkplace, CodePeriod, CodeReceipt, CodeWares, CodePS, TypeDiscount, Data,DataEx from ReceiptWaresPromotionNoPrice where IdWorkplace = @IdWorkplace and CodePeriod = @CodePeriod and CodeReceipt = @CodeReceipt";
             return dbRC.Execute<IdReceipt, ReceiptWaresPromotionNoPrice>(Sql, pIdR);
         }
         public bool DeleteReceiptWaresPromotionNoPrice(IdReceipt pIdR, eTypeDiscount pTD)
@@ -1473,6 +1472,19 @@ from WaresLink wl join  wares w on wl.CodeWares = w.Code_wares where wl.CodeWare
     join Wares w on wrl.CodeWares=w.Code_Wares
 where wrl.IdWorkplace = @IdWorkplace and wrl.CodePeriod = @CodePeriod and wrl.CodeReceipt = @CodeReceipt and wrl.CodeWaresTo = @CodeWares";
             return db.Execute<IdReceiptWares, ReceiptWaresLink>(Sql, pIdRW);
+        }
+
+        public bool ReplaceReceiptGift(ReceiptGift pRG)
+        {
+            try
+            {
+                string SQL = @"replace into ReceiptGift (IdWorkplace, CodePeriod, CodeReceipt, CodePS, NumberGroup, Quantity) values (@IdWorkplace,@CodePeriod,@CodeReceipt,@CodePS,@NumberGroup, @Quantity)";
+                return dbRC.ExecuteNonQuery<ReceiptGift>(SQL, pRG) > 0;
+            }catch(Exception e)
+            {
+                var a = e.Message;
+            }
+            return false;
         }
     }
 }

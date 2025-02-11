@@ -38,21 +38,24 @@ namespace SharedLib
             try
             {
                 bool IsErrorSend = false;
-                List<int> IdWP =  pR.IdWorkplacePays.Where(el => el == pR.IdWorkplace).ToList();
-                var l = pR.IdWorkplacePays.Where(el => el != pR.IdWorkplace);
-                if (l.Count() > 0)
-                    IdWP.AddRange(l);
-               
-                foreach (var el in IdWP)
+                if (pR.IdWorkplace != 36)
                 {
-                    pR.IdWorkplacePay = el;
-                    var r = new Receipt1C(pR);
-                    var body = soapTo1C.GenBody("JSONCheck", new Parameters[] { new Parameters("JSONSting", r.GetBase64()) });
-                    var res = Global.IsTest ? "0" : await soapTo1C.RequestAsync(pServer, body, 60000, "application/json");
-                    IsErrorSend |= !res.Equals("0");
-                    FileLogger.WriteLogMessage(this, "SendReceiptTo1CAsync", $"({pR.NumberReceipt1C},{pR.CodePeriod},{pR.IdWorkplace},{pR.CodeReceipt})=>{res}");
-                    //if (!IsErrorSend)
-                     //   Res += JsonConvert.SerializeObject(r)+Environment.NewLine;
+                    List<int> IdWP = pR.IdWorkplacePays.Where(el => el == pR.IdWorkplace).ToList();
+                    var l = pR.IdWorkplacePays.Where(el => el != pR.IdWorkplace);
+                    if (l.Count() > 0)
+                        IdWP.AddRange(l);
+
+                    foreach (var el in IdWP)
+                    {
+                        pR.IdWorkplacePay = el;
+                        var r = new Receipt1C(pR);
+                        var body = soapTo1C.GenBody("JSONCheck", new Parameters[] { new Parameters("JSONSting", r.GetBase64()) });
+                        var res = Global.IsTest ? "0" : await soapTo1C.RequestAsync(pServer, body, 60000, "application/json");
+                        IsErrorSend |= !res.Equals("0");
+                        FileLogger.WriteLogMessage(this, "SendReceiptTo1CAsync", $"({pR.NumberReceipt1C},{pR.CodePeriod},{pR.IdWorkplace},{pR.CodeReceipt})=>{res}");
+                        //if (!IsErrorSend)
+                        //   Res += JsonConvert.SerializeObject(r)+Environment.NewLine;
+                    }
                 }
                 if (IsErrorSend)
                     return false;

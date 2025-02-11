@@ -296,7 +296,7 @@ namespace Front.Equipments
                     PricePromotion PP = res.CustomWindow.DataEx as PricePromotion;
                      
                     Bl.db.ReplaceReceiptWaresPromotionNoPrice(new ReceiptWaresPromotionNoPrice(new IdReceiptWares(MW.curReceipt)) 
-                        { CodePS = PP?.CodePs??0, DataEx=res.Id,TypeDiscount=PP?.TypeDiscount??eTypeDiscount.NotDefine,Data=1 });
+                        { CodePS = PP?.CodePs??0, DataEx=res.Id, TypeDiscount=PP?.TypeDiscount??eTypeDiscount.NotDefine, Data=1 });
                     if (PP?.IsOneTime==true )
                      Bl.db.ReplaceOneTime(new OneTime(MW.curReceipt) {CodePS = PP.CodePs,CodeData = MW.curReceipt?.Client?.CodeClient??0,TypeData = eTypeCode.Client });
                     PayAndPrint();

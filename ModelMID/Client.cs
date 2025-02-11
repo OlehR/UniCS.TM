@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ModelMID.DB;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Utils;
@@ -104,6 +105,8 @@ namespace ModelMID
         /// </summary>
         public bool IsMoneyCard { get; set; }
         public bool IsСertificate { get; set; }
+
+        public IEnumerable<ReceiptGift> ReceiptGift { get; set; }
         public Client() { }
         public Client(int parCodeClient) => CodeClient=parCodeClient; 
     }

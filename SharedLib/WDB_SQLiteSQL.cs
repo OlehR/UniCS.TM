@@ -28,7 +28,7 @@ DROP INDEX IF exists id_FiscalArticle;--Ver=>15
 CREATE UNIQUE INDEX id_FiscalArticle ON FiscalArticle(IdWorkplacePay,CodeWares);--Ver=>15
 CREATE UNIQUE INDEX id_FiscalArticle_PLU ON FiscalArticle(IdWorkplacePay,PLU);--Ver=>16";
 
-        public readonly int VerRC = 27;
+        public readonly int VerRC = 29;
         readonly string SqlUpdateRC = @"alter TABLE WARES_RECEIPT            add Fix_Weight NUMBER NOT NULL DEFAULT 0;--Ver=>0
 alter TABLE WARES_RECEIPT_PROMOTION  add TYPE_DISCOUNT  INTEGER  NOT NULL  DEFAULT (12);--Ver=>0
 alter TABLE wares_receipt            add Priority INTEGER  NOT NULL DEFAULT 0;--Ver=>0
@@ -64,7 +64,12 @@ CREATE TABLE ReceiptOneTime (IdWorkplace INTEGER NOT NULL, CodePeriod  INTEGER N
 CREATE UNIQUE INDEX IdReceiptOneTime ON ReceiptOneTime(IdWorkplace,CodePeriod,CodeReceipt,CodePS,TypeData,CodeData);--Ver=>26
 CREATE INDEX IndReceiptOneTime ON ReceiptOneTime(TypeData,CodeData,CodePS);--Ver=>26
 CREATE TABLE ReceiptWaresPromotionNoPrice(IdWorkplace INTEGER  NOT NULL, CodePeriod INTEGER  NOT NULL, CodeReceipt INTEGER  NOT NULL, CodeWares INTEGER  NOT NULL, CodePS INTEGER  NOT NULL, TypeDiscount INTEGER  NOT NULL,Data NUMBER NOT NULL,DataEx NUMBER NOT NULL);--Ver=>27
-CREATE INDEX id_ReceiptWaresPromotionNoPrice ON ReceiptWaresPromotionNoPrice(IdWorkplace,CodePeriod,CodeReceipt,CodeWares);--Ver=>27";
+CREATE INDEX id_ReceiptWaresPromotionNoPrice ON ReceiptWaresPromotionNoPrice(IdWorkplace,CodePeriod,CodeReceipt,CodeWares);--Ver=>27
+CREATE TABLE ReceiptGift (IdWorkplace INTEGER NOT NULL, CodePeriod  INTEGER NOT NULL, CodeReceipt INTEGER NOT NULL, CodePS INTEGER NOT NULL, NumberGroup INTEGER NOT NULL, Quantity NUMBER NOT NULL);--Ver=>28
+CREATE UNIQUE INDEX IdReceiptGift ON ReceiptGift(IdWorkplace,CodePeriod,CodeReceipt,CodePS,NumberGroup);--Ver=>28
+alter TABLE WARES_RECEIPT_PROMOTION  add Coefficient  NUMBER  NOT NULL  DEFAULT (0);--Ver=>29
+
+";
 
         public readonly int VerMID = 18;
         readonly string SqlUpdateMID = @"--Ver=>0;Reload;
@@ -233,7 +238,8 @@ CREATE UNIQUE INDEX id_RECEIPT ON RECEIPT(CODE_RECEIPT, ID_WORKPLACE, CODE_PERIO
     CODE_PS        INTEGER NOT NULL,
     NUMBER_GROUP INTEGER  NOT NULL,
     BARCODE_2_CATEGORY        TEXT NULL,
-    Type_Wares     INTEGER NOT NULL DEFAULT(0)
+    Type_Wares     INTEGER NOT NULL DEFAULT(0),
+    Coefficient  NUMBER  NOT NULL  DEFAULT (0)
 	);
 CREATE UNIQUE INDEX id_WARES_RECEIPT_PROMOTION ON WARES_RECEIPT_PROMOTION(CODE_RECEIPT, CODE_WARES, CODE_PS, NUMBER_GROUP, ID_WORKPLACE, CODE_PERIOD, BARCODE_2_CATEGORY);
 
@@ -373,7 +379,18 @@ CodeData INTEGER NOT NULL
 );
 
 CREATE UNIQUE INDEX IdReceiptOneTime ON ReceiptOneTime(IdWorkplace,CodePeriod,CodeReceipt,CodePS,TypeData,CodeData);
-CREATE INDEX IndReceiptOneTime ON ReceiptOneTime(TypeData,CodeData,CodePS);";
+CREATE INDEX IndReceiptOneTime ON ReceiptOneTime(TypeData,CodeData,CodePS);
+
+CREATE TABLE ReceiptGift (
+IdWorkplace INTEGER NOT NULL,
+CodePeriod  INTEGER NOT NULL,
+CodeReceipt INTEGER NOT NULL,    
+CodePS      INTEGER NOT NULL,
+NumberGroup INTEGER NOT NULL,
+Quantity NUMBER   NOT NULL
+);
+CREATE UNIQUE INDEX IdReceiptGift ON ReceiptGift(IdWorkplace,CodePeriod,CodeReceipt,CodePS,NumberGroup);
+";
         
         public readonly string SqlCreateMIDTable = @"
         CREATE TABLE UNIT_DIMENSION(
@@ -960,11 +977,11 @@ where id_workplace = @IdWorkplace and code_period = @CodePeriod and code_receipt
 delete from WARES_RECEIPT_PROMOTION where id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt
         and length(@BarCode2Category)=13 and BARCODE_2_CATEGORY = @BarCode2Category;
         replace into WARES_RECEIPT_PROMOTION(id_workplace, code_period, code_receipt, code_wares, code_unit,
-          quantity, sum, code_ps, NUMBER_GROUP, BARCODE_2_CATEGORY, TYPE_DISCOUNT, Type_Wares)
+          quantity, sum, code_ps, NUMBER_GROUP, BARCODE_2_CATEGORY, TYPE_DISCOUNT, Type_Wares, Coefficient)
  values(
   @IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @CodeUnit,
   @Quantity, @Sum, @CodePS, @NumberGroup, @BarCode2Category, @TypeDiscount --, (select COALESCE(max(sort),0)+1 from wares_receipt  where id_workplace = @IdWorkplace and code_period = @CodePeriod and code_receipt = @CodeReceipt)
- , @TypeWares 
+ , @TypeWares, @Coefficient 
  );
         update WARES_RECEIPT
 set price = ifnull((select  max((0.000 + wrp.sum) / wrp.QUANTITY)
@@ -1170,7 +1187,8 @@ from
  join PROMOTION_SALE_FILTER psf on psf.Code_ps=psd.Code_ps and psf.TYPE_GROUP_FILTER=51 and psf.CODE_DATA= @CodeWarehouse
  join  PROMOTION_SALE_FILTER psfw on psfw.Code_ps= psd.Code_ps and psfw.TYPE_GROUP_FILTER= 11  and psfw.Code_Group_Filter= psd.Number_group
 where psd.TYPE_DISCOUNT= 41)
-select pr.Code_PS as CodePS, pr.Number_group as NumberGroup , wr.code_wares as CodeWares, pr.Quantity, psg.TYPE_DISCOUNT as TypeDiscount, psg.Data as DataDiscount from
+select pr.Code_PS as CodePS, pr.Number_group as NumberGroup , wr.code_wares as CodeWares, pr.Quantity, psg.TYPE_DISCOUNT as TypeDiscount, psg.Data as DataDiscount, 0 as Coefficient 
+from
 (select wk.CODE_PS, wk.Number_group, wr.id_workplace, wr.code_period, wr.code_receipt, cast(sum(wr.QUANTITY)/wk.Quantity_For_Gift as int) as Quantity
     from WARES_RECEIPT wr
     join wk on wr.code_wares=wk.code_wares
@@ -1183,7 +1201,23 @@ having    sum(wr.QUANTITY)>= wk.Quantity_For_Gift
 join PROMOTION_SALE_GIFT psg on(psg.code_ps= pr.code_ps and PSG.NUMBER_GROUP = PR.NUMBER_GROUP)
 join WARES_RECEIPT wr on(psg.code_wares= wr.code_wares and pr.id_workplace= wr.id_workplace and pr.code_period= wr.code_period and pr.code_receipt= wr.code_receipt)
 join PROMOTION_SALE ps on(ps.code_ps= pr.code_ps and datetime('now','localtime') between ps.date_begin and ps.DATE_END )
-order by pr.code_ps, pr.Number_group";
+union all 
+select pr.Code_PS as CodePS, pr.Number_group as NumberGroup , wr.code_wares as CodeWares, pr.Quantity, psg.TYPE_DISCOUNT as TypeDiscount, psg.Data as DataDiscount , pr.Coefficient as Coefficient 
+from
+(select rg.CODEPS as CODE_PS, 0 as NUMBER_GROUP , rg.idworkplace as id_workplace, rg.codeperiod as code_period, rg.codereceipt as code_receipt, cast(rg.QUANTITY/psd.data as int) as Quantity,psd.data as Coefficient 
+    from  ReceiptGift rg 
+    join  PROMOTION_SALE_DATA psd on(psd.code_ps= rg.codeps and psd.TYPE_DISCOUNT=-9)
+     where rg.IDWORKPLACE = @IdWorkplace
+   and rg.CODEPERIOD = @CodePeriod
+   and rg.CODERECEIPT = @CodeReceipt
+
+) pr
+join PROMOTION_SALE_GIFT psg on(psg.code_ps= pr.code_ps and PSG.NUMBER_GROUP = PR.NUMBER_GROUP)
+join WARES_RECEIPT wr on(psg.code_wares= wr.code_wares and pr.id_workplace= wr.id_workplace and pr.code_period= wr.code_period and pr.code_receipt= wr.code_receipt)
+join PROMOTION_SALE ps on(ps.code_ps= pr.code_ps and datetime('now','localtime') between ps.date_begin and ps.DATE_END )
+order by 1,4
+
+";
 
         readonly string SqlCopyWaresReturnReceipt = @"
         insert into wares_receipt
@@ -1263,7 +1297,7 @@ select ID_WORKPLACE as IdWorkplace,    CODE_PERIOD as CodePeriod,    CODE_RECEIP
 
         readonly string SqlGetReceiptWaresPromotion = @"
 select id_workplace IdWorkplace, code_period CodePeriod, code_receipt CodeReceipt,code_wares as CodeWares,Code_unit as CodeUnit,quantity as Quantity,sum as Sum,wrp.Code_Ps as CodePs ,
-ps.NAME_PS as NamePS, Number_Group as NumberGroup, BarCode_2_Category as  BarCode2Category,TYPE_DISCOUNT as TypeDiscount,Type_Wares as TypeWares
+ps.NAME_PS as NamePS, Number_Group as NumberGroup, BarCode_2_Category as  BarCode2Category,TYPE_DISCOUNT as TypeDiscount,Type_Wares as TypeWares, Coefficient
      from WARES_RECEIPT_PROMOTION wrp
      left join PROMOTION_SALE ps on ps.CODE_PS=wrp.CODE_PS
      where id_workplace= @IdWorkplace and code_period = @CodePeriod and code_receipt = @CodeReceipt

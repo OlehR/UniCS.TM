@@ -200,6 +200,9 @@ namespace ModelMID
         /// Власне знижка ціна тощо.
         /// </summary>
         public decimal DataDiscount { get; set; }
+
+        public decimal Coefficient  { get; set; }
+
     }
     //psd.CODE_PS,psd.DATA,psfw.code_data as Code_wares,psd.Number_group
 
