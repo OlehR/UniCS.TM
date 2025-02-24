@@ -5,13 +5,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Front.Control"
              mc:Ignorable="d" 
-             d:DesignHeight="550" d:DesignWidth="1000">
+             d:DesignHeight="560" d:DesignWidth="1010">
     <!-- ОПЛАТА  САМООБСЛУГОВУВАННЯ  -->
     <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
       Name="WaitPayment" Visibility="Visible" Grid.ZIndex="2" 
      CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
         <Border.Effect>
-            <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+            <DropShadowEffect ShadowDepth="10" BlurRadius="50" Color="{Binding color, RelativeSource={RelativeSource 
+                        Mode=FindAncestor, AncestorType=UserControl}}"/>
         </Border.Effect>
 
         <Grid  Width="1000" Height="550">

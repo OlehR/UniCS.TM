@@ -2318,11 +2318,22 @@ Mode=FindAncestor, AncestorType=Window}}"/>
               Grid.Column="0" Grid.ColumnSpan="4" 
               x:Name="WeightWaresUC" VerticalAlignment="Stretch" 
               Grid.ZIndex="4" />
-        <!-- Інформація про клієнта -->
-        <uc:PaymentWindowKSO Grid.Row="0" Grid.RowSpan="5" Visibility="Collapsed"
-              Grid.Column="0" Grid.ColumnSpan="4" 
-              x:Name="PaymentWindowKSO_UC" VerticalAlignment="Stretch" 
-              Grid.ZIndex="4" />
+        <!-- Вікно оплати на КСО -->
+        <StackPanel Grid.Row="0" Grid.RowSpan="5" Visibility="Visible"
+      Grid.Column="0" Grid.ColumnSpan="4" Grid.ZIndex="4" VerticalAlignment="Center" HorizontalAlignment="Center">
+            
+            <uc:PaymentWindowKSO Grid.Row="0" Grid.RowSpan="5" Visibility="Collapsed"
+      Grid.Column="0" Grid.ColumnSpan="4" 
+      x:Name="PaymentWindowKSO_UC" VerticalAlignment="Stretch" 
+      Grid.ZIndex="4"  Padding="15"/>
+            
+            <uc:PaymentWindowKSO Grid.Row="0" Grid.RowSpan="5" Visibility="Collapsed"
+      Grid.Column="0" Grid.ColumnSpan="4" 
+      x:Name="PaymentWindowKSO_UC_2" VerticalAlignment="Stretch" 
+      Grid.ZIndex="4" Padding="15" />
+            
+        </StackPanel>
+
 
         <!--Додати пакети-->
         <uc:AddPackagesBag Grid.Row="0" Grid.RowSpan="5" Visibility="Collapsed"

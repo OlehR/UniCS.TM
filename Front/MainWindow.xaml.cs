@@ -29,6 +29,7 @@ using Equipments.Model;
 using Pr = Equipments.Model.Price;
 using LibVLCSharp.Shared;
 using Equipments;
+using Front.ViewModels;
 
 namespace Front
 {
@@ -902,6 +903,7 @@ namespace Front
                     WaitAdminLogin.Visibility = Visibility.Collapsed;
                     WeightWaresUC.Visibility = Visibility.Collapsed;
                     PaymentWindowKSO_UC.Visibility = Visibility.Collapsed;
+                    PaymentWindowKSO_UC_2.Visibility = Visibility.Collapsed;
                     StartShopping.Visibility = Visibility.Collapsed;
                     StartShoppingLogo.Visibility = Visibility.Collapsed;
                     StartShoppingButtons.Visibility = Visibility.Collapsed;
@@ -1067,12 +1069,22 @@ namespace Front
                         case eStateMainWindows.ProcessPay:
                             PaymentWindowKSO_UC.PaymentImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/newPaymentTerminal.png"));
                             PaymentWindowKSO_UC.Visibility = Visibility.Visible;
+                            if (IsManyPayments)
+                            {
+                                PaymentWindowKSO_UC_2.PaymentImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/newPaymentTerminal.png"));
+                                PaymentWindowKSO_UC_2.Visibility = Visibility.Visible;
+                            }
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;
                             break;
                         case eStateMainWindows.ProcessPrintReceipt:
                             PaymentWindowKSO_UC.PaymentImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/newReceipt.png"));
                             PaymentWindowKSO_UC.Visibility = Visibility.Visible;
+                            if (IsManyPayments)
+                            {
+                                PaymentWindowKSO_UC_2.PaymentImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/newReceipt.png"));
+                                PaymentWindowKSO_UC_2.Visibility = Visibility.Visible;
+                            }
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;
                             break;
@@ -1224,7 +1236,40 @@ namespace Front
                     SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.DelWares, el);
             }
         }
-
+        public void ChangePaymentWindows()
+        {
+            PaymentWindowKSO_UC.Width = 1000;
+            PaymentWindowKSO_UC.Height = 550;
+            PaymentWindowKSO_UC_2.Width = 1000;
+            PaymentWindowKSO_UC_2.Height = 550;
+            if ( IsManyPayments && Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout && TypeMonitor == eTypeMonitor.VerticalMonitorKSO)
+            {
+                if (!curReceipt._Payment.Any())
+                {
+                    PaymentWindowKSO_UC.color = "#419e08";
+                    PaymentWindowKSO_UC_2.color = "Gray";
+                    PaymentWindowKSO_UC.Width = 1000;
+                    PaymentWindowKSO_UC.Height = 550;
+                    PaymentWindowKSO_UC_2.Width = 900;
+                    PaymentWindowKSO_UC_2.Height = 500;
+                }
+                else
+                {
+                    PaymentWindowKSO_UC.Width = 900;
+                    PaymentWindowKSO_UC.Height = 500;
+                    PaymentWindowKSO_UC_2.Width = 1000;
+                    PaymentWindowKSO_UC_2.Height = 550;
+                    PaymentWindowKSO_UC_2.color = "#419e08";
+                    PaymentWindowKSO_UC.color = "Gray";
+                }
+            }
+            //PaymentWindowKSO_UC.Width = 900;
+            //PaymentWindowKSO_UC.Height = 500;
+            //PaymentWindowKSO_UC_2.Width = 900;
+            //PaymentWindowKSO_UC_2.Height = 500;
+            OnPropertyChanged(nameof(PaymentWindowKSO_UC));
+            OnPropertyChanged(nameof(PaymentWindowKSO_UC_2));
+        }
         private void BtnClickMinusPlus(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;

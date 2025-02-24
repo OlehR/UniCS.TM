@@ -63,7 +63,7 @@ namespace Front
                 var r = Dispatcher.BeginInvoke(new ThreadStart(() =>
                 {
                     PosStatus PS = info as PosStatus;
-
+                    ChangePaymentWindows();
                     if (PS != null)
                         EquipmentInfo = PS.Status.GetDescription();
                     else

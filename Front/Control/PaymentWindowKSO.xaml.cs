@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,9 +19,16 @@ namespace Front.Control
     /// <summary>
     /// Interaction logic for PaymentWindowKSO.xaml
     /// </summary>
-    public partial class PaymentWindowKSO : UserControl
+    public partial class PaymentWindowKSO : UserControl, INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
         MainWindow MW;
+        string _color = "#419e08";
+        public string color { get=> _color; set {
+                _color = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(color));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(_color));
+            } } 
         public void Init(MainWindow mw)
         {
             MW = mw;
