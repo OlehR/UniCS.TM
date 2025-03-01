@@ -530,23 +530,45 @@ namespace SharedLib
             return dbConfig.BulkExecuteNonQuery<WorkPlace>(SqlReplaceWorkPlace, parData, true) > 0;
         }
 
+        class BC
+        {
+            public int CodeWares { get; set; }
+            public string BarCode { get; set; }
+        }
         /// <summary>
         /// Повертає знайдений товар/товари
         /// </summary>
-        public virtual IEnumerable<ReceiptWares> FindWares(string parBarCode = null, string parName = null, int parCodeWares = 0, int parCodeUnit = 0, int parCodeFastGroup = 0, int parArticl = -1, int parOffSet = -1, int parLimit = 10)
+        public virtual IEnumerable<ReceiptWares> FindWares(string pBarCode = null, string pName = null, int pCodeWares = 0, int pCodeUnit = 0, int pCodeFastGroup = 0, int pArticl = -1, int pOffSet = -1, int pLimit = 10)
         {
-            string SqlGetPricesMRC = "select CODE_WARES as CodeWares,PRICE as Price,Type_Wares as TypeWares from MRC where CODE_WARES = @CodeWares order by PRICE desc";
-            var Lim = parOffSet >= 0 ? $" limit {parLimit} offset {parOffSet}" : "";
-            var Wares = this.db.Execute<object, ReceiptWares>(SqlFoundWares + Lim, new { CodeWares = parCodeWares, CodeUnit = parCodeUnit, BarCode = parBarCode, NameUpper = (parName == null ? null : "%" + parName.ToUpper().Replace(" ", "%") + "%"), CodeDealer = ModelMID.Global.DefaultCodeDealer, CodeFastGroup = parCodeFastGroup, Articl = parArticl });
+            var Lim = pOffSet >= 0 ? $" limit {pLimit} offset {pOffSet}" : "";
+            var Wares = db.Execute<object, ReceiptWares>(SqlFoundWares + Lim, new { CodeWares = pCodeWares, CodeUnit = pCodeUnit, BarCode = pBarCode, NameUpper = (pName == null ? null : "%" + pName.ToUpper().Replace(" ", "%") + "%"), CodeDealer = Global.DefaultCodeDealer, CodeFastGroup = pCodeFastGroup, Articl = pArticl });
+
+            if (pBarCode?.Length == 13 && Wares?.Any() != true) //Пошук по штрихкоду виробника
+            {
+                string SQL = @"select bc.code_wares as CodeWares,bar_code as BarCode from bar_code bc join WARES w on w.code_wares=bc.code_wares
+where w.CODE_UNIT=@CodeUnit and  substring(bar_code, 1,6) = @BC";
+
+                var rr = db.Execute<object, BC>(SQL, new { BC = pBarCode[..6], CodeUnit = Global.WeightCodeUnit });
+                foreach (var el in rr)
+                {
+                    if (pBarCode[..el.BarCode.Length].Equals(el.BarCode))
+                    {
+                        Wares = FindWares(null, null, el.CodeWares);
+                        var Quantity = pBarCode[8..12].ToDecimal();
+                        foreach (var e in Wares)
+                            e.Quantity = Quantity;
+                        break;
+                    }
+                }
+            }
             foreach (var el in Wares)
             {
-                el.AdditionalWeights = db.Execute<object, decimal>(SqlAdditionalWeightsWares, new { CodeWares = el.CodeWares });
-                el.Prices = db.Execute<object, MRC>(SqlGetPricesMRC, new { CodeWares = el.CodeWares });
+                string SqlGetPricesMRC = "select CODE_WARES as CodeWares,PRICE as Price,Type_Wares as TypeWares from MRC where CODE_WARES = @CodeWares order by PRICE desc";
+                el.AdditionalWeights = db.Execute<object, decimal>(SqlAdditionalWeightsWares, new { el.CodeWares });
+                el.Prices = db.Execute<object, MRC>(SqlGetPricesMRC, new { el.CodeWares });
             }
             return Wares;
         }
-
-
 
         public bool InsertWeight(Object parWeight)
         {
