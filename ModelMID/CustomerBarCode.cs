@@ -6,14 +6,16 @@ namespace ModelMID
 {
     public enum eTypeCode
     {
-        NotDefine=0,
-        Article=1,
-        Code=2,
-        PercentDiscount=3,
-        Coupon=4,
+        NotDefine = 0,
+        Article = 1,
+        Code = 2,
+        PercentDiscount = 3,
+        Coupon = 4,
         OneTimeCoupon = 5,
-        Client = 6
+        Client = 6,
+        BarCode2Category = 7
     }
+    
 
     public enum eTypeBarCode
     {

@@ -553,7 +553,6 @@ namespace ModelMID
 
     public enum eReturnClient
     {
-
         [Description("Помилка")]
         Error = -9999999,
         [Description("Не вдале з'єднання з 1С")]

@@ -711,7 +711,6 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             return null;
         }
 
-
         public async Task<bool> CheckDiscountBarCodeAsync(IdReceipt pIdReceipt, string pBarCode, int pPercent)
         {
             bool isGood = true;
@@ -751,6 +750,9 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     Cat2First.Quantity = LastQuantyity;
                     try
                     {
+                        ///!!!TMP треба буде перейти на цей механізм
+                        _ = CheckOneTime(new OneTime(pIdReceipt) { CodePS = Cat2First.CodePS, TypeData = eTypeCode.BarCode2Category, CodeData = pBarCode.ToLong() });
+
                         isGood = await Ds1C.IsUseDiscountBarCode(pBarCode);
                         Global.ErrorDiscountOnLine = 0;
                     }
@@ -844,8 +846,36 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     }
                 }
             }
-            catch (Exception ex) { }
+            catch (Exception e) {
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+            }
             return null;
+        }
+
+        public async Task<eReturnClient> Send1CClientAsync(ClientNew pC)
+        {
+            try
+            {
+                HttpClient client = new HttpClient
+                {
+                    Timeout = TimeSpan.FromMilliseconds(2000)
+                };
+
+                HttpRequestMessage requestMessage = new(HttpMethod.Post, Global.Api + "Send1CClient");
+                string data = pC.ToJson();
+                requestMessage.Content = new StringContent(data, Encoding.UTF8, "application/json");
+                var response = await client.SendAsync(requestMessage);
+                if (response.IsSuccessStatusCode)
+                {
+                    var res = await response.Content.ReadAsStringAsync();
+                    if (!string.IsNullOrEmpty(res))
+                    {
+                        return (eReturnClient)res.ToInt();                        
+                    }
+                }
+            }
+            catch (Exception e) { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e); }
+            return eReturnClient.Error;
         }
     }
 

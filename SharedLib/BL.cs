@@ -551,7 +551,7 @@ namespace SharedLib
             return true;
         }*/
 
-        public Task GetBonusAsync(Client pClient) { return ds.Ds1C.GetBonusAsync(pClient, Global.CodeWarehouse); }
+        //public Task GetBonusAsync(Client pClient) { return ds.Ds1C.GetBonusAsync(pClient, Global.CodeWarehouse); }
 
         public void SendReceiptTo1C(IdReceipt parIdReceipt)
         {

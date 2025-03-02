@@ -185,7 +185,5 @@ namespace SharedLib
             var res = await soapTo1C.RequestAsync(Global.Server1C, body, 2000);
             return res.Equals("1");
         }
-
-
     }
 }
