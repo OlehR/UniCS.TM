@@ -23,7 +23,6 @@ namespace SharedLib
         WDB_SQLite db { get { return bl?.db; } }
         BL bl;
         public DataSync1C(BL pBL) {
-           // db = WDB_SQLite.GetInstance;
             bl = pBL;
         }
 
