@@ -18,6 +18,22 @@ namespace Front.Equipments
     {
         public void PayAndPrint()
         {
+            foreach (int el in MW.curReceipt.IdWorkplacePays)
+            {
+                MW.curReceipt.IdWorkplacePay = el;
+                var WP = Global.GetWorkPlaceByIdWorkplace(el);
+                if (!WP.Settings.IsAlcoholLicense && MW.curReceipt.IsAlcohol)
+                {
+                    SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, new CustomWindow(eWindows.Info,$"По даному місцю=>{el} відсутня алкогольна ліцензія"));
+                    return;
+                }
+                if (!WP.Settings.IsTobaccoLicense && MW.curReceipt.IsTobacco)
+                {
+                    SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, new CustomWindow(eWindows.Info, $"По даному місцю=>{el} відсутня тютюнова ліцензія"));
+                    return;
+                }
+            }
+
             //MW.curReceipt.Client.SumMoneyBonus = 100;
             var xx = Bl.db.GetNoPricePromorion(MW.curReceipt).Where(x => x.TypeDiscount == eTypeDiscount.TextСashier).FirstOrDefault();
             if (MW.curReceipt?.Client != null && xx != null)

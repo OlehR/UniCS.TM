@@ -456,6 +456,9 @@ namespace ModelMID
         public bool IsManyPayments { get { return IdWorkplacePays?.Length > 1; } }
 
         public bool IsWaresLink { get { return GetLastWares?.IsWaresLink == true; } }
+
+        public bool IsTobacco { get { return Wares?.Any(el => el.TypeWares == eTypeWares.Tobacco || el.TypeWares == eTypeWares.TobaccoNoExcise) == true; } }
+        public bool IsAlcohol { get { return Wares?.Any(el => el.TypeWares == eTypeWares.Alcohol || el.TypeWares == eTypeWares.LowAlcohol || el.TypeWares == eTypeWares.Beer) == true; } }
     }
     public class WorkplacePay
     {

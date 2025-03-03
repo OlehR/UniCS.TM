@@ -89,5 +89,9 @@ namespace ModelMID
 
         public IEnumerable<CustomerBarCode> CustomerBarCode { get; set; }
 
+        public bool IsAlcoholLicense { get; set; }
+
+        public bool IsTobaccoLicense { get; set; }
+
     }
 }
