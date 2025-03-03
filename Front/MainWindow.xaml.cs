@@ -1242,7 +1242,7 @@ namespace Front
             PaymentWindowKSO_UC.Height = 550;
             PaymentWindowKSO_UC_2.Width = 1000;
             PaymentWindowKSO_UC_2.Height = 550;
-            if ( IsManyPayments && Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout && TypeMonitor == eTypeMonitor.VerticalMonitorKSO)
+            if (false && IsManyPayments && Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout && TypeMonitor == eTypeMonitor.VerticalMonitorKSO)
             {
                 if (!curReceipt._Payment.Any())
                 {
