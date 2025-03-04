@@ -1069,7 +1069,7 @@ namespace Front
                         case eStateMainWindows.ProcessPay:
                             PaymentWindowKSO_UC.PaymentImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/newPaymentTerminal.png"));
                             PaymentWindowKSO_UC.Visibility = Visibility.Visible;
-                            if (IsManyPayments)
+                            if (false && IsManyPayments)
                             {
                                 PaymentWindowKSO_UC_2.PaymentImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/newPaymentTerminal.png"));
                                 PaymentWindowKSO_UC_2.Visibility = Visibility.Visible;
@@ -1080,7 +1080,7 @@ namespace Front
                         case eStateMainWindows.ProcessPrintReceipt:
                             PaymentWindowKSO_UC.PaymentImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/newReceipt.png"));
                             PaymentWindowKSO_UC.Visibility = Visibility.Visible;
-                            if (IsManyPayments)
+                            if (false && IsManyPayments)
                             {
                                 PaymentWindowKSO_UC_2.PaymentImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/newReceipt.png"));
                                 PaymentWindowKSO_UC_2.Visibility = Visibility.Visible;
@@ -1238,11 +1238,12 @@ namespace Front
         }
         public void ChangePaymentWindows()
         {
+            return;
             PaymentWindowKSO_UC.Width = 1000;
             PaymentWindowKSO_UC.Height = 550;
             PaymentWindowKSO_UC_2.Width = 1000;
             PaymentWindowKSO_UC_2.Height = 550;
-            if (false && IsManyPayments && Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout && TypeMonitor == eTypeMonitor.VerticalMonitorKSO)
+            if (IsManyPayments && Global.TypeWorkplace == eTypeWorkplace.SelfServicCheckout && TypeMonitor == eTypeMonitor.VerticalMonitorKSO)
             {
                 if (!curReceipt._Payment.Any())
                 {
