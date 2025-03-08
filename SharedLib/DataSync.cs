@@ -566,7 +566,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
 
         public bool GetClientOrder1C(string pNumberOrder)
         {
-            Task.Run(() =>
+            Task.Run(async() =>
             {
                 try
                 {
@@ -575,7 +575,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     pNumberOrder = s.Substring(0, 11 - pNumberOrder.Length) + pNumberOrder;
                     if (!MsSQL.IsSync(Global.CodeWarehouse)) return;
 
-                    var Order = MsSQL.GetClientOrder(pNumberOrder);
+                    var Order = await GetClientOrder(pNumberOrder);// MsSQL.GetClientOrder(pNumberOrder);
                     if (Order != null && Order.Any())
                     {
                         var curReceipt = bl.GetNewIdReceipt();
@@ -876,6 +876,58 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             catch (Exception e) { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e); }
             return eReturnClient.Error;
         }
+
+        public async Task<Dictionary<string, decimal>> GetReceipt1CAsync(DateTime pDT, int pIdWorkplace)
+        {
+            try
+            {
+                HttpClient client = new HttpClient
+                {
+                    Timeout = TimeSpan.FromMilliseconds(5000)
+                };
+
+                HttpRequestMessage requestMessage = new(HttpMethod.Post, Global.Api + "GetReceipt1C");
+                string data = (new IdReceipt() {IdWorkplace= pIdWorkplace,DTPeriod= pDT} ).ToJson();
+                requestMessage.Content = new StringContent(data, Encoding.UTF8, "application/json");
+                var response = await client.SendAsync(requestMessage);
+                if (response.IsSuccessStatusCode)
+                {
+                    var res = await response.Content.ReadAsStringAsync();
+                    if (!string.IsNullOrEmpty(res))
+                    {
+                        return JsonConvert.DeserializeObject<Dictionary<string, decimal>>(res);                        
+                    }
+                }
+            }
+            catch (Exception e) { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e); }
+            return null;
+        }
+
+        public async Task<IEnumerable<ReceiptWares>> GetClientOrder(string pNumberOrder)
+        {
+            try
+            {
+                HttpClient client = new HttpClient
+                {
+                    Timeout = TimeSpan.FromMilliseconds(5000)
+                };
+                HttpRequestMessage requestMessage = new(HttpMethod.Post, Global.Api + "GetClientOrder");
+                string data = pNumberOrder.ToJson();
+                requestMessage.Content = new StringContent(data, Encoding.UTF8, "application/json");
+                var response = await client.SendAsync(requestMessage);
+                if (response.IsSuccessStatusCode)
+                {
+                    var res = await response.Content.ReadAsStringAsync();
+                    if (!string.IsNullOrEmpty(res))
+                    {
+                        return JsonConvert.DeserializeObject<IEnumerable<ReceiptWares>>(res);
+                    }
+                }
+            }
+            catch (Exception e) { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e); }
+            return null;
+        }
+
     }
 
     public class WeightReceipt

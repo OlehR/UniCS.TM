@@ -35,6 +35,7 @@ namespace Front.Equipments
             }*/
 
             //MW.curReceipt.Client.SumMoneyBonus = 100;
+            MW.curReceipt.IdWorkplacePay = 0;
             var xx = Bl.db.GetNoPricePromorion(MW.curReceipt).Where(x => x.TypeDiscount == eTypeDiscount.TextСashier).FirstOrDefault();
             if (MW.curReceipt?.Client != null && xx != null)
             {
@@ -200,13 +201,14 @@ namespace Front.Equipments
                         FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
                     }
                     finally { R.IdWorkplacePay = 0; }
-                }
-                //Друк номерка на піцу якщо він потрібний
-                PrintOrderReceipt(R);
+                }                
 
                 R.StateReceipt = Bl.GetStateReceipt(R);
                 if (R.StateReceipt == eStateReceipt.Pay || R.StateReceipt == eStateReceipt.PartialPrint || R.StateReceipt == eStateReceipt.StartPrint)
                 {
+                    //Друк номерка на піцу якщо він потрібний
+                    PrintOrderReceipt(R);
+
                     LogRRO res = null;
                     //Відключаємо контроль контрольної ваги тимчасово до наступної зміни товарного складу.
                     MW.CS.IsControl = false;

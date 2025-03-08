@@ -992,7 +992,7 @@ namespace Front.Control
             EF.PrintQR(curReceipt);
         }
 
-        private void Check1C_Click(object sender, RoutedEventArgs e)
+        async private void Check1C_Click(object sender, RoutedEventArgs e)
         {
             StringBuilder Res = new();
 
@@ -1001,28 +1001,26 @@ namespace Front.Control
             var Receipts = Bl.GetReceipts(DateSoSearch, DateSoSearch, Global.IdWorkPlace);
 
             decimal Sum1CTotal = 0, Sum = 0;
-            Res.Append($"Звіт за {DateSoSearch} {Environment.NewLine}");
+            Res.Append($"Звіт за {DateSoSearch:d} {Environment.NewLine}");
 
             decimal Total = 0;// Receipts.Where(el => el.StateReceipt >= eStateReceipt.Pay).Sum(el => el.SumTotal);
-
-
 
             foreach (var IdWP in Global.GetIdWorkPlaces)
             {
                 Total = 0;
-                var R1C = MsSQL.GetReceipt1C(DateSoSearch, IdWP.IdWorkplace);
+               
+                var R1C = await Bl.ds.GetReceipt1CAsync (DateSoSearch, IdWP.IdWorkplace);
+                if (R1C == null) return;
                 Sum = R1C.Sum(el => el.Value);
-                Sum1CTotal += Sum;
-                Res.Append($"Всього 1С => {IdWP.Name}-{Sum}{Environment.NewLine}");
+                Sum1CTotal += Sum;               
 
                 foreach (var el in Receipts.Where(el => el.StateReceipt >= eStateReceipt.Pay))
                 {
-                    var r = Bl.GetReceiptHead(el, true);
-                    
-                    Total += r.SumTotal;
+                    var r = Bl.GetReceiptHead(el, true);  
                     MW.Blf.FillPays(r);
                     decimal SumPr = 0, Sum1c = 0;                   
                     SumPr = r.WorkplacePays?.Where(e => e.IdWorkplacePay == IdWP.IdWorkplace)?.Sum(e => e.Sum) ?? 0m;
+                    Total += SumPr;
                     r.IdWorkplacePay = IdWP.IdWorkplace;
                     if (SumPr > 0)
                     {
@@ -1044,7 +1042,8 @@ namespace Front.Control
                     }
                     r.IdWorkplacePay = IdWP.IdWorkplace;
                 }
-                Res.Append($"Програма {IdWP.CodeWarehouse} Total={Total}{Environment.NewLine}");
+                Res.Append($"Всього по {IdWP.Name}{Environment.NewLine}1С => {Sum} Програма => {Total}{Environment.NewLine}");
+                //Res.Append($"Програма {IdWP.CodeWarehouse} Total={Total}{Environment.NewLine}");
 
                 foreach( var r in Receipts )
                     r.IdWorkplacePay = IdWP.IdWorkplace;
@@ -1055,10 +1054,9 @@ namespace Front.Control
                         Res.Append($"{el.Key} Відсутній чек в базі на суму {el.Value:n2} {Environment.NewLine}");
                 }
             }
-            Res.Append($"Всього 1С => {Sum1CTotal}{Environment.NewLine}");
-
+            
             Sum = Receipts.Where(el => el.StateReceipt >= eStateReceipt.Pay).Sum(el => el.SumTotal);
-            Res.Append($"Всього Програма => {Sum}{Environment.NewLine}");
+            Res.Append($"Всього 1С => {Sum1CTotal} Програма => {Sum}{Environment.NewLine}");
             Sum = Receipts.Where(el => el.StateReceipt >= eStateReceipt.Pay && el.StateReceipt < eStateReceipt.Send).Sum(el => el.SumTotal);
             Res.Append($"Всього в проміжних станах => {Sum}{Environment.NewLine}");
 
@@ -1096,12 +1094,8 @@ from RECEIPT r
                 foreach (var el in ss)
                     Res.AppendLine(el);
             }
-
-            MW.CustomMessage.Show(Res.ToString(), "Звірка з 1С", eTypeMessage.Information);
-            //MessageBox.Show(Res.ToString());
-
+            MW.CustomMessage.Show(Res.ToString(), "Звірка з 1С", eTypeMessage.Information);           
         }
-
 
         private void PrintSelectRecript(object sender, RoutedEventArgs e)
         {
@@ -1130,11 +1124,7 @@ from RECEIPT r
             if (SelectedListJournal != null)
             {
                 IEnumerable<string> ArrayFiscalLine = null;
-
-
                 ArrayFiscalLine = SelectedListJournal.TextReceipt.Split(Environment.NewLine);
-
-
                 try
                 {
                     IdReceipt IdR = new() { CodePeriod = Global.GetCodePeriod(), IdWorkplace = Global.IdWorkPlace, IdWorkplacePay = Global.IdWorkPlace };
@@ -1185,8 +1175,7 @@ from RECEIPT r
                     if (resMes)
                     {
                         decimal pSumMoveMoney = pRes.ToDecimal();
-                        //pRes = pRes.Replace(",", ".");
-                        //var res = Decimal.TryParse(pRes, out decimal pSumMoveMoney);
+
                         if (pSumMoveMoney > 0)
                         {
                             if (IsRemoveMoney)
@@ -1196,42 +1185,16 @@ from RECEIPT r
                                 var r = EF.RroMoveMoney(pSumMoveMoney, new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace }, SelectedCashRegister);
                                 if (r.CodeError == 0)
                                     MW.CustomMessage.Show("Успішно!", "Операції з готівкою", eTypeMessage.Information);
-                                //MessageBox.Show("Успішно!");
                                 else
                                 {
                                     Thread.Sleep(100);
                                     MW.CustomMessage.Show($"Помилка: ({r.CodeError}){Environment.NewLine}{r.Error}", "Помилка!", eTypeMessage.Error);
-
-                                    //MW.ShowErrorMessage($"Помилка: ({r.CodeError}){Environment.NewLine}{r.Error}");
                                 }
                             });
                         }
                         else MW.CustomMessage.Show($"Введіть коректну суму!", "Помилка!", eTypeMessage.Error);
-                        //MW.ShowErrorMessage("Введіть коректну суму!");
                     }
-
-                };
-                //if (MessageBox.Show($"{pDesciption} {pRes}?", "Увага!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                //{
-                //    var res = Decimal.TryParse(pRes, out decimal pSumMoveMoney);
-                //    if (res)
-                //    {
-                //        if (IsRemoveMoney)
-                //            pSumMoveMoney = pSumMoveMoney * (-1); // для вилучення відємне значення
-                //        var task = Task.Run(() =>
-                //        {
-                //            var r = EF.RroMoveMoney(pSumMoveMoney, new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = SelectedWorkPlace.IdWorkplace });
-                //            if (r.CodeError == 0)
-                //                MessageBox.Show("Успішно!");
-                //            else
-                //            {
-                //                Thread.Sleep(100);
-                //                MW.ShowErrorMessage($"Помилка: ({r.CodeError}){Environment.NewLine}{r.Error}");
-                //            }
-                //        });
-                //    }
-                //    else MW.ShowErrorMessage("Введіть коректну суму!");
-                //}
+                };                
             }
             Admin_NumericPad.Visibility = Visibility.Collapsed;
             BackgroundShift.Visibility = Visibility.Collapsed;
@@ -1437,7 +1400,6 @@ from RECEIPT r
                 SelectedWorkPlace = SelWorkPlace;
                 foreach (var workPlace in WorkPlaces)
                     workPlace.IsChoice = workPlace.IdWorkplace == SelWorkPlace.IdWorkplace;
-
             }
         }
 
@@ -1523,8 +1485,4 @@ from RECEIPT r
         public eTypeWorkplace TypeWorkplace_ { get; set; }
         public string TranslateTypeWorkplace_ { get { return TypeWorkplace_.GetDescription(); } }
     }
-
-
-
-
 }

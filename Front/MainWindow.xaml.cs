@@ -569,7 +569,14 @@ namespace Front
                 IsBild = false;
                 LibVLC = new LibVLC(); //enableDebugLogs: true);                
                 MediaPlayer = new LibVLCSharp.Shared.MediaPlayer(LibVLC);
+                //MediaPlayer.EndReached += (s, e) => Environment.Exit(0);
+                //MediaPlayer.PositionChanged //= new System.EventHandler<Vlc.DotNet.Core.VlcMediaPlayerPositionChangedEventArgs>(this.vlcControl1_PositionChanged);
+                //MediaPlayer.Playing                
                 Media = new Media(LibVLC, new Uri(PathVideo[0]));// "D:\\pictures\\Video\\1.mp4"));
+                //MediaList list = new MediaList(LibVLC);
+                //list.AddMedia(Media);
+                //list.SetMedia()
+
                 Media.AddOption(":input-repeat=65535");
                 Task.Delay(1000);
                 IsBild = true;

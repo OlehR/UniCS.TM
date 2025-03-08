@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
-
+using Utils;
 namespace ModelMID
 {
     public class IdReceipt
@@ -52,6 +52,7 @@ namespace ModelMID
                     return res;
                 return DateTime.Now.Date;
             }
+            set { CodePeriod = value.ToString("yyyyMMdd").ToInt(); }
         }
         public IdReceipt()
         {

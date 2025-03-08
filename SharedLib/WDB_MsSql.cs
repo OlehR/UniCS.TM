@@ -228,7 +228,7 @@ namespace SharedLib
             return varMessageNoMax;
         }
 
-        public Dictionary<string, decimal> GetReceipt1C(DateTime pDT, int pIdWorkplace)
+        /*public Dictionary<string, decimal> GetReceipt1C(DateTime pDT, int pIdWorkplace)
         {
             var Res = new Dictionary<string, decimal>();
             var par = new { DT = pDT, IdWorkplace = pIdWorkplace };
@@ -237,13 +237,13 @@ namespace SharedLib
             foreach (var el in res)
                 Res.Add(el.number, el.sum);
             return Res;
-        }
+        } */
 
-        public IEnumerable<ReceiptWares> GetClientOrder(string pNumberOrder)
+        /*public IEnumerable<ReceiptWares> GetClientOrder(string pNumberOrder)
         {
             string SQL = "SELECT oc.CodeWares,oc.CodeUnit, oc.Quantity, oc.Price, oc.Sum FROM dbo.V1C_doc_Order_Client oc WHERE oc.NumberOrder = @NumberOrder";// 'ПСЮ00006865'
             return db.Execute<object, ReceiptWares>(SQL, new { NumberOrder = pNumberOrder });
-        }
+        }*/
 
         public bool IsSync(int pCodeWarehouse)
         {
