@@ -18,7 +18,7 @@ namespace Front.Equipments
     {
         public void PayAndPrint()
         {
-            /*foreach (int el in MW.curReceipt.IdWorkplacePays)
+            foreach (int el in MW.curReceipt.IdWorkplacePays)
             {
                 MW.curReceipt.IdWorkplacePay = el;
                 var WP = Global.GetWorkPlaceByIdWorkplace(el);
@@ -32,7 +32,7 @@ namespace Front.Equipments
                     SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, new CustomWindow(eWindows.Info, $"По даному місцю=>{el} відсутня тютюнова ліцензія"));
                     return;
                 }
-            }*/
+            }
 
             //MW.curReceipt.Client.SumMoneyBonus = 100;
             MW.curReceipt.IdWorkplacePay = 0;
