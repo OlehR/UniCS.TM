@@ -13,7 +13,8 @@ namespace ModelMID
         Coupon = 4,
         OneTimeCoupon = 5,
         Client = 6,
-        BarCode2Category = 7
+        BarCode2Category = 7,
+        OneTimeCouponGift =8
     }
     
 

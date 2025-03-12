@@ -225,6 +225,7 @@ namespace SharedLib
                                     return new ReceiptWares(pReceipt);
                                 case eTypeCode.Coupon:                                    
                                 case eTypeCode.OneTimeCoupon:
+                                case eTypeCode.OneTimeCouponGift:
                                     if (CheckOneTime(pReceipt, pBarCode.ToLong(), el.TypeCode))
                                         return new ReceiptWares(pReceipt);
                                     else return null;                                    
@@ -265,7 +266,7 @@ namespace SharedLib
         {
             var RC = new OneTime(pReceipt) { CodeData = pCodeData,TypeData= pTypeCode};
             RC.CodePS = db.GetCodePS(pCodeData);
-            if (pTypeCode == eTypeCode.OneTimeCoupon)
+            if (pTypeCode == eTypeCode.OneTimeCoupon || pTypeCode == eTypeCode.OneTimeCouponGift)
             {
                 OneTime R = ds.CheckOneTime(RC).Result;
                 if(  !pReceipt.Equals(R) && R!=null) 
@@ -277,6 +278,8 @@ namespace SharedLib
             
             if (RC.CodePS > 0)
             {
+                if(pTypeCode==eTypeCode.OneTimeCouponGift)
+                    db.ReplaceReceiptGift(new ReceiptGift(pReceipt) { CodePS= RC.CodePS , NumberGroup=0,Quantity=1});
                 db.ReplaceOneTime(RC);
                 db.RecalcPriceAsync(new(pReceipt));
                 return true;

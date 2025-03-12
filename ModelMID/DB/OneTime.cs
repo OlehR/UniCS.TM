@@ -14,5 +14,6 @@ namespace ModelMID.DB
         public eTypeCode TypeData { get; set; }
         public Int64 CodeData { get; set; }
         //public int ExData { get; set; }
+        public DateTime DateCreate { get; set; }
     }
 }
