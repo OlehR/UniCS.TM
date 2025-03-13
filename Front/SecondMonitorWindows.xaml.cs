@@ -121,6 +121,7 @@ namespace Front
             };
             UpdateTypeWorkplace();
             calculateWidthHeaderReceipt(TypeMonitor);
+            Loaded += SecondMonitor_Loaded;
             // Loaded += (a, b) => { IsLoading = true; StarVideo(); };
 
         }
@@ -167,13 +168,36 @@ namespace Front
                 scrollViewer.ScrollToBottom();
             }
         }
+        public LibVLC _LibVLC= null;
+        public Media _Media = null;
+        public LibVLCSharp.Shared.MediaPlayer _MediaPlayer;
+        private void SecondMonitor_Loaded(object sender, RoutedEventArgs e)
+        {
+            Core.Initialize();
+            _LibVLC = new LibVLC();
+            _MediaPlayer = new LibVLCSharp.Shared.MediaPlayer(_LibVLC);
+            StartVideo.MediaPlayer = _MediaPlayer;
+
+            MW.LoadVideos();
+            MW.PlayNextVideo(_MediaPlayer);
+
+            _MediaPlayer.EndReached += MediaPlayer_EndReached;
+        }
+        public void MediaPlayer_EndReached(object sender, EventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                MW._currentVideoIndex = (MW._currentVideoIndex + 1) % MW._videoFiles.Length;
+                MW.PlayNextVideo(_MediaPlayer);
+            });
+        }
         public void UpdateSecondMonitor()
         {
             Dispatcher.BeginInvoke(new ThreadStart(() =>
             {
                 if (StartVideo != null && StartVideo.MediaPlayer == null)
                 {
-                    StartVideo.MediaPlayer = new LibVLCSharp.Shared.MediaPlayer(MW.LibVLC);
+                    StartVideo.MediaPlayer = new LibVLCSharp.Shared.MediaPlayer(_LibVLC);
                     StartVideo.MediaPlayer.Play(MW.Media);
                     //SecondVideo.MediaPlayer = new LibVLCSharp.Shared.MediaPlayer(MW.LibVLC);
                     //SecondVideo.MediaPlayer.Play(MW.Media);

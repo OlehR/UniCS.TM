@@ -541,7 +541,8 @@ namespace Front
 
             SetWorkPlace();
             Task.Run(() => Bl.ds.SyncDataAsync());
-            Loaded += (a, b) => VideoView_Loaded(); // { IsLoading = true; StarVideo(); };
+            Loaded += MainWindow_Loaded;
+            //Loaded += (a, b) => VideoView_Loaded(); // { IsLoading = true; StarVideo(); };
         }
 
         // bool IsLoading = false;
@@ -560,29 +561,91 @@ namespace Front
 
         public LibVLC LibVLC = null;
         public Media Media = null;
-        LibVLCSharp.Shared.MediaPlayer MediaPlayer = null;
+        public LibVLCSharp.Shared.MediaPlayer MediaPlayer;
+        //LibVLCSharp.Shared.MediaPlayer MediaPlayer = null;
         bool? IsBild = null;
-        private void VideoView_Loaded(object sender = null, RoutedEventArgs e = null)
+        public string[] _videoFiles;
+        public int _currentVideoIndex = 0;
+        private readonly string _videoDirectory = Path.Combine(Global.PathPictures, "Video");
+        //private void VideoView_Loaded(object sender = null, RoutedEventArgs e = null)
+        //{
+        //    if (IsBild == null && PathVideo?.Length > 0)
+        //    {
+        //        IsBild = false;
+        //        LibVLC = new LibVLC(); //enableDebugLogs: true);                
+        //        MediaPlayer = new LibVLCSharp.Shared.MediaPlayer(LibVLC);
+        //        //LoadVideos();
+        //        //MediaPlayer.EndReached += MediaPlayer_EndReached;
+        //        //MediaPlayer.EndReached += (s, e) => Environment.Exit(0);
+        //        //MediaPlayer.PositionChanged //= new System.EventHandler<Vlc.DotNet.Core.VlcMediaPlayerPositionChangedEventArgs>(this.vlcControl1_PositionChanged);
+        //        //MediaPlayer.Playing                
+        //        Media = new Media(LibVLC, new Uri(PathVideo[0]));// "D:\\pictures\\Video\\1.mp4"));
+        //        //MediaList list = new MediaList(LibVLC);
+        //        //list.AddMedia(Media);
+        //        //list.SetMedia()
+
+        //        Media.AddOption(":input-repeat=65535");
+        //        Task.Delay(1000);
+        //        IsBild = true;
+        //        StarVideo();
+        //    }
+
+        //}
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            if (IsBild == null && PathVideo?.Length > 0)
+            Core.Initialize();
+            LibVLC = new LibVLC();
+            MediaPlayer = new LibVLCSharp.Shared.MediaPlayer(LibVLC);
+            StartVideo.MediaPlayer = MediaPlayer;
+
+            LoadVideos();
+            PlayNextVideo(MediaPlayer);
+
+            MediaPlayer.EndReached += MediaPlayer_EndReached;
+        }
+        public void LoadVideos()
+        {
+            if (Directory.Exists(_videoDirectory))
             {
-                IsBild = false;
-                LibVLC = new LibVLC(); //enableDebugLogs: true);                
-                MediaPlayer = new LibVLCSharp.Shared.MediaPlayer(LibVLC);
-                //MediaPlayer.EndReached += (s, e) => Environment.Exit(0);
-                //MediaPlayer.PositionChanged //= new System.EventHandler<Vlc.DotNet.Core.VlcMediaPlayerPositionChangedEventArgs>(this.vlcControl1_PositionChanged);
-                //MediaPlayer.Playing                
-                Media = new Media(LibVLC, new Uri(PathVideo[0]));// "D:\\pictures\\Video\\1.mp4"));
-                //MediaList list = new MediaList(LibVLC);
-                //list.AddMedia(Media);
-                //list.SetMedia()
-
-                Media.AddOption(":input-repeat=65535");
-                Task.Delay(1000);
-                IsBild = true;
-                StarVideo();
+                _videoFiles = Directory.GetFiles(_videoDirectory, "*.mp4");
             }
+            else
+            {
+                _videoFiles = Array.Empty<string>();
+            }
+        }
 
+        public async void PlayNextVideo(LibVLCSharp.Shared.MediaPlayer Player)
+        {
+            IsBild = false;
+            if (_videoFiles.Length == 0) return;
+
+            // Зупиняємо відтворення перед зміною відео
+            // MediaPlayer.Stop();
+
+            // Очищаємо попереднє медіа (важливо!)
+            Player?.Media?.Dispose();
+
+            // Робимо невелику затримку, щоб уникнути зависання
+            await Task.Delay(300);
+
+            // Вибираємо наступне відео
+            var videoPath = _videoFiles[_currentVideoIndex];
+            Media = new Media(LibVLC, new Uri(videoPath));
+
+            // Встановлюємо нове медіа та відтворюємо його
+            Player.Media = Media;
+            Player.Play();
+            IsBild = true;
+        }
+
+        public void MediaPlayer_EndReached(object sender, EventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                _currentVideoIndex = (_currentVideoIndex + 1) % _videoFiles.Length;
+                PlayNextVideo(MediaPlayer);
+            });
         }
 
         void StarVideo(eStateMainWindows? pState = null)
