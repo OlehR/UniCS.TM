@@ -22,12 +22,12 @@ namespace Front.Equipments
             {
                 MW.curReceipt.IdWorkplacePay = el;
                 var WP = Global.GetWorkPlaceByIdWorkplace(el);
-                if (!WP.Settings.IsAlcoholLicense && MW.curReceipt.IsAlcohol)
+                if (!WP.Settings?.IsAlcoholLicense == true && MW.curReceipt.IsAlcohol)
                 {
                     SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, new CustomWindow(eWindows.Info,$"По даному місцю=>{el} відсутня алкогольна ліцензія"));
                     return;
                 }
-                if (!WP.Settings.IsTobaccoLicense && MW.curReceipt.IsTobacco)
+                if (!WP.Settings?.IsTobaccoLicense == true && MW.curReceipt.IsTobacco)
                 {
                     SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, new CustomWindow(eWindows.Info, $"По даному місцю=>{el} відсутня тютюнова ліцензія"));
                     return;
