@@ -10,6 +10,7 @@ namespace ModelMID.DB
         public ReceiptGift(IdReceipt pRW) : base(pRW) { }        
         public Int64 CodePS { get; set; }
         public int NumberGroup { get; set; }
+        public Int64 CodeCoupon { get; set; }
         public decimal Quantity { get; set; }
     }
 }

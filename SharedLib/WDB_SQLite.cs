@@ -1500,7 +1500,8 @@ where wrl.IdWorkplace = @IdWorkplace and wrl.CodePeriod = @CodePeriod and wrl.Co
         {
             try
             {
-                string SQL = @"replace into ReceiptGift (IdWorkplace, CodePeriod, CodeReceipt, CodePS, NumberGroup, Quantity) values (@IdWorkplace,@CodePeriod,@CodeReceipt,@CodePS,@NumberGroup, @Quantity)";
+                string SQL = @"replace into ReceiptGift ( IdWorkplace, CodePeriod, CodeReceipt, CodePS, NumberGroup, CodeCoupon, Quantity) values 
+                                                        (@IdWorkplace,@CodePeriod,@CodeReceipt,@CodePS,@NumberGroup,@CodeCoupon,@Quantity)";
                 return dbRC.ExecuteNonQuery<ReceiptGift>(SQL, pRG) > 0;
             }catch(Exception e)
             {

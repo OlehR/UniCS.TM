@@ -226,9 +226,10 @@ namespace SharedLib
                                 case eTypeCode.Coupon:                                    
                                 case eTypeCode.OneTimeCoupon:
                                 case eTypeCode.OneTimeCouponGift:
-                                    if (CheckOneTime(pReceipt, pBarCode.ToLong(), el.TypeCode))
-                                        return new ReceiptWares(pReceipt);
-                                    else return null;                                    
+                                    //if (
+                                    CheckOneTime(pReceipt, pBarCode.ToLong(), el.TypeCode); //)
+                                     return new ReceiptWares(pReceipt);
+                                    //else return null;                                    
                                 default:
                                     break;
                             }
@@ -264,14 +265,14 @@ namespace SharedLib
 
         public bool CheckOneTime(IdReceipt pReceipt,long pCodeData,eTypeCode pTypeCode)
         {
-            var RC = new OneTime(pReceipt) { CodeData = pCodeData,TypeData= pTypeCode};
-            RC.CodePS = db.GetCodePS(pCodeData);
+            var RC = new OneTime(pReceipt) { CodeData = pCodeData,TypeData= pTypeCode, CodePS = db.GetCodePS(pCodeData) };            
             if (pTypeCode == eTypeCode.OneTimeCoupon || pTypeCode == eTypeCode.OneTimeCouponGift)
             {
-                OneTime R = ds.CheckOneTime(RC).Result;
-                if(  !pReceipt.Equals(R) && R!=null) 
+                var R = ds.CheckOneTime(RC).Result;
+                if( R==null || !R.status || R.Data==null || !pReceipt.Equals(R.Data) ) 
                 {
-                    Global.Message?.Invoke($"Даний купон=>{pCodeData} вже використано в чеку {R.IdWorkplace}-{R.CodePeriod}-{R.CodeReceipt} !!!", eTypeMessage.Information);
+                    Global.Message?.Invoke(R==null || R.status==false || R.Data==null? $"Проблема з перевіркою купона {pCodeData} => {R?.TextState}" : 
+                                    $"Даний купон=>{pCodeData} вже використано в чеку {R.Data.IdWorkplace}/ {R.Data.NumberReceipt1C}", eTypeMessage.Information);
                     return false;
                 }               
             }
@@ -279,7 +280,7 @@ namespace SharedLib
             if (RC.CodePS > 0)
             {
                 if(pTypeCode==eTypeCode.OneTimeCouponGift)
-                    db.ReplaceReceiptGift(new ReceiptGift(pReceipt) { CodePS= RC.CodePS , NumberGroup=0,Quantity=1});
+                    db.ReplaceReceiptGift(new ReceiptGift(pReceipt) { CodePS= RC.CodePS , NumberGroup=0, CodeCoupon=pCodeData, Quantity=-1});
                 db.ReplaceOneTime(RC);
                 db.RecalcPriceAsync(new(pReceipt));
                 return true;

@@ -821,7 +821,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             return Result;
         }
 
-        public async Task<OneTime> CheckOneTime(OneTime pRC)
+        public async Task<Status<OneTime>> CheckOneTime(OneTime pRC)
         {
             try
             {
@@ -838,15 +838,15 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     if (!string.IsNullOrEmpty(res))
                     {
                         var Res = JsonConvert.DeserializeObject<Status<OneTime>>(res);
-                        if (Res?.State == 0)
-                        {
-                            return Res.Data;
-                        }
+                        return Res;
                     }
                 }
+                else return new Status<OneTime>(response.StatusCode);
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+                return new Status<OneTime>(e);
             }
             return null;
         }
