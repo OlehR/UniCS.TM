@@ -227,7 +227,7 @@ namespace SharedLib
                                 case eTypeCode.OneTimeCoupon:
                                 case eTypeCode.OneTimeCouponGift:
                                     //if (
-                                    CheckOneTime(pReceipt, pBarCode.ToLong(), el.TypeCode); //)
+                                    _ = CheckOneTimeAsync(pReceipt, pBarCode.ToLong(), el.TypeCode); //)
                                      return new ReceiptWares(pReceipt);
                                     //else return null;                                    
                                 default:
@@ -263,12 +263,12 @@ namespace SharedLib
             return AddReceiptWares(W);
         }
 
-        public bool CheckOneTime(IdReceipt pReceipt,long pCodeData,eTypeCode pTypeCode)
+        public async Task<bool> CheckOneTimeAsync(IdReceipt pReceipt,long pCodeData,eTypeCode pTypeCode)
         {
             var RC = new OneTime(pReceipt) { CodeData = pCodeData,TypeData= pTypeCode, CodePS = db.GetCodePS(pCodeData) };            
             if (pTypeCode == eTypeCode.OneTimeCoupon || pTypeCode == eTypeCode.OneTimeCouponGift)
             {
-                var R = ds.CheckOneTime(RC).Result;
+                var R = await ds.CheckOneTime(RC);
                 if( R==null || !R.status || R.Data==null || !pReceipt.Equals(R.Data) ) 
                 {
                     Global.Message?.Invoke(R==null || R.status==false || R.Data==null? $"Проблема з перевіркою купона {pCodeData} => {R?.TextState}" : 
@@ -282,7 +282,7 @@ namespace SharedLib
                 if(pTypeCode==eTypeCode.OneTimeCouponGift)
                     db.ReplaceReceiptGift(new ReceiptGift(pReceipt) { CodePS= RC.CodePS , NumberGroup=0, CodeCoupon=pCodeData, Quantity=-1});
                 db.ReplaceOneTime(RC);
-                db.RecalcPriceAsync(new(pReceipt));
+                _ = db.RecalcPriceAsync(new(pReceipt));
                 return true;
             }
             Global.Message?.Invoke($"Даний купон=>{pCodeData} не можна застосувати!!!", eTypeMessage.Information);
