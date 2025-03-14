@@ -201,15 +201,15 @@ namespace Front
                 WidthTotalPrise = widthTotalPrise;
             }
         }
-        InfoRemoteCheckout _RemoteCheckout  = new();
+        InfoRemoteCheckout _RemoteCheckout = new();
         public InfoRemoteCheckout RemoteCheckout
         {
             get { return _RemoteCheckout; }
             set
             {
-                _RemoteCheckout = value; 
+                _RemoteCheckout = value;
                 if (RemoteCheckout.RemoteCigarettesPrices.Count > 1)
-                    RemotePrices.ItemsSource = RemoteCheckout.RemoteCigarettesPrices;                
+                    RemotePrices.ItemsSource = RemoteCheckout.RemoteCigarettesPrices;
                 RemoteWorkplace = Bl.db.GetWorkPlace().FirstOrDefault(el => el.IdWorkplace == RemoteCheckout.RemoteIdWorkPlace);
                 OnPropertyChanged(nameof(RemoteWorkplace));
                 OnPropertyChanged(nameof(RemoteCheckout));
@@ -379,13 +379,13 @@ namespace Front
             {
                 FileLogger.WriteLogMessage($"SocketAnsver: {Environment.NewLine}Command: {Command} {Environment.NewLine}WorkPlaceName: {WorkPlace.Name}{Environment.NewLine}IdWorkPlace: {WorkPlace.IdWorkplace}{Environment.NewLine}Ansver: {Ansver.TextState}", eTypeLog.Full);
             };
-            
+
             Volume = (Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout);
             var fc = new List<FlagColor>();
             Config.GetConfiguration().GetSection("MID:FlagColor").Bind(fc);
             foreach (var el in fc)
                 if (!FC.ContainsKey(el.State))
-                    FC.Add(el.State, el.Color);            
+                    FC.Add(el.State, el.Color);
 
             KeyUp += SetKey;
             InitAction();
@@ -551,11 +551,11 @@ namespace Front
         {
             var key = e.Key;
             var aa = key.ToString();
-           // ss += $"{e.Device}  {e.InputSource} {e.Handled} {e.SystemKey} {e.KeyStates} {e.DeadCharProcessedKey} {e.ImeProcessedKey} {e.IsDown } {e.IsUp} {key} {aa} {Environment.NewLine}";
-            if (!(key == Key.Enter || key == Key.Return || key==Key.LeftShift || key == Key.RightShift || ((int)key >= 34 && (int)key <= 69)))
+            // ss += $"{e.Device}  {e.InputSource} {e.Handled} {e.SystemKey} {e.KeyStates} {e.DeadCharProcessedKey} {e.ImeProcessedKey} {e.IsDown } {e.IsUp} {key} {aa} {Environment.NewLine}";
+            if (!(key == Key.Enter || key == Key.Return || key == Key.LeftShift || key == Key.RightShift || ((int)key >= 34 && (int)key <= 69)))
                 return;
             var Ch = aa.Length == 2 && aa[0] == 'D' ? aa[1] : aa[0];
-            EF.SetKey((int)key, Ch);          
+            EF.SetKey((int)key, Ch);
         }
 
 
@@ -635,7 +635,8 @@ namespace Front
 
             // Встановлюємо нове медіа та відтворюємо його
             Player.Media = Media;
-            Player.Play();
+            if (Global.TypeWorkplace != eTypeWorkplace.CashRegister)
+                Player.Play();
             IsBild = true;
         }
 
@@ -947,7 +948,7 @@ namespace Front
                             ObservableCollection<Pr> prices = new();
                             if (CurWares?.Prices?.Any() == true)
                             {
-                                prices = new ObservableCollection<Pr>(CurWares.Prices.OrderByDescending(r => r.Price).Select(r => new Pr(r.Price, true, r.TypeWares)));                                
+                                prices = new ObservableCollection<Pr>(CurWares.Prices.OrderByDescending(r => r.Price).Select(r => new Pr(r.Price, true, r.TypeWares)));
                             }
                             InfoRemoteCheckout remoteInfo = new() { StateMainWindows = pSMV, TypeAccess = TypeAccessWait, TextInfo = $"{CS.InfoEx}", UserBarcode = AdminSSC?.BarCode, RemoteCigarettesPrices = prices };
                             CommandAPI<InfoRemoteCheckout> Command = new() { Command = eCommand.GeneralCondition, Data = remoteInfo };
@@ -1414,7 +1415,7 @@ namespace Front
         private void _Search(object sender, RoutedEventArgs e) => SetStateView(eStateMainWindows.WaitFindWares);
 
         private void _ButtonHelp(object sender, RoutedEventArgs e) => SetStateView(Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout || AdminSSC == null ? eStateMainWindows.WaitAdmin : eStateMainWindows.AdminPanel, eTypeAccess.AdminPanel);
-        
+
         private void _OwnBag(object sender, RoutedEventArgs e)
         {
             if (ControlScaleCurrentWeight > 0 && ControlScaleCurrentWeight < Global.MaxWeightBag)
@@ -1425,8 +1426,8 @@ namespace Front
             }
         }
 
-        private void _BuyBag(object sender, RoutedEventArgs e)=>  Bl.GetClientByPhone(curReceipt, "0664417744");
-        
+        private void _BuyBag(object sender, RoutedEventArgs e) => Bl.GetClientByPhone(curReceipt, "0664417744");
+
 
         private void _Cancel(object sender, RoutedEventArgs e)
         {
@@ -1434,7 +1435,7 @@ namespace Front
             SetStateView(eStateMainWindows.WaitInput);
         }
 
-        private void StartBuy(object sender, RoutedEventArgs e) => StartAddWares();        
+        private void StartBuy(object sender, RoutedEventArgs e) => StartAddWares();
         public void StartAddWares()
         {
             Blf.NewReceipt();
@@ -1459,7 +1460,7 @@ namespace Front
         }
 
         //Тестовий варіант роботи замовлень!!!
-        private void _ButtonPayment(object sender, RoutedEventArgs e) =>  Blf.PayAndPrint();  
+        private void _ButtonPayment(object sender, RoutedEventArgs e) => Blf.PayAndPrint();
 
         /// <summary>
         /// Добавляєм товар(сигарери) з списку цін
@@ -1489,8 +1490,8 @@ namespace Front
             SetStateView(eStateMainWindows.WaitInput);
         }
 
-        private void ButtonAdmin(object sender, RoutedEventArgs e)=> SetStateView(eStateMainWindows.WaitAdminLogin);
-        
+        private void ButtonAdmin(object sender, RoutedEventArgs e) => SetStateView(eStateMainWindows.WaitAdminLogin);
+
         private void LoginCancel(object sender, RoutedEventArgs e) => SetConfirm(null);
 
         private void LoginButton(object sender, RoutedEventArgs e)
@@ -1534,7 +1535,7 @@ namespace Front
         }
 
         private void ExciseStampNone(object sender, RoutedEventArgs e) => Blf.ExciseStampNone();
-        
+
         private void CustomWindowClickButton(object sender, RoutedEventArgs e)
         {
             KBAdmin.SetInput(null);
@@ -1553,11 +1554,11 @@ namespace Front
                     return;
                 }
             }
-            Blf.CustomWindowClickButton(res);           
+            Blf.CustomWindowClickButton(res);
         }
 
         private void FindClientByPhoneClick(object sender, RoutedEventArgs e) => SetStateView(eStateMainWindows.FindClientByPhone);
-        
+
         private void FindClientByPhone(string pResult)
         {
             if (curReceipt == null)
@@ -1732,7 +1733,7 @@ namespace Front
         }
 
         private void IssueCardButton(object sender, RoutedEventArgs e) => SetStateView(eStateMainWindows.WaitInputIssueCard);
-        
+
         private void CodeSMSUseBonusBtn(object sender, RoutedEventArgs e)
         {
             BorderNumPadUseBonus.Visibility = Visibility.Visible;
@@ -1769,6 +1770,6 @@ namespace Front
                 scrollViewer.ScrollToBottom();
             }
         }
-        private void OnPropertyChanged(String info) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(info));        
+        private void OnPropertyChanged(String info) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(info));
     }
 }
