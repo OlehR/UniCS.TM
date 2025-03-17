@@ -811,6 +811,5 @@ namespace SharedLib
                     Global.OnClientChanged?.Invoke(cl);
             });
         }
-
     }
 }
