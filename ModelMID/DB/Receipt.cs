@@ -163,7 +163,7 @@ namespace ModelMID
                     {
                         var r = res==null?new List<ReceiptWares>():res.ToList();
                         r.Add(new ReceiptWares(this)
-                        { CodeWares = Global.Settings.CodeWaresWallet, Quantity = 1, CodeUnit = 19, CodeDefaultUnit = 19, Sum = -SumWallet, PriceDealer = -SumWallet, NameWares = "Скарбничка", TypeVat = 2, PercentVat = 20 });
+                        { CodeWares = Global.Settings.CodeWaresWallet, IdWorkplacePay=IdWorkplace, Quantity = 1, CodeUnit = 19, CodeDefaultUnit = 19, Sum = -SumWallet, PriceDealer = -SumWallet, NameWares = "Скарбничка", TypeVat = 2, PercentVat = 20 });
                         res = r;
                     }
                 }
