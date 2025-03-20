@@ -596,12 +596,13 @@ namespace Front
             Core.Initialize();
             LibVLC = new LibVLC();
             MediaPlayer = new LibVLCSharp.Shared.MediaPlayer(LibVLC);
-            StartVideo.MediaPlayer = MediaPlayer;
+            //StartVideo.MediaPlayer = MediaPlayer;
 
             LoadVideos();
-            PlayNextVideo(MediaPlayer);
+            PlayNextVideo(MediaPlayer, true);
 
             MediaPlayer.EndReached += MediaPlayer_EndReached;
+            IsBild = true;
         }
         public void LoadVideos()
         {
@@ -615,7 +616,7 @@ namespace Front
             }
         }
 
-        public async void PlayNextVideo(LibVLCSharp.Shared.MediaPlayer Player)
+        public async void PlayNextVideo(LibVLCSharp.Shared.MediaPlayer Player, bool IsFirstStart = false)
         {
             IsBild = false;
             if (_videoFiles.Length == 0) return;
@@ -635,7 +636,7 @@ namespace Front
 
             // Встановлюємо нове медіа та відтворюємо його
             Player.Media = Media;
-            if (Global.TypeWorkplace != eTypeWorkplace.CashRegister)
+            if (Global.TypeWorkplace != eTypeWorkplace.CashRegister && !IsFirstStart)
                 Player.Play();
             IsBild = true;
         }
