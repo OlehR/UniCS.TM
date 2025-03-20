@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-//using DB_SQLite;
 using System.IO;
 using System.Linq;
-using System.Runtime.ConstrainedExecution;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using Dapper;
-using Microsoft.VisualBasic;
 using ModelMID;
 using ModelMID.DB;
 using Utils;
@@ -495,15 +491,9 @@ namespace SharedLib
 
 
 
-        public IEnumerable<ReceiptWares> GetWaresFromFastGroup(int parCodeFastGroup)
-        {
-            return FindWares(null, null, 0, 0, parCodeFastGroup);
-        }
+        public IEnumerable<ReceiptWares> GetWaresFromFastGroup(int parCodeFastGroup)=> FindWares(null, null, 0, 0, parCodeFastGroup);
 
-        public IEnumerable<ReceiptWares> GetBags()
-        {
-            return FindWares(null, null, 0, 0, Global.CodeFastGroupBag);
-        }
+        public IEnumerable<ReceiptWares> GetBags() => FindWares(null, null, 0, 0, Global.CodeFastGroupBag);
 
         public void Close(bool isWait = false)
         {
@@ -783,8 +773,8 @@ insert into RECEIPT_Event(
         }
         ////////////////////////// MID
 
-        public bool CreateMIDTable() { return dbMid.ExecuteNonQuery(SqlCreateMIDTable) > 0; }
-        public bool CreateMIDIndex(SQLite pDB) { return pDB.ExecuteNonQuery(SqlCreateMIDIndex) > 0; }
+        public bool CreateMIDTable() => dbMid.ExecuteNonQuery(SqlCreateMIDTable) > 0;
+        public bool CreateMIDIndex(SQLite pDB) => pDB.ExecuteNonQuery(SqlCreateMIDIndex) > 0;
 
         public bool ReplaceUnitDimension(IEnumerable<UnitDimension> parData, SQLite pDB)
         {
@@ -798,10 +788,7 @@ insert into RECEIPT_Event(
             return pDB.BulkExecuteNonQuery<GroupWares>(SqlReplaceGroupWares, parData, true) > 0;
         }
 
-        public bool ReplaceWares(IEnumerable<Wares> parData, SQLite pDB)
-        {
-            return pDB.BulkExecuteNonQuery<Wares>(SqlReplaceWares, parData, true) > 0;
-        }
+        public bool ReplaceWares(IEnumerable<Wares> parData, SQLite pDB) => pDB.BulkExecuteNonQuery<Wares>(SqlReplaceWares, parData, true) > 0;
 
         public bool ReplaceAdditionUnit(IEnumerable<AdditionUnit> parData, SQLite pDB)
         {
@@ -951,11 +938,7 @@ replace into PROMOTION_SALE_FILTER(CODE_PS, CODE_GROUP_FILTER, TYPE_GROUP_FILTER
         }
 
 
-        public bool DelAllFiscalArticle()
-        {
-            var SQL = "delete from FiscalArticle";
-            return dbConfig.ExecuteNonQuery(SQL) > 0;
-        }
+        public bool DelAllFiscalArticle() => dbConfig.ExecuteNonQuery("delete from FiscalArticle") > 0;
 
         public FiscalArticle GetFiscalArticle(ReceiptWares pRW)
         {
@@ -1071,10 +1054,7 @@ Where ID_WORKPLACE = @IdWorkplace
             return null;
         }
 
-        public IEnumerable<ParameterPromotion> GetInfoClientByReceipt(IdReceipt parIdReceipt)
-        {
-            return db.Execute<IdReceipt, ParameterPromotion>(SqlGetInfoClientByReceipt, parIdReceipt);
-        }
+        public IEnumerable<ParameterPromotion> GetInfoClientByReceipt(IdReceipt parIdReceipt) => db.Execute<IdReceipt, ParameterPromotion>(SqlGetInfoClientByReceipt, parIdReceipt);
 
         public IEnumerable<ReceiptWares> ViewReceiptWares(IdReceiptWares parIdReceiptWares, bool pIsReceiptWaresPromotion = false)
         {
@@ -1131,11 +1111,8 @@ Where ID_WORKPLACE = @IdWorkplace
             return Res;
         }
 
-        public Int64 GetPricePromotionSale2Category(IdReceiptWares parIdReceiptWares)
-        {
-            return db.ExecuteScalar<IdReceiptWares, Int64>(SqlGetPricePromotionSale2Category, parIdReceiptWares);
-        }
-
+        public Int64 GetPricePromotionSale2Category(IdReceiptWares parIdReceiptWares) =>  db.ExecuteScalar<IdReceiptWares, Int64>(SqlGetPricePromotionSale2Category, parIdReceiptWares);
+        
         public virtual IEnumerable<WorkPlace> GetWorkPlace()
         {
             string SqlGetWorkplace = @"select ID_WORKPLACE as IdWorkplace, NAME as Name,
@@ -1167,9 +1144,7 @@ Select min(case when CODE_DEALER = -888888  then PRICE_DEALER else null end) as 
         public bool ReplaceMRC(IEnumerable<MRC> parData, SQLite pDB)
         {
             string SqlReplaceMRC = " replace into  MRC(Code_Wares, Price, Type_Wares) values(@CodeWares, @Price, @TypeWares);";
-
             return pDB.BulkExecuteNonQuery<MRC>(SqlReplaceMRC, parData, true) > 0;
-
         }
 
         public IEnumerable<Payment> GetPayment(IdReceipt pIdR)
@@ -1190,11 +1165,8 @@ Select min(case when CODE_DEALER = -888888  then PRICE_DEALER else null end) as 
             }
         }
 
-        public IEnumerable<WaresReceiptPromotion> CheckLastWares2Cat(IdReceipt parIdReceipt)
-        {
-            return db.Execute<IdReceipt, WaresReceiptPromotion>(SqlCheckLastWares2Cat, parIdReceipt);
-        }
-
+        public IEnumerable<WaresReceiptPromotion> CheckLastWares2Cat(IdReceipt parIdReceipt)=>db.Execute<IdReceipt, WaresReceiptPromotion>(SqlCheckLastWares2Cat, parIdReceipt);
+       
         public Receipt GetLastReceipt(IdReceipt parIdReceipt)
         {
             var r = this.db.Execute<IdReceipt, Receipt>(SqlGetLastReceipt, parIdReceipt);
@@ -1217,26 +1189,15 @@ sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_
             return db.Execute<object, Receipt>(SqlGetReceipts, new { StartDate = parStartDate, FinishDate = parFinishDate, IdWorkplace = parIdWorkPlace });
         }
 
-        public IEnumerable<Receipt> GetReceiptByFiscalNumber(int pIdWorkPlace, string pFiscalNumber, DateTime pStartDate = default(DateTime), DateTime pFinishDate = default(DateTime))
-        {
-            return db.Execute<object, Receipt>(SqlReceiptByFiscalNumbers, new { StartDate = pStartDate, FinishDate = pFinishDate, IdWorkPlace = pIdWorkPlace, NumberReceipt = pFiscalNumber });
-        }
+        public IEnumerable<Receipt> GetReceiptByFiscalNumber(int pIdWorkPlace, string pFiscalNumber, DateTime pStartDate = default(DateTime), DateTime pFinishDate = default(DateTime)) =>
+            db.Execute<object, Receipt>(SqlReceiptByFiscalNumbers, new { StartDate = pStartDate, FinishDate = pFinishDate, IdWorkPlace = pIdWorkPlace, NumberReceipt = pFiscalNumber });
+        
+        public IEnumerable<ReceiptEvent> GetReceiptEvent(IdReceipt parIdReceipt)=>db.Execute<IdReceipt, ReceiptEvent>(SqlGetReceiptEvent, parIdReceipt);
 
-        public IEnumerable<ReceiptEvent> GetReceiptEvent(IdReceipt parIdReceipt)
-        {
-            return db.Execute<IdReceipt, ReceiptEvent>(SqlGetReceiptEvent, parIdReceipt);
-        }
-
-        public IEnumerable<WaresReceiptPromotion> GetReceiptWaresPromotion(IdReceiptWares parIdReceiptWares)
-        {
-            return this.db.Execute<IdReceipt, WaresReceiptPromotion>(SqlGetReceiptWaresPromotion, parIdReceiptWares);
-        }
-
-        public virtual IEnumerable<WaresReceiptPromotion> GetReceiptWaresPromotion(IdReceipt parIdReceipt)
-        {
-            return GetReceiptWaresPromotion(new IdReceiptWares(parIdReceipt));
-        }
-
+        public IEnumerable<WaresReceiptPromotion> GetReceiptWaresPromotion(IdReceiptWares parIdReceiptWares) => this.db.Execute<IdReceipt, WaresReceiptPromotion>(SqlGetReceiptWaresPromotion, parIdReceiptWares);
+        
+        public virtual IEnumerable<WaresReceiptPromotion> GetReceiptWaresPromotion(IdReceipt parIdReceipt) => GetReceiptWaresPromotion(new IdReceiptWares(parIdReceipt));
+        
         public decimal GetLastQuantity(IdReceiptWares parIdReceiptWares)
         {
             string SqlGetLastQuantity = @"select QUANTITY from(
@@ -1246,11 +1207,7 @@ SELECT QUANTITY - QUANTITY_OLD as QUANTITY, ROW_NUMBER()   OVER(ORDER BY  DATE_C
             return db.ExecuteScalar<IdReceiptWares, decimal>(SqlGetLastQuantity, parIdReceiptWares);
         }
 
-        public virtual IEnumerable<ReceiptWaresDeleted1C> GetReceiptWaresDeleted()
-        {
-            return this.db.Execute<ReceiptWaresDeleted1C>(SqlGetReceiptWaresDeleted);
-        }
-
+        public virtual IEnumerable<ReceiptWaresDeleted1C> GetReceiptWaresDeleted() =>  db.Execute<ReceiptWaresDeleted1C>(SqlGetReceiptWaresDeleted);
 
         public virtual IEnumerable<User> GetUser(User pUser)
         {
@@ -1300,20 +1257,11 @@ select sum( sum_pay* case when TYPE_PAY in (4) then -1 else 1 end) as sum from p
         /// </summary>
         /// <param name="parParameters"> </param>
         /// <returns></returns>
-     	public IEnumerable<ReceiptWares> ViewReceiptWares(IdReceipt parIdReceipt, bool pIsReceiptWaresPromotion = false)
-        {
-            return ViewReceiptWares(new IdReceiptWares(parIdReceipt), pIsReceiptWaresPromotion); //this.db.Execute<IdReceipt, ReceiptWares>(SqlViewReceiptWares, parIdReceipt);
-        }
+     	public IEnumerable<ReceiptWares> ViewReceiptWares(IdReceipt parIdReceipt, bool pIsReceiptWaresPromotion = false) => ViewReceiptWares(new IdReceiptWares(parIdReceipt), pIsReceiptWaresPromotion); //this.db.Execute<IdReceipt, ReceiptWares>(SqlViewReceiptWares, parIdReceipt);
+  
+        public bool IsWaresInPromotionKit(int parCodeWares) => db.ExecuteScalar<object, int>(SqlIsWaresInPromotionKit, new { CodeWares = parCodeWares }) > 0;
 
-        public bool IsWaresInPromotionKit(int parCodeWares)
-        {
-            return db.ExecuteScalar<object, int>(SqlIsWaresInPromotionKit, new { CodeWares = parCodeWares }) > 0;
-        }
-
-        public IEnumerable<WaresWarehouse> GetWaresWarehouse()
-        {
-            return db.Execute<WaresWarehouse>("Select * from WaresWarehouse");
-        }
+        public IEnumerable<WaresWarehouse> GetWaresWarehouse() => db.Execute<WaresWarehouse>("Select * from WaresWarehouse");
 
         public bool ReplaceWaresWarehouse(IEnumerable<WaresWarehouse> pWW, SQLite pDB)
         {
@@ -1444,6 +1392,8 @@ from WaresLink wl join  wares w on wl.CodeWares = w.Code_wares where wl.CodeWare
                 par.Quantity = RW.Quantity;
                 
                 var res=db.Execute<ParameterPromotion, PricePromotion>(SqlGetPrice, par);
+
+                //IEnumerable<int> dd=db.Execute<ParameterPromotion, int>(SqlGetPriceFilter + " select * from ExeptionPS ", par);
 
                 if (res?.Any() == true)
                 {                   

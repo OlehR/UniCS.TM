@@ -844,7 +844,6 @@ where ID_WORKPLACE = @IdWorkplace
    and CODE_PERIOD = @CodePeriod
    and CODE_RECEIPT = @CodeReceipt";
 
-
    
         readonly string SqlViewReceiptWares = @"
 select wr.id_workplace as IdWorkplace, wr.code_period as CodePeriod, wr.code_receipt as CodeReceipt, wr.code_wares as CodeWares, w.Name_Wares as NameWares , wr.quantity as Quantity, ud.abr_unit as AbrUnit,
@@ -1064,14 +1063,13 @@ select PSF.CODE_PS
   select PSF.CODE_PS
 	from PROMOTION_SALE_FILTER PSF 
 		left join ReceiptOneTime OT on (OT.CodePS=PSF.CODE_PS and OT.TypeData in (4,5) and IdWorkplace = @IdWorkplace and CodePeriod = @CodePeriod and CodeReceipt = @CodeReceipt)
-		where PSF.TYPE_GROUP_FILTER= 71 and OT.CodePS is null 
-  union -- вже використані одноразові акції.
+		where PSF.TYPE_GROUP_FILTER= 71 and OT.CodePS is null and @IsPricePromotion=1 
+ union -- вже використані одноразові акції.
   select OT.CodePS as CODE_PS from ReceiptOneTime OT where OT.TypeData = 6 and OT.CodeData=@CodeClient and OT.IdWorkplace = @IdWorkplace and OT.CodePeriod = @CodePeriod and OT.CodeReceipt = @CodeReceipt
  union -- Одноразова акція тільки для клієнта
   select ps.CODE_PS from PROMOTION_SALE  ps   
 	where IsOneTime=1 and not EXISTS (  
 		select 1 from ReceiptOneTime OT where OT.CodePS=0 and OT.TypeData=6 and OT.CodeData= @CodeClient and OT.IdWorkplace = @IdWorkplace and OT.CodePeriod = @CodePeriod and OT.CodeReceipt = @CodeReceipt)
-
 ),
 PSEW as 
 (select psfe.CODE_PS from

@@ -27,7 +27,6 @@ namespace SharedLib
         public int LoadData(WDB_SQLite pDB, bool parIsFull,  SQLite pD)
         {
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name,"Start LoadData {parIsFull}");
-
             int varMessageNoMax = db.ExecuteScalar<int>(SqlGetMessageNo);
             int varMessageNoMin = pDB.GetConfig<int>("MessageNo") + 1;
 
@@ -39,14 +38,12 @@ namespace SharedLib
                 CodeWarehouseLink  = r.FirstOrDefault (el => (el.IdWorkplace == Global.Settings?.IdWorkPlaceLink))?.CodeWarehouse??0;
             }
 
-
             //return varMessageNoMin;//!!!!!!!!!!!!!!TMP
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "LoadData varMessageNoMin={varMessageNoMin} varMessageNoMax={varMessageNoMax}");
 
             var oWarehouse = new pWarehouse() { CodeWarehouse = Global.CodeWarehouse, CodeWarehouseLink= CodeWarehouseLink };
             var oMessage = new pMessage() { IsFull = parIsFull ? 1 : 0, MessageNoMin = varMessageNoMin, MessageNoMax = varMessageNoMax, CodeWarehouse = Global.CodeWarehouse, IdWorkPlace = Global.IdWorkPlace, ShopTM=Global.Settings.CodeTM  };
 
-            Debug.WriteLine("SqlGetWaresLink");
             var WL = db.Execute<pWarehouse, WaresLink>("SELECT CodeWares,CodeWaresTo, 0 as IsDefault,min(Sort) AS Sort FROM dbo.V1C_DimWaresLink  wl WHERE Wl.CodeWarehouse IN (0, @CodeWarehouse) GROUP BY CodeWares,CodeWaresTo", oMessage);
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Read ReplaceWaresWarehouse => {WL.Count()}");
             pDB.ReplaceWaresLink(WL, pD);
@@ -65,7 +62,6 @@ namespace SharedLib
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Write SqlGetClientData => {CD.Count()}");
             CD = null;
 
-            Debug.WriteLine("SqlGetDimWorkplace");
             var DW = GetDimWorkplace();
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Read SqlGetDimWorkplace => {DW.Count()}");
             pDB.ReplaceWorkPlace(DW);
