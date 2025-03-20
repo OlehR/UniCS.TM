@@ -168,7 +168,7 @@ namespace Front
                 scrollViewer.ScrollToBottom();
             }
         }
-        public LibVLC _LibVLC= null;
+        public LibVLC _LibVLC = null;
         public Media _Media = null;
         public LibVLCSharp.Shared.MediaPlayer _MediaPlayer;
         private void SecondMonitor_Loaded(object sender, RoutedEventArgs e)
@@ -176,10 +176,10 @@ namespace Front
             Core.Initialize();
             _LibVLC = new LibVLC();
             _MediaPlayer = new LibVLCSharp.Shared.MediaPlayer(_LibVLC);
-            StartVideo.MediaPlayer = _MediaPlayer;
+            //StartVideo.MediaPlayer = _MediaPlayer;
 
             MW.LoadVideos();
-            MW.PlayNextVideo(_MediaPlayer);
+            MW.PlayNextVideo(_MediaPlayer, true);
 
             _MediaPlayer.EndReached += MediaPlayer_EndReached;
         }
@@ -195,9 +195,9 @@ namespace Front
         {
             Dispatcher.BeginInvoke(new ThreadStart(() =>
             {
-                if (StartVideo != null && StartVideo.MediaPlayer == null)
+                if (StartVideo != null && (StartVideo.MediaPlayer == null || StartVideo.MediaPlayer.Media == null) && MW.State == eStateMainWindows.StartWindow)
                 {
-                    StartVideo.MediaPlayer = new LibVLCSharp.Shared.MediaPlayer(_LibVLC);
+                    StartVideo.MediaPlayer = _MediaPlayer;
                     StartVideo.MediaPlayer.Play(MW.Media);
                     //SecondVideo.MediaPlayer = new LibVLCSharp.Shared.MediaPlayer(MW.LibVLC);
                     //SecondVideo.MediaPlayer.Play(MW.Media);
