@@ -50,6 +50,7 @@ namespace ModelMID
         public Receipt1C(Receipt pR)
         {
             Date = pR.DateReceipt;
+            pR.RefundId.IdWorkplacePay = pR.IdWorkplacePay > 0 ? pR.IdWorkplacePay : pR.IdWorkplace; 
             //Фінт з датою заради 4 знаків для дати. Вистачить на років 30.
             Number = pR.NumberReceipt1C;
             if ( pR.IdWorkplacePays?.Count()>1 && pR.IdWorkplacePay > 0 && pR.IdWorkplacePay != pR.IdWorkplace)
