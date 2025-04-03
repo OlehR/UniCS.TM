@@ -6,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Front.Models
+namespace ModelMID
 {
-    internal class FlagColor
+    public class FlagColor
     {
        public eStateMainWindows State { get;set; }
        public Color Color { get; set; }

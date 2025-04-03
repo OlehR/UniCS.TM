@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ModelMID.DB;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -92,6 +93,8 @@ namespace ModelMID
         public bool IsAlcoholLicense { get; set; }
 
         public bool IsTobaccoLicense { get; set; }
+        public IEnumerable<FlagColor> FlagColor { get; set; }
+        public  DeltaWeight[] DeltaWeight { get; set; }
 
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using Utils;
 
 namespace ModelMID
 {
@@ -78,138 +79,142 @@ namespace ModelMID
 
         public CustomWindow(eWindows pW, object pObject = null)
         {
-            Id = pW;
-            DataEx = pObject;
-            switch (pW)
+            try
             {
-                case eWindows.RestoreLastRecipt:
-                    Caption = $"Відновлення останнього чека на суму {pObject}";
-                    IsCancelButton = false;
-                    Buttons = new ObservableCollection<CustomButton>() {
+                Id = pW;
+                DataEx = pObject;
+                switch (pW)
+                {
+                    case eWindows.RestoreLastRecipt:
+                        Caption = $"Відновлення останнього чека на суму {pObject}";
+                        IsCancelButton = false;
+                        Buttons = new ObservableCollection<CustomButton>() {
                         new CustomButton() {CustomWindow = this, Id=1,  Text="Відновити"},
                         new CustomButton() {CustomWindow = this, Id=2,  Text="Скасувати"} };
-                    break;
-                case eWindows.UseBonus:
-                    Text = "Зробіть вибір";
-                    Caption = "Зазначені номери клієнта";
-                    AnswerRequired = true;
-                    List<string> phones = pObject as List<string>;
-                    Buttons = new ObservableCollection<CustomButton>();
-                    for (int i = 0; i < phones.Count(); i++)
-                    {
-                        Buttons.Add(new CustomButton() { CustomWindow = this, Id = i, Text = phones[i] });
-                    }
-                    break;
-                case eWindows.NoPrice:
-                    Text = pObject as string;
-                    Caption = "Відсутня ціна на товар!";
-                    AnswerRequired = true;
-                    break;
-                case eWindows.LimitSales:
-                    Text = pObject as string;
-                    Caption = "Обмеження кількості!";
-                    AnswerRequired = true;
-                    break;
-                case eWindows.ExciseStamp:
-                    Text = "Ввід акцизної марки";
-                    Caption = "Назва товару";
-                    AnswerRequired = true;
-                    ValidationMask = @"^\w{4}[0-9]{6}?$";
-                    //if (pObject is bool IsCashRegister == true)
-                    Buttons = new ObservableCollection<CustomButton>()
+                        break;
+                    case eWindows.UseBonus:
+                        Text = "Зробіть вибір";
+                        Caption = "Зазначені номери клієнта";
+                        AnswerRequired = true;
+                        List<string> phones = pObject as List<string>;
+                        Buttons = new ObservableCollection<CustomButton>();
+                        for (int i = 0; i < phones.Count(); i++)
+                        {
+                            Buttons.Add(new CustomButton() { CustomWindow = this, Id = i, Text = phones[i] });
+                        }
+                        break;
+                    case eWindows.NoPrice:
+                        Text = pObject as string;
+                        Caption = "Відсутня ціна на товар!";
+                        AnswerRequired = true;
+                        break;
+                    case eWindows.LimitSales:
+                        Text = pObject as string;
+                        Caption = "Обмеження кількості!";
+                        AnswerRequired = true;
+                        break;
+                    case eWindows.ExciseStamp:
+                        Text = "Ввід акцизної марки";
+                        Caption = "Назва товару";
+                        AnswerRequired = true;
+                        ValidationMask = @"^\w{4}[0-9]{6}?$";
+                        //if (pObject is bool IsCashRegister == true)
+                        Buttons = new ObservableCollection<CustomButton>()
                         {
                             new CustomButton() {CustomWindow = this,  Id = 33, Text = "Підтвердження акцизу", IsNeedAdmin = true }
                         };
-                    /*else
-                        Buttons = new ObservableCollection<CustomButton>()
+                        /*else
+                            Buttons = new ObservableCollection<CustomButton>()
+                            {
+                                new CustomButton() {CustomWindow = this,  Id = 32, Text = "Акцизний код відсутній", IsNeedAdmin = false },
+                                new CustomButton() {CustomWindow = this,  Id = 33, Text = "Підтвердження акцизу", IsNeedAdmin = true }
+                            };*/
+
+                        break;
+                    case eWindows.PhoneClient:
+                        Text = "Введіть ваш номер!";
+                        Caption = "Пошук за номером телефону";
+                        AnswerRequired = true;
+                        ValidationMask = @"^[+]{0,1}[0-9]{10,13}$";
+                        // Buttons = new List<CustomButton>() {new CustomButton() { Id = 666, Text = "Пошук картки" } }                    
+                        break;
+
+                    case eWindows.ChoiceClient:
+                        Text = "Зробіть вибір";
+                        Caption = "Вибір карточки клієнта";
+                        AnswerRequired = true;
+                        IEnumerable<Client> d = pObject as IEnumerable<Client>;
+                        Buttons = new ObservableCollection<CustomButton>(d.Select(el => new CustomButton() { CustomWindow = this, Id = el.CodeClient, Text = el.NameDiscount + ' ' + el.NameClient }));
+                        break;
+
+                    case eWindows.ConfirmAge:
+                        Text = "Зробіть вибір";
+                        Caption = "Мені є 18";
+                        AnswerRequired = true;
+                        string textButton1, textButton2;
+                        if (pObject is bool IsCashRegister2 == true)
                         {
-                            new CustomButton() {CustomWindow = this,  Id = 32, Text = "Акцизний код відсутній", IsNeedAdmin = false },
-                            new CustomButton() {CustomWindow = this,  Id = 33, Text = "Підтвердження акцизу", IsNeedAdmin = true }
-                        };*/
+                            textButton1 = "Так, клієнту є 18 років";
+                            textButton2 = "Ні, клієнту менше 18 років";
 
-                    break;
-                case eWindows.PhoneClient:
-                    Text = "Введіть ваш номер!";
-                    Caption = "Пошук за номером телефону";
-                    AnswerRequired = true;
-                    ValidationMask = @"^[+]{0,1}[0-9]{10,13}$";
-                    // Buttons = new List<CustomButton>() {new CustomButton() { Id = 666, Text = "Пошук картки" } }                    
-                    break;
-
-                case eWindows.ChoiceClient:
-                    Text = "Зробіть вибір";
-                    Caption = "Вибір карточки клієнта";
-                    AnswerRequired = true;
-                    IEnumerable<Client> d = pObject as IEnumerable<Client>;
-                    Buttons = new ObservableCollection<CustomButton>(d.Select(el => new CustomButton() { CustomWindow = this, Id = el.CodeClient, Text = el.NameDiscount + ' ' + el.NameClient }));
-                    break;
-
-                case eWindows.ConfirmAge:
-                    Text = "Зробіть вибір";
-                    Caption = "Мені є 18";
-                    AnswerRequired = true;
-                    string textButton1, textButton2;
-                    if (pObject is bool IsCashRegister2 == true)
-                    {
-                        textButton1 = "Так, клієнту є 18 років";
-                        textButton2 = "Ні, клієнту менше 18 років";
-
-                    }
-                    else
-                    {
-                        textButton1 = "Так, мені є 18 років";
-                        textButton2 = "Ні, мені менше 18 років";
-                    }
-                    Buttons = new ObservableCollection<CustomButton>() {
+                        }
+                        else
+                        {
+                            textButton1 = "Так, мені є 18 років";
+                            textButton2 = "Ні, мені менше 18 років";
+                        }
+                        Buttons = new ObservableCollection<CustomButton>() {
                         new CustomButton() { CustomWindow = this, Id = 1, Text = textButton1, IsNeedAdmin = false },
                         new CustomButton() { CustomWindow = this, Id = 0, Text = textButton2, IsNeedAdmin = false }
                          };
-                    break;
-                case eWindows.Info:
-                    Caption = "Увага";
-                    Text = pObject as string;
-                    AnswerRequired = true;
-                    break;
-                case eWindows.BlockSale:
-                    Caption = "Увага";
-                    Text = pObject as string;
-                    AnswerRequired = true;
-                    break;
-                case eWindows.MaxSumReceipt:
-                    Caption = "Увага!";
-                    decimal v = Convert.ToDecimal(pObject);
-                    Text = $"Сума чека не може перевищувати {v} грн";
-                    AnswerRequired = true;
-                    break;
-                case eWindows.NoPricePromotion:
-                    Caption = "Увага!";
-                    PricePromotion r = pObject as PricePromotion;
-                    
-                    var TextButton = r.DataText.Split(';');
-                    Text = TextButton[0];
-                    if (TextButton?.Count() > 1)
-                    {
-                        Buttons = new ObservableCollection<CustomButton>();                        
-                        for (int i = 1; i < TextButton?.Count(); i++)
-                            Buttons.Add(new CustomButton() { CustomWindow = this, Id = i, Text = TextButton[i], IsNeedAdmin = false });
-                    }
-                    else
-                    {
-                        Text = r.DataText;
-                        Buttons = new ObservableCollection<CustomButton>() {
+                        break;
+                    case eWindows.Info:
+                        Caption = "Увага";
+                        Text = pObject as string;
+                        AnswerRequired = true;
+                        break;
+                    case eWindows.BlockSale:
+                        Caption = "Увага";
+                        Text = pObject as string;
+                        AnswerRequired = true;
+                        break;
+                    case eWindows.MaxSumReceipt:
+                        Caption = "Увага!";
+                        decimal v = Convert.ToDecimal(pObject);
+                        Text = $"Сума чека не може перевищувати {v} грн";
+                        AnswerRequired = true;
+                        break;
+                    case eWindows.NoPricePromotion:
+                        Caption = "Увага!";
+                        PricePromotion r = pObject as PricePromotion;
+
+                        var TextButton = r.DataText.Split(';');
+                        Text = TextButton[0];
+                        if (TextButton?.Count() > 1)
+                        {
+                            Buttons = new ObservableCollection<CustomButton>();
+                            for (int i = 1; i < TextButton?.Count(); i++)
+                                Buttons.Add(new CustomButton() { CustomWindow = this, Id = i, Text = TextButton[i], IsNeedAdmin = false });
+                        }
+                        else
+                        {
+                            Text = r.DataText;
+                            Buttons = new ObservableCollection<CustomButton>() {
                         new CustomButton() { CustomWindow = this, Id = 0, Text = "Повідомлено", IsNeedAdmin = false }};
-                    }
+                        }
 
-                    AnswerRequired = true;
-                    break;
-                default:
-                    Buttons = new ObservableCollection<CustomButton>();
-                    break;
-
+                        AnswerRequired = true;
+                        break;
+                    default:
+                        Buttons = new ObservableCollection<CustomButton>();
+                        break;
+                }
             }
-
+            catch (Exception ex)
+            {
+                FileLogger.WriteLogMessage(this, "CustomWindow", ex);
+            }
         }
-
         public CustomWindow(eStateScale pST, bool IsViewAddWeight = false, bool IsDelReceipt = false)
         {
             Id = eWindows.ConfirmWeight;
