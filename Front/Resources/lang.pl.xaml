@@ -38,6 +38,9 @@
     <v:String x:Key="ReturnCheck">Wróć do czeku</v:String>
     <v:String x:Key="ManyPayments">Musisz dokonać kilku płatności!</v:String>
     <v:String x:Key="AmountsOfPayments">Kwoty wpłat:</v:String>
+    <v:String x:Key="BonusCard">Zeskanuj swoją kartę bonusową</v:String>
+    <v:String x:Key="Back">Wracać</v:String>
+    <v:String x:Key="EnterPhoneNumber">Wprowadź swój numer telefonu</v:String>
 
 
 

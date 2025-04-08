@@ -619,7 +619,11 @@ namespace Front.Control
 
         public void SetManualPay(Payment pPay)
         {
-            pPay.SumPay = pPay.PosPaid = curReceipt.SumTotal;
+            
+            Blf.FillPays(curReceipt);
+            var SumIdWorkplacePay = curReceipt.WorkplacePays.FirstOrDefault(x=> x.IdWorkplacePay == pPay.IdWorkplacePay).Sum;
+
+            pPay.SumPay = pPay.PosPaid = SumIdWorkplacePay;
             pPay.PosPaid = pPay.SumPay;
             pPay.NumberTerminal = "Manual";
             Bl.db.ReplacePayment(pPay);
@@ -630,6 +634,10 @@ namespace Front.Control
             curReceipt.SumCreditCard = pPay.SumPay;
             Bl.db.ReplaceReceipt(curReceipt);
             curReceipt.Payment = new List<Payment>() { pPay };
+
+            //для оновлення сторінки
+            FindChecksByDate(null, null);
+            historiReceiptList_SelectionChanged(null, null);
         }
 
         private void Transfer1CButton(object sender, RoutedEventArgs e)

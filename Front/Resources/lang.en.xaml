@@ -38,6 +38,12 @@
     <v:String x:Key="ReturnCheck">Return to the check</v:String>
     <v:String x:Key="ManyPayments">You need to make several payments!</v:String>
     <v:String x:Key="AmountsOfPayments">Amounts of payments:</v:String>
+    <v:String x:Key="BonusCard">Scan your bonus card</v:String>
+    <v:String x:Key="Back">Go back</v:String>
+    <v:String x:Key="EnterPhoneNumber">Enter your phone number</v:String>
+
+
+
 
 
 

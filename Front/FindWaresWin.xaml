@@ -186,7 +186,7 @@
                                     </Style>
                                 </Image.Style>
                             </Image>
-                            <TextBlock  Text="Назад" Margin="5,0,5,0">
+                            <TextBlock  Text="{DynamicResource Back }" Margin="5,0,5,0">
                                 <TextBlock.Style>
                                     <Style TargetType="{x:Type TextBlock}">
                                         <Setter Property="FontSize" Value="20" />
@@ -306,7 +306,7 @@
             </Button>
 
         </Grid>
-        <TextBlock Grid.Row="2" Grid.Column="0" Margin="10,0,0,0"  Text="Назва" >
+        <TextBlock Grid.Row="2" Grid.Column="0" Margin="10,0,0,0"  Text="{DynamicResource markWareName}" >
             <TextBlock.Style>
                 <Style TargetType="TextBlock">
                     <Setter Property="FontSize" Value="24" />
