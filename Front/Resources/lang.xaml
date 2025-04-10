@@ -37,6 +37,10 @@
     <v:String x:Key="ReturnCheck">Повернутися до чеку</v:String>
     <v:String x:Key="ManyPayments">Потрібно здійснити декілька платежів!</v:String>
     <v:String x:Key="AmountsOfPayments">Суми платежів: </v:String>
+    <v:String x:Key="BonusCard">Проскануйте бонусну картку</v:String>
+    <v:String x:Key="Back">Назад</v:String>
+    <v:String x:Key="EnterPhoneNumber">Введіть номер телефону</v:String>
+
     
 
 </ResourceDictionary>

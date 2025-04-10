@@ -123,7 +123,7 @@ namespace Front.Control
                 {
                     TypeMessageRadiobuton.Add(new APIRadiobuton() { ServerTypeMessage = item });
                 }
-               
+
 
 
                 InitializeComponent();
@@ -354,7 +354,7 @@ namespace Front.Control
                 else
                 {
                     Thread.Sleep(100);
-                    MW.CustomMessage.Show($"Помилка друку звіта:({r.CodeError}){Environment.NewLine}{r.Error}", "Помилка!", eTypeMessage.Error);                    
+                    MW.CustomMessage.Show($"Помилка друку звіта:({r.CodeError}){Environment.NewLine}{r.Error}", "Помилка!", eTypeMessage.Error);
                 }
             });
         }
@@ -378,18 +378,18 @@ namespace Front.Control
                             else
                             {
                                 Thread.Sleep(100);
-                                MW.CustomMessage.Show($"Помилка друку звіта:({r.CodeError}){Environment.NewLine}{r.Error}", "Помилка!", eTypeMessage.Error);                                
+                                MW.CustomMessage.Show($"Помилка друку звіта:({r.CodeError}){Environment.NewLine}{r.Error}", "Помилка!", eTypeMessage.Error);
                             }
                         });
                     }
                 };
-                
+
             }
             else
             {
                 MW.SetStateView(eStateMainWindows.StartWindow);
                 TabAdmin.SelectedIndex = 0;
-                MW.CustomMessage.Show("Існує відкритий чек! Для закриття зміни потрібно закрити всі чеки!", "Увага!", eTypeMessage.Warning);               
+                MW.CustomMessage.Show("Існує відкритий чек! Для закриття зміни потрібно закрити всі чеки!", "Увага!", eTypeMessage.Warning);
             }
         }
 
@@ -414,7 +414,7 @@ namespace Front.Control
 
         public void OpenShift(User pU)
         {
-            Blf.OpenShift(pU);            
+            Blf.OpenShift(pU);
             Init();
         }
 
@@ -431,7 +431,7 @@ namespace Front.Control
             {
                 MW.SetStateView(eStateMainWindows.StartWindow);
                 TabAdmin.SelectedIndex = 0;
-                MW.CustomMessage.Show("Існує відкритий чек! Для закриття зміни потрібно закрити всі чеки!", "Увага!", eTypeMessage.Warning);               
+                MW.CustomMessage.Show("Існує відкритий чек! Для закриття зміни потрібно закрити всі чеки!", "Увага!", eTypeMessage.Warning);
             }
         }
 
@@ -598,15 +598,16 @@ namespace Front.Control
 
         private void FiscalizCheckButton(object sender, RoutedEventArgs e)
         {
-            MW.SetCurReceipt( curReceipt);
+            MW.SetCurReceipt(curReceipt);
             MW.Blf.PayAndPrint();
             //MessageBox.Show("Фiскалізовано");
         }
 
         private void PaymentDetailsAdminPanelButton(object sender, RoutedEventArgs e)
         {
+            curReceipt.Payment = Bl.GetPayment(curReceipt);
             TerminalPaymentInfo terminalPaymentInfo = new TerminalPaymentInfo(MW, curReceipt, WorkPlaces);
-            if (terminalPaymentInfo.ShowDialog() == true && curReceipt != null)
+            if (terminalPaymentInfo.ShowDialog() == true && curReceipt != null && !curReceipt.Payment.Any(x => x.IdWorkplacePay == terminalPaymentInfo.enteredDataFromTerminal.IdWorkplacePay && x.TypePay == eTypePay.Card))
             {
                 var Res = terminalPaymentInfo.enteredDataFromTerminal;
                 int Id = Res.IdWorkplacePay;
@@ -615,11 +616,20 @@ namespace Front.Control
                 Res.IdWorkplacePay = Id;
                 SetManualPay(Res);
             }
+            else if (terminalPaymentInfo.DialogResult == false) return;
+            else
+            {
+                MW.CustomMessage.Show("Оплата по даному робочому місцю вже існує!", "Увага!", eTypeMessage.Warning);
+            }
         }
 
         public void SetManualPay(Payment pPay)
         {
-            pPay.SumPay = pPay.PosPaid = curReceipt.SumTotal;
+
+            Blf.FillPays(curReceipt);
+            var SumIdWorkplacePay = curReceipt.WorkplacePays.FirstOrDefault(x => x.IdWorkplacePay == pPay.IdWorkplacePay)?.Sum;
+            SumIdWorkplacePay = SumIdWorkplacePay == null ? 0 : SumIdWorkplacePay;
+            pPay.SumPay = pPay.PosPaid = (decimal)SumIdWorkplacePay;
             pPay.PosPaid = pPay.SumPay;
             pPay.NumberTerminal = "Manual";
             Bl.db.ReplacePayment(pPay);
@@ -630,6 +640,10 @@ namespace Front.Control
             curReceipt.SumCreditCard = pPay.SumPay;
             Bl.db.ReplaceReceipt(curReceipt);
             curReceipt.Payment = new List<Payment>() { pPay };
+
+            //для оновлення сторінки
+            FindChecksByDate(null, null);
+            historiReceiptList_SelectionChanged(null, null);
         }
 
         private void Transfer1CButton(object sender, RoutedEventArgs e)
@@ -721,7 +735,7 @@ namespace Front.Control
                     Task.Run(() => Bl.ds.SyncDataAsync(true));
                 }
             };
-            
+
         }
 
         private void CheckTypeLog(object sender, RoutedEventArgs e)
@@ -775,7 +789,7 @@ namespace Front.Control
                     Application.Current.Shutdown();
                 }
             };
-            
+
         }
 
         private void CloneReceipt(object sender, RoutedEventArgs e)
@@ -1008,17 +1022,17 @@ namespace Front.Control
             foreach (var IdWP in Global.GetIdWorkPlaces)
             {
                 Total = 0;
-               
-                var R1C = await Bl.ds.GetReceipt1CAsync (DateSoSearch, IdWP.IdWorkplace);
+
+                var R1C = await Bl.ds.GetReceipt1CAsync(DateSoSearch, IdWP.IdWorkplace);
                 if (R1C == null) return;
                 Sum = R1C.Sum(el => el.Value);
-                Sum1CTotal += Sum;               
+                Sum1CTotal += Sum;
 
                 foreach (var el in Receipts.Where(el => el.StateReceipt >= eStateReceipt.Pay))
                 {
-                    var r = Bl.GetReceiptHead(el, true);  
+                    var r = Bl.GetReceiptHead(el, true);
                     MW.Blf.FillPays(r);
-                    decimal SumPr = 0, Sum1c = 0;                   
+                    decimal SumPr = 0, Sum1c = 0;
                     SumPr = r.WorkplacePays?.Where(e => e.IdWorkplacePay == IdWP.IdWorkplace)?.Sum(e => e.Sum) ?? 0m;
                     Total += SumPr;
                     r.IdWorkplacePay = IdWP.IdWorkplace;
@@ -1045,7 +1059,7 @@ namespace Front.Control
                 Res.Append($"Всього по {IdWP.Name}{Environment.NewLine}1С => {Sum} Програма => {Total}{Environment.NewLine}");
                 //Res.Append($"Програма {IdWP.CodeWarehouse} Total={Total}{Environment.NewLine}");
 
-                foreach( var r in Receipts )
+                foreach (var r in Receipts)
                     r.IdWorkplacePay = IdWP.IdWorkplace;
 
                 foreach (var el in R1C)
@@ -1054,7 +1068,7 @@ namespace Front.Control
                         Res.Append($"{el.Key} Відсутній чек в базі на суму {el.Value:n2} {Environment.NewLine}");
                 }
             }
-            
+
             Sum = Receipts.Where(el => el.StateReceipt >= eStateReceipt.Pay).Sum(el => el.SumTotal);
             Res.Append($"Всього 1С => {Sum1CTotal} Програма => {Sum}{Environment.NewLine}");
             Sum = Receipts.Where(el => el.StateReceipt >= eStateReceipt.Pay && el.StateReceipt < eStateReceipt.Send).Sum(el => el.SumTotal);
@@ -1094,7 +1108,7 @@ from RECEIPT r
                 foreach (var el in ss)
                     Res.AppendLine(el);
             }
-            MW.CustomMessage.Show(Res.ToString(), "Звірка з 1С", eTypeMessage.Information);           
+            MW.CustomMessage.Show(Res.ToString(), "Звірка з 1С", eTypeMessage.Information);
         }
 
         private void PrintSelectRecript(object sender, RoutedEventArgs e)
@@ -1194,7 +1208,7 @@ from RECEIPT r
                         }
                         else MW.CustomMessage.Show($"Введіть коректну суму!", "Помилка!", eTypeMessage.Error);
                     }
-                };                
+                };
             }
             Admin_NumericPad.Visibility = Visibility.Collapsed;
             BackgroundShift.Visibility = Visibility.Collapsed;
@@ -1327,7 +1341,7 @@ from RECEIPT r
                     Application.Current.Shutdown();
                 }
                 else TabAdmin.SelectedIndex = 0;
-            };            
+            };
         }
 
         private void ChangeOrderNumber(object sender, RoutedEventArgs e)

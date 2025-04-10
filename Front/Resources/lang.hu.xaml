@@ -38,6 +38,10 @@
     <v:String x:Key="ReturnCheck">Vissza a csekkbe</v:String>
     <v:String x:Key="ManyPayments">Több fizetést kell teljesítenie!</v:String>
     <v:String x:Key="AmountsOfPayments">Befizetések összegei: </v:String>
+    <v:String x:Key="BonusCard">Olvassa be a bónuszkártyáját</v:String>
+    <v:String x:Key="Back">Menj vissza</v:String>
+    <v:String x:Key="EnterPhoneNumber">Adjon meg egy telefonszámot</v:String>
+
 
 
 </ResourceDictionary>

@@ -64,7 +64,7 @@ namespace Front
         public bool IsReceiptPostpone { get { return ReceiptPostpone == null || (curReceipt == null || curReceipt.Wares == null || !curReceipt.Wares.Any()); } }
         public ReceiptWares CurWares { get; set; } = null;
         public Client Client { get { return curReceipt?.Client; } }
-        public string ClientName { get { return curReceipt != null && curReceipt.CodeClient == Client?.CodeClient ? Client?.NameClient : "Проскануйте бонусну картку"; } }
+        public string ClientName { get { return curReceipt != null && curReceipt.CodeClient == Client?.CodeClient ? Client?.NameClient : (string)Application.Current.FindResource("BonusCard"); } }
         public List<string> ClientPhoneNumvers = new List<string>();
         public Visibility IsViewClientInfo { get { return Client == null ? Visibility.Collapsed : Visibility.Visible; } }
         public GW CurW { get; set; } = null;
@@ -284,7 +284,7 @@ namespace Front
                 tb.Margin = new Thickness(10);
                 WaitAdminImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/clock.png"));
                 if (IsCashRegister)
-                    WaitAdminTitle.Text = "Будь ласка очікуйте охорону!";
+                    WaitAdminTitle.Text = (string)Application.Current.FindResource("WaitAdmin");   //"Будь ласка очікуйте охорону!";
                 // WaitAdminTitle.Visibility = Visibility.Visible;
                 switch (TypeAccessWait)
                 {
@@ -1224,7 +1224,7 @@ namespace Front
                             break;
                         case eStateMainWindows.FindClientByPhone:
                             s.Play(eTypeSound.ScanCustomerCardOrEnterPhone);
-                            UC_NumericPad.Desciption = "Введіть номер телефону";
+                            UC_NumericPad.Desciption = (string)Application.Current.FindResource("EnterPhoneNumber");//"Введіть номер телефону";
                             UC_NumericPad.ValidationMask = Global.Settings.IsUseCardSparUkraine ? "^\\d{4}$|^\\d{10}$|^\\d{12}$" : "^[0-9]{10,13}$";
                             UC_NumericPad.Result = "";
                             UC_NumericPad.IsEnableComma = false;
@@ -1395,6 +1395,7 @@ namespace Front
                     pl.Style = (Style)pl.FindResource("WhiteButton");
                     break;
             }
+            OnPropertyChanged(nameof(ClientName));
         }
 
         private void _Back(object sender, RoutedEventArgs e) => CancelReceipt();
