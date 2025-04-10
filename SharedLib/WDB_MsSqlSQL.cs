@@ -33,7 +33,7 @@ namespace SharedLib
   , w.code_brand as CodeTM -- бо в 1С спутано.
   ,w.ProductionLocation
   FROM dbo.Wares w
-  WHERE w.is_old = 0 AND  w.IsBlockSale =1 and w.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull= 1";
+  WHERE w.is_old = 0 AND  w.IsBlockSale =0 and (w.MessageNo BETWEEN @MessageNoMin AND @MessageNoMax or @IsFull= 1)";
 
         string SqlGetDimAdditionUnit = @"SELECT code_wares AS CodeWares, code_unit AS CodeUnit, coef AS Coefficient, weight AS weight, CASE WHEN DEFAULT_UNIT= 'Y' then 1 ELSE 0 END as DefaultUnit
   FROM dbo.addition_unit au
