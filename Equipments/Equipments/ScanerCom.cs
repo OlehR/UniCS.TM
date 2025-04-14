@@ -86,6 +86,9 @@ namespace Front.Equipments
         //int CountZero = 0;
         private bool OnDataReceived(byte[] data)
         {
+            for(int i=0;i<data.Length;i++)           
+                if (data[i] == 160) data[i] = 13;
+                
             string Str = Encoding.ASCII.GetString(data);
 
             FileLogger.WriteLogMessage("OnDataReceived=>" + Str);
