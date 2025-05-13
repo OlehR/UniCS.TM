@@ -91,6 +91,35 @@ namespace UtilNetwork
             }
             return new HttpResult();
         }
+
+        public static async Task DownloadFileWithProgressAsync(string pUrl, string pDestinationPath, Action<double> pProgress)
+        {
+            using HttpClient client = new();
+            using HttpResponseMessage response = await client.GetAsync(pUrl, HttpCompletionOption.ResponseHeadersRead);
+            response.EnsureSuccessStatusCode();
+
+            var totalBytes = response.Content.Headers.ContentLength ?? -1L;
+            var canReportProgress = totalBytes != -1 && pProgress != null;
+
+            using Stream contentStream = await response.Content.ReadAsStreamAsync();
+            using FileStream fileStream = new FileStream(pDestinationPath, FileMode.Create, FileAccess.Write, FileShare.None, 8192, true);
+
+            var buffer = new byte[8192];
+            long totalRead = 0;
+            int bytesRead;
+
+            while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+            {
+                await fileStream.WriteAsync(buffer, 0, bytesRead);
+                totalRead += bytesRead;
+
+                if (canReportProgress)
+                {
+                    double progressValue = (double)totalRead / totalBytes;
+                    pProgress?.Invoke(progressValue);
+                }
+            }
+        }
     }
     public enum eStateHTTP
     {
