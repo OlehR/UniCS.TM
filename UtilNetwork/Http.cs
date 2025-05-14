@@ -94,6 +94,7 @@ namespace UtilNetwork
 
         public static async Task DownloadFileWithProgressAsync(string pUrl, string pDestinationPath, Action<double> pProgress)
         {
+            const int BufferSize = 1024 * 64; // 64 KB
             using HttpClient client = new();
             using HttpResponseMessage response = await client.GetAsync(pUrl, HttpCompletionOption.ResponseHeadersRead);
             response.EnsureSuccessStatusCode();
@@ -102,9 +103,9 @@ namespace UtilNetwork
             var canReportProgress = totalBytes != -1 && pProgress != null;
 
             using Stream contentStream = await response.Content.ReadAsStreamAsync();
-            using FileStream fileStream = new FileStream(pDestinationPath, FileMode.Create, FileAccess.Write, FileShare.None, 8192, true);
+            using FileStream fileStream = new FileStream(pDestinationPath, FileMode.Create, FileAccess.Write, FileShare.None, BufferSize, true);
 
-            var buffer = new byte[8192];
+            var buffer = new byte[BufferSize];
             long totalRead = 0;
             int bytesRead;
 
