@@ -738,10 +738,6 @@ select p.code_client as CodeClient, p.name_client as NameClient, 0 as TypeDiscou
      join client p on (t.CodeClient=p.code_client)
    left join TYPE_DISCOUNT td on td.TYPE_DISCOUNT=p.TYPE_DISCOUNT;";
 
-        readonly string SqlReplacePromotionSale = @"replace into PROMOTION_SALE (CODE_PS, NAME_PS, CODE_PATTERN, STATE, DATE_BEGIN, DATE_END, TYPE, TYPE_DATA, PRIORITY, SUM_ORDER, TYPE_WORK_COUPON, BAR_CODE_COUPON, IsOneTime, DATE_CREATE, USER_CREATE) 
-values 
-     (@CodePS, @NamePS, @CodePattern,@State, @DateBegin, @DateEnd,@Type, @TypeData,@Priority, @SumOrder, @TypeWorkCoupon,  @BarCodeCoupon, @IsOneTime, @DateCreate, @UserCreate);";
-
         readonly string SqlGetLogRRO = @"Select ID_WORKPLACE as IdWorkplace,CODE_PERIOD as CodePeriod,CODE_RECEIPT as CodeReceipt,ID_WORKPLACE_PAY as IdWorkplacePay,
       FiscalNumber as FiscalNumber, Number_Operation as NumberOperation,Type_Operation as TypeOperation, SUM as SUM,
       Type_RRO as TypeRRO,JSON as JSON, Text_Receipt as TextReceipt, CodeError as CodeError, Error as Error, USER_CREATE as UserCreate,TypePay
@@ -1227,14 +1223,6 @@ select @IdWorkplaceReturn, @CodePeriodReturn, @CodeReceiptReturn, @id_workplace_
 0,0,0,0, type_vat, sort, Excise_Stamp, @IdWorkplace, @CodePeriod, @CodeReceipt, @UserCreate, @barCode2Category
 from wares_receipt wr where wr.id_workplace=@IdWorkplace and wr.code_period=@CodePeriod and wr.code_receipt=@CodeReceipt;
 update receipt set CODE_PATTERN = 2  where id_workplace = @IdWorkplaceReturn and code_period = @CodePeriodReturn  and code_receipt = @CodeReceiptReturn;";
-
-        readonly string SqlReplaceWares = @"
-replace into Wares(CODE_WARES, CODE_GROUP, CodeGroupUp, NAME_WARES, Name_Wares_Upper, ARTICL, CODE_BRAND, CODE_UNIT,
-                     Percent_Vat, Type_VAT, NAME_WARES_RECEIPT, DESCRIPTION, Type_Wares, Weight_brutto,
-                     Weight_Fact, Weight_Delta, CODE_UKTZED, Limit_Age, PLU, Code_Direction, Code_TM,ProductionLocation)
-             values(@CodeWares, @CodeGroup,@CodeGroupUp, @NameWares, @NameWaresUpper, @Articl, @CodeBrand, @CodeUnit,
-                     @PercentVat, @TypeVat, @NameWaresReceipt, @Description, @TypeWares, @WeightBrutto,
-                     @WeightFact, @WeightDelta, @CodeUKTZED, @LimitAge, @PLU, @CodeDirection, @CodeTM,@ProductionLocation);";
 
         readonly string SqlReplacePayment = @"
  replace into  payment(ID_WORKPLACE, id_workplace_pay , CODE_PERIOD, CODE_RECEIPT, TYPE_PAY, Code_Bank, CODE_WARES, SUM_PAY, SUM_ext, NUMBER_TERMINAL, NUMBER_RECEIPT, CODE_authorization, NUMBER_SLIP, Number_Card, Pos_Paid, Pos_Add_Amount, Card_Holder, Issuer_Name, Bank,  TransactionId,  MerchantID,  DATE_CREATE) values

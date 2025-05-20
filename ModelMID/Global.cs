@@ -300,10 +300,9 @@ namespace ModelMID
                     if (el.IdWorkplace == Global.IdWorkPlace && el.Settings != null)
                         Global.Settings = el.Settings;
                 }
-                Global.WorkPlaceByWorkplaceId = WorkPlaceByWorkplaceId;
+                Global.WorkPlaceByWorkplaceId = WorkPlaceByWorkplaceId;               
             }
             FileLogger.WriteLogMessage("Global", System.Reflection.MethodBase.GetCurrentMethod().Name, $"Записів=>{pWP?.Count()}");
-
             return true;
         }
     }

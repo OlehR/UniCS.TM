@@ -8,6 +8,7 @@ using System.IO;
 using System.IO.Pipes;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Security.Policy;
 using System.Text;
 using System.Threading;
@@ -17,17 +18,17 @@ using Utils;
 
 namespace SharedLib
 {
-    public class DataSync
+    public class DataSync 
     {
         public WDB_SQLite db { get { return bl?.db; } }
         BL bl;
         WDB_MsSql MsSQL;
-        public DataSync1C Ds1C;
+        DataSync1C Ds1C;
         private readonly object _locker = new object();
         //public SoapTo1C soapTo1C = new SoapTo1C();
-        public bool IsUseOldDB = true;
+        public bool IsUseOldDB { get; set; } = true;
 
-        public eSyncStatus Status = eSyncStatus.NotDefine;
+        public eSyncStatus Status { get; set; } = eSyncStatus.NotDefine;
         public bool IsReady
         {
             get
@@ -144,15 +145,15 @@ namespace SharedLib
         public bool SyncData(ref bool pIsFull)
         {
             lock (this._locker)
-            {                
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "parIsFull=>{pIsFull}");
+            {
+                FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, "parIsFull=>{pIsFull}");
                 string varMidFile = db.GetMIDFile();
                 try
                 {
                     if (!pIsFull && !File.Exists(varMidFile)) //Якщо відсутній файл
                     {
                         pIsFull = true;
-                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Відсутній файл {varMidFile} parIsFull=>{pIsFull} ");
+                        FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, "Відсутній файл {varMidFile} parIsFull=>{pIsFull} ");
                     }
                     if (!pIsFull && File.Exists(varMidFile)) // Якщо база порожня.
                     {
@@ -162,7 +163,7 @@ namespace SharedLib
                             if (i == 0)
                             {
                                 pIsFull = true;
-                                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Відсутні дані {varMidFile} parIsFull=>{pIsFull} ");
+                                FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, "Відсутні дані {varMidFile} parIsFull=>{pIsFull} ");
                             }
                         }
                         catch (Exception) { pIsFull = true; }
@@ -174,13 +175,13 @@ namespace SharedLib
                     {
                         if (TD == default(DateTime) || DateTime.Now.Date != TD.Date)
                             pIsFull = true;
-                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Устарівші дані {TD:yyyy-MM-dd} {varMidFile} parIsFull=>{pIsFull} ");
+                        FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, "Устарівші дані {TD:yyyy-MM-dd} {varMidFile} parIsFull=>{pIsFull} ");
                     }
 
                     Status = pIsFull ? eSyncStatus.StartedFullSync : eSyncStatus.NotDefine;
                     Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = pIsFull ? eSyncStatus.StartedFullSync : eSyncStatus.StartedPartialSync, StatusDescription = "SendAllReceipt" });
 
-                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "varMidFile=>{varMidFile}\n\tLoad_Full=>{TD:yyyy-MM-dd} parIsFull=>{pIsFull}");
+                    FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, "varMidFile=>{varMidFile}\n\tLoad_Full=>{TD:yyyy-MM-dd} parIsFull=>{pIsFull}");
 
                     var NameDB = db.GetMIDFile(default, pIsFull);
                     if (pIsFull)
@@ -193,28 +194,28 @@ namespace SharedLib
                         if (File.Exists(varMidFile))
                         {
                             Thread.Sleep(200);
-                            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Try Delete file {varMidFile}");
+                            FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, "Try Delete file {varMidFile}");
                             try
                             {
                                 File.Delete(varMidFile);
                             }
                             catch (Exception e)
                             {
-                                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+                                FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, e);
                             }
                         }
 
                         if (File.Exists(NameDB))
                         {
                             Thread.Sleep(200);
-                            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Try Delete file {NameDB}");
+                            FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, "Try Delete file {NameDB}");
                             try
                             {
                                 File.Delete(NameDB);
                             }
                             catch (Exception e)
                             {
-                                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+                                FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, e);
                             }
                         }
 
@@ -224,10 +225,10 @@ namespace SharedLib
                             Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = Ex, Status = eSyncStatus.Error, StatusDescription = $"SyncData Error=> Помилка видалення файла {Ex?.Message}" });
                             return false;
                         }
-                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Create New DB");
+                        FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, "Create New DB");
                     }
 
-                    SQLite pD = new SQLite(NameDB);
+                    SQLiteMid pD = new(NameDB);
                     if (pIsFull)
                     {
                         pD.ExecuteNonQuery(db.SqlCreateMIDTable);
@@ -236,46 +237,53 @@ namespace SharedLib
 
                     if (!MsSQL.IsSync(Global.CodeWarehouse)) return false;
 
-                    var varMessageNMax = MsSQL.LoadData(db, pIsFull, pD);
+                    var DW = MsSQL.GetDimWorkplace();
+                    FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Read SqlGetDimWorkplace => {DW.Count()}");
+                    db.ReplaceWorkPlace(DW);
+                    FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Write SqlGetDimWorkplace => {DW.Count()}");
+                    Global.BildWorkplace(DW);
+                    DW = null;
+                    
+                    int MessageNoMin = db.GetConfig<int>("MessageNo");
+                    var varMessageNMax = MsSQL.LoadData(Global.IdWorkPlace, pIsFull, pD, MessageNoMin);                    
 
                     if (pIsFull)
                     {
                         int CW = pD.ExecuteScalar<int>("select count(*) from wares");
                         if (CW > 1000)
                         {
-                            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Create MIDIndex");
+                            FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, "Create MIDIndex");
                             db.CreateMIDIndex(pD);
                             pD.Close();
                             try
                             {
                                 File.Move(NameDB, varMidFile);
                                 db.LastMidFile = varMidFile;
-                                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Set config LastMidFile=> {db.LastMidFile}");
+                                FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, "Set config LastMidFile=> {db.LastMidFile}");
                                 db.SetConfig<DateTime>("Load_Full", DateTime.Now);
                                 db.SetConfig<DateTime>("Load_Update", DateTime.Now);
-
                                 db.GetDB();
                             }
                             catch (Exception e)
                             {
-                                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+                                FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, e);
                             }
 
                         }
                         else
                         {
-                            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Wares=>{CW}");
+                            FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Wares=>{CW}");
                             return false;
                         }
                     }
-
+                    db.BildWaresWarehouse();
                     db.SetConfig<int>("MessageNo", varMessageNMax);
                     db.SetConfig<DateTime>("Load_" + (pIsFull ? "Full" : "Update"), DateTime.Now);
 
-                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "End");
-                    Status = pIsFull ? eSyncStatus.SyncFinishedSuccess : eSyncStatus.NotDefine;
+                    FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, "End");
+                    Status = eSyncStatus.SyncFinishedSuccess;// : eSyncStatus.NotDefine;
                     Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.SyncFinishedSuccess, StatusDescription = "SyncData=>Ok" });
-                    
+
                 }
                 catch (Exception ex)
                 {
@@ -283,7 +291,7 @@ namespace SharedLib
                     Status = pIsFull ? eSyncStatus.Error : eSyncStatus.NotDefine;
                     Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = (pIsFull ? eSyncStatus.Error : eSyncStatus.NoFatalError), StatusDescription = $"SyncData Error=>{ex.Message}" });
                     Global.OnStatusChanged?.Invoke(db.GetStatus());
-                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex);
+                    FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, ex);
                     return false;
                 }
             }
@@ -299,7 +307,7 @@ namespace SharedLib
             public int PK { get; set; }
         }
 
-        public string BildSqlUpdate(string parTableName)
+        /*public string BildSqlUpdate(string parTableName)
         {
             var r = db.db.Execute<TableStruc>($"PRAGMA table_info('{parTableName}');");
             var ListField = "";
@@ -316,7 +324,7 @@ namespace SharedLib
             }
             var Res = $"replace parTableName ({ListField}) \n select {ListField} from main.{parTableName}\n join upd.{parTableName} on ( {On})\n where {Where}";
             return Res;
-        }
+        }*/
 
         public void SendOldReceipt()
         {
@@ -345,7 +353,7 @@ namespace SharedLib
             db.SetConfig<DateTime>("LastDaySend", Ldc);
         }
 
-        public void LoadWeightKasa(DateTime parDT = default(DateTime))
+        /*public void LoadWeightKasa(DateTime parDT = default(DateTime))
         {
             if (!MsSQL.IsSync(Global.CodeWarehouse)) return;
             try
@@ -385,7 +393,7 @@ where nn=1 ";
             {
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "LoadWeightKasa=> " + ex.Message });
             }
-        }
+        }*/
 
         public void LoadWeightKasa2Period(DateTime pDT = default(DateTime))
         {
@@ -461,7 +469,7 @@ where RE.EVENT_TYPE=1"
 }".Replace("{Order}", (++pOrder).ToString()).Replace("{PLU}", pReceiptWares.PLU.ToString()).
 Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace("{Price}", ((int)(pReceiptWares.PriceDealer * 100m)).ToString());
 
-            bl.db.InsertReceiptEvent(new ReceiptEvent(pReceiptWares) { EventType = eReceiptEventType.AskQR, EventName = Body, CreatedAt = DateTime.Now } );
+            bl.db.InsertReceiptEvent(new ReceiptEvent(pReceiptWares) { EventType = eReceiptEventType.AskQR, EventName = Body, CreatedAt = DateTime.Now });
             try
             {
                 HttpClient client = new HttpClient();
@@ -522,6 +530,10 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
 
         }
 
+        public async Task<eReturnClient> SendClientAsync(ClientNew pC)
+        {
+            return await Ds1C.Send1CClientAsync(pC);
+        }
         public async Task Send1CClientAsync()
         {
             DateTime Ldc, Today = DateTime.Now.Date;
@@ -534,8 +546,8 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
 
             try
             {
-                if (Ldc == default(DateTime))
-                    Ldc = Today.AddDays(-10);
+                if (Ldc == default(DateTime) || Ldc < Today.AddDays(-5))
+                    Ldc = Today.AddDays(-5);
                 Ldc = Ldc.AddDays(1);
                 while (Ldc < Today)
                 {
@@ -544,7 +556,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     bool Res = true;
                     foreach (var el in Cl)
                     {
-                        eReturnClient res = await Ds1C.Send1CClientAsync(el);
+                        eReturnClient res = await SendClientAsync(el);
                         if (res == eReturnClient.Ok || res == eReturnClient.ErrorCardIsUse || res == eReturnClient.ErrorCardIsAlreadyPresent)
                             ldb.SetConfirmClientNew(el);
                         else
@@ -566,7 +578,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
 
         public bool GetClientOrder1C(string pNumberOrder)
         {
-            Task.Run(async() =>
+            Task.Run(async () =>
             {
                 try
                 {
@@ -590,7 +602,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     }
                 }
                 catch (Exception ex)
-                { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex); }
+                { FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, ex); }
             });
             return true;
         }
@@ -658,7 +670,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                 }
             }
             catch (Exception e)
-            { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e); }
+            { FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, e); }
             return null;
         }
 
@@ -696,17 +708,17 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                             pR.StateReceipt = eStateReceipt.Send;
                             db.SetStateReceipt(pR);
                         }
-                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"CodeReceipt=>{pR.CodeReceipt} State=>${Res.State} Text=>{Res.TextState}");
+                        FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"CodeReceipt=>{pR.CodeReceipt} State=>${Res.State} Text=>{Res.TextState}");
                         return Res;
                     }
                 }
                 else
                 {
-                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, response.StatusCode.ToString());
+                    FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, response.StatusCode.ToString());
                 }
             }
             catch (Exception e)
-            { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e); }
+            { FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, e); }
             return null;
         }
 
@@ -799,7 +811,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                 if (response.IsSuccessStatusCode)
                 {
                     var res = await response.Content.ReadAsStringAsync();
-                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"res=>{res}");
+                    FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"res=>{res}");
                     if (!string.IsNullOrEmpty(res))
                     {
                         var Res = JsonConvert.DeserializeObject<Status<Client>>(res);
@@ -811,11 +823,11 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                 }
                 else
                 {
-                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, response.StatusCode.ToString());
+                    FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, response.StatusCode.ToString());
                 }
             }
             catch (Exception e)
-            { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e); }
+            { FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, e); }
             if (Result == null && !string.IsNullOrEmpty(pFC.Phone))
                 bl.OnCustomWindow?.Invoke(new CustomWindow(eWindows.Info, $"Клієнта з номером {pFC.Phone} не знайдено в базі!"));
             return Result;
@@ -845,7 +857,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             }
             catch (Exception e)
             {
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+                FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, e);
                 return new Status<OneTime>(e);
             }
             return null;
@@ -869,11 +881,11 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     var res = await response.Content.ReadAsStringAsync();
                     if (!string.IsNullOrEmpty(res))
                     {
-                        return (eReturnClient)res.ToInt();                        
+                        return (eReturnClient)res.ToInt();
                     }
                 }
             }
-            catch (Exception e) { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e); }
+            catch (Exception e) { FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, e); }
             return eReturnClient.Error;
         }
 
@@ -887,7 +899,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                 };
 
                 HttpRequestMessage requestMessage = new(HttpMethod.Post, Global.Api + "GetReceipt1C");
-                string data = (new IdReceipt() {IdWorkplace= pIdWorkplace,DTPeriod= pDT} ).ToJson();
+                string data = (new IdReceipt() { IdWorkplace = pIdWorkplace, DTPeriod = pDT }).ToJson();
                 requestMessage.Content = new StringContent(data, Encoding.UTF8, "application/json");
                 var response = await client.SendAsync(requestMessage);
                 if (response.IsSuccessStatusCode)
@@ -895,11 +907,11 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     var res = await response.Content.ReadAsStringAsync();
                     if (!string.IsNullOrEmpty(res))
                     {
-                        return JsonConvert.DeserializeObject<Dictionary<string, decimal>>(res);                        
+                        return JsonConvert.DeserializeObject<Dictionary<string, decimal>>(res);
                     }
                 }
             }
-            catch (Exception e) { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e); }
+            catch (Exception e) { FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, e); }
             return null;
         }
 
@@ -924,10 +936,9 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     }
                 }
             }
-            catch (Exception e) { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e); }
+            catch (Exception e) { FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, e); }
             return null;
         }
-
     }
 
     public class WeightReceipt
@@ -939,5 +950,5 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
         public int IdWorkplace { get; set; }
         public int CodeReceipt { get; set; }
         public decimal Quantity { get; set; }
-    } 
+    }
 }

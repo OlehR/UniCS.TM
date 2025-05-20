@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
-//using DB_SQLite;
-using System.IO;
-using System.Linq;
-using System.Text;
-using ModelMID;
-using ModelMID.DB;
-
+﻿#if PSU
 namespace SharedLib
 {
     public partial class WDB_MsSql //: WDB
@@ -89,6 +79,8 @@ CASE WHEN kard_disc_type_id IN (0xBC8CFC297E763BE448E1098F069E2D9A,0xBE42F21E3C6
           JOIN dw.dbo.WAREHOUSES wh ON cd.Warehouse_RRef= wh._IDRRef 
             WHERE  CD.code=@IdWorkPlace 
         group by wh.Code, g.Order_Button, w1.code_wares;";
+
+        string SqlGetWaresLink = "SELECT CodeWares,CodeWaresTo, 0 as IsDefault,min(Sort) AS Sort FROM dbo.V1C_DimWaresLink  wl WHERE Wl.CodeWarehouse IN (0, @CodeWarehouse) GROUP BY CodeWares,CodeWaresTo";
 
         string SqlGetPromotionSaleData = @"WITH wh_ex AS
           (SELECT pw.doc_promotion_RRef,
@@ -679,21 +671,11 @@ CASE WHEN [is_leaf]=1 THEN 4 else 3 END  AS TypeData, dn.code AS Data
           JOIN dw.dbo.WAREHOUSES wh ON o.Warehouse_RRef= wh._IDRRef 
             WHERE  CD.code = @IdWorkPlace";
     }
-    class Res
+    /*class Res
     {
         public string number { get; set; }
         public decimal sum { get; set; }
-    }
-    class pWarehouse { 
-        public int CodeWarehouse { get; set; }
-        public int CodeWarehouseLink { get; set; }
-    }
-    class pMessage : pWarehouse
-    {
-        public int IsFull { get; set; }
-        public int MessageNoMin { get; set; }
-        public int MessageNoMax { get; set; }
-        public int IdWorkPlace { get; set; }
-        public eShopTM ShopTM { get; set; }
-    }
+    }*/
+   
 }
+#endif

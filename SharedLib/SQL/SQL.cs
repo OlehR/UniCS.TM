@@ -15,10 +15,9 @@ namespace SharedLib
         /// Чи можна користуватись базою
         /// </summary>
         protected  bool IsLock = false;
-        public SQL(String varConectionString)
+        public SQL(string varConectionString)
         {
-            ConectionString = varConectionString;
-     //       FileLogger.ExtLogForClassConstruct(GetType(), GetHashCode(), ConectionString);
+            ConectionString = varConectionString;     
         }
 
         ~SQL()

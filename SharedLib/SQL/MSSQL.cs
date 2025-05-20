@@ -21,7 +21,8 @@ namespace SharedLib
         {
             try
             {
-                connection = new SqlConnection(ConectionString);
+                string CS= Config.AppConfiguration["MsSqlInit"];
+                connection = new SqlConnection(CS??ConectionString);
                 connection.Open();                
                 TypeCommit = eTypeCommit.Auto;
             } catch(Exception e) 

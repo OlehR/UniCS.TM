@@ -11,7 +11,7 @@ namespace SharedLib
 {
     public partial class WDB_MsSql
     {
-        public ReceiptWares varWares = new ReceiptWares();
+        //public ReceiptWares varWares = new ReceiptWares();
         public MSSQL db;
         public string Version { get { return "WDB_MsSql.0.0.1"; } }
         bool IsReady =false;
@@ -24,190 +24,183 @@ namespace SharedLib
             } catch { }
         }
 
-        public int LoadData(WDB_SQLite pDB, bool parIsFull,  SQLite pD)
+        public int LoadData(int pIdWorkPlace, bool pIsFull, SQLiteMid pD, int pMessageNoMin)
         {
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name,"Start LoadData {parIsFull}");
-            int varMessageNoMax = db.ExecuteScalar<int>(SqlGetMessageNo);
-            int varMessageNoMin = pDB.GetConfig<int>("MessageNo") + 1;
+            string MethodName = "LoadData";
+            FileLogger.WriteLogMessage(this, MethodName,$"Start LoadData pIdWorkPlace=>{pIdWorkPlace} pIsFull=>{pIsFull}");
+            pMessageNoMin++;
+            int MessageNoMax = db.ExecuteScalar<int>(SqlGetMessageNo);
 
-            
+            Settings Settings = Global.Settings;
+
             int CodeWarehouseLink = 0;
-            if(Global.Settings?.IdWorkPlaceLink>0)
-            {
-                var r = pDB.GetWorkPlace();
-                CodeWarehouseLink  = r.FirstOrDefault (el => (el.IdWorkplace == Global.Settings?.IdWorkPlaceLink))?.CodeWarehouse??0;
-            }
+            if(Global.Settings?.IdWorkPlaceLink>0)            
+                CodeWarehouseLink = Global.WorkPlaceByWorkplaceId.Values.FirstOrDefault(el => (el.IdWorkplace == Settings.IdWorkPlaceLink))?.CodeWarehouse ?? 0;
+                //r.FirstOrDefault (el => (el.IdWorkplace == Global.Settings?.IdWorkPlaceLink))?.CodeWarehouse??0;
 
             //return varMessageNoMin;//!!!!!!!!!!!!!!TMP
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "LoadData varMessageNoMin={varMessageNoMin} varMessageNoMax={varMessageNoMax}");
+            FileLogger.WriteLogMessage(this, MethodName, $"LoadData pIdWorkPlace=>{pIdWorkPlace} MessageNoMin={pMessageNoMin} MessageNoMax={MessageNoMax}");
 
-            var oWarehouse = new pWarehouse() { CodeWarehouse = Global.CodeWarehouse, CodeWarehouseLink= CodeWarehouseLink };
-            var oMessage = new pMessage() { IsFull = parIsFull ? 1 : 0, MessageNoMin = varMessageNoMin, MessageNoMax = varMessageNoMax, CodeWarehouse = Global.CodeWarehouse, IdWorkPlace = Global.IdWorkPlace, ShopTM=Global.Settings.CodeTM  };
+            var oWarehouse = new pWarehouse() { CodeWarehouse = Settings.CodeWarehouse, CodeWarehouseLink= CodeWarehouseLink };
+            var oMessage = new pMessage() { IsFull = pIsFull ? 1 : 0, MessageNoMin = pMessageNoMin, MessageNoMax = MessageNoMax, CodeWarehouse = Settings.CodeWarehouse, IdWorkPlace = pIdWorkPlace, ShopTM=Settings.CodeTM  };
 
-            var WL = db.Execute<pWarehouse, WaresLink>("SELECT CodeWares,CodeWaresTo, 0 as IsDefault,min(Sort) AS Sort FROM dbo.V1C_DimWaresLink  wl WHERE Wl.CodeWarehouse IN (0, @CodeWarehouse) GROUP BY CodeWares,CodeWaresTo", oMessage);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Read ReplaceWaresWarehouse => {WL.Count()}");
-            pDB.ReplaceWaresLink(WL, pD);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Write ReplaceWaresWarehouse => {WL.Count()}");
+            var WL = db.Execute<pWarehouse, WaresLink>(SqlGetWaresLink, oMessage);
+            FileLogger.WriteLogMessage(this, MethodName, $"Read ReplaceWaresWarehouse => {WL.Count()}");
+            pD.ReplaceWaresLink(WL);
+            FileLogger.WriteLogMessage(this, MethodName, $"Write ReplaceWaresWarehouse => {WL.Count()}");
             WL = null;
 
             var WWh = db.Execute<pWarehouse, WaresWarehouse>(SqlGetWaresWarehous, oMessage);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Read ReplaceWaresWarehouse => {WWh.Count()}");
-            pDB.ReplaceWaresWarehouse(WWh, pD);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Write ReplaceWaresWarehouse => {WWh.Count()}");
+            FileLogger.WriteLogMessage(this, MethodName, $"Read ReplaceWaresWarehouse => {WWh.Count()}");
+            pD.ReplaceWaresWarehouse(WWh);
+            FileLogger.WriteLogMessage(this, MethodName, $"Write ReplaceWaresWarehouse => {WWh.Count()}");
             WWh = null;
 
             var CD = db.Execute<pMessage, ClientData>(SqlGetClientData, oMessage);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Read SqlGetClientData => {CD.Count()}");
-            pDB.ReplaceClientData(CD, pD);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Write SqlGetClientData => {CD.Count()}");
+            FileLogger.WriteLogMessage(this, MethodName, $"Read SqlGetClientData => {CD.Count()}");
+            pD.ReplaceClientData(CD);
+            FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetClientData => {CD.Count()}");
             CD = null;
 
-            var DW = GetDimWorkplace();
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Read SqlGetDimWorkplace => {DW.Count()}");
-            pDB.ReplaceWorkPlace(DW);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Write SqlGetDimWorkplace => {DW.Count()}");
-            Global.BildWorkplace(DW);
-            DW = null;
-
             var PD = db.Execute<pMessage, Price>(SqlGetDimPrice, oMessage);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Read SqlGetDimPrice => {PD.Count()}");
-            pDB.ReplacePrice(PD, pD);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Write SqlGetDimPrice => {PD.Count()}");
+            FileLogger.WriteLogMessage(this, MethodName, $"Read SqlGetDimPrice => {PD.Count()}");
+            pD.ReplacePrice(PD);
+            FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetDimPrice => {PD.Count()}");
             PD = null;
 
             var PU = db.Execute<pMessage, User>(SqlGetUser, oMessage);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Read SqlGetUser => {PU.Count()}");
-            pDB.ReplaceUser(PU, pD);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Write SqlGetUser => {PU.Count()}");
+            FileLogger.WriteLogMessage(this, MethodName, $"Read SqlGetUser => {PU.Count()}");
+            pD.ReplaceUser(PU);
+            FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetUser => {PU.Count()}");
             PU = null;
 
             var SB = db.Execute<pWarehouse, SalesBan>(SqlSalesBan, oWarehouse);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Read SqlSalesBan => {SB.Count()}");
-            pDB.ReplaceSalesBan(SB, pD);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Write SqlSalesBan => {SB.Count()}");
+            FileLogger.WriteLogMessage(this, MethodName, $"Read SqlSalesBan => {SB.Count()}");
+            pD.ReplaceSalesBan(SB);
+            FileLogger.WriteLogMessage(this, MethodName, $"Write SqlSalesBan => {SB.Count()}");
             SB = null;
 
             var PSGf = db.Execute<pWarehouse, PromotionSaleGift>(SqlGetPromotionSaleGift, oWarehouse);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Read SqlGetPromotionSaleGift => {PSGf.Count()}");
+            FileLogger.WriteLogMessage(this, MethodName, $"Read SqlGetPromotionSaleGift => {PSGf.Count()}");
 
             var PSGW = db.Execute<pWarehouse, PromotionSaleGroupWares>(SqlGetPromotionSaleGroupWares, oWarehouse);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Read SqlGetPromotionSaleGroupWares => {PSGW.Count()}");
+            FileLogger.WriteLogMessage(this, MethodName, $"Read SqlGetPromotionSaleGroupWares => {PSGW.Count()}");
 
             var PS = db.Execute<pWarehouse, PromotionSale>(SqlGetPromotionSale, oWarehouse);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Read SqlGetPromotionSale => {PS.Count()}");
+            FileLogger.WriteLogMessage(this, MethodName, $"Read SqlGetPromotionSale => {PS.Count()}");
 
             var PSF = db.Execute<pWarehouse, PromotionSaleFilter>(SqlGetPromotionSaleFilter, oWarehouse);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Read SqlGetPromotionSaleFilter => {PSF.Count()}");
+            FileLogger.WriteLogMessage(this, MethodName, $"Read SqlGetPromotionSaleFilter => {PSF.Count()}");
 
             var PSD = db.Execute<pWarehouse, PromotionSaleData>(SqlGetPromotionSaleData, oWarehouse);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Read SqlGetPromotionSaleData => {PSD.Count()}");
+            FileLogger.WriteLogMessage(this, MethodName, $"Read SqlGetPromotionSaleData => {PSD.Count()}");
 
             var PSP = db.Execute<pWarehouse, PromotionSaleDealer>(SqlGetPromotionSaleDealer, oWarehouse);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Read SqlGetPromotionSaleDealer =>{PSP.Count()}");
+            FileLogger.WriteLogMessage(this, MethodName, $"Read SqlGetPromotionSaleDealer =>{PSP.Count()}");
 
             var PS2c = db.Execute<pWarehouse, PromotionSale2Category>(SqlGetPromotionSale2Category, oWarehouse);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Read SqlGetPromotionSale2Category => {PS2c.Count()}");
+            FileLogger.WriteLogMessage(this, MethodName, $"Read SqlGetPromotionSale2Category => {PS2c.Count()}");
             try
             {
                 pD.BeginTransaction();
-                pDB.ReplacePromotionSaleGift(PSGf, pD);
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Write SqlGetPromotionSaleGift => {PSGf.Count()}");
+                pD.ReplacePromotionSaleGift(PSGf);
+                FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetPromotionSaleGift => {PSGf.Count()}");
                 PSGf = null;
 
                 if (PSGW != null)
                 {
-                    pDB.ReplacePromotionSaleGroupWares(PSGW, pD);
-                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Write SqlGetPromotionSaleGroupWares => {PSGW.Count()}");
+                    pD.ReplacePromotionSaleGroupWares(PSGW);
+                    FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetPromotionSaleGroupWares => {PSGW.Count()}");
                     PSGW = null;
                 }
 
-                pDB.ReplacePromotionSale(PS, pD);
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Write SqlGetPromotionSale => {PS.Count()}");
+                pD.ReplacePromotionSale(PS);
+                FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetPromotionSale => {PS.Count()}");
                 PS = null;
 
-                pDB.ReplacePromotionSaleFilter(PSF, pD);
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Write SqlGetPromotionSaleFilter => {PSF.Count()}");
+                pD.ReplacePromotionSaleFilter(PSF);
+                FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetPromotionSaleFilter => {PSF.Count()}");
                 PSF = null;
 
-                pDB.ReplacePromotionSaleData(PSD, pD);
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Write SqlGetPromotionSaleData => {PSD.Count()}");
+                pD.ReplacePromotionSaleData(PSD);
+                FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetPromotionSaleData => {PSD.Count()}");
                 PSD = null;
 
-                pDB.ReplacePromotionSaleDealer(PSP, pD);
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Write SqlGetPromotionSaleDealer =>{PSP.Count()}");
+                pD.ReplacePromotionSaleDealer(PSP);
+                FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetPromotionSaleDealer =>{PSP.Count()}");
                 PSP = null;
 
-                pDB.ReplacePromotionSale2Category(PS2c, pD);
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Write SqlGetPromotionSale2Category => {PS2c.Count()}");
+                pD.ReplacePromotionSale2Category(PS2c);
+                FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetPromotionSale2Category => {PS2c.Count()}");
                 PS2c = null;
                 pD.CommitTransaction();
             }
             catch (Exception e)
             {
                 pD.RollbackTransaction();
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+                FileLogger.WriteLogMessage(this, MethodName, e);
                 throw;
             }
             ///!!!!!!!!!!!!!!!!!!!!!!!!!!
             
             var MRC = db.Execute<pWarehouse, MRC>(SqlGetMRC, oWarehouse);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Read SqlGetMRC => {MRC.Count()}");
-            pDB.ReplaceMRC(MRC, pD);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Write SqlGetMRC => {MRC.Count()}");
+            FileLogger.WriteLogMessage(this, MethodName, $"Read SqlGetMRC => {MRC.Count()}");
+            pD.ReplaceMRC(MRC);
+            FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetMRC => {MRC.Count()}");
             MRC = null;
 
             var Cl = db.Execute<pMessage, Client>(SqlGetDimClient, oMessage);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Read SqlGetDimClient => {Cl.Count()}");
-            pDB.ReplaceClient(Cl, pD);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Write SqlGetDimClient => {Cl.Count()}");
+            FileLogger.WriteLogMessage(this, MethodName, $"Read SqlGetDimClient => {Cl.Count()}");
+            pD.ReplaceClient(Cl);
+            FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetDimClient => {Cl.Count()}");
             Cl = null;
             
             var W = db.Execute<pMessage, Wares>(SqlGetDimWares, oMessage);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Read SqlGetDimWares => {W.Count()}");
-            pDB.ReplaceWares(W, pD);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Write SqlGetDimWares => {W.Count()}");
+            FileLogger.WriteLogMessage(this, MethodName, $"Read SqlGetDimWares => {W.Count()}");
+            pD.ReplaceWares(W);
+            FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetDimWares => {W.Count()}");
             W = null;
 
             var AU = db.Execute<pMessage, AdditionUnit>(SqlGetDimAdditionUnit, oMessage);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "SqlGetDimAdditionUnit => {AU.Count()}");
-            pDB.ReplaceAdditionUnit(AU, pD);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "SqlGetDimAdditionUnit => {AU.Count()}");
+            FileLogger.WriteLogMessage(this, MethodName, $"SqlGetDimAdditionUnit => {AU.Count()}");
+            pD.ReplaceAdditionUnit(AU);
+            FileLogger.WriteLogMessage(this, MethodName, $"SqlGetDimAdditionUnit => {AU.Count()}");
             AU = null;
 
             var BC = db.Execute<pMessage, Barcode>(SqlGetDimBarCode, oMessage);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Read SqlGetDimBarCode => {BC.Count()}");
-            pDB.ReplaceBarCode(BC, pD);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Write SqlGetDimBarCode => {BC.Count()}");
+            FileLogger.WriteLogMessage(this, MethodName, $"Read SqlGetDimBarCode => {BC.Count()}");
+            pD.ReplaceBarCode(BC);
+            FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetDimBarCode => {BC.Count()}");
             BC = null;
 
             var UD = db.Execute<UnitDimension>(SqlGetDimUnitDimension);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Read SqlGetDimUnitDimension => {UD.Count()}");
-            pDB.ReplaceUnitDimension(UD, pD);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Write SqlGetDimUnitDimension => {UD.Count()}");
+            FileLogger.WriteLogMessage(this, MethodName, $"Read SqlGetDimUnitDimension => {UD.Count()}");
+            pD.ReplaceUnitDimension(UD);
+            FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetDimUnitDimension => {UD.Count()}");
             UD = null;
 
             var GW = db.Execute<GroupWares>(SqlGetDimGroupWares);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Read SqlGetDimGroupWares => {GW.Count()}");
-            pDB.ReplaceGroupWares(GW, pD);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Write SqlGetDimGroupWares => {GW.Count()}");
+            FileLogger.WriteLogMessage(this, MethodName, $"Read SqlGetDimGroupWares => {GW.Count()}");
+            pD.ReplaceGroupWares(GW);
+            FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetDimGroupWares => {GW.Count()}");
             GW = null;
             
             var TD = db.Execute<TypeDiscount>(SqlGetDimTypeDiscount);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Read SqlGetDimTypeDiscount => {TD.Count()}");
-            pDB.ReplaceTypeDiscount(TD, pD);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Write SqlGetDimTypeDiscount => {TD.Count()}");
+            FileLogger.WriteLogMessage(this, MethodName, $"Read SqlGetDimTypeDiscount => {TD.Count()}");
+            pD.ReplaceTypeDiscount(TD);
+            FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetDimTypeDiscount => {TD.Count()}");
             TD = null;
 
             var FG = db.Execute<pWarehouse, FastGroup>(SqlGetDimFastGroup, oMessage);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Read SqlGetDimFastGroup => {FG.Count()}");
-            pDB.ReplaceFastGroup(FG, pD);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Write SqlGetDimFastGroup => {FG.Count()}");
+            FileLogger.WriteLogMessage(this, MethodName, $"Read SqlGetDimFastGroup => {FG.Count()}");
+            pD.ReplaceFastGroup(FG);
+            FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetDimFastGroup => {FG.Count()}");
             FG = null;
 
             var FW = db.Execute<pWarehouse, FastWares>(SqlGetDimFastWares, oMessage);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Read SqlGetDimFastWares => {FW.Count()}");
-            pDB.ReplaceFastWares(FW, pD);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Write SqlGetDimFastWares => {FW.Count()}");
+            FileLogger.WriteLogMessage(this, MethodName, $"Read SqlGetDimFastWares => {FW.Count()}");
+            pD.ReplaceFastWares(FW);
+            FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetDimFastWares => {FW.Count()}");
             FW = null;
 
             //Пакети
@@ -216,12 +209,12 @@ namespace SharedLib
             foreach (var el in Global.Bags)
                 GWL.Add(new FastWares { CodeFastGroup = Global.CodeFastGroupBag, CodeWares = el });
 
-            pDB.ReplaceFastWares(GWL, pD);
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "FastWares => {GWL.Count()}");
+            pD.ReplaceFastWares(GWL);
+            FileLogger.WriteLogMessage(this, MethodName, $"FastWares => {GWL.Count()}");
             GWL = null;
 
-            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "MessageNo {varMessageNoMax}\n");
-            return varMessageNoMax;
+            FileLogger.WriteLogMessage(this, MethodName, $"MessageNo {MessageNoMax}\n");
+            return MessageNoMax;
         }
 
         /*public Dictionary<string, decimal> GetReceipt1C(DateTime pDT, int pIdWorkplace)
@@ -271,4 +264,20 @@ namespace SharedLib
 
         public IEnumerable<WorkPlace> GetDimWorkplace() { return db.Execute<WorkPlace>(SqlGetDimWorkplace); }
     }
+
+    class pWarehouse
+    {
+        public int CodeWarehouse { get; set; }
+        public int CodeWarehouseLink { get; set; }
+    }
+    class pMessage : pWarehouse
+    {
+        public int IsFull { get; set; }
+        public int MessageNoMin { get; set; }
+        public int MessageNoMax { get; set; }
+        public int IdWorkPlace { get; set; }
+        public eShopTM ShopTM { get; set; }
+    }
+
 }
+

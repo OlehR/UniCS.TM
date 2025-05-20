@@ -9,8 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Utils;
 using System.Linq;
-using System.Collections;
-using System.Xml.Linq;
+
 namespace SharedLib
 {
     public class SQLite : SQL, IDisposable
@@ -18,9 +17,6 @@ namespace SharedLib
         public SQLiteConnection Connection = null;
         public SQLiteTransaction Transaction = null;
         private bool disposedValue;
-
-         
-
         public SQLite(String varConectionString) : base(varConectionString)
         {
             var connectionString = new SQLiteConnectionStringBuilder("Data Source=" + varConectionString + ";Version=3;")

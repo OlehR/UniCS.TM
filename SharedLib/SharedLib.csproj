@@ -8,6 +8,14 @@
     <FileVersion>1.0.3.1</FileVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>$(DefineConstants);PSU</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>$(DefineConstants);PSU</DefineConstants>
+  </PropertyGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.35" />
