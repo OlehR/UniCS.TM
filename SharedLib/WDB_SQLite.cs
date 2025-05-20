@@ -38,7 +38,7 @@ namespace SharedLib
         {
             DateTime Date = pD == default ? DateTime.Today : pD;
             int Wh= (Global.CodeWarehouse==0) ? GetCodeWarehouse() : Global.CodeWarehouse;
-            return Path.Combine(Global.PathDB, $"{Date:yyyyMM}", $"MID_{Wh}_{Date:yyyyMMdd}{(pTmp ? "_tmp" : "")}.db");
+            return SQLiteMid.GetMIDFile(Date, pTmp, Wh); //  Path.Combine(Global.PathDB, $"{Date:yyyyMM}", $"MID_{Wh}_{Date:yyyyMMdd}{(pTmp ? "_tmp" : "")}.db");
         }
 
         public WDB_SQLite(DateTime parD = default(DateTime), string pConnect = null, bool pIsUseOldDB = true)//, bool pIsCreateMidFile = false)
@@ -104,7 +104,7 @@ namespace SharedLib
             }
         }
 
-        int GetCodeWarehouse()
+         int GetCodeWarehouse()
         {
             string SqlGetCodeWarehouse = "select CODE_WAREHOUSE from WORKPLACE where ID_WORKPLACE=@IdWorkplace";
             var res = dbConfig?.ExecuteScalar<object, int>(SqlGetCodeWarehouse, new { IdWorkplace = Global.IdWorkPlace })??0;            
@@ -194,7 +194,7 @@ namespace SharedLib
                     using var dbMID = new SQLite(MidFile);
                     //CurVerMid = dbMID.GetVersion;// GetConfig<int>("VerMID",dbConfig);
                     //Lines = SqlUpdateMID.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-                    bool IsReload = Parse(SqlUpdateMID, dbMID);
+                    bool IsReload = Parse(SQLiteMid.SqlUpdateMID, dbMID);
                     dbMID.Close(true);
                     if (IsReload)
                     {
@@ -426,7 +426,7 @@ namespace SharedLib
         /// </summary>
         /// <param name="parIdReceipt"></param>
         /// <returns></returns>
-        public bool GetPricePromotionKit(IdReceipt parIdReceipt, int parCodeWares)
+        public bool GetPricePromotionKit(IdReceipt parIdReceipt, long parCodeWares)
         {
             if (parCodeWares > 0 && !IsWaresInPromotionKit(parCodeWares))
                 return true;
@@ -530,13 +530,13 @@ namespace SharedLib
 
         class BC
         {
-            public int CodeWares { get; set; }
+            public long CodeWares { get; set; }
             public string BarCode { get; set; }
         }
         /// <summary>
         /// Повертає знайдений товар/товари
         /// </summary>
-        public virtual IEnumerable<ReceiptWares> FindWares(string pBarCode = null, string pName = null, int pCodeWares = 0, int pCodeUnit = 0, int pCodeFastGroup = 0, int pArticl = -1, int pOffSet = -1, int pLimit = 10)
+        public virtual IEnumerable<ReceiptWares> FindWares(string pBarCode = null, string pName = null, long pCodeWares = 0, int pCodeUnit = 0, int pCodeFastGroup = 0, int pArticl = -1, int pOffSet = -1, int pLimit = 10)
         {
             var Lim = pOffSet >= 0 ? $" limit {pLimit} offset {pOffSet}" : "";
             var Wares = db.Execute<object, ReceiptWares>(SqlFoundWares + Lim, new { CodeWares = pCodeWares, CodeUnit = pCodeUnit, BarCode = pBarCode, NameUpper = (pName == null ? null : "%" + pName.ToUpper().Replace(" ", "%") + "%"), CodeDealer = Global.DefaultCodeDealer, CodeFastGroup = pCodeFastGroup, Articl = pArticl });
@@ -781,7 +781,7 @@ insert into RECEIPT_Event(
         }
         ////////////////////////// MID
 
-        public bool CreateMIDTable() => dbMid.ExecuteNonQuery(SqlCreateMIDTable) > 0;
+        //public bool CreateMIDTable() => dbMid.ExecuteNonQuery(SqlCreateMIDTable) > 0;
         public bool CreateMIDIndex(SQLite pDB) => pDB.ExecuteNonQuery(SqlCreateMIDIndex) > 0;
 
                 
@@ -1131,7 +1131,7 @@ select sum( sum_pay* case when TYPE_PAY in (4) then -1 else 1 end) as sum from p
         /// <returns></returns>
      	public IEnumerable<ReceiptWares> ViewReceiptWares(IdReceipt parIdReceipt, bool pIsReceiptWaresPromotion = false) => ViewReceiptWares(new IdReceiptWares(parIdReceipt), pIsReceiptWaresPromotion); //this.db.Execute<IdReceipt, ReceiptWares>(SqlViewReceiptWares, parIdReceipt);
   
-        public bool IsWaresInPromotionKit(int parCodeWares) => db.ExecuteScalar<object, int>(SqlIsWaresInPromotionKit, new { CodeWares = parCodeWares }) > 0;
+        public bool IsWaresInPromotionKit(long parCodeWares) => db.ExecuteScalar<object, long>(SqlIsWaresInPromotionKit, new { CodeWares = parCodeWares }) > 0;
 
         public IEnumerable<WaresWarehouse> GetWaresWarehouse() => db.Execute<WaresWarehouse>("Select * from WaresWarehouse");
 

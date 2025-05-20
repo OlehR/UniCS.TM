@@ -9,11 +9,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>$(DefineConstants);PSU</DefineConstants>
+    <DefineConstants>$(DefineConstants);OLIVE</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>$(DefineConstants);PSU</DefineConstants>
+    <DefineConstants>$(DefineConstants);OLIVE</DefineConstants>
   </PropertyGroup>
 
 

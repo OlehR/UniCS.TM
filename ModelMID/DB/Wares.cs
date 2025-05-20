@@ -9,7 +9,7 @@ namespace ModelMID
         /// <summary>
         /// Код товару
         /// </summary>
-        public int CodeWares { get; set; }
+        public long CodeWares { get; set; }
         
         /// <summary>
         /// Код Групи

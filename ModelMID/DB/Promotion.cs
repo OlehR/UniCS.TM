@@ -36,7 +36,7 @@ namespace ModelMID
         /// <summary>
         /// Код товару, 0 - на всі товари згідно фільтрів. (тип знижки 1 заборонено)
         /// </summary>
-        public int CodeWares { get; set; }
+        public long CodeWares { get; set; }
 
         public bool UseIndicative { get; set; }
         /// <summary>
@@ -90,7 +90,7 @@ namespace ModelMID
         /// <summary>
         /// Код товару
         /// </summary>
-        public int CodeWares { get; set; }
+        public long CodeWares { get; set; }
         /// <summary>
         /// Тип знижки (11-ціна,12-знижка,13-%знижки, 14- заміна ДК,41-Подарок) і тд (select t.*, t.rowid from C.DATA_NAME t where t.data_level=50)
         /// </summary>
@@ -107,7 +107,7 @@ namespace ModelMID
     public class PromotionSaleDealer
     {
         public Int64 CodePS { get; set; }
-        public int CodeWares { get; set; }
+        public long CodeWares { get; set; }
         public DateTime DateBegin { get; set; }
         public DateTime DateEnd { get; set; }
         public int CodeDealer { get; set; }        
@@ -130,7 +130,7 @@ namespace ModelMID
     public class PromotionSale2Category
     {
         public Int64 CodePS { get; set; }
-        public int CodeWares { get; set; }
+        public long CodeWares { get; set; }
     }
 
     public class ParameterPromotion:IdReceipt
@@ -141,7 +141,7 @@ namespace ModelMID
         public int TypeCard { get; set; }
         public int Time { get; set; }
         public DateTime BirthDay { get; set; }
-        public int CodeWares { get; set; }
+        public long CodeWares { get; set; }
         public int CodeDealer { get; set; }
         public int CodeClient { get; set; }
         /// <summary>
@@ -189,7 +189,7 @@ namespace ModelMID
 
         public int NumberGroup { get; set; }
 
-        public int CodeWares { get; set; }
+        public long CodeWares { get; set; }
         public decimal Quantity { get; set; }
         public decimal Price { get { return (TypeDiscount == eTypeDiscount.Price? DataDiscount:0); }  }
         

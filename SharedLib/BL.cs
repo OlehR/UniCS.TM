@@ -289,7 +289,7 @@ namespace SharedLib
             return true;
         }
 
-        public ReceiptWares AddWaresCode(IdReceipt pIdReceipt, int pCodeWares, int pCodeUnit, decimal pQuantity = 0, decimal pPrice = 0, bool IsFixPrice = false)
+        public ReceiptWares AddWaresCode(IdReceipt pIdReceipt, long pCodeWares, int pCodeUnit, decimal pQuantity = 0, decimal pPrice = 0, bool IsFixPrice = false)
         {
             var State = GetStateReceipt(pIdReceipt);
             if (State != eStateReceipt.Prepare)

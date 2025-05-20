@@ -95,7 +95,7 @@ namespace Front.Equipments.pRRO_SG
                 AbrUnit = unitName
             };
         }
-        public int SKU { get; set; }
+        public long SKU { get; set; }
         public string UKTZED { get; set; }
         public string barcode { get; set; }
         public IEnumerable<string> excises { get; set; }

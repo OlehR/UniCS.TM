@@ -247,7 +247,7 @@ namespace Front
             if (Gw != null)
                 if (Gw.Type == 1)
                 {
-                    CodeFastGroup = Gw.Code;
+                    CodeFastGroup = (int)Gw.Code;
                     NewB();
                 }
                 else

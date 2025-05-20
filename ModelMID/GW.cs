@@ -30,7 +30,7 @@ namespace ModelMID
 		}
 		public int Type { get; set; }
 		public string Name { get; set; }
-		public int Code { get; set; }
+		public long Code { get; set; }
 		//public string Pictures { get; set; }
 		public int TotalRows { get; set; }
 		public int CodeUnit { get; set; }

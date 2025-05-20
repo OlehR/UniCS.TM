@@ -45,7 +45,7 @@ namespace ModelMID.DB
     }
     public class BarCodeOut
     {
-        public int CodeWares { get; set; }
+        public long CodeWares { get; set; }
         public string NameWares { get; set; }
         public string BarCode { get; set; }
         public decimal Weight { get; set; }

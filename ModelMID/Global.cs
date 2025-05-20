@@ -28,7 +28,7 @@ namespace ModelMID
         public static SortedList<int, int> IdWorkPlacePayDirection = new SortedList<int, int>();
         public static SortedList<int, int> IdWorkPlacePayTM = new SortedList<int, int>();
         public static SortedList<int, int> IdWorkPlacePayGroup = new SortedList<int, int>();
-        public static SortedList<int, int> IdWorkPlacePayWares = new SortedList<int, int>();
+        public static SortedList<long, int> IdWorkPlacePayWares = new SortedList<long, int>();
 
         public static Settings Settings { get; set; }
 
@@ -61,7 +61,7 @@ namespace ModelMID
 
         public static bool IsGenQrCoffe = true;
 
-        public static int CodeWaresWallet = 0;
+        public static Int64 CodeWaresWallet = 0;
 
         /// <summary>
         /// Чи можна розраховуватись готівкою.
@@ -219,7 +219,7 @@ namespace ModelMID
             return null;
         }
 
-        public static int GetIdWorkPlacePay(int pCodeDirection, int pCodeTM, int[] pCodeGroup = null,int pCodeWares=0)
+        public static int GetIdWorkPlacePay(int pCodeDirection, int pCodeTM, int[] pCodeGroup = null,long pCodeWares=0)
         {
             if (IdWorkPlacePayWares.ContainsKey(pCodeWares))
                 return IdWorkPlacePayWares[pCodeWares];

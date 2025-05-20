@@ -183,7 +183,7 @@ namespace SharedLib
 
                     FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, "varMidFile=>{varMidFile}\n\tLoad_Full=>{TD:yyyy-MM-dd} parIsFull=>{pIsFull}");
 
-                    var NameDB = db.GetMIDFile(default, pIsFull);
+                    string NameDB = db.GetMIDFile(default, pIsFull);
                     if (pIsFull)
                     {
                         db.SetConfig<DateTime>("Load_Full", DateTime.Now.Date.AddDays(-1).Date);
@@ -231,8 +231,8 @@ namespace SharedLib
                     SQLiteMid pD = new(NameDB);
                     if (pIsFull)
                     {
-                        pD.ExecuteNonQuery(db.SqlCreateMIDTable);
-                        pD.SetVersion(db.VerMID);
+                        pD.ExecuteNonQuery(SQLiteMid.SqlCreateMIDTable);
+                        pD.SetVersion(SQLiteMid.VerMID);
                     }
 
                     if (!MsSQL.IsSync(Global.CodeWarehouse)) return false;
@@ -944,7 +944,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
     public class WeightReceipt
     {
         public int TypeSource { get; set; }
-        public int CodeWares { get; set; }
+        public long CodeWares { get; set; }
         public decimal Weight { get; set; }
         public DateTime Date { get; set; }
         public int IdWorkplace { get; set; }

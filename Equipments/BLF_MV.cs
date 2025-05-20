@@ -268,7 +268,7 @@ namespace Front.Equipments
             }
         }
 
-        public void AddWares(int pCodeWares, int pCodeUnit = 0, decimal pQuantity = 0m, decimal pPrice = 0m)
+        public void AddWares(long pCodeWares, int pCodeUnit = 0, decimal pQuantity = 0m, decimal pPrice = 0m)
         {
             if (pCodeWares > 0)
             {

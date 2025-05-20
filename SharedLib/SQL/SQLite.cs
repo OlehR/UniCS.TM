@@ -227,6 +227,7 @@ namespace SharedLib
 
         public override int BulkExecuteNonQuery<T>(string pQuery, IEnumerable<T> pData, bool IsRepeatNotBulk = false)
         {
+            if (pData == null) return 0;
             if (IsLock) ExceptionIsLock();
 
             SQLiteTransaction transaction = null;

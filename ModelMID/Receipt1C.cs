@@ -107,7 +107,7 @@ namespace ModelMID
     public class ReceiptWares1C
     {
         public int Order { get; set; }
-        public int CodeWares { get; set; }
+        public long CodeWares { get; set; }
         public decimal Quantity { get; set; }
         public string AbrUnit { get; set; }
         public decimal Price { get; set; }
@@ -166,7 +166,7 @@ namespace ModelMID
         /// Порядок (Sort)
         /// </summary>
         public int Order { get; set; }
-        public int CodeWares { get; set; }
+        public long CodeWares { get; set; }
         /// <summary>
         /// Час вставки рядка.
         /// </summary>

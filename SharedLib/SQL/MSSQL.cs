@@ -17,12 +17,11 @@ namespace SharedLib
         IDbTransaction transaction = null;
 
         //public TypeCommit TypeCommit { get; set; }
-        public MSSQL(int pTimeout = 30, string pConectionString= @"Server=10.1.0.22;Database=DW;Uid=dwreader;Pwd=DW_Reader;") :base(pConectionString+$"Connect Timeout = {pTimeout};")
+        public MSSQL(int pTimeout = 30, string pConectionString= @"Server=10.1.0.22;Database=DW;Uid=dwreader;Pwd=DW_Reader;") :base(pConectionString/*+$"Connect Timeout = {pTimeout};"*/)
         {
             try
             {
-                string CS= Config.AppConfiguration["MsSqlInit"];
-                connection = new SqlConnection(CS??ConectionString);
+                connection = new SqlConnection(ConectionString);
                 connection.Open();                
                 TypeCommit = eTypeCommit.Auto;
             } catch(Exception e) 
@@ -34,6 +33,7 @@ namespace SharedLib
 
         public override IEnumerable<T1> Execute<T, T1>(string query, T parameters)
         {
+            if (string.IsNullOrEmpty(query)) return null;
             return connection.Query<T1>(query, parameters);
         }
 

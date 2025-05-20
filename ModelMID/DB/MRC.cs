@@ -6,7 +6,7 @@ namespace ModelMID.DB
 {
     public class MRC
     {
-        public int CodeWares { get; set; }
+        public long CodeWares { get; set; }
         public decimal Price { get; set; }
         public eTypeWares TypeWares { get; set; }
     }

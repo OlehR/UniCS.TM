@@ -24,7 +24,7 @@ namespace Front
 {
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        int LastCodeWares = 0;
+        long LastCodeWares = 0;
 
         void SetClient()
         {

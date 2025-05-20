@@ -6,7 +6,7 @@ namespace ModelMID
 {
     public class IdReceiptWares : IdReceipt
     {        
-        public int CodeWares { get; set; }
+        public long CodeWares { get; set; }
         public int CodeUnit { get; set; }
         public int Order { get; set; }
         public Receipt Parent { get; set; }       
@@ -19,7 +19,7 @@ namespace ModelMID
             Order = pIdReceiptWares.Order;
         }
 
-        public IdReceiptWares(IdReceipt idReceipt, int parCodeWares = 0, int parCodeUnit = 0, int parOrder = 0) : base(idReceipt)
+        public IdReceiptWares(IdReceipt idReceipt, long parCodeWares = 0, int parCodeUnit = 0, int parOrder = 0) : base(idReceipt)
         {
             CodeWares = parCodeWares;
             CodeUnit = parCodeUnit;
@@ -46,7 +46,7 @@ namespace ModelMID
         }
         public override int GetHashCode()
         {
-            return IdWorkplace * 10000+ /*CodePeriod * 1000 +*/ CodeReceipt +10000* CodeWares;
+            return IdWorkplace * 10000+ /*CodePeriod * 1000 +*/ CodeReceipt +10000* (int)CodeWares;
             //2147 483 648
         }
     }

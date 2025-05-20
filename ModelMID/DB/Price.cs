@@ -7,7 +7,7 @@ namespace ModelMID
     public class Price
     {
         public int CodeDealer { get; set; }
-        public int CodeWares { get; set; }
+        public long CodeWares { get; set; }
         public decimal PriceDealer { get; set; }
     }
 }

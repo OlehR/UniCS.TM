@@ -44,7 +44,7 @@ namespace ModelMID
         public int IdWorkplace { get; set; }
         public int CodePeriod { get; set; }
         public int CodeReceipt { get; set; }
-        public int CodeWares { get; set; }
+        public long CodeWares { get; set; }
         public string NameWares { get; set; }
         public decimal Quantity { get; set; }
         public int Sort { get; set; }
@@ -88,9 +88,9 @@ namespace ModelMID
         public string Name { get; set; }
         public int CodePeriod { get; set; }
         public int CodeReceipt { get; set; }
-        public int CodeWares { get; set; }
+        public long CodeWares { get; set; }
         public decimal Quantity { get; set; }
-        public int CodeWaresTo { get; set; }
+        public long CodeWaresTo { get; set; }
         public int Sort { get; set; }
         public OrderReceiptLink(ReceiptWaresLink waresLink, ReceiptWares receiptWares)
         {

@@ -6,8 +6,8 @@ namespace ModelMID.DB
 {   
     public class WaresLink
     {
-        public int CodeWares { get; set; }
-        public int CodeWaresTo { get; set; }
+        public long CodeWares { get; set; }
+        public Int64 CodeWaresTo { get; set; }
         public int CodeWarehouse { get; set; }
         public bool IsDefault { get; set; }
         public int Sort { get; set; }
