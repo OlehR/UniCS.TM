@@ -39,6 +39,7 @@ namespace SharedLib
 
         public override IEnumerable<T1> Execute<T1>(string query)
         {
+            if (string.IsNullOrEmpty(query)) return null;
             return connection.Query<T1>(query);
         }
 

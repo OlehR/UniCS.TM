@@ -245,7 +245,7 @@ namespace SharedLib
                     DW = null;
                     
                     int MessageNoMin = db.GetConfig<int>("MessageNo");
-                    var varMessageNMax = MsSQL.LoadData(Global.IdWorkPlace, pIsFull, pD, MessageNoMin);                    
+                    var MessageNMax = MsSQL.LoadData(Global.IdWorkPlace, pIsFull, pD, MessageNoMin).MessageNoMax;                    
 
                     if (pIsFull)
                     {
@@ -277,7 +277,7 @@ namespace SharedLib
                         }
                     }
                     db.BildWaresWarehouse();
-                    db.SetConfig<int>("MessageNo", varMessageNMax);
+                    db.SetConfig<int>("MessageNo", MessageNMax);
                     db.SetConfig<DateTime>("Load_" + (pIsFull ? "Full" : "Update"), DateTime.Now);
 
                     FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, "End");

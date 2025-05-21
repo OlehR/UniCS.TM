@@ -9,11 +9,13 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>$(DefineConstants);OLIVE</DefineConstants>
+    <DefineConstants>$(DefineConstants);PSU</DefineConstants>
+    <WarningLevel>8</WarningLevel>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>$(DefineConstants);OLIVE</DefineConstants>
+    <DefineConstants>$(DefineConstants);PSU</DefineConstants>
+    <WarningLevel>8</WarningLevel>
   </PropertyGroup>
 
 

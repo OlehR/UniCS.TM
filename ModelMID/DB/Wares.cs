@@ -14,9 +14,9 @@ namespace ModelMID
         /// <summary>
         /// Код Групи
         /// </summary>
-        public int CodeGroup { get; set; }
+        public long CodeGroup { get; set; }
 
-        public int CodeGroupUp { get; set; }        
+        public long CodeGroupUp { get; set; }        
         /// <summary>
         /// Назва товару
         /// </summary>
@@ -64,7 +64,7 @@ namespace ModelMID
         /// <summary>
         /// Напрямок
         /// </summary>
-        public int CodeDirection { get; set; }
+        public long CodeDirection { get; set; }
         /// <summary>
         /// Торгова марка (в 1С - Бренд) 
         /// </summary>
