@@ -75,7 +75,7 @@ namespace SharedLib
             var PU = db.Execute<pMessage, User>(SqlGetUser, oMessage);
             FileLogger.WriteLogMessage(this, MethodName, $"Read SqlGetUser => {PU?.Count()}");
             if (pD != null) pD.ReplaceUser(PU);
-            else Res.User = PU;
+            else Res.User = PU; //TMP!!!
                 FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetUser => {PU?.Count()}");
             PU = null;
 
@@ -239,7 +239,7 @@ namespace SharedLib
             GWL = null;
 
             FileLogger.WriteLogMessage(this, MethodName, $"MessageNo {MessageNoMax}\n");
-            return MessageNoMax;
+            return Res;
         }
 
         /*public Dictionary<string, decimal> GetReceipt1C(DateTime pDT, int pIdWorkplace)

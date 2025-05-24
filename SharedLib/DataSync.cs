@@ -14,16 +14,17 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+using UtilNetwork;
 using Utils;
 
 namespace SharedLib
 {
-    public class DataSync 
+    public class DataSync
     {
         public WDB_SQLite db { get { return bl?.db; } }
         BL bl;
         WDB_MsSql MsSQL;
-        DataSync1C Ds1C;
+        //DataSync1C Ds1C;
         private readonly object _locker = new object();
         //public SoapTo1C soapTo1C = new SoapTo1C();
         public bool IsUseOldDB { get; set; } = true;
@@ -42,7 +43,7 @@ namespace SharedLib
             try
             {
                 MsSQL = new WDB_MsSql();
-                Ds1C = new DataSync1C(pBL);
+                //Ds1C = new DataSync1C(pBL);
             }
             catch { }
 
@@ -117,14 +118,12 @@ namespace SharedLib
             var R = ldb.ViewReceipt(pIdR, true);
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            _ = Ds1C.SendReceiptTo1CAsync(R);
+            _ = DataSync1C.SendReceiptTo1CAsync(R, ldb);
             _ = SendReceipt(R); // В сховище чеків
 
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             return true;
         }
-
-
 
         public async Task<bool> SendAllReceipt(WDB_SQLite parDB = null)
         {
@@ -133,7 +132,7 @@ namespace SharedLib
             foreach (var el in varReceipts)
             {
                 var R = varDB.ViewReceipt(el, true);
-                await Ds1C.SendReceiptTo1CAsync(R);
+                await DataSync1C.SendReceiptTo1CAsync(R, varDB);
                 _ = SendReceipt(R); // В сховище чеків
             }
             if (parDB == null)
@@ -243,9 +242,21 @@ namespace SharedLib
                     FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Write SqlGetDimWorkplace => {DW.Count()}");
                     Global.BildWorkplace(DW);
                     DW = null;
-                    
+
                     int MessageNoMin = db.GetConfig<int>("MessageNo");
-                    var MessageNMax = MsSQL.LoadData(Global.IdWorkPlace, pIsFull, pD, MessageNoMin).MessageNoMax;                    
+                    int MessageNMax = 0;
+                   
+                    if (Global.IsHttp)
+                    {
+                        bool IsFull = pIsFull;
+                        var r = AsyncHelper.RunSync(() => LoadDataAsync(Global.IdWorkPlace, IsFull, NameDB, MessageNoMin));
+                        if (r != null)
+                        {
+                            MessageNMax = r.MessageNoMax;
+                        }
+                    }
+                    else
+                        MessageNMax = MsSQL.LoadData(Global.IdWorkPlace, pIsFull, pD, MessageNoMin).MessageNoMax;
 
                     if (pIsFull)
                     {
@@ -253,13 +264,14 @@ namespace SharedLib
                         if (CW > 1000)
                         {
                             FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, "Create MIDIndex");
-                            db.CreateMIDIndex(pD);
-                            pD.Close();
+                            if (!Global.IsHttp)
+                                db.CreateMIDIndex(pD);                        
+                            pD?.Close();
                             try
                             {
                                 File.Move(NameDB, varMidFile);
                                 db.LastMidFile = varMidFile;
-                                FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, "Set config LastMidFile=> {db.LastMidFile}");
+                                FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Set config LastMidFile=> {db.LastMidFile}");
                                 db.SetConfig<DateTime>("Load_Full", DateTime.Now);
                                 db.SetConfig<DateTime>("Load_Update", DateTime.Now);
                                 db.GetDB();
@@ -268,7 +280,6 @@ namespace SharedLib
                             {
                                 FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, e);
                             }
-
                         }
                         else
                         {
@@ -283,7 +294,6 @@ namespace SharedLib
                     FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, "End");
                     Status = eSyncStatus.SyncFinishedSuccess;// : eSyncStatus.NotDefine;
                     Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.SyncFinishedSuccess, StatusDescription = "SyncData=>Ok" });
-
                 }
                 catch (Exception ex)
                 {
@@ -514,7 +524,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                 {
                     using var ldb = new WDB_SQLite(Ldc);
                     var t = ldb.GetReceiptWaresDeleted();
-                    var res = await Ds1C.Send1CReceiptWaresDeletedAsync(t);
+                    var res = await DataSync1C.Send1CReceiptWaresDeletedAsync(t);
 
                     if (res)
                         db.SetConfig<DateTime>("LastDaySendDeleted", Ldc);
@@ -532,7 +542,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
 
         public async Task<eReturnClient> SendClientAsync(ClientNew pC)
         {
-            return await Ds1C.Send1CClientAsync(pC);
+            return await DataSync1C.Send1CClientAsync(pC);
         }
         public async Task Send1CClientAsync()
         {
@@ -764,7 +774,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                         ///!!!TMP треба буде перейти на цей механізм
                         _ = CheckOneTime(new OneTime(pIdReceipt) { CodePS = Cat2First.CodePS, TypeData = eTypeCode.BarCode2Category, CodeData = pBarCode.ToLong() });
 
-                        isGood = await Ds1C.IsUseDiscountBarCode(pBarCode);
+                        isGood = await DataSync1C.IsUseDiscountBarCode(pBarCode);
                         Global.ErrorDiscountOnLine = 0;
                     }
                     catch (Exception ex)
@@ -933,6 +943,47 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     if (!string.IsNullOrEmpty(res))
                     {
                         return JsonConvert.DeserializeObject<IEnumerable<ReceiptWares>>(res);
+                    }
+                }
+            }
+            catch (Exception e) { FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, e); }
+            return null;
+        }
+
+        public async Task<MidData> LoadDataAsync(int pIdWorkPlace, bool pIsFull, string pPathDB, int pMessageNoMin)
+        {
+            var Res = await LoadDataAsync(pIdWorkPlace, pIsFull);
+            if (Res != null)
+            {
+                if(!string.IsNullOrEmpty( Res.PathMid))
+                {
+                    Http.LoadFile(Res.PathMid, pPathDB);                    
+                }
+                if (Res.MessageNoMax > pMessageNoMin)
+                {
+                }
+            }
+            return null;
+        }
+        public async Task<MidData> LoadDataAsync(int pIdWorkPlace, bool pIsFull)
+        {
+            try
+            {
+                HttpClient client = new HttpClient
+                {
+                    Timeout = TimeSpan.FromMilliseconds(5000)
+                };
+                HttpRequestMessage requestMessage = new(HttpMethod.Post, Global.Api + "LoadData");
+                InLoadData data = new() {IdWorkPlace= pIdWorkPlace , IsFull= pIsFull };
+       
+                requestMessage.Content = new StringContent(data.ToJson(), Encoding.UTF8, "application/json");
+                var response = await client.SendAsync(requestMessage);
+                if (response.IsSuccessStatusCode)
+                {
+                    var res = await response.Content.ReadAsStringAsync();
+                    if (!string.IsNullOrEmpty(res))
+                    {
+                        return JsonConvert.DeserializeObject<MidData>(res);
                     }
                 }
             }

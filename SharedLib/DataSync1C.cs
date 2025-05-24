@@ -20,20 +20,19 @@ namespace SharedLib
     public class DataSync1C
     {
         public SoapTo1C soapTo1C = new SoapTo1C();
-        WDB_SQLite db { get { return bl?.db; } }
-        BL bl;
-        public DataSync1C(BL pBL) {
-            bl = pBL;
+        
+        public DataSync1C() { //BL pBL
+            //bl = pBL;
         }
 
-        public async Task<bool> SendReceiptTo1CAsync(Receipt pR, string pServer = null, bool pIsChangeState = true)
+        public static async Task<bool> SendReceiptTo1CAsync(Receipt pR,  WDB_SQLite db=null) //string pServer = null, bool pIsChangeState = true,
         {
            // if (!Global.Is1C) return null;
             //string Res = null;
-            if (!Global.Settings.IsSend1C && pIsChangeState) return false;
+            if (db != null && !Global.Settings.IsSend1C ) return false; //&& pIsChangeState
 
-            if (string.IsNullOrEmpty(pServer))
-                pServer = Global.Server1C;
+            //if (string.IsNullOrEmpty(pServer))
+            var pServer = Global.Server1C;
             try
             {
                 bool IsErrorSend = false;
@@ -48,10 +47,10 @@ namespace SharedLib
                     {
                         pR.IdWorkplacePay = el;
                         var r = new Receipt1C(pR);
-                        var body = soapTo1C.GenBody("JSONCheck", new Parameters[] { new Parameters("JSONSting", r.GetBase64()) });
-                        var res = Global.IsTest ? "0" : await soapTo1C.RequestAsync(pServer, body, 60000, "application/json");
+                        var body = SoapTo1C.GenBody("JSONCheck", new Parameters[] { new Parameters("JSONSting", r.GetBase64()) });
+                        var res = Global.IsTest ? "0" : await SoapTo1C.RequestAsync(pServer, body, 60000, "application/json");
                         IsErrorSend |= !res.Equals("0");
-                        FileLogger.WriteLogMessage(this, "SendReceiptTo1CAsync", $"({pR.NumberReceipt1C},{pR.CodePeriod},{pR.IdWorkplace},{pR.CodeReceipt})=>{res}");
+                        FileLogger.WriteLogMessage($"DataSync1C\\SendReceiptTo1CAsync ({pR.NumberReceipt1C},{pR.CodePeriod},{pR.IdWorkplace},{pR.CodeReceipt})=>{res}");
                         //if (!IsErrorSend)
                         //   Res += JsonConvert.SerializeObject(r)+Environment.NewLine;
                     }
@@ -59,13 +58,13 @@ namespace SharedLib
                 if (IsErrorSend)
                     return false;
                 pR.StateReceipt = eStateReceipt.Send;
-                if (pIsChangeState&& db!=null)
-                    db.SetStateReceipt(pR);//Змінюєм стан чека на відправлено.                
+                //if (pIsChangeState&& db!=null)
+                    db?.SetStateReceipt(pR);//Змінюєм стан чека на відправлено.                
                 return true;
             }
             catch (Exception ex)
             {
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex);
+                FileLogger.WriteLogMessage($"DataSync1C\\SendReceiptTo1CAsync", ex);
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = $"SendReceiptTo1CAsync=> {pR.CodeReceipt}{Environment.NewLine}{ex.Message}{Environment.NewLine}{new System.Diagnostics.StackTrace()}" });
                 return false;
             }
@@ -75,44 +74,44 @@ namespace SharedLib
             }
         }
         
-        public async Task<Client> GetBonusAsync(Client pClient, int pCodeWarehouse = 0)
+        public static async Task<Client> GetBonusAsync(Client pClient, int pCodeWarehouse = 0)
         {
             try
             {
-                var body = soapTo1C.GenBody("GetBonusSum", new Parameters[] { new Parameters("CodeOfCard", pClient.BarCode) });
-                var res = await soapTo1C.RequestAsync(Global.Server1C, body,5000);
+                var body = SoapTo1C.GenBody("GetBonusSum", new Parameters[] { new Parameters("CodeOfCard", pClient.BarCode) });
+                var res = await SoapTo1C.RequestAsync(Global.Server1C, body,5000);
                 
                 if (!string.IsNullOrEmpty(res) )
                     pClient.SumBonus = res.ToDecimal(); //!!!TMP
                 if (pClient.SumBonus > 0 && pCodeWarehouse > 0)
                 {
-                    body = soapTo1C.GenBody("GetOtovProc", new Parameters[] {
+                    body = SoapTo1C.GenBody("GetOtovProc", new Parameters[] {
                         new Parameters("CodeOfSklad",$"{pCodeWarehouse:D9}"),
                         new Parameters("CodeOfCard", pClient.BarCode),
                         new Parameters("Summ", pClient.SumBonus.ToS())
                     });
-                    res = await soapTo1C.RequestAsync(Global.Server1C, body,5000);                   
+                    res = await SoapTo1C.RequestAsync(Global.Server1C, body,5000);                   
                     if (!string.IsNullOrEmpty(res) )
                     {
                         pClient.PercentBonus = res.ToDecimal() / 100m; //!!!TMP
                         pClient.SumMoneyBonus = Math.Round(pClient.SumBonus * pClient.PercentBonus, 2);
                     }
                 }
-                body = soapTo1C.GenBody("GetMoneySum", new Parameters[] { new Parameters("CodeOfCard", pClient.BarCode) });
-                res = await soapTo1C.RequestAsync(Global.Server1C, body, 5000);                
+                body = SoapTo1C.GenBody("GetMoneySum", new Parameters[] { new Parameters("CodeOfCard", pClient.BarCode) });
+                res = await SoapTo1C.RequestAsync(Global.Server1C, body, 5000);                
                 if (!string.IsNullOrEmpty(res) )
                     pClient.Wallet = res.ToDecimal();
             }
             catch (Exception ex)
             {
-                FileLogger.WriteLogMessage(this, "GetBonusAsync", ex);
+                FileLogger.WriteLogMessage("DataSync1C\\GetBonusAsync", ex);
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = ex.Message });
             }
             Global.OnClientChanged?.Invoke(pClient);
             return pClient;
         }
 
-        public async Task<bool> Send1CReceiptWaresDeletedAsync(IEnumerable<ReceiptWaresDeleted1C> pRWD)
+        public static async Task<bool> Send1CReceiptWaresDeletedAsync(IEnumerable<ReceiptWaresDeleted1C> pRWD)
         {
             if (pRWD == null || pRWD.Count() == 0)
                 return true;
@@ -122,9 +121,9 @@ namespace SharedLib
                 var r = JsonConvert.SerializeObject(d);
                 var plainTextBytes = Encoding.UTF8.GetBytes(r);
                 var resBase64 = Convert.ToBase64String(plainTextBytes);
-                var body = soapTo1C.GenBody("DeletedItemsInTheCheck", new Parameters[] { new Parameters("JSONSting", resBase64) });
+                var body = SoapTo1C.GenBody("DeletedItemsInTheCheck", new Parameters[] { new Parameters("JSONSting", resBase64) });
 
-                var res = await soapTo1C.RequestAsync(Global.Server1C, body, 60000, "application/json");
+                var res = await SoapTo1C.RequestAsync(Global.Server1C, body, 60000, "application/json");
 
                 if (!string.IsNullOrEmpty(res) && res.Equals("0"))
                     return true;
@@ -139,14 +138,14 @@ namespace SharedLib
             }
         }
 
-        public async Task<eReturnClient> Send1CClientAsync(ClientNew pC)
+        public static  async Task<eReturnClient> Send1CClientAsync(ClientNew pC)
         {
             eReturnClient Res = eReturnClient.ErrorConnect;
             if (pC == null)
                 return eReturnClient.Error;
             try
             {
-                var body = soapTo1C.GenBody("IssuanceOfCards", new Parameters[]
+                var body = SoapTo1C.GenBody("IssuanceOfCards", new Parameters[]
                 {
                     new Parameters("CardId", pC.BarcodeClient),
                     new Parameters("User",pC.BarcodeCashier),
@@ -157,7 +156,7 @@ namespace SharedLib
                     new Parameters("TypeOfOperation","0")
                 });
 
-                var res = await soapTo1C.RequestAsync(Global.Server1C, body, 5000, "application/json");
+                var res = await SoapTo1C.RequestAsync(Global.Server1C, body, 5000, "application/json");
 
                 if (!string.IsNullOrEmpty(res))
                 {
@@ -169,19 +168,19 @@ namespace SharedLib
                     else
                         Res = eReturnClient.Error;
                 }
-                 FileLogger.WriteLogMessage(this, "Send1CClientAsync", $"{body}=>{res}");
+                 FileLogger.WriteLogMessage($"DataSync1C\\Send1CClientAsync{body}=>{res}");
             }
             catch (Exception ex)
             {
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex);
+                FileLogger.WriteLogMessage("DataSync1C\\Send1CClientAsync", System.Reflection.MethodBase.GetCurrentMethod().Name, ex);
             }
             return Res;
         }
 
-        public async Task<bool> IsUseDiscountBarCode(string pBarCode)
+        public static async Task<bool> IsUseDiscountBarCode(string pBarCode)
         {
-            var body = soapTo1C.GenBody("GetRestOfLabel", new Parameters[] { new Parameters("CodeOfLabel", pBarCode) });
-            var res = await soapTo1C.RequestAsync(Global.Server1C, body, 2000);
+            var body = SoapTo1C.GenBody("GetRestOfLabel", new Parameters[] { new Parameters("CodeOfLabel", pBarCode) });
+            var res = await SoapTo1C.RequestAsync(Global.Server1C, body, 2000);
             return res.Equals("1");
         }
     }

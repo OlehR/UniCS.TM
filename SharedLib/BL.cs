@@ -32,21 +32,28 @@ namespace SharedLib
 
         public BL()
         {
-            db = WDB_SQLite.GetInstance;
-            ds = new DataSync(this);
-            Global.BildWorkplace(db.GetWorkPlace());
-            if (!File.Exists(db.LastMidFile))
+            try
             {
-                bool res = true;
-                ds.SyncData(ref res);
-            }
-            db.BildWaresWarehouse();
+                db = WDB_SQLite.GetInstance;
+                ds = new DataSync(this);
+                Global.BildWorkplace(db.GetWorkPlace());
+                if (!File.Exists(db.LastMidFile))
+                {
+                    bool res = true;
+                    _ = ds.SyncData(ref res);
+                }
+                db.BildWaresWarehouse();
 
-            sBL = this;
-            var WP = Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace);
-            if (WP != null)
+                sBL = this;
+                var WP = Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace);
+                if (WP != null)
+                {
+                    Global.DefaultCodeDealer = WP.CodeDealer;
+                }
+            }
+            catch (Exception ex)
             {
-                Global.DefaultCodeDealer = WP.CodeDealer;
+                FileLogger.WriteLogMessage("BL", ex);
             }
         }
 

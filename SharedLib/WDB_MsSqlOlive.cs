@@ -11,10 +11,7 @@ namespace SharedLib
 
         string SqlGetDimWares { get { return @"SELECT * FROM dbo.Wares w"; } }
 
-        string SqlGetDimAdditionUnit { get { return @"SELECT w.CodeWares, ud.CodeUnit ,au.Coefficient,au.Weight,'Y' AS DefaultUnit --, WeightNet 
-FROM dbo.V1C_AdditionUnit AU
-JOIN dbo.V1C_UnitDimension ud ON AU.UnitRRef = ud.UnitRRef
-JOIN dbo.Wares w ON AU.WaresRRef = w.WaresRRef"; } }
+        string SqlGetDimAdditionUnit { get { return @"SELECT CodeWares,CodeUnit,Coefficient,Weight,DefaultUnit FROM dbo.V_AdditionUnit"; } }
 
         string SqlGetDimBarCode { get { return @"SELECT w.CodeWares, w.CodeUnit , BC.BarCode, 1 AS Coefficient
 FROM dbo.V1C_BarCode BC 

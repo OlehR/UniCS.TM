@@ -20,7 +20,7 @@ namespace SharedLib
     }
     public class SoapTo1C
     {
-        public string GenBody(string parFunction, IEnumerable<Parameters> parPar)
+        public static string GenBody(string parFunction, IEnumerable<Parameters> parPar)
         {
             string parameters = "";
             if (parPar != null)
@@ -32,7 +32,7 @@ namespace SharedLib
                     $"<soap:Body>\n<{parFunction} xmlns=\"vopak\">{parameters}</{parFunction}>\n</soap:Body>\n</soap:Envelope>";
         }
 
-        public async System.Threading.Tasks.Task<string> RequestAsync(string parUrl,string parBody,int parWait=10000,string parContex= "text/xml")
+        public static async System.Threading.Tasks.Task<string> RequestAsync(string parUrl,string parBody,int parWait=10000,string parContex= "text/xml")
         {
             string res = null;
             using HttpClient client = new HttpClient();
@@ -54,7 +54,7 @@ namespace SharedLib
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation {  Exception = null, Status = eSyncStatus.NoFatalError, StatusDescription = "RequestAsync=>" + response.RequestMessage });
             }
             if(string.IsNullOrEmpty(res))   // || !res.Equals("0"))
-                FileLogger.WriteLogMessage(this, "SharedLib.SoapTo1C.RequestAsync", $"{parUrl}{Environment.NewLine}{parBody}{Environment.NewLine} res=>{res}");
+                FileLogger.WriteLogMessage($"SharedLib.SoapTo1C.RequestAsync {parUrl}{Environment.NewLine}{parBody}{Environment.NewLine} res=>{res}");
 
             return res;
         }
